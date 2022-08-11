@@ -2,81 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18D5F58F4E6
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 01:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 933AC58F50D
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 02:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231557AbiHJXcc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 19:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        id S232142AbiHKAFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 20:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHJXc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 19:32:29 -0400
-Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52F487FE6B;
-        Wed, 10 Aug 2022 16:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=XIdpO
-        Qq44WwBDrfcT18lSv7b7H/On0t6NSVFCJoXbes=; b=mQcRRBoLt+b8XkGoggg2d
-        aBudR+RH0JF6aKb6yeDX3whtMyrTwIW/OJrPu5StBz4x6yGe0SxUChG/I/bP39iG
-        Lhy2QEV+u6zz84vRPy9dFKZF03sn7hBvPUhCwkZzCs4/CN6ZivXlMZfSESwg5bwP
-        nLAmlBfI1qEr24MBgjnZXA=
-Received: from localhost.localdomain (unknown [113.87.232.118])
-        by smtp12 (Coremail) with SMTP id EMCowACn0zlvP_Ri7Nf3Fw--.60811S4;
-        Thu, 11 Aug 2022 07:30:03 +0800 (CST)
-From:   Chen Lin <chen45464546@163.com>
-To:     ioana.ciornei@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yi.liu@nxp.com,
-        Chen Lin <chen45464546@163.com>,
-        Chen Lin <chen.lin5@zte.com.cn>
-Subject: [PATCH] dpaa2-eth: trace the allocated address instead of page struct
-Date:   Thu, 11 Aug 2022 07:29:48 +0800
-Message-Id: <20220810232948.40636-1-chen45464546@163.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230118AbiHKAFq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 20:05:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949A145066
+        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 17:05:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=E+VMxyFx22o9k6Z47KDFf3vd8iJpnH6qCgtaat/xdhU=; b=G5Orc4dl6bG+skXptOT5lQQLq8
+        nwtzT1cIH+lyDIAwuApOCjt4iP8Nu63QGhyo3TNWegvb5vWPABMZki1jz7zwXJ3MMprRkSXmWTist
+        D7XXVefQvrb92pilflEE6bTGPDcCR5wsFt6ezStObYyvo1sncLHLF1FK7q+Ub3Yd//Hs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oLvhj-00CyTn-L8; Thu, 11 Aug 2022 02:05:39 +0200
+Date:   Thu, 11 Aug 2022 02:05:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
+Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>
+Subject: Re: [PATCH] fec: Restart PPS after link state change
+Message-ID: <YvRH06S/7E6J8RY0@lunn.ch>
+References: <20220809124119.29922-1-csokas.bence@prolan.hu>
+ <YvKZNcVfYdLw7bkm@lunn.ch>
+ <299d74d5-2d56-23f6-affc-78bb3ae3e03c@prolan.hu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EMCowACn0zlvP_Ri7Nf3Fw--.60811S4
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw1DJFyDKF1UKF4kAFWUJwb_yoWDJFc_ur
-        nrXr17JF4jkFyFya1Fkr45Xa4v9r47Zr48AF1SgFW3G347Ar1rJw1kA34xArZ5ur4SkF9x
-        Jw17Aa43J3s3JjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRAtxhPUUUUU==
-X-Originating-IP: [113.87.232.118]
-X-CM-SenderInfo: hfkh0kqvuwkkiuw6il2tof0z/xtbBdhtZnmDkoNZ6JAAAsG
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <299d74d5-2d56-23f6-affc-78bb3ae3e03c@prolan.hu>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow the commit 27c874867c4(dpaa2-eth: Use a single page per Rx buffer),
-we should trace the allocated address instead of page struct.
+> The fec driver doesn't support anything other than PTP_CLK_REQ_PPS. And if
+> it will at some point, this will need to be amended anyways.
 
-Signed-off-by: Chen Lin <chen.lin5@zte.com.cn>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+O.K.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-index cd9ec8052..75d515726 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
-@@ -1660,8 +1660,8 @@ static int dpaa2_eth_add_bufs(struct dpaa2_eth_priv *priv,
- 		buf_array[i] = addr;
- 
- 		/* tracing point */
--		trace_dpaa2_eth_buf_seed(priv->net_dev,
--					 page, DPAA2_ETH_RX_BUF_RAW_SIZE,
-+		trace_dpaa2_eth_buf_seed(priv->net_dev, page_address(page),
-+					 DPAA2_ETH_RX_BUF_RAW_SIZE,
- 					 addr, priv->rx_buf_size,
- 					 bpid);
- 	}
--- 
-2.25.1
+> > 
+> > >   	/* Whack a reset.  We should wait for this.
+> > >   	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+> > > @@ -1119,6 +1120,13 @@ fec_restart(struct net_device *ndev)
+> > >   	if (fep->bufdesc_ex)
+> > >   		fec_ptp_start_cyclecounter(ndev);
+> > > +	/* Restart PPS if needed */
+> > > +	if (fep->pps_enable) {
+> > > +		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
+> > > +		fep->pps_enable = 0;
+> > 
+> > If reset causes PPS to stop, maybe it would be better to do this
+> > unconditionally?
+> 
+> But if it wasn't enabled before the reset in the first place, we wouldn't
+> want to unexpectedly start it.
 
+We should decide what fep->pps_enable actually means. It should be
+enabled, or it is actually enabled? Then it becomes clear if the reset
+function should clear it to reflect the hardware, or if the
+fec_ptp_enable_pps() should not be looking at it, and needs to read
+the status from the hardware.
+
+> > 	fep->pps_enable = 0;
+> > 	fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
+> > 
+> > > +	if (fep->bufdesc_ex)
+> > > +		ecntl |= (1 << 4);
+> > 
+> > Please replace (1 << 4) with a #define to make it clear what this is doing.
+> 
+> I took it from the original source, line 1138 as of commit #504148f. It is
+> the EN1588 bit by the way. I shall replace it with a #define in both places
+> then. Though the code is riddled with other magic numbers without
+> explanation, and I probably won't be bothered to fix them all.
+
+Yes, i understand. It just makes it easier to review if you fixup
+parts of the code you are changing.
+
+> > So you re-start PPS in stop()? Should it keep outputting when the
+> > interface is down?
+> 
+> Yes. We use PPS to synchronize devices on a common backplane. We use PTP to
+> sync this PPS to a master clock. But if PTP sync drops out, we wouldn't want
+> the backplane-level synchronization to fail. The PPS needs to stay on as
+> long as userspace *explicitly* disables it, regardless of what happens to
+> the link.
+
+We need the PTP Maintainers view on that. I don't know if that is
+normal or not.
+
+> > Also, if it is always outputting, don't you need to stop it in
+> > fec_drv_remove(). You probably don't want to still going after the
+> > driver is unloaded.
+> 
+> Good point, that is one exception we could make to the above statement
+> (though even in this case, userspace *really* should disable PPS before
+> unloading the module).
+
+Never trust userspace. Ever.
+
+      Andrew
