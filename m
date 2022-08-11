@@ -2,64 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C5795906CC
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 21:07:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6CCA5906D1
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 21:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235799AbiHKS7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 14:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40762 "EHLO
+        id S236236AbiHKTFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 15:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234335AbiHKS7F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 14:59:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E0B9FAB2
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 11:59:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660244344; x=1691780344;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OgRPmckFG0TtMVAfj/fjsMBpWluP7n5nc5q0S29fQ70=;
-  b=B9Co7/MzMkBXuUDwiRgvaz1hGeuSi3tRJdLy7JR5Gw99hPJvGXmpvZM8
-   PMWcsow2ZL5W/4z1GIDqZIMuQRGALLeFlFLvF4oyp8YcoxHeLxKN9Puvg
-   04dbTMMbGrQH1qsNS2W0jR1SsHKt8jnoBTd1JRo9b4QWwiZY9DMYvHeWu
-   LJS37z6x3hsrYbkV9lepY2lkl2e0LULISQ6rhKIoS+BOcxWZpSniE1euV
-   /1gjQdLvTBz3w53vInvu/XKf1Q3FuVejrOXkepr7U0S1IAYROjTTzGJAO
-   CWahFFt0OrGVpbWcHhx0yQVCWQqhjzvEMNpUN+Ysm7FDsQkTWGfOgX+17
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="355442232"
-X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
-   d="scan'208";a="355442232"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 11:59:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
-   d="scan'208";a="673810482"
-Received: from lkp-server02.sh.intel.com (HELO cfab306db114) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 11 Aug 2022 11:59:01 -0700
-Received: from kbuild by cfab306db114 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMDOX-0000Xr-0K;
-        Thu, 11 Aug 2022 18:59:01 +0000
-Date:   Fri, 12 Aug 2022 02:58:15 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhogan@kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Paul Menzel <pmenzel@molgen.mpg.de>, netdev@vger.kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        intel-wired-lan@lists.osuosl.org
-Subject: Re: [Intel-wired-lan] [PATCH] igc: fix deadlock caused by taking
- RTNL in RPM resume path
-Message-ID: <202208120244.a7CKRiFy-lkp@intel.com>
-References: <20220811151342.19059-1-vinicius.gomes@intel.com>
+        with ESMTP id S230006AbiHKTFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 15:05:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB3982870;
+        Thu, 11 Aug 2022 12:05:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED5E60C03;
+        Thu, 11 Aug 2022 19:05:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6C9C433D6;
+        Thu, 11 Aug 2022 19:05:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660244729;
+        bh=0SThgFqFZyXezUn0d6O27jzfZynm2O9WY2w+bU36Vno=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iQSDeiZt3INPVzxg4SYeispGR7rJh9zxFmLpTigxTbUU/kLB3VyqAbGMoQDPfjfZa
+         VD49nTgv1XCzS+/qTcYtNcn07Y59fjdSLN9IGfLF8RpyCEN0CAku+iUPjS1PwA7G4C
+         k6b0fJ8hYYea8lR83Yd0GnOL5DFtTvJ+9Ik/NOBBH0ymxRovg7MmLxk/5Z2IfVdPq7
+         ZdCCOXwBR3Ng4lfPt4i+y5h1pUhtSG1Fye43bvjjhgGyKIk6589HNRMe349GkXAeCT
+         uq9aWw6wOLYfsthYnrgm/mF58ONb0bc+9VzsJKWD9ed1mv0HcFwP3XHmL4JHCGJ1Fd
+         BCx3UccaNLxvg==
+Date:   Thu, 11 Aug 2022 12:05:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-next@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org
+Subject: Re: build failure of next-20220811 due to 332f1795ca20 ("Bluetooth:
+ L2CAP: Fix l2cap_global_chan_by_psm regression")
+Message-ID: <20220811120528.0e2bc1e5@kernel.org>
+In-Reply-To: <YvVQEDs75pxSgxjM@debian>
+References: <YvVQEDs75pxSgxjM@debian>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220811151342.19059-1-vinicius.gomes@intel.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,108 +62,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+On Thu, 11 Aug 2022 19:53:04 +0100 Sudip Mukherjee (Codethink) wrote:
+> Hi All,
+> 
+> Not sure if it has been reported, builds of csky and mips allmodconfig
+> failed to build next-20220811 with gcc-12.
 
-I love your patch! Yet something to improve:
+Heh, 2 minutes after I submitted it to Linus :S
 
-[auto build test ERROR on tnguy-next-queue/dev-queue]
-[also build test ERROR on linus/master v5.19 next-20220811]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+> mips error is:
+> 
+> In function 'memcmp',
+>     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+>     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
+> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Vinicius-Costa-Gomes/igc-fix-deadlock-caused-by-taking-RTNL-in-RPM-resume-path/20220811-232032
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue.git dev-queue
-config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220812/202208120244.a7CKRiFy-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/61ed7ed758f23a10549c5d4fdc82ef9356281cbf
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Vinicius-Costa-Gomes/igc-fix-deadlock-caused-by-taking-RTNL-in-RPM-resume-path/20220811-232032
-        git checkout 61ed7ed758f23a10549c5d4fdc82ef9356281cbf
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/intel/igc/
+Source is the second argument? memcmp does not really have src and dst..
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Assuming it's the second one it appears to object to the:
 
-All errors (new ones prefixed by >>):
+#define BDADDR_ANY  (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
 
->> drivers/net/ethernet/intel/igc/igc_main.c:6838:26: error: use of undeclared identifier 'igc_suspend'; did you mean '__igc_suspend'?
-           SET_SYSTEM_SLEEP_PM_OPS(igc_suspend, igc_resume)
-                                   ^~~~~~~~~~~
-                                   __igc_suspend
-   include/linux/pm.h:343:22: note: expanded from macro 'SET_SYSTEM_SLEEP_PM_OPS'
-           SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-                               ^
-   include/linux/pm.h:313:26: note: expanded from macro 'SYSTEM_SLEEP_PM_OPS'
-           .suspend = pm_sleep_ptr(suspend_fn), \
-                                   ^
-   include/linux/pm.h:439:65: note: expanded from macro 'pm_sleep_ptr'
-   #define pm_sleep_ptr(_ptr) PTR_IF(IS_ENABLED(CONFIG_PM_SLEEP), (_ptr))
-                                                                   ^
-   include/linux/kernel.h:57:38: note: expanded from macro 'PTR_IF'
-   #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
-                                              ^
-   drivers/net/ethernet/intel/igc/igc_main.c:6706:27: note: '__igc_suspend' declared here
-   static int __maybe_unused __igc_suspend(struct device *dev)
-                             ^
->> drivers/net/ethernet/intel/igc/igc_main.c:6838:26: error: use of undeclared identifier 'igc_suspend'; did you mean '__igc_suspend'?
-           SET_SYSTEM_SLEEP_PM_OPS(igc_suspend, igc_resume)
-                                   ^~~~~~~~~~~
-                                   __igc_suspend
-   include/linux/pm.h:343:22: note: expanded from macro 'SET_SYSTEM_SLEEP_PM_OPS'
-           SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-                               ^
-   include/linux/pm.h:315:25: note: expanded from macro 'SYSTEM_SLEEP_PM_OPS'
-           .freeze = pm_sleep_ptr(suspend_fn), \
-                                  ^
-   include/linux/pm.h:439:65: note: expanded from macro 'pm_sleep_ptr'
-   #define pm_sleep_ptr(_ptr) PTR_IF(IS_ENABLED(CONFIG_PM_SLEEP), (_ptr))
-                                                                   ^
-   include/linux/kernel.h:57:38: note: expanded from macro 'PTR_IF'
-   #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
-                                              ^
-   drivers/net/ethernet/intel/igc/igc_main.c:6706:27: note: '__igc_suspend' declared here
-   static int __maybe_unused __igc_suspend(struct device *dev)
-                             ^
->> drivers/net/ethernet/intel/igc/igc_main.c:6838:26: error: use of undeclared identifier 'igc_suspend'; did you mean '__igc_suspend'?
-           SET_SYSTEM_SLEEP_PM_OPS(igc_suspend, igc_resume)
-                                   ^~~~~~~~~~~
-                                   __igc_suspend
-   include/linux/pm.h:343:22: note: expanded from macro 'SET_SYSTEM_SLEEP_PM_OPS'
-           SYSTEM_SLEEP_PM_OPS(suspend_fn, resume_fn)
-                               ^
-   include/linux/pm.h:317:27: note: expanded from macro 'SYSTEM_SLEEP_PM_OPS'
-           .poweroff = pm_sleep_ptr(suspend_fn), \
-                                    ^
-   include/linux/pm.h:439:65: note: expanded from macro 'pm_sleep_ptr'
-   #define pm_sleep_ptr(_ptr) PTR_IF(IS_ENABLED(CONFIG_PM_SLEEP), (_ptr))
-                                                                   ^
-   include/linux/kernel.h:57:38: note: expanded from macro 'PTR_IF'
-   #define PTR_IF(cond, ptr)       ((cond) ? (ptr) : NULL)
-                                              ^
-   drivers/net/ethernet/intel/igc/igc_main.c:6706:27: note: '__igc_suspend' declared here
-   static int __maybe_unused __igc_suspend(struct device *dev)
-                             ^
-   3 errors generated.
+Which, well, kinda understandable but why does it not dislike the same
+construct when used in the other 70 places in the tree?
 
+My preferred fix would be to do the same thing as we do for ethernet
+i.e. open code the helper, see is_zero_ether_addr().
 
-vim +6838 drivers/net/ethernet/intel/igc/igc_main.c
+>    44 | #define __underlying_memcmp     __builtin_memcmp
+>       |                                 ^
+> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+>   420 |         return __underlying_memcmp(p, q, size);
+>       |                ^~~~~~~~~~~~~~~~~~~
+> In function 'memcmp',
+>     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
+>     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
+> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>    44 | #define __underlying_memcmp     __builtin_memcmp
+>       |                                 ^
+> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+>   420 |         return __underlying_memcmp(p, q, size);
+>       |                ^~~~~~~~~~~~~~~~~~~
+> 
+> 
+> csky error is:
+> 
+> In file included from net/bluetooth/l2cap_core.c:37:
+> In function 'bacmp',
+>     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
+> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>   347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
+>       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> In function 'bacmp',
+>     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
+> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+>   347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
+>       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> 
+> git bisect pointed to 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression").
+> And, reverting that commit has fixed the build failure.
+> 
+> I will be happy to test any patch or provide any extra log if needed.
+> 
+> --
+> Regards
+> Sudip
 
-bc23aa949aeba0 Sasha Neftin 2020-01-29  6835  
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6836  #ifdef CONFIG_PM
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6837  static const struct dev_pm_ops igc_pm_ops = {
-9513d2a5dc7f3f Sasha Neftin 2019-11-14 @6838  	SET_SYSTEM_SLEEP_PM_OPS(igc_suspend, igc_resume)
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6839  	SET_RUNTIME_PM_OPS(igc_runtime_suspend, igc_runtime_resume,
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6840  			   igc_runtime_idle)
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6841  };
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6842  #endif
-9513d2a5dc7f3f Sasha Neftin 2019-11-14  6843  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
