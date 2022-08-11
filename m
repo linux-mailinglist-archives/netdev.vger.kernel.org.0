@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FDF1590061
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:43:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DF22590066
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236106AbiHKPlo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:41:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41128 "EHLO
+        id S236142AbiHKPlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236431AbiHKPkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:40:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153F999264;
-        Thu, 11 Aug 2022 08:36:21 -0700 (PDT)
+        with ESMTP id S236505AbiHKPky (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:40:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4089C20A;
+        Thu, 11 Aug 2022 08:36:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D7FB61620;
-        Thu, 11 Aug 2022 15:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09A9EC433D7;
-        Thu, 11 Aug 2022 15:36:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D42B361689;
+        Thu, 11 Aug 2022 15:36:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 659DBC433D7;
+        Thu, 11 Aug 2022 15:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232180;
-        bh=bhhV4Nhie3v1Rww2WwGnEWmY1+nfvJttYCbx1pBQg5w=;
+        s=k20201202; t=1660232187;
+        bh=v4gP1CPwAs+y2Qsyjp0bkq9yER44jjMYz1Kh2ZiPq0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ccvGX/wxyPPvj1YwOWf4pAC5GCVAyFgAo9XIAyss3meGX1vv4YhEpKdkVm9l1dbwr
-         RQewJIyDqkiP4HUQ/7XzCm1oc9z2VkNQMMESf4fcXfmVFBF1QxWDqxuysjIkwqHiOw
-         Cv60k7FOvRtOFOHFMi3bBgbl3NgaPUuj0X0CKPXTb0a1c+giGBABkVDE72lrDTfNRd
-         x77pS+SzcUpdEH8+axHxhbrAphrePvAXgsK2rY+aFkkD8kbI+vPNRX9J4yYtcEBxAS
-         63Xky8aJFqBzhtYH8yiTASFq0Fg072Jr+tv911dXOflBuPkiy0s+GnwiRx5JSZTmT4
-         ILOujizD1JxFQ==
+        b=nm8H7BPusWGMmhIR5itA9x3XgngZdtofzixx6E8F8OU3Hgr6/V8lDgILlZ/dqTSfB
+         BDx1HtXO1PeWlEeBamT0bLdlLC0TzJazXSvqJqBtTalfApi+qLpaXGNte/d0fz2qBI
+         HJhXvSAvRqkhF68Z3pKVO5a7fhwFtgbK8hHCpH8939zMTg4Ssh4LJIkPo10c2cGo01
+         U3oWZRmLHcwjKNnt4kkyLrjYf2k4EXldBgwI4c7k4JGN/teCGCrjpMEu52KJH7I2aQ
+         uEx8sxgg4NdPQzhDBVXVnApDtxyHRR2Gzi34Re2s9UdgafSZauQnGlRyzF2KxkzJPO
+         11vU+eacpQsOw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hariprasad Kelam <hkelam@marvell.com>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, lcherian@marvell.com,
-        gakula@marvell.com, jerinj@marvell.com, sbhatta@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 066/105] octeontx2-af: Don't reset previous pfc config
-Date:   Thu, 11 Aug 2022 11:27:50 -0400
-Message-Id: <20220811152851.1520029-66-sashal@kernel.org>
+Cc:     Yafang Shao <laoar.shao@gmail.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>, NeilBrown <neilb@suse.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, martin.lau@linux.dev,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 068/105] bpf: Make non-preallocated allocation low priority
+Date:   Thu, 11 Aug 2022 11:27:52 -0400
+Message-Id: <20220811152851.1520029-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -60,150 +61,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hariprasad Kelam <hkelam@marvell.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-[ Upstream commit 8e1514579246ddc36ba0b860fc8bdd03be085aee ]
+[ Upstream commit ace2bee839e08df324cb320763258dfd72e6120e ]
 
-Current implementation is such that driver first resets the
-existing PFC config before applying new pfc configuration.
-This creates a problem like once PF or VFs requests PFC config
-previous pfc config by other PFVfs is getting reset.
+GFP_ATOMIC doesn't cooperate well with memcg pressure so far, especially
+if we allocate too much GFP_ATOMIC memory. For example, when we set the
+memcg limit to limit a non-preallocated bpf memory, the GFP_ATOMIC can
+easily break the memcg limit by force charge. So it is very dangerous to
+use GFP_ATOMIC in non-preallocated case. One way to make it safe is to
+remove __GFP_HIGH from GFP_ATOMIC, IOW, use (__GFP_ATOMIC |
+__GFP_KSWAPD_RECLAIM) instead, then it will be limited if we allocate
+too much memory. There's a plan to completely remove __GFP_ATOMIC in the
+mm side[1], so let's use GFP_NOWAIT instead.
 
-This patch fixes the problem by removing unnecessary resetting
-of PFC config. Also configure Pause quanta value to smaller as
-current value is too high.
+We introduced BPF_F_NO_PREALLOC is because full map pre-allocation is
+too memory expensive for some cases. That means removing __GFP_HIGH
+doesn't break the rule of BPF_F_NO_PREALLOC, but has the same goal with
+it-avoiding issues caused by too much memory. So let's remove it.
 
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This fix can also apply to other run-time allocations, for example, the
+allocation in lpm trie, local storage and devmap. So let fix it
+consistently over the bpf code
+
+It also fixes a typo in the comment.
+
+[1]. https://lore.kernel.org/linux-mm/163712397076.13692.4727608274002939094@noble.neil.brown.name/
+
+Cc: Roman Gushchin <roman.gushchin@linux.dev>
+Cc: Shakeel Butt <shakeelb@google.com>
+Cc: NeilBrown <neilb@suse.de>
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
+Link: https://lore.kernel.org/r/20220709154457.57379-2-laoar.shao@gmail.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/marvell/octeontx2/af/cgx.c    | 15 +++++++++++----
- .../net/ethernet/marvell/octeontx2/af/rpm.c    | 18 +++++++++++-------
- .../net/ethernet/marvell/octeontx2/af/rpm.h    |  3 +--
- 3 files changed, 23 insertions(+), 13 deletions(-)
+ kernel/bpf/devmap.c        | 2 +-
+ kernel/bpf/hashtab.c       | 6 +++---
+ kernel/bpf/local_storage.c | 2 +-
+ kernel/bpf/lpm_trie.c      | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 25491edc35ce..931a1a7ebf76 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -847,6 +847,11 @@ static void cgx_lmac_pause_frm_config(void *cgxd, int lmac_id, bool enable)
- 	cfg |= CGX_CMR_RX_OVR_BP_EN(lmac_id);
- 	cfg &= ~CGX_CMR_RX_OVR_BP_BP(lmac_id);
- 	cgx_write(cgx, 0, CGXX_CMR_RX_OVR_BP, cfg);
-+
-+	/* Disable all PFC classes by default */
-+	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
- }
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index c2867068e5bd..1400561efb15 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -845,7 +845,7 @@ static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
+ 	struct bpf_dtab_netdev *dev;
  
- int verify_lmac_fc_cfg(void *cgxd, int lmac_id, u8 tx_pause, u8 rx_pause,
-@@ -899,6 +904,7 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 		return 0;
- 
- 	cfg = cgx_read(cgx, lmac_id, CGXX_SMUX_CBFC_CTL);
-+	pfc_en |= FIELD_GET(CGX_PFC_CLASS_MASK, cfg);
- 
- 	if (rx_pause) {
- 		cfg |= (CGXX_SMUX_CBFC_CTL_RX_EN |
-@@ -910,12 +916,13 @@ int cgx_lmac_pfc_config(void *cgxd, int lmac_id, u8 tx_pause,
- 			CGXX_SMUX_CBFC_CTL_DRP_EN);
+ 	dev = bpf_map_kmalloc_node(&dtab->map, sizeof(*dev),
+-				   GFP_ATOMIC | __GFP_NOWARN,
++				   GFP_NOWAIT | __GFP_NOWARN,
+ 				   dtab->map.numa_node);
+ 	if (!dev)
+ 		return ERR_PTR(-ENOMEM);
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 17fb69c0e0dc..da7578426a46 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -61,7 +61,7 @@
+  *
+  * As regular device interrupt handlers and soft interrupts are forced into
+  * thread context, the existing code which does
+- *   spin_lock*(); alloc(GPF_ATOMIC); spin_unlock*();
++ *   spin_lock*(); alloc(GFP_ATOMIC); spin_unlock*();
+  * just works.
+  *
+  * In theory the BPF locks could be converted to regular spinlocks as well,
+@@ -978,7 +978,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+ 				goto dec_count;
+ 			}
+ 		l_new = bpf_map_kmalloc_node(&htab->map, htab->elem_size,
+-					     GFP_ATOMIC | __GFP_NOWARN,
++					     GFP_NOWAIT | __GFP_NOWARN,
+ 					     htab->map.numa_node);
+ 		if (!l_new) {
+ 			l_new = ERR_PTR(-ENOMEM);
+@@ -996,7 +996,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+ 		} else {
+ 			/* alloc_percpu zero-fills */
+ 			pptr = bpf_map_alloc_percpu(&htab->map, size, 8,
+-						    GFP_ATOMIC | __GFP_NOWARN);
++						    GFP_NOWAIT | __GFP_NOWARN);
+ 			if (!pptr) {
+ 				kfree(l_new);
+ 				l_new = ERR_PTR(-ENOMEM);
+diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
+index 8654fc97f5fe..49ef0ce040c7 100644
+--- a/kernel/bpf/local_storage.c
++++ b/kernel/bpf/local_storage.c
+@@ -165,7 +165,7 @@ static int cgroup_storage_update_elem(struct bpf_map *map, void *key,
  	}
  
--	if (tx_pause)
-+	if (tx_pause) {
- 		cfg |= CGXX_SMUX_CBFC_CTL_TX_EN;
--	else
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+	} else {
- 		cfg &= ~CGXX_SMUX_CBFC_CTL_TX_EN;
--
--	cfg = FIELD_SET(CGX_PFC_CLASS_MASK, pfc_en, cfg);
-+		cfg = FIELD_SET(CGX_PFC_CLASS_MASK, 0, cfg);
-+	}
+ 	new = bpf_map_kmalloc_node(map, struct_size(new, data, map->value_size),
+-				   __GFP_ZERO | GFP_ATOMIC | __GFP_NOWARN,
++				   __GFP_ZERO | GFP_NOWAIT | __GFP_NOWARN,
+ 				   map->numa_node);
+ 	if (!new)
+ 		return -ENOMEM;
+diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
+index f0d05a3cc4b9..d789e3b831ad 100644
+--- a/kernel/bpf/lpm_trie.c
++++ b/kernel/bpf/lpm_trie.c
+@@ -285,7 +285,7 @@ static struct lpm_trie_node *lpm_trie_node_alloc(const struct lpm_trie *trie,
+ 	if (value)
+ 		size += trie->map.value_size;
  
- 	cgx_write(cgx, lmac_id, CGXX_SMUX_CBFC_CTL, cfg);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-index 47e83d7a5804..05666922a45b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.c
-@@ -276,6 +276,11 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
- 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
-+
-+	/* Disable all PFC classes */
-+	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, 0, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
- }
- 
- int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
-@@ -387,15 +392,14 @@ void rpm_lmac_ptp_config(void *rpmd, int lmac_id, bool enable)
- int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 pfc_en)
- {
- 	rpm_t *rpm = rpmd;
--	u64 cfg;
-+	u64 cfg, class_en;
- 
- 	if (!is_lmac_valid(rpm, lmac_id))
- 		return -ENODEV;
- 
--	/* reset PFC class quanta and threshold */
--	rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
--
- 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
-+	class_en = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
-+	pfc_en |= FIELD_GET(RPM_PFC_CLASS_MASK, class_en);
- 
- 	if (rx_pause) {
- 		cfg &= ~(RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE |
-@@ -410,9 +414,11 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 	if (tx_pause) {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, pfc_en, true);
- 		cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, class_en);
- 	} else {
- 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xfff, false);
- 		cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
-+		class_en = FIELD_SET(RPM_PFC_CLASS_MASK, 0, class_en);
- 	}
- 
- 	if (!rx_pause && !tx_pause)
-@@ -422,9 +428,7 @@ int rpm_lmac_pfc_config(void *rpmd, int lmac_id, u8 tx_pause, u8 rx_pause, u16 p
- 
- 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
- 
--	cfg = rpm_read(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL);
--	cfg = FIELD_SET(RPM_PFC_CLASS_MASK, pfc_en, cfg);
--	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, cfg);
-+	rpm_write(rpm, lmac_id, RPMX_CMRX_PRT_CBFC_CTL, class_en);
- 
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-index 9ab8d49dd180..8205f2626f61 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rpm.h
-@@ -48,7 +48,6 @@
- #define RPMX_MTI_MAC100X_CL1011_QUANTA_THRESH		0x8130
- #define RPMX_MTI_MAC100X_CL1213_QUANTA_THRESH		0x8138
- #define RPMX_MTI_MAC100X_CL1415_QUANTA_THRESH		0x8140
--#define RPM_DEFAULT_PAUSE_TIME			0xFFFF
- #define RPMX_CMR_RX_OVR_BP		0x4120
- #define RPMX_CMR_RX_OVR_BP_EN(x)	BIT_ULL((x) + 8)
- #define RPMX_CMR_RX_OVR_BP_BP(x)	BIT_ULL((x) + 4)
-@@ -70,7 +69,7 @@
- #define RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_FWD              BIT_ULL(7)
- #define RPMX_MTI_MAC100X_CL01_PAUSE_QUANTA              0x80A8
- #define RPMX_MTI_MAC100X_CL89_PAUSE_QUANTA		0x8108
--#define RPM_DEFAULT_PAUSE_TIME                          0xFFFF
-+#define RPM_DEFAULT_PAUSE_TIME                          0x7FF
- 
- /* Function Declarations */
- int rpm_get_nr_lmacs(void *rpmd);
+-	node = bpf_map_kmalloc_node(&trie->map, size, GFP_ATOMIC | __GFP_NOWARN,
++	node = bpf_map_kmalloc_node(&trie->map, size, GFP_NOWAIT | __GFP_NOWARN,
+ 				    trie->map.numa_node);
+ 	if (!node)
+ 		return NULL;
 -- 
 2.35.1
 
