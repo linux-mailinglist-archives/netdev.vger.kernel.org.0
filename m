@@ -2,44 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7E395900D7
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9046E5900DA
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236338AbiHKPq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
+        id S236611AbiHKPrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236558AbiHKPpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:45:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC66C98D3F;
-        Thu, 11 Aug 2022 08:39:52 -0700 (PDT)
+        with ESMTP id S236664AbiHKPqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:03 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED3224950;
+        Thu, 11 Aug 2022 08:40:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96DDB616C2;
-        Thu, 11 Aug 2022 15:39:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84BEC43140;
-        Thu, 11 Aug 2022 15:39:49 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 14DD1CE223A;
+        Thu, 11 Aug 2022 15:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4334C433D7;
+        Thu, 11 Aug 2022 15:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232391;
-        bh=5hhvk5IPErcp0dtyq/OlGrnCvzVm22q6xsW9HQcOJsE=;
+        s=k20201202; t=1660232419;
+        bh=VSXzN9FQUeQ+9olGNZCgpdskhfdRDBYRp89MGdAkkww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BlMFAY2XrNHC/dMvyZHNxK3RmsbOscObSQS9ATaSEt7JzzMVfORgL9pjmBHiq4PnP
-         +lqjF5hZnSOyWs+CNqN3oJ3zDd9aTaWV9HzLeT50r0qe7m5x7VqWuxZ5eHVOn5UISn
-         CWSGFNDrl5hgbD+otaaWQVL2w5uo+9oFFHnW+Ch3PtWkit/mpAN26ig4MEPshzXeun
-         bAH1xdImiyl0wb7V9nnjys+fGAcT1xqnU0krS2d9l8MUzsO/v709weneqPagR8Yeox
-         C0osb9IPk9+K+cXglbLfRaQ60/XDMjE3xtHvvdXW1zEqd8QvYwfnu7sqowWSrdPPxf
-         8gtvsZKaF+gFQ==
+        b=KJgcbSmzpAh9RyXBp5Z2mPWsSS481N1xvDDb0fgm6epka4YNA1cOkj2L9hjEmjR8r
+         CGgqIrolBIoUdqNlQlN1A/JWD/dOfAGQ4roXMM7ZUhl62z56Cqk881YneRADmCAZyK
+         34rMoa1gCXd9yOSeU/BV1l2nCj1MgJ0maeODckIXg46X/1W7W0Hdjr3XB8obqmE6YC
+         irq80duFLp0TFvt6Cs4sgo01kMXAJOpsS43rryEVceMRpdufpfqtxT8lKvXnUWhgSu
+         oZyrJrBDjqtQWyp9dP1/u4d8HHjRPy5Yt6RZ9nK/XiSCabpTKHCYgs9ZUBSlxgJPB2
+         KEe1sMdbgQ0eg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 076/105] net: devlink: avoid false DEADLOCK warning reported by lockdep
-Date:   Thu, 11 Aug 2022 11:28:00 -0400
-Message-Id: <20220811152851.1520029-76-sashal@kernel.org>
+Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
+        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
+        Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, imagedong@tencent.com,
+        dsahern@kernel.org, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, asml.silence@gmail.com,
+        bigeasy@linutronix.de, petrm@nvidia.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 077/105] bpf: Don't redirect packets with invalid pkt_len
+Date:   Thu, 11 Aug 2022 11:28:01 -0400
+Message-Id: <20220811152851.1520029-77-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -57,154 +64,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Zhengchao Shao <shaozhengchao@huawei.com>
 
-[ Upstream commit e26fde2f5befad0951fe6345403616bf51e901be ]
+[ Upstream commit fd1894224407c484f652ad456e1ce423e89bb3eb ]
 
-Add a lock_class_key per devlink instance to avoid DEADLOCK warning by
-lockdep, while locking more than one devlink instance in driver code,
-for example in opening VFs flow.
+Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
+skbs, that is, the flow->head is null.
+The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
+run a bpf prog which redirects empty skbs.
+So we should determine whether the length of the packet modified by bpf
+prog or others like bpf_prog_test is valid before forwarding it directly.
 
-Kernel log:
-[  101.433802] ============================================
-[  101.433803] WARNING: possible recursive locking detected
-[  101.433810] 5.19.0-rc1+ #35 Not tainted
-[  101.433812] --------------------------------------------
-[  101.433813] bash/892 is trying to acquire lock:
-[  101.433815] ffff888127bfc2f8 (&devlink->lock){+.+.}-{3:3}, at: probe_one+0x3c/0x690 [mlx5_core]
-[  101.433909]
-               but task is already holding lock:
-[  101.433910] ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
-[  101.433989]
-               other info that might help us debug this:
-[  101.433990]  Possible unsafe locking scenario:
+LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
+LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
 
-[  101.433991]        CPU0
-[  101.433991]        ----
-[  101.433992]   lock(&devlink->lock);
-[  101.433993]   lock(&devlink->lock);
-[  101.433995]
-                *** DEADLOCK ***
-
-[  101.433996]  May be due to missing lock nesting notation
-
-[  101.433996] 6 locks held by bash/892:
-[  101.433998]  #0: ffff88810eb50448 (sb_writers#3){.+.+}-{0:0}, at: ksys_write+0xf3/0x1d0
-[  101.434009]  #1: ffff888114777c88 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x20d/0x520
-[  101.434017]  #2: ffff888102b58660 (kn->active#231){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x230/0x520
-[  101.434023]  #3: ffff888102d70198 (&dev->mutex){....}-{3:3}, at: sriov_numvfs_store+0x132/0x310
-[  101.434031]  #4: ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
-[  101.434108]  #5: ffff88812adce198 (&dev->mutex){....}-{3:3}, at: __device_attach+0x76/0x430
-[  101.434116]
-               stack backtrace:
-[  101.434118] CPU: 5 PID: 892 Comm: bash Not tainted 5.19.0-rc1+ #35
-[  101.434120] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-[  101.434130] Call Trace:
-[  101.434133]  <TASK>
-[  101.434135]  dump_stack_lvl+0x57/0x7d
-[  101.434145]  __lock_acquire.cold+0x1df/0x3e7
-[  101.434151]  ? register_lock_class+0x1880/0x1880
-[  101.434157]  lock_acquire+0x1c1/0x550
-[  101.434160]  ? probe_one+0x3c/0x690 [mlx5_core]
-[  101.434229]  ? lockdep_hardirqs_on_prepare+0x400/0x400
-[  101.434232]  ? __xa_alloc+0x1ed/0x2d0
-[  101.434236]  ? ksys_write+0xf3/0x1d0
-[  101.434239]  __mutex_lock+0x12c/0x14b0
-[  101.434243]  ? probe_one+0x3c/0x690 [mlx5_core]
-[  101.434312]  ? probe_one+0x3c/0x690 [mlx5_core]
-[  101.434380]  ? devlink_alloc_ns+0x11b/0x910
-[  101.434385]  ? mutex_lock_io_nested+0x1320/0x1320
-[  101.434388]  ? lockdep_init_map_type+0x21a/0x7d0
-[  101.434391]  ? lockdep_init_map_type+0x21a/0x7d0
-[  101.434393]  ? __init_swait_queue_head+0x70/0xd0
-[  101.434397]  probe_one+0x3c/0x690 [mlx5_core]
-[  101.434467]  pci_device_probe+0x1b4/0x480
-[  101.434471]  really_probe+0x1e0/0xaa0
-[  101.434474]  __driver_probe_device+0x219/0x480
-[  101.434478]  driver_probe_device+0x49/0x130
-[  101.434481]  __device_attach_driver+0x1b8/0x280
-[  101.434484]  ? driver_allows_async_probing+0x140/0x140
-[  101.434487]  bus_for_each_drv+0x123/0x1a0
-[  101.434489]  ? bus_for_each_dev+0x1a0/0x1a0
-[  101.434491]  ? lockdep_hardirqs_on_prepare+0x286/0x400
-[  101.434494]  ? trace_hardirqs_on+0x2d/0x100
-[  101.434498]  __device_attach+0x1a3/0x430
-[  101.434501]  ? device_driver_attach+0x1e0/0x1e0
-[  101.434503]  ? pci_bridge_d3_possible+0x1e0/0x1e0
-[  101.434506]  ? pci_create_resource_files+0xeb/0x190
-[  101.434511]  pci_bus_add_device+0x6c/0xa0
-[  101.434514]  pci_iov_add_virtfn+0x9e4/0xe00
-[  101.434517]  ? trace_hardirqs_on+0x2d/0x100
-[  101.434521]  sriov_enable+0x64a/0xca0
-[  101.434524]  ? pcibios_sriov_disable+0x10/0x10
-[  101.434528]  mlx5_core_sriov_configure+0xab/0x280 [mlx5_core]
-[  101.434602]  sriov_numvfs_store+0x20a/0x310
-[  101.434605]  ? sriov_totalvfs_show+0xc0/0xc0
-[  101.434608]  ? sysfs_file_ops+0x170/0x170
-[  101.434611]  ? sysfs_file_ops+0x117/0x170
-[  101.434614]  ? sysfs_file_ops+0x170/0x170
-[  101.434616]  kernfs_fop_write_iter+0x348/0x520
-[  101.434619]  new_sync_write+0x2e5/0x520
-[  101.434621]  ? new_sync_read+0x520/0x520
-[  101.434624]  ? lock_acquire+0x1c1/0x550
-[  101.434626]  ? lockdep_hardirqs_on_prepare+0x400/0x400
-[  101.434630]  vfs_write+0x5cb/0x8d0
-[  101.434633]  ksys_write+0xf3/0x1d0
-[  101.434635]  ? __x64_sys_read+0xb0/0xb0
-[  101.434638]  ? lockdep_hardirqs_on_prepare+0x286/0x400
-[  101.434640]  ? syscall_enter_from_user_mode+0x1d/0x50
-[  101.434643]  do_syscall_64+0x3d/0x90
-[  101.434647]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
-[  101.434650] RIP: 0033:0x7f5ff536b2f7
-[  101.434658] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f
-1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f
-05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
-[  101.434661] RSP: 002b:00007ffd9ea85d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[  101.434664] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f5ff536b2f7
-[  101.434666] RDX: 0000000000000002 RSI: 000055c4c279e230 RDI: 0000000000000001
-[  101.434668] RBP: 000055c4c279e230 R08: 000000000000000a R09: 0000000000000001
-[  101.434669] R10: 000055c4c283cbf0 R11: 0000000000000246 R12: 0000000000000002
-[  101.434670] R13: 00007f5ff543d500 R14: 0000000000000002 R15: 00007f5ff543d700
-[  101.434673]  </TASK>
-
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
+Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/devlink.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/linux/skbuff.h | 8 ++++++++
+ net/bpf/test_run.c     | 3 +++
+ net/core/dev.c         | 1 +
+ 3 files changed, 12 insertions(+)
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 5cc88490f18f..e4c19692c792 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -66,6 +66,7 @@ struct devlink {
- 	 * port, sb, dpipe, resource, params, region, traps and more.
- 	 */
- 	struct mutex lock;
-+	struct lock_class_key lock_key;
- 	u8 reload_failed:1;
- 	refcount_t refcount;
- 	struct completion comp;
-@@ -9473,7 +9474,9 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
- 	INIT_LIST_HEAD(&devlink->trap_list);
- 	INIT_LIST_HEAD(&devlink->trap_group_list);
- 	INIT_LIST_HEAD(&devlink->trap_policer_list);
-+	lockdep_register_key(&devlink->lock_key);
- 	mutex_init(&devlink->lock);
-+	lockdep_set_class(&devlink->lock, &devlink->lock_key);
- 	mutex_init(&devlink->reporters_lock);
- 	mutex_init(&devlink->linecards_lock);
- 	refcount_set(&devlink->refcount, 1);
-@@ -9620,6 +9623,7 @@ void devlink_free(struct devlink *devlink)
- 	mutex_destroy(&devlink->linecards_lock);
- 	mutex_destroy(&devlink->reporters_lock);
- 	mutex_destroy(&devlink->lock);
-+	lockdep_unregister_key(&devlink->lock_key);
- 	WARN_ON(!list_empty(&devlink->trap_policer_list));
- 	WARN_ON(!list_empty(&devlink->trap_group_list));
- 	WARN_ON(!list_empty(&devlink->trap_list));
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index d3d10556f0fa..2f41364a6791 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2624,6 +2624,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
+ 
+ #endif /* NET_SKBUFF_DATA_USES_OFFSET */
+ 
++static inline void skb_assert_len(struct sk_buff *skb)
++{
++#ifdef CONFIG_DEBUG_NET
++	if (WARN_ONCE(!skb->len, "%s\n", __func__))
++		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
++#endif /* CONFIG_DEBUG_NET */
++}
++
+ /*
+  *	Add data to an sk_buff
+  */
+diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+index 56f059b3c242..42f8de4ebbd7 100644
+--- a/net/bpf/test_run.c
++++ b/net/bpf/test_run.c
+@@ -955,6 +955,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+ {
+ 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ 
++	if (!skb->len)
++		return -EINVAL;
++
+ 	if (!__skb)
+ 		return 0;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 30a1603a7225..fe487dc6798e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4168,6 +4168,7 @@ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ 	bool again = false;
+ 
+ 	skb_reset_mac_header(skb);
++	skb_assert_len(skb);
+ 
+ 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
+ 		__skb_tstamp_tx(skb, NULL, NULL, skb->sk, SCM_TSTAMP_SCHED);
 -- 
 2.35.1
 
