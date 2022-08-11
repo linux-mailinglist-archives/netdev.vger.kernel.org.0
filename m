@@ -2,45 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBD87590446
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBC4F59042F
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236586AbiHKQhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:37:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
+        id S238678AbiHKQhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:37:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238980AbiHKQeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:34:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DCDBC80B;
-        Thu, 11 Aug 2022 09:11:11 -0700 (PDT)
+        with ESMTP id S239020AbiHKQgL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:36:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44442760FF;
+        Thu, 11 Aug 2022 09:11:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AD0DB6147B;
-        Thu, 11 Aug 2022 16:11:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99EB0C433D6;
-        Thu, 11 Aug 2022 16:11:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1735B82123;
+        Thu, 11 Aug 2022 16:11:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FDD1C433C1;
+        Thu, 11 Aug 2022 16:11:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234270;
-        bh=zgyoLBr6Vb3y7XprZiyIjbnCZ9/4KBPW6kvYeyYhwCw=;
+        s=k20201202; t=1660234291;
+        bh=O9KBh+JEHKvSn8aaofSPCI6UL1Cfbf9hwmI6B2XVZeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2nvA9AUgD+p7HUY7qqX5jE2+D364CsNbMhlNXfYgLJQm71PgnmctxaV0t3Hat7Ln
-         wyd3b4/Yvz9ajLTfzfdu8Fl5FcN6oSOlNFclrNVVLXvigfExi6NsPny0ufskd7EfsL
-         cpMo+GGWECnp1smmC2yCnxE7PtdC1m82kCshnb1h1thOpBXi0zWmMafOtsDEVfe3Sy
-         JSqBuMUMMh3Ksb0BGBx3ECpZvINObVO5L0upSQ9GL53HsdkJH4hGCLfrtynLjhonUi
-         BBvAzZv7fE+/QygvZ1qHwiQxglezVcmH1EQLrgz1E6sntpmVZJrGClsOO/mb0MF7JC
-         4km0pGy8kcawQ==
+        b=h7/O9stSUAF9XNaPnv8PGc5ltbCBsnLa5QkEhz7yMWU3PQrK12VClpy/40W72Et0x
+         eEH743JBApwd+Amb/zBVoJjRaf8ZQ6er+iEuC+hiG0N/xT0pIBvMexVjIsBpa0abv5
+         EQyTXFS5TiIbo6MrNwxuBkIdeL8TGXqJT99HPqTSQIvA0MKUpn3tKAr9Z9pkg0660k
+         w7YXGPZcIdY4yCk5u1eIB9d/B2aqoH8um5cMpeU/W/A07NcWzvMdPXV+mqkzibQyLl
+         zfavYa7u32Nby7VvfwY4mMGnhqNm/vWTtckVMIEtVcUTMNvY41nOk5soaMZ/ERx8In
+         1ZwWMLvjmxt/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/14] mlxsw: cmd: Increase 'config_profile.flood_mode' length
-Date:   Thu, 11 Aug 2022 12:10:36 -0400
-Message-Id: <20220811161050.1543183-7-sashal@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
+        stefan.maetje@esd.eu, socketcan@hartkopp.net,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/14] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
+Date:   Thu, 11 Aug 2022 12:10:39 -0400
+Message-Id: <20220811161050.1543183-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
 References: <20220811161050.1543183-1-sashal@kernel.org>
@@ -58,37 +60,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
+[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
 
-Currently, the length of 'config_profile.flood_mode' is defined as 2
-bits, while the correct length is 3 bits.
+As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
+CAN controller does not support Clock Divider Register compared to
+the reference Philips SJA1000 device.
 
-As preparation for unified bridge model, which will use the whole field
-length, fix it and increase the field to the correct size.
+This patch adds a device quirk to handle this difference.
 
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/sja1000/sja1000.c | 8 +++++---
+ drivers/net/can/sja1000/sja1000.h | 3 ++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 479511cf79bc..8a97d033bacc 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -727,7 +727,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
-  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
-  * max_fid_flood_tables indicates the number of per-FID tables.
-  */
--MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
-+MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 9f107798f904..ae0ca0ab371f 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -184,8 +184,9 @@ static void chipset_init(struct net_device *dev)
+ {
+ 	struct sja1000_priv *priv = netdev_priv(dev);
  
- /* cmd_mbox_config_profile_max_fid_offset_flood_tables
-  * Maximum number of FID-offset flooding tables.
+-	/* set clock divider and output control register */
+-	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
++		/* set clock divider and output control register */
++		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
+ 
+ 	/* set acceptance filter (accept all) */
+ 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
+@@ -210,7 +211,8 @@ static void sja1000_start(struct net_device *dev)
+ 		set_reset_mode(dev);
+ 
+ 	/* Initialize chip if uninitialized at this stage */
+-	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
++	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
+ 		chipset_init(dev);
+ 
+ 	/* Clear error counters and error code capture */
+diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
+index 9d46398f8154..7f736f1df547 100644
+--- a/drivers/net/can/sja1000/sja1000.h
++++ b/drivers/net/can/sja1000/sja1000.h
+@@ -145,7 +145,8 @@
+ /*
+  * Flags for sja1000priv.flags
+  */
+-#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
++#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
++#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
+ 
+ /*
+  * SJA1000 private data structure
 -- 
 2.35.1
 
