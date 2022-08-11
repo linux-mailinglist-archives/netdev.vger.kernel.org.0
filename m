@@ -2,193 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA0358F8F5
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:23:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC37458F907
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234099AbiHKIXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 04:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S234486AbiHKI1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 04:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233400AbiHKIXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:23:15 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9317D65654
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:23:14 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id q6-20020a05683033c600b0061d2f64df5dso12233232ott.13
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:23:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Z98a3HO107jt3OeR1OAEpJcXYk9jZSZvv6zasMuBAKQ=;
-        b=BawQT+lzrupZ2m2iNWWHdklupztcU+x7Bl/DqPjYc2TnZyf/1uaqymbBCau9Gv4ziI
-         iA72RRyESDD5fFNP+7OOVF6InyPNc3aX2WN4oEUS6uY+ZW/DDM7Nu10ueffp8NDw71DZ
-         eiE0OuJ39O4ds9uZiPgl9uYVgQ2jvDVfjd9CMiH+xl6wpqJnzasvrkqHEjIogwMa06KH
-         A2k4IWouV0lYhEQPunY4Da69z3rIAOD76iIzO7n7BXhWDGq4I/VzT6jUb9AgTa4kVgQR
-         t2uOSd/R/uaYgCEuzfWAD4wwTP6oVk8fUGJo74A3f/ULOWD0xHkyVuGeAEs29xlDM4NY
-         Garw==
+        with ESMTP id S234480AbiHKI1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:27:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 440939081B
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:27:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660206461;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fRCed6nnEDFTJS61x3dawnYdkP8v3FkULNF0fZ1BK3g=;
+        b=BKCCDC4v+T7/wizwn/5rKrvE5nI9x0VKsvi/ET4ftdk/liUaUuoDFASYwOQ9ciBIKjswGK
+        H+ySb4xs1EN5u58DB+mK4KIuIjSXh6NWJ0ikTb/91pyayfmLhkLTxugH8cdoUfaYKhdo+l
+        XTHT5bxXwKp7CDC9biKqpIoSvUgUlps=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-491-cMIkUweoM8S6elnLJxKHRA-1; Thu, 11 Aug 2022 04:27:39 -0400
+X-MC-Unique: cMIkUweoM8S6elnLJxKHRA-1
+Received: by mail-wm1-f72.google.com with SMTP id r10-20020a1c440a000000b003a538a648a9so5532220wma.5
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:27:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Z98a3HO107jt3OeR1OAEpJcXYk9jZSZvv6zasMuBAKQ=;
-        b=dm8in+EKJuOfn2OSOf9aFDJHbrLkmbq3wE+AQEA3m8avYgLDCICQNoFiat8nKioe7a
-         LfxUDu02tJw8pnv7UBOXZETmq5K/e6qxK5IS4zF6TFJdoUOdZMB40R3qS1fNoaMmdm5O
-         +DNt8uz4KSDIFc3pKsaWowRhDx7nZDPqyATcv0MdbQPNjtwPXQ71oYhv8OqQ2Hu5aSmK
-         KB5ZO6NjwDF6bLhMugX7trcJlCJv3xqgVvn2IBzf0OqrqbXCAu6kUy8UkVHnBMDk/eQu
-         3kyaog1NWT3KMTjzz9iNwLuh+KSuWfr1YHMqjL1MkMW2i1nWxQnDgk58doiszaN75ki3
-         HMug==
-X-Gm-Message-State: ACgBeo2jLozS79yO84//FaAoVvi6xR+bIcB5OQC6UB+FIxKYuSX9exoZ
-        9TBlkIFtkBwXXs93d8XhENeNJmCOunByczeZ8vw=
-X-Google-Smtp-Source: AA6agR5sdeaB+4TVeyWEH6JwF8MYZdKQb3zvCq14GTXvBFjSAQH9tEH16gn87nrMY7d3io128HPZsA5YEI5vuWzjAsg=
-X-Received: by 2002:a05:6830:630f:b0:61c:7c8b:ed18 with SMTP id
- cg15-20020a056830630f00b0061c7c8bed18mr11888806otb.168.1660206193912; Thu, 11
- Aug 2022 01:23:13 -0700 (PDT)
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=fRCed6nnEDFTJS61x3dawnYdkP8v3FkULNF0fZ1BK3g=;
+        b=0tbBpC/hAvJ0qijOgZRZf4zLTBLTtEkeZ3u4r7pom2FQicypqtwsMIe/jRtx1+rti9
+         ok/3JRqeIay61ZzRkN1sBqw0ttGL6nNZN8Sms+2wXqPepMbd4CeVvsbe+qLgVgkG1KN2
+         T5Uqkcy/HMdRKEqGAQIX0KLLrEVBT9VzgRElsXNwg4e5fMdJfIN51AGPMQRVnSfYMxfh
+         b8H7QiAtHS3qlsDS2Ddp5CL2epkTjTZ3DGworsz/p65iuZ/mqtS6RKVzZiarbXoxd9F8
+         /UI+4ldjCRP2qPnwiKE1XIn4VTIO34DWSkS8JHjPKGHn1BkmU75HDQowX/ygNSn7VxuJ
+         8HIA==
+X-Gm-Message-State: ACgBeo3hNCbw8uKInIZ8GgoOnS7L7EjC99VeKRwIF8D+lPDO179FUb2U
+        hDZrxll2qnLKjVzj0IslvbtCCYjO2K+337srBNyN1Iisj+ttQdEOjX9FsdAQzSfNxWFICxsHEiL
+        07Gnoic9hBaZ64Sns
+X-Received: by 2002:a1c:a3c4:0:b0:3a5:512f:717a with SMTP id m187-20020a1ca3c4000000b003a5512f717amr4823108wme.192.1660206458802;
+        Thu, 11 Aug 2022 01:27:38 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5sw3H77GbQvlSeiH8m701pegTIDjU8UzoPnZf53/Xhmt7IzjB7QDado1bpqhPaIYYSo6lqUw==
+X-Received: by 2002:a1c:a3c4:0:b0:3a5:512f:717a with SMTP id m187-20020a1ca3c4000000b003a5512f717amr4823072wme.192.1660206458571;
+        Thu, 11 Aug 2022 01:27:38 -0700 (PDT)
+Received: from redhat.com ([2.52.152.113])
+        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00222ed7ea203sm8822453wrx.100.2022.08.11.01.27.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 01:27:37 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 04:27:32 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        dinang@xilinx.com, martinpo@xilinx.com,
+        Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
+        ecree.xilinx@gmail.com, martinh@xilinx.com,
+        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
+        habetsm.xilinx@gmail.com, lvivier@redhat.com,
+        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
+        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
+        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Xie Yongji <xieyongji@bytedance.com>,
+        Zhang Min <zhang.min9@zte.com.cn>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH v7 1/4] vdpa: Add suspend operation
+Message-ID: <20220811042717-mutt-send-email-mst@kernel.org>
+References: <20220810171512.2343333-1-eperezma@redhat.com>
+ <20220810171512.2343333-2-eperezma@redhat.com>
 MIME-Version: 1.0
-References: <20220810082745.1466895-1-saproj@gmail.com> <20220810100818.greurtz6csgnfggv@skbuf>
- <CABikg9zb7z8p7tE0H+fpmB_NSK3YVS-Sy4sqWbihziFdPBoL+Q@mail.gmail.com>
- <20220810133531.wia2oznylkjrgje2@skbuf> <CABikg9yVpQaU_cf+iuPn5EV0Hn9ydwigdmZrrdStq7y-y+=YsQ@mail.gmail.com>
- <20220810193825.vq7rdgwx7xua5amj@skbuf>
-In-Reply-To: <20220810193825.vq7rdgwx7xua5amj@skbuf>
-From:   Sergei Antonov <saproj@gmail.com>
-Date:   Thu, 11 Aug 2022 11:23:02 +0300
-Message-ID: <CABikg9wUtyNGJ+SvASGC==qezh2eghJ=SyM5hECYVguR3BmGQQ@mail.gmail.com>
-Subject: Re: [PATCH] net: dsa: mv88e6060: report max mtu 1536
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220810171512.2343333-2-eperezma@redhat.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Aug 2022 at 22:38, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > The bug seems to have been introduced by commit 0abfd494deef ("net: dsa:
-> > > use dedicated CPU port"), because, although before we'd be uselessly
-> > > programming the port VLAN for a disabled port, now in doing so, we
-> > > dereference a NULL pointer.
-> >
-> > The suggested fix with dsa_is_unused_port() works. I tested it on the
-> > 'netdev/net.git' repo, see below. Should I submit it as a patch
-> > (Fixes: 0abfd494deef)?
->
-> Yes. See the section that talks about "git log -1 --pretty=fixes" in
-> process/submitting-patches.rst for how the Fixes tag should actually
-> look like.
->
-> I thought about whether dsa_is_unused_port() is sufficient, since
-> theoretically dsa_is_dsa_port() is also a possibility which isn't
-> covered by the check. But I rechecked and it appears that the Marvell
-> 6060 doesn't support cascade ports, so we should be fine with just that.
+On Wed, Aug 10, 2022 at 07:15:09PM +0200, Eugenio Pérez wrote:
+> This operation is optional: It it's not implemented, backend feature bit
+> will not be exposed.
+> 
+> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+> Message-Id: <20220623160738.632852-2-eperezma@redhat.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-Great. I submitted a patch.
+What is this message id doing here?
 
-> > So I tested "dsa_is_unused_port()" and "switch@10" fixes with
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
-> > What I did after system boot-up:
-> >
-> > ~ # dmesg | grep mv88
-> > [    7.187296] mv88e6060 92000090.mdio--1-mii:10: switch Marvell 88E6060 (B0) detected
-> > [    8.325712] mv88e6060 92000090.mdio--1-mii:10: switch Marvell 88E6060 (B0) detected
-> > [    9.190299] mv88e6060 92000090.mdio--1-mii:10 lan2 (uninitialized): PHY [dsa-0.0:02] driver [Generic PHY] (irq=POLL)
-> >
-> > ~ # ip a
-> > 1: lo: <LOOPBACK> mtu 65536 qdisc noop qlen 1000
-> >     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
-> > 2: eth0: <BROADCAST,MULTICAST> mtu 1504 qdisc noop qlen 1000
-> >     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
->
-> The DSA master is super odd for starting with an all-zero MAC address.
-> What driver handles this part? Normally, drivers are expected to work
-> with a MAC address provided by the firmware (of_get_mac_address or
-> other, perhaps proprietary, means) and fall back to eth_random_addr()
-> if that is missing.
+> ---
+>  include/linux/vdpa.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index 7b4a13d3bd91..d282f464d2f1 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -218,6 +218,9 @@ struct vdpa_map_file {
+>   * @reset:			Reset device
+>   *				@vdev: vdpa device
+>   *				Returns integer: success (0) or error (< 0)
+> + * @suspend:			Suspend or resume the device (optional)
+> + *				@vdev: vdpa device
+> + *				Returns integer: success (0) or error (< 0)
+>   * @get_config_size:		Get the size of the configuration space includes
+>   *				fields that are conditional on feature bits.
+>   *				@vdev: vdpa device
+> @@ -319,6 +322,7 @@ struct vdpa_config_ops {
+>  	u8 (*get_status)(struct vdpa_device *vdev);
+>  	void (*set_status)(struct vdpa_device *vdev, u8 status);
+>  	int (*reset)(struct vdpa_device *vdev);
+> +	int (*suspend)(struct vdpa_device *vdev);
+>  	size_t (*get_config_size)(struct vdpa_device *vdev);
+>  	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+>  			   void *buf, unsigned int len);
+> -- 
+> 2.31.1
 
-eth0 is handled by the CONFIG_ARM_MOXART_ETHER driver. By the way, I
-had to change some code in it to make it work, and I am going to
-submit a patch or two later.
-The driver does not know its MAC address initially. On my hardware it
-is stored in a flash memory chip, so I assign it using "ip link set
-..." either manually or from an /etc/init.d script. A solution with
-early MAC assignment in the moxart_mac_probe() function is doable. Do
-you think I should implement it?
-
-> > 3: lan2@eth0: <BROADCAST,MULTICAST,M-DOWN> mtu 1500 qdisc noop qlen 1000
-> >     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
->
-> Here DSA inherits the MAC address of the master. It does this by default
-> in dsa_slave_create() -> eth_hw_addr_inherit(). If the OF node for the
-> DSA port has its own MAC address, that will have priority over the MAC
-> address of the master.
-
-I quickly tried setting a MAC address in the moxart_mac_probe()
-function and DSA did inherit it. Looks like the way to go.
-
-> > ~ # ip link set dev eth0 address 00:90:e8:00:10:03 up
->
-> This shouldn't be necessary, neither assigning a MAC address nor putting
-> the master up, see Documentation/networking/dsa/configuration.rst, the
-> master comes up automatically.
-
-Yes, it indeed does. Thanks.
-
-> > ~ # ip a add 192.168.127.254/24 dev lan2
-> >
-> > ~ # ip link set dev lan2 address 00:90:e8:00:10:03 up
-> > [   56.383801] DSA: failed to set STP state 3 (-95)
->
-> errno 95 is EOPNOTSUPP, we shouldn't warn here, I'll submit a patch for
-> that.
-
-Great, I'll review it.
-
-> > Is it correct for eth0 and lan2@eth0 to have the same MAC?
->
-> It is not wrong, it's a configuration that many deployed DSA systems use.
-
-Is it also not wrong with several lanN@eth0 interfaces? I'm asking it
-because I will probably need to support hardware with more than one
-port on the 6060.
-
-> > I could not make it work with different MACs.
->
-> That is a problem, and I believe it's a problem with the DSA master driver.
-> See, the reason it should work is this. Switch ports don't really have a
-> MAC address, since they forward everything and not really terminate anything.
-> The MAC address of a switch port is a software construct which means
-> that software L3 termination interfaces (of which we have one per port)
-> should accept packets with some known MAC DA, and drop the rest, and
-> everything should be fine.
->
-> There are multiple kinds of DSA tags, but 6060 uses a trailer, and this
-> will not shift the 'real' MAC DA of packets compared to where the DSA
-> master expects to see them. So if the MAC address of the DSA master is A,
-> the MAC address of lan2 is B, and you ping lan2 from the outside world,
-> the DSA master will see packets with a MAC DA of B.
->
-> So the DSA master sees packets with a MAC DA different from its own
-> dev->dev_addr (A) and thinks it's within its right to drop them. Except
-> that it isn't, because we do the following to prevent it:
->
-> (1) in case the DSA master supports IFF_UNICAST_FLT, we call dev_uc_add()
->     from dsa_slave_set_mac_address() and from dsa_slave_open(), and this
->     informs it of our address B.
-> (2) in case it doesn't support IFF_UNICAST_FLT, we just call
->     dsa_master_set_promiscuity() and that should keep it promiscuous and
->     it should accept packets regardless of MAC DA (that's the definition).
->
-> So you should run some tcpdump and ethtool -S on the DSA master and see
-> whether it receives any packets or it drops them. It's possible that
-> tcpdump makes packets be accepted, since it puts the interface in
-> promiscuous mode.
-
-When I tried to make it work with different MAC addresses, I used
-Wireshark and saw that ARP packets did not reach the interface unless
-they were broadcast. I might have been a configuration issue rather
-than driver issue. Thanks for the explanation! But I will happily
-stick to the common MAC address solution if it is not wrong.
