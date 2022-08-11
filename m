@@ -2,81 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CE8B58F8DD
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:13:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E77F58F8E3
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:15:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234381AbiHKINX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 04:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
+        id S234391AbiHKIPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 04:15:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbiHKINX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:13:23 -0400
-Received: from out30-56.freemail.mail.aliyun.com (out30-56.freemail.mail.aliyun.com [115.124.30.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AB78CE1
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:13:21 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R151e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VLyTMzl_1660205596;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VLyTMzl_1660205596)
-          by smtp.aliyun-inc.com;
-          Thu, 11 Aug 2022 16:13:17 +0800
-Message-ID: <1660205553.7374692-1-xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH vhost 0/2] virtio_net: fix for stuck when change ring size with dev down
-Date:   Thu, 11 Aug 2022 16:12:33 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-References: <20220811080258.79398-1-xuanzhuo@linux.alibaba.com>
- <20220811041041-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20220811041041-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S234074AbiHKIPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:15:01 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D98B8901AB
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:14:58 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.188:38120.474108747
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.86.5.94 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id 91B8A2800A5;
+        Thu, 11 Aug 2022 16:14:50 +0800 (CST)
+X-189-SAVE-TO-SEND: liyonglong@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id dd3347cf458a4524b4b3d577cb079b83 for pabeni@redhat.com;
+        Thu, 11 Aug 2022 16:14:53 CST
+X-Transaction-ID: dd3347cf458a4524b4b3d577cb079b83
+X-Real-From: liyonglong@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: liyonglong@chinatelecom.cn
+Subject: Re: [PATCH v2] tcp: adjust rcvbuff according copied rate of user
+ space
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        ycheng@google.com, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com
+References: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
+ <CADVnQym47_uqqKWkGnu7hA+vhHjvURMmTdd0Xx6z8m_mspwFJw@mail.gmail.com>
+From:   Yonglong Li <liyonglong@chinatelecom.cn>
+Message-ID: <12489b98-772f-ff2a-0ac4-cb33a06f8870@chinatelecom.cn>
+Date:   Thu, 11 Aug 2022 16:14:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
+MIME-Version: 1.0
+In-Reply-To: <CADVnQym47_uqqKWkGnu7hA+vhHjvURMmTdd0Xx6z8m_mspwFJw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Aug 2022 04:11:22 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Thu, Aug 11, 2022 at 04:02:56PM +0800, Xuan Zhuo wrote:
-> > When dev is set to DOWN state, napi has been disabled, if we modify the
-> > ring size at this time, we should not call napi_disable() again, which
-> > will cause stuck.
-> >
-> > And all operations are under the protection of rtnl_lock, so there is no
-> > need to consider concurrency issues.
-> >
-> > PS.
-> > Hi Michael, I don't know which way is more convenient for you, so I split the
-> > commit into two commits, so you can fixup to my previous commit:
-> >
-> >     virtio_net: support tx queue resize
-> > 	virtio_net: support rx queue resize
-> >
-> > Xuan Zhuo (2):
-> >   virtio_net: fix for stuck when change rx ring size with dev down
-> >   virtio_net: fix for stuck when change tx ring size with dev down
-> >
-> >  drivers/net/virtio_net.c | 14 ++++++++++----
-> >  1 file changed, 10 insertions(+), 4 deletions(-)
->
->
-> Which patches does this fix?
-> Maybe I should squash.
-
-These two:
-     virtio_net: support tx queue resize
-     virtio_net: support rx queue resize
-
-Thanks.
 
 
->
-> > --
-> > 2.31.0
->
+On 8/10/2022 8:43 PM, Neal Cardwell wrote:
+> On Wed, Aug 10, 2022 at 3:49 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+>>
+>> every time data is copied to user space tcp_rcv_space_adjust is called.
+>> current It adjust rcvbuff by the length of data copied to user space.
+>> If the interval of user space copy data from socket is not stable, the
+>> length of data copied to user space will not exactly show the speed of
+>> copying data from rcvbuff.
+>> so in tcp_rcv_space_adjust it is more reasonable to adjust rcvbuff by
+>> copied rate (length of copied data/interval)instead of copied data len
+>>
+>> I tested this patch in simulation environment by Mininet:
+>> with 80~120ms RTT / 1% loss link, 100 runs
+>> of (netperf -t TCP_STREAM -l 5), and got an average throughput
+>> of 17715 Kbit instead of 17703 Kbit.
+>> with 80~120ms RTT without loss link, 100 runs of (netperf -t
+>> TCP_STREAM -l 5), and got an average throughput of 18272 Kbit
+>> instead of 18248 Kbit.
+> 
+> So with 1% emulated loss that's a 0.06% throughput improvement and
+> without emulated loss that's a 0.13% improvement. That sounds like it
+> may well be statistical noise, particularly given that we would expect
+> the steady-state impact of this change to be negligible.
+> 
+Hi neal,
+
+Thank you for your feedback.
+I don't think the improvement is statistical noise. Because I can get small
+improvement after patch every time I test.
+
+
+-- 
+Li YongLong
