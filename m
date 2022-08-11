@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4AFB5900EF
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:48:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 794605900FA
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236662AbiHKPrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:47:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
+        id S236441AbiHKPr4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236828AbiHKPqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D2479A77;
-        Thu, 11 Aug 2022 08:40:58 -0700 (PDT)
+        with ESMTP id S236838AbiHKPqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9472C8E0FD;
+        Thu, 11 Aug 2022 08:41:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70732B8214A;
-        Thu, 11 Aug 2022 15:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 977B5C433C1;
-        Thu, 11 Aug 2022 15:40:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20FEF616D1;
+        Thu, 11 Aug 2022 15:41:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B9B7C433D6;
+        Thu, 11 Aug 2022 15:41:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232456;
-        bh=wk93eVSDYsfcr+KWzJsuTBj3BnCkHAZGo0rZVIe1z/o=;
+        s=k20201202; t=1660232463;
+        bh=QaOgUX6f59t2m5Q8gSbIyldyDlbSwfbK1pcUKFAUH38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1RrzN/c+MuCOdNri1MnvQiJqaHUh+2HLDkjHi43JgCnqzoE4nmv+mv6L3MDD9U4u
-         1IN1wzhNTSnhWlAXQ5O6OmcWsM52MSF+4/pjgOigO1sMbnlePMk/4jBfk8kFZmGHih
-         oh1FNaSNkzwp6XNajoePLbziM3h1TheiLO5DoqV0Uk4kUB47yAC2X05J9aWWYGcy/0
-         0yTi4+Z/JqEO34iBAnJ3/xyzxeKlPHft9JmzNN956lIgpk000cnzzvXEwQZnD4G1Qw
-         KzoxxRGHpt9HBkI/K7OfRuEqcnU7aVJHfSnJDvovyIxKaUySHUVLubT+5kQczVPLc0
-         JWBEx3pp2/8kA==
+        b=EPzfIZDe26RVKK0UQVPGLXA9S4uMh+NN6swA0ocV87Hr40hCJFAmt13GYYYth6Vac
+         1s6I5sdq43YMvU4UcHfGNs4rK/Fx9n2H8JFrgfKYHNAvhaJiki0Zi7h/CNWWIPiL6v
+         l7J1wzSw7mx+WBmKgRcXtnG3Il6vfwo/54O+29/giC9S4gb8WuOqU77FH6yohYLcNP
+         4iJTkO6g9dU8hR3S2psUos0/dErjsUKavEZDsXzAD6QGPX3UlA/v3AK+OD1CQUb+pD
+         /Z1BqCi6R2WPTXbwdkcyNXrnRQVqWSmlRWS9U+dHzgsKNS4CQJsJTJ57HF8lSvNSIG
+         4nlq8CAjXQlCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
@@ -39,9 +39,9 @@ Cc:     Zijun Hu <quic_zijuhu@quicinc.com>,
         johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 085/105] Bluetooth: hci_sync: Check LMP feature bit instead of quirk
-Date:   Thu, 11 Aug 2022 11:28:09 -0400
-Message-Id: <20220811152851.1520029-85-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 088/105] Bluetooth: hci_sync: Remove HCI_QUIRK_BROKEN_ERR_DATA_REPORTING
+Date:   Thu, 11 Aug 2022 11:28:12 -0400
+Message-Id: <20220811152851.1520029-88-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -61,93 +61,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Zijun Hu <quic_zijuhu@quicinc.com>
 
-[ Upstream commit 766ae2422b4312a73510ebee9266bc23b466fbbb ]
+[ Upstream commit 63b1a7dd38bfd4630e5f59a20a2b7b1f3d04f486 ]
 
-BT core driver should addtionally check LMP feature bit
-"Erroneous Data Reporting" instead of quirk
-HCI_QUIRK_BROKEN_ERR_DATA_REPORTING set by BT device driver to decide if
-HCI commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken.
-
-BLUETOOTH CORE SPECIFICATION Version 5.3 | Vol 2, Part C | page 587
-This feature indicates whether the device is able to support the
-Packet_Status_Flag and the HCI commands HCI_Write_Default_-
-Erroneous_Data_Reporting and HCI_Read_Default_Erroneous_-
-Data_Reporting.
-
-the quirk was introduced by 'commit cde1a8a99287 ("Bluetooth: btusb: Fix
-and detect most of the Chinese Bluetooth controllers")' to mark HCI
-commands HCI_Read|Write_Default_Erroneous_Data_Reporting broken by BT
-device driver, but the reason why these two HCI commands are broken is
-that feature "Erroneous Data Reporting" is not enabled by firmware, this
-scenario is illustrated by below log of QCA controllers with USB I/F:
-
-@ RAW Open: hcitool (privileged) version 2.22
-< HCI Command: Read Local Supported Commands (0x04|0x0002) plen 0
-> HCI Event: Command Complete (0x0e) plen 68
-      Read Local Supported Commands (0x04|0x0002) ncmd 1
-        Status: Success (0x00)
-        Commands: 288 entries
-......
-          Read Default Erroneous Data Reporting (Octet 18 - Bit 2)
-          Write Default Erroneous Data Reporting (Octet 18 - Bit 3)
-......
-
-< HCI Command: Read Default Erroneous Data Reporting (0x03|0x005a) plen 0
-> HCI Event: Command Complete (0x0e) plen 4
-      Read Default Erroneous Data Reporting (0x03|0x005a) ncmd 1
-        Status: Unknown HCI Command (0x01)
-
-< HCI Command: Read Local Supported Features (0x04|0x0003) plen 0
-> HCI Event: Command Complete (0x0e) plen 12
-      Read Local Supported Features (0x04|0x0003) ncmd 1
-        Status: Success (0x00)
-        Features: 0xff 0xfe 0x0f 0xfe 0xd8 0x3f 0x5b 0x87
-          3 slot packets
-......
+Core driver addtionally checks LMP feature bit "Erroneous Data Reporting"
+instead of quirk HCI_QUIRK_BROKEN_ERR_DATA_REPORTING to decide if HCI
+commands HCI_Read|Write_Default_Erroneous_Data_Reporting are broken, so
+remove this unnecessary quirk.
 
 Signed-off-by: Zijun Hu <quic_zijuhu@quicinc.com>
 Tested-by: Zijun Hu <quic_zijuhu@quicinc.com>
 Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci.h | 1 +
- net/bluetooth/hci_sync.c    | 4 ++--
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ include/net/bluetooth/hci.h | 11 -----------
+ net/bluetooth/hci_sync.c    |  3 ---
+ 2 files changed, 14 deletions(-)
 
 diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index fe7935be7dc4..000c70e88aa8 100644
+index 000c70e88aa8..a74535e2edef 100644
 --- a/include/net/bluetooth/hci.h
 +++ b/include/net/bluetooth/hci.h
-@@ -496,6 +496,7 @@ enum {
- #define LMP_EXT_INQ	0x01
- #define LMP_SIMUL_LE_BR	0x02
- #define LMP_SIMPLE_PAIR	0x08
-+#define LMP_ERR_DATA_REPORTING 0x20
- #define LMP_NO_FLUSH	0x40
+@@ -228,17 +228,6 @@ enum {
+ 	 */
+ 	HCI_QUIRK_VALID_LE_STATES,
  
- #define LMP_LSTO	0x01
+-	/* When this quirk is set, then erroneous data reporting
+-	 * is ignored. This is mainly due to the fact that the HCI
+-	 * Read Default Erroneous Data Reporting command is advertised,
+-	 * but not supported; these controllers often reply with unknown
+-	 * command and tend to lock up randomly. Needing a hard reset.
+-	 *
+-	 * This quirk can be set before hci_register_dev is called or
+-	 * during the hdev->setup vendor callback.
+-	 */
+-	HCI_QUIRK_BROKEN_ERR_DATA_REPORTING,
+-
+ 	/*
+ 	 * When this quirk is set, then the hci_suspend_notifier is not
+ 	 * registered. This is intended for devices which drop completely
 diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index c17021642234..a6418095b8d5 100644
+index a6418095b8d5..9a3a7cc01345 100644
 --- a/net/bluetooth/hci_sync.c
 +++ b/net/bluetooth/hci_sync.c
-@@ -3191,7 +3191,7 @@ static int hci_read_page_scan_activity_sync(struct hci_dev *hdev)
- static int hci_read_def_err_data_reporting_sync(struct hci_dev *hdev)
- {
- 	if (!(hdev->commands[18] & 0x04) ||
--	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
-+	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
- 		return 0;
- 
- 	return __hci_cmd_sync_status(hdev, HCI_OP_READ_DEF_ERR_DATA_REPORTING,
-@@ -3676,7 +3676,7 @@ static int hci_set_err_data_report_sync(struct hci_dev *hdev)
- 	bool enabled = hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED);
- 
- 	if (!(hdev->commands[18] & 0x08) ||
--	    test_bit(HCI_QUIRK_BROKEN_ERR_DATA_REPORTING, &hdev->quirks))
-+	    !(hdev->features[0][6] & LMP_ERR_DATA_REPORTING))
- 		return 0;
- 
- 	if (enabled == hdev->err_data_reporting)
+@@ -3835,9 +3835,6 @@ static const struct {
+ 	HCI_QUIRK_BROKEN(STORED_LINK_KEY,
+ 			 "HCI Delete Stored Link Key command is advertised, "
+ 			 "but not supported."),
+-	HCI_QUIRK_BROKEN(ERR_DATA_REPORTING,
+-			 "HCI Read Default Erroneous Data Reporting command is "
+-			 "advertised, but not supported."),
+ 	HCI_QUIRK_BROKEN(READ_TRANSMIT_POWER,
+ 			 "HCI Read Transmit Power Level command is advertised, "
+ 			 "but not supported."),
 -- 
 2.35.1
 
