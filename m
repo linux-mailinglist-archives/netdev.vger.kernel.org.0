@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9008459035D
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:22:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35C50590364
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:22:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237854AbiHKQVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:21:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60804 "EHLO
+        id S237930AbiHKQWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238001AbiHKQVJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:21:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0C62AC9;
-        Thu, 11 Aug 2022 09:03:33 -0700 (PDT)
+        with ESMTP id S238024AbiHKQVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:21:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5984785A8;
+        Thu, 11 Aug 2022 09:03:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D13A76133D;
-        Thu, 11 Aug 2022 16:03:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69AA5C433D7;
-        Thu, 11 Aug 2022 16:03:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A50CB821A3;
+        Thu, 11 Aug 2022 16:03:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D3C8C433C1;
+        Thu, 11 Aug 2022 16:03:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233812;
-        bh=D5hKPEg7EA5umWGwy1OZWtz442FFe0TMYJXhD8I1R6A=;
+        s=k20201202; t=1660233815;
+        bh=tzQKl/sdvH+UgZy0kJPS14LwLDjN2pCQ9Q3IViVZtpc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZAxm7beqKhXUxYZ6mVIYYpKdEKo0Ou9K7YHxWiESGHycUnErAZ5ipMkogE5CiQ76o
-         T747rpP/1taNSn0Xzwucx+/qrABp4vESq1PLZrMH3EzZUfRQ7vnHKOHKJ2uqI0/sqK
-         cNoOKtdSE3AuoefNM5ndxTHEc/T2jUwSoQlSJ7PZ5r/k6692Iqim9+np6xKHbdB/Fg
-         NJXR4iDPgsyyEVYB4D39qaLM1gCwp3QjHTQHOrIfJGLQA/2gfki1HS6Jzdgo6o8wFE
-         PZqhmOY0lx/mVU4B6n598hB8KNnOq/dyjSGWlIsitMBfoVxsV6yRp8SQApMc9yEd5x
-         iTq88N+Psay1w==
+        b=OY1ehHWG7Z84DNAW4lH+rvhgeERGSLipzmnzQiOawX/GrE3GGQ8DTclat6M47vwIf
+         Q5nQkFmZTxYMmst8gp6OLheTabZFbmTWzGWsJEOrRqCQ8SaEsuC04/MO28coyJnrjs
+         h3zQRe7CxSU56kR+dVTGWPl9yNXJwrvEzTRl6Rk9LU+qsO/BNjOGMH343Gk+KEFs50
+         Ye0TKVc2MldmGBAlBHA5rwFd9x/ne3Q7qKyo5EHuCwpCfBfYBz2D5lNIlIMC2qWroQ
+         yYs5VjHg0dpSlFIvBh18EYg6RWa8Wg8MFbhaFAoh4D+cDdidrHRXFiWBJ8uUdtNRZe
+         FsOdSa6Vq+5bw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 62/69] net: ethernet: stmicro: stmmac: first disable all queues and disconnect in release
-Date:   Thu, 11 Aug 2022 11:56:11 -0400
-Message-Id: <20220811155632.1536867-62-sashal@kernel.org>
+Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 63/69] wifi: rtl8xxxu: Fix the error handling of the probe function
+Date:   Thu, 11 Aug 2022 11:56:12 -0400
+Message-Id: <20220811155632.1536867-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -61,44 +58,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Marangi <ansuelsmth@gmail.com>
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-[ Upstream commit 7028471edb646bfc532fec0973e50e784cdcb7c6 ]
+[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
 
-Disable all queues and disconnect before tx_disable in stmmac_release to
-prevent a corner case where packet may be still queued at the same time
-tx_disable is called resulting in kernel panic if some packet still has
-to be processed.
+When the driver fails at ieee80211_alloc_hw() at the probe time, the
+driver will free the 'hw' which is not allocated, causing a bug.
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The following log can reveal it:
+
+[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
+[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
+[   15.982583] Call Trace:
+[   15.984282]  ieee80211_free_hw+0x22/0x390
+[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
+
+Fix the bug by changing the order of the error handling.
+
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 3a6283cf8fd4..f53a0588fefb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3817,8 +3817,6 @@ static int stmmac_release(struct net_device *dev)
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	u32 chan;
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 774341b0005a..deb20cccd33b 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -6607,7 +6607,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (!hw) {
+ 		ret = -ENOMEM;
+ 		priv = NULL;
+-		goto exit;
++		goto err_put_dev;
+ 	}
  
--	netif_tx_disable(dev);
--
- 	if (device_may_wakeup(priv->device))
- 		phylink_speed_down(priv->phylink, false);
- 	/* Stop and disconnect the PHY */
-@@ -3830,6 +3828,8 @@ static int stmmac_release(struct net_device *dev)
- 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
- 		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+ 	priv = hw->priv;
+@@ -6629,24 +6629,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
  
-+	netif_tx_disable(dev);
-+
- 	/* Free the IRQ lines */
- 	stmmac_free_irq(dev, REQ_IRQ_ERR_ALL, 0);
+ 	ret = rtl8xxxu_parse_usb(priv, interface);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
  
+ 	ret = rtl8xxxu_identify_chip(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_read_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = priv->fops->parse_efuse(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	rtl8xxxu_print_chipinfo(priv);
+@@ -6654,12 +6654,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	ret = priv->fops->load_firmware(priv);
+ 	if (ret) {
+ 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	ret = rtl8xxxu_init_device(hw);
+ 	if (ret)
+-		goto exit;
++		goto err_set_intfdata;
+ 
+ 	hw->wiphy->max_scan_ssids = 1;
+ 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
+@@ -6709,12 +6709,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 	if (ret) {
+ 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
+ 			__func__, ret);
+-		goto exit;
++		goto err_set_intfdata;
+ 	}
+ 
+ 	return 0;
+ 
+-exit:
++err_set_intfdata:
+ 	usb_set_intfdata(interface, NULL);
+ 
+ 	if (priv) {
+@@ -6722,9 +6722,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
+ 		mutex_destroy(&priv->usb_buf_mutex);
+ 		mutex_destroy(&priv->h2c_mutex);
+ 	}
+-	usb_put_dev(udev);
+ 
+ 	ieee80211_free_hw(hw);
++err_put_dev:
++	usb_put_dev(udev);
+ 
+ 	return ret;
+ }
 -- 
 2.35.1
 
