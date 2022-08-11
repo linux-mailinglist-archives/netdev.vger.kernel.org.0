@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63B4D590387
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:28:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02C69590398
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238309AbiHKQ1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49582 "EHLO
+        id S237859AbiHKQ1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:27:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238447AbiHKQ0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:26:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A811511441;
-        Thu, 11 Aug 2022 09:07:43 -0700 (PDT)
+        with ESMTP id S238079AbiHKQ0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:26:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FAF39F756;
+        Thu, 11 Aug 2022 09:07:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5EF69B821AE;
-        Thu, 11 Aug 2022 16:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB1D0C433D6;
-        Thu, 11 Aug 2022 16:07:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3DDEB821AF;
+        Thu, 11 Aug 2022 16:07:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01188C433D6;
+        Thu, 11 Aug 2022 16:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234061;
-        bh=VNOvAUTm9ITNEsg5utj03668RaFbEKTXdPs/gQI3s24=;
+        s=k20201202; t=1660234074;
+        bh=Nl4k4uVS+qZpeZesi4YWD+FNLNnu3oe2D9APmbP7Wxk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cevH+2OfJyydPwjNv7y/emHmB8xdwdvD170frz/0kVfp6ice/nRCUWhTj8yvrYSFd
-         9UzW+tPi1qQv1Tj1B6dUqrW85stBcVwKwHsb4SHvTY3KOFWtbwYNRBwyzLvzp/mg15
-         mlsA4mjwEgg+kXfUNDXUj706d9pVVTFsNgqAKjkH8c8DJf9i3B1GHnzDF87xkSH++X
-         Jy76mYZp1U/a0ddptGbnMw8DfxLn3gFjm/bkbBVCadPM9qItNrKX4TRQLJ7atbo+KG
-         ULlecRe5MQzG1gLMlYghj86l7TLj7LlNPC3cmNoLD0D+ZzYddei6QY0YJGc3keACBy
-         nvTt/CPlYWIbA==
+        b=t4fcYhpgvX7ARPdgst0AzEHcKdQk4cRdJ2XzlI70NbZz9HnjvwNEE3pUsWc+j+aJ1
+         gRCJZw4IJHMWsI3pO6CtxIfXlffWl1pRINKHsXOx/59f2E60HYc/Fd9DiNyTMIk54M
+         X/IaKtxdmHb6OVV1Y7o8fJAfa+YAjOnLd1WwHjQdHIQFFBPvDzxhNR91ikcq61NqvN
+         DM96Rgxn43OsSgIaao/SdLC1OMhRO6C9xhni5cyX/sx5lI2gV5X02fKTwnbEBtSEGR
+         yODipUqjok21Y4ltPJiCmWd6S9ZN572JfGpI1sHnbBRusC4Ij8DFylmuvzbehj6C7s
+         UVgq0h2AMQhEw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhengchao Shao <shaozhengchao@huawei.com>,
-        syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com,
-        Stanislav Fomichev <sdf@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, imagedong@tencent.com,
-        dsahern@kernel.org, kafai@fb.com, talalahmad@google.com,
-        keescook@chromium.org, asml.silence@gmail.com,
-        bigeasy@linutronix.de, petrm@nvidia.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 35/46] bpf: Don't redirect packets with invalid pkt_len
-Date:   Thu, 11 Aug 2022 12:03:59 -0400
-Message-Id: <20220811160421.1539956-35-sashal@kernel.org>
+Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, stefan.maetje@esd.eu,
+        mailhol.vincent@wanadoo.fr, socketcan@hartkopp.net,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 36/46] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
+Date:   Thu, 11 Aug 2022 12:04:00 -0400
+Message-Id: <20220811160421.1539956-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -64,77 +60,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhengchao Shao <shaozhengchao@huawei.com>
+From: Biju Das <biju.das.jz@bp.renesas.com>
 
-[ Upstream commit fd1894224407c484f652ad456e1ce423e89bb3eb ]
+[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
 
-Syzbot found an issue [1]: fq_codel_drop() try to drop a flow whitout any
-skbs, that is, the flow->head is null.
-The root cause, as the [2] says, is because that bpf_prog_test_run_skb()
-run a bpf prog which redirects empty skbs.
-So we should determine whether the length of the packet modified by bpf
-prog or others like bpf_prog_test is valid before forwarding it directly.
+As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
+CAN controller does not support Clock Divider Register compared to
+the reference Philips SJA1000 device.
 
-LINK: [1] https://syzkaller.appspot.com/bug?id=0b84da80c2917757915afa89f7738a9d16ec96c5
-LINK: [2] https://www.spinics.net/lists/netdev/msg777503.html
+This patch adds a device quirk to handle this difference.
 
-Reported-by: syzbot+7a12909485b94426aceb@syzkaller.appspotmail.com
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Link: https://lore.kernel.org/r/20220715115559.139691-1-shaozhengchao@huawei.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skbuff.h | 8 ++++++++
- net/bpf/test_run.c     | 3 +++
- net/core/dev.c         | 1 +
- 3 files changed, 12 insertions(+)
+ drivers/net/can/sja1000/sja1000.c | 8 +++++---
+ drivers/net/can/sja1000/sja1000.h | 3 ++-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index acbf1875ad50..61fc053a4a4e 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -2222,6 +2222,14 @@ static inline void skb_set_tail_pointer(struct sk_buff *skb, const int offset)
- 
- #endif /* NET_SKBUFF_DATA_USES_OFFSET */
- 
-+static inline void skb_assert_len(struct sk_buff *skb)
-+{
-+#ifdef CONFIG_DEBUG_NET
-+	if (WARN_ONCE(!skb->len, "%s\n", __func__))
-+		DO_ONCE_LITE(skb_dump, KERN_ERR, skb, false);
-+#endif /* CONFIG_DEBUG_NET */
-+}
-+
- /*
-  *	Add data to an sk_buff
-  */
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index eb684f31fd69..da13adac0fdc 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -398,6 +398,9 @@ static int convert___skb_to_skb(struct sk_buff *skb, struct __sk_buff *__skb)
+diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
+index 25a4d7d0b349..3f2667c07dc3 100644
+--- a/drivers/net/can/sja1000/sja1000.c
++++ b/drivers/net/can/sja1000/sja1000.c
+@@ -184,8 +184,9 @@ static void chipset_init(struct net_device *dev)
  {
- 	struct qdisc_skb_cb *cb = (struct qdisc_skb_cb *)skb->cb;
+ 	struct sja1000_priv *priv = netdev_priv(dev);
  
-+	if (!skb->len)
-+		return -EINVAL;
-+
- 	if (!__skb)
- 		return 0;
+-	/* set clock divider and output control register */
+-	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
++		/* set clock divider and output control register */
++		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
  
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 637bc576fbd2..dd0070b0d1e2 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4097,6 +4097,7 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 	bool again = false;
+ 	/* set acceptance filter (accept all) */
+ 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
+@@ -210,7 +211,8 @@ static void sja1000_start(struct net_device *dev)
+ 		set_reset_mode(dev);
  
- 	skb_reset_mac_header(skb);
-+	skb_assert_len(skb);
+ 	/* Initialize chip if uninitialized at this stage */
+-	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
++	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
++	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
+ 		chipset_init(dev);
  
- 	if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_SCHED_TSTAMP))
- 		__skb_tstamp_tx(skb, NULL, skb->sk, SCM_TSTAMP_SCHED);
+ 	/* Clear error counters and error code capture */
+diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
+index 9d46398f8154..7f736f1df547 100644
+--- a/drivers/net/can/sja1000/sja1000.h
++++ b/drivers/net/can/sja1000/sja1000.h
+@@ -145,7 +145,8 @@
+ /*
+  * Flags for sja1000priv.flags
+  */
+-#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
++#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
++#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
+ 
+ /*
+  * SJA1000 private data structure
 -- 
 2.35.1
 
