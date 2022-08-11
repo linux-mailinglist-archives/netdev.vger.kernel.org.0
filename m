@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9471B59033D
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BEA590340
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237638AbiHKQVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60898 "EHLO
+        id S237713AbiHKQV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:21:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237932AbiHKQVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:21:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D62DB02BB;
-        Thu, 11 Aug 2022 09:03:21 -0700 (PDT)
+        with ESMTP id S237959AbiHKQVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:21:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A1DB1B8D;
+        Thu, 11 Aug 2022 09:03:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 374156133A;
-        Thu, 11 Aug 2022 16:03:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CD5DC433B5;
-        Thu, 11 Aug 2022 16:03:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF0060F39;
+        Thu, 11 Aug 2022 16:03:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D871C433D6;
+        Thu, 11 Aug 2022 16:03:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233800;
-        bh=vXfoFootITy+FkfYy6TFNfHiQJDgV05om3bAiEd/0iU=;
+        s=k20201202; t=1660233804;
+        bh=YQ9TIrcgL3Lgs2QmjYnfZswOi+9m7X4sON/9SPtXGQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OZP/dmANU5QZwZvd/joT2YZFRQVgB3lJbqvwjLgJXsLpDVa/X69nU9bEuvoXzQnMb
-         SDSP01MS0oJ58fg+Nwxlw1h4EGp87mzreppVWKzmgcaQiypprNAOASqE5UN4uMxpnP
-         lXvna7qeTOpfedg5zu+ekD+iJrNtzt8Nu2REQpi8p/Xe4XbP3iF5Mq7JZXJAo0YHwp
-         KRzabf/2r5VOxenFPk90/y9JxqVpd69mFRvgrNoXs+ZHNX7mnnic8svKzUBLuUIrO9
-         DbkUyrINXcZMDW9qey/X7aLsOhRqZt3Bu7NbmjwMQP3xlltGKBiNqoPCG5RqRit8O4
-         3gjteKigoNqQg==
+        b=WT8oVuhlreUffzqaK+SkZVUnDwPb1Mj2NpNIlAgCVyHITx1VOJcsmr7DMmkmwMbPL
+         x6p5zGIle0y2bo5ct0KVrLArQTJuF/h2MXxqKEUUNbFfJVlgdy0kToeDA0bhk/yt9R
+         YDZC26h0fzDp93xO5SvaCOyIqD40O4PP+W3W6mDHAKbT6MqkvCrRTOC9pUFfHtt4kz
+         blIfD07Rsj7+Gp3xCfOcUHa732Mrg8a552Ye1unnxE/+ZIu3bg6Li2a96T3GYvkzWD
+         nGmyHyC/aDtLPPzrUOA3MDCx2RRUMiKeQqMbmaY3k6FNCwVtbu+UYyrID3fkB55MYM
+         7eiI5vKp/bkPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tamas Koczka <poprdi@google.com>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 58/69] Bluetooth: Collect kcov coverage from hci_rx_work
-Date:   Thu, 11 Aug 2022 11:56:07 -0400
-Message-Id: <20220811155632.1536867-58-sashal@kernel.org>
+Cc:     Jie2x Zhou <jie2x.zhou@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 59/69] bpf/selftests: Fix couldn't retrieve pinned program in xdp veth test
+Date:   Thu, 11 Aug 2022 11:56:08 -0400
+Message-Id: <20220811155632.1536867-59-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811155632.1536867-1-sashal@kernel.org>
 References: <20220811155632.1536867-1-sashal@kernel.org>
@@ -61,59 +61,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tamas Koczka <poprdi@google.com>
+From: Jie2x Zhou <jie2x.zhou@intel.com>
 
-[ Upstream commit 9f30de9e0343da05ac621b5817e9b1ce303c6310 ]
+[ Upstream commit f664f9c6b4a1bb9a10af812df0fbbf6aac28fcc6 ]
 
-Annotate hci_rx_work() with kcov_remote_start() and kcov_remote_stop()
-calls, so remote KCOV coverage is collected while processing the rx_q
-queue which is the main incoming Bluetooth packet queue.
+Before change:
 
-Coverage is associated with the thread which created the packet skb.
+  selftests: bpf: test_xdp_veth.sh
+  Couldn't retrieve pinned program '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  selftests: xdp_veth [SKIP]
+  ok 20 selftests: bpf: test_xdp_veth.sh # SKIP
 
-The collected extra coverage helps kernel fuzzing efforts in finding
-vulnerabilities.
+After change:
 
-This change only has effect if the kernel is compiled with CONFIG_KCOV,
-otherwise kcov_ functions don't do anything.
+  PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
+  64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.320 ms
+  --- 10.1.1.33 ping statistics ---
+  1 packets transmitted, 1 received, 0% packet loss, time 0ms
+  rtt min/avg/max/mdev = 0.320/0.320/0.320/0.000 ms
+  selftests: xdp_veth [PASS]
 
-Signed-off-by: Tamas Koczka <poprdi@google.com>
-Tested-by: Aleksandr Nogikh <nogikh@google.com>
-Reviewed-by: Dmitry Vyukov <dvyukov@google.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+For the test case, the following can be found:
+
+  ls /sys/fs/bpf/test_xdp_veth/progs/redirect_map_0
+  ls: cannot access '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  ls /sys/fs/bpf/test_xdp_veth/progs/
+  xdp_redirect_map_0  xdp_redirect_map_1  xdp_redirect_map_2
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220719082430.9916-1-jie2x.zhou@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index cdca53732304..f4ce6efe3b72 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -29,6 +29,7 @@
- #include <linux/rfkill.h>
- #include <linux/debugfs.h>
- #include <linux/crypto.h>
-+#include <linux/kcov.h>
- #include <linux/property.h>
- #include <linux/suspend.h>
- #include <linux/wait.h>
-@@ -5100,7 +5101,14 @@ static void hci_rx_work(struct work_struct *work)
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index a3a1eaee26ea..73a9e1b22290 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -103,9 +103,9 @@ bpftool prog loadall \
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
+-ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
+-ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+-ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
++ip link set dev veth1 xdp pinned $BPF_DIR/progs/xdp_redirect_map_0
++ip link set dev veth2 xdp pinned $BPF_DIR/progs/xdp_redirect_map_1
++ip link set dev veth3 xdp pinned $BPF_DIR/progs/xdp_redirect_map_2
  
- 	BT_DBG("%s", hdev->name);
- 
--	while ((skb = skb_dequeue(&hdev->rx_q))) {
-+	/* The kcov_remote functions used for collecting packet parsing
-+	 * coverage information from this background thread and associate
-+	 * the coverage with the syscall's thread which originally injected
-+	 * the packet. This helps fuzzing the kernel.
-+	 */
-+	for (; (skb = skb_dequeue(&hdev->rx_q)); kcov_remote_stop()) {
-+		kcov_remote_start_common(skb_get_kcov_handle(skb));
-+
- 		/* Send copy to monitor */
- 		hci_send_to_monitor(hdev, skb);
- 
+ ip -n ns1 link set dev veth11 xdp obj xdp_dummy.o sec xdp
+ ip -n ns2 link set dev veth22 xdp obj xdp_tx.o sec xdp
 -- 
 2.35.1
 
