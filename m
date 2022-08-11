@@ -2,150 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E651F58F66F
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 05:40:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C893B58F673
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 05:41:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbiHKDkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 23:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
+        id S233907AbiHKDlX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 23:41:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229924AbiHKDke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 23:40:34 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5041CB19;
-        Wed, 10 Aug 2022 20:40:34 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so3969051pjf.2;
-        Wed, 10 Aug 2022 20:40:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=Mk3j1i9fjva3zOn4D60tqeJdxJKrOKo4G/RmrY0teV8=;
-        b=IKwV+B6G1N4PQzIEcp5Yq2XmnVU3ng7UhjBM7VRyqRt6Ug+yyLCE96ukuk8chUd0IS
-         eAQzPW2KbdzGtchePxc1BfZ29DiXEQ0HLQA+iI42BvFnNegrdZOPFBXZPWpuyPx27PQT
-         VmPY6SaTGD8C21vmFQo+QQNELnRce3IHK7FgsLyIgkrq3otgRsr/KSamnv3cJt9Z9VWw
-         Zc7hwA+p+/2PqN7APfyS7zJwPVQ+lyUVFVguWTBN+qwd2EnR722ryBl+JL3oE2ZBYqAf
-         9NNDe1k6yeDgb7L7nMCtkZx4rVXdHnrgzGzDf+yFLXmNtZhkJIERTZG1LspGFEn4E2gz
-         nogQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=Mk3j1i9fjva3zOn4D60tqeJdxJKrOKo4G/RmrY0teV8=;
-        b=tyyCibscMa8H4oLHT8SGkfNi5DPXXOZObzjlAKQDg6BQQNMNzZstrCIWR9fCg0UcFY
-         4TD7Q8tgOyjpZccw7FJAF5Jh+LWSxIXLCjLzj4U7/Na0xIMXXSDgmDqnPSZCcwflXaZ5
-         LhgrP0fIpe/DM4vW7HYKCtHIMEccyRVpVhQFCqFJ0bKrRK0N5uL9pSRho5+YfzXjhumV
-         ogxbzr/XXv1vKnMIiWgBDzZOPq1SC+FUsMgyyhU7Mp8gaW6VoeQCYBZHoEjr18fyKl4i
-         nUrtGpfKbwv9DI70SDAnGy3/S4vaWD1qP5tmfETYdZEKxYU15QvHThXabZ59xq+o9Nzp
-         VnZQ==
-X-Gm-Message-State: ACgBeo3XKA66bEXk+9YBy25wrx8mZzn+aYkQRaqQwl0LL6fiKXLur8vI
-        8zgbObPQA6wxOBd06I2S+m5KAttjt8U=
-X-Google-Smtp-Source: AA6agR4V2BtEtEDGSkZJrGHu61syc3ugZApTaNsb/bNiRKPFRrcCWCJ7cdn6sKp/YC79jGNNLDONHQ==
-X-Received: by 2002:a17:90a:c402:b0:1f7:75ce:1206 with SMTP id i2-20020a17090ac40200b001f775ce1206mr6782355pjt.68.1660189233445;
-        Wed, 10 Aug 2022 20:40:33 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id i6-20020a654d06000000b0040df0c9a1aasm10433017pgt.14.2022.08.10.20.40.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 20:40:32 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Quentin Monnet <quentin@isovalent.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        bpf@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv3 bpf-next] libbpf: Add names for auxiliary maps
-Date:   Thu, 11 Aug 2022 11:40:20 +0800
-Message-Id: <20220811034020.529685-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S229924AbiHKDlW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 23:41:22 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CB628E26;
+        Wed, 10 Aug 2022 20:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660189281; x=1691725281;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=pmGTeFXTRCq2QoJTtO4AUyyyAiy9u7rIqBO4oy0L52g=;
+  b=GnraFpVDAN6VP+gktu6LBEZX7OVl87lldKFzk7PSgNli8dTCZu4374CX
+   kevAgfBSF55pAqoj6tl55Iwa8XbqcWk/tJNI2x9a/cLqANPfKl0fOr4m2
+   FKqXi5k/bNN6oLTZGZe9YzloiKmadXL0lLrLuTvzqz6MW3tkpzfhtOCix
+   EoPI0JFoTdAcSNQpbvjFVzI2YSdP6S6X+wZ3XWPJ1rHSbgZ0OUv8X7QuG
+   WozYwNMcdgUmxDRK3qXv0EpBjHUpqEysz100yDtFK03bKAvrJWFwC39CW
+   JuA+NqOiiTYIrEUGCIK+jzF/M2D2aT5KUmN5Fr2X85jtKceewAc7RbfkJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="292040550"
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="292040550"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Aug 2022 20:41:21 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="933153776"
+Received: from lkp-server02.sh.intel.com (HELO 5d6b42aa80b8) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Aug 2022 20:41:18 -0700
+Received: from kbuild by 5d6b42aa80b8 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oLz4Q-00013W-0b;
+        Thu, 11 Aug 2022 03:41:18 +0000
+Date:   Thu, 11 Aug 2022 11:41:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 01/10] net/smc: remove locks
+ smc_client_lgr_pending and smc_server_lgr_pending
+Message-ID: <202208111145.LdpP76au-lkp@intel.com>
+References: <075ff0be35660efac638448cdae7f7e7e04199d4.1660152975.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <075ff0be35660efac638448cdae7f7e7e04199d4.1660152975.git.alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpftool self-created maps can appear in final map show output due to
-deferred removal in kernel. These maps don't have a name, which would make
-users confused about where it comes from.
+Hi Wythe",
 
-With a libbpf_ prefix name, users could know who created these maps.
-It also could make some tests (like test_offload.py, which skip base maps
-without names as a workaround) filter them out.
+Thank you for the patch! Perhaps something to improve:
 
-Kernel adds bpf prog/map name support in the same merge
-commit fadad670a8ab ("Merge branch 'bpf-extend-info'"). So we can also use
-kernel_supports(NULL, FEAT_PROG_NAME) to check if kernel supports map name.
+[auto build test WARNING on net-next/master]
 
-As disscussed[1], Let's make bpf_map_create accept non-null
-name string, and silently ignore the name if kernel doesn't support.
+url:    https://github.com/intel-lab-lkp/linux/commits/D-Wythe/net-smc-optimize-the-parallelism-of-SMC-R-connections/20220811-014942
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git f86d1fbbe7858884d6754534a0afbb74fc30bc26
+config: i386-randconfig-a013 (https://download.01.org/0day-ci/archive/20220811/202208111145.LdpP76au-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/2c1c2e644fb8dbce9b8a004e604792340cbfccb8
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review D-Wythe/net-smc-optimize-the-parallelism-of-SMC-R-connections/20220811-014942
+        git checkout 2c1c2e644fb8dbce9b8a004e604792340cbfccb8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/smc/
 
-[1] https://lore.kernel.org/bpf/CAEf4BzYL1TQwo1231s83pjTdFPk9XWWhfZC5=KzkU-VO0k=0Ug@mail.gmail.com/
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v3: let bpf_map_create ignore the name if kernel doesn't support
-v2: rename the wrapper with proper name
----
- tools/lib/bpf/bpf.c    | 2 +-
- tools/lib/bpf/libbpf.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+All warnings (new ones prefixed by >>):
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index efcc06dafbd9..6a96e665dc5d 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -183,7 +183,7 @@ int bpf_map_create(enum bpf_map_type map_type,
- 		return libbpf_err(-EINVAL);
- 
- 	attr.map_type = map_type;
--	if (map_name)
-+	if (map_name && kernel_supports(NULL, FEAT_PROG_NAME))
- 		libbpf_strlcpy(attr.map_name, map_name, sizeof(attr.map_name));
- 	attr.key_size = key_size;
- 	attr.value_size = value_size;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index f7364ea82ac1..a075211b3730 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -4432,7 +4432,7 @@ static int probe_kern_global_data(void)
- 	};
- 	int ret, map, insn_cnt = ARRAY_SIZE(insns);
- 
--	map = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), 32, 1, NULL);
-+	map = bpf_map_create(BPF_MAP_TYPE_ARRAY, "libbpf_global", sizeof(int), 32, 1, NULL);
- 	if (map < 0) {
- 		ret = -errno;
- 		cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
-@@ -4565,7 +4565,7 @@ static int probe_kern_array_mmap(void)
- 	LIBBPF_OPTS(bpf_map_create_opts, opts, .map_flags = BPF_F_MMAPABLE);
- 	int fd;
- 
--	fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), sizeof(int), 1, &opts);
-+	fd = bpf_map_create(BPF_MAP_TYPE_ARRAY, "libbpf_mmap", sizeof(int), sizeof(int), 1, &opts);
- 	return probe_fd(fd);
- }
- 
-@@ -4612,7 +4612,7 @@ static int probe_prog_bind_map(void)
- 	};
- 	int ret, map, prog, insn_cnt = ARRAY_SIZE(insns);
- 
--	map = bpf_map_create(BPF_MAP_TYPE_ARRAY, NULL, sizeof(int), 32, 1, NULL);
-+	map = bpf_map_create(BPF_MAP_TYPE_ARRAY, "libbpf_det_bind", sizeof(int), 32, 1, NULL);
- 	if (map < 0) {
- 		ret = -errno;
- 		cp = libbpf_strerror_r(ret, errmsg, sizeof(errmsg));
+>> net/smc/smc_core.c:95:30: warning: operator '?:' has lower precedence than '+'; '+' will be evaluated first [-Wparentheses]
+                   + (lnkc->role == SMC_SERV) ? 0 : lnkc->clcqpn;
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+   net/smc/smc_core.c:95:30: note: place parentheses around the '+' expression to silence this warning
+                   + (lnkc->role == SMC_SERV) ? 0 : lnkc->clcqpn;
+                                              ^
+                                             )
+   net/smc/smc_core.c:95:30: note: place parentheses around the '?:' expression to evaluate it first
+                   + (lnkc->role == SMC_SERV) ? 0 : lnkc->clcqpn;
+                                              ^
+                     (                                          )
+   net/smc/smc_core.c:104:29: warning: operator '?:' has lower precedence than '+'; '+' will be evaluated first [-Wparentheses]
+                   + (key->role == SMC_SERV) ? 0 : key->clcqpn;
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+   net/smc/smc_core.c:104:29: note: place parentheses around the '+' expression to silence this warning
+                   + (key->role == SMC_SERV) ? 0 : key->clcqpn;
+                                             ^
+                                            )
+   net/smc/smc_core.c:104:29: note: place parentheses around the '?:' expression to evaluate it first
+                   + (key->role == SMC_SERV) ? 0 : key->clcqpn;
+                                             ^
+                     (                                        )
+   2 warnings generated.
+
+
+vim +95 net/smc/smc_core.c
+
+    88	
+    89	/* SMC-R lnk cluster hash func */
+    90	static u32 smcr_lnk_cluster_hashfn(const void *data, u32 len, u32 seed)
+    91	{
+    92		const struct smc_lnk_cluster *lnkc = data;
+    93	
+    94		return jhash2((u32 *)lnkc->peer_systemid, SMC_SYSTEMID_LEN / sizeof(u32), seed)
+  > 95			+ (lnkc->role == SMC_SERV) ? 0 : lnkc->clcqpn;
+    96	}
+    97	
+
 -- 
-2.35.3
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
