@@ -2,105 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8944258FBC7
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 14:01:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB76B58FBCF
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 14:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235070AbiHKMBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 08:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
+        id S235051AbiHKMCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 08:02:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235049AbiHKMBH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 08:01:07 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F87A74DF9
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 05:01:04 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10e615a36b0so21280574fac.1
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 05:01:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=JCztoRdXYQ6qDq2BlZ6MlrFgM9S8PbihK7TObhhKOYA=;
-        b=OpIA7b661j+rVkNRpcVDvPoLKmhM8Go+jyvqU80Sddv+yVx7V7/eXXBPUtTlETr/OG
-         O4en2/V3gJ7SdxY/8wOdFXhxH6FEIMoj5fB0D2pXfZXcJnrZ8IDlepU3CUDDfdrqet4p
-         LNYL91b18Bht2ZnBikqP8A5AFXJhwbt38wDJQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=JCztoRdXYQ6qDq2BlZ6MlrFgM9S8PbihK7TObhhKOYA=;
-        b=r85AXCAKTrLhotyIfk3ogrLzCv/f6fhHIrb3r0Xo/Q+bysdRa9ogDirmr63hO334M7
-         RmAJOWUYbCsnaXhgoB13Pny8Y+EHKWXjqs2XJC5rj1H8Y2y+sE2H51M9DVRZo72js0pS
-         aeK7eAWHZR30Gg2RVHvyYfLrZVCK5pfkk9BO+J/vZ/AsfrbMF5L9WOA1fMaz0DS4ozR3
-         T5INfoLcoYnWvd6/Qg2oS5vwofzah5EaCDdBXyg6DhgEYijNg3Vp+WO9VJUEXSDCzuvc
-         PKv1OJK2c9gu+7dE5WKdzscLOCGFxt0aRmVR/PMJKmSxfjt8AYuAbVK4vMrkyk68oJlj
-         hw9g==
-X-Gm-Message-State: ACgBeo0cToNh9bRs9VZdcCju+QCZpZdJMcQS/TRvk+YIaaWGtlrzkudG
-        FqpZpcPKjvqkKAweF18fte6Zcw==
-X-Google-Smtp-Source: AA6agR4n2ysKOUzhj2lL7UXo6mjwS8nnZt0pi+5x5wLFhzoJTL80LC7+DkTbWGmCNC2xcZqpoIjxMw==
-X-Received: by 2002:a05:6870:c186:b0:101:f97d:eff4 with SMTP id h6-20020a056870c18600b00101f97deff4mr3306204oad.289.1660219262081;
-        Thu, 11 Aug 2022 05:01:02 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id 12-20020aca0d0c000000b0033b15465357sm1045138oin.5.2022.08.11.05.01.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 11 Aug 2022 05:01:01 -0700 (PDT)
-Message-ID: <5939d440-9940-a123-9297-ea0e2a41fd7d@ieee.org>
-Date:   Thu, 11 Aug 2022 07:01:00 -0500
+        with ESMTP id S235097AbiHKMBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 08:01:37 -0400
+Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03A296777
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 05:01:35 -0700 (PDT)
+X-QQ-mid: bizesmtp71t1660219145tsz6jflk
+Received: from localhost.localdomain ( [182.148.14.53])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Thu, 11 Aug 2022 19:59:03 +0800 (CST)
+X-QQ-SSF: 01000000002000G0V000B00A0000000
+X-QQ-FEAT: 4T5cXmihZDp6QV4di6KvMH+L6MJgNYaWdg2v3Q6xnyKpPInIgV0WEAzzKPXO7
+        ik2Q+FUoo6Qpm5akFbksoE1oHzrqBto+7dhSL0awwaQWFaddDWJ0m/06BY25oZ3YH/If9Kp
+        k/DmetiJf+M49G90xxNJv6bf3GmdOS86RW9t+09tpWGWdCXY1q7inDBJprce5LsRlJ/juRY
+        utxap5XUBmd/oeAEPa49bI2UjtuzoURdQZ9UIFXuGEsvYU3DtSnoNVKdoHRn4n2+fp4VKs0
+        lqtdLOHaaHIN2El+8W2lSCREcHbhyDjaTgWkXeg7EWvgC8+TcF1L0BHdc7XLo0DXGiIwoVz
+        pQxgp71x3TmKMMw7ClOBDGW0GfFsDqaAzZ9PZ978yYj3t9xdmpaLgveeoPlGBhcCTQwyBB4
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     davem@davemloft.net
+Cc:     gregory.greenman@intel.com, kvalo@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, luciano.coelho@intel.com,
+        johannes.berg@intel.com, miriam.rachel.korenblit@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] iwlwifi: mvm: Fix comment typo
+Date:   Thu, 11 Aug 2022 19:58:56 +0800
+Message-Id: <20220811115856.6725-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: ipa: Fix comment typo
-Content-Language: en-US
-To:     Jason Wang <wangborong@cdjrlc.com>, edumazet@google.com
-Cc:     elder@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220811115259.64225-1-wangborong@cdjrlc.com>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <20220811115259.64225-1-wangborong@cdjrlc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/22 6:52 AM, Jason Wang wrote:
-> The double `is' is duplicated in the comment, remove one.
-> 
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+The double `the' is duplicated in the comment, remove one.
 
-I  know this is not the only instance of a duplicate word in
-the comments in this driver.  I (and others) keep finding them.
-It might be nice if someone tried to take care of as many as
-can be found in a single patch.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-In any case, this looks good.
-
-Reviewed-by: Alex Elder <elder@linaro.org>
-
-> ---
->   drivers/net/ipa/ipa_reg.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ipa/ipa_reg.h b/drivers/net/ipa/ipa_reg.h
-> index a5b355384d4a..6f35438cda89 100644
-> --- a/drivers/net/ipa/ipa_reg.h
-> +++ b/drivers/net/ipa/ipa_reg.h
-> @@ -48,7 +48,7 @@ struct ipa;
->    *
->    * The offset of registers related to resource types is computed by a macro
->    * that is supplied a parameter "rt".  The "rt" represents a resource type,
-> - * which is is a member of the ipa_resource_type_src enumerated type for
-> + * which is a member of the ipa_resource_type_src enumerated type for
->    * source endpoint resources or the ipa_resource_type_dst enumerated type
->    * for destination endpoint resources.
->    *
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+index a3cefbc43e80..abf8585bf3bd 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/phy-ctxt.c
+@@ -29,7 +29,7 @@ u8 iwl_mvm_get_channel_width(struct cfg80211_chan_def *chandef)
+ 
+ /*
+  * Maps the driver specific control channel position (relative to the center
+- * freq) definitions to the the fw values
++ * freq) definitions to the fw values
+  */
+ u8 iwl_mvm_get_ctrl_pos(struct cfg80211_chan_def *chandef)
+ {
+-- 
+2.36.1
 
