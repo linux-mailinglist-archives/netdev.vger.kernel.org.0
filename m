@@ -2,123 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 017FB58F72E
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 07:07:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57AB858F732
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 07:09:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233971AbiHKFHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 01:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59970 "EHLO
+        id S233987AbiHKFJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 01:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233483AbiHKFG7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 01:06:59 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8414B74E3E
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 22:06:57 -0700 (PDT)
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id B6A6F3FB91
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 05:06:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1660194415;
-        bh=Kh+l9msGhn7mWAxPmpY/gaB6opRq+mjhr2ErkHQrNjQ=;
-        h=From:To:Cc:Subject:MIME-Version:Content-Type:Date:Message-ID;
-        b=brn3zZ1VF0Uq91UJOwRhDDG8Os+C6bQ+NuUzNqHorjSDJ4i30dCR0R8Cv46DMQB7q
-         EImTeLwpMlXVkbD+79grQsGmxySnV3/Xks3Xpx49omQzaydz1X97JP7YBo96CUH49D
-         +BeK/1wE+jLRxgIz9d1QfduLDdxtDD/UFNpjaT8fM8m99MJ6jzBc/oClLkLMossZWO
-         OoIHgLIM9XR5rQw+v5k+X64xDVpzWQOp2d3kzH/hF+zYc9C7zomZYe6SOKopQi7Egv
-         ghMYEV38n11OY2dmQ7k2JKXROIZUL4WwdVqufJoPPlG3Q0f6OvbVrZHGyr6iMx8bln
-         AD5oNm6q5BggQ==
-Received: by mail-pl1-f200.google.com with SMTP id c11-20020a170902d48b00b0016f093907e0so10962353plg.20
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 22:06:55 -0700 (PDT)
+        with ESMTP id S231424AbiHKFJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 01:09:24 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69EE83BEB;
+        Wed, 10 Aug 2022 22:09:23 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id p125so12043126pfp.2;
+        Wed, 10 Aug 2022 22:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc;
+        bh=DZrxMuUWLyOOGOzou+/YbJCnEI+s6JajXm/D/EndXY0=;
+        b=A213iWRXguE8DZnpQIMCrIlREr6BNeY4UQGwFU3+PYimUNEcvxJJw745lEfZYjDOwC
+         pJhyRN+HKo7MdLzRQ0VGBFR0DvPdMDYGxRvVe5d3srZwI7YG9GTpe2J2fgUgIJtqPZbU
+         3Yy1Wng6CTobUIFcGP6KXOR0njOIjtvQJH2y6voZFeXExvMyEHCwSpzUY4wqFTPv1kBx
+         RWpGI5dv6Ig07hVwydmV61S6Dmbf3EEVmlWl5sL04ETo7yiQdiTLeeReJoD/dtKFC73n
+         zKAY2J4vX8Teg2OUP4Ty01m0cSBCh5Su788OlbfCe5tCgtpTqaYkkvkfNEDWIwexvhI/
+         +x9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:content-transfer-encoding:content-id:mime-version
-         :subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Kh+l9msGhn7mWAxPmpY/gaB6opRq+mjhr2ErkHQrNjQ=;
-        b=hp7DHkngOkIMepbRqURMAaQWNvYQJZs4+ZPTYnhBi4pF34Wm8WLDn3VHMSO539H+jy
-         9bcMPNDgkJYRPJkPkfPieIwI5ltgCHWGEAX9CoNTw9Ro0PzJoQejXBnFoVU2glOH/ICH
-         mgtuLdrpg2/eYBKwtBE7H5mGKIqHVQXmNpoV0B9aU0kMhqB9+Tm5cYofpnS8/sE/hjkZ
-         qOL3meZEx948qcbyyUSj0uB+bEqvdIDIZU28eWEhm/vkjWGSFClPfs+zm4DZeaDZQK5k
-         Zyrn5Svrb+/YWHhb4/9893rjg9oKoD9T26sThgS7cjWMcDudPoZjbNfvXbZMiqUT2tRN
-         RdMQ==
-X-Gm-Message-State: ACgBeo12cqUYFL5hfAt4Bb/JVeIk/AtmnB0N4V/WOOh7oRCA2gCdjx4D
-        gVTusQvyK+F0NaKUKE8+lGSm3bK3VsSdsgknbBL9TSrjye7e6RqgpNT1EHjKbm5xkMaeNWWG1HB
-        fwhucLYGvq3kNMW7hB6buGW2gP/c8Ibu0Ew==
-X-Received: by 2002:a63:d006:0:b0:419:b272:9e6d with SMTP id z6-20020a63d006000000b00419b2729e6dmr25132852pgf.608.1660194414110;
-        Wed, 10 Aug 2022 22:06:54 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5hVrM4mGwjHlQTrcGOMzvOjjJAGiErxEPzeqguWkhn6+og5d4lKaROawLHMRWzY9PWLjthcA==
-X-Received: by 2002:a63:d006:0:b0:419:b272:9e6d with SMTP id z6-20020a63d006000000b00419b2729e6dmr25132838pgf.608.1660194413810;
-        Wed, 10 Aug 2022 22:06:53 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id i15-20020a17090332cf00b0016cf3f124e5sm14074191plr.131.2022.08.10.22.06.53
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 10 Aug 2022 22:06:53 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 139086119B; Wed, 10 Aug 2022 22:06:53 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 0C9089FA79;
-        Wed, 10 Aug 2022 22:06:53 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     netdev@vger.kernel.org, sunshouxin@chinatelecom.cn
-Cc:     vfalico@gmail.com, andy@greyhouse.net, razor@blackwall.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
-Subject: [PATCH net] bonding: fix reference count leak in balance-alb mode
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=DZrxMuUWLyOOGOzou+/YbJCnEI+s6JajXm/D/EndXY0=;
+        b=KdLGMdHjDFIL16Ah03x8KKzYU/LAOvCjtpp6b3bwuFxHAdNfBofMgrr8Luo4x3K/pR
+         Yr/XCKCbau9aaIfj0v/pQg0/WUtUmb3biRbzs9mew0/Y3gyOYyGs10tZ2kVm2aeZN0jy
+         4tn0URYu8y3MLrvUarAVxzPt5mpT3tDeYINGiMMqMzxurLbpUsMAjOXQOEu9UaiRm4xY
+         5Fk2wpvh//eMfR7iovaMPhLxWtDpgaWlXYGVxaG3xNsGP0InFpQV3iPkqgzY7Z+vUp87
+         /WIR/rgw0UKIXcAviytjM4/MXUXDsMTnZ6wy/uDY+oOxtGbsp+4GEgKvItjX/WJchnql
+         oitw==
+X-Gm-Message-State: ACgBeo1co8YabiFO+JsuygEMRfGVA6zuOaCSM6akEabbVUvXBJpXTAVW
+        Ie2OXToX24pQGs5/0lwwmBY=
+X-Google-Smtp-Source: AA6agR4CYIBep1Qc6b2rxtOzCLCWjyelWDv+c6Jn1ykqtKYdC0nWTbjGrVaVzqh2oca2PBbd0hVOCA==
+X-Received: by 2002:a65:6556:0:b0:41c:9c36:98fa with SMTP id a22-20020a656556000000b0041c9c3698famr25928505pgw.491.1660194563312;
+        Wed, 10 Aug 2022 22:09:23 -0700 (PDT)
+Received: from localhost ([2405:6580:97e0:3100:ae94:2ee7:59a:4846])
+        by smtp.gmail.com with ESMTPSA id w3-20020a170902e88300b0016be96e07d1sm14005662plg.121.2022.08.10.22.09.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 10 Aug 2022 22:09:22 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 14:09:21 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Hans Schultz <netdev@kapio-technology.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 0/6] Extend locked port feature with FDB
+ locked flag (MAC-Auth/MAB)
+Message-ID: <YvSPAatX80jGiS3x@d3>
+References: <20220707152930.1789437-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <26757.1660194413.1@famine>
-Content-Transfer-Encoding: quoted-printable
-Date:   Wed, 10 Aug 2022 22:06:53 -0700
-Message-ID: <26758.1660194413@famine>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220707152930.1789437-1-netdev@kapio-technology.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	Commit d5410ac7b0ba ("net:bonding:support balance-alb interface
-with vlan to bridge") introduced a reference count leak by not releasing
-the reference acquired by ip_dev_find().  Remedy this by insuring the
-reference is released.
+On 2022-07-07 17:29 +0200, Hans Schultz wrote:
+> This patch set extends the locked port feature for devices
+> that are behind a locked port, but do not have the ability to
+> authorize themselves as a supplicant using IEEE 802.1X.
+> Such devices can be printers, meters or anything related to
+> fixed installations. Instead of 802.1X authorization, devices
+> can get access based on their MAC addresses being whitelisted.
+                                                    ^
 
-Fixes: d5410ac7b0ba ("net:bonding:support balance-alb interface with vlan =
-to bridge")
-Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-
----
- drivers/net/bonding/bond_alb.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb=
-.c
-index 60cb9a0225aa..b9dbad3a8af8 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -668,8 +668,11 @@ static struct slave *rlb_arp_xmit(struct sk_buff *skb=
-, struct bonding *bond)
- =
-
- 	dev =3D ip_dev_find(dev_net(bond->dev), arp->ip_src);
- 	if (dev) {
--		if (netif_is_bridge_master(dev))
-+		if (netif_is_bridge_master(dev)) {
-+			dev_put(dev);
- 			return NULL;
-+		}
-+		dev_put(dev);
- 	}
- =
-
- 	if (arp->op_code =3D=3D htons(ARPOP_REPLY)) {
--- =
-
-2.17.1
-
+Please consider using the alternate vocabulary discussed in
+Documentation/process/coding-style.rst §4.
