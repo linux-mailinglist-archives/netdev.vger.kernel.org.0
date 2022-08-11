@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F8675904BC
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3064590424
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:47:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239070AbiHKQoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
+        id S239101AbiHKQpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239037AbiHKQoC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:44:02 -0400
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EF2AB06B;
-        Thu, 11 Aug 2022 09:16:51 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 09:16:28 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660234609;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=d9Knayh1uWBTa8dQn7LG9+/Wpow1M6VlJCr9CzUjIEk=;
-        b=LGxJvmFFgkBq6tKpWN+qREjF/ahVy7BWm7keZmAcKgbf9/nmwmslHS6buM+/C3LNWpiuBb
-        5sVDQmF7csohvsiNso5Vfjiok+f1fTb/KoWo5g58qWSZfEMYvDVw9rcNuWrkJMyNJhvwML
-        Dj8xrlZ59L0I+SBmpHEWxwDCmuhHQs0=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, shakeelb@google.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH bpf-next 13/15] mm, memcg: Add new helper
- get_obj_cgroup_from_cgroup
-Message-ID: <YvUrXLJF6qrGOdjP@P9FQF9L96D.corp.robot.car>
-References: <20220810151840.16394-1-laoar.shao@gmail.com>
- <20220810151840.16394-14-laoar.shao@gmail.com>
+        with ESMTP id S239105AbiHKQpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:45:14 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DCFEC4C90
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:17:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660234647; x=1691770647;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=LR8dT98IJrAOKb7u/KxwRXL7wq1fI7q9KUSwZaTYX1M=;
+  b=f+VSr1aykdgR6y2tGLtg+tnScYOArwKsHLGYGWiy+R9nBXCma6F9KRGJ
+   Jen58HYBG4md37MTuM+vPrYZQSwQuZavHwbjtaLHReHgW+Cygd/fUTBun
+   bnrHlrqbSCK1yhUipVhQ9brXhB7EgylLqJKsxmoKC+Md+zOuK9NENtffX
+   Q4leQkaG3rjDaLamyPWVmOHBGMY3nXTnc4dJBB3a9wa99karumQ2bQFdY
+   fMsOQOzbMikzcOIsLLUZWNjoOA6mCiIVkxX1afES44KbDfDUtz8MhjLPR
+   YSuLxZXg1oTVjJ6WNqQH8WECOHI0UPO1ufsEvq/9+ViiNCa1pWpioFzF3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="274448353"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="274448353"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 09:17:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="731928496"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga004.jf.intel.com with ESMTP; 11 Aug 2022 09:17:26 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org
+Subject: [PATCH net 0/2][pull request] Intel Wired LAN Driver Updates 2022-08-11 (ice)
+Date:   Thu, 11 Aug 2022 09:17:12 -0700
+Message-Id: <20220811161714.305094-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220810151840.16394-14-laoar.shao@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,46 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 03:18:38PM +0000, Yafang Shao wrote:
-> Introduce new helper get_obj_cgroup_from_cgroup() to get obj_cgroup from
-> a specific cgroup.
-> 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  include/linux/memcontrol.h |  1 +
->  mm/memcontrol.c            | 41 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 42 insertions(+)
-> 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 2f0a611..901a921 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
->  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
->  void __memcg_kmem_uncharge_page(struct page *page, int order);
->  
-> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
->  struct obj_cgroup *get_obj_cgroup_from_current(void);
->  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
->  
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index 618c366..762cffa 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -2908,6 +2908,47 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
->  	return objcg;
->  }
->  
-> +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
-> +{
-> +	struct obj_cgroup *objcg;
-> +
-> +	if (memcg_kmem_bypass())
-> +		return NULL;
-> +
-> +	rcu_read_lock();
-> +	objcg = __get_obj_cgroup_from_memcg(memcg);
-> +	rcu_read_unlock();
-> +	return objcg;
+This series contains updates to ice driver only.
 
-This code doesn't make sense to me. What does rcu read lock protect here?
+Benjamin corrects a misplaced parenthesis for a WARN_ON check.
+
+Michal removes WARN_ON from a check as its recoverable and not
+warranting of a call trace.
+
+The following are changes since commit 84ba28901629cd3aa3b24d359bc4da3ac24c2329:
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Benjamin Mikailenko (1):
+  ice: Fix VSI rebuild WARN_ON check for VF
+
+Michal Jaron (1):
+  ice: Fix call trace with null VSI during VF reset
+
+ drivers/net/ethernet/intel/ice/ice_lib.c    | 2 +-
+ drivers/net/ethernet/intel/ice/ice_vf_lib.c | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+-- 
+2.35.1
+
