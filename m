@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 710C258FF7C
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351E358FF91
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235850AbiHKPaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
+        id S235873AbiHKPbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235746AbiHKP3p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:29:45 -0400
+        with ESMTP id S235794AbiHKPbB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:31:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBCE796747;
-        Thu, 11 Aug 2022 08:29:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 489003B2;
+        Thu, 11 Aug 2022 08:30:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E350615CE;
-        Thu, 11 Aug 2022 15:29:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82044C433C1;
-        Thu, 11 Aug 2022 15:29:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D429E615E7;
+        Thu, 11 Aug 2022 15:30:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6AF1C433D6;
+        Thu, 11 Aug 2022 15:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660231771;
-        bh=Qein4jotMuYQonx6x2QvIt87OKd3haE8/BzXpAt4ElE=;
+        s=k20201202; t=1660231811;
+        bh=JpWJuc87JdE7l8Oa/B1+9XhhPK7XEBMFR4T7SWPH+Tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WIPm7BDZGqiBOor68IqUoGXq5F7LkFpiUTi8F2K/8XK1CmqRxQMukLk4iJohM8d40
-         R0eD0dW5vSxNOMjwy7uyMN8O6G/RBeBpwLlpgDByoqXmiAwujHsE1fw4EGsSl6pT17
-         fxg1nGrBit1fZy2o1QFc3eJGZND+wb4p0b0O5d+ZEEgpCkvnP5w+F+iaqhjNi/UR7m
-         60dNzqUh5j/n0rxmvoJAzTZMTqs6BaoW1OpEky1iQjlJUxw+w6DpZjb4CZDjnh6uXu
-         PsbJ1MT64Zhe/uHWUNqY69T+abni3F8ukvzzZiKemYq0XU1D5homtxJ0kNrV/6QR4Z
-         Ug0qZNsdUxW6Q==
+        b=P1pGtmaLAMEt96wTnDwoxdVpseikk/DWluVhXwSeZvUhb879wJdZfevauUw33yDR/
+         MdeWseJEXqYuOIKDWbPG+GQvRAYHgQFlatvZuYw27tXOBAWDRD9GR/41dEbCeGSQFz
+         h+U3v6AhStObjb8s3bxZyM/KrtzwdvlupJLtnEcSLidYYNRLCXI6wcy47gvtMSTs1L
+         FTFx1S+KRUYMYeZuRdHQLfGCm+26KTqhrvx8AR2RITcPjl0GU6RDKqcn7QAJxd0AwB
+         XaeM6XbNW7XwhJ9Ohip6tkrU/w37WGzyWCvn1I2t0V4r2wpL9Jly94IN1Wu2BZFMAs
+         PpnR70o2fSaOg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wang Yufen <wangyufen@huawei.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+Cc:     Mateusz Palczewski <mateusz.palczewski@intel.com>,
+        Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>, jesse.brandeburg@intel.com,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 010/105] bpf, sockmap: Fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
-Date:   Thu, 11 Aug 2022 11:26:54 -0400
-Message-Id: <20220811152851.1520029-10-sashal@kernel.org>
+        pabeni@redhat.com, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 015/105] iavf: Add waiting for response from PF in set mac
+Date:   Thu, 11 Aug 2022 11:26:59 -0400
+Message-Id: <20220811152851.1520029-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -62,133 +61,366 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wang Yufen <wangyufen@huawei.com>
+From: Mateusz Palczewski <mateusz.palczewski@intel.com>
 
-[ Upstream commit d8616ee2affcff37c5d315310da557a694a3303d ]
+[ Upstream commit 35a2443d0910fdd6ce29d4f724447ad7029e8f23 ]
 
-During TCP sockmap redirect pressure test, the following warning is triggered:
+Make iavf_set_mac synchronous by waiting for a response
+from a PF. Without this iavf_set_mac is always returning
+success even though set_mac can be rejected by a PF.
+This ensures that when set_mac exits netdev MAC is updated.
+This is needed for sending ARPs with correct MAC after
+changing VF's MAC. This is also needed by bonding module.
 
-WARNING: CPU: 3 PID: 2145 at net/core/stream.c:205 sk_stream_kill_queues+0xbc/0xd0
-CPU: 3 PID: 2145 Comm: iperf Kdump: loaded Tainted: G        W         5.10.0+ #9
-Call Trace:
- inet_csk_destroy_sock+0x55/0x110
- inet_csk_listen_stop+0xbb/0x380
- tcp_close+0x41b/0x480
- inet_release+0x42/0x80
- __sock_release+0x3d/0xa0
- sock_close+0x11/0x20
- __fput+0x9d/0x240
- task_work_run+0x62/0x90
- exit_to_user_mode_prepare+0x110/0x120
- syscall_exit_to_user_mode+0x27/0x190
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-The reason we observed is that:
-
-When the listener is closing, a connection may have completed the three-way
-handshake but not accepted, and the client has sent some packets. The child
-sks in accept queue release by inet_child_forget()->inet_csk_destroy_sock(),
-but psocks of child sks have not released.
-
-To fix, add sock_map_destroy to release psocks.
-
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
-Acked-by: John Fastabend <john.fastabend@gmail.com>
-Link: https://lore.kernel.org/bpf/20220524075311.649153-1-wangyufen@huawei.com
+Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+Signed-off-by: Mateusz Palczewski <mateusz.palczewski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/bpf.h   |  1 +
- include/linux/skmsg.h |  1 +
- net/core/skmsg.c      |  1 +
- net/core/sock_map.c   | 23 +++++++++++++++++++++++
- net/ipv4/tcp_bpf.c    |  1 +
- 5 files changed, 27 insertions(+)
+ drivers/net/ethernet/intel/iavf/iavf.h        |   7 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 127 +++++++++++++++---
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  61 ++++++++-
+ 3 files changed, 174 insertions(+), 21 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 2b914a56a2c5..8e6092d0ea95 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2104,6 +2104,7 @@ int sock_map_bpf_prog_query(const union bpf_attr *attr,
- 			    union bpf_attr __user *uattr);
+diff --git a/drivers/net/ethernet/intel/iavf/iavf.h b/drivers/net/ethernet/intel/iavf/iavf.h
+index 0ea0361cd86b..69703801d1b0 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf.h
++++ b/drivers/net/ethernet/intel/iavf/iavf.h
+@@ -145,7 +145,8 @@ struct iavf_mac_filter {
+ 		u8 remove:1;        /* filter needs to be removed */
+ 		u8 add:1;           /* filter needs to be added */
+ 		u8 is_primary:1;    /* filter is a default VF MAC */
+-		u8 padding:4;
++		u8 add_handled:1;   /* received response for filter add */
++		u8 padding:3;
+ 	};
+ };
  
- void sock_map_unhash(struct sock *sk);
-+void sock_map_destroy(struct sock *sk);
- void sock_map_close(struct sock *sk, long timeout);
- #else
- static inline int bpf_prog_offload_init(struct bpf_prog *prog,
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index c5a2d6f50f25..153b6dec9b6a 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -95,6 +95,7 @@ struct sk_psock {
- 	spinlock_t			link_lock;
- 	refcount_t			refcnt;
- 	void (*saved_unhash)(struct sock *sk);
-+	void (*saved_destroy)(struct sock *sk);
- 	void (*saved_close)(struct sock *sk, long timeout);
- 	void (*saved_write_space)(struct sock *sk);
- 	void (*saved_data_ready)(struct sock *sk);
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index b0fcd0200e84..fc69154bbc88 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -720,6 +720,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 	psock->eval = __SK_NONE;
- 	psock->sk_proto = prot;
- 	psock->saved_unhash = prot->unhash;
-+	psock->saved_destroy = prot->destroy;
- 	psock->saved_close = prot->close;
- 	psock->saved_write_space = sk->sk_write_space;
+@@ -251,6 +252,7 @@ struct iavf_adapter {
+ 	struct work_struct adminq_task;
+ 	struct delayed_work client_task;
+ 	wait_queue_head_t down_waitqueue;
++	wait_queue_head_t vc_waitqueue;
+ 	struct iavf_q_vector *q_vectors;
+ 	struct list_head vlan_filter_list;
+ 	struct list_head mac_filter_list;
+@@ -295,6 +297,7 @@ struct iavf_adapter {
+ #define IAVF_FLAG_QUEUES_DISABLED		BIT(17)
+ #define IAVF_FLAG_SETUP_NETDEV_FEATURES		BIT(18)
+ #define IAVF_FLAG_REINIT_MSIX_NEEDED		BIT(20)
++#define IAVF_FLAG_INITIAL_MAC_SET		BIT(23)
+ /* duplicates for common code */
+ #define IAVF_FLAG_DCB_ENABLED			0
+ 	/* flags for admin queue service task */
+@@ -567,6 +570,8 @@ void iavf_enable_vlan_stripping_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_disable_vlan_stripping_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_enable_vlan_insertion_v2(struct iavf_adapter *adapter, u16 tpid);
+ void iavf_disable_vlan_insertion_v2(struct iavf_adapter *adapter, u16 tpid);
++int iavf_replace_primary_mac(struct iavf_adapter *adapter,
++			     const u8 *new_mac);
+ void
+ iavf_set_vlan_offload_features(struct iavf_adapter *adapter,
+ 			       netdev_features_t prev_features,
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
+index 2e2c153ce46a..2ec3ebb397f3 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_main.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
+@@ -978,6 +978,7 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
  
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 81d4b4756a02..9f08ccfaf6da 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -1561,6 +1561,29 @@ void sock_map_unhash(struct sock *sk)
+ 		list_add_tail(&f->list, &adapter->mac_filter_list);
+ 		f->add = true;
++		f->add_handled = false;
+ 		f->is_new_mac = true;
+ 		f->is_primary = ether_addr_equal(macaddr, adapter->hw.mac.addr);
+ 		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
+@@ -989,47 +990,132 @@ struct iavf_mac_filter *iavf_add_filter(struct iavf_adapter *adapter,
  }
- EXPORT_SYMBOL_GPL(sock_map_unhash);
  
-+void sock_map_destroy(struct sock *sk)
-+{
-+	void (*saved_destroy)(struct sock *sk);
-+	struct sk_psock *psock;
-+
-+	rcu_read_lock();
-+	psock = sk_psock_get(sk);
-+	if (unlikely(!psock)) {
-+		rcu_read_unlock();
-+		if (sk->sk_prot->destroy)
-+			sk->sk_prot->destroy(sk);
-+		return;
+ /**
+- * iavf_set_mac - NDO callback to set port mac address
+- * @netdev: network interface device structure
+- * @p: pointer to an address structure
++ * iavf_replace_primary_mac - Replace current primary address
++ * @adapter: board private structure
++ * @new_mac: new MAC address to be applied
+  *
+- * Returns 0 on success, negative on failure
++ * Replace current dev_addr and send request to PF for removal of previous
++ * primary MAC address filter and addition of new primary MAC filter.
++ * Return 0 for success, -ENOMEM for failure.
++ *
++ * Do not call this with mac_vlan_list_lock!
+  **/
+-static int iavf_set_mac(struct net_device *netdev, void *p)
++int iavf_replace_primary_mac(struct iavf_adapter *adapter,
++			     const u8 *new_mac)
+ {
+-	struct iavf_adapter *adapter = netdev_priv(netdev);
+ 	struct iavf_hw *hw = &adapter->hw;
+ 	struct iavf_mac_filter *f;
+-	struct sockaddr *addr = p;
+-
+-	if (!is_valid_ether_addr(addr->sa_data))
+-		return -EADDRNOTAVAIL;
+-
+-	if (ether_addr_equal(netdev->dev_addr, addr->sa_data))
+-		return 0;
+ 
+ 	spin_lock_bh(&adapter->mac_vlan_list_lock);
+ 
++	list_for_each_entry(f, &adapter->mac_filter_list, list) {
++		f->is_primary = false;
 +	}
 +
-+	saved_destroy = psock->saved_destroy;
-+	sock_map_remove_links(sk, psock);
-+	rcu_read_unlock();
-+	sk_psock_stop(psock, true);
-+	sk_psock_put(sk, psock);
-+	saved_destroy(sk);
-+}
-+EXPORT_SYMBOL_GPL(sock_map_destroy);
+ 	f = iavf_find_filter(adapter, hw->mac.addr);
+ 	if (f) {
+ 		f->remove = true;
+-		f->is_primary = true;
+ 		adapter->aq_required |= IAVF_FLAG_AQ_DEL_MAC_FILTER;
+ 	}
+ 
+-	f = iavf_add_filter(adapter, addr->sa_data);
++	f = iavf_add_filter(adapter, new_mac);
 +
- void sock_map_close(struct sock *sk, long timeout)
- {
- 	void (*saved_close)(struct sock *sk, long timeout);
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 0d3f68bb51c0..a1626afe87a1 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -540,6 +540,7 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
- 				   struct proto *base)
- {
- 	prot[TCP_BPF_BASE]			= *base;
-+	prot[TCP_BPF_BASE].destroy		= sock_map_destroy;
- 	prot[TCP_BPF_BASE].close		= sock_map_close;
- 	prot[TCP_BPF_BASE].recvmsg		= tcp_bpf_recvmsg;
- 	prot[TCP_BPF_BASE].sock_is_readable	= sk_msg_is_readable;
+ 	if (f) {
++		/* Always send the request to add if changing primary MAC
++		 * even if filter is already present on the list
++		 */
+ 		f->is_primary = true;
+-		ether_addr_copy(hw->mac.addr, addr->sa_data);
++		f->add = true;
++		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER;
++		ether_addr_copy(hw->mac.addr, new_mac);
+ 	}
+ 
+ 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
+ 
+ 	/* schedule the watchdog task to immediately process the request */
+-	if (f)
++	if (f) {
+ 		queue_work(iavf_wq, &adapter->watchdog_task.work);
++		return 0;
++	}
++	return -ENOMEM;
++}
++
++/**
++ * iavf_is_mac_set_handled - wait for a response to set MAC from PF
++ * @netdev: network interface device structure
++ * @macaddr: MAC address to set
++ *
++ * Returns true on success, false on failure
++ */
++static bool iavf_is_mac_set_handled(struct net_device *netdev,
++				    const u8 *macaddr)
++{
++	struct iavf_adapter *adapter = netdev_priv(netdev);
++	struct iavf_mac_filter *f;
++	bool ret = false;
++
++	spin_lock_bh(&adapter->mac_vlan_list_lock);
++
++	f = iavf_find_filter(adapter, macaddr);
+ 
+-	return (f == NULL) ? -ENOMEM : 0;
++	if (!f || (!f->add && f->add_handled))
++		ret = true;
++
++	spin_unlock_bh(&adapter->mac_vlan_list_lock);
++
++	return ret;
++}
++
++/**
++ * iavf_set_mac - NDO callback to set port MAC address
++ * @netdev: network interface device structure
++ * @p: pointer to an address structure
++ *
++ * Returns 0 on success, negative on failure
++ */
++static int iavf_set_mac(struct net_device *netdev, void *p)
++{
++	struct iavf_adapter *adapter = netdev_priv(netdev);
++	struct sockaddr *addr = p;
++	bool handle_mac = iavf_is_mac_set_handled(netdev, addr->sa_data);
++	int ret;
++
++	if (!is_valid_ether_addr(addr->sa_data))
++		return -EADDRNOTAVAIL;
++
++	ret = iavf_replace_primary_mac(adapter, addr->sa_data);
++
++	if (ret)
++		return ret;
++
++	/* If this is an initial set MAC during VF spawn do not wait */
++	if (adapter->flags & IAVF_FLAG_INITIAL_MAC_SET) {
++		adapter->flags &= ~IAVF_FLAG_INITIAL_MAC_SET;
++		return 0;
++	}
++
++	if (handle_mac)
++		goto done;
++
++	ret = wait_event_interruptible_timeout(adapter->vc_waitqueue, false, msecs_to_jiffies(2500));
++
++	/* If ret < 0 then it means wait was interrupted.
++	 * If ret == 0 then it means we got a timeout.
++	 * else it means we got response for set MAC from PF,
++	 * check if netdev MAC was updated to requested MAC,
++	 * if yes then set MAC succeeded otherwise it failed return -EACCES
++	 */
++	if (ret < 0)
++		return ret;
++
++	if (!ret)
++		return -EAGAIN;
++
++done:
++	if (!ether_addr_equal(netdev->dev_addr, addr->sa_data))
++		return -EACCES;
++
++	return 0;
+ }
+ 
+ /**
+@@ -2445,6 +2531,8 @@ static void iavf_init_config_adapter(struct iavf_adapter *adapter)
+ 		ether_addr_copy(netdev->perm_addr, adapter->hw.mac.addr);
+ 	}
+ 
++	adapter->flags |= IAVF_FLAG_INITIAL_MAC_SET;
++
+ 	adapter->tx_desc_count = IAVF_DEFAULT_TXD;
+ 	adapter->rx_desc_count = IAVF_DEFAULT_RXD;
+ 	err = iavf_init_interrupt_scheme(adapter);
+@@ -4678,6 +4766,9 @@ static int iavf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	/* Setup the wait queue for indicating transition to down status */
+ 	init_waitqueue_head(&adapter->down_waitqueue);
+ 
++	/* Setup the wait queue for indicating virtchannel events */
++	init_waitqueue_head(&adapter->vc_waitqueue);
++
+ 	return 0;
+ 
+ err_ioremap:
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+index 1603e99bae4a..7c98ac1fe458 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_virtchnl.c
+@@ -598,6 +598,8 @@ static void iavf_mac_add_ok(struct iavf_adapter *adapter)
+ 	spin_lock_bh(&adapter->mac_vlan_list_lock);
+ 	list_for_each_entry_safe(f, ftmp, &adapter->mac_filter_list, list) {
+ 		f->is_new_mac = false;
++		if (!f->add && !f->add_handled)
++			f->add_handled = true;
+ 	}
+ 	spin_unlock_bh(&adapter->mac_vlan_list_lock);
+ }
+@@ -618,6 +620,9 @@ static void iavf_mac_add_reject(struct iavf_adapter *adapter)
+ 		if (f->remove && ether_addr_equal(f->macaddr, netdev->dev_addr))
+ 			f->remove = false;
+ 
++		if (!f->add && !f->add_handled)
++			f->add_handled = true;
++
+ 		if (f->is_new_mac) {
+ 			list_del(&f->list);
+ 			kfree(f);
+@@ -1970,6 +1975,7 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 			iavf_mac_add_reject(adapter);
+ 			/* restore administratively set MAC address */
+ 			ether_addr_copy(adapter->hw.mac.addr, netdev->dev_addr);
++			wake_up(&adapter->vc_waitqueue);
+ 			break;
+ 		case VIRTCHNL_OP_DEL_VLAN:
+ 			dev_err(&adapter->pdev->dev, "Failed to delete VLAN filter, error %s\n",
+@@ -2134,7 +2140,13 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 		if (!v_retval)
+ 			iavf_mac_add_ok(adapter);
+ 		if (!ether_addr_equal(netdev->dev_addr, adapter->hw.mac.addr))
+-			eth_hw_addr_set(netdev, adapter->hw.mac.addr);
++			if (!ether_addr_equal(netdev->dev_addr,
++					      adapter->hw.mac.addr)) {
++				netif_addr_lock_bh(netdev);
++				eth_hw_addr_set(netdev, adapter->hw.mac.addr);
++				netif_addr_unlock_bh(netdev);
++			}
++		wake_up(&adapter->vc_waitqueue);
+ 		break;
+ 	case VIRTCHNL_OP_GET_STATS: {
+ 		struct iavf_eth_stats *stats =
+@@ -2164,10 +2176,11 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 			/* restore current mac address */
+ 			ether_addr_copy(adapter->hw.mac.addr, netdev->dev_addr);
+ 		} else {
++			netif_addr_lock_bh(netdev);
+ 			/* refresh current mac address if changed */
+-			eth_hw_addr_set(netdev, adapter->hw.mac.addr);
+ 			ether_addr_copy(netdev->perm_addr,
+ 					adapter->hw.mac.addr);
++			netif_addr_unlock_bh(netdev);
+ 		}
+ 		spin_lock_bh(&adapter->mac_vlan_list_lock);
+ 		iavf_add_filter(adapter, adapter->hw.mac.addr);
+@@ -2203,6 +2216,10 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 		}
+ 		fallthrough;
+ 	case VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS: {
++		struct iavf_mac_filter *f;
++		bool was_mac_changed;
++		u64 aq_required = 0;
++
+ 		if (v_opcode == VIRTCHNL_OP_GET_OFFLOAD_VLAN_V2_CAPS)
+ 			memcpy(&adapter->vlan_v2_caps, msg,
+ 			       min_t(u16, msglen,
+@@ -2210,6 +2227,46 @@ void iavf_virtchnl_completion(struct iavf_adapter *adapter,
+ 
+ 		iavf_process_config(adapter);
+ 		adapter->flags |= IAVF_FLAG_SETUP_NETDEV_FEATURES;
++		was_mac_changed = !ether_addr_equal(netdev->dev_addr,
++						    adapter->hw.mac.addr);
++
++		spin_lock_bh(&adapter->mac_vlan_list_lock);
++
++		/* re-add all MAC filters */
++		list_for_each_entry(f, &adapter->mac_filter_list, list) {
++			if (was_mac_changed &&
++			    ether_addr_equal(netdev->dev_addr, f->macaddr))
++				ether_addr_copy(f->macaddr,
++						adapter->hw.mac.addr);
++
++			f->is_new_mac = true;
++			f->add = true;
++			f->add_handled = false;
++			f->remove = false;
++		}
++
++		/* re-add all VLAN filters */
++		if (VLAN_FILTERING_ALLOWED(adapter)) {
++			struct iavf_vlan_filter *vlf;
++
++			if (!list_empty(&adapter->vlan_filter_list)) {
++				list_for_each_entry(vlf,
++						    &adapter->vlan_filter_list,
++						    list)
++					vlf->add = true;
++
++				aq_required |= IAVF_FLAG_AQ_ADD_VLAN_FILTER;
++			}
++		}
++
++		spin_unlock_bh(&adapter->mac_vlan_list_lock);
++
++		netif_addr_lock_bh(netdev);
++		eth_hw_addr_set(netdev, adapter->hw.mac.addr);
++		netif_addr_unlock_bh(netdev);
++
++		adapter->aq_required |= IAVF_FLAG_AQ_ADD_MAC_FILTER |
++			aq_required;
+ 		}
+ 		break;
+ 	case VIRTCHNL_OP_ENABLE_QUEUES:
 -- 
 2.35.1
 
