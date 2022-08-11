@@ -2,66 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B5A58F597
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 03:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFEE58F59A
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 03:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233508AbiHKBhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 21:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
+        id S232785AbiHKBlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 21:41:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230461AbiHKBhW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 21:37:22 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354C3844F2
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 18:37:22 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id gj1so16452070pjb.0
-        for <netdev@vger.kernel.org>; Wed, 10 Aug 2022 18:37:22 -0700 (PDT)
+        with ESMTP id S229488AbiHKBlP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 21:41:15 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C5B844FE;
+        Wed, 10 Aug 2022 18:41:12 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id h132so15888998pgc.10;
+        Wed, 10 Aug 2022 18:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=Fu/GNhR6xqNNC4O0PQawWokTnCLX48zFL3Czg/cqAbc=;
-        b=M2jzKjAC6GYu/uATGFqxGxkDcdTri0iezW8vI13ZSRmU0Ba0T6kCIfd0WCOqrQ7gCp
-         sE1BCUfPJzeQMZ9UhuTlyGEGeob02wMvOIYmF86EKsJ9ULLkwR2WBcq126F8XfGYFhXL
-         bhlogpYeAmdlnfGz4cMSQHi3k+FLHwkPRP9r7oyVLBNiJuWyXQh+Ai852APmwe6WPPv6
-         4DYY+YbwanyIxu5jFFjjy95b0nanU7dRFsWIiNuOKxEJ5eqm/TTrfQCamHFXbD+gfQWy
-         wLRR9uQ9umjPBaYIIocaLutIv0JJN6U89mogJ8mJRGtl4R+YfY/xjDhyVz3LcnYWABAt
-         ZuqA==
+        bh=F6hxhK/CjlN1f5v5Y2g2kDzYo8Q8zwKdylN6nrbEMvU=;
+        b=ic+8ScICKjjbdXIQQQmthij281I3mSRMks3Wz+5PmPGiGjve/0Mhj6uJHW1C1OjV49
+         5dhtxWSiJpNuJ4+u/PT+J4y0S29qrn/kl6QgtlDQtaFaKNXFfotD9Y5odxIsOYNxDM5l
+         J7R41PfhBLdPrayfFvDdBVB2MYqh8S4DudkAVWtJcxktwa8nBrRGTaxtOaLgXThhd/hV
+         Fi3Ef7T557Gx2t5tXOK/JCsboXGvZOuhthyyJj0lUtoFz9uUHYAmV+HwtDZ1Bs36IA+C
+         d4R6msDSug80BQWdnojMkESuKlA0YuJAsUSJEHSAKYUFcTLZ1xbmb9xE7YFBAvkN5+VW
+         H3nA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Fu/GNhR6xqNNC4O0PQawWokTnCLX48zFL3Czg/cqAbc=;
-        b=a3319oxJCPpGlUG2fpAJD/sD7HUKqLXlOcYNofrA/3J0NoVxSA9OGmZLotqP2o/T4M
-         AqEstWXvjWhXCBfKwV+58qYwo0XOS1pVM/K0kUjmOCr/xzBQsZCYqgiaYbqL4c4bmJK/
-         a21gFzOtg7jsKJMlSka2nfAKb2irBIJMnAhBrOklVuwn5EbcBEXxqISfF22Zqp/K8TuZ
-         tSQHDFdzqx7XhTw5M6st0VzmG3IAHuZXWkyOziLKtoROj7QEl8CH6b92UPOdsBhYAS6A
-         UwbaFHxAnvyTIKQYqC8mOtkqSyZDCq0WI/7yG8GS+MErjU2fkTZOPOZz0QMk4d7BYOWf
-         JLrg==
-X-Gm-Message-State: ACgBeo3vhRjy+RiSCzJ8BTr7bz2yFvarbe1xPw5HftoUintuO1RV+41u
-        RDTmekZLw+RXSrZtZ9nMttE=
-X-Google-Smtp-Source: AA6agR6dfFH33f6KJjR5ETfFBAOMQ5pIf2G1txCo0IIKTbJGtVBpcK2SL2rGURlKve9hRwI+OAJ06Q==
-X-Received: by 2002:a17:90b:4b8e:b0:1f5:49bd:8b0e with SMTP id lr14-20020a17090b4b8e00b001f549bd8b0emr6314286pjb.86.1660181841744;
-        Wed, 10 Aug 2022 18:37:21 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id p126-20020a622984000000b0052d4cb47339sm2674122pfp.151.2022.08.10.18.37.20
+        bh=F6hxhK/CjlN1f5v5Y2g2kDzYo8Q8zwKdylN6nrbEMvU=;
+        b=ysum7JKUjl8pQMG+jD4rqBPW8Cjvf0WYGXJgAHuSK/dHY0lp9VtP+TpMbcdsCOf9XC
+         bJzfUJZnwkkHnasDqaoBj/PDSbQrptJJiETA54speZ+bKHf3FKb2V/52M2CgG6h+gSYS
+         HUieZ42CZu1AKughuUFmN6zU9hIYLprHUEhGwZQIcju/4DTTK/tBrUyCj1c0SyXk6Qmm
+         UIZMUVpJigGxeb3bA17a6bhyrYEbSe9cS03FtvxO7ddP8PRRxIKz3770Yu19o9jviMek
+         yLuxG64p4qZd3Lb8hOky3DDAi7xEjjJ3NfgpaPFsUX5HLsZjFb8Qf12eG/RMNDHQZj7I
+         Dz4A==
+X-Gm-Message-State: ACgBeo3FQy1rebjH5eR5tqmXNBnMgvhrXi2WPJ2JJ6AacHE5C2TrhcBc
+        K/50VeOKIDguEr6v0phgNds=
+X-Google-Smtp-Source: AA6agR5i4m+EV/NKTsVlOHb/dJE8NZ1qD2gdYXDUfRbMq2kX6GDB3kvaCOXOJmrSZhtfLN6xJuAOeA==
+X-Received: by 2002:a63:8ac3:0:b0:41b:ba48:e3f6 with SMTP id y186-20020a638ac3000000b0041bba48e3f6mr24089927pgd.567.1660182072334;
+        Wed, 10 Aug 2022 18:41:12 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b17-20020a621b11000000b0052da33fe7d2sm2818830pfb.95.2022.08.10.18.41.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Aug 2022 18:37:21 -0700 (PDT)
-Date:   Wed, 10 Aug 2022 18:37:19 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>,
-        netdev@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>
-Subject: Re: [PATCH] fec: Restart PPS after link state change
-Message-ID: <YvRdTwRM4JBc5RuV@hoboy.vegasvil.org>
-References: <20220809124119.29922-1-csokas.bence@prolan.hu>
- <YvKZNcVfYdLw7bkm@lunn.ch>
- <299d74d5-2d56-23f6-affc-78bb3ae3e03c@prolan.hu>
- <YvRH06S/7E6J8RY0@lunn.ch>
+        Wed, 10 Aug 2022 18:41:11 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 09:41:03 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     Piyush Thange <pthange19@gmail.com>, davem <davem@davemloft.net>,
+        edumazet <edumazet@google.com>, kuba <kuba@kernel.org>,
+        pabeni <pabeni@redhat.com>, shuah <shuah@kernel.org>,
+        "vladimir.oltean" <vladimir.oltean@nxp.com>,
+        idosch <idosch@nvidia.com>, petrm <petrm@nvidia.com>,
+        troglobit <troglobit@gmail.com>, amcohen <amcohen@nvidia.com>,
+        tobias <tobias@waldekranz.com>,
+        "po-hsu.lin" <po-hsu.lin@canonical.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kselftest <linux-kselftest@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>
+Subject: Re: [PATCH] selftests:net:forwarding: Included install command
+Message-ID: <YvReL0HkZt639BoO@Laptop-X1>
+References: <20220810093508.33790-1-pthange19@gmail.com>
+ <182872c2de1.4461d55242061.8862004854197621952@siddh.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YvRH06S/7E6J8RY0@lunn.ch>
+In-Reply-To: <182872c2de1.4461d55242061.8862004854197621952@siddh.me>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,18 +81,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 02:05:39AM +0200, Andrew Lunn wrote:
-> > Yes. We use PPS to synchronize devices on a common backplane. We use PTP to
-> > sync this PPS to a master clock. But if PTP sync drops out, we wouldn't want
-> > the backplane-level synchronization to fail. The PPS needs to stay on as
-> > long as userspace *explicitly* disables it, regardless of what happens to
-> > the link.
+On Wed, Aug 10, 2022 at 03:23:15PM +0530, Siddh Raman Pant wrote:
+> On Wed, 10 Aug 2022 15:05:08 +0530  Piyush Thange <pthange19@gmail.com>  wrote:
+> > If the execution is skipped due to "jq not installed" message then
+> > the installation methods on different OS's have been provided with
+> > this message.
+> > 
+> > Signed-off-by: Piyush Thange <pthange19@gmail.com>
+> > ---
+> >  tools/testing/selftests/net/forwarding/lib.sh | 8 ++++++++
+> >  1 file changed, 8 insertions(+)
+> > 
+> > diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
+> > index 37ae49d47853..c4121856fe06 100755
+> > --- a/tools/testing/selftests/net/forwarding/lib.sh
+> > +++ b/tools/testing/selftests/net/forwarding/lib.sh
+> > @@ -152,6 +152,14 @@ require_command()
+> > 
+> >  	if [[ ! -x "$(command -v "$cmd")" ]]; then
+> >  		echo "SKIP: $cmd not installed"
+> > +		if [[ $cmd == "jq" ]]; then
+> > +			echo " Install on Debian based systems"
+> > +			echo "	sudo apt -y install jq"
+> > +			echo " Install on RHEL based systems"
+> > +			echo "	sudo yum -y install jq"
+> > +			echo " Install on Fedora based systems"
+> > +			echo "	sudo dnf -y install jq"
+> > +		fi
+> >  		exit $ksft_skip
+> >  	fi
+> >  }
+> > --
+> > 2.37.1
 > 
-> We need the PTP Maintainers view on that. I don't know if that is
-> normal or not.
+> This is very specific to `jq` command. What's special with `jq` and not
+> others? If methods have to be shown, they should be shown for all the
+> programs which are not installed.
 
-IMO the least surprising behavior is that once enabled, a feature
-stays on until explicitly disabled.
+Agree. The user could decide if jq should be install via REQUIRE_JQ. There are
+also other cmds that vendor may not build by default. I didn't see any
+selftests need to handle the installation. The users should takes care of it.
 
-Thanks,
-Richard
+require_command() has takes care most of the needed cmds. If we want to
+improve the user's experience for the needed cmds. I think add the needed cmds
+to README file is better.
+
+Thanks
+Hangbin
