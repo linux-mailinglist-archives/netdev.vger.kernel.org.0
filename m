@@ -2,171 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6B459049D
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F8675904BC
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238712AbiHKQh1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:37:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
+        id S239070AbiHKQoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:44:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239293AbiHKQgu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:36:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E6165540;
-        Thu, 11 Aug 2022 09:12:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9EA961470;
-        Thu, 11 Aug 2022 16:12:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D798FC433D6;
-        Thu, 11 Aug 2022 16:12:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234335;
-        bh=F7Za96Zk9fR31g27p/6/PHrEOPrA9xzIElgi9R/ZIzY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lgLspGvM5DbfahGo0AJzkdL6xtROKmX8ekHiB360q21AHfxW6whQDwzLodWQ9W38M
-         M+nv2uEYOqg8L0skjFI8AcxoG2ilWaYGc+xv836Kt6mzg4QXBK+GvZ6MyU4uHIbYPE
-         Y8L7iDiphyozcpoLkT5UNi3GSxsODfK7ttCwRZm3nZjsM/AZncVQz2sQTDtaLNdBuI
-         8x+KK64dbOU6723X63gFCo5wD5/wRb+0BvU1B3NXj2sI/DLvSFfQ8jdrykO3sdGq++
-         hHnokE2kqhcfQz8oAtZH4gvhm3XNbFvWGADgwKw4JYYo+oGCZM2TFCX9y64rlg4Q3H
-         sk02tj5heP06w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 10/12] wifi: rtl8xxxu: Fix the error handling of the probe function
-Date:   Thu, 11 Aug 2022 12:11:36 -0400
-Message-Id: <20220811161144.1543598-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
-References: <20220811161144.1543598-1-sashal@kernel.org>
+        with ESMTP id S239037AbiHKQoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:44:02 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37EF2AB06B;
+        Thu, 11 Aug 2022 09:16:51 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 09:16:28 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1660234609;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=d9Knayh1uWBTa8dQn7LG9+/Wpow1M6VlJCr9CzUjIEk=;
+        b=LGxJvmFFgkBq6tKpWN+qREjF/ahVy7BWm7keZmAcKgbf9/nmwmslHS6buM+/C3LNWpiuBb
+        5sVDQmF7csohvsiNso5Vfjiok+f1fTb/KoWo5g58qWSZfEMYvDVw9rcNuWrkJMyNJhvwML
+        Dj8xrlZ59L0I+SBmpHEWxwDCmuhHQs0=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, shakeelb@google.com, songmuchun@bytedance.com,
+        akpm@linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH bpf-next 13/15] mm, memcg: Add new helper
+ get_obj_cgroup_from_cgroup
+Message-ID: <YvUrXLJF6qrGOdjP@P9FQF9L96D.corp.robot.car>
+References: <20220810151840.16394-1-laoar.shao@gmail.com>
+ <20220810151840.16394-14-laoar.shao@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810151840.16394-14-laoar.shao@gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+On Wed, Aug 10, 2022 at 03:18:38PM +0000, Yafang Shao wrote:
+> Introduce new helper get_obj_cgroup_from_cgroup() to get obj_cgroup from
+> a specific cgroup.
+> 
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> ---
+>  include/linux/memcontrol.h |  1 +
+>  mm/memcontrol.c            | 41 +++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 42 insertions(+)
+> 
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index 2f0a611..901a921 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
+>  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
+>  void __memcg_kmem_uncharge_page(struct page *page, int order);
+>  
+> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
+>  struct obj_cgroup *get_obj_cgroup_from_current(void);
+>  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
+>  
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 618c366..762cffa 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -2908,6 +2908,47 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+>  	return objcg;
+>  }
+>  
+> +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+> +{
+> +	struct obj_cgroup *objcg;
+> +
+> +	if (memcg_kmem_bypass())
+> +		return NULL;
+> +
+> +	rcu_read_lock();
+> +	objcg = __get_obj_cgroup_from_memcg(memcg);
+> +	rcu_read_unlock();
+> +	return objcg;
 
-[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
-
-When the driver fails at ieee80211_alloc_hw() at the probe time, the
-driver will free the 'hw' which is not allocated, causing a bug.
-
-The following log can reveal it:
-
-[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
-[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
-[   15.982583] Call Trace:
-[   15.984282]  ieee80211_free_hw+0x22/0x390
-[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
-
-Fix the bug by changing the order of the error handling.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index e73613b9f2f5..ba9ac025d440 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -6023,7 +6023,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (!hw) {
- 		ret = -ENOMEM;
- 		priv = NULL;
--		goto exit;
-+		goto err_put_dev;
- 	}
- 
- 	priv = hw->priv;
-@@ -6042,24 +6042,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 
- 	ret = rtl8xxxu_parse_usb(priv, interface);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	ret = rtl8xxxu_identify_chip(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_read_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = priv->fops->parse_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	rtl8xxxu_print_chipinfo(priv);
-@@ -6067,12 +6067,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	ret = priv->fops->load_firmware(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_init_device(hw);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	hw->wiphy->max_scan_ssids = 1;
- 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
-@@ -6120,12 +6120,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (ret) {
- 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
- 			__func__, ret);
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	return 0;
- 
--exit:
-+err_set_intfdata:
- 	usb_set_intfdata(interface, NULL);
- 
- 	if (priv) {
-@@ -6133,9 +6133,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 		mutex_destroy(&priv->usb_buf_mutex);
- 		mutex_destroy(&priv->h2c_mutex);
- 	}
--	usb_put_dev(udev);
- 
- 	ieee80211_free_hw(hw);
-+err_put_dev:
-+	usb_put_dev(udev);
- 
- 	return ret;
- }
--- 
-2.35.1
-
+This code doesn't make sense to me. What does rcu read lock protect here?
