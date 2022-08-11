@@ -2,46 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3621E59037A
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:28:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C46195903BA
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:28:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237755AbiHKQYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43902 "EHLO
+        id S238052AbiHKQYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:24:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236212AbiHKQXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:23:37 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A63A1A56;
-        Thu, 11 Aug 2022 09:04:45 -0700 (PDT)
+        with ESMTP id S237860AbiHKQXq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:23:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1ED1144E;
+        Thu, 11 Aug 2022 09:05:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A51C2CE22A8;
-        Thu, 11 Aug 2022 16:04:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61BB7C433D7;
-        Thu, 11 Aug 2022 16:04:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19F8CB82123;
+        Thu, 11 Aug 2022 16:05:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC07C433C1;
+        Thu, 11 Aug 2022 16:05:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233881;
-        bh=eeMxLyMBnHp8qz7QBvTK3AYqhUhlL3pajegNTaJlOcE=;
+        s=k20201202; t=1660233916;
+        bh=oxr8ZUJO9aysC9EUSeeMWhFCCQ44WU/CjI3XHIhaM7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B6nFUxw8TqtAV5Wk73wJvX1MYF7Pjkgz2xtY4uXmuSQP0fR9lrwDb/WSHSdrEuev8
-         3+RcsmwW4ALwN7TqUwQTqI422DL1z08kaPVGoxXBorsE3yO853DaLUfPE+hI7HpcJr
-         0+039BssNfRcrHPPR7uEM2mfQPx/9l5+nhUa4B00Dwx4UPbkPklYauCqpR/pgCYMc2
-         6MSVINQqPdjS1ghU7fz0kGNu1TrNM97TkyiV2E+ViyqsyivS6LdQpHC42n5MWP3cXr
-         NjN8Arv/gUXWJ+r1m5KsFN1YuQ6uar+4VS5kbCxPrJol4Of7YjzU30+wID5E25Ch/L
-         xMl5Jfc7ds8yQ==
+        b=iNrNLNsdlYfHkwUiSFXOEvhgtvPEsY7AkFRX0e1bfEEhEpT2xMLfNzDAcP3mZn8iP
+         w5VBu7Af/6ddPrdoH80G0Ng0whR6tCS6DKHcQ1HPmJPO+SdbXCQSYwv+4SsydpcY5E
+         vjgRscwNuiDYgKJCMoZNnaJmm/rpGPDaeLxILKdONfsCzJNwE98d4OjO5LE/lcyNNF
+         JhMYw7rqJWBYubZG9kR86JDO/Qn/BmFDoWD+5CPn9n+ldF7dTZh/dtWt38COIPkio9
+         susVvD/JFS51fy/NJYaTVgzC/A7+ic5P2mmQcyM0gQuaoAz+KVkYHGGGkzwG2HYg5T
+         WyiIRJGPxSwBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/46] ath10k: fix regdomain info of iw reg set/get
-Date:   Thu, 11 Aug 2022 12:03:31 -0400
-Message-Id: <20220811160421.1539956-7-sashal@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Michael Guralnik <michaelgur@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 13/46] net/mlx5: Add HW definitions of vport debug counters
+Date:   Thu, 11 Aug 2022 12:03:37 -0400
+Message-Id: <20220811160421.1539956-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811160421.1539956-1-sashal@kernel.org>
 References: <20220811160421.1539956-1-sashal@kernel.org>
@@ -59,133 +57,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-[ Upstream commit 8723750e2753868591ba86a57b0041c5e38047ad ]
+[ Upstream commit 3e94e61bd44d90070dcda53b647fdc826097ef26 ]
 
-When wlan load, firmware report the reg code with 0x6C for QCA6174,
-it is world reg which checked by ath_is_world_regd(), then the reg
-will be save into reg_world_copy of ath_common in ath_regd_init().
-Later the regulatory of ath_common is updated to another country
-code such as "US" in ath_reg_notifier_apply() by below call stack.
-After that, regulatory_hint() is called in ath10k_mac_register()
-and it lead "iw reg get" show two regdomain info as below.
+total_q_under_processor_handle - number of queues in error state due to an
+async error or errored command.
 
-global
-country US: DFS-FCC
-	(2400 - 2472 @ 40), (N/A, 30), (N/A)
-	(5150 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW
-	(5250 - 5350 @ 80), (N/A, 23), (0 ms), DFS, AUTO-BW
-	(5470 - 5730 @ 160), (N/A, 23), (0 ms), DFS
-	(5730 - 5850 @ 80), (N/A, 30), (N/A)
-	(57240 - 71000 @ 2160), (N/A, 40), (N/A)
+send_queue_priority_update_flow - number of QP/SQ priority/SL update
+events.
 
-phy#0
-country US: DFS-FCC
-	(2400 - 2472 @ 40), (N/A, 30), (N/A)
-	(5150 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW
-	(5250 - 5350 @ 80), (N/A, 23), (0 ms), DFS, AUTO-BW
-	(5470 - 5730 @ 160), (N/A, 23), (0 ms), DFS
-	(5730 - 5850 @ 80), (N/A, 30), (N/A)
-	(57240 - 71000 @ 2160), (N/A, 40), (N/A)
+cq_overrun - number of times CQ entered an error state due to an
+overflow.
 
-[ 4255.704975] Call Trace:
-[ 4255.704983]  ath_reg_notifier_apply+0xa6/0xc5 [ath]
-[ 4255.704991]  ath10k_reg_notifier+0x2f/0xd2 [ath10k_core]
-[ 4255.705010]  wiphy_regulatory_register+0x5f/0x69 [cfg80211]
-[ 4255.705020]  wiphy_register+0x459/0x8f0 [cfg80211]
-[ 4255.705042]  ? ieee80211_register_hw+0x3a6/0x7d1 [mac80211]
-[ 4255.705049]  ? __kmalloc+0xf4/0x218
-[ 4255.705058]  ? ieee80211_register_hw+0x3a6/0x7d1 [mac80211]
-[ 4255.705066]  ? ath10k_mac_register+0x70/0xaab [ath10k_core]
-[ 4255.705075]  ieee80211_register_hw+0x51a/0x7d1 [mac80211]
-[ 4255.705084]  ath10k_mac_register+0x8b4/0xaab [ath10k_core]
-[ 4255.705094]  ath10k_core_register_work+0xa5e/0xb45 [ath10k_core]
-[ 4255.705100]  ? __schedule+0x61f/0x7d3
-[ 4255.705105]  process_one_work+0x1b7/0x392
-[ 4255.705109]  worker_thread+0x271/0x35d
-[ 4255.705112]  ? pr_cont_work+0x58/0x58
-[ 4255.705116]  kthread+0x13f/0x147
-[ 4255.705119]  ? pr_cont_work+0x58/0x58
-[ 4255.705123]  ? kthread_destroy_worker+0x62/0x62
-[ 4255.705126]  ret_from_fork+0x22/0x40
+async_eq_overrun -number of time an EQ mapped to async events was
+overrun.
 
-At this moment, the two regdomain info is same, when run "iw reg set KR",
-the global regdomain info changed to KR, but the regdomain of phy#0
-does not change again. It leads inconsistent values between global and
-phy#0 as below.
+comp_eq_overrun - number of time an EQ mapped to completion events was
+overrun.
 
-global
-country KR: DFS-JP
-        (2402 - 2482 @ 40), (N/A, 13), (N/A)
-        (5170 - 5250 @ 80), (N/A, 20), (N/A), AUTO-BW
-        (5250 - 5330 @ 80), (N/A, 20), (0 ms), DFS, AUTO-BW
-        (5490 - 5710 @ 160), (N/A, 30), (0 ms), DFS
-        (5735 - 5835 @ 80), (N/A, 30), (N/A)
-        (57000 - 66000 @ 2160), (N/A, 43), (N/A)
+quota_exceeded_command - number of commands issued and failed due to quota
+exceeded.
 
-phy#0
-country US: DFS-FCC
-	(2400 - 2472 @ 40), (N/A, 30), (N/A)
-	(5150 - 5250 @ 80), (N/A, 23), (N/A), AUTO-BW
-	(5250 - 5350 @ 80), (N/A, 23), (0 ms), DFS, AUTO-BW
-	(5470 - 5730 @ 160), (N/A, 23), (0 ms), DFS
-	(5730 - 5850 @ 80), (N/A, 30), (N/A)
-	(57240 - 71000 @ 2160), (N/A, 40), (N/A)
+invalid_command - number of commands issued and failed dues to any reason
+other than quota exceeded.
 
-The initial reg code is 0x6C which saved in reg_world_copy of ath_common,
-and the code US is updated from cfg80211 later, so ath10k should also
-check the initial reg code before regulatory_hint().
-
-After this fix, regdomain info is same between "iw reg get" and "iw reg
-set xx", it does not have the regdomain info of phy#0 again.
-
-global
-country KR: DFS-JP
-        (2402 - 2482 @ 40), (N/A, 13), (N/A)
-        (5170 - 5250 @ 80), (N/A, 20), (N/A), AUTO-BW
-        (5250 - 5330 @ 80), (N/A, 20), (0 ms), DFS, AUTO-BW
-        (5490 - 5710 @ 160), (N/A, 30), (0 ms), DFS
-        (5735 - 5835 @ 80), (N/A, 30), (N/A)
-        (57000 - 66000 @ 2160), (N/A, 43), (N/A)
-
-This does not effect the channel list and power which ath10k used.
-When the country code for regulatory_hint() in ath10k_mac_register()
-is same with the global country code, then reg_set_rd_driver() of
-cfg80211 called from crda which return -EALREADY to set_regdom() and
-then update_all_wiphy_regulatory() will not be called while wlan load.
-When run "iw reg set xx", reg_get_regdomain() which used by function
-handle_channel() in net/wirelss/reg.c always use the regdomain
-returned by get_cfg80211_regdom() because the initiator of last
-regulatory_request is NL80211_REGDOM_SET_BY_USER, get_cfg80211_regdom()
-is the global regdomain, then all the ieee80211_channel info is updated
-in handle_channel() with the global regdomain.
-
-Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
-Tested-on: QCA9984 hw1.0 PCI 10.4-3.6-00104
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20220525132247.23459-1-quic_wgong@quicinc.com
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Michael Guralnik <michaelgur@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/mac.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/linux/mlx5/mlx5_ifc.h | 23 +++++++++++++++++++----
+ 1 file changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index b61cd275fbda..a2868f6c7861 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -10108,7 +10108,8 @@ int ath10k_mac_register(struct ath10k *ar)
- 		ar->hw->wiphy->software_iftypes |= BIT(NL80211_IFTYPE_AP_VLAN);
- 	}
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 6ca97729b54a..4276677ecdb5 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1282,7 +1282,8 @@ struct mlx5_ifc_cmd_hca_cap_bits {
  
--	if (!ath_is_world_regd(&ar->ath_common.regulatory)) {
-+	if (!ath_is_world_regd(&ar->ath_common.reg_world_copy) &&
-+	    !ath_is_world_regd(&ar->ath_common.regulatory)) {
- 		ret = regulatory_hint(ar->hw->wiphy,
- 				      ar->ath_common.regulatory.alpha2);
- 		if (ret)
+ 	u8         reserved_at_120[0xa];
+ 	u8         log_max_ra_req_dc[0x6];
+-	u8         reserved_at_130[0xa];
++	u8         reserved_at_130[0x9];
++	u8         vnic_env_cq_overrun[0x1];
+ 	u8         log_max_ra_res_dc[0x6];
+ 
+ 	u8         reserved_at_140[0x6];
+@@ -1472,7 +1473,11 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 	u8         nic_receive_steering_discard[0x1];
+ 	u8         receive_discard_vport_down[0x1];
+ 	u8         transmit_discard_vport_down[0x1];
+-	u8         reserved_at_343[0x5];
++	u8         eq_overrun_count[0x1];
++	u8         reserved_at_344[0x1];
++	u8         invalid_command_count[0x1];
++	u8         quota_exceeded_count[0x1];
++	u8         reserved_at_347[0x1];
+ 	u8         log_max_flow_counter_bulk[0x8];
+ 	u8         max_flow_counter_15_0[0x10];
+ 
+@@ -3128,11 +3133,21 @@ struct mlx5_ifc_vnic_diagnostic_statistics_bits {
+ 
+ 	u8         transmit_discard_vport_down[0x40];
+ 
+-	u8         reserved_at_140[0xa0];
++	u8         async_eq_overrun[0x20];
++
++	u8         comp_eq_overrun[0x20];
++
++	u8         reserved_at_180[0x20];
++
++	u8         invalid_command[0x20];
++
++	u8         quota_exceeded_command[0x20];
+ 
+ 	u8         internal_rq_out_of_buffer[0x20];
+ 
+-	u8         reserved_at_200[0xe00];
++	u8         cq_overrun[0x20];
++
++	u8         reserved_at_220[0xde0];
+ };
+ 
+ struct mlx5_ifc_traffic_counter_bits {
 -- 
 2.35.1
 
