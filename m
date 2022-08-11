@@ -2,118 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F19958F537
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 02:26:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41FDA58F53D
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 02:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231834AbiHKA0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 10 Aug 2022 20:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42362 "EHLO
+        id S230282AbiHKAan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 10 Aug 2022 20:30:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229488AbiHKA03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 20:26:29 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00A874367;
-        Wed, 10 Aug 2022 17:26:28 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id x64so13569441iof.1;
-        Wed, 10 Aug 2022 17:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=52hp91B4o6nctmi+AsMxs5+KDTzl/WmhmAFz8/MIyO8=;
-        b=dDGa+Qwz8mCmY2TmXJMA83qpGLhEMolwQKzllwhArJrLqKH758YGEe2g5eSvz+6Y3h
-         ih63pohWsDK1LVUKnPqz+AMx3QhNpBaigoweKA8EqRcwrV4UqIkWfRn9BLz3JhODisjh
-         U3u0Vv1zEHCtGpxJUKyA/visum/Z2/MxEd+fSAIKYDkMrhac2whVsh8P5d4REL+mjiPj
-         Qjhq04zgQtu7AifOY3ATpFwdZnmGRkP+L7p3QTQviT80ipeUb4+4tSqHHR9wMtUgDZCn
-         vJcVRyA16bKMlXnuXyuCHndQr53PHvI2hALBixnAvZ1mX8FijtCMn3Mq8zRzI8TIYk2D
-         6tvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=52hp91B4o6nctmi+AsMxs5+KDTzl/WmhmAFz8/MIyO8=;
-        b=m8VeFLVen4GpmsHgcbt1fZ/RIoF3MXJHzq/SYuMql3r/zjoZnYlYe7dF2A+cj21vEg
-         bSUgTvMW7y2SKz4MK4fKw7rmsErpdT74FNf9Chk5GSIvNQcz+MrvLjy7oZhreLJcGeSS
-         yU4qHsyzjJAq3iIGtdhVzAZib5bOBCmbC6qB7Ap309GSKhm8P9nOd3khaPWKZVweG8v3
-         LslQHTZWwKxhMy9m8uzU7hnMLsjeuipNFkzFGO+oRwPFpwW1nONb/gqHrAPvIGbg3IyI
-         smP3sx6U60Kko3Eh8geu5oKcyxDCY1d4EBnJB6h/l/kNKLclkYUQ4jlnHcwFXzwL1GIb
-         whHA==
-X-Gm-Message-State: ACgBeo17moqMnEZPe0OtxGpNnIZESwY9zItTHkV+8OLWRdM0dEPMHvo1
-        XovE7q00kE/JvL2Q/BWlhcdVyh6rJTAYCU+gp6s=
-X-Google-Smtp-Source: AA6agR6DsMDCdJeapz0WBl/syPB6ijuEbr1lhiarDGdRh9X+4I+zvtKXZdBqrPsy9smZ+wdvIrvRbGCzFhCsYNKz5AA=
-X-Received: by 2002:a05:6638:238b:b0:343:ff4:a62 with SMTP id
- q11-20020a056638238b00b003430ff40a62mr7319334jat.124.1660177588008; Wed, 10
- Aug 2022 17:26:28 -0700 (PDT)
+        with ESMTP id S229488AbiHKAam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 10 Aug 2022 20:30:42 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5382466A70;
+        Wed, 10 Aug 2022 17:30:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cVnlVnJwObO86ULdSvAwM695LLQEVtnRb++QK0jLVRA=; b=vt0L8vjYEJ9MWh3HBefr68tO81
+        BEfNLfx963mhY0aqpHZnD9Bhl/KkdiiTMmf5tWA06mHQln6FyGgcg1ROqXVZO2J1VtesjykJIDU9j
+        UNfZd4ya/x74mPo8i1zAHZUypQoVnwGqtQ+9HDm+jlD08etlCYI4CkQgWRE8txurb+ec=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oLw5k-00CyZr-5a; Thu, 11 Aug 2022 02:30:28 +0200
+Date:   Thu, 11 Aug 2022 02:30:28 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ravi Gunasekaran <r-gunasekaran@ti.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, linux-omap@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kishon@ti.com,
+        vigneshr@ti.com
+Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
+ workaround for errata i2329
+Message-ID: <YvRNpAdG7/edUEc+@lunn.ch>
+References: <20220810111345.31200-1-r-gunasekaran@ti.com>
 MIME-Version: 1.0
-References: <cover.1660173222.git.dxu@dxuuu.xyz>
-In-Reply-To: <cover.1660173222.git.dxu@dxuuu.xyz>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Thu, 11 Aug 2022 02:25:51 +0200
-Message-ID: <CAP01T74aWUW-iyPCV_VfASO6YqfAZmnkYQMN2B4L8ngMMgnAcw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 0/3] Add more bpf_*_ct_lookup() selftests
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        pablo@netfilter.org, fw@strlen.de,
-        "toke@redhat.com" <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220810111345.31200-1-r-gunasekaran@ti.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Aug 2022 at 01:16, Daniel Xu <dxu@dxuuu.xyz> wrote:
->
-> This patchset adds more bpf_*_ct_lookup() selftests. The goal is to test
-> interaction with netfilter subsystem as well as reading from `struct
-> nf_conn`. The first is important when migrating legacy systems towards
-> bpf. The latter is important in general to take full advantage of
-> connection tracking.
->
+> +static int davinci_mdiobb_read(struct mii_bus *bus, int phy, int reg)
+> +{
+> +	int ret;
+> +	struct mdiobb_ctrl *ctrl = bus->priv;
+> +	struct davinci_mdio_data *data;
+> +
+> +	data = container_of(ctrl, struct davinci_mdio_data, bb_ctrl);
+> +
+> +	if (phy & ~PHY_REG_MASK || reg & ~PHY_ID_MASK)
+> +		return -EINVAL;
 
-Thank you for contributing these tests. Feel free to add:
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+You don't need this. Leave it up to the bit banging code to do the
+validation. This also breaks C45, which the bit banging code can do,
+and it looks like the hardware cannot.
 
-People often look at selftests for usage examples these days, so it's
-great to have coverage + examples for more use cases.
+> +
+> +	ret = pm_runtime_resume_and_get(data->dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = mdiobb_read(bus, phy, reg);
+> +
+> +	pm_runtime_mark_last_busy(data->dev);
+> +	pm_runtime_put_autosuspend(data->dev);
 
-> I'll follow this patchset up with support for writing to `struct nf_conn`.
->
+Once you take the validation out, this function then all becomes about
+runtime power management. Should the bit banging core actually be
+doing this? It seems like it is something which could be useful for
+other devices.
 
-Please also cc netfilter-devel, netdev, Pablo, and Florian when you send it.
+struct mii_bus has a parent member. If set, you could apply these run
+time PM functions to that. Please add a patch to modify the core bit
+banging code, and then you should be able to remove these helpers.
 
-I think we can directly enable stores to ct->mark, since that is what
-ctnetlink is doing too, so adding another helper for this would be
-unnecessary overhead.
+>  static int davinci_mdio_probe(struct platform_device *pdev)
+>  {
+>  	struct mdio_platform_data *pdata = dev_get_platdata(&pdev->dev);
+> @@ -340,12 +535,30 @@ static int davinci_mdio_probe(struct platform_device *pdev)
+>  	struct phy_device *phy;
+>  	int ret, addr;
+>  	int autosuspend_delay_ms = -1;
+> +	const struct soc_device_attribute *soc_match_data;
 
+netdev uses reverse christmas tree. Variables should be sorted longest
+first, shortest last.
 
-> Past discussion:
-> - v2: https://lore.kernel.org/bpf/cover.1660062725.git.dxu@dxuuu.xyz/
-> - v1: https://lore.kernel.org/bpf/cover.1659209738.git.dxu@dxuuu.xyz/
->
-> Changes since v2:
-> - Add bpf-ci kconfig changes
->
-> Changes since v1:
-> - Reword commit message / cover letter to not mention connmark writing
->
->
-> Daniel Xu (3):
->   selftests/bpf: Add existing connection bpf_*_ct_lookup() test
->   selftests/bpf: Add connmark read test
->   selftests/bpf: Update CI kconfig
->
->  tools/testing/selftests/bpf/config            |  2 +
->  .../testing/selftests/bpf/prog_tests/bpf_nf.c | 60 +++++++++++++++++++
->  .../testing/selftests/bpf/progs/test_bpf_nf.c | 21 +++++++
->  3 files changed, 83 insertions(+)
->
-> --
-> 2.37.1
->
+       Andrew
