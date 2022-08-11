@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13100590136
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:52:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFCEB590037
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236809AbiHKPtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:49:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51426 "EHLO
+        id S236372AbiHKPjs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235430AbiHKPrr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:47:47 -0400
+        with ESMTP id S236349AbiHKPjQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:39:16 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7AD99252;
-        Thu, 11 Aug 2022 08:41:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AF398A40;
+        Thu, 11 Aug 2022 08:34:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96F00B82150;
-        Thu, 11 Aug 2022 15:41:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0C51C433C1;
-        Thu, 11 Aug 2022 15:41:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4ABACB82128;
+        Thu, 11 Aug 2022 15:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5759EC433C1;
+        Thu, 11 Aug 2022 15:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232499;
-        bh=jxCJXV3r94ECNtHPtLRWzj+wtlXEx+3pRqSD92g9vzA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ju1nHxlVzE15f+y89SLinFKURlTUNkVPCn20RLtJ7KsKCL2Fx+0grcwwjNWw4ZQ1B
-         B+4SAlRxzihiT9w79WOSmUAXhC5WDO6xGnurLQLeDxwvT59wtWerPMieQj03FJbsWD
-         uNPJpXZ7Kh5skjw+sVhG+Vj/zYC2HYl3bZbP4KJOxxYW5em/RwrCOQkLjmUv5AygZp
-         rcVuLwUJnZGTB2Yq+uktmbMb7ZYHiDmped0ba+TKEt2EKjX9YnQvE14AeQI9Zu0wRp
-         3IRiw2UVW/GnWdlxGyXj7+hyXZ9LudOChlwMDdNVCJCkeOdHSoDYaXuIZT8JWl9iSB
-         AJ1/Qk5xD8Akw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 098/105] wifi: rtl8xxxu: Fix the error handling of the probe function
-Date:   Thu, 11 Aug 2022 11:28:22 -0400
-Message-Id: <20220811152851.1520029-98-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
-References: <20220811152851.1520029-1-sashal@kernel.org>
+        s=k20201202; t=1660232085;
+        bh=Ge0ao3IlkYaEA/oggyEUXZM/khav/xX3ShWmPj2mtkA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tlebtIg4GNKrYmMIHeZXVwR7iAEHmVAaCwu2+1YJMU7yVEROrcj7B9EEp6GIA4LVf
+         d39ZbIMdAKJsNYxqyhTvVH6GONPThihtszeuVyrv8v335SBugtWoyOEzt16ks0IxUM
+         Ke53oJzYvPc2+6SH16zOSW6oGLIzK1AFiQWUbPi/7sU4Qe1V+QQRFh2tGMdxg3ibvn
+         JXNTWU2TjYTyj8JPs3DwswPZQQNy6Iotr+z4RLuuVUzO+fAy0S80mjMx9/1r0v4Emo
+         5KwNm7+9KDrwZLmQTZ2YuDhaKWzRFdfCrYgrRwsrxohDlTk2qMFSJ4bKr/p3AC7+LU
+         e4HJYz5IIZTLw==
+Date:   Thu, 11 Aug 2022 08:34:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
+        vadfed@fb.com, johannes@sipsolutions.net, jiri@resnulli.us,
+        dsahern@kernel.org, fw@strlen.de, linux-doc@vger.kernel.org,
+        Michal Kubecek <mkubecek@suse.cz>
+Subject: Re: [RFC net-next 0/4] ynl: YAML netlink protocol descriptions
+Message-ID: <20220811083435.1b271c7f@kernel.org>
+In-Reply-To: <20220811080152.2dbd82c2@hermes.local>
+References: <20220811022304.583300-1-kuba@kernel.org>
+        <20220810211534.0e529a06@hermes.local>
+        <20220810214701.46565016@kernel.org>
+        <20220811080152.2dbd82c2@hermes.local>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,115 +59,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+Randomly adding Michal to CC since I just realized I forgot
+to CC him on the series.
 
-[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
+On Thu, 11 Aug 2022 08:01:52 -0700 Stephen Hemminger wrote:
+> > On Wed, 10 Aug 2022 21:15:34 -0700 Stephen Hemminger wrote:  
+> > > Would rather this be part of iproute2 rather than requiring it
+> > > to be maintained separately and part of the kernel tree.    
+> > 
+> > I don't understand what you're trying to say. What is "this", 
+> > what is "separate" from what?  
+> 
+> I am saying that ynl could live as a standalone project or as
+> part of the iproute2 tools collection.
 
-When the driver fails at ieee80211_alloc_hw() at the probe time, the
-driver will free the 'hw' which is not allocated, causing a bug.
+It's a bit of a strange beast, because the YNL C library ends up being
+relatively small:
 
-The following log can reveal it:
+ tools/net/ynl/lib/ynl.c                  | 528 +++++++++++++++++++++++++
+ tools/net/ynl/lib/ynl.h                  | 112 ++++++
 
-[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
-[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
-[   15.982583] Call Trace:
-[   15.984282]  ieee80211_free_hw+0x22/0x390
-[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
+The logic is mostly in the codegen:
 
-Fix the bug by changing the order of the error handling.
+ gen.py                                   | 1601 +++++++++++++++++++++++++
 
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+but that part we need for kernel C code as well.
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 8b2ca9e8eac6..567ada2e665a 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -6657,7 +6657,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (!hw) {
- 		ret = -ENOMEM;
- 		priv = NULL;
--		goto exit;
-+		goto err_put_dev;
- 	}
- 
- 	priv = hw->priv;
-@@ -6679,24 +6679,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 
- 	ret = rtl8xxxu_parse_usb(priv, interface);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	ret = rtl8xxxu_identify_chip(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_read_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = priv->fops->parse_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	rtl8xxxu_print_chipinfo(priv);
-@@ -6704,12 +6704,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	ret = priv->fops->load_firmware(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_init_device(hw);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	hw->wiphy->max_scan_ssids = 1;
- 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
-@@ -6759,12 +6759,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (ret) {
- 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
- 			__func__, ret);
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	return 0;
- 
--exit:
-+err_set_intfdata:
- 	usb_set_intfdata(interface, NULL);
- 
- 	if (priv) {
-@@ -6772,9 +6772,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 		mutex_destroy(&priv->usb_buf_mutex);
- 		mutex_destroy(&priv->h2c_mutex);
- 	}
--	usb_put_dev(udev);
- 
- 	ieee80211_free_hw(hw);
-+err_put_dev:
-+	usb_put_dev(udev);
- 
- 	return ret;
- }
--- 
-2.35.1
+The generated code is largish:
 
+ tools/net/ynl/generated/dpll-user.c      | 371 ++++++++++++++++++
+ tools/net/ynl/generated/dpll-user.h      | 204 ++++++++++
+ tools/net/ynl/generated/ethtool-user.c   | 367 ++++++++++++++++++
+ tools/net/ynl/generated/ethtool-user.h   | 190 +++++++++
+ tools/net/ynl/generated/fou-user.c       | 322 ++++++++++++++++
+ tools/net/ynl/generated/fou-user.h       | 287 ++++++++++++++
+ tools/net/ynl/generated/genetlink-user.c | 635 +++++++++++++++++++++++++++++++
+ tools/net/ynl/generated/genetlink-user.h | 201 ++++++++++
+
+but we don't have to commit it, it can be created on the fly 
+(for instance when a selftest wants to make use of YNL).
+
+Then again it would feel a lot cleaner for the user space library
+to be a separate project. I've been putting off thinking about the
+distribution until I'm done coding, TBH. Dunno.
