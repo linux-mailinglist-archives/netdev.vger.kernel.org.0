@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58C805904A4
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0788259045C
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238946AbiHKQhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38192 "EHLO
+        id S238777AbiHKQhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239066AbiHKQgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:36:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3F480F4D;
-        Thu, 11 Aug 2022 09:11:37 -0700 (PDT)
+        with ESMTP id S239220AbiHKQgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:36:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9AA8982F;
+        Thu, 11 Aug 2022 09:11:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B36FB821BA;
-        Thu, 11 Aug 2022 16:11:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCDBC433D7;
-        Thu, 11 Aug 2022 16:11:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 668D561481;
+        Thu, 11 Aug 2022 16:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1CD2C43470;
+        Thu, 11 Aug 2022 16:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660234295;
-        bh=qqwV4dyb4khQvMZue9/Ktv1PFB9EogM2IWPuM2RuACo=;
+        s=k20201202; t=1660234314;
+        bh=7ZBP70SIkwcvnNZY9xJxWBSIaZ1GuXGG5/2WtJDY+g4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fRSayTrBcztJngUxUk5JLL1+5YcN+1v2mp8LLw8luxcIuvwEkBid2NinTlDVv/csN
-         pFvT+hNMmk1trE3e4LmJSvGVGtX7PmYO8N1nvKT4/G/lbaLJHNTqwnVAqnTLjy+Hnz
-         6k4Zs2HdfmDW3GTPywLygnL5hyT6QHYTqVUj6QjMftEo7DyampZ3HQiBtIZO07oMRX
-         A2VstRdALJs5c/cvcrA8bQbPFx2uVwGdWGtTGOVLqMEVN8c6MZiXvNhSKx0gCmfQ4b
-         iX7QGPsWJQqIvfqgDuQ2oBKGtk46mkbdPTGa46aEUDj8wdQjkIyYQ+QSv3UUaoMjup
-         wjoUEt8Aq1rsQ==
+        b=tOIzmp5mla2PepHi5DlJguDtJmmPcWGSzdOQ4BI/Fc0X1vroDo/RMaha2XRYIB0vd
+         yG6hOCgxRQoNYYzy1wBkI/WzLf7BUaXVUEG7Tb7P/+SpeZd6rywv8yAzuw2Csmjaz5
+         GE5DlIysI/9D1WWWcifg/5lI2aBWua1XncY3e/RklXvWaqW7uhXuT1j4z6nRinuXUN
+         pWCaIEMwInm+cb4lZLvxEICqVRavMNYswbtb4UXrpRFWWPAWwAKcYpXwvyzdD2fAHk
+         gH4G5oaK1Gos/sviDfX3NwwUppCQsd16p8elzzn+grC4kS6BAjcvAKYmCHRzWx7atr
+         8OEYC3LVawPBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zheyu Ma <zheyuma97@gmail.com>, Kalle Valo <kvalo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, Jes.Sorensen@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
+Cc:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 12/14] wifi: rtl8xxxu: Fix the error handling of the probe function
-Date:   Thu, 11 Aug 2022 12:10:41 -0400
-Message-Id: <20220811161050.1543183-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 05/12] mlxsw: cmd: Increase 'config_profile.flood_mode' length
+Date:   Thu, 11 Aug 2022 12:11:31 -0400
+Message-Id: <20220811161144.1543598-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220811161050.1543183-1-sashal@kernel.org>
-References: <20220811161050.1543183-1-sashal@kernel.org>
+In-Reply-To: <20220811161144.1543598-1-sashal@kernel.org>
+References: <20220811161144.1543598-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,115 +58,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Amit Cohen <amcohen@nvidia.com>
 
-[ Upstream commit 13876f2a087ad352bf640a7a0a4a4229ea6e9e4f ]
+[ Upstream commit 89df3c6261f271c550f120b5ccf4d9c5132e870c ]
 
-When the driver fails at ieee80211_alloc_hw() at the probe time, the
-driver will free the 'hw' which is not allocated, causing a bug.
+Currently, the length of 'config_profile.flood_mode' is defined as 2
+bits, while the correct length is 3 bits.
 
-The following log can reveal it:
+As preparation for unified bridge model, which will use the whole field
+length, fix it and increase the field to the correct size.
 
-[   15.981294] BUG: KASAN: user-memory-access in mutex_is_locked+0xe/0x40
-[   15.981558] Read of size 8 at addr 0000000000001ab0 by task modprobe/373
-[   15.982583] Call Trace:
-[   15.984282]  ieee80211_free_hw+0x22/0x390
-[   15.984446]  rtl8xxxu_probe+0x3a1/0xab30 [rtl8xxxu]
-
-Fix the bug by changing the order of the error handling.
-
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20220716130444.2950690-1-zheyuma97@gmail.com
+Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 21 ++++++++++---------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-index 5cf61710ae2f..60a3e421e7bb 100644
---- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-+++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
-@@ -6055,7 +6055,7 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (!hw) {
- 		ret = -ENOMEM;
- 		priv = NULL;
--		goto exit;
-+		goto err_put_dev;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+index 28271bedd957..f126050389ee 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+@@ -722,7 +722,7 @@ MLXSW_ITEM32(cmd_mbox, config_profile, max_vid_flood_tables, 0x30, 8, 4);
+  * max_fid_offset_flood_tables indicates the number of FID-offset tables.
+  * max_fid_flood_tables indicates the number of per-FID tables.
+  */
+-MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 2);
++MLXSW_ITEM32(cmd_mbox, config_profile, flood_mode, 0x30, 0, 3);
  
- 	priv = hw->priv;
-@@ -6074,24 +6074,24 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 
- 	ret = rtl8xxxu_parse_usb(priv, interface);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	ret = rtl8xxxu_identify_chip(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to identify chip\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_read_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to read EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = priv->fops->parse_efuse(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to parse EFuse\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	rtl8xxxu_print_chipinfo(priv);
-@@ -6099,12 +6099,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	ret = priv->fops->load_firmware(priv);
- 	if (ret) {
- 		dev_err(&udev->dev, "Fatal - failed to load firmware\n");
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	ret = rtl8xxxu_init_device(hw);
- 	if (ret)
--		goto exit;
-+		goto err_set_intfdata;
- 
- 	hw->wiphy->max_scan_ssids = 1;
- 	hw->wiphy->max_scan_ie_len = IEEE80211_MAX_DATA_LEN;
-@@ -6154,12 +6154,12 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 	if (ret) {
- 		dev_err(&udev->dev, "%s: Failed to register: %i\n",
- 			__func__, ret);
--		goto exit;
-+		goto err_set_intfdata;
- 	}
- 
- 	return 0;
- 
--exit:
-+err_set_intfdata:
- 	usb_set_intfdata(interface, NULL);
- 
- 	if (priv) {
-@@ -6167,9 +6167,10 @@ static int rtl8xxxu_probe(struct usb_interface *interface,
- 		mutex_destroy(&priv->usb_buf_mutex);
- 		mutex_destroy(&priv->h2c_mutex);
- 	}
--	usb_put_dev(udev);
- 
- 	ieee80211_free_hw(hw);
-+err_put_dev:
-+	usb_put_dev(udev);
- 
- 	return ret;
- }
+ /* cmd_mbox_config_profile_max_fid_offset_flood_tables
+  * Maximum number of FID-offset flooding tables.
 -- 
 2.35.1
 
