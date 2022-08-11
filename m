@@ -2,285 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C99358FD15
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 15:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09CCC58FD5D
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 15:27:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234947AbiHKNJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 09:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
+        id S235557AbiHKN1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 09:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234133AbiHKNJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 09:09:57 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DE36E885
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 06:09:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660223396; x=1691759396;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=njTOBk7RvkLgc5Aeo903n2/na/q0rI/E+m9Svu7Swsw=;
-  b=ectaHJZy9QrOJHk31hPQmadgqZz2m08y82cPFuVj4MpQcfURBV/8lRjE
-   LIqa3JUX4LLUMfgYELn8AmPIDEN3sFiXMvmvHs4lXnZit1JJTaHWZQA+9
-   7WGlQ47PAX+zEuvqJmRfKvy99TgNQ15ZbDlJSWdJWz1jmL8QybHbtx6aO
-   lKNsFP8xffYyD93BiZTTVtaqxC4Ge/Bk0l+ZTBNsiIkf2rgSMtRpvJ5UN
-   hRPhCf+C+/3eb7JBXhTN9Zg1uMPDy42T6/+dnycmB41nRbhAfsk2h7Q3J
-   HmfJ/2382+bNf4inyN192IU2jtHWgDtcU+2lGn+3AFhdAR27nnEdyXFVD
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271116347"
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="271116347"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 06:09:55 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
-   d="scan'208";a="781595213"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga005.jf.intel.com with ESMTP; 11 Aug 2022 06:09:52 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27BD9p9n010063;
-        Thu, 11 Aug 2022 14:09:51 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     "shenjian (K)" <shenjian15@huawei.com>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
-        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
-Subject: Re: [RFCv7 PATCH net-next 36/36] net: redefine the prototype of netdev_features_t
-Date:   Thu, 11 Aug 2022 15:07:57 +0200
-Message-Id: <20220811130757.9904-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <3df89822-7dec-c01e-0df9-15b8e6f7d4e5@huawei.com>
-References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-37-shenjian15@huawei.com> <20220810113547.1308711-1-alexandr.lobakin@intel.com> <3df89822-7dec-c01e-0df9-15b8e6f7d4e5@huawei.com>
+        with ESMTP id S234394AbiHKN1S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 09:27:18 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE54883D4
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 06:27:16 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id f28so3540660qkl.7
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 06:27:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=/4QayQrRMtdQlM6h+mGhnOYiud0cm7dS4spYCg2eLtQ=;
+        b=isQ2ON9EBInOxDBXkiCfnl6pEXwdwwNW+V+NYYMheKvrO2xYIDthqQRb8QjpQ8D12z
+         WPWJ4iB9U/idoM6pPK1U5AlOLEY/Ps2IqFcrX1rbeUgAhoY0kUkGdWGk32wGFA6hjG6j
+         o+C8rA/luh2eszfw4CI8VbXTYS4BTRUchIJQpy8n7CTckdfENTxiRg0qPykbWqw/nmPk
+         kvhx5dqZkNMFlQtaYujsY5hHvFUHPBx8aEHGPvpDI89iTwyChpj0v8BcH2XegQh8DshN
+         2rPWIiq/4FkjiQqKekZYyWFTz/c5OVwjxB7FCh5xL/BnAS+forfHpEZY/xOeZzCPSOjl
+         7RJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=/4QayQrRMtdQlM6h+mGhnOYiud0cm7dS4spYCg2eLtQ=;
+        b=cyxRmTcSaUCWupg4Z+npTf7ltBjwykAHHCg+/n9ybx6/qrWftk5M1xkRQ9h5Fe+oKG
+         xGzkU2fEIy9N4TXWvsyozhOzeqvYhKngVblKwrEuk94heGL5NHZD/VwOUy2h3xEMkxGW
+         eheGekx7v4T5B4dRRrKH3hpYafBah0RM1Tl5mMx7oXS1npyPBMGBJEYEtoyqAoO0236/
+         mHqjMJGI45NjTw23LX5bHVp9sdDkRvifPgDR5wh2AH9O7wCe+1deLW2Zc9Isv20D0Tv3
+         DbpKCGHtFmRWvfD5ZYd2KJMeEDH+QR0CDmRJ97MjtI40xfPHTsG26nG5aCWxZSKXLDoc
+         GCbQ==
+X-Gm-Message-State: ACgBeo3qH9LWPoA+/W8N8vufXvlaZH9ZL0fL1gR1CgAF3Wb4bcEXviX6
+        ZJK/JQ5a9RMqFuRBOdgGdmVualTB2mjVWhtGFftsZg==
+X-Google-Smtp-Source: AA6agR7yS/3xyAosY94/rx/m690An/b/pcTlMXyBf2GdheTgSqYmLCLFPqY1I7ARws3m4cQvDn7bkWx59SxpSMxbyAY=
+X-Received: by 2002:a05:620a:25d4:b0:6ab:8b17:3724 with SMTP id
+ y20-20020a05620a25d400b006ab8b173724mr24589644qko.395.1660224435868; Thu, 11
+ Aug 2022 06:27:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <1660117763-38322-1-git-send-email-liyonglong@chinatelecom.cn>
+ <CADVnQym47_uqqKWkGnu7hA+vhHjvURMmTdd0Xx6z8m_mspwFJw@mail.gmail.com> <12489b98-772f-ff2a-0ac4-cb33a06f8870@chinatelecom.cn>
+In-Reply-To: <12489b98-772f-ff2a-0ac4-cb33a06f8870@chinatelecom.cn>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 11 Aug 2022 09:26:59 -0400
+Message-ID: <CADVnQynuFfW5DAeHM1LwKh0YgG3A27Zn2H6MGsj_14WdXCMZsA@mail.gmail.com>
+Subject: Re: [PATCH v2] tcp: adjust rcvbuff according copied rate of user space
+To:     Yonglong Li <liyonglong@chinatelecom.cn>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        ycheng@google.com, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "shenjian (K)" <shenjian15@huawei.com>
-Date: Wed, 10 Aug 2022 21:34:43 +0800
-
-BTW, you replied in HTML instead of plain text and korg mail servers
-rejected it. So non-Ccs can't see it. Just be aware that LKML
-accepts plain text only :)
-
-> 在 2022/8/10 19:35, Alexander Lobakin 写道:
-> > From: Jian Shen <shenjian15@huawei.com>
-> > Date: Wed, 10 Aug 2022 11:06:24 +0800
-> >
-> >> For the prototype of netdev_features_t is u64, and the number
-> >> of netdevice feature bits is 64 now. So there is no space to
-> >> introduce new feature bit. Change the prototype of netdev_features_t
-> >> from u64 to structure below:
-> >> 	typedef struct {
-> >> 		DECLARE_BITMAP(bits, NETDEV_FEATURE_COUNT);
-> >> 	} netdev_features_t;
+On Thu, Aug 11, 2022 at 4:15 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
+>
+>
+>
+> On 8/10/2022 8:43 PM, Neal Cardwell wrote:
+> > On Wed, Aug 10, 2022 at 3:49 AM Yonglong Li <liyonglong@chinatelecom.cn> wrote:
 > >>
-> >> Rewrite the netdev_features helpers to adapt with new prototype.
+> >> every time data is copied to user space tcp_rcv_space_adjust is called.
+> >> current It adjust rcvbuff by the length of data copied to user space.
+> >> If the interval of user space copy data from socket is not stable, the
+> >> length of data copied to user space will not exactly show the speed of
+> >> copying data from rcvbuff.
+> >> so in tcp_rcv_space_adjust it is more reasonable to adjust rcvbuff by
+> >> copied rate (length of copied data/interval)instead of copied data len
 > >>
-> >> To avoid mistake using NETIF_F_XXX as NETIF_F_XXX_BIT as
-> >> input macroes for above helpers, remove all the macroes
-> >> of NETIF_F_XXX for single feature bit. Serveal macroes remained
-> >> temporarily, by some precompile dependency.
-> >>
-> >> With the prototype is no longer u64, the implementation of print
-> >> interface for netdev features(%pNF) is changed to bitmap. So
-> >> does the implementation of net/ethtool/.
-> >>
-> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
-> >> ---
-> >>   drivers/net/ethernet/amazon/ena/ena_netdev.c  |  12 +-
-> >>   .../net/ethernet/intel/i40e/i40e_debugfs.c    |  12 +-
-> >>   .../ethernet/netronome/nfp/nfp_net_common.c   |   4 +-
-> >>   .../net/ethernet/pensando/ionic/ionic_lif.c   |   4 +-
-> >>   include/linux/netdev_features.h               | 101 ++----------
-> >>   include/linux/netdev_features_helper.h        | 149 +++++++++++-------
-> >>   include/linux/netdevice.h                     |   7 +-
-> >>   include/linux/skbuff.h                        |   4 +-
-> >>   include/net/ip_tunnels.h                      |   2 +-
-> >>   lib/vsprintf.c                                |  11 +-
-> >>   net/ethtool/features.c                        |  96 ++++-------
-> >>   net/ethtool/ioctl.c                           |  46 ++++--
-> >>   net/mac80211/main.c                           |   3 +-
-> >>   13 files changed, 201 insertions(+), 250 deletions(-)
-> > [...]
+> >> I tested this patch in simulation environment by Mininet:
+> >> with 80~120ms RTT / 1% loss link, 100 runs
+> >> of (netperf -t TCP_STREAM -l 5), and got an average throughput
+> >> of 17715 Kbit instead of 17703 Kbit.
+> >> with 80~120ms RTT without loss link, 100 runs of (netperf -t
+> >> TCP_STREAM -l 5), and got an average throughput of 18272 Kbit
+> >> instead of 18248 Kbit.
 > >
-> >> -static inline int find_next_netdev_feature(u64 feature, unsigned long start)
-> >> -{
-> >> -	/* like BITMAP_LAST_WORD_MASK() for u64
-> >> -	 * this sets the most significant 64 - start to 0.
-> >> -	 */
-> >> -	feature &= ~0ULL >> (-start & ((sizeof(feature) * 8) - 1));
-> >> -
-> >> -	return fls64(feature) - 1;
-> >> -}
-> >> +#define NETIF_F_HW_VLAN_CTAG_TX
-> >> +#define NETIF_F_IPV6_CSUM
-> >> +#define NETIF_F_TSO
-> >> +#define NETIF_F_GSO
-> > Uhm, what are those empty definitions for? They look confusing.
-> I kept them temporary for some drivers use them like below:
-> for example in drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-> #ifdef NETIF_F_HW_VLAN_CTAG_TX
-> #include <linux/if_vlan.h>
-> #endif
-> 
-> So far I haven't got a good way to replace it.
-
-I believe such constructs sneaked in from some development/draft
-versions of the code, as those definitions are always here, so
-this is just redundant/pointless.
-Just remove those ifdefs and always include the file.
-The empty definitions you left in netdev_features.h are confusing,
-I'd not keep them.
-
-> 
-> >>   
-> >>   /* This goes for the MSB to the LSB through the set feature bits,
-> >>    * mask_addr should be a u64 and bit an int
-> >>    */
-
-[...]
-
-> >> +#define GSO_ENCAP_FEATURES	(((u64)1 << NETIF_F_GSO_GRE_BIT) |		\
-> >> +				 ((u64)1 << NETIF_F_GSO_GRE_CSUM_BIT) |		\
-> >> +				 ((u64)1 << NETIF_F_GSO_IPXIP4_BIT) |		\
-> >> +				 ((u64)1 << NETIF_F_GSO_IPXIP6_BIT) |		\
-> >> +				 (((u64)1 << NETIF_F_GSO_UDP_TUNNEL_BIT) |	\
-> >> +				  ((u64)1 << NETIF_F_GSO_UDP_TUNNEL_CSUM_BIT)))
-> > 1) 1ULL;
-> ok，will fix it
-> 
-> > 2) what if we get a new GSO encap type which's bit will be higher
-> >     than 64?
-> So far I prefer to use this.  It's used to assgned to 
-> skb_shinfo(skb)->gso_type, which prototype
-> is 'unsigned int'.  Once new gso encap type introduced, we should extend 
-> the gso_type first.
-
-But ::gso_type accepts flags like %SKB_GSO_DODGY and so on, not
-netdev_features, doesn't it?
-
-> 
-> 
-> >> +
-> >>   #endif	/* _LINUX_NETDEV_FEATURES_H */
-
-[...]
-
-> >>   static inline netdev_features_t
-> >>   netdev_features_and(const netdev_features_t a, const netdev_features_t b)
-> >>   {
-> >> -	return a & b;
-> >> +	netdev_features_t dst;
-> >> +
-> >> +	bitmap_and(dst.bits, a.bits, b.bits, NETDEV_FEATURE_COUNT);
-> >> +	return dst;
-> > Yeah, so as I wrote previously, not a good idea to return a whole
-> > bitmap/structure.
+> > So with 1% emulated loss that's a 0.06% throughput improvement and
+> > without emulated loss that's a 0.13% improvement. That sounds like it
+> > may well be statistical noise, particularly given that we would expect
+> > the steady-state impact of this change to be negligible.
 > >
-> > netdev_features_and(*dst, const *a, const *b)
-> > {
-> > 	return bitmap_and(); // bitmap_and() actually returns useful value
-> > }
-> >
-> > I mean, 16 bytes (currently 8, but some new features will come
-> > pretty shortly, I'm sure) are probably okayish, but... let's see
-> > what other folks think, but even Linus wrote about this recently
-> > BTW.
-> Yes, Jakub also mentioned this.
-> 
-> But there are many existed features interfaces(e.g. ndo_fix_features,
-> ndo_features_check), use netdev_features_t as return value. Then we
-> have to change their prototype.
+> Hi neal,
+>
+> Thank you for your feedback.
+> I don't think the improvement is statistical noise. Because I can get small
+> improvement after patch every time I test.
 
-We have to do 12k lines of changes already :D
-You know, 16 bytes is probably fine to return directly and it will
-be enough for up to 128 features (+64 more comparing to the
-mainline). OTOH, using pointers removes that "what if/when", so
-it's more flexible in that term. So that's why I asked for other
-folks' opinions -- 2 PoVs doesn't seem enough here.
+Interesting. To help us all understand the dynamics, can you please
+share a sender-side tcpdump binary .pcap trace of the emulated tests
+without loss, with:
 
-> 
-> second problem is for the helpers' definition. For example:
-> When we introduce helper like netdev_features_zero(netdev_features_t 
-> *features)
-> without change prototype of netdev_features_t.
-> once covert netdev_features_t from u64 to unsigned long *, then it becomes
-> netdev_features_zero(unsigned long **features), result in much redundant 
-> work
-> to adjust it to netdev_features_zero(unsigned long *features).
+(a) one baseline pcap of a test without the patch, and
 
-> 
-> 
-> >>   }
+(b) one experimental pcap of a test with the patch showing the roughly
+0.13% throughput improvement.
 
-[...]
+It will be interesting to compare the receive window and transmit
+behavior in both cases.
 
-> >>   static noinline_for_stack
-> >> -char *netdev_bits(char *buf, char *end, const void *addr,
-> >> +char *netdev_bits(char *buf, char *end, void *addr,
-> >>   		  struct printf_spec spec,  const char *fmt)
-> >>   {
-> >> -	unsigned long long num;
-> >> -	int size;
-> >> +	netdev_features_t *features;
-> > const? We're printing.
-> It will cause compile warning for bitmap_string use features->bits
-> as input param without "const" definition in its prototype.
-
-Oof, that's weird. I checked the function you mentioned and don't
-see any reason why it would require non-RO access to the bitmap it
-prints.
-Could you maybe please change its proto to take const bitmap, so
-that it won't complain on your code? As a separate patch going right
-before this one in your series.
-
-> >>   
-> >>   	if (check_pointer(&buf, end, addr, spec))
-> >>   		return buf;
-> >>   
-> >>   	switch (fmt[1]) {
-> >>   	case 'F':
-> >> -		num = *(const netdev_features_t *)addr;
-> >> -		size = sizeof(netdev_features_t);
-> >> +		features = (netdev_features_t *)addr;
-> > Casts are not needed when assigning from `void *`.
-> ok, will fix it
-> >> +		spec.field_width = NETDEV_FEATURE_COUNT;
-> >>   		break;
-> >>   	default:
-> >>   		return error_string(buf, end, "(%pN?)", spec);
-> >>   	}
-> >>   
-> >> -	return special_hex_number(buf, end, num, size);
-> >> +	return bitmap_string(buf, end, features->bits, spec, fmt);
-> >>   }
-
-[...]
-
-> >> -- 
-> >> 2.33.0
-> > That's my last review email for now. Insane amount of work, I'm glad
-> > someone did it finally. Thanks a lot!
-> >
-> > Olek
-> > .
-> Hi   Olek,
-> Grateful for your review.  You made a lot of valuable suggestions. I will
-> check and continue refine the patchset.
-> 
-> Thanks again!
-> 
-> Jian
-
-Thanks!
-Olek
+thanks,
+neal
