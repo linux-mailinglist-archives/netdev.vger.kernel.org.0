@@ -2,47 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28CAE5900BE
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E395900D7
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235800AbiHKPq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:46:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
+        id S236338AbiHKPq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:46:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235247AbiHKPpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:45:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356158C46E;
-        Thu, 11 Aug 2022 08:39:32 -0700 (PDT)
+        with ESMTP id S236558AbiHKPpr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:45:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC66C98D3F;
+        Thu, 11 Aug 2022 08:39:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA0D6B82151;
-        Thu, 11 Aug 2022 15:39:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE73FC433D6;
-        Thu, 11 Aug 2022 15:39:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96DDB616C2;
+        Thu, 11 Aug 2022 15:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84BEC43140;
+        Thu, 11 Aug 2022 15:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232369;
-        bh=unky3ptO3FDMumLgteG75EQI1lgFJwkv56YH0pqh2BQ=;
+        s=k20201202; t=1660232391;
+        bh=5hhvk5IPErcp0dtyq/OlGrnCvzVm22q6xsW9HQcOJsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lZIXKIMivxQxH6dAbtol5a5PPdJVaqyT4nrDSbb8KPJ0aXVoqDFDGffJ3JdZcj/W1
-         cmbWW69h4x9wSc5SwzjNTfZLSbLboWAJWcNiJuq1rmNWudouqGlSJM7I5jKf/OasyM
-         Ue3K/TT77odDeAy96MdIYsgGU4sAxDsLCVPW2gZZKAUOJIf/LYf05bl8t9E5BDBivj
-         iSdHFl7L08/w84K6DY/Jdqyjcvzxne/V2yDJHm2cEE/M9V546tMmFO9e32itfZhrwo
-         eo491eznnDTNdFCe2s7nDHjV9e1OKYs33Wuc5PZpE0KT+GQFRTyNtV9yL8goS1wudf
-         uesQA13KhElSg==
+        b=BlMFAY2XrNHC/dMvyZHNxK3RmsbOscObSQS9ATaSEt7JzzMVfORgL9pjmBHiq4PnP
+         +lqjF5hZnSOyWs+CNqN3oJ3zDd9aTaWV9HzLeT50r0qe7m5x7VqWuxZ5eHVOn5UISn
+         CWSGFNDrl5hgbD+otaaWQVL2w5uo+9oFFHnW+Ch3PtWkit/mpAN26ig4MEPshzXeun
+         bAH1xdImiyl0wb7V9nnjys+fGAcT1xqnU0krS2d9l8MUzsO/v709weneqPagR8Yeox
+         C0osb9IPk9+K+cXglbLfRaQ60/XDMjE3xtHvvdXW1zEqd8QvYwfnu7sqowWSrdPPxf
+         8gtvsZKaF+gFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        daniel@iogearbox.net, shuah@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
-        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 071/105] selftests/bpf: Do not attach kprobe_multi bench to bpf_dispatcher_xdp_func
-Date:   Thu, 11 Aug 2022 11:27:55 -0400
-Message-Id: <20220811152851.1520029-71-sashal@kernel.org>
+Cc:     Moshe Shemesh <moshe@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 076/105] net: devlink: avoid false DEADLOCK warning reported by lockdep
+Date:   Thu, 11 Aug 2022 11:28:00 -0400
+Message-Id: <20220811152851.1520029-76-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -60,66 +57,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Olsa <jolsa@kernel.org>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-[ Upstream commit 7fb27a56b9ebd8a77d9dd188e8a42bff99bc3443 ]
+[ Upstream commit e26fde2f5befad0951fe6345403616bf51e901be ]
 
-Alexei reported crash by running test_progs -j on system
-with 32 cpus.
+Add a lock_class_key per devlink instance to avoid DEADLOCK warning by
+lockdep, while locking more than one devlink instance in driver code,
+for example in opening VFs flow.
 
-It turned out the kprobe_multi bench test that attaches all
-ftrace-able functions will race with bpf_dispatcher_update,
-that calls bpf_arch_text_poke on bpf_dispatcher_xdp_func,
-which is ftrace-able function.
+Kernel log:
+[  101.433802] ============================================
+[  101.433803] WARNING: possible recursive locking detected
+[  101.433810] 5.19.0-rc1+ #35 Not tainted
+[  101.433812] --------------------------------------------
+[  101.433813] bash/892 is trying to acquire lock:
+[  101.433815] ffff888127bfc2f8 (&devlink->lock){+.+.}-{3:3}, at: probe_one+0x3c/0x690 [mlx5_core]
+[  101.433909]
+               but task is already holding lock:
+[  101.433910] ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
+[  101.433989]
+               other info that might help us debug this:
+[  101.433990]  Possible unsafe locking scenario:
 
-Ftrace is not aware of this update so this will cause
-ftrace_bug with:
+[  101.433991]        CPU0
+[  101.433991]        ----
+[  101.433992]   lock(&devlink->lock);
+[  101.433993]   lock(&devlink->lock);
+[  101.433995]
+                *** DEADLOCK ***
 
-  WARNING: CPU: 6 PID: 1985 at
-  arch/x86/kernel/ftrace.c:94 ftrace_verify_code+0x27/0x50
-  ...
-  ftrace_replace_code+0xa3/0x170
-  ftrace_modify_all_code+0xbd/0x150
-  ftrace_startup_enable+0x3f/0x50
-  ftrace_startup+0x98/0xf0
-  register_ftrace_function+0x20/0x60
-  register_fprobe_ips+0xbb/0xd0
-  bpf_kprobe_multi_link_attach+0x179/0x430
-  __sys_bpf+0x18a1/0x2440
-  ...
-  ------------[ ftrace bug ]------------
-  ftrace failed to modify
-  [<ffffffff818d9380>] bpf_dispatcher_xdp_func+0x0/0x10
-   actual:   ffffffe9:7b:ffffff9c:77:1e
-  Setting ftrace call site to call ftrace function
+[  101.433996]  May be due to missing lock nesting notation
 
-It looks like we need some way to hide some functions
-from ftrace, but meanwhile we workaround this by skipping
-bpf_dispatcher_xdp_func from kprobe_multi bench test.
+[  101.433996] 6 locks held by bash/892:
+[  101.433998]  #0: ffff88810eb50448 (sb_writers#3){.+.+}-{0:0}, at: ksys_write+0xf3/0x1d0
+[  101.434009]  #1: ffff888114777c88 (&of->mutex){+.+.}-{3:3}, at: kernfs_fop_write_iter+0x20d/0x520
+[  101.434017]  #2: ffff888102b58660 (kn->active#231){.+.+}-{0:0}, at: kernfs_fop_write_iter+0x230/0x520
+[  101.434023]  #3: ffff888102d70198 (&dev->mutex){....}-{3:3}, at: sriov_numvfs_store+0x132/0x310
+[  101.434031]  #4: ffff888118f4c2f8 (&devlink->lock){+.+.}-{3:3}, at: mlx5_core_sriov_configure+0x62/0x280 [mlx5_core]
+[  101.434108]  #5: ffff88812adce198 (&dev->mutex){....}-{3:3}, at: __device_attach+0x76/0x430
+[  101.434116]
+               stack backtrace:
+[  101.434118] CPU: 5 PID: 892 Comm: bash Not tainted 5.19.0-rc1+ #35
+[  101.434120] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+[  101.434130] Call Trace:
+[  101.434133]  <TASK>
+[  101.434135]  dump_stack_lvl+0x57/0x7d
+[  101.434145]  __lock_acquire.cold+0x1df/0x3e7
+[  101.434151]  ? register_lock_class+0x1880/0x1880
+[  101.434157]  lock_acquire+0x1c1/0x550
+[  101.434160]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434229]  ? lockdep_hardirqs_on_prepare+0x400/0x400
+[  101.434232]  ? __xa_alloc+0x1ed/0x2d0
+[  101.434236]  ? ksys_write+0xf3/0x1d0
+[  101.434239]  __mutex_lock+0x12c/0x14b0
+[  101.434243]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434312]  ? probe_one+0x3c/0x690 [mlx5_core]
+[  101.434380]  ? devlink_alloc_ns+0x11b/0x910
+[  101.434385]  ? mutex_lock_io_nested+0x1320/0x1320
+[  101.434388]  ? lockdep_init_map_type+0x21a/0x7d0
+[  101.434391]  ? lockdep_init_map_type+0x21a/0x7d0
+[  101.434393]  ? __init_swait_queue_head+0x70/0xd0
+[  101.434397]  probe_one+0x3c/0x690 [mlx5_core]
+[  101.434467]  pci_device_probe+0x1b4/0x480
+[  101.434471]  really_probe+0x1e0/0xaa0
+[  101.434474]  __driver_probe_device+0x219/0x480
+[  101.434478]  driver_probe_device+0x49/0x130
+[  101.434481]  __device_attach_driver+0x1b8/0x280
+[  101.434484]  ? driver_allows_async_probing+0x140/0x140
+[  101.434487]  bus_for_each_drv+0x123/0x1a0
+[  101.434489]  ? bus_for_each_dev+0x1a0/0x1a0
+[  101.434491]  ? lockdep_hardirqs_on_prepare+0x286/0x400
+[  101.434494]  ? trace_hardirqs_on+0x2d/0x100
+[  101.434498]  __device_attach+0x1a3/0x430
+[  101.434501]  ? device_driver_attach+0x1e0/0x1e0
+[  101.434503]  ? pci_bridge_d3_possible+0x1e0/0x1e0
+[  101.434506]  ? pci_create_resource_files+0xeb/0x190
+[  101.434511]  pci_bus_add_device+0x6c/0xa0
+[  101.434514]  pci_iov_add_virtfn+0x9e4/0xe00
+[  101.434517]  ? trace_hardirqs_on+0x2d/0x100
+[  101.434521]  sriov_enable+0x64a/0xca0
+[  101.434524]  ? pcibios_sriov_disable+0x10/0x10
+[  101.434528]  mlx5_core_sriov_configure+0xab/0x280 [mlx5_core]
+[  101.434602]  sriov_numvfs_store+0x20a/0x310
+[  101.434605]  ? sriov_totalvfs_show+0xc0/0xc0
+[  101.434608]  ? sysfs_file_ops+0x170/0x170
+[  101.434611]  ? sysfs_file_ops+0x117/0x170
+[  101.434614]  ? sysfs_file_ops+0x170/0x170
+[  101.434616]  kernfs_fop_write_iter+0x348/0x520
+[  101.434619]  new_sync_write+0x2e5/0x520
+[  101.434621]  ? new_sync_read+0x520/0x520
+[  101.434624]  ? lock_acquire+0x1c1/0x550
+[  101.434626]  ? lockdep_hardirqs_on_prepare+0x400/0x400
+[  101.434630]  vfs_write+0x5cb/0x8d0
+[  101.434633]  ksys_write+0xf3/0x1d0
+[  101.434635]  ? __x64_sys_read+0xb0/0xb0
+[  101.434638]  ? lockdep_hardirqs_on_prepare+0x286/0x400
+[  101.434640]  ? syscall_enter_from_user_mode+0x1d/0x50
+[  101.434643]  do_syscall_64+0x3d/0x90
+[  101.434647]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+[  101.434650] RIP: 0033:0x7f5ff536b2f7
+[  101.434658] Code: 0d 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b7 0f
+1f 00 f3 0f 1e fa 64 8b 04 25 18 00 00 00 85 c0 75 10 b8 01 00 00 00 0f
+05 <48> 3d 00 f0 ff ff 77 51 c3 48 83 ec 28 48 89 54 24 18 48 89 74 24
+[  101.434661] RSP: 002b:00007ffd9ea85d58 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+[  101.434664] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007f5ff536b2f7
+[  101.434666] RDX: 0000000000000002 RSI: 000055c4c279e230 RDI: 0000000000000001
+[  101.434668] RBP: 000055c4c279e230 R08: 000000000000000a R09: 0000000000000001
+[  101.434669] R10: 000055c4c283cbf0 R11: 0000000000000246 R12: 0000000000000002
+[  101.434670] R13: 00007f5ff543d500 R14: 0000000000000002 R15: 00007f5ff543d700
+[  101.434673]  </TASK>
 
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20220714082316.479181-1-jolsa@kernel.org
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/core/devlink.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index 5b93d5d0bd93..48681bf73e0b 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -364,6 +364,8 @@ static int get_syms(char ***symsp, size_t *cntp)
- 			continue;
- 		if (!strncmp(name, "rcu_", 4))
- 			continue;
-+		if (!strcmp(name, "bpf_dispatcher_xdp_func"))
-+			continue;
- 		if (!strncmp(name, "__ftrace_invalid_address__",
- 			     sizeof("__ftrace_invalid_address__") - 1))
- 			continue;
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 5cc88490f18f..e4c19692c792 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -66,6 +66,7 @@ struct devlink {
+ 	 * port, sb, dpipe, resource, params, region, traps and more.
+ 	 */
+ 	struct mutex lock;
++	struct lock_class_key lock_key;
+ 	u8 reload_failed:1;
+ 	refcount_t refcount;
+ 	struct completion comp;
+@@ -9473,7 +9474,9 @@ struct devlink *devlink_alloc_ns(const struct devlink_ops *ops,
+ 	INIT_LIST_HEAD(&devlink->trap_list);
+ 	INIT_LIST_HEAD(&devlink->trap_group_list);
+ 	INIT_LIST_HEAD(&devlink->trap_policer_list);
++	lockdep_register_key(&devlink->lock_key);
+ 	mutex_init(&devlink->lock);
++	lockdep_set_class(&devlink->lock, &devlink->lock_key);
+ 	mutex_init(&devlink->reporters_lock);
+ 	mutex_init(&devlink->linecards_lock);
+ 	refcount_set(&devlink->refcount, 1);
+@@ -9620,6 +9623,7 @@ void devlink_free(struct devlink *devlink)
+ 	mutex_destroy(&devlink->linecards_lock);
+ 	mutex_destroy(&devlink->reporters_lock);
+ 	mutex_destroy(&devlink->lock);
++	lockdep_unregister_key(&devlink->lock_key);
+ 	WARN_ON(!list_empty(&devlink->trap_policer_list));
+ 	WARN_ON(!list_empty(&devlink->trap_group_list));
+ 	WARN_ON(!list_empty(&devlink->trap_list));
 -- 
 2.35.1
 
