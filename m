@@ -2,92 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B5358F90F
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:29:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0BB558F918
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:30:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234489AbiHKI3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 04:29:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
+        id S234466AbiHKIar (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 04:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234456AbiHKI3S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:29:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09B5790836
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:29:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660206556;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FxVByzSzFDmsCiLB/TiRSXnYOQzfrWFzUNaldqvoDEA=;
-        b=FcuPBac9nPT8MZMNA0pvH3pQdYJ6MuzVJkVA59rxA9BLjP33Jq9yD1AYRXF85QFAqFqeDU
-        wvzOWtrUmztqKERLfFOw+8RLIzdktCFIbxb6wb+VtiL4J+zzUmAcD4ixs8CKMNziCy/ZqW
-        XR+Ku1lQuZTmqEYWk13zAaSCwpQqors=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-173-2c48XTdIOmuqaI5sVywO-A-1; Thu, 11 Aug 2022 04:29:14 -0400
-X-MC-Unique: 2c48XTdIOmuqaI5sVywO-A-1
-Received: by mail-wm1-f70.google.com with SMTP id c17-20020a7bc011000000b003a2bfaf8d3dso8438337wmb.0
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:29:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=FxVByzSzFDmsCiLB/TiRSXnYOQzfrWFzUNaldqvoDEA=;
-        b=mp3gSSRpk9LvcODmpzRH/vCRAGTekk+SSUwDZwatFlFKcd1mXpdxZ0GjgFRgphiwi1
-         L1yxcCNsFg/UHxEau+DM5jgpcUI/gtce3YjyGEntReMq7yA58e9vq7nr38jSTB8prhUb
-         AyQQH431HqpCjNFNdfJXiPIsHffDcMMVVpJsBhZBiKOhOGbKyXlc7a5dlqYKmo7irLQL
-         OfRGz3xMJWDZHXUo0If2D2Rstszy3RyNFptDt7+ccUM3bQsBDhXwzfyzZPczMjKfRnnO
-         Vt2Sf53fH3Tgr5cTv8Xzwous1OPCoMN6n5V6wF08n5t0w0KeHmCb4Hn5PoV8juLu5/4g
-         kVSw==
-X-Gm-Message-State: ACgBeo2YaGD15kN8+JlRPcx5AFER43681jy2EaaT7aUb/CdhZYRqVVMJ
-        VuJjzzRuVqxE8x+LaOolL4JpXtuhx0ghKBO/e8dBMf8nkX8yis9bVy7F4kyPildEeqlRGO0hPy5
-        DWzaQCBaXdFTqvctz
-X-Received: by 2002:a7b:cbd7:0:b0:3a5:500e:13bc with SMTP id n23-20020a7bcbd7000000b003a5500e13bcmr4872412wmi.83.1660206553689;
-        Thu, 11 Aug 2022 01:29:13 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR66zsuUOgvuqZVbOtSOAaY+Zmwp04081qg20ikPfEaP/6IS6rnkd3YWhqyK4i6W0P73yvfqIw==
-X-Received: by 2002:a7b:cbd7:0:b0:3a5:500e:13bc with SMTP id n23-20020a7bcbd7000000b003a5500e13bcmr4872374wmi.83.1660206553473;
-        Thu, 11 Aug 2022 01:29:13 -0700 (PDT)
-Received: from redhat.com ([2.52.152.113])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b003a317ee3036sm5522733wms.2.2022.08.11.01.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 01:29:12 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 04:29:06 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dinang@xilinx.com, martinpo@xilinx.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
-        ecree.xilinx@gmail.com, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
-        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v7 3/4] vhost-vdpa: uAPI to suspend the device
-Message-ID: <20220811042847-mutt-send-email-mst@kernel.org>
-References: <20220810171512.2343333-1-eperezma@redhat.com>
- <20220810171512.2343333-4-eperezma@redhat.com>
+        with ESMTP id S234543AbiHKIaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:30:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E87513137B
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:30:44 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oM3aU-0002Wy-0c; Thu, 11 Aug 2022 10:30:42 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 3A669C747A;
+        Thu, 11 Aug 2022 08:30:41 +0000 (UTC)
+Date:   Thu, 11 Aug 2022 10:30:39 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH] can: rx-offload: Break loop on queue full
+Message-ID: <20220811083039.xi4fkj2cl4k22wm7@pengutronix.de>
+References: <20220810144536.389237-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="s6ozykicaunnl2sy"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220810171512.2343333-4-eperezma@redhat.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220810144536.389237-1-u.kleine-koenig@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -95,90 +52,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:15:11PM +0200, Eugenio Pérez wrote:
-> The ioctl adds support for suspending the device from userspace.
-> 
-> This is a must before getting virtqueue indexes (base) for live migration,
-> since the device could modify them after userland gets them. There are
-> individual ways to perform that action for some devices
-> (VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no
-> way to perform it for any vhost device (and, in particular, vhost-vdpa).
-> 
-> After a successful return of the ioctl call the device must not process
-> more virtqueue descriptors. The device can answer to read or writes of
-> config fields as if it were not suspended. In particular, writing to
-> "queue_enable" with a value of 1 will not make the device start
-> processing buffers of the virtqueue.
-> 
-> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-> Message-Id: <20220623160738.632852-4-eperezma@redhat.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-You are not supposed to include upstream maintainer's signoff
-like this.
+--s6ozykicaunnl2sy
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 10.08.2022 16:45:36, Uwe Kleine-K=C3=B6nig wrote:
+> The following happend on an i.MX25 using flexcan with many packets on
+> the bus:
+>=20
+> The rx-offload queue reached a length more than skb_queue_len_max. So in
+> can_rx_offload_offload_one() the drop variable was set to true which
+> made the call to .mailbox_read() (here: flexcan_mailbox_read()) just
+> return ERR_PTR(-ENOBUFS) (plus some irrelevant hardware interaction) and
+> so can_rx_offload_offload_one() returned ERR_PTR(-ENOBUFS), too.
+>=20
+> Now can_rx_offload_irq_offload_fifo() looks as follows:
+>=20
+> 	while (1) {
+> 		skb =3D can_rx_offload_offload_one(offload, 0);
+> 		if (IS_ERR(skb))
+> 			continue;
+> 		...
+> 	}
+>=20
+> As the i.MX25 is a single core CPU while the rx-offload processing is
+> active there is no thread to process packets from the offload queue and
+> so it doesn't get shorter.
+>=20
+> The result is a tight loop: can_rx_offload_offload_one() does nothing
+> relevant and returns an error code and so
+> can_rx_offload_irq_offload_fifo() calls can_rx_offload_offload_one()
+> again.
+>=20
+> To break that loop don't continue calling can_rx_offload_offload_one()
+> after it reported an error.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
 > ---
-> v7: Delete argument to ioctl, unused
-> ---
->  drivers/vhost/vdpa.c       | 19 +++++++++++++++++++
->  include/uapi/linux/vhost.h |  9 +++++++++
->  2 files changed, 28 insertions(+)
-> 
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 3d636e192061..7fa671ac4bdf 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -478,6 +478,22 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
->  	return 0;
->  }
->  
-> +/* After a successful return of ioctl the device must not process more
-> + * virtqueue descriptors. The device can answer to read or writes of config
-> + * fields as if it were not suspended. In particular, writing to "queue_enable"
-> + * with a value of 1 will not make the device start processing buffers.
-> + */
-> +static long vhost_vdpa_suspend(struct vhost_vdpa *v)
-> +{
-> +	struct vdpa_device *vdpa = v->vdpa;
-> +	const struct vdpa_config_ops *ops = vdpa->config;
-> +
-> +	if (!ops->suspend)
-> +		return -EOPNOTSUPP;
-> +
-> +	return ops->suspend(vdpa);
-> +}
-> +
->  static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
->  				   void __user *argp)
->  {
-> @@ -654,6 +670,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->  	case VHOST_VDPA_GET_VQS_COUNT:
->  		r = vhost_vdpa_get_vqs_count(v, argp);
->  		break;
-> +	case VHOST_VDPA_SUSPEND:
-> +		r = vhost_vdpa_suspend(v);
-> +		break;
->  	default:
->  		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
->  		if (r == -ENOIOCTLCMD)
-> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> index cab645d4a645..f9f115a7c75b 100644
-> --- a/include/uapi/linux/vhost.h
-> +++ b/include/uapi/linux/vhost.h
-> @@ -171,4 +171,13 @@
->  #define VHOST_VDPA_SET_GROUP_ASID	_IOW(VHOST_VIRTIO, 0x7C, \
->  					     struct vhost_vring_state)
->  
-> +/* Suspend a device so it does not process virtqueue requests anymore
-> + *
-> + * After the return of ioctl the device must preserve all the necessary state
-> + * (the virtqueue vring base plus the possible device specific states) that is
-> + * required for restoring in the future. The device must not change its
-> + * configuration after that point.
-> + */
-> +#define VHOST_VDPA_SUSPEND		_IO(VHOST_VIRTIO, 0x7D)
-> +
->  #endif
-> -- 
-> 2.31.1
+> Hello,
+>=20
+> this patch just implements the obvious change to break the loop. I'm not
+> 100% certain that there is no corner case where the break is wrong. The
+> problem exists at least since v5.6, didn't go back further to check.
+>=20
+> This fixes a hard hang on said i.MX25.
 
+As Uwe suggested in an IRC conversation, the correct fix for the flexcan
+driver is to return NULL if there is no CAN frame pending.
+
+I'll send a -v2.
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--s6ozykicaunnl2sy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmL0viwACgkQrX5LkNig
+012x7Qf/ZNMk/dsREbMdNeQBVsCyN6IvXErj6bykSFxTkigt8iz1j4l71DNPSnzr
+b6S3zKnmMOrLUX0bl6N2YXDzJhdPTMs06gjg9yWriLLKjCy9qITiQ+kQIbgz5ZUf
+lzi1Ta6Y9nAJoRZ6lsUSKkxbiXvG4dV5KUqLKHsIGWLvOonp1tjfcGbApw0GiJhO
+83MPMlE6FUp3a+kS2W2yvELq0YBtK2wfwyAaVdpngFUmoX5shN4cC2/+kHl5xIi+
+xm3W1gvdr0FGxDDd6g6b3ey8TscoIbyLYPQyULQu2Udk4M/mnBdLVndIHq8crYIN
+gGjgYj1uwNqxz0ieH3cu8Iv6JMp1+A==
+=lxhW
+-----END PGP SIGNATURE-----
+
+--s6ozykicaunnl2sy--
