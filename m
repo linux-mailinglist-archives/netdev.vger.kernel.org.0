@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46F3D59028B
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:12:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B05159029C
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:12:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237437AbiHKQKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38118 "EHLO
+        id S237398AbiHKQK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236420AbiHKQJ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:09:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C15CBC82F;
-        Thu, 11 Aug 2022 08:54:57 -0700 (PDT)
+        with ESMTP id S237412AbiHKQJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:09:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F7CA4B19;
+        Thu, 11 Aug 2022 08:55:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD5C861307;
-        Thu, 11 Aug 2022 15:54:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63619C433D6;
-        Thu, 11 Aug 2022 15:54:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 52C01B82160;
+        Thu, 11 Aug 2022 15:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3DF6C43140;
+        Thu, 11 Aug 2022 15:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660233296;
-        bh=maXF7ZC6cfIX8ykFNKxGKIZyclT9pJwRfys2ve5K0aU=;
+        s=k20201202; t=1660233300;
+        bh=wjXb44oYEnAlhU16rkHyBpckEauNUBNXCbEuTpPCOrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fRv/uM+LKntc/QYbITHPg0gthbUDbO3bnv5ZbyngDFekwdZF1VhKY/qrGXUPF7u/E
-         IYNPB3O/8iwf2FELMLVqWm8jEWxZTbM5cOmw2IHOgW7TvqCr2EFowQvB3TYrW2mgrN
-         NImaZL8ZsYApZlVYNxV1B9BGjzeMeYS0LVE0vmsnNCh80KIsvKmCcbS/OBOSxlbCVQ
-         W2qv4wxgeGKbUojXtmUeEiB6/5BPpuoc39bw8ZpDllH49DnOB6CW0pkMpOh1nODeGS
-         ue6bVNk+E+AnCyWPwtSB1Ze0TS7zC77Ua6CEsEhRb4a7tjHkNE4kKLwhvWfgM0df60
-         oQ6Vs3zGvU6bA==
+        b=bDiRa0bZ954S8IrYamI0dCLcrStQbQceg1RUrryU4CX5/wq0TLgEdE7Ozn+YYPKBJ
+         oCBpt5P1QyS9DHpYU2U10wxiNsf/baky47DBVVoVkOcwcYeez1cLw++mXYWZW3LmVa
+         lEqXUno3dougC3Jw889nDbT14vswXSw35RP2MTahJE5L/+YpnumnzdAvSllW5/Zl6+
+         7LGgg9w99n82FvoCJtukngJmSS6IEcuVH2ZEXpO+0EExWZf2Mz9XFXqoswve5SmXI7
+         Ko3NzjT1qOTxzCBZ+RCVAG5VydEiUc5iS9v52QLzZ60Z1mKwUvLqqAOlan+HIYWz/4
+         NETkFLHzQ5llw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 80/93] Bluetooth: mgmt: Fix using hci_conn_abort
-Date:   Thu, 11 Aug 2022 11:42:14 -0400
-Message-Id: <20220811154237.1531313-80-sashal@kernel.org>
+Cc:     Jie2x Zhou <jie2x.zhou@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
+        john.fastabend@gmail.com, andrii@kernel.org, shuah@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 81/93] bpf/selftests: Fix couldn't retrieve pinned program in xdp veth test
+Date:   Thu, 11 Aug 2022 11:42:15 -0400
+Message-Id: <20220811154237.1531313-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
 References: <20220811154237.1531313-1-sashal@kernel.org>
@@ -58,109 +61,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Jie2x Zhou <jie2x.zhou@intel.com>
 
-[ Upstream commit 1f7435c8f6558a94f75b408a74140bdcbd0f6dd1 ]
+[ Upstream commit f664f9c6b4a1bb9a10af812df0fbbf6aac28fcc6 ]
 
-This fixes using hci_conn_abort instead of using hci_conn_abort_sync.
+Before change:
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+  selftests: bpf: test_xdp_veth.sh
+  Couldn't retrieve pinned program '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  selftests: xdp_veth [SKIP]
+  ok 20 selftests: bpf: test_xdp_veth.sh # SKIP
+
+After change:
+
+  PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
+  64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.320 ms
+  --- 10.1.1.33 ping statistics ---
+  1 packets transmitted, 1 received, 0% packet loss, time 0ms
+  rtt min/avg/max/mdev = 0.320/0.320/0.320/0.000 ms
+  selftests: xdp_veth [PASS]
+
+For the test case, the following can be found:
+
+  ls /sys/fs/bpf/test_xdp_veth/progs/redirect_map_0
+  ls: cannot access '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
+  ls /sys/fs/bpf/test_xdp_veth/progs/
+  xdp_redirect_map_0  xdp_redirect_map_1  xdp_redirect_map_2
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220719082430.9916-1-jie2x.zhou@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/hci_sync.h |  2 ++
- net/bluetooth/hci_sync.c         |  3 +--
- net/bluetooth/mgmt.c             | 38 +++++++++++++++++++++++++++++---
- 3 files changed, 38 insertions(+), 5 deletions(-)
+ tools/testing/selftests/bpf/test_xdp_veth.sh | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/bluetooth/hci_sync.h b/include/net/bluetooth/hci_sync.h
-index 2492e3b46a8f..544e949b5dbf 100644
---- a/include/net/bluetooth/hci_sync.h
-+++ b/include/net/bluetooth/hci_sync.h
-@@ -105,4 +105,6 @@ int hci_resume_sync(struct hci_dev *hdev);
+diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
+index 392d28cc4e58..49936c4c8567 100755
+--- a/tools/testing/selftests/bpf/test_xdp_veth.sh
++++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
+@@ -106,9 +106,9 @@ bpftool prog loadall \
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
+ bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
+-ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
+-ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
+-ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
++ip link set dev veth1 xdp pinned $BPF_DIR/progs/xdp_redirect_map_0
++ip link set dev veth2 xdp pinned $BPF_DIR/progs/xdp_redirect_map_1
++ip link set dev veth3 xdp pinned $BPF_DIR/progs/xdp_redirect_map_2
  
- struct hci_conn;
- 
-+int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn, u8 reason);
-+
- int hci_le_create_conn_sync(struct hci_dev *hdev, struct hci_conn *conn);
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 5c352db71819..fc6b91669327 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -4404,8 +4404,7 @@ static int hci_reject_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
- 				     sizeof(cp), &cp, HCI_CMD_TIMEOUT);
- }
- 
--static int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn,
--			       u8 reason)
-+int hci_abort_conn_sync(struct hci_dev *hdev, struct hci_conn *conn, u8 reason)
- {
- 	int err;
- 
-diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
-index ae758ab1b558..5b5bee52e835 100644
---- a/net/bluetooth/mgmt.c
-+++ b/net/bluetooth/mgmt.c
-@@ -2528,6 +2528,37 @@ static int device_unpaired(struct hci_dev *hdev, bdaddr_t *bdaddr,
- 			  skip_sk);
- }
- 
-+static void unpair_device_complete(struct hci_dev *hdev, void *data, int err)
-+{
-+	struct mgmt_pending_cmd *cmd = data;
-+	struct mgmt_cp_unpair_device *cp = cmd->param;
-+
-+	if (!err)
-+		device_unpaired(hdev, &cp->addr.bdaddr, cp->addr.type, cmd->sk);
-+
-+	cmd->cmd_complete(cmd, err);
-+	mgmt_pending_free(cmd);
-+}
-+
-+static int unpair_device_sync(struct hci_dev *hdev, void *data)
-+{
-+	struct mgmt_pending_cmd *cmd = data;
-+	struct mgmt_cp_unpair_device *cp = cmd->param;
-+	struct hci_conn *conn;
-+
-+	if (cp->addr.type == BDADDR_BREDR)
-+		conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK,
-+					       &cp->addr.bdaddr);
-+	else
-+		conn = hci_conn_hash_lookup_le(hdev, &cp->addr.bdaddr,
-+					       le_addr_type(cp->addr.type));
-+
-+	if (!conn)
-+		return 0;
-+
-+	return hci_abort_conn_sync(hdev, conn, HCI_ERROR_REMOTE_USER_TERM);
-+}
-+
- static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 			 u16 len)
- {
-@@ -2638,7 +2669,7 @@ static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 		goto unlock;
- 	}
- 
--	cmd = mgmt_pending_add(sk, MGMT_OP_UNPAIR_DEVICE, hdev, cp,
-+	cmd = mgmt_pending_new(sk, MGMT_OP_UNPAIR_DEVICE, hdev, cp,
- 			       sizeof(*cp));
- 	if (!cmd) {
- 		err = -ENOMEM;
-@@ -2647,9 +2678,10 @@ static int unpair_device(struct sock *sk, struct hci_dev *hdev, void *data,
- 
- 	cmd->cmd_complete = addr_cmd_complete;
- 
--	err = hci_abort_conn(conn, HCI_ERROR_REMOTE_USER_TERM);
-+	err = hci_cmd_sync_queue(hdev, unpair_device_sync, cmd,
-+				 unpair_device_complete);
- 	if (err < 0)
--		mgmt_pending_remove(cmd);
-+		mgmt_pending_free(cmd);
- 
- unlock:
- 	hci_dev_unlock(hdev);
+ ip -n ${NS1} link set dev veth11 xdp obj xdp_dummy.o sec xdp
+ ip -n ${NS2} link set dev veth22 xdp obj xdp_tx.o sec xdp
 -- 
 2.35.1
 
