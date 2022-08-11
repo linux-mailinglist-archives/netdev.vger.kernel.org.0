@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B11A85900C2
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1955900DF
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236598AbiHKPrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
+        id S236631AbiHKPrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:47:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236799AbiHKPqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:20 -0400
+        with ESMTP id S236819AbiHKPqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DD06B663;
-        Thu, 11 Aug 2022 08:40:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51EA79A7E;
+        Thu, 11 Aug 2022 08:40:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B853CB82150;
-        Thu, 11 Aug 2022 15:40:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9280C433D6;
-        Thu, 11 Aug 2022 15:40:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FF03B82156;
+        Thu, 11 Aug 2022 15:40:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5581C433B5;
+        Thu, 11 Aug 2022 15:40:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232441;
-        bh=vWxMhTLOlvBvRUfH9j2U4MQTpIn2kqpnxtWPQNZxddg=;
+        s=k20201202; t=1660232448;
+        bh=xd2PSARypbXlsiv+xUlqcCkvCp6QI2mZBUuB/PH+cSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jlLjPx9JbTIzFGQP3fYdqaxA+VPOsFGjVKlMQpsEAn5IljarC2QxdI3fW7M9MAGUS
-         GbK6MArQnCXxmZAZrjf4NdmiXclgjByqUvSGaBkZrapMehHxgIEXmmdRDRzvhUTbA4
-         jbnNnmhz3z0rOwOxmUjVzFyaX2tc8fwVQh0LOuytSzbjlxKBYlxENu1KRdEfjufpK0
-         yPeCpOuQyGBLhwbYsKoPGvQhCkE2eICyTldPA/iQGmvQaCChgfhX0Bdqdu3EKgUboH
-         FL6LqqIamskGw2x1wKAvnSSOYUEVgzhXXoLUq9ZIM6Vs90d12ggTp0iQRszzuQ4dEh
-         SoZ5x+RTQANCA==
+        b=lAhWCiGRhSS3SVqevME9vqLbuiU2UPFbWwR6Y/ajIuCkOlsEi2b+HuyItFA/wlkDm
+         5y97/uDEQ0weplTi+FqftkAlRd/yaBpk2VEtLcjiuWX1m11f71hxCf/SGyYol6kRJe
+         oaXlg1NmRcVmZBH0zXuMWde80B90uL52AXLGyamdMTcQ0Ak2uZZKDpz0EMQb5Ilj51
+         a8lVAZLKv+BqslBLXU0+MFPETY20y+BszdM/aheP2H/s/hjdN4m6QTADZ2XHgeawTS
+         HB6RBnhjqiGOgRuXE95HQSQ05LCQ0lWCOJd/vPoCRmr8Gl4IRtC4hV1woRtDhg7/4b
+         yBZW1088PjnBQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, stefan.maetje@esd.eu,
-        mailhol.vincent@wanadoo.fr, socketcan@hartkopp.net,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 079/105] can: sja1000: Add Quirk for RZ/N1 SJA1000 CAN controller
-Date:   Thu, 11 Aug 2022 11:28:03 -0400
-Message-Id: <20220811152851.1520029-79-sashal@kernel.org>
+Cc:     Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 082/105] Bluetooth: use memset avoid memory leaks
+Date:   Thu, 11 Aug 2022 11:28:06 -0400
+Message-Id: <20220811152851.1520029-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -60,65 +59,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
 
-[ Upstream commit 2d99bfbf3386962692dcccd73931cb0db07a1a43 ]
+[ Upstream commit a5133fe87ed827ce94084eecb7830a6d451ef55c ]
 
-As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-CAN controller does not support Clock Divider Register compared to
-the reference Philips SJA1000 device.
+Similar to the handling of l2cap_ecred_connect in commit d3715b2333e9
+("Bluetooth: use memset avoid memory leaks"), we thought a patch
+might be needed here as well.
 
-This patch adds a device quirk to handle this difference.
+Use memset to initialize structs to prevent memory leaks
+in l2cap_le_connect
 
-Link: https://lore.kernel.org/all/20220710115248.190280-4-biju.das.jz@bp.renesas.com
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Xiaohui Zhang <xiaohuizhang@ruc.edu.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/sja1000/sja1000.c | 8 +++++---
- drivers/net/can/sja1000/sja1000.h | 3 ++-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ net/bluetooth/l2cap_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 2e7638f98cf1..d9da471f1bb9 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -183,8 +183,9 @@ static void chipset_init(struct net_device *dev)
- {
- 	struct sja1000_priv *priv = netdev_priv(dev);
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index 52668662ae8d..77c0aac14539 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -1392,6 +1392,7 @@ static void l2cap_le_connect(struct l2cap_chan *chan)
  
--	/* set clock divider and output control register */
--	priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
-+		/* set clock divider and output control register */
-+		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
+ 	l2cap_le_flowctl_init(chan, 0);
  
- 	/* set acceptance filter (accept all) */
- 	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
-@@ -209,7 +210,8 @@ static void sja1000_start(struct net_device *dev)
- 		set_reset_mode(dev);
- 
- 	/* Initialize chip if uninitialized at this stage */
--	if (!(priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
-+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
-+	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
- 		chipset_init(dev);
- 
- 	/* Clear error counters and error code capture */
-diff --git a/drivers/net/can/sja1000/sja1000.h b/drivers/net/can/sja1000/sja1000.h
-index 9d46398f8154..7f736f1df547 100644
---- a/drivers/net/can/sja1000/sja1000.h
-+++ b/drivers/net/can/sja1000/sja1000.h
-@@ -145,7 +145,8 @@
- /*
-  * Flags for sja1000priv.flags
-  */
--#define SJA1000_CUSTOM_IRQ_HANDLER 0x1
-+#define SJA1000_CUSTOM_IRQ_HANDLER	BIT(0)
-+#define SJA1000_QUIRK_NO_CDR_REG	BIT(1)
- 
- /*
-  * SJA1000 private data structure
++	memset(&req, 0, sizeof(req));
+ 	req.psm     = chan->psm;
+ 	req.scid    = cpu_to_le16(chan->scid);
+ 	req.mtu     = cpu_to_le16(chan->imtu);
 -- 
 2.35.1
 
