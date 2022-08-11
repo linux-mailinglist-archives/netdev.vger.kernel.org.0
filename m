@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4E755901DB
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:01:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A78EC59017E
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236962AbiHKPzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:55:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
+        id S237057AbiHKPzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236926AbiHKPyu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:54:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD15188DCE;
-        Thu, 11 Aug 2022 08:45:55 -0700 (PDT)
+        with ESMTP id S236929AbiHKPyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:54:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4AC088DEB;
+        Thu, 11 Aug 2022 08:45:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F156B82160;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80DA6616F2;
+        Thu, 11 Aug 2022 15:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3C6DC433C1;
         Thu, 11 Aug 2022 15:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E42C43141;
-        Thu, 11 Aug 2022 15:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232753;
-        bh=hkXGLG8rAsWoTPAjMhI/WPVl3m6bU6wBH24/unoei4w=;
+        s=k20201202; t=1660232756;
+        bh=OglZk3lvIIpnspeCkp4O55N82sJMle/dH7SfPmuFBaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CMQ1rkjU33yjtJPLkVrgUo9huIQzNIDfXMuiNDGWmCYzQTMKLNYb9S7GD+GckWC9R
-         +kKSRqgQSAyObjzAemE1XWnuHMuv0TrThmkQcwwWW7O+ptb7JVSPLcHqfj0UWJg59M
-         AjsQE2Bap97u9sx8GZAFFji+DVAwSmjvfcqtCFFWs9Zsq6Hr8BCl8tSSSAzIlfh/Cu
-         B1DYOucRQDfgSsGVRSXnPThuLjtEZ8cBPO3fkTOejjOhVS+Wfv5lXWJome21QNOjmZ
-         as3EySlZK9R1ss7cCmwiUoPhPLat8JhA7fam7AepQSz0W6U9+4fCt5Faot+9ndpaKa
-         vcRIF9LOmMEDQ==
+        b=JYOehzT9X85fswKuvbsO9M4ql9ayRVfEPXOcZA7sf1U5aZSDgsd/hJmNBXU0c7pbW
+         gjw0TXPe5b7qM4DieN46C1bhaWT9BiHe5suZa37Wq4+s0kl+VM3v4kopJjaspayWnI
+         imD1KOvut8OI7svCfXy2FOftpPPzesB2Q+yWPlqhasue8odl9NhVuZGcKMk2R5wiHm
+         WnW6DETUNaZmB4e+To6ggsW+A7LGGVQZNtLYQQy1hpk85T0sY/P6QueAj1naJ+zqEr
+         ZrNgatR6MfYVt5yFzPE/PqwoYym2sFY+RvZsupkbEMXhrRLzE0s4apv6ettg9qhRbG
+         zL0cTnBn0adig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
-        kernel test robot <lkp@intel.com>,
+        Emilio Riva <emilio.riva@ericsson.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, olteanv@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        Jose.Abreu@synopsys.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 27/93] net: make xpcs_do_config to accept advertising for pcs-xpcs and sja1105
-Date:   Thu, 11 Aug 2022 11:41:21 -0400
-Message-Id: <20220811154237.1531313-27-sashal@kernel.org>
+        mcoquelin.stm32@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.18 28/93] net: stmmac: make mdio register skips PHY scanning for fixed-link
+Date:   Thu, 11 Aug 2022 11:41:22 -0400
+Message-Id: <20220811154237.1531313-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
 References: <20220811154237.1531313-1-sashal@kernel.org>
@@ -63,81 +64,89 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ong Boon Leong <boon.leong.ong@intel.com>
 
-[ Upstream commit fa9c562f9735d24c3253747eb21f3f0c0f6de48e ]
+[ Upstream commit ab21cf920928a791aa70b8665b395294da17667c ]
 
-xpcs_config() has 'advertising' input that is required for C37 1000BASE-X
-AN in later patch series. So, we prepare xpcs_do_config() for it.
+stmmac_mdio_register() lacks fixed-link consideration and only skip PHY
+scanning if it has done DT style PHY discovery. So, for DT or ACPI _DSD
+setting of fixed-link, the PHY scanning should not happen.
 
-For sja1105, xpcs_do_config() is used for xpcs configuration without
-depending on advertising input, so set to NULL.
+v2: fix incorrect order related to fwnode that is not caught in non-DT
+    platform.
 
-Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Emilio Riva <emilio.riva@ericsson.com>
 Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 2 +-
- drivers/net/pcs/pcs-xpcs.c             | 6 +++---
- include/linux/pcs/pcs-xpcs.h           | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 12 +++++++-----
+ drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c | 14 ++++++++++++++
+ 2 files changed, 21 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 7734c6b1baca..48a9b61744bc 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -2331,7 +2331,7 @@ int sja1105_static_config_reload(struct sja1105_private *priv,
- 		else
- 			mode = MLO_AN_PHY;
- 
--		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode);
-+		rc = xpcs_do_config(xpcs, priv->phy_mode[i], mode, NULL);
- 		if (rc < 0)
- 			goto out;
- 
-diff --git a/drivers/net/pcs/pcs-xpcs.c b/drivers/net/pcs/pcs-xpcs.c
-index 61418d4dc0cd..b80e680220f5 100644
---- a/drivers/net/pcs/pcs-xpcs.c
-+++ b/drivers/net/pcs/pcs-xpcs.c
-@@ -797,7 +797,7 @@ static int xpcs_config_2500basex(struct dw_xpcs *xpcs)
- }
- 
- int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
--		   unsigned int mode)
-+		   unsigned int mode, const unsigned long *advertising)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 6a7f63a58aef..98c4abbcd469 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -1119,18 +1119,20 @@ static void stmmac_check_pcs_mode(struct stmmac_priv *priv)
+ static int stmmac_init_phy(struct net_device *dev)
  {
- 	const struct xpcs_compat *compat;
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+-	struct device_node *node;
++	struct fwnode_handle *fwnode;
  	int ret;
-@@ -845,7 +845,7 @@ static int xpcs_config(struct phylink_pcs *pcs, unsigned int mode,
- {
- 	struct dw_xpcs *xpcs = phylink_pcs_to_xpcs(pcs);
  
--	return xpcs_do_config(xpcs, interface, mode);
-+	return xpcs_do_config(xpcs, interface, mode, advertising);
- }
+-	node = priv->plat->phylink_node;
++	fwnode = of_fwnode_handle(priv->plat->phylink_node);
++	if (!fwnode)
++		fwnode = dev_fwnode(priv->device);
  
- static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
-@@ -866,7 +866,7 @@ static int xpcs_get_state_c73(struct dw_xpcs *xpcs,
+-	if (node)
+-		ret = phylink_of_phy_connect(priv->phylink, node, 0);
++	if (fwnode)
++		ret = phylink_fwnode_phy_connect(priv->phylink, fwnode, 0);
  
- 		state->link = 0;
+ 	/* Some DT bindings do not set-up the PHY handle. Let's try to
+ 	 * manually parse it
+ 	 */
+-	if (!node || ret) {
++	if (!fwnode || ret) {
+ 		int addr = priv->plat->phy_addr;
+ 		struct phy_device *phydev;
  
--		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND);
-+		return xpcs_do_config(xpcs, state->interface, MLO_AN_INBAND, NULL);
- 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+index a5d150c5f3d8..971e287aeb05 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c
+@@ -442,9 +442,11 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 	int err = 0;
+ 	struct mii_bus *new_bus;
+ 	struct stmmac_priv *priv = netdev_priv(ndev);
++	struct fwnode_handle *fwnode = of_fwnode_handle(priv->plat->phylink_node);
+ 	struct stmmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
+ 	struct device_node *mdio_node = priv->plat->mdio_node;
+ 	struct device *dev = ndev->dev.parent;
++	struct fwnode_handle *fixed_node;
+ 	int addr, found, max_addr;
  
- 	if (state->an_enabled && xpcs_aneg_done_c73(xpcs, state, compat)) {
-diff --git a/include/linux/pcs/pcs-xpcs.h b/include/linux/pcs/pcs-xpcs.h
-index 266eb26fb029..37eb97cc2283 100644
---- a/include/linux/pcs/pcs-xpcs.h
-+++ b/include/linux/pcs/pcs-xpcs.h
-@@ -30,7 +30,7 @@ int xpcs_get_an_mode(struct dw_xpcs *xpcs, phy_interface_t interface);
- void xpcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 		  phy_interface_t interface, int speed, int duplex);
- int xpcs_do_config(struct dw_xpcs *xpcs, phy_interface_t interface,
--		   unsigned int mode);
-+		   unsigned int mode, const unsigned long *advertising);
- void xpcs_get_interfaces(struct dw_xpcs *xpcs, unsigned long *interfaces);
- int xpcs_config_eee(struct dw_xpcs *xpcs, int mult_fact_100ns,
- 		    int enable);
+ 	if (!mdio_bus_data)
+@@ -498,6 +500,18 @@ int stmmac_mdio_register(struct net_device *ndev)
+ 	if (priv->plat->has_xgmac)
+ 		stmmac_xgmac2_mdio_read(new_bus, 0, MII_ADDR_C45);
+ 
++	/* If fixed-link is set, skip PHY scanning */
++	if (!fwnode)
++		fwnode = dev_fwnode(priv->device);
++
++	if (fwnode) {
++		fixed_node = fwnode_get_named_child_node(fwnode, "fixed-link");
++		if (fixed_node) {
++			fwnode_handle_put(fixed_node);
++			goto bus_register_done;
++		}
++	}
++
+ 	if (priv->plat->phy_node || mdio_node)
+ 		goto bus_register_done;
+ 
 -- 
 2.35.1
 
