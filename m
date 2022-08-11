@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF22590066
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:43:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28CAE5900BE
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:47:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236142AbiHKPlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43330 "EHLO
+        id S235800AbiHKPq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:46:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236505AbiHKPky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:40:54 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B4089C20A;
-        Thu, 11 Aug 2022 08:36:28 -0700 (PDT)
+        with ESMTP id S235247AbiHKPpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:45:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356158C46E;
+        Thu, 11 Aug 2022 08:39:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D42B361689;
-        Thu, 11 Aug 2022 15:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 659DBC433D7;
-        Thu, 11 Aug 2022 15:36:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA0D6B82151;
+        Thu, 11 Aug 2022 15:39:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE73FC433D6;
+        Thu, 11 Aug 2022 15:39:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232187;
-        bh=v4gP1CPwAs+y2Qsyjp0bkq9yER44jjMYz1Kh2ZiPq0I=;
+        s=k20201202; t=1660232369;
+        bh=unky3ptO3FDMumLgteG75EQI1lgFJwkv56YH0pqh2BQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nm8H7BPusWGMmhIR5itA9x3XgngZdtofzixx6E8F8OU3Hgr6/V8lDgILlZ/dqTSfB
-         BDx1HtXO1PeWlEeBamT0bLdlLC0TzJazXSvqJqBtTalfApi+qLpaXGNte/d0fz2qBI
-         HJhXvSAvRqkhF68Z3pKVO5a7fhwFtgbK8hHCpH8939zMTg4Ssh4LJIkPo10c2cGo01
-         U3oWZRmLHcwjKNnt4kkyLrjYf2k4EXldBgwI4c7k4JGN/teCGCrjpMEu52KJH7I2aQ
-         uEx8sxgg4NdPQzhDBVXVnApDtxyHRR2Gzi34Re2s9UdgafSZauQnGlRyzF2KxkzJPO
-         11vU+eacpQsOw==
+        b=lZIXKIMivxQxH6dAbtol5a5PPdJVaqyT4nrDSbb8KPJ0aXVoqDFDGffJ3JdZcj/W1
+         cmbWW69h4x9wSc5SwzjNTfZLSbLboWAJWcNiJuq1rmNWudouqGlSJM7I5jKf/OasyM
+         Ue3K/TT77odDeAy96MdIYsgGU4sAxDsLCVPW2gZZKAUOJIf/LYf05bl8t9E5BDBivj
+         iSdHFl7L08/w84K6DY/Jdqyjcvzxne/V2yDJHm2cEE/M9V546tMmFO9e32itfZhrwo
+         eo491eznnDTNdFCe2s7nDHjV9e1OKYs33Wuc5PZpE0KT+GQFRTyNtV9yL8goS1wudf
+         uesQA13KhElSg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yafang Shao <laoar.shao@gmail.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>, NeilBrown <neilb@suse.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, daniel@iogearbox.net,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, martin.lau@linux.dev,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 068/105] bpf: Make non-preallocated allocation low priority
-Date:   Thu, 11 Aug 2022 11:27:52 -0400
-Message-Id: <20220811152851.1520029-68-sashal@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
+        daniel@iogearbox.net, shuah@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        bpf@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.19 071/105] selftests/bpf: Do not attach kprobe_multi bench to bpf_dispatcher_xdp_func
+Date:   Thu, 11 Aug 2022 11:27:55 -0400
+Message-Id: <20220811152851.1520029-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -61,118 +60,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yafang Shao <laoar.shao@gmail.com>
+From: Jiri Olsa <jolsa@kernel.org>
 
-[ Upstream commit ace2bee839e08df324cb320763258dfd72e6120e ]
+[ Upstream commit 7fb27a56b9ebd8a77d9dd188e8a42bff99bc3443 ]
 
-GFP_ATOMIC doesn't cooperate well with memcg pressure so far, especially
-if we allocate too much GFP_ATOMIC memory. For example, when we set the
-memcg limit to limit a non-preallocated bpf memory, the GFP_ATOMIC can
-easily break the memcg limit by force charge. So it is very dangerous to
-use GFP_ATOMIC in non-preallocated case. One way to make it safe is to
-remove __GFP_HIGH from GFP_ATOMIC, IOW, use (__GFP_ATOMIC |
-__GFP_KSWAPD_RECLAIM) instead, then it will be limited if we allocate
-too much memory. There's a plan to completely remove __GFP_ATOMIC in the
-mm side[1], so let's use GFP_NOWAIT instead.
+Alexei reported crash by running test_progs -j on system
+with 32 cpus.
 
-We introduced BPF_F_NO_PREALLOC is because full map pre-allocation is
-too memory expensive for some cases. That means removing __GFP_HIGH
-doesn't break the rule of BPF_F_NO_PREALLOC, but has the same goal with
-it-avoiding issues caused by too much memory. So let's remove it.
+It turned out the kprobe_multi bench test that attaches all
+ftrace-able functions will race with bpf_dispatcher_update,
+that calls bpf_arch_text_poke on bpf_dispatcher_xdp_func,
+which is ftrace-able function.
 
-This fix can also apply to other run-time allocations, for example, the
-allocation in lpm trie, local storage and devmap. So let fix it
-consistently over the bpf code
+Ftrace is not aware of this update so this will cause
+ftrace_bug with:
 
-It also fixes a typo in the comment.
+  WARNING: CPU: 6 PID: 1985 at
+  arch/x86/kernel/ftrace.c:94 ftrace_verify_code+0x27/0x50
+  ...
+  ftrace_replace_code+0xa3/0x170
+  ftrace_modify_all_code+0xbd/0x150
+  ftrace_startup_enable+0x3f/0x50
+  ftrace_startup+0x98/0xf0
+  register_ftrace_function+0x20/0x60
+  register_fprobe_ips+0xbb/0xd0
+  bpf_kprobe_multi_link_attach+0x179/0x430
+  __sys_bpf+0x18a1/0x2440
+  ...
+  ------------[ ftrace bug ]------------
+  ftrace failed to modify
+  [<ffffffff818d9380>] bpf_dispatcher_xdp_func+0x0/0x10
+   actual:   ffffffe9:7b:ffffff9c:77:1e
+  Setting ftrace call site to call ftrace function
 
-[1]. https://lore.kernel.org/linux-mm/163712397076.13692.4727608274002939094@noble.neil.brown.name/
+It looks like we need some way to hide some functions
+from ftrace, but meanwhile we workaround this by skipping
+bpf_dispatcher_xdp_func from kprobe_multi bench test.
 
-Cc: Roman Gushchin <roman.gushchin@linux.dev>
-Cc: Shakeel Butt <shakeelb@google.com>
-Cc: NeilBrown <neilb@suse.de>
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-Reviewed-by: Shakeel Butt <shakeelb@google.com>
-Link: https://lore.kernel.org/r/20220709154457.57379-2-laoar.shao@gmail.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reported-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Yonghong Song <yhs@fb.com>
+Link: https://lore.kernel.org/bpf/20220714082316.479181-1-jolsa@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/devmap.c        | 2 +-
- kernel/bpf/hashtab.c       | 6 +++---
- kernel/bpf/local_storage.c | 2 +-
- kernel/bpf/lpm_trie.c      | 2 +-
- 4 files changed, 6 insertions(+), 6 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index c2867068e5bd..1400561efb15 100644
---- a/kernel/bpf/devmap.c
-+++ b/kernel/bpf/devmap.c
-@@ -845,7 +845,7 @@ static struct bpf_dtab_netdev *__dev_map_alloc_node(struct net *net,
- 	struct bpf_dtab_netdev *dev;
- 
- 	dev = bpf_map_kmalloc_node(&dtab->map, sizeof(*dev),
--				   GFP_ATOMIC | __GFP_NOWARN,
-+				   GFP_NOWAIT | __GFP_NOWARN,
- 				   dtab->map.numa_node);
- 	if (!dev)
- 		return ERR_PTR(-ENOMEM);
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 17fb69c0e0dc..da7578426a46 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -61,7 +61,7 @@
-  *
-  * As regular device interrupt handlers and soft interrupts are forced into
-  * thread context, the existing code which does
-- *   spin_lock*(); alloc(GPF_ATOMIC); spin_unlock*();
-+ *   spin_lock*(); alloc(GFP_ATOMIC); spin_unlock*();
-  * just works.
-  *
-  * In theory the BPF locks could be converted to regular spinlocks as well,
-@@ -978,7 +978,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
- 				goto dec_count;
- 			}
- 		l_new = bpf_map_kmalloc_node(&htab->map, htab->elem_size,
--					     GFP_ATOMIC | __GFP_NOWARN,
-+					     GFP_NOWAIT | __GFP_NOWARN,
- 					     htab->map.numa_node);
- 		if (!l_new) {
- 			l_new = ERR_PTR(-ENOMEM);
-@@ -996,7 +996,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
- 		} else {
- 			/* alloc_percpu zero-fills */
- 			pptr = bpf_map_alloc_percpu(&htab->map, size, 8,
--						    GFP_ATOMIC | __GFP_NOWARN);
-+						    GFP_NOWAIT | __GFP_NOWARN);
- 			if (!pptr) {
- 				kfree(l_new);
- 				l_new = ERR_PTR(-ENOMEM);
-diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-index 8654fc97f5fe..49ef0ce040c7 100644
---- a/kernel/bpf/local_storage.c
-+++ b/kernel/bpf/local_storage.c
-@@ -165,7 +165,7 @@ static int cgroup_storage_update_elem(struct bpf_map *map, void *key,
- 	}
- 
- 	new = bpf_map_kmalloc_node(map, struct_size(new, data, map->value_size),
--				   __GFP_ZERO | GFP_ATOMIC | __GFP_NOWARN,
-+				   __GFP_ZERO | GFP_NOWAIT | __GFP_NOWARN,
- 				   map->numa_node);
- 	if (!new)
- 		return -ENOMEM;
-diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-index f0d05a3cc4b9..d789e3b831ad 100644
---- a/kernel/bpf/lpm_trie.c
-+++ b/kernel/bpf/lpm_trie.c
-@@ -285,7 +285,7 @@ static struct lpm_trie_node *lpm_trie_node_alloc(const struct lpm_trie *trie,
- 	if (value)
- 		size += trie->map.value_size;
- 
--	node = bpf_map_kmalloc_node(&trie->map, size, GFP_ATOMIC | __GFP_NOWARN,
-+	node = bpf_map_kmalloc_node(&trie->map, size, GFP_NOWAIT | __GFP_NOWARN,
- 				    trie->map.numa_node);
- 	if (!node)
- 		return NULL;
+diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+index 5b93d5d0bd93..48681bf73e0b 100644
+--- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
++++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+@@ -364,6 +364,8 @@ static int get_syms(char ***symsp, size_t *cntp)
+ 			continue;
+ 		if (!strncmp(name, "rcu_", 4))
+ 			continue;
++		if (!strcmp(name, "bpf_dispatcher_xdp_func"))
++			continue;
+ 		if (!strncmp(name, "__ftrace_invalid_address__",
+ 			     sizeof("__ftrace_invalid_address__") - 1))
+ 			continue;
 -- 
 2.35.1
 
