@@ -2,53 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6CCA5906D1
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 21:07:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AB125906D7
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 21:09:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236236AbiHKTFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 15:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S235526AbiHKTJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 15:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiHKTFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 15:05:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB3982870;
-        Thu, 11 Aug 2022 12:05:30 -0700 (PDT)
+        with ESMTP id S235083AbiHKTJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 15:09:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E08A1A43;
+        Thu, 11 Aug 2022 12:09:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1ED5E60C03;
-        Thu, 11 Aug 2022 19:05:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6C9C433D6;
-        Thu, 11 Aug 2022 19:05:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15A09B8200A;
+        Thu, 11 Aug 2022 19:09:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD31C433C1;
+        Thu, 11 Aug 2022 19:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660244729;
-        bh=0SThgFqFZyXezUn0d6O27jzfZynm2O9WY2w+bU36Vno=;
+        s=k20201202; t=1660244943;
+        bh=e7+/hsuVnFf7TiLZzimRb3KiCHnwK91WXtyUVwVpXFk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iQSDeiZt3INPVzxg4SYeispGR7rJh9zxFmLpTigxTbUU/kLB3VyqAbGMoQDPfjfZa
-         VD49nTgv1XCzS+/qTcYtNcn07Y59fjdSLN9IGfLF8RpyCEN0CAku+iUPjS1PwA7G4C
-         k6b0fJ8hYYea8lR83Yd0GnOL5DFtTvJ+9Ik/NOBBH0ymxRovg7MmLxk/5Z2IfVdPq7
-         ZdCCOXwBR3Ng4lfPt4i+y5h1pUhtSG1Fye43bvjjhgGyKIk6589HNRMe349GkXAeCT
-         uq9aWw6wOLYfsthYnrgm/mF58ONb0bc+9VzsJKWD9ed1mv0HcFwP3XHmL4JHCGJ1Fd
-         BCx3UccaNLxvg==
-Date:   Thu, 11 Aug 2022 12:05:28 -0700
+        b=jB2cs5MTBO8qGUqd8Dp/dhivdFH4wROLgdF0nBdvi8Puy3Mi86NDAGDHbaEtLvGwm
+         BuOMzd9Bs1+mexJHbrPd2DN+aKcHrKsB5hOdidesUIIM9smlHU9jgZENUa0MilxRwP
+         oOld7Zggob6Z5iPmNICE6cKR48l5Ux5TwAFidUCQqjlYnKTX05mw59m6IvRkhYG0Wj
+         oFJrlb5Uz1dVCWH1KjZVJf9Gcm3702/mV1U4Rfd6lUGhP6EK+KYe8B3KLLBSLCCdWd
+         iIrQg3bfqihf7dF0h9zC0SGtMt7E16O8El+jkjScTnGmk4OyT+Y+lutBWdT1j7aANk
+         HJbrhfVWOnJQQ==
+Date:   Thu, 11 Aug 2022 12:09:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Sudip Mukherjee (Codethink)" <sudipm.mukherjee@gmail.com>
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-next@vger.kernel.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org
-Subject: Re: build failure of next-20220811 due to 332f1795ca20 ("Bluetooth:
- L2CAP: Fix l2cap_global_chan_by_psm regression")
-Message-ID: <20220811120528.0e2bc1e5@kernel.org>
-In-Reply-To: <YvVQEDs75pxSgxjM@debian>
-References: <YvVQEDs75pxSgxjM@debian>
+To:     torvalds@linux-foundation.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+Subject: Re: [PULL] Networking for 6.0-rc1
+Message-ID: <20220811120902.7e82826a@kernel.org>
+In-Reply-To: <20220811185102.3253045-1-kuba@kernel.org>
+References: <20220811185102.3253045-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,70 +53,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Aug 2022 19:53:04 +0100 Sudip Mukherjee (Codethink) wrote:
-> Hi All,
+On Thu, 11 Aug 2022 11:51:02 -0700 Jakub Kicinski wrote:
+> The following changes since commit f86d1fbbe7858884d6754534a0afbb74fc30bc26:
 > 
-> Not sure if it has been reported, builds of csky and mips allmodconfig
-> failed to build next-20220811 with gcc-12.
-
-Heh, 2 minutes after I submitted it to Linus :S
-
-> mips error is:
+>   Merge tag 'net-next-6.0' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next (2022-08-03 16:29:08 -0700)
 > 
-> In function 'memcmp',
->     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
->     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
-> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
-
-Source is the second argument? memcmp does not really have src and dst..
-
-Assuming it's the second one it appears to object to the:
-
-#define BDADDR_ANY  (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
-
-Which, well, kinda understandable but why does it not dislike the same
-construct when used in the other 70 places in the tree?
-
-My preferred fix would be to do the same thing as we do for ethernet
-i.e. open code the helper, see is_zero_ether_addr().
-
->    44 | #define __underlying_memcmp     __builtin_memcmp
->       |                                 ^
-> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
->   420 |         return __underlying_memcmp(p, q, size);
->       |                ^~~~~~~~~~~~~~~~~~~
-> In function 'memcmp',
->     inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
->     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
-> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->    44 | #define __underlying_memcmp     __builtin_memcmp
->       |                                 ^
-> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
->   420 |         return __underlying_memcmp(p, q, size);
->       |                ^~~~~~~~~~~~~~~~~~~
+> are available in the Git repository at:
 > 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc1
 > 
-> csky error is:
+> for you to fetch changes up to c2e75634cbe368065f140dd30bf8b1a0355158fd:
 > 
-> In file included from net/bluetooth/l2cap_core.c:37:
-> In function 'bacmp',
->     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
-> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->   347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
->       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> In function 'bacmp',
->     inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
-> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->   347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
->       |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> 
-> git bisect pointed to 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression").
-> And, reverting that commit has fixed the build failure.
-> 
-> I will be happy to test any patch or provide any extra log if needed.
-> 
-> --
-> Regards
-> Sudip
+>   net: atm: bring back zatm uAPI (2022-08-11 10:31:19 -0700)
 
+Let's put this one on hold, sorry. We got a report 2 minutes after
+sending that one of the BT patches broke mips and csky builds :S
+I'll try to get hold of Luiz and fix that up quickly.
+
+Speaking of build problems after merging with your tree I run into
+-Werror,-Wframe-larger-than on the AMD GPU drivers (gcc and clang, both). 
+Quick search of lore does not show any hits.
