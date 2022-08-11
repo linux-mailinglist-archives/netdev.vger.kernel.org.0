@@ -2,72 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC0B58F7CD
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 08:41:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F0358F803
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 09:00:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234264AbiHKGlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 02:41:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50904 "EHLO
+        id S234002AbiHKHAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 03:00:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234167AbiHKGli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 02:41:38 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C246277;
-        Wed, 10 Aug 2022 23:41:34 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660200073; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=JIuhEtk+zC29CbNkmdOCrw+Q5z2xH1mC4BnEARSwRXYvM3ivF+ov3OHhbg+Uz/sq7kczmueyeTpvLbNf+GjamFTQG9n0ST9ufl3fAYXaerMTAFpR4K79HjTauu27QSgplrXttiR1ORBvfh7Eqz6OM7OWm9MckYroa+Cr5xHkqM0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660200073; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=qzGf/xcU2qq0loWcNErzo5p+bIrEsm6IFkASa7YpiCw=; 
-        b=RsjzwqRl5kyoQAszaa1fi/Pq/SLsnaS8X4AOvxTio0sa6W20pxrPNP1G/qEKVt2jUTgqMT5afTjCd8+U0vvPC7YMwFWfZKWw7ZIes/Owntd79EXRJNIckiSio0OxDqUadwgr4xa8FnQz4Fjmuue8unB5kA7kkPngLjKPDU6Mmf0=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660200073;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=qzGf/xcU2qq0loWcNErzo5p+bIrEsm6IFkASa7YpiCw=;
-        b=UMSq0MqTUseR1Ca9R3QbfhVoBkeMmWaW3kL9mXslNS0ht+KTczA9AXIJJvKLwmCc
-        kJD3rE3ZTwBZGw/sfIC+lN9XB+PS+nZAvysF363UNOw7aEku3XMWNZkoBiP+xfTJjSM
-        lVgHUhqDzFRrdELEHnYQTTQiy9zeXIyKgkLyW4OE=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1660200062303914.6279487087534; Thu, 11 Aug 2022 12:11:02 +0530 (IST)
-Date:   Thu, 11 Aug 2022 12:11:02 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "syzbot" <syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com>
-Cc:     "davem" <davem@davemloft.net>,
-        "johannes" <johannes@sipsolutions.net>, "kuba" <kuba@kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "netdev" <netdev@vger.kernel.org>,
-        "syzkaller-bugs" <syzkaller-bugs@googlegroups.com>
-Message-ID: <1828ba28d43.27f8b7ca86738.4232033862850200536@siddh.me>
-In-Reply-To: <000000000000f5acfd05e5e5ccdc@google.com>
-References: <000000000000f5acfd05e5e5ccdc@google.com>
-Subject: Re: [syzbot] WARNING in ieee80211_ibss_csa_beacon
+        with ESMTP id S234203AbiHKHAh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 03:00:37 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCD629817;
+        Thu, 11 Aug 2022 00:00:35 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27B705Jv069485;
+        Thu, 11 Aug 2022 02:00:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660201205;
+        bh=ip7Z7++npAFNQklVD88uiIaYx0GA6sMVYP8RDrD+Dlg=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=MCsdobzlKdfD6Ulpqq7P5xIIxIQVtIFe/XFfzsPnhCG4JRfZq2Ud3d4GRYaJ1Ozbm
+         MDjHA8awaP7Vo/piMo0hXhsem+Zzw10npMWOD/JTBgVbGt0IcpCdh+wkQe3O5xiFqb
+         O0z8mY9K+nybscCmpzCKN1oZba28phSU2pcptkJU=
+Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27B705ia056567
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 11 Aug 2022 02:00:05 -0500
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE100.ent.ti.com
+ (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
+ Aug 2022 02:00:04 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 11 Aug 2022 02:00:05 -0500
+Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27B7018j032239;
+        Thu, 11 Aug 2022 02:00:02 -0500
+Message-ID: <9d17ab9f-1679-4af1-f85c-a538cb330d7b@ti.com>
+Date:   Thu, 11 Aug 2022 12:30:00 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
+ workaround for errata i2329
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-omap@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
+        <vigneshr@ti.com>
+References: <20220810111345.31200-1-r-gunasekaran@ti.com>
+ <YvRNpAdG7/edUEc+@lunn.ch>
+From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
+In-Reply-To: <YvRNpAdG7/edUEc+@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED
-        autolearn=no autolearn_force=no version=3.4.6
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 10 Aug 2022 22:17:12 +0530  syzbot  wrote:
-> Hello,
+
+
+On 11/08/22 6:00 am, Andrew Lunn wrote:
+>> +static int davinci_mdiobb_read(struct mii_bus *bus, int phy, int reg)
+>> +{
+>> +	int ret;
+>> +	struct mdiobb_ctrl *ctrl = bus->priv;
+>> +	struct davinci_mdio_data *data;
+>> +
+>> +	data = container_of(ctrl, struct davinci_mdio_data, bb_ctrl);
+>> +
+>> +	if (phy & ~PHY_REG_MASK || reg & ~PHY_ID_MASK)
+>> +		return -EINVAL;
 > 
-> syzbot tried to test the proposed patch but the build/boot failed:
+> You don't need this. Leave it up to the bit banging code to do the
+> validation. This also breaks C45, which the bit banging code can do,
+> and it looks like the hardware cannot.
 
-Trying again.
+I will remove these validation.
 
-#syz test https://github.com/siddhpant/linux.git warning_ibss_csa_beacon
+>> +
+>> +	ret = pm_runtime_resume_and_get(data->dev);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	ret = mdiobb_read(bus, phy, reg);
+>> +
+>> +	pm_runtime_mark_last_busy(data->dev);
+>> +	pm_runtime_put_autosuspend(data->dev);
+> 
+> Once you take the validation out, this function then all becomes about
+> runtime power management. Should the bit banging core actually be
+> doing this? It seems like it is something which could be useful for
+> other devices.
+> 
+> struct mii_bus has a parent member. If set, you could apply these run
+> time PM functions to that. Please add a patch to modify the core bit
+> banging code, and then you should be able to remove these helpers.
+
+Devices may or may not be configured for runtime autosuspend, and 
+perhaps may not even use runtime PM. pm_runtime_enabled() and the 
+autosuspend configuration could be addressed by checking against 
+dev->power.use_autosuspend flag. But if the runtime PM functions are 
+added to the bit banging core, would it not restrict the usage of 
+pm_runtime_put_*() variants for others?
+
+There is atleast one device sh_eth, which is not configured for 
+autosuspend but uses the bit bang core in sh_mdiobb_read() and invokes 
+regular runtime PM functions.
+
+>>   static int davinci_mdio_probe(struct platform_device *pdev)
+>>   {
+>>   	struct mdio_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>> @@ -340,12 +535,30 @@ static int davinci_mdio_probe(struct platform_device *pdev)
+>>   	struct phy_device *phy;
+>>   	int ret, addr;
+>>   	int autosuspend_delay_ms = -1;
+>> +	const struct soc_device_attribute *soc_match_data;
+> 
+> netdev uses reverse christmas tree. Variables should be sorted longest
+> first, shortest last.
+
+Noted. I will fix this as well.
+
+
+-- 
+Regards,
+Ravi
