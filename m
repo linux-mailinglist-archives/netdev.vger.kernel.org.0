@@ -2,229 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEFF958FE16
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 16:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C562D58FE1A
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 16:12:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235408AbiHKOKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 10:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54758 "EHLO
+        id S234995AbiHKOM3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 10:12:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234785AbiHKOKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 10:10:13 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6048E0FD
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 07:10:10 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso2737907wmb.2
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 07:10:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=WLk0grdpHXDP9f9JN3vRVxfg5WZpuipZfPqGJjRfsbM=;
-        b=MtBhkQZOjz/dOkOu0kGjIwRw7X+TGIfvAxUtwShgJf5gfXBC271Hm+2nrxKyCawSqm
-         SUAnhfutlbyHthhFMOTEMIxnuUHZ11QsiVB210iy+SfA4g67q99qsBeJI5nRJ/SFEzdV
-         Q+v4d+u/LL3goF20YvtVV1VCXDQmTmzymfk9tfPJSwyPM7e/y2XbJVmbbzGLPtZA4gtt
-         hDtCGPakHrxwy/d/b9VXyDknjSKUFLS5vRELIe39GztXFXUQanVYWoWyRH+5yZKf3lT6
-         8X7HVFBhBzCgav9X0D1z3uNgB4IfwVs6JeYq8jS9AM334uxJMe8X5vMVWu6Q6WKDHOS5
-         eI0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=WLk0grdpHXDP9f9JN3vRVxfg5WZpuipZfPqGJjRfsbM=;
-        b=chOT9MiLjTkeZwYe9yoZRFZXQ86+/TPxPiIXYW5x8pgJKybN9S++OdkW35jJI5CIZt
-         mphq9oaQJ17UBIS0IhGJcCRsOTk4+5o755EuFssjXLxKjQ+8aEn+Qswmtfd0BuGhzB6T
-         V4Fme/vQEn0EF3RQAXmmnyi4Ufki4sTTNqSS5P12VW8pBXC2EMY8e1VwT/JLDbElUhlP
-         yciW9NwAANC7Tas5RBrUx3rG4WOeuKpblT+EoWE4XRRDxBxURZkCSzOZzW5CJ2J/pret
-         V2xRN/bbwoZ/qlO1kpU0/w0hw1w+2XRZUoBqoXFVvMMcBmS4N6UovCx2ZadMPU3WtGlL
-         2g+w==
-X-Gm-Message-State: ACgBeo2S+gqmVNNdvsC9zaptaRFsy6pSZCb+5GEsNWSU5l7sBX2StYcQ
-        NsO9vAjPXaOflAJLBbgwUCx1hgrVfsdNvqpAws4Ojg==
-X-Google-Smtp-Source: AA6agR4bHnAn8rhCevNCDJ6c7oIxHG2UH3I+wCSDVfUUXPfrIA6kn4zo3K09Avazk/xneuf/ushBQt5QGadYNIvAMC0=
-X-Received: by 2002:a1c:ed16:0:b0:3a5:1206:147d with SMTP id
- l22-20020a1ced16000000b003a51206147dmr5819846wmh.196.1660227008707; Thu, 11
- Aug 2022 07:10:08 -0700 (PDT)
+        with ESMTP id S234619AbiHKOM2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 10:12:28 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E0E64FD
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 07:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=pqpfrjNo925kqjlZNWOT7G0b+jlXTS8ZjYzV9/DPllI=; b=y0WpkPMTYro5r8CMxHhMKWUDpf
+        ISSCeTvBVpE+sCn5Z9lKjotSXiNyZ7HEVCyQ2IuEh0uWnVuXxqWUZyT0bs+S4AWPgk9ygFSYtG2Ag
+        vSYVvXoGxPCPKPQeAuXc9ODNnrgnzyCoE3ESrBvNpwi4n/FzWrTBd8DDIwZS6vSBLg6U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oM8vC-00D2A2-0W; Thu, 11 Aug 2022 16:12:26 +0200
+Date:   Thu, 11 Aug 2022 16:12:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sergei Antonov <saproj@gmail.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6060: report max mtu 1536
+Message-ID: <YvUOSWxZPXa2JX8o@lunn.ch>
+References: <20220810082745.1466895-1-saproj@gmail.com>
+ <20220810100818.greurtz6csgnfggv@skbuf>
+ <CABikg9zb7z8p7tE0H+fpmB_NSK3YVS-Sy4sqWbihziFdPBoL+Q@mail.gmail.com>
+ <20220810133531.wia2oznylkjrgje2@skbuf>
+ <CABikg9yVpQaU_cf+iuPn5EV0Hn9ydwigdmZrrdStq7y-y+=YsQ@mail.gmail.com>
+ <20220810193825.vq7rdgwx7xua5amj@skbuf>
+ <CABikg9wUtyNGJ+SvASGC==qezh2eghJ=SyM5hECYVguR3BmGQQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220805214821.1058337-1-haoluo@google.com> <20220805214821.1058337-5-haoluo@google.com>
- <CAEf4BzZHf89Ds8nQWFCH00fKs9-9GkJ0d+Hrp-LkMCDUP_td0A@mail.gmail.com>
- <CA+khW7hUVOkHBO3dhRze2_VKZuxD-LuNQdO3nHUkLCYmuuR6eg@mail.gmail.com>
- <20220809162325.hwgvys5n3rivuz7a@MacBook-Pro-3.local.dhcp.thefacebook.com>
- <CA+khW7j0kzP+W_Qgsim52J+HeR27XJcyMk73Hq93tsmNzT7q6w@mail.gmail.com> <CA+khW7j1Ni_PfvsGisUpUgFtgg=f_qEUVd1VUmocn6L3=kndhw@mail.gmail.com>
-In-Reply-To: <CA+khW7j1Ni_PfvsGisUpUgFtgg=f_qEUVd1VUmocn6L3=kndhw@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 11 Aug 2022 07:09:31 -0700
-Message-ID: <CAJD7tkY6ihK9PkaAwrdRr-3QyiVFf8h4WkLXx73zYwNUjS_7pw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 4/8] bpf: Introduce cgroup iter
-To:     Hao Luo <haoluo@google.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cgroups <cgroups@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABikg9wUtyNGJ+SvASGC==qezh2eghJ=SyM5hECYVguR3BmGQQ@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 8:10 PM Hao Luo <haoluo@google.com> wrote:
->
-> On Tue, Aug 9, 2022 at 11:38 AM Hao Luo <haoluo@google.com> wrote:
+> > > 2: eth0: <BROADCAST,MULTICAST> mtu 1504 qdisc noop qlen 1000
+> > >     link/ether 00:00:00:00:00:00 brd ff:ff:ff:ff:ff:ff
 > >
-> > On Tue, Aug 9, 2022 at 9:23 AM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Mon, Aug 08, 2022 at 05:56:57PM -0700, Hao Luo wrote:
-> > > > On Mon, Aug 8, 2022 at 5:19 PM Andrii Nakryiko
-> > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Aug 5, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
-> > > > > >
-> > > > > > Cgroup_iter is a type of bpf_iter. It walks over cgroups in four modes:
-> > > > > >
-> > > > > >  - walking a cgroup's descendants in pre-order.
-> > > > > >  - walking a cgroup's descendants in post-order.
-> > > > > >  - walking a cgroup's ancestors.
-> > > > > >  - process only the given cgroup.
-> > > > > >
-> > [...]
-> > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > > > index 59a217ca2dfd..4d758b2e70d6 100644
-> > > > > > --- a/include/uapi/linux/bpf.h
-> > > > > > +++ b/include/uapi/linux/bpf.h
-> > > > > > @@ -87,10 +87,37 @@ struct bpf_cgroup_storage_key {
-> > > > > >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
-> > > > > >  };
-> > > > > >
-> > > > > > +enum bpf_iter_order {
-> > > > > > +       BPF_ITER_ORDER_DEFAULT = 0,     /* default order. */
-> > > > >
-> > > > > why is this default order necessary? It just adds confusion (I had to
-> > > > > look up source code to know what is default order). I might have
-> > > > > missed some discussion, so if there is some very good reason, then
-> > > > > please document this in commit message. But I'd rather not do some
-> > > > > magical default order instead. We can set 0 to mean invalid and error
-> > > > > out, or just do SELF as the very first value (and if user forgot to
-> > > > > specify more fancy mode, they hopefully will quickly discover this in
-> > > > > their testing).
-> > > > >
-> > > >
-> > > > PRE/POST/UP are tree-specific orders. SELF applies on all iters and
-> > > > yields only a single object. How does task_iter express a non-self
-> > > > order? By non-self, I mean something like "I don't care about the
-> > > > order, just scan _all_ the objects". And this "don't care" order, IMO,
-> > > > may be the common case. I don't think everyone cares about walking
-> > > > order for tasks. The DEFAULT is intentionally put at the first value,
-> > > > so that if users don't care about order, they don't have to specify
-> > > > this field.
-> > > >
-> > > > If that sounds valid, maybe using "UNSPEC" instead of "DEFAULT" is better?
-> > >
-> > > I agree with Andrii.
-> > > This:
-> > > +       if (order == BPF_ITER_ORDER_DEFAULT)
-> > > +               order = BPF_ITER_DESCENDANTS_PRE;
-> > >
-> > > looks like an arbitrary choice.
-> > > imo
-> > > BPF_ITER_DESCENDANTS_PRE = 0,
-> > > would have been more obvious. No need to dig into definition of "default".
-> > >
-> > > UNSPEC = 0
-> > > is fine too if we want user to always be conscious about the order
-> > > and the kernel will error if that field is not initialized.
-> > > That would be my preference, since it will match the rest of uapi/bpf.h
-> > >
-> >
-> > Sounds good. In the next version, will use
-> >
-> > enum bpf_iter_order {
-> >         BPF_ITER_ORDER_UNSPEC = 0,
-> >         BPF_ITER_SELF_ONLY,             /* process only a single object. */
-> >         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
-> >         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
-> >         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
-> > };
-> >
->
-> Sigh, I find that having UNSPEC=0 and erroring out when seeing UNSPEC
-> doesn't work. Basically, if we have a non-iter prog and a cgroup_iter
-> prog written in the same source file, I can't use
-> bpf_object__attach_skeleton to attach them. Because the default
-> prog_attach_fn for iter initializes `order` to 0 (that is, UNSPEC),
-> which is going to be rejected by the kernel. In order to make
-> bpf_object__attach_skeleton work on cgroup_iter, I think I need to use
-> the following
->
-> enum bpf_iter_order {
->         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
->         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
->         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
->         BPF_ITER_SELF_ONLY,             /* process only a single object. */
-> };
->
-> So that when calling bpf_object__attach_skeleton() on cgroup_iter, a
-> link can be generated and the generated link defaults to pre-order
-> walk on the whole hierarchy. Is there a better solution?
->
+> > The DSA master is super odd for starting with an all-zero MAC address.
+> > What driver handles this part? Normally, drivers are expected to work
+> > with a MAC address provided by the firmware (of_get_mac_address or
+> > other, perhaps proprietary, means) and fall back to eth_random_addr()
+> > if that is missing.
+> 
+> eth0 is handled by the CONFIG_ARM_MOXART_ETHER driver. By the way, I
+> had to change some code in it to make it work, and I am going to
+> submit a patch or two later.
+> The driver does not know its MAC address initially. On my hardware it
+> is stored in a flash memory chip, so I assign it using "ip link set
+> ..." either manually or from an /etc/init.d script. A solution with
+> early MAC assignment in the moxart_mac_probe() function is doable. Do
+> you think I should implement it?
 
-I think this can be handled by userspace? We can attach the
-cgroup_iter separately first (and maybe we will need to set prog->link
-as well) so that bpf_object__attach_skeleton() doesn't try to attach
-it? I am following this pattern in the selftest in the final patch,
-although I think I might be missing setting prog->link, so I am
-wondering why there are no issues in that selftest which has the same
-scenario that you are talking about.
+I would suggest a few patches:
 
-I think such a pattern will need to be used anyway if the users need
-to set any non-default arguments for the cgroup_iter prog (like the
-selftest), right? The only case we are discussing here is the case
-where the user wants to attach the cgroup_iter with all default
-options (in which case the default order will fail).
-I agree that it might be inconvenient if the default/uninitialized
-options don't work for cgroup_iter, but Alexei pointed out that this
-matches other bpf uapis.
+1) Use eth_hw_addr_random() to assign a random MAC address during probe.
+2) Remove is_valid_ether_addr() from moxart_mac_open()
+3) Add a call to platform_get_ethdev_address() during probe
+4) Remove is_valid_ether_addr() from moxart_set_mac_address(). The core does this
 
-My concern is that in the future we try to reuse enum bpf_iter_order
-to set ordering for other iterators, and then the
-default/uninitialized value (BPF_ITER_DESCENDANTS_PRE) doesn't make
-sense for that iterator (e.g. not a tree). In this case, the same
-problem that we are avoiding for cgroup_iter here will show up for
-that iterator, and we can't easily change it at this point because
-it's uapi.
+platform_get_ethdev_address() will call of_get_mac_addr_nvmem() which
+might be able to get your MAC address out of flash, without user space
+being involved.
 
-
-> > and explicitly list the values acceptable by cgroup_iter, error out if
-> > UNSPEC is detected.
-> >
-> > Also, following Andrii's comments, will change BPF_ITER_SELF to
-> > BPF_ITER_SELF_ONLY, which does seem a little bit explicit in
-> > comparison.
-> >
-> > > I applied the first 3 patches to ease respin.
-> >
-> > Thanks! This helps!
-> >
-> > > Thanks!
+      Andrew
