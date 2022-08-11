@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 543835900F4
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:48:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 988E959012C
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:52:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236696AbiHKPrz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:47:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49794 "EHLO
+        id S236580AbiHKPtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:49:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236442AbiHKPqa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:46:30 -0400
+        with ESMTP id S233655AbiHKPrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:47:00 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F08992F57;
-        Thu, 11 Aug 2022 08:41:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70D8D979F9;
+        Thu, 11 Aug 2022 08:41:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47B55B82150;
-        Thu, 11 Aug 2022 15:41:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F6B8C433B5;
-        Thu, 11 Aug 2022 15:41:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18EE0B82128;
+        Thu, 11 Aug 2022 15:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDDC8C433C1;
+        Thu, 11 Aug 2022 15:41:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232470;
-        bh=wjXb44oYEnAlhU16rkHyBpckEauNUBNXCbEuTpPCOrU=;
+        s=k20201202; t=1660232483;
+        bh=YXPr/ANB8NDGvjlxSqSQ81BHPbhHIsxajrD9b7v65h4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LzKt2tPhvCpVf10VYHxv1IRRFUydo+rn3P4dpS1GM3VxxHK5Audt/OIPLzJXl/4Fo
-         6tzRP+qmWM+gQdOqZ7+nNbWCTDsU7FdZUuKlAex5mvRvTECgxL87W8OMTCWEk7W0pl
-         SIq6jvhZnXXVQNQicJ/A6JWaWW06tJ/Z43w3XgzpWZaVs42paDdAei4iseJytw6Obn
-         /y/FdHAmy12KDg8tCicPOKoC8v+wH4n0l0dLsJySuKFjkk/8I75rskfQGnngdZyc/c
-         suUGBgvDtUR4JlPbQYKEoK7UdFTSeZNcczyqJVc6s5k1P3L7EvkSaA985aKP3eUxjx
-         3Z86bfatr8peA==
+        b=ixw7XrGyS8VlsJcLTJpSEZwL3DM/3bRTpb16JQv5JiKK3i+Slq5Vp8+Vn9UDdaSbI
+         Ay2kFhfhf1HZoiMoW5NdrHNdVAiiafGMF1t2EO5303ecL31/GdDCu/9SmvGSZBAi2o
+         nWBtVopr5Bq4ZWVDigmuVR8Na27LRwdsGOH3WUydtbj92bTihvXhbOr8DXpzjyltYS
+         PjrgvBDsuuKZ6UazRixXLI+tqGewxa+/02UCZDjVWFWtJqPY5HBQ9UKmu2op7uiIHt
+         zgKI6x5HbF+9yK+gUoHvXB5g4tTATmUfprBDOlwtSwvJwhDqwRGbgdBPWeSRygzvWU
+         uk1BXWMK5nJGQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jie2x Zhou <jie2x.zhou@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        john.fastabend@gmail.com, andrii@kernel.org, shuah@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 090/105] bpf/selftests: Fix couldn't retrieve pinned program in xdp veth test
-Date:   Thu, 11 Aug 2022 11:28:14 -0400
-Message-Id: <20220811152851.1520029-90-sashal@kernel.org>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.19 095/105] net: ethernet: stmicro: stmmac: first disable all queues and disconnect in release
+Date:   Thu, 11 Aug 2022 11:28:19 -0400
+Message-Id: <20220811152851.1520029-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811152851.1520029-1-sashal@kernel.org>
 References: <20220811152851.1520029-1-sashal@kernel.org>
@@ -61,59 +61,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jie2x Zhou <jie2x.zhou@intel.com>
+From: Christian Marangi <ansuelsmth@gmail.com>
 
-[ Upstream commit f664f9c6b4a1bb9a10af812df0fbbf6aac28fcc6 ]
+[ Upstream commit 7028471edb646bfc532fec0973e50e784cdcb7c6 ]
 
-Before change:
+Disable all queues and disconnect before tx_disable in stmmac_release to
+prevent a corner case where packet may be still queued at the same time
+tx_disable is called resulting in kernel panic if some packet still has
+to be processed.
 
-  selftests: bpf: test_xdp_veth.sh
-  Couldn't retrieve pinned program '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
-  selftests: xdp_veth [SKIP]
-  ok 20 selftests: bpf: test_xdp_veth.sh # SKIP
-
-After change:
-
-  PING 10.1.1.33 (10.1.1.33) 56(84) bytes of data.
-  64 bytes from 10.1.1.33: icmp_seq=1 ttl=64 time=0.320 ms
-  --- 10.1.1.33 ping statistics ---
-  1 packets transmitted, 1 received, 0% packet loss, time 0ms
-  rtt min/avg/max/mdev = 0.320/0.320/0.320/0.000 ms
-  selftests: xdp_veth [PASS]
-
-For the test case, the following can be found:
-
-  ls /sys/fs/bpf/test_xdp_veth/progs/redirect_map_0
-  ls: cannot access '/sys/fs/bpf/test_xdp_veth/progs/redirect_map_0': No such file or directory
-  ls /sys/fs/bpf/test_xdp_veth/progs/
-  xdp_redirect_map_0  xdp_redirect_map_1  xdp_redirect_map_2
-
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jie2x Zhou <jie2x.zhou@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220719082430.9916-1-jie2x.zhou@intel.com
+Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/test_xdp_veth.sh | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xdp_veth.sh b/tools/testing/selftests/bpf/test_xdp_veth.sh
-index 392d28cc4e58..49936c4c8567 100755
---- a/tools/testing/selftests/bpf/test_xdp_veth.sh
-+++ b/tools/testing/selftests/bpf/test_xdp_veth.sh
-@@ -106,9 +106,9 @@ bpftool prog loadall \
- bpftool map update pinned $BPF_DIR/maps/tx_port key 0 0 0 0 value 122 0 0 0
- bpftool map update pinned $BPF_DIR/maps/tx_port key 1 0 0 0 value 133 0 0 0
- bpftool map update pinned $BPF_DIR/maps/tx_port key 2 0 0 0 value 111 0 0 0
--ip link set dev veth1 xdp pinned $BPF_DIR/progs/redirect_map_0
--ip link set dev veth2 xdp pinned $BPF_DIR/progs/redirect_map_1
--ip link set dev veth3 xdp pinned $BPF_DIR/progs/redirect_map_2
-+ip link set dev veth1 xdp pinned $BPF_DIR/progs/xdp_redirect_map_0
-+ip link set dev veth2 xdp pinned $BPF_DIR/progs/xdp_redirect_map_1
-+ip link set dev veth3 xdp pinned $BPF_DIR/progs/xdp_redirect_map_2
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 306f03399f5e..db2098cbe1fe 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3764,8 +3764,6 @@ static int stmmac_release(struct net_device *dev)
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	u32 chan;
  
- ip -n ${NS1} link set dev veth11 xdp obj xdp_dummy.o sec xdp
- ip -n ${NS2} link set dev veth22 xdp obj xdp_tx.o sec xdp
+-	netif_tx_disable(dev);
+-
+ 	if (device_may_wakeup(priv->device))
+ 		phylink_speed_down(priv->phylink, false);
+ 	/* Stop and disconnect the PHY */
+@@ -3777,6 +3775,8 @@ static int stmmac_release(struct net_device *dev)
+ 	for (chan = 0; chan < priv->plat->tx_queues_to_use; chan++)
+ 		hrtimer_cancel(&priv->tx_queue[chan].txtimer);
+ 
++	netif_tx_disable(dev);
++
+ 	/* Free the IRQ lines */
+ 	stmmac_free_irq(dev, REQ_IRQ_ERR_ALL, 0);
+ 
 -- 
 2.35.1
 
