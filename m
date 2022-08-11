@@ -2,135 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC37458F907
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BA0B58F90C
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 10:28:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiHKI1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 04:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33596 "EHLO
+        id S234497AbiHKI2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 04:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234480AbiHKI1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:27:43 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 440939081B
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:27:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660206461;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fRCed6nnEDFTJS61x3dawnYdkP8v3FkULNF0fZ1BK3g=;
-        b=BKCCDC4v+T7/wizwn/5rKrvE5nI9x0VKsvi/ET4ftdk/liUaUuoDFASYwOQ9ciBIKjswGK
-        H+ySb4xs1EN5u58DB+mK4KIuIjSXh6NWJ0ikTb/91pyayfmLhkLTxugH8cdoUfaYKhdo+l
-        XTHT5bxXwKp7CDC9biKqpIoSvUgUlps=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-491-cMIkUweoM8S6elnLJxKHRA-1; Thu, 11 Aug 2022 04:27:39 -0400
-X-MC-Unique: cMIkUweoM8S6elnLJxKHRA-1
-Received: by mail-wm1-f72.google.com with SMTP id r10-20020a1c440a000000b003a538a648a9so5532220wma.5
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 01:27:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=fRCed6nnEDFTJS61x3dawnYdkP8v3FkULNF0fZ1BK3g=;
-        b=0tbBpC/hAvJ0qijOgZRZf4zLTBLTtEkeZ3u4r7pom2FQicypqtwsMIe/jRtx1+rti9
-         ok/3JRqeIay61ZzRkN1sBqw0ttGL6nNZN8Sms+2wXqPepMbd4CeVvsbe+qLgVgkG1KN2
-         T5Uqkcy/HMdRKEqGAQIX0KLLrEVBT9VzgRElsXNwg4e5fMdJfIN51AGPMQRVnSfYMxfh
-         b8H7QiAtHS3qlsDS2Ddp5CL2epkTjTZ3DGworsz/p65iuZ/mqtS6RKVzZiarbXoxd9F8
-         /UI+4ldjCRP2qPnwiKE1XIn4VTIO34DWSkS8JHjPKGHn1BkmU75HDQowX/ygNSn7VxuJ
-         8HIA==
-X-Gm-Message-State: ACgBeo3hNCbw8uKInIZ8GgoOnS7L7EjC99VeKRwIF8D+lPDO179FUb2U
-        hDZrxll2qnLKjVzj0IslvbtCCYjO2K+337srBNyN1Iisj+ttQdEOjX9FsdAQzSfNxWFICxsHEiL
-        07Gnoic9hBaZ64Sns
-X-Received: by 2002:a1c:a3c4:0:b0:3a5:512f:717a with SMTP id m187-20020a1ca3c4000000b003a5512f717amr4823108wme.192.1660206458802;
-        Thu, 11 Aug 2022 01:27:38 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5sw3H77GbQvlSeiH8m701pegTIDjU8UzoPnZf53/Xhmt7IzjB7QDado1bpqhPaIYYSo6lqUw==
-X-Received: by 2002:a1c:a3c4:0:b0:3a5:512f:717a with SMTP id m187-20020a1ca3c4000000b003a5512f717amr4823072wme.192.1660206458571;
-        Thu, 11 Aug 2022 01:27:38 -0700 (PDT)
-Received: from redhat.com ([2.52.152.113])
-        by smtp.gmail.com with ESMTPSA id m7-20020a056000008700b00222ed7ea203sm8822453wrx.100.2022.08.11.01.27.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Aug 2022 01:27:37 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 04:27:32 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        dinang@xilinx.com, martinpo@xilinx.com,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Piotr.Uminski@intel.com, gautam.dawar@amd.com,
-        ecree.xilinx@gmail.com, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>, pabloc@xilinx.com,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhu Lingshan <lingshan.zhu@intel.com>, tanuj.kamde@amd.com,
-        Longpeng <longpeng2@huawei.com>, lulu@redhat.com,
-        hanand@xilinx.com, Parav Pandit <parav@nvidia.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Xie Yongji <xieyongji@bytedance.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH v7 1/4] vdpa: Add suspend operation
-Message-ID: <20220811042717-mutt-send-email-mst@kernel.org>
-References: <20220810171512.2343333-1-eperezma@redhat.com>
- <20220810171512.2343333-2-eperezma@redhat.com>
+        with ESMTP id S234481AbiHKI2U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 04:28:20 -0400
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF429083A;
+        Thu, 11 Aug 2022 01:28:15 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 27B8RhGh635424
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Thu, 11 Aug 2022 09:27:44 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:961:910a:a293:6d6e:8bbf:c204])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 27B8RbPu798373
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Thu, 11 Aug 2022 10:27:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1660206458; bh=DVAcRpjHUD6SC/z94VyNoM8QbNmGcb9r0L8yrNq9za8=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=IqfPse84meJiD6rat7y8q0Fvr5+4dM8VBVy0T6cEFEIf/vQLJTozD8GEFESt9wR25
+         w/zhVGfWNLne5aPP0/TFdP/MI/wUnuyQN2zyGrACzZfdrZo2JaxhakQvwLyY0xkS/1
+         FU5GEkNh9NWjfvU36NsfGl318FOklJkjFcrqoFu0=
+Received: (nullmailer pid 510642 invoked by uid 1000);
+        Thu, 11 Aug 2022 08:27:32 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: usb: qmi_wwan: Add support for Cinterion MV32
+Organization: m
+References: <20220810014521.9383-1-slark_xiao@163.com>
+Date:   Thu, 11 Aug 2022 10:27:32 +0200
+In-Reply-To: <20220810014521.9383-1-slark_xiao@163.com> (Slark Xiao's message
+        of "Wed, 10 Aug 2022 09:45:21 +0800")
+Message-ID: <87y1vvjibv.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220810171512.2343333-2-eperezma@redhat.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.6 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:15:09PM +0200, Eugenio Pérez wrote:
-> This operation is optional: It it's not implemented, backend feature bit
-> will not be exposed.
-> 
-> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
-> Message-Id: <20220623160738.632852-2-eperezma@redhat.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Slark Xiao <slark_xiao@163.com> writes:
 
-What is this message id doing here?
+> There are 2 models for MV32 serials. MV32-W-A is designed
+> based on Qualcomm SDX62 chip, and MV32-W-B is designed based
+> on Qualcomm SDX65 chip. So we use 2 different PID to separate it.
+>
+> Test evidence as below:
+> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D03 Dev#=3D  3 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D1e2d ProdID=3D00f3 Rev=3D05.04
+> S:  Manufacturer=3DCinterion
+> S:  Product=3DCinterion PID 0x00F3 USB Mobile Broadband
+> S:  SerialNumber=3Dd7b4be8d
+> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
+r=3Dqmi_wwan
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
+r=3Doption
+>
+> T:  Bus=3D03 Lev=3D01 Prnt=3D01 Port=3D02 Cnt=3D03 Dev#=3D 10 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.10 Cls=3Def(misc ) Sub=3D02 Prot=3D01 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D1e2d ProdID=3D00f4 Rev=3D05.04
+> S:  Manufacturer=3DCinterion
+> S:  Product=3DCinterion PID 0x00F4 USB Mobile Broadband
+> S:  SerialNumber=3Dd095087d
+> C:  #Ifs=3D 4 Cfg#=3D 1 Atr=3Da0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D50 Drive=
+r=3Dqmi_wwan
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3D40 Drive=
+r=3Doption
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3D30 Drive=
+r=3Doption
+>
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
 
-> ---
->  include/linux/vdpa.h | 4 ++++
->  1 file changed, 4 insertions(+)
-> 
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index 7b4a13d3bd91..d282f464d2f1 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -218,6 +218,9 @@ struct vdpa_map_file {
->   * @reset:			Reset device
->   *				@vdev: vdpa device
->   *				Returns integer: success (0) or error (< 0)
-> + * @suspend:			Suspend or resume the device (optional)
-> + *				@vdev: vdpa device
-> + *				Returns integer: success (0) or error (< 0)
->   * @get_config_size:		Get the size of the configuration space includes
->   *				fields that are conditional on feature bits.
->   *				@vdev: vdpa device
-> @@ -319,6 +322,7 @@ struct vdpa_config_ops {
->  	u8 (*get_status)(struct vdpa_device *vdev);
->  	void (*set_status)(struct vdpa_device *vdev, u8 status);
->  	int (*reset)(struct vdpa_device *vdev);
-> +	int (*suspend)(struct vdpa_device *vdev);
->  	size_t (*get_config_size)(struct vdpa_device *vdev);
->  	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
->  			   void *buf, unsigned int len);
-> -- 
-> 2.31.1
+Thanks for answering all my questions so fast. This patch looks very
+good to me
+
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
 
