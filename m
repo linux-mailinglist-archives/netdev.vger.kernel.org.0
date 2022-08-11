@@ -2,84 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB40358FAD1
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 12:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E54058FAF0
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 12:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbiHKKnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 06:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48912 "EHLO
+        id S234010AbiHKKvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 06:51:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234530AbiHKKnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 06:43:09 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 466938D3D0
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 03:43:08 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id g22-20020a056602249600b0067caba4f24bso9470386ioe.4
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 03:43:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:in-reply-to:date:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=lEX60Cbcazn6R6L/6XwKBw23ViseQXIZ1Z7ZlktS5UU=;
-        b=nfUo8obWkxiDyMdLAkMvUJ9r2zZAWVtaHrdnUa3yNSDY93mVcPWi4cwb2VpXwwwucW
-         2kEI9mm+lSWL/PWEbtgzXOMpEWuJHPrCXCz0jLifW0OBj7Xn1z8OhAibcQg9LJZxhG5O
-         YLrGCVJvxA7UV6Hy0nilotHVle9WFbFxBiw8cMrNR3vnLNniIlCL6gB5CqAWlMMsTEyz
-         PbeBBT/o8IBht4H8l1Z7jlAlE6M9wyiptv+xWDstjk0GYQfYbUXfke1qCYOBdZ7+L1n/
-         pKIfZq9hJgRuS3IhQO/wfHUT7sfVznvbJnysK7UtLi373ccbOFNYv5vBTRYkwitEiGir
-         1v6A==
-X-Gm-Message-State: ACgBeo1K/23xIRi9e2rOIMT6FIrEWLBeKmV2buYFMepO6X3dVbI/39OV
-        ksAKXcCdtgjvAshU/fg2p+BJ8lHz3fYbjjzXaVYe+AaueoMV
-X-Google-Smtp-Source: AA6agR7Hi8B5W6WKGtAFwNNK4FUnHOGc4ICUBkEfs2/hpQ+PtJ8uOlWMicG2kCUmtKciLXR1skIHdYUjGApnwnJNYP1JTBqG2pa1
+        with ESMTP id S233884AbiHKKvm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 06:51:42 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E6C80F73
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 03:51:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660215101; x=1691751101;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=cd8hXPZRGkvy4Z7QjEyN2n6ofbRPcPq2avevoVc1c9E=;
+  b=HDR0SMEdkbasy8MqIuAHkSU+FsYwjhZzzbEalT/gXDboULKIM7GQuawz
+   VxmOuJQBOWm9Vcmz0jTBCJIksi/K+8OsezAPByKPPcq3tU1L1cy5wOxrj
+   m63KVDCm6gIuYrXotZctjmaJbmkSXrQyfONYputSXbi04B4jSDIsGCrH+
+   tRuW8PEgQGvPoMPdtkSsmTkj6Dy5t2U710ZIpyPeZOKxr1SRo/7yxhTWS
+   86XDWSama7e+2qi/UjQRl4Pq4KwLg2b4I6xu//AKqNTEdHlPpftpF4Flc
+   3yt6hbtjoCm1RL/VKRMjbbGo9p/ncYyKDHYcvcQ39we1GGDzUF3AryMop
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10435"; a="271702071"
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="271702071"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 03:51:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,228,1654585200"; 
+   d="scan'208";a="581624347"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga006.jf.intel.com with ESMTP; 11 Aug 2022 03:51:38 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27BApaVb000420;
+        Thu, 11 Aug 2022 11:51:37 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     "shenjian (K)" <shenjian15@huawei.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        ecree.xilinx@gmail.com, hkallweit1@gmail.com, saeed@kernel.org,
+        leon@kernel.org, netdev@vger.kernel.org, linuxarm@openeuler.org
+Subject: Re: [RFCv7 PATCH net-next 01/36] net: introduce operation helpers for netdev features
+Date:   Thu, 11 Aug 2022 12:49:36 +0200
+Message-Id: <20220811104936.3675-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <444c4f87-ed36-721a-f619-97c7725e2c87@huawei.com>
+References: <20220810030624.34711-1-shenjian15@huawei.com> <20220810030624.34711-2-shenjian15@huawei.com> <20220810094358.1303843-1-alexandr.lobakin@intel.com> <444c4f87-ed36-721a-f619-97c7725e2c87@huawei.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2490:b0:343:31f3:b09f with SMTP id
- x16-20020a056638249000b0034331f3b09fmr5093263jat.247.1660214587687; Thu, 11
- Aug 2022 03:43:07 -0700 (PDT)
-Date:   Thu, 11 Aug 2022 03:43:07 -0700
-In-Reply-To: <000000000000a256df05e39a74e7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c0089905e5f4d452@google.com>
-Subject: Re: [syzbot] inconsistent lock state in find_vmap_area
-From:   syzbot <syzbot+8d19062486784d15dda9@syzkaller.appspotmail.com>
-To:     alan.maguire@oracle.com, andrii@kernel.org, ast@kernel.org,
-        bp@alien8.de, bpf@vger.kernel.org, daniel@iogearbox.net,
-        dave.hansen@linux.intel.com, gor@linux.ibm.com, hpa@zytor.com,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        luto@kernel.org, mingo@redhat.com, netdev@vger.kernel.org,
-        peterz@infradead.org, rdunlap@infradead.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        x86@kernel.org, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_DIGITS,
-        FROM_LOCAL_HEX,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+From: "shenjian (K)" <shenjian15@huawei.com>
+Date: Wed, 10 Aug 2022 19:32:28 +0800
 
-commit 43174f0d4597325cb91f1f1f55263eb6e6101036
-Author: Alan Maguire <alan.maguire@oracle.com>
-Date:   Mon Nov 29 10:00:40 2021 +0000
+> 在 2022/8/10 17:43, Alexander Lobakin 写道:
+> > From: Jian Shen <shenjian15@huawei.com>
+> > Date: Wed, 10 Aug 2022 11:05:49 +0800
+> >
+> >> Introduce a set of bitmap operation helpers for netdev features,
+> >> then we can use them to replace the logical operation with them.
+> >>
+> >> The implementation of these helpers are based on the old prototype
+> >> of netdev_features_t is still u64. These helpers will be rewritten
+> >> on the last patch, when the prototype changes.
+> >>
+> >> To avoid interdependencies between netdev_features_helper.h and
+> >> netdevice.h, put the helpers for testing feature in the netdevice.h,
+> >> and move advandced helpers like netdev_get_wanted_features() and
+> >> netdev_intersect_features() to netdev_features_helper.h.
+> >>
+> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+> >> ---
+> >>   include/linux/netdev_features.h        |  11 +
+> >>   include/linux/netdev_features_helper.h | 707 +++++++++++++++++++++++++
+> > 'netdev_feature_helpers.h' fits more I guess, doesn't it? It
+> > contains several helpers, not only one.
+> ok， will rename it.
+> 
+> > And BTW, do you think it's worth to create a new file rather than
+> > put everything just in netdev_features.h?
+> Jakub suggested me to move them to a new file, then it can be includued
+> at users appropriately. 
+> [https://www.spinics.net/lists/netdev/msg809370.html]
+> 
+> And it's unable to put everything in netdev_features.h, because these 
+> helpers
+> need to see the definition of struct net_device which is defined in 
+> netdevice.h.
+> It leading interdependence for netdeice.h include netdev_features.h.
 
-    libbpf: Silence uninitialized warning/error in btf_dump_dump_type_data
+Ah, correct then, sure! I missed that fact.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1350eb05080000
-start commit:   200e340f2196 Merge tag 'pull-work.dcache' of git://git.ker..
-git tree:       upstream
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=10d0eb05080000
-console output: https://syzkaller.appspot.com/x/log.txt?x=1750eb05080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a3f4d6985d3164cd
-dashboard link: https://syzkaller.appspot.com/bug?extid=8d19062486784d15dda9
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1252c5a7080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1160a8e3080000
+> 
+> 
+> >>   include/linux/netdevice.h              |  45 +-
+> >>   net/8021q/vlan_dev.c                   |   1 +
+> >>   net/core/dev.c                         |   1 +
+> >>   5 files changed, 747 insertions(+), 18 deletions(-)
+> >>   create mode 100644 include/linux/netdev_features_helper.h
+> >>
+> >> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> >> index 7c2d77d75a88..9d434b4e6e6e 100644
+> >> --- a/include/linux/netdev_features.h
+> >> +++ b/include/linux/netdev_features.h
+> >> @@ -11,6 +11,17 @@
+> >>   
+> >>   typedef u64 netdev_features_t;
+> >>   
+> >> +struct netdev_feature_set {
+> >> +	unsigned int cnt;
+> >> +	unsigned short feature_bits[];
+> >> +};
+> >> +
+> >> +#define DECLARE_NETDEV_FEATURE_SET(name, features...)			\
+> >> +	const struct netdev_feature_set name = {			\
+> >> +		.cnt = sizeof((unsigned short[]){ features }) / sizeof(unsigned short),	\
+> >> +		.feature_bits = { features },				\
+> >> +	}
+> >> +
+> >>   enum {
+> >>   	NETIF_F_SG_BIT,			/* Scatter/gather IO. */
+> >>   	NETIF_F_IP_CSUM_BIT,		/* Can checksum TCP/UDP over IPv4. */
+> >> diff --git a/include/linux/netdev_features_helper.h b/include/linux/netdev_features_helper.h
+> >> new file mode 100644
+> >> index 000000000000..5423927d139b
+> >> --- /dev/null
+> >> +++ b/include/linux/netdev_features_helper.h
+> >> @@ -0,0 +1,707 @@
+> >> +/* SPDX-License-Identifier: GPL-2.0-or-later */
+> >> +/*
+> >> + * Network device features helpers.
+> >> + */
+> >> +#ifndef _LINUX_NETDEV_FEATURES_HELPER_H
+> >> +#define _LINUX_NETDEV_FEATURES_HELPER_H
+> >> +
+> >> +#include <linux/netdevice.h>
+> >> +
+> >> +static inline void netdev_features_zero(netdev_features_t *dst)
+> >> +{
+> >> +	*dst = 0;
+> >> +}
+> >> +
+> >> +/* active_feature prefer to netdev->features */
+> >> +#define netdev_active_features_zero(ndev) \
+> >> +		netdev_features_zero(&ndev->features)
+> > netdev_features_t sometimes is being placed and used on the stack.
+> > I think it's better to pass just `netdev_features_t *` to those
+> > helpers, this way you wouldn't also need to create a new helper
+> > for each net_device::*_features.
+> My purpose of defining  helpers for each net_device::*_features is to
+> avoiding driver to change  net_device::*_features directly.
 
-Reported-by: syzbot+8d19062486784d15dda9@syzkaller.appspotmail.com
-Fixes: 43174f0d4597 ("libbpf: Silence uninitialized warning/error in btf_dump_dump_type_data")
+But why? My point is that you have to create a whole bunch of
+copy'n'paste functions differing only by the &net_device field
+name.
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> 
+> >> +
+> >> +#define netdev_hw_features_zero(ndev) \
+> >> +		netdev_features_zero(&ndev->hw_features)
+
+Oh BTW: wrap `ndev` in the netdev_features_zero() call into braces,
+`netdev_feature_zero(&(ndev)->hw_features)`, otherwise it may cause
+unwanted sneaky logical changes or build failures.
+
+> >> +
+> >> +#define netdev_wanted_features_zero(ndev) \
+> > [...]
+> >
+> >> +#define netdev_gso_partial_features_and(ndev, __features) \
+> >> +		netdev_features_and(ndev->gso_partial_features, __features)
+> >> +
+> >> +/* helpers for netdev features '&=' operation */
+> >> +static inline void
+> >> +netdev_features_mask(netdev_features_t *dst,
+> >> +			   const netdev_features_t features)
+> >> +{
+> >> +	*dst = netdev_features_and(*dst, features);
+> > A small proposal: if you look at bitmap_and() for example, it
+> > returns 1 if the resulting bitmap is non-empty and 0 if it is. What
+> > about doing the same here? It would probably help to do reduce
+> > boilerplating in the drivers where we only want to know if there's
+> > anything left after masking.
+> > Same for xor, toggle etc.
+> Thanks for point this.  Return whether empty, then I can remove 
+> netdev_features_intersects
+> helpers. But there are also many places to use 'f1 & f2' as return value 
+> or input param, then
+> I need to define more temporay features to store the result, and then 
+> return the temporay
+> features or pass into it.
+
+No, netdev_features_intersects() is okay, leave it as it is. Just
+look on bitmap_*() prototypes and return its values when applicable.
+
+> 
+> >> +}
+> >> +
+> >> +static inline void
+> >> +netdev_active_features_mask(struct net_device *ndev,
+> >> +			    const netdev_features_t features)
+> >> +{
+> >> +	ndev->features = netdev_active_features_and(ndev, features);
+> >> +}
+> > [...]
+> >
+> >> +/* helpers for netdev features 'set bit array' operation */
+> >> +static inline void
+> >> +netdev_features_set_array(const struct netdev_feature_set *set,
+> >> +			  netdev_features_t *dst)
+> >> +{
+> >> +	int i;
+> >> +
+> >> +	for (i = 0; i < set->cnt; i++)
+> > Nit: kernel is C11 now, you can do just `for (u32 i = 0; i ...`.
+> > (and yeah, it's better to use unsigned types when you don't plan
+> > to store negative values there).
+> ok, will fix it.
+> 
+> >> +		netdev_feature_add(set->feature_bits[i], dst);
+> >> +}
+> > [...]
+> >
+> >> -- 
+> >> 2.33.0
+> > Thanks,
+> > Olek
+> >
+> > .
+
+Thanks,
+Olek
