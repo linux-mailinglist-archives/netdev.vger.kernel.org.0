@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1290458F81D
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 09:07:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D88658F81F
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 09:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234089AbiHKHHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 03:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45588 "EHLO
+        id S233827AbiHKHKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 03:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233869AbiHKHHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 03:07:06 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7858F94D;
-        Thu, 11 Aug 2022 00:07:05 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id f22so21766038edc.7;
-        Thu, 11 Aug 2022 00:07:05 -0700 (PDT)
+        with ESMTP id S229617AbiHKHJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 03:09:59 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1009E8FD56
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 00:09:56 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id c17so24390656lfb.3
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 00:09:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=TDjWinqlF0X8bU7yycHeeQp7mYPb81LIq0/kGr0oCbc=;
-        b=N4HMGc6y508GTOW8f5WEgo5tCcgy/kUfPFoMNE2IVGpuUDE4BW17B/jEIm/azAT+eA
-         dMLQso7X1/6AvpUOWlsBnD6bQjmK8ndIdMRh/vEkqHVn2BNSdw4qkXBrzSXYnCj7bbTf
-         hsNYiS4kqaeo+4Z7vpWR9zzG3lxuLg9EEAiEqqyh4hNH1k5gd9u3Kscqw/bslRQgKgez
-         1NPBM/Lp9ZsqalQCg+t73EMsI6CQsJXWAZq/VduEJodVDyyst/ccxiKc9VgQmuj0dHJ8
-         SuFwWf2TJTBPOTImi1YbjsdN2YsabaurK3AWCZvt6TmmJbdu8Zm29YNd4rqMtRxCkxA/
-         RiWA==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=h0orVpEglwSLXEru9jgQKJmaJuYt4bdggifYEzNhZY8=;
+        b=NIEgCrpkDI6uU390UEePXPalFUUMsb1cnp8DLahBexXKLR89luySmscmQch+99pUXt
+         GZ/3HvPI83kGVqru2Sw0BrbYYxp9t01Jaq14K6E+zYlmHhmNYokYPb+Z3LFoHLT7RPnE
+         kBY6m4opOtuNsM3MHFJdaAagHX9Bh9j+XNc6JTXlalZ8FvgFOOeZPGkX2a3VO4KA5Cdr
+         ApYV5BcZGm65wYWzD/CRTPeFHuPy/Y5cyAfIi7lD/Gp0SGpszbWj5WTCYoAqTY5HWeb/
+         9VgmKLZvBQWUADQfclRPikP33Sp/Ul3LlJ0B3ub71kbWP8/7pxABOC/CnVAIznBDivqf
+         6E/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=TDjWinqlF0X8bU7yycHeeQp7mYPb81LIq0/kGr0oCbc=;
-        b=mMezKjCt84wfEJoY8KOSwnu9USkQoNR4JcZ+pV1FMkBClaf9jtIAxZ0+VUL3VUk1ti
-         jyu8qksq78rDK0LkiUcFJn9HzWo0NFMARtgqeOrM+bonxFlJgyf6tnMAmIK7De19Su/L
-         SOTjqdiBbdERFV26/6P9V2eh5CPV42PtEisIPHm2aUs0JSSZibXF7Z6YBktbk64Yk4SF
-         aoDZ0pLYZK1I/EoUC9ZkP3idFZmig7YDMHIY1ZwhzuOXIqRiNj+WGA2jvugQilp2kHpA
-         y3PDJjmSnjT07DuD/gK11pmWMn0f606K/ooxS/oRAoubACj9SeFLGa+SPBpKw8uhNjS3
-         CIoA==
-X-Gm-Message-State: ACgBeo0Dga2chp+VZFaAuYodNt3pZBxY6azlMZLRp2MhZkurEd6gvDGm
-        lckOaQrk28qIHajl3kpXcl0Xeg7XG2H0OdIpYig=
-X-Google-Smtp-Source: AA6agR504tQLMZmgqBnlH3VKpLQzvBnzTTvoGiDy9cIvo61T3Jdr6d+rggCBWlhWqqHUAc31RHf5ywfQ8AQXyazgPrw=
-X-Received: by 2002:a05:6402:3697:b0:443:1c6:acc3 with SMTP id
- ej23-20020a056402369700b0044301c6acc3mr1318466edb.421.1660201624083; Thu, 11
- Aug 2022 00:07:04 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=h0orVpEglwSLXEru9jgQKJmaJuYt4bdggifYEzNhZY8=;
+        b=p3K5g5DrIn5YI9/xNxwz3d0QEMRyy8O6X+zUH6/MzpCMI4cMT+W9lQeSywj9MmIn8/
+         sR8PrdF2zRwG1ZWbZfByVMGzS+F69kRqXPy4s4WivwqUPA2fyWKA/rB46hDl8G9eAGxH
+         MljRI/c8p6wiXqZcMM0t38S5S37OCoLk6BS5Awm3pwVAeXDk7OdD8/fMcxuLcym1CeGd
+         ZW4BryI6XEbyvpNSMrJVHROdVoN2Hc6GQyle6xNnMDAYFOA8JdWQFYl0EA96QS5hJE6W
+         k9rdkzswApVb4IwH9X0wdxyYc8pI3MUK5DlX8s3WniXRBasqIXKL3o+lKUhxKSVnCf6x
+         90zA==
+X-Gm-Message-State: ACgBeo308Q8osIX2ES7W6a7sVyimr4Wy/9o1Bwhep7D//4nvQwxAWQ3L
+        ZoRzWi1GAu+neTP6mXiIrzT8v6HO6RVF/CWh
+X-Google-Smtp-Source: AA6agR7sZcaSMiGRFX50EvQLYJN0KQ0+WKaB70S2o80qXAT7w8iz+i+7hMvlLZWALYuETUWT6NizXw==
+X-Received: by 2002:ac2:4e15:0:b0:48b:7a5f:923c with SMTP id e21-20020ac24e15000000b0048b7a5f923cmr9002070lfr.134.1660201794767;
+        Thu, 11 Aug 2022 00:09:54 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:f682:a160:7363:c1c9])
+        by smtp.gmail.com with ESMTPSA id bi20-20020a05651c231400b0025e739cd9a7sm673100ljb.101.2022.08.11.00.09.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 00:09:54 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sergei Antonov <saproj@gmail.com>,
+        Vivien Didelot <vivien.didelot@savoirfairelinux.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH] net: dsa: mv88e6060: prevent crash on an unused port
+Date:   Thu, 11 Aug 2022 10:09:39 +0300
+Message-Id: <20220811070939.1717146-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220810190624.10748-1-daniel@iogearbox.net> <20220810205357.304ade32@kernel.org>
- <20220810211857.51884269@kernel.org>
-In-Reply-To: <20220810211857.51884269@kernel.org>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 11 Aug 2022 00:06:52 -0700
-Message-ID: <CAADnVQK589CZN1Q9w8huJqkEyEed+ZMTWqcpA1Rm2CjN3a4XoQ@mail.gmail.com>
-Subject: Re: pull-request: bpf 2022-08-10
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,33 +70,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 9:18 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 10 Aug 2022 20:53:57 -0700 Jakub Kicinski wrote:
-> > On Wed, 10 Aug 2022 21:06:24 +0200 Daniel Borkmann wrote:
-> > > The following pull-request contains BPF updates for your *net* tree.
-> >
-> > Could you follow up before we send the PR to Linus if this is legit?
-> >
-> > kernel/bpf/syscall.c:5089:5: warning: no previous prototype for function 'kern_sys_bpf' [-Wmissing-prototypes]
-> > int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
-> >     ^
-> > kernel/bpf/syscall.c:5089:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-> > int kern_sys_bpf(int cmd, union bpf_attr *attr, unsigned int size)
->
-> Looking at the code it seems intentional, even if questionable.
-> I wish BPF didn't have all these W=1 warnings, I always worry
-> we'll end up letting an real one in since the CI only compares
-> counts and the counts seem to fluctuate.
+If the port isn't a CPU port nor a user port, 'cpu_dp'
+is a null pointer and a crash happened on dereferencing
+it in mv88e6060_setup_port():
 
-Yeah. It is intentional.
-We used all sorts of hacks to shut up this pointless warning.
-Just grep for __diag_ignore_all("-Wmissing-prototypes
-in two files already.
-Here I've opted for the explicit hack and the comment.
-Pushed this fix to bpf tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git/commit/?id=4e4588f1c4d2e67c993208f0550ef3fae33abce4
+[    9.575872] Unable to handle kernel NULL pointer dereference at virtual address 00000014
+...
+[    9.942216]  mv88e6060_setup from dsa_register_switch+0x814/0xe84
+[    9.948616]  dsa_register_switch from mdio_probe+0x2c/0x54
+[    9.954433]  mdio_probe from really_probe.part.0+0x98/0x2a0
+[    9.960375]  really_probe.part.0 from driver_probe_device+0x30/0x10c
+[    9.967029]  driver_probe_device from __device_attach_driver+0xb8/0x13c
+[    9.973946]  __device_attach_driver from bus_for_each_drv+0x90/0xe0
+[    9.980509]  bus_for_each_drv from __device_attach+0x110/0x184
+[    9.986632]  __device_attach from bus_probe_device+0x8c/0x94
+[    9.992577]  bus_probe_device from deferred_probe_work_func+0x78/0xa8
+[    9.999311]  deferred_probe_work_func from process_one_work+0x290/0x73c
+[   10.006292]  process_one_work from worker_thread+0x30/0x4b8
+[   10.012155]  worker_thread from kthread+0xd4/0x10c
+[   10.017238]  kthread from ret_from_fork+0x14/0x3c
 
-Please consider pulling these changes from:
+Fixes: 0abfd494deef ("net: dsa: use dedicated CPU port")
+CC: Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
+CC: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/mv88e6060.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+diff --git a/drivers/net/dsa/mv88e6060.c b/drivers/net/dsa/mv88e6060.c
+index a4c6eb9a52d0..83dca9179aa0 100644
+--- a/drivers/net/dsa/mv88e6060.c
++++ b/drivers/net/dsa/mv88e6060.c
+@@ -118,6 +118,9 @@ static int mv88e6060_setup_port(struct mv88e6060_priv *priv, int p)
+ 	int addr = REG_PORT(p);
+ 	int ret;
+ 
++	if (dsa_is_unused_port(priv->ds, p))
++		return 0;
++
+ 	/* Do not force flow control, disable Ingress and Egress
+ 	 * Header tagging, disable VLAN tunneling, and set the port
+ 	 * state to Forwarding.  Additionally, if this is the CPU
+-- 
+2.32.0
+
