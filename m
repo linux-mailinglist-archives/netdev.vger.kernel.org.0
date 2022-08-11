@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E068B58FEEC
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2A0E58FF21
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 17:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235573AbiHKPNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:13:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58958 "EHLO
+        id S235601AbiHKPSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiHKPNP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:13:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2C08E9A3
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 08:13:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBC2EB82123
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 15:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4776FC433C1;
-        Thu, 11 Aug 2022 15:13:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660230792;
-        bh=eBigUrgZcJfFvNKu0t9Pdqc6p0jDKxmTYIzOj7ggNEI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=krHJONQUHEXqMZd49PY3EtlYCU2HoQeCZfvkySKzae5TCJ1frmMn10q0Cv9Aj7ZQo
-         4VWPzVavmOWRqqoAO2GVO1UOlaVO1euyoz3Jfi7gjsUKUfgPYjv9O8GSGYU2zLvzJ8
-         BbrbfGNqcC8Bvv5zG+KXw7sSLrmDdOlmXHWRv9tDJROZnkxXKG25yiivFSvVZFz4AF
-         akN73UpP1cWoqqMGMjdnXy54zmswKRG7jeghPdLCEbc+vdGm2z2L00FuD3fVwJz9M7
-         /wkznLpX3aISP2xk28JjBXs3mlsD4D/Wze9Hbya6b6QOke0Aqohu8hE7ZsKYG4WyFc
-         DD7bOP1hhqo4w==
-Date:   Thu, 11 Aug 2022 08:13:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "shenjian (K)" <shenjian15@huawei.com>, davem@davemloft.net,
-        andrew@lunn.ch, ecree.xilinx@gmail.com, hkallweit1@gmail.com,
-        saeed@kernel.org, leon@kernel.org, netdev@vger.kernel.org,
-        linuxarm@openeuler.org
-Subject: Re: [RFCv7 PATCH net-next 36/36] net: redefine the prototype of
- netdev_features_t
-Message-ID: <20220811081311.0f549b39@kernel.org>
-In-Reply-To: <20220811130757.9904-1-alexandr.lobakin@intel.com>
-References: <20220810030624.34711-1-shenjian15@huawei.com>
-        <20220810030624.34711-37-shenjian15@huawei.com>
-        <20220810113547.1308711-1-alexandr.lobakin@intel.com>
-        <3df89822-7dec-c01e-0df9-15b8e6f7d4e5@huawei.com>
-        <20220811130757.9904-1-alexandr.lobakin@intel.com>
+        with ESMTP id S235638AbiHKPSB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:18:01 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE41910AF
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 08:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660231080; x=1691767080;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0fEKQjA1HCk9crC+7tHW1/TWCNPNYgFPRzpLwyPy/HM=;
+  b=D251O83//E3g1kZzGgzOsEXk71ysto7+1LSD/nQnLHEtAXqTjtA42e5v
+   deGBR2hNoy0eDA5SLGCiqtyvpDK48cAarBdeEWvRFb7tk4YsBrFzLUSAl
+   O0DWQfYtRFIDNrjE8Ypl4cRsqyhI9IofnwFVMZILUc9f0eCi4DQd5NWSw
+   +yg50qfwtm+BiEL4dWFwqWH/vmGPdR4643ayw1nv5u8hWRdNipVU2gIPO
+   DbmFE8OQ7JQjg0bHl3J57ZO0jWb0baZgVHfI1rXBrMdkbbTJgQvh9LOER
+   hMYjNKmu/6A7+1YZGSCjLak+m4bgw3Td3p5tca/KLIMoFmkQ967JjnEQB
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="288941687"
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="288941687"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 08:14:04 -0700
+X-IronPort-AV: E=Sophos;i="5.93,230,1654585200"; 
+   d="scan'208";a="781634966"
+Received: from jmhiguer-mobl.amr.corp.intel.com (HELO vcostago-mobl3.intel.com) ([10.212.17.132])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 08:13:59 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     jhogan@kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+Subject: [PATCH] igc: fix deadlock caused by taking RTNL in RPM resume path
+Date:   Thu, 11 Aug 2022 12:13:42 -0300
+Message-Id: <20220811151342.19059-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <4765029.31r3eYUQgx@saruman>
+References: <4765029.31r3eYUQgx@saruman>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,30 +63,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Aug 2022 15:07:57 +0200 Alexander Lobakin wrote:
+It was reported a RTNL deadlock in the igc driver that was causing
+problems during suspend/resume.
 
-> > Yes, Jakub also mentioned this.
-> >=20
-> > But there are many existed features interfaces(e.g. ndo_fix_features,
-> > ndo_features_check), use netdev_features_t as return value. Then we
-> > have to change their prototype. =20
->=20
-> We have to do 12k lines of changes already :D
-> You know, 16 bytes is probably fine to return directly and it will
-> be enough for up to 128 features (+64 more comparing to the
-> mainline). OTOH, using pointers removes that "what if/when", so
-> it's more flexible in that term. So that's why I asked for other
-> folks' opinions -- 2 PoVs doesn't seem enough here.
+The solution is similar to commit ac8c58f5b535 ("igb: fix deadlock
+caused by taking RTNL in RPM resume path").
 
-=46rom a quick grep it seems like the and() is mostly used in some form
-of:
+Reported-by: James Hogan <jhogan@kernel.org>
+Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+---
+Hi James,
 
-	features =3D and(features, mask);
+Thanks to your investigation I found commit ac8c58f5b535, and it looks
+like it could solve the issue you are seeing.
 
-and we already have netdev_features_clear() which modifies its first
-argument. I'd also have and() update its first arg rather than return
-the result as a value. It will require changing the prototype of
-ndo_features_check() :( But yeah, I reckon we shouldn't be putting of
-refactoring, best if we make all the changes at once than have to
-revisit this once the flags grow again and return by value starts to
-be a problem.
+Could you please see if this patch helps. It's only compile and boot
+tested.
+
+Sorry the delay, I am travelling.
+
+Cheers,
+
+
+ drivers/net/ethernet/intel/igc/igc_main.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index ebff0e04045d..5079dc581d8d 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -6600,7 +6600,7 @@ static void igc_deliver_wake_packet(struct net_device *netdev)
+ 	netif_rx(skb);
+ }
+ 
+-static int __maybe_unused igc_resume(struct device *dev)
++static int __maybe_unused __igc_resume(struct device *dev, bool rpm)
+ {
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	struct net_device *netdev = pci_get_drvdata(pdev);
+@@ -6642,23 +6642,30 @@ static int __maybe_unused igc_resume(struct device *dev)
+ 
+ 	wr32(IGC_WUS, ~0);
+ 
+-	rtnl_lock();
++	if (!rpm)
++		rtnl_lock();
+ 	if (!err && netif_running(netdev))
+ 		err = __igc_open(netdev, true);
+ 
+ 	if (!err)
+ 		netif_device_attach(netdev);
+-	rtnl_unlock();
++	if (!rpm)
++		rtnl_unlock();
+ 
+ 	return err;
+ }
+ 
+ static int __maybe_unused igc_runtime_resume(struct device *dev)
+ {
+-	return igc_resume(dev);
++	return __igc_resume(dev, true);
+ }
+ 
+-static int __maybe_unused igc_suspend(struct device *dev)
++static int __maybe_unused igc_resume(struct device *dev)
++{
++	return __igc_resume(dev, false);
++}
++
++static int __maybe_unused __igc_suspend(struct device *dev)
+ {
+ 	return __igc_shutdown(to_pci_dev(dev), NULL, 0);
+ }
+@@ -6719,7 +6726,7 @@ static pci_ers_result_t igc_io_error_detected(struct pci_dev *pdev,
+  *  @pdev: Pointer to PCI device
+  *
+  *  Restart the card from scratch, as if from a cold-boot. Implementation
+- *  resembles the first-half of the igc_resume routine.
++ *  resembles the first-half of the __igc_resume routine.
+  **/
+ static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
+ {
+@@ -6758,7 +6765,7 @@ static pci_ers_result_t igc_io_slot_reset(struct pci_dev *pdev)
+  *
+  *  This callback is called when the error recovery driver tells us that
+  *  its OK to resume normal operation. Implementation resembles the
+- *  second-half of the igc_resume routine.
++ *  second-half of the __igc_resume routine.
+  */
+ static void igc_io_resume(struct pci_dev *pdev)
+ {
+-- 
+2.37.1
+
