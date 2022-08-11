@@ -2,139 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F0358F803
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 09:00:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB2B58F805
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 09:01:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbiHKHAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 03:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37464 "EHLO
+        id S234294AbiHKHBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 03:01:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234203AbiHKHAh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 03:00:37 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCD629817;
-        Thu, 11 Aug 2022 00:00:35 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27B705Jv069485;
-        Thu, 11 Aug 2022 02:00:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660201205;
-        bh=ip7Z7++npAFNQklVD88uiIaYx0GA6sMVYP8RDrD+Dlg=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=MCsdobzlKdfD6Ulpqq7P5xIIxIQVtIFe/XFfzsPnhCG4JRfZq2Ud3d4GRYaJ1Ozbm
-         MDjHA8awaP7Vo/piMo0hXhsem+Zzw10npMWOD/JTBgVbGt0IcpCdh+wkQe3O5xiFqb
-         O0z8mY9K+nybscCmpzCKN1oZba28phSU2pcptkJU=
-Received: from DFLE100.ent.ti.com (dfle100.ent.ti.com [10.64.6.21])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27B705ia056567
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 11 Aug 2022 02:00:05 -0500
-Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE100.ent.ti.com
- (10.64.6.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
- Aug 2022 02:00:04 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE112.ent.ti.com
- (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 11 Aug 2022 02:00:05 -0500
-Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27B7018j032239;
-        Thu, 11 Aug 2022 02:00:02 -0500
-Message-ID: <9d17ab9f-1679-4af1-f85c-a538cb330d7b@ti.com>
-Date:   Thu, 11 Aug 2022 12:30:00 +0530
+        with ESMTP id S229786AbiHKHBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 03:01:01 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FEF2E9FF
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 00:00:59 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id t5so21727789edc.11
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 00:00:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=yKDvXoGhE9VymIRDKMizOkf26gzFKmzaBxN+JMf4zI4=;
+        b=AxOIZZxSoc1hopcnnY/21m/+c6rxeOHs52kXxFZyqZBceWeiFgm5M4QZkKcMc9e8D5
+         46ReJ9JTXB+OOmjzum9P5eVtSB/4ua0/9uhL95ZnpB8ZqBkLuC7y1ojaKAb4G94wdHi0
+         TeOHDmj2h2Z0iV9Sw2SqkZyKfnN7qdw3lOtZbKOsq5iDXDcd7QGUilkiDmA8OLpm+zm1
+         m3ttiBeJnxpLccGAHKxhVD5UAK0aRt8ZvUDFXbxdZwyToEFcxOScJMBY/HE7RjX6xaQv
+         hQ8I9vnb8jnpDdh8nm5LyPM6PogKmA0dVTF/oW74C0LYPjPMrNdBUOpuWckpXWRYY9LL
+         yNBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=yKDvXoGhE9VymIRDKMizOkf26gzFKmzaBxN+JMf4zI4=;
+        b=Pw6fIIzgyPC9hU9tmEsj7Qx7QIsqj94blOWBeABPLkrUbBtpfIxezvodTgLiTnWytK
+         cAjGMWm1UZmIeBJ7TZ3NEaCuNP3K2vhKUarmWfzpCnLduZ1qFPhNR2N1u3tuPsCbd2XE
+         /k7Zs4W0OHIwQg7HkyzBllhXEnGeuaIWrRKqymbt+FFiwf70zuhsM+HIIcLgRuLchQaC
+         zOApigpykrMJIhIrn1kwhes6HFDZGtV3XmT3hU7qQGw/8nNPlcj+bHGKpMnuaMSWc+e0
+         k1Y53VuRA6vG6V3aejId4VeL6ciapjUMm92nfWuOhGVoDRmAcGpClsWxbwsTTXPM/6la
+         EUQQ==
+X-Gm-Message-State: ACgBeo1fghqTyjO6enHIRAlLi/rnXweHXPEqy1NIJUaaBsPp3XYf6MGr
+        FINXRMbqM8v1CAnWbHjUcOzMwUBV+bY/2CahEUwDJQ==
+X-Google-Smtp-Source: AA6agR4w7AxtfaM+icnb6QzN8O86KTkJmMMhlE8wgH4bxszR76OfqhLG8jRW3DV7JdermkR/iMyEnb0pyk/hXZbrq9w=
+X-Received: by 2002:a05:6402:d05:b0:425:b7ab:776e with SMTP id
+ eb5-20020a0564020d0500b00425b7ab776emr30703741edb.142.1660201258017; Thu, 11
+ Aug 2022 00:00:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
- workaround for errata i2329
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-omap@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
-        <vigneshr@ti.com>
-References: <20220810111345.31200-1-r-gunasekaran@ti.com>
- <YvRNpAdG7/edUEc+@lunn.ch>
-From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
-In-Reply-To: <YvRNpAdG7/edUEc+@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220810164627.1.Id730b98f188a504d9835b96ddcbc83d49a70bb36@changeid>
+ <CABBYNZLhhdKLqYu-5OWQcHs22aeEJw0tSjVNhgpMCj_ctH+Ldg@mail.gmail.com>
+In-Reply-To: <CABBYNZLhhdKLqYu-5OWQcHs22aeEJw0tSjVNhgpMCj_ctH+Ldg@mail.gmail.com>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Thu, 11 Aug 2022 15:00:46 +0800
+Message-ID: <CAJQfnxGOcALAOGQb57bMKfU9qe1jBKXFgnPJhHcoVtSGaVk0zQ@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Honor name resolve evt regardless of discov state
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Ying Hsu <yinghsu@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Luiz,
 
+On Thu, 11 Aug 2022 at 03:58, Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Archie,
+>
+> On Wed, Aug 10, 2022 at 1:47 AM Archie Pusaka <apusaka@google.com> wrote:
+> >
+> > From: Archie Pusaka <apusaka@chromium.org>
+> >
+> > Currently, we don't update the name resolving cache when receiving
+> > a name resolve event if the discovery phase is not in the resolving
+> > stage.
+> >
+> > However, if the user connect to a device while we are still resolving
+> > remote name for another device, discovery will be stopped, and because
+> > we are no longer in the discovery resolving phase, the corresponding
+> > remote name event will be ignored, and thus the device being resolved
+> > will stuck in NAME_PENDING state.
+> >
+> > If discovery is then restarted and then stopped, this will cause us to
+> > try cancelling the name resolve of the same device again, which is
+> > incorrect and might upset the controller.
+>
+> Please add the Fixes tag.
 
-On 11/08/22 6:00 am, Andrew Lunn wrote:
->> +static int davinci_mdiobb_read(struct mii_bus *bus, int phy, int reg)
->> +{
->> +	int ret;
->> +	struct mdiobb_ctrl *ctrl = bus->priv;
->> +	struct davinci_mdio_data *data;
->> +
->> +	data = container_of(ctrl, struct davinci_mdio_data, bb_ctrl);
->> +
->> +	if (phy & ~PHY_REG_MASK || reg & ~PHY_ID_MASK)
->> +		return -EINVAL;
-> 
-> You don't need this. Leave it up to the bit banging code to do the
-> validation. This also breaks C45, which the bit banging code can do,
-> and it looks like the hardware cannot.
+Unfortunately I don't know when was the issue introduced, I don't even
+know whether this is a recent issue or an old one.
+Looking back, this part of the code has stayed this way since 2012.
+Do I still need to add the fixes tag? If so, does it have to be accurate?
 
-I will remove these validation.
+>
+> > Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+> > Reviewed-by: Ying Hsu <yinghsu@chromium.org>
+> >
+> > ---
+> > The following steps are performed:
+> >     (1) Prepare 2 classic peer devices that needs RNR. Put device A
+> >         closer to DUT and device B (much) farther from DUT.
+> >     (2) Remove all cache and previous connection from DUT
+> >     (3) Put both peers into pairing mode, then start scanning on DUT
+> >     (4) After ~8 sec, turn off peer B.
+> >     *This is done so DUT can discover peer B (discovery time is 10s),
+> >     but it hasn't started RNR. Peer is turned off to buy us the max
+> >     time in the RNR phase (5s).
+> >     (5) Immediately as device A is shown on UI, click to connect.
+> >     *We thus know that the DUT is in the RNR phase and trying to
+> >     resolve the name of peer B when we initiate connection to peer A.
+> >     (6) Forget peer A.
+> >     (7) Restart scan and stop scan.
+> >     *Before the CL, stop scan is broken because we will try to cancel
+> >     a nonexistent RNR
+> >     (8) Restart scan again. Observe DUT can scan normally.
+> >
+> >
+> >  net/bluetooth/hci_event.c | 17 ++++++++++-------
+> >  1 file changed, 10 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+> > index 395c6479456f..95e145e278c9 100644
+> > --- a/net/bluetooth/hci_event.c
+> > +++ b/net/bluetooth/hci_event.c
+> > @@ -2453,6 +2453,16 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
+> >             !test_and_set_bit(HCI_CONN_MGMT_CONNECTED, &conn->flags))
+> >                 mgmt_device_connected(hdev, conn, name, name_len);
+> >
+> > +       e = hci_inquiry_cache_lookup_resolve(hdev, bdaddr, NAME_PENDING);
+> > +
+> > +       if (e) {
+> > +               list_del(&e->list);
+> > +
+> > +               e->name_state = name ? NAME_KNOWN : NAME_NOT_KNOWN;
+> > +               mgmt_remote_name(hdev, bdaddr, ACL_LINK, 0x00, e->data.rssi,
+> > +                                name, name_len);
+> > +       }
+> > +
+> >         if (discov->state == DISCOVERY_STOPPED)
+> >                 return;
+> >
+> > @@ -2462,7 +2472,6 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
+> >         if (discov->state != DISCOVERY_RESOLVING)
+> >                 return;
+> >
+> > -       e = hci_inquiry_cache_lookup_resolve(hdev, bdaddr, NAME_PENDING);
+> >         /* If the device was not found in a list of found devices names of which
+> >          * are pending. there is no need to continue resolving a next name as it
+> >          * will be done upon receiving another Remote Name Request Complete
+> > @@ -2470,12 +2479,6 @@ static void hci_check_pending_name(struct hci_dev *hdev, struct hci_conn *conn,
+> >         if (!e)
+> >                 return;
+> >
+> > -       list_del(&e->list);
+> > -
+> > -       e->name_state = name ? NAME_KNOWN : NAME_NOT_KNOWN;
+> > -       mgmt_remote_name(hdev, bdaddr, ACL_LINK, 0x00, e->data.rssi,
+> > -                        name, name_len);
+> > -
+> >         if (hci_resolve_next_name(hdev))
+> >                 return;
+> >
+> > --
+> > 2.37.1.595.g718a3a8f04-goog
+> >
+>
+>
+> --
+> Luiz Augusto von Dentz
 
->> +
->> +	ret = pm_runtime_resume_and_get(data->dev);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = mdiobb_read(bus, phy, reg);
->> +
->> +	pm_runtime_mark_last_busy(data->dev);
->> +	pm_runtime_put_autosuspend(data->dev);
-> 
-> Once you take the validation out, this function then all becomes about
-> runtime power management. Should the bit banging core actually be
-> doing this? It seems like it is something which could be useful for
-> other devices.
-> 
-> struct mii_bus has a parent member. If set, you could apply these run
-> time PM functions to that. Please add a patch to modify the core bit
-> banging code, and then you should be able to remove these helpers.
-
-Devices may or may not be configured for runtime autosuspend, and 
-perhaps may not even use runtime PM. pm_runtime_enabled() and the 
-autosuspend configuration could be addressed by checking against 
-dev->power.use_autosuspend flag. But if the runtime PM functions are 
-added to the bit banging core, would it not restrict the usage of 
-pm_runtime_put_*() variants for others?
-
-There is atleast one device sh_eth, which is not configured for 
-autosuspend but uses the bit bang core in sh_mdiobb_read() and invokes 
-regular runtime PM functions.
-
->>   static int davinci_mdio_probe(struct platform_device *pdev)
->>   {
->>   	struct mdio_platform_data *pdata = dev_get_platdata(&pdev->dev);
->> @@ -340,12 +535,30 @@ static int davinci_mdio_probe(struct platform_device *pdev)
->>   	struct phy_device *phy;
->>   	int ret, addr;
->>   	int autosuspend_delay_ms = -1;
->> +	const struct soc_device_attribute *soc_match_data;
-> 
-> netdev uses reverse christmas tree. Variables should be sorted longest
-> first, shortest last.
-
-Noted. I will fix this as well.
-
-
--- 
-Regards,
-Ravi
+Thanks,
+Archie
