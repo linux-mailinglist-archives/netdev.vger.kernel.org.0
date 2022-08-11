@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 987B3590493
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868E7590479
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238454AbiHKQc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 12:32:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38410 "EHLO
+        id S238330AbiHKQc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 12:32:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238944AbiHKQbj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:31:39 -0400
+        with ESMTP id S238961AbiHKQbl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:31:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DC329C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA83C10FB;
         Thu, 11 Aug 2022 09:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB6236141C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFFD16145B;
         Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C481C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 54816C4347C;
         Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1660234215;
-        bh=HXAbDfVeXmIO5DEFlIxEcJYO7aeSrFuwHUb0hgRFnoA=;
+        bh=fwNryxcXoLuBUuV+BJ0v6gHwy+VG3pWeBl4er5b7iiQ=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uv3O1Kt1q6z/eN1cEL2/BHFpyxBdegNZvreMLJr/KyXa+ZRT/eHBGb4xi3jdEOOtR
-         Wm0+pHPzrqQm81UjWFJFyqGeF9kvdIUeGm3HJ7t8rsM/L2TGpgR9HpA+GiBmhiJwd/
-         PAwCPS6TxrCXAVfkYXyxSpyHeu7C2DP5w+fESSp0RW0yYHyN60BO8SViml1wLOgQKd
-         G43la+Af9BoRscgBqnv8VVhQskvczXqpeGhWliEXyD2y5wTHdYKhn0monw3dYLM4NQ
-         NKdux0pc2CDi+e/kSK4mkGWTt8onL3a3GM2gz3ryynukA7TclWg9JK4ixYKXunS0Ks
-         8t9s3BYFoSF9Q==
+        b=FUhA5HBWP6tafLrt5KNuOu44kVTAlGPW/0xiZ55lAyX1vT1oV0LfruA86r4s5y1lt
+         RCMWj98Abx4w8w++H/sdvVSQlmrSwR1hNlLxKcOgj5xX3jfeZXo34N9IB1Oa1vY+Al
+         xx57qIR4XBwtjVOSNGmr6KytFxx5lSJXtRvxwd+BrgkNy0+tyeV7sXJ+7oedGICxN/
+         Sj3Ib4iejilkBAqTbeXrYbzqeprBBwc1qtOwSvD4eBJjoMtCMDj140+A/VuAnHxsyj
+         ghkhpeZjqMvQrZoPXPiCcOkbBcF2Ilg3boBQEGa0GwwT0I/xNOyD3ejBKXiBUonBka
+         04Zb9MxShstaA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C2F0C43143;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 35C28C43144;
         Thu, 11 Aug 2022 16:10:15 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] bonding: fix reference count leak in balance-alb mode
+Subject: Re: [PATCH net] mlxsw: minimal: Fix deadlock in ports creation
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166023421511.9507.3349317019551791684.git-patchwork-notify@kernel.org>
+Message-Id: <166023421521.9507.10489139013497988620.git-patchwork-notify@kernel.org>
 Date:   Thu, 11 Aug 2022 16:10:15 +0000
-References: <26758.1660194413@famine>
-In-Reply-To: <26758.1660194413@famine>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-Cc:     netdev@vger.kernel.org, sunshouxin@chinatelecom.cn,
-        vfalico@gmail.com, andy@greyhouse.net, razor@blackwall.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-kernel@vger.kernel.org,
-        huyd12@chinatelecom.cn
+References: <f4afce5ab0318617f3866b85274be52542d59b32.1660211614.git.petrm@nvidia.com>
+In-Reply-To: <f4afce5ab0318617f3866b85274be52542d59b32.1660211614.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vadimp@nvidia.com, idosch@nvidia.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,20 +62,22 @@ Hello:
 This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 10 Aug 2022 22:06:53 -0700 you wrote:
-> Commit d5410ac7b0ba ("net:bonding:support balance-alb interface
-> with vlan to bridge") introduced a reference count leak by not releasing
-> the reference acquired by ip_dev_find().  Remedy this by insuring the
-> reference is released.
+On Thu, 11 Aug 2022 11:57:36 +0200 you wrote:
+> From: Vadim Pasternak <vadimp@nvidia.com>
 > 
-> Fixes: d5410ac7b0ba ("net:bonding:support balance-alb interface with vlan to bridge")
-> Signed-off-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+> Drop devl_lock() / devl_unlock() from ports creation and removal flows
+> since the devlink instance lock is now taken by mlxsw_core.
+> 
+> Fixes: 72a4c8c94efa ("mlxsw: convert driver to use unlocked devlink API during init/fini")
+> Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] bonding: fix reference count leak in balance-alb mode
-    https://git.kernel.org/netdev/net/c/4f5d33f4f798
+  - [net] mlxsw: minimal: Fix deadlock in ports creation
+    https://git.kernel.org/netdev/net/c/4f98cb0408b0
 
 You are awesome, thank you!
 -- 
