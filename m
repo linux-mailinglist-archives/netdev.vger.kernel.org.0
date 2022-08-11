@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E6BC5901E7
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCFF1590187
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:00:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbiHKPyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 11:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36752 "EHLO
+        id S237046AbiHKPzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 11:55:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiHKPyH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:54:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39DC6B643;
-        Thu, 11 Aug 2022 08:45:34 -0700 (PDT)
+        with ESMTP id S236953AbiHKPyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 11:54:46 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576DD85AB6;
+        Thu, 11 Aug 2022 08:45:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67B4F61633;
-        Thu, 11 Aug 2022 15:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 853A8C433C1;
-        Thu, 11 Aug 2022 15:45:32 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id C3D11CE223C;
+        Thu, 11 Aug 2022 15:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5462C433D7;
+        Thu, 11 Aug 2022 15:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660232733;
-        bh=Q/b5sdn+npo2ooep5nrSplnZeiz1t01Fl6+3JDl+qtI=;
+        s=k20201202; t=1660232749;
+        bh=Aocgr8zGnQi0qKTbUzhRxToq4ousPGgnT8+596BZhCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rvm/SDY7OFwUnkg3+Y4fy69NCkREMGAgnowVQ20UF5HIe0097ZjT6pDdnQpauxc4H
-         DN3FvrA967GAop9sXfR9ApeTI2HqLjbVLXgH0PkzZyuE88/y6eUblMqaJk3UqPQKeA
-         VZBIMJcNz8x/cBWkVei0MK9KhNUcXAgLOnO19dEA5o7hmcjLba0A7t0drdC9ZdtEzc
-         qoN9Z5yeGW8dvN2e9UU0DRtumkLxMAGATC38lUu7BNCrKtQq5OlsIYyftqHSRzVZyL
-         gXY5bMJ5OG+j/cfZm78CBv8leg1HR9L0Go3NVK2HiilqzMbuL0jlYjcnsNdxHZk6IF
-         4EkGWSvXKlWBg==
+        b=lgfbh8DeYJnXuuli4ibbJwXpjLH2iaQeFTsg0zPhbTlsvBj0Hkoj4ffv2ZSZ8RnQr
+         YkmFMTpyOQh6N96EdmAEcMbNRFt/A4JxJ6zWsbOGztFEwOo/JJfwDWPcf0LEdSxyYp
+         Mw/J6Cmty3qpLxMGIYtMJ2gYpEwUwWNrpnTs4CV5vT1sTfdQ4nofYCWjbMoA7uQEzN
+         H8OuUy8LQkf57howzabAhOHiiUVV+BzK9PqirduGf5L/rg3a7IrNjnmifUANCMZ27J
+         Y7r7Yj/sosjX7QGgI29BTe2C875XOpUa8Pt82CpSDZccqe2YuTp4OBi4yI7FlmXmdD
+         7e7I9qgm1UYtA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+Cc:     Petr Machata <petrm@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, andrew@lunn.ch,
-        hkallweit1@gmail.com, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 25/93] net: phy: marvell-88x2222: set proper phydev->port
-Date:   Thu, 11 Aug 2022 11:41:19 -0400
-Message-Id: <20220811154237.1531313-25-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        danieller@nvidia.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.18 26/93] selftests: mlxsw: resource_scale: Allow skipping a test
+Date:   Thu, 11 Aug 2022 11:41:20 -0400
+Message-Id: <20220811154237.1531313-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220811154237.1531313-1-sashal@kernel.org>
 References: <20220811154237.1531313-1-sashal@kernel.org>
@@ -58,40 +59,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+From: Petr Machata <petrm@nvidia.com>
 
-[ Upstream commit 9794ef5a68430946da2dfe7342be53b50bce9a41 ]
+[ Upstream commit 8cad339db339a39cb82b1188e4be4070a433abac ]
 
-phydev->port was not set and always reported as PORT_TP.
-Set phydev->port according to inserted SFP module.
+The scale tests are currently testing two things: that some number of
+instances of a given resource can actually be created; and that when an
+attempt is made to create more than the supported amount, the failures are
+noted and handled gracefully.
 
-Signed-off-by: Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Sometimes the scale test depends on more than one resource. In particular,
+a following patch will add a RIF counter scale test, which depends on the
+number of RIF counters that can be bound, and also on the number of RIFs
+that can be created.
+
+When the test is limited by the auxiliary resource and not by the primary
+one, there's no point trying to run the overflow test, because it would be
+testing exhaustion of the wrong resource.
+
+To support this use case, when the $test_get_target yields 0, skip the test
+instead.
+
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Amit Cohen <amcohen@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell-88x2222.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh | 5 +++++
+ .../selftests/drivers/net/mlxsw/spectrum/resource_scale.sh   | 4 ++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/drivers/net/phy/marvell-88x2222.c b/drivers/net/phy/marvell-88x2222.c
-index d8b31d4d2a73..f070776ca904 100644
---- a/drivers/net/phy/marvell-88x2222.c
-+++ b/drivers/net/phy/marvell-88x2222.c
-@@ -490,6 +490,7 @@ static int mv2222_sfp_insert(void *upstream, const struct sfp_eeprom_id *id)
- 	dev = &phydev->mdio.dev;
- 
- 	sfp_parse_support(phydev->sfp_bus, id, sfp_supported);
-+	phydev->port = sfp_parse_port(phydev->sfp_bus, id, sfp_supported);
- 	sfp_interface = sfp_select_interface(phydev->sfp_bus, sfp_supported);
- 
- 	dev_info(dev, "%s SFP module inserted\n", phy_modes(sfp_interface));
-@@ -526,6 +527,7 @@ static void mv2222_sfp_remove(void *upstream)
- 
- 	priv->line_interface = PHY_INTERFACE_MODE_NA;
- 	linkmode_zero(priv->supported);
-+	phydev->port = PORT_NONE;
- }
- 
- static void mv2222_sfp_link_up(void *upstream)
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+index e9f65bd2e299..df920b6ed7c4 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum-2/resource_scale.sh
+@@ -36,6 +36,11 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 	for should_fail in 0 1; do
+ 		RET=0
+ 		target=$(${current_test}_get_target "$should_fail")
++		if ((target == 0)); then
++			log_test_skip "'$current_test' should_fail=$should_fail test"
++			continue
++		fi
++
+ 		${current_test}_setup_prepare
+ 		setup_wait $num_netifs
+ 		${current_test}_test "$target" "$should_fail"
+diff --git a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+index dea33dc93790..b75d1fcd2db2 100755
+--- a/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
++++ b/tools/testing/selftests/drivers/net/mlxsw/spectrum/resource_scale.sh
+@@ -41,6 +41,10 @@ for current_test in ${TESTS:-$ALL_TESTS}; do
+ 		for should_fail in 0 1; do
+ 			RET=0
+ 			target=$(${current_test}_get_target "$should_fail")
++			if ((target == 0)); then
++				log_test_skip "'$current_test' [$profile] should_fail=$should_fail test"
++				continue
++			fi
+ 			${current_test}_setup_prepare
+ 			setup_wait $num_netifs
+ 			${current_test}_test "$target" "$should_fail"
 -- 
 2.35.1
 
