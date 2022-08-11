@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A454058FA29
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 11:37:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AFCE58FA3A
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 11:43:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234837AbiHKJhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 05:37:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47954 "EHLO
+        id S232585AbiHKJnm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 05:43:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232585AbiHKJhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 05:37:38 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39EE90802;
-        Thu, 11 Aug 2022 02:37:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 54E61CE1FCB;
-        Thu, 11 Aug 2022 09:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF321C433D6;
-        Thu, 11 Aug 2022 09:37:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660210648;
-        bh=hE/Qb0FD4bADTX3ai6AJnDvlPB0Rt0EGI8kSmltGj/E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SDJpHh0nYgdvSobJ3dsR6WHj0c5Yam+qZVVKWF+rwbYrSyDTLmw275TTQE++XM3hC
-         SX1oSZQNdb3VkXpDwgF0S4m1z2EfePKP8ThZksG/NrcWdkCFUAB2tgjXskuXk+BEaG
-         2hsVrdJiJsHbBbQyrhUlOkhj1cIlMqQi3/T0my26TNx9JJExIYQ+s91jXVLNwAtKNV
-         nXTUeubw/yPv4L0+ahvm1nMhT1jue9/LEEEm3LF570+KjvbYSbAPeeIleqEjs8hQ4y
-         ISop5SP8APX6BJ+IN4ImCIYLYFUTYF+zr32EiVlEtNnrFschuaeHh0/3f8Cf87QqdU
-         2yJAT+tbrtjUg==
-Date:   Thu, 11 Aug 2022 15:07:21 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Maxim Kochetkov <fido_max@inbox.ru>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-arm-msm@vger.kernel.org,
-        Hemant Kumar <quic_hemantk@quicinc.com>
-Subject: Re: [PATCH 1/1] net: qrtr: start MHI channel after endpoit creation
-Message-ID: <20220811093721.GA29799@workstation>
-References: <20220811092145.1648008-1-fido_max@inbox.ru>
+        with ESMTP id S234992AbiHKJnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 05:43:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAEDC81698
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 02:43:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oM4ix-0004BG-Ty; Thu, 11 Aug 2022 11:43:31 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1ACD2C7587;
+        Thu, 11 Aug 2022 09:43:31 +0000 (UTC)
+Date:   Thu, 11 Aug 2022 11:43:29 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH] can: rx-offload: Break loop on queue full
+Message-ID: <20220811094329.hgkgeydboswlfwvr@pengutronix.de>
+References: <20220810144536.389237-1-u.kleine-koenig@pengutronix.de>
+ <20220811083039.xi4fkj2cl4k22wm7@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zllfu5hp6pdxzqpm"
 Content-Disposition: inline
-In-Reply-To: <20220811092145.1648008-1-fido_max@inbox.ru>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220811083039.xi4fkj2cl4k22wm7@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,79 +53,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 12:21:45PM +0300, Maxim Kochetkov wrote:
-> MHI channel may generates event/interrupt right after enabling.
-> It may leads to 2 race conditions issues.
-> 
-> 1)
-> Such event may be dropped by qcom_mhi_qrtr_dl_callback() at check:
-> 
-> 	if (!qdev || mhi_res->transaction_status)
-> 		return;
-> 
-> Because dev_set_drvdata(&mhi_dev->dev, qdev) may be not performed at
-> this moment. In this situation qrtr-ns will be unable to enumerate
-> services in device.
-> ---------------------------------------------------------------
-> 
-> 2)
-> Such event may come at the moment after dev_set_drvdata() and
-> before qrtr_endpoint_register(). In this case kernel will panic with
-> accessing wrong pointer at qcom_mhi_qrtr_dl_callback():
-> 
-> 	rc = qrtr_endpoint_post(&qdev->ep, mhi_res->buf_addr,
-> 				mhi_res->bytes_xferd);
-> 
-> Because endpoint is not created yet.
-> --------------------------------------------------------------
-> So move mhi_prepare_for_transfer_autoqueue after endpoint creation
-> to fix it.
-> 
-> Fixes: a2e2cc0dbb11 ("net: qrtr: Start MHI channels during init")
-> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-> Reviewed-by: Hemant Kumar <quic_hemantk@quicinc.com>
-> Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-> ---
->  net/qrtr/mhi.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/qrtr/mhi.c b/net/qrtr/mhi.c
-> index 18196e1c8c2f..17520d9e7a51 100644
-> --- a/net/qrtr/mhi.c
-> +++ b/net/qrtr/mhi.c
-> @@ -78,11 +78,6 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
->  	struct qrtr_mhi_dev *qdev;
->  	int rc;
->  
-> -	/* start channels */
-> -	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
-> -	if (rc)
-> -		return rc;
-> -
->  	qdev = devm_kzalloc(&mhi_dev->dev, sizeof(*qdev), GFP_KERNEL);
->  	if (!qdev)
->  		return -ENOMEM;
-> @@ -96,6 +91,11 @@ static int qcom_mhi_qrtr_probe(struct mhi_device *mhi_dev,
->  	if (rc)
->  		return rc;
->  
-> +	/* start channels */
-> +	rc = mhi_prepare_for_transfer_autoqueue(mhi_dev);
-> +	if (rc)
-> +		return rc;
 
-I missed the fact that you need to call qrtr_endpoint_unregister() in
-the error path.
+--zllfu5hp6pdxzqpm
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Please fix it.
+On 11.08.2022 10:30:39, Marc Kleine-Budde wrote:
+> On 10.08.2022 16:45:36, Uwe Kleine-K=C3=B6nig wrote:
+> > The following happend on an i.MX25 using flexcan with many packets on
+> > the bus:
+> >=20
+> > The rx-offload queue reached a length more than skb_queue_len_max. So in
+> > can_rx_offload_offload_one() the drop variable was set to true which
+> > made the call to .mailbox_read() (here: flexcan_mailbox_read()) just
+> > return ERR_PTR(-ENOBUFS) (plus some irrelevant hardware interaction) and
+> > so can_rx_offload_offload_one() returned ERR_PTR(-ENOBUFS), too.
+> >=20
+> > Now can_rx_offload_irq_offload_fifo() looks as follows:
+> >=20
+> > 	while (1) {
+> > 		skb =3D can_rx_offload_offload_one(offload, 0);
+> > 		if (IS_ERR(skb))
+> > 			continue;
+> > 		...
+> > 	}
+> >=20
+> > As the i.MX25 is a single core CPU while the rx-offload processing is
+> > active there is no thread to process packets from the offload queue and
+> > so it doesn't get shorter.
+> >=20
+> > The result is a tight loop: can_rx_offload_offload_one() does nothing
+> > relevant and returns an error code and so
+> > can_rx_offload_irq_offload_fifo() calls can_rx_offload_offload_one()
+> > again.
+> >=20
+> > To break that loop don't continue calling can_rx_offload_offload_one()
+> > after it reported an error.
+> >=20
+> > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > ---
+> > Hello,
+> >=20
+> > this patch just implements the obvious change to break the loop. I'm not
+> > 100% certain that there is no corner case where the break is wrong. The
+> > problem exists at least since v5.6, didn't go back further to check.
+> >=20
+> > This fixes a hard hang on said i.MX25.
+>=20
+> As Uwe suggested in an IRC conversation, the correct fix for the flexcan
+> driver is to return NULL if there is no CAN frame pending.
+>=20
+> I'll send a -v2.
 
-Thanks,
-Mani
+https://lore.kernel.org/all/20220811094254.1864367-1-mkl@pengutronix.de
 
-> +
->  	dev_dbg(qdev->dev, "Qualcomm MHI QRTR driver probed\n");
->  
->  	return 0;
-> -- 
-> 2.34.1
-> 
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--zllfu5hp6pdxzqpm
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmL0zz8ACgkQrX5LkNig
+011+Xwf/X4VsSsn3CgA4sPOsk5lCd1TSocL6rIW/b44B/giltDfJ7zaIJGndd9sz
+qSiOcNLsxKm9JTp+m9YPlBqeszH7PQ3EDce7jey9nFZW+dp8QvAYwdoGTYHpU3YA
+MDXjjCj4CqamYqiR8cK+A6pex5HJAdyEYOeET8gy6eiDiy+hoh6WE90qBH9C6Blc
+tJLbNhL5q8kDopXxhGCSa37BMqVGkbFzql5oXFBmLem8U5CIMAwxHYtcNKBWffOV
+tqOA15FqJdbCom5jNS+SwuImCWIPG1c+kzKRQq/8KGt9LPWpEsZqGjTNq4pcA3KC
+PqCclvArr7RT5UBuPMuOat7ZBUaprQ==
+=OTv0
+-----END PGP SIGNATURE-----
+
+--zllfu5hp6pdxzqpm--
