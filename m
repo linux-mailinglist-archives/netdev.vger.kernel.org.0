@@ -2,108 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA6959055A
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 19:04:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A387590561
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 19:08:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234731AbiHKREr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 13:04:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        id S235109AbiHKRIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 13:08:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235632AbiHKREa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 13:04:30 -0400
-Received: from mail-oa1-x44.google.com (mail-oa1-x44.google.com [IPv6:2001:4860:4864:20::44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66015BFE97
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:35:34 -0700 (PDT)
-Received: by mail-oa1-x44.google.com with SMTP id 586e51a60fabf-116c7286aaaso6198732fac.11
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:35:34 -0700 (PDT)
+        with ESMTP id S234971AbiHKRHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 13:07:52 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AE8B9412
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:38:52 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id d65-20020a17090a6f4700b001f303a97b14so5611065pjk.1
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:38:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=Zczd81LNv1xHVJW5LMHbnrfWpLWiMppZkaou/EB+Esg=;
-        b=kmINe7WZ1opzh8b3nAhaU/2SSw88sntzEe9tbx/lxmIWCgVhdXQZ+tc6H6Rq1mqYDo
-         Dkb3ySFNTkth07u5uiUH4hZRfz4xPzYhdSg90V4P1e6Joew14GUNEF01ucl/luI9pJOL
-         Ok4EaZq5bPNuOdX20oQ7OUMCnkIc7Kl/qZL4afg76sWjAd0Kfu9OXYGZp7IHbIGmfRYO
-         wHp5PxiiFxpUFL5luuP8dvF+zFqeUR1hwV6BRpg9XPzcZjRUiJ9AfS3pEY2Ppe0hY4qv
-         3j28sjdcbi/7Zj0XtbZrwJIn1RIPNmKjRjx/XfaGj8GfZlaCYWaGlmaXPQyaPhaKDxN0
-         Jxiw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=7mtAPaCvuXWhKm6qq0xjM2LkXuh1hMoxs+rdRBZuI7E=;
+        b=B1JxAUU7v4FoWRM+SxomGLHFr8HSTYrye+HYzez6UPyzxW2ubD/sJZe9EXRXedLztF
+         mSQFcd7ug0o/SWABt1RieFJXHEHlie6p8ll4PsMvaz9NC9/vbDGjXL2Cr2UJ7xMkjaAW
+         Y4U0CYDyrTQuuhddKVtgrRKVbBC2jR6DT6/yQWKhWlFMqyTyXwgeuDT6XzowWng0RYy5
+         qdnbExsHxc9thvjmXobJf/hxY4FE3+nDrYCISi83ebCVqYgsLt4I+kAjc05Cvsfo2G3k
+         0TK/wUcDr5I6eGWpeUy7j4YN7aXgTKF8EARPYZTLgY9er1fRA75s7AqDowVeH96xIIYV
+         SQEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=Zczd81LNv1xHVJW5LMHbnrfWpLWiMppZkaou/EB+Esg=;
-        b=EzxAsEZbMMhzLtqfRFjKSNAW+CRJ3prhsHmwCBCBIza4LD4qdTKiq8dFfMnQ4eIvFW
-         qA0RhoPHGN8ehC+8vep4gwi+dlM4bUDOz6lqL/u/4/tA5OawLtXelAdDjft1tagz4TjK
-         7HNAJ242BOoX9HE8vxWYyVWK5tqszShET6zn8VNwDCkN0xjRgRXbj9oKPgRbQfKB/jeW
-         f/EdwRs5R1rzbIPlsY+t8S0JZs4OrLAlEQklSa3m5nYXJKoOvHUcV5eMdYPGfmAuC+Tp
-         Ke+OTiVks0LNbPj4lcNAiX93XPojk4GXWtbbGEozwr+hkgxp+KN57B9RBGI3bWY7VNb/
-         bHWw==
-X-Gm-Message-State: ACgBeo3lLyrhHuDwIO5Jx/YzAsL9eeaPJ5TUnv6zBepE+p7aznzWHspE
-        JwB50988vVjsoE/bmnKr8k7251CZqsEzPgSkvB8=
-X-Google-Smtp-Source: AA6agR5lnZsWXBMV9JTu2soQ1lOHfgykO8XKKm8a5FxBBjmzhPRqKHHm7uYsad6/jdrC1GQYHX3jCYK0CeP/QJgJnSg=
-X-Received: by 2002:a05:6870:a689:b0:10c:289b:78df with SMTP id
- i9-20020a056870a68900b0010c289b78dfmr4007611oam.25.1660235732122; Thu, 11 Aug
- 2022 09:35:32 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=7mtAPaCvuXWhKm6qq0xjM2LkXuh1hMoxs+rdRBZuI7E=;
+        b=dsrMgnVUMw28gcc5qZ0c2rhpu+S5ZDPEIZ1Pzl0RUn/ZV/at3jiAKIMpM4xc2uIBeQ
+         PUZOaJx/36ii1iZaezTg4a+GTxc86h4W9vu9zoBN9VmLPufZF8KPv4946pQNkuDzwOPU
+         SNeUBpkvCh3/jyfcgHhG0N1FGXwlxvNhS4yET/HpTvUDAQO5apWoxnAAVSokE8+7V8mu
+         iTsBDlAzQhzDKc4d4c79/IEZQ9883G8rX2/0BD9+GOpVwF/mjtwd1gJ0Z6K5EAk6gbHm
+         JN+pQGukFoWlufI+Z0VFqnqiHP0iUrH0UAsksTXuMzRrZKuxymCsMWg6SjpNx2Teoakv
+         NH5g==
+X-Gm-Message-State: ACgBeo0L9u07436RSOxRIp5YQqc0f7bZQGaOpKMh9mof0a2hNXJ7Bk3t
+        N3LtQ41XnWh20+Zkd7xPKa8=
+X-Google-Smtp-Source: AA6agR5kGcUfg7FnUuwiQH+SMQ8Y9BJFWpj1R3aa98ecT8b3LgBatloGdpmM8AZPY8wc3Lwop87Zrw==
+X-Received: by 2002:a17:903:1246:b0:171:5033:85c with SMTP id u6-20020a170903124600b001715033085cmr40386plh.146.1660235930563;
+        Thu, 11 Aug 2022 09:38:50 -0700 (PDT)
+Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
+        by smtp.gmail.com with ESMTPSA id d15-20020a170902cecf00b0015e8d4eb1d7sm15346263plg.33.2022.08.11.09.38.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 09:38:50 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 09:38:48 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>,
+        netdev@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>
+Subject: Re: [PATCH] fec: Restart PPS after link state change
+Message-ID: <YvUwmFCDoZofr0Yv@hoboy.vegasvil.org>
+References: <20220809124119.29922-1-csokas.bence@prolan.hu>
+ <YvKZNcVfYdLw7bkm@lunn.ch>
+ <299d74d5-2d56-23f6-affc-78bb3ae3e03c@prolan.hu>
+ <YvRH06S/7E6J8RY0@lunn.ch>
+ <YvRdTwRM4JBc5RuV@hoboy.vegasvil.org>
+ <YvRjzwMsMWv3AG1H@lunn.ch>
 MIME-Version: 1.0
-Received: by 2002:a4a:b507:0:0:0:0:0 with HTTP; Thu, 11 Aug 2022 09:35:31
- -0700 (PDT)
-Reply-To: ubabankdirector07@gmail.com
-From:   "Mr.Peter Usman" <mtoo77272@gmail.com>
-Date:   Thu, 11 Aug 2022 09:35:31 -0700
-Message-ID: <CAKJY4bzgHrwg6ckVBW6p06Fq5wqA9ytFm5ZX=xP51LyAAe0TzA@mail.gmail.com>
-Subject: ATM Card Owner
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2001:4860:4864:20:0:0:0:44 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [mtoo77272[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [ubabankdirector07[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [mtoo77272[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YvRjzwMsMWv3AG1H@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attn: Honorable Customer,
+On Thu, Aug 11, 2022 at 04:05:03AM +0200, Andrew Lunn wrote:
+> So your answer also implies PPS can be used before the interface is
+> set administratively up?
 
-This is to let you know that your Visa Card is ready now and the part
-payment has been credited already as IRS has signed it. So contact Mr
-Janny King of UBA for immediate mailing of your Visa card now. The
-amount is $10.5USD
+Why not?
 
-Name: Mr.Janny King
-Email: (ubabankdirector07@gmail.com)
+After all, the clock is (or should be) independent from the MAC.
+It works all by itself.
 
-Thanks
-Mr.Peter Usman
+Thanks,
+Richard
+
