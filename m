@@ -2,116 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A5C5904E6
-	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ED8859044B
+	for <lists+netdev@lfdr.de>; Thu, 11 Aug 2022 18:48:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236167AbiHKQq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S236195AbiHKQq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 11 Aug 2022 12:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36522 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239120AbiHKQp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:45:26 -0400
-Received: from mail-yw1-x1134.google.com (mail-yw1-x1134.google.com [IPv6:2607:f8b0:4864:20::1134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DD0AB437
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:17:46 -0700 (PDT)
-Received: by mail-yw1-x1134.google.com with SMTP id 00721157ae682-32a17d3bba2so55190147b3.9
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:17:46 -0700 (PDT)
+        with ESMTP id S239149AbiHKQpm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 12:45:42 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81039ABF19
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:18:05 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id c11-20020a170902d48b00b0016f093907e0so11728199plg.20
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 09:18:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc;
-        bh=leab60b7I9UNxhInyXxQiPFRsnns/qgQM+6MF7ATRlo=;
-        b=C8xPgfFXl7AxVKKG8gVUwkpls8Y5rcy16GhSuZxlnH9/14BF8U6ElMM6EsRa2r2STY
-         Yf3krdQc9506qFxyN0KRi+IF4vjrdIFA9q0kzrYTJbmCJ0psdhtaAZ6CXAX70n0cn2MU
-         K+dabbTT2WnblPtD4EiSEIFT2G275RPZ6g9mnSfIduZkk8/hjvGlHfi8QpYhGSXUaQ95
-         8GsLC1R8Cs9tbknomnb5WkFZkmo/r/WyJOWyni5ozMGkOhTi1IjJKNbamoYXzONTYGjI
-         JaMdb30RlWCh9xSl60iKzA1xjM2Za5HHHqBLdUh0zAPz7Li+SzwStvQFhgbh5GL0CF4B
-         9b+Q==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=w9Ubj4OzQE3ffMJ/ARoQJkMO4sXqU3QEFZeRKMDqfuE=;
+        b=W6GJeuyn1ZH+lJBMHsxHi7YDg2XSAeICOOEoarWYx6dIbRxUlIeGTIa235maADZM42
+         fTOvWxQxHW6yQKkPUzfUQyk6dZOUSAMViCJ5hyDSK5GrIDuAWGL2tW7C8/+uZsFjgKRO
+         0cdOd3YN91KjK9yG65Ozuu0lVk8T4RcJDBRvkTrg2EOMic+w9fEvdmRzegM8oi85E5MQ
+         bloSXxagk+yHlddzVS9gfLFugz4ETMwvCJznChe5iLhZfom4ZCxCoyQJLvFFGfcLyPr1
+         D2fNk9HdqBStYSqSFf93swd5qr3cdh5PCXcZYAKxcqELok+7LTSCzXls3y4nkJoY7jt9
+         8rrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=leab60b7I9UNxhInyXxQiPFRsnns/qgQM+6MF7ATRlo=;
-        b=joXMQ34/kdAqnWBkY4nW+pf5NquPaVNvs0OiiK3a5Mni2nFIkmpF2P6G7ss7LSJ8iE
-         jyAaBQ8/kTaRSl4MJKlmYNqIxYxaT7GpuuK2TtgpARvdfxpX8PVEOmyoSYZjB12J3A+J
-         0t2cWXpNuQXuQTiCo1EiHPWFxAKxVSAdQPeqkbn+13k5cBu+wKL8zmavxKjbDxphyn6+
-         2jERaODsFrR0+cbrL+v3oJWu6CvBmtxdRFj1bCpkEcMW5HjYoeCVdeRKmmWTCO4uui2j
-         TFdj2wN0jRHs0lTgjurXp05itWwplbS0kmwXa1NS/ECDZV5o4YhmZs4a4YDZn5AJ7WW0
-         CjGw==
-X-Gm-Message-State: ACgBeo14cbP+1H9kEuNBAnHT4VhwVAvnqGqmbHybkO6ZbzxWnFs8NTFg
-        BDNYvA0ei7ndslt8qwQySi1PICEpJU/xVg7dwOs=
-X-Google-Smtp-Source: AA6agR4BDD6TZ7xb4KCtAI1twT7dkkIQ76HJz1356YG0x9IU5qC5q3t/RDmrJQm97jE0eGZrO9A8rCEiJePd94Qdcic=
-X-Received: by 2002:a81:13c4:0:b0:321:1c6c:8f2 with SMTP id
- 187-20020a8113c4000000b003211c6c08f2mr32613524ywt.323.1660234666111; Thu, 11
- Aug 2022 09:17:46 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:a5b:c51:0:0:0:0:0 with HTTP; Thu, 11 Aug 2022 09:17:45 -0700 (PDT)
-Reply-To: jon768266@gmail.com
-From:   johnson <oliajeremy@gmail.com>
-Date:   Thu, 11 Aug 2022 16:17:45 +0000
-Message-ID: <CABz_VOAXyjVObSfYLtEg4X++Fi+H3YyABL0kJ+3yPARTXz_BDA@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: **
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=w9Ubj4OzQE3ffMJ/ARoQJkMO4sXqU3QEFZeRKMDqfuE=;
+        b=TaTvlfV1G6OOmJUfDY1KWYhPGH7eEGs8gO2Ct/hjY2AcP5B1uNvgl+2IipUAusIlAH
+         eXUePmmQ26ki2dHRgBJHXnzgUrlEoAWUpwxH/nrPmrRZ6b7WPOlN+UD/9rTEWIG8Gnew
+         QO1jBWn4/wn5q6BwWLSaBSTSfSRJ535kSTz3PGbU3Vuu5R/2ZHksbjFAs78lZxfTd92e
+         PHCbqWJ8sJiUDSztM0eKUp58lO1r/dgk+hZqQBm51LiTrbogS2Xi/Sf+lCtglRbh6zXv
+         Zd7g42z9RyGeoeNRJh2Nk61k1bKVF4qdm+xyodclDoKllAVJuz8OTUq4mlC+dopDqYsq
+         1GKg==
+X-Gm-Message-State: ACgBeo3iB0ArMg36CrINLpOAtLO3jGoB/SokmbfRXulxnb6jRM0d6Nfq
+        fnQ/uJ/ux9Q329oQ3eSWVoXuu2E=
+X-Google-Smtp-Source: AA6agR7Sdkb59bDlRsAbfQrkFRNJBe/8uAs4cN1bJdBWU44UnvkeaDGQ6QXMhOdb+AuqnaDLby8Ewpc=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:902:e88a:b0:16f:281:3f59 with SMTP id
+ w10-20020a170902e88a00b0016f02813f59mr32963781plg.0.1660234685002; Thu, 11
+ Aug 2022 09:18:05 -0700 (PDT)
+Date:   Thu, 11 Aug 2022 09:18:03 -0700
+In-Reply-To: <20220811022304.583300-5-kuba@kernel.org>
+Message-Id: <YvUru3QvN/LuYgnq@google.com>
+Mime-Version: 1.0
+References: <20220811022304.583300-1-kuba@kernel.org> <20220811022304.583300-5-kuba@kernel.org>
+Subject: Re: [RFC net-next 4/4] ynl: add a sample user for ethtool
+From:   sdf@google.com
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, jacob.e.keller@intel.com, vadfed@fb.com,
+        johannes@sipsolutions.net, jiri@resnulli.us, dsahern@kernel.org,
+        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-L=C3=BCtfen dikkat,
+On 08/10, Jakub Kicinski wrote:
+> A sample schema describing ethtool channels and a script showing
+> that it works. The script is called like this:
 
- Bay orlando Morris, Nas=C4=B1ls=C4=B1n, umar=C4=B1m iyi ve sa=C4=9Fl=C4=B1=
-kl=C4=B1s=C4=B1nd=C4=B1r? Bu
-ile i=C5=9Flemi ba=C5=9Far=C4=B1yla tamamlad=C4=B1=C4=9F=C4=B1m=C4=B1 size =
-bildirmek i=C3=A7in
-Hindistan'dan yeni bir orta=C4=9F=C4=B1n yard=C4=B1m=C4=B1yla ve =C5=9Fimdi=
- fon banka hesab=C4=B1na aktar=C4=B1ld=C4=B1,
+>   ./tools/net/ynl/samples/ethtool.py \
+>      --spec Documentation/netlink/bindings/ethtool.yaml \
+>      --device eth0
 
+> I have schemas for genetlink, FOU and the proposed DPLL subsystem,
+> to validate that the concept has wide applicability, but ethtool
+> feels like the best demo of the 4.
 
-Bu arada, size toplam 2,50,000,00 ABD dolar=C4=B1 tutar=C4=B1nda tazminat
-=C3=B6demeye karar verdim.
-(Yaln=C4=B1zca iki y=C3=BCz elli Bin ABD Dolar=C4=B1) ge=C3=A7mi=C5=9F =C3=
-=A7abalar=C4=B1n=C4=B1z nedeniyle,
-ger=C3=A7i beni hayal k=C4=B1r=C4=B1kl=C4=B1=C4=9F=C4=B1na u=C4=9Fratt=C4=
-=B1n. Ama yine de =C3=A7ok mutluyum
-i=C5=9Flemin sorunsuz bir =C5=9Fekilde sona ermesi i=C3=A7in ve bu
-sana toplam=C4=B1n=C4=B1 tazmin etmeye karar vermemin nedeni bu.
-Benimle sevincini payla=C5=9Fman i=C3=A7in 2.50.000,00$.
+Looks super promising! I'm going to comment mostly here because it's easier
+to talk about the sample schema definition.
 
-250.000,00 Dolarl=C4=B1k bir ATM kart=C4=B1 i=C3=A7in sekreterimle g=C3=B6r=
-=C3=BC=C5=9Fmenizi tavsiye ederim.
-senin i=C3=A7in saklad=C4=B1m. Herhangi bir gecikme olmadan =C5=9Fimdi onun=
-la ileti=C5=9Fime ge=C3=A7in.
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>   Documentation/netlink/bindings/ethtool.yaml | 115 ++++++++++++++++++++
+>   tools/net/ynl/samples/ethtool.py            |  30 +++++
+>   2 files changed, 145 insertions(+)
+>   create mode 100644 Documentation/netlink/bindings/ethtool.yaml
+>   create mode 100755 tools/net/ynl/samples/ethtool.py
 
-Ad=C4=B1 Bay Mike johnson
-E-posta: (jon768266@gmail.com)
+> diff --git a/Documentation/netlink/bindings/ethtool.yaml  
+> b/Documentation/netlink/bindings/ethtool.yaml
+> new file mode 100644
+> index 000000000000..b4540d60b4b3
+> --- /dev/null
+> +++ b/Documentation/netlink/bindings/ethtool.yaml
+> @@ -0,0 +1,115 @@
+> +# SPDX-License-Identifier: BSD-3-Clause
+> +
+> +name: ethtool
+> +
+> +description: |
+> +  Ethernet device configuration interface.
+> +
 
+[..]
 
-L=C3=BCtfen a=C5=9Fa=C4=9F=C4=B1daki bilgileri kendisine tekrar teyit edin:
+> +attr-cnt-suffix: CNT
 
-Tam ad=C4=B1n=C4=B1z:........
-Senin adresin:..........
-Senin =C3=BClken:..........
-Ya=C5=9F=C4=B1n=C4=B1z:.........
-Mesle=C4=9Fin:..........
-Cep Telefonu Numaran=C4=B1z: ..........
-Pasaportunuz veya S=C3=BCr=C3=BCc=C3=BC Belgeniz: .........
+Is it a hack to make the generated header fit into existing
+implementation? Should we #define ETHTOOL_XXX_CNT ETHTOOL_XXX in
+the implementation instead? (or s/ETHTOOL_XXX_CNT/ETHTOOL_XXX/ the
+source itself?)
 
-Ona yukar=C4=B1daki bilgileri tam olarak g=C3=B6ndermediyseniz,
-oldu=C4=9Fundan emin olmas=C4=B1 gerekti=C4=9Fi i=C3=A7in ATM kart=C4=B1n=
-=C4=B1 size vermeyecektir.
-sen. Size toplam (2.50.000.00$) ATM kart=C4=B1n=C4=B1 g=C3=B6ndermesini ist=
-eyin.
-senin i=C3=A7in sakland=C4=B1.
+> +attribute-spaces:
 
-Sayg=C4=B1lar=C4=B1mla,
+Are you open to bike shedding? :-) I like how ethtool_netlink.h calls
+these 'message types'.
 
-Bay orlando morris
+> +  -
+> +    name: header
+> +    name-prefix: ETHTOOL_A_HEADER_
+
+Any issue with name-prefix+name-suffix being non-greppable? Have you tried
+something like this instead:
+
+- name: ETHTOOL_A_HEADER # this is fake, for ynl reference only
+   attributes:
+     - name: ETHTOOL_A_HEADER_DEV_INDEX
+       val:
+       type:
+     - name ETHTOOL_A_HEADER_DEV_NAME
+       ..
+
+It seems a bit easier to map the spec into what it's going to produce.
+For example, it took me a while to translate 'channels_get' below into
+ETHTOOL_MSG_CHANNELS_GET.
+
+Or is it too much ETHTOOL_A_HEADER_?
+
+> +    attributes:
+> +      -
+> +        name: dev_index
+> +        val: 1
+> +        type: u32
+> +      -
+> +        name: dev_name
+> +        type: nul-string
+
+[..]
+
+> +        len: ALTIFNAMSIZ - 1
+
+Not sure how strict you want to be here. ALTIFNAMSIZ is defined
+somewhere else it seems? (IOW, do we want to have implicit dependencies
+on external/uapi headers?)
+
+> +      -
+> +        name: flags
+> +        type: u32
+> +  -
+> +    name: channels
+> +    name-prefix: ETHTOOL_A_CHANNELS_
+> +    attributes:
+> +      -
+> +        name: header
+> +        val: 1
+> +        type: nest
+> +        nested-attributes: header
+> +      -
+> +        name: rx_max
+> +        type: u32
+> +      -
+> +        name: tx_max
+> +        type: u32
+> +      -
+> +        name: other_max
+> +        type: u32
+> +      -
+> +        name: combined_max
+> +        type: u32
+> +      -
+> +        name: rx_count
+> +        type: u32
+> +      -
+> +        name: tx_count
+> +        type: u32
+> +      -
+> +        name: other_count
+> +        type: u32
+> +      -
+> +        name: combined_count
+> +        type: u32
+> +
+> +headers:
+> +  user: linux/if.h
+> +  uapi: linux/ethtool_netlink.h
+> +
+> +operations:
+> +  name-prefix: ETHTOOL_MSG_
+> +  async-prefix: ETHTOOL_MSG_
+> +  list:
+> +    -
+> +      name: channels_get
+> +      val: 17
+> +      description: Get current and max supported number of channels.
+> +      attribute-space: channels
+> +      do:
+> +        request:
+> +          attributes:
+> +            - header
+> +        reply: &channel_reply
+> +          attributes:
+> +            - header
+> +            - rx_max
+> +            - tx_max
+> +            - other_max
+> +            - combined_max
+> +            - rx_count
+> +            - tx_count
+> +            - other_count
+> +            - combined_count
+> +      dump:
+> +        reply: *channel_reply
+> +
+> +    -
+> +      name: channels_ntf
+> +      description: Notification for device changing its number of  
+> channels.
+> +      notify: channels_get
+> +      mcgrp: monitor
+> +
+> +    -
+> +      name: channels_set
+> +      description: Set number of channels.
+> +      attribute-space: channels
+> +      do:
+> +        request:
+> +          attributes:
+
+[..]
+
+> +            - header
+> +            - rx_count
+> +            - tx_count
+> +            - other_count
+> +            - combined_count
+
+My netlink is super rusty, might be worth mentioning in the spec: these
+are possible attributes, but are all of them required?
+
+You also mention the validation part in the cover letter, do you plan
+add some of these policy properties to the spec or everything is
+there already? (I'm assuming we care about the types which we have above and
+optional/required attribute indication?)
+
+> +
+> +mcast-groups:
+> +  name-prefix: ETHTOOL_MCGRP_
+> +  name-suffix: _NAME
+> +  list:
+> +    -
+> +      name: monitor
+> diff --git a/tools/net/ynl/samples/ethtool.py  
+> b/tools/net/ynl/samples/ethtool.py
+> new file mode 100755
+> index 000000000000..63c8e29f8e5d
+> --- /dev/null
+> +++ b/tools/net/ynl/samples/ethtool.py
+> @@ -0,0 +1,30 @@
+> +#!/usr/bin/env python
+> +# SPDX-License-Identifier: BSD-3-Clause
+> +
+> +import argparse
+> +
+> +from ynl import YnlFamily
+> +
+> +
+> +def main():
+> +    parser = argparse.ArgumentParser(description='YNL ethtool sample')
+> +    parser.add_argument('--spec', dest='spec', type=str, required=True)
+> +    parser.add_argument('--schema', dest='schema', type=str)
+> +    parser.add_argument('--device', dest='dev_name', type=str)
+> +    parser.add_argument('--ifindex', dest='ifindex', type=str)
+> +    args = parser.parse_args()
+> +
+> +    ynl = YnlFamily(args.spec)
+> +
+> +    if args.dev_name:
+> +        channels = ynl.channels_get({'header': {'dev_name':  
+> args.dev_name}})
+> +    elif args.ifindex:
+> +        channels = ynl.channels_get({'header': {'dev_index':  
+> args.ifindex}})
+> +    else:
+> +        return
+> +    print('Netlink responded with:')
+> +    print(channels)
+> +
+> +
+> +if __name__ == "__main__":
+> +    main()
+> --
+> 2.37.1
+
