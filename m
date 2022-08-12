@@ -2,157 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 21FC2590FFF
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:26:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896CE591007
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:27:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236899AbiHLLZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 07:25:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        id S237207AbiHLL0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 07:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233977AbiHLLZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:25:51 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A372CE10
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:25:49 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id z25so957434lfr.2
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:25:49 -0700 (PDT)
+        with ESMTP id S237217AbiHLL0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:26:31 -0400
+Received: from mail-vs1-xe36.google.com (mail-vs1-xe36.google.com [IPv6:2607:f8b0:4864:20::e36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B607A6C1F;
+        Fri, 12 Aug 2022 04:26:26 -0700 (PDT)
+Received: by mail-vs1-xe36.google.com with SMTP id d126so463221vsd.13;
+        Fri, 12 Aug 2022 04:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=CicaxzhBFo0KPREhpr4TXcueTsn2K/vZuDdXuzYsKWU=;
-        b=ZSjkS3G57jOr2ZUgBUg647LpswyGyUyOyxiv0qFWeuWeUxKsfjmjUXDseiTfsQeItA
-         C7ge0PECV1KDT/YzTpu722jyDhSyTkdFC9Tz1gGtysf3KxHqSztEfFLFt2lBu7DmBQo4
-         is0MZePlBzlABtDsifedY/+Z3wAkjtKPZ+7kvVg62lftbaHeyB2zFH0GKgXkK/osYma0
-         KMRoFx5V+/YgxcE2CHqMv/q1MXffwjHDhg7RRANtqkqntp+ZcsYIkO2B6lSFUrO0jcxl
-         nUp2kC2MVEEazP4SXMIreFRMBeyz+1HSNrbsCona9am1KL+dpyWbCzXSVezdHj/fIpqp
-         rNCA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=l6ANe7OLSs2lP132priVK+trTtZprCMMHdnLexTkcYs=;
+        b=cbulXJ2X1GM7VeFpFsNH4B5cF+6IIkVya1vFuJ1ZP88Rpim+pn+2xDldVmms9y4fnX
+         PWr8qVMeW00lQq74DTp179OZ52B2HCIVjFWWVg3wQNqQstxvw4HOUIcdtqTsulyCxjtI
+         VY14oyLtqSuMSLjdQ9F8RFYEkYdBuUEKArObuz6kt2IF1j3CF8LxppqcQJqvtzZ3fWYD
+         kKpkc1enVd3Um1F3YBCVq5l9aSuXuAwC1xvOrrVbaA6nooM6VT8oCCOT0TUfa0J1UsAh
+         Es3fM1Z1ZESpa2rrGQn5oz/yfkgJNUWRT7VeJXA2iefTYdshDjvzhMaS89aVCqHJdLKq
+         zXXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=CicaxzhBFo0KPREhpr4TXcueTsn2K/vZuDdXuzYsKWU=;
-        b=U71BWddKfRqEWBg+Vwj91IgBWqOXY9bb0xO7lIu+XJ/GssfbTHc1gfGxkHCVSnX8PL
-         gUnjScagBpOUIbdgiY+UrWCxa4YO7chJ9eNsUzt4iZXpuB6i92icrTfMlaAO78RXOT3Z
-         KLosEed0iavT5oj3dH95qldGZ83ee4PmF36cW5Fb1U49/XK0OyrChsC1Cgx3A0qOzEk+
-         lMrMAzID6TB/0kCVZqVGfvXo3abq63zJRvC5wh8tiA+d5I3UyvUIxLQ7AtXj8m/kCeT+
-         Qaf+WPIbJyPD+mbVSwdVwieX150dnIZnlzIznnzZI8soNcrfIcUf7S0CQKHIsS6qshEr
-         fqFg==
-X-Gm-Message-State: ACgBeo1wSxJTWtVpWbU0eo3xkQqB7xQHQwzzccBBEWje/pRVHoDq2dc1
-        4svhnOomOOkIejGMqo2kfrupTw==
-X-Google-Smtp-Source: AA6agR7nbIA1W9kvuTBrsjatx+y+trLViCt2NS014KwbWMIhl7WPsCOj2Q0c6fDtZvYCVRpwve0F1w==
-X-Received: by 2002:ac2:4f03:0:b0:48a:6061:bd8e with SMTP id k3-20020ac24f03000000b0048a6061bd8emr1247397lfr.647.1660303548058;
-        Fri, 12 Aug 2022 04:25:48 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id b20-20020a196714000000b0048a9a756763sm188699lfc.19.2022.08.12.04.25.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 04:25:47 -0700 (PDT)
-Message-ID: <14cf568e-d7ee-886e-5122-69b2e58b8717@linaro.org>
-Date:   Fri, 12 Aug 2022 14:25:42 +0300
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=l6ANe7OLSs2lP132priVK+trTtZprCMMHdnLexTkcYs=;
+        b=kOzZFvG3EFBg0Jsd5XA8ie8wCWRpXWTAJZw7uAqPYLkaMqThd6lt0pfVoFojI40lia
+         YWrijbXUVcZ+WhxMX18rn3JrDef0wCsovt1/phxUjnka0D+z+S4FA6h60DlVHecBB1zC
+         oAr+fF9g/OKGGrq7lpVTQHEvkspfu1o2LqjIrTSfev/CSG6eSFH44yhDQ7kHFrOISoha
+         CwhPjFlDlLmZHYSL8QU8ille2N74pu6qFsKkcnqgRTO6GMHO0F9aaAFyoyWONTuQ0Vxc
+         o7ok4WepMKSwe8wW0+rogV/hJWFTga6/zrgdtssd5mjc/jPDmz0mcbSYdVeGO/zgj3CJ
+         29EA==
+X-Gm-Message-State: ACgBeo0t/apEPM4vD7wBCKvPTyLhCXYfywegIMJTXGYWz3aIkKFHbBKU
+        aoKEwbOpo/W/Dzp6tybhlv7Q3rYWVGXVw0AEX5s=
+X-Google-Smtp-Source: AA6agR7eRhzJ5qbC7QMZSEHPwBxL98qPwKICiNP035okRK1tdFf5nl4wb5ho1LLXA7DjnWx2GN3yTrW4DRJHQzCGmO4=
+X-Received: by 2002:a05:6102:750:b0:381:feef:d966 with SMTP id
+ v16-20020a056102075000b00381feefd966mr1528054vsg.35.1660303584334; Fri, 12
+ Aug 2022 04:26:24 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
-Content-Language: en-US
-To:     Wei Fang <wei.fang@nxp.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220812145009.1229094-1-wei.fang@nxp.com>
- <20220812145009.1229094-2-wei.fang@nxp.com>
- <0cd22a17-3171-b572-65fb-e9d3def60133@linaro.org>
- <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-6-laoar.shao@gmail.com>
+ <20220810170706.ikyrsuzupjwt65h7@google.com> <CALOAHbBk+komswLqs0KBg8FeFAYpC20HjXrUeZA-=7cWf6nRUw@mail.gmail.com>
+ <20220811154731.3smhom6v4qy2u6rd@google.com> <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
+ <870C70CA-C760-40A5-8A04-F0962EFDF507@linux.dev>
+In-Reply-To: <870C70CA-C760-40A5-8A04-F0962EFDF507@linux.dev>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Fri, 12 Aug 2022 19:25:46 +0800
+Message-ID: <CALOAHbDHB=ncRfO2ATCmQ0+wvxE62JrRqh_As-CbjMQDAs9oqA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
+To:     Muchun Song <muchun.song@linux.dev>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/08/2022 12:02, Wei Fang wrote:
-> 
-> 
->> -----Original Message-----
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Sent: 2022年8月12日 15:28
->> To: Wei Fang <wei.fang@nxp.com>; andrew@lunn.ch; hkallweit1@gmail.com;
->> linux@armlinux.org.uk; davem@davemloft.net; edumazet@google.com;
->> kuba@kernel.org; pabeni@redhat.com; robh+dt@kernel.org;
->> krzysztof.kozlowski+dt@linaro.org; f.fainelli@gmail.com;
->> netdev@vger.kernel.org; devicetree@vger.kernel.org;
->> linux-kernel@vger.kernel.org
->> Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation
->> property
->>
->> On 12/08/2022 17:50, wei.fang@nxp.com wrote:
->>> From: Wei Fang <wei.fang@nxp.com>
->>>
->>
->> Please use subject prefix matching subsystem.
->>
-> Ok, I'll add the subject prefix.
-> 
->>> The hibernation mode of Atheros AR803x PHYs is default enabled.
->>> When the cable is unplugged, the PHY will enter hibernation mode and
->>> the PHY clock does down. For some MACs, it needs the clock to support
->>> it's logic. For instance, stmmac needs the PHY inputs clock is present
->>> for software reset completion. Therefore, It is reasonable to add a DT
->>> property to disable hibernation mode.
->>>
->>> Signed-off-by: Wei Fang <wei.fang@nxp.com>
->>> ---
->>>  Documentation/devicetree/bindings/net/qca,ar803x.yaml | 6 ++++++
->>>  1 file changed, 6 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/qca,ar803x.yaml
->>> b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
->>> index b3d4013b7ca6..d08431d79b83 100644
->>> --- a/Documentation/devicetree/bindings/net/qca,ar803x.yaml
->>> +++ b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
->>> @@ -40,6 +40,12 @@ properties:
->>>        Only supported on the AR8031.
->>>      type: boolean
->>>
->>> +  qca,disable-hibernation:
->>> +    description: |
->>> +    If set, the PHY will not enter hibernation mode when the cable is
->>> +    unplugged.
->>
->> Wrong indentation. Did you test the bindings?
->>
-> Sorry, I just checked the patch and forgot to check the dt-bindings.
-> 
->> Unfortunately the property describes driver behavior not hardware, so it is not
->> suitable for DT. Instead describe the hardware
->> characteristics/features/bugs/constraints. Not driver behavior. Both in property
->> name and property description.
->>
-> Thanks for your review and feedback. Actually, the hibernation mode is a feature of hardware, I will modify the property name and description to be more in line with the requirements of the DT property. 
+On Fri, Aug 12, 2022 at 1:34 PM Muchun Song <muchun.song@linux.dev> wrote:
+>
+>
+>
+> > On Aug 12, 2022, at 08:27, Yafang Shao <laoar.shao@gmail.com> wrote:
+> >
+> > On Thu, Aug 11, 2022 at 11:47 PM Shakeel Butt <shakeelb@google.com> wro=
+te:
+> >>
+> >> On Thu, Aug 11, 2022 at 10:49:13AM +0800, Yafang Shao wrote:
+> >>> On Thu, Aug 11, 2022 at 1:07 AM Shakeel Butt <shakeelb@google.com> wr=
+ote:
+> >>>>
+> >>>> On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
+> >>>>> The memcg may be the root_mem_cgroup, in which case we shouldn't pu=
+t it.
+> >>>>
+> >>>> No, it is ok to put root_mem_cgroup. css_put already handles the roo=
+t
+> >>>> cgroups.
+> >>>>
+> >>>
+> >>> Ah, this commit log doesn't describe the issue clearly. I should impr=
+ove it.
+> >>> The issue is that in bpf_map_get_memcg() it doesn't get the objcg if
+> >>> map->objcg is NULL (that can happen if the map belongs to the root
+> >>> memcg), so we shouldn't put the objcg if map->objcg is NULL neither i=
+n
+> >>> bpf_map_put_memcg().
+> >>
+> >> Sorry I am still not understanding. We are not 'getting' objcg in
+> >> bpf_map_get_memcg(). We are 'getting' memcg from map->objcg and if tha=
+t
+> >> is NULL the function is returning root memcg and putting root memcg is
+> >> totally fine.
+> >
+> > When the map belongs to root_mem_cgroup, the map->objcg is NULL, right =
+?
+> > See also bpf_map_save_memcg() and it describes clearly in the comment -
+> >
+> > static void bpf_map_save_memcg(struct bpf_map *map)
+> > {
+> >        /* Currently if a map is created by a process belonging to the r=
+oot
+> >         * memory cgroup, get_obj_cgroup_from_current() will return NULL=
+.
+> >         * So we have to check map->objcg for being NULL each time it's
+> >         * being used.
+> >         */
+> >        map->objcg =3D get_obj_cgroup_from_current();
+> > }
+> >
+> > So for the root_mem_cgroup case, bpf_map_get_memcg() will return
+> > root_mem_cgroup directly without getting its css, right ? See below,
+> >
+> > static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
+> > {
+> >
+> >        if (map->objcg)
+> >                return get_mem_cgroup_from_objcg(map->objcg);
+> >
+> >        return root_mem_cgroup;   // without css_get(&memcg->css);
+> > }
+> >
+> > But it will put the css unconditionally.  See below,
+> >
+> > memcg =3D bpf_map_get_memcg(map);
+> > ...
+> > mem_cgroup_put(memcg);
+> >
+> > So we should put it *conditionally* as well.
+>
+> Hi,
+>
+> No. We could put root_mem_cgroup unconditionally since the root css
+> is treated as no reference css. See css_put().
+>
+> static inline void css_put(struct cgroup_subsys_state *css)
+> {
+>         // The root memcg=E2=80=99s css has been set with CSS_NO_REF.
+>         if (!(css->flags & CSS_NO_REF))
+>                 percpu_ref_put(&css->refcnt);
+> }
 
-hibernation is a feature, but 'disable-hibernation' is not. DTS
-describes the hardware, not policy or driver bejhvior. Why disabling
-hibernation is a property of hardware? How you described, it's not,
-therefore either property is not for DT or it has to be phrased
-correctly to describe the hardware.
+Indeed. I missed that.
+The call stack is so deep that I didn't look into it :(
+Thanks for the information.
 
-Best regards,
-Krzysztof
+--=20
+Regards
+Yafang
