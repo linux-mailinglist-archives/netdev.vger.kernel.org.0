@@ -2,135 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E25CF590AF2
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 06:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99616590AF5
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 06:16:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236766AbiHLEJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 00:09:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S235602AbiHLEQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 00:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbiHLEJs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 00:09:48 -0400
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE92A0302;
-        Thu, 11 Aug 2022 21:09:47 -0700 (PDT)
-Received: by mail-yb1-xb2b.google.com with SMTP id g5so31201274ybg.11;
-        Thu, 11 Aug 2022 21:09:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=VElpo/hJHfw2RvZvud8eiJu3fb0VVkH8EWFL092LbyM=;
-        b=blP25JnLo2TmHjHag2bR+teBEK87Mz7SHz967KGBmFf1p5xgNeulgtkLNaOZsvHcFj
-         QTk4BI80mvvcE3TIP29g7aY4kmQ2qzqwYi98tdOyIcC9kPFx894zioqG/H5KiYSsm11b
-         1vOiScZd46PL3CMmNCrAhbxDa0dElvnru66liMq8I7HbUnqTWSibq9LDSmmxNh5AjdHp
-         jW4QKqsb5GiJX3ivYl19mwURClKJAgisYLz2AkCKMnyDPKfMmzC9vuByhCuFMtubmnUM
-         tEvwW/AK9qAKyhe2AAgc4blnry8Ish4U7kal/2L8VJL7cx3q1k5yffy9/pBPbnNcgDGy
-         +cXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=VElpo/hJHfw2RvZvud8eiJu3fb0VVkH8EWFL092LbyM=;
-        b=DqcRAAKJGZWl2phrrHPrTgrRy7tveR+2T17ngEJbZcGxGrmau6+HGbaWKiG72a6gTN
-         m8zX4cibP4auDY3KhLoGKWUwTrnd81+YIXbnYkuNZivow2n4fgegOEbc5to+vfaWpkXi
-         7pgG5FVq1cKknSe3SS9S/E5K4AGXeueBStPIFwGsx5XqvkADapSll/YyPv7dZihgIiej
-         aix4cTeYHeD7FyLyd5DxCPdORMTthntsq5xsZ+x1TEz7qRzILNP8vjVvS3mvN9wzfgBU
-         JfgZsWiPaZnXQvw2Tk2MDUEDyahR6bT0ULeYJyP+3eTf/+sb3jv3NBz19WoU99CiiUvH
-         g06g==
-X-Gm-Message-State: ACgBeo1ZysUrCmCVhW0WUp7iGNl4U1HmE7U/B9Q95mtbQOFlrMy0T66f
-        AjUgrrWfk5Q0eHipkS7Atfj81iR9Z9dMNRN1aaE=
-X-Google-Smtp-Source: AA6agR7aS8A13CrYgjl8GiA4yxSMSh8285o1W6Z9Itk2qso727yl4VcHZ225ZGHVW28V8MpIdpTrAfpF1lIigRh3rhI=
-X-Received: by 2002:a25:da13:0:b0:672:6a10:a033 with SMTP id
- n19-20020a25da13000000b006726a10a033mr2082818ybf.617.1660277386448; Thu, 11
- Aug 2022 21:09:46 -0700 (PDT)
+        with ESMTP id S230271AbiHLEQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 00:16:34 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BB1FD37;
+        Thu, 11 Aug 2022 21:16:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660277793; x=1691813793;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xEKQMRYYwNapwWCbuAHmwaEJwzGtEja9gbRJRyakeJ8=;
+  b=UI5+wn2unGkKbMbQFqbbwPfG6sZYpTcUEf5lmGTMXrnC6SgPPTENMyOu
+   xw7HX8vgUKP7Iow5aQUfV5vOsoL8K8Dnosv6T06RXQQc4P1i7WUSAiaIE
+   NgUzPURsio3xDUxmhtHAe3hlhdYI5M+UcB545h26+lyTZppStQq2AXg2v
+   JsOLsdWuD2e7WAQcx3eShxm8WSg/GHXTpSiECI2/PvkFfep21hGVRIl1X
+   FocypV6CesiAx/gwqc+OvX3w1/K1nAzfczHY4YzFwCkCITey3HFLgO1NV
+   MAogkjdxvZTDH+iWtdJCqv2emuL4jlVO6JJJsW2hCcAGqVDA1OdQXoXgc
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="289087908"
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="289087908"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 21:16:33 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="933578432"
+Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 11 Aug 2022 21:16:31 -0700
+Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oMM62-00007f-1X;
+        Fri, 12 Aug 2022 04:16:30 +0000
+Date:   Fri, 12 Aug 2022 12:16:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, kafai@fb.com, kuba@kernel.org,
+        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, kernel-team@fb.com,
+        Joanne Koong <joannelkoong@gmail.com>
+Subject: Re: [PATCH bpf-next v2 1/3] bpf: Add skb dynptrs
+Message-ID: <202208121214.urSMKXgE-lkp@intel.com>
+References: <20220811230501.2632393-2-joannelkoong@gmail.com>
 MIME-Version: 1.0
-References: <YvVQEDs75pxSgxjM@debian> <20220811124637.4cdb84f1@kernel.org>
-In-Reply-To: <20220811124637.4cdb84f1@kernel.org>
-From:   Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Date:   Fri, 12 Aug 2022 05:09:10 +0100
-Message-ID: <CADVatmPQxgQoQ5o_9PhRphekhnmjndq2jd+0yXnDc1OuUphdpA@mail.gmail.com>
-Subject: Re: build failure of next-20220811 due to 332f1795ca20 ("Bluetooth:
- L2CAP: Fix l2cap_global_chan_by_psm regression")
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-bluetooth@vger.kernel.org,
-        linux-next <linux-next@vger.kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips <linux-mips@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220811230501.2632393-2-joannelkoong@gmail.com>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 8:46 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 11 Aug 2022 19:53:04 +0100 Sudip Mukherjee (Codethink) wrote:
-> > Not sure if it has been reported, builds of csky and mips allmodconfig
-> > failed to build next-20220811 with gcc-12.
->
-> I can't repro with the cross compiler from kernel.org.
-> Can you test something like this?
+Hi Joanne,
 
-With this patch I get new failure:
+Thank you for the patch! Yet something to improve:
 
-In file included from net/bluetooth/l2cap_core.c:37:
-./include/net/bluetooth/bluetooth.h: In function 'ba_is_any':
-./include/net/bluetooth/bluetooth.h:346:16: error: returning 'void *'
-from a function with return type 'int' makes integer from pointer
-without a cast [-Werror=int-conversion]
-  346 |         return memchr_inv(ba, sizeof(*ba), 0);
+[auto build test ERROR on bpf-next/master]
 
-So for a quick test, I modified it a little (just a typecast) which worked.
+url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/Add-skb-xdp-dynptrs/20220812-070634
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220812/202208121214.urSMKXgE-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/ecab09dda7739b27ffd6ed6c93753f6dfd9bdcb2
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Joanne-Koong/Add-skb-xdp-dynptrs/20220812-070634
+        git checkout ecab09dda7739b27ffd6ed6c93753f6dfd9bdcb2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
 
-diff --git a/include/net/bluetooth/bluetooth.h
-b/include/net/bluetooth/bluetooth.h
-index e72f3b247b5e..19bdd2520070 100644
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -341,6 +341,11 @@ static inline bool bdaddr_type_is_le(u8 type)
- #define BDADDR_ANY  (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
- #define BDADDR_NONE (&(bdaddr_t) {{0xff, 0xff, 0xff, 0xff, 0xff, 0xff}})
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-+static inline int ba_is_any(const bdaddr_t *ba)
-+{
-+       return (int) memchr_inv(ba, sizeof(*ba), 0);
-+}
-+
- /* Copy, swap, convert BD Address */
- static inline int bacmp(const bdaddr_t *ba1, const bdaddr_t *ba2)
- {
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index cbe0cae73434..67c5d923bc6c 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -2000,8 +2000,8 @@ static struct l2cap_chan
-*l2cap_global_chan_by_psm(int state, __le16 psm,
-                        }
+All errors (new ones prefixed by >>):
 
-                        /* Closest match */
--                       src_any = !bacmp(&c->src, BDADDR_ANY);
--                       dst_any = !bacmp(&c->dst, BDADDR_ANY);
-+                       src_any = !ba_is_any(&c->src);
-+                       dst_any = !ba_is_any(&c->dst);
-                        if ((src_match && dst_any) || (src_any && dst_match) ||
-                            (src_any && dst_any))
-                                c1 = c;
-
-
+   /usr/bin/ld: net/core/filter.o: in function `bpf_dynptr_from_skb':
+>> filter.c:(.text+0x4e87): undefined reference to `bpf_dynptr_set_null'
+>> /usr/bin/ld: filter.c:(.text+0x4e9e): undefined reference to `bpf_dynptr_init'
+>> /usr/bin/ld: filter.c:(.text+0x4eae): undefined reference to `bpf_dynptr_set_rdonly'
+   collect2: error: ld returned 1 exit status
 
 -- 
-Regards
-Sudip
+0-DAY CI Kernel Test Service
+https://01.org/lkp
