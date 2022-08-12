@@ -2,117 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98A1459145C
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 18:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 858CC591476
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 18:58:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235840AbiHLQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 12:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54940 "EHLO
+        id S236554AbiHLQ6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 12:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229464AbiHLQy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 12:54:59 -0400
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com [209.85.166.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACF5B07DA;
-        Fri, 12 Aug 2022 09:54:59 -0700 (PDT)
-Received: by mail-il1-f180.google.com with SMTP id z13so755751ilq.9;
-        Fri, 12 Aug 2022 09:54:59 -0700 (PDT)
+        with ESMTP id S236184AbiHLQ6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 12:58:00 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2720B0B0B
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:57:59 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id k16-20020a252410000000b006718984ef63so1145362ybk.3
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:57:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:from:to:cc;
+        bh=R06lrdYIFgbYGZQBaMs5Tz+QLWy1uP4VRkuAR/ckZ+8=;
+        b=n0KhhCoQu6+2K3yOqGNXdch+D7V/Ekevc0fxste8wMmkb/8TnpmAihLvGSc0h1JtTd
+         EwOFd05EA2wEgAJJDxWuWP5Z7BT1V8+1XAGlKTK4GwzcPc4DVz3UcYP/ifg9/fkZOf6J
+         Xef4us85cJv9lI9o/D4w0JcMWY0vro6AXCpzcNhQCZha2oEUMZKyH7osWxxBFHaqZfFI
+         cKvz3GaE+lku7a6/CLOHGohAA5rgahXSQs2PV6OG5eaMz7kE2gDKIXOYiN4FcshygkIf
+         susCJqBwnuX+JZEl4tAvq0mimSVUrmysEY4GP8JEcPKix7AIF0OPcbgX86u/sTGQeLt9
+         i4OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=fRm+MK443iv+bWqysNNlWEdx5OQMpvKZbcU7Wh8UXuE=;
-        b=0h6S05Hx7CJjzexBNhziPCTLQdJkIC0j0zQpgqgTXb62uhMEULKJlePz/DmXmPFSQY
-         Jm/steKaS2nz64CdFoO3hlRupQEOkm7CFt+5+zy5V19ryUZPsD+cy7yjuv7zvmWYZ7I1
-         mwocLGY6PnOGn35rbLDSR++QNRebT1DbDMEmTg/xLNgH0IM1GDTEsImSDZvG+D+V2Vsc
-         0U8fNuSBR+hVi1Zo3wqL4mHylRu4Kt/GHwYvW7PC6RD05Z8UnYWnsbQBsbrb3Kmj0oVN
-         hzztvMPhXLSUxOg2h+209mOVerifzs+alrQ8cNX84c1k7+CmO8c8tej7H8hbogDYpZi9
-         nO4g==
-X-Gm-Message-State: ACgBeo3hPiuZD5ZX/Fh7bm2W3aQmIHl9zZBjFCOyAjfW7SmUkQOeLtTk
-        IvFDzTWSdVAbL1jUG10xZw==
-X-Google-Smtp-Source: AA6agR6tiAMmjfHF8/Q9cMoh1KscSKGBxd6+ZvSHYQseYcfmbrN92lYw48Pzhq+xNnC/wejeACiZbA==
-X-Received: by 2002:a05:6e02:148c:b0:2de:c3b:91d with SMTP id n12-20020a056e02148c00b002de0c3b091dmr2342165ilk.95.1660323298542;
-        Fri, 12 Aug 2022 09:54:58 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id o4-20020a927304000000b002e4c8200225sm141783ilc.39.2022.08.12.09.54.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Aug 2022 09:54:58 -0700 (PDT)
-Received: (nullmailer pid 315561 invoked by uid 1000);
-        Fri, 12 Aug 2022 16:54:55 -0000
-Date:   Fri, 12 Aug 2022 10:54:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Pavel Machek <pavel@ucw.cz>,
-        Tim Harvey <tharvey@gateworks.com>, Lee Jones <lee@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, Andrew Davis <afd@ti.com>,
-        linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-leds@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH v2 0/5] iio/hwmon/mfd/leds/net/power/ASoC: dt-bindings:
- few stale maintainers cleanup
-Message-ID: <20220812165455.GA315443-robh@kernel.org>
-References: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220809162752.10186-1-krzysztof.kozlowski@linaro.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
+         :date:x-gm-message-state:from:to:cc;
+        bh=R06lrdYIFgbYGZQBaMs5Tz+QLWy1uP4VRkuAR/ckZ+8=;
+        b=pS+1wzZ/wFQS6+KvWRb0rWw5Z8s9W2nXblgmo2qcKKoUO1V8dqeBWp92+LWQAUOpbm
+         RK1pqpMzkrBgXY+g2KMZKydwQtK1Fc4twyOVMR7EH2kg/EkLUlyERt+WJ7OH4Epr4hl9
+         LJaRh9wxUTOU0xUmmrb+bzmVvYf+YD2TU+78Gfm017n25eE/XjmJfIfPeaUU3aaYTUMQ
+         PutgpD0Fs/SeP7MQmMeJmVAK3MSbzAC7lhqdOql2O9ojxLDd1okh018AX+r7mUC6ZohQ
+         aRLIwuVotjHU0nvYuzZ7YterT5k/lDaQyuDO1TAsDYZys0v7P9I1FvqTFvJ1uxmemWOC
+         KsQQ==
+X-Gm-Message-State: ACgBeo29qRvjejd33wOtF3JKBUDhv7WCqz7kzuJzq+Slx/LMlr/i5ckU
+        1AkgOHlBVdbYtgoo6JYYWsAJ0oxir+8szg==
+X-Google-Smtp-Source: AA6agR5eA3zKFSyDylTwjia5RJoC02zN57hFsDAYzxC+KdxlNVOXC54p8q8MygnauAQw7PY7YjFbWWcHGb2j0Q==
+X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
+ (user=shakeelb job=sendgmr) by 2002:a81:5d07:0:b0:329:8fb8:779 with SMTP id
+ r7-20020a815d07000000b003298fb80779mr4720036ywb.77.1660323479019; Fri, 12 Aug
+ 2022 09:57:59 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 16:57:56 +0000
+In-Reply-To: <20220810151840.16394-14-laoar.shao@gmail.com>
+Message-Id: <20220812165756.dxaqy3go567prr5s@google.com>
+Mime-Version: 1.0
+References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-14-laoar.shao@gmail.com>
+Subject: Re: [PATCH bpf-next 13/15] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
+From:   Shakeel Butt <shakeelb@google.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev,
+        songmuchun@bytedance.com, akpm@linux-foundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 09, 2022 at 07:27:47PM +0300, Krzysztof Kozlowski wrote:
-> Hi,
-> 
-> Changes since v1
-> ================
-> 1. Patch #5: Drop also Ricardo Rivera-Matos and assign TI bindings to Andrew Davis
-> 2. Add acks.
-> 
-> A question
-> ==========
-> 
-> Several of the bindings here had only one maintainer and history does not
-> always point to a new one (although I did not perform extensive digging). I
-> added subsystem maintainer, because dtschema requires an entry with valid email address.
-> 
-> This is not the best choice as simply subsystem maintainer might not have the
-> actual device (or its datasheets or any interest in it).
-> 
-> Maybe we could add some "orphaned" entry in such case?
+On Wed, Aug 10, 2022 at 03:18:38PM +0000, Yafang Shao wrote:
+> Introduce new helper get_obj_cgroup_from_cgroup() to get obj_cgroup from
+> a specific cgroup.
 
-It would need to be obvious to not use for a new binding.
+Can you please add couple of lines on why you need objcg?
 
 > 
-> Best regards,
-> Krzysztof
+> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> ---
+>  include/linux/memcontrol.h |  1 +
+>  mm/memcontrol.c            | 41 +++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 42 insertions(+)
 > 
-> Krzysztof Kozlowski (5):
->   dt-bindings: iio: Drop Joachim Eastwood
->   dt-bindings: iio: Drop Bogdan Pricop
->   dt-bindings: Drop Beniamin Bia and Stefan Popa
->   dt-bindings: Drop Robert Jones
->   dt-bindings: Drop Dan Murphy and Ricardo Rivera-Matos
+> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> index 2f0a611..901a921 100644
+> --- a/include/linux/memcontrol.h
+> +++ b/include/linux/memcontrol.h
+> @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
+>  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
+>  void __memcg_kmem_uncharge_page(struct page *page, int order);
+>  
+> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
+>  struct obj_cgroup *get_obj_cgroup_from_current(void);
+>  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
+>  
+> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> index 618c366..762cffa 100644
+> --- a/mm/memcontrol.c
+> +++ b/mm/memcontrol.c
+> @@ -2908,6 +2908,47 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+>  	return objcg;
+>  }
+>  
+> +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+> +{
+> +	struct obj_cgroup *objcg;
+> +
+> +	if (memcg_kmem_bypass())
+> +		return NULL;
+> +
+> +	rcu_read_lock();
+> +	objcg = __get_obj_cgroup_from_memcg(memcg);
+> +	rcu_read_unlock();
+> +	return objcg;
+> +}
+> +
+> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp)
+> +{
+> +	struct cgroup_subsys_state *css;
+> +	struct mem_cgroup *memcg;
+> +	struct obj_cgroup *objcg;
+> +
+> +	rcu_read_lock();
+> +	css = rcu_dereference(cgrp->subsys[memory_cgrp_id]);
+> +	if (!css || !css_tryget_online(css)) {
+> +		rcu_read_unlock();
+> +		cgroup_put(cgrp);
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +	rcu_read_unlock();
+> +	cgroup_put(cgrp);
 
-Series applied for 6.0-rc1.
+The above put seems out of place and buggy.
 
-Rob
+> +
+> +	memcg = mem_cgroup_from_css(css);
+> +	if (!memcg) {
+> +		css_put(css);
+> +		return ERR_PTR(-EINVAL);
+> +	}
+> +
+> +	objcg = get_obj_cgroup_from_memcg(memcg);
+> +	css_put(css);
+> +
+> +	return objcg;
+> +}
+> +
+>  __always_inline struct obj_cgroup *get_obj_cgroup_from_current(void)
+>  {
+>  	struct obj_cgroup *objcg = NULL;
+> -- 
+> 1.8.3.1
+> 
