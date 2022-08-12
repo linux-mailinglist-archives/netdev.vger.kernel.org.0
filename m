@@ -2,85 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B51E591481
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 18:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2ED591487
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 19:01:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239611AbiHLQ7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 12:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
+        id S239521AbiHLRBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 13:01:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239383AbiHLQ7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 12:59:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395EEB0B20;
-        Fri, 12 Aug 2022 09:59:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5C17B82469;
-        Fri, 12 Aug 2022 16:59:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ADF31C433C1;
-        Fri, 12 Aug 2022 16:59:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660323573;
-        bh=UTKXm22gxGKOxQwXMb2+WzZLLlwtMaey0B1673Ha0c0=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=M0+xi+wW9kr/9EALHN5PaRgaWI682cL1D0MjZjpUvSKizAEdNmkR+cEMSClYXheBM
-         t33+JlyYKkYUWG3uxGRuCzLLLCpXGjUHmy4CJWwEQqlakX79MssnxmFy+zyfM42nkG
-         oWxvd69utb3t42NpTAFv7i0Eea7m4D8tfK2nKYFURxyQ11bbceYuiDi10kspiu6bpV
-         liBqp36MlEcvcJrf14d5vfWlbDwPVIy9sWYG+CmYFH6cz6pI69hQk5JfIPV0/lkHiZ
-         WGcd/21JOEROn9mNDzeIrjWKAxSnGcfpkQKJfq4wEduuUnOsl0Ukdolzl4VxYDXYOj
-         Msy4NdT8RHvKg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 96D06C43142;
-        Fri, 12 Aug 2022 16:59:33 +0000 (UTC)
-Subject: Re: [GIT PULL] virtio: fatures, fixes
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220812114250-mutt-send-email-mst@kernel.org>
-References: <20220812114250-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220812114250-mutt-send-email-mst@kernel.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-X-PR-Tracked-Commit-Id: 93e530d2a1c4c0fcce45e01ae6c5c6287a08d3e3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7a53e17accce9d310d2e522dfc701d8da7ccfa65
-Message-Id: <166032357360.14629.10068636645471683682.pr-tracker-bot@kernel.org>
-Date:   Fri, 12 Aug 2022 16:59:33 +0000
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alvaro.karsz@solid-run.com, colin.i.king@gmail.com,
-        colin.king@intel.com, dan.carpenter@oracle.com, david@redhat.com,
-        elic@nvidia.com, eperezma@redhat.com, gautam.dawar@xilinx.com,
-        gshan@redhat.com, hdegoede@redhat.com, hulkci@huawei.com,
-        jasowang@redhat.com, jiaming@nfschina.com,
-        kangjie.xu@linux.alibaba.com, lingshan.zhu@intel.com,
-        liubo03@inspur.com, michael.christie@oracle.com, mst@redhat.com,
-        pankaj.gupta@amd.com, peng.fan@nxp.com, quic_mingxue@quicinc.com,
-        robin.murphy@arm.com, sgarzare@redhat.com, suwan.kim027@gmail.com,
-        syoshida@redhat.com, xieyongji@bytedance.com,
-        xuanzhuo@linux.alibaba.com, xuqiang36@huawei.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S239530AbiHLRA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 13:00:59 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3225FAED;
+        Fri, 12 Aug 2022 10:00:57 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id x5so1198590qtv.9;
+        Fri, 12 Aug 2022 10:00:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=HGYCPjo9Ox5Yihgn+X42WcT7OjqP49HxXrJuPQjVfRQ=;
+        b=oZ2nrEbsLdGC7yM5lY4Mw5LY90jJ2tl9s+pcVmRyLOoMjlX/2LMO0Q4hx9AgXi5Y19
+         0NAyYmibeQ+HbFAMIHQPtGjckT1orCv/QAYmRaV+W5Q4sHiflDLeN+Tn+ZotYWOO++VH
+         yhMDvCz461+qL4GovCK1B8YrlhyoIsQW8gOOwEjU2z1uuC9jJ+4fVO7JYieZRKfcRYvJ
+         2Xumw4lRkCVKmCjjWKCW2artlEYq+F1O5vue+Tk8OhctdYWTUZ1ONODon31V4+EFfAsd
+         jqatgDe7n5mC7+1TC0lQ8rfTHaEGYQK6F3mfEEbocDUFpoygsPMOBjvPCghEQAI+Teva
+         EdPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=HGYCPjo9Ox5Yihgn+X42WcT7OjqP49HxXrJuPQjVfRQ=;
+        b=Eg5if2EZX8ZryV3INTwLvMEz7LirlnTZv1s0OyztfPCCVVp3gSS5KCIg5puuxdZmhU
+         0T/DH3CBox1p24eKNSwd+48M55jecILTgaqRD7lmcWyf5jGIdtYZpQ/x1SK21zXEx0Ok
+         KFC/+i0T1jx90/eevqIDqMBVbiacjhoVVZJtcSa7rUg+OHenmRtxPxFVrAUhji4FmCs9
+         Q8pzQuFRKEt6/lPdJoP/8dnT/183JTFxPMqN9B6gP/sr+yixIsMkhyXAenvdZskTaFx7
+         uhNjciUURSHCATymgNK0Ysz9D0KM83uXyKJlSMW+9fzen/iqD2oXA52Dxk0lT+oIBvVY
+         n/Pg==
+X-Gm-Message-State: ACgBeo2LA/iTQDVEqFlqb8Yt7lf15tgXT8xWatw+pCxzPdt8c9sRNhXd
+        /VveOwsSIznmLTP9RpllkoN7S9CRSW0=
+X-Google-Smtp-Source: AA6agR7T4QQ6CtB3Q8iFKDtFI8IrQWGaZFVvxmrn8D2gaTBBT5YY0Dn6Op2hCQn1+1B/WGCNp+Bt/g==
+X-Received: by 2002:ac8:7d90:0:b0:326:b431:6cd3 with SMTP id c16-20020ac87d90000000b00326b4316cd3mr4361676qtd.511.1660323656373;
+        Fri, 12 Aug 2022 10:00:56 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id cp5-20020a05622a420500b0031f41ea94easm1910796qtb.28.2022.08.12.10.00.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 10:00:55 -0700 (PDT)
+Message-ID: <9208fec1-60e9-dd2b-af27-ada3dfa50121@gmail.com>
+Date:   Fri, 12 Aug 2022 10:00:52 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC net-next 0/4] ynl: YAML netlink protocol descriptions
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
+Cc:     sdf@google.com, jacob.e.keller@intel.com, vadfed@fb.com,
+        johannes@sipsolutions.net, jiri@resnulli.us, dsahern@kernel.org,
+        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
+References: <20220811022304.583300-1-kuba@kernel.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220811022304.583300-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Fri, 12 Aug 2022 11:42:50 -0400:
+On 8/10/22 19:23, Jakub Kicinski wrote:
+> Netlink seems simple and reasonable to those who understand it.
+> It appears cumbersome and arcane to those who don't.
+> 
+> This RFC introduces machine readable netlink protocol descriptions
+> in YAML, in an attempt to make creation of truly generic netlink
+> libraries a possibility. Truly generic netlink library here means
+> a library which does not require changes to support a new family
+> or a new operation.
+> 
+> Each YAML spec lists attributes and operations the family supports.
+> The specs are fully standalone, meaning that there is no dependency
+> on existing uAPI headers in C. Numeric values of all attribute types,
+> operations, enums, and defines and listed in the spec (or unambiguous).
+> This property removes the need to manually translate the headers for
+> languages which are not compatible with C.
+> 
+> The expectation is that the spec can be used to either dynamically
+> translate between whatever types the high level language likes (see
+> the Python example below) or codegen a complete libarary / bindings
+> for a netlink family at compilation time (like popular RPC libraries
+> do).
+> 
+> Currently only genetlink is supported, but the "old netlink" should
+> be supportable as well (I don't need it myself).
+> 
+> On the kernel side the YAML spec can be used to generate:
+>   - the C uAPI header
+>   - documentation of the protocol as a ReST file
+>   - policy tables for input attribute validation
+>   - operation tables
+> 
+> We can also codegen parsers and dump helpers, but right now the level
+> of "creativity & cleverness" when it comes to netlink parsing is so
+> high it's quite hard to generalize it for most families without major
+> refactoring.
+> 
+> Being able to generate the header, documentation and policy tables
+> should balance out the extra effort of writing the YAML spec.
+> 
+> Here is a Python example I promised earlier:
+> 
+>    ynl = YnlFamily("path/to/ethtool.yaml")
+>    channels = ynl.channels_get({'header': {'dev_name': 'eni1np1'}})
+> 
+> If the call was successful "channels" will hold a standard Python dict,
+> e.g.:
+> 
+>    {'header': {'dev_index': 6, 'dev_name': 'eni1np1'},
+>     'combined_max': 1,
+>     'combined_count': 1}
+> 
+> for a netdevsim device with a single combined queue.
+> 
+> YnlFamily is an implementation of a YAML <> netlink translator (patch 3).
+> It takes a path to the YAML spec - hopefully one day we will make
+> the YAMLs themselves uAPI and distribute them like we distribute
+> C headers. Or get them distributed to a standard search path another
+> way. Until then, the YNL library needs a full path to the YAML spec and
+> application has to worry about the distribution of those.
+> 
+> The YnlFamily reads all the info it needs from the spec, resolves
+> the genetlink family id, and creates methods based on the spec.
+> channels_get is such a dynamically-generated method (i.e. grep for
+> channels_get in the python code shows nothing). The method can be called
+> passing a standard Python dict as an argument. YNL will look up each key
+> in the YAML spec and render the appropriate binary (netlink TLV)
+> representation of the value. It then talks thru a netlink socket
+> to the kernel, and deserilizes the response, converting the netlink
+> TLVs into Python types and constructing a dictionary.
+> 
+> Again, the YNL code is completely generic and has no knowledge specific
+> to ethtool. It's fairly simple an incomplete (in terms of types
+> for example), I wrote it this afternoon. I'm also pretty bad at Python,
+> but it's the only language I can type which allows the method
+> magic, so please don't judge :) I have a rather more complete codegen
+> for C, with support for notifications, kernel -> user policy/type
+> verification, resolving extack attr offsets into a path
+> of attribute names etc, etc. But that stuff needs polishing and
+> is less suitable for an RFC.
+> 
+> The ability for a high level language like Python to talk to the kernel
+> so easily, without ctypes, manually packing structs, copy'n'pasting
+> values for defines etc. excites me more than C codegen, anyway.
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7a53e17accce9d310d2e522dfc701d8da7ccfa65
-
-Thank you!
-
+This is really cool BTW, and it makes a lot of sense to me that we are 
+moving that way, especially with Rust knocking at the door. I will try 
+to do a more thorough review, than "cool, I like it".
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Florian
