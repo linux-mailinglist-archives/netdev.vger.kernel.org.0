@@ -2,223 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E524A590932
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 01:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 621A359098F
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 02:27:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236665AbiHKXbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 19:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36216 "EHLO
+        id S233974AbiHLA1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 20:27:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233974AbiHKXbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 19:31:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28AF99410B;
-        Thu, 11 Aug 2022 16:31:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D63FBB82339;
-        Thu, 11 Aug 2022 23:31:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3764BC433D6;
-        Thu, 11 Aug 2022 23:31:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660260672;
-        bh=g9lXYjeZup1st1u3UHpbk9YPsqoJWbV7ijlwPKUv80U=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SUz/ZJw84+7ItNUt3Pf3kI+WmsYaNCOBfNuz4W3JSmo5avGwaplPRzIA6GHdHnM69
-         GS0+hOCpWFbgPrYRWjlfZzwo1SlzLjMnR//9J+sgUwv7jnOAdNinTESNOxK+lg70fb
-         9GxfggVtXQcYYgJ9ulmVy8jLuLEbFJeDaZS9gJuJpoHp4YWxjnCMdRPTly8DKNhxLr
-         EkwNhhc5oBjxsAO7mTV15e33iz15ht5sc+b1PfyPPLLT1QTb7VnJFhNQuj1vwEzkqv
-         V6vRHQVbDKm7qH34QuKTJ+gJTwL9jjGxShpfp5dvCxZ8e8FFWsqWEtwxc8G51/o4Ht
-         1iYfMPJm7fk3Q==
-Date:   Thu, 11 Aug 2022 16:31:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, jacob.e.keller@intel.com, vadfed@fb.com,
-        johannes@sipsolutions.net, jiri@resnulli.us, dsahern@kernel.org,
-        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
-Subject: Re: [RFC net-next 4/4] ynl: add a sample user for ethtool
-Message-ID: <20220811163111.56d83702@kernel.org>
-In-Reply-To: <CAKH8qBs54kX_MjA2xHM1sSa_zvNYDEPhiZcwEVWV4kP1dEPcEw@mail.gmail.com>
-References: <20220811022304.583300-1-kuba@kernel.org>
-        <20220811022304.583300-5-kuba@kernel.org>
-        <YvUru3QvN/LuYgnq@google.com>
-        <20220811123515.4ef1a715@kernel.org>
-        <CAKH8qBs54kX_MjA2xHM1sSa_zvNYDEPhiZcwEVWV4kP1dEPcEw@mail.gmail.com>
+        with ESMTP id S229833AbiHLA1u (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 20:27:50 -0400
+Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F044EA00F1;
+        Thu, 11 Aug 2022 17:27:48 -0700 (PDT)
+Received: by mail-vk1-xa2c.google.com with SMTP id q14so9733893vke.9;
+        Thu, 11 Aug 2022 17:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1EqMW9+sIv7QJbTeZKUHZUM/p01kIgjNDKoKtzHUX6I=;
+        b=M1GNjTX6MjOuuRZWm3CHgm0eqBJRWOE2DYIwkpijn0zr44uLH0SX2pVKsqnu6SKNns
+         crOKzPpxy1RA43nKlwbqOUFzA7HRedMYZ8tQVF/fVGMAyKmhhwsTdSvsU68Ud2Rd1Vvf
+         VGg7iWJFnTpKjk557gHnFc+YZibSg5rVyMlQJaEi3/Ldv14TBB8M/M2PtEJHVInQAn18
+         t0OPuaERFvAALtrbkGhfJXRFwmuZN2S5HT8whf8Ecld+YIN1EMC8dvvmJ1vMiAv3owSc
+         silpXSxehuEjE0NLkaQfkPb9niGhisKpqBCPa6hiJgda+d+CFnoRwtbCafYrK4a9pelF
+         WX2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1EqMW9+sIv7QJbTeZKUHZUM/p01kIgjNDKoKtzHUX6I=;
+        b=0SqqQmwY5bCS30RwTOuUf75VVJqWlKzO8KAClOZPAWLl9jFHnnG++VOQp3MEaZwy/f
+         +XxVDlDtefO9VbBaFC1IEw0nXy4f8fKVExtSBd13kfzoxeEIQM01hUKP8roAia5iXzQR
+         lDIUTBE6bTjlGXTHsMyumFfV45EO7HgMGtHafabJ3g/Vkfz7XRjnAFmrksJEjXFDsFaS
+         i0r36BdH4YMybtt5+nCCgNcAHA6waOFfHrJHLDkJo17RHMHdkysRvun+uxKglwGQmPg/
+         jm4+piAbJpU2ZntRoaJxiNhw1QXxYnN08mpAzJpBp3GSmmNBygmnb16NS43ov5ahJXPw
+         4oTg==
+X-Gm-Message-State: ACgBeo3bg2alLkwOEEindbxEBQ1rd04KmlWkqk05GFhFln/lDaFucKxE
+        mQxs5dzLVRZFbq32wUMum23ywqXS+i6TlYspBPjPoze9rnJ0Aw==
+X-Google-Smtp-Source: AA6agR6Xxa627apoLE5N7GpRkjtgyd4LlWQoOuRcxBEEqPifbL4QHOVP/BOrxS/OJ4GGBJ0emBtj3jLw3QnSmFAygEI=
+X-Received: by 2002:a1f:1644:0:b0:378:c157:d0f5 with SMTP id
+ 65-20020a1f1644000000b00378c157d0f5mr902289vkw.5.1660264068116; Thu, 11 Aug
+ 2022 17:27:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-6-laoar.shao@gmail.com>
+ <20220810170706.ikyrsuzupjwt65h7@google.com> <CALOAHbBk+komswLqs0KBg8FeFAYpC20HjXrUeZA-=7cWf6nRUw@mail.gmail.com>
+ <20220811154731.3smhom6v4qy2u6rd@google.com>
+In-Reply-To: <20220811154731.3smhom6v4qy2u6rd@google.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Fri, 12 Aug 2022 08:27:09 +0800
+Message-ID: <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 11 Aug 2022 15:55:44 -0700 Stanislav Fomichev wrote:
-> > We could, I guess. To be clear this controls the count, IOW:
+On Thu, Aug 11, 2022 at 11:47 PM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Thu, Aug 11, 2022 at 10:49:13AM +0800, Yafang Shao wrote:
+> > On Thu, Aug 11, 2022 at 1:07 AM Shakeel Butt <shakeelb@google.com> wrote:
+> > >
+> > > On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
+> > > > The memcg may be the root_mem_cgroup, in which case we shouldn't put it.
+> > >
+> > > No, it is ok to put root_mem_cgroup. css_put already handles the root
+> > > cgroups.
+> > >
 > >
-> > enum {
-> >         PREFIX_A_BLA_ATTR = 1,
-> >         PREFIX_A_ANOTHER_ATTR,
-> >         PREFIX_A_AND_ONEMORE,
-> >         __PFREIX_A_CNT, // <--- This thing
-> > };
-> > #define PREFIX_A_MAX (__PFREIX_A_CNT - 1)
-> >
-> > It's not used in the generated code, only if we codegen the uAPI,
-> > AFAIR. So we'd need a way to tell the generator of the uAPI about
-> > the situation, anyway. I could be misremembering.  
-> 
-> My worry is that we'll have more hacks like these and it's hard, as a
-> spec reader/writer, to figure out that they exist..
-> So I was wondering if it's "easier" (from the spec reader/writer pov)
-> to have some c-header-fixup: section where we can have plain
-> c-preprocessor hacks like these (where we need to redefine something
-> to match the old behavior).
+> > Ah, this commit log doesn't describe the issue clearly. I should improve it.
+> > The issue is that in bpf_map_get_memcg() it doesn't get the objcg if
+> > map->objcg is NULL (that can happen if the map belongs to the root
+> > memcg), so we shouldn't put the objcg if map->objcg is NULL neither in
+> > bpf_map_put_memcg().
+>
+> Sorry I am still not understanding. We are not 'getting' objcg in
+> bpf_map_get_memcg(). We are 'getting' memcg from map->objcg and if that
+> is NULL the function is returning root memcg and putting root memcg is
+> totally fine.
 
-Let me think about it some more. My main motivation is people writing
-new families, I haven't sent too much time worrying about the existing
-ones with all their quirks. It's entirely possible that the uAPI quirks
-can just go and we won't generate uAPI for existing families as it
-doesn't buy us anything.
+When the map belongs to root_mem_cgroup, the map->objcg is NULL, right ?
+See also bpf_map_save_memcg() and it describes clearly in the comment -
 
-> Coming from stubby/grpc, I was expecting to see words like
-> message/field/struct. The question is what's more confusing: sticking
-> with netlink naming or trying to map grpc/thrift concepts on top of
-> what we have. (I'm assuming more people know about grpc/thrift than
-> netlink)
-> 
-> messages: # or maybe 'attribute-sets' ?
->   - name: channels
->     ...
+static void bpf_map_save_memcg(struct bpf_map *map)
+{
+        /* Currently if a map is created by a process belonging to the root
+         * memory cgroup, get_obj_cgroup_from_current() will return NULL.
+         * So we have to check map->objcg for being NULL each time it's
+         * being used.
+         */
+        map->objcg = get_obj_cgroup_from_current();
+}
 
-Still not convinced about messages, as it makes me think that every
-"space" is then a definition of a message rather than just container
-for field definitions with independent ID spaces. 
+So for the root_mem_cgroup case, bpf_map_get_memcg() will return
+root_mem_cgroup directly without getting its css, right ? See below,
 
-Attribute-sets sounds good, happy to rename.
+static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
+{
 
-Another thought I just had was to call it something like "data-types"
-or "field-types" or "type-spaces". To indicate the split into "data" 
-and "actions"/"operations"?
+        if (map->objcg)
+                return get_mem_cgroup_from_objcg(map->objcg);
 
-> operations:
->   - name: channel_get
->     message: channels
->     do:
->       request:
->         fields:
->         - header
->         - rx_max
-> 
-> Or maybe all we really need is a section in the doc called 'Netlink
-> for gRPC/Thrift users' where we map these concepts:
-> - attribute-spaces (attribute-sets?) -> messages
-> - attributes -> fields
+        return root_mem_cgroup;   // without css_get(&memcg->css);
+}
 
-Excellent idea!
+But it will put the css unconditionally.  See below,
 
-> > Dunno, that'd mean that the Python method is called
-> > ETHTOOL_MSG_CHANNELS_GET rather than just channels_get.
-> > I don't want to force all languages to use the C naming.
-> > The C naming just leads to silly copy'n'paste issues like
-> > f329a0ebeab.  
-> 
-> Can we have 'name:' and 'long-name:' or 'c-name:' or 'full-name' ?
-> 
-> - name: header
->    attributes:
->     - name: dev_index
->       full-name: ETHTOOL_A_HEADER_DEV_INDEX
->       val:
->       type:
-> 
-> Suppose I'm rewriting my c application from uapi to some generated (in
-> the future) python-like channels_get() method. If I can grep for
-> ETHTOOL_MSG_CHANNELS_GET, that would save me a bunch of time figuring
-> out what the new canonical wrapper is.
-> 
-> Also, maybe, at some point we'll have:
-> - name: dev_index
->   c-name: ETHTOOL_A_HEADER_DEV_INDEX
->   java-name: headerDevIndex
+memcg = bpf_map_get_memcg(map);
+...
+mem_cgroup_put(memcg);
 
-Herm, looking at my commits where I started going with the C codegen
-(which I haven't posted here) is converting the values to the same
-format as keys (i.e. YAML/JSON style with dashes). So the codegen does:
+So we should put it *conditionally* as well.
 
-	c_name = attr['name']
-	if c_name in c_keywords:
-		c_name += '_'
-	c_name = c_name.replace('-', '_')
+  memcg = bpf_map_get_memcg(map);
+   ...
++ if (map->objcg)
+       mem_cgroup_put(memcg);
 
-So the name would be "dev-index", C will make that dev_index, Java will
-make that devIndex (or whatever) etc.
+Is it clear to you ?
 
-I really don't want people to have to prefix the names because that's
-creating more work. We can slap a /* header.dev_index */ comment in 
-the generated uAPI, for the grep? Dunno..
+> Or are you saying that root_mem_cgroup is NULL?
+>
 
-> > Good catch, I'm aware. I was planning to add a "header constants"
-> > section or some such. A section in "headers" which defines the
-> > constants which C code will get from the headers.  
-> 
-> Define as in 're-define' or define as in 'you need to include some
-> other header for this to work'?
-> 
-> const:
->   - name: ALTIFNAMSIZ
->     val: 128
+No
 
-This one. In most cases the constant is defined in the same uAPI header
-as the proto so we're good. But there's IFNAMSIZ and friends which are
-shared.
-
-> which then does
-> 
-> #ifndef
-> #define ALTIFNAMSIZ 128
-> #else
-> static_assert(ALTIFNAMSIZ == 128)
-> #endif
-> 
-> ?
-> 
-> or:
-> 
-> external-const:
->   - name: ALTIFNAMSIZ
->     header: include/uapi/linux/if.h
-> 
-> which then might generate the following:
-> 
-> #include <include/uapi/linux/if.h>
-> #ifndef ALTIFNAMSIZ
-> #error "include/uapi/linux/if.h does not define ALTIFNAMSIZ"
-> #endif
-> 
-> > For Python it does not matter, as we don't have to size arrays.  
-> 
-> Hm, I was expecting the situation to be the opposite :-) Because if
-> you really have to know this len in python, how do you resolve
-> ALTIFNAMSIZ?
-
-Why does Python need to know the length of the string tho?
-On receive if kernel gives you a longer name - great, no problem.
-On send the kernel will tell you so also meh.
-
-In C the struct has a char bla[FIXED_SIZE] so if we get an oversized
-string we're pooped, that's my point, dunno what other practical use
-the string sizing has.
-
-> The simplest thing to do might be to require these headers to be
-> hermetic (i.e., redefine all consts the spec cares about internally)?
-
-That's what I'm thinking if they are actually needed. But it only C
-cares we can just slap the right includes and not worry. Dunno if other
-languages are similarly string-challenged. 
+-- 
+Regards
+Yafang
