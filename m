@@ -2,225 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DEFD590FF3
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21FC2590FFF
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:26:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233586AbiHLLUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 07:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54646 "EHLO
+        id S236899AbiHLLZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 07:25:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231478AbiHLLT6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:19:58 -0400
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C051AA4D9
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:19:54 -0700 (PDT)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220812111949euoutp02832541225f76ee173a85ea7bdbfa091a~KlPQshCn_1188311883euoutp021
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 11:19:49 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220812111949euoutp02832541225f76ee173a85ea7bdbfa091a~KlPQshCn_1188311883euoutp021
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1660303189;
-        bh=wO8hdbryY0sm32FNDU5Z3KbpOXWIqd/1YwOt9Mkpv7k=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=Ge+PPFXD6wGTS4Nc/m2JFdaWxPUzrwrGz+2ggxSTtU7QEGKB4z41xj2PAstJ0f049
-         jpixEPKw5Sf4OlUY/HBxVW1kNflrwXdtrD+QiawxTpn2szqGyyavyb+uqtBTG+WUsV
-         bkVuF3vnIMCygmd5bQ1stwFU18wzo7VFFqs/+8ZE=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220812111948eucas1p296e40a57115e095f353f54c8e78988e2~KlPQNgBKI0686106861eucas1p2M;
-        Fri, 12 Aug 2022 11:19:48 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 41.D6.10067.45736F26; Fri, 12
-        Aug 2022 12:19:48 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45~KlPPsbNQi2071120711eucas1p2L;
-        Fri, 12 Aug 2022 11:19:48 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220812111947eusmtrp1db526300ab355bde6559b55e234726e0~KlPProDkn2568325683eusmtrp1X;
-        Fri, 12 Aug 2022 11:19:47 +0000 (GMT)
-X-AuditID: cbfec7f4-dd7ff70000002753-e5-62f63754612c
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id E4.93.09038.35736F26; Fri, 12
-        Aug 2022 12:19:47 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220812111947eusmtip21a68c6fb8ed7a1f3757a752b83138358~KlPPBpTmS0418004180eusmtip2h;
-        Fri, 12 Aug 2022 11:19:47 +0000 (GMT)
-Message-ID: <27016cc0-f228-748b-ea03-800dda4e5f0c@samsung.com>
-Date:   Fri, 12 Aug 2022 13:19:47 +0200
+        with ESMTP id S233977AbiHLLZv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:25:51 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A372CE10
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:25:49 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id z25so957434lfr.2
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:25:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=CicaxzhBFo0KPREhpr4TXcueTsn2K/vZuDdXuzYsKWU=;
+        b=ZSjkS3G57jOr2ZUgBUg647LpswyGyUyOyxiv0qFWeuWeUxKsfjmjUXDseiTfsQeItA
+         C7ge0PECV1KDT/YzTpu722jyDhSyTkdFC9Tz1gGtysf3KxHqSztEfFLFt2lBu7DmBQo4
+         is0MZePlBzlABtDsifedY/+Z3wAkjtKPZ+7kvVg62lftbaHeyB2zFH0GKgXkK/osYma0
+         KMRoFx5V+/YgxcE2CHqMv/q1MXffwjHDhg7RRANtqkqntp+ZcsYIkO2B6lSFUrO0jcxl
+         nUp2kC2MVEEazP4SXMIreFRMBeyz+1HSNrbsCona9am1KL+dpyWbCzXSVezdHj/fIpqp
+         rNCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CicaxzhBFo0KPREhpr4TXcueTsn2K/vZuDdXuzYsKWU=;
+        b=U71BWddKfRqEWBg+Vwj91IgBWqOXY9bb0xO7lIu+XJ/GssfbTHc1gfGxkHCVSnX8PL
+         gUnjScagBpOUIbdgiY+UrWCxa4YO7chJ9eNsUzt4iZXpuB6i92icrTfMlaAO78RXOT3Z
+         KLosEed0iavT5oj3dH95qldGZ83ee4PmF36cW5Fb1U49/XK0OyrChsC1Cgx3A0qOzEk+
+         lMrMAzID6TB/0kCVZqVGfvXo3abq63zJRvC5wh8tiA+d5I3UyvUIxLQ7AtXj8m/kCeT+
+         Qaf+WPIbJyPD+mbVSwdVwieX150dnIZnlzIznnzZI8soNcrfIcUf7S0CQKHIsS6qshEr
+         fqFg==
+X-Gm-Message-State: ACgBeo1wSxJTWtVpWbU0eo3xkQqB7xQHQwzzccBBEWje/pRVHoDq2dc1
+        4svhnOomOOkIejGMqo2kfrupTw==
+X-Google-Smtp-Source: AA6agR7nbIA1W9kvuTBrsjatx+y+trLViCt2NS014KwbWMIhl7WPsCOj2Q0c6fDtZvYCVRpwve0F1w==
+X-Received: by 2002:ac2:4f03:0:b0:48a:6061:bd8e with SMTP id k3-20020ac24f03000000b0048a6061bd8emr1247397lfr.647.1660303548058;
+        Fri, 12 Aug 2022 04:25:48 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id b20-20020a196714000000b0048a9a756763sm188699lfc.19.2022.08.12.04.25.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 04:25:47 -0700 (PDT)
+Message-ID: <14cf568e-d7ee-886e-5122-69b2e58b8717@linaro.org>
+Date:   Fri, 12 Aug 2022 14:25:42 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH net] net: phy: Warn about incorrect
- mdio_bus_phy_resume() state
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
 Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>
-Cc:     opendmb@gmail.com, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20220801233403.258871-1-f.fainelli@gmail.com>
+To:     Wei Fang <wei.fang@nxp.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220812145009.1229094-1-wei.fang@nxp.com>
+ <20220812145009.1229094-2-wei.fang@nxp.com>
+ <0cd22a17-3171-b572-65fb-e9d3def60133@linaro.org>
+ <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfUgTcRjud3fbbqvFObP9stJYaRppWZEXlX2QdEFBhBEYVqcebswvNqcm
-        fay00qFSWrouQUltJmY1TFOyj61mNWmZaRmlohbmZmYrKSnN7frwv+d93+f5Pe/z8sNRiYXn
-        jSsSUxhVIh0v44uwesuPZ0ERoWPRK4fzfUnbOxNKltiyMPK9pU9Ajn96KCAvj+h55PP6fB7Z
-        3lTCJ00XmgFpKZtLOgvOA3LM6gBk5pchZPMsqr2zDaXqrnYhVCP7TkCVGTWUsTqHTzXediLU
-        yN0OPjWZ2Y5RTqPPbmGkaEMsE69IZVQrwg6J5LZaC5JsXZie3/YW1YKPUh3AcUisgbYvkTog
-        wiVEFYDt42cQrvgKoPnlfQFXOAH86RjEdEDoVvRmagE3MABY1dnD44rRKX1tId/FEhNh0FBQ
-        KXBhjPCDWWw54Poe8MnFAfdLXkQM/DBZ7uZ4Envh46I8ngujhBS+GShFXHgOkQ4735vda6CE
-        GYH27mI3iU+EQN2wzm0mJNbDilY7xol9YeatS6hLAIlSIWxi21Au6TZYYz3ARfCEQy11Ag4v
-        gNbCXIyjJMFf+tVce8rXXoNyeD18+2yc76KgRCC83rSCa2+BV7KqEE45G74e9uAWmA0L6ov/
-        eIph9mkJx/aHbEvtP88Hz1+gZ4GMnXYTdlp2dloU9r9vGcCqgZTRqBPiGPWqRCYtWE0nqDWJ
-        ccExSQlGMPXVrBMtX28Dw9BosAkgODABiKOyOeLUy85oiTiWPpzBqJIOqjTxjNoE5uOYTCqO
-        UdygJUQcncIoGSaZUf2dIrjQW4tsOrp/goi5t+rp8pXNS9MdR3J3mYMUgc0eLxbbe4BPctra
-        RaQeOzbzW0CHP+3XMVY5IlnoxT7KsjtSsYb4W0rF2PET28GMkEk0LXBfdULlJ8x/IJa3pyt0
-        0zkkSs7LTUL8/aINtmLlKYM8FO1rlJ/MmMuc+Igs6QI2z9bS0YkDZ8Lkg1GvloUXzZvIGSxX
-        7oqi8qRFju87I5Ubxm37+oUlKXjeOnPOjuoZ2pq7EVt5DVtHLHfOfhd1Zt/pV2qzu1MX/BqY
-        93DWTt86Db06/V5Af5dPWWvvWmP2xm36lMBrV70aMm72FlfMnFT1b/kRuYcJL4wIWOxdoQj6
-        3H1BX+snw9RyOmQZqlLTvwGNzQbG2QMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDIsWRmVeSWpSXmKPExsVy+t/xe7rB5t+SDC5vMbU4f/cQs8Wc8y0s
-        Fk+PPWK3+PXuCLvFovczWC0ubOtjtbi8aw6bxaGpexktji0Qs/g8aQqjxbfTbxgtmj+9YnLg
-        8bh87SKzx5aVN5k8ds66y+6xYFOpx6ZVnWweO3d8ZvJ4v+8qm8f/5sssHp83yQVwRunZFOWX
-        lqQqZOQXl9gqRRtaGOkZWlroGZlY6hkam8daGZkq6dvZpKTmZJalFunbJehlnF93jKngtGxF
-        38U7zA2ML8W7GDk5JARMJB40NzB2MXJxCAksZZS4eL+BBSIhI3FyWgMrhC0s8edaFxtE0XtG
-        iSnT/zGBJHgF7CSWT1rKDmKzCKhKtMxazAgRF5Q4OfMJ2CBRgWSJBYeWgtnCAqESd8+fAKtn
-        FhCXuPVkPtgcEYEKiZs7LzCBLGAWOMwkcerZJLDNQgJWEhO2nAcbyiZgKNH1FuQKTg5OAWuJ
-        JWdes0AMMpPo2trFCGHLSzRvnc08gVFoFpI7ZiHZNwtJyywkLQsYWVYxiqSWFuem5xYb6RUn
-        5haX5qXrJefnbmIERvO2Yz+37GBc+eqj3iFGJg7GQ4wSHMxKIrxliz4nCfGmJFZWpRblxxeV
-        5qQWH2I0BQbGRGYp0eR8YDrJK4k3NDMwNTQxszQwtTQzVhLn9SzoSBQSSE8sSc1OTS1ILYLp
-        Y+LglGpgWsgqcrKr5FO7/tfFp5dzVVwt+bNw8qpX/5uZamsfdX05/CZXyzjEqTiR9+2xWzP9
-        1jgaXbIRvLZAe7FfltVetYetl6qyWJVyHU8tN7+5x8y4rZJhmXAM4/ZI9soG+73LlVhq3Ks+
-        WEbtS53Fqz7r6+faK2JPQjUDEjLsc9pvH6+4XMrj8WftuUpX36dH51fsV9ywZOnsnlLudyxZ
-        Wu9DLh50t29bav2DQaz7SPP07TGhG1a92rhc5uBZu6+ZT6x7Mp4GNr8O6jhzL99JQsb3+qlN
-        WzI3VC63cd4n9tFhtrSPIrea1NFn3ZfPHUvmfb15/oXJG+895zJk6jat9jtyhbfu6n2XI0Ll
-        K3hTBIqklFiKMxINtZiLihMBDLIQ228DAAA=
-X-CMS-MailID: 20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45
-References: <20220801233403.258871-1-f.fainelli@gmail.com>
-        <CGME20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45@eucas1p2.samsung.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi All,
+On 12/08/2022 12:02, Wei Fang wrote:
+> 
+> 
+>> -----Original Message-----
+>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Sent: 2022年8月12日 15:28
+>> To: Wei Fang <wei.fang@nxp.com>; andrew@lunn.ch; hkallweit1@gmail.com;
+>> linux@armlinux.org.uk; davem@davemloft.net; edumazet@google.com;
+>> kuba@kernel.org; pabeni@redhat.com; robh+dt@kernel.org;
+>> krzysztof.kozlowski+dt@linaro.org; f.fainelli@gmail.com;
+>> netdev@vger.kernel.org; devicetree@vger.kernel.org;
+>> linux-kernel@vger.kernel.org
+>> Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation
+>> property
+>>
+>> On 12/08/2022 17:50, wei.fang@nxp.com wrote:
+>>> From: Wei Fang <wei.fang@nxp.com>
+>>>
+>>
+>> Please use subject prefix matching subsystem.
+>>
+> Ok, I'll add the subject prefix.
+> 
+>>> The hibernation mode of Atheros AR803x PHYs is default enabled.
+>>> When the cable is unplugged, the PHY will enter hibernation mode and
+>>> the PHY clock does down. For some MACs, it needs the clock to support
+>>> it's logic. For instance, stmmac needs the PHY inputs clock is present
+>>> for software reset completion. Therefore, It is reasonable to add a DT
+>>> property to disable hibernation mode.
+>>>
+>>> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/net/qca,ar803x.yaml | 6 ++++++
+>>>  1 file changed, 6 insertions(+)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/net/qca,ar803x.yaml
+>>> b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
+>>> index b3d4013b7ca6..d08431d79b83 100644
+>>> --- a/Documentation/devicetree/bindings/net/qca,ar803x.yaml
+>>> +++ b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
+>>> @@ -40,6 +40,12 @@ properties:
+>>>        Only supported on the AR8031.
+>>>      type: boolean
+>>>
+>>> +  qca,disable-hibernation:
+>>> +    description: |
+>>> +    If set, the PHY will not enter hibernation mode when the cable is
+>>> +    unplugged.
+>>
+>> Wrong indentation. Did you test the bindings?
+>>
+> Sorry, I just checked the patch and forgot to check the dt-bindings.
+> 
+>> Unfortunately the property describes driver behavior not hardware, so it is not
+>> suitable for DT. Instead describe the hardware
+>> characteristics/features/bugs/constraints. Not driver behavior. Both in property
+>> name and property description.
+>>
+> Thanks for your review and feedback. Actually, the hibernation mode is a feature of hardware, I will modify the property name and description to be more in line with the requirements of the DT property. 
 
-On 02.08.2022 01:34, Florian Fainelli wrote:
-> Calling mdio_bus_phy_resume() with neither the PHY state machine set to
-> PHY_HALTED nor phydev->mac_managed_pm set to true is a good indication
-> that we can produce a race condition looking like this:
->
-> CPU0						CPU1
-> bcmgenet_resume
->   -> phy_resume
->     -> phy_init_hw
->   -> phy_start
->     -> phy_resume
->                                                  phy_start_aneg()
-> mdio_bus_phy_resume
->   -> phy_resume
->      -> phy_write(..., BMCR_RESET)
->       -> usleep()                                  -> phy_read()
->
-> with the phy_resume() function triggering a PHY behavior that might have
-> to be worked around with (see bf8bfc4336f7 ("net: phy: broadcom: Fix
-> brcm_fet_config_init()") for instance) that ultimately leads to an error
-> reading from the PHY.
->
-> Fixes: fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+hibernation is a feature, but 'disable-hibernation' is not. DTS
+describes the hardware, not policy or driver bejhvior. Why disabling
+hibernation is a property of hardware? How you described, it's not,
+therefore either property is not for DT or it has to be phrased
+correctly to describe the hardware.
 
-This patch, as probably intended, triggers a warning during system 
-suspend/resume cycle in the SMSC911x driver. I've observed it on ARM 
-Juno R1 board on the kernel compiled from next-202208010:
-
-  ------------[ cut here ]------------
-  WARNING: CPU: 1 PID: 398 at drivers/net/phy/phy_device.c:323 
-mdio_bus_phy_resume+0x34/0xc8
-  Modules linked in: smsc911x cpufreq_powersave cpufreq_conservative 
-crct10dif_ce ip_tables x_tables ipv6 [last unloaded: smsc911x]
-  CPU: 1 PID: 398 Comm: rtcwake Not tainted 5.19.0+ #940
-  Hardware name: ARM Juno development board (r1) (DT)
-  pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-  pc : mdio_bus_phy_resume+0x34/0xc8
-  lr : dpm_run_callback+0x74/0x350
-  ...
-  Call trace:
-   mdio_bus_phy_resume+0x34/0xc8
-   dpm_run_callback+0x74/0x350
-   device_resume+0xb8/0x258
-   dpm_resume+0x120/0x4a8
-   dpm_resume_end+0x14/0x28
-   suspend_devices_and_enter+0x164/0xa60
-   pm_suspend+0x25c/0x3a8
-   state_store+0x84/0x108
-   kobj_attr_store+0x14/0x28
-   sysfs_kf_write+0x60/0x70
-   kernfs_fop_write_iter+0x124/0x1a8
-   new_sync_write+0xd0/0x190
-   vfs_write+0x208/0x478
-   ksys_write+0x64/0xf0
-   __arm64_sys_write+0x14/0x20
-   invoke_syscall+0x40/0xf8
-   el0_svc_common.constprop.3+0x8c/0x120
-   do_el0_svc+0x28/0xc8
-   el0_svc+0x48/0xd0
-   el0t_64_sync_handler+0x94/0xb8
-   el0t_64_sync+0x15c/0x160
-  irq event stamp: 24406
-  hardirqs last  enabled at (24405): [<ffff8000090c4734>] 
-_raw_spin_unlock_irqrestore+0x8c/0x90
-  hardirqs last disabled at (24406): [<ffff8000090b3164>] el1_dbg+0x24/0x88
-  softirqs last  enabled at (24144): [<ffff800008010488>] _stext+0x488/0x5cc
-  softirqs last disabled at (24139): [<ffff80000809bf98>] 
-irq_exit_rcu+0x168/0x1a8
-  ---[ end trace 0000000000000000 ]---
-
-I hope the above information will help fixing the driver.
-
-> ---
->   drivers/net/phy/phy_device.c | 6 ++++++
->   1 file changed, 6 insertions(+)
->
-> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-> index 46acddd865a7..608de5a94165 100644
-> --- a/drivers/net/phy/phy_device.c
-> +++ b/drivers/net/phy/phy_device.c
-> @@ -316,6 +316,12 @@ static __maybe_unused int mdio_bus_phy_resume(struct device *dev)
->   
->   	phydev->suspended_by_mdio_bus = 0;
->   
-> +	/* If we managed to get here with the PHY state machine in a state other
-> +	 * than PHY_HALTED this is an indication that something went wrong and
-> +	 * we should most likely be using MAC managed PM and we are not.
-> +	 */
-> +	WARN_ON(phydev->state != PHY_HALTED && !phydev->mac_managed_pm);
-> +
->   	ret = phy_init_hw(phydev);
->   	if (ret < 0)
->   		return ret;
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Best regards,
+Krzysztof
