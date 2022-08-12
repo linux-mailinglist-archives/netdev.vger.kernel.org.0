@@ -2,73 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F5CA590B71
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 07:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA9B2590B88
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 07:34:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236059AbiHLFVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 01:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
+        id S235768AbiHLFey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 01:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233593AbiHLFVf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 01:21:35 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE0F9410B
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:21:34 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id u1so28258258lfq.4
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:21:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:from:to:cc;
-        bh=JfvkqOks6SEsnWBnmoF1stRD9zel/4Vy8jqvru3pmxU=;
-        b=EY3PhBYC+HKoXQSVVBdD2/vi/buDvcQGKTST0UiZjzTdqmpeFkFalfrBZigs7t4dHh
-         5yDkTNEqNmhb9WKKJkoGeBHdqJneCiyeCJWrT+DNm5oex3m6wJcKOsLsl1U/idrtkO4y
-         L657PHcC0e4ACG11c04Y7e88xMRQArXN5pxG7QOlkCLNQfY/7aQ+WJ3NSAhcgMGw1Tvj
-         t0GxfMFxDjIFSkPByTWecgUHbx0NClYWwaEhMapmbHeqxQes+0z6E0XkQFMXmzqTc/Tp
-         VfpjoKkZ+nY88xcysCzbVukjcs7pNoxFYjPodbi9sB8xe4ysg6FY79AJu/Sx0loJxXJd
-         HCxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JfvkqOks6SEsnWBnmoF1stRD9zel/4Vy8jqvru3pmxU=;
-        b=zsNNR3tNLZuQ37UMW5lVGZgI7a7du8zbUoI2bQ9qlEv7AZOfDaW90IaCsJlNxGraQe
-         D4ahpwEJfDTCAmZnEUfcGsr6U/iwjfnlLC7kafxEhPMY4bvgv8z46uNQuYS8xecUeqaJ
-         5VMpVx1UXterf+hSg/T9ramReA6z+aROIcpLPBZX0UYjxdUsaVmndbanZep4NTSEpgrx
-         qHBNdpfHqcSxIdt7iJNlymSonVNvzIZU32fZtTHQpwdQJDBfyOBLyUEKDvcXhQz5Ty5Q
-         Ay18DFXy0lmFRxcieIMLXtoGK/GeXJfOtYPbk2Nrc73YOBeiTeow2Lbh6rjcuzwx4m9d
-         90NQ==
-X-Gm-Message-State: ACgBeo1PnKHmlalCzySJVLjvoboQQBklwRzVx+Zz9lC3V88vQGXNUgrX
-        6QN/dr0iRWQxe85jUL6cm3jSUjDFdBWYs1+zzSs=
-X-Google-Smtp-Source: AA6agR4uiQBt68H0VD3DGgKmVgy+Cu72a/QAhl+1PLYpIMTPrssLkV5tFV7L92fjabsBPWQiGH1BuMvjSMGQg/Q3Rn0=
-X-Received: by 2002:a05:6512:15a7:b0:48b:236c:7302 with SMTP id
- bp39-20020a05651215a700b0048b236c7302mr702023lfb.264.1660281692635; Thu, 11
- Aug 2022 22:21:32 -0700 (PDT)
+        with ESMTP id S230422AbiHLFex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 01:34:53 -0400
+Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E643FA287A;
+        Thu, 11 Aug 2022 22:34:51 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1660282490;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eT9oB/Jxs0HX/eo2S3EGE6XjZBx5ygu2ZiQitesEUO4=;
+        b=w2pIQGWCS1/EKSQZpsMmnNHdguMKuLCCLx81UoSZ1cJIns5aJlRW/klnxQxiXEXBqXDzj1
+        /I1800EVWMbwRGR+k99rKu6F5nZla3D0AmNRp7u7RrQnx4XQIv2OWT8dzbMuEXRDZOd6di
+        B6IqiwAAkFlhCc3zqmARwFxJq42GCM0=
 MIME-Version: 1.0
-Received: by 2002:aa6:d98f:0:b0:210:affa:b291 with HTTP; Thu, 11 Aug 2022
- 22:21:31 -0700 (PDT)
-Reply-To: fredrich.david.mail@gmail.com
-From:   Mr Fredrich David <tgfar4131278991@gmail.com>
-Date:   Fri, 12 Aug 2022 05:21:31 +0000
-Message-ID: <CAMSGiNnGzGbgcNJRFNMFX9mGLxspdTB6L_XkbQq-3LMWOvkmBQ@mail.gmail.com>
-Subject: G44S21
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Muchun Song <muchun.song@linux.dev>
+In-Reply-To: <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
+Date:   Fri, 12 Aug 2022 13:33:54 +0800
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: ****
+Message-Id: <870C70CA-C760-40A5-8A04-F0962EFDF507@linux.dev>
+References: <20220810151840.16394-1-laoar.shao@gmail.com>
+ <20220810151840.16394-6-laoar.shao@gmail.com>
+ <20220810170706.ikyrsuzupjwt65h7@google.com>
+ <CALOAHbBk+komswLqs0KBg8FeFAYpC20HjXrUeZA-=7cWf6nRUw@mail.gmail.com>
+ <20220811154731.3smhom6v4qy2u6rd@google.com>
+ <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
+To:     Yafang Shao <laoar.shao@gmail.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To jest w odpowiedzi na Wasze e-maile, pisz=C4=99, aby poinformowa=C4=87, =
-=C5=BCe
-projekty zosta=C5=82y zako=C5=84czone i zosta=C5=82e=C5=9B zaakceptowany !
-Z powa=C5=BCaniem,
-Pan Fredrich David
+
+
+> On Aug 12, 2022, at 08:27, Yafang Shao <laoar.shao@gmail.com> wrote:
+>=20
+> On Thu, Aug 11, 2022 at 11:47 PM Shakeel Butt <shakeelb@google.com> =
+wrote:
+>>=20
+>> On Thu, Aug 11, 2022 at 10:49:13AM +0800, Yafang Shao wrote:
+>>> On Thu, Aug 11, 2022 at 1:07 AM Shakeel Butt <shakeelb@google.com> =
+wrote:
+>>>>=20
+>>>> On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
+>>>>> The memcg may be the root_mem_cgroup, in which case we shouldn't =
+put it.
+>>>>=20
+>>>> No, it is ok to put root_mem_cgroup. css_put already handles the =
+root
+>>>> cgroups.
+>>>>=20
+>>>=20
+>>> Ah, this commit log doesn't describe the issue clearly. I should =
+improve it.
+>>> The issue is that in bpf_map_get_memcg() it doesn't get the objcg if
+>>> map->objcg is NULL (that can happen if the map belongs to the root
+>>> memcg), so we shouldn't put the objcg if map->objcg is NULL neither =
+in
+>>> bpf_map_put_memcg().
+>>=20
+>> Sorry I am still not understanding. We are not 'getting' objcg in
+>> bpf_map_get_memcg(). We are 'getting' memcg from map->objcg and if =
+that
+>> is NULL the function is returning root memcg and putting root memcg =
+is
+>> totally fine.
+>=20
+> When the map belongs to root_mem_cgroup, the map->objcg is NULL, right =
+?
+> See also bpf_map_save_memcg() and it describes clearly in the comment =
+-
+>=20
+> static void bpf_map_save_memcg(struct bpf_map *map)
+> {
+>        /* Currently if a map is created by a process belonging to the =
+root
+>         * memory cgroup, get_obj_cgroup_from_current() will return =
+NULL.
+>         * So we have to check map->objcg for being NULL each time it's
+>         * being used.
+>         */
+>        map->objcg =3D get_obj_cgroup_from_current();
+> }
+>=20
+> So for the root_mem_cgroup case, bpf_map_get_memcg() will return
+> root_mem_cgroup directly without getting its css, right ? See below,
+>=20
+> static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
+> {
+>=20
+>        if (map->objcg)
+>                return get_mem_cgroup_from_objcg(map->objcg);
+>=20
+>        return root_mem_cgroup;   // without css_get(&memcg->css);
+> }
+>=20
+> But it will put the css unconditionally.  See below,
+>=20
+> memcg =3D bpf_map_get_memcg(map);
+> ...
+> mem_cgroup_put(memcg);
+>=20
+> So we should put it *conditionally* as well.
+
+Hi,
+
+No. We could put root_mem_cgroup unconditionally since the root css
+is treated as no reference css. See css_put().
+
+static inline void css_put(struct cgroup_subsys_state *css)
+{
+	// The root memcg=E2=80=99s css has been set with CSS_NO_REF.
+        if (!(css->flags & CSS_NO_REF))
+                percpu_ref_put(&css->refcnt);
+}
+
+Muchun,
+Thanks.
+
+>=20
+>  memcg =3D bpf_map_get_memcg(map);
+>   ...
+> + if (map->objcg)
+>       mem_cgroup_put(memcg);
+>=20
+> Is it clear to you ?
+>=20
+>> Or are you saying that root_mem_cgroup is NULL?
+>>=20
+>=20
+> No
+>=20
+> --=20
+> Regards
+> Yafang
+
