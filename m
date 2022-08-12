@@ -2,167 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D2ED591487
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 19:01:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D0B6591498
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 19:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239521AbiHLRBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 13:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37502 "EHLO
+        id S239335AbiHLRE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 13:04:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239530AbiHLRA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 13:00:59 -0400
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F3225FAED;
-        Fri, 12 Aug 2022 10:00:57 -0700 (PDT)
-Received: by mail-qt1-x834.google.com with SMTP id x5so1198590qtv.9;
-        Fri, 12 Aug 2022 10:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=HGYCPjo9Ox5Yihgn+X42WcT7OjqP49HxXrJuPQjVfRQ=;
-        b=oZ2nrEbsLdGC7yM5lY4Mw5LY90jJ2tl9s+pcVmRyLOoMjlX/2LMO0Q4hx9AgXi5Y19
-         0NAyYmibeQ+HbFAMIHQPtGjckT1orCv/QAYmRaV+W5Q4sHiflDLeN+Tn+ZotYWOO++VH
-         yhMDvCz461+qL4GovCK1B8YrlhyoIsQW8gOOwEjU2z1uuC9jJ+4fVO7JYieZRKfcRYvJ
-         2Xumw4lRkCVKmCjjWKCW2artlEYq+F1O5vue+Tk8OhctdYWTUZ1ONODon31V4+EFfAsd
-         jqatgDe7n5mC7+1TC0lQ8rfTHaEGYQK6F3mfEEbocDUFpoygsPMOBjvPCghEQAI+Teva
-         EdPQ==
+        with ESMTP id S238439AbiHLRE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 13:04:27 -0400
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A988BB14D6
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:04:26 -0700 (PDT)
+Received: by mail-io1-f70.google.com with SMTP id w6-20020a6bf006000000b006845b59a08bso899234ioc.9
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:04:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=HGYCPjo9Ox5Yihgn+X42WcT7OjqP49HxXrJuPQjVfRQ=;
-        b=Eg5if2EZX8ZryV3INTwLvMEz7LirlnTZv1s0OyztfPCCVVp3gSS5KCIg5puuxdZmhU
-         0T/DH3CBox1p24eKNSwd+48M55jecILTgaqRD7lmcWyf5jGIdtYZpQ/x1SK21zXEx0Ok
-         KFC/+i0T1jx90/eevqIDqMBVbiacjhoVVZJtcSa7rUg+OHenmRtxPxFVrAUhji4FmCs9
-         Q8pzQuFRKEt6/lPdJoP/8dnT/183JTFxPMqN9B6gP/sr+yixIsMkhyXAenvdZskTaFx7
-         uhNjciUURSHCATymgNK0Ysz9D0KM83uXyKJlSMW+9fzen/iqD2oXA52Dxk0lT+oIBvVY
-         n/Pg==
-X-Gm-Message-State: ACgBeo2LA/iTQDVEqFlqb8Yt7lf15tgXT8xWatw+pCxzPdt8c9sRNhXd
-        /VveOwsSIznmLTP9RpllkoN7S9CRSW0=
-X-Google-Smtp-Source: AA6agR7T4QQ6CtB3Q8iFKDtFI8IrQWGaZFVvxmrn8D2gaTBBT5YY0Dn6Op2hCQn1+1B/WGCNp+Bt/g==
-X-Received: by 2002:ac8:7d90:0:b0:326:b431:6cd3 with SMTP id c16-20020ac87d90000000b00326b4316cd3mr4361676qtd.511.1660323656373;
-        Fri, 12 Aug 2022 10:00:56 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id cp5-20020a05622a420500b0031f41ea94easm1910796qtb.28.2022.08.12.10.00.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 10:00:55 -0700 (PDT)
-Message-ID: <9208fec1-60e9-dd2b-af27-ada3dfa50121@gmail.com>
-Date:   Fri, 12 Aug 2022 10:00:52 -0700
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=OucfZo6bVXb/CmNvLXiX7ZiXfaSuQBZNkZAXzjRTZBU=;
+        b=pqUmbdfh1Mt9KiuxIxwx73pl724adrP1JEWylhBfVrzndfQf0rOFt2XxcRZ3SAt2RM
+         rNAqYmJcxjnQmNjoMAZcoIC4NDlQpUuc5P2p6vaAsTLXHh4N7QxTnTqgZKIxYhZAPILO
+         lkzjkzN5IfgF1O3GBCV3iP1XW3HggWJNiRlmWREkYcH/LjZJhTi0yxHfGFP3la68Dvpq
+         Y0BmlofOCBSVFm/ssb7SCd7QO4aANiJfD/ibrag1H7EYKvWHpY4dPmr4XXvSXDwX7rHp
+         JQvixba5TZN13zqGUYrEqVo/e/vjtsIAUb/8Pt0t93fRRpxbhsE3B0bOltjFUhJOnG3h
+         rXbg==
+X-Gm-Message-State: ACgBeo2ls/rAqUp2INpQAhkjblTjEfuqXzjRkQ9+05/K3cIBBxW3dfYg
+        irernX8E3wdQ+2esbwb10BFBvSIAL5JVijAAOyPBgz78Cuc8
+X-Google-Smtp-Source: AA6agR5HWmeytSdzRgCgeULhsaPpv91UfKL6B8MwYexprhotbMy5bkGj4e3ws5EVzW2GuZhBp7h8YINzcUmzrNzO0KTy32T3c1+V
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC net-next 0/4] ynl: YAML netlink protocol descriptions
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com
-Cc:     sdf@google.com, jacob.e.keller@intel.com, vadfed@fb.com,
-        johannes@sipsolutions.net, jiri@resnulli.us, dsahern@kernel.org,
-        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
-References: <20220811022304.583300-1-kuba@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220811022304.583300-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:595:b0:343:3759:b245 with SMTP id
+ a21-20020a056638059500b003433759b245mr2448450jar.180.1660323866068; Fri, 12
+ Aug 2022 10:04:26 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 10:04:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003fcafc05e60e466e@google.com>
+Subject: [syzbot] memory leak in netlink_policy_dump_add_policy
+From:   syzbot <syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/10/22 19:23, Jakub Kicinski wrote:
-> Netlink seems simple and reasonable to those who understand it.
-> It appears cumbersome and arcane to those who don't.
-> 
-> This RFC introduces machine readable netlink protocol descriptions
-> in YAML, in an attempt to make creation of truly generic netlink
-> libraries a possibility. Truly generic netlink library here means
-> a library which does not require changes to support a new family
-> or a new operation.
-> 
-> Each YAML spec lists attributes and operations the family supports.
-> The specs are fully standalone, meaning that there is no dependency
-> on existing uAPI headers in C. Numeric values of all attribute types,
-> operations, enums, and defines and listed in the spec (or unambiguous).
-> This property removes the need to manually translate the headers for
-> languages which are not compatible with C.
-> 
-> The expectation is that the spec can be used to either dynamically
-> translate between whatever types the high level language likes (see
-> the Python example below) or codegen a complete libarary / bindings
-> for a netlink family at compilation time (like popular RPC libraries
-> do).
-> 
-> Currently only genetlink is supported, but the "old netlink" should
-> be supportable as well (I don't need it myself).
-> 
-> On the kernel side the YAML spec can be used to generate:
->   - the C uAPI header
->   - documentation of the protocol as a ReST file
->   - policy tables for input attribute validation
->   - operation tables
-> 
-> We can also codegen parsers and dump helpers, but right now the level
-> of "creativity & cleverness" when it comes to netlink parsing is so
-> high it's quite hard to generalize it for most families without major
-> refactoring.
-> 
-> Being able to generate the header, documentation and policy tables
-> should balance out the extra effort of writing the YAML spec.
-> 
-> Here is a Python example I promised earlier:
-> 
->    ynl = YnlFamily("path/to/ethtool.yaml")
->    channels = ynl.channels_get({'header': {'dev_name': 'eni1np1'}})
-> 
-> If the call was successful "channels" will hold a standard Python dict,
-> e.g.:
-> 
->    {'header': {'dev_index': 6, 'dev_name': 'eni1np1'},
->     'combined_max': 1,
->     'combined_count': 1}
-> 
-> for a netdevsim device with a single combined queue.
-> 
-> YnlFamily is an implementation of a YAML <> netlink translator (patch 3).
-> It takes a path to the YAML spec - hopefully one day we will make
-> the YAMLs themselves uAPI and distribute them like we distribute
-> C headers. Or get them distributed to a standard search path another
-> way. Until then, the YNL library needs a full path to the YAML spec and
-> application has to worry about the distribution of those.
-> 
-> The YnlFamily reads all the info it needs from the spec, resolves
-> the genetlink family id, and creates methods based on the spec.
-> channels_get is such a dynamically-generated method (i.e. grep for
-> channels_get in the python code shows nothing). The method can be called
-> passing a standard Python dict as an argument. YNL will look up each key
-> in the YAML spec and render the appropriate binary (netlink TLV)
-> representation of the value. It then talks thru a netlink socket
-> to the kernel, and deserilizes the response, converting the netlink
-> TLVs into Python types and constructing a dictionary.
-> 
-> Again, the YNL code is completely generic and has no knowledge specific
-> to ethtool. It's fairly simple an incomplete (in terms of types
-> for example), I wrote it this afternoon. I'm also pretty bad at Python,
-> but it's the only language I can type which allows the method
-> magic, so please don't judge :) I have a rather more complete codegen
-> for C, with support for notifications, kernel -> user policy/type
-> verification, resolving extack attr offsets into a path
-> of attribute names etc, etc. But that stuff needs polishing and
-> is less suitable for an RFC.
-> 
-> The ability for a high level language like Python to talk to the kernel
-> so easily, without ctypes, manually packing structs, copy'n'pasting
-> values for defines etc. excites me more than C codegen, anyway.
+Hello,
 
-This is really cool BTW, and it makes a lot of sense to me that we are 
-moving that way, especially with Rust knocking at the door. I will try 
-to do a more thorough review, than "cool, I like it".
--- 
-Florian
+syzbot found the following issue on:
+
+HEAD commit:    4e23eeebb2e5 Merge tag 'bitmap-6.0-rc1' of https://github...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=165f4f6a080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3a433c7a2539f51c
+dashboard link: https://syzkaller.appspot.com/bug?extid=dc54d9ba8153b216cae0
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1443be71080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e5918e080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff888113093f00 (size 192):
+  comm "syz-executor228", pid 3636, jiffies 4294947950 (age 12.750s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00  ................
+    40 53 fd 84 ff ff ff ff 40 01 00 00 00 00 00 00  @S......@.......
+  backtrace:
+    [<ffffffff83a0e378>] kmalloc include/linux/slab.h:600 [inline]
+    [<ffffffff83a0e378>] kzalloc include/linux/slab.h:733 [inline]
+    [<ffffffff83a0e378>] alloc_state net/netlink/policy.c:104 [inline]
+    [<ffffffff83a0e378>] netlink_policy_dump_add_policy+0x198/0x1f0 net/netlink/policy.c:135
+    [<ffffffff83a0d78d>] ctrl_dumppolicy_start+0x15d/0x290 net/netlink/genetlink.c:1173
+    [<ffffffff83a0abf8>] genl_start+0x148/0x210 net/netlink/genetlink.c:596
+    [<ffffffff83a0756a>] __netlink_dump_start+0x20a/0x440 net/netlink/af_netlink.c:2370
+    [<ffffffff83a0a38e>] genl_family_rcv_msg_dumpit+0x15e/0x190 net/netlink/genetlink.c:678
+    [<ffffffff83a0b1d5>] genl_family_rcv_msg net/netlink/genetlink.c:772 [inline]
+    [<ffffffff83a0b1d5>] genl_rcv_msg+0x225/0x2c0 net/netlink/genetlink.c:792
+    [<ffffffff83a09807>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2501
+    [<ffffffff83a0a214>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
+    [<ffffffff83a08977>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
+    [<ffffffff83a08977>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
+    [<ffffffff83a08e36>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
+    [<ffffffff8385aea6>] sock_sendmsg_nosec net/socket.c:714 [inline]
+    [<ffffffff8385aea6>] sock_sendmsg+0x56/0x80 net/socket.c:734
+    [<ffffffff8385b40c>] ____sys_sendmsg+0x36c/0x390 net/socket.c:2482
+    [<ffffffff8385fd08>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
+    [<ffffffff8385fe98>] __sys_sendmsg+0x88/0x100 net/socket.c:2565
+    [<ffffffff845d8535>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+    [<ffffffff845d8535>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
