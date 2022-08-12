@@ -2,94 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9A27590C55
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 09:14:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D7A590C9E
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 09:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237213AbiHLHOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 03:14:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
+        id S237378AbiHLHgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 03:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237153AbiHLHOo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 03:14:44 -0400
-Received: from smtp.smtpout.orange.fr (smtp-15.smtpout.orange.fr [80.12.242.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3EB32D90
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 00:14:39 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id MOsNovEvhsfCIMOsNocAyy; Fri, 12 Aug 2022 09:14:37 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 12 Aug 2022 09:14:37 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <7c3dda38-d741-8f5e-a034-b4678ed79fc0@wanadoo.fr>
-Date:   Fri, 12 Aug 2022 09:14:35 +0200
+        with ESMTP id S235319AbiHLHga (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 03:36:30 -0400
+X-Greylist: delayed 906 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 12 Aug 2022 00:36:27 PDT
+Received: from m1391.mail.163.com (m1391.mail.163.com [220.181.13.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F3D2D98A78
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 00:36:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=vKUQp
+        BmZZIzUT78niF5BwpbswGEey/GojeqexK2WiCE=; b=e9Aj6PtI0LjUPuV8roRzE
+        8c6TLK53EiOAYDrTMUYA8fIs/zTVjl2ZzKXRkgl79K0SHzXi75LrqO4ZXfZrc95j
+        e13qGBxZ46mN6AxKz0QdlhOkM+teoiufAR78uOpuHmnnSOsX5eVXYog6gA6MT1ES
+        Pi2sPtaeSnpVMPrP2rZ6ro=
+Received: from 15720603159$163.com ( [119.3.119.21] ) by
+ ajax-webmail-wmsvr91 (Coremail) ; Fri, 12 Aug 2022 15:21:15 +0800 (CST)
+X-Originating-IP: [119.3.119.21]
+Date:   Fri, 12 Aug 2022 15:21:15 +0800 (CST)
+From:   jiangheng <15720603159@163.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH iproute2] genl: modify the command output message of genl -h
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] bonding: return -ENOMEM on rlb_initialize() allocation
- failure
-Content-Language: en-US
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        j.vosburgh@gmail.com
-Cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220812032059.64572-1-jiapeng.chong@linux.alibaba.com>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220812032059.64572-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Message-ID: <1c6b71b1.62fc.18290edbaff.Coremail.15720603159@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: W8GowAD3_39r__VibHmbAA--.57316W
+X-CM-SenderInfo: jprvljyqwqjievzbjqqrwthudrp/xtbCqQBbhV0DgnOYYgAAsi
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Spam-Status: No, score=-0.1 required=5.0 tests=BAYES_05,DKIM_INVALID,
+        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FROM_LOCAL_DIGITS,
+        FROM_LOCAL_HEX,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 12/08/2022 à 05:20, Jiapeng Chong a écrit :
-> drivers/net/bonding/bond_alb.c:861 rlb_initialize() warn: returning -1 instead of -ENOMEM is sloppy.
-> 
-> Link: https://bugzilla.openanolis.cn/show_bug.cgi?id=1896
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->   drivers/net/bonding/bond_alb.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-> index 60cb9a0225aa..96cb4404b3c7 100644
-> --- a/drivers/net/bonding/bond_alb.c
-> +++ b/drivers/net/bonding/bond_alb.c
-> @@ -858,7 +858,7 @@ static int rlb_initialize(struct bonding *bond)
->   
->   	new_hashtbl = kmalloc(size, GFP_KERNEL);
->   	if (!new_hashtbl)
-> -		return -1;
-> +		return -ENOMEM;
->   
->   	spin_lock_bh(&bond->mode_lock);
->   
-
-Hi,
-
-Nit: if of any use, the only call chain leads to [1]:
-bond_open()
---> bond_alb_initialize()
-   --> rlb_initialize()
-
-So, the error in bond_open() could be changed to ret instead of a hard 
-coded -ENOMEM.
-
-Just my 2c,
-
-
-Other than that, for what it worth,
-Reviewed-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-
-CJ
-
-[1]: 
-https://elixir.bootlin.com/linux/v5.19/source/drivers/net/bonding/bond_main.c#L4163
+RnJvbSBmNDcwOWEzMjQ4NzA4MjIwNjZiNDQ5YmFiODk5ODBkYmE4YzhhZjc5IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBqaW5hZyA8amluYWcxMjEzOEBnbWFpbC5jb20+CkRhdGU6IFRo
+dSwgMTQgT2N0IDIwMjEgMTU6MTM6MDMgKzA4MDAKU3ViamVjdDogW1BBVENIXSBnZW5sOiBtb2Rp
+ZnkgdGhlIGNvbW1hbmQgb3V0cHV0IG9mIGdlbmwgLWgKCmFmdGVyIHRoZSBtb2RpZmljYXRpb24s
+IHRoZSBjb21tYW5kIG91dHB1dCBpcyB0aGUgc2FtZSBhcyB0aGF0IG9mIG1hbiA4IGdlbmwgYW5k
+IG1vcmUgcmVhZGFibGUuCi0tLQogZ2VubC9nZW5sLmMgfCA4ICsrKysrLS0tCiAxIGZpbGUgY2hh
+bmdlZCwgNSBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2dlbmwv
+Z2VubC5jIGIvZ2VubC9nZW5sLmMKaW5kZXggNjU1N2U2YmMuLjk3N2U5ZGI3IDEwMDY0NAotLS0g
+YS9nZW5sL2dlbmwuYworKysgYi9nZW5sL2dlbmwuYwpAQCAtOTksOSArOTksMTEgQEAgc3RhdGlj
+IHZvaWQgdXNhZ2Uodm9pZCkgX19hdHRyaWJ1dGVfXygobm9yZXR1cm4pKTsKIHN0YXRpYyB2b2lk
+IHVzYWdlKHZvaWQpCiB7CiAgICAgICAgZnByaW50ZihzdGRlcnIsCi0gICAgICAgICAgICAgICAi
+VXNhZ2U6IGdlbmwgWyBPUFRJT05TIF0gT0JKRUNUIFtoZWxwXSB9XG4iCi0gICAgICAgICAgICAg
+ICAid2hlcmUgIE9CSkVDVCA6PSB7IGN0cmwgZXRjIH1cbiIKLSAgICAgICAgICAgICAgICIgICAg
+ICAgT1BUSU9OUyA6PSB7IC1zW3RhdGlzdGljc10gfCAtZFtldGFpbHNdIHwgLXJbYXddIHwgLVZb
+ZXJzaW9uXSB8IC1oW2VscF0gfVxuIik7CisgICAgICAgICAgICAgICAiVXNhZ2U6IGdlbmwgWyBP
+UFRJT05TIF0gT0JKRUNUIFtoZWxwXVxuIgorICAgICAgICAgICAgICAgIndoZXJlICBPQkpFQ1Qg
+Oj0geyBjdHJsIENUUkxfT1BUUyB9XG4iCisgICAgICAgICAgICAgICAiICAgICAgIE9QVElPTlMg
+Oj0geyAtc1t0YXRpc3RpY3NdIHwgLWRbZXRhaWxzXSB8IC1yW2F3XSB8IC1WW2Vyc2lvbl0gfCAt
+aFtlbHBdIH1cbiIKKyAgICAgICAgICAgICAgICIgICAgICAgQ1RSTF9PUFRTIDo9IHsgaGVscCB8
+IGxpc3QgfCBtb25pdG9yIHwgZ2V0IFBBUk1TIH1cbiIKKyAgICAgICAgICAgICAgICIgICAgICAg
+UEFSTVMgOj0geyBuYW1lIE5BTUUgfCBpZCBJRCB9XG4iKTsKICAgICAgICBleGl0KC0xKTsKIH0K
+Ci0tCjIuMjMuMAo=
