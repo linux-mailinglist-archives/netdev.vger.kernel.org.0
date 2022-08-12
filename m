@@ -2,126 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F59A591048
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0734591056
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 13:48:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237964AbiHLLpx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 07:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
+        id S238251AbiHLLsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 07:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238206AbiHLLpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:45:25 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FE05AFAF2;
-        Fri, 12 Aug 2022 04:44:49 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 261F361EA1929;
-        Fri, 12 Aug 2022 13:44:45 +0200 (CEST)
-Message-ID: <f0a6f8cc-e8a5-ff72-b8f0-ed25fcf03b47@molgen.mpg.de>
-Date:   Fri, 12 Aug 2022 13:44:44 +0200
+        with ESMTP id S237535AbiHLLsP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 07:48:15 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFCDAFAE9
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:48:14 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id h28so727481pfq.11
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 04:48:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:sender:mime-version:from:to:cc;
+        bh=447DttLGWlnXVhl3+i4qWwJxEj6tFprhGwRHCuyrWEY=;
+        b=KBmG7tzSoY4YZcO/9NZeQHLvT0HWiaBrUQqGuVHl9bMBthu/tkTo2YpJwAXqjiCeDy
+         gGEyl1GTu+Inz3FCDfcLkpDBOug9NSQw5nUfV1IeSqrMKtzxBimOQNxacQJyO5NlyTCf
+         YzKnRYSEMHM3+YL50wlNA/ibzG4LGCygChaTFP8VYYnnICF1z7Q+mQpW2Hg1H6XBBCo7
+         0SggrLjimrObKh9rw2g/P5T/cJUYyluSYMYI7YkFRz+QS0S9T1494ORXojVlCifDeOit
+         ErxbMfmjjzX9Wf096wwZs9Rss0+dPrANmx8J7/W04kmuiGl+nH2KDq3f8be25lulVhU5
+         i8WA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:sender:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=447DttLGWlnXVhl3+i4qWwJxEj6tFprhGwRHCuyrWEY=;
+        b=l0EtcH1dDv0iDxS3+nyI4iE1SLI9Pn34JdqW1Nn4MVJ825bEnW2ZuPHFfzpm7Dc7PO
+         JK1lPOqOACZ2LfbfbyRfBIu43CAY3LsVf6B+hbAOogOJid5gRhvxgmAo3z+mY2mxPSPy
+         7RF6iHZ5agbhNpHFu5Hm02UtgVqqE/dNVw8JbRe4gvEWNFznRNGXZRFMHTINyO4C0v9S
+         7P1CJTWoYZeZCijM413xNK0zlKISao5wy8MwDEfqYxcPWX/5B1pVZSDBg6JziyimfE6G
+         VLT7wRQkHy52xrETpT1KCksuTI5HFzy6SJjeOIw6NlnkyvBi3lm3C6RfKgVirrvb8wvE
+         sUgw==
+X-Gm-Message-State: ACgBeo0VHZ9GcuXAlH7Y5/arRAzevhybnNQI75390z92JsIuAAOlUqtF
+        +whe8oAUgXvEjcMXCbhsR3PQMpB63loQDxMiEmM=
+X-Google-Smtp-Source: AA6agR5EX083RQMWxgFpLU6t3ElYjjf4hs5exL61hBqtIecz9vUTP5KOzU5gWCUZ98kwG7rDBEdDdrzQACm1ex7Xdkc=
+X-Received: by 2002:aa7:982f:0:b0:52d:9787:c5c5 with SMTP id
+ q15-20020aa7982f000000b0052d9787c5c5mr3619576pfl.24.1660304894467; Fri, 12
+ Aug 2022 04:48:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: mainline build failure due to 332f1795ca20 ("Bluetooth: L2CAP:
- Fix l2cap_global_chan_by_psm regression")
-Content-Language: en-US
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-Cc:     torvalds@linux-foundation.org, Jakub Kicinski <kuba@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Palmer Dabbelt <palmer@rivosinc.com>
-References: <YvY4xdZEWAPosFdJ@debian>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <YvY4xdZEWAPosFdJ@debian>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Sender: bazarkowanigeria@gmail.com
+Received: by 2002:a17:90a:9f91:0:0:0:0 with HTTP; Fri, 12 Aug 2022 04:48:14
+ -0700 (PDT)
+From:   "Mrs. Margaret Christopher" <mrsmargaretchristopher01@gmail.com>
+Date:   Fri, 12 Aug 2022 04:48:14 -0700
+X-Google-Sender-Auth: nF1Flb71947AnpH-L0SoSE1o54c
+Message-ID: <CAPgaJa2jLS9fUmxdA56aRgXUzd2T+ir5623sOS9oHx1PZ8=iaA@mail.gmail.com>
+Subject: Humanitarian Project For Less Privileged.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_HK_NAME_FM_MR_MRS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Sudip,
+-- 
+Hello Dear
 
+  Am a dying woman here in the hospital, i was diagnose as a
+Coronavirus patient over 2 months ago. I am A business woman who is
+dealing with Gold Exportation, I Am 59 year old from USA California i
+have a charitable and unfufilling  project that am about to handover
+to you, if you are interested to know more about this project please reply me.
 
-Am 12.08.22 um 13:25 schrieb Sudip Mukherjee (Codethink):
+ Hope to hear from you
 
-> The latest mainline kernel branch fails to build csky and mips allmodconfig
-> with gcc-12.
-> 
-> mips error is:
-> 
-> In function 'memcmp',
->      inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
->      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
-> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->     44 | #define __underlying_memcmp     __builtin_memcmp
->        |                                 ^
-> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
->    420 |         return __underlying_memcmp(p, q, size);
->        |                ^~~~~~~~~~~~~~~~~~~
-> In function 'memcmp',
->      inlined from 'bacmp' at ./include/net/bluetooth/bluetooth.h:347:9,
->      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
-> ./include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->     44 | #define __underlying_memcmp     __builtin_memcmp
->        |                                 ^
-> ./include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
->    420 |         return __underlying_memcmp(p, q, size);
->        |                ^~~~~~~~~~~~~~~~~~~
-> 
-> 
-> csky error is:
-> 
-> In file included from net/bluetooth/l2cap_core.c:37:
-> In function 'bacmp',
->      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2003:15:
-> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->    347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
->        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> In function 'bacmp',
->      inlined from 'l2cap_global_chan_by_psm' at net/bluetooth/l2cap_core.c:2004:15:
-> ./include/net/bluetooth/bluetooth.h:347:16: error: 'memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
->    347 |         return memcmp(ba1, ba2, sizeof(bdaddr_t));
->        |                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> 
-> 
-> git bisect pointed to 332f1795ca20 ("Bluetooth: L2CAP: Fix l2cap_global_chan_by_psm regression").
-> And, reverting that commit has fixed the build failure.
-> 
-> Already reported at https://lore.kernel.org/lkml/YvVQEDs75pxSgxjM@debian/
-> and Jacub is looking at a fix, but this is just my usual build failure
-> mail of mainline branch for Linus's information.
+Best Regard
 
-Does *[PATCH] Bluetooth: L2CAP: Elide a string overflow warning* [1] fix it?
-
-
-Kind regards,
-
-Paul
-
-
-PS:
-
-> --
-> Regards
-> Sudip
-
-Only if you care, your signature delimiter is missing a trailing space [2].
-
-
-[1]: 
-https://lore.kernel.org/linux-bluetooth/20220812055249.8037-1-palmer@rivosinc.com/T/#t
-[2]: https://en.wikipedia.org/wiki/Signature_block#Standard_delimiter
+Mrs. Margaret
