@@ -2,69 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F1A5590E78
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 11:52:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADCBB590E8A
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 11:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237054AbiHLJwh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 05:52:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        id S237105AbiHLJ6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 05:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230257AbiHLJwg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 05:52:36 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE172AA4F2;
-        Fri, 12 Aug 2022 02:52:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660297921; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=Cd/xypIKHG364pNv0fHs7deIiXlvrE1YCUkE2ad1GSEJQwy7BIy+umQ0jeKVf2aZ3rnlf0a81212o1uXfr4QaaSA2hhP24UMycriS8DbAU0LRrxggeiJIJKANll+9M68mfwPHM30N9UjlhPEF4sPGeq5WkiOkBmD6Y+doMqTjAg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660297921; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=JDFuru950tXWa6BmvXRLViFwR94Hwhfx/5+AvH3uJNM=; 
-        b=Lu4/xacnp4XRTCFanncfZVgKqCLxlYOQzU1xhEO0jFQ9UgXDdgLDLiyoW0hmp15vii531u6G0YnGWKtpfUxuP/39dmhqWAyzg4DZ2dXIuvgesGREyBzB7zqkk15EjobKovjdnPQHa7UB9HR6OWqpi6m+atocr0z0Zo10wpL7gnk=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660297921;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=JDFuru950tXWa6BmvXRLViFwR94Hwhfx/5+AvH3uJNM=;
-        b=eXa6Z+JTKAI7iMG3tj4n29sU4xYUuhooMASeJl2mNzDtJN9EDEIgVR7LU7vlhKux
-        C6s6TRZAn3r6K7S5Qt0ocmHjDGz3ruRao/OD4bpHyqjvhxMiV9sl7JjYx0SEMvKQu8i
-        ArvaKRUW3WQdyoThY+GkbMyUeAP0QBd9hvQnVPxs=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1660297910208203.65727225521607; Fri, 12 Aug 2022 15:21:50 +0530 (IST)
-Date:   Fri, 12 Aug 2022 15:21:50 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Johannes Berg" <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>
-Cc:     "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        "syzbot+f9acff9bf08a845f225d" 
-        <syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com>,
-        "syzbot+6cb476b7c69916a0caca" 
-        <syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com>,
-        "syzbot+9250865a55539d384347" 
-        <syzbot+9250865a55539d384347@syzkaller.appspotmail.com>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>
-Message-ID: <18291779771.584fa6ab156295.3990923778713440655@siddh.me>
-In-Reply-To: <20220726123921.29664-1-code@siddh.me>
-References: <20220726123921.29664-1-code@siddh.me>
-Subject: Re: [PATCH v2] wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
+        with ESMTP id S235330AbiHLJ6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 05:58:30 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734EFAA4E3
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 02:58:29 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id i14so1160835ejg.6
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 02:58:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:from:to:cc;
+        bh=DOY22/g3AyzMKPXN3ChxkOgWt4fev38PjKt+897Ta5g=;
+        b=hc42EyAZnecfhEZ9N0pFbC/I0EmhuRfHnBTTfie2bZV5gsmZGX6OcvE822SLjD9G9s
+         OdtBamYkqmnzqfQJoTPzmLTpP3hUjlcpQBhJ5scq+73/UivdS+3b/majhnv8TAuT2vXW
+         M1CsRsvmVv8RJ/52iU7hduBhFIH7qv3tvjqMY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc;
+        bh=DOY22/g3AyzMKPXN3ChxkOgWt4fev38PjKt+897Ta5g=;
+        b=Do4pizDrSidAtv2x5uILFbf8/j+XJRFYEHl0iE+GbzvXhzFZjSPnL4bwwTuBA1dg0v
+         l+5TFRLPTd3lL7gjfLAzoE9YzUP8/LdIe5xLvNgNZuSDZVBGaW5MXlNWGaFaFxAKD212
+         xVfPV5jbBS00pNnz6NYbSqSyU2kz+SKA5rBG3Lu/wZKkWwPBIUdgR/9m+SkmifTKK4/u
+         v5tvy/4Dni+2nll1+HBLMx5mKGUmaIYq0tVdm/gMYXzNIPhJq06WhnMLk/EhxEmkqo3L
+         PxeXS67FqPfD23HOncMWtIHjlQzTMHIywUjKJtIRzR6K13QzRQL6rBheOG4kBBPMzRzK
+         O+nA==
+X-Gm-Message-State: ACgBeo0Hj6LckjolmifrS6+62Pq7jlF98wbToxcZaRLPMZvuAyn3CZtj
+        0ffFtb4BbbJLv1/m38hsbBnwFg==
+X-Google-Smtp-Source: AA6agR5zRKxMqFfggTXc7WejoHTug0CFn55A1Gmq9Nuj5E1rF2erkpAna6VGS+o6NCPL6iam0F+BzQ==
+X-Received: by 2002:a17:907:7f11:b0:730:6f6f:e444 with SMTP id qf17-20020a1709077f1100b007306f6fe444mr2064993ejc.657.1660298308014;
+        Fri, 12 Aug 2022 02:58:28 -0700 (PDT)
+Received: from cloudflare.com (79.184.200.53.ipv4.supernova.orange.pl. [79.184.200.53])
+        by smtp.gmail.com with ESMTPSA id g3-20020a17090613c300b0073079439f27sm623415ejc.72.2022.08.12.02.58.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 02:58:27 -0700 (PDT)
+References: <20220810102848.282778-1-jakub@cloudflare.com>
+ <20220811102310.3577136d@kernel.org>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        van fantasy <g1042620637@gmail.com>
+Subject: Re: [PATCH net] l2tp: Serialize access to sk_user_data with sock lock
+Date:   Fri, 12 Aug 2022 11:54:43 +0200
+In-reply-to: <20220811102310.3577136d@kernel.org>
+Message-ID: <87edxlu6kd.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,85 +67,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jul 2022 18:09:21 +0530  Siddh Raman Pant  wrote:
-> ieee80211_scan_rx() tries to access scan_req->flags after a null check
-> (see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
-> kfree() on the scan_req (see line 991 of wireless/scan.c).
-> 
-> This results in a UAF.
-> 
-> ieee80211_scan_rx() is called inside a RCU read-critical section
-> initiated by ieee80211_rx_napi() (see line 5044 of mac80211/rx.c).
-> 
-> Thus, add an rcu_head to the scan_req struct, so that we can use
-> kfree_rcu() instead of kfree() and thus not free during the critical
-> section.
-> 
-> We can clear the pointer before freeing here, since scan_req is
-> accessed using rcu_dereference().
-> 
-> Bug report (3): https://syzkaller.appspot.com/bug?extid=f9acff9bf08a845f225d
-> Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-> Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
-> Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
-> 
-> Signed-off-by: Siddh Raman Pant code@siddh.me>
-> ---
-> Changes since v1 as requested:
-> - Fixed commit heading and better commit message.
-> - Clear pointer before freeing.
-> 
->  include/net/cfg80211.h | 2 ++
->  net/wireless/scan.c    | 2 +-
->  2 files changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
-> index 80f41446b1f0..7e0b448c4cdb 100644
-> --- a/include/net/cfg80211.h
-> +++ b/include/net/cfg80211.h
-> @@ -2368,6 +2368,7 @@ struct cfg80211_scan_6ghz_params {
->   * @n_6ghz_params: number of 6 GHz params
->   * @scan_6ghz_params: 6 GHz params
->   * @bssid: BSSID to scan for (most commonly, the wildcard BSSID)
-> + * @rcu_head: (internal) RCU head to use for freeing
->   */
->  struct cfg80211_scan_request {
->  	struct cfg80211_ssid *ssids;
-> @@ -2397,6 +2398,7 @@ struct cfg80211_scan_request {
->  	bool scan_6ghz;
->  	u32 n_6ghz_params;
->  	struct cfg80211_scan_6ghz_params *scan_6ghz_params;
-> +	struct rcu_head rcu_head;
->  
->  	/* keep last */
->  	struct ieee80211_channel *channels[];
-> diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-> index 6d82bd9eaf8c..6cf58fe6dea0 100644
-> --- a/net/wireless/scan.c
-> +++ b/net/wireless/scan.c
-> @@ -988,8 +988,8 @@ void ___cfg80211_scan_done(struct cfg80211_registered_device *rdev,
->  	kfree(rdev->int_scan_req);
->  	rdev->int_scan_req = NULL;
->  
-> -	kfree(rdev->scan_req);
->  	rdev->scan_req = NULL;
-> +	kfree_rcu(rdev_req, rcu_head);
->  
->  	if (!send_message)
->  		rdev->scan_msg = msg;
-> -- 
-> 2.35.1
-> 
+On Thu, Aug 11, 2022 at 10:23 AM -07, Jakub Kicinski wrote:
+> On Wed, 10 Aug 2022 12:28:48 +0200 Jakub Sitnicki wrote:
+>> Fixes: fd558d186df2 ("l2tp: Split pppol2tp patch into separate l2tp and ppp parts")
+>
+> That tag immediately sets off red flags. Please find the commit where
+> to code originates, not where it was last moved.
 
-Hello,
+The code move happened in v2.6.35. There's no point in digging further, IMHO.
 
-Probably the above quoted patch was missed, which can be found on
-https://lore.kernel.org/linux-wireless/20220726123921.29664-1-code@siddh.me/
+>
+>> Reported-by: van fantasy <g1042620637@gmail.com>
+>> Tested-by: van fantasy <g1042620637@gmail.com>
+>
+> Can we get real names? Otherwise let's just drop those tags.
+> I know that the legal name requirement is only for S-o-b tags,
+> technically, but it feels silly.
 
-This patch was posted more than 2 weeks ago, with changes as requested.
+I don't make the rules. There is already a precendent in the git log:
 
-With the merge window almost ending, may I request for another look at
-this patch?
+commit 5c835bb142d4013c2ab24bff5ae9f6709a39cbcf
+Author: Paolo Abeni <pabeni@redhat.com>
+Date:   Fri Jul 8 16:36:09 2022 -0700
 
-Thanks,
-Siddh
+    mptcp: fix subflow traversal at disconnect time
+
+    At disconnect time the MPTCP protocol traverse the subflows
+    list closing each of them. In some circumstances - MPJ subflow,
+    passive MPTCP socket, the latter operation can remove the
+    subflow from the list, invalidating the current iterator.
+
+    Address the issue using the safe list traversing helper
+    variant.
+
+    Reported-by: van fantasy <g1042620637@gmail.com>
+    Fixes: b29fcfb54cd7 ("mptcp: full disconnect implementation")
+    Tested-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+    Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+    Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+    Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
