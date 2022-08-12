@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9D9A590F9A
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 12:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5972590FB3
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 12:53:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237850AbiHLKk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 06:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45134 "EHLO
+        id S233773AbiHLKxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 06:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237291AbiHLKkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 06:40:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1A11CF;
-        Fri, 12 Aug 2022 03:40:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1DD8616C6;
-        Fri, 12 Aug 2022 10:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 15135C433B5;
-        Fri, 12 Aug 2022 10:40:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660300814;
-        bh=6KT4pab0sSZtxp5EluswxZ9JlwS3DXqQ+L8sCMstgeo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=kALZibqJciyy1CE2tq6b0VN5RJPppDhohrCcpVeL8arLT2OjkYVBZ9LKATnjegK8l
-         W8ZQ2TRZB2mzKNfqIGDNLfdnIEd+LRxs2riqeAt4alixX93rr+7d/7ISwtO/R/8+7d
-         ru/THuAEEM/NV4Hzm0JqFWoMdsW0+P2me+680wbLi5QblbVXoWGTi9/JE2bvaHuJcZ
-         Uw/aSPXsMugU7GglasL6el4DEXlIHlOYhU/AvGNqzO5tQd4FOr5SvfZ7q1MGBkdLkv
-         2ai5KFIAs+qh7Ej2twGdmWfp3qJW89qYEE00BPu76kEjEUCZSovQa+RX1atqrGcGOW
-         bAAVfplCriBsw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EF62EC43143;
-        Fri, 12 Aug 2022 10:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229664AbiHLKxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 06:53:02 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502F39BB4C;
+        Fri, 12 Aug 2022 03:53:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660301582; x=1691837582;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=bStvOSpsXVApWkDcCtm3uX/ugByyXgBgVEJUj06LIyE=;
+  b=f+15gZTX6lcJZrIrboxIHDr6j4NagCsR/++oZSPWDfR4gcgevhZqNEcS
+   ABNEMlrGtpabQgsqpd2b6cr0vOktDxqxjJ3HfZhPIRoOrEW9OyenN8+S+
+   CEqk23aX4SQcHmVNI8/HgW6BqOP4nt3mlJBdMqsxUSQ1Mbc6jpG0iuEID
+   MET6o1TfnlONxF2F611fjfXqVk6Jv30xiNCqldzd2DY3gSreLxifA/9YE
+   HCvda+855kjovWlEYamZXrmyvRv1d/SZZMxe+kN1TjcRf/pwZao+xydTK
+   8I6SN0uO3CibEWtczjx9jLpmpmixE7q4WOo0wjjTG9fX0pBCOHIn6cvTo
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="271956259"
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="271956259"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 03:53:02 -0700
+X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
+   d="scan'208";a="665780567"
+Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 03:52:59 -0700
+From:   Zhu Lingshan <lingshan.zhu@intel.com>
+To:     jasowang@redhat.com, mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com, Zhu Lingshan <lingshan.zhu@intel.com>
+Subject: [PATCH V5 0/6] ifcvf/vDPA: support query device config space through netlink
+Date:   Fri, 12 Aug 2022 18:44:54 +0800
+Message-Id: <20220812104500.163625-1-lingshan.zhu@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: lan966x: fix checking for return value of
- platform_get_irq_byname()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166030081397.15777.15613376655712609091.git-patchwork-notify@kernel.org>
-Date:   Fri, 12 Aug 2022 10:40:13 +0000
-References: <20220812030954.24050-1-liqiong@nfschina.com>
-In-Reply-To: <20220812030954.24050-1-liqiong@nfschina.com>
-To:     Li Qiong <liqiong@nfschina.com>
-Cc:     horatiu.vultur@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
-        renyu@nfschina.com, jiaming@nfschina.com,
-        kernel-janitors@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,28 +58,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This series allows userspace to query device config space of vDPA
+devices and the management devices through netlink,
+to get multi-queue, feature bits and etc.
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series has introduced a new netlink attr
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, this should be used to query
+features of vDPA  devices than the management device.
 
-On Fri, 12 Aug 2022 11:09:54 +0800 you wrote:
-> The platform_get_irq_byname() returns non-zero IRQ number
-> or negative error number. "if (irq)" always true, chang it
-> to "if (irq > 0)"
-> 
-> Signed-off-by: Li Qiong <liqiong@nfschina.com>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+Please help review.
 
-Here is the summary with links:
-  - net: lan966x: fix checking for return value of platform_get_irq_byname()
-    https://git.kernel.org/netdev/net/c/40b4ac880e21
+Thanks!
+Zhu Lingshan
 
-You are awesome, thank you!
+Changes rom V4:
+(1) Read MAC, MTU, MQ conditionally (Michael)
+(2) If VIRTIO_NET_F_MAC not set, don't report MAC to userspace
+(3) If VIRTIO_NET_F_MTU not set, report 1500 to userspace
+(4) Add comments to the new attr
+VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES(Michael)
+(5) Add comments for reporting the device status as LE(Michael)
+
+Changes from V3:
+(1)drop the fixes tags(Parva)
+(2)better commit log for patch 1/6(Michael)
+(3)assign num_queues to max_supported_vqs than max_vq_pairs(Jason)
+(4)initialize virtio pci capabilities in the probe() function.
+
+Changes from V2:
+Add fixes tags(Parva)
+
+Changes from V1:
+(1) Use __virito16_to_cpu(true, xxx) for the le16 casting(Jason)
+(2) Add a comment in ifcvf_get_config_size(), to explain
+why we should return the minimum value of
+sizeof(struct virtio_net_config) and the onboard
+cap size(Jason)
+(3) Introduced a new attr VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES
+(4) Show the changes of iproute2 output before and after 5/6 patch(Jason)
+(5) Fix cast warning in vdpa_fill_stats_rec() 
+
+Zhu Lingshan (6):
+  vDPA/ifcvf: get_config_size should return a value no greater than dev
+    implementation
+  vDPA/ifcvf: support userspace to query features and MQ of a management
+    device
+  vDPA: allow userspace to query features of a vDPA device
+  vDPA: !FEATURES_OK should not block querying device config space
+  vDPA: Conditionally read fields in virtio-net dev config space
+  fix 'cast to restricted le16' warnings in vdpa.c
+
+ drivers/vdpa/ifcvf/ifcvf_base.c |  13 ++-
+ drivers/vdpa/ifcvf/ifcvf_base.h |   2 +
+ drivers/vdpa/ifcvf/ifcvf_main.c | 142 +++++++++++++++++---------------
+ drivers/vdpa/vdpa.c             |  82 ++++++++++++------
+ include/uapi/linux/vdpa.h       |   3 +
+ 5 files changed, 149 insertions(+), 93 deletions(-)
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.31.1
 
