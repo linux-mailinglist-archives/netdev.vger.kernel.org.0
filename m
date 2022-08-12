@@ -2,68 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 858CC591476
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 18:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 707E2591477
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 18:58:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236554AbiHLQ6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 12:58:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60974 "EHLO
+        id S238161AbiHLQ6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 12:58:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236184AbiHLQ6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 12:58:00 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2720B0B0B
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:57:59 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id k16-20020a252410000000b006718984ef63so1145362ybk.3
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:57:59 -0700 (PDT)
+        with ESMTP id S237768AbiHLQ6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 12:58:19 -0400
+Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A031B0B2E
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:58:18 -0700 (PDT)
+Received: by mail-qv1-xf2e.google.com with SMTP id j11so1023100qvt.10
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 09:58:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=R06lrdYIFgbYGZQBaMs5Tz+QLWy1uP4VRkuAR/ckZ+8=;
-        b=n0KhhCoQu6+2K3yOqGNXdch+D7V/Ekevc0fxste8wMmkb/8TnpmAihLvGSc0h1JtTd
-         EwOFd05EA2wEgAJJDxWuWP5Z7BT1V8+1XAGlKTK4GwzcPc4DVz3UcYP/ifg9/fkZOf6J
-         Xef4us85cJv9lI9o/D4w0JcMWY0vro6AXCpzcNhQCZha2oEUMZKyH7osWxxBFHaqZfFI
-         cKvz3GaE+lku7a6/CLOHGohAA5rgahXSQs2PV6OG5eaMz7kE2gDKIXOYiN4FcshygkIf
-         susCJqBwnuX+JZEl4tAvq0mimSVUrmysEY4GP8JEcPKix7AIF0OPcbgX86u/sTGQeLt9
-         i4OQ==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=cw1FIacqOtFV2GdU5gap1p7lXRAdRFXGh5oAxf5ngYk=;
+        b=MlZ9wOjLLxNnnT78vQVIOmJbiDM3ioz5FN51O0tWF+hrrKRhrZJZt1BLpPZuYAyZ/9
+         eJEKBE3HhzQ9bZ7hRQiwIUq92Pn8r5ugMYHEyUQBdmJ5G8c9eJd5CyTZ7metlELwk7HH
+         b3AefBmuEQSs8xkwF3HMHwWook/bqwiy+lgZi+ZKwir6BPDEOguljONIOJBoADzMBn/t
+         DUpfaYpD2TyW9NRAdQcRKvap+Xtstc8lVt69jqfA8wvApj7nVhYr9Cvu11UAT1/m7Mph
+         awPQlxrJ4oi9CbvzmNmrjouTyVEhiuyPJ8ItCjNDArMcS3NEENppJPp2M2bWIAOld18z
+         qC6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=R06lrdYIFgbYGZQBaMs5Tz+QLWy1uP4VRkuAR/ckZ+8=;
-        b=pS+1wzZ/wFQS6+KvWRb0rWw5Z8s9W2nXblgmo2qcKKoUO1V8dqeBWp92+LWQAUOpbm
-         RK1pqpMzkrBgXY+g2KMZKydwQtK1Fc4twyOVMR7EH2kg/EkLUlyERt+WJ7OH4Epr4hl9
-         LJaRh9wxUTOU0xUmmrb+bzmVvYf+YD2TU+78Gfm017n25eE/XjmJfIfPeaUU3aaYTUMQ
-         PutgpD0Fs/SeP7MQmMeJmVAK3MSbzAC7lhqdOql2O9ojxLDd1okh018AX+r7mUC6ZohQ
-         aRLIwuVotjHU0nvYuzZ7YterT5k/lDaQyuDO1TAsDYZys0v7P9I1FvqTFvJ1uxmemWOC
-         KsQQ==
-X-Gm-Message-State: ACgBeo29qRvjejd33wOtF3JKBUDhv7WCqz7kzuJzq+Slx/LMlr/i5ckU
-        1AkgOHlBVdbYtgoo6JYYWsAJ0oxir+8szg==
-X-Google-Smtp-Source: AA6agR5eA3zKFSyDylTwjia5RJoC02zN57hFsDAYzxC+KdxlNVOXC54p8q8MygnauAQw7PY7YjFbWWcHGb2j0Q==
-X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
- (user=shakeelb job=sendgmr) by 2002:a81:5d07:0:b0:329:8fb8:779 with SMTP id
- r7-20020a815d07000000b003298fb80779mr4720036ywb.77.1660323479019; Fri, 12 Aug
- 2022 09:57:59 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 16:57:56 +0000
-In-Reply-To: <20220810151840.16394-14-laoar.shao@gmail.com>
-Message-Id: <20220812165756.dxaqy3go567prr5s@google.com>
-Mime-Version: 1.0
-References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-14-laoar.shao@gmail.com>
-Subject: Re: [PATCH bpf-next 13/15] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
-From:   Shakeel Butt <shakeelb@google.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, roman.gushchin@linux.dev,
-        songmuchun@bytedance.com, akpm@linux-foundation.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=cw1FIacqOtFV2GdU5gap1p7lXRAdRFXGh5oAxf5ngYk=;
+        b=sLRhGMiC+0DeqXYMpQQkC2hhSEVXkE1RLkl/vDt+tCJF3xNqwsuWprzW70Q+/qDopn
+         fUwSaer95F4xY8iBsPYr20W0yPaF2m2pXeDxV+SxLQeOTAddUimiwAOuqnuKl76UNkDc
+         ChkXp96JlweRVDOVBf2PMb8ZhzdU9MEmMbzc9vq46+yFCBhbRSE5tVPKFUSXhe17MkK8
+         tHMKT0X8jK122cS3jsR/j+Gvkn1bkuxxoJXYmEHe7DuRZSPuihPXwZTTHMXjANqXtgnO
+         oafqxiymQSIU7+xowzbnuCm1tDgdW7p+1oUnkCdHN/Q7A5ayOaOIkKkYRFaWL/Tc3rNN
+         oYwA==
+X-Gm-Message-State: ACgBeo0AVmagj3eNUHeeqZT5Q4OeQD9Z6PBZLjm8MpCTekYcrLr9wX/u
+        EEcSwRI9URWFbxA2IyQPff8=
+X-Google-Smtp-Source: AA6agR5mjCjxxPlUoBkWY0YgrdNaWvjIUG2FvbAC5FgKFjiRBdOIOWmJyAjhFYoGQaoWjNnTXIGXSQ==
+X-Received: by 2002:a05:6214:27ee:b0:476:67f1:3fdc with SMTP id jt14-20020a05621427ee00b0047667f13fdcmr4187383qvb.119.1660323497060;
+        Fri, 12 Aug 2022 09:58:17 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id b5-20020a05622a020500b0034308283775sm2187400qtx.21.2022.08.12.09.58.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 12 Aug 2022 09:58:16 -0700 (PDT)
+Message-ID: <83755aa0-2d6d-bf53-9f62-1dd7320b025e@gmail.com>
+Date:   Fri, 12 Aug 2022 09:58:14 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] net: moxa: inherit DMA masks to make dma_map_single()
+ work
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Sergei Antonov <saproj@gmail.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Guobin Huang <huangguobin4@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220812154820.2225457-1-saproj@gmail.com>
+ <YvZ8NwzGV/9QDInR@lunn.ch>
+ <CABikg9wm=8rbBFP0vaVHpGBJfXOi4k0bvwK7F+agMXEPfFn2RQ@mail.gmail.com>
+ <YvaCE0lqfOi+tE5X@lunn.ch>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <YvaCE0lqfOi+tE5X@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,86 +81,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 03:18:38PM +0000, Yafang Shao wrote:
-> Introduce new helper get_obj_cgroup_from_cgroup() to get obj_cgroup from
-> a specific cgroup.
-
-Can you please add couple of lines on why you need objcg?
-
+On 8/12/22 09:38, Andrew Lunn wrote:
+> On Fri, Aug 12, 2022 at 07:35:43PM +0300, Sergei Antonov wrote:
+>> On Fri, 12 Aug 2022 at 19:13, Andrew Lunn <andrew@lunn.ch> wrote:
+>>>> +     /* Inherit the DMA masks from the platform device */
+>>>> +     ndev->dev.dma_mask = p_dev->dma_mask;
+>>>> +     ndev->dev.coherent_dma_mask = p_dev->coherent_dma_mask;
+>>>
+>>> There is only one other ethernet driver which does this. What you see
+>>> much more often is:
+>>>
+>>> alacritech/slicoss.c:   paddr = dma_map_single(&sdev->pdev->dev, skb->data, maplen,
+>>> neterion/s2io.c:                                dma_map_single(&sp->pdev->dev, ba->ba_1,
+>>> dlink/dl2k.c:                       cpu_to_le64(dma_map_single(&np->pdev->dev, skb->data,
+>>> micrel/ksz884x.c:               dma_buf->dma = dma_map_single(&hw_priv->pdev->dev, skb->data,
+>>
+>> Also works. Do you recommend to create a v2 of the patch?
 > 
-> Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> ---
->  include/linux/memcontrol.h |  1 +
->  mm/memcontrol.c            | 41 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 42 insertions(+)
-> 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 2f0a611..901a921 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
->  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
->  void __memcg_kmem_uncharge_page(struct page *page, int order);
->  
-> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
->  struct obj_cgroup *get_obj_cgroup_from_current(void);
->  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
->  
-> diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> index 618c366..762cffa 100644
-> --- a/mm/memcontrol.c
-> +++ b/mm/memcontrol.c
-> @@ -2908,6 +2908,47 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
->  	return objcg;
->  }
->  
-> +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
-> +{
-> +	struct obj_cgroup *objcg;
-> +
-> +	if (memcg_kmem_bypass())
-> +		return NULL;
-> +
-> +	rcu_read_lock();
-> +	objcg = __get_obj_cgroup_from_memcg(memcg);
-> +	rcu_read_unlock();
-> +	return objcg;
-> +}
-> +
-> +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp)
-> +{
-> +	struct cgroup_subsys_state *css;
-> +	struct mem_cgroup *memcg;
-> +	struct obj_cgroup *objcg;
-> +
-> +	rcu_read_lock();
-> +	css = rcu_dereference(cgrp->subsys[memory_cgrp_id]);
-> +	if (!css || !css_tryget_online(css)) {
-> +		rcu_read_unlock();
-> +		cgroup_put(cgrp);
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +	rcu_read_unlock();
-> +	cgroup_put(cgrp);
+> Yes please. It makes things easier to maintain if every driver does
+> the same thing.
 
-The above put seems out of place and buggy.
+Yes this is a common pattern to store a device reference pointing to 
+&pdev->dev into your network device private structure fetched via 
+netdev_priv().
 
-> +
-> +	memcg = mem_cgroup_from_css(css);
-> +	if (!memcg) {
-> +		css_put(css);
-> +		return ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	objcg = get_obj_cgroup_from_memcg(memcg);
-> +	css_put(css);
-> +
-> +	return objcg;
-> +}
-> +
->  __always_inline struct obj_cgroup *get_obj_cgroup_from_current(void)
->  {
->  	struct obj_cgroup *objcg = NULL;
-> -- 
-> 1.8.3.1
-> 
+Alternatively, we could sort of try to settle on a common pattern where 
+we utilize &dev->parent->dev thanks to having called SET_NETDEV_DEV(), 
+that might be more universal?
+-- 
+Florian
