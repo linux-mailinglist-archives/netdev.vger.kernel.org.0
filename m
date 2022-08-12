@@ -2,52 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1477A590A55
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 04:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2207590A59
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 04:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235066AbiHLCjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 22:39:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45506 "EHLO
+        id S236723AbiHLCkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 22:40:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiHLCjU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 22:39:20 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC10A263E
-        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 19:39:19 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M3nrR33vwzmVS3;
-        Fri, 12 Aug 2022 10:37:11 +0800 (CST)
-Received: from [10.67.103.87] (10.67.103.87) by dggpeml500022.china.huawei.com
- (7.185.36.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 12 Aug
- 2022 10:39:17 +0800
-Subject: Re: [RFCv7 PATCH net-next 01/36] net: introduce operation helpers for
- netdev features
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <andrew@lunn.ch>,
-        <ecree.xilinx@gmail.com>, <hkallweit1@gmail.com>,
-        <saeed@kernel.org>, <leon@kernel.org>, <netdev@vger.kernel.org>,
-        <linuxarm@openeuler.org>
-References: <20220810030624.34711-1-shenjian15@huawei.com>
- <20220810030624.34711-2-shenjian15@huawei.com>
- <20220810094358.1303843-1-alexandr.lobakin@intel.com>
- <444c4f87-ed36-721a-f619-97c7725e2c87@huawei.com>
- <20220811104936.3675-1-alexandr.lobakin@intel.com>
-From:   "shenjian (K)" <shenjian15@huawei.com>
-Message-ID: <699f5e21-6193-9cc9-3e64-d5126655b139@huawei.com>
-Date:   Fri, 12 Aug 2022 10:39:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.5.2
+        with ESMTP id S235200AbiHLCku (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 22:40:50 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1361113E04;
+        Thu, 11 Aug 2022 19:40:49 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id 24so2244187pgr.7;
+        Thu, 11 Aug 2022 19:40:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=DIcwJvYXEEGxgAne15ybzf6JBPEATrgdBirQ9Ch5jbM=;
+        b=I02CZkt3njve4du9UX9KyHovHhOV9kQZ4qS9rM/UOp+zF0v9+7s2dMngx/OeBIkEfb
+         xU8+N/MV2TUOSWTT6CU+//NLmhWYjbTiQ0eq03AS+P0m6nyGMJQ5n4xW5s9VHBd91DJE
+         39ielXTVZztWVWa99fSgga3SkOOz8L3A4CtoJhlE/Bw2/JjXXpNXQ4abrsmsqdb/BR/e
+         v6YOYn5zZ7nl5j6/Rm06sMvZogoQPVEvlqGmmBGbmKRPZXgnxygDGZcc/eVPxHugTnGT
+         psU0Raq8XGQpog3qBmd0KtxJHqqggSPhc5G7RzgRaiicnnRgr7MY6DFtvS4NEkKXQii0
+         IclA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=DIcwJvYXEEGxgAne15ybzf6JBPEATrgdBirQ9Ch5jbM=;
+        b=h1oSr7s6r2BxwVnl08HrrsgxFIIEItiGixmGYIPfHVhi1m0FLk5/SgTDY3RYb7Sct1
+         eIvfedG98V3poBJ/QVkhW9FYZ5Ooc9xtqoGtI019cBgRRTC4IbhfyLlt53Q5HGOXWei8
+         qECukkQMNmsDH1s2tYurwo8ada0kZVOQRFgZIyGjlnqZVtFClLD3GjdGXCzTUYP1vC5Y
+         7VcfMkcOvIElrhcyWQG5oZ1rIxb7qPvtUij1+uJKiW49SLdnfl+boneBzj3X0NF+nQMX
+         eGeY5Duqjb5cdhlkm1IcepiBBhpvhQi6gTR/cNOU8u6zJySzmrRB8fANnOUmuke6NSOf
+         S8Yw==
+X-Gm-Message-State: ACgBeo15r3tRptk4e7c+pM4GQeKhxAJrD0Okfe76tMTmZE7gk0ZGR5Ne
+        /d8zSFh7XDbhHsrOb5ZGabYjMW0yQRk8Qw==
+X-Google-Smtp-Source: AA6agR7dol9FIRvuy+F2aOAUGNCnwh8+KfBElb+iVjcXA9KRSAV/vUTHdofTWWZyz5BT8E+kbODJMQ==
+X-Received: by 2002:a65:6bc4:0:b0:3c2:2f7c:cc74 with SMTP id e4-20020a656bc4000000b003c22f7ccc74mr1475973pgw.307.1660272048407;
+        Thu, 11 Aug 2022 19:40:48 -0700 (PDT)
+Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id b10-20020aa7950a000000b0052d3a442760sm399133pfp.161.2022.08.11.19.40.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 19:40:47 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        bpf@vger.kernel.org, Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCH bpf-next] libbpf: making bpf_prog_load() ignore name if kernel doesn't support
+Date:   Fri, 12 Aug 2022 10:40:38 +0800
+Message-Id: <20220812024038.7056-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20220811104936.3675-1-alexandr.lobakin@intel.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.103.87]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpeml500022.china.huawei.com (7.185.36.66)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,209 +76,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Similar with commit 10b62d6a38f7 ("libbpf: Add names for auxiliary maps"),
+let's make bpf_prog_load() also ignore name if kernel doesn't support
+program name.
 
+To achieve this, we need to call sys_bpf_prog_load() directly in
+probe_kern_prog_name() to avoid circular dependency. sys_bpf_prog_load()
+also need to be exported in the bpf.h file.
 
-在 2022/8/11 18:49, Alexander Lobakin 写道:
-> From: "shenjian (K)" <shenjian15@huawei.com>
-> Date: Wed, 10 Aug 2022 19:32:28 +0800
->
->> 在 2022/8/10 17:43, Alexander Lobakin 写道:
->> > From: Jian Shen <shenjian15@huawei.com>
->> > Date: Wed, 10 Aug 2022 11:05:49 +0800
->> >
->> >> Introduce a set of bitmap operation helpers for netdev features,
->> >> then we can use them to replace the logical operation with them.
->> >>
->> >> The implementation of these helpers are based on the old prototype
->> >> of netdev_features_t is still u64. These helpers will be rewritten
->> >> on the last patch, when the prototype changes.
->> >>
->> >> To avoid interdependencies between netdev_features_helper.h and
->> >> netdevice.h, put the helpers for testing feature in the netdevice.h,
->> >> and move advandced helpers like netdev_get_wanted_features() and
->> >> netdev_intersect_features() to netdev_features_helper.h.
->> >>
->> >> Signed-off-by: Jian Shen <shenjian15@huawei.com>
->> >> ---
->> >>   include/linux/netdev_features.h        |  11 +
->> >>   include/linux/netdev_features_helper.h | 707 
->> +++++++++++++++++++++++++
->> > 'netdev_feature_helpers.h' fits more I guess, doesn't it? It
->> > contains several helpers, not only one.
->> ok， will rename it.
->>
->> > And BTW, do you think it's worth to create a new file rather than
->> > put everything just in netdev_features.h?
->> Jakub suggested me to move them to a new file, then it can be includued
->> at users appropriately. 
->> [https://www.spinics.net/lists/netdev/msg809370.html]
->>
->> And it's unable to put everything in netdev_features.h, because these 
->> helpers
->> need to see the definition of struct net_device which is defined in 
->> netdevice.h.
->> It leading interdependence for netdeice.h include netdev_features.h.
->
-> Ah, correct then, sure! I missed that fact.
->
->>
->>
->> >>   include/linux/netdevice.h              |  45 +-
->> >>   net/8021q/vlan_dev.c                   |   1 +
->> >>   net/core/dev.c                         |   1 +
->> >>   5 files changed, 747 insertions(+), 18 deletions(-)
->> >>   create mode 100644 include/linux/netdev_features_helper.h
->> >>
->> >> diff --git a/include/linux/netdev_features.h 
->> b/include/linux/netdev_features.h
->> >> index 7c2d77d75a88..9d434b4e6e6e 100644
->> >> --- a/include/linux/netdev_features.h
->> >> +++ b/include/linux/netdev_features.h
->> >> @@ -11,6 +11,17 @@
->> >>   >>   typedef u64 netdev_features_t;
->> >>   >> +struct netdev_feature_set {
->> >> +    unsigned int cnt;
->> >> +    unsigned short feature_bits[];
->> >> +};
->> >> +
->> >> +#define DECLARE_NETDEV_FEATURE_SET(name, features...)            \
->> >> +    const struct netdev_feature_set name = {            \
->> >> +        .cnt = sizeof((unsigned short[]){ features }) / 
->> sizeof(unsigned short),    \
->> >> +        .feature_bits = { features },                \
->> >> +    }
->> >> +
->> >>   enum {
->> >>       NETIF_F_SG_BIT,            /* Scatter/gather IO. */
->> >>       NETIF_F_IP_CSUM_BIT,        /* Can checksum TCP/UDP over 
->> IPv4. */
->> >> diff --git a/include/linux/netdev_features_helper.h 
->> b/include/linux/netdev_features_helper.h
->> >> new file mode 100644
->> >> index 000000000000..5423927d139b
->> >> --- /dev/null
->> >> +++ b/include/linux/netdev_features_helper.h
->> >> @@ -0,0 +1,707 @@
->> >> +/* SPDX-License-Identifier: GPL-2.0-or-later */
->> >> +/*
->> >> + * Network device features helpers.
->> >> + */
->> >> +#ifndef _LINUX_NETDEV_FEATURES_HELPER_H
->> >> +#define _LINUX_NETDEV_FEATURES_HELPER_H
->> >> +
->> >> +#include <linux/netdevice.h>
->> >> +
->> >> +static inline void netdev_features_zero(netdev_features_t *dst)
->> >> +{
->> >> +    *dst = 0;
->> >> +}
->> >> +
->> >> +/* active_feature prefer to netdev->features */
->> >> +#define netdev_active_features_zero(ndev) \
->> >> +        netdev_features_zero(&ndev->features)
->> > netdev_features_t sometimes is being placed and used on the stack.
->> > I think it's better to pass just `netdev_features_t *` to those
->> > helpers, this way you wouldn't also need to create a new helper
->> > for each net_device::*_features.
->> My purpose of defining  helpers for each net_device::*_features is to
->> avoiding driver to change  net_device::*_features directly.
->
-> But why? My point is that you have to create a whole bunch of
-> copy'n'paste functions differing only by the &net_device field
-> name.
->
-I noticed that Jakub have done a lot work for avoiding driver to write 
-netdev->dev_addr
-directly. Also in earlier discuss, Saeed had suggested to hide hide the 
-implementation
-details and abstract it away from drivers using getters and manipulation 
-APIs.
-[https://lore.kernel.org/all/b335852ecaba3c86d1745b5021bb500798fc843b.camel@kernel.org/]
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/lib/bpf/bpf.c    |  6 ++----
+ tools/lib/bpf/bpf.h    |  3 +++
+ tools/lib/bpf/libbpf.c | 11 +++++++++--
+ 3 files changed, 14 insertions(+), 6 deletions(-)
 
-
->>
->> >> +
->> >> +#define netdev_hw_features_zero(ndev) \
->> >> + netdev_features_zero(&ndev->hw_features)
->
-> Oh BTW: wrap `ndev` in the netdev_features_zero() call into braces,
-> `netdev_feature_zero(&(ndev)->hw_features)`, otherwise it may cause
-> unwanted sneaky logical changes or build failures.
->
-OK, will fix it.
-
->> >> +
->> >> +#define netdev_wanted_features_zero(ndev) \
->> > [...]
->> >
->> >> +#define netdev_gso_partial_features_and(ndev, __features) \
->> >> + netdev_features_and(ndev->gso_partial_features, __features)
->> >> +
->> >> +/* helpers for netdev features '&=' operation */
->> >> +static inline void
->> >> +netdev_features_mask(netdev_features_t *dst,
->> >> +               const netdev_features_t features)
->> >> +{
->> >> +    *dst = netdev_features_and(*dst, features);
->> > A small proposal: if you look at bitmap_and() for example, it
->> > returns 1 if the resulting bitmap is non-empty and 0 if it is. What
->> > about doing the same here? It would probably help to do reduce
->> > boilerplating in the drivers where we only want to know if there's
->> > anything left after masking.
->> > Same for xor, toggle etc.
->> Thanks for point this.  Return whether empty, then I can remove 
->> netdev_features_intersects
->> helpers. But there are also many places to use 'f1 & f2' as return 
->> value or input param, then
->> I need to define more temporay features to store the result, and then 
->> return the temporay
->> features or pass into it.
->
-> No, netdev_features_intersects() is okay, leave it as it is. Just
-> look on bitmap_*() prototypes and return its values when applicable.
->
-OK, will follow the prototypes of bitmap_and and others.
-
-
->>
->> >> +}
->> >> +
->> >> +static inline void
->> >> +netdev_active_features_mask(struct net_device *ndev,
->> >> +                const netdev_features_t features)
->> >> +{
->> >> +    ndev->features = netdev_active_features_and(ndev, features);
->> >> +}
->> > [...]
->> >
->> >> +/* helpers for netdev features 'set bit array' operation */
->> >> +static inline void
->> >> +netdev_features_set_array(const struct netdev_feature_set *set,
->> >> +              netdev_features_t *dst)
->> >> +{
->> >> +    int i;
->> >> +
->> >> +    for (i = 0; i < set->cnt; i++)
->> > Nit: kernel is C11 now, you can do just `for (u32 i = 0; i ...`.
->> > (and yeah, it's better to use unsigned types when you don't plan
->> > to store negative values there).
->> ok, will fix it.
->>
->> >> +        netdev_feature_add(set->feature_bits[i], dst);
->> >> +}
->> > [...]
->> >
->> >> -- >> 2.33.0
->> > Thanks,
->> > Olek
->> >
->> > .
->
-> Thanks,
-> Olek
->
-> .
->
-Thanks,
-Jian
+diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+index 6a96e665dc5d..575867d69496 100644
+--- a/tools/lib/bpf/bpf.c
++++ b/tools/lib/bpf/bpf.c
+@@ -84,9 +84,7 @@ static inline int sys_bpf_fd(enum bpf_cmd cmd, union bpf_attr *attr,
+ 	return ensure_good_fd(fd);
+ }
+ 
+-#define PROG_LOAD_ATTEMPTS 5
+-
+-static inline int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size, int attempts)
++int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size, int attempts)
+ {
+ 	int fd;
+ 
+@@ -263,7 +261,7 @@ int bpf_prog_load(enum bpf_prog_type prog_type,
+ 	attr.prog_ifindex = OPTS_GET(opts, prog_ifindex, 0);
+ 	attr.kern_version = OPTS_GET(opts, kern_version, 0);
+ 
+-	if (prog_name)
++	if (prog_name && kernel_supports(NULL, FEAT_PROG_NAME))
+ 		libbpf_strlcpy(attr.prog_name, prog_name, sizeof(attr.prog_name));
+ 	attr.license = ptr_to_u64(license);
+ 
+diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+index 9c50beabdd14..125c580e45f8 100644
+--- a/tools/lib/bpf/bpf.h
++++ b/tools/lib/bpf/bpf.h
+@@ -35,6 +35,9 @@
+ extern "C" {
+ #endif
+ 
++#define PROG_LOAD_ATTEMPTS 5
++int sys_bpf_prog_load(union bpf_attr *attr, unsigned int size, int attempts);
++
+ int libbpf_set_memlock_rlim(size_t memlock_bytes);
+ 
+ struct bpf_map_create_opts {
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 3f01f5cd8a4c..1bcb2735d3f1 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -4419,10 +4419,17 @@ static int probe_kern_prog_name(void)
+ 		BPF_MOV64_IMM(BPF_REG_0, 0),
+ 		BPF_EXIT_INSN(),
+ 	};
+-	int ret, insn_cnt = ARRAY_SIZE(insns);
++	union bpf_attr attr = {
++		.prog_type = BPF_PROG_TYPE_SOCKET_FILTER,
++		.prog_name = "test",
++		.license = ptr_to_u64("GPL"),
++		.insns = ptr_to_u64(insns),
++		.insn_cnt = (__u32)ARRAY_SIZE(insns),
++	};
++	int ret;
+ 
+ 	/* make sure loading with name works */
+-	ret = bpf_prog_load(BPF_PROG_TYPE_SOCKET_FILTER, "test", "GPL", insns, insn_cnt, NULL);
++	ret = sys_bpf_prog_load(&attr, sizeof(attr), PROG_LOAD_ATTEMPTS);
+ 	return probe_fd(ret);
+ }
+ 
+-- 
+2.31.1
 
