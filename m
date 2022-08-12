@@ -2,109 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DE75590B47
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 06:36:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F5CA590B71
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 07:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236796AbiHLEgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 00:36:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        id S236059AbiHLFVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 01:21:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236269AbiHLEgc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 00:36:32 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA7D90812;
-        Thu, 11 Aug 2022 21:36:29 -0700 (PDT)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27C4a93T002653;
-        Thu, 11 Aug 2022 23:36:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660278969;
-        bh=rxFKTwMGkyTFRaVUJXNHx4g7Bh4686ASvFuE6UEmTcY=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=TvwUIMpdzKDHFRiVmpGW8fcgGULYcyRpuzfucv1Jw46NXZigCWdcyissD4AbF7b8F
-         G0QlJK8z6sQvymG322ggJvlqmGTycbAZSGMaf2ed1YTm5g4GYUx5IQ0ymI2CxQ/DXR
-         3UK/5Xfn8lI7ATuyveDhUcjOMISvUTkoRgcTK8uk=
-Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27C4a9dh023830
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 11 Aug 2022 23:36:09 -0500
-Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
- (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
- Aug 2022 23:36:09 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Thu, 11 Aug 2022 23:36:09 -0500
-Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27C4a5R0003462;
-        Thu, 11 Aug 2022 23:36:06 -0500
-Message-ID: <ed3554bc-af62-78ce-a3eb-ff5f27ade6a2@ti.com>
-Date:   Fri, 12 Aug 2022 10:06:05 +0530
+        with ESMTP id S233593AbiHLFVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 01:21:35 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE0F9410B
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:21:34 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id u1so28258258lfq.4
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:from:to:cc;
+        bh=JfvkqOks6SEsnWBnmoF1stRD9zel/4Vy8jqvru3pmxU=;
+        b=EY3PhBYC+HKoXQSVVBdD2/vi/buDvcQGKTST0UiZjzTdqmpeFkFalfrBZigs7t4dHh
+         5yDkTNEqNmhb9WKKJkoGeBHdqJneCiyeCJWrT+DNm5oex3m6wJcKOsLsl1U/idrtkO4y
+         L657PHcC0e4ACG11c04Y7e88xMRQArXN5pxG7QOlkCLNQfY/7aQ+WJ3NSAhcgMGw1Tvj
+         t0GxfMFxDjIFSkPByTWecgUHbx0NClYWwaEhMapmbHeqxQes+0z6E0XkQFMXmzqTc/Tp
+         VfpjoKkZ+nY88xcysCzbVukjcs7pNoxFYjPodbi9sB8xe4ysg6FY79AJu/Sx0loJxXJd
+         HCxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=JfvkqOks6SEsnWBnmoF1stRD9zel/4Vy8jqvru3pmxU=;
+        b=zsNNR3tNLZuQ37UMW5lVGZgI7a7du8zbUoI2bQ9qlEv7AZOfDaW90IaCsJlNxGraQe
+         D4ahpwEJfDTCAmZnEUfcGsr6U/iwjfnlLC7kafxEhPMY4bvgv8z46uNQuYS8xecUeqaJ
+         5VMpVx1UXterf+hSg/T9ramReA6z+aROIcpLPBZX0UYjxdUsaVmndbanZep4NTSEpgrx
+         qHBNdpfHqcSxIdt7iJNlymSonVNvzIZU32fZtTHQpwdQJDBfyOBLyUEKDvcXhQz5Ty5Q
+         Ay18DFXy0lmFRxcieIMLXtoGK/GeXJfOtYPbk2Nrc73YOBeiTeow2Lbh6rjcuzwx4m9d
+         90NQ==
+X-Gm-Message-State: ACgBeo1PnKHmlalCzySJVLjvoboQQBklwRzVx+Zz9lC3V88vQGXNUgrX
+        6QN/dr0iRWQxe85jUL6cm3jSUjDFdBWYs1+zzSs=
+X-Google-Smtp-Source: AA6agR4uiQBt68H0VD3DGgKmVgy+Cu72a/QAhl+1PLYpIMTPrssLkV5tFV7L92fjabsBPWQiGH1BuMvjSMGQg/Q3Rn0=
+X-Received: by 2002:a05:6512:15a7:b0:48b:236c:7302 with SMTP id
+ bp39-20020a05651215a700b0048b236c7302mr702023lfb.264.1660281692635; Thu, 11
+ Aug 2022 22:21:32 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
- workaround for errata i2329
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux-omap@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
-        <vigneshr@ti.com>
-References: <20220810111345.31200-1-r-gunasekaran@ti.com>
- <YvRNpAdG7/edUEc+@lunn.ch> <9d17ab9f-1679-4af1-f85c-a538cb330d7b@ti.com>
- <YvT8ovgHz2j7yOQP@lunn.ch>
-From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
-In-Reply-To: <YvT8ovgHz2j7yOQP@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:aa6:d98f:0:b0:210:affa:b291 with HTTP; Thu, 11 Aug 2022
+ 22:21:31 -0700 (PDT)
+Reply-To: fredrich.david.mail@gmail.com
+From:   Mr Fredrich David <tgfar4131278991@gmail.com>
+Date:   Fri, 12 Aug 2022 05:21:31 +0000
+Message-ID: <CAMSGiNnGzGbgcNJRFNMFX9mGLxspdTB6L_XkbQq-3LMWOvkmBQ@mail.gmail.com>
+Subject: G44S21
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.9 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
->> There is atleast one device sh_eth, which is not configured for autosuspend
->> but uses the bit bang core in sh_mdiobb_read() and invokes regular runtime
->> PM functions.
-> 
-> And that is the point of moving it into the core. It would of just
-> worked for you.
-> 
-> If you don't feel comfortable with making this unconditional, please
-> put runtime pm enabled version of mdiobb_read/mdiobb_write() in the
-> core and swap sh_eth and any other drivers to using them.
-> 
-
-sh_eth is not configured for autosuspend and uses only pm_runtime_put().
-davinci_mdio is configured for autosuspend and it must invoke 
-pm_runtime_mark_last_busy() before calling pm_runtime_put_autosuspend().
-So it looks like, there needs to be a runtime PM version of 
-mdiobb_read/mdiobb_write() for each pm_runtime_put_*(). As of now, it's 
-only sh_eth which is currently using runtime PM and davinci_mdio would 
-be the next one. So at least in this case, two variants of 
-mdiobb_read/mdiobb_write() could be added at the moment. By checking 
-against the dev->power.use_autosuspend flag, it is possible to support 
-both via a single version.
-
-That being said, I'm quite inclined towards the existing implementation, 
-where drivers can have wrappers written around 
-mdiobb_read/mdiobb_write(). But I might be failing to see the broader 
-picture. If having multiple runtime PM versions of 
-mdiobb_read/mdiobb_write() benefits many other future drivers, then I 
-will go ahead and add the variant(s) in the bitbang core.
-
-Please provide your views on this. Your inputs on the next course of 
-action would be helpful.
-
--- 
-Regards,
-Ravi
+To jest w odpowiedzi na Wasze e-maile, pisz=C4=99, aby poinformowa=C4=87, =
+=C5=BCe
+projekty zosta=C5=82y zako=C5=84czone i zosta=C5=82e=C5=9B zaakceptowany !
+Z powa=C5=BCaniem,
+Pan Fredrich David
