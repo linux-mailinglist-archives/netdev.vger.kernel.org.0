@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 621A359098F
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 02:27:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 67918590993
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 02:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233974AbiHLA1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 11 Aug 2022 20:27:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S234978AbiHLAcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 11 Aug 2022 20:32:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbiHLA1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 20:27:50 -0400
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F044EA00F1;
-        Thu, 11 Aug 2022 17:27:48 -0700 (PDT)
-Received: by mail-vk1-xa2c.google.com with SMTP id q14so9733893vke.9;
-        Thu, 11 Aug 2022 17:27:48 -0700 (PDT)
+        with ESMTP id S229833AbiHLAcc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 11 Aug 2022 20:32:32 -0400
+Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92E75A0313;
+        Thu, 11 Aug 2022 17:32:30 -0700 (PDT)
+Received: by mail-vs1-xe34.google.com with SMTP id c3so19878820vsc.6;
+        Thu, 11 Aug 2022 17:32:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=1EqMW9+sIv7QJbTeZKUHZUM/p01kIgjNDKoKtzHUX6I=;
-        b=M1GNjTX6MjOuuRZWm3CHgm0eqBJRWOE2DYIwkpijn0zr44uLH0SX2pVKsqnu6SKNns
-         crOKzPpxy1RA43nKlwbqOUFzA7HRedMYZ8tQVF/fVGMAyKmhhwsTdSvsU68Ud2Rd1Vvf
-         VGg7iWJFnTpKjk557gHnFc+YZibSg5rVyMlQJaEi3/Ldv14TBB8M/M2PtEJHVInQAn18
-         t0OPuaERFvAALtrbkGhfJXRFwmuZN2S5HT8whf8Ecld+YIN1EMC8dvvmJ1vMiAv3owSc
-         silpXSxehuEjE0NLkaQfkPb9niGhisKpqBCPa6hiJgda+d+CFnoRwtbCafYrK4a9pelF
-         WX2Q==
+        bh=03fjnh1xwewL0u689e6AC8d7EfZpcbmYwThbeEIF6Rs=;
+        b=L9BIC0FSsu2fW5qW8A9HJmyxpMSSNuMf4263HMvYTZd7akdGq5Z5L8fL0H50GeDQIG
+         gEHX7Btt79N3upJJqP1yuAAB9tmPy3gqBjTlhoxmlWCxoBuP0dk6I8FYEv3L7KQkUJOi
+         K5Rzwydh8XPqVpzAznseOTIWJ5HuwzoNfKR3FRh+IZMBPWnvAc6mzKkNq9ePpbQV8nB6
+         XnvALkD09KVnPMjwsbPKhO+X18rlft2HzMBXIgc2sjqw48l8gY27iPlZE3CWdoErBk9F
+         odIRYh6kuzskgAU/iNuRlvWs2QZQgeqWh4TpFUWsP4AM0p65i+ULOi34birkfhUoUuaB
+         UsUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=1EqMW9+sIv7QJbTeZKUHZUM/p01kIgjNDKoKtzHUX6I=;
-        b=0SqqQmwY5bCS30RwTOuUf75VVJqWlKzO8KAClOZPAWLl9jFHnnG++VOQp3MEaZwy/f
-         +XxVDlDtefO9VbBaFC1IEw0nXy4f8fKVExtSBd13kfzoxeEIQM01hUKP8roAia5iXzQR
-         lDIUTBE6bTjlGXTHsMyumFfV45EO7HgMGtHafabJ3g/Vkfz7XRjnAFmrksJEjXFDsFaS
-         i0r36BdH4YMybtt5+nCCgNcAHA6waOFfHrJHLDkJo17RHMHdkysRvun+uxKglwGQmPg/
-         jm4+piAbJpU2ZntRoaJxiNhw1QXxYnN08mpAzJpBp3GSmmNBygmnb16NS43ov5ahJXPw
-         4oTg==
-X-Gm-Message-State: ACgBeo3bg2alLkwOEEindbxEBQ1rd04KmlWkqk05GFhFln/lDaFucKxE
-        mQxs5dzLVRZFbq32wUMum23ywqXS+i6TlYspBPjPoze9rnJ0Aw==
-X-Google-Smtp-Source: AA6agR6Xxa627apoLE5N7GpRkjtgyd4LlWQoOuRcxBEEqPifbL4QHOVP/BOrxS/OJ4GGBJ0emBtj3jLw3QnSmFAygEI=
-X-Received: by 2002:a1f:1644:0:b0:378:c157:d0f5 with SMTP id
- 65-20020a1f1644000000b00378c157d0f5mr902289vkw.5.1660264068116; Thu, 11 Aug
- 2022 17:27:48 -0700 (PDT)
+        bh=03fjnh1xwewL0u689e6AC8d7EfZpcbmYwThbeEIF6Rs=;
+        b=zPGjtB0c6wub9xBR3GZ2yegFRNe6XFtaksoWdlU3gcOd76dOv9Y2hzZhStwxgeQwvo
+         I0vxs/70/l8DELPSdKQY66REMPzCQ/RhqicR+kuDHVIg8ZmgyWvBC9y2zpMjFjvzyZsi
+         BW2Tew8IC0Hhoac5Xk2nL+m48j6WrJhKpi5rBLcktF1X7RoxhnsZVPwRD7/BSt9thwSU
+         U3gkbxh2QjPXtyO12vHD17AIHYe05NBeoVCnRZdiU1BrhLknVUvgti7sT0XvmrcvQ/LQ
+         9UjC3izEfUpXExQuuQcmcwwAfizfr0pEN7DDtwNT7ogCMI8977bD4XDZF5wP8e1txGeM
+         wpvw==
+X-Gm-Message-State: ACgBeo1iJuEX32eXYORm7ob+dZVPZnSCMouw75/Z7VAxJXZhJQgDbOBy
+        qY6UNi1ZI5Ef1NuCyO/d+WroM05+4TpvwUqB2H4=
+X-Google-Smtp-Source: AA6agR5Yk07g13dO92BJmJBTUJKn4YRbog6iyUSopPgtnGx3pom6mYU73oS2EW6JwYnu2B9lSh/JqHHicdrPK0rUZ9g=
+X-Received: by 2002:a05:6102:441c:b0:378:fcdd:d951 with SMTP id
+ df28-20020a056102441c00b00378fcddd951mr805121vsb.22.1660264349645; Thu, 11
+ Aug 2022 17:32:29 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-6-laoar.shao@gmail.com>
- <20220810170706.ikyrsuzupjwt65h7@google.com> <CALOAHbBk+komswLqs0KBg8FeFAYpC20HjXrUeZA-=7cWf6nRUw@mail.gmail.com>
- <20220811154731.3smhom6v4qy2u6rd@google.com>
-In-Reply-To: <20220811154731.3smhom6v4qy2u6rd@google.com>
+ <YvUy5IA+XJp7ylIC@P9FQF9L96D.corp.robot.car>
+In-Reply-To: <YvUy5IA+XJp7ylIC@P9FQF9L96D.corp.robot.car>
 From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Fri, 12 Aug 2022 08:27:09 +0800
-Message-ID: <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
+Date:   Fri, 12 Aug 2022 08:31:50 +0800
+Message-ID: <CALOAHbDGUJ4BELfUPF3Sq0bBcQhNU=RGOhr2_uCT3-XcjdYKSw@mail.gmail.com>
 Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
-To:     Shakeel Butt <shakeelb@google.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
@@ -64,7 +63,7 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Hao Luo <haoluo@google.com>, jolsa@kernel.org,
         Johannes Weiner <hannes@cmpxchg.org>,
         Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
         Muchun Song <songmuchun@bytedance.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
@@ -80,73 +79,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 11:47 PM Shakeel Butt <shakeelb@google.com> wrote:
+On Fri, Aug 12, 2022 at 12:48 AM Roman Gushchin
+<roman.gushchin@linux.dev> wrote:
 >
-> On Thu, Aug 11, 2022 at 10:49:13AM +0800, Yafang Shao wrote:
-> > On Thu, Aug 11, 2022 at 1:07 AM Shakeel Butt <shakeelb@google.com> wrote:
-> > >
-> > > On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
-> > > > The memcg may be the root_mem_cgroup, in which case we shouldn't put it.
-> > >
-> > > No, it is ok to put root_mem_cgroup. css_put already handles the root
-> > > cgroups.
-> > >
+> On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
+> > The memcg may be the root_mem_cgroup, in which case we shouldn't put it.
+> > So a new helper bpf_map_put_memcg() is introduced to pair with
+> > bpf_map_get_memcg().
 > >
-> > Ah, this commit log doesn't describe the issue clearly. I should improve it.
-> > The issue is that in bpf_map_get_memcg() it doesn't get the objcg if
-> > map->objcg is NULL (that can happen if the map belongs to the root
-> > memcg), so we shouldn't put the objcg if map->objcg is NULL neither in
-> > bpf_map_put_memcg().
+> > Fixes: 4201d9ab3e42 ("bpf: reparent bpf maps on memcg offlining")
+> > Cc: Roman Gushchin <roman.gushchin@linux.dev>
+> > Cc: Shakeel Butt <shakeelb@google.com>
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > ---
+> >  kernel/bpf/syscall.c | 14 +++++++++++---
+> >  1 file changed, 11 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 83c7136..51ab8b1 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -441,6 +441,14 @@ static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
+> >       return root_mem_cgroup;
+> >  }
+> >
+> > +static void bpf_map_put_memcg(struct mem_cgroup *memcg)
+> > +{
+> > +     if (mem_cgroup_is_root(memcg))
+> > +             return;
+> > +
+> > +     mem_cgroup_put(memcg);
+> > +}
 >
-> Sorry I am still not understanding. We are not 'getting' objcg in
-> bpf_map_get_memcg(). We are 'getting' memcg from map->objcg and if that
-> is NULL the function is returning root memcg and putting root memcg is
-> totally fine.
-
-When the map belongs to root_mem_cgroup, the map->objcg is NULL, right ?
-See also bpf_map_save_memcg() and it describes clearly in the comment -
-
-static void bpf_map_save_memcg(struct bpf_map *map)
-{
-        /* Currently if a map is created by a process belonging to the root
-         * memory cgroup, get_obj_cgroup_from_current() will return NULL.
-         * So we have to check map->objcg for being NULL each time it's
-         * being used.
-         */
-        map->objcg = get_obj_cgroup_from_current();
-}
-
-So for the root_mem_cgroup case, bpf_map_get_memcg() will return
-root_mem_cgroup directly without getting its css, right ? See below,
-
-static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
-{
-
-        if (map->objcg)
-                return get_mem_cgroup_from_objcg(map->objcg);
-
-        return root_mem_cgroup;   // without css_get(&memcg->css);
-}
-
-But it will put the css unconditionally.  See below,
-
-memcg = bpf_map_get_memcg(map);
-...
-mem_cgroup_put(memcg);
-
-So we should put it *conditionally* as well.
-
-  memcg = bpf_map_get_memcg(map);
-   ...
-+ if (map->objcg)
-       mem_cgroup_put(memcg);
-
-Is it clear to you ?
-
-> Or are you saying that root_mem_cgroup is NULL?
+> +1 to what Shakeel said. mem_cgroup_put(root_mem_cgroup) is totally valid.
+> So this change does absolutely nothing.
 >
 
-No
+Do you mean that we can mem_cgroup_put(root_mem_cgroup) without
+mem_cgroup_get(root_mem_cgroup) ?
+Am I missing something ?
+
+> The fixes tag assumes there is a bug in the existing code. If so, please,
+> describe the problem and how to reproduce it.
+>
+
+It is found by code review.  The root_mem_cgroup's css will break. But
+I don't know what it may cause to the user.
+If you think the fixes tag is unproper, I will remove it.
+
+> Also, if it's not related to the rest of the patchset, please, send it
+> separately.
+>
+
+I want to introduce a bpf_map_put_memcg() helper to pair with
+bpf_map_get_memcg().
+This new helper will be used by other patches.
 
 -- 
 Regards
