@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D280591657
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 22:32:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E200C59165B
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 22:34:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235096AbiHLUcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 16:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
+        id S233391AbiHLUes (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 16:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234747AbiHLUcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 16:32:07 -0400
-Received: from 69-171-232-181.mail-mxout.facebook.com (69-171-232-181.mail-mxout.facebook.com [69.171.232.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C288B089D
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 13:32:05 -0700 (PDT)
+        with ESMTP id S229617AbiHLUeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 16:34:46 -0400
+Received: from 66-220-155-178.mail-mxout.facebook.com (66-220-155-178.mail-mxout.facebook.com [66.220.155.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173BFB1B9A
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 13:34:44 -0700 (PDT)
 Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
-        id 7561010576443; Fri, 12 Aug 2022 13:31:49 -0700 (PDT)
+        id 5F16810576446; Fri, 12 Aug 2022 13:31:50 -0700 (PDT)
 From:   Joanne Koong <joannelkoong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
         davem@davemloft.net, pabeni@redhat.com, dccp@vger.kernel.org,
         Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH net-next v4 2/3] selftests/net: Add test for timing a bind request to a port with a populated bhash entry
-Date:   Fri, 12 Aug 2022 13:29:04 -0700
-Message-Id: <20220812202905.1599234-3-joannelkoong@gmail.com>
+Subject: [PATCH net-next v4 3/3] selftests/net: Add sk_bind_sendto_listen and sk_connect_zero_addr
+Date:   Fri, 12 Aug 2022 13:29:05 -0700
+Message-Id: <20220812202905.1599234-4-joannelkoong@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220812202905.1599234-1-joannelkoong@gmail.com>
 References: <20220812202905.1599234-1-joannelkoong@gmail.com>
@@ -40,310 +40,212 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test populates the bhash table for a given port with
-MAX_THREADS * MAX_CONNECTIONS sockets, and then times how long
-a bind request on the port takes.
+This patch adds 2 new tests: sk_bind_sendto_listen and
+sk_connect_zero_addr.
 
-When populating the bhash table, we create the sockets and then bind
-the sockets to the same address and port (SO_REUSEADDR and SO_REUSEPORT
-are set). When timing how long a bind on the port takes, we bind on a
-different address without SO_REUSEPORT set. We do not set SO_REUSEPORT
-because we are interested in the case where the bind request does not
-go through the tb->fastreuseport path, which is fragile (eg
-tb->fastreuseport path does not work if binding with a different uid).
+The sk_bind_sendto_listen test exercises the path where a socket's
+rcv saddr changes after it has been added to the binding tables,
+and then a listen() on the socket is invoked. The listen() should
+succeed.
 
-To run the script:
-    Usage: ./bind_bhash.sh [-6 | -4] [-p port] [-a address]
-	    6: use ipv6
-	    4: use ipv4
-	    port: Port number
-	    address: ip address
+The sk_bind_sendto_listen test is copied over from one of syzbot's
+tests: https://syzkaller.appspot.com/x/repro.c?x=3D1673a38df00000
 
-Without any arguments, ./bind_bhash.sh defaults to ipv6 using ip address
-"2001:0db8:0:f101::1" on port 443.
-
-On my local machine, I see:
-ipv4:
-before - 0.002317 seconds
-with bhash2 - 0.000020 seconds
-
-ipv6:
-before - 0.002431 seconds
-with bhash2 - 0.000021 seconds
+The sk_connect_zero_addr test exercises the path where the socket was
+never previously added to the binding tables and it gets assigned a
+saddr upon a connect() to address 0.
 
 Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
 ---
- tools/testing/selftests/net/.gitignore    |   3 +-
- tools/testing/selftests/net/Makefile      |   3 +
- tools/testing/selftests/net/bind_bhash.c  | 144 ++++++++++++++++++++++
- tools/testing/selftests/net/bind_bhash.sh |  66 ++++++++++
- 4 files changed, 215 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/bind_bhash.c
- create mode 100755 tools/testing/selftests/net/bind_bhash.sh
+ tools/testing/selftests/net/.gitignore        |  2 +
+ tools/testing/selftests/net/Makefile          |  2 +
+ .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
+ .../selftests/net/sk_connect_zero_addr.c      | 62 ++++++++++++++
+ 4 files changed, 146 insertions(+)
+ create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
+ create mode 100644 tools/testing/selftests/net/sk_connect_zero_addr.c
 
 diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selft=
 ests/net/.gitignore
-index 0e5751af6247..89e2d4aa812a 100644
+index 89e2d4aa812a..bec5cf96984c 100644
 --- a/tools/testing/selftests/net/.gitignore
 +++ b/tools/testing/selftests/net/.gitignore
-@@ -39,4 +39,5 @@ toeplitz
- tun
- cmsg_sender
+@@ -41,3 +41,5 @@ cmsg_sender
  unix_connect
--tap
-\ No newline at end of file
-+tap
-+bind_bhash
+ tap
+ bind_bhash
++sk_bind_sendto_listen
++sk_connect_zero_addr
 diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
 ts/net/Makefile
-index c0ee2955fe54..a3a26d8c29df 100644
+index a3a26d8c29df..e9f02850106f 100644
 --- a/tools/testing/selftests/net/Makefile
 +++ b/tools/testing/selftests/net/Makefile
-@@ -42,6 +42,7 @@ TEST_PROGS +=3D arp_ndisc_evict_nocarrier.sh
- TEST_PROGS +=3D ndisc_unsolicited_na_test.sh
- TEST_PROGS +=3D arp_ndisc_untracked_subnets.sh
- TEST_PROGS +=3D stress_reuseport_listen.sh
-+TEST_PROGS +=3D bind_bhash.sh
- TEST_PROGS_EXTENDED :=3D in_netns.sh setup_loopback.sh setup_veth.sh
- TEST_PROGS_EXTENDED +=3D toeplitz_client.sh toeplitz.sh
- TEST_GEN_FILES =3D  socket nettest
-@@ -63,6 +64,7 @@ TEST_GEN_FILES +=3D cmsg_sender
- TEST_GEN_FILES +=3D stress_reuseport_listen
+@@ -65,6 +65,8 @@ TEST_GEN_FILES +=3D stress_reuseport_listen
  TEST_PROGS +=3D test_vxlan_vnifiltering.sh
  TEST_GEN_FILES +=3D io_uring_zerocopy_tx
-+TEST_GEN_FILES +=3D bind_bhash
+ TEST_GEN_FILES +=3D bind_bhash
++TEST_GEN_PROGS +=3D sk_bind_sendto_listen
++TEST_GEN_PROGS +=3D sk_connect_zero_addr
 =20
  TEST_FILES :=3D settings
 =20
-@@ -73,3 +75,4 @@ include bpf/Makefile
- $(OUTPUT)/reuseport_bpf_numa: LDLIBS +=3D -lnuma
- $(OUTPUT)/tcp_mmap: LDLIBS +=3D -lpthread
- $(OUTPUT)/tcp_inq: LDLIBS +=3D -lpthread
-+$(OUTPUT)/bind_bhash: LDLIBS +=3D -lpthread
-diff --git a/tools/testing/selftests/net/bind_bhash.c b/tools/testing/sel=
-ftests/net/bind_bhash.c
+diff --git a/tools/testing/selftests/net/sk_bind_sendto_listen.c b/tools/=
+testing/selftests/net/sk_bind_sendto_listen.c
 new file mode 100644
-index 000000000000..57ff67a3751e
+index 000000000000..b420d830f72c
 --- /dev/null
-+++ b/tools/testing/selftests/net/bind_bhash.c
-@@ -0,0 +1,144 @@
++++ b/tools/testing/selftests/net/sk_bind_sendto_listen.c
+@@ -0,0 +1,80 @@
 +// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This times how long it takes to bind to a port when the port already
-+ * has multiple sockets in its bhash table.
-+ *
-+ * In the setup(), we populate the port's bhash table with
-+ * MAX_THREADS * MAX_CONNECTIONS number of entries.
-+ */
 +
++#include <arpa/inet.h>
++#include <error.h>
++#include <errno.h>
 +#include <unistd.h>
-+#include <stdio.h>
-+#include <netdb.h>
-+#include <pthread.h>
-+#include <string.h>
-+#include <stdbool.h>
 +
-+#define MAX_THREADS 600
-+#define MAX_CONNECTIONS 40
-+
-+static const char *setup_addr_v6 =3D "::1";
-+static const char *setup_addr_v4 =3D "127.0.0.1";
-+static const char *setup_addr;
-+static const char *bind_addr;
-+static const char *port;
-+bool use_v6;
-+int ret;
-+
-+static int fd_array[MAX_THREADS][MAX_CONNECTIONS];
-+
-+static int bind_socket(int opt, const char *addr)
++int main(void)
 +{
-+	struct addrinfo *res, hint =3D {};
-+	int sock_fd, reuse =3D 1, err;
-+	int domain =3D use_v6 ? AF_INET6 : AF_INET;
++	int fd1, fd2, one =3D 1;
++	struct sockaddr_in6 bind_addr =3D {
++		.sin6_family =3D AF_INET6,
++		.sin6_port =3D htons(20000),
++		.sin6_flowinfo =3D htonl(0),
++		.sin6_addr =3D {},
++		.sin6_scope_id =3D 0,
++	};
 +
-+	sock_fd =3D socket(domain, SOCK_STREAM, 0);
-+	if (sock_fd < 0) {
-+		perror("socket fd err");
-+		return sock_fd;
-+	}
++	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
 +
-+	hint.ai_family =3D domain;
-+	hint.ai_socktype =3D SOCK_STREAM;
-+
-+	err =3D getaddrinfo(addr, port, &hint, &res);
-+	if (err) {
-+		perror("getaddrinfo failed");
-+		goto cleanup;
-+	}
-+
-+	if (opt) {
-+		err =3D setsockopt(sock_fd, SOL_SOCKET, opt, &reuse, sizeof(reuse));
-+		if (err) {
-+			perror("setsockopt failed");
-+			goto cleanup;
-+		}
-+	}
-+
-+	err =3D bind(sock_fd, res->ai_addr, res->ai_addrlen);
-+	if (err) {
-+		perror("failed to bind to port");
-+		goto cleanup;
-+	}
-+
-+	return sock_fd;
-+
-+cleanup:
-+	close(sock_fd);
-+	return err;
-+}
-+
-+static void *setup(void *arg)
-+{
-+	int sock_fd, i;
-+	int *array =3D (int *)arg;
-+
-+	for (i =3D 0; i < MAX_CONNECTIONS; i++) {
-+		sock_fd =3D bind_socket(SO_REUSEADDR | SO_REUSEPORT, setup_addr);
-+		if (sock_fd < 0) {
-+			ret =3D sock_fd;
-+			pthread_exit(&ret);
-+		}
-+		array[i] =3D sock_fd;
-+	}
-+
-+	return NULL;
-+}
-+
-+int main(int argc, const char *argv[])
-+{
-+	int listener_fd, sock_fd, i, j;
-+	pthread_t tid[MAX_THREADS];
-+	clock_t begin, end;
-+
-+	if (argc !=3D 4) {
-+		printf("Usage: listener <port> <ipv6 | ipv4> <bind-addr>\n");
++	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
++	if (fd1 < 0) {
++		error(1, errno, "socket fd1");
 +		return -1;
 +	}
 +
-+	port =3D argv[1];
-+	use_v6 =3D strcmp(argv[2], "ipv6") =3D=3D 0;
-+	bind_addr =3D argv[3];
-+
-+	setup_addr =3D use_v6 ? setup_addr_v6 : setup_addr_v4;
-+
-+	listener_fd =3D bind_socket(SO_REUSEADDR | SO_REUSEPORT, setup_addr);
-+	if (listen(listener_fd, 100) < 0) {
-+		perror("listen failed");
-+		return -1;
++	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
++		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
++		goto out_err1;
 +	}
 +
-+	/* Set up threads to populate the bhash table entry for the port */
-+	for (i =3D 0; i < MAX_THREADS; i++)
-+		pthread_create(&tid[i], NULL, setup, fd_array[i]);
-+
-+	for (i =3D 0; i < MAX_THREADS; i++)
-+		pthread_join(tid[i], NULL);
-+
-+	if (ret)
-+		goto done;
-+
-+	begin =3D clock();
-+
-+	/* Bind to the same port on a different address */
-+	sock_fd  =3D bind_socket(0, bind_addr);
-+	if (sock_fd < 0)
-+		goto done;
-+
-+	end =3D clock();
-+
-+	printf("time spent =3D %f\n", (double)(end - begin) / CLOCKS_PER_SEC);
-+
-+	/* clean up */
-+	close(sock_fd);
-+
-+done:
-+	close(listener_fd);
-+	for (i =3D 0; i < MAX_THREADS; i++) {
-+		for (j =3D 0; i < MAX_THREADS; i++)
-+			close(fd_array[i][j]);
++	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
++		error(1, errno, "bind fd1");
++		goto out_err1;
 +	}
 +
++	if (sendto(fd1, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
++		   sizeof(bind_addr))) {
++		error(1, errno, "sendto fd1");
++		goto out_err1;
++	}
++
++	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
++	if (fd2 < 0) {
++		error(1, errno, "socket fd2");
++		goto out_err1;
++	}
++
++	if (setsockopt(fd2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
++		error(1, errno, "setsockopt(SO_REUSEADDR) fd2");
++		goto out_err2;
++	}
++
++	if (bind(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
++		error(1, errno, "bind fd2");
++		goto out_err2;
++	}
++
++	if (sendto(fd2, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
++		   sizeof(bind_addr)) !=3D -1) {
++		error(1, errno, "sendto fd2");
++		goto out_err2;
++	}
++
++	if (listen(fd2, 0)) {
++		error(1, errno, "listen");
++		goto out_err2;
++	}
++
++	close(fd2);
++	close(fd1);
 +	return 0;
++
++out_err2:
++	close(fd2);
++
++out_err1:
++	close(fd1);
++	return -1;
 +}
-diff --git a/tools/testing/selftests/net/bind_bhash.sh b/tools/testing/se=
-lftests/net/bind_bhash.sh
-new file mode 100755
-index 000000000000..ca0292d4b441
+diff --git a/tools/testing/selftests/net/sk_connect_zero_addr.c b/tools/t=
+esting/selftests/net/sk_connect_zero_addr.c
+new file mode 100644
+index 000000000000..4be418aefd9f
 --- /dev/null
-+++ b/tools/testing/selftests/net/bind_bhash.sh
-@@ -0,0 +1,66 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
++++ b/tools/testing/selftests/net/sk_connect_zero_addr.c
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+NR_FILES=3D32768
-+SAVED_NR_FILES=3D$(ulimit -n)
++#include <arpa/inet.h>
++#include <error.h>
++#include <errno.h>
++#include <unistd.h>
 +
-+# default values
-+port=3D443
-+addr_v6=3D"2001:0db8:0:f101::1"
-+addr_v4=3D"10.8.8.8"
-+use_v6=3Dtrue
-+addr=3D""
++int main(void)
++{
++	int fd1, fd2, one =3D 1;
++	struct sockaddr_in6 bind_addr =3D {
++		.sin6_family =3D AF_INET6,
++		.sin6_port =3D htons(20000),
++		.sin6_flowinfo =3D htonl(0),
++		.sin6_addr =3D {},
++		.sin6_scope_id =3D 0,
++	};
 +
-+usage() {
-+    echo "Usage: $0 [-6 | -4] [-p port] [-a address]"
-+    echo -e "\t6: use ipv6"
-+    echo -e "\t4: use ipv4"
-+    echo -e "\tport: Port number"
-+    echo -e "\taddress: ip address"
++	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
++
++	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
++	if (fd1 < 0) {
++		error(1, errno, "socket fd1");
++		return -1;
++	}
++
++	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
++		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
++		goto out_err1;
++	}
++
++	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
++		error(1, errno, "bind fd1");
++		goto out_err1;
++	}
++
++	if (listen(fd1, 0)) {
++		error(1, errno, "listen");
++		goto out_err1;
++	}
++
++	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
++	if (fd2 < 0) {
++		error(1, errno, "socket fd2");
++		goto out_err1;
++	}
++
++	if (connect(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
++		error(1, errno, "bind fd2");
++		goto out_err2;
++	}
++
++	close(fd2);
++	close(fd1);
++	return 0;
++
++out_err2:
++	close(fd2);
++out_err1:
++	close(fd1);
++	return -1;
 +}
-+
-+while getopts "ha:p:64" opt; do
-+    case ${opt} in
-+	h)
-+	    usage $0
-+	    exit 0
-+	    ;;
-+	a)  addr=3D$OPTARG;;
-+	p)
-+	    port=3D$OPTARG;;
-+	6)
-+	    use_v6=3Dtrue;;
-+	4)
-+	    use_v6=3Dfalse;;
-+    esac
-+done
-+
-+setup() {
-+    if [[ "$use_v6" =3D=3D true ]]; then
-+	ip addr add $addr_v6 nodad dev eth0
-+    else
-+	ip addr add $addr_v4 dev lo
-+    fi
-+	ulimit -n $NR_FILES
-+}
-+
-+cleanup() {
-+    if [[ "$use_v6" =3D=3D true ]]; then
-+	ip addr del $addr_v6 dev eth0
-+    else
-+	ip addr del $addr_v4/32 dev lo
-+    fi
-+    ulimit -n $SAVED_NR_FILES
-+}
-+
-+if [[ "$addr" !=3D "" ]]; then
-+    addr_v4=3D$addr;
-+    addr_v6=3D$addr;
-+fi
-+setup
-+if [[ "$use_v6" =3D=3D true ]] ; then
-+    ./bind_bhash $port "ipv6" $addr_v6
-+else
-+    ./bind_bhash $port "ipv4" $addr_v4
-+fi
-+cleanup
 --=20
 2.30.2
 
