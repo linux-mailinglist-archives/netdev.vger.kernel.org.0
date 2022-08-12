@@ -2,99 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99616590AF5
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 06:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DE75590B47
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 06:36:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235602AbiHLEQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 00:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
+        id S236796AbiHLEgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 00:36:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230271AbiHLEQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 00:16:34 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85BB1FD37;
-        Thu, 11 Aug 2022 21:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660277793; x=1691813793;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xEKQMRYYwNapwWCbuAHmwaEJwzGtEja9gbRJRyakeJ8=;
-  b=UI5+wn2unGkKbMbQFqbbwPfG6sZYpTcUEf5lmGTMXrnC6SgPPTENMyOu
-   xw7HX8vgUKP7Iow5aQUfV5vOsoL8K8Dnosv6T06RXQQc4P1i7WUSAiaIE
-   NgUzPURsio3xDUxmhtHAe3hlhdYI5M+UcB545h26+lyTZppStQq2AXg2v
-   JsOLsdWuD2e7WAQcx3eShxm8WSg/GHXTpSiECI2/PvkFfep21hGVRIl1X
-   FocypV6CesiAx/gwqc+OvX3w1/K1nAzfczHY4YzFwCkCITey3HFLgO1NV
-   MAogkjdxvZTDH+iWtdJCqv2emuL4jlVO6JJJsW2hCcAGqVDA1OdQXoXgc
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10436"; a="289087908"
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="289087908"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Aug 2022 21:16:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,231,1654585200"; 
-   d="scan'208";a="933578432"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 11 Aug 2022 21:16:31 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMM62-00007f-1X;
-        Fri, 12 Aug 2022 04:16:30 +0000
-Date:   Fri, 12 Aug 2022 12:16:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, kafai@fb.com, kuba@kernel.org,
-        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, kernel-team@fb.com,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] bpf: Add skb dynptrs
-Message-ID: <202208121214.urSMKXgE-lkp@intel.com>
-References: <20220811230501.2632393-2-joannelkoong@gmail.com>
+        with ESMTP id S236269AbiHLEgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 00:36:32 -0400
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA7D90812;
+        Thu, 11 Aug 2022 21:36:29 -0700 (PDT)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27C4a93T002653;
+        Thu, 11 Aug 2022 23:36:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660278969;
+        bh=rxFKTwMGkyTFRaVUJXNHx4g7Bh4686ASvFuE6UEmTcY=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=TvwUIMpdzKDHFRiVmpGW8fcgGULYcyRpuzfucv1Jw46NXZigCWdcyissD4AbF7b8F
+         G0QlJK8z6sQvymG322ggJvlqmGTycbAZSGMaf2ed1YTm5g4GYUx5IQ0ymI2CxQ/DXR
+         3UK/5Xfn8lI7ATuyveDhUcjOMISvUTkoRgcTK8uk=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27C4a9dh023830
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 11 Aug 2022 23:36:09 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Thu, 11
+ Aug 2022 23:36:09 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Thu, 11 Aug 2022 23:36:09 -0500
+Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27C4a5R0003462;
+        Thu, 11 Aug 2022 23:36:06 -0500
+Message-ID: <ed3554bc-af62-78ce-a3eb-ff5f27ade6a2@ti.com>
+Date:   Fri, 12 Aug 2022 10:06:05 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220811230501.2632393-2-joannelkoong@gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 net-next] net: ethernet: ti: davinci_mdio: Add
+ workaround for errata i2329
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <linux-omap@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <kishon@ti.com>,
+        <vigneshr@ti.com>
+References: <20220810111345.31200-1-r-gunasekaran@ti.com>
+ <YvRNpAdG7/edUEc+@lunn.ch> <9d17ab9f-1679-4af1-f85c-a538cb330d7b@ti.com>
+ <YvT8ovgHz2j7yOQP@lunn.ch>
+From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
+In-Reply-To: <YvT8ovgHz2j7yOQP@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Joanne,
 
-Thank you for the patch! Yet something to improve:
+>> There is atleast one device sh_eth, which is not configured for autosuspend
+>> but uses the bit bang core in sh_mdiobb_read() and invokes regular runtime
+>> PM functions.
+> 
+> And that is the point of moving it into the core. It would of just
+> worked for you.
+> 
+> If you don't feel comfortable with making this unconditional, please
+> put runtime pm enabled version of mdiobb_read/mdiobb_write() in the
+> core and swap sh_eth and any other drivers to using them.
+> 
 
-[auto build test ERROR on bpf-next/master]
+sh_eth is not configured for autosuspend and uses only pm_runtime_put().
+davinci_mdio is configured for autosuspend and it must invoke 
+pm_runtime_mark_last_busy() before calling pm_runtime_put_autosuspend().
+So it looks like, there needs to be a runtime PM version of 
+mdiobb_read/mdiobb_write() for each pm_runtime_put_*(). As of now, it's 
+only sh_eth which is currently using runtime PM and davinci_mdio would 
+be the next one. So at least in this case, two variants of 
+mdiobb_read/mdiobb_write() could be added at the moment. By checking 
+against the dev->power.use_autosuspend flag, it is possible to support 
+both via a single version.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Joanne-Koong/Add-skb-xdp-dynptrs/20220812-070634
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220812/202208121214.urSMKXgE-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/ecab09dda7739b27ffd6ed6c93753f6dfd9bdcb2
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Joanne-Koong/Add-skb-xdp-dynptrs/20220812-070634
-        git checkout ecab09dda7739b27ffd6ed6c93753f6dfd9bdcb2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+That being said, I'm quite inclined towards the existing implementation, 
+where drivers can have wrappers written around 
+mdiobb_read/mdiobb_write(). But I might be failing to see the broader 
+picture. If having multiple runtime PM versions of 
+mdiobb_read/mdiobb_write() benefits many other future drivers, then I 
+will go ahead and add the variant(s) in the bitbang core.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   /usr/bin/ld: net/core/filter.o: in function `bpf_dynptr_from_skb':
->> filter.c:(.text+0x4e87): undefined reference to `bpf_dynptr_set_null'
->> /usr/bin/ld: filter.c:(.text+0x4e9e): undefined reference to `bpf_dynptr_init'
->> /usr/bin/ld: filter.c:(.text+0x4eae): undefined reference to `bpf_dynptr_set_rdonly'
-   collect2: error: ld returned 1 exit status
+Please provide your views on this. Your inputs on the next course of 
+action would be helpful.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+Ravi
