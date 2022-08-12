@@ -2,131 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BD3C590BDF
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 08:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49A28590BF4
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 08:24:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237016AbiHLGVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 02:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
+        id S237205AbiHLGYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 02:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHLGVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 02:21:11 -0400
-Received: from mail-m965.mail.126.com (mail-m965.mail.126.com [123.126.96.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73E383AB1A;
-        Thu, 11 Aug 2022 23:21:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=JGPSn
-        sJUeHGrj1k5i6Iut36C0p2uCQrpqlgvRnQxyYQ=; b=GZahsZSYES4Mhj+GgczGy
-        hCWQZTGRlvAuvvMNUGNLobjyxOWkDJYngequwSKRgePB7FRJpFcuhH2o1/hdJf6e
-        yvWox7IgoptrLaC8gEANBn24WN2Ih5SMIJdAmlMvwCkOtheSQelfKyUOzJeX1jd8
-        Gz+QNDwVKioY7naN61gbq8=
-Received: from localhost.localdomain (unknown [39.99.236.58])
-        by smtp10 (Coremail) with SMTP id NuRpCgC3U4FGy_Vi57sbAA--.20935S2;
-        Fri, 12 Aug 2022 11:38:47 +0800 (CST)
-From:   Hongbin Wang <wh_bin@126.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        sahern@kernel.org, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ip6_tunnel: Fix the type of functions
-Date:   Thu, 11 Aug 2022 23:38:33 -0400
-Message-Id: <20220812033833.1872176-1-wh_bin@126.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236418AbiHLGYB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 02:24:01 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA4E9A50F9
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 23:24:00 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id h138so132817iof.12
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 23:24:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
+        bh=XD21JD+K+a8oVdMsdQOvvYNmKdGALvhGBN389+nvhDQ=;
+        b=EpW5Z5TgciYDdB6xfCcptx1QN4MlIUlFnJBMVXWDlW1a4zQZEMQbvFAGv41yeW49GF
+         jyXXMWqu0I10clLPZu3+lHOkW1MJlixk7Z6dw0D2x/nbdtuTzuzFyXKUA7eT8wd+Trrt
+         +vBfqFKH9BFP+uC4U9A9lPJ/FaNmrwELvYSq5hR+iD1Rx7xXKe8DKX1ECvWw5g2LkT8+
+         enbZINT+q9Xn4BsiJHpj0LNBloShalwpn4/i2YatPSzSy785EAERgeHGmj5XRw7X+dmL
+         1+eJb7oIt/l8UD87AWdTiVhDU9Ncl65i2Kx17i50S1RVocLjPREv8IoMtIIyp9mhssSC
+         RHyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=XD21JD+K+a8oVdMsdQOvvYNmKdGALvhGBN389+nvhDQ=;
+        b=22j5XD1fwJl3wC0nSzmDpyKkz+IWCxIwiQeJlRM7CGCP+ml5p/i3Wj24WByU9Yf/pL
+         msnizq+GE4fTRbANZC9yw02PyIZExl97YYoxx9BUWU91EcHklg7pXsH24fBdIGMKX67c
+         xBShDY8fw03Lv3e9+3FB9FUbyA5zCEQifgMDf1FfzuxMwZMn8CNUYQU53V0qjnYHaKhL
+         +aNR5QAbfOYXpOq5txU3tZd23QNR3c6nqaIgBqU+4ie2FigCm+LR2twHOfo4RkOHSbth
+         K64FQtHLoMM+Kv6tqe9IdwxIYNfd24kHvEznGHP1I/a3Jqv0w5l4mHaBHnymvgrXIbTV
+         +tWA==
+X-Gm-Message-State: ACgBeo0qHhcIof2CgKAGdIJdyN8FZfqzATlZ7zG2JloiWIR9xPSBTzCd
+        OE+d0e2h/Ue2V8IJFVMuMD15lHDzDP5abKCP1Jk=
+X-Google-Smtp-Source: AA6agR6IAWoGWAQ6CxQqGx0K5ZehLPKDALqk6UYkGhSJY0WkV+2S1xH5c1VQAx7jfPi88FK4Do7DdayAk5mLTDxfKL8=
+X-Received: by 2002:a05:6638:370d:b0:342:e3cf:5be8 with SMTP id
+ k13-20020a056638370d00b00342e3cf5be8mr1250356jav.127.1660285440299; Thu, 11
+ Aug 2022 23:24:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: NuRpCgC3U4FGy_Vi57sbAA--.20935S2
-X-Coremail-Antispam: 1Uf129KBjvJXoW7Cry8WF48CFy3WF4kAFyfCrg_yoW8tFWxpF
-        15Ca18KF45Xw4DWF1Utr1kAry3KF42y34xX3WfGa4rK3ZrJw4rtF1Iq34kWF4YyFyfGFWf
-        ZF15tr17Kr48Zr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UGtCcUUUUU=
-X-Originating-IP: [39.99.236.58]
-X-CM-SenderInfo: xzkbuxbq6rjloofrz/1tbi7gdboltC-N+5FwAAsE
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6602:2d47:0:0:0:0 with HTTP; Thu, 11 Aug 2022 23:23:59
+ -0700 (PDT)
+Reply-To: warners@telkomsa.net
+From:   Yours Faithfully <99onlinemasters2022@gmail.com>
+Date:   Fri, 12 Aug 2022 07:23:59 +0100
+Message-ID: <CAJ6qs-y2COUAd-31aLm1XEfWdMO8GFYdJ1x0taLr1CTZ0QKZNQ@mail.gmail.com>
+Subject: 
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.3 required=5.0 tests=ADVANCE_FEE_4_NEW,BAYES_80,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:d43 listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.8639]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [99onlinemasters2022[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [99onlinemasters2022[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  2.2 ADVANCE_FEE_4_NEW Appears to be advance fee fraud (Nigerian
+        *      419)
+        *  3.0 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Functions ip6_tnl_change, ip6_tnl_update and ip6_tnl0_update do always
-return 0, change the type of functions to void.
-
-Signed-off-by: Hongbin Wang <wh_bin@126.com>
----
- net/ipv6/ip6_tunnel.c | 19 ++++++++-----------
- 1 file changed, 8 insertions(+), 11 deletions(-)
-
-diff --git a/net/ipv6/ip6_tunnel.c b/net/ipv6/ip6_tunnel.c
-index 3fda5634578c..79c6a827dea9 100644
---- a/net/ipv6/ip6_tunnel.c
-+++ b/net/ipv6/ip6_tunnel.c
-@@ -1517,7 +1517,7 @@ static void ip6_tnl_link_config(struct ip6_tnl *t)
-  *   ip6_tnl_change() updates the tunnel parameters
-  **/
- 
--static int
-+static void
- ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
- {
- 	t->parms.laddr = p->laddr;
-@@ -1531,29 +1531,25 @@ ip6_tnl_change(struct ip6_tnl *t, const struct __ip6_tnl_parm *p)
- 	t->parms.fwmark = p->fwmark;
- 	dst_cache_reset(&t->dst_cache);
- 	ip6_tnl_link_config(t);
--	return 0;
- }
- 
--static int ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
-+static void ip6_tnl_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
- {
- 	struct net *net = t->net;
- 	struct ip6_tnl_net *ip6n = net_generic(net, ip6_tnl_net_id);
--	int err;
- 
- 	ip6_tnl_unlink(ip6n, t);
- 	synchronize_net();
--	err = ip6_tnl_change(t, p);
-+	ip6_tnl_change(t, p);
- 	ip6_tnl_link(ip6n, t);
- 	netdev_state_change(t->dev);
--	return err;
- }
- 
--static int ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
-+static void ip6_tnl0_update(struct ip6_tnl *t, struct __ip6_tnl_parm *p)
- {
- 	/* for default tnl0 device allow to change only the proto */
- 	t->parms.proto = p->proto;
- 	netdev_state_change(t->dev);
--	return 0;
- }
- 
- static void
-@@ -1667,9 +1663,9 @@ ip6_tnl_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
- 			} else
- 				t = netdev_priv(dev);
- 			if (dev == ip6n->fb_tnl_dev)
--				err = ip6_tnl0_update(t, &p1);
-+				ip6_tnl0_update(t, &p1);
- 			else
--				err = ip6_tnl_update(t, &p1);
-+				ip6_tnl_update(t, &p1);
- 		}
- 		if (!IS_ERR(t)) {
- 			err = 0;
-@@ -2091,7 +2087,8 @@ static int ip6_tnl_changelink(struct net_device *dev, struct nlattr *tb[],
- 	} else
- 		t = netdev_priv(dev);
- 
--	return ip6_tnl_update(t, &p);
-+	ip6_tnl_update(t, &p);
-+	return 0;
- }
- 
- static void ip6_tnl_dellink(struct net_device *dev, struct list_head *head)
 -- 
-2.25.1
+I have a proposition for you, this however is not mandatory nor will I
+in any manner compel you to honor against your will. Let me start by
+introducing myself. I am Dr. Smith Lee, Director of Operations of the
+Hang Seng Bank Ltd, Sai Wan Ho Branch. I have a mutually beneficial
+business suggestion for you.
 
+1. Can you handle this project?
+
+2. Can I give you this trust ?
+
+Absolute confidentiality is required from you. Besides, i  will use my
+connection to get some documents to back up the fund so that the fund
+can not be questioned by any authority.
+
+More information awaits you in my next response to your email message.
+
+Treat as very urgent.
+
+Yours Faithfully,
