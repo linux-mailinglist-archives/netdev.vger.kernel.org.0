@@ -2,62 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 727D25911B7
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 15:49:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 096225911E3
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 16:09:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237644AbiHLNtA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 09:49:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
+        id S239088AbiHLOHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 10:07:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237117AbiHLNs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 09:48:58 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF8AA405A
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 06:48:55 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id f20so1408711lfc.10
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 06:48:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=C60Y/Psn2DfbYSl6cZKqaTCQ7Sgqzh8lKtssMlfhgdo=;
-        b=pWbMOWv12SncgQnIuIVOZIuOGhZs9m4NIgAH4gt6ZLQlOYjrJkkrpfmGlGCsIisBzI
-         x/v8DlJwMigklZslZraUmAV3o3EudTu6miObF37SapiaOyQ7qROqopSG36e739kWIR7w
-         JJD6EAb9D0Wzj4lYQx6qyLJVCE8AOvJfpDEYCmPZeUn+tmgP3zoa9TCJ3qI4TQidCQzh
-         A3WWOzYXKKX64DYzpcg9y635CEsUDPsNh/89xvbckuKi0dbRGta8wpqRK3MSOwQcj2ka
-         jioKGTP+gwvfVng2HwS+LbU1WM/BicwUT0gtxiXvDGzrnx51rOIp5qDvT7EuLpFj65Eq
-         45Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=C60Y/Psn2DfbYSl6cZKqaTCQ7Sgqzh8lKtssMlfhgdo=;
-        b=XbXx+h9Sc1EyTKlM5j31AvPL7e0958MPBTMelJjBd/XRPbn3bNQtZRG3HWVDzUey1/
-         FmBAhWvt3Oa5nYy4DO5fBrLatcQdJx4rZIHdGn43TaemtZopHo8zwovbEqn+eWeA5MSB
-         FdaBRCioOtWmSTyuoin1hkOhvCbFm9C/8KBJL3e00Jk3/eHsEbvPKnOnLkCzMpfS/cCA
-         acjryGmVQhU9IFEJx30FP1OWtoyZSrnMyqNT+/MZ+b8dciTH+xxbumTqeqDWXYVA7vFB
-         6DIfI3ZWpI14ftOUHamr7SKCNJAs+gCKuRY82b/2dKHC/aUra1BRP5Hv4MSZGYHbq343
-         UTrw==
-X-Gm-Message-State: ACgBeo1zyhDmiWXqAU6bntKEDnQ3EBrF9mmc5fLJdx2/ahCPud+KkxDV
-        4r1+b2op2exvAvjH2mxtYP/oOg==
-X-Google-Smtp-Source: AA6agR64G+c5wbFPsOJpNw8i8kydU4HW7gKVfY0L7wZs/5J9GKNtG7Gd/wPYjnf5eFU18oI1+UgbUQ==
-X-Received: by 2002:a05:6512:1155:b0:48a:fb9a:32d8 with SMTP id m21-20020a056512115500b0048afb9a32d8mr1340962lfg.672.1660312133710;
-        Fri, 12 Aug 2022 06:48:53 -0700 (PDT)
-Received: from [192.168.1.39] ([83.146.140.105])
-        by smtp.gmail.com with ESMTPSA id b19-20020ac24113000000b0048b03d1ca4asm221323lfi.161.2022.08.12.06.48.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 12 Aug 2022 06:48:53 -0700 (PDT)
-Message-ID: <3731cd56-f7e8-6807-06b5-b8b176b078b6@linaro.org>
-Date:   Fri, 12 Aug 2022 16:48:43 +0300
+        with ESMTP id S239050AbiHLOHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 10:07:47 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE95956B3;
+        Fri, 12 Aug 2022 07:07:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660313231; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=fbBtS1sg+Vt+hYNlH9db0vKSm0VsISSrbfKZ/jEVUctlhUv5Xw0mKF+lLIVdoOC67ZqtwTDl6GFF8h81U4wl03iMeFA2rH3tCxg+UuQrCE64wNKQ4ctiDtYbgXfQv3VNw+3p1b8EzvwFZWgglGMMKOZwefzrtQKneptX8LGJnZU=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1660313231; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=FknEHEc1nj2hFhwhzwEjhZw/Siy0uBdyidv+M0TdjsE=; 
+        b=ejCDYI+Vgpjfdt/dnFRUl682pDogP8XqdY2fOEJXOEgi4dwLIVjYUGvNfl/2zrKz9R5whJ0XUzCS02wecsaw28nvbwvQqMPVIUKQ3lmOJtCDDNA7sBwOb5sLMPLUhmi/lLOvz2b6toEXjiUn7IY/YYRK9UXl+nt/pC4s09Ce458=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660313231;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=FknEHEc1nj2hFhwhzwEjhZw/Siy0uBdyidv+M0TdjsE=;
+        b=hwqzb+Y5rHO41lrcPIZ6+VC9+Dogbd4NVHxz44ZoQT3+znvTYXqqwpgUoX2t5gA/
+        pGmtNz/+mfYN6mG2syEJNbXRVTlpWxSa5AOtc2UodyAwE45f+OH+aRsbfbf7kvDqV4I
+        HnQ15pmVHeveHhlEv12dlDPD8dwmloROl5lpYfqU=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 16603132237851003.355451322594; Fri, 12 Aug 2022 07:07:03 -0700 (PDT)
+Message-ID: <24e251d7-f5db-5715-463d-333f5dfbfceb@arinc9.com>
+Date:   Fri, 12 Aug 2022 17:06:57 +0300
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
+ Thunderbird/91.11.0
 Subject: Re: [PATCH 4/4] dt-bindings: net: dsa: mediatek,mt7530: update
  json-schema
 Content-Language: en-US
-To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -88,10 +73,12 @@ References: <20220730142627.29028-1-arinc.unal@arinc9.com>
  <8a665b7a-bbd0-99ce-658e-bc78568bdca2@linaro.org>
  <40130c63-1e36-bb43-43b4-444a8f287226@linaro.org>
  <70e246af-c336-0896-95b5-9e42a17a239d@arinc9.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <70e246af-c336-0896-95b5-9e42a17a239d@arinc9.com>
-Content-Type: text/plain; charset=UTF-8
+ <3731cd56-f7e8-6807-06b5-b8b176b078b6@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <3731cd56-f7e8-6807-06b5-b8b176b078b6@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -102,103 +89,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/08/2022 16:41, Arınç ÜNAL wrote:
-> On 12.08.2022 10:01, Krzysztof Kozlowski wrote:
->> On 12/08/2022 09:57, Krzysztof Kozlowski wrote:
->>> On 12/08/2022 01:09, Arınç ÜNAL wrote:
->>>>>> -patternProperties:
->>>>>> -  "^(ethernet-)?ports$":
->>>>>> -    type: object
+
+
+On 12.08.2022 16:48, Krzysztof Kozlowski wrote:
+> On 12/08/2022 16:41, Arınç ÜNAL wrote:
+>> On 12.08.2022 10:01, Krzysztof Kozlowski wrote:
+>>> On 12/08/2022 09:57, Krzysztof Kozlowski wrote:
+>>>> On 12/08/2022 01:09, Arınç ÜNAL wrote:
+>>>>>>> -patternProperties:
+>>>>>>> -  "^(ethernet-)?ports$":
+>>>>>>> -    type: object
+>>>>>>
+>>>>>> Actually four patches...
+>>>>>>
+>>>>>> I don't find this change explained in commit msg. What is more, it looks
+>>>>>> incorrect. All properties and patternProperties should be explained in
+>>>>>> top-level part.
+>>>>>>
+>>>>>> Defining such properties (with big piece of YAML) in each if:then: is no
+>>>>>> readable.
 >>>>>
->>>>> Actually four patches...
->>>>>
->>>>> I don't find this change explained in commit msg. What is more, it looks
->>>>> incorrect. All properties and patternProperties should be explained in
->>>>> top-level part.
->>>>>
->>>>> Defining such properties (with big piece of YAML) in each if:then: is no
->>>>> readable.
+>>>>> I can't figure out another way. I need to require certain properties for
+>>>>> a compatible string AND certain enum/const for certain properties which
+>>>>> are inside patternProperties for "^(ethernet-)?port@[0-9]+$" by reading
+>>>>> the compatible string.
 >>>>
->>>> I can't figure out another way. I need to require certain properties for
->>>> a compatible string AND certain enum/const for certain properties which
->>>> are inside patternProperties for "^(ethernet-)?port@[0-9]+$" by reading
->>>> the compatible string.
->>>
->>> requiring properties is not equal to defining them and nothing stops you
->>> from defining all properties top-level and requiring them in
->>> allOf:if:then:patternProperties.
->>>
->>>
->>>> If I put allOf:if:then under patternProperties, I can't do the latter.
->>>
->>> You can.
+>>>> requiring properties is not equal to defining them and nothing stops you
+>>>> from defining all properties top-level and requiring them in
+>>>> allOf:if:then:patternProperties.
+>>>>
+>>>>
+>>>>> If I put allOf:if:then under patternProperties, I can't do the latter.
+>>>>
+>>>> You can.
+>>
+>> Am I supposed to do something like this:
+>>
+>> patternProperties:
+>>     "^(ethernet-)?ports$":
+>>       type: object
+>>
+>>       patternProperties:
+>>         "^(ethernet-)?port@[0-9]+$":
+>>           type: object
+>>           description: Ethernet switch ports
+>>
+>>           unevaluatedProperties: false
+>>
+>>           properties:
+>>             reg:
+>>               description:
+>>                 Port address described must be 5 or 6 for CPU port and
+>>                 from 0 to 5 for user ports.
+>>
+>>           allOf:
+>>             - $ref: dsa-port.yaml#
+>>             - if:
+>>                 properties:
+>>                   label:
+>>                     items:
+>>                       - const: cpu
+>>               then:
+>>                 allOf:
+>>                   - if:
+>>                       properties:
 > 
-> Am I supposed to do something like this:
+> Not really, this is absolutely unreadable.
+> 
+> Usually the way it is handled is:
 > 
 > patternProperties:
->    "^(ethernet-)?ports$":
->      type: object
+>     "^(ethernet-)?ports$":
+>       type: object
 > 
->      patternProperties:
->        "^(ethernet-)?port@[0-9]+$":
->          type: object
->          description: Ethernet switch ports
+>       patternProperties:
+>         "^(ethernet-)?port@[0-9]+$":
+>           type: object
+>           description: Ethernet switch ports
+>           unevaluatedProperties: false
+>           ... regular stuff follows
 > 
->          unevaluatedProperties: false
+> allOf:
+>   - if:
+>       properties:
+>         compatible:
+>           .....
+>     then:
+>       patternProperties:
+>         "^(ethernet-)?ports$":
+>           patternProperties:
+>             "^(ethernet-)?port@[0-9]+$":
+>               properties:
+>                 reg:
+>                   const: 5
 > 
->          properties:
->            reg:
->              description:
->                Port address described must be 5 or 6 for CPU port and
->                from 0 to 5 for user ports.
 > 
->          allOf:
->            - $ref: dsa-port.yaml#
->            - if:
->                properties:
->                  label:
->                    items:
->                      - const: cpu
->              then:
->                allOf:
->                  - if:
->                      properties:
+> I admit that it is still difficult to parse, which could justify
+> splitting to separate schema. Anyway the point of my comment was to
+> define all properties in top level, not in allOf.
+> 
+> allOf should be used to constrain these properties.
 
-Not really, this is absolutely unreadable.
+The problem is:
+- only specific values of reg are allowed if label is cpu.
+- only specific values of phy-mode are allowed if reg is 5 or 6.
 
-Usually the way it is handled is:
+This forces me to define properties under allOf:if:then. Splitting to 
+separate schema (per compatible string?) wouldn't help in this case.
 
-patternProperties:
-   "^(ethernet-)?ports$":
-     type: object
+I can split patternProperties to two sections, but I can't directly 
+define the reg property like you put above.
 
-     patternProperties:
-       "^(ethernet-)?port@[0-9]+$":
-         type: object
-         description: Ethernet switch ports
-         unevaluatedProperties: false
-         ... regular stuff follows
+I can at least split mediatek,mt7531 to a separate schema to have less 
+patternProperties on a single binding.
 
-allOf:
- - if:
-     properties:
-       compatible:
-         .....
-   then:
-     patternProperties:
-       "^(ethernet-)?ports$":
-         patternProperties:
-           "^(ethernet-)?port@[0-9]+$":
-             properties:
-               reg:
-                 const: 5
+What do you think?
 
-
-I admit that it is still difficult to parse, which could justify
-splitting to separate schema. Anyway the point of my comment was to
-define all properties in top level, not in allOf.
-
-allOf should be used to constrain these properties.
-
-Best regards,
-Krzysztof
+Arınç
