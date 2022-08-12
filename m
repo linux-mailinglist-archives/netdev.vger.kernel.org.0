@@ -2,116 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D0B6591498
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 19:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 139AA5914AA
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 19:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239335AbiHLRE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 13:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S238874AbiHLRNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 13:13:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238439AbiHLRE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 13:04:27 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A988BB14D6
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:04:26 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id w6-20020a6bf006000000b006845b59a08bso899234ioc.9
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:04:26 -0700 (PDT)
+        with ESMTP id S234019AbiHLRNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 13:13:48 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96353A4052
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:13:44 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id z20so1549308ljq.3
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 10:13:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=m3zcp3iaGbmg+LbrGq1j6FWnwKspMtSv4IFs4ySHRck=;
+        b=WJLuk5BrjXQS4Z60ykAuCauK0jzmee71ZGM7c64RIdovef3hrJwmxyVu1RkyxB0Ag/
+         /XlYuHRdibKP72Gqu+rgNlds57LOWbBwtXzq/p/mhjAly9SgyX+hjsyUfbN4Qy0OOT8v
+         cfFf/2mYBhsz5dXkk5LS30ixHrGIt+XCcYmZS4UX6oOR1Otw7Y6lXAOM/2KNG7A6ET5r
+         6TVTXVYj68gvWnSlAz8njukjDHc/55FujCcZ9Ib2VBb0trRzc42DP9k9pkwdaK39yJjj
+         JiUV1GNuR9n3ZkN31zFM+BGcRI81cAhX6Vk3SLD0+Ekkc27kcyJgzYmhirGFXHXUDKQg
+         YTSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=OucfZo6bVXb/CmNvLXiX7ZiXfaSuQBZNkZAXzjRTZBU=;
-        b=pqUmbdfh1Mt9KiuxIxwx73pl724adrP1JEWylhBfVrzndfQf0rOFt2XxcRZ3SAt2RM
-         rNAqYmJcxjnQmNjoMAZcoIC4NDlQpUuc5P2p6vaAsTLXHh4N7QxTnTqgZKIxYhZAPILO
-         lkzjkzN5IfgF1O3GBCV3iP1XW3HggWJNiRlmWREkYcH/LjZJhTi0yxHfGFP3la68Dvpq
-         Y0BmlofOCBSVFm/ssb7SCd7QO4aANiJfD/ibrag1H7EYKvWHpY4dPmr4XXvSXDwX7rHp
-         JQvixba5TZN13zqGUYrEqVo/e/vjtsIAUb/8Pt0t93fRRpxbhsE3B0bOltjFUhJOnG3h
-         rXbg==
-X-Gm-Message-State: ACgBeo2ls/rAqUp2INpQAhkjblTjEfuqXzjRkQ9+05/K3cIBBxW3dfYg
-        irernX8E3wdQ+2esbwb10BFBvSIAL5JVijAAOyPBgz78Cuc8
-X-Google-Smtp-Source: AA6agR5HWmeytSdzRgCgeULhsaPpv91UfKL6B8MwYexprhotbMy5bkGj4e3ws5EVzW2GuZhBp7h8YINzcUmzrNzO0KTy32T3c1+V
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=m3zcp3iaGbmg+LbrGq1j6FWnwKspMtSv4IFs4ySHRck=;
+        b=eHYFc7XtThjShQNPeTP8R1ReAeH/01T97/Idjwo+EZ0ZwWx3wDj9hNkNQgQP2yed05
+         B70873TLqJ8TrMCUOAjNbGhrkqseISJRHUKNiIRSbqAa5ZXydaWWJZROPbUim4ZVrIPt
+         KA6bSLm3WoS4uchttPANIOkHrjwI9vice7HrLXEbjUvsNTv6E2ZRXF9HAMGM9r/oz80I
+         HTgSMLJtS8U71szJXjjBP7Eb7ErPMIQh2qSXdu2j+gp+yeU6fY7Z6djWTT+whygsElSU
+         fNLQ4avSbb6//blJPShTgrFrTpB91c8tMwZsO0BY9FObfMVbn31h37tF3CqXLwWSBnLi
+         /PFA==
+X-Gm-Message-State: ACgBeo1t5tGhsF7+VYBDeBJ6ebPzU2encdPnFqsX+ZfMMA1EBj+1qHgd
+        3oJ6R20OvumHTGruiYZ/F0c0uU4DQwxMaEJM
+X-Google-Smtp-Source: AA6agR5B6085oSMQBHuWqSrMvkxZ64vExa2S733gMtdwnXkSaWiKaGHyJPU3mTWfZ3+ZMXMEqQEg8g==
+X-Received: by 2002:a2e:894d:0:b0:25e:66e8:eb9c with SMTP id b13-20020a2e894d000000b0025e66e8eb9cmr1558482ljk.241.1660324422788;
+        Fri, 12 Aug 2022 10:13:42 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:be32:268f:3ab7:4324])
+        by smtp.gmail.com with ESMTPSA id f8-20020ac25328000000b0048a9d0242afsm277781lfh.32.2022.08.12.10.13.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 10:13:42 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sergei Antonov <saproj@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: [PATCH v2] net: moxa: pass pdev instead of ndev to DMA functions
+Date:   Fri, 12 Aug 2022 20:13:39 +0300
+Message-Id: <20220812171339.2271788-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:595:b0:343:3759:b245 with SMTP id
- a21-20020a056638059500b003433759b245mr2448450jar.180.1660323866068; Fri, 12
- Aug 2022 10:04:26 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 10:04:26 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000003fcafc05e60e466e@google.com>
-Subject: [syzbot] memory leak in netlink_policy_dump_add_policy
-From:   syzbot <syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
+moxart_mac_start_xmit() which leads to an incessant output of this:
 
-syzbot found the following issue on:
+[   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
 
-HEAD commit:    4e23eeebb2e5 Merge tag 'bitmap-6.0-rc1' of https://github...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=165f4f6a080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3a433c7a2539f51c
-dashboard link: https://syzkaller.appspot.com/bug?extid=dc54d9ba8153b216cae0
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1443be71080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e5918e080000
+Passing pdev to DMA is a common approach among net drivers.
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+Changes in v2:
+- Reject an approach to inherit DMA masks from the platform device.
 
-executing program
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff888113093f00 (size 192):
-  comm "syz-executor228", pid 3636, jiffies 4294947950 (age 12.750s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 0a 00 00 00 00 00 00 00  ................
-    40 53 fd 84 ff ff ff ff 40 01 00 00 00 00 00 00  @S......@.......
-  backtrace:
-    [<ffffffff83a0e378>] kmalloc include/linux/slab.h:600 [inline]
-    [<ffffffff83a0e378>] kzalloc include/linux/slab.h:733 [inline]
-    [<ffffffff83a0e378>] alloc_state net/netlink/policy.c:104 [inline]
-    [<ffffffff83a0e378>] netlink_policy_dump_add_policy+0x198/0x1f0 net/netlink/policy.c:135
-    [<ffffffff83a0d78d>] ctrl_dumppolicy_start+0x15d/0x290 net/netlink/genetlink.c:1173
-    [<ffffffff83a0abf8>] genl_start+0x148/0x210 net/netlink/genetlink.c:596
-    [<ffffffff83a0756a>] __netlink_dump_start+0x20a/0x440 net/netlink/af_netlink.c:2370
-    [<ffffffff83a0a38e>] genl_family_rcv_msg_dumpit+0x15e/0x190 net/netlink/genetlink.c:678
-    [<ffffffff83a0b1d5>] genl_family_rcv_msg net/netlink/genetlink.c:772 [inline]
-    [<ffffffff83a0b1d5>] genl_rcv_msg+0x225/0x2c0 net/netlink/genetlink.c:792
-    [<ffffffff83a09807>] netlink_rcv_skb+0x87/0x1d0 net/netlink/af_netlink.c:2501
-    [<ffffffff83a0a214>] genl_rcv+0x24/0x40 net/netlink/genetlink.c:803
-    [<ffffffff83a08977>] netlink_unicast_kernel net/netlink/af_netlink.c:1319 [inline]
-    [<ffffffff83a08977>] netlink_unicast+0x397/0x4c0 net/netlink/af_netlink.c:1345
-    [<ffffffff83a08e36>] netlink_sendmsg+0x396/0x710 net/netlink/af_netlink.c:1921
-    [<ffffffff8385aea6>] sock_sendmsg_nosec net/socket.c:714 [inline]
-    [<ffffffff8385aea6>] sock_sendmsg+0x56/0x80 net/socket.c:734
-    [<ffffffff8385b40c>] ____sys_sendmsg+0x36c/0x390 net/socket.c:2482
-    [<ffffffff8385fd08>] ___sys_sendmsg+0xa8/0x110 net/socket.c:2536
-    [<ffffffff8385fe98>] __sys_sendmsg+0x88/0x100 net/socket.c:2565
-    [<ffffffff845d8535>] do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-    [<ffffffff845d8535>] do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-    [<ffffffff84600087>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-
-
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Pavel Skripkin <paskripkin@gmail.com>
+CC: David S. Miller <davem@davemloft.net>
+CC: Paolo Abeni <pabeni@redhat.com>
+CC: Florian Fainelli <f.fainelli@gmail.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/ethernet/moxa/moxart_ether.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index a3214a762e4b..f11f1cb92025 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -77,7 +77,7 @@ static void moxart_mac_free_memory(struct net_device *ndev)
+ 	int i;
+ 
+ 	for (i = 0; i < RX_DESC_NUM; i++)
+-		dma_unmap_single(&ndev->dev, priv->rx_mapping[i],
++		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
+ 				 priv->rx_buf_size, DMA_FROM_DEVICE);
+ 
+ 	if (priv->tx_desc_base)
+@@ -147,11 +147,11 @@ static void moxart_mac_setup_desc_ring(struct net_device *ndev)
+ 		       desc + RX_REG_OFFSET_DESC1);
+ 
+ 		priv->rx_buf[i] = priv->rx_buf_base + priv->rx_buf_size * i;
+-		priv->rx_mapping[i] = dma_map_single(&ndev->dev,
++		priv->rx_mapping[i] = dma_map_single(&priv->pdev->dev,
+ 						     priv->rx_buf[i],
+ 						     priv->rx_buf_size,
+ 						     DMA_FROM_DEVICE);
+-		if (dma_mapping_error(&ndev->dev, priv->rx_mapping[i]))
++		if (dma_mapping_error(&priv->pdev->dev, priv->rx_mapping[i]))
+ 			netdev_err(ndev, "DMA mapping error\n");
+ 
+ 		moxart_desc_write(priv->rx_mapping[i],
+@@ -240,7 +240,7 @@ static int moxart_rx_poll(struct napi_struct *napi, int budget)
+ 		if (len > RX_BUF_SIZE)
+ 			len = RX_BUF_SIZE;
+ 
+-		dma_sync_single_for_cpu(&ndev->dev,
++		dma_sync_single_for_cpu(&priv->pdev->dev,
+ 					priv->rx_mapping[rx_head],
+ 					priv->rx_buf_size, DMA_FROM_DEVICE);
+ 		skb = netdev_alloc_skb_ip_align(ndev, len);
+@@ -294,7 +294,7 @@ static void moxart_tx_finished(struct net_device *ndev)
+ 	unsigned int tx_tail = priv->tx_tail;
+ 
+ 	while (tx_tail != tx_head) {
+-		dma_unmap_single(&ndev->dev, priv->tx_mapping[tx_tail],
++		dma_unmap_single(&priv->pdev->dev, priv->tx_mapping[tx_tail],
+ 				 priv->tx_len[tx_tail], DMA_TO_DEVICE);
+ 
+ 		ndev->stats.tx_packets++;
+@@ -358,9 +358,9 @@ static netdev_tx_t moxart_mac_start_xmit(struct sk_buff *skb,
+ 
+ 	len = skb->len > TX_BUF_SIZE ? TX_BUF_SIZE : skb->len;
+ 
+-	priv->tx_mapping[tx_head] = dma_map_single(&ndev->dev, skb->data,
++	priv->tx_mapping[tx_head] = dma_map_single(&priv->pdev->dev, skb->data,
+ 						   len, DMA_TO_DEVICE);
+-	if (dma_mapping_error(&ndev->dev, priv->tx_mapping[tx_head])) {
++	if (dma_mapping_error(&priv->pdev->dev, priv->tx_mapping[tx_head])) {
+ 		netdev_err(ndev, "DMA mapping error\n");
+ 		goto out_unlock;
+ 	}
+@@ -379,7 +379,7 @@ static netdev_tx_t moxart_mac_start_xmit(struct sk_buff *skb,
+ 		len = ETH_ZLEN;
+ 	}
+ 
+-	dma_sync_single_for_device(&ndev->dev, priv->tx_mapping[tx_head],
++	dma_sync_single_for_device(&priv->pdev->dev, priv->tx_mapping[tx_head],
+ 				   priv->tx_buf_size, DMA_TO_DEVICE);
+ 
+ 	txdes1 = TX_DESC1_LTS | TX_DESC1_FTS | (len & TX_DESC1_BUF_SIZE_MASK);
+@@ -493,7 +493,7 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 	priv->tx_buf_size = TX_BUF_SIZE;
+ 	priv->rx_buf_size = RX_BUF_SIZE;
+ 
+-	priv->tx_desc_base = dma_alloc_coherent(&pdev->dev, TX_REG_DESC_SIZE *
++	priv->tx_desc_base = dma_alloc_coherent(p_dev, TX_REG_DESC_SIZE *
+ 						TX_DESC_NUM, &priv->tx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->tx_desc_base) {
+@@ -501,7 +501,7 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 		goto init_fail;
+ 	}
+ 
+-	priv->rx_desc_base = dma_alloc_coherent(&pdev->dev, RX_REG_DESC_SIZE *
++	priv->rx_desc_base = dma_alloc_coherent(p_dev, RX_REG_DESC_SIZE *
+ 						RX_DESC_NUM, &priv->rx_base,
+ 						GFP_DMA | GFP_KERNEL);
+ 	if (!priv->rx_desc_base) {
+-- 
+2.32.0
+
