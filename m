@@ -2,93 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B06659124A
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 16:34:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9539559124F
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 16:34:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238432AbiHLOd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 10:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        id S238673AbiHLOet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 10:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236950AbiHLOd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 10:33:56 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC9A0A406F;
-        Fri, 12 Aug 2022 07:33:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660314797; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=ZsPeTBwCvtjfBth8vCDZ73XUlW82+n2II13ffIl313k1+oOYiENtHB9UVPUFiUH7/nlK4XZFKluKR0d9y5YWaPv646IhMo1/sVmoVRIB3FEN4J3h7Dsh3CM7nsGQ8WSh3Xwia0qaWVzyuH7XvNy61XI9ZB0LxGmDUH8MwCtIJy8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660314797; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=dumJYXz+P7lT1DPflB6oGqlatTwRRoJ0LNEvMWFK+Lc=; 
-        b=FiZ9xtbApy4datR1Ci/1lkexOq5Ep6P1qVUCJzPRp11JDSa3uq9aHYz9mlzp0AzFWiqTNWo+TWbKcbfpOUUY8bkllsYytUWedSDC2z2bDiD0oOLTy46PXHp+ey4u+hUemHYfz7Fqp461prmdddCj+Zqugl+OlF2enx1nwhu/Fqg=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660314797;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=dumJYXz+P7lT1DPflB6oGqlatTwRRoJ0LNEvMWFK+Lc=;
-        b=CV76Upvi9tklgyTLuwhoGmyhL+YvwHD62NLAPtXIeXioCiczbg5LLWx2beUVNX7t
-        bqvFXs5cL3Y7+FqQyT2EjKeUaeaaV2F7KUtQ2ufvyxfKujAXub4ezVjuTlldBXXE5dU
-        UXUdsOZIf9kTOwYO5TtmrlgBTj4prl8cs/KiYuHQ=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 166031478558942.555014497664615; Fri, 12 Aug 2022 20:03:05 +0530 (IST)
-Date:   Fri, 12 Aug 2022 20:03:05 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     "johannes berg" <johannes@sipsolutions.net>,
-        "david s. miller" <davem@davemloft.net>,
-        "eric dumazet" <edumazet@google.com>,
-        "jakub kicinski" <kuba@kernel.org>,
-        "paolo abeni" <pabeni@redhat.com>,
-        "netdev" <netdev@vger.kernel.org>,
-        "syzbot+6cb476b7c69916a0caca" 
-        <syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "syzbot+f9acff9bf08a845f225d" 
-        <syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com>,
-        "syzbot+9250865a55539d384347" 
-        <syzbot+9250865a55539d384347@syzkaller.appspotmail.com>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Message-ID: <18292791718.88f48d22175003.6675210189148271554@siddh.me>
-In-Reply-To: <YvZEfnjGIpH6XjsD@kroah.com>
-References: <20220726123921.29664-1-code@siddh.me>
- <18291779771.584fa6ab156295.3990923778713440655@siddh.me> <YvZEfnjGIpH6XjsD@kroah.com>
-Subject: Re: [PATCH v2] wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
+        with ESMTP id S233256AbiHLOeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 10:34:44 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96CDDAB18C;
+        Fri, 12 Aug 2022 07:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=yD5r2iwKIH2SlMWCJ47h9MpS0KVr39/25PEKuEp8OGc=; b=Z5pQS/exV3Dx+uM5To1Owm2/NS
+        j7rurb+ldQ3KsH9cap6KdRTMv2vqAQvwTwMSk6j7zizi2q/IpsdFx0slKKLBSj959nkDYipeK0HQi
+        cztreqDi+zVk7EVIVzsaXEEWx9z77sPTOcnNXLsJ/TJe0YOR92OaO0sw+7EX32OtYt973g9aXFN6F
+        EvgzkyB2NIOrTnxAAwVJQWH5Ys9Y1ph3J5c11Cmw0ccAjtXap5i5uXxdvtp+FsPC4IgVho9RvbUBI
+        v0UG/NzlbAH7N2wHpYlCoep/j4eWWlwx82YVYbn3Zrh/1uWrBNgdTVLIDh2/2a6KGIu5frauodmKL
+        GyFmCu7A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33766)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oMVk7-0000Lt-Kq; Fri, 12 Aug 2022 15:34:31 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oMVk4-0000zV-Tm; Fri, 12 Aug 2022 15:34:28 +0100
+Date:   Fri, 12 Aug 2022 15:34:28 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Wei Fang <wei.fang@nxp.com>, "andrew@lunn.ch" <andrew@lunn.ch>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
+Message-ID: <YvZk9PPxKoMR1kMt@shell.armlinux.org.uk>
+References: <20220812145009.1229094-1-wei.fang@nxp.com>
+ <20220812145009.1229094-2-wei.fang@nxp.com>
+ <0cd22a17-3171-b572-65fb-e9d3def60133@linaro.org>
+ <DB9PR04MB81060AF4890DEA9E2378940288679@DB9PR04MB8106.eurprd04.prod.outlook.com>
+ <14cf568e-d7ee-886e-5122-69b2e58b8717@linaro.org>
+ <YvY7Vjtj+WV3BI59@shell.armlinux.org.uk>
+ <4cf8d73e-9f14-fe8d-d6e2-551920c1f29e@linaro.org>
+ <YvZH9avGaZ3z5B5H@shell.armlinux.org.uk>
+ <01021dde-106c-5660-ea96-a8b8fd89ad50@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <01021dde-106c-5660-ea96-a8b8fd89ad50@linaro.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 12 Aug 2022 17:45:58 +0530  Greg KH  wrote:
-> The merge window is for new features to be added, bugfixes can be merged
-> at any point in time, but most maintainers close their trees until after
-> the merge window is closed before accepting new fixes, like this one.
+On Fri, Aug 12, 2022 at 03:36:43PM +0300, Krzysztof Kozlowski wrote:
+> On 12/08/2022 15:30, Russell King (Oracle) wrote:
+> > On Fri, Aug 12, 2022 at 03:04:41PM +0300, Krzysztof Kozlowski wrote:
+> >> I did not propose a property to enable hibernation. The property must
+> >> describe hardware, so this piece is missing, regardless whether the
+> >> logic in the driver is "enable" or "disable".
+> >>
+> >> The hardware property for example is: "broken foo, so hibernation should
+> >> be disabled" or "engineer forgot to wire cables, so hibernation won't
+> >> work"...
+> > 
+> > From the problem description, the PHY itself isn't broken. The stmmac
+> > hardware doesn't reset properly when the clock from the PHY is stopped.
 > 
-> So just relax, wait another week or so, and if there's no response,
-> resend it then.
+> There is nothing like that in the property name or property description.
+> Again - DT is not for describing driver behavior or driver policy.
+
+Where have I said that it's describing driver behaviour or policy?
+Hint: I haven't.
+
+I have no idea why DT maintainers like to keep shoving that idiotic
+statement down people's thoats. WE KNOW THIS. And that is NOT what
+is being proposed here.
+
+It is purely in your mind that this is a driver behaviour or driver
+policy property. It *isn't*.
+
+> > That could hardly be described as "broken" - it's quite common for
+> > hardware specifications to state that clocks must be running for the
+> > hardware to operate correctly.
+> > 
+> > This is a matter of configuring the hardware to inter-operate correctly.
+> > Isn't that the whole purpose of DT?
+> > 
+> > So, nothing is broken. Nothing has forgotten to be wired. It's a matter
+> > of properly configuring the hardware. Just the same as selecting the
+> > correct interface mode to connect two devices together.
 > 
+> I just gave you two examples what could be written, don't need to stick
+> them. You can use some real one...
 
-Okay, sure.
+So the original proposed property to _disable_ a feature implemented by
+the hardware should be fine, because it's describing how the hardware
+needs to be configured. It's not driver behaviour. It's not driver
+policy. It's a configuration bit in a register.
 
-> Personally, this patch seems very incorrect, but hey, I'm not the wifi
-> subsystem maintainer :)
+I think you're thinking that the "hibernation" described here is
+somehow related to system hibernation, which this has nothing to do
+with. This is about configuring the PHY hardware to operate with the
+MAC hardware.
 
-Why do you think so?
-
-Thanks,
-Siddh
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
