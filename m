@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA9B2590B88
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 07:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 559B5590B9F
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 07:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235768AbiHLFey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 01:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
+        id S237008AbiHLFyx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 01:54:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230422AbiHLFex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 01:34:53 -0400
-Received: from out2.migadu.com (out2.migadu.com [188.165.223.204])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E643FA287A;
-        Thu, 11 Aug 2022 22:34:51 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1660282490;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=eT9oB/Jxs0HX/eo2S3EGE6XjZBx5ygu2ZiQitesEUO4=;
-        b=w2pIQGWCS1/EKSQZpsMmnNHdguMKuLCCLx81UoSZ1cJIns5aJlRW/klnxQxiXEXBqXDzj1
-        /I1800EVWMbwRGR+k99rKu6F5nZla3D0AmNRp7u7RrQnx4XQIv2OWT8dzbMuEXRDZOd6di
-        B6IqiwAAkFlhCc3zqmARwFxJq42GCM0=
+        with ESMTP id S229524AbiHLFyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 01:54:52 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A007A222D
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:54:51 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id z19so18813318plb.1
+        for <netdev@vger.kernel.org>; Thu, 11 Aug 2022 22:54:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=rivosinc-com.20210112.gappssmtp.com; s=20210112;
+        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:to:cc;
+        bh=HEmnO6gKg/Ny8un1UXhsJJIoNDtb7QUrGLbN/Rj+U2s=;
+        b=S6h2JsqkYWxvS7jC1PPYrCoWtVa1c7jhqkVfdgVTRawsQeU2o7qd8syCitbKL3Igry
+         a2vspnYwiX6atjvhYOj/vgZm9OOs8OD2WVJ/uQMFT1JSzXM/f6+wpg5tjONYx5mXVrYk
+         QMx5u3F0tiwy+Pgj/g0dpXjvsnBKPsStW07oA+hI2mlUWmshJ9YYA8VYd58ZYpT9Sff+
+         soe+nCeH5MvE3QIats2gqq3natPebdib/4PCZ+ZVA3LIKmcaYBq9+ZZ0aGOcCufe2Zbk
+         1agEwVe66MkKDSIryjo+6X+jlL2BoyUqn4gP4pMrGcv3ahE2DIJVIeuNibm5w0pb9rjy
+         ysqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:cc:content-transfer-encoding:mime-version:message-id:date
+         :subject:x-gm-message-state:from:to:cc;
+        bh=HEmnO6gKg/Ny8un1UXhsJJIoNDtb7QUrGLbN/Rj+U2s=;
+        b=FLqUdrizL6yUxBELXSkAk2/ZDz5DOMfC3tQMoKD/8ctwYjwMsSaEOrfbEI6oHEVsu5
+         dLGF4xZC0sYo/pSq+qu6lXBa20LUvvHjYcxhwz/3ZRB5bJkZ/2nUvltmeQpx4condc+T
+         KyylZkVofW0RwNAB7Z0pRlBwvt3ovEw5+VqtOnePKn1vKPUAmfV9q7txSzGMw3bBogNP
+         ueET2h2rg1A7MFngcEP9U/OXcPL19CO9JU+nklpwaSydoZmBO6RgPt4R6OZJ8igFN9WD
+         6h4cemtMdH3GcvkVSaVVivA6p82Us4SDoTnsQ/7biQIDCtPW1BD3fnRhZMvAjmqx2aLg
+         6WoQ==
+X-Gm-Message-State: ACgBeo2jLkdN4Glii0Snr9NEd1fBDO3udza7c71Fv/y0ZMUH/bjeWyLi
+        KKHCGtsSse9Skcpo/Fe0i7GVPg==
+X-Google-Smtp-Source: AA6agR6wDPIXSDkF+CszeF/rMBh6TQvpmXARS1enqN+Ysw0cl5HOZUKV33pVKo+76S2g+k+swpD2Cg==
+X-Received: by 2002:a17:902:b607:b0:170:c7fc:388a with SMTP id b7-20020a170902b60700b00170c7fc388amr2474205pls.29.1660283690611;
+        Thu, 11 Aug 2022 22:54:50 -0700 (PDT)
+Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
+        by smtp.gmail.com with ESMTPSA id z185-20020a6333c2000000b0041aeb36088asm659096pgz.16.2022.08.11.22.54.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 11 Aug 2022 22:54:50 -0700 (PDT)
+Subject: [PATCH] Bluetooth: L2CAP: Elide a string overflow warning
+Date:   Thu, 11 Aug 2022 22:52:49 -0700
+Message-Id: <20220812055249.8037-1-palmer@rivosinc.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Subject: Re: [PATCH bpf-next 05/15] bpf: Fix incorrect mem_cgroup_put
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Muchun Song <muchun.song@linux.dev>
-In-Reply-To: <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
-Date:   Fri, 12 Aug 2022 13:33:54 +0800
-Cc:     Shakeel Butt <shakeelb@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <870C70CA-C760-40A5-8A04-F0962EFDF507@linux.dev>
-References: <20220810151840.16394-1-laoar.shao@gmail.com>
- <20220810151840.16394-6-laoar.shao@gmail.com>
- <20220810170706.ikyrsuzupjwt65h7@google.com>
- <CALOAHbBk+komswLqs0KBg8FeFAYpC20HjXrUeZA-=7cWf6nRUw@mail.gmail.com>
- <20220811154731.3smhom6v4qy2u6rd@google.com>
- <CALOAHbCXfRKDEt7jsUBsf-pQ-A7TpXPxGKYxu_GZN-8BUe2auw@mail.gmail.com>
-To:     Yafang Shao <laoar.shao@gmail.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+Content-Transfer-Encoding: 8bit
+Cc:     luiz.dentz@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@rivosinc.com,
+        Palmer Dabbelt <palmer@rivosinc.com>
+From:   Palmer Dabbelt <palmer@rivosinc.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,107 +69,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
+Without this I get a string op warning related to copying from a
+possibly NULL pointer.  I think the warning is spurious, but it's
+tripping up allmodconfig.
 
-> On Aug 12, 2022, at 08:27, Yafang Shao <laoar.shao@gmail.com> wrote:
->=20
-> On Thu, Aug 11, 2022 at 11:47 PM Shakeel Butt <shakeelb@google.com> =
-wrote:
->>=20
->> On Thu, Aug 11, 2022 at 10:49:13AM +0800, Yafang Shao wrote:
->>> On Thu, Aug 11, 2022 at 1:07 AM Shakeel Butt <shakeelb@google.com> =
-wrote:
->>>>=20
->>>> On Wed, Aug 10, 2022 at 03:18:30PM +0000, Yafang Shao wrote:
->>>>> The memcg may be the root_mem_cgroup, in which case we shouldn't =
-put it.
->>>>=20
->>>> No, it is ok to put root_mem_cgroup. css_put already handles the =
-root
->>>> cgroups.
->>>>=20
->>>=20
->>> Ah, this commit log doesn't describe the issue clearly. I should =
-improve it.
->>> The issue is that in bpf_map_get_memcg() it doesn't get the objcg if
->>> map->objcg is NULL (that can happen if the map belongs to the root
->>> memcg), so we shouldn't put the objcg if map->objcg is NULL neither =
-in
->>> bpf_map_put_memcg().
->>=20
->> Sorry I am still not understanding. We are not 'getting' objcg in
->> bpf_map_get_memcg(). We are 'getting' memcg from map->objcg and if =
-that
->> is NULL the function is returning root memcg and putting root memcg =
-is
->> totally fine.
->=20
-> When the map belongs to root_mem_cgroup, the map->objcg is NULL, right =
-?
-> See also bpf_map_save_memcg() and it describes clearly in the comment =
--
->=20
-> static void bpf_map_save_memcg(struct bpf_map *map)
-> {
->        /* Currently if a map is created by a process belonging to the =
-root
->         * memory cgroup, get_obj_cgroup_from_current() will return =
-NULL.
->         * So we have to check map->objcg for being NULL each time it's
->         * being used.
->         */
->        map->objcg =3D get_obj_cgroup_from_current();
-> }
->=20
-> So for the root_mem_cgroup case, bpf_map_get_memcg() will return
-> root_mem_cgroup directly without getting its css, right ? See below,
->=20
-> static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
-> {
->=20
->        if (map->objcg)
->                return get_mem_cgroup_from_objcg(map->objcg);
->=20
->        return root_mem_cgroup;   // without css_get(&memcg->css);
-> }
->=20
-> But it will put the css unconditionally.  See below,
->=20
-> memcg =3D bpf_map_get_memcg(map);
-> ...
-> mem_cgroup_put(memcg);
->=20
-> So we should put it *conditionally* as well.
+In file included from /scratch/merges/ko-linux-next/linux/include/linux/string.h:253,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/bitmap.h:11,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/cpumask.h:12,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/mm_types_task.h:14,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/mm_types.h:5,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/buildid.h:5,
+                 from /scratch/merges/ko-linux-next/linux/include/linux/module.h:14,
+                 from /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:31:
+In function 'memcmp',
+    inlined from 'bacmp' at /scratch/merges/ko-linux-next/linux/include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:2003:15:
+/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+In function 'memcmp',
+    inlined from 'bacmp' at /scratch/merges/ko-linux-next/linux/include/net/bluetooth/bluetooth.h:347:9,
+    inlined from 'l2cap_global_chan_by_psm' at /scratch/merges/ko-linux-next/linux/net/bluetooth/l2cap_core.c:2004:15:
+/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:44:33: error: '__builtin_memcmp' specified bound 6 exceeds source size 0 [-Werror=stringop-overread]
+   44 | #define __underlying_memcmp     __builtin_memcmp
+      |                                 ^
+/scratch/merges/ko-linux-next/linux/include/linux/fortify-string.h:420:16: note: in expansion of macro '__underlying_memcmp'
+  420 |         return __underlying_memcmp(p, q, size);
+      |                ^~~~~~~~~~~~~~~~~~~
+cc1: all warnings being treated as errors
 
-Hi,
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+---
+ net/bluetooth/l2cap_core.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-No. We could put root_mem_cgroup unconditionally since the root css
-is treated as no reference css. See css_put().
-
-static inline void css_put(struct cgroup_subsys_state *css)
-{
-	// The root memcg=E2=80=99s css has been set with CSS_NO_REF.
-        if (!(css->flags & CSS_NO_REF))
-                percpu_ref_put(&css->refcnt);
-}
-
-Muchun,
-Thanks.
-
->=20
->  memcg =3D bpf_map_get_memcg(map);
->   ...
-> + if (map->objcg)
->       mem_cgroup_put(memcg);
->=20
-> Is it clear to you ?
->=20
->> Or are you saying that root_mem_cgroup is NULL?
->>=20
->=20
-> No
->=20
-> --=20
-> Regards
-> Yafang
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index cbe0cae73434..be7f47e52119 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -2000,11 +2000,13 @@ static struct l2cap_chan *l2cap_global_chan_by_psm(int state, __le16 psm,
+ 			}
+ 
+ 			/* Closest match */
+-			src_any = !bacmp(&c->src, BDADDR_ANY);
+-			dst_any = !bacmp(&c->dst, BDADDR_ANY);
+-			if ((src_match && dst_any) || (src_any && dst_match) ||
+-			    (src_any && dst_any))
+-				c1 = c;
++			if (c) {
++				src_any = !bacmp(&c->src, BDADDR_ANY);
++				dst_any = !bacmp(&c->dst, BDADDR_ANY);
++				if ((src_match && dst_any) || (src_any && dst_match) ||
++				    (src_any && dst_any))
++					c1 = c;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.34.1
 
