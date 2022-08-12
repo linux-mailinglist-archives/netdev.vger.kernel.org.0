@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E2FC1591694
+	by mail.lfdr.de (Postfix) with ESMTP id 97B56591693
 	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 23:04:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235118AbiHLVEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 17:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53860 "EHLO
+        id S233723AbiHLVEt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 17:04:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233601AbiHLVEn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 17:04:43 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9616FB4409
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 14:04:42 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id w7-20020a5d9607000000b0067c6030dfb8so1224262iol.10
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 14:04:42 -0700 (PDT)
+        with ESMTP id S234524AbiHLVEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 17:04:45 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B057FB440A
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 14:04:44 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id q20-20020a6bd214000000b00680799e0fbaso1219922iob.16
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 14:04:44 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:message-id:in-reply-to:date:mime-version
          :x-gm-message-state:from:to:cc;
-        bh=CqAP7/erwabYfZcEqDajpmAewsF59PsJ5bWHrsgdEGI=;
-        b=FEJgCaUZgSYPUIxJ4YiZrstuGY56pyKzKsegXdqtCDjkQMXp11t8alX+hloc/1/gWP
-         VDGHlQMCdnXyopJwUNMdCeMtzCw3mA5U2/LOCAJ4Oo9932CA5LMiVMPXhwSo+PLLweX2
-         riadRkIE5PsdqR/Jr3LV7E2SCEajATIFKzAjKD+1eDsyQz5KaTFj/yQxaQHEfb7uAbzO
-         ZNVX3e0m5jd02mMKG+vSMykLEOft30OCmid5mwMJtraPDq8mvFyIQs+GzTgf7BTe126H
-         e3iJvZo6c+cjqOxfW6eL4yjdJf+RabpUgS6hY0mI5901GpC/3FK/EIVA8i81pgsD6YYJ
-         3Dhg==
-X-Gm-Message-State: ACgBeo1GWaYyzehwkGdr0ies00msuKtseyC1TmiGSNOvj2hpWJW9i0tL
-        LG2tEV1zs1qc7V9sjWhH1Rfpqb7Lu0gbUQPUHPnbDYWqkUSo
-X-Google-Smtp-Source: AA6agR41mVj/xh13nLXVSDnRQYc6cKY6oZWjSheQQKcb41XlCnsB5BUVCRbV9DspI9xzhbrPfISPofF6+HlqRCpSmqjyrUoK1J2R
+        bh=EZPhLvqxjH7DlnwZ7ApNxUiZnxKWt7nngUkeSukkWJk=;
+        b=jG/QdIxgPQIXYNDVg9+oW3M+r98jUOYWnXEqmIkp74HMRf40Ij/PnvFQfbJVKyXz2L
+         Ufoo8XHBR/vnF4NJb7VwLdcbZH035z5co+sd09SHMhbvdVMcybfkxj+2QzCqsWHGfxa4
+         5W5xm8Y83BXodfLl9+CIRLIkpRIg4mClWweOZEfEqoJYz28yTh2y1qkkGSKEl9MgQqF1
+         61Fj6Li8i/O+PK7FBl3VwB7r+UfScOOejCzdj6WhkF8U6TRcfJrBR7oIN37m4sZzlnVb
+         wCvbUoTBSxjDykOqklZ0F42vSS2vl0wce50sXzO9g3XgZZVYa6te4RP/rU5HQg7713kA
+         qHuA==
+X-Gm-Message-State: ACgBeo3WE8uRIFJIeqnIURTKa7KVwHtoHUS4q/DAiNdapSbewVwFDmTr
+        Fm5jXryjm54r2+rdjDwR+TLelIlaGy32UbCYDuE441Ir4I5a
+X-Google-Smtp-Source: AA6agR4HwG9XIviTxXABofMckWtRGeOD/pzisHBBhE61PadPxLYp+b+DX7ew4YDT+Shvdmvl0KiOkn8bBcWLoTfqBHGjtuOnHKC0
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:270e:b0:343:6da4:6738 with SMTP id
- m14-20020a056638270e00b003436da46738mr1318672jav.263.1660338281929; Fri, 12
- Aug 2022 14:04:41 -0700 (PDT)
-Date:   Fri, 12 Aug 2022 14:04:41 -0700
+X-Received: by 2002:a05:6602:2a47:b0:67c:3ea9:1a97 with SMTP id
+ k7-20020a0566022a4700b0067c3ea91a97mr2455827iov.180.1660338284015; Fri, 12
+ Aug 2022 14:04:44 -0700 (PDT)
+Date:   Fri, 12 Aug 2022 14:04:44 -0700
 In-Reply-To: <20220812140439.6bb2bb17@kernel.org>
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000080646c05e611a198@google.com>
+Message-ID: <000000000000a03c5205e611a113@google.com>
 Subject: Re: [syzbot] memory leak in netlink_policy_dump_add_policy
 From:   syzbot <syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>
@@ -77,5 +77,10 @@ X-Mailing-List: netdev@vger.kernel.org
 >
 > #syz test
 
-want 2 args (repo, branch), got 1
+want 2 args (repo, branch), got 15
 
+>
+> -- 
+> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20220812140439.6bb2bb17%40kernel.org.
