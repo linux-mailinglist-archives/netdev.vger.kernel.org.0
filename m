@@ -2,103 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8008959133C
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 17:45:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8127591346
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 17:48:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238163AbiHLPpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 11:45:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41090 "EHLO
+        id S238810AbiHLPsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 11:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232527AbiHLPpf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 11:45:35 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C73642AFF;
-        Fri, 12 Aug 2022 08:45:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1660319127;
-        bh=w0NYj5A+TUnMhvnQe3ByTeL621CrZYXF3bjfm9j7Dz8=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=RJ/L9FvDMUr+NJlQ4d+i2rxUzrn7iqt0wWxMLUlFQ9WTsbW77LFBDb7f1NVwmgLWB
-         ntd5T4cER8J6YqWaCHCkYNOe+PfgNRAmiolzBEASzs8grJoZSDNAZ1qH5oMwYURaOI
-         JYMvh0vpWdlUz+WSnO9xDDfTOHstDK8L6Fl8AOTA=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.2.10] ([155.133.221.219]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MDQic-1oC2jZ0qow-00ATFI; Fri, 12
- Aug 2022 17:45:27 +0200
-Message-ID: <97b0e7ff-c099-c921-a283-43098d683781@gmx.de>
-Date:   Fri, 12 Aug 2022 17:45:26 +0200
+        with ESMTP id S238718AbiHLPsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 11:48:45 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAE09E2C5
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 08:48:44 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id s9so1321967ljs.6
+        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 08:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=bFbDOQm22ztt3sjzpox0SGZF9u6rZdUlcZeD04qlWho=;
+        b=Hys/ZrsgAktTL2C90NrfdDmHPYONRTzyknAQtZXfWy+m2QwbevONVp4HKoLDFyPV41
+         JfdaSMuGkiQWE4DmNX52YrjO2BbLCbftGW3NW7Het7GM0Wr+izR9rPUn7XIHffQMRx2V
+         3q5Cj/gbBmG44EC5bxiVmUE0m3qGicaMDSQTM9BU7+VZhkTqNT0dLSJtfGbWjQtfua3Q
+         6nTQ+Vv3tQtDOp2yPlXrhCC8p/wYW4suLqVLkr3+fqFotusbZSjZzG5Lo5hVoO7mBRnP
+         lF68Z+MjeCUnwr5HcjPio838LrMPFHLN7v1RL1hykNCigyKlDzdqettzKRFRw8UkQhtD
+         +X+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=bFbDOQm22ztt3sjzpox0SGZF9u6rZdUlcZeD04qlWho=;
+        b=eiE/O61sh+cECw/Z2yWILFwAQ7bN87ODyUnESSarhCX7r9A3r+4biAj0HxtGRkeIVL
+         VH5s+vn/p75kqEAlcUbZ8mBhcPhPB0dfWRhaH75KTMuU3y8Kfp1I9TIKe/DqADjsXZFp
+         w4MRK56HT1i8CoRbn+AG+Qau5LkhfyzQaGploduJANIsUKfMdUKRI21Cww9H0ITFZjvW
+         VHlM4qTOMw0ObtxC8lc8Gs/Q51SsUYbOy3aq7M2txV8Ozw0iDY5lg7C4zC4jnH32HaI5
+         I+RqDhkXNtjX0KAEFmZ1ydI6K0YRKNQFU7QE7rpqFN5Mj/r1uKWUjhOa/i+OuNZgEEiE
+         mRSA==
+X-Gm-Message-State: ACgBeo0sXauIwwaYuFsvK8OS5TO8OFnW4Ubc+c+UAHsr+ECaTZ45+eHs
+        idGv2hjtss0mmOR7MVcktm+cAI0y5ar3QNc/
+X-Google-Smtp-Source: AA6agR4hDsU9hwh7nZXKC2e7uf5INw8utSskCtLvd+tSSmaLvfPYIp61oyk7TCMEg+B8/kAgIrMu3Q==
+X-Received: by 2002:a2e:be23:0:b0:25e:7756:5242 with SMTP id z35-20020a2ebe23000000b0025e77565242mr1326457ljq.443.1660319322970;
+        Fri, 12 Aug 2022 08:48:42 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:be32:268f:3ab7:4324])
+        by smtp.gmail.com with ESMTPSA id b14-20020a056512070e00b0048b97c7260csm249318lfs.222.2022.08.12.08.48.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 08:48:42 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sergei Antonov <saproj@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Guobin Huang <huangguobin4@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH] net: moxa: inherit DMA masks to make dma_map_single() work
+Date:   Fri, 12 Aug 2022 18:48:20 +0300
+Message-Id: <20220812154820.2225457-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: sfp: reset fault retry counter on successful
- reinitialisation
-Content-Language: en-CA
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220812130438.140434-1-dac922@gmx.de>
- <YvZswfC/JhkWmyBj@shell.armlinux.org.uk>
-From:   Stefan Mahr <dac922@gmx.de>
-In-Reply-To: <YvZswfC/JhkWmyBj@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:I4qX4G9toiYHXbKcgn3DtX+KDc5a0WCkPqtpRIs4lnvc+JDGrBO
- /9NJa47dBGy47NxiaW1yBicECEg9zhPrlsdLwx4PQjOh1ZziNShUR9kDfxd0O07CbEqGAs4
- vy8unNlSUhBdUwd+4ZGrh59QgwJZtVkw2sqIU/Lkeu50oFV8rEEOgXFIQ6pzuHCYGhKvrLw
- UlZy0lRSN18qDUimnShdg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:YSUK/ymvG5M=:NwvKlbV38xYCEvz5qLXhxq
- 6TyCh2nO7ZPorxy86qYa78rNQGmHoIDSzudJ/wV60I3jkkbPy6aIpjhLdi5Vv0IvdKMzw3mr1
- K4u/ODBB+N71NZ5RxnSJPuw0uMKwXx0fIv3mhJo/aiWn2Lo1C+okeVecQGolJGoh4qF99Piiw
- B05w/+t0dEannfxuUkTqs5RayXMZ0YNKThZthflL/cMaHAzAkac9D00/hGp5Uuoym1o8DZVMV
- 6+pJmiK8aJgqXIrG5QDh57AimuzqMCwXn5NlOjzcvB5O3khK5PMBA8h28QARzyZZfX05XzMLi
- ePAnbQDUZviEDu0ABkzRMSpXFqiw6VRMvHNhS3+zLVLsaI5in9jBxiFHsTkrFiXDF/Yo5FUjj
- NfrYCsHCMqybjBBoZM5IX74TObooHMB+kNhb4yxDt7F2lkibzWD8opYTAzyXY6qrhGkheCGvM
- sprae7nFFbNfeBfD6dP405M7g8XGxdpg1iPj+/lP+T/y6+Bm4/LSm8IGwpIaQMkPNgLmuCrs6
- ACWw1qCXHFUYQC8qkw1MssRKVWhO9ETDGojcZ3yx2PsFTD+18US5YClBvPQjBulDQP8KKteYo
- GlvvfWW5zr0+DgoZbzkhz4zxt/XUSiHtUfUOrWDS0Tpm8U/Of+RpFW6qRt66ozxro4f2+2DG4
- YwcLC5nd3S7yBaqyz0UGomAf/06t79oErxC/+APDC6h3dUbFHnKDXGivVNZrAtpmCy32CYc7x
- 3ZBjPxiqsEMOcbGP1NpnfgBr7cX/YgHBYW9n+JfyD9oW5G/Se+RMmUyKk4S3/R4U8BdCl1SgU
- KNHPXvLk0l2TcUfHxpurPEWzQnZl7Xu8M+/1vMm7/ogF71XwKaUHVShgPBn/Mvw6WvopKxKg6
- +M7unLFEImWfyZXWaXaUo7BWXPUux5W4aSxx28JiPvKETpjcflPh8/AHqDUHmOjpIF48tQJKP
- PhKuX/NtqUfsofqeEYq2AavkScNl7QCdWGFBxLh1kFq3snyJ63PE0uq6NijYwFM3ccfp4nJL2
- 8Jnx+d8d1S/6K4y59LZIlMuOusCW/kwFGLf5von+/NQsB+zQ5+ozYk6xg2077p5/lWkrnEDzX
- LdDp2VuFaM9NgnMvEAYfNsg6MJuNeiG7Pl7DHlvbwbcvo+SdrQNdn6ZxQ==
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On Fri, Aug 12, 2022 at 03:04:38PM +0200, Stefan Mahr wrote:
->> This patch resets the fault retry counter to the default value, if the
->> module reinitialisation was successful. Otherwise without resetting
->> the counter, five (N_FAULT/N_FAULT_INIT) single TX_FAULT events will
->> deactivate the module persistently.
->
-> This is intentional - if a module keeps asserting its TX_FAULT status,
-> then there is something wrong with it, and for an optical module it
-> means that the laser is overloading (producing more output than it
-> should.) That is a safety issue.
+dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
+moxart_mac_start_xmit() which leads to an incessant output of this:
 
-Yes, this behaviour is not changed by the patch. When TX_FAULT is true
-persistently for 5 retries, the module will still be disabled.
+[   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
+[   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
 
->
-> So, if the module keeps indicating that its laser is misbehaving the
-> only right thing to do is to shut it down permanently, and have
-> someone investigate.
->
-> What issue are you seeing that needs a different behaviour?
->
+To make dma_map_single() work, inherit DMA masks from the platform device.
 
-In my case two different SFP modules (1000Base-BX) indicate short
-TX_FAULT events for less than one second and only one per week -
-sometimes more, sometimes less. So the idea was to reset the counter if
-reinitialisation was successful, so rare single TX_FAULT events can be
-ignored.
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Pavel Skripkin <paskripkin@gmail.com>
+CC: David S. Miller <davem@davemloft.net>
+CC: Guobin Huang <huangguobin4@huawei.com>
+CC: Paolo Abeni <pabeni@redhat.com>
+---
+ drivers/net/ethernet/moxa/moxart_ether.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-However, you are right: If a module reports TX_FAULT several times,
-something serious may be wrong.
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index a3214a762e4b..de99211d85c2 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -537,6 +537,10 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 	ndev->priv_flags |= IFF_UNICAST_FLT;
+ 	ndev->irq = irq;
+ 
++	/* Inherit the DMA masks from the platform device */
++	ndev->dev.dma_mask = p_dev->dma_mask;
++	ndev->dev.coherent_dma_mask = p_dev->coherent_dma_mask;
++
+ 	SET_NETDEV_DEV(ndev, &pdev->dev);
+ 
+ 	ret = register_netdev(ndev);
+-- 
+2.32.0
+
