@@ -2,250 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E200C59165B
-	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 22:34:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C32F591692
+	for <lists+netdev@lfdr.de>; Fri, 12 Aug 2022 23:04:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233391AbiHLUes (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 16:34:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58414 "EHLO
+        id S229451AbiHLVEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 12 Aug 2022 17:04:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiHLUeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 16:34:46 -0400
-Received: from 66-220-155-178.mail-mxout.facebook.com (66-220-155-178.mail-mxout.facebook.com [66.220.155.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173BFB1B9A
-        for <netdev@vger.kernel.org>; Fri, 12 Aug 2022 13:34:44 -0700 (PDT)
-Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
-        id 5F16810576446; Fri, 12 Aug 2022 13:31:50 -0700 (PDT)
-From:   Joanne Koong <joannelkoong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, dccp@vger.kernel.org,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH net-next v4 3/3] selftests/net: Add sk_bind_sendto_listen and sk_connect_zero_addr
-Date:   Fri, 12 Aug 2022 13:29:05 -0700
-Message-Id: <20220812202905.1599234-4-joannelkoong@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220812202905.1599234-1-joannelkoong@gmail.com>
-References: <20220812202905.1599234-1-joannelkoong@gmail.com>
+        with ESMTP id S234295AbiHLVEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 17:04:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D716CB440B;
+        Fri, 12 Aug 2022 14:04:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63FD8B82440;
+        Fri, 12 Aug 2022 21:04:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE55AC433C1;
+        Fri, 12 Aug 2022 21:04:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660338280;
+        bh=Wu/Fe5PtFXEUQP9G8z5TOGhYqD7CJDN7ROGX/QlPWBw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U+kryXSh74RjZMPWvB3mUiBaLIVY/1D5u6APiJeXByTIAN51gN0QIpW/1/y5++8yw
+         pHycLKgNWYgeqApN9FUOBvntQFzEIrllqqRUP+WGshYtAjFBNej4psO0XYWR7gSGAS
+         oABaJcZYw+lGRznhvglB4sUIUUGZXanx/jhmGKoC3zUyhghYhCCoFs7X49f6RzjiHP
+         5X4JPHdzR7TrLucdMrU6fwVRLBOTCqV2se4waPw7addnlYcgT1Zw6bQys4yFwAzUPj
+         hzKqX/B98vYXdmlMhsFsUdsOAgxfai0wAGZDUeJDwRtgelJzvT8afVzANJBkcWN3s5
+         xuf9A/GzrSQfg==
+Date:   Fri, 12 Aug 2022 14:04:39 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] memory leak in netlink_policy_dump_add_policy
+Message-ID: <20220812140439.6bb2bb17@kernel.org>
+In-Reply-To: <0000000000003fcafc05e60e466e@google.com>
+References: <0000000000003fcafc05e60e466e@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_SOFTFAIL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: multipart/mixed; boundary="MP_/639sy1KJ9WxF2xFSvzLooDv"
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds 2 new tests: sk_bind_sendto_listen and
-sk_connect_zero_addr.
+--MP_/639sy1KJ9WxF2xFSvzLooDv
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-The sk_bind_sendto_listen test exercises the path where a socket's
-rcv saddr changes after it has been added to the binding tables,
-and then a listen() on the socket is invoked. The listen() should
-succeed.
+On Fri, 12 Aug 2022 10:04:26 -0700 syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    4e23eeebb2e5 Merge tag 'bitmap-6.0-rc1' of https://github...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=165f4f6a080000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3a433c7a2539f51c
+> dashboard link: https://syzkaller.appspot.com/bug?extid=dc54d9ba8153b216cae0
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1443be71080000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11e5918e080000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
 
-The sk_bind_sendto_listen test is copied over from one of syzbot's
-tests: https://syzkaller.appspot.com/x/repro.c?x=3D1673a38df00000
+Let's see if attaching a patch works...
 
-The sk_connect_zero_addr test exercises the path where the socket was
-never previously added to the binding tables and it gets assigned a
-saddr upon a connect() to address 0.
+#syz test
 
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+--MP_/639sy1KJ9WxF2xFSvzLooDv
+Content-Type: text/x-patch
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+ filename=0001-net-genl-fix-error-path-memory-leak-in-policy-dumpin.patch
+
+From 7b3f410d5c49568deffcc8ee9881a7d3de730699 Mon Sep 17 00:00:00 2001
+From: Jakub Kicinski <kuba@kernel.org>
+Date: Fri, 12 Aug 2022 13:56:48 -0700
+Subject: [--remember tree name--] net: genl: fix error path memory leak in
+ policy dumping
+
+If construction of the array of policies fails when recording
+non-first policy we need to unwind.
+
+Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+Fixes: 50a896cf2d6f ("genetlink: properly support per-op policy dumping")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- tools/testing/selftests/net/.gitignore        |  2 +
- tools/testing/selftests/net/Makefile          |  2 +
- .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
- .../selftests/net/sk_connect_zero_addr.c      | 62 ++++++++++++++
- 4 files changed, 146 insertions(+)
- create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
- create mode 100644 tools/testing/selftests/net/sk_connect_zero_addr.c
+ net/netlink/genetlink.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selft=
-ests/net/.gitignore
-index 89e2d4aa812a..bec5cf96984c 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -41,3 +41,5 @@ cmsg_sender
- unix_connect
- tap
- bind_bhash
-+sk_bind_sendto_listen
-+sk_connect_zero_addr
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
-ts/net/Makefile
-index a3a26d8c29df..e9f02850106f 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -65,6 +65,8 @@ TEST_GEN_FILES +=3D stress_reuseport_listen
- TEST_PROGS +=3D test_vxlan_vnifiltering.sh
- TEST_GEN_FILES +=3D io_uring_zerocopy_tx
- TEST_GEN_FILES +=3D bind_bhash
-+TEST_GEN_PROGS +=3D sk_bind_sendto_listen
-+TEST_GEN_PROGS +=3D sk_connect_zero_addr
-=20
- TEST_FILES :=3D settings
-=20
-diff --git a/tools/testing/selftests/net/sk_bind_sendto_listen.c b/tools/=
-testing/selftests/net/sk_bind_sendto_listen.c
-new file mode 100644
-index 000000000000..b420d830f72c
---- /dev/null
-+++ b/tools/testing/selftests/net/sk_bind_sendto_listen.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 1afca2a6c2ac..57010927e20a 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1174,13 +1174,17 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
+ 							     op.policy,
+ 							     op.maxattr);
+ 			if (err)
+-				return err;
++				goto err_free_state;
+ 		}
+ 	}
+ 
+ 	if (!ctx->state)
+ 		return -ENODATA;
+ 	return 0;
 +
-+#include <arpa/inet.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <unistd.h>
-+
-+int main(void)
-+{
-+	int fd1, fd2, one =3D 1;
-+	struct sockaddr_in6 bind_addr =3D {
-+		.sin6_family =3D AF_INET6,
-+		.sin6_port =3D htons(20000),
-+		.sin6_flowinfo =3D htonl(0),
-+		.sin6_addr =3D {},
-+		.sin6_scope_id =3D 0,
-+	};
-+
-+	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
-+
-+	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd1 < 0) {
-+		error(1, errno, "socket fd1");
-+		return -1;
-+	}
-+
-+	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
-+		goto out_err1;
-+	}
-+
-+	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd1");
-+		goto out_err1;
-+	}
-+
-+	if (sendto(fd1, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr))) {
-+		error(1, errno, "sendto fd1");
-+		goto out_err1;
-+	}
-+
-+	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd2 < 0) {
-+		error(1, errno, "socket fd2");
-+		goto out_err1;
-+	}
-+
-+	if (setsockopt(fd2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd2");
-+		goto out_err2;
-+	}
-+
-+	if (bind(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd2");
-+		goto out_err2;
-+	}
-+
-+	if (sendto(fd2, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr)) !=3D -1) {
-+		error(1, errno, "sendto fd2");
-+		goto out_err2;
-+	}
-+
-+	if (listen(fd2, 0)) {
-+		error(1, errno, "listen");
-+		goto out_err2;
-+	}
-+
-+	close(fd2);
-+	close(fd1);
-+	return 0;
-+
-+out_err2:
-+	close(fd2);
-+
-+out_err1:
-+	close(fd1);
-+	return -1;
-+}
-diff --git a/tools/testing/selftests/net/sk_connect_zero_addr.c b/tools/t=
-esting/selftests/net/sk_connect_zero_addr.c
-new file mode 100644
-index 000000000000..4be418aefd9f
---- /dev/null
-+++ b/tools/testing/selftests/net/sk_connect_zero_addr.c
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <arpa/inet.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <unistd.h>
-+
-+int main(void)
-+{
-+	int fd1, fd2, one =3D 1;
-+	struct sockaddr_in6 bind_addr =3D {
-+		.sin6_family =3D AF_INET6,
-+		.sin6_port =3D htons(20000),
-+		.sin6_flowinfo =3D htonl(0),
-+		.sin6_addr =3D {},
-+		.sin6_scope_id =3D 0,
-+	};
-+
-+	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
-+
-+	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd1 < 0) {
-+		error(1, errno, "socket fd1");
-+		return -1;
-+	}
-+
-+	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
-+		goto out_err1;
-+	}
-+
-+	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd1");
-+		goto out_err1;
-+	}
-+
-+	if (listen(fd1, 0)) {
-+		error(1, errno, "listen");
-+		goto out_err1;
-+	}
-+
-+	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd2 < 0) {
-+		error(1, errno, "socket fd2");
-+		goto out_err1;
-+	}
-+
-+	if (connect(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd2");
-+		goto out_err2;
-+	}
-+
-+	close(fd2);
-+	close(fd1);
-+	return 0;
-+
-+out_err2:
-+	close(fd2);
-+out_err1:
-+	close(fd1);
-+	return -1;
-+}
---=20
-2.30.2
++err_free_state:
++	netlink_policy_dump_free(ctx->state);
++	return err;
+ }
+ 
+ static void *ctrl_dumppolicy_prep(struct sk_buff *skb,
+-- 
+2.37.1
 
+
+--MP_/639sy1KJ9WxF2xFSvzLooDv--
