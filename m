@@ -2,213 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B9B6591C9D
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 22:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07BAD591CEC
+	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 00:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbiHMUqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 16:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
+        id S240286AbiHMWAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 18:00:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiHMUp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 16:45:59 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BF6B1F2;
-        Sat, 13 Aug 2022 13:45:57 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id kb8so7402720ejc.4;
-        Sat, 13 Aug 2022 13:45:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=UOHF02Uytz6VtbFA8RtBMSIPMhJ1idgg73HpstKT3vA=;
-        b=GOgMutyqIDl28lCVcssgSMpFMtzyClTj+6RFwYWrnZyvSvdRs0o4cRvaJxbib7L1Ja
-         yReuVtoVq7Po0V2pe6ToXsd3OUuqyC8lZNMRK+yV35I7XX/uNxQNHRrc3sMRfzB2oB7l
-         fpTaJxr8D1qVn6GaDEv+ZVKa/yvTBrhSiTyPMkiODQM0WshaRKxj+G2MSQ85lNUn/o9d
-         YL0TKcNqUmjKJXY+URXfp4WPIrsBtHgO5jOIZ55x2PnwshuYjhpqjY3jaPTuNjNhB9w6
-         /FdMSPW/oVQj+QAKeslcbHIBuBybvbAk5Pdpn8IKVJj7lkVpttqrQbuJx+2pY2lxWuPC
-         ZQ8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=UOHF02Uytz6VtbFA8RtBMSIPMhJ1idgg73HpstKT3vA=;
-        b=nIJqwkqgivdjE9d96NZQKgVLNdEe2n3kM5s36fwVgaLpFKBTSTvToj9aeHZUDYNVI0
-         tYQx7FqVZfwEfC3/NymXSs7sSFW6qSF5Ot76cdoGEvhWbbSHWxjfDlj9LcB5tUvWc7Rm
-         l8n25hxJ6toXbPUg+5XkXovHokf140rWBCbOC7qPOiTetZnjG9+vmpU8HYqrbn84cRvl
-         4f2b8o8pFVfF0cNvb59AxSu6mulUUnVeIAbZAyVNx82pnYF2ZJ3cJ8ippBgWZlbxRShm
-         8p7wLK7mX7tFS/OBfnfPe8F/8qqb84MHfBp4Y8WRtLQT5SMRo+gderMBuBZgwYR8umjT
-         uoGg==
-X-Gm-Message-State: ACgBeo0bQdviiGLVFwzexsY44NmhAxkaTQXEPCX+zV6OUtUDCVqYj8p2
-        JYOHghPa6ZrUgy4NlQz4/AU=
-X-Google-Smtp-Source: AA6agR7y8x+PsZx6ypxdNu+t34348o8Xixgxt1Gmxfb2BSpGMiaPtDPGaC8JOIqY/CQX9UG/1tMU2Q==
-X-Received: by 2002:a17:906:cc0c:b0:730:8bbb:69ac with SMTP id ml12-20020a170906cc0c00b007308bbb69acmr6274862ejb.392.1660423555921;
-        Sat, 13 Aug 2022 13:45:55 -0700 (PDT)
-Received: from localhost.localdomain (5-13-160-72.residential.rdsnet.ro. [5.13.160.72])
-        by smtp.gmail.com with ESMTPSA id fx18-20020a170906b75200b007306d3c338dsm2222547ejb.164.2022.08.13.13.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 13 Aug 2022 13:45:55 -0700 (PDT)
-From:   Beniamin Sandu <beniaminsandu@gmail.com>
-To:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Beniamin Sandu <beniaminsandu@gmail.com>
-Subject: [PATCH] net: sfp: use simplified HWMON_CHANNEL_INFO macro
-Date:   Sat, 13 Aug 2022 23:46:58 +0300
-Message-Id: <20220813204658.848372-1-beniaminsandu@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S240250AbiHMWAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 18:00:45 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2890BF70;
+        Sat, 13 Aug 2022 15:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660428043; x=1691964043;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J2stkkYmPik2bQMds1PPTKQFWYY4K6w3/+pjsawBn4I=;
+  b=czriY2QSJtsHs+0YJIn5ie4MEylQAeO1kW/kS7jZoyutko3tg5lYKLsh
+   U8uwSotSnGfPl2vJQS7mXtH4oMFazwVlS/Xc7jXjm/W0R2M8xn4DxBnHw
+   kIWTBYyV1rhIi/CUgFr62xfLVN+CqYCowKo4VrUWdTiHHWU6njZrRlHxQ
+   kaTEKulZ63EuSu4qn9pNqf4xP0sdTWK/u2NAugMb9FbtEUSj30NAXgimh
+   5qPunzQISbEjtHhAHANiwq1Jl2HcUvhbN24qdPsixdN+lNMnl7ALLrf3m
+   ZKPstDNZJppuxJNs4K8cjvcKaPPyhu1ezSatsWfsJc/83jLR0F08xO9ot
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="293049446"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="293049446"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 15:00:42 -0700
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="635047705"
+Received: from tsaiyinl-mobl1.amr.corp.intel.com (HELO localhost) ([10.209.125.19])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Aug 2022 15:00:40 -0700
+From:   ira.weiny@intel.com
+To:     Andy Whitcroft <apw@canonical.com>, Joe Perches <joe@perches.com>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Fabio M . De Francesco" <fmdefrancesco@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-kernel@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
+        loongarch@lists.linux.dev, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-riscv@lists.infradead.org,
+        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-um@lists.infradead.org, x86@kernel.org,
+        linux-xtensa@linux-xtensa.org, keyrings@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-media@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux1394-devel@lists.sourceforge.net,
+        dri-devel@lists.freedesktop.org, dm-devel@redhat.com,
+        linux-raid@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-mtd@lists.infradead.org,
+        netdev@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-nvme@lists.infradead.org, linux-scsi@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        linux-fsdevel@vger.kernel.org,
+        kgdb-bugreport@lists.sourceforge.net, iommu@lists.linux.dev,
+        bpf@vger.kernel.org, kvm@vger.kernel.org
+Subject: [PATCH] checkpatch: Add kmap and kmap_atomic to the deprecated list
+Date:   Sat, 13 Aug 2022 15:00:34 -0700
+Message-Id: <20220813220034.806698-1-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This makes the code look cleaner and easier to read.
+From: Ira Weiny <ira.weiny@intel.com>
 
-Signed-off-by: Beniamin Sandu <beniaminsandu@gmail.com>
+kmap() and kmap_atomic() are being deprecated in favor of
+kmap_local_page().
+
+There are two main problems with kmap(): (1) It comes with an overhead
+as mapping space is restricted and protected by a global lock for
+synchronization and (2) it also requires global TLB invalidation when
+the kmap’s pool wraps and it might block when the mapping space is fully
+utilized until a slot becomes available.
+
+kmap_local_page() is safe from any context and is therefore redundant
+with kmap_atomic() with the exception of any pagefault or preemption
+disable requirements.  However, using kmap_atomic() for these side
+effects makes the code less clear.  So any requirement for pagefault or
+preemption disable should be made explicitly.
+
+With kmap_local_page() the mappings are per thread, CPU local, can take
+page faults, and can be called from any context (including interrupts).
+It is faster than kmap() in kernels with HIGHMEM enabled. Furthermore,
+the tasks can be preempted and, when they are scheduled to run again,
+the kernel virtual addresses are restored.
+
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Suggested-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
 ---
- drivers/net/phy/sfp.c | 121 +++++++++++++-----------------------------
- 1 file changed, 38 insertions(+), 83 deletions(-)
+Suggested by credits.
+	Thomas: Idea to keep from growing more kmap/kmap_atomic calls.
+	Fabio: Stole some of his boiler plate commit message.
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 63f90fe9a4d2..a12f7b599da2 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1195,90 +1195,45 @@ static const struct hwmon_ops sfp_hwmon_ops = {
- 	.read_string = sfp_hwmon_read_string,
- };
+Notes on tree-wide conversions:
+
+I've cc'ed mailing lists for subsystems which currently contains either kmap()
+or kmap_atomic() calls.  As some of you already know Fabio and I have been
+working through converting kmap() calls to kmap_local_page().  But there is a
+lot more work to be done.  Help from the community is always welcome,
+especially with kmap_atomic() conversions.  To keep from stepping on each
+others toes I've created a spreadsheet of the current calls[1].  Please let me
+or Fabio know if you plan on tacking one of the conversions so we can mark it
+off the list.
+
+[1] https://docs.google.com/spreadsheets/d/1i_ckZ10p90bH_CkxD2bYNi05S2Qz84E2OFPv8zq__0w/edit#gid=1679714357
+
+---
+ scripts/checkpatch.pl | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
+index 79e759aac543..9ff219e0a9d5 100755
+--- a/scripts/checkpatch.pl
++++ b/scripts/checkpatch.pl
+@@ -807,6 +807,8 @@ our %deprecated_apis = (
+ 	"rcu_barrier_sched"			=> "rcu_barrier",
+ 	"get_state_synchronize_sched"		=> "get_state_synchronize_rcu",
+ 	"cond_synchronize_sched"		=> "cond_synchronize_rcu",
++	"kmap"					=> "kmap_local_page",
++	"kmap_atomic"				=> "kmap_local_page",
+ );
  
--static u32 sfp_hwmon_chip_config[] = {
--	HWMON_C_REGISTER_TZ,
--	0,
--};
--
--static const struct hwmon_channel_info sfp_hwmon_chip = {
--	.type = hwmon_chip,
--	.config = sfp_hwmon_chip_config,
--};
--
--static u32 sfp_hwmon_temp_config[] = {
--	HWMON_T_INPUT |
--	HWMON_T_MAX | HWMON_T_MIN |
--	HWMON_T_MAX_ALARM | HWMON_T_MIN_ALARM |
--	HWMON_T_CRIT | HWMON_T_LCRIT |
--	HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM |
--	HWMON_T_LABEL,
--	0,
--};
--
--static const struct hwmon_channel_info sfp_hwmon_temp_channel_info = {
--	.type = hwmon_temp,
--	.config = sfp_hwmon_temp_config,
--};
--
--static u32 sfp_hwmon_vcc_config[] = {
--	HWMON_I_INPUT |
--	HWMON_I_MAX | HWMON_I_MIN |
--	HWMON_I_MAX_ALARM | HWMON_I_MIN_ALARM |
--	HWMON_I_CRIT | HWMON_I_LCRIT |
--	HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM |
--	HWMON_I_LABEL,
--	0,
--};
--
--static const struct hwmon_channel_info sfp_hwmon_vcc_channel_info = {
--	.type = hwmon_in,
--	.config = sfp_hwmon_vcc_config,
--};
--
--static u32 sfp_hwmon_bias_config[] = {
--	HWMON_C_INPUT |
--	HWMON_C_MAX | HWMON_C_MIN |
--	HWMON_C_MAX_ALARM | HWMON_C_MIN_ALARM |
--	HWMON_C_CRIT | HWMON_C_LCRIT |
--	HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM |
--	HWMON_C_LABEL,
--	0,
--};
--
--static const struct hwmon_channel_info sfp_hwmon_bias_channel_info = {
--	.type = hwmon_curr,
--	.config = sfp_hwmon_bias_config,
--};
--
--static u32 sfp_hwmon_power_config[] = {
--	/* Transmit power */
--	HWMON_P_INPUT |
--	HWMON_P_MAX | HWMON_P_MIN |
--	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
--	HWMON_P_CRIT | HWMON_P_LCRIT |
--	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
--	HWMON_P_LABEL,
--	/* Receive power */
--	HWMON_P_INPUT |
--	HWMON_P_MAX | HWMON_P_MIN |
--	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
--	HWMON_P_CRIT | HWMON_P_LCRIT |
--	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
--	HWMON_P_LABEL,
--	0,
--};
--
--static const struct hwmon_channel_info sfp_hwmon_power_channel_info = {
--	.type = hwmon_power,
--	.config = sfp_hwmon_power_config,
--};
--
- static const struct hwmon_channel_info *sfp_hwmon_info[] = {
--	&sfp_hwmon_chip,
--	&sfp_hwmon_vcc_channel_info,
--	&sfp_hwmon_temp_channel_info,
--	&sfp_hwmon_bias_channel_info,
--	&sfp_hwmon_power_channel_info,
-+	HWMON_CHANNEL_INFO(chip,
-+			   HWMON_C_REGISTER_TZ),
-+	HWMON_CHANNEL_INFO(in,
-+			   HWMON_I_INPUT |
-+			   HWMON_I_MAX | HWMON_I_MIN |
-+			   HWMON_I_MAX_ALARM | HWMON_I_MIN_ALARM |
-+			   HWMON_I_CRIT | HWMON_I_LCRIT |
-+			   HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM |
-+			   HWMON_I_LABEL),
-+	HWMON_CHANNEL_INFO(temp,
-+			   HWMON_T_INPUT |
-+			   HWMON_T_MAX | HWMON_T_MIN |
-+			   HWMON_T_MAX_ALARM | HWMON_T_MIN_ALARM |
-+			   HWMON_T_CRIT | HWMON_T_LCRIT |
-+			   HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM |
-+			   HWMON_T_LABEL),
-+	HWMON_CHANNEL_INFO(curr,
-+			   HWMON_C_INPUT |
-+			   HWMON_C_MAX | HWMON_C_MIN |
-+			   HWMON_C_MAX_ALARM | HWMON_C_MIN_ALARM |
-+			   HWMON_C_CRIT | HWMON_C_LCRIT |
-+			   HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM |
-+			   HWMON_C_LABEL),
-+	HWMON_CHANNEL_INFO(power,
-+			   /* Transmit power */
-+			   HWMON_P_INPUT |
-+			   HWMON_P_MAX | HWMON_P_MIN |
-+			   HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
-+			   HWMON_P_CRIT | HWMON_P_LCRIT |
-+			   HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
-+			   HWMON_P_LABEL,
-+			   /* Receive power */
-+			   HWMON_P_INPUT |
-+			   HWMON_P_MAX | HWMON_P_MIN |
-+			   HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
-+			   HWMON_P_CRIT | HWMON_P_LCRIT |
-+			   HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
-+			   HWMON_P_LABEL),
- 	NULL,
- };
- 
+ #Create a search pattern for all these strings to speed up a loop below
+
+base-commit: 4a9350597aff50bbd0f4b80ccf49d2e02d1111f5
 -- 
-2.25.1
+2.35.3
 
