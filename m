@@ -2,100 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88E77591C99
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 22:42:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B9B6591C9D
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 22:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236467AbiHMUmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 16:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        id S229787AbiHMUqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 16:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233786AbiHMUmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 16:42:14 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8E5DF7;
-        Sat, 13 Aug 2022 13:42:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uYG/3bvDD/aIehieTFZ6RQ90evcA+hq/P9eGFj7ektU=; b=sPT9KSEuVrHDMAVEIZtCH3z/ea
-        Efhhe9C5+KN+bkt1/UMwIznj6BAn/49heyXOtd4dUDjjtlNtO9sJG+AeeAsW3bG/cmKIKfn43Buay
-        yTD2cfuGzTxl3Qu3Ir5JJ9YKTiH+DUzi0vVJrXYzmbIt5530viG0BMEzYWFOVdklzKDQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oMxxN-00DFHc-NK; Sat, 13 Aug 2022 22:42:05 +0200
-Date:   Sat, 13 Aug 2022 22:42:05 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        UNGLinuxDriver@microchip.com, Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
-        Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v1 07/10] net: dsa: microchip: warn about not
- supported synclko properties on KSZ9893 chips
-Message-ID: <YvgMnfSkEeD8jwIG@lunn.ch>
-References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
- <20220729130346.2961889-8-o.rempel@pengutronix.de>
- <20220802113633.73rxlb2kmihivwpx@skbuf>
- <20220805115601.GB10667@pengutronix.de>
- <20220805134234.ps4qfjiachzm7jv4@skbuf>
- <20220813143215.GA12534@pengutronix.de>
- <Yve/MSMc/4klJPFL@lunn.ch>
- <20220813161850.GB12534@pengutronix.de>
+        with ESMTP id S233786AbiHMUp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 16:45:59 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BF6B1F2;
+        Sat, 13 Aug 2022 13:45:57 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id kb8so7402720ejc.4;
+        Sat, 13 Aug 2022 13:45:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=UOHF02Uytz6VtbFA8RtBMSIPMhJ1idgg73HpstKT3vA=;
+        b=GOgMutyqIDl28lCVcssgSMpFMtzyClTj+6RFwYWrnZyvSvdRs0o4cRvaJxbib7L1Ja
+         yReuVtoVq7Po0V2pe6ToXsd3OUuqyC8lZNMRK+yV35I7XX/uNxQNHRrc3sMRfzB2oB7l
+         fpTaJxr8D1qVn6GaDEv+ZVKa/yvTBrhSiTyPMkiODQM0WshaRKxj+G2MSQ85lNUn/o9d
+         YL0TKcNqUmjKJXY+URXfp4WPIrsBtHgO5jOIZ55x2PnwshuYjhpqjY3jaPTuNjNhB9w6
+         /FdMSPW/oVQj+QAKeslcbHIBuBybvbAk5Pdpn8IKVJj7lkVpttqrQbuJx+2pY2lxWuPC
+         ZQ8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=UOHF02Uytz6VtbFA8RtBMSIPMhJ1idgg73HpstKT3vA=;
+        b=nIJqwkqgivdjE9d96NZQKgVLNdEe2n3kM5s36fwVgaLpFKBTSTvToj9aeHZUDYNVI0
+         tYQx7FqVZfwEfC3/NymXSs7sSFW6qSF5Ot76cdoGEvhWbbSHWxjfDlj9LcB5tUvWc7Rm
+         l8n25hxJ6toXbPUg+5XkXovHokf140rWBCbOC7qPOiTetZnjG9+vmpU8HYqrbn84cRvl
+         4f2b8o8pFVfF0cNvb59AxSu6mulUUnVeIAbZAyVNx82pnYF2ZJ3cJ8ippBgWZlbxRShm
+         8p7wLK7mX7tFS/OBfnfPe8F/8qqb84MHfBp4Y8WRtLQT5SMRo+gderMBuBZgwYR8umjT
+         uoGg==
+X-Gm-Message-State: ACgBeo0bQdviiGLVFwzexsY44NmhAxkaTQXEPCX+zV6OUtUDCVqYj8p2
+        JYOHghPa6ZrUgy4NlQz4/AU=
+X-Google-Smtp-Source: AA6agR7y8x+PsZx6ypxdNu+t34348o8Xixgxt1Gmxfb2BSpGMiaPtDPGaC8JOIqY/CQX9UG/1tMU2Q==
+X-Received: by 2002:a17:906:cc0c:b0:730:8bbb:69ac with SMTP id ml12-20020a170906cc0c00b007308bbb69acmr6274862ejb.392.1660423555921;
+        Sat, 13 Aug 2022 13:45:55 -0700 (PDT)
+Received: from localhost.localdomain (5-13-160-72.residential.rdsnet.ro. [5.13.160.72])
+        by smtp.gmail.com with ESMTPSA id fx18-20020a170906b75200b007306d3c338dsm2222547ejb.164.2022.08.13.13.45.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Aug 2022 13:45:55 -0700 (PDT)
+From:   Beniamin Sandu <beniaminsandu@gmail.com>
+To:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Beniamin Sandu <beniaminsandu@gmail.com>
+Subject: [PATCH] net: sfp: use simplified HWMON_CHANNEL_INFO macro
+Date:   Sat, 13 Aug 2022 23:46:58 +0300
+Message-Id: <20220813204658.848372-1-beniaminsandu@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220813161850.GB12534@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 06:18:50PM +0200, Oleksij Rempel wrote:
-> On Sat, Aug 13, 2022 at 05:11:45PM +0200, Andrew Lunn wrote:
-> > On Sat, Aug 13, 2022 at 04:32:15PM +0200, Oleksij Rempel wrote:
-> > > On Fri, Aug 05, 2022 at 04:42:34PM +0300, Vladimir Oltean wrote:
-> > > > On Fri, Aug 05, 2022 at 01:56:01PM +0200, Oleksij Rempel wrote:
-> > > > > Hm, if we will have any random not support OF property in the switch
-> > > > > node. We won't be able to warn about it anyway. So, if it is present
-> > > > > but not supported, we will just ignore it.
-> > > > > 
-> > > > > I'll drop this patch.
-> > > > 
-> > > > To continue, I think the right way to go about this is to edit the
-> > > > dt-schema to say that these properties are only applicable to certain
-> > > > compatible strings, rather than for all. Then due to the
-> > > > "unevaluatedProperties: false", you'd get the warnings you want, at
-> > > > validation time.
-> > > 
-> > > Hm, with "unevaluatedProperties: false" i have no warnings. Even if I
-> > > create examples with random strings as properties. Are there some new
-> > > json libraries i should use?
-> > 
-> > Try
-> > 
-> > additionalProperties: False
-> 
-> Yes, it works. But in this case I'll do more changes. Just wont to make
-> sure I do not fix not broken things.
+This makes the code look cleaner and easier to read.
 
-I've been working on converting some old SoCs bindings from .txt to
-.yaml. My observations is that the yaml is sometimes more restrictive
-than what the drivers actually imposes. So you might need to change
-perfectly working .dts files to get it warning free. Or you just
-accept the warnings and move on. At lot will depend on the number of
-warnings and how easy it is to see real problems mixed in with
-warnings you never intend to fix.
+Signed-off-by: Beniamin Sandu <beniaminsandu@gmail.com>
+---
+ drivers/net/phy/sfp.c | 121 +++++++++++++-----------------------------
+ 1 file changed, 38 insertions(+), 83 deletions(-)
 
-       Andrew
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index 63f90fe9a4d2..a12f7b599da2 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1195,90 +1195,45 @@ static const struct hwmon_ops sfp_hwmon_ops = {
+ 	.read_string = sfp_hwmon_read_string,
+ };
+ 
+-static u32 sfp_hwmon_chip_config[] = {
+-	HWMON_C_REGISTER_TZ,
+-	0,
+-};
+-
+-static const struct hwmon_channel_info sfp_hwmon_chip = {
+-	.type = hwmon_chip,
+-	.config = sfp_hwmon_chip_config,
+-};
+-
+-static u32 sfp_hwmon_temp_config[] = {
+-	HWMON_T_INPUT |
+-	HWMON_T_MAX | HWMON_T_MIN |
+-	HWMON_T_MAX_ALARM | HWMON_T_MIN_ALARM |
+-	HWMON_T_CRIT | HWMON_T_LCRIT |
+-	HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM |
+-	HWMON_T_LABEL,
+-	0,
+-};
+-
+-static const struct hwmon_channel_info sfp_hwmon_temp_channel_info = {
+-	.type = hwmon_temp,
+-	.config = sfp_hwmon_temp_config,
+-};
+-
+-static u32 sfp_hwmon_vcc_config[] = {
+-	HWMON_I_INPUT |
+-	HWMON_I_MAX | HWMON_I_MIN |
+-	HWMON_I_MAX_ALARM | HWMON_I_MIN_ALARM |
+-	HWMON_I_CRIT | HWMON_I_LCRIT |
+-	HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM |
+-	HWMON_I_LABEL,
+-	0,
+-};
+-
+-static const struct hwmon_channel_info sfp_hwmon_vcc_channel_info = {
+-	.type = hwmon_in,
+-	.config = sfp_hwmon_vcc_config,
+-};
+-
+-static u32 sfp_hwmon_bias_config[] = {
+-	HWMON_C_INPUT |
+-	HWMON_C_MAX | HWMON_C_MIN |
+-	HWMON_C_MAX_ALARM | HWMON_C_MIN_ALARM |
+-	HWMON_C_CRIT | HWMON_C_LCRIT |
+-	HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM |
+-	HWMON_C_LABEL,
+-	0,
+-};
+-
+-static const struct hwmon_channel_info sfp_hwmon_bias_channel_info = {
+-	.type = hwmon_curr,
+-	.config = sfp_hwmon_bias_config,
+-};
+-
+-static u32 sfp_hwmon_power_config[] = {
+-	/* Transmit power */
+-	HWMON_P_INPUT |
+-	HWMON_P_MAX | HWMON_P_MIN |
+-	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
+-	HWMON_P_CRIT | HWMON_P_LCRIT |
+-	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
+-	HWMON_P_LABEL,
+-	/* Receive power */
+-	HWMON_P_INPUT |
+-	HWMON_P_MAX | HWMON_P_MIN |
+-	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
+-	HWMON_P_CRIT | HWMON_P_LCRIT |
+-	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
+-	HWMON_P_LABEL,
+-	0,
+-};
+-
+-static const struct hwmon_channel_info sfp_hwmon_power_channel_info = {
+-	.type = hwmon_power,
+-	.config = sfp_hwmon_power_config,
+-};
+-
+ static const struct hwmon_channel_info *sfp_hwmon_info[] = {
+-	&sfp_hwmon_chip,
+-	&sfp_hwmon_vcc_channel_info,
+-	&sfp_hwmon_temp_channel_info,
+-	&sfp_hwmon_bias_channel_info,
+-	&sfp_hwmon_power_channel_info,
++	HWMON_CHANNEL_INFO(chip,
++			   HWMON_C_REGISTER_TZ),
++	HWMON_CHANNEL_INFO(in,
++			   HWMON_I_INPUT |
++			   HWMON_I_MAX | HWMON_I_MIN |
++			   HWMON_I_MAX_ALARM | HWMON_I_MIN_ALARM |
++			   HWMON_I_CRIT | HWMON_I_LCRIT |
++			   HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM |
++			   HWMON_I_LABEL),
++	HWMON_CHANNEL_INFO(temp,
++			   HWMON_T_INPUT |
++			   HWMON_T_MAX | HWMON_T_MIN |
++			   HWMON_T_MAX_ALARM | HWMON_T_MIN_ALARM |
++			   HWMON_T_CRIT | HWMON_T_LCRIT |
++			   HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM |
++			   HWMON_T_LABEL),
++	HWMON_CHANNEL_INFO(curr,
++			   HWMON_C_INPUT |
++			   HWMON_C_MAX | HWMON_C_MIN |
++			   HWMON_C_MAX_ALARM | HWMON_C_MIN_ALARM |
++			   HWMON_C_CRIT | HWMON_C_LCRIT |
++			   HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM |
++			   HWMON_C_LABEL),
++	HWMON_CHANNEL_INFO(power,
++			   /* Transmit power */
++			   HWMON_P_INPUT |
++			   HWMON_P_MAX | HWMON_P_MIN |
++			   HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
++			   HWMON_P_CRIT | HWMON_P_LCRIT |
++			   HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
++			   HWMON_P_LABEL,
++			   /* Receive power */
++			   HWMON_P_INPUT |
++			   HWMON_P_MAX | HWMON_P_MIN |
++			   HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
++			   HWMON_P_CRIT | HWMON_P_LCRIT |
++			   HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
++			   HWMON_P_LABEL),
+ 	NULL,
+ };
+ 
+-- 
+2.25.1
 
