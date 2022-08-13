@@ -2,134 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B8C59184A
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 04:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD2B55918D5
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 06:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233498AbiHMCJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 12 Aug 2022 22:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
+        id S235672AbiHMEfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 00:35:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiHMCJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 12 Aug 2022 22:09:09 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B99F220D6;
-        Fri, 12 Aug 2022 19:09:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660356548; x=1691892548;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=K1sPmUlSGlZdpd8fyqcmHRHve+qzuq97ORygXjVcVjk=;
-  b=EsEGK7ox/yG3habdL+miQBI+Tjr9PtXZnxyPmIq2aZPXc5JOA0buQueI
-   vMZAHRiBoBZ9gQjFjkn+X9IRlghbJLKlZVsMz4av082P/E4AfhE8VSLuI
-   /VVlqwE5f6STUmWhiAHG7MA0DZeqdd8jpV5Aj3nSW3o9SSW4R2y2Thbrg
-   b0zQ9Kfbw65aG9v21FrTDPmx5NMdEYh6FM4IFI+Rd1vU4AfZndULuN4NO
-   gZU0GFhIUHXiQ70ntgmtXQQOqe7W7V20A7cdkHjBjsPZ5CoPUkKbX5uyL
-   2jhpamzAkH7K6YRnZchnKZwTLmbPIM0bQMebGkFLtzsAhckSgeAgybGxS
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="271492189"
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="271492189"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Aug 2022 19:09:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,233,1654585200"; 
-   d="scan'208";a="609430908"
-Received: from lkp-server02.sh.intel.com (HELO 8745164cafc7) ([10.239.97.151])
-  by fmsmga007.fm.intel.com with ESMTP; 12 Aug 2022 19:09:04 -0700
-Received: from kbuild by 8745164cafc7 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oMgaF-0001Cw-2D;
-        Sat, 13 Aug 2022 02:09:03 +0000
-Date:   Sat, 13 Aug 2022 10:09:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     menglong8.dong@gmail.com, kuba@kernel.org,
-        miguel.ojeda.sandonis@gmail.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, ojeda@kernel.org,
-        ndesaulniers@google.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, asml.silence@gmail.com, imagedong@tencent.com,
-        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
-        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: skb: prevent the split of
- kfree_skb_reason() by gcc
-Message-ID: <202208131003.M7FBGBna-lkp@intel.com>
-References: <20220812025015.316609-1-imagedong@tencent.com>
+        with ESMTP id S231424AbiHMEfW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 00:35:22 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 620FA6472;
+        Fri, 12 Aug 2022 21:35:19 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id y1so2318848plb.2;
+        Fri, 12 Aug 2022 21:35:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=VUHCQwlaRdPYc5+96fH2AK8O9hMSpZvPcuLwqBAO7GQ=;
+        b=DbqPITAh6lgQPvO8iRa3uqHjy37oFWqdIFpqX5YpaTeFSa9gvbfPa8ouyMvutd/LuW
+         ka2BMZndXfiNWXfow9ffrQt2nFRaSV/9YFfeii7/IHng9yehzW/yZ297A2N1C6RfU+ES
+         gP6LngMgBEL1JkSigxeKsJQysiofWZ8/etpZ9MY4uEFuTFSHqdlVL+jJ6bfj0Z3tqynK
+         yb4oIbwmRKsf8Ki1eaBFEGKXcYM6hrSfRqOJjNJqY9pg9yocPUKxr85qAzee0zUi6lyO
+         WgOZZ7KBVGUbxOEwDEEof2WCWLeokyTkWD2mvkkQgqYl8iPWfdGnjzWzlElMvOMFwMZ4
+         xpXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=VUHCQwlaRdPYc5+96fH2AK8O9hMSpZvPcuLwqBAO7GQ=;
+        b=bqtwLqfmwjMDf+Zlo3ln2I+yO0HFywftoIkqjIxLOkAAPQqeK8AiKlmdKo+XQ+HHEz
+         4rnbG4T/WXr/DhQVZAPWKbqrnZEYSrOqDd7SmTHOCHuSQHPk4s/wBznBr2MSafvGAA5+
+         gnYVh4wNmOjWbUXf9L0zpRfFBX3qWWYdI6eQguU3c/HI8OM+N3N0yoCvS3VcyFC3s3v6
+         QsHG+6mkxLGn4flk+rQVMixxb1NpPTQyKhFbWuN+Y0z4x19iqR7s0S90PSrCW/acrjTb
+         33voNkMygwDlmkq9W21MBGcUMXwl9i4qxZJw6/enrzoVgLwojyqkIOnIA3Iqhk25BHbO
+         bHaw==
+X-Gm-Message-State: ACgBeo0lON3ZtiNDNAmfNoo+llJ/lO9aAtyJu/wLttQf42XjOmwYYuQb
+        UiabOQOdTYbTAqB7ZuRuzqQ=
+X-Google-Smtp-Source: AA6agR5E1/zUPIeHYwRmzswCgIOXoJuOjoKcs89aA7ZQycOVw8pfa7Exlb/hyVvFnRNXjExarmZJ8A==
+X-Received: by 2002:a17:90b:1c8e:b0:1f7:5250:7b44 with SMTP id oo14-20020a17090b1c8e00b001f752507b44mr17176314pjb.212.1660365318895;
+        Fri, 12 Aug 2022 21:35:18 -0700 (PDT)
+Received: from localhost.localdomain ([223.212.58.71])
+        by smtp.gmail.com with ESMTPSA id y6-20020aa793c6000000b0052e2a1edab8sm2479425pff.24.2022.08.12.21.35.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Aug 2022 21:35:18 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, wireguard@lists.zx2c4.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH] wireguard: send/receive: update function names in comments
+Date:   Sat, 13 Aug 2022 12:35:08 +0800
+Message-Id: <20220813043508.128996-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220812025015.316609-1-imagedong@tencent.com>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+The functions packet_send_queued_handshakes() and
+packet_process_queued_handshake_packets() were renamed to
+wg_packet_handshake_send_worker() and wg_packet_handshake_receive_worker()
+respectively, but the comments referring to them were not updated
+accordingly, let's fix it.
 
-Thank you for the patch! Perhaps something to improve:
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ drivers/net/wireguard/receive.c | 2 +-
+ drivers/net/wireguard/send.c    | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/menglong8-dong-gmail-com/net-skb-prevent-the-split-of-kfree_skb_reason-by-gcc/20220812-105214
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
-config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220813/202208131003.M7FBGBna-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 5f1c7e2cc5a3c07cbc2412e851a7283c1841f520)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/ec98116fd4b985103e65c71d47f9390fee025cb9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review menglong8-dong-gmail-com/net-skb-prevent-the-split-of-kfree_skb_reason-by-gcc/20220812-105214
-        git checkout ec98116fd4b985103e65c71d47f9390fee025cb9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/core/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/core/skbuff.c:780:6: warning: unknown attribute '__optimize__' ignored [-Wunknown-attributes]
-   void __nofnsplit
-        ^~~~~~~~~~~
-   include/linux/compiler_attributes.h:273:56: note: expanded from macro '__nofnsplit'
-   #define __nofnsplit                     __attribute__((__optimize__("O1")))
-                                                          ^~~~~~~~~~~~~~~~~~
-   1 warning generated.
-
-
-vim +/__optimize__ +780 net/core/skbuff.c
-
-   770	
-   771	/**
-   772	 *	kfree_skb_reason - free an sk_buff with special reason
-   773	 *	@skb: buffer to free
-   774	 *	@reason: reason why this skb is dropped
-   775	 *
-   776	 *	Drop a reference to the buffer and free it if the usage count has
-   777	 *	hit zero. Meanwhile, pass the drop reason to 'kfree_skb'
-   778	 *	tracepoint.
-   779	 */
- > 780	void __nofnsplit
-   781	kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
-   782	{
-   783		if (!skb_unref(skb))
-   784			return;
-   785	
-   786		DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
-   787	
-   788		trace_kfree_skb(skb, __builtin_return_address(0), reason);
-   789		__kfree_skb(skb);
-   790	}
-   791	EXPORT_SYMBOL(kfree_skb_reason);
-   792	
-
+diff --git a/drivers/net/wireguard/receive.c b/drivers/net/wireguard/receive.c
+index 7135d51d2d87..5b9cd1841390 100644
+--- a/drivers/net/wireguard/receive.c
++++ b/drivers/net/wireguard/receive.c
+@@ -566,7 +566,7 @@ void wg_packet_receive(struct wg_device *wg, struct sk_buff *skb)
+ 		}
+ 		atomic_inc(&wg->handshake_queue_len);
+ 		cpu = wg_cpumask_next_online(&wg->handshake_queue.last_cpu);
+-		/* Queues up a call to packet_process_queued_handshake_packets(skb): */
++		/* Queues up a call to wg_packet_handshake_receive_worker(skb): */
+ 		queue_work_on(cpu, wg->handshake_receive_wq,
+ 			      &per_cpu_ptr(wg->handshake_queue.worker, cpu)->work);
+ 		break;
+diff --git a/drivers/net/wireguard/send.c b/drivers/net/wireguard/send.c
+index 5368f7c35b4b..15202c2e91a8 100644
+--- a/drivers/net/wireguard/send.c
++++ b/drivers/net/wireguard/send.c
+@@ -69,8 +69,8 @@ void wg_packet_send_queued_handshake_initiation(struct wg_peer *peer,
+ 		goto out;
+ 
+ 	wg_peer_get(peer);
+-	/* Queues up calling packet_send_queued_handshakes(peer), where we do a
+-	 * peer_put(peer) after:
++	/* Queues up calling wg_packet_handshake_send_worker(peer), where we do
++	 * a wg_peer_put(peer) after:
+ 	 */
+ 	if (!queue_work(peer->device->handshake_send_wq,
+ 			&peer->transmit_handshake_work))
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1
+
