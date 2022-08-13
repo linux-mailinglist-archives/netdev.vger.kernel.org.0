@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F301F591ABA
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 15:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB96C591AFE
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 16:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239562AbiHMNoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 09:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48008 "EHLO
+        id S239474AbiHMOcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 10:32:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239466AbiHMNoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 09:44:09 -0400
-Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2D4DED8;
-        Sat, 13 Aug 2022 06:44:08 -0700 (PDT)
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id C2CF11C000F; Sat, 13 Aug 2022 15:44:06 +0200 (CEST)
-Date:   Sat, 13 Aug 2022 15:44:03 +0200
-From:   Pavel Machek <pavel@denx.de>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>, wg@grandegger.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
-        stefan.maetje@esd.eu, socketcan@hartkopp.net,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 4.9 08/12] can: sja1000: Add Quirk for RZ/N1
- SJA1000 CAN controller
-Message-ID: <20220813134403.GC24517@duo.ucw.cz>
-References: <20220811161144.1543598-1-sashal@kernel.org>
- <20220811161144.1543598-8-sashal@kernel.org>
+        with ESMTP id S239390AbiHMOcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 10:32:43 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F2D2E68E
+        for <netdev@vger.kernel.org>; Sat, 13 Aug 2022 07:32:42 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oMsBV-0001St-NT; Sat, 13 Aug 2022 16:32:17 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oMsBT-0008JE-6q; Sat, 13 Aug 2022 16:32:15 +0200
+Date:   Sat, 13 Aug 2022 16:32:15 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v1 07/10] net: dsa: microchip: warn about not
+ supported synclko properties on KSZ9893 chips
+Message-ID: <20220813143215.GA12534@pengutronix.de>
+References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
+ <20220729130346.2961889-8-o.rempel@pengutronix.de>
+ <20220802113633.73rxlb2kmihivwpx@skbuf>
+ <20220805115601.GB10667@pengutronix.de>
+ <20220805134234.ps4qfjiachzm7jv4@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="H8ygTp4AXg6deix2"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220811161144.1543598-8-sashal@kernel.org>
+In-Reply-To: <20220805134234.ps4qfjiachzm7jv4@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 05, 2022 at 04:42:34PM +0300, Vladimir Oltean wrote:
+> On Fri, Aug 05, 2022 at 01:56:01PM +0200, Oleksij Rempel wrote:
+> > Hm, if we will have any random not support OF property in the switch
+> > node. We won't be able to warn about it anyway. So, if it is present
+> > but not supported, we will just ignore it.
+> > 
+> > I'll drop this patch.
+> 
+> To continue, I think the right way to go about this is to edit the
+> dt-schema to say that these properties are only applicable to certain
+> compatible strings, rather than for all. Then due to the
+> "unevaluatedProperties: false", you'd get the warnings you want, at
+> validation time.
 
---H8ygTp4AXg6deix2
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hm, with "unevaluatedProperties: false" i have no warnings. Even if I
+create examples with random strings as properties. Are there some new
+json libraries i should use?
 
-Hi!
-
-> As per Chapter 6.5.16 of the RZ/N1 Peripheral Manual, The SJA1000
-> CAN controller does not support Clock Divider Register compared to
-> the reference Philips SJA1000 device.
->=20
-> This patch adds a device quirk to handle this difference.
-
-I don't think this is suitable for stable (at least 5.10.X and older)
-as we don't have user of the quirk queued up.
-
-Best regards,
-								Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---H8ygTp4AXg6deix2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYveqowAKCRAw5/Bqldv6
-8r8YAJ9Y7BnSBOz+McET0wttzNzYXrskHwCfY9PL8bFQVQIEjgCOwKuQARsWwpA=
-=twIP
------END PGP SIGNATURE-----
-
---H8ygTp4AXg6deix2--
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
