@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C52591BA7
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 17:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C38B591B9F
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 17:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239855AbiHMPp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 11:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58078 "EHLO
+        id S239859AbiHMPp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 11:45:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239843AbiHMPpZ (ORCPT
+        with ESMTP id S239845AbiHMPpZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 11:45:25 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F4124BEC;
-        Sat, 13 Aug 2022 08:45:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660405481; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103432AE38;
+        Sat, 13 Aug 2022 08:45:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660405487; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=f5XP1KzAb9JAcwx5vN+MD6abC72s4JGh3j50rwj8uMx5sdM49vUyN/krozKh0gKKVwbAeLU1WiUvs9yVzDEIBuszV83nd3V7fTB/sv2cRNTpsPstuGZihGrsztQlR0CsXZOTXucDnZe2F7/6xs1FrzA9wYzJ5Jem2IHiHJLYpmU=
+        b=MOtjIfr3lBKlwNsilG+bg0DCAzHQcyUHp/+z2mPnOaIS2vlZKhnT3TXgXX1g6SWVAFtm+Rg6vzG6jUnmJO1rCbk6Qb8kp77uT/s48y9ZZ0dEkkxJwE2UasYboGNsqYGaqC805ao00z3xs6rXT9kBU9cicQSLvmlkOlCOZfmC81g=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660405481; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=yGdam4HCk0JO9lv/W5n08OUCBsZPnrBx9o3iHj6VyIo=; 
-        b=AHDc3AXSkFV0X3Qxj2UQUU5QFevfZVoNivZzoUcm8aMuHL8kyVaoEzf6CPEwk7SuR0UMLrFEqSwdYu44Ck9WQNRpbZiJsllthax0KvtdAMat2HBezKQEmssxf1wheIP0ZjNTOfBbZtEi24K5Am8wGZcnzAJ/Ak//Mpd8WNfvsiU=
+        t=1660405487; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=QNV0gWhZJF/IPokV0kiDV9FDuQzarKvTyBPl2WTKlk4=; 
+        b=dwQMeLCBlwoN7Q2EKTJcNGV539v0IS1wAxjMYgU8Iu3VjJScJO3PWj+xJEAqT4EK60QU2tOk4XGPKVWf0FhPj4G8+eaOaDGBifBRcyUz+JLmvYzAPdpwUlL6A74CbWWTIo1QQDL4MuMJqgOsCQoMDTB5EqCiuLGkXQLcsAfC5EU=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405481;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405487;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=yGdam4HCk0JO9lv/W5n08OUCBsZPnrBx9o3iHj6VyIo=;
-        b=BkW1p8qBrz8Oi+PA8s3k+IuJ9XXy1f5SzF01ahBDg3ShP0EL0PDhh5aiQivtxwH7
-        pr9kRsLAdguHmwJe9qUOpZhfESbGLXZwrXGM63hCJMQ1nV4T2gCv/aiCixtMpd5GXY+
-        PguBrPVi0L2wuxR6j9iGdlGQIMjv019hLpstuEXQ=
+        bh=QNV0gWhZJF/IPokV0kiDV9FDuQzarKvTyBPl2WTKlk4=;
+        b=GQoUAq1ej10sAsMAehYwiNxXon7NBe3r8M/KCrDNKfOYjkROWIiJ2pzPUwKTutVf
+        rP9LcZIsbOaD03ufVq9m3b01Intt7zY/YZ/XQOUXrw4+f4g44Vrd3ZBqEz+kSZ9Yd8F
+        nrjErHOn4jgTINlbqz8pxRt7VfUnxRNi4S28R4NY=
 Received: from arinc9-PC.lan (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1660405479705512.3045871969838; Sat, 13 Aug 2022 08:44:39 -0700 (PDT)
+        with SMTPS id 1660405486581113.96185653513157; Sat, 13 Aug 2022 08:44:46 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
-Date:   Sat, 13 Aug 2022 18:44:09 +0300
-Message-Id: <20220813154415.349091-2-arinc.unal@arinc9.com>
+Subject: [PATCH v2 2/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+Date:   Sat, 13 Aug 2022 18:44:10 +0300
+Message-Id: <20220813154415.349091-3-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220813154415.349091-1-arinc.unal@arinc9.com>
 References: <20220813154415.349091-1-arinc.unal@arinc9.com>
@@ -79,106 +79,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make trivial changes on the binding.
-
-- Update title to include MT7531 switch.
-- Add me as a maintainer. List maintainers in alphabetical order by first
-name.
-- Add description to compatible strings.
-- Stretch descriptions up to the 80 character limit.
-- Remove quotes from $ref: "dsa.yaml#".
+- Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
+- Add description for reset-gpios.
+- Invalidate reset-gpios if mediatek,mcm is used.
+- Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
+- Require mediatek,mcm for the described MT7621 SoCs as the compatible
+string is only used for MT7530 which is a part of the multi-chip module.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
- 1 file changed, 24 insertions(+), 12 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
+ 1 file changed, 28 insertions(+), 3 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index 17ab6c69ecc7..edf48e917173 100644
+index edf48e917173..4c99266ce82a 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -4,12 +4,13 @@
- $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Mediatek MT7530 Ethernet switch
-+title: Mediatek MT7530 and MT7531 Ethernet Switches
- 
- maintainers:
--  - Sean Wang <sean.wang@mediatek.com>
-+  - Arınç ÜNAL <arinc.unal@arinc9.com>
-   - Landen Chao <Landen.Chao@mediatek.com>
-   - DENG Qingfang <dqfext@gmail.com>
-+  - Sean Wang <sean.wang@mediatek.com>
- 
- description: |
-   Port 5 of mt7530 and mt7621 switch is muxed between:
-@@ -61,10 +62,21 @@ description: |
- 
- properties:
-   compatible:
--    enum:
--      - mediatek,mt7530
--      - mediatek,mt7531
--      - mediatek,mt7621
-+    oneOf:
-+      - description:
-+          Standalone MT7530 and multi-chip module MT7530 in MT7623AI SoC
-+        items:
-+          - const: mediatek,mt7530
-+
-+      - description:
-+          Standalone MT7531
-+        items:
-+          - const: mediatek,mt7531
-+
-+      - description:
-+          Multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
-+        items:
-+          - const: mediatek,mt7621
- 
-   reg:
-     maxItems: 1
-@@ -79,7 +91,7 @@ properties:
-   gpio-controller:
-     type: boolean
-     description:
--      if defined, MT7530's LED controller will run on GPIO mode.
-+      If defined, MT7530's LED controller will run on GPIO mode.
- 
-   "#interrupt-cells":
-     const: 1
-@@ -92,8 +104,8 @@ properties:
-   io-supply:
-     description:
-       Phandle to the regulator node necessary for the I/O power.
--      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt
--      for details for the regulator setup on these boards.
-+      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt for
-+      details for the regulator setup on these boards.
- 
+@@ -110,11 +110,15 @@ properties:
    mediatek,mcm:
      type: boolean
-@@ -110,8 +122,8 @@ properties:
- 
-   resets:
      description:
--      Phandle pointing to the system reset controller with line index for
--      the ethsys.
-+      Phandle pointing to the system reset controller with line index for the
-+      ethsys.
+-      if defined, indicates that either MT7530 is the part on multi-chip
+-      module belong to MT7623A has or the remotely standalone chip as the
+-      function MT7623N reference board provided for.
++      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
++      switch is a part of the multi-chip module.
+ 
+   reset-gpios:
++    description:
++      GPIO to reset the switch. Use this if mediatek,mcm is not used.
++      This property is optional because some boards share the reset line with
++      other components which makes it impossible to probe the switch if the
++      reset line is used.
      maxItems: 1
  
- patternProperties:
-@@ -148,7 +160,7 @@ required:
-   - reg
- 
- allOf:
--  - $ref: "dsa.yaml#"
-+  - $ref: dsa.yaml#
-   - if:
+   reset-names:
+@@ -165,6 +169,9 @@ allOf:
        required:
          - mediatek,mcm
+     then:
++      properties:
++        reset-gpios: false
++
+       required:
+         - resets
+         - reset-names
+@@ -182,6 +189,24 @@ allOf:
+         - core-supply
+         - io-supply
+ 
++  - if:
++      properties:
++        compatible:
++          items:
++            - const: mediatek,mt7531
++    then:
++      properties:
++        mediatek,mcm: false
++
++  - if:
++      properties:
++        compatible:
++          items:
++            - const: mediatek,mt7621
++    then:
++      required:
++        - mediatek,mcm
++
+ unevaluatedProperties: false
+ 
+ examples:
 -- 
 2.34.1
 
