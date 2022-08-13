@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F23059197A
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 10:46:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06251591A66
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 14:53:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235685AbiHMIpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 04:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
+        id S239250AbiHMMxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 08:53:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229507AbiHMIpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 04:45:42 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A6031909;
-        Sat, 13 Aug 2022 01:45:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=From:Cc:To:Date:Message-ID;
-        bh=3cEBObWgCZMEf5BzXPdMLgj+++YHuxc+xbCWnw6pWiE=; b=1BCxgAO3j1D7zHsNXs+eZtQn/P
-        8xMlz2ekJlCiLTMMb+MjBx8SZt+yu6b5Frh8Hq2xxe8LClb/RTPE0P8a5f5+FqvSdvGbkBL1IziID
-        yLmLVo5t4mB4TcOXP7s68jYHp2wf37YxzjJACLCbv+b/v4EtyqHSIR9GTTcCkWlr+oGuCDxOIu8fy
-        DbM/Xtleb3dRjlc6oC5UMdW5Y9r/MO7P8jsnG73Vf7yL+XQYzeJriBrvF+qf+5JU+tYzfq8zhdI0I
-        jCBON0LqNeo9apvSR8sQp0nR7/F5Ami8VLxlTNUbCkzjsFdfQsEGqhuBB3s6NTfjQiE034NVveI0F
-        rNbnmvM8kIlScMnhW0Bur+bpLaQ+ZuDbKS3tzhCB5NqYF07Ws3seWMbzsqDS5F631n2D+aoHQS3qu
-        lmOP3Ygevg4g/ZCBet7a819qMdJr+M8xbMDH1PZMVVnkXRXMxt6WDSbhqlCt1ktDgsFkbQCRxKAAf
-        6ffa2hcD0SwM+4iPfyFR1fb+;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1oMmlp-009Qyp-37; Sat, 13 Aug 2022 08:45:25 +0000
-Message-ID: <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
-Date:   Sat, 13 Aug 2022 10:45:24 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230127AbiHMMxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 08:53:05 -0400
+Received: from azure-sdnproxy.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 6547714D38;
+        Sat, 13 Aug 2022 05:53:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=WQtOnY+Z92
+        L7/1I7BZ8DkX5raCZRktz8clLSxNYeH20=; b=Pxx6fcQAqmPVvMUE/EOxsezWk3
+        O1QUiIkSXCTGnjYWh9sgbX7wYBmO2LIAFFmXOTtUn+jq+P1vcf+zGQQS7K3ZleT4
+        zsEVpC0zhmrtEWRyrqyI0Xy1R0oOOYmDyoCOPxODtMQwAaC6UXzhAE08gfy9J67s
+        LjbFnpJ6bLFSmpOm4=
+Received: from localhost.localdomain (unknown [10.230.34.198])
+        by app1 (Coremail) with SMTP id XAUFCgAXDdGQnvdiVsQEBg--.16992S4;
+        Sat, 13 Aug 2022 20:52:39 +0800 (CST)
+From:   Xin Xiong <xiongx18@fudan.edu.cn>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1653992701.git.asml.silence@gmail.com>
- <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
- <cccec667-d762-9bfd-f5a5-1c9fb46df5af@samba.org>
- <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
-From:   Stefan Metzmacher <metze@samba.org>
-Subject: Re: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
-In-Reply-To: <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Praveen Chaudhary <praveen5582@gmail.com>,
+        Zhenggen Xu <zxu@linkedin.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>
+Subject: [PATCH] net: fix potential refcount leak in ndisc_router_discovery()
+Date:   Sat, 13 Aug 2022 20:49:08 +0800
+Message-Id: <20220813124907.3396-1-xiongx18@fudan.edu.cn>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: XAUFCgAXDdGQnvdiVsQEBg--.16992S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw4DJFyrZF1rCF4UGw4fuFg_yoW8JFy8pF
+        sak34ftFyDKrnrWanrCa1fXry8ua1DtFW3Gw4vkwnYkr4DZ3s29ryFgF4Yq3WUurZ7AryS
+        vF4jg345XF1kua7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9G14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
+        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
+        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
+        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCFx2
+        IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v2
+        6r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67
+        AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IY
+        s7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxV
+        W8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbHa0DUUUUU==
+X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiARAREFKp5Dni7wAAs7
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
+The issue happens on specific paths in the function. After both the
+object `rt` and `neigh` are grabbed successfully, when `lifetime` is
+nonzero but the metric needs change, the function just deletes the
+route and set `rt` to NULL. Then, it may try grabbing `rt` and `neigh`
+again if above conditions hold. The function simply overwrite `neigh`
+if succeeds or returns if fails, without decreasing the reference
+count of previous `neigh`. This may result in memory leaks.
 
->> Given that this fills in msg almost completely can we also have
->> a version of SENDMSGZC, it would be very useful to also allow
->> msg_control to be passed and as well as an iovec.
->>
->> Would that be possible?
-> 
-> Right, I left it to follow ups as the series is already too long.
-> 
-> fwiw, I'm going to also add addr to IORING_OP_SEND.
+Fix it by decrementing the reference count of `neigh` in place.
 
+Fixes: 6b2e04bc240f ("net: allow user to set metric on default route learned via Router Advertisement")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+---
+ net/ipv6/ndisc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Given the minimal differences, which were left between
-IORING_OP_SENDZC and IORING_OP_SEND, wouldn't it be better
-to merge things to IORING_OP_SEND using a IORING_RECVSEND_ZC_NOTIF
-as indication to use the notif slot.
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 98453693e400..3a553494ff16 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -1378,6 +1378,9 @@ static void ndisc_router_discovery(struct sk_buff *skb)
+ 	if (!rt && lifetime) {
+ 		ND_PRINTK(3, info, "RA: adding default router\n");
+ 
++		if (neigh)
++			neigh_release(neigh);
++
+ 		rt = rt6_add_dflt_router(net, &ipv6_hdr(skb)->saddr,
+ 					 skb->dev, pref, defrtr_usr_metric);
+ 		if (!rt) {
+-- 
+2.25.1
 
-It would means we don't need to waste two opcodes for
-IORING_OP_SENDZC and IORING_OP_SENDMSGZC (and maybe more)
-
-
-I also noticed a problem in io_notif_update()
-
-         for (; idx < idx_end; idx++) {
-                 struct io_notif_slot *slot = &ctx->notif_slots[idx];
-
-                 if (!slot->notif)
-                         continue;
-                 if (up->arg)
-                         slot->tag = up->arg;
-                 io_notif_slot_flush_submit(slot, issue_flags);
-         }
-
-  slot->tag = up->arg is skipped if there is no notif already.
-
-So you can't just use a 2 linked sqe's with
-
-IORING_RSRC_UPDATE_NOTIF followed by IORING_OP_SENDZC(with IORING_RECVSEND_NOTIF_FLUSH)
-
-I think the if (!slot->notif) should be moved down a bit.
-
-It would somehow be nice to avoid the notif slots at all and somehow
-use some kind of multishot request in order to generate two qces.
-
-I'm also wondering what will happen if a notif will be referenced by the net layer
-but the io_uring instance is already closed, wouldn't
-io_uring_tx_zerocopy_callback() or __io_notif_complete_tw() crash
-because notif->ctx is a stale pointer, of notif itself is already gone...
-
-What do you think?
-
-metze
