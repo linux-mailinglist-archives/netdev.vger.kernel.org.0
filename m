@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9C5591BA8
-	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 17:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27AA3591BAC
+	for <lists+netdev@lfdr.de>; Sat, 13 Aug 2022 17:46:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239996AbiHMPqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 11:46:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S239963AbiHMPqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 11:46:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239913AbiHMPpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 11:45:49 -0400
+        with ESMTP id S239925AbiHMPqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 11:46:01 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15406326C5;
-        Sat, 13 Aug 2022 08:45:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660405509; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BDF2FFF8;
+        Sat, 13 Aug 2022 08:45:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660405515; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=D1Zfk5JkXA6KE5KzpCAb9VVLrjlrX6Lntp8gKyxlnkaRGVy9/8q+uJsXmEUnX9F6cK3dfp0IuTK/ZJORL0EkgLbvOyY/mlNDhXrgnEv2p1DV2sm40VB6Lmcq43w6USRkO2artg2dqfgkogf1G4x5Q1y5+E2wMRjHyFvLbAwCAYw=
+        b=LHguKks0lv7vA3ueibE2h19pXiUvWhpnLecebJ4kCqKf2zVTSqc/EHbKKjX5JkIZ4uyQVRICg94O19OOVjtZ2PVvKU0d6PbQMMMyTaW7//Iz2TJCRKAlEvPRsAbv3/1OxRAFY5QmzbEkHbNhJYMLoYE1foUj4bJ1s7jlkpaR1O8=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660405509; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=jsLNwKu69dMoowXkaVBPR2TlA1Lu17rBjhIrh9GsaeU=; 
-        b=fmr2aK5GjjT3eU7K9tiVKKzGbnjRZsbbAtm2KLqS+UQzfPJsHvTewBpbGHfumXsEJ5CFY1rMtyWFvn5TxMKSI0dG5GGDGa/m8hIdJX5DyPnw0tGjxvs/cEvQkEr4q8uU+XLOancp4b+SeewL+8ZKoj3xGX0q41dXL0Av5CtRjk0=
+        t=1660405515; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=zy98iC9XC2eVhC07Cr4RMR8a0qJzk56OXu8sNv2CeM4=; 
+        b=fWIYkNz00lm8ELkSMUHDxH9I2bix0PwYEFNozFALqewJ1pa/gAwh32H5lhjyJKkqMIOrcBqlcTZvbci4JVtB55uOuNrdlQaD+lv0zzThsl9SZIwQOZHGfy9nOpiaZ/xqlNYbv+g5+tovavL1aQP5EZwXeqUJTJvMZj5L/jh09R8=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405509;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660405515;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=jsLNwKu69dMoowXkaVBPR2TlA1Lu17rBjhIrh9GsaeU=;
-        b=SRMEhb/h5L6+dlrsVv6DPRaXYXEM4U0TpzWSqh1iM7yNYEOxqTdPNi9iIiIdKA5G
-        XhYQvb6Iw/1/Ex2zWzDsdmtzEhGKLutHpzGpvhvzFsONThLpqdAarrZzrvbIyDik+nq
-        k7Tj1gcIv9U7R+eTT6l8P9gInbL+OcaBE89kMMtg=
+        bh=zy98iC9XC2eVhC07Cr4RMR8a0qJzk56OXu8sNv2CeM4=;
+        b=Nv6cdOYAB97QZBR9N8itpcTzpPm/s3tG9Vy6oynKxXEs9XrJ92P9RBLpPspqNqvv
+        0IvCWV8eK1SFVihhPhCnHsrAHC3rp862bJM96iWbXKrgkPXfRUh/PL/77KRyfyPWWWl
+        9EfbgNjs3GhvEfq3eH8bpriH26tLjTYDwLVsip0I=
 Received: from arinc9-PC.lan (85.117.236.245 [85.117.236.245]) by mx.zohomail.com
-        with SMTPS id 1660405507469429.1380002259672; Sat, 13 Aug 2022 08:45:07 -0700 (PDT)
+        with SMTPS id 166040551423871.94615740500126; Sat, 13 Aug 2022 08:45:14 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -59,9 +59,9 @@ Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v2 5/7] dt-bindings: net: dsa: mediatek,mt7530: remove unnecesary lines
-Date:   Sat, 13 Aug 2022 18:44:13 +0300
-Message-Id: <20220813154415.349091-6-arinc.unal@arinc9.com>
+Subject: [PATCH v2 6/7] dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for each compatible
+Date:   Sat, 13 Aug 2022 18:44:14 +0300
+Message-Id: <20220813154415.349091-7-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220813154415.349091-1-arinc.unal@arinc9.com>
 References: <20220813154415.349091-1-arinc.unal@arinc9.com>
@@ -79,114 +79,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unnecessary lines as they are already included from the referred
-dsa.yaml.
+Define acceptable phy-mode values for CPU port of each compatible device.
+Remove relevant information from the description of the binding.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 27 -------------------
- 1 file changed, 27 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 103 ++++++++++++++++--
+ 1 file changed, 92 insertions(+), 11 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index ff51a2f6875f..a27cb4fa490f 100644
+index a27cb4fa490f..530ef5a75a2f 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -162,15 +162,8 @@ allOf:
+@@ -49,17 +49,6 @@ description: |
+   * mt7621: phy-mode = "rgmii-txid";
+   * mt7623: phy-mode = "rgmii";
  
-       patternProperties:
-         "^(ethernet-)?ports$":
--          type: object
+-  CPU-Ports need a phy-mode property:
+-    Allowed values on mt7530 and mt7621:
+-      - "rgmii"
+-      - "trgmii"
+-    On mt7531:
+-      - "1000base-x"
+-      - "2500base-x"
+-      - "rgmii"
+-      - "sgmii"
 -
-           patternProperties:
-             "^(ethernet-)?port@[0-9]+$":
--              type: object
--              description: Ethernet switch ports
 -
--              unevaluatedProperties: false
--
-               properties:
-                 reg:
-                   description:
-@@ -178,7 +171,6 @@ allOf:
-                     0 to 5 for user ports.
- 
-               allOf:
--                - $ref: dsa-port.yaml#
-                 - if:
-                     properties:
-                       label:
-@@ -186,7 +178,6 @@ allOf:
+ properties:
+   compatible:
+     oneOf:
+@@ -177,6 +166,36 @@ allOf:
+                         items:
                            - const: cpu
                    then:
++                    allOf:
++                      - if:
++                          properties:
++                            reg:
++                              const: 5
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - gmii
++                                - mii
++                                - rgmii
++
++                      - if:
++                          properties:
++                            reg:
++                              const: 6
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - rgmii
++                                - trgmii
++
++                    properties:
++                      reg:
++                        enum:
++                          - 5
++                          - 6
++
                      required:
--                      - reg
                        - phy-mode
  
-   - if:
-@@ -200,15 +191,8 @@ allOf:
- 
-       patternProperties:
-         "^(ethernet-)?ports$":
--          type: object
--
-           patternProperties:
-             "^(ethernet-)?port@[0-9]+$":
--              type: object
--              description: Ethernet switch ports
--
--              unevaluatedProperties: false
--
-               properties:
-                 reg:
-                   description:
-@@ -216,7 +200,6 @@ allOf:
-                     0 to 5 for user ports.
- 
-               allOf:
--                - $ref: dsa-port.yaml#
-                 - if:
-                     properties:
-                       label:
-@@ -224,7 +207,6 @@ allOf:
+@@ -206,6 +225,38 @@ allOf:
+                         items:
                            - const: cpu
                    then:
++                    allOf:
++                      - if:
++                          properties:
++                            reg:
++                              const: 5
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - 1000base-x
++                                - 2500base-x
++                                - rgmii
++                                - sgmii
++
++                      - if:
++                          properties:
++                            reg:
++                              const: 6
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - 1000base-x
++                                - 2500base-x
++                                - sgmii
++
++                    properties:
++                      reg:
++                        enum:
++                          - 5
++                          - 6
++
                      required:
--                      - reg
                        - phy-mode
  
-   - if:
-@@ -238,15 +220,8 @@ allOf:
- 
-       patternProperties:
-         "^(ethernet-)?ports$":
--          type: object
--
-           patternProperties:
-             "^(ethernet-)?port@[0-9]+$":
--              type: object
--              description: Ethernet switch ports
--
--              unevaluatedProperties: false
--
-               properties:
-                 reg:
-                   description:
-@@ -254,7 +229,6 @@ allOf:
-                     0 to 5 for user ports.
- 
-               allOf:
--                - $ref: dsa-port.yaml#
-                 - if:
-                     properties:
-                       label:
-@@ -262,7 +236,6 @@ allOf:
+@@ -235,6 +286,36 @@ allOf:
+                         items:
                            - const: cpu
                    then:
++                    allOf:
++                      - if:
++                          properties:
++                            reg:
++                              const: 5
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - gmii
++                                - mii
++                                - rgmii
++
++                      - if:
++                          properties:
++                            reg:
++                              const: 6
++                        then:
++                          properties:
++                            phy-mode:
++                              enum:
++                                - rgmii
++                                - trgmii
++
++                    properties:
++                      reg:
++                        enum:
++                          - 5
++                          - 6
++
                      required:
--                      - reg
                        - phy-mode
  
- unevaluatedProperties: false
 -- 
 2.34.1
 
