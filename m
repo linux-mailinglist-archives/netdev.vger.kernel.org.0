@@ -2,206 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3BF591FBA
-	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 14:27:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89654591FC9
+	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 14:52:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiHNM1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Aug 2022 08:27:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
+        id S232849AbiHNMwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Aug 2022 08:52:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229820AbiHNM1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 08:27:32 -0400
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BE71C92B;
-        Sun, 14 Aug 2022 05:27:31 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9D8585C00A6;
-        Sun, 14 Aug 2022 08:27:28 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Sun, 14 Aug 2022 08:27:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660480048; x=1660566448; bh=Hz0ZhyzIO3X/y1kG7So53cSJfTIn
-        sJ3nYEy6fIrN1Mg=; b=B2+jX9BHCYo6YvCkh+pBofceaa5C3scLD5LMAexH/D7s
-        ixH/KzBQL32cHqE9OgpJRcvUrq1FMIMLG6uqJJMnmOz/p1cm23g8sJB7NvYCN5DP
-        dPqwzBkQcT2qR1+gFt6A0WMZZB4vip7hWwQG+KYGOSlzjGEkPbWXfpnC4KZdoHG2
-        GF4w4lNTgZov8WNR17qh/adIBYYJ1TlB2L8dT4424DMXLYAnVisBqFL76dW6sOpA
-        ip1pUMq8DRFF9WNFz2LNqdNBsZlnRwIEutjhbz3iGWRynRTEffiBWrSTbNyQJHFX
-        4UM+JIpzB/SY47gfNz4MZHlpqWMdbVJ7d59cjUEIAg==
-X-ME-Sender: <xms:L-r4Yslxr4A-mP5aNJaZ-scQxXzR69adzyMWmLUEDIIm5OPVgpqHsA>
-    <xme:L-r4Yr0kMOa7bZYCnN5GeCUxBxNT4_H_G82SWOy36KTFMk8vR-n1rfq_Pjn9hG7wu
-    OCj9xCKigSro3k>
-X-ME-Received: <xmr:L-r4YqrKHf8j2qwNJxZU9YdaFvKLAy-pAC8TBowKLPnI-kEMa3CxLK9T7Dt0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehtddgheefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
-    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpefhffejgefhjeehjeevheevhfetve
-    evfefgueduueeivdeijeeihfegheeljefgueenucffohhmrghinhepghhithhhuhgsrdgt
-    ohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
-    guohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:L-r4YolyX-kqvXmZqP4NmSsVvUvtp34KtQo0erJS7txJVvAD2pnNtQ>
-    <xmx:L-r4Yq2eGr9OccEetK9WkejQvHbQOuk7foXBiLOSLALoYurVKcPt1w>
-    <xmx:L-r4YvuZRxdWRcQpFR5-G0gNSotGp3edxeY00A4xJwpEGODW-G3anA>
-    <xmx:MOr4YnshtJygL7f6jwCR_QqHJdGTMd_HxsWIOwE3XXIysfJXhP0Cdg>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 14 Aug 2022 08:27:27 -0400 (EDT)
-Date:   Sun, 14 Aug 2022 15:27:24 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
-        vadfed@fb.com, johannes@sipsolutions.net, jiri@resnulli.us,
-        dsahern@kernel.org, stephen@networkplumber.org, fw@strlen.de,
-        linux-doc@vger.kernel.org
-Subject: Re: [RFC net-next 4/4] ynl: add a sample user for ethtool
-Message-ID: <YvjqLDnWUONvnv3E@shredder>
-References: <20220811022304.583300-1-kuba@kernel.org>
- <20220811022304.583300-5-kuba@kernel.org>
+        with ESMTP id S237876AbiHNMwS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 08:52:18 -0400
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80D526E6
+        for <netdev@vger.kernel.org>; Sun, 14 Aug 2022 05:52:17 -0700 (PDT)
+Received: by mail-ot1-x329.google.com with SMTP id t11-20020a05683014cb00b0063734a2a786so3789723otq.11
+        for <netdev@vger.kernel.org>; Sun, 14 Aug 2022 05:52:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
+        bh=h0ZslgqQ94UM3iGDYCZGEx8ZwvbYHY5ZrQARiO/Kpbc=;
+        b=qixLeLaPbHSMZ/RHPVqgxk6+Gqqvi0yCC8DOd5ukSQrUAE+5mltHwzw31CUtw0d53o
+         awYCCkFRGCdwjIogY3vesETI/Zcu/tUTLvzukw3fXeItHmkJ2qk1mnLASVwwZU/Oxqsf
+         uhNyRtMZlfa4nrmk0/+MzDhOScNwnbhLiEpsoYzTENE6pDUSRoyKFm90sJS88m4NRZbP
+         Uwt4t8NkkzXqXiA3R8vGcmAq7fXOu5YsTKlsJBImqGwS2Ap46lPj2qn7BtRmfBuIoXSg
+         zyjv6h8LYEovkbkGgHMWZ51f3GgOzxG27J6KDp+z5KpklM58R9dTVfAKg3Ke/M/X+0oc
+         QK1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=h0ZslgqQ94UM3iGDYCZGEx8ZwvbYHY5ZrQARiO/Kpbc=;
+        b=U3PFvvWavF8LuLnLFHkSuLRJeOToFjN/9anNmaeumNP0t0OugrAHd0FYQHKjtWa41e
+         G+/lW5DWnxw6exDpA38xw72t5EouIDVpk294w+c7eiiQaDJgqX671PaGdg20IzFJ02pE
+         fCRsBh0Y93XQzOlC0UOK0v+9RO2WJi+Xg8SGwA+eoEmTMySFoCyU2F4JAM32qstXp5nT
+         rJwIYZ+XLxwe919a9GbWMgCxayvIv2bwDw1HLg6CdxY/ddzIIRDUDSddExVVEBRS9at2
+         0gitikB3O4t2ZlXOPkZhJ21JZgEhckQaOO4o06cGYDBDFjBhVkV2LlWYfQF9UFvaTvA8
+         d2wA==
+X-Gm-Message-State: ACgBeo11BTfFwYfBzWa7ZonubUBc3lmS3p0vXYNB6tKN5VV2NXzDYZjm
+        YSKKUplrr8GoufncQ6DmSuS4d9i4vU2WLSx8wjM=
+X-Google-Smtp-Source: AA6agR7T+OzWs6/TNlPnYiLpfddblC+KAJex/AIRjUAtAlKaqKg/KzJ1Ka703hP2eqUg8d4q+Z16w8de/glbGGZ1Y3Y=
+X-Received: by 2002:a9d:12b6:0:b0:637:3766:b4eb with SMTP id
+ g51-20020a9d12b6000000b006373766b4ebmr4483721otg.220.1660481536741; Sun, 14
+ Aug 2022 05:52:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220811022304.583300-5-kuba@kernel.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:ac9:5ec:0:0:0:0:0 with HTTP; Sun, 14 Aug 2022 05:52:16 -0700 (PDT)
+Reply-To: lilywilliam989@gmail.com
+From:   Lily William <ts069435@gmail.com>
+Date:   Sun, 14 Aug 2022 04:52:16 -0800
+Message-ID: <CALDOJZBJeitc9kFSo=BxSMXe9E_AD=iqtpRjeyLv-H-__GiL5w@mail.gmail.com>
+Subject: Hi,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:329 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [ts069435[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [ts069435[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [lilywilliam989[at]gmail.com]
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:23:04PM -0700, Jakub Kicinski wrote:
-> @@ -0,0 +1,115 @@
-> +# SPDX-License-Identifier: BSD-3-Clause
-> +
-> +name: ethtool
-> +
-> +description: |
-> +  Ethernet device configuration interface.
-> +
-> +attr-cnt-suffix: CNT
-> +
-> +attribute-spaces:
-> +  -
-> +    name: header
-> +    name-prefix: ETHTOOL_A_HEADER_
-> +    attributes:
-> +      -
-> +        name: dev_index
-> +        val: 1
-> +        type: u32
-> +      -
-> +        name: dev_name
-> +        type: nul-string
-> +        len: ALTIFNAMSIZ - 1
-> +      -
-> +        name: flags
-> +        type: u32
-> +  -
-> +    name: channels
-> +    name-prefix: ETHTOOL_A_CHANNELS_
-> +    attributes:
-> +      -
-> +        name: header
-> +        val: 1
-> +        type: nest
-> +        nested-attributes: header
-> +      -
-> +        name: rx_max
-> +        type: u32
-> +      -
-> +        name: tx_max
-> +        type: u32
-> +      -
-> +        name: other_max
-> +        type: u32
-> +      -
-> +        name: combined_max
-> +        type: u32
-> +      -
-> +        name: rx_count
-> +        type: u32
-> +      -
-> +        name: tx_count
-> +        type: u32
-> +      -
-> +        name: other_count
-> +        type: u32
-> +      -
-> +        name: combined_count
-> +        type: u32
+Hi Dear,
 
-Another interesting use case for the schema can be automatic generation
-of syzkaller descriptions. These are the corresponding descriptions for
-syzkaller:
+My name is Dr Lily William from the United States.I am a French and
+American nationality (dual) living in the U.S and sometimes in France
+for Work Purpose.
 
-https://github.com/google/syzkaller/blob/master/sys/linux/socket_netlink_generic_ethtool.txt#L125
+I hope you consider my friend request. I will share some of my pics
+and more details about myself when I get your response.
 
-Last I checked, these descriptions had to be written by hand, which is
-why they are generally out of date, leading to sub-optimal fuzzing. If
-schemas are sent along with the kernel code and syzkaller/syzbot
-automatically derives descriptions from them, then we should be able to
-get meaningful fuzzing as soon as a feature lands in net-next.
+Thanks
 
-> +
-> +headers:
-> +  user: linux/if.h
-> +  uapi: linux/ethtool_netlink.h
-> +
-> +operations:
-> +  name-prefix: ETHTOOL_MSG_
-> +  async-prefix: ETHTOOL_MSG_
-> +  list:
-> +    -
-> +      name: channels_get
-> +      val: 17
-> +      description: Get current and max supported number of channels.
-> +      attribute-space: channels
-> +      do:
-> +        request:
-> +          attributes:
-> +            - header
-> +        reply: &channel_reply
-> +          attributes:
-> +            - header
-> +            - rx_max
-> +            - tx_max
-> +            - other_max
-> +            - combined_max
-> +            - rx_count
-> +            - tx_count
-> +            - other_count
-> +            - combined_count
-> +      dump:
-> +        reply: *channel_reply
-> +
-> +    -
-> +      name: channels_ntf
-> +      description: Notification for device changing its number of channels.
-> +      notify: channels_get
-> +      mcgrp: monitor
-> +
-> +    -
-> +      name: channels_set
-> +      description: Set number of channels.
-> +      attribute-space: channels
-> +      do:
-> +        request:
-> +          attributes:
-> +            - header
-> +            - rx_count
-> +            - tx_count
-> +            - other_count
-> +            - combined_count
-> +
-> +mcast-groups:
-> +  name-prefix: ETHTOOL_MCGRP_
-> +  name-suffix: _NAME
-> +  list:
-> +    -
-> +      name: monitor
+With love
+Lily
