@@ -2,128 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF371591FB5
-	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 14:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A3BF591FBA
+	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 14:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231496AbiHNMTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Aug 2022 08:19:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57514 "EHLO
+        id S231358AbiHNM1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Aug 2022 08:27:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbiHNMTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 08:19:01 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C94111B7A0;
-        Sun, 14 Aug 2022 05:19:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660479540; x=1692015540;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=albSF85CxBJ7JCLgitr0rpDwaThRbxFTzo5X/4+HqRo=;
-  b=OiBDpPQu2DOp4H9ujAP06thKjEoTvliwvoSIVkRlJumIqsSAm5N4WwXt
-   preWg3t8cMiAGSmItp8Lq4q1dInKKU0+3ZUSR2CLSI2zGMr2wBaGGtQCR
-   zhy4snNNgINx4OiKLDRER+QzR4WIAVknuumK0BerFO5xZ7G0F/SJ5d75i
-   6UZv9sd7wQdriq/NlDBocOpcFLs2b9Z40kGRiJVX71orsamDSTdVFne1B
-   3ER+e2aWWpvAabXs+JTzrI6M4UMURe35QjI9w1Dc5rN2tWjyu5uOAm4vz
-   J5eh5/mZIkv0Wd7so4AdXog2x+++2lEMIrQ6D5hvxE5xzNh38hu5vt3JC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="289390263"
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="289390263"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 05:19:00 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="748649874"
-Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 14 Aug 2022 05:18:57 -0700
-Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oNCa0-00004b-1g;
-        Sun, 14 Aug 2022 12:18:56 +0000
-Date:   Sun, 14 Aug 2022 20:18:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Zijun Hu <quic_zijuhu@quicinc.com>, marcel@holtmann.org,
-        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        luiz.von.dentz@intel.com
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v5] Bluetooth: hci_sync: Remove redundant func definition
-Message-ID: <202208142033.Kav1wBRp-lkp@intel.com>
-References: <1658488552-24691-1-git-send-email-quic_zijuhu@quicinc.com>
+        with ESMTP id S229820AbiHNM1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 08:27:32 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BE71C92B;
+        Sun, 14 Aug 2022 05:27:31 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 9D8585C00A6;
+        Sun, 14 Aug 2022 08:27:28 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sun, 14 Aug 2022 08:27:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660480048; x=1660566448; bh=Hz0ZhyzIO3X/y1kG7So53cSJfTIn
+        sJ3nYEy6fIrN1Mg=; b=B2+jX9BHCYo6YvCkh+pBofceaa5C3scLD5LMAexH/D7s
+        ixH/KzBQL32cHqE9OgpJRcvUrq1FMIMLG6uqJJMnmOz/p1cm23g8sJB7NvYCN5DP
+        dPqwzBkQcT2qR1+gFt6A0WMZZB4vip7hWwQG+KYGOSlzjGEkPbWXfpnC4KZdoHG2
+        GF4w4lNTgZov8WNR17qh/adIBYYJ1TlB2L8dT4424DMXLYAnVisBqFL76dW6sOpA
+        ip1pUMq8DRFF9WNFz2LNqdNBsZlnRwIEutjhbz3iGWRynRTEffiBWrSTbNyQJHFX
+        4UM+JIpzB/SY47gfNz4MZHlpqWMdbVJ7d59cjUEIAg==
+X-ME-Sender: <xms:L-r4Yslxr4A-mP5aNJaZ-scQxXzR69adzyMWmLUEDIIm5OPVgpqHsA>
+    <xme:L-r4Yr0kMOa7bZYCnN5GeCUxBxNT4_H_G82SWOy36KTFMk8vR-n1rfq_Pjn9hG7wu
+    OCj9xCKigSro3k>
+X-ME-Received: <xmr:L-r4YqrKHf8j2qwNJxZU9YdaFvKLAy-pAC8TBowKLPnI-kEMa3CxLK9T7Dt0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehtddgheefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvvefukfhfgggtuggjsehttd
+    ertddttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucggtffrrghtthgvrhhnpefhffejgefhjeehjeevheevhfetve
+    evfefgueduueeivdeijeeihfegheeljefgueenucffohhmrghinhepghhithhhuhgsrdgt
+    ohhmnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepih
+    guohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:L-r4YolyX-kqvXmZqP4NmSsVvUvtp34KtQo0erJS7txJVvAD2pnNtQ>
+    <xmx:L-r4Yq2eGr9OccEetK9WkejQvHbQOuk7foXBiLOSLALoYurVKcPt1w>
+    <xmx:L-r4YvuZRxdWRcQpFR5-G0gNSotGp3edxeY00A4xJwpEGODW-G3anA>
+    <xmx:MOr4YnshtJygL7f6jwCR_QqHJdGTMd_HxsWIOwE3XXIysfJXhP0Cdg>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 14 Aug 2022 08:27:27 -0400 (EDT)
+Date:   Sun, 14 Aug 2022 15:27:24 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
+        vadfed@fb.com, johannes@sipsolutions.net, jiri@resnulli.us,
+        dsahern@kernel.org, stephen@networkplumber.org, fw@strlen.de,
+        linux-doc@vger.kernel.org
+Subject: Re: [RFC net-next 4/4] ynl: add a sample user for ethtool
+Message-ID: <YvjqLDnWUONvnv3E@shredder>
+References: <20220811022304.583300-1-kuba@kernel.org>
+ <20220811022304.583300-5-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1658488552-24691-1-git-send-email-quic_zijuhu@quicinc.com>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220811022304.583300-5-kuba@kernel.org>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Zijun,
+On Wed, Aug 10, 2022 at 07:23:04PM -0700, Jakub Kicinski wrote:
+> @@ -0,0 +1,115 @@
+> +# SPDX-License-Identifier: BSD-3-Clause
+> +
+> +name: ethtool
+> +
+> +description: |
+> +  Ethernet device configuration interface.
+> +
+> +attr-cnt-suffix: CNT
+> +
+> +attribute-spaces:
+> +  -
+> +    name: header
+> +    name-prefix: ETHTOOL_A_HEADER_
+> +    attributes:
+> +      -
+> +        name: dev_index
+> +        val: 1
+> +        type: u32
+> +      -
+> +        name: dev_name
+> +        type: nul-string
+> +        len: ALTIFNAMSIZ - 1
+> +      -
+> +        name: flags
+> +        type: u32
+> +  -
+> +    name: channels
+> +    name-prefix: ETHTOOL_A_CHANNELS_
+> +    attributes:
+> +      -
+> +        name: header
+> +        val: 1
+> +        type: nest
+> +        nested-attributes: header
+> +      -
+> +        name: rx_max
+> +        type: u32
+> +      -
+> +        name: tx_max
+> +        type: u32
+> +      -
+> +        name: other_max
+> +        type: u32
+> +      -
+> +        name: combined_max
+> +        type: u32
+> +      -
+> +        name: rx_count
+> +        type: u32
+> +      -
+> +        name: tx_count
+> +        type: u32
+> +      -
+> +        name: other_count
+> +        type: u32
+> +      -
+> +        name: combined_count
+> +        type: u32
 
-Thank you for the patch! Perhaps something to improve:
+Another interesting use case for the schema can be automatic generation
+of syzkaller descriptions. These are the corresponding descriptions for
+syzkaller:
 
-[auto build test WARNING on bluetooth/master]
-[also build test WARNING on net-next/master net/master linus/master v5.19]
-[cannot apply to bluetooth-next/master next-20220812]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+https://github.com/google/syzkaller/blob/master/sys/linux/socket_netlink_generic_ethtool.txt#L125
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Zijun-Hu/Bluetooth-hci_sync-Remove-redundant-func-definition/20220722-191804
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git master
-config: arm-defconfig (https://download.01.org/0day-ci/archive/20220814/202208142033.Kav1wBRp-lkp@intel.com/config)
-compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/01ff3d2230c220a1387940ed594eccda09dc51fb
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Zijun-Hu/Bluetooth-hci_sync-Remove-redundant-func-definition/20220722-191804
-        git checkout 01ff3d2230c220a1387940ed594eccda09dc51fb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/bluetooth/
+Last I checked, these descriptions had to be written by hand, which is
+why they are generally out of date, leading to sub-optimal fuzzing. If
+schemas are sent along with the kernel code and syzkaller/syzbot
+automatically derives descriptions from them, then we should be able to
+get meaningful fuzzing as soon as a feature lands in net-next.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/bluetooth/hci_sync.c:2398:6: warning: no previous prototype for 'disconnected_accept_list_entries' [-Wmissing-prototypes]
-    2398 | bool disconnected_accept_list_entries(struct hci_dev *hdev)
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-vim +/disconnected_accept_list_entries +2398 net/bluetooth/hci_sync.c
-
-  2397	
-> 2398	bool disconnected_accept_list_entries(struct hci_dev *hdev)
-  2399	{
-  2400		struct bdaddr_list *b;
-  2401	
-  2402		list_for_each_entry(b, &hdev->accept_list, list) {
-  2403			struct hci_conn *conn;
-  2404	
-  2405			conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
-  2406			if (!conn)
-  2407				return true;
-  2408	
-  2409			if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
-  2410				return true;
-  2411		}
-  2412	
-  2413		return false;
-  2414	}
-  2415	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> +
+> +headers:
+> +  user: linux/if.h
+> +  uapi: linux/ethtool_netlink.h
+> +
+> +operations:
+> +  name-prefix: ETHTOOL_MSG_
+> +  async-prefix: ETHTOOL_MSG_
+> +  list:
+> +    -
+> +      name: channels_get
+> +      val: 17
+> +      description: Get current and max supported number of channels.
+> +      attribute-space: channels
+> +      do:
+> +        request:
+> +          attributes:
+> +            - header
+> +        reply: &channel_reply
+> +          attributes:
+> +            - header
+> +            - rx_max
+> +            - tx_max
+> +            - other_max
+> +            - combined_max
+> +            - rx_count
+> +            - tx_count
+> +            - other_count
+> +            - combined_count
+> +      dump:
+> +        reply: *channel_reply
+> +
+> +    -
+> +      name: channels_ntf
+> +      description: Notification for device changing its number of channels.
+> +      notify: channels_get
+> +      mcgrp: monitor
+> +
+> +    -
+> +      name: channels_set
+> +      description: Set number of channels.
+> +      attribute-space: channels
+> +      do:
+> +        request:
+> +          attributes:
+> +            - header
+> +            - rx_count
+> +            - tx_count
+> +            - other_count
+> +            - combined_count
+> +
+> +mcast-groups:
+> +  name-prefix: ETHTOOL_MCGRP_
+> +  name-suffix: _NAME
+> +  list:
+> +    -
+> +      name: monitor
