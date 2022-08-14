@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDC1B59235E
+	by mail.lfdr.de (Postfix) with ESMTP id 2E80B59235C
 	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 18:11:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241060AbiHNQLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Aug 2022 12:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40714 "EHLO
+        id S232154AbiHNQLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Aug 2022 12:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240939AbiHNQLU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 12:11:20 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 576FBB089E;
-        Sun, 14 Aug 2022 08:50:08 -0700 (PDT)
+        with ESMTP id S240920AbiHNQLT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 12:11:19 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC861AF0EF;
+        Sun, 14 Aug 2022 08:50:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1660492208; x=1692028208;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=9tDkEh0tovVs9aif30DQfc9QXbxLmIxIbMKfNgZH81g=;
-  b=H80XrbXdZe54DaNTbaWZdEoTTr+EvSm4HSfyp0IKiF5GkFgTbnKLwFvU
-   jlfMtEQ2mL3HbJjKk04HtUXd5CoFSH2tVpgNP6nC6ANItk/yfpR7msNTD
-   tlRcvCXHiPXhmoowH9CCd6qWAeMI1gOEUGP8b6WBLBDJel1ZxwUF5DO3L
-   1JoGv8Cy/58jbeT6iKgz0jYmKn5z2MUMfOVdRD14+3SSdqp1gGHyEdzn8
-   4X0bSFOfBugdIapsi2uPAYBSAPDnj92pMhgsNCyqaX4aM/erk2seNa0H+
-   jH+Y4C89zR+7U5/GFcLiVWEimBXuEwuwspcI1maDDZAfNyyD0OLGqfFd2
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="274889565"
+  bh=l8q2uJASo+mAw7kilK4iHdZM4BYU3gWbDOJqH1aJatA=;
+  b=Bjqzfk8XjFYOcv8d9psK9w0waiMfQNAdyYnYxHNuxk3EdUSMjJQAc4xk
+   Mb7rpvy3tKGnSwxL5INnkNCF+AfO1uC8mxlfMzu1BjJj7uqU7WtdnoVuW
+   OJ72H0nGPEtA7isb5ZkyioYhrxYe+JIzefIEvc5bNz34jY+MT8LUx/XJ6
+   FDWafX5WQRQch7GiaUmvswhx3UlYrQxnt8oDcCvArRmHzKMUd2YLEpnin
+   zEZy1xuXE1wOmrmfF+f2E1PjIYHtJa+uaGxR9URXDmHEmLfGP4b0PGeSV
+   ITZL7OwI3W+idZdsvTUIHrWtB9gpHHSNZ4xxfOXwbdYXXVtD9PBJQkz/D
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="292630808"
 X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="274889565"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 08:50:07 -0700
+   d="scan'208";a="292630808"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 08:50:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
-   d="scan'208";a="732702759"
+   d="scan'208";a="674589370"
 Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
-  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2022 08:50:02 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 14 Aug 2022 08:50:02 -0700
 Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oNFsI-0000FN-0j;
+        id 1oNFsI-0000FL-0d;
         Sun, 14 Aug 2022 15:50:02 +0000
-Date:   Sun, 14 Aug 2022 23:49:24 +0800
+Date:   Sun, 14 Aug 2022 23:49:26 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org
 Cc:     kbuild-all@lists.01.org, Dmitry Safonov <0x7f454c46@gmail.com>,
@@ -60,16 +60,16 @@ Cc:     kbuild-all@lists.01.org, Dmitry Safonov <0x7f454c46@gmail.com>,
         netdev@vger.kernel.org, linux-crypto@vger.kernel.org
 Subject: Re: [PATCH 4/6] net/tcp: Disable TCP-MD5 static key on
  tcp_md5sig_info destruction
-Message-ID: <202208142357.bDGLpecB-lkp@intel.com>
+Message-ID: <202208142332.WUqM9sfv-lkp@intel.com>
 References: <20220726201600.1715505-5-dima@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <20220726201600.1715505-5-dima@arista.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -84,7 +84,7 @@ Thank you for the patch! Perhaps something to improve:
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-crypto-Introduce-crypto_pool/20220727-041830
 base:   058affafc65a74cf54499fb578b66ad0b18f939b
-config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220814/202208142357.bDGLpecB-lkp@intel.com/config)
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220814/202208142332.WUqM9sfv-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
 reproduce (this is a W=1 build):
         # https://github.com/intel-lab-lkp/linux/commit/a4ee3ecdaada036ed6747ed86eaf7270d3f27bab
@@ -93,7 +93,7 @@ reproduce (this is a W=1 build):
         git checkout a4ee3ecdaada036ed6747ed86eaf7270d3f27bab
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash net/ipv4/
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/ipv4/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
