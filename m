@@ -2,174 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7136591D9A
-	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 04:38:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE316591DC8
+	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 05:53:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229620AbiHNCgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 13 Aug 2022 22:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52508 "EHLO
+        id S229690AbiHNDwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 13 Aug 2022 23:52:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbiHNCgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 22:36:33 -0400
-Received: from mail-vs1-xe2c.google.com (mail-vs1-xe2c.google.com [IPv6:2607:f8b0:4864:20::e2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 202061BE94;
-        Sat, 13 Aug 2022 19:36:30 -0700 (PDT)
-Received: by mail-vs1-xe2c.google.com with SMTP id 67so4343420vsv.2;
-        Sat, 13 Aug 2022 19:36:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=CRrhz0BEyIQHXQS7Ebb+dZKjXFqlcQTdj6VUIrrnwgc=;
-        b=ftDvrBkguzbQ/2XyYFCtxaMeZSyG6ASkh0ukfmZpJkaUjIurT935qNLWskNEagEKUO
-         eAhSQQ6MHAEjrmmb753yJmoPqgV4BUf55SDaE0mvKMoLnNLqO2+/+b3eprUZmFPPOJB7
-         aRuCEGm0YL9t4M65uUCjHNhf/quKNJmjuZqfPvTL+EJO16D7I3f4tJbHEI4A0oNT7aMA
-         16sWo4E3+a6uMqMV71ED17WRM71pYSMy+BoUoGfaBjzZn6YIqMfV5me1MASAjIxzcTZe
-         uCYosMs/l7zv8Qri8c6fXcQWHn/z9EzE647USr1P/kYs8jwB0wBu41gtYg2X5FP8lRSv
-         YQ8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=CRrhz0BEyIQHXQS7Ebb+dZKjXFqlcQTdj6VUIrrnwgc=;
-        b=iYan4EMnCh5bZAgQL1WI/RAa/BF4xX2wg9AzcIr/djvxmDRyX0yA0qeOBQCtWUoVWY
-         K5sInGYC5wrxcDjS6aI819uivdPQCYRT4+vSxquUXlommUb4q1QKRctAvkY7c+TJaq2m
-         JXRKDQIsCJ2GjdYSBHLQQ+V/+1uQxtMrFXSAKn69Yij+LElYYwX/2+2fNdLK/g/m+eWb
-         HMVBIDJYDBbqshCm+k2nQIHkqN7aJFeHwI71RNIaCL1ukR8ECu1BDL498oNpO0M+7lQk
-         YnJeLby2Va1XNCyHm3hqVsT2sxQA1CXKhve2lgGxlmOQh2TqUeAivEDVVdaFe2mwZa1S
-         j7Mw==
-X-Gm-Message-State: ACgBeo2MRGs8MCWMehRB1HXuNzNGafWC0aTvR8Z3P29hA/laXDTFxC4j
-        r9pK1mz8mCz3YJ+kXr6MY3sDnJzPNA/dG2uMyv0=
-X-Google-Smtp-Source: AA6agR6xP+37xYYP/oJC40vFFtEp6SLwnBUAkGWFgSWjlaZv0tT4Jc+Drnc7QA0/YU0vEzbn/ZuaQfUQGqoPH65fG+U=
-X-Received: by 2002:a05:6102:2753:b0:38a:a86f:6ac5 with SMTP id
- p19-20020a056102275300b0038aa86f6ac5mr3471172vsu.80.1660444589209; Sat, 13
- Aug 2022 19:36:29 -0700 (PDT)
+        with ESMTP id S229599AbiHNDwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 13 Aug 2022 23:52:49 -0400
+Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C791C109;
+        Sat, 13 Aug 2022 20:52:47 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.nyi.internal (Postfix) with ESMTP id A97E25C0084;
+        Sat, 13 Aug 2022 23:52:42 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute1.internal (MEProxy); Sat, 13 Aug 2022 23:52:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1660449162; x=1660535562; bh=arK7yru82m
+        NQyxKZ58FhgyMo4fbKApN5PwTcq+J5WBg=; b=VkCNbD74dikSXuAA+bHCGFhlU0
+        Dk6jAzPelWLzpCyHqMqNy8iKvsioCz8IwQ9+15uJj2XSPF308XyDr+GDt685irb8
+        77tyu1dQtcHXMoT7AjBlec/k7A7bVe2WiPqAJtbLAEOWDaG02JgdZXw6MJhXG2/7
+        vAjyTHL7/yaCCRtAPqNx4XhvjCLgj0d/uOrIIzzzNXqpHulqExoOHFU4tfmdIYoh
+        mnIQXJK3sydPsiCaj6pupanGkxeHD0gjFeNGrJyMmtjRcsWR1buvdPMqkY/Y/B8h
+        fqGnqaaoN0D7VsrCquyAyTdMSsz8szx5ubgTjMwubLYqKquerh5Lv4PhT+dw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660449162; x=1660535562; bh=arK7yru82mNQyxKZ58FhgyMo4fbK
+        ApN5PwTcq+J5WBg=; b=28wb70dXB3yL0tuhQqMllb0PazCuy9MkFUANde0zFpmi
+        zjDIqAp9iC9TifmtPU6aEDx8qlpnM2FencSb8sroJlhrDBUt8ExESG7+5vtbzw4p
+        NQvAnJy7QiPsxyTqRb/GeLQhFv2AIciIAwNIg61ElHqXTEGqacLms27Kw08aGehX
+        zTRopaOOV9d+bds3c0+tM4wMIBGrpxaq8elOpaFaouHfhTt01tw1gksBlAR8FCNY
+        m+eeggQl0kk5VLICCEBMMdJOFocxVPmiswKB56ubeartbq1c5fjA/LXN5jtmZ7Lh
+        dORlVi8YEz8fh7v0t84GmGpDkdw7IIAowUU33exo4A==
+X-ME-Sender: <xms:iHH4YhCpP1OPCNYjC7i7ppu6P7YPmME6JTjsVjj1BQdjgR9Gi3NJBQ>
+    <xme:iHH4Yvh3tabpmdSvQpc_RrCe5q2kN0festnCyYRj97RHjkX8PnszQmxNv4ur6nePB
+    prwK0gmPa7oM1IWhg>
+X-ME-Received: <xmr:iHH4Ysk8DaXRneQdLZ7EUjbt4pRqVcZAQJDZGUrcyYHAf0rEUcromfB8CF43zlXBa7wmzXwsVPg8qVPerAIeEFJOuFIxaoqXXXdmwfVl_TO_YQD5pgX7Iu4HWJVc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdegledgjeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughr
+    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
+    grthhtvghrnhephefftdffheduffehffdtgfejgffhveehueeivdfhfefhfeekheeugfeg
+    fefgleffnecuffhomhgrihhnpehgihhthhhusgdrtghomhenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrnhgurhgvshesrghnrghrrgiivghl
+    rdguvg
+X-ME-Proxy: <xmx:iHH4Yrzjbsc-vjRdMBDkoUVnoEM_o8wDKwrNK7ZeHAGBRnSu0SPcTw>
+    <xmx:iHH4YmSjZcAQmZ-lqCm_S-_6t_JZlhlj_DTGG3nMUo5PxPRBEJavbg>
+    <xmx:iHH4YuYFKRVDaXd072svU5fx02CHuKDAIbE0IALxsNpF8E_9v7aXnw>
+    <xmx:inH4Yt8LAVnlvFMS5H8bp6JYpvNa6f752Q-XWYNpASow8o9MJkyYTA>
+Feedback-ID: id4a34324:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 13 Aug 2022 23:52:40 -0400 (EDT)
+Date:   Sat, 13 Aug 2022 20:52:39 -0700
+From:   Andres Freund <andres@anarazel.de>
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alvaro.karsz@solid-run.com, colin.i.king@gmail.com,
+        colin.king@intel.com, dan.carpenter@oracle.com, david@redhat.com,
+        elic@nvidia.com, eperezma@redhat.com, gautam.dawar@xilinx.com,
+        gshan@redhat.com, hdegoede@redhat.com, hulkci@huawei.com,
+        jasowang@redhat.com, jiaming@nfschina.com,
+        kangjie.xu@linux.alibaba.com, lingshan.zhu@intel.com,
+        liubo03@inspur.com, michael.christie@oracle.com,
+        pankaj.gupta@amd.com, peng.fan@nxp.com, quic_mingxue@quicinc.com,
+        robin.murphy@arm.com, sgarzare@redhat.com, suwan.kim027@gmail.com,
+        syoshida@redhat.com, xieyongji@bytedance.com, xuqiang36@huawei.com,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [GIT PULL] virtio: fatures, fixes
+Message-ID: <20220814035239.m7rtepyum5xvtu2c@awork3.anarazel.de>
+References: <20220812114250-mutt-send-email-mst@kernel.org>
+ <20220814004522.33ecrwkmol3uz7aq@awork3.anarazel.de>
+ <1660441835.6907768-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <20220810151840.16394-1-laoar.shao@gmail.com> <20220810151840.16394-14-laoar.shao@gmail.com>
- <YvUrXLJF6qrGOdjP@P9FQF9L96D.corp.robot.car> <CALOAHbAj7BymBV7KhzxLfMPue8666V+24TOfqG0XTE4euWyR4Q@mail.gmail.com>
- <YvaQhLk06MHQJWHB@P9FQF9L96D.corp.robot.car> <CALOAHbBh4=yxX5c2_TK8-uf14KKg=Vp1NoHAEZGxS2wAxCnZWA@mail.gmail.com>
- <YvftrF7GmqMjvAa+@P9FQF9L96D.corp.robot.car>
-In-Reply-To: <YvftrF7GmqMjvAa+@P9FQF9L96D.corp.robot.car>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Sun, 14 Aug 2022 10:35:52 +0800
-Message-ID: <CALOAHbDgdpx9ZPsqzfxs3grGhKBhN=zVOtjKRd=mJfT6NLGP_Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 13/15] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
-To:     Roman Gushchin <roman.gushchin@linux.dev>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1660441835.6907768-1-xuanzhuo@linux.alibaba.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 2:30 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
->
-> On Sat, Aug 13, 2022 at 07:56:54AM +0800, Yafang Shao wrote:
-> > On Sat, Aug 13, 2022 at 1:40 AM Roman Gushchin <roman.gushchin@linux.dev> wrote:
-> > >
-> > > On Fri, Aug 12, 2022 at 08:35:19AM +0800, Yafang Shao wrote:
-> > > > On Fri, Aug 12, 2022 at 12:16 AM Roman Gushchin
-> > > > <roman.gushchin@linux.dev> wrote:
-> > > > >
-> > > > > On Wed, Aug 10, 2022 at 03:18:38PM +0000, Yafang Shao wrote:
-> > > > > > Introduce new helper get_obj_cgroup_from_cgroup() to get obj_cgroup from
-> > > > > > a specific cgroup.
-> > > > > >
-> > > > > > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
-> > > > > > ---
-> > > > > >  include/linux/memcontrol.h |  1 +
-> > > > > >  mm/memcontrol.c            | 41 +++++++++++++++++++++++++++++++++++++++++
-> > > > > >  2 files changed, 42 insertions(+)
-> > > > > >
-> > > > > > diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> > > > > > index 2f0a611..901a921 100644
-> > > > > > --- a/include/linux/memcontrol.h
-> > > > > > +++ b/include/linux/memcontrol.h
-> > > > > > @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
-> > > > > >  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
-> > > > > >  void __memcg_kmem_uncharge_page(struct page *page, int order);
-> > > > > >
-> > > > > > +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
-> > > > > >  struct obj_cgroup *get_obj_cgroup_from_current(void);
-> > > > > >  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
-> > > > > >
-> > > > > > diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-> > > > > > index 618c366..762cffa 100644
-> > > > > > --- a/mm/memcontrol.c
-> > > > > > +++ b/mm/memcontrol.c
-> > > > > > @@ -2908,6 +2908,47 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
-> > > > > >       return objcg;
-> > > > > >  }
-> > > > > >
-> > > > > > +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
-> > > > > > +{
-> > > > > > +     struct obj_cgroup *objcg;
-> > > > > > +
-> > > > > > +     if (memcg_kmem_bypass())
-> > > > > > +             return NULL;
-> > > > > > +
-> > > > > > +     rcu_read_lock();
-> > > > > > +     objcg = __get_obj_cgroup_from_memcg(memcg);
-> > > > > > +     rcu_read_unlock();
-> > > > > > +     return objcg;
-> > > > >
-> > > > > This code doesn't make sense to me. What does rcu read lock protect here?
-> > > >
-> > > > To protect rcu_dereference(memcg->objcg);.
-> > > > Doesn't it need the read rcu lock ?
-> > >
-> > > No, it's not how rcu works. Please, take a look at the docs here:
-> > > https://docs.kernel.org/RCU/whatisRCU.html#whatisrcu .
-> > > In particular, it describes this specific case very well.
-> > >
-> > > In 2 words, you don't protect the rcu_dereference() call, you protect the pointer
-> >
-> > I just copied and pasted rcu_dereference(memcg->objcg) there to make it clear.
-> > Actually it protects memcg->objcg, doesn't it ?
-> >
-> > > you get, cause it's valid only inside the rcu read section. After rcu_read_unlock()
-> > > it might point at a random data, because the protected object can be already freed.
-> > >
-> >
-> > Are you sure?
-> > Can't the obj_cgroup_tryget(objcg) prevent it from being freed ?
->
-> Ok, now I see where it comes from. You copy-pasted it from get_obj_cgroup_from_current()?
-> There rcu read lock section protects memcg, not objcg.
+Hi,
 
-Could you pls explain in detail why we should protect memcg instead of objcg ?
-Why does the memcg need the read rcu lock ?
+On 2022-08-14 09:50:35 +0800, Xuan Zhuo wrote:
+> Sorry, I didn't get any valuable information from the logs, can you tell me how
+> to get such an image? Or how your [1] script is executed.
 
-> In your case you don't need it, because memcg is passed as a parameter to the function,
-> so it's the duty of the caller to ensure the lifetime of memcg.
->
-
-I'm still a bit confused. See below,
-
-objcg = rcu_dereference(memcg->objcg);
-percpu_ref_tryget(&objcg->refcnt);    <<<< what if the objcg is freed
-before this operation ??
+Is there specific information you'd like from the VM? I just recreated the
+problem and can extract.
 
 
--- 
-Regards
-Yafang
+The last image that succeeded getting built is publically available, so you
+could create a gcp VM for that, go to /usr/src/linux, git pull, make & install
+the new kernel and reproduce the problem that way.  The git pull will take a
+bit because it's a shallow clone...
+
+gcloud compute instances create myvm --preemptible --project your-gcp-project --image-project pg-ci-images --image pg-ci-sid-newkernel-2022-08-12t06-52 --zone us-west1-a --custom-cpu=4 --custom-memory=4 --metadata=serial-port-enable=true
+
+If you want to log in via serial console, you'd have set a password before
+rebooting.
+
+gcloud compute connect-to-serial-port --zone us-west1-a --project=pg-ci-images-dev myvm
+
+
+Executing the script requires a gcp key with the right to create instances and
+images. Here's how to invoke it:
+
+PACKER_LOG=1 GOOGLE_APPLICATION_CREDENTIALS=~/image-builder@pg-ci-images-dev.iam.gserviceaccount.com.json \
+  packer build \
+    -var gcp_project=pg-ci-images-dev \
+    -var "image_date=$(date --utc +'%Y-%m-%dt%H-%M')" \
+    -var "task_name=sid-newkernel" \
+    -only 'linux.googlecompute.sid-newkernel' \
+    -on-error=ask \
+    packer/linux_debian.pkr.hcl
+
+Of course you'd need to change the gcp_project= variable to point to a the
+project you have access to and GOOGLE_APPLICATION_CREDENTIALS to point to your
+gcp key.
+
+Initially (package upgrades, kernel builds) the VM would be SSH
+accessible. After building the kernel it's only accessible via serial console.
+
+
+I can probably also get you the image in some other form that you prefer,
+although I don't know if the problem will reproduce outside gcp. If helpful I
+could upload a "broken" gcp image that you could use to
+
+
+> > [1] https://github.com/anarazel/pg-vm-images/blob/main/packer/linux_debian.pkr.hcl#L225
+
+Greetings,
+
+Andres Freund
