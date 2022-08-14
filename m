@@ -2,151 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F724591FA0
-	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 13:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AABA1591FB8
+	for <lists+netdev@lfdr.de>; Sun, 14 Aug 2022 14:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbiHNL2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 14 Aug 2022 07:28:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
+        id S231536AbiHNMTD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 14 Aug 2022 08:19:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229723AbiHNL2M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 07:28:12 -0400
-Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8E820BF5
-        for <netdev@vger.kernel.org>; Sun, 14 Aug 2022 04:28:11 -0700 (PDT)
-Received: by mail-qv1-xf43.google.com with SMTP id d1so3731296qvs.0
-        for <netdev@vger.kernel.org>; Sun, 14 Aug 2022 04:28:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=jgSpr/OWE3HldXbKhd9zqtDt4AkKNg24We7/vDrM14k=;
-        b=dn+UymxdVD8DJ1nX1cX+3YYfFNl5uVkEgDLfsRWEgTruhuEmSU3JG6e+NSwkFH/2y7
-         KrpyqdrQRImpimsWplWBJzTf78xoca1FUr7HVYUY6zQoQhlDEnKwyresIcEYWfycq6f4
-         JaEaG64+asTxU4FS9l2Q4blgyaV69nolVHogjlCsFhHfVUf9c8uk5w4yLz3YCsPACW9x
-         cAHL83xJMLQSZvKx7KuPpRKLYHm2SrPWHTt2u55b9QK72c+wgZNeiQEWnBL0e1+0Anty
-         vW6smy9AVCm1lOxtln6vQ5pfd8y23TJnXOdySrpRnZm0HmpoHnvcp9D+tD+qLZVVzM95
-         1dNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=jgSpr/OWE3HldXbKhd9zqtDt4AkKNg24We7/vDrM14k=;
-        b=w7+LPLoj9rH4Y81pVJDYpxdQ8Mog2RBz27f9V0ompAeXlGyOo/6Axc8Ey9HWayfKuR
-         o1P9SU2646RNLBztIeiXhLaNkg13kHm02TCJ06o2gbHyVM5jp4WsZyfx/EMpc8fkkG1B
-         QpK0eIZMyHxbRZ2IQfEXVBemd9gNljWLDLvCPP6GT5Ro6DEo546+Ub3cnn7Omc5c8QGN
-         5q1EPrqHCS2zrvaMkjGJIfIF6+PAQInl5MMJMQTKe7VhHwy8hiC1GHafopKPnowHkimx
-         +P3j2IE566nWqc13y5lP1ElgABWS63fibAiexch6cbBheR1goY66RKzS0/XvkGH06gjD
-         DQZg==
-X-Gm-Message-State: ACgBeo2S2W+mTBXigNhGj6G6XJjqJdTSw+7cp6Rpilhd1jcN1Ksf1u05
-        oKsEV7tnZ3+rp/VXByfNBsFetg==
-X-Google-Smtp-Source: AA6agR7PRa0f3y4QZ+m99GB2+U1wkEC4RKPC0CFsety+4LJE8zDC4pjo86l0cE6n5MyHrt6IcP3geQ==
-X-Received: by 2002:a05:6214:5287:b0:476:7938:5b76 with SMTP id kj7-20020a056214528700b0047679385b76mr9974780qvb.131.1660476490753;
-        Sun, 14 Aug 2022 04:28:10 -0700 (PDT)
-Received: from localhost.localdomain (bras-base-kntaon1617w-grc-28-184-148-47-103.dsl.bell.ca. [184.148.47.103])
-        by smtp.gmail.com with ESMTPSA id r23-20020ae9d617000000b006af1f0af045sm6279599qkk.107.2022.08.14.04.28.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 04:28:10 -0700 (PDT)
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        kuznet@ms2.inr.ac.ru, cascardo@canonical.com,
-        linux-distros@vs.openwall.org, security@kernel.org,
-        stephen@networkplumber.org, dsahern@gmail.com,
-        gregkh@linuxfoundation.org, Jamal Hadi Salim <jhs@mojatatu.com>
-Subject: [PATCH net 1/1] net_sched: cls_route: disallow handle of 0
-Date:   Sun, 14 Aug 2022 11:27:58 +0000
-Message-Id: <20220814112758.3088655-1-jhs@mojatatu.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231473AbiHNMTC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 14 Aug 2022 08:19:02 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09BA61B7A4;
+        Sun, 14 Aug 2022 05:19:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660479541; x=1692015541;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kxVx2KOwxI7ag9xP9ukIW9wSDqF7JOUR+pXT8aaobjM=;
+  b=aVDRAMc9p1fLkAglTy9Nf8VXvcZ/CTFYRnKe2rhy0Pnivni9Lf7pfzHt
+   O509Qzg9nvv/T/yv98J0OD4+pOsm5fp6gZ3bRDODoNnwIaEXDa4ElVrpD
+   /HjBbZ7GfXIWeEK+WxUs8Lnsf6xho+HF231k847kUILQzi34m3Uvq6lgP
+   fCdIXIrb75ZWLTjFRD72UbNjelCw8vBJ2XN6Qo7oNQBQNSz3gThyT0/Ws
+   nhSS7Tf1vrcSVtRyddi/ihqHpSwcpeggnQPG7Ark3TX+nxGlVcnLyo2vQ
+   h5fLHr42vhgP93UhdMbeUy1cFhLpgkJAYruXvYvK2vgxPf+VaA6JPNU7t
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10437"; a="290574123"
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="290574123"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Aug 2022 05:19:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,236,1654585200"; 
+   d="scan'208";a="639367703"
+Received: from lkp-server02.sh.intel.com (HELO 3d2a4d02a2a9) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 14 Aug 2022 05:18:57 -0700
+Received: from kbuild by 3d2a4d02a2a9 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oNCa0-00004Z-1c;
+        Sun, 14 Aug 2022 12:18:56 +0000
+Date:   Sun, 14 Aug 2022 20:18:02 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Zijun Hu <quic_zijuhu@quicinc.com>, marcel@holtmann.org,
+        johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        luiz.von.dentz@intel.com
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v5] Bluetooth: hci_sync: Remove redundant func definition
+Message-ID: <202208142029.Y9YOiT4V-lkp@intel.com>
+References: <1658488552-24691-1-git-send-email-quic_zijuhu@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1658488552-24691-1-git-send-email-quic_zijuhu@quicinc.com>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follows up on:
-https://lore.kernel.org/all/20220809170518.164662-1-cascardo@canonical.com/
+Hi Zijun,
 
-handle of 0 implies from/to of universe realm which is not very
-sensible.
+Thank you for the patch! Perhaps something to improve:
 
-Lets see what this patch will do:
-$sudo tc qdisc add dev $DEV root handle 1:0 prio
+[auto build test WARNING on bluetooth/master]
+[also build test WARNING on net-next/master net/master linus/master v5.19]
+[cannot apply to bluetooth-next/master next-20220812]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-//lets manufacture a way to insert handle of 0
-$sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 \
-route to 0 from 0 classid 1:10 action ok
+url:    https://github.com/intel-lab-lkp/linux/commits/Zijun-Hu/Bluetooth-hci_sync-Remove-redundant-func-definition/20220722-191804
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git master
+config: x86_64-randconfig-a013 (https://download.01.org/0day-ci/archive/20220814/202208142029.Y9YOiT4V-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/01ff3d2230c220a1387940ed594eccda09dc51fb
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Zijun-Hu/Bluetooth-hci_sync-Remove-redundant-func-definition/20220722-191804
+        git checkout 01ff3d2230c220a1387940ed594eccda09dc51fb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/bluetooth/
 
-//gets rejected...
-Error: handle of 0 is not valid.
-We have an error talking to the kernel, -1
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-//lets create a legit entry..
-sudo tc filter add dev $DEV parent 1:0 protocol ip prio 100 route from 10 \
-classid 1:10 action ok
+All warnings (new ones prefixed by >>):
 
-//what did the kernel insert?
-$sudo tc filter ls dev $DEV parent 1:0
-filter protocol ip pref 100 route chain 0
-filter protocol ip pref 100 route chain 0 fh 0x000a8000 flowid 1:10 from 10
-	action order 1: gact action pass
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
+>> net/bluetooth/hci_sync.c:2398:6: warning: no previous prototype for 'disconnected_accept_list_entries' [-Wmissing-prototypes]
+    2398 | bool disconnected_accept_list_entries(struct hci_dev *hdev)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-//Lets try to replace that legit entry with a handle of 0
-$ sudo tc filter replace dev $DEV parent 1:0 protocol ip prio 100 \
-handle 0x000a8000 route to 0 from 0 classid 1:10 action drop
 
-Error: Replacing with handle of 0 is invalid.
-We have an error talking to the kernel, -1
+vim +/disconnected_accept_list_entries +2398 net/bluetooth/hci_sync.c
 
-And last, lets run Cascardo's POC:
-$ ./poc
-0
-0
--22
--22
--22
+  2397	
+> 2398	bool disconnected_accept_list_entries(struct hci_dev *hdev)
+  2399	{
+  2400		struct bdaddr_list *b;
+  2401	
+  2402		list_for_each_entry(b, &hdev->accept_list, list) {
+  2403			struct hci_conn *conn;
+  2404	
+  2405			conn = hci_conn_hash_lookup_ba(hdev, ACL_LINK, &b->bdaddr);
+  2406			if (!conn)
+  2407				return true;
+  2408	
+  2409			if (conn->state != BT_CONNECTED && conn->state != BT_CONFIG)
+  2410				return true;
+  2411		}
+  2412	
+  2413		return false;
+  2414	}
+  2415	
 
-Signed-off-by: Jamal Hadi Salim <jhs@mojatatu.com>
----
- net/sched/cls_route.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/net/sched/cls_route.c b/net/sched/cls_route.c
-index 3f935cbbaff6..48712bc51bda 100644
---- a/net/sched/cls_route.c
-+++ b/net/sched/cls_route.c
-@@ -424,6 +424,11 @@ static int route4_set_parms(struct net *net, struct tcf_proto *tp,
- 			return -EINVAL;
- 	}
- 
-+	if (!nhandle) {
-+		NL_SET_ERR_MSG(extack, "Replacing with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	h1 = to_hash(nhandle);
- 	b = rtnl_dereference(head->table[h1]);
- 	if (!b) {
-@@ -477,6 +482,11 @@ static int route4_change(struct net *net, struct sk_buff *in_skb,
- 	int err;
- 	bool new = true;
- 
-+	if (!handle) {
-+		NL_SET_ERR_MSG(extack, "Creating with handle of 0 is invalid");
-+		return -EINVAL;
-+	}
-+
- 	if (opt == NULL)
- 		return handle ? -EINVAL : 0;
- 
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
