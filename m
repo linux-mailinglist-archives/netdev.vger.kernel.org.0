@@ -2,144 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FF7595222
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80445595232
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:52:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbiHPFkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 01:40:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
+        id S229879AbiHPFwP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 01:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230054AbiHPFj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:39:56 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2042.outbound.protection.outlook.com [40.107.21.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB6B46C11E
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 15:26:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JCv9mMBfD8XqbsaxItwuab5jwjFUGoAU3sgBhNDL6sxwf8EUn20TU/0f5N+bdc6h4vwjmWHQ6dWuhyyjPlOlEHVvROKfVpJV8U7g0YFjH0Esxe2bpHhdMnd9yJnzrBbIBZYpT5m5okgOmh3zCxL9kzrELhop2BXEKKWP7Ukgz2F0fzEVSrq7H64nEY2c3cNAI3jyWvg9o1nf5OS7GnqXb5ibI9ruDu9uZEpFpOVHS8fU0zqOTO8dvSHLz3IOFeiM7XRy9iSXJG41HSexrJLEjft1nN2IfY7tbwVDC6UHGULusForneEaOrc3Y//VJPo6Nf91Eyd0IJtGZM0JZkQxJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GTifngPDUgTBwwLCxfzU1Pd0jCfT9beO0EhPgcHAHJk=;
- b=bpBRnGApuMiNq88669qryf3S3Rtx64FH1Vxi4qqTQflab6AnCKhR/Uub8p4fg//gYhWVx6NoajSooJc8+tGSZ8ef/aax67WU99t4WC4e+pL3vc9VoHbBq/AX3RlcWPV4ODouIwQ63I1u2fNk9Shm9GNsLBBz3IONTNq85TRAAWr3iETY3Hvj7as+1h88B7EtQl0gvrNNLh2eSaE38migqkWMhjyruC6ci3np1A7BVkffzlKNyfYtXwOYdYS0knfpdY5knfaTZ9RN0YlyD5uHgR/xDTcyRAZ6/dVRUryn12DeuJTi72xGyBwXOCX/3Cg8Umzb5sCnNlyXV+Pm8S/SJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GTifngPDUgTBwwLCxfzU1Pd0jCfT9beO0EhPgcHAHJk=;
- b=RfVhyF/3yVtCKcMj8zBrLD3vHW3pTpxAl2K8tAk5ZOF51V9JpBkzyWbTca7PL8JnNKRvJzbnid+fKxcjISBQmY4lywmxl23fMwKt9RpfwyTr1WsjSvqV0h/B3IXHNvfOKpyWzJuQgVi25f/kTsboC3xJwJQ1tAmWV3k0a8ehhEg=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB6PR0402MB2903.eurprd04.prod.outlook.com (2603:10a6:4:9b::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Mon, 15 Aug
- 2022 22:26:39 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Mon, 15 Aug 2022
- 22:26:39 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-CC:     Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "marton12050@gmail.com" <marton12050@gmail.com>,
-        "peti.antal99@gmail.com" <peti.antal99@gmail.com>
-Subject: Re: igc: missing HW timestamps at TX
-Thread-Topic: igc: missing HW timestamps at TX
-Thread-Index: AQHYmepVJYOkQdQn8k+cRlOb7lKNfK2wqy+AgAANKIA=
-Date:   Mon, 15 Aug 2022 22:26:39 +0000
-Message-ID: <20220815222639.346wachaaq5zjwue@skbuf>
-References: <VI1PR07MB4080AED64AC8BFD3F9C1BE58E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
- <VI1PR07MB4080DC45051E112EEC6D7734E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
- <87tu7emqb9.fsf@intel.com>
- <695ec13e018d1111cf3e16a309069a72d55ea70e.camel@ericsson.com>
- <d5571f0ea205e26bced51220044781131296aaac.camel@ericsson.com>
- <87tu6i6h1k.fsf@intel.com>
- <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
- <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
- <20220812201654.qx7e37otu32pxnbk@skbuf> <87v8qti3u2.fsf@intel.com>
-In-Reply-To: <87v8qti3u2.fsf@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: db793db0-be9d-4b8b-e343-08da7f0d3925
-x-ms-traffictypediagnostic: DB6PR0402MB2903:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: HHPyrWYUcjX732chqctHaxGbvGa4y9FyJ7v0HF/WpqoOLfYRRUgjKj5vlPpiYigTIqocUKpriOqaOR80SCnb8RNn2rSKtkqFbB4nBpUC8kd8tNKJ7TsbxrRk1DyfHTUs9RNplagntlK5PdbbwAxE444G4ah6+XyuV3gL06G4M99Zk+cl4NXdr96z5qMYGhE81Ft8y9yAQ9qRNgl9wLpG7WUXIgqSttvURuwVCKWWa26BUmtHCCEtIbbzytGH7vldx2XIbK0TKJnLGW8Y+JA8kjlLOw/o4vEnVGTJWILv6SJlJoZWSPjz2TWrNLbQrM9F8zqVlMB2lJMkxsQQpkPdAXZwi5nQ1T4db6QJNsdqaj2OhK9LgVlQUIXOVh1iBsfsetzy4QwnUBslGv7ob9qFpcG5OBtwVj0gPWdfhJuxc0yIfE1QmY8dMl4C8+AeaaFjpy+ee0z7rMoAbOvu5o/cXo76F9vP+Wo3ny2UZtlPj1Ed0sgTij/IVlpwuuwzZQQZLadDQiqnA5SjMBEq/CKpAwGmVm/VFubhW0nydyalNqdToxqorsWQRClr7HK/g6tdeMNDDxF2wH3q9Ro7WOAHFoPFKg9/B8o7ulu6FP1PbNxqNDsbevLkpk1WworVU8Zm9G8yNy7NLP0UgA5sWE/TaDfn1uetFo61LEqU9AZ4C3KSIrb14S/2pJMzSw6xEYCW+QryXkkudvHdWFk2P2xb3O5PQHg7iuoKJsgkISE/EGGBRNmPTHirdDO2WZk2vRF2+37WCDd5r01fQjJN8abZuhP8n1ElfBFwKRpUkwlHz4E=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(396003)(346002)(366004)(39860400002)(136003)(376002)(33716001)(316002)(54906003)(8676002)(76116006)(66476007)(5660300002)(6916009)(64756008)(66946007)(91956017)(4326008)(66446008)(8936002)(38100700002)(44832011)(66556008)(122000001)(2906002)(26005)(6506007)(38070700005)(86362001)(186003)(478600001)(71200400001)(41300700001)(9686003)(4744005)(83380400001)(6486002)(1076003)(6512007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ugxFF1ImWXunlVb8gaZdGw3ijC8pZQvPvDrRDmawshWgHiY5QjLXCqlBe5MK?=
- =?us-ascii?Q?k9tyYsQt3OpbayTYY+McJOaYmVQ5JoxtWJn1FI6eFzzaG09K9lOtG9gmqRHF?=
- =?us-ascii?Q?nhqImd38UloZtzh25g9O+Wiy1urK5OYqXpg2xLpKfiWEJxEdiT2OUyV+o0kd?=
- =?us-ascii?Q?JGx3TqJatOJd0ChwjEkBRTmr8x68TIf3mgpK5YRHTOYXIqTIKfxHSwm1BN4y?=
- =?us-ascii?Q?YM4VXSa2aZXQzSn9KvNsgQ4t/Pubh5TuRNaALV2RLqZAPtIgI7X6sdRFPWIg?=
- =?us-ascii?Q?pEYNzen5lruKjoNTjiqhvAKzvb9at9sDjahGGvAKlVJMkDMPo8XUI5/PHa2B?=
- =?us-ascii?Q?n7uVz2TD2gw6mFRNypVYt75KZEsKxmIbGpD5GSjDPT43djnw6V5zwW0CyYD+?=
- =?us-ascii?Q?b7QHzXkTmUtPUVv1eDHjfnlD8ttFKApi0LSK2nEVJR37cZZersd33ga5ZJOk?=
- =?us-ascii?Q?T4Nx5HayjvXz4AQxnGV7YgRWxYjxP3GqVjyn6fijjHzBuIipG2EyAOmAxeln?=
- =?us-ascii?Q?1WU8WJXE3Ki3KzqdnTJq6fBUJ0yQaFV2KIhJcOBvwf0aqwbiOxFbG6A3xNpn?=
- =?us-ascii?Q?XlCfH1cbyiGwLdBBRvpEtGgC/L1PzEoKvEeOGATYwzWNT3VfX+zieeHlI20G?=
- =?us-ascii?Q?HYYnLkLOrQyefhZBgeL7ch7PTArPRVvkZSvg5jOBlse/hx6dups3944vpg5A?=
- =?us-ascii?Q?TIan2ZVkby76bmQVisB9CHViopuhkH0mi4i1kFDvGYSQ5dCiB3G6qfwsbQdK?=
- =?us-ascii?Q?r2bTG0QF6sAEa3+XD4a+7joNUlxRFAExRFc896HbhXDrzS34AhEU9YIO7vw3?=
- =?us-ascii?Q?HKWgTViEPxcJNGb4PPerIIbTtg+8StFYrKjBMLNz9ZoXw9B3BOLMXVEzUP6Z?=
- =?us-ascii?Q?Vsghlbw6xue9jVH5NUAyYR6R8/72/TOPUKIAvIHlx6oUUinLn+TatNO768+v?=
- =?us-ascii?Q?5s/4PkpD1hNPGY4/hklOUwBt4PcTK6z0Qe0rAe/Gf7IZLKN+9pf7GLJP0+td?=
- =?us-ascii?Q?x77ANcstF39KObCmJS0fC2CWyf2F9GgP0yq5aTI+403FVgADzDzKJWJe1lTX?=
- =?us-ascii?Q?HGSZYK/G9dw1TlicFuFviykXw0yWFjVnujkxnZEdnC818q7sDV9UKQrViBwV?=
- =?us-ascii?Q?imYITYmMj+7i/I3DOivrPOmad5+V/vJUVqzk6pf2BmDIXzJome3GfUQvRPIX?=
- =?us-ascii?Q?rZ8mkHjfa46Ok1K5qAHA963/yTm1dm4wp+t5BVRMwLZ49Z7hV0oT9Jw0j76x?=
- =?us-ascii?Q?AzwZl4M1LA3/CgZUKzRpHkzNa1iKHpHTpOjbSeKxKPFl52qqibYm/WuqtvaA?=
- =?us-ascii?Q?/nLdFtMf7i29lHpDDxSWU5d6sDzC6Mh51pEu2t5hXao3v39MYphlAZrUs2vN?=
- =?us-ascii?Q?EvUbYVn0C6+N9UKfwUSqAwsx3bY1zQk2mJPLO4dt8lhiKJrW+6TMtB9lznzP?=
- =?us-ascii?Q?nyQ1U0k21O6CexrJ68MEuhfYtS1vgZRBxH5WlfsKJp8GGPaoYzCBUoZKqvlo?=
- =?us-ascii?Q?BJ3+Kkd3Xodq6887b6PBkbEVvG6yM+mloenxc41A/FetqXtcu4bp2Oe0Ql8j?=
- =?us-ascii?Q?G8HzJbwC1bkqKTqJBPE0lDuvDSHFS9RynwRHEz6TAuhoBTxZGJcB+kxvrHQr?=
- =?us-ascii?Q?EA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A4195A377C442A4C8605CA0846EB94CB@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229457AbiHPFvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:51:48 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18EDD13A50C
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 15:54:24 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id l20-20020a056e02067400b002dfa7256498so6050123ilt.4
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 15:54:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=Ah+1dZUt7UeRfkSg4ZXLRhIOVtV2gaNkjc7aI0CWsB8=;
+        b=LeJ9KQhrn/rCWEWtDsFdNu/8FqBKev7P9ZKW+Tm19BaQZJwdLmKWJtS/kobBig54OU
+         6YOtSmPHeWxOLTi7NzNXqUel5lR5zNT/EKGkRqnF2bMuozTPF/qcSe4WP7dNG5UL3nGu
+         gRzUUBEY5BsDrwFe28JpwBvXcqQbCxZvAsfOYOmf/xl5w3Y9Tosiz1j6Zyx7gHmMvvQe
+         CpbAqzyweKCBFfswYpizWdbMg+ecRqecBKK4jSSDzz/87+tj/ks/xer6YIFLJUzXVukt
+         o/OZvELgNuxAsAeKRBjaAJoCKm3ZxjJP8fVn2PNcl4SmSoSXPmHVoYDfZ3+r5xrZXqKl
+         kNnw==
+X-Gm-Message-State: ACgBeo0Fd+86WTCwMvaq3eCkq4p8OdGuXam8BDVOvk40Sy5mU6rG/Z4p
+        eqt8RIFHIi8oLKgYyxYfTNhQ9FYNKnFg/XYitM/MVHmV4mrx
+X-Google-Smtp-Source: AA6agR5/rHbEP3eKZ8WQtjVvfdcLY2yMw+rI1yPRRLHG02IyeR16Xo6aTBoscenX1GVyRLfG/xIh94pHlP7UgrdJ+dXHeLrbaFUV
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db793db0-be9d-4b8b-e343-08da7f0d3925
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2022 22:26:39.6276
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gKBOShFztUaKP4/BwqDZ1tSQJDNFiVg7qKLJS0yKGpqBn1LRVDbOQKhRYuRnMCjj+hlSvMhfEqbsLHQ1wckTkw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2903
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6638:210d:b0:343:17cb:60a7 with SMTP id
+ n13-20020a056638210d00b0034317cb60a7mr8436734jaj.292.1660604063454; Mon, 15
+ Aug 2022 15:54:23 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 15:54:23 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000509beb05e64f8351@google.com>
+Subject: [syzbot] inconsistent lock state in p9_fd_request
+From:   syzbot <syzbot+c4455787f92b4f78d5b1@syzkaller.appspotmail.com>
+To:     asmadeus@codewreck.org, davem@davemloft.net, edumazet@google.com,
+        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vinicius,
+Hello,
 
-On Mon, Aug 15, 2022 at 02:39:33PM -0700, Vinicius Costa Gomes wrote:
-> Just some aditional information (note that I know very little about
-> interrupt internal workings), igc_intr_msi() is called when MSI-X is not
-> enabled (i.e. "MSI only" system), igc_msix_other() is called when MSI-X
-> is available. When MSI-X is available, i225/i226 sets up a separate
-> interrupt handler for "general" events, the TX timestamp being available
-> to be read from the registers is one those events.
+syzbot found the following issue on:
 
-Thanks for the extra information.
+HEAD commit:    568035b01cfb Linux 6.0-rc1
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12a5b2a5080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e706e91b2a433db
+dashboard link: https://syzkaller.appspot.com/bug?extid=c4455787f92b4f78d5b1
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-Why is the i225/i226 emitting an interrupt about the availability of a
-new TX timestamp, if the igc driver polls for its availability anyway?
-In other words, when IGC_TSICR_TXTS is found set, is a TX timestamp
-available or is it not? Why does the driver schedule a deferred work
-item to retrieve it?=
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+c4455787f92b4f78d5b1@syzkaller.appspotmail.com
+
+================================
+WARNING: inconsistent lock state
+6.0.0-rc1-syzkaller #0 Not tainted
+--------------------------------
+inconsistent {IN-HARDIRQ-W} -> {HARDIRQ-ON-W} usage.
+syz-executor.3/5046 [HC0[0]:SC0[0]:HE1:SE1] takes:
+ffff88801e763818 (&clnt->lock){?...}-{2:2}, at: spin_lock include/linux/spinlock.h:349 [inline]
+ffff88801e763818 (&clnt->lock){?...}-{2:2}, at: p9_fd_request+0x85/0x330 net/9p/trans_fd.c:672
+{IN-HARDIRQ-W} state was registered at:
+  lock_acquire kernel/locking/lockdep.c:5666 [inline]
+  lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+  __raw_spin_lock_irqsave include/linux/spinlock_api_smp.h:110 [inline]
+  _raw_spin_lock_irqsave+0x39/0x50 kernel/locking/spinlock.c:162
+  p9_tag_remove net/9p/client.c:367 [inline]
+  p9_req_put net/9p/client.c:375 [inline]
+  p9_req_put+0xc6/0x250 net/9p/client.c:372
+  req_done+0x1de/0x2e0 net/9p/trans_virtio.c:148
+  vring_interrupt drivers/virtio/virtio_ring.c:2454 [inline]
+  vring_interrupt+0x29d/0x3d0 drivers/virtio/virtio_ring.c:2429
+  __handle_irq_event_percpu+0x227/0x870 kernel/irq/handle.c:158
+  handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+  handle_irq_event+0xa7/0x1e0 kernel/irq/handle.c:210
+  handle_edge_irq+0x25f/0xd00 kernel/irq/chip.c:819
+  generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+  handle_irq arch/x86/kernel/irq.c:231 [inline]
+  __common_interrupt+0x9d/0x210 arch/x86/kernel/irq.c:250
+  common_interrupt+0xa4/0xc0 arch/x86/kernel/irq.c:240
+  asm_common_interrupt+0x22/0x40 arch/x86/include/asm/idtentry.h:640
+  lock_is_held_type+0xe/0x140 kernel/locking/lockdep.c:5694
+  lock_is_held include/linux/lockdep.h:283 [inline]
+  rcu_read_lock_sched_held+0x3a/0x70 kernel/rcu/update.c:125
+  trace_lock_release include/trace/events/lock.h:69 [inline]
+  lock_release+0x560/0x780 kernel/locking/lockdep.c:5677
+  rcu_lock_release include/linux/rcupdate.h:285 [inline]
+  rcu_read_unlock include/linux/rcupdate.h:739 [inline]
+  batadv_nc_purge_orig_hash net/batman-adv/network-coding.c:412 [inline]
+  batadv_nc_worker+0x86b/0xfa0 net/batman-adv/network-coding.c:719
+  process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+  worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+  kthread+0x2e4/0x3a0 kernel/kthread.c:376
+  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+irq event stamp: 527
+hardirqs last  enabled at (527): [<ffffffff8982206f>] __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:159 [inline]
+hardirqs last  enabled at (527): [<ffffffff8982206f>] _raw_spin_unlock_irq+0x1f/0x40 kernel/locking/spinlock.c:202
+hardirqs last disabled at (526): [<ffffffff89821e41>] __raw_spin_lock_irq include/linux/spinlock_api_smp.h:117 [inline]
+hardirqs last disabled at (526): [<ffffffff89821e41>] _raw_spin_lock_irq+0x41/0x50 kernel/locking/spinlock.c:170
+softirqs last  enabled at (0): [<ffffffff8146165e>] copy_process+0x213e/0x7090 kernel/fork.c:2201
+softirqs last disabled at (0): [<0000000000000000>] 0x0
+
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(&clnt->lock);
+  <Interrupt>
+    lock(&clnt->lock);
+
+ *** DEADLOCK ***
+
+no locks held by syz-executor.3/5046.
+
+stack backtrace:
+CPU: 0 PID: 5046 Comm: syz-executor.3 Not tainted 6.0.0-rc1-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ print_usage_bug kernel/locking/lockdep.c:3961 [inline]
+ valid_state kernel/locking/lockdep.c:3973 [inline]
+ mark_lock_irq kernel/locking/lockdep.c:4176 [inline]
+ mark_lock.part.0.cold+0x18/0xd8 kernel/locking/lockdep.c:4632
+ mark_lock kernel/locking/lockdep.c:4596 [inline]
+ mark_usage kernel/locking/lockdep.c:4541 [inline]
+ __lock_acquire+0x847/0x56d0 kernel/locking/lockdep.c:5007
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ __raw_spin_lock include/linux/spinlock_api_smp.h:133 [inline]
+ _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:154
+ spin_lock include/linux/spinlock.h:349 [inline]
+ p9_fd_request+0x85/0x330 net/9p/trans_fd.c:672
+ p9_client_rpc+0x2f0/0xce0 net/9p/client.c:660
+ p9_client_version net/9p/client.c:880 [inline]
+ p9_client_create+0xaec/0x1070 net/9p/client.c:985
+ v9fs_session_init+0x1e2/0x1810 fs/9p/v9fs.c:408
+ v9fs_mount+0xba/0xc90 fs/9p/vfs_super.c:126
+ legacy_get_tree+0x105/0x220 fs/fs_context.c:610
+ vfs_get_tree+0x89/0x2f0 fs/super.c:1530
+ do_new_mount fs/namespace.c:3040 [inline]
+ path_mount+0x1326/0x1e20 fs/namespace.c:3370
+ do_mount fs/namespace.c:3383 [inline]
+ __do_sys_mount fs/namespace.c:3591 [inline]
+ __se_sys_mount fs/namespace.c:3568 [inline]
+ __x64_sys_mount+0x27f/0x300 fs/namespace.c:3568
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7f072b089279
+Code: ff ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 40 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f072c122168 EFLAGS: 00000246 ORIG_RAX: 00000000000000a5
+RAX: ffffffffffffffda RBX: 00007f072b19bf80 RCX: 00007f072b089279
+RDX: 0000000020000040 RSI: 0000000020000000 RDI: 0000000000000000
+RBP: 00007f072b0e3189 R08: 0000000020000400 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
+R13: 00007ffcabcfe84f R14: 00007f072c122300 R15: 0000000000022000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
