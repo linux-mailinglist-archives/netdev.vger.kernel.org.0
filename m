@@ -2,71 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E090592C61
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C862A592BEC
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241925AbiHOJLQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 05:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36924 "EHLO
+        id S241933AbiHOJRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 05:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241885AbiHOJLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:11:14 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D0821E21
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 02:11:13 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id v3so8393780wrp.0
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 02:11:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=4rKwZNDYI+83FraB3sI3WNiPbee1XL85BdUCCn3vWeU=;
-        b=slO4MlkpU5Q+Lso1PKCzK/Q9UJIjYqobmzDMUV2vytdp+wvtzRgf0zO+S2AWHAqhhi
-         BdZMftNH3L4SchZQiNMorZ1yG6Frl75mEcwb1SrW5V6/krmtMbQ9oL1pFXKZiSQXQqwY
-         I4m3wfkcJC9N9tFvtjSlCv3BCkLrM4NPajpO/nF/VNXn0VV+pnJFDknAWelkBBvuHlZR
-         vi0IoOWU6REQQO3+RGONJG0JJiVDPH3m1uHt1QP7lzfxqprboheAyF7/yFxDORHkxfP9
-         bPi/kVVMMjO1nTRnGZrhErK1SFjUEJ07vhAF8B8cC015af40QtCl1rRTWZx5f2Q71Oy1
-         Zweg==
+        with ESMTP id S232000AbiHOJRB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:17:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4F2DE220FF
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 02:17:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660555019;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=+lgH1hBRD1m/mzbQi1aYCWsf/2qMXaicGixcF+IMRPc=;
+        b=Aquct0fecHxR7AMGjpzcigv4cjnDEddx1hUr2Crq7zPg8mo2X1skM4toBlHAHGHjHwG0RA
+        OfU7gk1tU5YdY9jf9C2RELUfMA7sL09Up6HEvOhKsL61bFLY90b4qd1Kn93oUNjFvl1BTG
+        HaYdkvVOQMJZUIdGYtjMLO1bxVMv7Lk=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-439-seXYdKAxMaKsYEdNF-W7Jw-1; Mon, 15 Aug 2022 05:16:58 -0400
+X-MC-Unique: seXYdKAxMaKsYEdNF-W7Jw-1
+Received: by mail-ej1-f71.google.com with SMTP id sd6-20020a1709076e0600b0073315809fb5so970217ejc.10
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 02:16:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=4rKwZNDYI+83FraB3sI3WNiPbee1XL85BdUCCn3vWeU=;
-        b=zN/AYEKxhk9LQTT67Kpd2g8QTqaeOQOcemnPGeg0lAh2wjbUYf9Ll0nnybvn3PgNuE
-         cSQ/N+TmXThmp+vTJaik0wgzoDYrg10Du+r4+E+sqwFQU8SF+jcq1jN/eREnsyVWJC7o
-         CSdGOb7XDF12YPt2vgXO4nW94Mp6aHIeHwCeBSbfgVB7qtiGEDc8ph6Aj2CllMU5rua3
-         Uw8qm2LhFclS6FOEHRRZ51cPhImjKby9PuDm7ZH+HEzxB2buG6xq5hNngjbY0idoJIW3
-         +VNkIy0yEpPNnqK9fD7OzYtk/vmATGe8vuIY5lpiCtkoEaBCeb4KTi2PeU7PzVRdkEE6
-         c1aw==
-X-Gm-Message-State: ACgBeo1EVv7CTpIj9aWqrkBYN/9Oq5f2VGXj0xcgF55prluQGNvgs0Zl
-        0U0QSc3c0fWIrQr7HwRj7MymCg==
-X-Google-Smtp-Source: AA6agR7OeFtsHADloYcvhVEBbiz8XvPVZqItIzVWcXeVD5mu1U41gZknwaEsmyPQM4XxS1i+BinJEw==
-X-Received: by 2002:a05:6000:1c11:b0:21f:5abc:e777 with SMTP id ba17-20020a0560001c1100b0021f5abce777mr7821112wrb.221.1660554672179;
-        Mon, 15 Aug 2022 02:11:12 -0700 (PDT)
-Received: from localhost.localdomain (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.gmail.com with ESMTPSA id n15-20020a7bcbcf000000b003a5ce167a68sm9025115wmi.7.2022.08.15.02.11.11
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=+lgH1hBRD1m/mzbQi1aYCWsf/2qMXaicGixcF+IMRPc=;
+        b=gCRO7q+FD5hDfp41HKyH7s2bl/lDK2UqRRiuHekwrOHiv+JnngGDYgof8xKqsRybNq
+         SfD55DJPw3wcJ/9ZnOCOaDF3ru6O4CghyQQnliVKQ736GVBz62Cx0Asp1pbpA0hFADai
+         6lKehdh55DkhkDc6CslK8EGRdKBzpRXLaXLdKVUrWhPpbHEMN8+5fBD8HQUIkUsA3J3S
+         wUou1S109YLraplheqlGKXqFbNQ5fltyP+Sgg/YjJm7kuxrsuZkwxlpUMl7NE/kCv8u0
+         mxrZuyFMocUo4sRcoP973SkbCfc+QlmPK1reFnkBRTEyDA90OUPQwbkTzsf0XhO+pS/t
+         Socw==
+X-Gm-Message-State: ACgBeo357jx/XwCBQ+CdVYOMteR8jo6qlAMTVJaZQk3nVzLd49Fxv3up
+        nINr2QRwS2d+t9Al2yTS0JlhkuIcSoa7dLN3vzmqkP74Sodv0L+uq1N/eeKELulq8wWX1ooFzeP
+        WuPf9z7KEFe1mLw7V
+X-Received: by 2002:a05:6402:1e8d:b0:441:58db:b6a2 with SMTP id f13-20020a0564021e8d00b0044158dbb6a2mr13472955edf.277.1660555017043;
+        Mon, 15 Aug 2022 02:16:57 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4TUuxXLf4X9ZxvGDLmurzNR+B1PhAkCo7uKtZy520YFWqKHF1q3eDJtrRUZuNuy6tNLwZeog==
+X-Received: by 2002:a05:6402:1e8d:b0:441:58db:b6a2 with SMTP id f13-20020a0564021e8d00b0044158dbb6a2mr13472939edf.277.1660555016769;
+        Mon, 15 Aug 2022 02:16:56 -0700 (PDT)
+Received: from redhat.com ([2.54.169.49])
+        by smtp.gmail.com with ESMTPSA id i20-20020a17090685d400b00722e50dab2csm3817610ejy.109.2022.08.15.02.16.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 02:11:11 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     vadimp@mellanox.com, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
+        Mon, 15 Aug 2022 02:16:56 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 05:16:50 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andres Freund <andres@anarazel.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2 2/2] Revert "mlxsw: core: Add the hottest thermal zone detection"
-Date:   Mon, 15 Aug 2022 11:10:32 +0200
-Message-Id: <20220815091032.1731268-2-daniel.lezcano@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220815091032.1731268-1-daniel.lezcano@linaro.org>
-References: <20220815091032.1731268-1-daniel.lezcano@linaro.org>
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        c@redhat.com
+Subject: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
+ size by find_vqs()"
+Message-ID: <20220815090521.127607-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,185 +88,135 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 6f73862fabd93213de157d9cc6ef76084311c628.
+This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
 
-As discussed in the thread:
+This has been reported to trip up guests on GCP (Google Cloud).  Why is
+not yet clear - to be debugged, but the patch itself has several other
+issues:
 
-https://lore.kernel.org/all/f3c62ebe-7d59-c537-a010-bff366c8aeba@linaro.org/
+- It treats unknown speed as < 10G
+- It leaves userspace no way to find out the ring size set by hypervisor
+- It tests speed when link is down
+- It ignores the virtio spec advice:
+        Both \field{speed} and \field{duplex} can change, thus the driver
+        is expected to re-read these values after receiving a
+        configuration change notification.
+- It is not clear the performance impact has been tested properly
 
-the feature provided by commits 2dc2f760052da and 6f73862fabd93 is
-actually already handled by the thermal framework via the cooling
-device state aggregation, thus all this code is pointless.
+Revert the patch for now.
 
-The revert conflicts with the following changes:
- - 7f4957be0d5b8: thermal: Use mode helpers in drivers
- - 6a79507cfe94c: mlxsw: core: Extend thermal module with per QSFP module thermal zones
-
-These conflicts were fixed and the resulting changes are in this patch.
-
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Tested-by: Vadim Pasternak <vadimp@nvidia.com>
+Link: https://lore.kernel.org/r/20220814212610.GA3690074%40roeck-us.net
+Link: https://lore.kernel.org/r/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de
+Link: https://lore.kernel.org/r/3df6bb82-1951-455d-a768-e9e1513eb667%40www.fastmail.com
+Link: https://lore.kernel.org/r/FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE%40anarazel.de
+Fixes: 762faee5a267 ("virtio_net: set the default max ring size by find_vqs()")
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Tested-by: Andres Freund <andres@anarazel.de>
 ---
- v2:
-   - Fix 'err' not used as reported by kbuild test:
-   https://lore.kernel.org/all/202208150708.fk6sfd8u-lkp@intel.com/
----
- .../ethernet/mellanox/mlxsw/core_thermal.c    | 64 ++-----------------
- 1 file changed, 4 insertions(+), 60 deletions(-)
+ drivers/net/virtio_net.c | 42 ++++------------------------------------
+ 1 file changed, 4 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-index f5751242653b..237a813fbb52 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core_thermal.c
-@@ -22,7 +22,6 @@
- #define MLXSW_THERMAL_HYSTERESIS_TEMP	5000	/* 5C */
- #define MLXSW_THERMAL_MODULE_TEMP_SHIFT	(MLXSW_THERMAL_HYSTERESIS_TEMP * 2)
- #define MLXSW_THERMAL_ZONE_MAX_NAME	16
--#define MLXSW_THERMAL_TEMP_SCORE_MAX	GENMASK(31, 0)
- #define MLXSW_THERMAL_MAX_STATE	10
- #define MLXSW_THERMAL_MIN_STATE	2
- #define MLXSW_THERMAL_MAX_DUTY	255
-@@ -96,8 +95,6 @@ struct mlxsw_thermal {
- 	u8 tz_module_num;
- 	struct mlxsw_thermal_module *tz_gearbox_arr;
- 	u8 tz_gearbox_num;
--	unsigned int tz_highest_score;
--	struct thermal_zone_device *tz_highest_dev;
- };
- 
- static inline u8 mlxsw_state_to_duty(int state)
-@@ -186,34 +183,6 @@ mlxsw_thermal_module_trips_update(struct device *dev, struct mlxsw_core *core,
- 	return 0;
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index d934774e9733..ece00b84e3a7 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3432,29 +3432,6 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
+ 		   (unsigned int)GOOD_PACKET_LEN);
  }
  
--static void mlxsw_thermal_tz_score_update(struct mlxsw_thermal *thermal,
--					  struct thermal_zone_device *tzdev,
--					  struct mlxsw_thermal_trip *trips,
--					  int temp)
+-static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
 -{
--	struct mlxsw_thermal_trip *trip = trips;
--	unsigned int score, delta, i, shift = 1;
+-	u32 i, rx_size, tx_size;
 -
--	/* Calculate thermal zone score, if temperature is above the hot
--	 * threshold score is set to MLXSW_THERMAL_TEMP_SCORE_MAX.
--	 */
--	score = MLXSW_THERMAL_TEMP_SCORE_MAX;
--	for (i = MLXSW_THERMAL_TEMP_TRIP_NORM; i < MLXSW_THERMAL_NUM_TRIPS;
--	     i++, trip++) {
--		if (temp < trip->temp) {
--			delta = DIV_ROUND_CLOSEST(temp, trip->temp - temp);
--			score = delta * shift;
--			break;
--		}
--		shift *= 256;
+-	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
+-		rx_size = 1024;
+-		tx_size = 1024;
+-
+-	} else if (vi->speed < SPEED_40000) {
+-		rx_size = 1024 * 4;
+-		tx_size = 1024 * 4;
+-
+-	} else {
+-		rx_size = 1024 * 8;
+-		tx_size = 1024 * 8;
 -	}
 -
--	if (score > thermal->tz_highest_score) {
--		thermal->tz_highest_score = score;
--		thermal->tz_highest_dev = tzdev;
+-	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		sizes[rxq2vq(i)] = rx_size;
+-		sizes[txq2vq(i)] = tx_size;
 -	}
 -}
 -
- static int mlxsw_thermal_bind(struct thermal_zone_device *tzdev,
- 			      struct thermal_cooling_device *cdev)
+ static int virtnet_find_vqs(struct virtnet_info *vi)
  {
-@@ -278,10 +247,8 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
- 		dev_err(dev, "Failed to query temp sensor\n");
- 		return err;
+ 	vq_callback_t **callbacks;
+@@ -3462,7 +3439,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 	int ret = -ENOMEM;
+ 	int i, total_vqs;
+ 	const char **names;
+-	u32 *sizes;
+ 	bool *ctx;
+ 
+ 	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
+@@ -3490,15 +3466,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 		ctx = NULL;
  	}
+ 
+-	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
+-	if (!sizes)
+-		goto err_sizes;
+-
+ 	/* Parameters for control virtqueue, if any */
+ 	if (vi->has_cvq) {
+ 		callbacks[total_vqs - 1] = NULL;
+ 		names[total_vqs - 1] = "control";
+-		sizes[total_vqs - 1] = 64;
+ 	}
+ 
+ 	/* Allocate/initialize parameters for send/receive virtqueues */
+@@ -3513,10 +3484,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 			ctx[rxq2vq(i)] = true;
+ 	}
+ 
+-	virtnet_config_sizes(vi, sizes);
+-
+-	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
+-				       names, sizes, ctx, NULL);
++	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
++				  names, ctx, NULL);
+ 	if (ret)
+ 		goto err_find;
+ 
+@@ -3536,8 +3505,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 
+ 
+ err_find:
+-	kfree(sizes);
+-err_sizes:
+ 	kfree(ctx);
+ err_ctx:
+ 	kfree(names);
+@@ -3897,9 +3864,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		vi->curr_queue_pairs = num_online_cpus();
+ 	vi->max_queue_pairs = max_queue_pairs;
+ 
+-	virtnet_init_settings(dev);
+-	virtnet_update_settings(vi);
+-
+ 	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -3912,6 +3876,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
+ 	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
+ 
++	virtnet_init_settings(dev);
 +
- 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
--	if (temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
--					      temp);
- 
- 	*p_temp = temp;
- 	return 0;
-@@ -342,22 +309,6 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
- 	return 0;
- }
- 
--static int mlxsw_thermal_trend_get(struct thermal_zone_device *tzdev,
--				   int trip, enum thermal_trend *trend)
--{
--	struct mlxsw_thermal_module *tz = tzdev->devdata;
--	struct mlxsw_thermal *thermal = tz->parent;
--
--	if (trip < 0 || trip >= MLXSW_THERMAL_NUM_TRIPS)
--		return -EINVAL;
--
--	if (tzdev == thermal->tz_highest_dev)
--		return 1;
--
--	*trend = THERMAL_TREND_STABLE;
--	return 0;
--}
--
- static struct thermal_zone_params mlxsw_thermal_params = {
- 	.no_hwmon = true,
- };
-@@ -371,7 +322,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_ops = {
- 	.set_trip_temp	= mlxsw_thermal_set_trip_temp,
- 	.get_trip_hyst	= mlxsw_thermal_get_trip_hyst,
- 	.set_trip_hyst	= mlxsw_thermal_set_trip_hyst,
--	.get_trend	= mlxsw_thermal_trend_get,
- };
- 
- static int mlxsw_thermal_module_bind(struct thermal_zone_device *tzdev,
-@@ -456,7 +406,6 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
- 	int temp, crit_temp, emerg_temp;
- 	struct device *dev;
- 	u16 sensor_index;
--	int err;
- 
- 	dev = thermal->bus_info->dev;
- 	sensor_index = MLXSW_REG_MTMP_MODULE_INDEX_MIN + tz->module;
-@@ -471,10 +420,8 @@ static int mlxsw_thermal_module_temp_get(struct thermal_zone_device *tzdev,
- 		return 0;
- 
- 	/* Update trip points. */
--	err = mlxsw_thermal_module_trips_update(dev, thermal->core, tz,
--						crit_temp, emerg_temp);
--	if (!err && temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
-+	mlxsw_thermal_module_trips_update(dev, thermal->core, tz,
-+					  crit_temp, emerg_temp);
- 
- 	return 0;
- }
-@@ -547,7 +494,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_module_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
--	.get_trend	= mlxsw_thermal_trend_get,
- };
- 
- static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
-@@ -568,8 +514,6 @@ static int mlxsw_thermal_gearbox_temp_get(struct thermal_zone_device *tzdev,
- 		return err;
- 
- 	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
--	if (temp > 0)
--		mlxsw_thermal_tz_score_update(thermal, tzdev, tz->trips, temp);
- 
- 	*p_temp = temp;
- 	return 0;
-@@ -584,7 +528,6 @@ static struct thermal_zone_device_ops mlxsw_thermal_gearbox_ops = {
- 	.set_trip_temp	= mlxsw_thermal_module_trip_temp_set,
- 	.get_trip_hyst	= mlxsw_thermal_module_trip_hyst_get,
- 	.set_trip_hyst	= mlxsw_thermal_module_trip_hyst_set,
--	.get_trend	= mlxsw_thermal_trend_get,
- };
- 
- static int mlxsw_thermal_get_max_state(struct thermal_cooling_device *cdev,
-@@ -667,6 +610,7 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
- 							MLXSW_THERMAL_TRIP_MASK,
- 							module_tz,
- 							&mlxsw_thermal_module_ops,
-+
- 							&mlxsw_thermal_params,
- 							0,
- 							module_tz->parent->polling_delay);
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+ 		vi->failover = net_failover_create(vi->dev);
+ 		if (IS_ERR(vi->failover)) {
 -- 
-2.34.1
+MST
 
