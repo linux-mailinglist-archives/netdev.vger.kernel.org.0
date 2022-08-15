@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA4CE5931A3
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:19:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A85FA5931A6
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232866AbiHOPSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 11:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34596 "EHLO
+        id S242765AbiHOPTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 11:19:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243220AbiHOPSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:18:40 -0400
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C9826AF5;
-        Mon, 15 Aug 2022 08:18:38 -0700 (PDT)
-Received: by mail-ua1-x92d.google.com with SMTP id 5so2987221uay.5;
-        Mon, 15 Aug 2022 08:18:38 -0700 (PDT)
+        with ESMTP id S241006AbiHOPS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:18:56 -0400
+Received: from mail-ua1-x929.google.com (mail-ua1-x929.google.com [IPv6:2607:f8b0:4864:20::929])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F9421244;
+        Mon, 15 Aug 2022 08:18:55 -0700 (PDT)
+Received: by mail-ua1-x929.google.com with SMTP id 5so2987543uay.5;
+        Mon, 15 Aug 2022 08:18:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
-        bh=DIWrbZlEfd3/DW1QpNhOvoAtHCnXwPVvDcMVlPM1dEQ=;
-        b=PjIiC7HNPU5Nsj8C3oCKOE98jQqGcPh7kjA3se8Kp9zQ67wBS3pPpkri9FEguyJKUK
-         9x1BTGMFGUX3mhJV3MlAGfWcJavFHpHptpKdsIfy2N+MAcDMh61O+sB9aELY5zRKUaND
-         G6+RZTyavNX3vCvp1npeWmaVKmJuhb2NtqJt6oK4/Nca/YO/dT/ra3+lTyD8bufSuCek
-         LSAPA6RumHpYeIfmY/rSdh0jMo7VQ9DhrjiKDgLSBQYMJoJkf4uIiaxfAvIxkpHoC7cR
-         GbvqTM9Jsp4xo+Q/FsyEBzv0qrNUC23b1YYIcFGJEzendKR6fZqf3eqFV2JkxgiMCHp6
-         wjAw==
+        bh=BcFt82RUJW5J4Iiz0vCULij2YJ4NVB/55zK7nEHb9eY=;
+        b=eFv1TcrWGwhXeSzH9ocXhFgb/LzBL1vHh8KGtQZKKulysTE7pusFqful0WCwhPyDkW
+         +Tq8+r6FKv6aTnfMDqaDN0zlmjTjUR8g9rSPFAqvUF+FYUOGrtvoPnqfUJxle6HpKNGU
+         S7Wtqy2f0Dg7BVC7PPvHS8l7g6oav7rb23qZIdSj77jQKuwh6cQpPe8yLwZA5iG66+ft
+         Y2dScHNxDZGa5A1tCpfa/J8EhYoUdMgJ7dWUyIjoSmatS+hEyGKBuj6X0Ie+euudubJh
+         iPIaYUmWlFWiiTD/76FSCnwkHdYtTUcqYs+TsO9q07/S+jZN3g5de35BJVX9QEAZvw95
+         nTxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
-        bh=DIWrbZlEfd3/DW1QpNhOvoAtHCnXwPVvDcMVlPM1dEQ=;
-        b=sE641fDjELwaMpwFdQ0cHLipRb4g9IvCGdSxQMIi6aI27aHv3m89iR5mMWr2+B03bj
-         TmwL1wnQ1Z3P8XPhvLlHDqwXTfMNhP87bSsKXw90VBEBHlt8cwm85eaXiduknZrhVu72
-         6+PW5Uj7zPqRk8jesyDalMjYwHrV0VA803cX82IpC3bFrJxUw9etbXL2HONO0GeItuHh
-         PtJQui1bQ6itLxzfsF3VBRsER6pH/ajQXye5eDUQa5TxZiW5LnrQvqV9IB3YdoAfYhZ6
-         qXprXFaCl9ypbbTElI8L3hfYJfQs1LfSUJ6kJDGT32fOYsNeHsS+TQgYxgFBBw8JednP
-         emNQ==
-X-Gm-Message-State: ACgBeo0QbMf6uI/TtOHqdwnjj3Hvrhi+NqLZa13pmW3j5AuEjKVyjrOF
-        Bukol6+GmLB2H/co/fyylls7u5YVrtMo4v32
-X-Google-Smtp-Source: AA6agR7YC9NycKv5xOMUyAcalxUtBHGX97aONxdmgX/nEECSm1+Dl+GaD9zL7fEE+Ok6lGoZxuzbNA==
-X-Received: by 2002:ab0:760d:0:b0:384:cea0:b24f with SMTP id o13-20020ab0760d000000b00384cea0b24fmr6828696uap.7.1660576717721;
-        Mon, 15 Aug 2022 08:18:37 -0700 (PDT)
+        bh=BcFt82RUJW5J4Iiz0vCULij2YJ4NVB/55zK7nEHb9eY=;
+        b=7n+TEG1TkaG1J6l6ybNWRtLVCFh/UlpJirZcj3+gpPVQkG+W6MB5W6D7g+JEpynIlJ
+         jWbpMbhYJNV5zC9Zj1fNXN9C2TlCTs9CCbTBPQ+gQei/xJHD/RjM6CJQjwSS+dWNf4hu
+         8rTQw+SpZikEoa0x98pie6Yyi7m/kwOLIxF1CzZCBQ1NtD3rvBWQtt8hu3Fl5IYgCTJQ
+         kga5FXbs8dIYtzg7cewB2vwS1t65aFPDVkDpMAJP2EmHk3SaglJHBbY5j8CGDTVA7ifQ
+         NM+4oLlUhcxi7a6eRGpV/TToxzFv3CAYIBeMA3jNyenSV0gv7tHapdYgdWg5vVIk+O8A
+         oTPg==
+X-Gm-Message-State: ACgBeo3XYGV55sg0Yjde9fUUa42eR5dhrCawvKwcn/bc0Y/HD/OCrbtJ
+        yhfJHjo1RczMDGHoNYlA4AY=
+X-Google-Smtp-Source: AA6agR54n1c87zyWyaYOlgaiFlWuSXxRglI+j+aGxTXocodD4s7OTb3WsPJlyhJEL4m+6be+ReNgqQ==
+X-Received: by 2002:ab0:2259:0:b0:384:e172:e16 with SMTP id z25-20020ab02259000000b00384e1720e16mr6714549uan.61.1660576734756;
+        Mon, 15 Aug 2022 08:18:54 -0700 (PDT)
 Received: from laptop.. ([2804:14c:71:8fe6:44c:4bb9:384e:eda5])
-        by smtp.gmail.com with ESMTPSA id y18-20020ab02eb2000000b00390cbced44csm4574448uay.7.2022.08.15.08.18.35
+        by smtp.gmail.com with ESMTPSA id v74-20020a1f2f4d000000b0037d0bb0a3c8sm6955818vkv.15.2022.08.15.08.18.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 08:18:37 -0700 (PDT)
+        Mon, 15 Aug 2022 08:18:54 -0700 (PDT)
 From:   Jose Alonso <joalonsof@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
@@ -54,9 +54,9 @@ Cc:     netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>,
         Ronald Wahl <ronald.wahl@raritan.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Jose Alonso <joalonsof@gmail.com>
-Subject: [PATCH stable 5.4.x] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-Date:   Mon, 15 Aug 2022 12:18:32 -0300
-Message-Id: <20220815151832.319094-1-joalonsof@gmail.com>
+Subject: [PATCH stable 4.19.x] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
+Date:   Mon, 15 Aug 2022 12:18:48 -0300
+Message-Id: <20220815151848.319112-1-joalonsof@gmail.com>
 X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -95,10 +95,10 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index 5ee3e457a79c..ea9c8361bf46 100644
+index efee7bacfd76..cf6ff8732fb2 100644
 --- a/drivers/net/usb/ax88179_178a.c
 +++ b/drivers/net/usb/ax88179_178a.c
-@@ -1690,7 +1690,7 @@ static const struct driver_info ax88179_info = {
+@@ -1706,7 +1706,7 @@ static const struct driver_info ax88179_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -107,7 +107,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1703,7 +1703,7 @@ static const struct driver_info ax88178a_info = {
+@@ -1719,7 +1719,7 @@ static const struct driver_info ax88178a_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -116,7 +116,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1716,7 +1716,7 @@ static const struct driver_info cypress_GX3_info = {
+@@ -1732,7 +1732,7 @@ static const struct driver_info cypress_GX3_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -125,7 +125,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1729,7 +1729,7 @@ static const struct driver_info dlink_dub1312_info = {
+@@ -1745,7 +1745,7 @@ static const struct driver_info dlink_dub1312_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -134,7 +134,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1742,7 +1742,7 @@ static const struct driver_info sitecom_info = {
+@@ -1758,7 +1758,7 @@ static const struct driver_info sitecom_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -143,7 +143,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1755,7 +1755,7 @@ static const struct driver_info samsung_info = {
+@@ -1771,7 +1771,7 @@ static const struct driver_info samsung_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -152,7 +152,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1768,7 +1768,7 @@ static const struct driver_info lenovo_info = {
+@@ -1784,7 +1784,7 @@ static const struct driver_info lenovo_info = {
  	.link_reset = ax88179_link_reset,
  	.reset = ax88179_reset,
  	.stop = ax88179_stop,
@@ -161,7 +161,7 @@ index 5ee3e457a79c..ea9c8361bf46 100644
  	.rx_fixup = ax88179_rx_fixup,
  	.tx_fixup = ax88179_tx_fixup,
  };
-@@ -1781,7 +1781,7 @@ static const struct driver_info belkin_info = {
+@@ -1797,7 +1797,7 @@ static const struct driver_info belkin_info = {
  	.link_reset = ax88179_link_reset,
  	.reset	= ax88179_reset,
  	.stop	= ax88179_stop,
