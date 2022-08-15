@@ -2,194 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64339592BEE
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33C39592C82
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242156AbiHOJon (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 05:44:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
+        id S242173AbiHOJug (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 05:50:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242142AbiHOJol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:44:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2148E2253A;
-        Mon, 15 Aug 2022 02:44:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B7261026;
-        Mon, 15 Aug 2022 09:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82466C433C1;
-        Mon, 15 Aug 2022 09:44:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660556679;
-        bh=QaGBzqhn0ZD/7Zc89Ov2cg1W44KZCJ7lb2WJY5GCRe0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R2Ofi4zyad+oWz3HSL8eqIZkRZa1q6PYP3byrgrIvNeESt3UDcRvypPVdxOIa0rLu
-         DJfDWXiIXk+lF+2z8fMZbipcFDoqefOkINi/1sKBUey2Ymdx3AYmxXsJ6A0tEfmY6o
-         MGL2DWhpT+5/Rwrj3yZTlmHwSjFtDlF+RXnSbC7SDlhUp7ccqHs1/cifyQQ0V3V6T4
-         eUo1MzxbSFxwVkhE4lY/UCmKW1kbznB+YilWQ6Ot1hD/hxHDXIY4AI+8oMmFYjq+tv
-         pEAxBC0eHySIMaUe2GNV6CCNmyd4r/vsF9MXNBW3H411HH5kEMvFGBcYFu4hGu/iDP
-         av0IFTplRP1SA==
-Date:   Mon, 15 Aug 2022 11:44:32 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>,
-        Yajun Deng <yajun.deng@linux.dev>,
-        Roopa Prabhu <roopa@nvidia.com>, linux-kernel@vger.kernel.org,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        kernel@openvz.org, devel@openvz.org
-Subject: Re: [PATCH v2 1/2] neigh: fix possible DoS due to net iface
- start/stop loop
-Message-ID: <20220815094432.tdqdfh3pwcfekegg@wittgenstein>
-References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
- <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
- <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
+        with ESMTP id S231819AbiHOJuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:50:35 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659D51027;
+        Mon, 15 Aug 2022 02:50:34 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id n4so8433526wrp.10;
+        Mon, 15 Aug 2022 02:50:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc;
+        bh=psPpKOGAtOeEDOvtXs+apIVxxYFLedxYJn8rDYeTSCI=;
+        b=PK2DQ3jN1k0ul0I4lNJsvoX8D8d/pWB4v4UqceK+ww+/lTWvd5YcI87PHTTT6XpZf4
+         bZiM4SGEDS5n6XS9YdXFl9ukYqIblFl17u/dEz1nikjXlzp4YuGzlElxqNKL5zIFzqX+
+         HGWkJI5Nk6+9yRgPza14UwKBsixMsAWVwUyCKlyotUwLV3xAgWOU+LcmUL58YMxqNMjL
+         EnGhB+Sx4eBQ1kMqCweDdN0oH+l2/+vJDDabgdE3451oiXitxmjVAqYo821OT1pjumJo
+         bao1AF5HusRVbeQeLr6cbydIwHkxgG43Lpg1jp6OigsHyfBxYbm95vUZuUjEZrktqv3b
+         r8Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=psPpKOGAtOeEDOvtXs+apIVxxYFLedxYJn8rDYeTSCI=;
+        b=F7ycitHfvkZeQrmJBHncTp4jq7yvzi2JoE8XAX1Dp7ckH6lTLoqNtgksU5h8ocYAe1
+         WUtEfgtJ9hOiMCDtDgcBfwlJj/2h/nVLAw+IKOqb2JdRK1wqSGbk8dE1cL/opUJnEiFd
+         p3p0xx7tZuPL8+E69R/EutpFlltttu4DeUA8rQp0qQNBuH7z4cSvMUanl6WA4cDYOB2r
+         G0EYV5ma2f8PyKNzWAI7jEjO8r6v4hBzxO0BgEdP+UzG7KTLqOrcGzUMz6lZwdniAoa6
+         ZnH0/0qDgv8MTTb9UxXwGilm2kQjw+SPnTcnsCQNuiTKceoqWH82egVBPN5YWKe0nPyA
+         VOHg==
+X-Gm-Message-State: ACgBeo3ajksAjYLNqblxwRXZ5EjqlAbiKhzLSsAv5nGMnRO/YiA7ZTOU
+        s8qPQkaESrTejJNlyoqPqD4=
+X-Google-Smtp-Source: AA6agR7Fll0IsHCmnqegeErvjOXbjZ88G3w3Re6FoaI23BQ+MWnCi0Ef8ldTP5VOGG2rxRelJEthrw==
+X-Received: by 2002:a05:6000:18a2:b0:221:7d32:e6a5 with SMTP id b2-20020a05600018a200b002217d32e6a5mr8282027wri.278.1660557032800;
+        Mon, 15 Aug 2022 02:50:32 -0700 (PDT)
+Received: from ?IPV6:2620:10d:c096:310::22ef? ([2620:10d:c092:600::2:5fc6])
+        by smtp.gmail.com with ESMTPSA id j3-20020a5d5643000000b0021f138e07acsm6832311wrw.35.2022.08.15.02.50.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 02:50:32 -0700 (PDT)
+Message-ID: <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
+Date:   Mon, 15 Aug 2022 10:46:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   Pavel Begunkov <asml.silence@gmail.com>
+Subject: Re: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
+To:     Stefan Metzmacher <metze@samba.org>, io-uring@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
+References: <cover.1653992701.git.asml.silence@gmail.com>
+ <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
+ <cccec667-d762-9bfd-f5a5-1c9fb46df5af@samba.org>
+ <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
+ <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
+Content-Language: en-US
+In-Reply-To: <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 07:08:39PM +0300, Alexander Mikhalitsyn wrote:
-> From: "Denis V. Lunev" <den@openvz.org>
-> 
-> Normal processing of ARP request (usually this is Ethernet broadcast
-> packet) coming to the host is looking like the following:
-> * the packet comes to arp_process() call and is passed through routing
->   procedure
-> * the request is put into the queue using pneigh_enqueue() if
->   corresponding ARP record is not local (common case for container
->   records on the host)
-> * the request is processed by timer (within 80 jiffies by default) and
->   ARP reply is sent from the same arp_process() using
->   NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
->   pneigh_enqueue())
-> 
-> And here the problem comes. Linux kernel calls pneigh_queue_purge()
-> which destroys the whole queue of ARP requests on ANY network interface
-> start/stop event through __neigh_ifdown().
-> 
-> This is actually not a problem within the original world as network
-> interface start/stop was accessible to the host 'root' only, which
-> could do more destructive things. But the world is changed and there
-> are Linux containers available. Here container 'root' has an access
-> to this API and could be considered as untrusted user in the hosting
-> (container's) world.
-> 
-> Thus there is an attack vector to other containers on node when
-> container's root will endlessly start/stop interfaces. We have observed
-> similar situation on a real production node when docker container was
-> doing such activity and thus other containers on the node become not
-> accessible.
-> 
-> The patch proposed doing very simple thing. It drops only packets from
-> the same namespace in the pneigh_queue_purge() where network interface
-> state change is detected. This is enough to prevent the problem for the
-> whole node preserving original semantics of the code.
+On 8/13/22 09:45, Stefan Metzmacher wrote:
+> Hi Pavel,
 
-This is how I'd do it as well.
+Hi Stefan,
 
-> 
-> v2:
-> 	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
-> 
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: David Ahern <dsahern@kernel.org>
-> Cc: Yajun Deng <yajun.deng@linux.dev>
-> Cc: Roopa Prabhu <roopa@nvidia.com>
-> Cc: Christian Brauner <brauner@kernel.org>
-> Cc: netdev@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
-> Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
-> Cc: kernel@openvz.org
-> Cc: devel@openvz.org
-> Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
-> Signed-off-by: Denis V. Lunev <den@openvz.org>
-> ---
->  net/core/neighbour.c | 25 +++++++++++++++++--------
->  1 file changed, 17 insertions(+), 8 deletions(-)
-> 
-> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> index 54625287ee5b..19d99d1eff53 100644
-> --- a/net/core/neighbour.c
-> +++ b/net/core/neighbour.c
-> @@ -307,14 +307,23 @@ static int neigh_del_timer(struct neighbour *n)
->  	return 0;
->  }
->  
-> -static void pneigh_queue_purge(struct sk_buff_head *list)
-> +static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
->  {
-> +	unsigned long flags;
->  	struct sk_buff *skb;
->  
-> -	while ((skb = skb_dequeue(list)) != NULL) {
-> -		dev_put(skb->dev);
-> -		kfree_skb(skb);
-> +	spin_lock_irqsave(&list->lock, flags);
+Thanks for giving a thought about the API, are you trying
+to use it in samba?
 
-I'm a bit surprised to see a spinlock held around a while loop walking a
-linked list but that seems to be quite common in this file. I take it
-the lists are guaranteed to be short.
-
-> +	skb = skb_peek(list);
-> +	while (skb != NULL) {
-> +		struct sk_buff *skb_next = skb_peek_next(skb, list);
-> +		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
-> +			__skb_unlink(skb, list);
-> +			dev_put(skb->dev);
-> +			kfree_skb(skb);
-> +		}
-> +		skb = skb_next;
->  	}
-> +	spin_unlock_irqrestore(&list->lock, flags);
->  }
->  
->  static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
-> @@ -385,9 +394,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
->  	write_lock_bh(&tbl->lock);
->  	neigh_flush_dev(tbl, dev, skip_perm);
->  	pneigh_ifdown_and_unlock(tbl, dev);
-> -
-> -	del_timer_sync(&tbl->proxy_timer);
-> -	pneigh_queue_purge(&tbl->proxy_queue);
-> +	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
-> +	if (skb_queue_empty_lockless(&tbl->proxy_queue))
-> +		del_timer_sync(&tbl->proxy_timer);
->  	return 0;
->  }
->  
-> @@ -1787,7 +1796,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
->  	cancel_delayed_work_sync(&tbl->managed_work);
->  	cancel_delayed_work_sync(&tbl->gc_work);
->  	del_timer_sync(&tbl->proxy_timer);
-> -	pneigh_queue_purge(&tbl->proxy_queue);
-> +	pneigh_queue_purge(&tbl->proxy_queue, NULL);
->  	neigh_ifdown(tbl, NULL);
->  	if (atomic_read(&tbl->entries))
->  		pr_crit("neighbour leakage\n");
-> -- 
-> 2.36.1
+>>> Given that this fills in msg almost completely can we also have
+>>> a version of SENDMSGZC, it would be very useful to also allow
+>>> msg_control to be passed and as well as an iovec.
+>>>
+>>> Would that be possible?
+>>
+>> Right, I left it to follow ups as the series is already too long.
+>>
+>> fwiw, I'm going to also add addr to IORING_OP_SEND.
 > 
+> 
+> Given the minimal differences, which were left between
+> IORING_OP_SENDZC and IORING_OP_SEND, wouldn't it be better
+> to merge things to IORING_OP_SEND using a IORING_RECVSEND_ZC_NOTIF
+> as indication to use the notif slot.
+
+And will be even more similar in for-next, but with notifications
+I'd still prefer different opcodes to get a little bit more
+flexibility and not making the normal io_uring send path messier.
+
+> It would means we don't need to waste two opcodes for
+> IORING_OP_SENDZC and IORING_OP_SENDMSGZC (and maybe more)
+> 
+> 
+> I also noticed a problem in io_notif_update()
+> 
+>          for (; idx < idx_end; idx++) {
+>                  struct io_notif_slot *slot = &ctx->notif_slots[idx];
+> 
+>                  if (!slot->notif)
+>                          continue;
+>                  if (up->arg)
+>                          slot->tag = up->arg;
+>                  io_notif_slot_flush_submit(slot, issue_flags);
+>          }
+> 
+>   slot->tag = up->arg is skipped if there is no notif already.
+> 
+> So you can't just use a 2 linked sqe's with
+> 
+> IORING_RSRC_UPDATE_NOTIF followed by IORING_OP_SENDZC(with IORING_RECVSEND_NOTIF_FLUSH)
+
+slot->notif is lazily initialised with the first send attached to it,
+so in your example IORING_OP_SENDZC will first create a notification
+to execute the send and then will flush it.
+
+This "if" is there is only to have a more reliable API. We can
+go over the range and allocate all empty slots and then flush
+all of them, but allocation failures should be propagated to the
+userspace when currently the function it can't fail.
+
+> I think the if (!slot->notif) should be moved down a bit.
+
+Not sure what you mean
+
+> It would somehow be nice to avoid the notif slots at all and somehow
+> use some kind of multishot request in order to generate two qces.
+
+It is there first to ammortise overhead of zerocopy infra and bits
+for second CQE posting. But more importantly, without it for TCP
+the send payload size would need to be large enough or performance
+would suffer, but all depends on the use case. TL;DR; it would be
+forced to create a new SKB for each new send.
+
+For something simpler, I'll push another zc variant that doesn't
+have notifiers and posts only one CQE and only after the buffers
+are no more in use by the kernel. This works well for UDP and for
+some TCP scenarios, but doesn't cover all cases.
+> I'm also wondering what will happen if a notif will be referenced by the net layer
+> but the io_uring instance is already closed, wouldn't
+> io_uring_tx_zerocopy_callback() or __io_notif_complete_tw() crash
+> because notif->ctx is a stale pointer, of notif itself is already gone...
+
+io_uring will flush all slots and wait for all notifications
+to fire, i.e. io_uring_tx_zerocopy_callback(), so it's not a
+problem.
+
+-- 
+Pavel Begunkov
