@@ -2,69 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74776594E4B
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 03:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 547E0594E5B
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 04:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243333AbiHPBzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 21:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
+        id S232942AbiHPCBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 22:01:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234305AbiHPByj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 21:54:39 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95868210870;
-        Mon, 15 Aug 2022 14:46:09 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.west.internal (Postfix) with ESMTP id 330E732007D7;
-        Mon, 15 Aug 2022 17:46:07 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Mon, 15 Aug 2022 17:46:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660599966; x=1660686366; bh=5/0EPvXdhP
-        ro0zKMiqEkonkJvXb/I1AzuGUyP3JQyBI=; b=wJ/HZdYgs0p31ThNXOV8mrGlLT
-        Vk46kz9Qn76RQBJzxbUmYaB3E3ZuFVum/Aqm5qZUlDxu34pekRNIs9XqDYRYsXl5
-        FWnt+zCgIAOJIGM8yhRqajjLNRIZs68RJDKBBmavTEHypZ3LrHm/6hynZ9xTMP6L
-        TNOl8VuBLUW7QfBjmxLY1bUeD4sj+Otzjiy2j2UtN0gWx7yCaXWRj1Q9ea/suKRr
-        i45PrJFOYLwtEO70Hxp0PkBU+n110TSBesNUmW6Q+GcZD0+NGBfPM1Lkwv1lUcrF
-        UJTcw4dNWgNDgitrR6KZeHIqLOYqT9dLGK/PFOlm4d5r2luvcVzy/O4gTqmw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660599966; x=1660686366; bh=5/0EPvXdhPro0zKMiqEkonkJvXb/
-        I1AzuGUyP3JQyBI=; b=2ZXCvA9cimntn1UjjHMB0r0MlvpOfOOtHRF5pcIaI81T
-        mdTJA6vLOYPQM6eL69Kq7ZrFUhQmM8qPZ2ldvDMpyOwzUP+2vCOikQDugdVuRb/K
-        pPBPc5U2su3eZoqmIEjJoM2btRPfAeIy864LeQ1D9rhxgWem0JvESurBZN/D3eD+
-        IlT1IvcztrdJDrhSkHY8OlPVXV02IwYwk2AiBKpMXflEiwhQ22s1SxW2gB++os7B
-        Icohgq8CUp3Ypigl5Omf0Se3QD24c5B4DZ0MvLzvm5zRZbCuY1bRKYZt/kIuNEH/
-        sSkIoFePwmLMd0HOnlArTvKFJlHCfNbvyGXSNY2rdA==
-X-ME-Sender: <xms:nb76Yv0Ej_z_uM_wN3B_P_R3ltOfeO2C8sGBtIuh29Zc_4lFpEvSDw>
-    <xme:nb76YuGJkk7QBkz5kLgrEN5S4OJ8ssQK3Ly2IV2RLuJyqfrclNP7vLJyHnLQmnuSN
-    sFj2Dtf4BWj03uncA>
-X-ME-Received: <xmr:nb76Yv4yEU20_iu9UQ3pOzsS8VZdfTPLdbpzNJK1NfMSFmLq2SchkjeCfKMsQ0R5QFLwBsENaGicY9hIZPI77-KYqmmsE03A2ds4LP_mNbh27kyAwhUSYlokYwB0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehfedgtdefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughr
-    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
-    grthhtvghrnhepvdfffeevhfetveffgeeiteefhfdtvdffjeevhfeuteegleduheetvedu
-    ieettddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    eprghnughrvghssegrnhgrrhgriigvlhdruggv
-X-ME-Proxy: <xmx:nb76Yk1WLs_gY1IYxKa9HCfxP1WZQGDwJuW8-uJfX6mcviCw_oXBTQ>
-    <xmx:nb76YiGxg2k9yNZr3I-NuiFVrR-7qWSkqLVqj3TFJwEPTe17kdgAnA>
-    <xmx:nb76Yl-tiKe5RZYevmY2_0IdTNT3c5Rx2X5TGOj8Tou6sOHIO93XsQ>
-    <xmx:nr76YgHpauIZlhEd-lIjWIXnPExykmUPz133PNZHrrtpg7Di_j3q_g>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 17:46:05 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 14:46:04 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        with ESMTP id S243651AbiHPCBN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 22:01:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 01F5A220046
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:53:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660600402;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=nE9l+oBuuihtRdwrfLYvB+ZfpLg2bb3PcW4cPmCNwqE=;
+        b=RrgP37l8lMoBxZ4/jGC6A86UoBGXBmhMCL63a36CZKrzxdZY7iAoRlntTDv7oaKDQe4erX
+        sEqTfnTunYnUbJ2Zrpe9IOeK3WayQIgZPlazVjMg5OlI/xk84sHgVDBNnM9cLD+Wdomq6C
+        Os5LgaZatZyKu2ga3Hzuuq/tb3CEa74=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-218-LhZIcCu_N5is1LRUzzJwYA-1; Mon, 15 Aug 2022 17:53:21 -0400
+X-MC-Unique: LhZIcCu_N5is1LRUzzJwYA-1
+Received: by mail-wm1-f71.google.com with SMTP id az42-20020a05600c602a00b003a552086ba9so9238402wmb.6
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:53:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=nE9l+oBuuihtRdwrfLYvB+ZfpLg2bb3PcW4cPmCNwqE=;
+        b=Kh9F3pSDrhc+O90LtUAfNq1M1AVKjpPkHzWRFL47duq0E3GPMRnmXU/oePEyV9sD4i
+         fE/X4npu6mbW4S/3g2W9EnMw6FeiBLCHJgP9lmw5o2l0/ExBNI5YGwIprdy4mGH93jcD
+         M1EXcFtsAKt42SezWAJQ4OY9IcUG5JzrGF/WhSIJMTNAarTBlv8sLjI8rVMrrIzRJTfv
+         dwrCTakFvB76ulgO4DZ6I+2wHICIBZ86x2gfQNBGxO5gT/sH2mliLKKaC13mrGyJOC28
+         l3Y91/OE/Elj+4ikoPUg8yuYzc3cITZnRdIcBYUhgoqYRaexPwR8lmPQQioOfUgvpgn9
+         mqkw==
+X-Gm-Message-State: ACgBeo2crbbuTKU1EK0/3RqYjeRDqJnagqjS1NVhS2NSq/VgInt3+Uog
+        bx+Z0f/taw0HATfxS6h5BggdxJeaYNeb8prh/oejPnKywiUW1qhJW+FnYYDoxtpz7JcHmwsDqz6
+        wAImdtLp4wg9uMpLq
+X-Received: by 2002:adf:e588:0:b0:21f:ace:dd82 with SMTP id l8-20020adfe588000000b0021f0acedd82mr9691327wrm.226.1660600400302;
+        Mon, 15 Aug 2022 14:53:20 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4hxSDMZpftCBBMFSFs4qXARqcIDfoNeMwyu98fDGaG6R9gCUSZWy72wuRpnU0bbvDp4w56Vw==
+X-Received: by 2002:adf:e588:0:b0:21f:ace:dd82 with SMTP id l8-20020adfe588000000b0021f0acedd82mr9691323wrm.226.1660600400097;
+        Mon, 15 Aug 2022 14:53:20 -0700 (PDT)
+Received: from redhat.com ([2.55.4.37])
+        by smtp.gmail.com with ESMTPSA id j27-20020a05600c1c1b00b003a32251c3f9sm11520530wms.5.2022.08.15.14.53.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 14:53:19 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 17:53:14 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -75,72 +66,66 @@ Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
         Jens Axboe <axboe@kernel.dk>,
         James Bottomley <James.Bottomley@hansenpartnership.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>, c@redhat.com
-Subject: Re: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
- size by find_vqs()"
-Message-ID: <20220815214604.x7g342h3oadruxx2@awork3.anarazel.de>
-References: <20220815090521.127607-1-mst@redhat.com>
- <20220815203426.GA509309@roeck-us.net>
- <20220815164013-mutt-send-email-mst@kernel.org>
- <20220815205053.GD509309@roeck-us.net>
- <20220815165608-mutt-send-email-mst@kernel.org>
- <20220815212839.aop6wwx4fkngihbf@awork3.anarazel.de>
- <20220815173256-mutt-send-email-mst@kernel.org>
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg KH <gregkh@linuxfoundation.org>
+Subject: [PATCH v2 0/5] virtio: drop sizing vqs during init
+Message-ID: <20220815215251.154451-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815173256-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Supplying size during init does not work for all transports.
+In fact for legacy pci doing that causes a memory
+corruption which was reported on Google Cloud.
 
-On 2022-08-15 17:39:08 -0400, Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 02:28:39PM -0700, Andres Freund wrote:
-> > On 2022-08-15 17:04:10 -0400, Michael S. Tsirkin wrote:
-> > > So virtio has a queue_size register. When read, it will give you
-> > > originally the maximum queue size. Normally we just read it and
-> > > use it as queue size.
-> > > 
-> > > However, when queue memory allocation fails, and unconditionally with a
-> > > network device with the problematic patch, driver is asking the
-> > > hypervisor to make the ring smaller by writing a smaller value into this
-> > > register.
-> > > 
-> > > I suspect that what happens is hypervisor still uses the original value
-> > > somewhere.
-> > 
-> > It looks more like the host is never told about the changed size for legacy
-> > devices...
-> > 
-> > Indeed, adding a vp_legacy_set_queue_size() & call to it to setup_vq(), makes
-> > 5.19 + restricting queue sizes to 1024 boot again.
-> 
-> Interesting, the register is RO in the legacy interface.
-> And to be frank I can't find where is vp_legacy_set_queue_size
-> even implemented. It's midnight here too ...
+We might get away with changing size to size_hint so it's
+safe to ignore and then fixing legacy to ignore the hint.
 
-Yea, I meant that added both vp_legacy_set_queue_size() and a call to it. I
-was just quickly experimenting around.
+But the benefit is unclear in any case, so let's revert for now.
+Any new version will have to come with
+- documentation of performance gains
+- performance testing showing existing workflows
+  are not harmed materially. especially ones with
+  bursty traffic
+- report of testing on legacy devices
 
 
-> Yes I figured this out too. And I was able to reproduce on qemu now.
+Huge shout out to Andres Freund for the effort spent reproducing and
+debugging!  Thanks to Guenter Roeck for help with testing!
 
-Cool.
+Michael S. Tsirkin (5):
+  virtio_net: Revert "virtio_net: set the default max ring size by
+    find_vqs()"
+  virtio: Revert "virtio: add helper virtio_find_vqs_ctx_size()"
+  virtio-mmio: Revert "virtio_mmio: support the arg sizes of find_vqs()"
+  virtio_pci: Revert "virtio_pci: support the arg sizes of find_vqs()"
+  virtio: Revert "virtio: find_vqs() add arg sizes"
 
+ arch/um/drivers/virtio_uml.c             |  2 +-
+ drivers/net/virtio_net.c                 | 42 +++---------------------
+ drivers/platform/mellanox/mlxbf-tmfifo.c |  1 -
+ drivers/remoteproc/remoteproc_virtio.c   |  1 -
+ drivers/s390/virtio/virtio_ccw.c         |  1 -
+ drivers/virtio/virtio_mmio.c             |  9 ++---
+ drivers/virtio/virtio_pci_common.c       | 20 +++++------
+ drivers/virtio/virtio_pci_common.h       |  3 +-
+ drivers/virtio/virtio_pci_legacy.c       |  6 +---
+ drivers/virtio/virtio_pci_modern.c       | 17 +++-------
+ drivers/virtio/virtio_vdpa.c             |  1 -
+ include/linux/virtio_config.h            | 26 +++------------
+ 12 files changed, 28 insertions(+), 101 deletions(-)
 
-> I'm posting a new patchset reverting all the handing of resize
-> restrictions, I think we should rethink it for the next release.
+-- 
+MST
 
-Makes sense.
-
-Greetings,
-
-Andres Freund
