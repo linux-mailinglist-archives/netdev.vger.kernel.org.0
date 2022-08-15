@@ -2,197 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F8A259332E
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 18:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BB19593369
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 18:45:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiHOQ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 12:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39834 "EHLO
+        id S230517AbiHOQpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 12:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239307AbiHOQZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 12:25:45 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DAB1CFDE
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:24:56 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id c185so9074446oia.7
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:24:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=7ou0ECd+4fAETC6hUkJMnLd+W0E7PsRe0P5UWcQigd4=;
-        b=r+RpI+fMnzNHCFytU8UQ6nqIGDekSiKjvnTfzmwojHh6GqRmNJHdQWc6O9nDgRuDwk
-         Ga4Ox1wL7y+uei52ve+yaSwaRkPBWWK8kqCr1An7bmrmYToxs6UCkJZV80xos3sHRGSk
-         1vb+TaKwN50PHglyQ3nYnXzvU/XY9FJHBOhzferuzdGK9MfLCapVAOf5z0fZO3+BFEoi
-         RMggn+oUSSpJEGUoJClAZTewxIpvaALlukAXUMyVSpgfCQf+c5s7lwpf1GKxNuG6zxsC
-         +n+gmU13vGpz5lSoxFz0KKCz9uOA1nyVoeMWst3sc5wUYv+Xc3HsNEJYy8Eb10zYNlRW
-         sBwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=7ou0ECd+4fAETC6hUkJMnLd+W0E7PsRe0P5UWcQigd4=;
-        b=zY4zcksqH0Bijy/yRskYeQ0Mb4omL3KqaZB57HmAsiPWkXC7jUn5evwU/vpRfALvy0
-         3tVJh5lw1oMEQEz/ksB0uIXvMjmlezwrt3WYdwVpb5pGYhhx3NkT3btWmqn3FXoWBIgF
-         XUBz4J9lJ9XzC7it/MvRFfVz3PN3SR3mtdhn//yHIfgD/GmoWtREDlMwqhmyjXgz0m/D
-         RKGza4zJCQ0zvZaUIcBbE46joYD/jERKNPizZ4eeDNWcZQxvu/p9GioMq68B6U8u0JiT
-         XkFj5CdOAyFLOB5Dkal6moAgWi1aNQaLq6I85n5POM9p4FclVgh1jhtxASV4Jxx7jD0M
-         eUUA==
-X-Gm-Message-State: ACgBeo1wsQR78zCNha1FY9ljtTiwmX7p4PADYpgKAPFWPb/fsA75Aw9Y
-        DtYr2HffXiy+sUGXM1hf11P91zKdIx1Qe8Lj4YvL
-X-Google-Smtp-Source: AA6agR7KPHU1UFRQrkzLWmW555Jup4By1WQs4vqqr4MrHP0gT04wxxp0WpKGu1ttrDKgzeH3Ubo1pUQ7WuULUJjuKuQ=
-X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
- h204-20020acab7d5000000b00343c47891c6mr5194559oif.136.1660580695486; Mon, 15
- Aug 2022 09:24:55 -0700 (PDT)
+        with ESMTP id S229456AbiHOQpH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 12:45:07 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AE1B1658C;
+        Mon, 15 Aug 2022 09:45:06 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 6A00A5C016C;
+        Mon, 15 Aug 2022 12:45:05 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 15 Aug 2022 12:45:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1660581905; x=1660668305; bh=0KCTs7QdX7
+        QGBwK4s6VHupH8gpM1j2gtUP38/RuMSu8=; b=wxnOoOobFH7/VZq4GuA8ZYfkL/
+        Lhre764xAmEugXFpsY42iirKKEIjXz7lH3Iuh+EYyJ4XVzxU+Ct/Haoz7UemohyI
+        e75HzvhPrm+CKQcEmyVGgyYqhyK+D1rb5YH6+1ED0uZvnr3nIauntl0n9p1FNvSk
+        a64uGShRVSzPoJHH8kM3XfcX3fW48kxDevFjbleH7c3iw0rAnkB2FoSSbxyCmMnw
+        WLPR+RUjuMPwXOZW6QybbOvwPriIKgAvc/wP5p17DHdfhip6VICiYG/zpxzICJJh
+        tSQB5gsS8gNlF2Y0wNij4FN/2Se3Iz3pNSRe9s643ISf6HRIRtACUAYqI0dA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660581905; x=1660668305; bh=0KCTs7QdX7QGBwK4s6VHupH8gpM1
+        j2gtUP38/RuMSu8=; b=2Pe5D+cvWI/5abiszZxAanXo30fXTV5miwX7fTY0gxdj
+        u04M+HHRlMD7vGOhgeQMdQgVnHsw1e+j8xT3pI2kt9q26UqJGex081H6wjF3v5IP
+        /sJCdfrf9mnUBL7SDVrjGGaQWmieG0s3irQ8/ZP6hW/UNb49RhYBa88X6yP9dAHi
+        3xYpJyvGsZT7jUm6r1/0QEKRe57yP2q7vg/RBNtPHwbC1DGX3vZTCW65f1xcVEX5
+        csW+nypoir5xtQXPxQE8WDQGizMCasdkmm+lA6jmYgjmsFK4jd8DK+qqsNxpu00b
+        2+qcbmWFf7/y37YH6WGMnszN+YN6dcjdA7m9aDBl9w==
+X-ME-Sender: <xms:EHj6YvJ0aNstevVxaz6EUaR_hX6gTW4mw5eCnKQnWMTbPZeoke9dyw>
+    <xme:EHj6YjJTmTfjLJ6LH22E6unR-OOUgjOd3BechEgmVZ5YVUqoC5jw3NSK2UEZhHWkt
+    MPsVMd2Nr4NuCJSZQ>
+X-ME-Received: <xmr:EHj6Ynuwf3J6q3udhvFF8Q6oJF4oXre9oOwTj_0krKwypmTcHbEsBqyDug4B_PizuG3XKJXBbuAjOMSFu5HlVqzgfCJ9Buew4U1YOvPNlXvZ0ef8ddM25XOffW5Q>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddguddtiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
+    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
+    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
+    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
+X-ME-Proxy: <xmx:EHj6YoYSNBmocmnHo5iVmuvrrMs5oPmp32HkJwVdRiM11gYUpI2Taw>
+    <xmx:EHj6YmYLnAefTEEQEhppnEO4x5xeBtFNKvNqnvcrO2IZKMsbb4r8tg>
+    <xmx:EHj6YsAaneYj-3JQJZI6s_bfPot3P3gWOy_cCkPzO1X-Pd2ifLsP0Q>
+    <xmx:EXj6YrKpUmrwZ3BImSrl4ZeMawTCcGhodF4vRxSkux7WnF1ONB4IZg>
+Feedback-ID: id4a34324:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 12:45:04 -0400 (EDT)
+Date:   Mon, 15 Aug 2022 09:45:03 -0700
+From:   Andres Freund <andres@anarazel.de>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        c@redhat.com
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
+References: <CAHk-=wi6raoJE-1cyRU0YxJ+9ReO1eXmOAq0FwKAyZS7nhvk9w@mail.gmail.com>
+ <1c057afa-92df-ee3c-5978-3731d3db9345@kernel.dk>
+ <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
+ <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
+ <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
+ <20220815034532-mutt-send-email-mst@kernel.org>
+ <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
+ <20220815042623-mutt-send-email-mst@kernel.org>
+ <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
+ <20220815113729-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-References: <20220801180146.1157914-1-fred@cloudflare.com> <87les7cq03.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhRpUxyxkPaTz1scGeRm+i4KviQQA7WismOX2q5agzC+DQ@mail.gmail.com>
- <87wnbia7jh.fsf@email.froward.int.ebiederm.org> <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
- <20220814155508.GA7991@mail.hallyn.com> <CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com>
- <20220815154102.GA20944@mail.hallyn.com>
-In-Reply-To: <20220815154102.GA20944@mail.hallyn.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Mon, 15 Aug 2022 12:24:44 -0400
-Message-ID: <CAHC9VhTj9BHxa=NmnoOdT-iJ-o_cZP4RbWZ7kvA7VY_viN_hvw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815113729-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:41 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> On Sun, Aug 14, 2022 at 10:32:51PM -0400, Paul Moore wrote:
-> > On Sun, Aug 14, 2022 at 11:55 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> > > On Mon, Aug 08, 2022 at 03:16:16PM -0400, Paul Moore wrote:
-> > > > On Mon, Aug 8, 2022 at 2:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > > > Paul Moore <paul@paul-moore.com> writes:
-> > > > > > On Mon, Aug 1, 2022 at 10:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > > > >> Frederick Lawler <fred@cloudflare.com> writes:
-> > > > > >>
-> > > > > >> > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > > > > >> > used the LSM cred_prepare hook because that is the closest hook to prevent
-> > > > > >> > a call to create_user_ns().
-> > > > > >>
-> > > > > >> Re-nack for all of the same reasons.
-> > > > > >> AKA This can only break the users of the user namespace.
-> > > > > >>
-> > > > > >> Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> > > > > >>
-> > > > > >> You aren't fixing what your problem you are papering over it by denying
-> > > > > >> access to the user namespace.
-> > > > > >>
-> > > > > >> Nack Nack Nack.
-> > > > > >>
-> > > > > >> Stop.
-> > > > > >>
-> > > > > >> Go back to the drawing board.
-> > > > > >>
-> > > > > >> Do not pass go.
-> > > > > >>
-> > > > > >> Do not collect $200.
-> > > > > >
-> > > > > > If you want us to take your comments seriously Eric, you need to
-> > > > > > provide the list with some constructive feedback that would allow
-> > > > > > Frederick to move forward with a solution to the use case that has
-> > > > > > been proposed.  You response above may be many things, but it is
-> > > > > > certainly not that.
-> > > > >
-> > > > > I did provide constructive feedback.  My feedback to his problem
-> > > > > was to address the real problem of bugs in the kernel.
-> > > >
-> > > > We've heard from several people who have use cases which require
-> > > > adding LSM-level access controls and observability to user namespace
-> > > > creation.  This is the problem we are trying to solve here; if you do
-> > > > not like the approach proposed in this patchset please suggest another
-> > > > implementation that allows LSMs visibility into user namespace
-> > > > creation.
-> > >
-> > > Regarding the observability - can someone concisely lay out why just
-> > > auditing userns creation would not suffice?  Userspace could decide
-> > > what to report based on whether the creating user_ns == /proc/1/ns/user...
-> >
-> > One of the selling points of the BPF LSM is that it allows for various
-> > different ways of reporting and logging beyond audit.  However, even
-> > if it was limited to just audit I believe that provides some useful
-> > justification as auditing fork()/clone() isn't quite the same and
-> > could be difficult to do at scale in some configurations.  I haven't
-> > personally added a BPF LSM program to the kernel so I can't speak to
-> > the details on what is possible, but I'm sure others on the To/CC line
-> > could help provide more information if that is important to you.
-> >
-> > > Regarding limiting the tweaking of otherwise-privileged code by
-> > > unprivileged users, i wonder whether we could instead add smarts to
-> > > ns_capable().
-> >
-> > The existing security_capable() hook is eventually called by ns_capable():
-> >
-> >   ns_capable()
-> >     ns_capable_common()
-> >       security_capable(const struct cred *cred,
-> >                        struct user_namespace *ns,
-> >                        int cap,
-> >                        unsigned int opts);
-> >
-> > ... I'm not sure what additional smarts would be useful here?
->
-> Oh - i wasn't necessarily thinking of an LSM.  I was picturing a
-> sysctl next to unprivileged_userns_clone.  But you're right, looks
-> like an LSM could already do this.  Of course, there's an issue early
-> on in that the root user in the new namespace couldn't setuid, so
-> the uid mapping is still limited.  So this idea probably isn't worth
-> the characters we've typed about it so far, sorry.
+Hi,
 
-No harm, no foul.  This thread has already reached record lows with
-respect to usefulness-vs-characters ratio, a few more isn't going to
-hurt anything ;)
+On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
+> OK so this gives us a quick revert as a solution for now.
+> Next, I would appreciate it if you just try this simple hack.
+> If it crashes we either have a long standing problem in virtio
+> code or more likely a gcp bug where it can't handle smaller
+> rings than what device requestes.
+> Thanks!
 
-> > [side note: SELinux does actually distinguish between capability
-> > checks in the initial user namespace vs child namespaces]
-> >
-> > > Point being, uid mapping would still work, but we'd
-> > > break the "privileged against resources you own" part of user
-> > > namespaces.  I would want it to default to allow, but then when a
-> > > 0-day is found which requires reaching ns_capable() code, admins
-> > > could easily prevent exploitation until reboot from a fixed kernel.
-> >
-> > That assumes that everything you care about is behind a capability
-> > check, which is probably going to be correct in a lot of the cases,
-> > but I think it would be a mistake to assume that is always going to be
-> > true.
->
-> I might be thinking wrongly, but if it's not behind a capability check,
-> then it seems to me it's not an exploit that can only be reached by
-> becoming root in a user namespace, which means disabling user namespace
-> creation by unprivileged users will not stop the attack.
+I applied the below and the problem persists.
 
-I was primarily thinking about two things: subj/obj relationships
-which are really not addressed with capability checks, and unrelated
-problems which aren't the fault of the user namespace but could be
-somehow made easier through some of the unique situations offered by
-user namespaces.  There are exploits that often require chaining
-together multiple "things" to trigger the necessary flaw, and
-sometimes the most immediate way to stop such an attack is to apply
-additional controls to one of these intermediate steps.  Frekerick's
-work puts the necessary infrastructure in place so we can do that with
-user namespaces.
+> diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
+> index f7965c5dd36b..bdd5f481570b 100644
+> --- a/drivers/virtio/virtio_pci_modern.c
+> +++ b/drivers/virtio/virtio_pci_modern.c
+> @@ -314,6 +314,9 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+>  	if (!size || size > num)
+>  		size = num;
+>  
+> +	if (size > 1024)
+> +		size = 1024;
+> +
+>  	if (size & (size - 1)) {
+>  		dev_warn(&vp_dev->pci_dev->dev, "bad queue size %u", size);
+>  		return ERR_PTR(-EINVAL);
+> 
+> 
 
--- 
-paul-moore.com
+[    1.165162] virtio_net virtio1 enp0s4: renamed from eth0
+[    1.177815] general protection fault, probably for non-canonical address 0xffff000000000400: 0000 [#1] PREEMPT SMP PTI
+[    1.179565] CPU: 1 PID: 125 Comm: systemd-udevd Not tainted 6.0.0-rc1-bisect14-dirty #14
+[    1.180785] Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+[    1.182475] RIP: 0010:__kmalloc_node_track_caller+0x19e/0x380
+[    1.183365] Code: 2b 04 25 28 00 00 00 0f 85 f8 01 00 00 48 83 c4 18 48 89 e8 5b 5d 41 5c 41 5d 41 5e 41 5f c3 cc cc cc cc 8b 4d 28 48 8b 7d 00 <48> 8b 1c 08 48 8d 4a 40 65 48 0f c7 0f 0f 94 c0 84 c0 0f 84 0b ff
+[    1.186208] RSP: 0018:ffff9c470021b860 EFLAGS: 00010246
+[    1.187194] RAX: ffff000000000000 RBX: 00000000000928c0 RCX: 0000000000000400
+[    1.188634] RDX: 0000000000005781 RSI: 00000000000928c0 RDI: 000000000002e0f0
+[    1.190177] RBP: ffff908380042c00 R08: 0000000000000600 R09: ffff908380b665e4
+[    1.191256] R10: 0000000000000003 R11: 0000000000000002 R12: 00000000000928c0
+[    1.192269] R13: 0000000000000740 R14: 00000000ffffffff R15: 0000000000000000
+[    1.193368] FS:  00007f746702a8c0(0000) GS:ffff9084b7d00000(0000) knlGS:0000000000000000
+[    1.194846] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    1.195661] CR2: 00007ffc010df980 CR3: 0000000103826005 CR4: 00000000003706e0
+[    1.196912] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[    1.198216] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[    1.199367] Call Trace:
+[    1.199815]  <TASK>
+[    1.200138]  ? netlink_trim+0x85/0xb0
+[    1.200754]  pskb_expand_head+0x92/0x340
+[    1.202512]  netlink_trim+0x85/0xb0
+[    1.203069]  netlink_unicast+0x54/0x390
+[    1.203630]  rtnl_getlink+0x366/0x410
+[    1.204155]  ? __d_alloc+0x24/0x1d0
+[    1.204668]  rtnetlink_rcv_msg+0x146/0x3b0
+[    1.205256]  ? _raw_spin_unlock+0xd/0x30
+[    1.205867]  ? __d_add+0xf2/0x1b0
+[    1.206600]  ? rtnl_calcit.isra.0+0x130/0x130
+[    1.207221]  netlink_rcv_skb+0x49/0xf0
+[    1.207904]  netlink_unicast+0x23a/0x390
+[    1.208585]  netlink_sendmsg+0x23b/0x4b0
+[    1.209203]  sock_sendmsg+0x57/0x60
+[    1.210118]  __sys_sendto+0x117/0x170
+[    1.210694]  ? __wake_up_common_lock+0x83/0xc0
+[    1.211420]  __x64_sys_sendto+0x1b/0x30
+[    1.211992]  do_syscall_64+0x37/0x90
+[    1.212497]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[    1.213407] RIP: 0033:0x7f74677404e6
+[    1.213973] Code: 69 0e 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 72 c3 90 41 54 48 83 ec 30 44 89 4c 24 2c 4c
+[    1.217098] RSP: 002b:00007ffc010daa78 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+[    1.219539] RAX: ffffffffffffffda RBX: 000000000011bc98 RCX: 00007f74677404e6
+[    1.220552] RDX: 0000000000000020 RSI: 0000563160679570 RDI: 0000000000000005
+[    1.222378] RBP: 00005631606796b0 R08: 00007ffc010daaf0 R09: 0000000000000080
+[    1.223692] R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000001
+[    1.224793] R13: 0000000000000000 R14: 0000000000000000 R15: 00005631606794b0
+[    1.226228]  </TASK>
+[    1.226775] Modules linked in:
+[    1.227414] ---[ end trace 0000000000000000 ]---
+
+Greetings,
+
+Andres Freund
