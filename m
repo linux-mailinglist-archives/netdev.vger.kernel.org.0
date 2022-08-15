@@ -2,100 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3199C595198
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:03:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF3A95951B0
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:09:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiHPFD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 01:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43944 "EHLO
+        id S230021AbiHPFJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 01:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233305AbiHPFDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:03:09 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED171B9DC3;
-        Mon, 15 Aug 2022 14:04:41 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id DB9963200495;
-        Mon, 15 Aug 2022 17:04:39 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 17:04:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660597479; x=1660683879; bh=/DXZeTr6nc
-        QrsVrzKQetD1MJlZAdV7mdoExoKtlNx08=; b=vaek1/hY6jpMZLhoeTR3/5UZGn
-        zzeKgLdOTEUFTA2ZKYJm0CXjiH0C35BCGPXaa0M5T0htHV3tfujr6O4OAO3H8LIs
-        WJnb/ZCfJzdxDwUPR0wY9PXRTdrfV+IYDknLKdXlRSKfIG7/wZxl9gkOB/EgSFTw
-        CmI5V7TdaIwknwIZ7v3nokqWaFzs0tGu/VaGYF4+VXITKCQtOrc20Ur6yHhdv/ZY
-        R/9yqTwhWKll8LS+bg7HR3VP9sdTUSqdV89AoDx1min8ZYwqhGMeAqI3Sb/X0eYR
-        62CzpMExjDWxY9skYjC28GdkR5WACbCjkrDbNbNd9FxN2mYD4duriuE7mtYQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660597479; x=1660683879; bh=/DXZeTr6ncQrsVrzKQetD1MJlZAd
-        V7mdoExoKtlNx08=; b=Bp6uuZFQrhSxxp2kYUkxaPwvE1Wxr5YX4K/JLV68NDXQ
-        y96rQ30LHsxprGpTyEvcEP7rdCspX2pteIlROU8AOwy0tnjKQn0IHDmHWvJJizSk
-        tL0ccd22ipDSGJDNmwHdw98cr+sqzil8cYSWVtt78NHZLl/WPSCK1fLYULx+Fi4y
-        1HpFvcbnoUpgNWQIomq7KLm7waSmpEnOFeKSynIgus8TiUkGnA6HCZZt82y8zLqb
-        kKm6XwVBDSBi08XaBntHgWtRCKsn+Wy/GxYkKu9e64nA5WPncuD0xlPjksSH5Lvg
-        MKPalEY2I5JNMMqqflw6hDEZFTCPw/MMR1dBaV8o3w==
-X-ME-Sender: <xms:5rT6YuCj6Ap-BrzZKaz7yljDDykoyKKfO6IFFYqmem14XBBK5trBkQ>
-    <xme:5rT6Yogiv0LW8EXzojDRowWeSxJpDtW5J1CXmmg_Fwyi9ai0DBHr1vw6ULf0EvNP4
-    AW6V7kfy3ZENiJwdw>
-X-ME-Received: <xmr:5rT6Yhk8KOEu8nlXi0-t3wzecwrGNm2Vnjagmxo8OMGubVH3IspxtmUxOqCOaxM1wL3DyW0L6A76VTxiKfczok4YBBw0WrKT1j9YXvBXsCcOJtjvdaVhqesf5X11>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudehkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:5rT6Ysx4D16efdLye-L_68Q379-Hxdqbl84wWtYmRmovQ3DNph3hxQ>
-    <xmx:5rT6YjR7cXMdgIuEhUw9p0fZ743IvHNO738KJGfL1bW7SWbkRqtBOA>
-    <xmx:5rT6YnbJ2EiLxrzs3QHfNcYdoMEzppM8qb7ISQZuuVimW-Za18fF_g>
-    <xmx:57T6Ykj_r77gCL1HrNQKD70JFChemj-1IpjT7KG9TaKEHSjrJCXicQ>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 17:04:37 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 14:04:37 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815210437.saptyw6clr7datun@awork3.anarazel.de>
-References: <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
- <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
- <20220815161423-mutt-send-email-mst@kernel.org>
- <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
+        with ESMTP id S232573AbiHPFIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:08:54 -0400
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F9F254656
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:09:32 -0700 (PDT)
+Received: by mail-vk1-xa36.google.com with SMTP id c12so4267309vkn.13
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:09:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=hg8ZlxgjsyqbpHZ7OetYt5d22ngKlCVDzJjkV6i0AyQ=;
+        b=S30drc0mcqdIg37qZ647dCbwFWJ4QoJEjm7xBKUMtpZUzFaUVk19baWALb1r7x2uuV
+         c8zborMqELFnXK6wWVrSV5XXO5mwk+nKgIiYFYaSuacTp6M1nRwsGWU6y93BrrGbrTjR
+         WgCzZUCM036nJdurRU/Jit2OuA4taUWXntnNVY5wYsJ6XGvMvwHVTxVEOxeDed+jwfyw
+         oj6DnTQdic9OAqS2B3PgRzpBWQFUiBjqys6KDZtW2XZDt93vgvij0FUWnm+bVPC+CyCl
+         jdzOQ6z4p6Cq4cnG9oWy6yBbquBpyaslvtm5+sTUTf6pzjt/pVJBTjysgjtF9U+Ovm6H
+         zO5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=hg8ZlxgjsyqbpHZ7OetYt5d22ngKlCVDzJjkV6i0AyQ=;
+        b=k6KvCpSjJWiOZNhzclYhdUN9kpu0mYzlL0KVvfd3AHqMSddllvZxpn/xhuzg3FIFh+
+         Hkc4mLf1dpC0uPsu5BTo9Zkw3J/c3ieMhUI4EruiwIYBbggd5CmGpVsGCynS6yZGTxMN
+         WhCyPew3K0oxeXY/E30vPVzV4dDlWCtLfqezveWiZPU/M7TzGOYZaELRrxLaZutnOHZX
+         XcP4SA1Cgz4JS0qDjuDSDpAz3bsUnHmh/cEXMPCCcLebTRaTCLdQ1Bazl7bLUAUE8H3H
+         174VpToYGNHJRFkeoELIKbWSG+Ri3EN7nOhga5feRWSJHjW/F1QJaPABe+8ZgdYZ7io/
+         owmQ==
+X-Gm-Message-State: ACgBeo1q0kBcCg72Xgt8tvMODqvRcx1jutQxbg2a8LBmJokadx/JKVR8
+        Zjii3Fb2Jloh5k+1dNLuofUS83YNnVw=
+X-Google-Smtp-Source: AA6agR6EjNLvpFLrMfPJwGId/UZfhG6Qy7MStBUyWhNHXWe65JKY8fm77z6vw542EpsIBjPaWi82SQ==
+X-Received: by 2002:a1f:9d17:0:b0:380:48b7:fa5 with SMTP id g23-20020a1f9d17000000b0038048b70fa5mr1923134vke.16.1660597743446;
+        Mon, 15 Aug 2022 14:09:03 -0700 (PDT)
+Received: from macondo ([2804:431:e7cc:d33f:5121:bb42:7f86:df53])
+        by smtp.gmail.com with ESMTPSA id i18-20020a67fa12000000b0038890d0e100sm6019794vsq.27.2022.08.15.14.09.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 14:09:02 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 18:08:58 -0300
+From:   Rafael Soares <rafaelmendsr@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, johannes.berg@intel.com,
+        syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] net: genl: fix error path memory leak in policy
+ dumping
+Message-ID: <Yvq16sC3Pytaf04k@macondo>
+References: <20220815182021.48925-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <20220815182021.48925-1-kuba@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -103,60 +71,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-15 13:53:31 -0700, Andres Freund wrote:
-> The reason the debug patch didn't change anything, and that my debug printk
-> didn't show, is that gcp uses the legacy paths...
+On Mon, Aug 15, 2022 at 11:20:21AM -0700, Jakub Kicinski wrote:
+> If construction of the array of policies fails when recording
+> non-first policy we need to unwind.
 > 
-> If there were a bug in the legacy path, it'd explain why the problem only
-> shows on gcp, and not in other situations.
+> Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+> Fixes: 50a896cf2d6f ("genetlink: properly support per-op policy dumping")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+>  net/netlink/genetlink.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> I'll queue testing the legacy path with the equivalent change.
+> diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+> index 1afca2a6c2ac..57010927e20a 100644
+> --- a/net/netlink/genetlink.c
+> +++ b/net/netlink/genetlink.c
+> @@ -1174,13 +1174,17 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
+>  							     op.policy,
+>  							     op.maxattr);
+>  			if (err)
+> -				return err;
+> +				goto err_free_state;
 
-Booting with the equivalent change, atop 5.19, in the legacy setup_vq()
-reliably causes boot to hang:
+There's another call to netlink_policy_dump_add_policy() right above
+this one. The patch I posted to syzkaller frees the memory inside
+netlink_policy_dump_add_policy() and the result was OK.
 
-[    0.718768] ACPI: button: Sleep Button [SLPF]
-[    0.721989] ACPI: \_SB_.LNKC: Enabled at IRQ 11
-[    0.722688] adebug: use legacy: 0
-[    0.722724] virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-[    0.724286] adebug: probe modern: -19
-[    0.727353] ACPI: \_SB_.LNKD: Enabled at IRQ 10
-[    0.728719] adebug: use legacy: 0
-[    0.728766] virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-[    0.730422] adebug: probe modern: -19
-[    0.733552] ACPI: \_SB_.LNKA: Enabled at IRQ 10
-[    0.734923] adebug: use legacy: 0
-[    0.734957] virtio-pci 0000:00:05.0: virtio_pci: leaving for legacy driver
-[    0.736426] adebug: probe modern: -19
-[    0.739039] ACPI: \_SB_.LNKB: Enabled at IRQ 11
-[    0.740350] adebug: use legacy: 0
-[    0.740390] virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
-[    0.742142] adebug: probe modern: -19
-[    0.747627] adebug: legacy setup_vq
-[    0.748243] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 256
-[    0.751081] adebug: legacy setup_vq
-[    0.751110] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 256
-[    0.754028] adebug: legacy setup_vq
-[    0.754059] virtio-pci 0000:00:05.0: adebug: legacy: not limiting queue size, only 1
-[    0.757760] Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-[    0.759135] 00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-[    0.760399] 00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-[    0.761610] 00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-[    0.762923] 00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-[    0.764222] Non-volatile memory driver v1.3
-[    0.768857] adebug: legacy setup_vq
-[    0.768882] virtio-pci 0000:00:06.0: adebug: legacy: not limiting queue size, only 256
-[    0.773002] Linux agpgart interface v0.103
-[    0.775424] loop: module loaded
-[    0.780513] adebug: legacy setup_vq
-[    0.780538] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.784075] adebug: legacy setup_vq
-[    0.784104] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.787073] adebug: legacy setup_vq
-[    0.787101] virtio-pci 0000:00:03.0: adebug: legacy: limiting queue size from 8192 to 1024
-[    0.790379] scsi host0: Virtio SCSI HBA
-[    0.795968] Freeing initrd memory: 7236K
-
-Greetings,
-
-Andres Freund
+>  		}
+>  	}
+>  
+>  	if (!ctx->state)
+>  		return -ENODATA;
+>  	return 0;
+> +
+> +err_free_state:
+> +	netlink_policy_dump_free(ctx->state);
+> +	return err;
+>  }
+>  
+>  static void *ctrl_dumppolicy_prep(struct sk_buff *skb,
+> -- 
+> 2.37.2
+> 
