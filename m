@@ -2,99 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C075933B0
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 18:58:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF86593424
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 19:44:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232977AbiHOQ6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 12:58:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        id S231681AbiHORoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 13:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232889AbiHOQ5m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 12:57:42 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E7FB275C1;
-        Mon, 15 Aug 2022 09:57:41 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id b7so5761627qvq.2;
-        Mon, 15 Aug 2022 09:57:41 -0700 (PDT)
+        with ESMTP id S229475AbiHORoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 13:44:04 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C733527FE8;
+        Mon, 15 Aug 2022 10:44:03 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id a15so5625863qko.4;
+        Mon, 15 Aug 2022 10:44:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=dT9Pg0cgomgnI0kkqHjm6eb1hxEl1p1LNNw04+pYAiw=;
-        b=UAbnyBq77vyYNRVvJhwDaocodBZTdW/rY26aTPJ3tUoVcG8kLbkvDeuHoCDVazGTqp
-         U3sWT1HisJNc/seNXOnderJHWURJq9o4MgfiwPF0JBbdfW64WPTclAeuu4L0OJZbxuLR
-         TcysGwk8ohcgr0uCvm6OGzo6qR8haErFewbD2I0+n3DaZN4NDE5GhwIJaJ5iAKsS7YjB
-         J67OCySu8M6iaLP6QU0K9qUMuaaQNz53rc7Mc+kihyUpk4ZXKxciQTtZMWWmzwdTR1iK
-         ylcJ2kUbrNKv0MWTDSbr31gytziDJYbVssAOt0Ez9SBA8elvqQr5y6onp0bOpYZVWs0k
-         Af3g==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=ot6aA0JLE7mQSLlUAhIRMLAI2J9tpo0G0V3a4tkd6yQ=;
+        b=QEHsxSEks8nskCPi3QT8dXwVeYw+NXJtGneY2gB1dFE78L/sYrCbhkVKvAOP+02USY
+         n5rpbFdIk40U0FqQknIK76WfiLkdoBAfHs782859v0kcP+Xjkzw7ValsKzXY2i4bY12Q
+         u2PcnDTZO8hoW/HN0c7cCDfhdlxVeOKuNeXFo4MRBSrnXjhQEFXZ7tAOojQNEUkyZBft
+         KTB0Z52qgtnKmnu7U+lKxia0mt3hwZw1ART96pQRhIGfj1T23LC82cE1e2LXArlqPIDw
+         vKzc1JhkmQOJYTpHxDWwVUOYwEucO6RA93R/Ru6a9zaYCPUSDvgBbb/YLZ6RZBwMzRKE
+         6YUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=dT9Pg0cgomgnI0kkqHjm6eb1hxEl1p1LNNw04+pYAiw=;
-        b=0YCUM/sxNd+XW1rz+aOEJFmU57WhC3pLKbfffXI+n+rlWZk/W6rfXokcDwTazXcrcX
-         GrAtRd2P5GGgLddw68da9ChN+9CKbg1BHAPEvRJgHQ0VFe1HiWEDPLDTwsFykjTDCLGL
-         HEji4/S47365BacyPSsIxbr5Irak2OkclqzoQy766AlbS/7tp0H4h7WUQbXZy5IIR8y2
-         KvPEU6TP3pLZ+bbYB/IY4zj0rHl+qBjvYvDZgl2uszYsiKn5QRqvTf+1d+KuDvs/1vzH
-         ulKQQjHs1HFVDk3PXBkMr/05Pr/cyRbqeG60jBRrIhZDtP+XIoPVZeFDjuXvWjcII6gR
-         tIRQ==
-X-Gm-Message-State: ACgBeo3DUcLc2Ozbkn9bG7AbqpJLfbvrnk3QCoU3BpvkIr4IkcAdHZAk
-        yFGtlHJ5BxNJWxby0g1qYnw=
-X-Google-Smtp-Source: AA6agR5+e4ITrllG9Zdjcav/qnQ/K77ki/+NPhNuFZ+FfibDMeCZLlBPNoSOkBpDKq1B9dRdFkv1qQ==
-X-Received: by 2002:a05:6214:62a:b0:476:858d:b2c8 with SMTP id a10-20020a056214062a00b00476858db2c8mr13917327qvx.65.1660582660417;
-        Mon, 15 Aug 2022 09:57:40 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f8-20020ac84648000000b0033e51aea00esm8459756qto.25.2022.08.15.09.57.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 09:57:39 -0700 (PDT)
-Message-ID: <584ebb0e-2d55-348f-18f7-a555c3a359b9@gmail.com>
-Date:   Mon, 15 Aug 2022 09:57:30 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-Content-Language: en-US
-To:     William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        joel.peshkin@broadcom.com, dan.beygelman@broadcom.com,
-        f.fainelli@gmail.com, krzysztof.kozlowski@linaro.org,
-        rafal@milecki.pl, Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
-        <linux-mtd@lists.infradead.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" 
-        <linux-mips@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>
-References: <20220803175455.47638-1-william.zhang@broadcom.com>
- <20220803175455.47638-7-william.zhang@broadcom.com>
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=ot6aA0JLE7mQSLlUAhIRMLAI2J9tpo0G0V3a4tkd6yQ=;
+        b=SzirA1oix7DDCmvveiwNtH5sMgv+7JrzFzrflnunLLnr6nwKGBIW0iCY4IXkkuUmtQ
+         EiqhR51F7BwyZETQI2JLPCy3HyvMQsrOGceioytvvn0MEUsQOjkRrfMsOJWXR6mtjSLr
+         2VawjYi5/j6n4rmlxsnf/P6u6WBUs+VL/l0bQS8fA97WhZ+8vdC78aRC0k3P5tnwnrVP
+         LUpDsWLcU/0VwWbOom8tvdYdmqje/GkJgOHRyrF8Ebmm2onVjxcaU8/yJoczY7LhcO47
+         wEgG6ThhV3Mlej7hknF3JiiweoORBmeIqvurvR2+t/tp2J7CoDWhPObz3zVuBm44gnHw
+         nTuA==
+X-Gm-Message-State: ACgBeo1Pt6vb1oowSbiFMemVJDBEtKrbWWavHkpnBN5s6Oq8zvJHxwuS
+        HNPrTMJ6EqkxkBvuy9OGVMl0EkEIwp0=
+X-Google-Smtp-Source: AA6agR7pPLILrI55qLDydNnToKZ7T6NxfGh/2ZhZps1vHGaQ92U0dAZ8sNbckFPlygGM7ehpgYxd8A==
+X-Received: by 2002:a05:620a:1513:b0:6ba:e66b:726d with SMTP id i19-20020a05620a151300b006bae66b726dmr9393061qkk.692.1660585442217;
+        Mon, 15 Aug 2022 10:44:02 -0700 (PDT)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id y6-20020ae9f406000000b006b8cff25187sm9497465qkl.42.2022.08.15.10.44.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 10:44:01 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220803175455.47638-7-william.zhang@broadcom.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+To:     netdev@vger.kernel.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH net-next] net: phy: broadcom: Implement suspend/resume for AC131 and BCM5241
+Date:   Mon, 15 Aug 2022 10:43:56 -0700
+Message-Id: <20220815174356.2681127-1-f.fainelli@gmail.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -103,18 +76,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/3/22 10:54, William Zhang wrote:
-> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
-> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
-> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
-> Acked-by: Wolfram Sang <wsa@kernel.org> (for i2c)
-> Acked-by: Philipp Zabel <p.zabel@pengutronix.de> (for reset)
+Implement the suspend/resume procedure for the Broadcom AC131 and BCM5241 type
+of PHYs (10/100 only) by entering the standard power down followed by the
+proprietary standby mode in the auxiliary mode 4 shadow register. On resume,
+the PHY software reset is enough to make it come out of standby mode so we can
+utilize brcm_fet_config_init() as the resume hook.
 
-Applied to https://github.com/Broadcom/stblinux/commits/drivers/next, 
-thanks!
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ drivers/net/phy/broadcom.c | 48 ++++++++++++++++++++++++++++++++++++++
+ include/linux/brcmphy.h    |  1 +
+ 2 files changed, 49 insertions(+)
+
+diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
+index 31fbcdddc9ad..739348b3f135 100644
+--- a/drivers/net/phy/broadcom.c
++++ b/drivers/net/phy/broadcom.c
+@@ -766,6 +766,50 @@ static irqreturn_t brcm_fet_handle_interrupt(struct phy_device *phydev)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int brcm_fet_suspend(struct phy_device *phydev)
++{
++	int reg, err, err2, brcmtest;
++
++	/* We cannot use a read/modify/write here otherwise the PHY continues
++	 * to drive LEDs which defeats the purpose of low power mode.
++	 */
++	err = phy_write(phydev, MII_BMCR, BMCR_PDOWN);
++	if (err < 0)
++		return err;
++
++	/* Enable shadow register access */
++	brcmtest = phy_read(phydev, MII_BRCM_FET_BRCMTEST);
++	if (brcmtest < 0)
++		return brcmtest;
++
++	reg = brcmtest | MII_BRCM_FET_BT_SRE;
++
++	err = phy_write(phydev, MII_BRCM_FET_BRCMTEST, reg);
++	if (err < 0)
++		return err;
++
++	/* Set standby mode */
++	reg = phy_read(phydev, MII_BRCM_FET_SHDW_AUXMODE4);
++	if (reg < 0) {
++		err = reg;
++		goto done;
++	}
++
++	reg |= MII_BRCM_FET_SHDW_AM4_STANDBY;
++
++	err = phy_write(phydev, MII_BRCM_FET_SHDW_AUXMODE4, reg);
++	if (err < 0)
++		goto done;
++
++done:
++	/* Disable shadow register access */
++	err2 = phy_write(phydev, MII_BRCM_FET_BRCMTEST, brcmtest);
++	if (!err)
++		err = err2;
++
++	return err;
++}
++
+ static int bcm54xx_phy_probe(struct phy_device *phydev)
+ {
+ 	struct bcm54xx_phy_priv *priv;
+@@ -1033,6 +1077,8 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_init	= brcm_fet_config_init,
+ 	.config_intr	= brcm_fet_config_intr,
+ 	.handle_interrupt = brcm_fet_handle_interrupt,
++	.suspend	= brcm_fet_suspend,
++	.resume		= brcm_fet_config_init,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5241,
+ 	.phy_id_mask	= 0xfffffff0,
+@@ -1041,6 +1087,8 @@ static struct phy_driver broadcom_drivers[] = {
+ 	.config_init	= brcm_fet_config_init,
+ 	.config_intr	= brcm_fet_config_intr,
+ 	.handle_interrupt = brcm_fet_handle_interrupt,
++	.suspend	= brcm_fet_suspend,
++	.resume		= brcm_fet_config_init,
+ }, {
+ 	.phy_id		= PHY_ID_BCM5395,
+ 	.phy_id_mask	= 0xfffffff0,
+diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
+index 6ff567ece34a..9e77165f3ef6 100644
+--- a/include/linux/brcmphy.h
++++ b/include/linux/brcmphy.h
+@@ -293,6 +293,7 @@
+ #define MII_BRCM_FET_SHDW_MC_FAME	0x4000	/* Force Auto MDIX enable */
+ 
+ #define MII_BRCM_FET_SHDW_AUXMODE4	0x1a	/* Auxiliary mode 4 */
++#define MII_BRCM_FET_SHDW_AM4_STANDBY	0x0008	/* Standby enable */
+ #define MII_BRCM_FET_SHDW_AM4_LED_MASK	0x0003
+ #define MII_BRCM_FET_SHDW_AM4_LED_MODE1 0x0001
+ 
 -- 
-Florian
+2.25.1
+
