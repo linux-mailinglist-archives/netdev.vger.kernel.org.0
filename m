@@ -2,115 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFC7593482
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 20:09:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEDF85938B0
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 21:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232913AbiHOSJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 14:09:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53564 "EHLO
+        id S233086AbiHOSKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 14:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbiHOSJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 14:09:16 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A473529C8C;
-        Mon, 15 Aug 2022 11:09:15 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id y4so4970581qvr.7;
-        Mon, 15 Aug 2022 11:09:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=35BvP9EA6UmVAWVwUm9hFAUDuAeF8dpNkQ9qW8oNTB4=;
-        b=jucWJuC9qvN4lki55uHyX7PERPzNfa8Ji9ed4mbdY+F/XjglZn2GS7DRSSM+I7gJXy
-         g2VDVCt1NnVqNvvKnXGyo2pZoRIGsnX7nHdAaUHkJWPHWkXEmecqnED6ivmXkFiQKd0L
-         W55Rk+XQcZ2OmU8qyarBDhNEx+K5nrOivVqxQEOIcI6G7gzY7mZ5a6p3iqXgFo/GLjEK
-         z26wmO0X/876nBR/pc0D4H+lWpd07379rjcxzwQdb2zs+iXBFgVCkFgTAN4Bt3gxvZl8
-         T6ap+6R6ZagOxUtirf2ezRrbk486i7SKOa3xK6nac5LqbXsQnxrovv0B7yIdfJ3NIZdD
-         OXWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=35BvP9EA6UmVAWVwUm9hFAUDuAeF8dpNkQ9qW8oNTB4=;
-        b=0fLKLYm8nUInd+Ele9Dcg34pAaeO0fPoOCksXQqIwFycxmuwMSpnKVI+ywqZRUmQMr
-         gR39zalJTRFsFZM/WtC9ios0xoAGA/FO6Y1qW5KCVeKHOOdoalQYFcGgrCWrnlBhzMAC
-         8v4Fre6T2RiUkjUPPfcV8gWA7IXQaWJs2YJfJ/0QekXDtvo2MgFTrOG05rNHhbAfsDGP
-         AvgHSAomcYlxP83sG8XacTITRT3XPf2elE80ht7YND/G8zYB88AYnuCs+xx7LcNyyvY/
-         AoLdlgX42niHMrLsn66xReNEnS3H5OWzV8z97hLf1whM/p8C9SSoejblGeqg/kilNm8f
-         zC3A==
-X-Gm-Message-State: ACgBeo3wLpRCO7er1A2TN+HEtbK8siWRVzxyUQGGzCRA9SqJruNrOO5/
-        pb/I2RWTsbg8RiIIkfK7KXg=
-X-Google-Smtp-Source: AA6agR4haNDihliJMwbXVir8pO28zMsz56l90jSW3Mrz4IaeRNTqrPLvDHHY5cfuqsqbOgCBV6Bl0g==
-X-Received: by 2002:a05:6214:2a84:b0:476:feb2:f436 with SMTP id jr4-20020a0562142a8400b00476feb2f436mr14623928qvb.43.1660586954722;
-        Mon, 15 Aug 2022 11:09:14 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y23-20020ac87c97000000b00342f8984348sm8360320qtv.87.2022.08.15.11.09.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 15 Aug 2022 11:09:14 -0700 (PDT)
-Message-ID: <d75b23fb-74e5-3986-26d0-9ae83158c7ce@gmail.com>
-Date:   Mon, 15 Aug 2022 11:09:11 -0700
+        with ESMTP id S233025AbiHOSKN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 14:10:13 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4048D2A249
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 11:10:11 -0700 (PDT)
+Received: from ramsan.of.borg ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id 7uA42800C4C55Sk06uA4oE; Mon, 15 Aug 2022 20:10:09 +0200
+Received: from geert (helo=localhost)
+        by ramsan.of.borg with local-esmtp (Exim 4.93)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1oNeXL-001DJO-RF; Mon, 15 Aug 2022 20:10:03 +0200
+Date:   Mon, 15 Aug 2022 20:10:03 +0200 (CEST)
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+X-X-Sender: geert@ramsan.of.borg
+To:     linux-kernel@vger.kernel.org
+cc:     linux-parisc@vger.kernel.org, linux-staging@lists.linux.dev,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        linuxppc-dev@lists.ozlabs.org, linux-sh@vger.kernel.org
+Subject: Re: Build regressions/improvements in v6.0-rc1
+In-Reply-To: <20220815180438.2875559-1-geert@linux-m68k.org>
+Message-ID: <alpine.DEB.2.22.394.2208152006320.289321@ramsan.of.borg>
+References: <CAHk-=wgRFjPHV-Y_eKP9wQMLFDgG+dEUHiv5wC17OQHsG5z7BA@mail.gmail.com> <20220815180438.2875559-1-geert@linux-m68k.org>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next] net: phy: broadcom: Implement suspend/resume for
- AC131 and BCM5241
-Content-Language: en-US
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20220815174356.2681127-1-f.fainelli@gmail.com>
- <YvqJyg3eUusc8jkC@shell.armlinux.org.uk>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <YvqJyg3eUusc8jkC@shell.armlinux.org.uk>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/22 11:00, Russell King (Oracle) wrote:
-> On Mon, Aug 15, 2022 at 10:43:56AM -0700, Florian Fainelli wrote:
->> +	/* We cannot use a read/modify/write here otherwise the PHY continues
->> +	 * to drive LEDs which defeats the purpose of low power mode.
->> +	 */
-> ...
->> +	/* Set standby mode */
->> +	reg = phy_read(phydev, MII_BRCM_FET_SHDW_AUXMODE4);
->> +	if (reg < 0) {
->> +		err = reg;
->> +		goto done;
->> +	}
->> +
->> +	reg |= MII_BRCM_FET_SHDW_AM4_STANDBY;
->> +
->> +	err = phy_write(phydev, MII_BRCM_FET_SHDW_AUXMODE4, reg);
-> 
-> Does the read-modify-write problem extend to this register? Why would
-> the PHY behave differently whether you used phy_modify() here or not?
-> On the mdio bus, it should be exactly the same - the only difference
-> is that we're guaranteed to hold the lock over the sequence whereas
-> this drops and re-acquires the lock.
+On Mon, 15 Aug 2022, Geert Uytterhoeven wrote:
+> Below is the list of build error/warning regressions/improvements in
+> v6.0-rc1[1] compared to v5.19[2].
+>
+> Summarized:
+>  - build errors: +26/-15
 
-What read-modify-write problem are you referring to, that is, are you 
-talking about my statement about setting BMCR.PDOWN only or something else?
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: .cfi_endproc without corresponding .cfi_startproc:  => 32
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: bad or irreducible absolute expression:  => 16
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: junk at end of line, first unrecognized character is `:':  => 16
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `be 0x100(%sr2,%r0)':  => 29
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldi 0,%r20':  => 30
+   + /kisskb/src/arch/parisc/kernel/vdso32/restart_syscall.S: Error: no such instruction: `ldw 0(%sp),%r31':  => 26
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ble 0x100(%sr2,%r0)':  => 51, 46
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 0,%r25':  => 44
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 1,%r25':  => 49
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: no such instruction: `ldi 173,%r20':  => 50, 45
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.callinfo':  => 40
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.entry':  => 41
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.exit':  => 54
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.proc':  => 39
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.procend':  => 55
+   + /kisskb/src/arch/parisc/kernel/vdso32/sigtramp.S: Error: unknown pseudo-op: `.stringz':  => 76
 
-I could use phy_modify(), sure.
--- 
-Florian
+parisc64-gcc11/generic-64bit_defconfig
+parisc-gcc11/generic-32bit_defconfig
+parisc-gcc11/parisc-{allmod,allno,def}config
+
+   + /kisskb/src/arch/sh/include/asm/io.h: error: cast to pointer from integer of different size [-Werror=int-to-pointer-cast]:  => 239:34
+
+sh4-gcc11/sh-allmodconfig (drivers/staging/octeon/ethernet-mem.c)
+
+   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn30/display_mode_vba_30.c: error: the frame size of 2096 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]:  => 6806:1
+   + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_32.c: error: the frame size of 2160 bytes is larger than 2048 bytes [-Werror=frame-larger-than=]:  => 3778:1
+
+x86_64-gcc8/x86-allmodconfig
+
+   + /kisskb/src/include/linux/bitfield.h: error: call to '__field_overflow' declared with attribute error: value doesn't fit into mask:  => 151:3
+
+mipsel-gcc5/mips-allmodconfig (net/mac80211/tx.c)
+
+   + /kisskb/src/include/linux/compiler_types.h: error: call to '__compiletime_assert_603' declared with attribute error: FIELD_GET: mask is not constant:  => 354:38
+
+arm64-gcc5/arm64-allmodconfig (arch/arm64/kvm/arm.c)
+
+   + /kisskb/src/include/linux/random.h: error: 'latent_entropy' undeclared (first use in this function):  => 25:39
+
+powerpc-gcc5/powerpc-all{mod,yes}config
+powerpc-gcc5/ppc32_allmodconfig
+powerpc-gcc5/ppc64_book3e_allmodconfig
+powerpc-gcc5/ppc64le_allmodconfig
+
+   + /kisskb/src/include/linux/random.h: error: 'latent_entropy' undeclared (first use in this function); did you mean 'add_latent_entropy'?:  => 25:46
+
+powerpc-gcc11/powerpc-all{mod,yes}config
+powerpc-gcc11/ppc64_book3e_allmodconfig
+
+   + {standard input}: Error: displacement to undefined symbol .L377 overflows 12-bit field:  => 2286
+   + {standard input}: Error: displacement to undefined symbol .L378 overflows 8-bit field :  => 2302
+   + {standard input}: Error: displacement to undefined symbol .L382 overflows 8-bit field :  => 2213
+
+sh4-gcc11/sh-allmodconfig (seen before, root cause is internal compiler error)
+
+> [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/568035b01cfb107af8d2e4bd2fb9aea22cf5b868/ (all 135 configs)
+> [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/3d7cb6b04c3f3115719235cc6866b10326de34cd/ (all 135 configs)
+
+Gr{oetje,eeting}s,
+
+ 						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
