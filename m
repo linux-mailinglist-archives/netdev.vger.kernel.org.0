@@ -2,51 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B6ED59307C
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 16:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F09D593091
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 16:19:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232547AbiHOONF convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 15 Aug 2022 10:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53920 "EHLO
+        id S242903AbiHOOT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 10:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiHOONE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 10:13:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706E81144A;
-        Mon, 15 Aug 2022 07:13:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6620B80ED4;
-        Mon, 15 Aug 2022 14:13:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86B11C433C1;
-        Mon, 15 Aug 2022 14:12:57 +0000 (UTC)
-Date:   Mon, 15 Aug 2022 10:13:03 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf@vger.kernel.org, magnus.karlsson@gmail.com,
-        magnus.karlsson@intel.com, jonathan.lemon@gmail.com,
-        ecree@solarflare.com, thoiland@redhat.com, brouer@redhat.com,
-        andrii.nakryiko@gmail.com, LKML <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
-Message-ID: <20220815101303.79ace3f8@gandalf.local.home>
-In-Reply-To: <20191211123017.13212-3-bjorn.topel@gmail.com>
-References: <20191211123017.13212-1-bjorn.topel@gmail.com>
-        <20191211123017.13212-3-bjorn.topel@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S242899AbiHOOTX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 10:19:23 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2116.outbound.protection.outlook.com [40.107.237.116])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3BF22B35;
+        Mon, 15 Aug 2022 07:19:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mY2m5FNQyvyCi3y9eqZB4fVZu9zCBPdhI1GuyiM3hfMnvKyeAlG3pxL1v1redAS3vQJTJpg+evZTyn5cV7ZPztCtdD+9jUO+haj3GkwWd+4ceSGJXYsnhPijdRy9KcmlfrxqcsuhDWwJWHGlWIIdEzdibZoAhST9EgeOvXixw2AJZ70rGN7WUCMaW0ELDA0bfSLbzixByyF5Hb3QyQbgbDoy3zYO4381jXppEkMQIwuZ7T7nx1opPdnxzzKJcm9MLULJDDic9lvZREy6yCAXxnyk1XsTJARSqVJaQL6LbdRxcdhuGp4fIuhEc25ktIrW8NsfNQyRIxVaZWF8EFhLLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7mOW1wKU12L7UO6zkSVsn0AoLnI9a0BT3CW6qSJKCj8=;
+ b=f7ews5b3fvVEOGGEtTxfe5XKsfv9IDwCm11Iv8FJh/ABuM6PRruioyu3sEiwwBadtgM12ARliUzY1BXOdXeVyMlc/Nd/n9XcioCA+35fhfKliY0zIW7ykr3wXNjFbZ35htMnfhiyPyEWVc9ij7DzuzWSEJzwSLnq2UzY+kF83Qjk77sEARlHqQMQCKKVtwlQiEMhp8tlMXMM/poh3fZUTQuzqTcLj88zn0gIX5iwFsysXSZXhXFQUqqAWOuDlS3Y3nZA/HuakOc0oJThrfwPk3kygLMlyFPsNpAXrgecbccB0S2fWP30M8IoMvNONSfhjSBi7+SlS9FXp5XQqX5nEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7mOW1wKU12L7UO6zkSVsn0AoLnI9a0BT3CW6qSJKCj8=;
+ b=QHQYgAFjKlvDKCZSuZ/s9iVc8Z1oiQ2HRpP28jsVXqnrE+SRGqtq+7GDfrajLXXTMit0R0Vt3FGKHpQIKsRqOLungCarL9OZmR3/uQMUl7HuorY10uCMVU+8xrMvIfaPKfcTU0C4veLyhh5/F0iNzs5MByy42z0hE4sjkyWTWMI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CH0PR10MB5146.namprd10.prod.outlook.com
+ (2603:10b6:610:c3::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Mon, 15 Aug
+ 2022 14:19:19 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee%4]) with mapi id 15.20.5504.027; Mon, 15 Aug 2022
+ 14:19:19 +0000
+Date:   Mon, 15 Aug 2022 07:19:13 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        katie.morris@in-advantage.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Lee Jones <lee@kernel.org>
+Subject: Re: [PATCH v16 mfd 8/8] mfd: ocelot: add support for the vsc7512
+ chip via spi
+Message-ID: <YvpV4cvwE0IQOax7@euler>
+References: <20220815005553.1450359-1-colin.foster@in-advantage.com>
+ <20220815005553.1450359-9-colin.foster@in-advantage.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815005553.1450359-9-colin.foster@in-advantage.com>
+X-ClientProxiedBy: BYAPR02CA0028.namprd02.prod.outlook.com
+ (2603:10b6:a02:ee::41) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a4de9742-1e4d-4c12-f63f-08da7ec92434
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5146:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: VdQQNtLkwgs+nDIGL1f93d96XZC86ltvhelArL+mdyQekX6VaTIpBR3h6LHPL7rdf99cyR7qRJ6Bt29IGhE5v7ypx02KErocmHb0xPnSfSIamUjhhiqB0ceIBLja/79MM8Ru3/yY83dVo7Jq23tWnwlV42St/mnoUjWBeA7+mzvO7nSRTY4Jc4Ei02ZLDm7zpnKJJtYm7laQShHSe9U/Cu5AkSfXqcTZgxbN+4ZvRE3UFg2iIoWNcHUtrCcCPhgZ+1vF+RM0K3cCiOGbRII/rMa1DYX3hJm4lMpIH3Czh1r12z4H0o8RckEPTVLD8H8qMO+KhVjLPGsP8iPclPNmLtEb14Ci5I/7AxAuO1klh7evg9EUrHGKApmtetyKIMtuN7TYKup7DSY0wiCoJdB9qzlBoM7byRV+tI5iynmgklGiTg2tEetldXyidj1Shwo5ItfLLl7X/NFsDhVNBQkYbQFkfTLdPthJ0VzpSFWh13e+8N+X41xnKhdFVPpkXJYOaUO77xd8flpHAgIY03g1PE9xe1KECDswm3qEHP20C4fBxIZ3W3TDC1RAtcZajP8koovN6AAuaKqYgLWyGugKHCISyMDNLdlFNAGSTxQhXpUJ+6KMRnf8sQA8fj3EsPzJ9K8rgSjRrekaGFjafKkPIyHHnRCX3Qqwx6EPnp1cVJhdaON+OzdHEAUZ3+oGB4ct
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(366004)(396003)(39830400003)(376002)(136003)(346002)(54906003)(9686003)(6666004)(86362001)(41300700001)(6506007)(26005)(186003)(6512007)(83380400001)(316002)(33716001)(4326008)(66946007)(66476007)(2906002)(66556008)(6486002)(5660300002)(966005)(44832011)(478600001)(8676002)(7416002)(8936002)(38100700002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?GwIt56T2BHYodAiAdIIEOx07IwvRRREPa0u+6ZCiO8fNp7bRK+KnnnyR1YV4?=
+ =?us-ascii?Q?2vPpeeB809BdOFrQnD2QHk+UCP/u8W6NLN2EtdkzhE0CecTgfiEODYS64Z8p?=
+ =?us-ascii?Q?4mp2bDPTTD+aqOJgdNGRtkddpHvWf3nX+1RpdVBsmUy1EJxM7s+voyVqPP4q?=
+ =?us-ascii?Q?YHZCrfPey3WmpkxiuGXuuushhFpYuw1R/3v3LPnZNnWXFhrHcB4I5AbGo1Vt?=
+ =?us-ascii?Q?lE0K9Q/SLMg7Gr3arb39iMUAqztMxm8QpaJHDw7rXDjS/7/CSHPTOQLoSLsk?=
+ =?us-ascii?Q?d8I9GjD8XwZl8ukoPJrlJKg/i0VbiSWDlTztGeXdzXTXZrsRXdPwsJnMy9Im?=
+ =?us-ascii?Q?pPMYmDi5PNDZNa2sbjDGsv2g7Rq4UtcKS4AJgSBPwSg0d7hI+Y1jZY0ZTRJk?=
+ =?us-ascii?Q?FAvpmJ3KOhOM6aW28u9VswUv9TilwXQJZtpfogL45B/Lb5dLmsQFZ+AGlBoP?=
+ =?us-ascii?Q?RJrx05mbh942cuoOVUHA1aptKM8W8pxGZzAmVG9DeCQP80Gye2HrNRegjdb7?=
+ =?us-ascii?Q?EPUaILBKIrSOLQNylcFUk3YRsd0yAo0989i2OosUjDrhfH0DChlSVedY4P98?=
+ =?us-ascii?Q?2jdK1unshrp7nB/4y8LSuK1wZ+S7c2BXIQZY8ZMrng6u7m6FYTZDiKuyDIpl?=
+ =?us-ascii?Q?vKI+vvg4vA6bEaAVr/4szDbF4X+W9sMk+49/QfKJpIj4SBH+cz05qWYxkUcp?=
+ =?us-ascii?Q?bXWQA++B5cm9KchYWm/+L0AxAUwudkF+l9hgE0iLr/hP2lGvzocHhkJHlah9?=
+ =?us-ascii?Q?Jk/GGhoGYjeIbu+t/fSfOu8tW0ykPk+hvD0zfWLJgq2EcWl3Np6/SgZ1kSDu?=
+ =?us-ascii?Q?yZ1083O4O+Ss7WYX78G+PNzHzDQNtyDRuX7xofW0ZsC46ESukd66GNgvJ1ms?=
+ =?us-ascii?Q?ahGO5bSNChw90WJDj5yyj505/BdDDq5Z8sZuC6TpWUy2p1DGQ9wLJ0t1EH2M?=
+ =?us-ascii?Q?RwTZxcJX8gJK6OH2p94pgdAnCFKAff5TJ+vqEctj9DFTvrGt84WxzR88zgMu?=
+ =?us-ascii?Q?34SFMxfvV/cn6xmeM+tZ521wteYi4i2uFwngZG451mZoRpUVVwbhtDBdP2Zj?=
+ =?us-ascii?Q?xf0QjetoHArSerkuCqnTQvZR4EpscxKX/g7cfy8HwjL2BLo2AbHlg4npOtny?=
+ =?us-ascii?Q?W/0smehSP2Bs/UdGJdOW8HiK0dSYTiKv5FUXFLlM1kEG2SGT6k8zLHHRhrxI?=
+ =?us-ascii?Q?GQnZCFfV1OP3iH3w+cN6ymiJI9sZvp4x7qcOASG5IxWXJnlv4z51xEFkq5Kw?=
+ =?us-ascii?Q?3O73w1/iBiQ8rQFekEZWtauZ+vlwiOh7D204m/EsEfYnHFLQlcyAQFf9iBi6?=
+ =?us-ascii?Q?eLD8sCo7Z9MzUoRB8sIzb2GOnqGjg5298utuExZmMustm11LRQxo95+SBSVf?=
+ =?us-ascii?Q?uGoVcPVnoRm/rlq7WuBWWy9xRRnRvW1e3Wj8U+/PVJe0BBN+AlYFutdcNz36?=
+ =?us-ascii?Q?1Ec3D1T6Gty8CPJML+4SMSBTTu0EwJ2j9eb7mhFGIYFdf1ApFrOehrQzlH+s?=
+ =?us-ascii?Q?Xjgt3mixoj5Ognm5k468T+oQgR0Y7crchqJT5PK5z8cbi8WgPFWT/UyksfU0?=
+ =?us-ascii?Q?JLah9OeVxuyl86ryCEAKBEM8ESi9Wr/ZSnzefN88W3Kc/Pq4mK2+qRYPixOl?=
+ =?us-ascii?Q?5A=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a4de9742-1e4d-4c12-f63f-08da7ec92434
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 14:19:19.0135
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HnUghN7sQZFSzD6AawE/X4F6/HF68Esv5g6iFLufmlbOGJ0bHEgkyPzb8/nWSBtf/UQ4h9KCguBepF8EqZMmne1mZ4EZCWoccez/Pdzu5yk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5146
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,469 +136,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 Dec 2019 13:30:13 +0100
-Björn Töpel <bjorn.topel@gmail.com> wrote:
+Add Lee - My apologies, it seems like you got a new email address and I
+didn't copy it on this series.
 
-> From: Björn Töpel <bjorn.topel@intel.com>
+On Sun, Aug 14, 2022 at 05:55:53PM -0700, Colin Foster wrote:
+> The VSC7512 is a networking chip that contains several peripherals. Many of
+> these peripherals are currently supported by the VSC7513 and VSC7514 chips,
+> but those run on an internal CPU. The VSC7512 lacks this CPU, and must be
+> controlled externally.
 > 
-> The BPF dispatcher is a multi-way branch code generator, mainly
-> targeted for XDP programs. When an XDP program is executed via the
-> bpf_prog_run_xdp(), it is invoked via an indirect call. The indirect
-> call has a substantial performance impact, when retpolines are
-> enabled. The dispatcher transform indirect calls to direct calls, and
-> therefore avoids the retpoline. The dispatcher is generated using the
-> BPF JIT, and relies on text poking provided by bpf_arch_text_poke().
+> Utilize the existing drivers by referencing the chip as an MFD. Add support
+> for the two MDIO buses, the internal phys, pinctrl, and serial GPIO.
 > 
-> The dispatcher hijacks a trampoline function it via the __fentry__ nop
-
-Why was the ftrace maintainers not Cc'd on this patch?  I would have NACKED
-it. Hell, it wasn't even sent to LKML! This was BPF being sneaky in
-updating major infrastructure of the Linux kernel without letting the
-stakeholders of this change know about it.
-
-For some reason, the BPF folks think they own the entire kernel!
-
-When I heard that ftrace was broken by BPF I thought it was something
-unique they were doing, but unfortunately, I didn't investigate what they
-were doing at the time.
-
-Then they started sending me patches to hide fentry locations from ftrace.
-And even telling me that fentry != ftrace
-
-   https://lore.kernel.org/all/CAADnVQJTT7h3MniVqdBEU=eLwvJhEKNLSjbUAK4sOrhN=zggCQ@mail.gmail.com/
-	
-Even though fentry was created for ftrace
-
-   https://lore.kernel.org/lkml/1258720459.22249.1018.camel@gandalf.stny.rr.com/
-
-and all the work with fentry was for the ftrace infrastructure. Ftrace
-takes a lot of care for security and use cases for other users (like
-live kernel patching). But BPF has the NIH syndrome, and likes to own
-everything and recreate the wheel so that they have full control.
-
-> of the trampoline. One dispatcher instance currently supports up to 64
-> dispatch points. A user creates a dispatcher with its corresponding
-> trampoline with the DEFINE_BPF_DISPATCHER macro.
-
-Anyway, this patch just looks like a re-implementation of static_calls:
-
-   https://lore.kernel.org/all/20200818135735.948368560@infradead.org/
-
-Maybe if the BPF folks communicated to a wider audience, they would not
-need to constantly recreate the wheel.
-
--- Steve
-
-
-> 
-> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
->  arch/x86/net/bpf_jit_comp.c | 122 +++++++++++++++++++++++++++
->  include/linux/bpf.h         |  56 +++++++++++++
->  kernel/bpf/Makefile         |   1 +
->  kernel/bpf/dispatcher.c     | 159 ++++++++++++++++++++++++++++++++++++
->  4 files changed, 338 insertions(+)
->  create mode 100644 kernel/bpf/dispatcher.c
 > 
-> diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
-> index b8be18427277..3ce7ad41bd6f 100644
-> --- a/arch/x86/net/bpf_jit_comp.c
-> +++ b/arch/x86/net/bpf_jit_comp.c
-> @@ -10,10 +10,12 @@
->  #include <linux/if_vlan.h>
->  #include <linux/bpf.h>
->  #include <linux/memory.h>
-> +#include <linux/sort.h>
->  #include <asm/extable.h>
->  #include <asm/set_memory.h>
->  #include <asm/nospec-branch.h>
->  #include <asm/text-patching.h>
-> +#include <asm/asm-prototypes.h>
->  
->  static u8 *emit_code(u8 *ptr, u32 bytes, unsigned int len)
->  {
-> @@ -1530,6 +1532,126 @@ int arch_prepare_bpf_trampoline(void *image, struct btf_func_model *m, u32 flags
->  	return 0;
->  }
->  
-> +static int emit_cond_near_jump(u8 **pprog, void *func, void *ip, u8 jmp_cond)
-> +{
-> +	u8 *prog = *pprog;
-> +	int cnt = 0;
-> +	s64 offset;
-> +
-> +	offset = func - (ip + 2 + 4);
-> +	if (!is_simm32(offset)) {
-> +		pr_err("Target %p is out of range\n", func);
-> +		return -EINVAL;
-> +	}
-> +	EMIT2_off32(0x0F, jmp_cond + 0x10, offset);
-> +	*pprog = prog;
-> +	return 0;
-> +}
-> +
-> +static int emit_fallback_jump(u8 **pprog)
-> +{
-> +	u8 *prog = *pprog;
-> +	int err = 0;
-> +
-> +#ifdef CONFIG_RETPOLINE
-> +	/* Note that this assumes the the compiler uses external
-> +	 * thunks for indirect calls. Both clang and GCC use the same
-> +	 * naming convention for external thunks.
-> +	 */
-> +	err = emit_jump(&prog, __x86_indirect_thunk_rdx, prog);
-> +#else
-> +	int cnt = 0;
-> +
-> +	EMIT2(0xFF, 0xE2);	/* jmp rdx */
-> +#endif
-> +	*pprog = prog;
-> +	return err;
-> +}
-> +
-> +static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
-> +{
-> +	int pivot, err, jg_bytes = 1, cnt = 0;
-> +	u8 *jg_reloc, *prog = *pprog;
-> +	s64 jg_offset;
-> +
-> +	if (a == b) {
-> +		/* Leaf node of recursion, i.e. not a range of indices
-> +		 * anymore.
-> +		 */
-> +		EMIT1(add_1mod(0x48, BPF_REG_3));	/* cmp rdx,func */
-> +		if (!is_simm32(progs[a]))
-> +			return -1;
-> +		EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3),
-> +			    progs[a]);
-> +		err = emit_cond_near_jump(&prog,	/* je func */
-> +					  (void *)progs[a], prog,
-> +					  X86_JE);
-> +		if (err)
-> +			return err;
-> +
-> +		err = emit_fallback_jump(&prog);	/* jmp thunk/indirect */
-> +		if (err)
-> +			return err;
-> +
-> +		*pprog = prog;
-> +		return 0;
-> +	}
-> +
-> +	/* Not a leaf node, so we pivot, and recursively descend into
-> +	 * the lower and upper ranges.
-> +	 */
-> +	pivot = (b - a) / 2;
-> +	EMIT1(add_1mod(0x48, BPF_REG_3));		/* cmp rdx,func */
-> +	if (!is_simm32(progs[a + pivot]))
-> +		return -1;
-> +	EMIT2_off32(0x81, add_1reg(0xF8, BPF_REG_3), progs[a + pivot]);
-> +
-> +	if (pivot > 2) {				/* jg upper_part */
-> +		/* Require near jump. */
-> +		jg_bytes = 4;
-> +		EMIT2_off32(0x0F, X86_JG + 0x10, 0);
-> +	} else {
-> +		EMIT2(X86_JG, 0);
-> +	}
-> +	jg_reloc = prog;
-> +
-> +	err = emit_bpf_dispatcher(&prog, a, a + pivot,	/* emit lower_part */
-> +				  progs);
-> +	if (err)
-> +		return err;
-> +
-> +	jg_offset = prog - jg_reloc;
-> +	emit_code(jg_reloc - jg_bytes, jg_offset, jg_bytes);
-> +
-> +	err = emit_bpf_dispatcher(&prog, a + pivot + 1,	/* emit upper_part */
-> +				  b, progs);
-> +	if (err)
-> +		return err;
-> +
-> +	*pprog = prog;
-> +	return 0;
-> +}
-> +
-> +static int cmp_ips(const void *a, const void *b)
-> +{
-> +	const s64 *ipa = a;
-> +	const s64 *ipb = b;
-> +
-> +	if (*ipa > *ipb)
-> +		return 1;
-> +	if (*ipa < *ipb)
-> +		return -1;
-> +	return 0;
-> +}
-> +
-> +int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
-> +{
-> +	u8 *prog = image;
-> +
-> +	sort(funcs, num_funcs, sizeof(funcs[0]), cmp_ips, NULL);
-> +	return emit_bpf_dispatcher(&prog, 0, num_funcs - 1, funcs);
-> +}
-> +
->  struct x64_jit_data {
->  	struct bpf_binary_header *header;
->  	int *addrs;
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 5d744828b399..e6a9d74d4e30 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -470,12 +470,61 @@ struct bpf_trampoline {
->  	void *image;
->  	u64 selector;
->  };
-> +
-> +#define BPF_DISPATCHER_MAX 64 /* Fits in 2048B */
-> +
-> +struct bpf_dispatcher_prog {
-> +	struct bpf_prog *prog;
-> +	refcount_t users;
-> +};
-> +
-> +struct bpf_dispatcher {
-> +	/* dispatcher mutex */
-> +	struct mutex mutex;
-> +	void *func;
-> +	struct bpf_dispatcher_prog progs[BPF_DISPATCHER_MAX];
-> +	int num_progs;
-> +	void *image;
-> +	u32 image_off;
-> +};
-> +
->  #ifdef CONFIG_BPF_JIT
->  struct bpf_trampoline *bpf_trampoline_lookup(u64 key);
->  int bpf_trampoline_link_prog(struct bpf_prog *prog);
->  int bpf_trampoline_unlink_prog(struct bpf_prog *prog);
->  void bpf_trampoline_put(struct bpf_trampoline *tr);
->  void *bpf_jit_alloc_exec_page(void);
-> +#define BPF_DISPATCHER_INIT(name) {			\
-> +	.mutex = __MUTEX_INITIALIZER(name.mutex),	\
-> +	.func = &name##func,				\
-> +	.progs = {},					\
-> +	.num_progs = 0,					\
-> +	.image = NULL,					\
-> +	.image_off = 0					\
-> +}
-> +
-> +#define DEFINE_BPF_DISPATCHER(name)					\
-> +	unsigned int name##func(					\
-> +		const void *xdp_ctx,					\
-> +		const struct bpf_insn *insnsi,				\
-> +		unsigned int (*bpf_func)(const void *,			\
-> +					 const struct bpf_insn *))	\
-> +	{								\
-> +		return bpf_func(xdp_ctx, insnsi);			\
-> +	}								\
-> +	EXPORT_SYMBOL(name##func);			\
-> +	struct bpf_dispatcher name = BPF_DISPATCHER_INIT(name);
-> +#define DECLARE_BPF_DISPATCHER(name)					\
-> +	unsigned int name##func(					\
-> +		const void *xdp_ctx,					\
-> +		const struct bpf_insn *insnsi,				\
-> +		unsigned int (*bpf_func)(const void *,			\
-> +					 const struct bpf_insn *));	\
-> +	extern struct bpf_dispatcher name;
-> +#define BPF_DISPATCHER_FUNC(name) name##func
-> +#define BPF_DISPATCHER_PTR(name) (&name)
-> +void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
-> +				struct bpf_prog *to);
->  #else
->  static inline struct bpf_trampoline *bpf_trampoline_lookup(u64 key)
->  {
-> @@ -490,6 +539,13 @@ static inline int bpf_trampoline_unlink_prog(struct bpf_prog *prog)
->  	return -ENOTSUPP;
->  }
->  static inline void bpf_trampoline_put(struct bpf_trampoline *tr) {}
-> +#define DEFINE_BPF_DISPATCHER(name)
-> +#define DECLARE_BPF_DISPATCHER(name)
-> +#define BPF_DISPATCHER_FUNC(name) bpf_dispatcher_nopfunc
-> +#define BPF_DISPATCHER_PTR(name) NULL
-> +static inline void bpf_dispatcher_change_prog(struct bpf_dispatcher *d,
-> +					      struct bpf_prog *from,
-> +					      struct bpf_prog *to) {}
->  #endif
->  
->  struct bpf_func_info_aux {
-> diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> index 3f671bf617e8..d4f330351f87 100644
-> --- a/kernel/bpf/Makefile
-> +++ b/kernel/bpf/Makefile
-> @@ -8,6 +8,7 @@ obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o
->  obj-$(CONFIG_BPF_SYSCALL) += disasm.o
->  obj-$(CONFIG_BPF_JIT) += trampoline.o
->  obj-$(CONFIG_BPF_SYSCALL) += btf.o
-> +obj-$(CONFIG_BPF_JIT) += dispatcher.o
->  ifeq ($(CONFIG_NET),y)
->  obj-$(CONFIG_BPF_SYSCALL) += devmap.o
->  obj-$(CONFIG_BPF_SYSCALL) += cpumap.o
-> diff --git a/kernel/bpf/dispatcher.c b/kernel/bpf/dispatcher.c
-> new file mode 100644
-> index 000000000000..a4690460d815
-> --- /dev/null
-> +++ b/kernel/bpf/dispatcher.c
-> @@ -0,0 +1,159 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright(c) 2019 Intel Corporation. */
-> +
-> +#include <linux/hash.h>
-> +#include <linux/bpf.h>
-> +#include <linux/filter.h>
-> +
-> +/* The BPF dispatcher is a multiway branch code generator. The
-> + * dispatcher is a mechanism to avoid the performance penalty of an
-> + * indirect call, which is expensive when retpolines are enabled. A
-> + * dispatch client registers a BPF program into the dispatcher, and if
-> + * there is available room in the dispatcher a direct call to the BPF
-> + * program will be generated. All calls to the BPF programs called via
-> + * the dispatcher will then be a direct call, instead of an
-> + * indirect. The dispatcher hijacks a trampoline function it via the
-> + * __fentry__ of the trampoline. The trampoline function has the
-> + * following signature:
-> + *
-> + * unsigned int trampoline(const void *xdp_ctx,
-> + *                         const struct bpf_insn *insnsi,
-> + *                         unsigned int (*bpf_func)(const void *,
-> + *                                                  const struct bpf_insn *));
-> + */
-> +
-> +static struct bpf_dispatcher_prog *bpf_dispatcher_find_prog(
-> +	struct bpf_dispatcher *d, struct bpf_prog *prog)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < BPF_DISPATCHER_MAX; i++) {
-> +		if (prog == d->progs[i].prog)
-> +			return &d->progs[i];
-> +	}
-> +	return NULL;
-> +}
-> +
-> +static struct bpf_dispatcher_prog *bpf_dispatcher_find_free(
-> +	struct bpf_dispatcher *d)
-> +{
-> +	return bpf_dispatcher_find_prog(d, NULL);
-> +}
-> +
-> +static bool bpf_dispatcher_add_prog(struct bpf_dispatcher *d,
-> +				    struct bpf_prog *prog)
-> +{
-> +	struct bpf_dispatcher_prog *entry;
-> +
-> +	if (!prog)
-> +		return false;
-> +
-> +	entry = bpf_dispatcher_find_prog(d, prog);
-> +	if (entry) {
-> +		refcount_inc(&entry->users);
-> +		return false;
-> +	}
-> +
-> +	entry = bpf_dispatcher_find_free(d);
-> +	if (!entry)
-> +		return false;
-> +
-> +	bpf_prog_inc(prog);
-> +	entry->prog = prog;
-> +	refcount_set(&entry->users, 1);
-> +	d->num_progs++;
-> +	return true;
-> +}
-> +
-> +static bool bpf_dispatcher_remove_prog(struct bpf_dispatcher *d,
-> +				       struct bpf_prog *prog)
-> +{
-> +	struct bpf_dispatcher_prog *entry;
-> +
-> +	if (!prog)
-> +		return false;
-> +
-> +	entry = bpf_dispatcher_find_prog(d, prog);
-> +	if (!entry)
-> +		return false;
-> +
-> +	if (refcount_dec_and_test(&entry->users)) {
-> +		entry->prog = NULL;
-> +		bpf_prog_put(prog);
-> +		d->num_progs--;
-> +		return true;
-> +	}
-> +	return false;
-> +}
-> +
-> +int __weak arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
-> +{
-> +	return -ENOTSUPP;
-> +}
-> +
-> +static int bpf_dispatcher_prepare(struct bpf_dispatcher *d, void *image)
-> +{
-> +	s64 ips[BPF_DISPATCHER_MAX] = {}, *ipsp = &ips[0];
-> +	int i;
-> +
-> +	for (i = 0; i < BPF_DISPATCHER_MAX; i++) {
-> +		if (d->progs[i].prog)
-> +			*ipsp++ = (s64)(uintptr_t)d->progs[i].prog->bpf_func;
-> +	}
-> +	return arch_prepare_bpf_dispatcher(image, &ips[0], d->num_progs);
-> +}
-> +
-> +static void bpf_dispatcher_update(struct bpf_dispatcher *d, int prev_num_progs)
-> +{
-> +	void *old, *new;
-> +	u32 noff;
-> +	int err;
-> +
-> +	if (!prev_num_progs) {
-> +		old = NULL;
-> +		noff = 0;
-> +	} else {
-> +		old = d->image + d->image_off;
-> +		noff = d->image_off ^ (PAGE_SIZE / 2);
-> +	}
-> +
-> +	new = d->num_progs ? d->image + noff : NULL;
-> +	if (new) {
-> +		if (bpf_dispatcher_prepare(d, new))
-> +			return;
-> +	}
-> +
-> +	err = bpf_arch_text_poke(d->func, BPF_MOD_JUMP, old, new);
-> +	if (err || !new)
-> +		return;
-> +
-> +	d->image_off = noff;
-> +}
-> +
-> +void bpf_dispatcher_change_prog(struct bpf_dispatcher *d, struct bpf_prog *from,
-> +				struct bpf_prog *to)
-> +{
-> +	bool changed = false;
-> +	int prev_num_progs;
-> +
-> +	if (from == to)
-> +		return;
-> +
-> +	mutex_lock(&d->mutex);
-> +	if (!d->image) {
-> +		d->image = bpf_jit_alloc_exec_page();
-> +		if (!d->image)
-> +			goto out;
-> +	}
-> +
-> +	prev_num_progs = d->num_progs;
-> +	changed |= bpf_dispatcher_remove_prog(d, from);
-> +	changed |= bpf_dispatcher_add_prog(d, to);
-> +
-> +	if (!changed)
-> +		goto out;
-> +
-> +	bpf_dispatcher_update(d, prev_num_progs);
-> +out:
-> +	mutex_unlock(&d->mutex);
-> +}
+> v16
+>     * Includes fixups:
+>     *  ocelot-core.c add includes device.h, export.h, iopoll.h, ioport,h
+>     *  ocelot-spi.c add includes device.h, err.h, errno.h, export.h, 
+>        mod_devicetable.h, types.h
+>     *  Move kconfig.h from ocelot-spi.c to ocelot.h
+>     *  Remove unnecessary byteorder.h
 
+Something is going on that I don't fully understand with <asm/byteorder.h>.
+I don't quite see how ocelot-core is throwing all sorts of errors in x86
+builds now:
+
+https://patchwork.hopto.org/static/nipa/667471/12942993/build_allmodconfig_warn/stderr
+
+Snippet from there:
+
+/home/nipa/nipa/tests/patch/build_32bit/build_32bit.sh: line 21: ccache gcc: command not found
+../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+../arch/x86/include/asm/bitops.h:66:1: warning: unreplaced symbol 'return'
+../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+../include/asm-generic/bitops/generic-non-atomic.h:29:9: warning: unreplaced symbol 'mask'
+../include/asm-generic/bitops/generic-non-atomic.h:30:9: warning: unreplaced symbol 'p'
+../include/asm-generic/bitops/generic-non-atomic.h:32:10: warning: unreplaced symbol 'p'
+../include/asm-generic/bitops/generic-non-atomic.h:32:16: warning: unreplaced symbol 'mask'
+../include/asm-generic/bitops/generic-non-atomic.h:27:1: warning: unreplaced symbol 'return'
+../drivers/mfd/ocelot-spi.c: note: in included file (through ../arch/x86/include/asm/bitops.h, ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ...):
+../include/asm-generic/bitops/instrumented-non-atomic.h:26:1: warning: unreplaced symbol 'return'
+
+
+<asm/byteorder.h> was included in both drivers/mfd/ocelot-spi.c and
+drivers/mfd/ocelot.h previously, though Andy pointed out there didn't
+seem to be any users... and I didn't either. I'm sure there's something
+I must be missing.
+
+>     * Utilize resource_size() function
+> 
