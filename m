@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B13615932E3
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 18:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F9E25932EA
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 18:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232428AbiHOQUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 12:20:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39424 "EHLO
+        id S232600AbiHOQUu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 12:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbiHOQUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 12:20:41 -0400
-Received: from mail-oa1-x2d.google.com (mail-oa1-x2d.google.com [IPv6:2001:4860:4864:20::2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874361704B
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:20:36 -0700 (PDT)
-Received: by mail-oa1-x2d.google.com with SMTP id 586e51a60fabf-10e6bdbe218so8646814fac.10
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:20:36 -0700 (PDT)
+        with ESMTP id S232630AbiHOQUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 12:20:42 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28ADF1D0F8
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:20:38 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-11be650aaccso1249411fac.6
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 09:20:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=BSoTNICrMj7u/TGLx7cm1e33DdNye1p3mIhcbsI607s=;
-        b=KInnq098LCWs5kg+cX63AWfFPPNfgicW4dz+z/PeD/+DN4q0G1c4WxPhxdS0HovuP6
-         Gw20+HN0SO+KQ+dpOPTgZ40IlusbkswAnwxW4ppuftQgEHziJp1APc6lf78h5nLctEqK
-         jJBxZ2sv/gFyKvOO4233k+8J81NsYuEOlODUQ=
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=lHIcVgvWJN3OdYYSsC7RBMC65yCdGzXPq7WonvXuURg=;
+        b=RvEV/vtBES4QRTvsEVNe4a5Hi5zkKvoQo4b6nwm41wBEK6GofgwjNoYoz10qjXdup+
+         MvGKBgcg8caPoHTuStaUp/U5En+8Hy9TjJ4WRUDbgB47RU/ULRTbNYYa1ZoiPDqGDqeE
+         ytBifsdreKSg5RvG/bMzaPl3czA5/79GcxKJU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=BSoTNICrMj7u/TGLx7cm1e33DdNye1p3mIhcbsI607s=;
-        b=NPSrEWoFb6zD95AOmbtPy+KNuSc4VnIQSkrjbsWyU638FsKDYgA91pJlQoUZS9sEwD
-         6r8U5/3nrl7jcjAhNs/S4ZhS2g2mY5tcpiuA2unmgvJ7XcnR5AvUYGRojdNPFceuKEXK
-         cUNaBSRGMBuHvhjrBwfz0TbPbpimiB9a27wd2I6krJacM9gNEXIVZ0SQlQS8NkAIVXQS
-         LP0O/ieoPbzmzShGSQURTF43He6JTfhKTRJ61/Iz9HsSIzK8vYp+li+8d9OpF7WuyD7X
-         vzF2APwyTfw091VEdMhyTeajKFMfWtIvT2tfYg8ZYSdqiEL5/u9nnubD9PMYUF37oO+k
-         T9Mg==
-X-Gm-Message-State: ACgBeo1MQbRMi+NzG9JdwBrxufe/KBIUjjNt9h8P9fbZbVJijvJCrWx7
-        Sn1/6vCrURJ63y8E/6t9Km5BQQ==
-X-Google-Smtp-Source: AA6agR78nAzd1nRQswnX5CWOif43etOxtDbBfDmKa4nzMrWkz8NAms1Thrx+XPtPcVl4miGYXiqyuQ==
-X-Received: by 2002:a05:6870:d60a:b0:10e:4333:d773 with SMTP id a10-20020a056870d60a00b0010e4333d773mr7168256oaq.78.1660580435563;
-        Mon, 15 Aug 2022 09:20:35 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=lHIcVgvWJN3OdYYSsC7RBMC65yCdGzXPq7WonvXuURg=;
+        b=y2vDMzh/3xSD/IjjzW/5dxAGwJr8PuMa7gZwDUKup48xuYjMH339YmNFXlq51iM11r
+         q6gXsjnnIVe6bbLSET5tbG4uVBCIymNI/SVcSV5G5QcGzWYjE7HWHbbAxGRWygXEgdeQ
+         RFaIJKIGW8x8JNcriLjEOKdi75bj++RuK8pgE7Z4tLtC2IAebRj7QFwgxASDYBmakA6i
+         wdZgUEhkZFPjCg9nBUfD41p+5F+tUy3d3FzIzmbKxzJkrRK21CdwYdf2bqnem9NIfdZZ
+         84aWsQFYWivqt1T5MSGAiYtgzoQp9Zy31OEXb74EfgyXw8naGBJWhw+hYzj5sICKjA3d
+         pj9g==
+X-Gm-Message-State: ACgBeo1c6BWuceD8wK3ilWtrz1Q3iBKlHXVIV/W1k3cV7btOcIq7YZWB
+        b8+zJGBvamuz43kWvQ2pKU924Q==
+X-Google-Smtp-Source: AA6agR650fvSfcKdkYWoRVUrzHcgjSsjMtiAbKZqBqqTc2hdtVBGXw6xkiFF2LwUv+jWcic87SCttg==
+X-Received: by 2002:a05:6870:8984:b0:10d:d981:151f with SMTP id f4-20020a056870898400b0010dd981151fmr11077864oaq.212.1660580437137;
+        Mon, 15 Aug 2022 09:20:37 -0700 (PDT)
 Received: from localhost.localdomain ([184.4.90.121])
-        by smtp.gmail.com with ESMTPSA id x91-20020a9d37e4000000b00636ee04e7aesm2163371otb.67.2022.08.15.09.20.34
+        by smtp.gmail.com with ESMTPSA id x91-20020a9d37e4000000b00636ee04e7aesm2163371otb.67.2022.08.15.09.20.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 09:20:35 -0700 (PDT)
+        Mon, 15 Aug 2022 09:20:36 -0700 (PDT)
 From:   Frederick Lawler <fred@cloudflare.com>
 To:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
         ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
@@ -58,10 +58,12 @@ Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         kernel-team@cloudflare.com, cgzones@googlemail.com,
         karl@bigbadwolfsecurity.com, tixxdz@gmail.com,
         Frederick Lawler <fred@cloudflare.com>
-Subject: [PATCH v5 0/4] Introduce security_create_user_ns()
-Date:   Mon, 15 Aug 2022 11:20:24 -0500
-Message-Id: <20220815162028.926858-1-fred@cloudflare.com>
+Subject: [PATCH v5 1/4] security, lsm: Introduce security_create_user_ns()
+Date:   Mon, 15 Aug 2022 11:20:25 -0500
+Message-Id: <20220815162028.926858-2-fred@cloudflare.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
+References: <20220815162028.926858-1-fred@cloudflare.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
@@ -74,101 +76,177 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While user namespaces do not make the kernel more vulnerable, they are however
-used to initiate exploits. Some users do not want to block namespace creation
-for the entirety of the system, which some distributions provide. Instead, we
-needed a way to have some applications be blocked, and others allowed. This is
-not possible with those tools. Managing hierarchies also did not fit our case
-because we're determining which tasks are allowed based on their attributes.
+User namespaces are an effective tool to allow programs to run with
+permission without requiring the need for a program to run as root. User
+namespaces may also be used as a sandboxing technique. However, attackers
+sometimes leverage user namespaces as an initial attack vector to perform
+some exploit. [1,2,3]
 
-While exploring a solution, we first leveraged the LSM cred_prepare hook
-because that is the closest hook to prevent a call to create_user_ns().
+While it is not the unprivileged user namespace functionality, which
+causes the kernel to be exploitable, users/administrators might want to
+more granularly limit or at least monitor how various processes use this
+functionality, while vulnerable kernel subsystems are being patched.
 
-The calls look something like this:
+Preventing user namespace already creation comes in a few of forms in
+order of granularity:
 
-    cred = prepare_creds()
-        security_prepare_creds()
-            call_int_hook(cred_prepare, ...
-    if (cred)
-        create_user_ns(cred)
+        1. /proc/sys/user/max_user_namespaces sysctl
+        2. Distro specific patch(es)
+        3. CONFIG_USER_NS
 
-We noticed that error codes were not propagated from this hook and
-introduced a patch [1] to propagate those errors.
+To block a task based on its attributes, the LSM hook cred_prepare is a
+decent candidate for use because it provides more granular control, and
+it is called before create_user_ns():
 
-The discussion notes that security_prepare_creds() is not appropriate for
-MAC policies, and instead the hook is meant for LSM authors to prepare
-credentials for mutation. [2]
+        cred = prepare_creds()
+                security_prepare_creds()
+                        call_int_hook(cred_prepare, ...
+        if (cred)
+                create_user_ns(cred)
 
-Additionally, cred_prepare hook is not without problems. Handling the clone3
-case is a bit more tricky due to the user space pointer passed to it. This
-makes checking the syscall subject to a possible TOCTTOU attack.
+Since security_prepare_creds() is meant for LSMs to copy and prepare
+credentials, access control is an unintended use of the hook. [4]
+Further, security_prepare_creds() will always return a ENOMEM if the
+hook returns any non-zero error code.
 
-Ultimately, we concluded that a better course of action is to introduce
-a new security hook for LSM authors. [3]
+This hook also does not handle the clone3 case which requires us to
+access a user space pointer to know if we're in the CLONE_NEW_USER
+call path which may be subject to a TOCTTOU attack.
 
-This patch set first introduces a new security_create_user_ns() function
-and userns_create LSM hook, then marks the hook as sleepable in BPF. The
-following patches after include a BPF test and a patch for an SELinux
-implementation.
+Lastly, cred_prepare is called in many call paths, and a targeted hook
+further limits the frequency of calls which is a beneficial outcome.
+Therefore introduce a new function security_create_user_ns() with an
+accompanying userns_create LSM hook.
 
-We want to encourage use of user namespaces, and also cater the needs
-of users/administrators to observe and/or control access. There is no
-expectation of an impact on user space applications because access control 
-is opt-in, and users wishing to observe within a LSM context 
+With the new userns_create hook, users will have more control over the
+observability and access control over user namespace creation. Users
+should expect that normal operation of user namespaces will behave as
+usual, and only be impacted when controls are implemented by users or
+administrators.
 
+This hook takes the prepared creds for LSM authors to write policy
+against. On success, the new namespace is applied to credentials,
+otherwise an error is returned.
 
 Links:
-1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
-2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
-3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+1. https://nvd.nist.gov/vuln/detail/CVE-2022-0492
+2. https://nvd.nist.gov/vuln/detail/CVE-2022-25636
+3. https://nvd.nist.gov/vuln/detail/CVE-2022-34918
+4. https://lore.kernel.org/all/1c4b1c0d-12f6-6e9e-a6a3-cdce7418110c@schaufler-ca.com/
 
-Past discussions:
-V4: https://lore.kernel.org/all/20220801180146.1157914-1-fred@cloudflare.com/
-V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
-V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
-V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+Reviewed-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Reviewed-by: KP Singh <kpsingh@kernel.org>
+Signed-off-by: Frederick Lawler <fred@cloudflare.com>
 
+---
 Changes since v4:
 - Update commit description
-- Update cover letter
 Changes since v3:
-- Explicitly set CAP_SYS_ADMIN to test namespace is created given
-  permission
-- Simplify BPF test to use sleepable hook only
-- Prefer unshare() over clone() for tests
+- No changes
 Changes since v2:
 - Rename create_user_ns hook to userns_create
-- Use user_namespace as an object opposed to a generic namespace object
-- s/domB_t/domA_t in commit message
 Changes since v1:
-- Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
-- Add selinux: Implement create_user_ns hook patch
-- Change function signature of security_create_user_ns() to only take
-  struct cred
-- Move security_create_user_ns() call after id mapping check in
-  create_user_ns()
-- Update documentation to reflect changes
+- Changed commit wording
+- Moved execution to be after id mapping check
+- Changed signature to only accept a const struct cred *
+---
+ include/linux/lsm_hook_defs.h | 1 +
+ include/linux/lsm_hooks.h     | 4 ++++
+ include/linux/security.h      | 6 ++++++
+ kernel/user_namespace.c       | 5 +++++
+ security/security.c           | 5 +++++
+ 5 files changed, 21 insertions(+)
 
-Frederick Lawler (4):
-  security, lsm: Introduce security_create_user_ns()
-  bpf-lsm: Make bpf_lsm_userns_create() sleepable
-  selftests/bpf: Add tests verifying bpf lsm userns_create hook
-  selinux: Implement userns_create hook
-
- include/linux/lsm_hook_defs.h                 |   1 +
- include/linux/lsm_hooks.h                     |   4 +
- include/linux/security.h                      |   6 ++
- kernel/bpf/bpf_lsm.c                          |   1 +
- kernel/user_namespace.c                       |   5 +
- security/security.c                           |   5 +
- security/selinux/hooks.c                      |   9 ++
- security/selinux/include/classmap.h           |   2 +
- .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
- .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
- 10 files changed, 168 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
-
+diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
+index 806448173033..aa7272e83626 100644
+--- a/include/linux/lsm_hook_defs.h
++++ b/include/linux/lsm_hook_defs.h
+@@ -224,6 +224,7 @@ LSM_HOOK(int, -ENOSYS, task_prctl, int option, unsigned long arg2,
+ 	 unsigned long arg3, unsigned long arg4, unsigned long arg5)
+ LSM_HOOK(void, LSM_RET_VOID, task_to_inode, struct task_struct *p,
+ 	 struct inode *inode)
++LSM_HOOK(int, 0, userns_create, const struct cred *cred)
+ LSM_HOOK(int, 0, ipc_permission, struct kern_ipc_perm *ipcp, short flag)
+ LSM_HOOK(void, LSM_RET_VOID, ipc_getsecid, struct kern_ipc_perm *ipcp,
+ 	 u32 *secid)
+diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
+index 84a0d7e02176..2e11a2a22ed1 100644
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -806,6 +806,10 @@
+  *	security attributes, e.g. for /proc/pid inodes.
+  *	@p contains the task_struct for the task.
+  *	@inode contains the inode structure for the inode.
++ * @userns_create:
++ *	Check permission prior to creating a new user namespace.
++ *	@cred points to prepared creds.
++ *	Return 0 if successful, otherwise < 0 error code.
+  *
+  * Security hooks for Netlink messaging.
+  *
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 1bc362cb413f..767802fe9bfa 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -437,6 +437,7 @@ int security_task_kill(struct task_struct *p, struct kernel_siginfo *info,
+ int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 			unsigned long arg4, unsigned long arg5);
+ void security_task_to_inode(struct task_struct *p, struct inode *inode);
++int security_create_user_ns(const struct cred *cred);
+ int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag);
+ void security_ipc_getsecid(struct kern_ipc_perm *ipcp, u32 *secid);
+ int security_msg_msg_alloc(struct msg_msg *msg);
+@@ -1194,6 +1195,11 @@ static inline int security_task_prctl(int option, unsigned long arg2,
+ static inline void security_task_to_inode(struct task_struct *p, struct inode *inode)
+ { }
+ 
++static inline int security_create_user_ns(const struct cred *cred)
++{
++	return 0;
++}
++
+ static inline int security_ipc_permission(struct kern_ipc_perm *ipcp,
+ 					  short flag)
+ {
+diff --git a/kernel/user_namespace.c b/kernel/user_namespace.c
+index 5481ba44a8d6..3f464bbda0e9 100644
+--- a/kernel/user_namespace.c
++++ b/kernel/user_namespace.c
+@@ -9,6 +9,7 @@
+ #include <linux/highuid.h>
+ #include <linux/cred.h>
+ #include <linux/securebits.h>
++#include <linux/security.h>
+ #include <linux/keyctl.h>
+ #include <linux/key-type.h>
+ #include <keys/user-type.h>
+@@ -113,6 +114,10 @@ int create_user_ns(struct cred *new)
+ 	    !kgid_has_mapping(parent_ns, group))
+ 		goto fail_dec;
+ 
++	ret = security_create_user_ns(new);
++	if (ret < 0)
++		goto fail_dec;
++
+ 	ret = -ENOMEM;
+ 	ns = kmem_cache_zalloc(user_ns_cachep, GFP_KERNEL);
+ 	if (!ns)
+diff --git a/security/security.c b/security/security.c
+index 14d30fec8a00..1e60c4b570ec 100644
+--- a/security/security.c
++++ b/security/security.c
+@@ -1909,6 +1909,11 @@ void security_task_to_inode(struct task_struct *p, struct inode *inode)
+ 	call_void_hook(task_to_inode, p, inode);
+ }
+ 
++int security_create_user_ns(const struct cred *cred)
++{
++	return call_int_hook(userns_create, 0, cred);
++}
++
+ int security_ipc_permission(struct kern_ipc_perm *ipcp, short flag)
+ {
+ 	return call_int_hook(ipc_permission, 0, ipcp, flag);
 -- 
 2.30.2
 
