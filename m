@@ -2,57 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF5A65929FF
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 09:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1A3C5929F2
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 08:58:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241226AbiHOHAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 03:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33326 "EHLO
+        id S241211AbiHOG6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 02:58:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229935AbiHOHAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 03:00:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3E0324B;
-        Mon, 15 Aug 2022 00:00:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDFA8B80C87;
-        Mon, 15 Aug 2022 07:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1374C433D6;
-        Mon, 15 Aug 2022 07:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660546817;
-        bh=5spCSdjW5x7ryIsjMw7hTdUHSF4GOoGP5GO8fxvWqC4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pPS4pehk4pfLxmtO3uvTEt4K2DMkgSjtTqLY9xDR4n60Z/rVeHK3ErdQajCiLocI4
-         FTkdyBwrAinsAp0RR7KPycBZHIYFgVkTWZjeK/P+bpCcORz8iWWPWrHDLGWJQkS9UQ
-         IhTCpQqu9AdDuUJJQnsdRcrjUiYdkui1ABc6AaSI=
-Date:   Mon, 15 Aug 2022 09:00:13 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        stable@vger.kernel.org,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-Subject: Re: [PATCH] wifi: mac80211: Don't finalize CSA in IBSS mode if state
- is disconnected
-Message-ID: <Yvnu/WT1Z+K36UwW@kroah.com>
-References: <20220814151512.9985-1-code@siddh.me>
+        with ESMTP id S241193AbiHOG6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 02:58:20 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5CB1BEBF;
+        Sun, 14 Aug 2022 23:58:17 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M5lQp45P8zlW9N;
+        Mon, 15 Aug 2022 14:55:14 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
+ 2022 14:58:14 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next] net: sched: make tcf_action_dump_1() static
+Date:   Mon, 15 Aug 2022 15:01:22 +0800
+Message-ID: <20220815070122.113871-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220814151512.9985-1-code@siddh.me>
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,32 +47,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 08:45:12PM +0530, Siddh Raman Pant via Linux-kernel-mentees wrote:
-> When we are not connected to a channel, sending channel "switch"
-> announcement doesn't make any sense.
-> 
-> The BSS list is empty in that case. This causes the for loop in
-> cfg80211_get_bss() to be bypassed, so the function returns NULL
-> (check line 1424 of net/wireless/scan.c), causing the WARN_ON()
-> in ieee80211_ibss_csa_beacon() to get triggered (check line 500
-> of net/mac80211/ibss.c), which was consequently reported on the
-> syzkaller dashboard.
-> 
-> Thus, check if we have an existing connection before generating
-> the CSA beacon in ieee80211_ibss_finish_csa().
-> 
-> Fixes: cd7760e62c2a ("mac80211: add support for CSA in IBSS mode")
-> Bug report: https://syzkaller.appspot.com/bug?id=05603ef4ae8926761b678d2939a3b2ad28ab9ca6
-> Reported-by: syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-> Cc: stable@vger.kernel.org
-> 
-> Signed-off-by: Siddh Raman Pant <code@siddh.me>
+Function tcf_action_dump_1() is not used outside of act_api.c, so remove
+the superfluous EXPORT_SYMBOL() and marks it static.
 
-Please no blank line before your signed-off-by line or the tools will
-not like it.
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ include/net/act_api.h |   1 -
+ net/sched/act_api.c   | 100 +++++++++++++++++++++---------------------
+ 2 files changed, 49 insertions(+), 52 deletions(-)
 
-And did sysbot verify that this change solved the problem?
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index 9cf6870b526e..d51b3f931771 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -215,7 +215,6 @@ struct tc_action *tcf_action_init_1(struct net *net, struct tcf_proto *tp,
+ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[], int bind,
+ 		    int ref, bool terse);
+ int tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int, int);
+-int tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int, int);
+ 
+ static inline void tcf_action_update_bstats(struct tc_action *a,
+ 					    struct sk_buff *skb)
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index b69fcde546ba..9fd98bf5c724 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -510,6 +510,55 @@ tcf_action_dump_terse(struct sk_buff *skb, struct tc_action *a, bool from_act)
+ 	return -1;
+ }
+ 
++int
++tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
++{
++	return a->ops->dump(skb, a, bind, ref);
++}
++
++static int
++tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
++{
++	int err = -EINVAL;
++	unsigned char *b = skb_tail_pointer(skb);
++	struct nlattr *nest;
++	u32 flags;
++
++	if (tcf_action_dump_terse(skb, a, false))
++		goto nla_put_failure;
++
++	if (a->hw_stats != TCA_ACT_HW_STATS_ANY &&
++	    nla_put_bitfield32(skb, TCA_ACT_HW_STATS,
++			       a->hw_stats, TCA_ACT_HW_STATS_ANY))
++		goto nla_put_failure;
++
++	if (a->used_hw_stats_valid &&
++	    nla_put_bitfield32(skb, TCA_ACT_USED_HW_STATS,
++			       a->used_hw_stats, TCA_ACT_HW_STATS_ANY))
++		goto nla_put_failure;
++
++	flags = a->tcfa_flags & TCA_ACT_FLAGS_USER_MASK;
++	if (flags &&
++	    nla_put_bitfield32(skb, TCA_ACT_FLAGS,
++			       flags, flags))
++		goto nla_put_failure;
++
++	if (nla_put_u32(skb, TCA_ACT_IN_HW_COUNT, a->in_hw_count))
++		goto nla_put_failure;
++
++	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
++	if (!nest)
++		goto nla_put_failure;
++	err = tcf_action_dump_old(skb, a, bind, ref);
++	if (err > 0) {
++		nla_nest_end(skb, nest);
++		return err;
++	}
++
++nla_put_failure:
++	nlmsg_trim(skb, b);
++	return -1;
++}
+ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 			   struct netlink_callback *cb)
+ {
+@@ -1132,57 +1181,6 @@ static void tcf_action_put_many(struct tc_action *actions[])
+ 	}
+ }
+ 
+-int
+-tcf_action_dump_old(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+-{
+-	return a->ops->dump(skb, a, bind, ref);
+-}
+-
+-int
+-tcf_action_dump_1(struct sk_buff *skb, struct tc_action *a, int bind, int ref)
+-{
+-	int err = -EINVAL;
+-	unsigned char *b = skb_tail_pointer(skb);
+-	struct nlattr *nest;
+-	u32 flags;
+-
+-	if (tcf_action_dump_terse(skb, a, false))
+-		goto nla_put_failure;
+-
+-	if (a->hw_stats != TCA_ACT_HW_STATS_ANY &&
+-	    nla_put_bitfield32(skb, TCA_ACT_HW_STATS,
+-			       a->hw_stats, TCA_ACT_HW_STATS_ANY))
+-		goto nla_put_failure;
+-
+-	if (a->used_hw_stats_valid &&
+-	    nla_put_bitfield32(skb, TCA_ACT_USED_HW_STATS,
+-			       a->used_hw_stats, TCA_ACT_HW_STATS_ANY))
+-		goto nla_put_failure;
+-
+-	flags = a->tcfa_flags & TCA_ACT_FLAGS_USER_MASK;
+-	if (flags &&
+-	    nla_put_bitfield32(skb, TCA_ACT_FLAGS,
+-			       flags, flags))
+-		goto nla_put_failure;
+-
+-	if (nla_put_u32(skb, TCA_ACT_IN_HW_COUNT, a->in_hw_count))
+-		goto nla_put_failure;
+-
+-	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
+-	if (nest == NULL)
+-		goto nla_put_failure;
+-	err = tcf_action_dump_old(skb, a, bind, ref);
+-	if (err > 0) {
+-		nla_nest_end(skb, nest);
+-		return err;
+-	}
+-
+-nla_put_failure:
+-	nlmsg_trim(skb, b);
+-	return -1;
+-}
+-EXPORT_SYMBOL(tcf_action_dump_1);
+-
+ int tcf_action_dump(struct sk_buff *skb, struct tc_action *actions[],
+ 		    int bind, int ref, bool terse)
+ {
+-- 
+2.17.1
 
-thanks,
-
-greg k-h
