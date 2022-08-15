@@ -2,99 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E95DF592E19
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 13:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76EAE592E4C
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 13:41:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231445AbiHOLYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 07:24:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41086 "EHLO
+        id S232509AbiHOLlI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 07:41:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232038AbiHOLYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 07:24:19 -0400
-Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6120421E28
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 04:24:18 -0700 (PDT)
-Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-f2a4c51c45so7834486fac.9
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 04:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nZKRK6PqpP9DzZexrnN2X0Qb/e767BxaO5vGQnjget0=;
-        b=rUAYoxNnI93ew8bxi9wgUMPjWeUoUDnG6Nj9o52dVkR2NlEGfl91GFzFSx79b35ysF
-         B1/f8iqHvCTg/tXiPf3LIWX/oklVsJ7tVX70T4va49yXdi08istOw26actUfiqZb+vah
-         9z6C3LLtxGrzUnJY1PszhLsgm1YkVdIstQG++4/Ynocf2OedbOgtDwb/H+MXDXGzanRY
-         DadyoocQgJopr1HKQyZimw656KC+mmSB0JBGK5gr6LIB9Z4jLG6lkpq4sqoDS9+HUFy8
-         +AYFuSacPLChDp5qNt8NFyWGvjbuq7p1FuZeUMvW9PJ4rgDl/6Qbna78pReiWl05XsvO
-         dwvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nZKRK6PqpP9DzZexrnN2X0Qb/e767BxaO5vGQnjget0=;
-        b=4jDye9dwsfsEv9Gy8DogLlHBwMvmsZctSy6xYGApRQet8yrVx/QJC4R99busIoufAJ
-         ofeRyvzK+JZugVFDvqAOj7qZ0XZ573tIHqouUAVZ7u+Uy/w7uMZ/mwjbkS1LJkfiPhD6
-         N2sz1dF3mifqlomuxVqvfv8buRphx6BtJhnVK1qqlELVoFgVpZJtcMItKh/5mvLUXNOx
-         sPiV9vFiT3EWszm1jaJZ6eRVEQ2cvTmQXIOOk7/5GUP68VrNo2EFfdiv7OpX0ANdvQAW
-         cSaInzSknbobiTwU2q2XpzP4TZpHoP0BezOQB2DxoU57XNtqetzAZx9d6Tp2JjrT3TL/
-         TElQ==
-X-Gm-Message-State: ACgBeo1r7ICOaxswL/RsEtQCwApJvzXIcf5uz8PSLiKlV+Rju8i5fxti
-        JnmgoaJHjML50/s4PaXFgZWJA1RtCs6ALOO9VRC5iQ==
-X-Google-Smtp-Source: AA6agR6wiP+vKr9ua4UscIVhTqUu7BG3rnpd+PJHlpopLMa7eQFclmDrowFtZDXtA0ZVOeaXnXx/ZkvJL/VIvqyLTbg=
-X-Received: by 2002:a05:6870:b28a:b0:10f:72f:6c with SMTP id
- c10-20020a056870b28a00b0010f072f006cmr6274489oao.148.1660562657764; Mon, 15
- Aug 2022 04:24:17 -0700 (PDT)
+        with ESMTP id S232011AbiHOLlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 07:41:07 -0400
+X-Greylist: delayed 604 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 04:41:05 PDT
+Received: from mail.flokli.de (mail.flokli.de [IPv6:2a01:4f8:1c1e:e12f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8E741087
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 04:41:05 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 18:30:52 +0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flokli.de; s=mail;
+        t=1660563055; bh=H8Z6InoKdHUzVCyOe/ov3dS6/gRYg/gr1dctVtmMoLw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=FGqSTwno7hcHEYNyDTqtiaHnAgbdblu/5NBHGMnqlmS6mEGXBGfWdCvEXmAGAQqDG
+         AYwKfSmSJSHmC3wWXUFT+lkqQU3CGaxX6rygjnWjr9WK3eMSIP+d9go660Y+FhDnop
+         1telYYRBKdAfd/L81qmVSh4I/rBCytqA5Q7LoB4c=
+From:   Florian Klink <flokli@flokli.de>
+To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+Cc:     Jan Kiszka <jan.kiszka@siemens.com>, netdev@vger.kernel.org,
+        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, linuxwwan@intel.com
+Subject: Re: [PATCH net-next] net: wwan: iosm: Enable M.2 7360 WWAN card
+ support
+Message-ID: <20220815113052.2yqidrrkr7bf6plt@tp.flokli.de>
+References: <20220210153445.724534-1-m.chetan.kumar@linux.intel.com>
+ <1c9240af-dbf4-0c11-ab25-bec5af132c24@siemens.com>
+ <fb700c62-eca4-879b-1b1a-966d9232fd4d@linux.intel.com>
 MIME-Version: 1.0
-References: <20220811125156.293825-1-mst@redhat.com> <166030021657.10916.8438944707929097441.git-patchwork-notify@kernel.org>
-In-Reply-To: <166030021657.10916.8438944707929097441.git-patchwork-notify@kernel.org>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Mon, 15 Aug 2022 14:12:16 +0300
-Message-ID: <CABcq3pGwc0MnkBfUfryOEcJfh96Ar3p_ZZw7U0SHvtnxjt+4pQ@mail.gmail.com>
-Subject: Re: [PATCH] virtio_net: fix endian-ness for RSS
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        linux-kernel@vger.kernel.org, jasowang@redhat.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <fb700c62-eca4-879b-1b1a-966d9232fd4d@linux.intel.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reviewed-by: Andrew Melnychenko andrew@daynix.com
+Hey,
 
-On Fri, Aug 12, 2022 at 1:30 PM <patchwork-bot+netdevbpf@kernel.org> wrote:
+On 22-02-10 21:46:21, Kumar, M Chetan wrote:
+>On 2/10/2022 9:08 PM, Jan Kiszka wrote:
+>>On 10.02.22 16:34, M Chetan Kumar wrote:
+>>>This patch enables Intel M.2 7360 WWAN card support on
+>>>IOSM Driver.
+>>>[…]
+>>
+>>Hey, cool! I'll be happy to try that out soon. Any special userland
+>>changes required, or will it "just work" with sufficiently recent
+>>ModemManager or whatever?
 >
-> Hello:
->
-> This patch was applied to netdev/net.git (master)
-> by David S. Miller <davem@davemloft.net>:
->
-> On Thu, 11 Aug 2022 08:51:58 -0400 you wrote:
-> > Using native endian-ness for device supplied fields is wrong
-> > on BE platforms. Sparse warns about this.
-> >
-> > Fixes: 91f41f01d219 ("drivers/net/virtio_net: Added RSS hash report.")
-> > Cc: "Andrew Melnychenko" <andrew@daynix.com>
-> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-> >
-> > [...]
->
-> Here is the summary with links:
->   - virtio_net: fix endian-ness for RSS
->     https://git.kernel.org/netdev/net/c/95bb633048fa
->
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
->
->
+>It need some changes at ModemManager side.
+
+There's some people trying out this patchset in
+https://github.com/xmm7360/xmm7360-pci/issues/31.
+
+With the changes merged in, apparently the modem still reports a "SIM
+not inserted" error.
+
+https://github.com/xmm7360/xmm7360-pci/issues/31#issuecomment-1181936111
+suggests it might be the "FCC lock" feature, but even then, it doesn't
+seem to work.
+
+There's now a ModemManager issue at
+https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/issues/612,
+which is probably the more appropriate way to discuss this, rather than
+another out-of-tree kernel driver.
+
+If you have any more insights on what's missing to get this to work in
+NetworkManager/ModemManager, any comment would be appreciated.
+
+Thanks!
+Florian
