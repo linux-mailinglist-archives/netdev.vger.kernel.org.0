@@ -2,169 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C020592A93
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 10:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD04B592D3D
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:52:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240763AbiHOICf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 04:02:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
+        id S241481AbiHOIHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 04:07:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240479AbiHOICQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 04:02:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 46B621C916
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 01:02:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660550534;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4Jg8oqAlmws/gbyv4WS+sTS1PPZS3LzrawxvloBs8oY=;
-        b=Z24iyj5xhKIKE1u3wG4s7TIf7Nrm7kwvTQEKAlSPxyZlY3ZWDMvHsLGX2O8BVeSMxcyjmz
-        EqRIPNbAYtE6aTqSkVXmQzZMSlX0FiUOOs9C+u7V3kxrQTcLAYMteXQAqsK7bVR6WDZvth
-        3KOsdhkH0oAiJKd7eToCrd5i1D844mc=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-592-eL2xvlZ1OGWTGXyvnOyWsg-1; Mon, 15 Aug 2022 04:02:13 -0400
-X-MC-Unique: eL2xvlZ1OGWTGXyvnOyWsg-1
-Received: by mail-ed1-f71.google.com with SMTP id y16-20020a056402359000b0043db5186943so4313273edc.3
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 01:02:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=4Jg8oqAlmws/gbyv4WS+sTS1PPZS3LzrawxvloBs8oY=;
-        b=2AePo2zIQ9DkkToQ8o+L5cOr5yaaZpGywi6lX+vktVKxLiOCExbO6wKUTTNViobvra
-         tkUIT8a88zV0eIZ5NN4KGBYzbT3ztzyjIL/yEIC1QEcnUsSWakX9Qns//eWOsDjZVDKU
-         NpaabtBmqbadhx+LEGXJH/7ntai3AvallZpuJ9Q/qBHk7lO+480IOq7tTmts177h29DL
-         aaVyVS75VKYDbU7JmOW26UbRIsZR+OZzfrMMiDTQwSxQl50yli+7WIzYJV5wKTspJByn
-         HQhAftXyJgMC+npwgWBwTcSu2A62ZeJj3S5DVANMuuLYtChqD6mo9BCFbp6RJtesLV5U
-         q9JA==
-X-Gm-Message-State: ACgBeo2QTBTl0jJk+8P3ojdjebkcaiSEjAeHcRz9Z0pZUqP+zXKP3Wju
-        vYFR1xow9NBgSZjy1kYL8IuJZ37VcFoflKqvjtn6NBxRz2gc8EOIXAKwxL5ge8Wth8LUfyzFYU0
-        JCgsByhj2nNc/RHgW
-X-Received: by 2002:a17:907:c0d:b0:730:a85d:8300 with SMTP id ga13-20020a1709070c0d00b00730a85d8300mr9882748ejc.558.1660550531938;
-        Mon, 15 Aug 2022 01:02:11 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4SndJAy1focKXdgrNdhVF4iukl3tw5+oox/Lgaz/m0ZIdCPTQsgSe8Nmrvc7s0AInVcbyaOg==
-X-Received: by 2002:a17:907:c0d:b0:730:a85d:8300 with SMTP id ga13-20020a1709070c0d00b00730a85d8300mr9882725ejc.558.1660550531668;
-        Mon, 15 Aug 2022 01:02:11 -0700 (PDT)
-Received: from redhat.com ([2.54.169.49])
-        by smtp.gmail.com with ESMTPSA id er6-20020a056402448600b00443d8118155sm789834edb.69.2022.08.15.01.02.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 01:02:11 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 04:02:05 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Andres Freund <andres@anarazel.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815035406-mutt-send-email-mst@kernel.org>
-References: <20220814212610.GA3690074@roeck-us.net>
- <CAHk-=wgf2EfLHui6A5NbWoaVBB2f8t-XBUiOMkyjN2NU41t6eA@mail.gmail.com>
- <20220814223743.26ebsbnrvrjien4f@awork3.anarazel.de>
- <CAHk-=wi6raoJE-1cyRU0YxJ+9ReO1eXmOAq0FwKAyZS7nhvk9w@mail.gmail.com>
- <1c057afa-92df-ee3c-5978-3731d3db9345@kernel.dk>
- <20220815013651.mrm7qgklk6sgpkbb@awork3.anarazel.de>
- <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
- <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
- <20220815031549-mutt-send-email-mst@kernel.org>
- <3df6bb82-1951-455d-a768-e9e1513eb667@www.fastmail.com>
+        with ESMTP id S232840AbiHOIHH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 04:07:07 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51AE1E3C9;
+        Mon, 15 Aug 2022 01:07:06 -0700 (PDT)
+Received: from stefanw-SCHENKER ([37.4.248.80]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1M8k65-1oIoHv0ONV-004nDA; Mon, 15 Aug 2022 10:06:54 +0200
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Stefan Wahren <stefan.wahren@i2se.com>
+Subject: [PATCH 1/2] dt-bindings: vertexcom-mse102x: Update email address
+Date:   Mon, 15 Aug 2022 10:06:25 +0200
+Message-Id: <20220815080626.9688-1-stefan.wahren@i2se.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3df6bb82-1951-455d-a768-e9e1513eb667@www.fastmail.com>
-X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:66NYIEABEw2lFmB4CyU8k3G6w89V9rvVHumYyKy6UGaICg9s/B8
+ Rvx/p0i835oyz/oztKo5Jlwv1dqslskeZYzfR3mCmwYMnVb2+r/vADftkiHqRcCgyOK+4XA
+ AVhuv/C48gxn2s3BOFVwGjdvpfO+hAxxKFMsgfcaA4JHYr4aGRRx0pb0rhz42rn5nQ9y3Fg
+ 49c1aNEBS+zhXg841pKsQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:3WvnVBQ2lgs=:fOyWd3Kv176WtYR1GsCvGl
+ hoAaUcTde1Oj3rzakW/gHBf47NIzJs1vD7bSNtNtSWea0b7YTOwQhILnLAKzLPLGwdW89nIek
+ sW9CMI7Qqawrkv177i9O2bzUQ+SoPfroLoBPer5hXaP/T1RgwomXpZj7WPNoKBdDCNi0AVprq
+ 6LpvKa2y/buTixUGPxPNd6KjKiqWRpp4INKax1Rmp6Ec7et3XdXROw+qPJviBhlZQxb7vy9eI
+ wSDqlGGeFvlQzaTwUHMs506fA+hgxFTGrRAunGbysDGEvzk4UyhNAmYFqhfQbuhWNyCWRDS5j
+ Tj/QU12PC9owDcoO3yWJ1rUhggLc8gTNNODYuRrvJ9HuAnFIynp5tTl8ukyVBHCdmnv/shgxn
+ oRFLiUFmcjiXjhNW9xN2XpXK9Srljs20DhtxuYZTnIYTFwPOSOz36Pph/wIODJMCJn6HsUg6D
+ Yw2IRBsw0v4nLfTaijWby3QTM45G1pN9Cs7/KCFbl/cf/4IPAqUUyAxNT0WlDTOlstGR+cRyf
+ eFZS99hnvaRCVjVrljOvws4sLgHLKt6pIOKxkgQ2qrXUsY9aPsxNQhvM67FMjG37/xV/wmxIr
+ G5I93/f1JPf3IaE15rD2fF2RuYyopkHqk6Hcs8IlyTVMITdtQMod+iKvNAc1j9Lj7myn0uH/G
+ ih9AKra7Kq6Cqy3ebH/BX7Mmipoz5L2YOjPF/f8YpxHEgtpQRcfRdKRomb4o9yt4xeEVuKiZp
+ 0QjAxQZZaMQ5Mmogj7XsSyb2QCgyAQf6Pk/0qlMVRN4Ee0JK3TmQJ11L8+8=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 12:46:36AM -0700, Andres Freund wrote:
-> Hi,
-> 
-> On Mon, Aug 15, 2022, at 00:29, Michael S. Tsirkin wrote:
-> > On Mon, Aug 15, 2022 at 12:11:43AM -0700, Andres Freund wrote:
-> >> Hi,
-> >> 
-> >> On 2022-08-14 20:18:44 -0700, Linus Torvalds wrote:
-> >> > On Sun, Aug 14, 2022 at 6:36 PM Andres Freund <andres@anarazel.de> wrote:
-> >> > >
-> >> > > Some of the symptoms could be related to the issue in this thread, hence
-> >> > > listing them here
-> >> > 
-> >> > Smells like slab corruption to me, and the problems may end up being
-> >> > then largely random just depending on who ends up using the allocation
-> >> > that gets trampled on.
-> >> > 
-> >> > I wouldn't be surprised if it's all the same thing - including your
-> >> > network issue.
-> >> 
-> >> Yea. As I just wrote in
-> >> https://postgr.es/m/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de I
-> >> bisected it down to one commit (762faee5a267). With that commit I only see the
-> >> networking issue across a few reboots, but with ebcce4926365 some boots oops
-> >> badly and other times it' "just" network not working.
-> >> 
-> >> 
-> >> [oopses]
-> 
-> >> If somebody knowledgeable staring at 762faee5a267 doesn't surface somebody I
-> >> can create a kernel with some more debugging stuff enabled, if somebody tells
-> >> me what'd work best here.
-> >> 
-> >> 
-> >> Greetings,
-> >> 
-> >> Andres Freund
-> >
-> > Thanks a lot for the work!
-> > Just a small clarification:
-> >
-> > So IIUC you see several issues, right?
-> 
-> Yes, although they might be related, as theorized by Linus upthread.
-> 
-> > With 762faee5a2678559d3dc09d95f8f2c54cd0466a7 you see networking issues.
-> 
-> Yes.
-> 
-> 
-> > With ebcce492636506443e4361db6587e6acd1a624f9 you see crashes.
-> 
-> Changed between rebooting. Sometimes the network issue, sometimes the crashes in the email you're replying to.
->
+in-tech smart charging is now chargebyte. So update the email address
+accordingly.
 
-OK just adding:
+Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+---
+ Documentation/devicetree/bindings/net/vertexcom-mse102x.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-    Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-    Acked-by: Jason Wang <jasowang@redhat.com>
-	L: virtualization@lists.linux-foundation.org
-	L: netdev@vger.kernel.org
-
-I think we can drop the original Cc list:
-
-Cc: Linus Torvalds <torvalds@linux-foundation.org>,
-	Jens Axboe <axboe@kernel.dk>,
-	James Bottomley <James.Bottomley@hansenpartnership.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-but I'm not sure, maybe they want to be informed.
-
-> 
-> > MST
+diff --git a/Documentation/devicetree/bindings/net/vertexcom-mse102x.yaml b/Documentation/devicetree/bindings/net/vertexcom-mse102x.yaml
+index 8156a9aeb589..304757bf9281 100644
+--- a/Documentation/devicetree/bindings/net/vertexcom-mse102x.yaml
++++ b/Documentation/devicetree/bindings/net/vertexcom-mse102x.yaml
+@@ -7,7 +7,7 @@ $schema: "http://devicetree.org/meta-schemas/core.yaml#"
+ title: The Vertexcom MSE102x (SPI) Device Tree Bindings
+ 
+ maintainers:
+-  - Stefan Wahren <stefan.wahren@in-tech.com>
++  - Stefan Wahren <stefan.wahren@chargebyte.com>
+ 
+ description:
+   Vertexcom's MSE102x are a family of HomePlug GreenPHY chips.
+-- 
+2.34.1
 
