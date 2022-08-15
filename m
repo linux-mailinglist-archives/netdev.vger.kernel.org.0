@@ -2,60 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5078594E60
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 04:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4DF7594E6D
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 04:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239845AbiHPCCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 22:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
+        id S240191AbiHPCCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 22:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiHPCBV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 22:01:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF1F7220069
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:53:57 -0700 (PDT)
+        with ESMTP id S233332AbiHPCBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 22:01:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 443B4107F36
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:54:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660600406;
+        s=mimecast20190719; t=1660600414;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=3QJuMC2X3Ls7xg8Zv+wmV/GtRe9wR+MYC+AaCjrIFhI=;
-        b=QzuYzXBdF4XJt871UR41qevJr4jLydu5qOoiBSgVl0B2BXrCp8/Yc/VW91+dK9iAQm1etH
-        LpBosegnj16dFmydjGsbe4u71oga148519cD8V4kX9bDEIUXGu5QepKT9heXbrxMlv1RQk
-        wzH44h7qRqMDRGt5EH1VWWTsAJMONBY=
+        bh=n9xDuhV9iHcXHcEoNmD/7wsehe62kvIxVjlpcT9npdI=;
+        b=cz49QCc91hRjAjoIVqSygKE2UmBCHKBVprl3LnMC8b8zY/Cu+GYFLpKbLaz84rwzl1TaIL
+        Fa1B4uaeIMUA+ihm6FZXmbnNcLYn4lZW95ayerwkqYKCXr1kLwYpxiv6abzf0oFm+JCZtn
+        qyC7/zMSQqeHGkHkPOgg3pKeOt7G65I=
 Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
  [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-220-jslA5a6oM9OtRbSNPQdDaA-1; Mon, 15 Aug 2022 17:53:25 -0400
-X-MC-Unique: jslA5a6oM9OtRbSNPQdDaA-1
-Received: by mail-wm1-f72.google.com with SMTP id x16-20020a1c7c10000000b003a5cefa5578so1586056wmc.7
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:53:25 -0700 (PDT)
+ us-mta-389-OVjEWJB2MwyWb3q0O2loog-1; Mon, 15 Aug 2022 17:53:30 -0400
+X-MC-Unique: OVjEWJB2MwyWb3q0O2loog-1
+Received: by mail-wm1-f72.google.com with SMTP id j36-20020a05600c1c2400b003a540d88677so4062123wms.1
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:53:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=3QJuMC2X3Ls7xg8Zv+wmV/GtRe9wR+MYC+AaCjrIFhI=;
-        b=jV/ihX2lcfAjtxtuDmgrT5ZGSj7JNeCkBX0/yiz/1DOS0K94s2FvQea0KoKy4/5It6
-         f+QkxesiZNxOgKHPvgpR9hVAzcSmvdRoX/KfSJM5FUWziSD81d3Si/a6DvvhK3WgHm7I
-         wmb0nR7UxnV6sbfP0miwXOK/VuQng2q5r5YaER+/UuxGfzlK3bNsG9aGvH6EEbeN+ge4
-         wzp2uNTKPRxWscacHX4LRvi4y2UND4kJ4qwoiiCLnUxjMx0N6f3hLnBavsAslWs9YMQP
-         PbnBMsgIMmUPIRot3gNhpHM1BWVB2hl4P7EuCocPCK9bcGxndfUu378zV9lGlmB2NU3o
-         LwVA==
-X-Gm-Message-State: ACgBeo0hqGbhqbM/IvUge+B7jMek8Pd61iTZVICPGP0uO2rm5rCrTawy
-        gwte5wnn6dHh0KA64ODbqo352wn0bTmNFFjxOeFdJCCfRPR4Wa4ErD+Oh9LyLU1RBmjb6yb+zBd
-        Riv2u4VS2dVe3la3t
-X-Received: by 2002:adf:ce89:0:b0:220:6cc5:aff8 with SMTP id r9-20020adfce89000000b002206cc5aff8mr9905791wrn.396.1660600404290;
-        Mon, 15 Aug 2022 14:53:24 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4OAJ7a0UnnYJ7tqTWqb9naQHIU382zVYRVHjmmnON5u7E9HsMntuwmikOY+aox36XmsS1mBQ==
-X-Received: by 2002:adf:ce89:0:b0:220:6cc5:aff8 with SMTP id r9-20020adfce89000000b002206cc5aff8mr9905783wrn.396.1660600403993;
-        Mon, 15 Aug 2022 14:53:23 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=n9xDuhV9iHcXHcEoNmD/7wsehe62kvIxVjlpcT9npdI=;
+        b=NsgDyeNs+gaUb13jAT3JM4/F447Dw9hOWTNuDpIuXAbHTqFPj7285EB1TcPdjXj9An
+         tFcufpeihNMXi67OMuEQDkzJOry1pVbWNLM95qTSrTN0muGLZzV2UhN1M2SnrWYRKkZs
+         5xrqPpWMS+/PQqUpUTVfB29IPXYwpOpr2dZRgheMZq6WNqQBiBN9+Ykoq30fYRWDrSRB
+         SuKmsnAs9HuDFhNiSo3JEDb3U7pNnVobEeMdpuSwE4Le4wmw9hfUEqPTAjhsaW75ZKKY
+         qqZfabyKCn7jQqc5BHLp9OrRbHDCIROyqJg5pbS8ySgrJs04rBdevXGz09LIKd6r80ge
+         LwTg==
+X-Gm-Message-State: ACgBeo1i9RgOrc2szzSNW/tufpzpJzds26yEsHnmwt11EpAOeJHV0xxH
+        QYMoMIJCImlMrWAkNsg3qWgkPeNwbHvsddLNQefRVgjX2hOPMOiudQ2T7AYevkE7bA502gR2yQr
+        IusDUEEVr5ZNXD1Jc
+X-Received: by 2002:a05:6000:a1b:b0:220:6d98:e97e with SMTP id co27-20020a0560000a1b00b002206d98e97emr10160829wrb.211.1660600409330;
+        Mon, 15 Aug 2022 14:53:29 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5eGYjtb0ao+td67NPUSA+l/VN9/A+r9WJoEcUsIJYOX4UpWH4A8YuFS6y8s/3ZvOYQ5c9VkA==
+X-Received: by 2002:a05:6000:a1b:b0:220:6d98:e97e with SMTP id co27-20020a0560000a1b00b002206d98e97emr10160811wrb.211.1660600409075;
+        Mon, 15 Aug 2022 14:53:29 -0700 (PDT)
 Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id n6-20020a1c2706000000b003a511e92abcsm10796901wmn.34.2022.08.15.14.53.21
+        by smtp.gmail.com with ESMTPSA id p15-20020adf9d8f000000b00223654e0eccsm10714216wre.9.2022.08.15.14.53.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 14:53:23 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 17:53:20 -0400
+        Mon, 15 Aug 2022 14:53:28 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 17:53:24 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
@@ -71,21 +69,20 @@ Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Greg KH <gregkh@linuxfoundation.org>,
-        Ricardo =?utf-8?Q?Ca=C3=B1uelo?= <ricardo.canuelo@collabora.com>,
-        Cornelia Huck <cohuck@redhat.com>
-Subject: [PATCH v2 1/1] virtio: kerneldocs fixes and enhancements
-Message-ID: <20220815215251.154451-2-mst@redhat.com>
+        Andres Freund <andres@anarazel.de>
+Subject: [PATCH v2 1/5] virtio_net: Revert "virtio_net: set the default max
+ ring size by find_vqs()"
+Message-ID: <20220815215251.154451-3-mst@redhat.com>
 References: <20220815215251.154451-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
 In-Reply-To: <20220815215251.154451-1-mst@redhat.com>
 X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
 X-Mutt-Fcc: =sent
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -93,128 +90,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
+This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
 
-Fix variable names in some kerneldocs, naming in others.
-Add kerneldocs for struct vring_desc and vring_interrupt.
+This has been reported to trip up guests on GCP (Google Cloud).
+The reason is that virtio_find_vqs_ctx_size is broken on legacy
+devices. We can in theory fix virtio_find_vqs_ctx_size but
+in fact the patch itself has several other issues:
 
-Signed-off-by: Ricardo Cañuelo <ricardo.canuelo@collabora.com>
-Message-Id: <20220810094004.1250-2-ricardo.canuelo@collabora.com>
+- It treats unknown speed as < 10G
+- It leaves userspace no way to find out the ring size set by hypervisor
+- It tests speed when link is down
+- It ignores the virtio spec advice:
+        Both \field{speed} and \field{duplex} can change, thus the driver
+        is expected to re-read these values after receiving a
+        configuration change notification.
+- It is not clear the performance impact has been tested properly
+
+Revert the patch for now.
+
+Reported-by: Andres Freund <andres@anarazel.de>
+Link: https://lore.kernel.org/r/20220814212610.GA3690074%40roeck-us.net
+Link: https://lore.kernel.org/r/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de
+Link: https://lore.kernel.org/r/3df6bb82-1951-455d-a768-e9e1513eb667%40www.fastmail.com
+Link: https://lore.kernel.org/r/FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE%40anarazel.de
+Fixes: 762faee5a267 ("virtio_net: set the default max ring size by find_vqs()")
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Tested-by: Andres Freund <andres@anarazel.de>
+Tested-by: From: Guenter Roeck <linux@roeck-us.net>
+---
+ drivers/net/virtio_net.c | 42 ++++------------------------------------
+ 1 file changed, 4 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index d66c8e6d0ef3..4620e9d79dde 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -2426,6 +2426,14 @@ static inline bool more_used(const struct vring_virtqueue *vq)
- 	return vq->packed_ring ? more_used_packed(vq) : more_used_split(vq);
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index d934774e9733..ece00b84e3a7 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -3432,29 +3432,6 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
+ 		   (unsigned int)GOOD_PACKET_LEN);
  }
  
-+/**
-+ * vring_interrupt - notify a virtqueue on an interrupt
-+ * @irq: the IRQ number (ignored)
-+ * @_vq: the struct virtqueue to notify
-+ *
-+ * Calls the callback function of @_vq to process the virtqueue
-+ * notification.
-+ */
- irqreturn_t vring_interrupt(int irq, void *_vq)
+-static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
+-{
+-	u32 i, rx_size, tx_size;
+-
+-	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
+-		rx_size = 1024;
+-		tx_size = 1024;
+-
+-	} else if (vi->speed < SPEED_40000) {
+-		rx_size = 1024 * 4;
+-		tx_size = 1024 * 4;
+-
+-	} else {
+-		rx_size = 1024 * 8;
+-		tx_size = 1024 * 8;
+-	}
+-
+-	for (i = 0; i < vi->max_queue_pairs; i++) {
+-		sizes[rxq2vq(i)] = rx_size;
+-		sizes[txq2vq(i)] = tx_size;
+-	}
+-}
+-
+ static int virtnet_find_vqs(struct virtnet_info *vi)
  {
- 	struct vring_virtqueue *vq = to_vvq(_vq);
-diff --git a/include/linux/virtio.h b/include/linux/virtio.h
-index a3f73bb6733e..dcab9c7e8784 100644
---- a/include/linux/virtio.h
-+++ b/include/linux/virtio.h
-@@ -11,7 +11,7 @@
- #include <linux/gfp.h>
+ 	vq_callback_t **callbacks;
+@@ -3462,7 +3439,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 	int ret = -ENOMEM;
+ 	int i, total_vqs;
+ 	const char **names;
+-	u32 *sizes;
+ 	bool *ctx;
  
- /**
-- * virtqueue - a queue to register buffers for sending or receiving.
-+ * struct virtqueue - a queue to register buffers for sending or receiving.
-  * @list: the chain of virtqueues for this device
-  * @callback: the function to call when buffers are consumed (can be NULL).
-  * @name: the name of this virtqueue (mainly for debugging)
-@@ -97,7 +97,7 @@ int virtqueue_resize(struct virtqueue *vq, u32 num,
- 		     void (*recycle)(struct virtqueue *vq, void *buf));
+ 	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
+@@ -3490,15 +3466,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 		ctx = NULL;
+ 	}
  
- /**
-- * virtio_device - representation of a device using virtio
-+ * struct virtio_device - representation of a device using virtio
-  * @index: unique position on the virtio bus
-  * @failed: saved value for VIRTIO_CONFIG_S_FAILED bit (for restore)
-  * @config_enabled: configuration change reporting enabled
-@@ -156,7 +156,7 @@ size_t virtio_max_dma_size(struct virtio_device *vdev);
- 	list_for_each_entry(vq, &vdev->vqs, list)
+-	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
+-	if (!sizes)
+-		goto err_sizes;
+-
+ 	/* Parameters for control virtqueue, if any */
+ 	if (vi->has_cvq) {
+ 		callbacks[total_vqs - 1] = NULL;
+ 		names[total_vqs - 1] = "control";
+-		sizes[total_vqs - 1] = 64;
+ 	}
  
- /**
-- * virtio_driver - operations for a virtio I/O driver
-+ * struct virtio_driver - operations for a virtio I/O driver
-  * @driver: underlying device driver (populate name and owner).
-  * @id_table: the ids serviced by this driver.
-  * @feature_table: an array of feature numbers supported by this driver.
-diff --git a/include/linux/virtio_config.h b/include/linux/virtio_config.h
-index 36ec7be1f480..4b517649cfe8 100644
---- a/include/linux/virtio_config.h
-+++ b/include/linux/virtio_config.h
-@@ -239,7 +239,7 @@ int virtio_find_vqs_ctx(struct virtio_device *vdev, unsigned nvqs,
+ 	/* Allocate/initialize parameters for send/receive virtqueues */
+@@ -3513,10 +3484,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+ 			ctx[rxq2vq(i)] = true;
+ 	}
  
- /**
-  * virtio_synchronize_cbs - synchronize with virtqueue callbacks
-- * @vdev: the device
-+ * @dev: the virtio device
-  */
- static inline
- void virtio_synchronize_cbs(struct virtio_device *dev)
-@@ -258,7 +258,7 @@ void virtio_synchronize_cbs(struct virtio_device *dev)
+-	virtnet_config_sizes(vi, sizes);
+-
+-	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
+-				       names, sizes, ctx, NULL);
++	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
++				  names, ctx, NULL);
+ 	if (ret)
+ 		goto err_find;
  
- /**
-  * virtio_device_ready - enable vq use in probe function
-- * @vdev: the device
-+ * @dev: the virtio device
-  *
-  * Driver must call this to use vqs in the probe function.
-  *
-@@ -306,7 +306,7 @@ const char *virtio_bus_name(struct virtio_device *vdev)
- /**
-  * virtqueue_set_affinity - setting affinity for a virtqueue
-  * @vq: the virtqueue
-- * @cpu: the cpu no.
-+ * @cpu_mask: the cpu mask
-  *
-  * Pay attention the function are best-effort: the affinity hint may not be set
-  * due to config support, irq type and sharing.
-diff --git a/include/uapi/linux/virtio_ring.h b/include/uapi/linux/virtio_ring.h
-index 476d3e5c0fe7..f8c20d3de8da 100644
---- a/include/uapi/linux/virtio_ring.h
-+++ b/include/uapi/linux/virtio_ring.h
-@@ -93,15 +93,21 @@
- #define VRING_USED_ALIGN_SIZE 4
- #define VRING_DESC_ALIGN_SIZE 16
+@@ -3536,8 +3505,6 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
  
--/* Virtio ring descriptors: 16 bytes.  These can chain together via "next". */
-+/**
-+ * struct vring_desc - Virtio ring descriptors,
-+ * 16 bytes long. These can chain together via @next.
-+ *
-+ * @addr: buffer address (guest-physical)
-+ * @len: buffer length
-+ * @flags: descriptor flags
-+ * @next: index of the next descriptor in the chain,
-+ *        if the VRING_DESC_F_NEXT flag is set. We chain unused
-+ *        descriptors via this, too.
-+ */
- struct vring_desc {
--	/* Address (guest-physical). */
- 	__virtio64 addr;
--	/* Length. */
- 	__virtio32 len;
--	/* The flags as indicated above. */
- 	__virtio16 flags;
--	/* We chain unused descriptors via this, too */
- 	__virtio16 next;
- };
  
+ err_find:
+-	kfree(sizes);
+-err_sizes:
+ 	kfree(ctx);
+ err_ctx:
+ 	kfree(names);
+@@ -3897,9 +3864,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 		vi->curr_queue_pairs = num_online_cpus();
+ 	vi->max_queue_pairs = max_queue_pairs;
+ 
+-	virtnet_init_settings(dev);
+-	virtnet_update_settings(vi);
+-
+ 	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+ 	err = init_vqs(vi);
+ 	if (err)
+@@ -3912,6 +3876,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
+ 	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
+ 
++	virtnet_init_settings(dev);
++
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+ 		vi->failover = net_failover_create(vi->dev);
+ 		if (IS_ERR(vi->failover)) {
 -- 
 MST
 
