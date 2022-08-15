@@ -2,69 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7BF95951BD
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:13:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 936085951C3
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 07:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231887AbiHPFNp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 01:13:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55216 "EHLO
+        id S231384AbiHPFPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 01:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231848AbiHPFNU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:13:20 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25E10F9953;
-        Mon, 15 Aug 2022 14:28:44 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id CFB323200488;
-        Mon, 15 Aug 2022 17:28:41 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Mon, 15 Aug 2022 17:28:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660598921; x=1660685321; bh=TG6h01Br37
-        C4F3jMCzgHNyxb/LAU3CF9cYEYzRCIsQI=; b=yvn6DXBfwxjXrtC+Te4D/kWHmC
-        8tpQP1Oy6qo8wuY0MkPzKpaF7EClUYOUG59BtsYm9ZfRvBSquvXdy5mfZHcYhbmZ
-        dP6H7EkjwhjI6HakI4aJmwyyc9vuDFCKPp3yQwLJbhvTR6BhjHIDdcIcNpxVbSyn
-        0JNdwCzxF2sFLbKdcBtr/yHOSgOmVMVhE43sTlhYdEMAdz6Y3M03RmOJ2I1VUs3e
-        oTWR8JQxIMFyIK5Ksn7hSfygYEwXjhcbrHkXQQ/n+IREXnT6LDfA6hqL3xuf8SHY
-        +vHBwry8olWA8pGFxTPSq7htrRf4309y7TiZbBg5oqkJXhp1suGpdKndWyPg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660598921; x=1660685321; bh=TG6h01Br37C4F3jMCzgHNyxb/LAU
-        3CF9cYEYzRCIsQI=; b=aL+giPBMZwPuKrh+P+nNenINh0up9FTNUwrC7DJ+9PoQ
-        MY1M4lduN925t5IqjR1tllocqr3tgPgU2k8W1s//wroofSSjFq7moupvxizJ6R2k
-        tZ+ZOSlm+Bb0E8xvjVx+FsicYw8+GtNNNpkKCfU/NSmxuvA0w/arFA8pMS5JZHZI
-        FNG8FzBvE9Md5MJDSloBFcjrY7GSgttKQ01G4TLUNKtFFclR35+4LtvwLntizBb7
-        PP3fWCE+T/x+JgvYCvWqdjY6NH/WLrNoQ2U8MD/J6cxUy7j2JJkzX67dCYURTtWc
-        uYtxpCx6mvy2LSmxrsD5EZCCdFbQ69TD5nYgRhX5aQ==
-X-ME-Sender: <xms:iLr6Yg2uEn8EOWZu5l2Bn_cu_LbsPMC8ffavd88zftdvJb_yoF5vxQ>
-    <xme:iLr6YrHlReUxZmOT2ApQD-MciDV-BpW6pIASajOYBuLPd54kSv_-iBV91pYPjqU8B
-    _w2mK2MBeI12BkWhA>
-X-ME-Received: <xmr:iLr6Yo4qrJ88Us5p4mkQflTVPm7FxxgbW646IEXYOWWXCRq0rwTHc_yGYIfYaNnmdKKww-45Pfbgc7IsU3RtPf_p4_fbAxQx6iAWoxoW4JeB9HyCeEV58aiTCLuO>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudeifecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:iLr6Yp0eVU7NJnUaOkwKOG7xyKFFsYMmfMCXZCuua0Az-YFL6n-8vw>
-    <xmx:iLr6YjHbvm6TWLpU6LIOqcwtEt2dTTPvg5uBsCyjcQXJo6KmPEZagQ>
-    <xmx:iLr6Yi_2Q7BtpolFX4o5wGQD6pwhUfS-dotaJo39PY8Ln9UfYRRKnQ>
-    <xmx:ibr6YtECLURIjGEkwZ2IMpYCf9iR1YGYoQninic5ysNhbiJCLqT8Bg>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 17:28:40 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 14:28:39 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        with ESMTP id S231356AbiHPFO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 01:14:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 09051F14EB
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:32:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660599134;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C5E1PnMcfUBlqR4DgvXh0RULdXNDlbBNqvxltGmBpAA=;
+        b=Gtnln9nt/OM9QnZNFV/bYdho60PB040Yn39qwfAfqJZbTvZBg3c7gIZdOfHxdzWM7+mnC5
+        2mC5NoW34+7PLDvzQWXQqq5XDJPJ7Y5v7Pz0uO/6s9ipvb/tDdIZ7et7tMENYxJ92V6oa0
+        7uRxsJ/AUjlFI+PNInkn+7QEG26yCJA=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-44-btWZSPidNP-RCaGWVz83Yg-1; Mon, 15 Aug 2022 17:32:13 -0400
+X-MC-Unique: btWZSPidNP-RCaGWVz83Yg-1
+Received: by mail-wm1-f71.google.com with SMTP id r4-20020a1c4404000000b003a5fa79008bso280250wma.5
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:32:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=C5E1PnMcfUBlqR4DgvXh0RULdXNDlbBNqvxltGmBpAA=;
+        b=Nm2ysX4rsnUHqE6lul2rq8yyKOiR46GqSrLU6ombdjT46MKmPL29T8ZM6KJrV8R7/T
+         A+Gm0CwmOUKsunbA4OD7v25HHKP1B3hEGrQw+7/LOtJ1eeahPCrOkN5qrHcT874Ylm9e
+         BNiOj2+RqaauIP9v1IlLyHKRYNmoDzRxXkwQzidkktAWX6yw63aIsExAVOUaBn0IW+1f
+         1OZ5dUP7iv5WRkzXo2Ys2Iw8z4v/BtiUVzdEIkR0OqLCtSyvLFw7BT22NwiMQXVo5Okx
+         EVMsnuj0pZsh5Pe0WjXHtl7UvBgEVg09muqW1Ej4REIlod1SoR8tyDxEXQtJ2OI8Vp5a
+         OUdg==
+X-Gm-Message-State: ACgBeo3XABtnjPUHjT1nNggPuDPrM0yXtSEeCJyYDo/btevr991lZuBq
+        66LU3vWQq8AnP6ko6Y7rHWpAiztH2oak5COd7Hy4i+OiiSyDtNS08oLvXYb67a90usCmxP1MtDy
+        uLL9s8KEl3q4l/2sH
+X-Received: by 2002:a7b:cb0e:0:b0:3a5:afff:d520 with SMTP id u14-20020a7bcb0e000000b003a5afffd520mr16640116wmj.3.1660599131761;
+        Mon, 15 Aug 2022 14:32:11 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5my+YWP5JS5ii6nnYx6L/bxpBqCs3VguhrRqaU9wVo6Wtqyap4pIk+XVs3eMaM58GGNIiRvA==
+X-Received: by 2002:a7b:cb0e:0:b0:3a5:afff:d520 with SMTP id u14-20020a7bcb0e000000b003a5afffd520mr16640100wmj.3.1660599131522;
+        Mon, 15 Aug 2022 14:32:11 -0700 (PDT)
+Received: from redhat.com ([2.55.4.37])
+        by smtp.gmail.com with ESMTPSA id q13-20020a056000136d00b00224f5bfa890sm7444926wrz.97.2022.08.15.14.32.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 14:32:10 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 17:32:06 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Andres Freund <andres@anarazel.de>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -75,51 +67,175 @@ Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
         Jens Axboe <axboe@kernel.dk>,
         James Bottomley <James.Bottomley@hansenpartnership.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Greg KH <gregkh@linuxfoundation.org>, c@redhat.com
-Subject: Re: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
- size by find_vqs()"
-Message-ID: <20220815212839.aop6wwx4fkngihbf@awork3.anarazel.de>
-References: <20220815090521.127607-1-mst@redhat.com>
- <20220815203426.GA509309@roeck-us.net>
- <20220815164013-mutt-send-email-mst@kernel.org>
- <20220815205053.GD509309@roeck-us.net>
- <20220815165608-mutt-send-email-mst@kernel.org>
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
+        c@redhat.com
+Subject: Re: upstream kernel crashes
+Message-ID: <20220815170444-mutt-send-email-mst@kernel.org>
+References: <20220815034532-mutt-send-email-mst@kernel.org>
+ <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
+ <20220815042623-mutt-send-email-mst@kernel.org>
+ <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
+ <20220815113729-mutt-send-email-mst@kernel.org>
+ <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
+ <20220815124748-mutt-send-email-mst@kernel.org>
+ <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
+ <20220815161423-mutt-send-email-mst@kernel.org>
+ <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220815165608-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 2022-08-15 17:04:10 -0400, Michael S. Tsirkin wrote:
-> So virtio has a queue_size register. When read, it will give you
-> originally the maximum queue size. Normally we just read it and
-> use it as queue size.
+On Mon, Aug 15, 2022 at 01:53:30PM -0700, Andres Freund wrote:
+> Hi,
 > 
-> However, when queue memory allocation fails, and unconditionally with a
-> network device with the problematic patch, driver is asking the
-> hypervisor to make the ring smaller by writing a smaller value into this
-> register.
+> On 2022-08-15 16:21:51 -0400, Michael S. Tsirkin wrote:
+> > On Mon, Aug 15, 2022 at 10:46:17AM -0700, Andres Freund wrote:
+> > > Hi,
+> > >
+> > > On 2022-08-15 12:50:52 -0400, Michael S. Tsirkin wrote:
+> > > > On Mon, Aug 15, 2022 at 09:45:03AM -0700, Andres Freund wrote:
+> > > > > Hi,
+> > > > >
+> > > > > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
+> > > > > > OK so this gives us a quick revert as a solution for now.
+> > > > > > Next, I would appreciate it if you just try this simple hack.
+> > > > > > If it crashes we either have a long standing problem in virtio
+> > > > > > code or more likely a gcp bug where it can't handle smaller
+> > > > > > rings than what device requestes.
+> > > > > > Thanks!
+> > > > >
+> > > > > I applied the below and the problem persists.
+> > > > >
+> > > > > [...]
+> > > >
+> > > > Okay!
+> > >
+> > > Just checking - I applied and tested this atop 6.0-rc1, correct? Or did you
+> > > want me to test it with the 762faee5a267 reverted? I guess what you're trying
+> > > to test if a smaller queue than what's requested you'd want to do so without
+> > > the problematic patch applied...
+> > >
+> > >
+> > > Either way, I did this, and there are no issues that I could observe. No
+> > > oopses, no broken networking. But:
+> > >
+> > > To make sure it does something I added a debugging printk - which doesn't show
+> > > up. I assume this is at a point at least earlyprintk should work (which I see
+> > > getting enabled via serial)?
+> > >
 > 
-> I suspect that what happens is hypervisor still uses the original value
-> somewhere.
+> > Sorry if I was unclear.  I wanted to know whether the change somehow
+> > exposes a driver bug or a GCP bug. So what I wanted to do is to test
+> > this patch on top of *5.19*, not on top of the revert.
+> 
+> Right, the 5.19 part was clear, just the earlier test:
+> 
+> > > > > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
+> > > > > > OK so this gives us a quick revert as a solution for now.
+> > > > > > Next, I would appreciate it if you just try this simple hack.
+> > > > > > If it crashes we either have a long standing problem in virtio
+> > > > > > code or more likely a gcp bug where it can't handle smaller
+> > > > > > Thanks!
+> 
+> I wasn't sure about.
+> 
+> After I didn't see any effect on 5.19 + your patch, I grew a bit suspicious
+> and added the printks.
+> 
+> 
+> > Yes I think printk should work here.
+> 
+> The reason the debug patch didn't change anything, and that my debug printk
+> didn't show, is that gcp uses the legacy paths...
 
-It looks more like the host is never told about the changed size for legacy
-devices...
+Wait a second. Eureka I think!
 
-Indeed, adding a vp_legacy_set_queue_size() & call to it to setup_vq(), makes
-5.19 + restricting queue sizes to 1024 boot again.  I'd bet that it also would
-fix 6.0rc1, but I'm running out of time to test that.
+So I think GCP is not broken.
+I think what's broken is this patch:
 
-Greetings,
+commit cdb44806fca2d0ad29ca644cbf1505433902ee0c
+Author: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date:   Mon Aug 1 14:38:54 2022 +0800
 
-Andres Freund
+    virtio_pci: support the arg sizes of find_vqs()
+
+
+Specifically:
+
+diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
+index 2257f1b3d8ae..d75e5c4e637f 100644
+--- a/drivers/virtio/virtio_pci_legacy.c
++++ b/drivers/virtio/virtio_pci_legacy.c
+@@ -112,6 +112,7 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+                                  unsigned int index,
+                                  void (*callback)(struct virtqueue *vq),
+                                  const char *name,
++                                 u32 size,
+                                  bool ctx,
+                                  u16 msix_vec)
+ {
+@@ -125,10 +126,13 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
+        if (!num || vp_legacy_get_queue_enable(&vp_dev->ldev, index))
+                return ERR_PTR(-ENOENT);
+ 
++       if (!size || size > num)
++               size = num;
++
+        info->msix_vector = msix_vec;
+ 
+        /* create the vring */
+-       vq = vring_create_virtqueue(index, num,
++       vq = vring_create_virtqueue(index, size,
+                                    VIRTIO_PCI_VRING_ALIGN, &vp_dev->vdev,
+                                    true, false, ctx,
+                                    vp_notify, callback, name);
+
+   
+
+So if you pass the size parameter for a legacy device it will
+try to make the ring smaller and that is not legal with
+legacy at all. But the driver treats legacy and modern
+the same, it allocates a smaller queue anyway.
+
+
+Lo and behold, I pass disable-modern=on to qemu and it happily
+corrupts memory exactly the same as GCP does.
+
+
+So the new find_vqs API is actually completely broken, it can not work for
+legacy at all and for added fun there's no way to find out
+that it's legacy. Maybe we should interpret the patch
+
+So I think I will also revert
+
+04ca0b0b16f11faf74fa92468dab51b8372586cd..fe3dc04e31aa51f91dc7f741a5f76cc4817eb5b4
+
+
+
+
+
+
+
+> If there were a bug in the legacy path, it'd explain why the problem only
+> shows on gcp, and not in other situations.
+> 
+> I'll queue testing the legacy path with the equivalent change.
+> 
+> - Andres
+> 
+> 
+> Greetings,
+> 
+> Andres Freund
+
