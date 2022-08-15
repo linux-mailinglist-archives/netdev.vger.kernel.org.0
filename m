@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D67594C93
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 03:33:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA5F594BF5
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 03:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234245AbiHPBTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 21:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
+        id S234246AbiHPBXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 21:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233520AbiHPBS6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 21:18:58 -0400
-Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43E6458099;
-        Mon, 15 Aug 2022 14:10:54 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id 12D0C32002D8;
-        Mon, 15 Aug 2022 17:10:37 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Mon, 15 Aug 2022 17:10:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm1; t=1660597837; x=1660684237; bh=9d7dhCe3Fq
-        d/bfA8yD544NDBFEKnJIxJgepP6HupnHc=; b=Sw2GBTR4vuywnmfbU2VucVwN4b
-        efRwLx92+SeVxu9DpYiM9sS9H38X+M9nmB2XpzhNvOxxb5JoJDbTxawwkLvyk2c3
-        buevRKZhBacx0DwC2+uAC/LsFPKBO76ez0raPhNZoceUAslgZH4W2rO7xZmFFmtt
-        NV3qcTcxQFLYsWMFvy4tzaHbZYJ6Vt2/wj/Sta4FHeb65rISF4i+p9Tv4zpDkP8A
-        NK+lS5/hOGiOxGACwReToCSic0km/wxhPXT7vfwCUeCdbIMCQ8wgCnkZn78PLK9o
-        +pcAZ9QUkGDWP5Mvnob0xP2ktcIZkVN7CKZAoof0l396WC6OVXZHaU/q840Q==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660597837; x=1660684237; bh=9d7dhCe3Fqd/bfA8yD544NDBFEKn
-        JIxJgepP6HupnHc=; b=KOJlnqL03kLLyaO/0NB3mk/dJoirnU68Nx7JTKUpj8rf
-        vVe7p792KJXBC1XDT+m4D2XgZDLPBhNoR4xTIgMVHlR6yfvZ3QIQsgWhIqzQ44V8
-        PUSEk7w8PQAn/cFwQq+u3nktOgacR/uZ+f/6/FbpnfDILGqmlI1I8po77UZvWuG2
-        wg6vQMgkdVeECgU1fuw5SKVQh+x1HHTMdqhw/Ae0XBcAIi4nLfb24x4PrqZt2H83
-        JWa0oWlIGniGkDoc2Y1SnLtkyK6JXlFGoKLWA1QB5a6CrDmNS4mJ6vX5P2Yl+I/+
-        v5EOExxCTEDkGcg3t8qDwfwwukD2UeOcM6FCEGo6gw==
-X-ME-Sender: <xms:Tbb6YsEkABtzc4Y_Sr5ZmBvRzpXaR81ZHU6DEjuFqNDIQ7DddIR32Q>
-    <xme:Tbb6YlUo9yf4_vq38Q77-Pqh-fUecSXPT9kPCwk_4dwcTRVZ6cjmnG3_mhiJYyVdr
-    ExyPbqT2Mr-TXcCrw>
-X-ME-Received: <xmr:Tbb6YmLiNO647ITbjg7f3pxHrktTjd2oV97wWdqgBttIN1JFZ6hpd8R7e3DQspRulyGm4oFVin6wjfrn2XsFjodZ_NB5Ro5q8XVBweAnnRwfunOFBtiP70Fp5OH4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgudeitdcutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpeetnhgu
-    rhgvshcuhfhrvghunhguuceorghnughrvghssegrnhgrrhgriigvlhdruggvqeenucggtf
-    frrghtthgvrhhnpedvffefvefhteevffegieetfefhtddvffejvefhueetgeeludehteev
-    udeitedtudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
-    hmpegrnhgurhgvshesrghnrghrrgiivghlrdguvg
-X-ME-Proxy: <xmx:Tbb6YuHbI-M3grPW61plMNzu61m3zkee0ETlUw9gk4q6sbJlWg6vNA>
-    <xmx:Tbb6YiWJgPtSuMItQui8RNHoixxsOw7S2ug5QkWCOHSulPe9czixag>
-    <xmx:Tbb6YhM_9JVkTmRQZblFmAZ_kM-EIsBAgpimesyVUEvFlNzP29ao8Q>
-    <xmx:Tbb6YvWGsb5k3UxdvkK7WVOFDAxucBDvrXXvFRG-6dadihdmb0CvaQ>
-Feedback-ID: id4a34324:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 17:10:36 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 14:10:35 -0700
-From:   Andres Freund <andres@anarazel.de>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815211035.r2ojxkilwsbxyewu@awork3.anarazel.de>
-References: <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
- <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
- <20220815161423-mutt-send-email-mst@kernel.org>
- <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de>
- <20220815210437.saptyw6clr7datun@awork3.anarazel.de>
+        with ESMTP id S238278AbiHPBXL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 21:23:11 -0400
+Received: from forward107j.mail.yandex.net (forward107j.mail.yandex.net [IPv6:2a02:6b8:0:801:2::252])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118DE1C6AF9
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:13:31 -0700 (PDT)
+Received: from iva3-6d6b5ab252da.qloud-c.yandex.net (iva3-6d6b5ab252da.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:c19:0:640:6d6b:5ab2])
+        by forward107j.mail.yandex.net (Yandex) with ESMTP id 3A02088612E;
+        Tue, 16 Aug 2022 00:13:24 +0300 (MSK)
+Received: by iva3-6d6b5ab252da.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id hxrdzVdp77-DMiqtBJc;
+        Tue, 16 Aug 2022 00:13:23 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1660598003;
+        bh=fyXKRnx1m8N4N19/XOGePikxGATxA7OoWeZ+Crlro3Y=;
+        h=Date:Message-ID:Cc:To:Subject:From;
+        b=UDs9dnR6pDA4XozblW1b0c+7T1CMlRUPqpaU2xszyAlRwLhxUzixCDH50plfYwC2G
+         X4KSNbPN+9Gd9yBDKCdvOq55LOAlBQ+ta1KNlORu1Qcm2J7Cghf1QrxMmS/bz6RuMQ
+         vwj8z9HbcoJKS9p9UZakrioOuX2BVuwJOwicq3sk=
+Authentication-Results: iva3-6d6b5ab252da.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
+From:   Kirill Tkhai <tkhai@ya.ru>
+Subject: [PATCH v2 0/2] unix: Add ioctl(SIOCUNIXGRABFDS) to grab files of
+ receive queue skbs
+To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, edumazet@google.com, viro@zeniv.linux.org.uk,
+        tkhai@ya.ru
+Message-ID: <0b07a55f-0713-7ba4-9b6b-88bc8cc6f1f5@ya.ru>
+Date:   Tue, 16 Aug 2022 00:13:16 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815210437.saptyw6clr7datun@awork3.anarazel.de>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When a fd owning a counter of some critical resource, say, of a mount,
+it's impossible to umount that mount and disconnect related block device.
+That fd may be contained in some unix socket receive queue skb.
 
-On 2022-08-15 14:04:37 -0700, Andres Freund wrote:
-> Booting with the equivalent change, atop 5.19, in the legacy setup_vq()
-> reliably causes boot to hang:
+Despite we have an interface for detecting such the sockets queues
+(/proc/[PID]/fdinfo/[fd] shows non-zero scm_fds count if so) and
+it's possible to kill that process to release the counter, the problem is
+that there may be several processes, and it's not a good thing to kill
+each of them.
 
-I don't know much virtio, so take this with a rock of salt:
+This patch adds a simple interface to grab files from receive queue,
+so the caller may analyze them, and even do that recursively, if grabbed
+file is unix socket itself. So, the described above problem may be solved
+by this ioctl() in pair with pidfd_getfd().
 
-Legacy setup_vq() doesn't tell the host about the queue size. The modern one
-does:
-	vp_modern_set_queue_size(mdev, index, virtqueue_get_vring_size(vq));
-but the legacy one doesn't.
+Note, that the existing recvmsg(,,MSG_PEEK) is not suitable for that
+purpose, since it modifies peek offset inside socket, and this results
+in a problem in case of examined process uses peek offset itself.
+Additional ptrace freezing of that task plus ioctl(SO_PEEK_OFF) won't help
+too, since that socket may relate to several tasks, and there is no
+reliable and non-racy way to detect that. Also, if the caller of such
+trick will die, the examined task will remain frozen forever. The new
+suggested ioctl(SIOCUNIXGRABFDS) does not have such problems.
 
-I assume this means the host will assume the queue is of the size suggested by
-vp_legacy_get_queue_size(). If the host continues to write into the space
-after the "assumed end" of the queue, but the guest puts other stuff in that
-space, well, I'd expect fun roughly like the stuff we've been seeing in this
-and related threads.
+The realization of ioctl(SIOCUNIXGRABFDS) is pretty simple. The only
+interesting thing is protocol with userspace. Firstly, we let userspace
+to know the number of all files in receive queue skbs. Then we receive
+fds one by one starting from requested offset. We return number of
+received fds if there is a successfully received fd, and this number
+may be less in case of error or desired fds number lack. Userspace
+may detect that situations by comparison of returned value and
+out.nr_all minus in.nr_skip. Looking over different variant this one
+looks the best for me (I considered returning error in case of error
+and there is a received fd. Also I considered returning number of
+received files as one more member in struct unix_ioc_grab_fds).
 
-Greetings,
+v2: Add "[PATCH 1/2] fs: Export __receive_fd()" to make receive_fd_user() be visible in [2/2] patch, when af_unix is module.
+---
 
-Andres Freund
+Kirill Tkhai (2):
+      fs: Export __receive_fd()
+      af_unix: Add ioctl(SIOCUNIXGRABFDS) to grab files of receive queue skbs
+
+
+ fs/file.c               |    1 +
+ include/uapi/linux/un.h |   12 ++++++++
+ net/unix/af_unix.c      |   70 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 83 insertions(+)
+
+--
+Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
