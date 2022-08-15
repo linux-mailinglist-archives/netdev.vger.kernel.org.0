@@ -2,134 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E641A5930D9
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 16:35:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061F859311B
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 16:57:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232742AbiHOOf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 10:35:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47358 "EHLO
+        id S232091AbiHOO5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 10:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbiHOOfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 10:35:22 -0400
-Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F317B26EC;
-        Mon, 15 Aug 2022 07:35:20 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 4325D5C00AD;
-        Mon, 15 Aug 2022 10:35:17 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 15 Aug 2022 10:35:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; t=1660574117; x=1660660517; bh=psq3UPz+5DdIdOmztd5OKOTJ4erP
-        Qsdb9+3N6tWZSE8=; b=QMC8rpEY6QNcODaiqXdoHjlpr1DivBuVJTU08mSpsQrD
-        Gnp7brnAJ8afjnsFJyRs+O+c1lDwtlpCxjty6EP+0C0fsZupN6hUbVrOf5C7VZVp
-        ovB6CqAp5tw70dR8R08vKJDNB+ZmAPk2joUqgRoydVWYAlxiT8SRzbH9MStlkL1g
-        u83gSCTlJoznBXWPPI5+N9M/YB2zK+ZrlINkgODsxBmbhqLi8PDKVFUksi1dE1lF
-        EafK3QYPgPspX69LfY92Tk/7jm0RYhbMfq/MejfkuSQwlbPVBrsBfLfY7sfGd3/k
-        f5MBjClxBIiSKYsqLjI6gZLo+GOyqXXgGk0tS0Haow==
-X-ME-Sender: <xms:o1n6YvDqmSpaINP2qYzPApDHDZ7Cd8Qi7XpK9iFj7eQp-RaLgH3_yw>
-    <xme:o1n6YljE0mm9FKAbOyzg80Yt9zEBmMoo8G8InlBQE4vb2ikuIxr-cDZsyXTic1EXe
-    6bms1nMRF8W2V8>
-X-ME-Received: <xmr:o1n6YqkBpbMq63JXAIMEV8_FoVHLqQD62qJ_HcuGdx28kY_npqZhKptA4Gb->
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehvddgjeelucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    goufhushhpvggtthffohhmrghinhculdegledmnecujfgurhepfffhvfevuffkfhggtggu
-    jgesthdtredttddtvdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstg
-    hhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvghrnheptdetgffhffettdetgeek
-    gffghfegledugefgfffhgfejvdelieegjeefudeltdffnecuffhomhgrihhnpehhohhpth
-    hordhorhhgpdhkvghrnhgvlhdrohhrghdpfhgvughorhgrphhrohhjvggtthdrohhrghen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:o1n6Yhz3bhejUDLsLnfWiTsgEQP55hf9r5SEKkElrXPcqYZJylrMHQ>
-    <xmx:o1n6YkQjVv74qjaAHUfGSKP5CcTD1fs5c7GbnEyrYCibOoQ2Jhxg_g>
-    <xmx:o1n6Yka48qkOPc1mXHNLBB_4nM_0l6k8R_tynBe3TUtYlsYE5gWClQ>
-    <xmx:pVn6Ygo7hIVvobPkxvMp60YKzfHSjFUoPIKy-WpheJK-YxSd-TTpKA>
-Feedback-ID: i494840e7:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Aug 2022 10:35:14 -0400 (EDT)
-Date:   Mon, 15 Aug 2022 17:35:12 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        UNGLinuxDriver@microchip.com,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        katie.morris@in-advantage.com,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Lee Jones <lee@kernel.org>
-Subject: Re: [PATCH v16 mfd 8/8] mfd: ocelot: add support for the vsc7512
- chip via spi
-Message-ID: <YvpZoIN+5htY9Z1o@shredder>
-References: <20220815005553.1450359-1-colin.foster@in-advantage.com>
- <20220815005553.1450359-9-colin.foster@in-advantage.com>
- <YvpV4cvwE0IQOax7@euler>
+        with ESMTP id S229445AbiHOO5P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 10:57:15 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E21A1A054;
+        Mon, 15 Aug 2022 07:57:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=35PiSrycvZePEg2FpFCAwxoALwiBP5+CAc/F+ajRY6Q=; b=H7+4HEwwXMWtNjyIxyU/ZlLIAb
+        hFvadehrOwjtz7/deu55E5PKv0Plavk8ONWe0YSNcBsgx/VUhfwP11vMxbM0/33ZJHX0uT40uOM6e
+        lzTre6xcEAoQQW6r/MZEUIsjlTnvaPCahQYYJ11WPCFG+9PO1CJfeKNgMHZcToZ5DerxDQ/eF6rqR
+        AmhzoWf2kC+m3m4k6KKkS44rM4nWNUNXkASGoxuvy24NatNoRUUtCdBD++MTW9iubHl9E8VFaS84I
+        Go8HWhyIUR86GFaeXkdjp6bn5MCI+VJ3kxXf7dCVLrSPowGATmiivPI0HLlOsPYP5dgbc1tfVWDTn
+        usGwN5iA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oNbWG-002h34-A8; Mon, 15 Aug 2022 14:56:44 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 54C42980153; Mon, 15 Aug 2022 16:56:43 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 16:56:43 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <thoiland@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+Message-ID: <Yvpeq+vPz63n8gmi@worktop.programming.kicks-ass.net>
+References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+ <20191211123017.13212-3-bjorn.topel@gmail.com>
+ <20220815101303.79ace3f8@gandalf.local.home>
+ <CAADnVQLhHm-gxJXTbWxJN0fFGW_dyVV+5D-JahVA1Wrj2cGu7g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <YvpV4cvwE0IQOax7@euler>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAADnVQLhHm-gxJXTbWxJN0fFGW_dyVV+5D-JahVA1Wrj2cGu7g@mail.gmail.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 07:19:13AM -0700, Colin Foster wrote:
-> Something is going on that I don't fully understand with <asm/byteorder.h>.
-> I don't quite see how ocelot-core is throwing all sorts of errors in x86
-> builds now:
+On Mon, Aug 15, 2022 at 07:31:23AM -0700, Alexei Starovoitov wrote:
+> On Mon, Aug 15, 2022 at 7:13 AM Steven Rostedt <rostedt@goodmis.org> wrote:
+> >
+> > On Wed, 11 Dec 2019 13:30:13 +0100
+> > Björn Töpel <bjorn.topel@gmail.com> wrote:
+> >
+> > > From: Björn Töpel <bjorn.topel@intel.com>
+> > >
+> > > The BPF dispatcher is a multi-way branch code generator, mainly
+> > > targeted for XDP programs. When an XDP program is executed via the
+> > > bpf_prog_run_xdp(), it is invoked via an indirect call. The indirect
+> > > call has a substantial performance impact, when retpolines are
+> > > enabled. The dispatcher transform indirect calls to direct calls, and
+> > > therefore avoids the retpoline. The dispatcher is generated using the
+> > > BPF JIT, and relies on text poking provided by bpf_arch_text_poke().
+> > >
+> > > The dispatcher hijacks a trampoline function it via the __fentry__ nop
+> >
+> > Why was the ftrace maintainers not Cc'd on this patch?  I would have NACKED
+> > it. Hell, it wasn't even sent to LKML! This was BPF being sneaky in
+> > updating major infrastructure of the Linux kernel without letting the
+> > stakeholders of this change know about it.
+> >
+> > For some reason, the BPF folks think they own the entire kernel!
+> >
+> > When I heard that ftrace was broken by BPF I thought it was something
+> > unique they were doing, but unfortunately, I didn't investigate what they
+> > were doing at the time.
 > 
-> https://patchwork.hopto.org/static/nipa/667471/12942993/build_allmodconfig_warn/stderr
-> 
-> Snippet from there:
-> 
-> /home/nipa/nipa/tests/patch/build_32bit/build_32bit.sh: line 21: ccache gcc: command not found
-> ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
-> ../arch/x86/include/asm/bitops.h:66:1: warning: unreplaced symbol 'return'
-> ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
-> ../include/asm-generic/bitops/generic-non-atomic.h:29:9: warning: unreplaced symbol 'mask'
-> ../include/asm-generic/bitops/generic-non-atomic.h:30:9: warning: unreplaced symbol 'p'
-> ../include/asm-generic/bitops/generic-non-atomic.h:32:10: warning: unreplaced symbol 'p'
-> ../include/asm-generic/bitops/generic-non-atomic.h:32:16: warning: unreplaced symbol 'mask'
-> ../include/asm-generic/bitops/generic-non-atomic.h:27:1: warning: unreplaced symbol 'return'
-> ../drivers/mfd/ocelot-spi.c: note: in included file (through ../arch/x86/include/asm/bitops.h, ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ...):
-> ../include/asm-generic/bitops/instrumented-non-atomic.h:26:1: warning: unreplaced symbol 'return'
-> 
-> 
-> <asm/byteorder.h> was included in both drivers/mfd/ocelot-spi.c and
-> drivers/mfd/ocelot.h previously, though Andy pointed out there didn't
-> seem to be any users... and I didn't either. I'm sure there's something
-> I must be missing.
+> ftrace is still broken and refusing to accept the fact doesn't make it
+> non-broken.
 
-I got similar errors in our internal CI yesterday. Fixed by compiling
-sparse from git:
-https://git.kernel.org/pub/scm/devel/sparse/sparse.git/commit/?id=0e1aae55e49cad7ea43848af5b58ff0f57e7af99
+Alexei, stop this. The 'call __fentry__' sites are owned by ftrace.
+Always have been. If BPF somehow thinks it can use them without telling
+ftrace then it's BPF that's broken.
 
-The update is also available in the "testing" repo in case you are
-running Fedora 35 / 36:
-https://bodhi.fedoraproject.org/updates/FEDORA-2022-c58b53730f
-https://bodhi.fedoraproject.org/updates/FEDORA-2022-2bc333ccac
+> > Then they started sending me patches to hide fentry locations from ftrace.
+> > And even telling me that fentry != ftrace
+> 
+> It sounds that you've invented nop5 and kernel's ability
+> to replace nop5 with a jump or call.
+
+Ftrace has introduced the mcount/fentry patching into the kernel and has
+always owned it for those sites. There is a lot of other text writing
+not owned by ftrace. But the fentry sites are ftrace's.
+
+Ftrace was also the one that got us the text_poke_bp() infrastructure
+and got it reviewed by the CPU vendors.
+
+Since then we've grown static_branch and static_call, they have their
+own patch sites and do no interfere with ftrace.
+
+> ftrace should really stop trying to own all of the kernel text rewrites.
+> It's in the way. Like this case.
+
+It doesn't. It hasn't. But it *does* own the fentry sites.
+
+> It was implemented long before static_calls made it to the kernel
+> and it's different.
+
+It wasn't long before. Yes it landed a few months prior to the
+static_call work, but the whole static_call thing was in progress for a
+long long time.
+
+Anyway, yes it is different. But it's still very much broken. You simply
+cannot step on __fentry__ sites like that.
+
+
