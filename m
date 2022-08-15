@@ -2,192 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E10B59318A
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:17:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCC5159319A
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243211AbiHOPQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 11:16:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59296 "EHLO
+        id S243054AbiHOPRg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 11:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243202AbiHOPQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:16:44 -0400
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F5D11836;
-        Mon, 15 Aug 2022 08:16:32 -0700 (PDT)
-Received: by mail-vs1-xe2b.google.com with SMTP id q190so7433015vsb.7;
-        Mon, 15 Aug 2022 08:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=wM8iPZoAXi42FT4t2AioDoDVZN+Ha9JWz4JcAwfRUqU=;
-        b=o2qEIjwHvwleXVrXD4QZ879qN2vCJ7ekZOy0MqaG3g1jm2eWI+mfpbS3c49cfpGfU/
-         Lyjyg5bs9LEBGdTkw77qn87wf5lXlnLeI5rGXPeARgv84l82JtE89q29xA5sGjSXnqE8
-         COl8yilTg/mjhkcVF8FbzAB6RljtHjO/hukZhEs+bGZFSFWI08GeuEw/22wQYiwqaK65
-         8WiSahk2CfNmrVqg6fMzw/U6+uz7jY49FEJ5Da+iCC68TQ4YfmPUeHQjKavHmNJvS12A
-         LfR+GNJZxJAJtoj6RtvOckJzJglKrnfaAImOtPzylNBwCQUIQ+iO2FbUvsIqP3WLtPQz
-         wz6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=wM8iPZoAXi42FT4t2AioDoDVZN+Ha9JWz4JcAwfRUqU=;
-        b=nVu/gtD6RiSZCSb5VHH5NCibOB+5YTCIrX7U82/+0yECKivjSA2dTw/AU/bKbKYh3v
-         7GcDeij1b4awO48vdOxnlrWnVRCzh8JfsadI5KtadkEM0kPBtFh3cJfSCPWWS9RmwGym
-         qH2EnEm1M37Sqjs+EZlRTziBcfDaLMPaRKw1BkqBwItmjGWTCrw8evoKXAy8dG/+4D/b
-         r0AyvhK9r8wwGgR6EjxGqrEB61Bff6db8k/mzjcOUj3+4uqt7CEfzHiDCJRXLC3bE3Ot
-         ReKYYALiVtuBeXSh868BEEma4LfzdlVduKy1mYvBaUCx60kdfOOblYnC+lU322M4yJA5
-         9D7A==
-X-Gm-Message-State: ACgBeo3JKsNe7JRVqHF9Em7P1c8RRQaeR+VHWjVIRqi2V+e6TPgE7uqY
-        Q+x53pYTFVk7SYWJjHKKOBo=
-X-Google-Smtp-Source: AA6agR7CE7/3IMCPJy4XeuTbCr8hcfHNraU1m1PXYrfZVxrw2Kmht348ZbhjAoXJKd289lRHfKFriA==
-X-Received: by 2002:a05:6102:5e6:b0:385:361:5892 with SMTP id w6-20020a05610205e600b0038503615892mr6464648vsf.7.1660576591219;
-        Mon, 15 Aug 2022 08:16:31 -0700 (PDT)
-Received: from laptop.. ([2804:14c:71:8fe6:44c:4bb9:384e:eda5])
-        by smtp.gmail.com with ESMTPSA id y12-20020ab05b8c000000b003844b2e1462sm5368338uae.13.2022.08.15.08.16.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 08:16:30 -0700 (PDT)
-From:   Jose Alonso <joalonsof@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev <netdev@vger.kernel.org>, stable <stable@vger.kernel.org>,
-        Ronald Wahl <ronald.wahl@raritan.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jose Alonso <joalonsof@gmail.com>
-Subject: [PATCH stable 5.15.x] Revert "net: usb: ax88179_178a needs FLAG_SEND_ZLP"
-Date:   Mon, 15 Aug 2022 12:16:18 -0300
-Message-Id: <20220815151618.319023-1-joalonsof@gmail.com>
-X-Mailer: git-send-email 2.37.1
+        with ESMTP id S242993AbiHOPRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:17:18 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EECD27B28;
+        Mon, 15 Aug 2022 08:16:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 559C0CE10F8;
+        Mon, 15 Aug 2022 15:16:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20CE9C433D6;
+        Mon, 15 Aug 2022 15:16:52 +0000 (UTC)
+Date:   Mon, 15 Aug 2022 11:16:58 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        bpf <bpf@vger.kernel.org>,
+        Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdl?= =?UTF-8?B?bnNlbg==?= 
+        <thoiland@redhat.com>, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH bpf-next v4 2/6] bpf: introduce BPF dispatcher
+Message-ID: <20220815111658.58d75672@gandalf.local.home>
+In-Reply-To: <CAADnVQLhHm-gxJXTbWxJN0fFGW_dyVV+5D-JahVA1Wrj2cGu7g@mail.gmail.com>
+References: <20191211123017.13212-1-bjorn.topel@gmail.com>
+        <20191211123017.13212-3-bjorn.topel@gmail.com>
+        <20220815101303.79ace3f8@gandalf.local.home>
+        <CAADnVQLhHm-gxJXTbWxJN0fFGW_dyVV+5D-JahVA1Wrj2cGu7g@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit 6fd2c17fb6e02a8c0ab51df1cfec82ce96b8e83d upstream.
+On Mon, 15 Aug 2022 07:31:23 -0700
+Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> >
+> > When I heard that ftrace was broken by BPF I thought it was something
+> > unique they were doing, but unfortunately, I didn't investigate what they
+> > were doing at the time.  
+> 
+> ftrace is still broken and refusing to accept the fact doesn't make it
+> non-broken.
 
-This reverts commit 36a15e1cb134c0395261ba1940762703f778438c.
+I extended Jiri's patch to make it work again.
 
-The usage of FLAG_SEND_ZLP causes problems to other firmware/hardware
-versions that have no issues.
+> 
+> > Then they started sending me patches to hide fentry locations from ftrace.
+> > And even telling me that fentry != ftrace  
+> 
+> It sounds that you've invented nop5 and kernel's ability
+> to replace nop5 with a jump or call.
 
-The FLAG_SEND_ZLP is not safe to use in this context.
-See:
-https://patchwork.ozlabs.org/project/netdev/patch/1270599787.8900.8.camel@Linuxdev4-laptop/#118378
-The original problem needs another way to solve.
+Actually I did invent it.
 
-Fixes: 36a15e1cb134 ("net: usb: ax88179_178a needs FLAG_SEND_ZLP")
-Cc: stable@vger.kernel.org
-Reported-by: Ronald Wahl <ronald.wahl@raritan.com>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=216327
-Link: https://bugs.archlinux.org/task/75491
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/usb/ax88179_178a.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+   https://lore.kernel.org/lkml/20080210072109.GR4100@elte.hu/
 
-diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
-index e1b9b78b474e..0a2c3860179e 100644
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1796,7 +1796,7 @@ static const struct driver_info ax88179_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1809,7 +1809,7 @@ static const struct driver_info ax88178a_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1822,7 +1822,7 @@ static const struct driver_info cypress_GX3_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1835,7 +1835,7 @@ static const struct driver_info dlink_dub1312_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1848,7 +1848,7 @@ static const struct driver_info sitecom_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1861,7 +1861,7 @@ static const struct driver_info samsung_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1874,7 +1874,7 @@ static const struct driver_info lenovo_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1887,7 +1887,7 @@ static const struct driver_info belkin_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1900,7 +1900,7 @@ static const struct driver_info toshiba_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1913,7 +1913,7 @@ static const struct driver_info mct_info = {
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
--- 
-2.37.1
 
+I'm the one that introduced the code to convert mcount into the 5 byte nop,
+and did the research and development to make it work at run time. I had one
+hiccup along the way that caused the e1000e network card breakage.
+
+The "daemon" approach was horrible, and then I created the recordmcount.pl
+perl script to accomplish the same thing at compile time.
+
+> ftrace should really stop trying to own all of the kernel text rewrites.
+> It's in the way. Like this case.
+
+It's not trying to own all modifications (static_calls is not ftrace). But
+the code at the start of functions with fentry does belong to it.
+
+> 
+> >    https://lore.kernel.org/all/CAADnVQJTT7h3MniVqdBEU=eLwvJhEKNLSjbUAK4sOrhN=zggCQ@mail.gmail.com/
+> >
+> > Even though fentry was created for ftrace
+> >
+> >    https://lore.kernel.org/lkml/1258720459.22249.1018.camel@gandalf.stny.rr.com/
+> >
+> > and all the work with fentry was for the ftrace infrastructure. Ftrace
+> > takes a lot of care for security and use cases for other users (like
+> > live kernel patching). But BPF has the NIH syndrome, and likes to own
+> > everything and recreate the wheel so that they have full control.
+> >  
+> > > of the trampoline. One dispatcher instance currently supports up to 64
+> > > dispatch points. A user creates a dispatcher with its corresponding
+> > > trampoline with the DEFINE_BPF_DISPATCHER macro.  
+> >
+> > Anyway, this patch just looks like a re-implementation of static_calls:  
+> 
+> It was implemented long before static_calls made it to the kernel
+> and it's different. Please do your home work.
+
+Long before? This code made it into the kernel in Dec 2019. Yes static calls
+finally made it into the kernel in 2020, but it was first introduced in
+October 2018:
+
+  https://lore.kernel.org/all/20181006015110.653946300@goodmis.org/
+
+If you had Cc'd us on this patch, we could have collaborated and come up
+with something that would have worked for you.
+
+It took time to get in because we don't just push our features in, we make
+sure that they are generic and work for others, and is secure and robust.
+
+I sent a proof of concept, Josh took over, Linus had issues, and finally
+Peter pushed it through the gate. It's a long process, but we don't break
+others code while doing it!
+
+-- Steve
