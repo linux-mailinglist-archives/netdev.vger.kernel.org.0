@@ -2,111 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D7F592CF6
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30945592CEC
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:52:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbiHOItb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 04:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        id S241699AbiHOIpW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 04:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229887AbiHOIta (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 04:49:30 -0400
-X-Greylist: delayed 372 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 15 Aug 2022 01:49:29 PDT
-Received: from mail.katalix.com (mail.katalix.com [IPv6:2a05:d01c:827:b342:16d0:7237:f32a:8096])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3284A205DA
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 01:49:28 -0700 (PDT)
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 7723E7D5B1;
-        Mon, 15 Aug 2022 09:43:14 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1660552994; bh=PsToe7c4M/JitU7m/h6ilpx+7IvtIeZYUv6GiQzjWnY=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Mon,=2015=20Aug=202022=2009:43:14=20+0100|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Jakub=20Sitnicki=20<jakub@clou
-         dflare.com>|Cc:=20Jakub=20Kicinski=20<kuba@kernel.org>,=20netdev@v
-         ger.kernel.org,=0D=0A=09kernel-team@cloudflare.com,=20van=20fantas
-         y=20<g1042620637@gmail.com>|Subject:=20Re:=20[PATCH=20net]=20l2tp:
-         =20Serialize=20access=20to=20sk_user_data=20with=20sock=20lock|Mes
-         sage-ID:=20<20220815084313.GA5059@katalix.com>|References:=20<2022
-         0810102848.282778-1-jakub@cloudflare.com>=0D=0A=20<20220811102310.
-         3577136d@kernel.org>=0D=0A=20<87edxlu6kd.fsf@cloudflare.com>|MIME-
-         Version:=201.0|Content-Disposition:=20inline|In-Reply-To:=20<87edx
-         lu6kd.fsf@cloudflare.com>;
-        b=B8BpVfz/471juGneq/ErCVaDPaJpygm7JoF2+hs+mMduUjdG5kOzy5BrkUkmTvkoy
-         S9es1K95zTNX11fSOZdEtKscw5BqAsNJMioTQdx36HHIaTuqKXpfVST14hMK2BWbqY
-         No6TYkD6hvb2czol/K2RYcMxDBmEI4Z6VsR9D2vkMMwhc9/3jrTyZJigSIZxZ+AVL6
-         Q532dCAR/PdhMQ1Sp7XstPCHEXRE3P7SW7OZgSpNa4zWlnoooBsPmL7j9bcECZTeYd
-         7eZoYXDQNzBqZaWDh92RJ++GLeeQcmcWEEGe/SVvsfWJ3izFTEoEgWuochpn8IQcm9
-         RMC/kZikzyJAQ==
-Date:   Mon, 15 Aug 2022 09:43:14 +0100
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, van fantasy <g1042620637@gmail.com>
-Subject: Re: [PATCH net] l2tp: Serialize access to sk_user_data with sock lock
-Message-ID: <20220815084313.GA5059@katalix.com>
-References: <20220810102848.282778-1-jakub@cloudflare.com>
- <20220811102310.3577136d@kernel.org>
- <87edxlu6kd.fsf@cloudflare.com>
+        with ESMTP id S241666AbiHOIpV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 04:45:21 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8774FC16
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 01:45:18 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 54E8220606;
+        Mon, 15 Aug 2022 10:45:16 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Py44kgUcf_ZB; Mon, 15 Aug 2022 10:45:15 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id BF904205FD;
+        Mon, 15 Aug 2022 10:45:15 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id ADA3D80004A;
+        Mon, 15 Aug 2022 10:45:15 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 15 Aug 2022 10:45:15 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 15 Aug
+ 2022 10:45:15 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id D73F23182A0E; Mon, 15 Aug 2022 10:45:14 +0200 (CEST)
+Date:   Mon, 15 Aug 2022 10:45:14 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Benedict Wong <benedictwong@google.com>
+CC:     <netdev@vger.kernel.org>, <nharold@google.com>,
+        <lorenzo@google.com>
+Subject: Re: [PATCH ipsec 1/2] xfrm: Check policy for nested XFRM packets in
+ xfrm_input
+Message-ID: <20220815084514.GA2950045@gauss3.secunet.de>
+References: <20220810182210.721493-1-benedictwong@google.com>
+ <20220810182210.721493-2-benedictwong@google.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="OgqxwSJOaUobr8KG"
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <87edxlu6kd.fsf@cloudflare.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220810182210.721493-2-benedictwong@google.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 10, 2022 at 06:22:09PM +0000, Benedict Wong wrote:
+> This change ensures that all nested XFRM packets have their policy
+> checked before decryption of the next layer, so that policies are
+> verified at each intermediate step of the decryption process.
+> 
+> This is necessary especially for nested tunnels, as the IP addresses,
+> protocol and ports may all change, thus not matching the previous
+> policies. In order to ensure that packets match the relevant inbound
+> templates, the xfrm_policy_check should be done before handing off to
+> the inner XFRM protocol to decrypt and decapsulate.
+> 
+> Test: Tested against Android Kernel Unit Tests
+> Signed-off-by: Benedict Wong <benedictwong@google.com>
+> Change-Id: I20c5abf39512d7f6cf438c0921a78a84e281b4e9
+> ---
+>  net/xfrm/xfrm_input.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
+> 
+> diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
+> index 144238a50f3d..b24df8a44585 100644
+> --- a/net/xfrm/xfrm_input.c
+> +++ b/net/xfrm/xfrm_input.c
+> @@ -585,6 +585,13 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
+>  			goto drop;
+>  		}
+>  
+> +		// If nested tunnel, check outer states before context is lost.
 
---OgqxwSJOaUobr8KG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Please use networking style comments like so /* ... */
 
-On  Fri, Aug 12, 2022 at 11:54:43 +0200, Jakub Sitnicki wrote:
-> On Thu, Aug 11, 2022 at 10:23 AM -07, Jakub Kicinski wrote:
-> > On Wed, 10 Aug 2022 12:28:48 +0200 Jakub Sitnicki wrote:
-> >> Fixes: fd558d186df2 ("l2tp: Split pppol2tp patch into separate l2tp an=
-d ppp parts")
-> >
-> > That tag immediately sets off red flags. Please find the commit where
-> > to code originates, not where it was last moved.
->=20
-> The code move happened in v2.6.35. There's no point in digging further, I=
-MHO.
+> +		if (x->outer_mode.flags & XFRM_MODE_FLAG_TUNNEL
+> +				&& sp->len > 0
 
-At the time of fd558d186df2, sk_user_data was checked/set by the newly
-added function l2tp_tunnel_create.  The only callpath for
-l2tp_tunnel_create was via.  pppol2tp_connect which called
-l2tp_tunnel_create with lock_sock held (and indeed still does).
+Please align this to the opening brace of the if statement
+like it is done everywhere in networking code. If you are
+unsure about coding style, try checkpatch it helps in that
+case.
 
-I think the addition of the netlink API (which added a new callpath
-for l2tp_tunnel_create via. l2tp_nl_cmd_tunnel_create which was *not*
-lock_sock-protected) is perhaps the right commit to point to?
+> +				&& !xfrm_policy_check(NULL, XFRM_POLICY_IN, skb, family)) {
 
-309795f4bec2 ("l2tp: Add netlink control API for L2TP")
+Hm, shouldn't the xfrm_policy_check called along the
+packet path for each round after decapsulation?
 
---OgqxwSJOaUobr8KG
-Content-Type: application/pgp-signature; name="signature.asc"
+Do you use ESP transformation offload (INET_ESP_OFFLOAD/
+INET6_ESP_OFFLOAD)?
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAmL6Bx0ACgkQlIwGZQq6
-i9B5nAgAj6fL3gToqPZmWQZ6iYA9i0EBjeh6xGBrVWSJdrN1fA+JyfgAnIYsmGPh
-BxgY+IW/5Gj5nuWtYbKCMpnN6dh0LjgPVUJFKcBNCXuSW70smU5VTUPo4jM4eh/x
-GhuruZ2MwVhF8HZK6uqRWrRYa/kQAPXrXX8M8AovA1QpI/SqxR3pO0+LyO5RJPS9
-9c+9y9OW7OyHWcBSgJcK/GvEzXIuSGbWO3O7+1xXUGYikl+R+Kk5tZLpqFbBBpSq
-BcW8YzMVP+lwnk8ATnBEhqzP4dlw810FitwklHE+dx043pWwCkSmPgyDUtNVD45r
-Fv88ZGQS1uCNAzwseaZ4Sh2GXr5EOw==
-=KqX/
------END PGP SIGNATURE-----
-
---OgqxwSJOaUobr8KG--
+> +			goto drop;
+> +		}
+> +
+>  		skb->mark = xfrm_smark_get(skb->mark, x);
+>  
+>  		sp->xvec[sp->len++] = x;
+> -- 
+> 2.37.1.595.g718a3a8f04-goog
