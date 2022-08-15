@@ -2,245 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4CE5592E46
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 13:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A950592E6A
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 13:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232025AbiHOLkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 07:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
+        id S231588AbiHOLsH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 07:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232011AbiHOLkR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 07:40:17 -0400
-Received: from hr2.samba.org (hr2.samba.org [IPv6:2a01:4f8:192:486::2:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 732941ED;
-        Mon, 15 Aug 2022 04:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=samba.org;
-        s=42; h=From:Cc:To:Date:Message-ID;
-        bh=I4kcLuOI9QLkFp6Xx5xV8uExa8DcDiyV34XA38HR150=; b=McBLV2os4UzFnUyyptk1VDPsRT
-        rYIIQ9rFdiXwsVdAdG4+rsQw1K2th3kRpjCiwJ/P84PJY2jvoP2IzbOlpTS/y65JN9PC4p3aHT9ko
-        o1lWg5qtMJWchNNHQHiiYndJwBtKwfSe1UV07QxBJ/tAo/PbxR5EkHrlflfP8PyWmyKxzWXRjI9Jd
-        sFX25GLvUwWaBRqyaWycOl1Rnv8BH0S6XJb+9bTzHKGpCDigwj3hA87izQLhCTfrljxkoOhFXC2x8
-        i+FUSnJIJohw1oPDQDsFmZq/RhS8IAH0quMEatJb+3wCMoUvI0u44AeDOo7gQut5ZMlJI6+itfcMT
-        3/tb2xDiXDHhJ3dkJefgPeTz1ajItnQ6Rm3YLBnzMrA/XNctZxwOEtM9jLRdDZ0SE2acLhW26Q888
-        FhA6aEUAUh6KDz5cm2jD19wl/SsKztvnlVY2JsbCLo9Pwjw9ZOAsxFSl0AUltGsIAOBTEGO+c96uj
-        nrSodYrz80sQsYGHxysPqWpH;
-Received: from [127.0.0.2] (localhost [127.0.0.1])
-        by hr2.samba.org with esmtpsa (TLS1.3:ECDHE_SECP256R1__ECDSA_SECP256R1_SHA256__CHACHA20_POLY1305:256)
-        (Exim)
-        id 1oNYRv-000Fwz-9b; Mon, 15 Aug 2022 11:40:03 +0000
-Message-ID: <246ef163-5711-01d6-feac-396fc176e14e@samba.org>
-Date:   Mon, 15 Aug 2022 13:40:02 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Pavel Begunkov <asml.silence@gmail.com>, io-uring@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S230184AbiHOLsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 07:48:04 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15764BF5C;
+        Mon, 15 Aug 2022 04:48:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R0z7x6bNYw8U/EJsoQI/1WnNTEkMPWW+SqnE6vVAFdHyxyVmZN12Pfk1gYduBxNCSeqteHSLDV5RH1xj3rV1ZpU/PVAT6lrQ5ujwXNcDJmamYnEcZzDhl3deInGwqVmpSyYkdrqh/OmjX/2Kb7egM6zSfKp3tJcdAKBHCood4O3M1eHM9x2J3aAu0bRmustnGssqFefI8fywn/CZ/vZBFtvgzKpUto6S9u9ir6rWjTYMPDjFXBTHYl0VucimoXwYHvepm0BDCzrTCLfS+KonE0EWHi4oQikLP7lbo5c6k6NTkaVnTIHeGgqwdSamhenh4Jy9I5f/5obJ/6RaQKVGmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=YK4/YYV/5JtbycZpuhBrL0roQ+XYkCZFiPWevSlq6o4=;
+ b=XiLiOD7H7QvmF51U69s502gMX5VrkXsrKNQkmX5kB3zOXMtRBuwHW5MXa6KxpauoeNGR2i0z0U85mqP14xn1Z5/ITNfhr0Ym3sltdiFu5Tp//6mxesFq4hKjgO2n8D2hmN3HuBRp7NXzY2NSLBIt4deElTYO00Mq2Y6F6xfy9HB/H3rvdhn2U59ZbpotjEknCati+GQh2aV3xO5KAHzenmgjBoneeib9x/qSbGQMclnchgoHHRkXi+b+Q4KNEQMtchLZmV11dd2JRJPr5wEQoQ6m3KVo8IINKuvQ6BBKfPjrSqlKhPWhoiPVNlDOkzqwfOBYnsJHLK8H+ETtJjf5+A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=YK4/YYV/5JtbycZpuhBrL0roQ+XYkCZFiPWevSlq6o4=;
+ b=Rzc2rXEDu1CkAEk/xM7j8JOc18qzFQ9x7aMQfSgn4135XVMLkXboUcQz7dA1mpMn6lhcwU3+yvntw7mjVLuXcYV/VajMEYGw1WVo2oP2VTBLpz9X+VEOLJwkIA5mCqhH+8UbZUVGtceDDqoWfHynDlSpYJuoBsMIJiTij8KSHvwQq0EeYixpyONdVxau9qfxMtHCrNgHTdF3xslEpVkLJw75TB0nREdYLhjc3ocz2VsXOawJ2zeAk3/Q9t4vYROq8N6jicHZmP/rk7kHsx7jNlarpQW6Syhm939IXguSVa9aIXiFBSUJlL31G5MetVaRbz/9FxK0uPJU5LZsh1C1bg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
+ by MN2PR12MB4607.namprd12.prod.outlook.com (2603:10b6:208:a1::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Mon, 15 Aug
+ 2022 11:48:01 +0000
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5504.027; Mon, 15 Aug 2022
+ 11:48:01 +0000
+Date:   Mon, 15 Aug 2022 14:47:56 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rafael@kernel.org, vadimp@mellanox.com, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Petr Machata <petrm@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Jens Axboe <axboe@kernel.dk>, kernel-team@fb.com
-References: <cover.1653992701.git.asml.silence@gmail.com>
- <228d4841af5eeb9a4b73955136559f18cb7e43a0.1653992701.git.asml.silence@gmail.com>
- <cccec667-d762-9bfd-f5a5-1c9fb46df5af@samba.org>
- <56631a36-fec8-9c41-712b-195ad7e4cb9f@gmail.com>
- <4eb0adae-660a-3582-df27-d6c254b97adb@samba.org>
- <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
-From:   Stefan Metzmacher <metze@samba.org>
-Subject: Re: [RFC net-next v3 23/29] io_uring: allow to pass addr into sendzc
-In-Reply-To: <db7bbfcd-fdd0-ed8e-3d8e-78d76f278af8@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH v2 1/2] Revert "mlxsw: core: Use different get_trend()
+ callbacks for different thermal zones"
+Message-ID: <YvoybKfgNnHi36dN@shredder>
+References: <20220815091032.1731268-1-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815091032.1731268-1-daniel.lezcano@linaro.org>
+X-ClientProxiedBy: LO2P265CA0484.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:13a::9) To IA1PR12MB6163.namprd12.prod.outlook.com
+ (2603:10b6:208:3e9::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 28a080d2-c47c-4ca4-2f7d-08da7eb40170
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4607:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jmOoEgLuPcyBScZb8l+utYzTL7KTtkzypkHuXOj4zFBaKO8UnhwoYA/nRVHx/d71OFCHcHoGgsL16iBdQaOrZgSnQTCMW5uzuM5Velji2rXAiSMAV7wIuaMC8fqeir3t6tq3MMtAks6oElhQp51blDr0+/OCVWJ8EhAFDxH5HII9HSMxZXsotSUXzDQr6dqZjbLsRyS1U09O1GYiRQJty0rq3PUF6qAmzXMXILpIznu8gBUZ6LeQv9fKW7mphqfmX3/8PCcl6b0BYvARDqQJ5XrIEWW4bZZWMQdvSE0GDe/57ZdBkklpT1P59CHxNdeBx99IX5Kg4fefmmAD3G08NETgsABTHMkUr0funEuRejImGQcgYpOyRXignWYzRwgPezDQ6Te42ZnKKWU2vUjJ09UvYqeSBze0lInc8Je7/HOFFGT0jSuqkFHQ9orATa+QOQKWkGVL/xFEfJzTvYee6xi4EtBNsQeyvYuRb70Ori3iL6Uyh1vVJcBVxPE+ZkRwOXrER1Ez3qGsbPUh70FIHjBI48y4WFh1LETqp8JeuSD3z9EkI/iYZsv+Yw5hyMNeyPhOam0kKWZpUdUvj5fchnDgag9PaahcHzjE0Duc0Fat60/77N7cJAg/2DYn+6sw3AiutmQl3a2lUsV9Iw2/dORcVl+S1HgDVa+sAiEHSDfA/NgrLfMCguVcigUY2IxuPdggzcM3I8x06gumxfc7IS5SImjIeXRSwr6d7xvtLok+HAXCNMuniyjubo+45xE51VsZh/sPLTpIxyjePEiUf47KxDaPi/0Pv1pnRo+SfbA9f9rwhASlqrmGJ0+uNoqM
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(39860400002)(376002)(366004)(136003)(346002)(478600001)(2906002)(26005)(41300700001)(6666004)(966005)(9686003)(6512007)(66476007)(66556008)(6506007)(6486002)(8676002)(33716001)(4744005)(6916009)(316002)(86362001)(54906003)(38100700002)(186003)(5660300002)(66946007)(4326008)(8936002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?R61bXfQD7Zfz8ST6D3CJQ5stFkkEWbyNhEF6Gz2rgMs0aXfJWNbAuCIpeWM/?=
+ =?us-ascii?Q?P2bPHGTaCpmxsb2ldic7I0El/rj9Rs4RkGlJLfZURzFa2r1XfjwpwYxLL9KY?=
+ =?us-ascii?Q?4MggYx9lV6JuCXpQZl3YRKMkbJi8Y80MTSzldx5bOISxQq0+Gv86/VMevCGK?=
+ =?us-ascii?Q?wtQ2edw2px3ktIalHdsQouZ3cRoJwCGt+e2gxw7/49IUnT5LJX/V9nq8VIbr?=
+ =?us-ascii?Q?Mp+D/MxnzxlX8OhnG9j3HZS64hgCj2GwLn4q3Ba+hBNwRR/JlDPxy7DsGjRe?=
+ =?us-ascii?Q?0ORHM9hqaE4gsg3a+29YRtml0RMrvqXGnaJYk64lVjIWOY1lxEPWXbTgCyrN?=
+ =?us-ascii?Q?wT4vuRgY3FSsMBf/co6kljrya4/kxab8O/N5EG84Jj05l0Ac8I0OUNfJkM5g?=
+ =?us-ascii?Q?IoQZh0MF27SxOOIibrDyUxtFaDgyePeTyjJGAuxb0mm7rUohZMINnlR1lGH0?=
+ =?us-ascii?Q?wnZcFtISwG4xbkibMl5t3+CSPh8k/kGql5uFl3LUjjWw0bh6aj7sRLx3odNK?=
+ =?us-ascii?Q?I7/a69t43U/UeMuL0aKqicz97k9agEL1kHnR7+Q66lnHCck23b6m647Yb06S?=
+ =?us-ascii?Q?LLrO4iW9HTHgKTx5yhKS882HLtToVgtfbnwCs2Np6SYxeBS+fIoeATGIjEtm?=
+ =?us-ascii?Q?WS828pAkmOUiDhGAPsnryx6Su5Dp9Fpdq0IUr9qDbx44iDdz6sHfhX692qK2?=
+ =?us-ascii?Q?dyvlwvQplVUo5VIhAY9isUvld8UdTChNLvic2pEgzuyIrAhxyHEvBeGAkKPZ?=
+ =?us-ascii?Q?w7/Bh5fiFRGofUumK/I0c+Y4sES/rtkbmf7Puv5EeA8DjbmksRDpYpA0LLBj?=
+ =?us-ascii?Q?tt7peda7L4O1++HfuqutJScOMhWH033punK6rsYG4aJQK+HNupsSmp/9EThB?=
+ =?us-ascii?Q?qKX6HQUC1pi8j74czQopo+FfjQikM6T5gQCszT5WDRKZhDvVJzoucU3Mchwe?=
+ =?us-ascii?Q?etUoWiGS9nJ/27c7yDJ1iglFJzQdMcWsVQ36810sCdk6OELH8RojP1KCqyzz?=
+ =?us-ascii?Q?MSfUSaQ+8RiUzmwZpWDEKX1GPZbByoVY+rYGF+W5OWD+ewzzxA087hHK2Fz7?=
+ =?us-ascii?Q?sCrYaJYTNLyx65BRovGTVNor8iN0wm2Nlr+tPlbx2xNfmzcSRomDHtG+GXX2?=
+ =?us-ascii?Q?dq6nldR7yqZIpR3Az/WOHmd/OfR0cjonBSArpNKnunQGCVitlG8xdzDNg91W?=
+ =?us-ascii?Q?wOWEMIBq2/Igea6c0+eZ8A1rT7eAoqmfqucTHQ9ofWOjQeNT85SJ4XTjk5v6?=
+ =?us-ascii?Q?15sU74iEG6klkvwGsEXv7MWFpH193ZKe6t4iTIl1qZIjc0GHEtRBex+dH6Dm?=
+ =?us-ascii?Q?TyhtLo5vc9RXfU2/joOgU5CjcQESWqVBi0QuLYMwT4E4W7Z8rQ8pLw6J6obb?=
+ =?us-ascii?Q?PwuRtYmUsBAnme2pQH8iDjKFAoySEv+Qug6xrY5KxAi7FuU+q8NukxUFO5cP?=
+ =?us-ascii?Q?oa7Y1yJzDa2oe0vNJ2+aBeCg4KADmh5gvdwNhEOrCHWnCPkQAn12CZPoJLXC?=
+ =?us-ascii?Q?mH2URrEw+ywd4ULKp++74+O3l07HCH3G+w+ihCWYLksahUrKu+cbNlmynJWq?=
+ =?us-ascii?Q?wjKocs1+Y6l8x1n6OUJ7KSNDR8m34mtUBRNU06ao?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28a080d2-c47c-4ca4-2f7d-08da7eb40170
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 11:48:01.0782
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hHgecoa1beTcaAk8qOa6WJBkmn3CvteIcOgejsPUPNgR5gYioFEJpsNXe3TKPEt0Ix2fl7Z8Ez8KBA12ijX5XQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4607
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pavel,
-
-> Thanks for giving a thought about the API, are you trying
-> to use it in samba?
-
-Yes, but I'd need SENDMSGZC and then I'd like to test,
-which variant gives the best performance. It also depends
-on the configured samba vfs module stack.
-
-My current prototype uses IO_SENDMSG for the header < 250 bytes
-followed by up to 8MBytes via IO_SPLICE if the storage backend also
-supports splice, otherwise I'd try to use IO_SENDMSGZC for header + 8 MBytes payload
-together. If there's encryption turned actice on the connection we would
-most likely always use a bounce buffer and hit the IO_SENDMSGZC case.
-So all in all I'd say we'll use it.
-
-I guess it would be useful for userspace to notice if zero was possible or not.
-
-__msg_zerocopy_callback() sets SO_EE_CODE_ZEROCOPY_COPIED, maybe
-io_uring_tx_zerocopy_callback() should have something like:
-
-if (!success)
-     notif->cqe.res = SO_EE_CODE_ZEROCOPY_COPIED;
-
-This would make it a bit easier to judge if SENDZC is useful for the
-application or not. Or at least have debug message, which would explain
-be able to explain degraded performance to the admin/developer.
-
->>>> Given that this fills in msg almost completely can we also have
->>>> a version of SENDMSGZC, it would be very useful to also allow
->>>> msg_control to be passed and as well as an iovec.
->>>>
->>>> Would that be possible?
->>>
->>> Right, I left it to follow ups as the series is already too long.
->>>
->>> fwiw, I'm going to also add addr to IORING_OP_SEND.
->>
->>
->> Given the minimal differences, which were left between
->> IORING_OP_SENDZC and IORING_OP_SEND, wouldn't it be better
->> to merge things to IORING_OP_SEND using a IORING_RECVSEND_ZC_NOTIF
->> as indication to use the notif slot.
+On Mon, Aug 15, 2022 at 11:10:31AM +0200, Daniel Lezcano wrote:
+> This reverts commit 2dc2f760052da4925482ecdcdc5c94d4a599153c.
 > 
-> And will be even more similar in for-next, but with notifications
-> I'd still prefer different opcodes to get a little bit more
-> flexibility and not making the normal io_uring send path messier.
-
-Ok, we should just remember the opcode is only u8
-and we already have ~ 50 out of ~250 allocated in ~3 years
-time.
-
->> It would means we don't need to waste two opcodes for
->> IORING_OP_SENDZC and IORING_OP_SENDMSGZC (and maybe more)
->>
->>
->> I also noticed a problem in io_notif_update()
->>
->>          for (; idx < idx_end; idx++) {
->>                  struct io_notif_slot *slot = &ctx->notif_slots[idx];
->>
->>                  if (!slot->notif)
->>                          continue;
->>                  if (up->arg)
->>                          slot->tag = up->arg;
->>                  io_notif_slot_flush_submit(slot, issue_flags);
->>          }
->>
->>   slot->tag = up->arg is skipped if there is no notif already.
->>
->> So you can't just use a 2 linked sqe's with
->>
->> IORING_RSRC_UPDATE_NOTIF followed by IORING_OP_SENDZC(with IORING_RECVSEND_NOTIF_FLUSH)
+> As discussed in the thread:
 > 
-> slot->notif is lazily initialised with the first send attached to it,
-> so in your example IORING_OP_SENDZC will first create a notification
-> to execute the send and then will flush it.
+> https://lore.kernel.org/all/f3c62ebe-7d59-c537-a010-bff366c8aeba@linaro.org/
 > 
-> This "if" is there is only to have a more reliable API. We can
-> go over the range and allocate all empty slots and then flush
-> all of them, but allocation failures should be propagated to the
-> userspace when currently the function it can't fail.
+> the feature provided by commits 2dc2f760052da and 6f73862fabd93 is
+> actually already handled by the thermal framework via the cooling
+> device state aggregation, thus all this code is pointless.
 > 
->> I think the if (!slot->notif) should be moved down a bit.
+> No conflict happened when reverting the patch.
 > 
-> Not sure what you mean
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Tested-by: Vadim Pasternak <vadimp@nvidia.com>
 
-I think it should be:
+Daniel, the intention is to send these patches to mainline as part of
+your 6.1 pull request?
 
-                   if (up->arg)
-                           slot->tag = up->arg;
-                   if (!slot->notif)
-                           continue;
-                   io_notif_slot_flush_submit(slot, issue_flags);
+I discussed it with Vadim yesterday and we do not expect changes in the
+file during the current cycle so this is OK as far as we are concerned,
+but I believe this will also need an ack from one of the netdev
+maintainers.
 
-or even:
-
-                   slot->tag = up->arg;
-                   if (!slot->notif)
-                           continue;
-                   io_notif_slot_flush_submit(slot, issue_flags);
-
-otherwise IORING_RSRC_UPDATE_NOTIF would not be able to reset the tag,
-if notif was never created or already be flushed.
-
->> It would somehow be nice to avoid the notif slots at all and somehow
->> use some kind of multishot request in order to generate two qces.
-> 
-> It is there first to ammortise overhead of zerocopy infra and bits
-> for second CQE posting. But more importantly, without it for TCP
-> the send payload size would need to be large enough or performance
-> would suffer, but all depends on the use case. TL;DR; it would be
-> forced to create a new SKB for each new send.
-> 
-> For something simpler, I'll push another zc variant that doesn't
-> have notifiers and posts only one CQE and only after the buffers
-> are no more in use by the kernel. This works well for UDP and for
-> some TCP scenarios, but doesn't cover all cases.
-
-I think (at least for stream sockets) it would be more useful to
-get two CQEs:
-1. The first signals userspace that it can
-    issue the next send-like operation (SEND,SENDZC,SENDMSG,SPLICE)
-    on the stream without the risk of byte ordering problem within the stream
-    and avoid too high latency (which would happen, if we wait for a send to
-    leave the hardware nic, before sending the next PDU).
-2. The 2nd signals userspace that the buffer can be reused or released.
-
-In that case it would be useful to also provide a separate 'user_data' element
-for the 2nd CQE.
-
->> I'm also wondering what will happen if a notif will be referenced by the net layer
->> but the io_uring instance is already closed, wouldn't
->> io_uring_tx_zerocopy_callback() or __io_notif_complete_tw() crash
->> because notif->ctx is a stale pointer, of notif itself is already gone...
-> 
-> io_uring will flush all slots and wait for all notifications
-> to fire, i.e. io_uring_tx_zerocopy_callback(), so it's not a
-> problem.
-
-I can't follow :-(
-
-What I see is that io_notif_unregister():
-
-                 nd = io_notif_to_data(notif);
-                 slot->notif = NULL;
-                 if (!refcount_dec_and_test(&nd->uarg.refcnt))
-                         continue;
-
-So if the net layer still has a reference we just go on.
-
-Only a wild guess, is it something of:
-
-io_alloc_notif():
-         ...
-         notif->task = current;
-         io_get_task_refs(1);
-         notif->rsrc_node = NULL;
-         io_req_set_rsrc_node(notif, ctx, 0);
-         ...
-
-and
-
-__io_req_complete_put():
-                 ...
-                 io_req_put_rsrc(req);
-                 /*
-                  * Selected buffer deallocation in io_clean_op() assumes that
-                  * we don't hold ->completion_lock. Clean them here to avoid
-                  * deadlocks.
-                  */
-                 io_put_kbuf_comp(req);
-                 io_dismantle_req(req);
-                 io_put_task(req->task, 1);
-                 ...
-
-that causes io_ring_exit_work() to wait for it.
-It would be great if you or someone else could explain this in detail
-and maybe adding some comments into the code.
-
-metze
-
+Thanks
