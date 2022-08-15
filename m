@@ -2,94 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC701592A56
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 09:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3ABB6592AD0
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 10:06:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233223AbiHOHZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 03:25:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57334 "EHLO
+        id S232209AbiHOHbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 03:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiHOHZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 03:25:28 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D326140;
-        Mon, 15 Aug 2022 00:25:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660548287; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=VRmmUHogCbfEV/Z47CYgjlmBymsGM0W+eG+hMXeZrxfmQ7WHdDChY/cSLTQHeZ1Bg+9JpYS2v0BOky/TwnpSKklKxNAkeSLySLFQ72eOR8HSa5fwV26GN65RWzWZhg2byMGAUsd42tU0QmaT48Syt2+xakgns4Su6XRUHrddW3M=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660548287; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=rFmN3Fcn03jyf5Yrgmq83ESGhPMfT3i8FmCTj6/USo8=; 
-        b=Hysf8rXPv/lic1u7ZDbKAkqAKr2sbyld0Bsjyfd6x02S5zpPOD2WWdz4Sz+OYjSCr/UIjixYmaNHnnp5hLAme9na/S/+6TOneunqpaonoaR143LRe7stk6qzAiCm5yU93ZlH+U1nmY6VVZN0hvcsH0WVYYDfETAPCpVP5mVeAWI=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660548287;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=rFmN3Fcn03jyf5Yrgmq83ESGhPMfT3i8FmCTj6/USo8=;
-        b=EMEpgejqJTujORMBx5/tvo5dKhYkjBqVfkGyDFM0EAjgPenELLPUSXOk7tD1SC3s
-        q2r4Uu0l+gUkql+ClhNXkzNNcFu1Jm+h7Lp/5kohAX8/cgPsdSEzEXtSFqTe0CAl4IZ
-        WKNyC/0L4tVZ3tRySIeH/BnlIgWBtViFT2VBb8BA=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1660548274922861.5813875926336; Mon, 15 Aug 2022 12:54:34 +0530 (IST)
-Date:   Mon, 15 Aug 2022 12:54:34 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "Greg KH" <gregkh@linuxfoundation.org>
-Cc:     "johannes berg" <johannes@sipsolutions.net>,
-        "david s. miller" <davem@davemloft.net>,
-        "eric dumazet" <edumazet@google.com>,
-        "jakub kicinski" <kuba@kernel.org>,
-        "paolo abeni" <pabeni@redhat.com>,
-        "netdev" <netdev@vger.kernel.org>,
-        "linux-wireless" <linux-wireless@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "stable" <stable@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        "syzbot+b6c9fe29aefe68e4ad34" 
-        <syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com>
-Message-ID: <182a063dacf.3f3632f6236592.5537187165122273734@siddh.me>
-In-Reply-To: <Yvnu/WT1Z+K36UwW@kroah.com>
-References: <20220814151512.9985-1-code@siddh.me> <Yvnu/WT1Z+K36UwW@kroah.com>
-Subject: Re: [PATCH] wifi: mac80211: Don't finalize CSA in IBSS mode if
- state is disconnected
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229647AbiHOHbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 03:31:22 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 608FB14D2E;
+        Mon, 15 Aug 2022 00:31:19 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VMFgzTk_1660548671;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VMFgzTk_1660548671)
+          by smtp.aliyun-inc.com;
+          Mon, 15 Aug 2022 15:31:12 +0800
+Message-ID: <1660548498.412278-11-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v14 37/42] virtio_net: set the default max ring size by find_vqs()
+Date:   Mon, 15 Aug 2022 15:28:18 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com
+References: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
+ <20220801063902.129329-38-xuanzhuo@linux.alibaba.com>
+ <20220815015405-mutt-send-email-mst@kernel.org>
+ <1660545303.436073-9-xuanzhuo@linux.alibaba.com>
+ <20220815031022-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220815031022-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 15 Aug 2022 12:30:13 +0530  Greg KH  wrote:
-> Please no blank line before your signed-off-by line or the tools will
-> not like it.
+On Mon, 15 Aug 2022 03:14:43 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Mon, Aug 15, 2022 at 02:35:03PM +0800, Xuan Zhuo wrote:
+> > On Mon, 15 Aug 2022 02:00:16 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> > > On Mon, Aug 01, 2022 at 02:38:57PM +0800, Xuan Zhuo wrote:
+> > > > Use virtio_find_vqs_ctx_size() to specify the maximum ring size of tx,
+> > > > rx at the same time.
+> > > >
+> > > >                          | rx/tx ring size
+> > > > -------------------------------------------
+> > > > speed == UNKNOWN or < 10G| 1024
+> > > > speed < 40G              | 4096
+> > > > speed >= 40G             | 8192
+> > > >
+> > > > Call virtnet_update_settings() once before calling init_vqs() to update
+> > > > speed.
+> > > >
+> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > >
+> > > I've been looking at this patchset because of the resent
+> > > reported crashes, and I'm having second thoughts about this.
+> > >
+> > > Do we really want to second-guess the device supplied
+> > > max ring size? If yes why?
+> > >
+> > > Could you please share some performance data that motivated this
+> > > specific set of numbers?
+> >
+> >
+> > The impact of this value on performance is as follows. The larger the value, the
+> > throughput can be increased, but the delay will also increase accordingly. It is
+> > a maximum limit for the ring size under the corresponding speed. The purpose of
+> > this limitation is not to improve performance, but more to reduce memory usage.
+> >
+> > These data come from many other network cards and some network optimization
+> > experience.
+> >
+> > For example, in the case of speed = 20G, the impact of ring size greater
+> > than 4096 on performance has no meaning. At this time, if the device supports
+> > 8192, we limit it to 4096 through this, the real meaning is to reduce the memory
+> > usage.
+> >
+> >
+> > >
+> > > Also why do we intepret UNKNOWN as "very low"?
+> > > I'm thinking that should definitely be "don't change anything".
+> > >
+> >
+> > Generally speaking, for a network card with a high speed, it will return a
+> > correct speed. But I think it is a good idea to do nothing.
+>
+>
+>
+>
+>
+> >
+> > > Finally if all this makes sense then shouldn't we react when
+> > > speed changes?
+> >
+> > This is the feedback of the network card when it is started, and theoretically
+> > it should not change in the future.
+>
+> Yes it should:
+> 	Both \field{speed} and \field{duplex} can change, thus the driver
+> 	is expected to re-read these values after receiving a
+> 	configuration change notification.
+>
+>
+> Moreover, during probe link can quite reasonably be down.
+> If it is, then speed and duplex might not be correct.
+>
 
-Oh okay, noted.
 
-> And did sysbot verify that this change solved the problem?
+It seems that this is indeed a problem.
 
-Syzbot was failing to boot for reasons unrelated to the patch.
-I tried testing three times, and every time the boot was failing.
-It was taking more than 5 hours for syzbot to pick up the patch
-from pending state every time, so I now posted it.
+But I feel that this is not the reason for the abnormal network.
 
-You can look at the syzkaller group page here:
-https://groups.google.com/g/syzkaller-bugs/c/bGZwWS4Q3ek/m/dQ3pdAVSAAAJ
-(Pardon the atrocious HTML email at the end, I used a mobile app
-to email and forgot it doesn't send in plaintext.)
+I'm still trying google cloud vm.
 
-I have locally tested this with the reproducer syzbot gave.
 
-Thanks,
-Siddh
+>
+>
+>
+> > >
+> > > Could you try reverting this and showing performance results
+> > > before and after please? Thanks!
+> >
+> > I hope the above reply can help you, if there is anything else you need me to
+> > cooperate with, I am very happy.
+> >
+> > If you think it's ok, I can resubmit a commit with 'UNKNOW' set to unlimited. I
+> > can submit it with the issue of #30.
+> >
+> > Thanks.
+> >
+> >
+> > >
+> > > > ---
+> > > >  drivers/net/virtio_net.c | 42 ++++++++++++++++++++++++++++++++++++----
+> > > >  1 file changed, 38 insertions(+), 4 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > > index 8a5810bcb839..40532ecbe7fc 100644
+> > > > --- a/drivers/net/virtio_net.c
+> > > > +++ b/drivers/net/virtio_net.c
+> > > > @@ -3208,6 +3208,29 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
+> > > >  		   (unsigned int)GOOD_PACKET_LEN);
+> > > >  }
+> > > >
+> > > > +static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
+> > > > +{
+> > > > +	u32 i, rx_size, tx_size;
+> > > > +
+> > > > +	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
+> > > > +		rx_size = 1024;
+> > > > +		tx_size = 1024;
+> > > > +
+> > > > +	} else if (vi->speed < SPEED_40000) {
+> > > > +		rx_size = 1024 * 4;
+> > > > +		tx_size = 1024 * 4;
+> > > > +
+> > > > +	} else {
+> > > > +		rx_size = 1024 * 8;
+> > > > +		tx_size = 1024 * 8;
+> > > > +	}
+> > > > +
+> > > > +	for (i = 0; i < vi->max_queue_pairs; i++) {
+> > > > +		sizes[rxq2vq(i)] = rx_size;
+> > > > +		sizes[txq2vq(i)] = tx_size;
+> > > > +	}
+> > > > +}
+> > > > +
+> > > >  static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >  {
+> > > >  	vq_callback_t **callbacks;
+> > > > @@ -3215,6 +3238,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >  	int ret = -ENOMEM;
+> > > >  	int i, total_vqs;
+> > > >  	const char **names;
+> > > > +	u32 *sizes;
+> > > >  	bool *ctx;
+> > > >
+> > > >  	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
+> > > > @@ -3242,10 +3266,15 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >  		ctx = NULL;
+> > > >  	}
+> > > >
+> > > > +	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
+> > > > +	if (!sizes)
+> > > > +		goto err_sizes;
+> > > > +
+> > > >  	/* Parameters for control virtqueue, if any */
+> > > >  	if (vi->has_cvq) {
+> > > >  		callbacks[total_vqs - 1] = NULL;
+> > > >  		names[total_vqs - 1] = "control";
+> > > > +		sizes[total_vqs - 1] = 64;
+> > > >  	}
+> > > >
+> > > >  	/* Allocate/initialize parameters for send/receive virtqueues */
+> > > > @@ -3260,8 +3289,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >  			ctx[rxq2vq(i)] = true;
+> > > >  	}
+> > > >
+> > > > -	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
+> > > > -				  names, ctx, NULL);
+> > > > +	virtnet_config_sizes(vi, sizes);
+> > > > +
+> > > > +	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
+> > > > +				       names, sizes, ctx, NULL);
+> > > >  	if (ret)
+> > > >  		goto err_find;
+> > > >
+> > > > @@ -3281,6 +3312,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> > > >
+> > > >
+> > > >  err_find:
+> > > > +	kfree(sizes);
+> > > > +err_sizes:
+> > > >  	kfree(ctx);
+> > > >  err_ctx:
+> > > >  	kfree(names);
+> > > > @@ -3630,6 +3663,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > > >  		vi->curr_queue_pairs = num_online_cpus();
+> > > >  	vi->max_queue_pairs = max_queue_pairs;
+> > > >
+> > > > +	virtnet_init_settings(dev);
+> > > > +	virtnet_update_settings(vi);
+> > > > +
+> > > >  	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+> > > >  	err = init_vqs(vi);
+> > > >  	if (err)
+> > > > @@ -3642,8 +3678,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+> > > >  	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
+> > > >  	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
+> > > >
+> > > > -	virtnet_init_settings(dev);
+> > > > -
+> > > >  	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+> > > >  		vi->failover = net_failover_create(vi->dev);
+> > > >  		if (IS_ERR(vi->failover)) {
+> > > > --
+> > > > 2.31.0
+> > >
+>
