@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5C5F592993
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 08:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61AA35929F9
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 08:58:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230009AbiHOG1t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 02:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58956 "EHLO
+        id S241230AbiHOG6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 02:58:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229775AbiHOG1s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 02:27:48 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F15E1A070;
-        Sun, 14 Aug 2022 23:27:47 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 130so5693231pfy.6;
-        Sun, 14 Aug 2022 23:27:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=8z9OmR/P+0PwN2paLh7tMPMVHLJ1jfO+/ke1w/8NdDE=;
-        b=enMPW8VczhA6ttHVXxxZfCpaI4v2lKIjKJCOjfagLf+dEajtA8hTOvpvPsJeYYVicJ
-         kIZtscPbBNIaPb1J9mQdCC8TXp01/G0p9GWzkXJRrzr5Oj5bm0Ftp2NSwFrne72/Hk2u
-         9wyxNQCHdIDZwynUnUN28gqN20bnn2cYyRZTpGQkDwKJj79YqI/sPOLHpCyV9OmDbvh+
-         jbDGJhFxsKmrLJqzzVd+Kci9LdVKZsz7PKPiTpuREAvMtEpCGdd5z4EtQBh+0XWE1OFJ
-         YAJL4y3yaja/IzycvpfKuO3EyDheCA6Y3XR2yP38O+8EYebU4c5y5ylwQ6P/VuLbFLxh
-         44xQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=8z9OmR/P+0PwN2paLh7tMPMVHLJ1jfO+/ke1w/8NdDE=;
-        b=AYS0Qe+2PN73WSc4+hw2vBpywFlwxBzCWfzV1tx2HUKEu5hXA8/sFM31WeB/bIlwJM
-         SgcWUiK8VNPJAhinjS9AccF3746j6g7ianRbCR8C2F0JUeEZJBLiImpUyPhP9TkzsDim
-         IAWzkO4lJJdZ5KFlschYRa4tLdEnPCdRee2/anAGvOBF0WAYnts4U9WzduwHhZig0aSc
-         8XRO4tpBt0KujI77iJRPMf5sXnno5T7TOzmAYDxdLRrSvHbv41Zy31lxAmjX3rHs0iBl
-         GK/HwcVNJ+W7WUu7JDez9gXsuiS/7pgquFN96iaaDeqc1k7NW6kY2sl464hxp9GgCdqa
-         JHhA==
-X-Gm-Message-State: ACgBeo1mB4aEu/QP+7tEkUSZHlEEvKi8k9kHd5+klw9FH89CO1VHZNT6
-        +j1Vo6qVioL2zEGqu7/YLTZMf2nX7b4=
-X-Google-Smtp-Source: AA6agR4x+qdgLq16MFs0HDoY02j6FL24Ei6hLsC9/c72kyRUmBUVn5DeHXa3F/ABZayP0CfwBpfTRA==
-X-Received: by 2002:a62:5f06:0:b0:52e:f3a3:ffee with SMTP id t6-20020a625f06000000b0052ef3a3ffeemr15245319pfb.79.1660544866881;
-        Sun, 14 Aug 2022 23:27:46 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.27])
-        by smtp.gmail.com with ESMTPSA id s65-20020a625e44000000b0052c87380aebsm5998023pfb.1.2022.08.14.23.27.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:27:46 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org, miguel.ojeda.sandonis@gmail.com
-Cc:     ojeda@kernel.org, ndesaulniers@google.com, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, asml.silence@gmail.com,
-        imagedong@tencent.com, luiz.von.dentz@intel.com,
-        vasily.averin@linux.dev, jk@codeconstruct.com.au,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v3] net: skb: prevent the split of kfree_skb_reason() by gcc
-Date:   Mon, 15 Aug 2022 14:27:27 +0800
-Message-Id: <20220815062727.1203589-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S241199AbiHOG62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 02:58:28 -0400
+Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356E3120A8;
+        Sun, 14 Aug 2022 23:58:22 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=36;SR=0;TI=SMTPD_---0VMEFdj9_1660546694;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VMEFdj9_1660546694)
+          by smtp.aliyun-inc.com;
+          Mon, 15 Aug 2022 14:58:15 +0800
+Message-ID: <1660545303.436073-9-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v14 37/42] virtio_net: set the default max ring size by find_vqs()
+Date:   Mon, 15 Aug 2022 14:35:03 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     virtualization@lists.linux-foundation.org,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Eric Farman <farman@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        linux-um@lists.infradead.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kvm@vger.kernel.org, bpf@vger.kernel.org,
+        kangjie.xu@linux.alibaba.com
+References: <20220801063902.129329-1-xuanzhuo@linux.alibaba.com>
+ <20220801063902.129329-38-xuanzhuo@linux.alibaba.com>
+ <20220815015405-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220815015405-mutt-send-email-mst@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,93 +69,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Mon, 15 Aug 2022 02:00:16 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> On Mon, Aug 01, 2022 at 02:38:57PM +0800, Xuan Zhuo wrote:
+> > Use virtio_find_vqs_ctx_size() to specify the maximum ring size of tx,
+> > rx at the same time.
+> >
+> >                          | rx/tx ring size
+> > -------------------------------------------
+> > speed == UNKNOWN or < 10G| 1024
+> > speed < 40G              | 4096
+> > speed >= 40G             | 8192
+> >
+> > Call virtnet_update_settings() once before calling init_vqs() to update
+> > speed.
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+>
+> I've been looking at this patchset because of the resent
+> reported crashes, and I'm having second thoughts about this.
+>
+> Do we really want to second-guess the device supplied
+> max ring size? If yes why?
+>
+> Could you please share some performance data that motivated this
+> specific set of numbers?
 
-Sometimes, gcc will optimize the function by spliting it to two or
-more functions. In this case, kfree_skb_reason() is splited to
-kfree_skb_reason and kfree_skb_reason.part.0. However, the
-function/tracepoint trace_kfree_skb() in it needs the return address
-of kfree_skb_reason().
 
-This split makes the call chains becomes:
-  kfree_skb_reason() -> kfree_skb_reason.part.0 -> trace_kfree_skb()
+The impact of this value on performance is as follows. The larger the value, the
+throughput can be increased, but the delay will also increase accordingly. It is
+a maximum limit for the ring size under the corresponding speed. The purpose of
+this limitation is not to improve performance, but more to reduce memory usage.
 
-which makes the return address that passed to trace_kfree_skb() be
-kfree_skb().
+These data come from many other network cards and some network optimization
+experience.
 
-Therefore, prevent this kind of optimization to kfree_skb_reason() by
-making the optimize level to "O1". I think these should be better
-method instead of this "O1", but I can't figure it out......
+For example, in the case of speed = 20G, the impact of ring size greater
+than 4096 on performance has no meaning. At this time, if the device supports
+8192, we limit it to 4096 through this, the real meaning is to reduce the memory
+usage.
 
-This optimization CAN happen, which depend on the behavior of gcc.
-I'm not able to reproduce it in the latest kernel code, but it happens
-in my kernel of version 5.4.119. Maybe the latest code already do someting
-that prevent this happen?
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
----
-v3:
-- define __nofnsplit only for GCC
-- add some document
+>
+> Also why do we intepret UNKNOWN as "very low"?
+> I'm thinking that should definitely be "don't change anything".
+>
 
-v2:
-- replace 'optimize' with '__optimize__' in __nofnsplit, as Miguel Ojeda
-  advised.
----
- include/linux/compiler-gcc.h   | 12 ++++++++++++
- include/linux/compiler_types.h |  4 ++++
- net/core/skbuff.c              |  3 ++-
- 3 files changed, 18 insertions(+), 1 deletion(-)
+Generally speaking, for a network card with a high speed, it will return a
+correct speed. But I think it is a good idea to do nothing.
 
-diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-index a0c55eeaeaf1..8d6d4d7b21a4 100644
---- a/include/linux/compiler-gcc.h
-+++ b/include/linux/compiler-gcc.h
-@@ -157,3 +157,15 @@
- #if GCC_VERSION < 90100
- #undef __alloc_size__
- #endif
-+
-+/*
-+ * Prevent function from being splited to multiple part. As what the
-+ * document says in gcc/ipa-split.cc, single function will be splited
-+ * when necessary:
-+ *
-+ *   https://github.com/gcc-mirror/gcc/blob/master/gcc/ipa-split.cc
-+ *
-+ * This optimization seems only take effect on O2 and O3 optimize level.
-+ * Therefore, make the optimize level to O1 to prevent this optimization.
-+ */
-+#define __nofnsplit		__attribute__((__optimize__("O1")))
-diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-index 4f2a819fd60a..e76cfff36491 100644
---- a/include/linux/compiler_types.h
-+++ b/include/linux/compiler_types.h
-@@ -380,4 +380,8 @@ struct ftrace_likely_data {
- #define __diag_ignore_all(option, comment)
- #endif
- 
-+#ifndef __nofnsplit
-+#define __nofnsplit
-+#endif
-+
- #endif /* __LINUX_COMPILER_TYPES_H */
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 974bbbbe7138..ff9ccbc032b9 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -777,7 +777,8 @@ EXPORT_SYMBOL(__kfree_skb);
-  *	hit zero. Meanwhile, pass the drop reason to 'kfree_skb'
-  *	tracepoint.
-  */
--void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
-+void __nofnsplit
-+kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
- {
- 	if (!skb_unref(skb))
- 		return;
--- 
-2.36.1
 
+> Finally if all this makes sense then shouldn't we react when
+> speed changes?
+
+This is the feedback of the network card when it is started, and theoretically
+it should not change in the future.
+
+>
+> Could you try reverting this and showing performance results
+> before and after please? Thanks!
+
+I hope the above reply can help you, if there is anything else you need me to
+cooperate with, I am very happy.
+
+If you think it's ok, I can resubmit a commit with 'UNKNOW' set to unlimited. I
+can submit it with the issue of #30.
+
+Thanks.
+
+
+>
+> > ---
+> >  drivers/net/virtio_net.c | 42 ++++++++++++++++++++++++++++++++++++----
+> >  1 file changed, 38 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 8a5810bcb839..40532ecbe7fc 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -3208,6 +3208,29 @@ static unsigned int mergeable_min_buf_len(struct virtnet_info *vi, struct virtqu
+> >  		   (unsigned int)GOOD_PACKET_LEN);
+> >  }
+> >
+> > +static void virtnet_config_sizes(struct virtnet_info *vi, u32 *sizes)
+> > +{
+> > +	u32 i, rx_size, tx_size;
+> > +
+> > +	if (vi->speed == SPEED_UNKNOWN || vi->speed < SPEED_10000) {
+> > +		rx_size = 1024;
+> > +		tx_size = 1024;
+> > +
+> > +	} else if (vi->speed < SPEED_40000) {
+> > +		rx_size = 1024 * 4;
+> > +		tx_size = 1024 * 4;
+> > +
+> > +	} else {
+> > +		rx_size = 1024 * 8;
+> > +		tx_size = 1024 * 8;
+> > +	}
+> > +
+> > +	for (i = 0; i < vi->max_queue_pairs; i++) {
+> > +		sizes[rxq2vq(i)] = rx_size;
+> > +		sizes[txq2vq(i)] = tx_size;
+> > +	}
+> > +}
+> > +
+> >  static int virtnet_find_vqs(struct virtnet_info *vi)
+> >  {
+> >  	vq_callback_t **callbacks;
+> > @@ -3215,6 +3238,7 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> >  	int ret = -ENOMEM;
+> >  	int i, total_vqs;
+> >  	const char **names;
+> > +	u32 *sizes;
+> >  	bool *ctx;
+> >
+> >  	/* We expect 1 RX virtqueue followed by 1 TX virtqueue, followed by
+> > @@ -3242,10 +3266,15 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> >  		ctx = NULL;
+> >  	}
+> >
+> > +	sizes = kmalloc_array(total_vqs, sizeof(*sizes), GFP_KERNEL);
+> > +	if (!sizes)
+> > +		goto err_sizes;
+> > +
+> >  	/* Parameters for control virtqueue, if any */
+> >  	if (vi->has_cvq) {
+> >  		callbacks[total_vqs - 1] = NULL;
+> >  		names[total_vqs - 1] = "control";
+> > +		sizes[total_vqs - 1] = 64;
+> >  	}
+> >
+> >  	/* Allocate/initialize parameters for send/receive virtqueues */
+> > @@ -3260,8 +3289,10 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> >  			ctx[rxq2vq(i)] = true;
+> >  	}
+> >
+> > -	ret = virtio_find_vqs_ctx(vi->vdev, total_vqs, vqs, callbacks,
+> > -				  names, ctx, NULL);
+> > +	virtnet_config_sizes(vi, sizes);
+> > +
+> > +	ret = virtio_find_vqs_ctx_size(vi->vdev, total_vqs, vqs, callbacks,
+> > +				       names, sizes, ctx, NULL);
+> >  	if (ret)
+> >  		goto err_find;
+> >
+> > @@ -3281,6 +3312,8 @@ static int virtnet_find_vqs(struct virtnet_info *vi)
+> >
+> >
+> >  err_find:
+> > +	kfree(sizes);
+> > +err_sizes:
+> >  	kfree(ctx);
+> >  err_ctx:
+> >  	kfree(names);
+> > @@ -3630,6 +3663,9 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >  		vi->curr_queue_pairs = num_online_cpus();
+> >  	vi->max_queue_pairs = max_queue_pairs;
+> >
+> > +	virtnet_init_settings(dev);
+> > +	virtnet_update_settings(vi);
+> > +
+> >  	/* Allocate/initialize the rx/tx queues, and invoke find_vqs */
+> >  	err = init_vqs(vi);
+> >  	if (err)
+> > @@ -3642,8 +3678,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+> >  	netif_set_real_num_tx_queues(dev, vi->curr_queue_pairs);
+> >  	netif_set_real_num_rx_queues(dev, vi->curr_queue_pairs);
+> >
+> > -	virtnet_init_settings(dev);
+> > -
+> >  	if (virtio_has_feature(vdev, VIRTIO_NET_F_STANDBY)) {
+> >  		vi->failover = net_failover_create(vi->dev);
+> >  		if (IS_ERR(vi->failover)) {
+> > --
+> > 2.31.0
+>
