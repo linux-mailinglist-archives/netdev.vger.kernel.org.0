@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5161593E6C
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 22:45:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1940593E69
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 22:45:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345003AbiHOUn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 16:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60436 "EHLO
+        id S1344819AbiHOUnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 16:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346775AbiHOUmC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 16:42:02 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF23AFAE6;
-        Mon, 15 Aug 2022 12:07:33 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id l5so6171945qtv.4;
-        Mon, 15 Aug 2022 12:07:33 -0700 (PDT)
+        with ESMTP id S1347315AbiHOUmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 16:42:43 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBEAB2841;
+        Mon, 15 Aug 2022 12:07:53 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id t11so6220934qkt.6;
+        Mon, 15 Aug 2022 12:07:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc;
         bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
-        b=DK3nNKcN+CtoEBzlgdLdBN2TUQD+X5Y/YRF3pn24jlTxsfiUIhkMwQpx0EWKqw/YE/
-         8FR8sUcyQ3sSRcv4ujH3K7Y6kz9h/HUS+3PyrbnU3wUA50pGx9J3EaWsRg4+hxxhhJZA
-         K0o/lMlVtBOqTxQrj723c87EoJ67m7TtncuZV3yA8pCL6aGqdqOPRuzs7xaKTkOWkGWa
-         6LE2SL8OzPGBr8IhDjgnv+JjOyW22g/UfPfwsez1+AKtGMb1/6yaHpp3JP8pe9OA5lUq
-         9NbWGTqPyAyoibnY8yCEQLuqh2m/GAoqVb6u6OV0UxZWHKqHAdOfwZxZm6zLtILXD/KT
-         Oqkg==
+        b=E5hSn4x/FyOrhwErFKwCPEo40cc9WtEGsbeeVaV9nMZJ1+j4BRemuUo9CBUdGhIPhz
+         53tLn/eI5vhAlajZV6LQbEOKfwhMDTadvCV4hSjF4z2kxFWRXhuqeOoVRNie4vpSPyG6
+         XYwcVUFDtwR1jH9Wdt+/eCMAut1YIqaWbo27CbsOXfTPG+/NoXX5nAVuY7gypUvWslVp
+         tooKDWR16OxzPkwhEHOPL7r51bz8YiynKxC+Ya7chnGb+jHmWrHA5sleEGDaY0JVUAp/
+         c4pr/TiRqcgqMdNJOxisU2+R7Alg1zdjSYxQJrzXzPT4MVl3CYz/7Dn7UiBD7taQg4Lj
+         jKHw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-message-state:from:to:cc;
         bh=hL/YxJ/IFnb2Rr2eHTccmTXhM5o8jIQ8tJcvbV9r0+w=;
-        b=l7HW+qutbnMkTE0p6STwDsjp/R2ixtc01Miee7cVz9mgpPdMFDb2iM02r5j7Q1gWba
-         MwPZ/JLfd4iqYu5IRdysTOq0fVjx2uAet0LlJLgbEdCJhHUMIOcDXn7V4H6kkPHL7lW7
-         va0JyeoqyaBi68fCy2TJiVExn5WXRA9XZejjoCgIGrHE+DHwRQs98iL+2UYWqzCo+/Gn
-         Ft05H3sKetrlIQJQdb29MlWvqIFkmxYX8CA/hJeM4xbquZgyJ2j6fINaiIirvQw48ozH
-         h2ZL3zmGQEMK3Gvo2xn0Nbppm9u9R2XVLGIqAP14BlrRfBT3uDpaEWq/Mg4TMBbHQ0qu
-         bKEg==
-X-Gm-Message-State: ACgBeo0gM+jpBycVN8Kk1tyysftjAt4GG+15Koz3a5IEd3MfvcJswBCb
-        MpouUir1Vh1f8wOBUBtCpb4=
-X-Google-Smtp-Source: AA6agR6n2NpzccTQTJOldUQ6j77kq3l0o/9m4P1loc2vEY7MUBD26j0MxtrwU5vEGi+YfSiqRxzUpg==
-X-Received: by 2002:a05:622a:13c6:b0:342:f6c7:5305 with SMTP id p6-20020a05622a13c600b00342f6c75305mr15504215qtk.348.1660590452277;
-        Mon, 15 Aug 2022 12:07:32 -0700 (PDT)
+        b=PoewzGwLZMZRNgUUAnWhni7TvuKPVmkDdwdvMu3BS+CEyflPpTz/RXruqHabhCrFeE
+         MQm8VBqdTqCU2nklsXob1DeI23XTfBAtZIhffReH/Z0Osj+BVHRMOmsJRlkDo7Lfnk11
+         BfpVYchjE1rXgxbT4MeTi/lYcKqrm4p4uzSiGHEfpgoYrSHblWYMbTS2CmsZx54b0MBT
+         7dW+QHQvK/dr7qOAc1q6IYt87F3cdgsLHXpApJNVDffmNkRl0m2pF33hpb++6W83NXFa
+         jvti2VkiGeUUZqGJYokWSIOItfl4UIgLTL0gk3OaUWYZVjNBDmKnGrGev2m3hzgDkVRT
+         /1fw==
+X-Gm-Message-State: ACgBeo1BgNvAtZn48EhH9JWHqE2x5VvyZRJMfoTIoCzsteoKi6qxNqSx
+        xEIqROhNTXa5de8TEyttY0UlwbwZDK8=
+X-Google-Smtp-Source: AA6agR5VoTu90ugZfLvHTUVoLW6a4nmf0qFxn/LPwfQGNz4x7026GRFC01AKDh44STznzxOxOhyJIQ==
+X-Received: by 2002:a05:620a:c55:b0:6a7:9e01:95c9 with SMTP id u21-20020a05620a0c5500b006a79e0195c9mr12404238qki.63.1660590471623;
+        Mon, 15 Aug 2022 12:07:51 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i17-20020a05620a405100b006b9c6d590fasm10336208qko.61.2022.08.15.12.07.30
+        by smtp.gmail.com with ESMTPSA id n5-20020a05620a294500b006b93fcc9604sm10226889qkp.108.2022.08.15.12.07.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 12:07:31 -0700 (PDT)
+        Mon, 15 Aug 2022 12:07:50 -0700 (PDT)
 From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernelorg
+To:     netdev@vger.kernel.org
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Broadcom internal kernel review list 
         <bcm-kernel-feedback-list@broadcom.com>,
@@ -59,11 +59,10 @@ Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        netdev@vger.kernel.org (open list:BROADCOM ETHERNET PHY DRIVERS),
         linux-kernel@vger.kernel.org (open list)
 Subject: [PATCH net-next v2] net: phy: broadcom: Implement suspend/resume for AC131 and BCM5241
-Date:   Mon, 15 Aug 2022 12:07:25 -0700
-Message-Id: <20220815190725.2749403-1-f.fainelli@gmail.com>
+Date:   Mon, 15 Aug 2022 12:07:47 -0700
+Message-Id: <20220815190747.2749477-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
