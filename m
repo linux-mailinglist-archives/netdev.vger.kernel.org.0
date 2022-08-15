@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D9CA59315F
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:12:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8972593162
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243029AbiHOPMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 11:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
+        id S243141AbiHOPMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 11:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240027AbiHOPMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:12:06 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2056.outbound.protection.outlook.com [40.107.93.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCE6205FD;
-        Mon, 15 Aug 2022 08:12:04 -0700 (PDT)
+        with ESMTP id S242678AbiHOPML (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:12:11 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2080.outbound.protection.outlook.com [40.107.243.80])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F972408D;
+        Mon, 15 Aug 2022 08:12:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VMfccK5A+jRWrvAsK8L2yvkfuj2GXKB7rJN6NPCOAd9ntOIgPU1qWKXo5t3LNYXHQK2V4gpt3Jo+4ziN+T9Re1rcqriJmBJ1kY7SXRwXdKb8CClzLNgLAqiCASTiNzjlpLl8lIVfLj5twk6G+qy1sM8A8tRjaQVspfXUCY9DjOX4pKlOZ6iNyac7B9ZlyulwuJhv28vTNr5x3WQiFRyDzeby6HwUPj2ufwR1PdJeE0WcIg5ngxH6f6BipiGITVmLq1FyVGyw6LH2d7DBdLtPYbwavAb2UrFAap+k81DG3lxaVqVRFxCTIaeAmuSxI5bZLE0Onj4AjklAKudC8MNKTQ==
+ b=i2mmoOW3RU2YOE2R/8p5OZxVczLaxV6ZcEkXxcHn5pwC0P3rqQj1WYhmwNAALaOYR/bpRfmz9vU0j4XLoR127jBnAb3Z9MeFMluriHyOegTcUi6X7Gw7PsJ+ewNsMuTqUVDzq1NpKyiiJEf1U0VRYHd3B3pfkrHghG0FKhds3u/Dk5KrVhQOn1+AP6l7uFEgHlSPFzw7OFgtp/9DodKA58J+FiJqH/XjVtW8oRX+Y9JOlUZ+VT4cN+VeJSDQjDVxL/mliLVDfaXzte/0gRcXzKsoMXQVurdDHXxUE5Lq5w9tBeMhxlXRru4eYfgMVYLOc/nUouIrIXa/atY8u43jiw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3DGCJTH1gN2qefNT81ZTzj2CLsE3lwqCbtSM2p36L4I=;
- b=E8P1TB17PWC95tLI+bR5IfW9kIwoaOk+XSynyoAGVufXkWdeT2T0wzMrg1Hb0oBCsv/q6aGVGTTVHL8dc3a/HF8nDIhsA9bv7ANIgX4GOcr+EuY1VASmiBbkn57ZYvYtqOnzUjdD76Wg4tcgcdo7Z+MbS2S8F8cTnseHK4+/NbKOVzYy5Dyhse0Gsh0dRziE8Y8bP/5HpB03gzgKPnoIgFAGWpJG80KvkZ8dJy1QWbuc0CbOfaJhi9gLuMuomlN437QqwIRgN8oc4f5nLj4Mn8cpkLTmzbTqbQfUd6FyXD+nCKAgHUXapFAJG0RKdeNbV0BiLrBkyYnurWuVWI3ovQ==
+ bh=oSPkWxG54mB2dy3Cj1M8FdqBfihoIqPeKJMyEkC8U8I=;
+ b=OpQR7soaJOBnxb2T8QSMJHuxzSNtnmIXcLSxcUAaadEFSH0fVKEpoCGKHoc8oulorz3l36lShkyFJ/WiBEh4bYunzChtPYqV0R+mCsM1zcchXTMua0TlHlXNcwsPPPKaM76MkkSmAZJuKbOhdoBJQfjz+t+u1oF/27KD1Z2a8afTHWywfucD2Xq0RhOrIt4yRFKHV8WtrQwJySfHQoRaNeGPVHFMhd0Fd13DACAxPJtzAdVLOf48OqgDCsNLjuS1LsKw6f7YAjpac3J8FZG52QEZiKp+gPOthCJXIEJ9Nshgyh8A/TmZRPnNSrtiOu9lAy9NYe1cT7LnBH3vy9/kMQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3DGCJTH1gN2qefNT81ZTzj2CLsE3lwqCbtSM2p36L4I=;
- b=EwDAmF7eq4DQIKJDTdg3lV196zSakQWLZITd2IFdzB6+4TdNk+jiH81lwBPMin3GnlmmPu7D0/UCbBMKkaHsiTVH8n6C+pglH7rtA7W3WzW2ebbGz0MHeywLsAlJdkdBSAYW7ZED5jYUE5+1pBgWqVRzXBnH3prv2v96P4czhx8syLpkDmnb8xjFMdzFXL4ea35OSS+v9Z9PE+OxZzvKufZbH3/rhuZm8fwjn0klx2MegeL12qCB22PiIsMElM8LToi/oIPmtUTpmUgzzgYp2ElXrw/KX6i67dj04LHU/HI/fRvkhCbu64pVYlRt0lejhadPub3luEgcZC9DCA7DZA==
-Received: from MW4PR04CA0350.namprd04.prod.outlook.com (2603:10b6:303:8a::25)
- by MN2PR12MB4407.namprd12.prod.outlook.com (2603:10b6:208:260::18) with
+ bh=oSPkWxG54mB2dy3Cj1M8FdqBfihoIqPeKJMyEkC8U8I=;
+ b=iZN2PHkHYrwVmhVzvbcGEwl+IckpeVNvlSrmZy4W/KWVIHcdHzvtMeG3gZuV7fJh/Oj31wTEJry8N1tKAiWXEIy/WvzisYiU+SFyFMQXM+oXQ2AVwsAL7bl7Vl9SIuNAaCfJiReNV5XiExNsa/057mrlIDBs7fV203/BljXpLvqySjvnvVlTIhoO47czbSGYOZb6M5owkWRfEgvDo3EQSUxoNFXllAT+CWoIJ/wCiuhtV8dY3h6AEHtdWG3Y5JXzbNvouEDITy0eYr2ZaTajQnf58bc88Trzhbdp1nyM/WCmnP7Zk9P0p1QqILVA/CQYnuAovBbShbV2Rmip3BYVBA==
+Received: from MW4PR03CA0159.namprd03.prod.outlook.com (2603:10b6:303:8d::14)
+ by MN2PR12MB4533.namprd12.prod.outlook.com (2603:10b6:208:266::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Mon, 15 Aug
- 2022 15:12:02 +0000
-Received: from CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8a:cafe::84) by MW4PR04CA0350.outlook.office365.com
- (2603:10b6:303:8a::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.16 via Frontend
- Transport; Mon, 15 Aug 2022 15:12:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.15; Mon, 15 Aug
+ 2022 15:12:06 +0000
+Received: from CO1NAM11FT084.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8d:cafe::fe) by MW4PR03CA0159.outlook.office365.com
+ (2603:10b6:303:8d::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20 via Frontend
+ Transport; Mon, 15 Aug 2022 15:12:06 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT054.mail.protection.outlook.com (10.13.174.70) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT084.mail.protection.outlook.com (10.13.174.194) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5525.11 via Frontend Transport; Mon, 15 Aug 2022 15:12:01 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Mon, 15 Aug 2022 15:12:01 +0000
+ 15.20.5546.7 via Frontend Transport; Mon, 15 Aug 2022 15:12:06 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Mon, 15 Aug 2022 15:12:04 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Mon, 15 Aug 2022 08:12:00 -0700
+ 15.2.986.29; Mon, 15 Aug 2022 08:12:04 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.181) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Mon, 15 Aug 2022 08:11:58 -0700
+ Transport; Mon, 15 Aug 2022 08:12:01 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -67,9 +67,9 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V4 vfio 06/10] vfio/mlx5: Init QP based resources for dirty tracking
-Date:   Mon, 15 Aug 2022 18:11:05 +0300
-Message-ID: <20220815151109.180403-7-yishaih@nvidia.com>
+Subject: [PATCH V4 vfio 07/10] vfio/mlx5: Create and destroy page tracker object
+Date:   Mon, 15 Aug 2022 18:11:06 +0300
+Message-ID: <20220815151109.180403-8-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220815151109.180403-1-yishaih@nvidia.com>
 References: <20220815151109.180403-1-yishaih@nvidia.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ac962617-b32f-4344-ae45-08da7ed081a2
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4407:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5d83dc9c-9e57-4252-c18b-08da7ed08454
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4533:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: chiZpixZlWY8MxfXAqET1oF4UefqOkPty0VFNXfHVBohXBZu7xPjIJR+VWaXZM45q2nFNhygnHAKg8Gdkbneb8Cu9DdqUgnP0M9YozaGXhJWQgG1DNTbdY19nBEXZg989XN/kMjXiWHcvX7nLpa4nIgbuvH4sodzClV9Apq16qI0BHEwykvo7U1qKCFg7lRnSeraQ5VJQoiu6U8sLLkpMq/dSuQsxouSIIpyAYDtufGSz36gXDXr4UMTPDrFjSAXIZ1/VYeFgGQVtqhht4qAEOUIUyOb03LsYeQuRedaVClBPJC7TpbkF3EMnuKR+Dj90pWfSQbKPggyd6CFD5iG2bXm8jIajyJlZFm5eqy8Ng96Wkq0iDzvkNFbgeitCyJWJC5SwGHT9wYF1Mk8X1894x27g+iZpgo9EiiIXujEiSRgwZMXHSnNVzLOVgwrsiajty0mfWcK4ikz1DDZ9QqgudmbLyRGI4OyaB/02eHgsztaWd4azMS5gehH9/QI8wUJxrGMfJBYaBdSm79MPURR1ve8aJ+c16e0Gv/KpBWyn9YZIUua5/HrJbtFKu4UxdijYVunWsnzppEY1FX1E2nRpFz2yjp08BTSgQC64VNDkl3WufL2ZF1atAxXetqCuu7sLGC0xlzoj+lJLyvgETXz1kLjaNo7+9XeQ3l+uReG2HBJ2+Md4d5FECy/aAFmwIAB5YESx1T8+YcCBhVbh+I4aRDOhAtbVopkEB8MFiAlK2z3IQfkV0sdXTJss676m5MBQ88SezQoxC91dyMgRzb2nboT/HMo4jVK+loPpP3AYpPyAtRxdDZTSa7hGu4Od+X7cu+N+lVp+MM0wUCIZCHunvYlUGFymBks0mFG0e7CGmc=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(376002)(346002)(136003)(40470700004)(36840700001)(46966006)(83380400001)(40460700003)(1076003)(2616005)(47076005)(426003)(186003)(82310400005)(81166007)(336012)(36860700001)(356005)(40480700001)(82740400003)(478600001)(316002)(6666004)(41300700001)(70206006)(70586007)(5660300002)(30864003)(6636002)(54906003)(2906002)(7696005)(26005)(8936002)(4326008)(110136005)(36756003)(8676002)(86362001)(14143004)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: XFk788Dlk/ecYSosY10RAXo2hPLsEPDKHxN82+hzhB1WYbernTqXVMfNCYq2zXTwo7125tWxFYKOSe0n4WKvYBgXgdr/dOQVVJD3AEFDgDnP+DhLyOM6hhN0zH2pZRoxYipmSJjNMlC3V+kCP4cUNNM5qqJWpcSgAeltP0gOK4PR6FTWgZh5qQlLL1s+hVihjzSwfnqzDuvXrpHxS0kTELhtF0blm8SBBpge5NibHl6G6Rqoey/EKIwur7PSkI/YfUlmo1Ila8lk8pil9IcBmKPxwih/zteB5lo66/x+05z7vY5qKQq0urAZwWXH33oFV8jtVLNIUQ8I6DAUw8dXI0Unpge/vwLEVYrxcy1zfKOskNOX+ROkMcbNw3b6QcLJUDtVyIOmooyjrxSTUJSvlvvURGZb1jxgy+E/BB4MCXdSypszxu9/FRX7z0yu1YYfEfahwbtkl10hJquHsdigKJyJ086/iYuzHwY95STd7tMeFNl7KVdg+7EgVcgYrjvHvfhiybJCw3yRgfH5i/t5rTbTWDNVAnfQz13vMaAI4YLmHQHoTAcCFMoO9TpDIfIz/YVvsKDC3CwyPEVCLKVVOOGnWD4b7NOqdft1AmjC4krkDkL86Un0kZ8GKCTmB9TLJl9TkMSwo5tOwEBNvVWaHGigkLz09M7Jf4q9UI6FIhTQqP9vqLzuNEsHl/QhnRdeRyzU01vy5jDIsRzdEOPNlApRGNohsGZezwhuG2pxs9ojANW7nlDmQrieGaBMlhg2QjTQMMuBUb2IbaGC2nyfxzWWO9j0i4SGDMWalXFXww2b4Gz5LVXrEZbHfJXTKzko9y0B3U7aFdulAmaEA/0KjQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(376002)(39860400002)(396003)(36840700001)(46966006)(40470700004)(8936002)(40480700001)(2906002)(5660300002)(81166007)(82740400003)(356005)(86362001)(40460700003)(36860700001)(478600001)(7696005)(6636002)(41300700001)(110136005)(54906003)(82310400005)(316002)(83380400001)(8676002)(70206006)(70586007)(4326008)(2616005)(26005)(47076005)(426003)(336012)(1076003)(186003)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 15:12:01.8316
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2022 15:12:06.3697
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac962617-b32f-4344-ae45-08da7ed081a2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d83dc9c-9e57-4252-c18b-08da7ed08454
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT054.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT084.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4407
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4533
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -105,790 +105,203 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Init QP based resources for dirty tracking to be used upon start
-logging.
+Add support for creating and destroying page tracker object.
 
-It includes:
-Creating the host and firmware RC QPs, move each of them to its expected
-state based on the device specification, etc.
+This object is used to control/report the device dirty pages.
 
-Creating the relevant resources which are needed by both QPs as of UAR,
-PD, etc.
-
-Creating the host receive side resources as of MKEY, CQ, receive WQEs,
-etc.
-
-The above resources are cleaned-up upon stop logging.
-
-The tracker object that will be introduced by next patches will use
-those resources.
+As part of creating the tracker need to consider the device capabilities
+for max ranges and adapt/combine ranges accordingly.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 ---
- drivers/vfio/pci/mlx5/cmd.c | 595 +++++++++++++++++++++++++++++++++++-
- drivers/vfio/pci/mlx5/cmd.h |  53 ++++
- 2 files changed, 636 insertions(+), 12 deletions(-)
+ drivers/vfio/pci/mlx5/cmd.c | 147 ++++++++++++++++++++++++++++++++++++
+ drivers/vfio/pci/mlx5/cmd.h |   1 +
+ 2 files changed, 148 insertions(+)
 
 diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index dd5d7bfe0a49..0a362796d567 100644
+index 0a362796d567..f1cad96af6ab 100644
 --- a/drivers/vfio/pci/mlx5/cmd.c
 +++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -7,6 +7,8 @@
- 
- static int mlx5vf_cmd_get_vhca_id(struct mlx5_core_dev *mdev, u16 function_id,
- 				  u16 *vhca_id);
-+static void
-+_mlx5vf_free_page_tracker_resources(struct mlx5vf_pci_core_device *mvdev);
- 
- int mlx5vf_cmd_suspend_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod)
- {
-@@ -72,19 +74,22 @@ static int mlx5fv_vf_event(struct notifier_block *nb,
- 	struct mlx5vf_pci_core_device *mvdev =
- 		container_of(nb, struct mlx5vf_pci_core_device, nb);
- 
--	mutex_lock(&mvdev->state_mutex);
- 	switch (event) {
- 	case MLX5_PF_NOTIFY_ENABLE_VF:
-+		mutex_lock(&mvdev->state_mutex);
- 		mvdev->mdev_detach = false;
-+		mlx5vf_state_mutex_unlock(mvdev);
- 		break;
- 	case MLX5_PF_NOTIFY_DISABLE_VF:
--		mlx5vf_disable_fds(mvdev);
-+		mlx5vf_cmd_close_migratable(mvdev);
-+		mutex_lock(&mvdev->state_mutex);
- 		mvdev->mdev_detach = true;
-+		mlx5vf_state_mutex_unlock(mvdev);
- 		break;
- 	default:
- 		break;
- 	}
--	mlx5vf_state_mutex_unlock(mvdev);
-+
- 	return 0;
- }
- 
-@@ -95,6 +100,7 @@ void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev)
- 
- 	mutex_lock(&mvdev->state_mutex);
- 	mlx5vf_disable_fds(mvdev);
-+	_mlx5vf_free_page_tracker_resources(mvdev);
- 	mlx5vf_state_mutex_unlock(mvdev);
- }
- 
-@@ -188,11 +194,13 @@ static int mlx5vf_cmd_get_vhca_id(struct mlx5_core_dev *mdev, u16 function_id,
- 	return ret;
- }
- 
--static int _create_state_mkey(struct mlx5_core_dev *mdev, u32 pdn,
--			      struct mlx5_vf_migration_file *migf, u32 *mkey)
-+static int _create_mkey(struct mlx5_core_dev *mdev, u32 pdn,
-+			struct mlx5_vf_migration_file *migf,
-+			struct mlx5_vhca_recv_buf *recv_buf,
-+			u32 *mkey)
- {
--	size_t npages = DIV_ROUND_UP(migf->total_length, PAGE_SIZE);
--	struct sg_dma_page_iter dma_iter;
-+	size_t npages = migf ? DIV_ROUND_UP(migf->total_length, PAGE_SIZE) :
-+				recv_buf->npages;
- 	int err = 0, inlen;
- 	__be64 *mtt;
- 	void *mkc;
-@@ -209,8 +217,17 @@ static int _create_state_mkey(struct mlx5_core_dev *mdev, u32 pdn,
- 		 DIV_ROUND_UP(npages, 2));
- 	mtt = (__be64 *)MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
- 
--	for_each_sgtable_dma_page(&migf->table.sgt, &dma_iter, 0)
--		*mtt++ = cpu_to_be64(sg_page_iter_dma_address(&dma_iter));
-+	if (migf) {
-+		struct sg_dma_page_iter dma_iter;
-+
-+		for_each_sgtable_dma_page(&migf->table.sgt, &dma_iter, 0)
-+			*mtt++ = cpu_to_be64(sg_page_iter_dma_address(&dma_iter));
-+	} else {
-+		int i;
-+
-+		for (i = 0; i < npages; i++)
-+			*mtt++ = cpu_to_be64(recv_buf->dma_addrs[i]);
-+	}
- 
- 	mkc = MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
- 	MLX5_SET(mkc, mkc, access_mode_1_0, MLX5_MKC_ACCESS_MODE_MTT);
-@@ -223,7 +240,8 @@ static int _create_state_mkey(struct mlx5_core_dev *mdev, u32 pdn,
- 	MLX5_SET(mkc, mkc, qpn, 0xffffff);
- 	MLX5_SET(mkc, mkc, log_page_size, PAGE_SHIFT);
- 	MLX5_SET(mkc, mkc, translations_octword_size, DIV_ROUND_UP(npages, 2));
--	MLX5_SET64(mkc, mkc, len, migf->total_length);
-+	MLX5_SET64(mkc, mkc, len,
-+		   migf ? migf->total_length : (npages * PAGE_SIZE));
- 	err = mlx5_core_create_mkey(mdev, mkey, in, inlen);
- 	kvfree(in);
- 	return err;
-@@ -297,7 +315,7 @@ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- 	if (err)
- 		goto err_dma_map;
- 
--	err = _create_state_mkey(mdev, pdn, migf, &mkey);
-+	err = _create_mkey(mdev, pdn, migf, NULL, &mkey);
- 	if (err)
- 		goto err_create_mkey;
- 
-@@ -369,7 +387,7 @@ int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- 	if (err)
- 		goto err_reg;
- 
--	err = _create_state_mkey(mdev, pdn, migf, &mkey);
-+	err = _create_mkey(mdev, pdn, migf, NULL, &mkey);
- 	if (err)
- 		goto err_mkey;
- 
-@@ -391,3 +409,556 @@ int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- 	mutex_unlock(&migf->lock);
+@@ -410,6 +410,148 @@ int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
  	return err;
  }
-+
-+static int alloc_cq_frag_buf(struct mlx5_core_dev *mdev,
-+			     struct mlx5_vhca_cq_buf *buf, int nent,
-+			     int cqe_size)
+ 
++static void combine_ranges(struct rb_root_cached *root, u32 cur_nodes,
++			   u32 req_nodes)
 +{
-+	struct mlx5_frag_buf *frag_buf = &buf->frag_buf;
-+	u8 log_wq_stride = 6 + (cqe_size == 128 ? 1 : 0);
-+	u8 log_wq_sz = ilog2(cqe_size);
-+	int err;
++	struct interval_tree_node *prev, *curr, *comb_start, *comb_end;
++	unsigned long min_gap;
++	unsigned long curr_gap;
 +
-+	err = mlx5_frag_buf_alloc_node(mdev, nent * cqe_size, frag_buf,
-+				       mdev->priv.numa_node);
-+	if (err)
-+		return err;
++	/* Special shortcut when a single range is required */
++	if (req_nodes == 1) {
++		unsigned long last;
 +
-+	mlx5_init_fbc(frag_buf->frags, log_wq_stride, log_wq_sz, &buf->fbc);
-+	buf->cqe_size = cqe_size;
-+	buf->nent = nent;
-+	return 0;
-+}
++		curr = comb_start = interval_tree_iter_first(root, 0, ULONG_MAX);
++		while (curr) {
++			last = curr->last;
++			prev = curr;
++			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
++			if (prev != comb_start)
++				interval_tree_remove(prev, root);
++		}
++		comb_start->last = last;
++		return;
++	}
 +
-+static void init_cq_frag_buf(struct mlx5_vhca_cq_buf *buf)
-+{
-+	struct mlx5_cqe64 *cqe64;
-+	void *cqe;
-+	int i;
-+
-+	for (i = 0; i < buf->nent; i++) {
-+		cqe = mlx5_frag_buf_get_wqe(&buf->fbc, i);
-+		cqe64 = buf->cqe_size == 64 ? cqe : cqe + 64;
-+		cqe64->op_own = MLX5_CQE_INVALID << 4;
++	/* Combine ranges which have the smallest gap */
++	while (cur_nodes > req_nodes) {
++		prev = NULL;
++		min_gap = ULONG_MAX;
++		curr = interval_tree_iter_first(root, 0, ULONG_MAX);
++		while (curr) {
++			if (prev) {
++				curr_gap = curr->start - prev->last;
++				if (curr_gap < min_gap) {
++					min_gap = curr_gap;
++					comb_start = prev;
++					comb_end = curr;
++				}
++			}
++			prev = curr;
++			curr = interval_tree_iter_next(curr, 0, ULONG_MAX);
++		}
++		comb_start->last = comb_end->last;
++		interval_tree_remove(comb_end, root);
++		cur_nodes--;
 +	}
 +}
 +
-+static void mlx5vf_destroy_cq(struct mlx5_core_dev *mdev,
-+			      struct mlx5_vhca_cq *cq)
++static int mlx5vf_create_tracker(struct mlx5_core_dev *mdev,
++				 struct mlx5vf_pci_core_device *mvdev,
++				 struct rb_root_cached *ranges, u32 nnodes)
 +{
-+	mlx5_core_destroy_cq(mdev, &cq->mcq);
-+	mlx5_frag_buf_free(mdev, &cq->buf.frag_buf);
-+	mlx5_db_free(mdev, &cq->db);
-+}
-+
-+static int mlx5vf_create_cq(struct mlx5_core_dev *mdev,
-+			    struct mlx5_vhca_page_tracker *tracker,
-+			    size_t ncqe)
-+{
-+	int cqe_size = cache_line_size() == 128 ? 128 : 64;
-+	u32 out[MLX5_ST_SZ_DW(create_cq_out)];
-+	struct mlx5_vhca_cq *cq;
-+	int inlen, err, eqn;
-+	void *cqc, *in;
-+	__be64 *pas;
-+	int vector;
-+
-+	cq = &tracker->cq;
-+	ncqe = roundup_pow_of_two(ncqe);
-+	err = mlx5_db_alloc_node(mdev, &cq->db, mdev->priv.numa_node);
-+	if (err)
-+		return err;
-+
-+	cq->ncqe = ncqe;
-+	cq->mcq.set_ci_db = cq->db.db;
-+	cq->mcq.arm_db = cq->db.db + 1;
-+	cq->mcq.cqe_sz = cqe_size;
-+	err = alloc_cq_frag_buf(mdev, &cq->buf, ncqe, cqe_size);
-+	if (err)
-+		goto err_db_free;
-+
-+	init_cq_frag_buf(&cq->buf);
-+	inlen = MLX5_ST_SZ_BYTES(create_cq_in) +
-+		MLX5_FLD_SZ_BYTES(create_cq_in, pas[0]) *
-+		cq->buf.frag_buf.npages;
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in) {
-+		err = -ENOMEM;
-+		goto err_buff;
-+	}
-+
-+	vector = raw_smp_processor_id() % mlx5_comp_vectors_count(mdev);
-+	err = mlx5_vector2eqn(mdev, vector, &eqn);
-+	if (err)
-+		goto err_vec;
-+
-+	cqc = MLX5_ADDR_OF(create_cq_in, in, cq_context);
-+	MLX5_SET(cqc, cqc, log_cq_size, ilog2(ncqe));
-+	MLX5_SET(cqc, cqc, c_eqn_or_apu_element, eqn);
-+	MLX5_SET(cqc, cqc, uar_page, tracker->uar->index);
-+	MLX5_SET(cqc, cqc, log_page_size, cq->buf.frag_buf.page_shift -
-+		 MLX5_ADAPTER_PAGE_SHIFT);
-+	MLX5_SET64(cqc, cqc, dbr_addr, cq->db.dma);
-+	pas = (__be64 *)MLX5_ADDR_OF(create_cq_in, in, pas);
-+	mlx5_fill_page_frag_array(&cq->buf.frag_buf, pas);
-+	err = mlx5_core_create_cq(mdev, &cq->mcq, in, inlen, out, sizeof(out));
-+	if (err)
-+		goto err_vec;
-+
-+	kvfree(in);
-+	return 0;
-+
-+err_vec:
-+	kvfree(in);
-+err_buff:
-+	mlx5_frag_buf_free(mdev, &cq->buf.frag_buf);
-+err_db_free:
-+	mlx5_db_free(mdev, &cq->db);
-+	return err;
-+}
-+
-+static struct mlx5_vhca_qp *
-+mlx5vf_create_rc_qp(struct mlx5_core_dev *mdev,
-+		    struct mlx5_vhca_page_tracker *tracker, u32 max_recv_wr)
-+{
-+	u32 out[MLX5_ST_SZ_DW(create_qp_out)] = {};
-+	struct mlx5_vhca_qp *qp;
-+	u8 log_rq_stride;
-+	u8 log_rq_sz;
-+	void *qpc;
++	int max_num_range =
++		MLX5_CAP_ADV_VIRTUALIZATION(mdev, pg_track_max_num_range);
++	struct mlx5_vhca_page_tracker *tracker = &mvdev->tracker;
++	int record_size = MLX5_ST_SZ_BYTES(page_track_range);
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)] = {};
++	struct interval_tree_node *node = NULL;
++	u64 total_ranges_len = 0;
++	u32 num_ranges = nnodes;
++	u8 log_addr_space_size;
++	void *range_list_ptr;
++	void *obj_context;
++	void *cmd_hdr;
 +	int inlen;
 +	void *in;
 +	int err;
++	int i;
 +
-+	qp = kzalloc(sizeof(*qp), GFP_KERNEL);
-+	if (!qp)
-+		return ERR_PTR(-ENOMEM);
-+
-+	qp->rq.wqe_cnt = roundup_pow_of_two(max_recv_wr);
-+	log_rq_stride = ilog2(MLX5_SEND_WQE_DS);
-+	log_rq_sz = ilog2(qp->rq.wqe_cnt);
-+	err = mlx5_db_alloc_node(mdev, &qp->db, mdev->priv.numa_node);
-+	if (err)
-+		goto err_free;
-+
-+	if (max_recv_wr) {
-+		err = mlx5_frag_buf_alloc_node(mdev,
-+			wq_get_byte_sz(log_rq_sz, log_rq_stride),
-+			&qp->buf, mdev->priv.numa_node);
-+		if (err)
-+			goto err_db_free;
-+		mlx5_init_fbc(qp->buf.frags, log_rq_stride, log_rq_sz, &qp->rq.fbc);
++	if (num_ranges > max_num_range) {
++		combine_ranges(ranges, nnodes, max_num_range);
++		num_ranges = max_num_range;
 +	}
 +
-+	qp->rq.db = &qp->db.db[MLX5_RCV_DBR];
-+	inlen = MLX5_ST_SZ_BYTES(create_qp_in) +
-+		MLX5_FLD_SZ_BYTES(create_qp_in, pas[0]) *
-+		qp->buf.npages;
-+	in = kvzalloc(inlen, GFP_KERNEL);
-+	if (!in) {
-+		err = -ENOMEM;
-+		goto err_in;
++	inlen = MLX5_ST_SZ_BYTES(create_page_track_obj_in) +
++				 record_size * num_ranges;
++	in = kzalloc(inlen, GFP_KERNEL);
++	if (!in)
++		return -ENOMEM;
++
++	cmd_hdr = MLX5_ADDR_OF(create_page_track_obj_in, in,
++			       general_obj_in_cmd_hdr);
++	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, opcode,
++		 MLX5_CMD_OP_CREATE_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, cmd_hdr, obj_type,
++		 MLX5_OBJ_TYPE_PAGE_TRACK);
++	obj_context = MLX5_ADDR_OF(create_page_track_obj_in, in, obj_context);
++	MLX5_SET(page_track, obj_context, vhca_id, mvdev->vhca_id);
++	MLX5_SET(page_track, obj_context, track_type, 1);
++	MLX5_SET(page_track, obj_context, log_page_size,
++		 ilog2(tracker->host_qp->tracked_page_size));
++	MLX5_SET(page_track, obj_context, log_msg_size,
++		 ilog2(tracker->host_qp->max_msg_size));
++	MLX5_SET(page_track, obj_context, reporting_qpn, tracker->fw_qp->qpn);
++	MLX5_SET(page_track, obj_context, num_ranges, num_ranges);
++
++	range_list_ptr = MLX5_ADDR_OF(page_track, obj_context, track_range);
++	node = interval_tree_iter_first(ranges, 0, ULONG_MAX);
++	for (i = 0; i < num_ranges; i++) {
++		void *addr_range_i_base = range_list_ptr + record_size * i;
++		unsigned long length = node->last - node->start;
++
++		MLX5_SET64(page_track_range, addr_range_i_base, start_address,
++			   node->start);
++		MLX5_SET64(page_track_range, addr_range_i_base, length, length);
++		total_ranges_len += length;
++		node = interval_tree_iter_next(node, 0, ULONG_MAX);
 +	}
 +
-+	qpc = MLX5_ADDR_OF(create_qp_in, in, qpc);
-+	MLX5_SET(qpc, qpc, st, MLX5_QP_ST_RC);
-+	MLX5_SET(qpc, qpc, pm_state, MLX5_QP_PM_MIGRATED);
-+	MLX5_SET(qpc, qpc, pd, tracker->pdn);
-+	MLX5_SET(qpc, qpc, uar_page, tracker->uar->index);
-+	MLX5_SET(qpc, qpc, log_page_size,
-+		 qp->buf.page_shift - MLX5_ADAPTER_PAGE_SHIFT);
-+	MLX5_SET(qpc, qpc, ts_format, mlx5_get_qp_default_ts(mdev));
-+	if (MLX5_CAP_GEN(mdev, cqe_version) == 1)
-+		MLX5_SET(qpc, qpc, user_index, 0xFFFFFF);
-+	MLX5_SET(qpc, qpc, no_sq, 1);
-+	if (max_recv_wr) {
-+		MLX5_SET(qpc, qpc, cqn_rcv, tracker->cq.mcq.cqn);
-+		MLX5_SET(qpc, qpc, log_rq_stride, log_rq_stride - 4);
-+		MLX5_SET(qpc, qpc, log_rq_size, log_rq_sz);
-+		MLX5_SET(qpc, qpc, rq_type, MLX5_NON_ZERO_RQ);
-+		MLX5_SET64(qpc, qpc, dbr_addr, qp->db.dma);
-+		mlx5_fill_page_frag_array(&qp->buf,
-+					  (__be64 *)MLX5_ADDR_OF(create_qp_in,
-+								 in, pas));
-+	} else {
-+		MLX5_SET(qpc, qpc, rq_type, MLX5_ZERO_LEN_RQ);
++	WARN_ON(node);
++	log_addr_space_size = ilog2(total_ranges_len);
++	if (log_addr_space_size <
++	    (MLX5_CAP_ADV_VIRTUALIZATION(mdev, pg_track_log_min_addr_space)) ||
++	    log_addr_space_size >
++	    (MLX5_CAP_ADV_VIRTUALIZATION(mdev, pg_track_log_max_addr_space))) {
++		err = -EOPNOTSUPP;
++		goto out;
 +	}
 +
-+	MLX5_SET(create_qp_in, in, opcode, MLX5_CMD_OP_CREATE_QP);
++	MLX5_SET(page_track, obj_context, log_addr_space_size,
++		 log_addr_space_size);
 +	err = mlx5_cmd_exec(mdev, in, inlen, out, sizeof(out));
-+	kvfree(in);
 +	if (err)
-+		goto err_in;
++		goto out;
 +
-+	qp->qpn = MLX5_GET(create_qp_out, out, qpn);
-+	return qp;
-+
-+err_in:
-+	if (max_recv_wr)
-+		mlx5_frag_buf_free(mdev, &qp->buf);
-+err_db_free:
-+	mlx5_db_free(mdev, &qp->db);
-+err_free:
-+	kfree(qp);
-+	return ERR_PTR(err);
-+}
-+
-+static void mlx5vf_post_recv(struct mlx5_vhca_qp *qp)
-+{
-+	struct mlx5_wqe_data_seg *data;
-+	unsigned int ix;
-+
-+	WARN_ON(qp->rq.pc - qp->rq.cc >= qp->rq.wqe_cnt);
-+	ix = qp->rq.pc & (qp->rq.wqe_cnt - 1);
-+	data = mlx5_frag_buf_get_wqe(&qp->rq.fbc, ix);
-+	data->byte_count = cpu_to_be32(qp->max_msg_size);
-+	data->lkey = cpu_to_be32(qp->recv_buf.mkey);
-+	data->addr = cpu_to_be64(qp->recv_buf.next_rq_offset);
-+	qp->rq.pc++;
-+	/* Make sure that descriptors are written before doorbell record. */
-+	dma_wmb();
-+	*qp->rq.db = cpu_to_be32(qp->rq.pc & 0xffff);
-+}
-+
-+static int mlx5vf_activate_qp(struct mlx5_core_dev *mdev,
-+			      struct mlx5_vhca_qp *qp, u32 remote_qpn,
-+			      bool host_qp)
-+{
-+	u32 init_in[MLX5_ST_SZ_DW(rst2init_qp_in)] = {};
-+	u32 rtr_in[MLX5_ST_SZ_DW(init2rtr_qp_in)] = {};
-+	u32 rts_in[MLX5_ST_SZ_DW(rtr2rts_qp_in)] = {};
-+	void *qpc;
-+	int ret;
-+
-+	/* Init */
-+	qpc = MLX5_ADDR_OF(rst2init_qp_in, init_in, qpc);
-+	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, 1);
-+	MLX5_SET(qpc, qpc, pm_state, MLX5_QPC_PM_STATE_MIGRATED);
-+	MLX5_SET(qpc, qpc, rre, 1);
-+	MLX5_SET(qpc, qpc, rwe, 1);
-+	MLX5_SET(rst2init_qp_in, init_in, opcode, MLX5_CMD_OP_RST2INIT_QP);
-+	MLX5_SET(rst2init_qp_in, init_in, qpn, qp->qpn);
-+	ret = mlx5_cmd_exec_in(mdev, rst2init_qp, init_in);
-+	if (ret)
-+		return ret;
-+
-+	if (host_qp) {
-+		struct mlx5_vhca_recv_buf *recv_buf = &qp->recv_buf;
-+		int i;
-+
-+		for (i = 0; i < qp->rq.wqe_cnt; i++) {
-+			mlx5vf_post_recv(qp);
-+			recv_buf->next_rq_offset += qp->max_msg_size;
-+		}
-+	}
-+
-+	/* RTR */
-+	qpc = MLX5_ADDR_OF(init2rtr_qp_in, rtr_in, qpc);
-+	MLX5_SET(init2rtr_qp_in, rtr_in, qpn, qp->qpn);
-+	MLX5_SET(qpc, qpc, mtu, IB_MTU_4096);
-+	MLX5_SET(qpc, qpc, log_msg_max, MLX5_CAP_GEN(mdev, log_max_msg));
-+	MLX5_SET(qpc, qpc, remote_qpn, remote_qpn);
-+	MLX5_SET(qpc, qpc, primary_address_path.vhca_port_num, 1);
-+	MLX5_SET(qpc, qpc, primary_address_path.fl, 1);
-+	MLX5_SET(qpc, qpc, min_rnr_nak, 1);
-+	MLX5_SET(init2rtr_qp_in, rtr_in, opcode, MLX5_CMD_OP_INIT2RTR_QP);
-+	MLX5_SET(init2rtr_qp_in, rtr_in, qpn, qp->qpn);
-+	ret = mlx5_cmd_exec_in(mdev, init2rtr_qp, rtr_in);
-+	if (ret || host_qp)
-+		return ret;
-+
-+	/* RTS */
-+	qpc = MLX5_ADDR_OF(rtr2rts_qp_in, rts_in, qpc);
-+	MLX5_SET(rtr2rts_qp_in, rts_in, qpn, qp->qpn);
-+	MLX5_SET(qpc, qpc, retry_count, 7);
-+	MLX5_SET(qpc, qpc, rnr_retry, 7); /* Infinite retry if RNR NACK */
-+	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8); /* ~1ms */
-+	MLX5_SET(rtr2rts_qp_in, rts_in, opcode, MLX5_CMD_OP_RTR2RTS_QP);
-+	MLX5_SET(rtr2rts_qp_in, rts_in, qpn, qp->qpn);
-+
-+	return mlx5_cmd_exec_in(mdev, rtr2rts_qp, rts_in);
-+}
-+
-+static void mlx5vf_destroy_qp(struct mlx5_core_dev *mdev,
-+			      struct mlx5_vhca_qp *qp)
-+{
-+	u32 in[MLX5_ST_SZ_DW(destroy_qp_in)] = {};
-+
-+	MLX5_SET(destroy_qp_in, in, opcode, MLX5_CMD_OP_DESTROY_QP);
-+	MLX5_SET(destroy_qp_in, in, qpn, qp->qpn);
-+	mlx5_cmd_exec_in(mdev, destroy_qp, in);
-+
-+	mlx5_frag_buf_free(mdev, &qp->buf);
-+	mlx5_db_free(mdev, &qp->db);
-+	kfree(qp);
-+}
-+
-+static void free_recv_pages(struct mlx5_vhca_recv_buf *recv_buf)
-+{
-+	int i;
-+
-+	/* Undo alloc_pages_bulk_array() */
-+	for (i = 0; i < recv_buf->npages; i++)
-+		__free_page(recv_buf->page_list[i]);
-+
-+	kvfree(recv_buf->page_list);
-+}
-+
-+static int alloc_recv_pages(struct mlx5_vhca_recv_buf *recv_buf,
-+			    unsigned int npages)
-+{
-+	unsigned int filled = 0, done = 0;
-+	int i;
-+
-+	recv_buf->page_list = kvcalloc(npages, sizeof(*recv_buf->page_list),
-+				       GFP_KERNEL);
-+	if (!recv_buf->page_list)
-+		return -ENOMEM;
-+
-+	for (;;) {
-+		filled = alloc_pages_bulk_array(GFP_KERNEL, npages - done,
-+						recv_buf->page_list + done);
-+		if (!filled)
-+			goto err;
-+
-+		done += filled;
-+		if (done == npages)
-+			break;
-+	}
-+
-+	recv_buf->npages = npages;
-+	return 0;
-+
-+err:
-+	for (i = 0; i < npages; i++) {
-+		if (recv_buf->page_list[i])
-+			__free_page(recv_buf->page_list[i]);
-+	}
-+
-+	kvfree(recv_buf->page_list);
-+	return -ENOMEM;
-+}
-+
-+static int register_dma_recv_pages(struct mlx5_core_dev *mdev,
-+				   struct mlx5_vhca_recv_buf *recv_buf)
-+{
-+	int i, j;
-+
-+	recv_buf->dma_addrs = kvcalloc(recv_buf->npages,
-+				       sizeof(*recv_buf->dma_addrs),
-+				       GFP_KERNEL);
-+	if (!recv_buf->dma_addrs)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < recv_buf->npages; i++) {
-+		recv_buf->dma_addrs[i] = dma_map_page(mdev->device,
-+						      recv_buf->page_list[i],
-+						      0, PAGE_SIZE,
-+						      DMA_FROM_DEVICE);
-+		if (dma_mapping_error(mdev->device, recv_buf->dma_addrs[i]))
-+			goto error;
-+	}
-+	return 0;
-+
-+error:
-+	for (j = 0; j < i; j++)
-+		dma_unmap_single(mdev->device, recv_buf->dma_addrs[j],
-+				 PAGE_SIZE, DMA_FROM_DEVICE);
-+
-+	kvfree(recv_buf->dma_addrs);
-+	return -ENOMEM;
-+}
-+
-+static void unregister_dma_recv_pages(struct mlx5_core_dev *mdev,
-+				      struct mlx5_vhca_recv_buf *recv_buf)
-+{
-+	int i;
-+
-+	for (i = 0; i < recv_buf->npages; i++)
-+		dma_unmap_single(mdev->device, recv_buf->dma_addrs[i],
-+				 PAGE_SIZE, DMA_FROM_DEVICE);
-+
-+	kvfree(recv_buf->dma_addrs);
-+}
-+
-+static void mlx5vf_free_qp_recv_resources(struct mlx5_core_dev *mdev,
-+					  struct mlx5_vhca_qp *qp)
-+{
-+	struct mlx5_vhca_recv_buf *recv_buf = &qp->recv_buf;
-+
-+	mlx5_core_destroy_mkey(mdev, recv_buf->mkey);
-+	unregister_dma_recv_pages(mdev, recv_buf);
-+	free_recv_pages(&qp->recv_buf);
-+}
-+
-+static int mlx5vf_alloc_qp_recv_resources(struct mlx5_core_dev *mdev,
-+					  struct mlx5_vhca_qp *qp, u32 pdn,
-+					  u64 rq_size)
-+{
-+	unsigned int npages = DIV_ROUND_UP_ULL(rq_size, PAGE_SIZE);
-+	struct mlx5_vhca_recv_buf *recv_buf = &qp->recv_buf;
-+	int err;
-+
-+	err = alloc_recv_pages(recv_buf, npages);
-+	if (err < 0)
-+		return err;
-+
-+	err = register_dma_recv_pages(mdev, recv_buf);
-+	if (err)
-+		goto end;
-+
-+	err = _create_mkey(mdev, pdn, NULL, recv_buf, &recv_buf->mkey);
-+	if (err)
-+		goto err_create_mkey;
-+
-+	return 0;
-+
-+err_create_mkey:
-+	unregister_dma_recv_pages(mdev, recv_buf);
-+end:
-+	free_recv_pages(recv_buf);
++	tracker->id = MLX5_GET(general_obj_out_cmd_hdr, out, obj_id);
++out:
++	kfree(in);
 +	return err;
 +}
 +
-+static void
-+_mlx5vf_free_page_tracker_resources(struct mlx5vf_pci_core_device *mvdev)
++static int mlx5vf_cmd_destroy_tracker(struct mlx5_core_dev *mdev,
++				      u32 tracker_id)
 +{
-+	struct mlx5_vhca_page_tracker *tracker = &mvdev->tracker;
-+	struct mlx5_core_dev *mdev = mvdev->mdev;
++	u32 in[MLX5_ST_SZ_DW(general_obj_in_cmd_hdr)] = {};
++	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)] = {};
 +
-+	lockdep_assert_held(&mvdev->state_mutex);
++	MLX5_SET(general_obj_in_cmd_hdr, in, opcode, MLX5_CMD_OP_DESTROY_GENERAL_OBJECT);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type, MLX5_OBJ_TYPE_PAGE_TRACK);
++	MLX5_SET(general_obj_in_cmd_hdr, in, obj_id, tracker_id);
 +
-+	if (!mvdev->log_active)
-+		return;
-+
-+	WARN_ON(mvdev->mdev_detach);
-+
-+	mlx5vf_destroy_qp(mdev, tracker->fw_qp);
-+	mlx5vf_free_qp_recv_resources(mdev, tracker->host_qp);
-+	mlx5vf_destroy_qp(mdev, tracker->host_qp);
-+	mlx5vf_destroy_cq(mdev, &tracker->cq);
-+	mlx5_core_dealloc_pd(mdev, tracker->pdn);
-+	mlx5_put_uars_page(mdev, tracker->uar);
-+	mvdev->log_active = false;
++	return mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
 +}
 +
-+int mlx5vf_stop_page_tracker(struct vfio_device *vdev)
-+{
-+	struct mlx5vf_pci_core_device *mvdev = container_of(
-+		vdev, struct mlx5vf_pci_core_device, core_device.vdev);
-+
-+	mutex_lock(&mvdev->state_mutex);
-+	if (!mvdev->log_active)
-+		goto end;
-+
-+	_mlx5vf_free_page_tracker_resources(mvdev);
-+	mvdev->log_active = false;
-+end:
-+	mlx5vf_state_mutex_unlock(mvdev);
-+	return 0;
-+}
-+
-+int mlx5vf_start_page_tracker(struct vfio_device *vdev,
-+			      struct rb_root_cached *ranges, u32 nnodes,
-+			      u64 *page_size)
-+{
-+	struct mlx5vf_pci_core_device *mvdev = container_of(
-+		vdev, struct mlx5vf_pci_core_device, core_device.vdev);
-+	struct mlx5_vhca_page_tracker *tracker = &mvdev->tracker;
-+	u8 log_tracked_page = ilog2(*page_size);
-+	struct mlx5_vhca_qp *host_qp;
-+	struct mlx5_vhca_qp *fw_qp;
-+	struct mlx5_core_dev *mdev;
-+	u32 max_msg_size = PAGE_SIZE;
-+	u64 rq_size = SZ_2M;
-+	u32 max_recv_wr;
-+	int err;
-+
-+	mutex_lock(&mvdev->state_mutex);
-+	if (mvdev->mdev_detach) {
-+		err = -ENOTCONN;
-+		goto end;
-+	}
-+
-+	if (mvdev->log_active) {
-+		err = -EINVAL;
-+		goto end;
-+	}
-+
-+	mdev = mvdev->mdev;
-+	memset(tracker, 0, sizeof(*tracker));
-+	tracker->uar = mlx5_get_uars_page(mdev);
-+	if (IS_ERR(tracker->uar)) {
-+		err = PTR_ERR(tracker->uar);
-+		goto end;
-+	}
-+
-+	err = mlx5_core_alloc_pd(mdev, &tracker->pdn);
-+	if (err)
-+		goto err_uar;
-+
-+	max_recv_wr = DIV_ROUND_UP_ULL(rq_size, max_msg_size);
-+	err = mlx5vf_create_cq(mdev, tracker, max_recv_wr);
-+	if (err)
-+		goto err_dealloc_pd;
-+
-+	host_qp = mlx5vf_create_rc_qp(mdev, tracker, max_recv_wr);
-+	if (IS_ERR(host_qp)) {
-+		err = PTR_ERR(host_qp);
-+		goto err_cq;
-+	}
-+
-+	host_qp->max_msg_size = max_msg_size;
-+	if (log_tracked_page < MLX5_CAP_ADV_VIRTUALIZATION(mdev,
-+				pg_track_log_min_page_size)) {
-+		log_tracked_page = MLX5_CAP_ADV_VIRTUALIZATION(mdev,
-+				pg_track_log_min_page_size);
-+	} else if (log_tracked_page > MLX5_CAP_ADV_VIRTUALIZATION(mdev,
-+				pg_track_log_max_page_size)) {
-+		log_tracked_page = MLX5_CAP_ADV_VIRTUALIZATION(mdev,
-+				pg_track_log_max_page_size);
-+	}
-+
-+	host_qp->tracked_page_size = (1ULL << log_tracked_page);
-+	err = mlx5vf_alloc_qp_recv_resources(mdev, host_qp, tracker->pdn,
-+					     rq_size);
-+	if (err)
-+		goto err_host_qp;
-+
-+	fw_qp = mlx5vf_create_rc_qp(mdev, tracker, 0);
-+	if (IS_ERR(fw_qp)) {
-+		err = PTR_ERR(fw_qp);
-+		goto err_recv_resources;
-+	}
-+
-+	err = mlx5vf_activate_qp(mdev, host_qp, fw_qp->qpn, true);
+ static int alloc_cq_frag_buf(struct mlx5_core_dev *mdev,
+ 			     struct mlx5_vhca_cq_buf *buf, int nent,
+ 			     int cqe_size)
+@@ -833,6 +975,7 @@ _mlx5vf_free_page_tracker_resources(struct mlx5vf_pci_core_device *mvdev)
+ 
+ 	WARN_ON(mvdev->mdev_detach);
+ 
++	mlx5vf_cmd_destroy_tracker(mdev, tracker->id);
+ 	mlx5vf_destroy_qp(mdev, tracker->fw_qp);
+ 	mlx5vf_free_qp_recv_resources(mdev, tracker->host_qp);
+ 	mlx5vf_destroy_qp(mdev, tracker->host_qp);
+@@ -941,6 +1084,10 @@ int mlx5vf_start_page_tracker(struct vfio_device *vdev,
+ 
+ 	tracker->host_qp = host_qp;
+ 	tracker->fw_qp = fw_qp;
++	err = mlx5vf_create_tracker(mdev, mvdev, ranges, nnodes);
 +	if (err)
 +		goto err_activate;
 +
-+	err = mlx5vf_activate_qp(mdev, fw_qp, host_qp->qpn, false);
-+	if (err)
-+		goto err_activate;
-+
-+	tracker->host_qp = host_qp;
-+	tracker->fw_qp = fw_qp;
-+	*page_size = host_qp->tracked_page_size;
-+	mvdev->log_active = true;
-+	mlx5vf_state_mutex_unlock(mvdev);
-+	return 0;
-+
-+err_activate:
-+	mlx5vf_destroy_qp(mdev, fw_qp);
-+err_recv_resources:
-+	mlx5vf_free_qp_recv_resources(mdev, host_qp);
-+err_host_qp:
-+	mlx5vf_destroy_qp(mdev, host_qp);
-+err_cq:
-+	mlx5vf_destroy_cq(mdev, &tracker->cq);
-+err_dealloc_pd:
-+	mlx5_core_dealloc_pd(mdev, tracker->pdn);
-+err_uar:
-+	mlx5_put_uars_page(mdev, tracker->uar);
-+end:
-+	mlx5vf_state_mutex_unlock(mvdev);
-+	return err;
-+}
+ 	*page_size = host_qp->tracked_page_size;
+ 	mvdev->log_active = true;
+ 	mlx5vf_state_mutex_unlock(mvdev);
 diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
-index 8208f4701a90..e71ec017bf04 100644
+index e71ec017bf04..658925ba5459 100644
 --- a/drivers/vfio/pci/mlx5/cmd.h
 +++ b/drivers/vfio/pci/mlx5/cmd.h
-@@ -9,6 +9,8 @@
- #include <linux/kernel.h>
- #include <linux/vfio_pci_core.h>
- #include <linux/mlx5/driver.h>
-+#include <linux/mlx5/cq.h>
-+#include <linux/mlx5/qp.h>
- 
- struct mlx5vf_async_data {
- 	struct mlx5_async_work cb_work;
-@@ -39,6 +41,52 @@ struct mlx5_vf_migration_file {
- 	struct mlx5vf_async_data async_data;
+@@ -80,6 +80,7 @@ struct mlx5_vhca_qp {
  };
  
-+struct mlx5_vhca_cq_buf {
-+	struct mlx5_frag_buf_ctrl fbc;
-+	struct mlx5_frag_buf frag_buf;
-+	int cqe_size;
-+	int nent;
-+};
-+
-+struct mlx5_vhca_cq {
-+	struct mlx5_vhca_cq_buf buf;
-+	struct mlx5_db db;
-+	struct mlx5_core_cq mcq;
-+	size_t ncqe;
-+};
-+
-+struct mlx5_vhca_recv_buf {
-+	u32 npages;
-+	struct page **page_list;
-+	dma_addr_t *dma_addrs;
-+	u32 next_rq_offset;
-+	u32 mkey;
-+};
-+
-+struct mlx5_vhca_qp {
-+	struct mlx5_frag_buf buf;
-+	struct mlx5_db db;
-+	struct mlx5_vhca_recv_buf recv_buf;
-+	u32 tracked_page_size;
-+	u32 max_msg_size;
-+	u32 qpn;
-+	struct {
-+		unsigned int pc;
-+		unsigned int cc;
-+		unsigned int wqe_cnt;
-+		__be32 *db;
-+		struct mlx5_frag_buf_ctrl fbc;
-+	} rq;
-+};
-+
-+struct mlx5_vhca_page_tracker {
-+	u32 pdn;
-+	struct mlx5_uars_page *uar;
-+	struct mlx5_vhca_cq cq;
-+	struct mlx5_vhca_qp *host_qp;
-+	struct mlx5_vhca_qp *fw_qp;
-+};
-+
- struct mlx5vf_pci_core_device {
- 	struct vfio_pci_core_device core_device;
- 	int vf_id;
-@@ -46,6 +94,7 @@ struct mlx5vf_pci_core_device {
- 	u8 migrate_cap:1;
- 	u8 deferred_reset:1;
- 	u8 mdev_detach:1;
-+	u8 log_active:1;
- 	/* protect migration state */
- 	struct mutex state_mutex;
- 	enum vfio_device_mig_state mig_state;
-@@ -53,6 +102,7 @@ struct mlx5vf_pci_core_device {
- 	spinlock_t reset_lock;
- 	struct mlx5_vf_migration_file *resuming_migf;
- 	struct mlx5_vf_migration_file *saving_migf;
-+	struct mlx5_vhca_page_tracker tracker;
- 	struct workqueue_struct *cb_wq;
- 	struct notifier_block nb;
- 	struct mlx5_core_dev *mdev;
-@@ -73,4 +123,7 @@ int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
- void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev);
- void mlx5vf_disable_fds(struct mlx5vf_pci_core_device *mvdev);
- void mlx5vf_mig_file_cleanup_cb(struct work_struct *_work);
-+int mlx5vf_start_page_tracker(struct vfio_device *vdev,
-+		struct rb_root_cached *ranges, u32 nnodes, u64 *page_size);
-+int mlx5vf_stop_page_tracker(struct vfio_device *vdev);
- #endif /* MLX5_VFIO_CMD_H */
+ struct mlx5_vhca_page_tracker {
++	u32 id;
+ 	u32 pdn;
+ 	struct mlx5_uars_page *uar;
+ 	struct mlx5_vhca_cq cq;
 -- 
 2.18.1
 
