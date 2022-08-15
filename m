@@ -2,155 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E07B6593222
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7BC59327D
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 17:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231875AbiHOPlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 11:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        id S231247AbiHOPwv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 11:52:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiHOPlG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:41:06 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2862711;
-        Mon, 15 Aug 2022 08:41:04 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 7BEB177A; Mon, 15 Aug 2022 10:41:02 -0500 (CDT)
-Date:   Mon, 15 Aug 2022 10:41:02 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com
-Subject: Re: [PATCH v4 0/4] Introduce security_create_user_ns()
-Message-ID: <20220815154102.GA20944@mail.hallyn.com>
-References: <20220801180146.1157914-1-fred@cloudflare.com>
- <87les7cq03.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhRpUxyxkPaTz1scGeRm+i4KviQQA7WismOX2q5agzC+DQ@mail.gmail.com>
- <87wnbia7jh.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhS3udhEecVYVvHm=tuqiPGh034-xPqXYtFjBk23+p-Szg@mail.gmail.com>
- <20220814155508.GA7991@mail.hallyn.com>
- <CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com>
+        with ESMTP id S229748AbiHOPwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 11:52:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECCB117077
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 08:52:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660578767;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/Nqcs8aa7/L83Uz8Dknl+flwCz9c6FCbM8IP+tpiszM=;
+        b=LJV0rGhk8+m1VfBz1ftBaZDSIud14xwNc7ZzRJBKvi19YB3pahEWHmK4SRNzEgoKlt8b97
+        cbgLG4nHvHwZ/7g36jPbWm/a3SYeMMjLqvEEaN40DTZan3VbbVUAKTdNCAw3VXrEAza5G2
+        7aBsz5tcWzUZgCVm2f+//XZ1k/w7bQc=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-611-FHYvPShnMuaqSYTzzwaBnw-1; Mon, 15 Aug 2022 11:52:46 -0400
+X-MC-Unique: FHYvPShnMuaqSYTzzwaBnw-1
+Received: by mail-ed1-f71.google.com with SMTP id g8-20020a056402424800b0043e81c582a4so4987242edb.17
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 08:52:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=/Nqcs8aa7/L83Uz8Dknl+flwCz9c6FCbM8IP+tpiszM=;
+        b=8HmFmwVxePCPFQYthNT24e99NIYVMcyzz/D1WlC/EvFcY1YaNh99fZtmMdpJEW6Nw1
+         GDM7tUNDYrkFgOs9NvwXX2+9lL79eKckG9aNZcvDV7GFEZWQUpt10BbYRzf+CYLCluWf
+         shoACFjbN4JCLWbqgVVJ3664HWfiieDeTt4mOvEI34TqvJzEUjmdGw7E+BXmKUF8lq3M
+         W9IyTqARg+xyBNNs+SomZ/Iwh7l/wK1Jkd3tlDiQQ0ru+SzB0Z0yExExzp4w7tKOFec+
+         DD5JAh8jU6I4r/CVrY8dJf0L9vUb5JkQH7Nd/c2BwREAIcoeStnadslpO5iyyvPrxc7v
+         aetA==
+X-Gm-Message-State: ACgBeo07pwIZT4WeeIk3afkCtXxJo5GriGqP+zXYrswo24F1ZtdGGfYX
+        WfGrsF+YJonHu9TTDKQj7PcOQ7dX/0REBme5VX+YQj78Xh7sNnauyIYFN0QuDkfPI1r1LJkFiX2
+        IiimH8NZnkUP7elRe
+X-Received: by 2002:aa7:d292:0:b0:43d:7923:66cd with SMTP id w18-20020aa7d292000000b0043d792366cdmr14420714edq.403.1660578765282;
+        Mon, 15 Aug 2022 08:52:45 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6nIFBB+89khXDcKZ1x+E5GSpuggmwuIXVyMYifWU71qMF4gZFv0oZKWPNyImccf4QH1VsZkQ==
+X-Received: by 2002:aa7:d292:0:b0:43d:7923:66cd with SMTP id w18-20020aa7d292000000b0043d792366cdmr14420699edq.403.1660578765066;
+        Mon, 15 Aug 2022 08:52:45 -0700 (PDT)
+Received: from redhat.com ([2.54.169.49])
+        by smtp.gmail.com with ESMTPSA id z28-20020a17090674dc00b00734bfab4d64sm4157408ejl.25.2022.08.15.08.52.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 08:52:44 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 11:52:40 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Zhu Lingshan <lingshan.zhu@intel.com>
+Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kvm@vger.kernel.org, parav@nvidia.com,
+        xieyongji@bytedance.com, gautam.dawar@amd.com
+Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+Message-ID: <20220815114900-mutt-send-email-mst@kernel.org>
+References: <20220815092638.504528-1-lingshan.zhu@intel.com>
+ <20220815092638.504528-3-lingshan.zhu@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220815092638.504528-3-lingshan.zhu@intel.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 14, 2022 at 10:32:51PM -0400, Paul Moore wrote:
-> On Sun, Aug 14, 2022 at 11:55 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> > On Mon, Aug 08, 2022 at 03:16:16PM -0400, Paul Moore wrote:
-> > > On Mon, Aug 8, 2022 at 2:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > > Paul Moore <paul@paul-moore.com> writes:
-> > > > > On Mon, Aug 1, 2022 at 10:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > > > >> Frederick Lawler <fred@cloudflare.com> writes:
-> > > > >>
-> > > > >> > While creating a LSM BPF MAC policy to block user namespace creation, we
-> > > > >> > used the LSM cred_prepare hook because that is the closest hook to prevent
-> > > > >> > a call to create_user_ns().
-> > > > >>
-> > > > >> Re-nack for all of the same reasons.
-> > > > >> AKA This can only break the users of the user namespace.
-> > > > >>
-> > > > >> Nacked-by: "Eric W. Biederman" <ebiederm@xmission.com>
-> > > > >>
-> > > > >> You aren't fixing what your problem you are papering over it by denying
-> > > > >> access to the user namespace.
-> > > > >>
-> > > > >> Nack Nack Nack.
-> > > > >>
-> > > > >> Stop.
-> > > > >>
-> > > > >> Go back to the drawing board.
-> > > > >>
-> > > > >> Do not pass go.
-> > > > >>
-> > > > >> Do not collect $200.
-> > > > >
-> > > > > If you want us to take your comments seriously Eric, you need to
-> > > > > provide the list with some constructive feedback that would allow
-> > > > > Frederick to move forward with a solution to the use case that has
-> > > > > been proposed.  You response above may be many things, but it is
-> > > > > certainly not that.
-> > > >
-> > > > I did provide constructive feedback.  My feedback to his problem
-> > > > was to address the real problem of bugs in the kernel.
-> > >
-> > > We've heard from several people who have use cases which require
-> > > adding LSM-level access controls and observability to user namespace
-> > > creation.  This is the problem we are trying to solve here; if you do
-> > > not like the approach proposed in this patchset please suggest another
-> > > implementation that allows LSMs visibility into user namespace
-> > > creation.
-> >
-> > Regarding the observability - can someone concisely lay out why just
-> > auditing userns creation would not suffice?  Userspace could decide
-> > what to report based on whether the creating user_ns == /proc/1/ns/user...
+On Mon, Aug 15, 2022 at 05:26:38PM +0800, Zhu Lingshan wrote:
+> Some fields of virtio-net device config space are
+> conditional on the feature bits, the spec says:
 > 
-> One of the selling points of the BPF LSM is that it allows for various
-> different ways of reporting and logging beyond audit.  However, even
-> if it was limited to just audit I believe that provides some useful
-> justification as auditing fork()/clone() isn't quite the same and
-> could be difficult to do at scale in some configurations.  I haven't
-> personally added a BPF LSM program to the kernel so I can't speak to
-> the details on what is possible, but I'm sure others on the To/CC line
-> could help provide more information if that is important to you.
+> "The mac address field always exists
+> (though is only valid if VIRTIO_NET_F_MAC is set)"
 > 
-> > Regarding limiting the tweaking of otherwise-privileged code by
-> > unprivileged users, i wonder whether we could instead add smarts to
-> > ns_capable().
+> "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ
+> or VIRTIO_NET_F_RSS is set"
 > 
-> The existing security_capable() hook is eventually called by ns_capable():
+> "mtu only exists if VIRTIO_NET_F_MTU is set"
 > 
->   ns_capable()
->     ns_capable_common()
->       security_capable(const struct cred *cred,
->                        struct user_namespace *ns,
->                        int cap,
->                        unsigned int opts);
+> so we should read MTU, MAC and MQ in the device config
+> space only when these feature bits are offered.
 > 
-> ... I'm not sure what additional smarts would be useful here?
+> For MQ, if both VIRTIO_NET_F_MQ and VIRTIO_NET_F_RSS are
+> not set, the virtio device should have
+> one queue pair as default value, so when userspace querying queue pair numbers,
+> it should return mq=1 than zero.
+> 
+> For MTU, if VIRTIO_NET_F_MTU is not set, we should not read
+> MTU from the device config sapce.
+> RFC894 <A Standard for the Transmission of IP Datagrams over Ethernet Networks>
+> says:"The minimum length of the data field of a packet sent over an
+> Ethernet is 1500 octets, thus the maximum length of an IP datagram
+> sent over an Ethernet is 1500 octets.  Implementations are encouraged
+> to support full-length packets"
+> 
+> virtio spec says:"The virtio network device is a virtual ethernet card",
+> so the default MTU value should be 1500 for virtio-net.
+> 
+> For MAC, the spec says:"If the VIRTIO_NET_F_MAC feature bit is set,
+> the configuration space mac entry indicates the “physical” address
+> of the network card, otherwise the driver would typically
+> generate a random local MAC address." So there is no
+> default MAC address if VIRTIO_NET_F_MAC not set.
+> 
+> This commits introduces functions vdpa_dev_net_mtu_config_fill()
+> and vdpa_dev_net_mac_config_fill() to fill MTU and MAC.
+> It also fixes vdpa_dev_net_mq_config_fill() to report correct
+> MQ when _F_MQ is not present.
+> 
+> These functions should check devices features than driver
+> features, and struct vdpa_device is not needed as a parameter
+> 
+> The test & userspace tool output:
+> 
+> Feature bit VIRTIO_NET_F_MTU, VIRTIO_NET_F_RSS, VIRTIO_NET_F_MQ
+> and VIRTIO_NET_F_MAC can be mask out by hardcode.
+> 
+> However, it is challenging to "disable" the related fields
+> in the HW device config space, so let's just assume the values
+> are meaningless if the feature bits are not set.
+> 
+> Before this change, when feature bits for RSS, MQ, MTU and MAC
+> are not set, iproute2 output:
+> $vdpa vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false mtu 1500
+>   negotiated_features
 
-Oh - i wasn't necessarily thinking of an LSM.  I was picturing a
-sysctl next to unprivileged_userns_clone.  But you're right, looks
-like an LSM could already do this.  Of course, there's an issue early
-on in that the root user in the new namespace couldn't setuid, so
-the uid mapping is still limited.  So this idea probably isn't worth
-the characters we've typed about it so far, sorry.
+where does it get 1500? what if there's e.g. 0 in the mtu field?
 
-> [side note: SELinux does actually distinguish between capability
-> checks in the initial user namespace vs child namespaces]
+> without this commit, function vdpa_dev_net_config_fill()
+> reads all config space fields unconditionally, so let's
+> assume the MAC and MTU are meaningless, and it checks
+> MQ with driver_features, so we don't see max_vq_pairs.
 > 
-> > Point being, uid mapping would still work, but we'd
-> > break the "privileged against resources you own" part of user
-> > namespaces.  I would want it to default to allow, but then when a
-> > 0-day is found which requires reaching ns_capable() code, admins
-> > could easily prevent exploitation until reboot from a fixed kernel.
+> After applying this commit, when feature bits for
+> MQ, RSS, MAC and MTU are not set,iproute2 output:
+> $vdpa dev config show vdpa0
+> vdpa0: link up link_announce false max_vq_pairs 1 mtu 1500
+>   negotiated_features
 > 
-> That assumes that everything you care about is behind a capability
-> check, which is probably going to be correct in a lot of the cases,
-> but I think it would be a mistake to assume that is always going to be
-> true.
+> As explained above:
+> Here is no MAC, because VIRTIO_NET_F_MAC is not set,
+> and there is no default value for MAC. It shows
+> max_vq_paris = 1 because even without MQ feature,
+> a functional virtio-net must have one queue pair.
+> mtu = 1500 is the default value as ethernet
+> required.
+> 
+> This commit also add supplementary comments for
+> __virtio16_to_cpu(true, xxx) operations in
+> vdpa_dev_net_config_fill() and vdpa_fill_stats_rec()
+> 
+> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+> ---
+>  drivers/vdpa/vdpa.c | 60 +++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 47 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index efb55a06e961..a74660b98979 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -801,19 +801,44 @@ static int vdpa_nl_cmd_dev_get_dumpit(struct sk_buff *msg, struct netlink_callba
+>  	return msg->len;
+>  }
+>  
+> -static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+> -				       struct sk_buff *msg, u64 features,
+> +static int vdpa_dev_net_mq_config_fill(struct sk_buff *msg, u64 features,
+>  				       const struct virtio_net_config *config)
+>  {
+>  	u16 val_u16;
+>  
+> -	if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
+> -		return 0;
+> +	if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0 &&
+> +	    (features & BIT_ULL(VIRTIO_NET_F_RSS)) == 0)
+> +		val_u16 = 1;
+> +	else
+> +		val_u16 = __virtio16_to_cpu(true, config->max_virtqueue_pairs);
+>  
+> -	val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
+>  	return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
+>  }
+>  
+> +static int vdpa_dev_net_mtu_config_fill(struct sk_buff *msg, u64 features,
+> +					const struct virtio_net_config *config)
+> +{
+> +	u16 val_u16;
+> +
+> +	if ((features & BIT_ULL(VIRTIO_NET_F_MTU)) == 0)
+> +		val_u16 = 1500;
+> +	else
+> +		val_u16 = __virtio16_to_cpu(true, config->mtu);
+> +
+> +	return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16);
+> +}
+> +
+> +static int vdpa_dev_net_mac_config_fill(struct sk_buff *msg, u64 features,
+> +					const struct virtio_net_config *config)
+> +{
+> +	if ((features & BIT_ULL(VIRTIO_NET_F_MAC)) == 0)
+> +		return 0;
+> +	else
+> +		return  nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR,
+> +				sizeof(config->mac), config->mac);
+> +}
+> +
+> +
+>  static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *msg)
+>  {
+>  	struct virtio_net_config config = {};
+> @@ -822,18 +847,16 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>  
+>  	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>  
+> -	if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, sizeof(config.mac),
+> -		    config.mac))
+> -		return -EMSGSIZE;
+> +	/*
+> +	 * Assume little endian for now, userspace can tweak this for
+> +	 * legacy guest support.
+> +	 */
+> +	val_u16 = __virtio16_to_cpu(true, config.status);
+>  
+>  	val_u16 = __virtio16_to_cpu(true, config.status);
+>  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
+>  		return -EMSGSIZE;
+>  
+> -	val_u16 = __virtio16_to_cpu(true, config.mtu);
+> -	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+> -		return -EMSGSIZE;
+> -
+>  	features_driver = vdev->config->get_driver_features(vdev);
+>  	if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+>  			      VDPA_ATTR_PAD))
+> @@ -846,7 +869,13 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
+>  			      VDPA_ATTR_PAD))
+>  		return -EMSGSIZE;
+>  
+> -	return vdpa_dev_net_mq_config_fill(vdev, msg, features_driver, &config);
+> +	if (vdpa_dev_net_mac_config_fill(msg, features_device, &config))
+> +		return -EMSGSIZE;
+> +
+> +	if (vdpa_dev_net_mtu_config_fill(msg, features_device, &config))
+> +		return -EMSGSIZE;
+> +
+> +	return vdpa_dev_net_mq_config_fill(msg, features_device, &config);
+>  }
+>  
+>  static int
+> @@ -914,6 +943,11 @@ static int vdpa_fill_stats_rec(struct vdpa_device *vdev, struct sk_buff *msg,
+>  	}
+>  	vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>  
+> +	/*
+> +	 * Assume little endian for now, userspace can tweak this for
+> +	 * legacy guest support.
+> +	 */
+> +
+>  	max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
+>  	if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
+>  		return -EMSGSIZE;
+> -- 
+> 2.31.1
 
-I might be thinking wrongly, but if it's not behind a capability check,
-then it seems to me it's not an exploit that can only be reached by
-becoming root in a user namespace, which means disabling user namespace
-creation by unprivileged users will not stop the attack.
