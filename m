@@ -2,211 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1ADE594E49
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 03:54:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74776594E4B
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 03:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbiHPByR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 21:54:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48150 "EHLO
+        id S243333AbiHPBzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 21:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234305AbiHPBxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 21:53:54 -0400
-Received: from forward500p.mail.yandex.net (forward500p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:110])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053EA20E98E
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 14:45:35 -0700 (PDT)
-Received: from iva4-143b1447cf50.qloud-c.yandex.net (iva4-143b1447cf50.qloud-c.yandex.net [IPv6:2a02:6b8:c0c:7511:0:640:143b:1447])
-        by forward500p.mail.yandex.net (Yandex) with ESMTP id 0F3B5F01683;
-        Tue, 16 Aug 2022 00:45:34 +0300 (MSK)
-Received: by iva4-143b1447cf50.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id L10zMfevH2-jWi8ZYbk;
-        Tue, 16 Aug 2022 00:45:33 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1660599933;
-        bh=6DfvZKkoYrBZQY9QKmpT6aw2IaRKeGGolubxlTMgOyY=;
-        h=Cc:References:Date:Message-ID:In-Reply-To:From:To:Subject;
-        b=nj9cldexlErytqtxJ1BjOuiWLBZDgpporLA3Jc0lP/+H0qaRtTp9+DWTm3zR5r700
-         XFS6BvM50olZyEf3znLvATcmXYBFv8GTPDoMkj32ZUL9bhHyKsvgV/WJIKosfAb0p5
-         7bAyAth39dDLAGq2sc0rj+IscL8UKp4Wq+AG3O8Q=
-Authentication-Results: iva4-143b1447cf50.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
-Subject: [PATCH v2 2/2] af_unix: Add ioctl(SIOCUNIXGRABFDS) to grab files of
- receive queue skbs
-To:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, edumazet@google.com, viro@zeniv.linux.org.uk
-References: <0b07a55f-0713-7ba4-9b6b-88bc8cc6f1f5@ya.ru>
-From:   Kirill Tkhai <tkhai@ya.ru>
-Message-ID: <694a6e0a-ed8f-17c0-f85f-77b56cd98357@ya.ru>
-Date:   Tue, 16 Aug 2022 00:45:32 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        with ESMTP id S234305AbiHPByj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 21:54:39 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95868210870;
+        Mon, 15 Aug 2022 14:46:09 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.west.internal (Postfix) with ESMTP id 330E732007D7;
+        Mon, 15 Aug 2022 17:46:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Mon, 15 Aug 2022 17:46:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=anarazel.de; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1660599966; x=1660686366; bh=5/0EPvXdhP
+        ro0zKMiqEkonkJvXb/I1AzuGUyP3JQyBI=; b=wJ/HZdYgs0p31ThNXOV8mrGlLT
+        Vk46kz9Qn76RQBJzxbUmYaB3E3ZuFVum/Aqm5qZUlDxu34pekRNIs9XqDYRYsXl5
+        FWnt+zCgIAOJIGM8yhRqajjLNRIZs68RJDKBBmavTEHypZ3LrHm/6hynZ9xTMP6L
+        TNOl8VuBLUW7QfBjmxLY1bUeD4sj+Otzjiy2j2UtN0gWx7yCaXWRj1Q9ea/suKRr
+        i45PrJFOYLwtEO70Hxp0PkBU+n110TSBesNUmW6Q+GcZD0+NGBfPM1Lkwv1lUcrF
+        UJTcw4dNWgNDgitrR6KZeHIqLOYqT9dLGK/PFOlm4d5r2luvcVzy/O4gTqmw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660599966; x=1660686366; bh=5/0EPvXdhPro0zKMiqEkonkJvXb/
+        I1AzuGUyP3JQyBI=; b=2ZXCvA9cimntn1UjjHMB0r0MlvpOfOOtHRF5pcIaI81T
+        mdTJA6vLOYPQM6eL69Kq7ZrFUhQmM8qPZ2ldvDMpyOwzUP+2vCOikQDugdVuRb/K
+        pPBPc5U2su3eZoqmIEjJoM2btRPfAeIy864LeQ1D9rhxgWem0JvESurBZN/D3eD+
+        IlT1IvcztrdJDrhSkHY8OlPVXV02IwYwk2AiBKpMXflEiwhQ22s1SxW2gB++os7B
+        Icohgq8CUp3Ypigl5Omf0Se3QD24c5B4DZ0MvLzvm5zRZbCuY1bRKYZt/kIuNEH/
+        sSkIoFePwmLMd0HOnlArTvKFJlHCfNbvyGXSNY2rdA==
+X-ME-Sender: <xms:nb76Yv0Ej_z_uM_wN3B_P_R3ltOfeO2C8sGBtIuh29Zc_4lFpEvSDw>
+    <xme:nb76YuGJkk7QBkz5kLgrEN5S4OJ8ssQK3Ly2IV2RLuJyqfrclNP7vLJyHnLQmnuSN
+    sFj2Dtf4BWj03uncA>
+X-ME-Received: <xmr:nb76Yv4yEU20_iu9UQ3pOzsS8VZdfTPLdbpzNJK1NfMSFmLq2SchkjeCfKMsQ0R5QFLwBsENaGicY9hIZPI77-KYqmmsE03A2ds4LP_mNbh27kyAwhUSYlokYwB0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehfedgtdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheptehnughr
+    vghsucfhrhgvuhhnugcuoegrnhgurhgvshesrghnrghrrgiivghlrdguvgeqnecuggftrf
+    grthhtvghrnhepvdfffeevhfetveffgeeiteefhfdtvdffjeevhfeuteegleduheetvedu
+    ieettddunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    eprghnughrvghssegrnhgrrhgriigvlhdruggv
+X-ME-Proxy: <xmx:nb76Yk1WLs_gY1IYxKa9HCfxP1WZQGDwJuW8-uJfX6mcviCw_oXBTQ>
+    <xmx:nb76YiGxg2k9yNZr3I-NuiFVrR-7qWSkqLVqj3TFJwEPTe17kdgAnA>
+    <xmx:nb76Yl-tiKe5RZYevmY2_0IdTNT3c5Rx2X5TGOj8Tou6sOHIO93XsQ>
+    <xmx:nr76YgHpauIZlhEd-lIjWIXnPExykmUPz133PNZHrrtpg7Di_j3q_g>
+Feedback-ID: id4a34324:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 15 Aug 2022 17:46:05 -0400 (EDT)
+Date:   Mon, 15 Aug 2022 14:46:04 -0700
+From:   Andres Freund <andres@anarazel.de>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>, linux-kernel@vger.kernel.org,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg KH <gregkh@linuxfoundation.org>, c@redhat.com
+Subject: Re: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
+ size by find_vqs()"
+Message-ID: <20220815214604.x7g342h3oadruxx2@awork3.anarazel.de>
+References: <20220815090521.127607-1-mst@redhat.com>
+ <20220815203426.GA509309@roeck-us.net>
+ <20220815164013-mutt-send-email-mst@kernel.org>
+ <20220815205053.GD509309@roeck-us.net>
+ <20220815165608-mutt-send-email-mst@kernel.org>
+ <20220815212839.aop6wwx4fkngihbf@awork3.anarazel.de>
+ <20220815173256-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <0b07a55f-0713-7ba4-9b6b-88bc8cc6f1f5@ya.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815173256-mutt-send-email-mst@kernel.org>
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a fd owning a counter of some critical resource, say, of a mount,
-it's impossible to umount that mount and disconnect related block device.
-That fd may be contained in some unix socket receive queue skb.
+Hi,
 
-Despite we have an interface for detecting such the sockets queues
-(/proc/[PID]/fdinfo/[fd] shows non-zero scm_fds count if so) and
-it's possible to kill that process to release the counter, the problem is
-that there may be several processes, and it's not a good thing to kill
-each of them.
+On 2022-08-15 17:39:08 -0400, Michael S. Tsirkin wrote:
+> On Mon, Aug 15, 2022 at 02:28:39PM -0700, Andres Freund wrote:
+> > On 2022-08-15 17:04:10 -0400, Michael S. Tsirkin wrote:
+> > > So virtio has a queue_size register. When read, it will give you
+> > > originally the maximum queue size. Normally we just read it and
+> > > use it as queue size.
+> > > 
+> > > However, when queue memory allocation fails, and unconditionally with a
+> > > network device with the problematic patch, driver is asking the
+> > > hypervisor to make the ring smaller by writing a smaller value into this
+> > > register.
+> > > 
+> > > I suspect that what happens is hypervisor still uses the original value
+> > > somewhere.
+> > 
+> > It looks more like the host is never told about the changed size for legacy
+> > devices...
+> > 
+> > Indeed, adding a vp_legacy_set_queue_size() & call to it to setup_vq(), makes
+> > 5.19 + restricting queue sizes to 1024 boot again.
+> 
+> Interesting, the register is RO in the legacy interface.
+> And to be frank I can't find where is vp_legacy_set_queue_size
+> even implemented. It's midnight here too ...
 
-This patch adds a simple interface to grab files from receive queue,
-so the caller may analyze them, and even do that recursively, if grabbed
-file is unix socket itself. So, the described above problem may be solved
-by this ioctl() in pair with pidfd_getfd().
-
-Note, that the existing recvmsg(,,MSG_PEEK) is not suitable for that
-purpose, since it modifies peek offset inside socket, and this results
-in a problem in case of examined process uses peek offset itself.
-Additional ptrace freezing of that task plus ioctl(SO_PEEK_OFF) won't help
-too, since that socket may relate to several tasks, and there is no
-reliable and non-racy way to detect that. Also, if the caller of such
-trick will die, the examined task will remain frozen forever. The new
-suggested ioctl(SIOCUNIXGRABFDS) does not have such problems.
-
-The realization of ioctl(SIOCUNIXGRABFDS) is pretty simple. The only
-interesting thing is protocol with userspace. Firstly, we let userspace
-to know the number of all files in receive queue skbs. Then we receive
-fds one by one starting from requested offset. We return number of
-received fds if there is a successfully received fd, and this number
-may be less in case of error or desired fds number lack. Userspace
-may detect that situations by comparison of returned value and
-out.nr_all minus in.nr_skip. Looking over different variant this one
-looks the best for me (I considered returning error in case of error
-and there is a received fd. Also I considered returning number of
-received files as one more member in struct unix_ioc_grab_fds).
-
-Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
----
- include/uapi/linux/un.h |   12 ++++++++
- net/unix/af_unix.c      |   70 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 82 insertions(+)
-
-diff --git a/include/uapi/linux/un.h b/include/uapi/linux/un.h
-index 0ad59dc8b686..995b358263dd 100644
---- a/include/uapi/linux/un.h
-+++ b/include/uapi/linux/un.h
-@@ -11,6 +11,18 @@ struct sockaddr_un {
- 	char sun_path[UNIX_PATH_MAX];	/* pathname */
- };
- 
-+struct unix_ioc_grab_fds {
-+	struct {
-+		int nr_grab;
-+		int nr_skip;
-+		int *fds;
-+	} in;
-+	struct {
-+		int nr_all;
-+	} out;
-+};
-+
- #define SIOCUNIXFILE (SIOCPROTOPRIVATE + 0) /* open a socket file with O_PATH */
-+#define SIOCUNIXGRABFDS (SIOCPROTOPRIVATE + 1) /* grab files from recv queue */
- 
- #endif /* _LINUX_UN_H */
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index bf338b782fc4..3c7e8049eba1 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -3079,6 +3079,73 @@ static int unix_open_file(struct sock *sk)
- 	return fd;
- }
- 
-+static int unix_ioc_grab_fds(struct sock *sk, struct unix_ioc_grab_fds __user *uarg)
-+{
-+	int i, todo, skip, count, all, err, done = 0;
-+	struct unix_sock *u = unix_sk(sk);
-+	struct unix_ioc_grab_fds arg;
-+	struct sk_buff *skb = NULL;
-+	struct scm_fp_list *fp;
-+
-+	if (copy_from_user(&arg, uarg, sizeof(arg)))
-+		return -EFAULT;
-+
-+	skip = arg.in.nr_skip;
-+	todo = arg.in.nr_grab;
-+
-+	if (skip < 0 || todo <= 0)
-+		return -EINVAL;
-+	if (mutex_lock_interruptible(&u->iolock))
-+		return -EINTR;
-+
-+	all = atomic_read(&u->scm_stat.nr_fds);
-+	err = -EFAULT;
-+	/* Set uarg->out.nr_all before the first file is received. */
-+	if (put_user(all, &uarg->out.nr_all))
-+		goto unlock;
-+	err = 0;
-+	if (all <= skip)
-+		goto unlock;
-+	if (all - skip < todo)
-+		todo = all - skip;
-+	while (todo) {
-+		spin_lock(&sk->sk_receive_queue.lock);
-+		if (!skb)
-+			skb = skb_peek(&sk->sk_receive_queue);
-+		else
-+			skb = skb_peek_next(skb, &sk->sk_receive_queue);
-+		spin_unlock(&sk->sk_receive_queue.lock);
-+
-+		if (!skb)
-+			goto unlock;
-+
-+		fp = UNIXCB(skb).fp;
-+		count = fp->count;
-+		if (skip >= count) {
-+			skip -= count;
-+			continue;
-+		}
-+
-+		for (i = skip; i < count && todo; i++) {
-+			err = receive_fd_user(fp->fp[i], &arg.in.fds[done], 0);
-+			if (err < 0)
-+				goto unlock;
-+			done++;
-+			todo--;
-+		}
-+		skip = 0;
-+	}
-+unlock:
-+	mutex_unlock(&u->iolock);
-+
-+	/* Return number of fds (non-error) if there is a received file. */
-+	if (done)
-+		return done;
-+	if (err < 0)
-+		return err;
-+	return 0;
-+}
-+
- static int unix_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- {
- 	struct sock *sk = sock->sk;
-@@ -3113,6 +3180,9 @@ static int unix_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
- 		}
- 		break;
- #endif
-+	case SIOCUNIXGRABFDS:
-+		err = unix_ioc_grab_fds(sk, (struct unix_ioc_grab_fds __user *)arg);
-+		break;
- 	default:
- 		err = -ENOIOCTLCMD;
- 		break;
+Yea, I meant that added both vp_legacy_set_queue_size() and a call to it. I
+was just quickly experimenting around.
 
 
+> Yes I figured this out too. And I was able to reproduce on qemu now.
 
+Cool.
+
+
+> I'm posting a new patchset reverting all the handing of resize
+> restrictions, I think we should rethink it for the next release.
+
+Makes sense.
+
+Greetings,
+
+Andres Freund
