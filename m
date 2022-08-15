@@ -2,169 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8DA592FE7
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 15:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35732592FEC
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 15:31:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233142AbiHON3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 09:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41414 "EHLO
+        id S232116AbiHONbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 09:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231953AbiHON2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 09:28:48 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B701F62F
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 06:28:47 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id w3so9590087edc.2
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 06:28:47 -0700 (PDT)
+        with ESMTP id S241337AbiHONa2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 09:30:28 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C254DF78
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 06:30:26 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id i24so5463982qkg.13
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 06:30:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc;
-        bh=qAMLSmufRDtzwaGivcSTlS4Hfd7XjPtp5rKgfmvwQ2Y=;
-        b=maLMGBrq281dQnY1yHnjv9/Q+gea5WWtT6jYJdHart0Ll+h0VaxFtK1fx73axbwdMh
-         cxsO/J9CHwkOXS8RDk43q1WMhjmSnSkYpZ3NOlpCCelpY78cotjlNCqyF6+N9YK3cFyR
-         qCHU8C9Dkd2TffiuQkXptb/wZtOXa1DwcLx4A=
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=lM1x63cXtRqyiiLyOzbpK/bo/CGl14dfFlrL0sDct7M=;
+        b=bR9ZvjIBGlsDdZzHbqJBiigEHCMuNFfCioFOvZwJG0GdpyGd7pG/WJeoU0y+eVvbrf
+         mhoTM4RhUM1zmC9KPYa/zIwUQCGQJINL7dY/ExLlnJM6MfEdemffOTOwsI0ImRnDZZcr
+         mFir+CfVjsvIGzJZR53wtLjMASAbzdoXR0J/IKGbeS9t/KTYSJO0JP+sIvKmkFXzrFhB
+         PuT202pS4Mah5G8gmORnEpwCvnPu3MzElxxHPneroBOL0+E1ySm7NgpsdEF/SI/q1p+l
+         q07hdCZdPjPR7pOuxnUtwK5Qw/eMIrbzZ14QvlrBbTs8VlcCBEB2ZRDdKWIoGFv2kALi
+         OPvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc;
-        bh=qAMLSmufRDtzwaGivcSTlS4Hfd7XjPtp5rKgfmvwQ2Y=;
-        b=BxWdTFLjBCO7pi3/x7H7R9uf3HKX7XNP1KHKRHPlFhGe2+HCMxJospCysxeZAhyQKd
-         Xj9gqp0M6d6nkG6fS2rJN5Cu6MPfDLRQ1wbv5j3khKtkgOnEqEODGA4Ee+OxLUDrYThM
-         iW2y3kZRCZFczGnTICWD2SjqNGTDInOQ0K658FgXW9SBvzxzWzci1N9ByeD1/QIW48Eg
-         dr5Wnt/3Sud4ccqJ2sC+aG9/NacUtJCpPgHL37oH/pSV69OgaPHjinzwHe8c5yP2zH5y
-         kYzNByO1EP8rtGOmZn79HK7Ib0jzAVU+4oVRuhvjgUfgvbNwGanq80uHJzkg++mAffn5
-         BW3g==
-X-Gm-Message-State: ACgBeo283o4wewejt3n9tyZCi4ttnh0ECwGgYy7mZNJxriD/We4on0Au
-        vRO3OHw5Qiq6eP3zYTdePxPjMg==
-X-Google-Smtp-Source: AA6agR7LeSLcVbwXq3/KMBB/4NolyBoPQiSArvGA4Equk2AwkQ4jZPQeeX3aOlCbyYy9Ly4w55cPVQ==
-X-Received: by 2002:a05:6402:194d:b0:43d:8001:984b with SMTP id f13-20020a056402194d00b0043d8001984bmr14485132edz.327.1660570126092;
-        Mon, 15 Aug 2022 06:28:46 -0700 (PDT)
-Received: from cloudflare.com (79.184.200.53.ipv4.supernova.orange.pl. [79.184.200.53])
-        by smtp.gmail.com with ESMTPSA id t7-20020a170906948700b0072b32de7794sm4072394ejx.70.2022.08.15.06.28.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 06:28:45 -0700 (PDT)
-References: <20220815130107.149345-1-jakub@cloudflare.com>
- <20220815132137.GB5059@katalix.com>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Tom Parkin <tparkin@katalix.com>
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Haowei Yan <g1042620637@gmail.com>
-Subject: Re: [PATCH net v2] l2tp: Serialize access to sk_user_data with sock
- lock
-Date:   Mon, 15 Aug 2022 15:26:51 +0200
-In-reply-to: <20220815132137.GB5059@katalix.com>
-Message-ID: <875yittz3n.fsf@cloudflare.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=lM1x63cXtRqyiiLyOzbpK/bo/CGl14dfFlrL0sDct7M=;
+        b=gya8/uem30hWb3vT91Sfsz+MGLInt6VOf62/pv1h1H8YecOdHpF+19aeM7cWOS0v3L
+         a4cFcpwbHPwgsAOGlwZm+KKQ9l9kY0qcRmYLtpr6aVacjMMAIMTdM/3j7+C+oTjrgPPy
+         bsjOsif9XUBSO2af3eSuj7gF1EydFzrId3j20gJrdaW5VNNNhG6rhBnjY8D7zU7Uae39
+         WcIeHY/ReqFO+yAVzAYpKyy7FvFZ10kPv9SO46Wd8MIbGVJ2dBMHZdT7qwjK4wHwY08v
+         wV7jlehqXYEAsSwuX5K8QH3czuy6vw+wIAyeQSQ7BVPKIOwIU8ey37tpujDEiD2Dq03O
+         RUKQ==
+X-Gm-Message-State: ACgBeo25FL8pkzbCC2cv4vG4Jlve0HhY9AI9FUpf9dR4P7HVdZU8Slol
+        tX4TVHtcKsZCXAG7freM15CL3k4NB/UdPZRF0IPZBw==
+X-Google-Smtp-Source: AA6agR6bOh+tuAi+2+WncPL3MDp1qLpcS9dP8l9IJYzhkztBVagLuJFnB4eetg8LP5EVcHpBN94r+wObRA/g02rIyWM=
+X-Received: by 2002:a05:620a:1a25:b0:6b6:47:aaf4 with SMTP id
+ bk37-20020a05620a1a2500b006b60047aaf4mr11134781qkb.296.1660570225503; Mon, 15
+ Aug 2022 06:30:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220721204404.388396-1-weiwan@google.com> <ca408271-8730-eb2b-f12e-3f66df2e643a@kernel.org>
+ <CADVnQymVXMamTRP-eSKhwq1M612zx0ZoNd=rs4MtipJNGm5Wcw@mail.gmail.com>
+ <e318ba59-d58a-5826-82c9-6cfc2409cbd4@kernel.org> <f3301080-78c6-a65a-d8b1-59b759a077a4@kernel.org>
+In-Reply-To: <f3301080-78c6-a65a-d8b1-59b759a077a4@kernel.org>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Mon, 15 Aug 2022 09:30:09 -0400
+Message-ID: <CADVnQykRMcumBjxND9E4nSxqA-s3exR3AzJ6+Nf0g+s5H6dqeQ@mail.gmail.com>
+Subject: Re: [PATCH net v2] Revert "tcp: change pingpong threshold to 3"
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        LemmyHuang <hlm3280@163.com>, stable <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 02:21 PM +01, Tom Parkin wrote:
-> [[PGP Signed Part:Undecided]]
-> On  Mon, Aug 15, 2022 at 15:01:07 +0200, Jakub Sitnicki wrote:
->> sk->sk_user_data has multiple users, which are not compatible with each
->> other. To synchronize the users, any check-if-unused-and-set access to the
->> pointer has to happen with sock lock held.
->> 
->> l2tp currently fails to grab the lock when modifying the underlying tunnel
->> socket. Fix it by adding appropriate locking.
->> 
->> We don't to grab the lock when l2tp clears sk_user_data, because it happens
->> only in sk->sk_destruct, when the sock is going away.
->> 
->> v2:
->> - update Fixes to point to origin of the bug
->> - use real names in Reported/Tested-by tags
->> 
->> Fixes: 3557baabf280 ("[L2TP]: PPP over L2TP driver core")
+On Mon, Aug 15, 2022 at 3:48 AM Jiri Slaby <jirislaby@kernel.org> wrote:
 >
-> This still seems wrong to me.
+> On 06. 08. 22, 16:41, Jiri Slaby wrote:
+> > On 06. 08. 22, 13:24, Neal Cardwell wrote:
+> >> On Sat, Aug 6, 2022 at 6:02 AM Jiri Slaby <jirislaby@kernel.org> wrote:
+> >>>
+> >>> On 21. 07. 22, 22:44, Wei Wang wrote:
+> >>>> This reverts commit 4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
+> >>>>
+> >>>> This to-be-reverted commit was meant to apply a stricter rule for the
+> >>>> stack to enter pingpong mode. However, the condition used to check for
+> >>>> interactive session "before(tp->lsndtime, icsk->icsk_ack.lrcvtime)" is
+> >>>> jiffy based and might be too coarse, which delays the stack entering
+> >>>> pingpong mode.
+> >>>> We revert this patch so that we no longer use the above condition to
+> >>>> determine interactive session, and also reduce pingpong threshold to 1.
+> >>>>
+> >>>> Fixes: 4a41f453bedf ("tcp: change pingpong threshold to 3")
+> >>>> Reported-by: LemmyHuang <hlm3280@163.com>
+> >>>> Suggested-by: Neal Cardwell <ncardwell@google.com>
+> >>>> Signed-off-by: Wei Wang <weiwan@google.com>
+> >>>
+> >>>
+> >>> This breaks python-eventlet [1] (and was backported to stable trees):
+> >>> ________________ TestHttpd.test_018b_http_10_keepalive_framing
+> >>> _________________
+> >>>
+> >>> self = <tests.wsgi_test.TestHttpd
+> >>> testMethod=test_018b_http_10_keepalive_framing>
+> >>>
+> >>>       def test_018b_http_10_keepalive_framing(self):
+> >>>           # verify that if an http/1.0 client sends connection:
+> >>> keep-alive
+> >>>           # that we don't mangle the request framing if the app doesn't
+> >>> read the request
+> >>>           def app(environ, start_response):
+> >>>               resp_body = {
+> >>>                   '/1': b'first response',
+> >>>                   '/2': b'second response',
+> >>>                   '/3': b'third response',
+> >>>               }.get(environ['PATH_INFO'])
+> >>>               if resp_body is None:
+> >>>                   resp_body = 'Unexpected path: ' + environ['PATH_INFO']
+> >>>                   if six.PY3:
+> >>>                       resp_body = resp_body.encode('latin1')
+> >>>               # Never look at wsgi.input!
+> >>>               start_response('200 OK', [('Content-type', 'text/plain')])
+> >>>               return [resp_body]
+> >>>
+> >>>           self.site.application = app
+> >>>           sock = eventlet.connect(self.server_addr)
+> >>>           req_body = b'GET /tricksy HTTP/1.1\r\n'
+> >>>           body_len = str(len(req_body)).encode('ascii')
+> >>>
+> >>>           sock.sendall(b'PUT /1 HTTP/1.0\r\nHost:
+> >>> localhost\r\nConnection: keep-alive\r\n'
+> >>>                        b'Content-Length: ' + body_len + b'\r\n\r\n' +
+> >>> req_body)
+> >>>           result1 = read_http(sock)
+> >>>           self.assertEqual(b'first response', result1.body)
+> >>>           self.assertEqual(result1.headers_original.get('Connection'),
+> >>> 'keep-alive')
+> >>>
+> >>>           sock.sendall(b'PUT /2 HTTP/1.0\r\nHost:
+> >>> localhost\r\nConnection: keep-alive\r\n'
+> >>>                        b'Content-Length: ' + body_len + b'\r\nExpect:
+> >>> 100-continue\r\n\r\n')
+> >>>           # Client may have a short timeout waiting on that 100 Continue
+> >>>           # and basically immediately send its body
+> >>>           sock.sendall(req_body)
+> >>>           result2 = read_http(sock)
+> >>>           self.assertEqual(b'second response', result2.body)
+> >>>           self.assertEqual(result2.headers_original.get('Connection'),
+> >>> 'close')
+> >>>
+> >>>   >       sock.sendall(b'PUT /3 HTTP/1.0\r\nHost:
+> >>> localhost\r\nConnection: close\r\n\r\n')
+> >>>
+> >>> tests/wsgi_test.py:648:
+> >>> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+> >>> _ _ _ _
+> >>> eventlet/greenio/base.py:407: in sendall
+> >>>       tail = self.send(data, flags)
+> >>> eventlet/greenio/base.py:401: in send
+> >>>       return self._send_loop(self.fd.send, data, flags)
+> >>> _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+> >>> _ _ _ _
+> >>>
+> >>> self = <eventlet.greenio.base.GreenSocket object at 0x7f5f2f73c9a0>
+> >>> send_method = <built-in method send of socket object at 0x7f5f2f73d520>
+> >>> data = b'PUT /3 HTTP/1.0\r\nHost: localhost\r\nConnection:
+> >>> close\r\n\r\n'
+> >>> args = (0,), _timeout_exc = timeout('timed out'), eno = 32
+> >>>
+> >>>       def _send_loop(self, send_method, data, *args):
+> >>>           if self.act_non_blocking:
+> >>>               return send_method(data, *args)
+> >>>
+> >>>           _timeout_exc = socket_timeout('timed out')
+> >>>           while True:
+> >>>               try:
+> >>>   >               return send_method(data, *args)
+> >>> E               BrokenPipeError: [Errno 32] Broken pipe
+> >>>
+> >>> eventlet/greenio/base.py:388: BrokenPipeError
+> >>> ====================
+> >>>
+> >>> Reverting this revert on the top of 5.19 solves the issue.
+> >>>
+> >>> Any ideas?
+> >>
+> >> Interesting. This revert should return the kernel back to the delayed
+> >> ACK behavior it had for many years before May 2019 and Linux 5.1,
+> >> which contains the commit it is reverting:
+> >>
+> >>    4a41f453bedfd tcp: change pingpong threshold to 3
+> >>
+> >> It sounds like perhaps this test you mention has an implicit
+> >> dependence on the timing of delayed ACKs.
+> >>
+> >> A few questions:
+> >
+> > Dunno. I am only an openSUSE kernel maintainer and this popped out at
+> > me. Feel free to dig to eventlet's sources on your own :P.
 >
-> In 3557baabf280 pppol2tp_connect checks/sets sk_user_data with
-> lock_sock held.
-
-I think you are referring to the PPP-over-L2TP socket, not the UDP
-socket. In pppol2tp_prepare_tunnel_socket() @ 3557baabf280 we're not
-holding the sock lock over the UDP socket, AFAICT.
-
+> Any updates on this or should I send a revert directly?
 >
->> Reported-by: Haowei Yan <g1042620637@gmail.com>
->> Tested-by: Haowei Yan <g1042620637@gmail.com>
->> Signed-off-by: Jakub Sitnicki <jakub@cloudflare.com>
->> ---
->> Cc: Tom Parkin <tparkin@katalix.com>
->> 
->>  net/l2tp/l2tp_core.c | 17 +++++++++++------
->>  1 file changed, 11 insertions(+), 6 deletions(-)
->> 
->> diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
->> index 7499c51b1850..9f5f86bfc395 100644
->> --- a/net/l2tp/l2tp_core.c
->> +++ b/net/l2tp/l2tp_core.c
->> @@ -1469,16 +1469,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->>  		sock = sockfd_lookup(tunnel->fd, &ret);
->>  		if (!sock)
->>  			goto err;
->> -
->> -		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
->> -		if (ret < 0)
->> -			goto err_sock;
->>  	}
->>  
->> +	sk = sock->sk;
->> +	lock_sock(sk);
->> +
->> +	ret = l2tp_validate_socket(sk, net, tunnel->encap);
->> +	if (ret < 0)
->> +		goto err_sock;
->> +
->>  	tunnel->l2tp_net = net;
->>  	pn = l2tp_pernet(net);
->>  
->> -	sk = sock->sk;
->>  	sock_hold(sk);
->>  	tunnel->sock = sk;
->>  
->> @@ -1504,7 +1506,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->>  
->>  		setup_udp_tunnel_sock(net, sock, &udp_cfg);
->>  	} else {
->> -		sk->sk_user_data = tunnel;
->> +		rcu_assign_sk_user_data(sk, tunnel);
->>  	}
->>  
->>  	tunnel->old_sk_destruct = sk->sk_destruct;
->> @@ -1518,6 +1520,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->>  	if (tunnel->fd >= 0)
->>  		sockfd_put(sock);
->>  
->> +	release_sock(sk);
->>  	return 0;
->>  
->>  err_sock:
->> @@ -1525,6 +1528,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
->>  		sock_release(sock);
->>  	else
->>  		sockfd_put(sock);
->> +
->> +	release_sock(sk);
->>  err:
->>  	return ret;
->>  }
->> -- 
->> 2.35.3
->> 
+> The "before() &&" part of the patch makes the difference. That is this diff:
+> --- a/net/ipv4/tcp_output.c
+> +++ b/net/ipv4/tcp_output.c
+> @@ -172,9 +172,17 @@ static void tcp_event_data_sent(struct tcp_sock *tp,
+>           * and it is a reply for ato after last received packet,
+>           * increase pingpong count.
+>           */
+> -       if (before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
+> -           (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato)
+> +       pr_info("%s: sk=%p (%llx:%x) now=%u lsndtime=%u lrcvtime=%u
+> ping=%u\n",
+> +                       __func__, sk, sk->sk_addrpair, sk->sk_portpair, now,
+> +                       tp->lsndtime, icsk->icsk_ack.lrcvtime,
+> +                       inet_csk(sk)->icsk_ack.pingpong);
+> +       if (//before(tp->lsndtime, icsk->icsk_ack.lrcvtime) &&
+> +           (u32)(now - icsk->icsk_ack.lrcvtime) < icsk->icsk_ack.ato) {
+>                  inet_csk_inc_pingpong_cnt(sk);
+> +               pr_info("\tINC ping=%u before=%u\n",
+> +                               inet_csk(sk)->icsk_ack.pingpong,
+> +                               before(tp->lsndtime,
+> icsk->icsk_ack.lrcvtime));
+> +       }
+>
+>          tp->lsndtime = now;
+>   }
+>
+> makes it work again, and outputs this:
+>
+>  > TCP: tcp_event_data_sent: sk=00000000fd67cf8d
+> (100007f0100007f:e858b18b) now=4294902140 lsndtime=4294902140
+> lrcvtime=4294902140 ping=0
+>  > TCP: tcp_event_data_sent: sk=00000000a4becf82
+> (100007f0100007f:8bb158e8) now=4294902143 lsndtime=4294902140
+> lrcvtime=4294902142 ping=0
+>  > TCP:     INC ping=1 before=1
+>  > TCP: tcp_event_data_sent: sk=00000000fd67cf8d
+> (100007f0100007f:e858b18b) now=4294902145 lsndtime=4294902140
+> lrcvtime=4294902144 ping=0
+>  > TCP:     INC ping=1 before=1
+>  > TCP: tcp_event_data_sent: sk=00000000fd67cf8d
+> (100007f0100007f:e858b18b) now=4294902147 lsndtime=4294902145
+> lrcvtime=4294902144 ping=1
+>  > TCP:     INC ping=2 before=0
+>
+> IMO, this "before=0" is the "source" of the problem. But I have no idea
+> what this means at all...
+>
+>  > TCP: tcp_event_data_sent: sk=00000000a4becf82
+> (100007f0100007f:8bb158e8) now=4294902149 lsndtime=4294902143
+> lrcvtime=4294902148 ping=1
+>  > TCP:     INC ping=2 before=1
+>  > TCP: tcp_event_data_sent: sk=00000000fd67cf8d
+> (100007f0100007f:e858b18b) now=4294902151 lsndtime=4294902147
+> lrcvtime=4294902150 ping=3
+>  > TCP:     INC ping=4 before=1
+>  > TCP: tcp_event_data_sent: sk=00000000c7a417e9
+> (100007f0100007f:e85ab18b) now=4294902153 lsndtime=4294902153
+> lrcvtime=4294902153 ping=0
+>  > TCP: tcp_event_data_sent: sk=000000008681183e
+> (100007f0100007f:8bb15ae8) now=4294902155 lsndtime=4294902153
+> lrcvtime=4294902154 ping=0
+>  > TCP:     INC ping=1 before=1
 
+It sounds like this test has a very specific dependence on the buggy
+delayed ACK timing behavior from the buggy commit
+4a41f453bedfd5e9cd040bad509d9da49feb3e2c.
+
+IMHO I don't think we can revert a kernel bug fix based on a test that
+decided to depend on the exact timing of delayed ACKs during a time
+when that delayed ACK behavior was buggy. :-)
+
+best regards,
+neal
