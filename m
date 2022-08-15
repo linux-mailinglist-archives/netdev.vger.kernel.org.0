@@ -2,163 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE87592BD3
-	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64339592BEE
+	for <lists+netdev@lfdr.de>; Mon, 15 Aug 2022 12:51:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232031AbiHOJhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 05:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
+        id S242156AbiHOJon (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 05:44:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbiHOJhG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:37:06 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEAE1EC61;
-        Mon, 15 Aug 2022 02:37:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660556225; x=1692092225;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=AXXaTyZOIZGMRQ2mE61yr2DkSiSB1u9Ymvz6MvmMtos=;
-  b=boN89XTPfLBM3RNle3vkDpcC1/jT932T8wECqafpUIBNVVGhyysSJv2R
-   EEWqTBFkzx+JgtaR6hR/8z4JDjxRtjgbTOyl7Fo/aJ9w6KYV1fhfKLJgA
-   HvCCEa056z7Q7+2OZhg/8UfS0575BPhstPGb2tggreqp/2dLv+wgp3mF8
-   7d7oylrQLgHo2zY9o4Ze7Pg0ySPKE4X+L12gA2nvLaWmQEsuBFHDttQ8S
-   /iGFSOyFK7xr81gxcp7Pn7ww/Oc6iQW4XY4ed+Zm9wHCe0bHQELD4yTdz
-   24qrJ+sYAcsjP7Ms+KA4aubWzeqAnFFlpO0w+Bk/xe9iMMERyuSpJvBCk
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10439"; a="289495385"
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="289495385"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 02:36:54 -0700
-X-IronPort-AV: E=Sophos;i="5.93,238,1654585200"; 
-   d="scan'208";a="934423231"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.31.45]) ([10.255.31.45])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 02:36:52 -0700
-Message-ID: <5cb5f67a-396c-ee04-cad3-1fdb44202e96@intel.com>
-Date:   Mon, 15 Aug 2022 17:36:49 +0800
+        with ESMTP id S242142AbiHOJol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 05:44:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2148E2253A;
+        Mon, 15 Aug 2022 02:44:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8B7261026;
+        Mon, 15 Aug 2022 09:44:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82466C433C1;
+        Mon, 15 Aug 2022 09:44:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660556679;
+        bh=QaGBzqhn0ZD/7Zc89Ov2cg1W44KZCJ7lb2WJY5GCRe0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R2Ofi4zyad+oWz3HSL8eqIZkRZa1q6PYP3byrgrIvNeESt3UDcRvypPVdxOIa0rLu
+         DJfDWXiIXk+lF+2z8fMZbipcFDoqefOkINi/1sKBUey2Ymdx3AYmxXsJ6A0tEfmY6o
+         MGL2DWhpT+5/Rwrj3yZTlmHwSjFtDlF+RXnSbC7SDlhUp7ccqHs1/cifyQQ0V3V6T4
+         eUo1MzxbSFxwVkhE4lY/UCmKW1kbznB+YilWQ6Ot1hD/hxHDXIY4AI+8oMmFYjq+tv
+         pEAxBC0eHySIMaUe2GNV6CCNmyd4r/vsF9MXNBW3H411HH5kEMvFGBcYFu4hGu/iDP
+         av0IFTplRP1SA==
+Date:   Mon, 15 Aug 2022 11:44:32 +0200
+From:   Christian Brauner <brauner@kernel.org>
+To:     Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+Cc:     netdev@vger.kernel.org, "Denis V. Lunev" <den@openvz.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@kernel.org>,
+        Yajun Deng <yajun.deng@linux.dev>,
+        Roopa Prabhu <roopa@nvidia.com>, linux-kernel@vger.kernel.org,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        kernel@openvz.org, devel@openvz.org
+Subject: Re: [PATCH v2 1/2] neigh: fix possible DoS due to net iface
+ start/stop loop
+Message-ID: <20220815094432.tdqdfh3pwcfekegg@wittgenstein>
+References: <20220729103559.215140-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20220810160840.311628-1-alexander.mikhalitsyn@virtuozzo.com>
+ <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.12.0
-Subject: Re: [PATCH V5 0/6] ifcvf/vDPA: support query device config space
- through netlink
-Content-Language: en-US
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     jasowang@redhat.com, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, kvm@vger.kernel.org, parav@nvidia.com,
-        xieyongji@bytedance.com, gautam.dawar@amd.com
-References: <20220812104500.163625-1-lingshan.zhu@intel.com>
- <20220812071251-mutt-send-email-mst@kernel.org>
- <20220812071638-mutt-send-email-mst@kernel.org>
- <d07dc70e-e97b-9b9e-3ef2-c3f648c57a05@intel.com>
-In-Reply-To: <d07dc70e-e97b-9b9e-3ef2-c3f648c57a05@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220810160840.311628-2-alexander.mikhalitsyn@virtuozzo.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 10, 2022 at 07:08:39PM +0300, Alexander Mikhalitsyn wrote:
+> From: "Denis V. Lunev" <den@openvz.org>
+> 
+> Normal processing of ARP request (usually this is Ethernet broadcast
+> packet) coming to the host is looking like the following:
+> * the packet comes to arp_process() call and is passed through routing
+>   procedure
+> * the request is put into the queue using pneigh_enqueue() if
+>   corresponding ARP record is not local (common case for container
+>   records on the host)
+> * the request is processed by timer (within 80 jiffies by default) and
+>   ARP reply is sent from the same arp_process() using
+>   NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED condition (flag is set inside
+>   pneigh_enqueue())
+> 
+> And here the problem comes. Linux kernel calls pneigh_queue_purge()
+> which destroys the whole queue of ARP requests on ANY network interface
+> start/stop event through __neigh_ifdown().
+> 
+> This is actually not a problem within the original world as network
+> interface start/stop was accessible to the host 'root' only, which
+> could do more destructive things. But the world is changed and there
+> are Linux containers available. Here container 'root' has an access
+> to this API and could be considered as untrusted user in the hosting
+> (container's) world.
+> 
+> Thus there is an attack vector to other containers on node when
+> container's root will endlessly start/stop interfaces. We have observed
+> similar situation on a real production node when docker container was
+> doing such activity and thus other containers on the node become not
+> accessible.
+> 
+> The patch proposed doing very simple thing. It drops only packets from
+> the same namespace in the pneigh_queue_purge() where network interface
+> state change is detected. This is enough to prevent the problem for the
+> whole node preserving original semantics of the code.
 
+This is how I'd do it as well.
 
-On 8/12/2022 7:41 PM, Zhu, Lingshan wrote:
->
->
-> On 8/12/2022 7:17 PM, Michael S. Tsirkin wrote:
->> On Fri, Aug 12, 2022 at 07:14:39AM -0400, Michael S. Tsirkin wrote:
->>> On Fri, Aug 12, 2022 at 06:44:54PM +0800, Zhu Lingshan wrote:
->>>> This series allows userspace to query device config space of vDPA
->>>> devices and the management devices through netlink,
->>>> to get multi-queue, feature bits and etc.
->>>>
->>>> This series has introduced a new netlink attr
->>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES, this should be used to query
->>>> features of vDPA  devices than the management device.
->>>>
->>>> Please help review.
->>> I can't merge this for this merge window.
->>> Am I right when I say that the new thing here is patch 5/6 + new
->>> comments?
->>> If yes I can queue it out of the window, on top.
->> So at this point, can you please send patches on top of the vhost
->> tree? I think these are just patches 3 and 5 but please confirm.
-> I will rebase them on vhost tree and resend them soon, main changes 
-> are in patch 5,
-> we have made MTU, MAC, MQ conditional there. And there are some new 
-> comments as
-> you suggested.
-Hi Michael,
+> 
+> v2:
+> 	- do del_timer_sync() if queue is empty after pneigh_queue_purge()
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: David Ahern <dsahern@kernel.org>
+> Cc: Yajun Deng <yajun.deng@linux.dev>
+> Cc: Roopa Prabhu <roopa@nvidia.com>
+> Cc: Christian Brauner <brauner@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+> Cc: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+> Cc: Konstantin Khorenko <khorenko@virtuozzo.com>
+> Cc: kernel@openvz.org
+> Cc: devel@openvz.org
+> Investigated-by: Alexander Mikhalitsyn <alexander.mikhalitsyn@virtuozzo.com>
+> Signed-off-by: Denis V. Lunev <den@openvz.org>
+> ---
+>  net/core/neighbour.c | 25 +++++++++++++++++--------
+>  1 file changed, 17 insertions(+), 8 deletions(-)
+> 
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 54625287ee5b..19d99d1eff53 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -307,14 +307,23 @@ static int neigh_del_timer(struct neighbour *n)
+>  	return 0;
+>  }
+>  
+> -static void pneigh_queue_purge(struct sk_buff_head *list)
+> +static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+>  {
+> +	unsigned long flags;
+>  	struct sk_buff *skb;
+>  
+> -	while ((skb = skb_dequeue(list)) != NULL) {
+> -		dev_put(skb->dev);
+> -		kfree_skb(skb);
+> +	spin_lock_irqsave(&list->lock, flags);
 
-I have rebased patch 3/6 and 5/6, they can apply on both vhost tree
-and Linus tree, the new series including these two patches are sent out.
+I'm a bit surprised to see a spinlock held around a while loop walking a
+linked list but that seems to be quite common in this file. I take it
+the lists are guaranteed to be short.
 
-Thanks,
-Zhu Lingshan
->
->
-> Thanks,
-> Zhu Lingshan
->>
->>
->>>> Thanks!
->>>> Zhu Lingshan
->>>>
->>>> Changes rom V4:
->>>> (1) Read MAC, MTU, MQ conditionally (Michael)
->>>> (2) If VIRTIO_NET_F_MAC not set, don't report MAC to userspace
->>>> (3) If VIRTIO_NET_F_MTU not set, report 1500 to userspace
->>>> (4) Add comments to the new attr
->>>> VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES(Michael)
->>>> (5) Add comments for reporting the device status as LE(Michael)
->>>>
->>>> Changes from V3:
->>>> (1)drop the fixes tags(Parva)
->>>> (2)better commit log for patch 1/6(Michael)
->>>> (3)assign num_queues to max_supported_vqs than max_vq_pairs(Jason)
->>>> (4)initialize virtio pci capabilities in the probe() function.
->>>>
->>>> Changes from V2:
->>>> Add fixes tags(Parva)
->>>>
->>>> Changes from V1:
->>>> (1) Use __virito16_to_cpu(true, xxx) for the le16 casting(Jason)
->>>> (2) Add a comment in ifcvf_get_config_size(), to explain
->>>> why we should return the minimum value of
->>>> sizeof(struct virtio_net_config) and the onboard
->>>> cap size(Jason)
->>>> (3) Introduced a new attr VDPA_ATTR_VDPA_DEV_SUPPORTED_FEATURES
->>>> (4) Show the changes of iproute2 output before and after 5/6 
->>>> patch(Jason)
->>>> (5) Fix cast warning in vdpa_fill_stats_rec()
->>>>
->>>> Zhu Lingshan (6):
->>>>    vDPA/ifcvf: get_config_size should return a value no greater 
->>>> than dev
->>>>      implementation
->>>>    vDPA/ifcvf: support userspace to query features and MQ of a 
->>>> management
->>>>      device
->>>>    vDPA: allow userspace to query features of a vDPA device
->>>>    vDPA: !FEATURES_OK should not block querying device config space
->>>>    vDPA: Conditionally read fields in virtio-net dev config space
->>>>    fix 'cast to restricted le16' warnings in vdpa.c
->>>>
->>>>   drivers/vdpa/ifcvf/ifcvf_base.c |  13 ++-
->>>>   drivers/vdpa/ifcvf/ifcvf_base.h |   2 +
->>>>   drivers/vdpa/ifcvf/ifcvf_main.c | 142 
->>>> +++++++++++++++++---------------
->>>>   drivers/vdpa/vdpa.c             |  82 ++++++++++++------
->>>>   include/uapi/linux/vdpa.h       |   3 +
->>>>   5 files changed, 149 insertions(+), 93 deletions(-)
->>>>
->>>> -- 
->>>> 2.31.1
->
-
+> +	skb = skb_peek(list);
+> +	while (skb != NULL) {
+> +		struct sk_buff *skb_next = skb_peek_next(skb, list);
+> +		if (net == NULL || net_eq(dev_net(skb->dev), net)) {
+> +			__skb_unlink(skb, list);
+> +			dev_put(skb->dev);
+> +			kfree_skb(skb);
+> +		}
+> +		skb = skb_next;
+>  	}
+> +	spin_unlock_irqrestore(&list->lock, flags);
+>  }
+>  
+>  static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
+> @@ -385,9 +394,9 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+>  	write_lock_bh(&tbl->lock);
+>  	neigh_flush_dev(tbl, dev, skip_perm);
+>  	pneigh_ifdown_and_unlock(tbl, dev);
+> -
+> -	del_timer_sync(&tbl->proxy_timer);
+> -	pneigh_queue_purge(&tbl->proxy_queue);
+> +	pneigh_queue_purge(&tbl->proxy_queue, dev_net(dev));
+> +	if (skb_queue_empty_lockless(&tbl->proxy_queue))
+> +		del_timer_sync(&tbl->proxy_timer);
+>  	return 0;
+>  }
+>  
+> @@ -1787,7 +1796,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+>  	cancel_delayed_work_sync(&tbl->managed_work);
+>  	cancel_delayed_work_sync(&tbl->gc_work);
+>  	del_timer_sync(&tbl->proxy_timer);
+> -	pneigh_queue_purge(&tbl->proxy_queue);
+> +	pneigh_queue_purge(&tbl->proxy_queue, NULL);
+>  	neigh_ifdown(tbl, NULL);
+>  	if (atomic_read(&tbl->entries))
+>  		pr_crit("neighbour leakage\n");
+> -- 
+> 2.36.1
+> 
