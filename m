@@ -2,169 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94A8F594A8E
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 02:18:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF96D594B4E
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 02:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351750AbiHPAEh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 15 Aug 2022 20:04:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
+        id S1351753AbiHPAOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 15 Aug 2022 20:14:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355561AbiHPAAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 20:00:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ACD9E9677F
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660594920;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rm2wKHLo3eIkvMoJ4hWHfr10tTEqNp9fs5ikAVIvZnA=;
-        b=iTFOV2zgxYI5uGizZwS3h2ZaLFKvaGkSRGBThc0ESfPTxByQIcuykx5QuN5iahqyZlJgWz
-        NqGulhz08WX7CAJHHh6Hwk+dL9s6qUeD/NwB86UN/ELoogLYkRAmHAT7ELZKnTrwEB2LlT
-        t6h+OHj/3FYD3ZZI2HvqUtjY1Il8Tas=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-467-pZiRzUiINlS8nc0w0Vit_Q-1; Mon, 15 Aug 2022 16:21:59 -0400
-X-MC-Unique: pZiRzUiINlS8nc0w0Vit_Q-1
-Received: by mail-wm1-f71.google.com with SMTP id c189-20020a1c35c6000000b003a4bfb16d86so3955141wma.3
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:21:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Rm2wKHLo3eIkvMoJ4hWHfr10tTEqNp9fs5ikAVIvZnA=;
-        b=AZICYBOxgahnE6itvR1e1Cb607H1iPyebv6ejU+NguQiXSq89JYbLNWu/jxOm5FtLj
-         oItf+jZtijGy/+0GmwnlzCIKl6zt0gSaHmVIFdTSQbWyAHWe3gzDHgW/l+p2Jqn5+YzH
-         KomqWnfARQVWSRB71nki6ZypGIlgvwZYdmXFh/WzI+Pao5qX3In5VMxrbnn8FPuaktdS
-         SBOGYrLrgpgvfyhLbKwggfG7963pVAAAhKErXICss8Rtb6sOP4xHhwOYt3HJfn8LMedI
-         CXcX7PDtBp12hOJ5yNsSrfvYysK9SDJPZHY42GQlxs8dRUgWFvUqKLWjinhpQ2i3C3Zy
-         nHEg==
-X-Gm-Message-State: ACgBeo2nf6PCv41/wzmm2YO86CfE0X2K3+P8S/ixh3eJTXmanfNogjSG
-        dJoJ6D4mqi3rhLzxmllW0oHBaH6IwWPm4MAu/57gjvbmQmK2w1uaZ8//JWVVQjbgU9Anpsgpxxy
-        rqzPM3dAf2q54khPa
-X-Received: by 2002:a7b:cb0e:0:b0:3a5:afff:d520 with SMTP id u14-20020a7bcb0e000000b003a5afffd520mr16521520wmj.3.1660594918277;
-        Mon, 15 Aug 2022 13:21:58 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6afLEHm3zW7k4Gxy/c/Vt6rsCXaxSClRUlE4+wMWQqwu2WwHKMucdlqtxtUbqpr2PcXXxaHg==
-X-Received: by 2002:a7b:cb0e:0:b0:3a5:afff:d520 with SMTP id u14-20020a7bcb0e000000b003a5afffd520mr16521507wmj.3.1660594918038;
-        Mon, 15 Aug 2022 13:21:58 -0700 (PDT)
-Received: from redhat.com ([2.55.43.215])
-        by smtp.gmail.com with ESMTPSA id e14-20020a05600c4e4e00b003a31ca9dfb6sm13620139wmq.32.2022.08.15.13.21.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 13:21:56 -0700 (PDT)
-Date:   Mon, 15 Aug 2022 16:21:51 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Andres Freund <andres@anarazel.de>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        James Bottomley <James.Bottomley@hansenpartnership.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        c@redhat.com
-Subject: Re: upstream kernel crashes
-Message-ID: <20220815161423-mutt-send-email-mst@kernel.org>
-References: <CAHk-=wikzU4402P-FpJRK_QwfVOS+t-3p1Wx5awGHTvr-s_0Ew@mail.gmail.com>
- <20220815071143.n2t5xsmifnigttq2@awork3.anarazel.de>
- <20220815034532-mutt-send-email-mst@kernel.org>
- <20220815081527.soikyi365azh5qpu@awork3.anarazel.de>
- <20220815042623-mutt-send-email-mst@kernel.org>
- <FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE@anarazel.de>
- <20220815113729-mutt-send-email-mst@kernel.org>
- <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de>
- <20220815124748-mutt-send-email-mst@kernel.org>
- <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
+        with ESMTP id S1356637AbiHPAMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 15 Aug 2022 20:12:07 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EDBBCCE38
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:29:32 -0700 (PDT)
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FIbwYg014763
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:29:31 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=zrAu2d6Awa3DTHIWUHb462duCgxHnfPFFfUZlSOGOdk=;
+ b=oyYACSCpPU418kbuX5HnHwP0VwsFL2GVaC6E8GVNeMhNomimS3MT9MlZWIlBSNcHSvMO
+ o3dkrbeWxU6FFw9diVrI2pP5H/d3ZLZPPrGE+O6x+YpP1QjxRPpVlyxC9ORJzPSZnK9M
+ 9MwhhKiWS+SDqcCK7wunnKN5eRWoOqkkn8E= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hyry8t3vw-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:29:31 -0700
+Received: from twshared22246.03.prn5.facebook.com (2620:10d:c085:108::8) by
+ mail.thefacebook.com (2620:10d:c085:21d::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 15 Aug 2022 13:29:30 -0700
+Received: by devbig150.prn5.facebook.com (Postfix, from userid 187975)
+        id BC718DF6F050; Mon, 15 Aug 2022 13:29:18 -0700 (PDT)
+From:   Jie Meng <jmeng@fb.com>
+To:     <netdev@vger.kernel.org>
+CC:     <kafai@fb.com>, <kuba@kernel.org>, <edumazet@google.com>,
+        <bpf@vger.kernel.org>, Jie Meng <jmeng@fb.com>
+Subject: [PATCH net-next] tcp: Make SYN ACK RTO tunable by BPF programs with TFO
+Date:   Mon, 15 Aug 2022 13:29:00 -0700
+Message-ID: <20220815202900.3961097-1-jmeng@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: hNBfo_ZLakzw7fuLPYJ1SpqX9e9Sakpz
+X-Proofpoint-ORIG-GUID: hNBfo_ZLakzw7fuLPYJ1SpqX9e9Sakpz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:46:17AM -0700, Andres Freund wrote:
-> Hi,
-> 
-> On 2022-08-15 12:50:52 -0400, Michael S. Tsirkin wrote:
-> > On Mon, Aug 15, 2022 at 09:45:03AM -0700, Andres Freund wrote:
-> > > Hi,
-> > > 
-> > > On 2022-08-15 11:40:59 -0400, Michael S. Tsirkin wrote:
-> > > > OK so this gives us a quick revert as a solution for now.
-> > > > Next, I would appreciate it if you just try this simple hack.
-> > > > If it crashes we either have a long standing problem in virtio
-> > > > code or more likely a gcp bug where it can't handle smaller
-> > > > rings than what device requestes.
-> > > > Thanks!
-> > > 
-> > > I applied the below and the problem persists.
-> > > 
-> > > [...]
-> >
-> > Okay!
-> 
-> Just checking - I applied and tested this atop 6.0-rc1, correct? Or did you
-> want me to test it with the 762faee5a267 reverted? I guess what you're trying
-> to test if a smaller queue than what's requested you'd want to do so without
-> the problematic patch applied...
-> 
-> 
-> > And just to be 100% sure, can you try the following on top of 5.19:
-> 
-> > diff --git a/drivers/virtio/virtio_pci_modern.c b/drivers/virtio/virtio_pci_modern.c
-> > index 623906b4996c..6f4e54a618bc 100644
-> > --- a/drivers/virtio/virtio_pci_modern.c
-> > +++ b/drivers/virtio/virtio_pci_modern.c
-> > @@ -208,6 +208,9 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
-> >  		return ERR_PTR(-EINVAL);
-> >  	}
-> >  
-> > +	if (num > 1024)
-> > +		num = 1024;
-> > +
-> >  	info->msix_vector = msix_vec;
-> >  
-> >  	/* create the vring */
-> > 
-> > -- 
-> 
-> Either way, I did this, and there are no issues that I could observe. No
-> oopses, no broken networking. But:
-> 
-> To make sure it does something I added a debugging printk - which doesn't show
-> up. I assume this is at a point at least earlyprintk should work (which I see
-> getting enabled via serial)?
-> 
-> Greetings,
-> 
-> Andres Freund
+Instead of the hardcoded TCP_TIMEOUT_INIT, this diff calls tcp_timeout_in=
+it
+to initiate req->timeout like the non TFO SYN ACK case.
 
+Tested using the following packetdrill script, on a host with a BPF
+program that sets the initial connect timeout to 10ms.
 
-Sorry if I was unclear.  I wanted to know whether the change somehow
-exposes a driver bug or a GCP bug. So what I wanted to do is to test
-this patch on top of *5.19*, not on top of the revert.
-The idea is if we reduce the size and it starts crashing then
-we know it's GCP fault, if not then GCP can handle smaller sizes
-and it's one of the driver changes.
+`../../common/defaults.sh`
 
-It will apply on top of the revert but won't do much.
+// Initialize connection
+    0 socket(..., SOCK_STREAM, IPPROTO_TCP) =3D 3
+   +0 setsockopt(3, SOL_TCP, TCP_FASTOPEN, [1], 4) =3D 0
+   +0 bind(3, ..., ...) =3D 0
+   +0 listen(3, 1) =3D 0
 
-Yes I think printk should work here.
+   +0 < S 0:0(0) win 32792 <mss 1000,sackOK,FO TFO_COOKIE>
+   +0 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+   +.01 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+   +.02 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+   +.04 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+   +.01 < . 1:1(0) ack 1 win 32792
 
--- 
-MST
+   +0 accept(3, ..., ...) =3D 4
+
+Signed-off-by: Jie Meng <jmeng@fb.com>
+---
+ net/ipv4/tcp_fastopen.c | 3 ++-
+ net/ipv4/tcp_timer.c    | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 825b216d11f5..45cc7f1ca296 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -272,8 +272,9 @@ static struct sock *tcp_fastopen_create_child(struct =
+sock *sk,
+ 	 * The request socket is not added to the ehash
+ 	 * because it's been added to the accept queue directly.
+ 	 */
++	req->timeout =3D tcp_timeout_init(child);
+ 	inet_csk_reset_xmit_timer(child, ICSK_TIME_RETRANS,
+-				  TCP_TIMEOUT_INIT, TCP_RTO_MAX);
++				  req->timeout, TCP_RTO_MAX);
+=20
+ 	refcount_set(&req->rsk_refcnt, 2);
+=20
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index b4dfb82d6ecb..cb79127f45c3 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -428,7 +428,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk=
+, struct request_sock *req)
+ 	if (!tp->retrans_stamp)
+ 		tp->retrans_stamp =3D tcp_time_stamp(tp);
+ 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
+-			  TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
++			  req->timeout << req->num_timeout, TCP_RTO_MAX);
+ }
+=20
+=20
+--=20
+2.30.2
 
