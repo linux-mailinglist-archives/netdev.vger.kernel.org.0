@@ -2,61 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71FBE59512C
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 06:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C785950C7
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 06:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbiHPEwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 00:52:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44364 "EHLO
+        id S232163AbiHPEqn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 00:46:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiHPEvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 00:51:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9324B17CFA7;
-        Mon, 15 Aug 2022 13:49:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED91E6128E;
-        Mon, 15 Aug 2022 20:49:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BF5C433D6;
-        Mon, 15 Aug 2022 20:49:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660596550;
-        bh=ZVE2RNHPOttuDHZ2xX2gbbcEhpFNhv9Nt5X6GeRZKSY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUkQtYIDzoOpYCzOKmbhgMMr5vl7QPNPhlItf34lzDhv3ryYDyHMbmMReGhlQxrlt
-         km1KxFYXliLYUSXFtaeoQdZBkvfhgLipR378qM8LbRtoF+QmmIoayMDuE0h3p97vPz
-         SDJtrzo9rjBMTHQcUKQn+1aJCbKC8ENgEPUVl0z8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Lindner <mareklindner@neomailbox.ch>,
-        Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
+        with ESMTP id S232981AbiHPEqS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 00:46:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2ACB325
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:42:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660596179;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=i1RagYWszqaSjhWpfjC6egbrOKZNG+z96AnlUoGxM5s=;
+        b=OppNVZ0+96UeID/p0ojiE5t+bPilayA6ONyDPGUzM3xC8VR0eO+2GdOdgNm7EB5zvB8ueZ
+        Ts/vBIoOyqtZ41EdOHJSzM1k+G67B5kAvjzA1fb0wETednwB02sQAlnkk7pVs93IHyxWR7
+        BRY8EqF3FEJ47GbpiIjUkQ/zW5f56Sk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-175-uvYnCvY3Nzmqs9kMPRHvng-1; Mon, 15 Aug 2022 16:42:57 -0400
+X-MC-Unique: uvYnCvY3Nzmqs9kMPRHvng-1
+Received: by mail-ed1-f71.google.com with SMTP id z20-20020a05640235d400b0043e1e74a495so5433819edc.11
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 13:42:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=i1RagYWszqaSjhWpfjC6egbrOKZNG+z96AnlUoGxM5s=;
+        b=ThR58hIofWEURfLFfN5cR/xpS67S6lerjf9w6onv0s8kQM8ahXfl//yKRdme5/6m+n
+         SEsrqLd3MeZmah6sw1AxtVjtRA/H/lqC524yCuWVxi9FwJ3geEbB2vWNkrwAw44YcIBG
+         f8hsexacTIYx31iyAGYaOpl71jIHHQXAV+Tf75l2C4idUVW+/RXCnhu4B39I670WzLF8
+         UrkyIcmS316pMRik5QuQrO6nIApadFHe8mIOCE7DwTqmJcQsljSOaP0JVUsLvKLm6IeS
+         1xsmTfDdqWJvAYgEFCoOHEl/fYMhQK7mpHcgprT4qIQckCClCIj1W4z8TbNdyimsBNjx
+         IZjg==
+X-Gm-Message-State: ACgBeo1A2NMsAtmuJuq8yi6esPz7mceiDpS7INfQYO+sQg+2Y7esetuQ
+        0j5vsHFFXDjRp5Xh84UlVSPNy0HRD+vJfSupFDrUS9D63Oc/V2e/njZ3+cudEnKTRj5XPKa/1RZ
+        CAcYVbg2B2VgKBAbq
+X-Received: by 2002:aa7:cb83:0:b0:443:3f15:84fe with SMTP id r3-20020aa7cb83000000b004433f1584femr14740036edt.17.1660596176537;
+        Mon, 15 Aug 2022 13:42:56 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR67uibTwHp3zJpk5WxR1XmHZTPFlM/8VgduWGMLCUUk/aIaJaspiMaWyR27MrJMbnjfUjKX9g==
+X-Received: by 2002:aa7:cb83:0:b0:443:3f15:84fe with SMTP id r3-20020aa7cb83000000b004433f1584femr14740015edt.17.1660596176355;
+        Mon, 15 Aug 2022 13:42:56 -0700 (PDT)
+Received: from redhat.com ([2.55.43.215])
+        by smtp.gmail.com with ESMTPSA id g1-20020a1709061e0100b00730a8190f54sm4421436ejj.102.2022.08.15.13.42.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Aug 2022 13:42:55 -0700 (PDT)
+Date:   Mon, 15 Aug 2022 16:42:51 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-kernel@vger.kernel.org,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Andres Freund <andres@anarazel.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org,
-        Sven Eckelmann <sven@narfation.org>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.19 1114/1157] batman-adv: tracing: Use the new __vstring() helper
-Date:   Mon, 15 Aug 2022 20:07:50 +0200
-Message-Id: <20220815180524.874593378@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220815180439.416659447@linuxfoundation.org>
-References: <20220815180439.416659447@linuxfoundation.org>
-User-Agent: quilt/0.67
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Greg KH <gregkh@linuxfoundation.org>, c@redhat.com
+Subject: Re: [PATCH] virtio_net: Revert "virtio_net: set the default max ring
+ size by find_vqs()"
+Message-ID: <20220815164013-mutt-send-email-mst@kernel.org>
+References: <20220815090521.127607-1-mst@redhat.com>
+ <20220815203426.GA509309@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220815203426.GA509309@roeck-us.net>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,69 +89,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Steven Rostedt (Google) <rostedt@goodmis.org>
+On Mon, Aug 15, 2022 at 01:34:26PM -0700, Guenter Roeck wrote:
+> On Mon, Aug 15, 2022 at 05:16:50AM -0400, Michael S. Tsirkin wrote:
+> > This reverts commit 762faee5a2678559d3dc09d95f8f2c54cd0466a7.
+> > 
+> > This has been reported to trip up guests on GCP (Google Cloud).  Why is
+> > not yet clear - to be debugged, but the patch itself has several other
+> > issues:
+> > 
+> > - It treats unknown speed as < 10G
+> > - It leaves userspace no way to find out the ring size set by hypervisor
+> > - It tests speed when link is down
+> > - It ignores the virtio spec advice:
+> >         Both \field{speed} and \field{duplex} can change, thus the driver
+> >         is expected to re-read these values after receiving a
+> >         configuration change notification.
+> > - It is not clear the performance impact has been tested properly
+> > 
+> > Revert the patch for now.
+> > 
+> > Link: https://lore.kernel.org/r/20220814212610.GA3690074%40roeck-us.net
+> > Link: https://lore.kernel.org/r/20220815070203.plwjx7b3cyugpdt7%40awork3.anarazel.de
+> > Link: https://lore.kernel.org/r/3df6bb82-1951-455d-a768-e9e1513eb667%40www.fastmail.com
+> > Link: https://lore.kernel.org/r/FCDC5DDE-3CDD-4B8A-916F-CA7D87B547CE%40anarazel.de
+> > Fixes: 762faee5a267 ("virtio_net: set the default max ring size by find_vqs()")
+> > Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Cc: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> > Tested-by: Andres Freund <andres@anarazel.de>
+> 
+> I ran this patch through a total of 14 syskaller tests, 2 test runs each on
+> 7 different crashes reported by syzkaller (as reported to the linux-kernel
+> mailing list). No problems were reported. I also ran a single cross-check
+> with one of the syzkaller runs on top of v6.0-rc1, without this patch.
+> That test run failed.
+> 
+> Overall, I think we can call this fixed.
+> 
+> Guenter
 
-[ Upstream commit 9abc291812d784bd4a26c01af4ebdbf9f2dbf0bb ]
+It's more of a work around though since we don't yet have the root
+cause for this. I suspect a GCP hypervisor bug at the moment.
+This is excercising a path we previously only took on GFP_KERNEL
+allocation failures during probe, I don't think that happens a lot.
 
-Instead of open coding a __dynamic_array() with a fixed length (which
-defeats the purpose of the dynamic array in the first place). Use the new
-__vstring() helper that will use a va_list and only write enough of the
-string into the ring buffer that is needed.
-
-Link: https://lkml.kernel.org/r/20220724191650.236b1355@rorschach.local.home
-
-Cc: Marek Lindner <mareklindner@neomailbox.ch>
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Simon Wunderlich <sw@simonwunderlich.de>
-Cc: Antonio Quartulli <a@unstable.cc>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: b.a.t.m.a.n@lists.open-mesh.org
-Cc: netdev@vger.kernel.org
-Acked-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/batman-adv/trace.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
-
-diff --git a/net/batman-adv/trace.h b/net/batman-adv/trace.h
-index d673ebdd0426..31c8f922651d 100644
---- a/net/batman-adv/trace.h
-+++ b/net/batman-adv/trace.h
-@@ -28,8 +28,6 @@
- 
- #endif /* CONFIG_BATMAN_ADV_TRACING */
- 
--#define BATADV_MAX_MSG_LEN	256
--
- TRACE_EVENT(batadv_dbg,
- 
- 	    TP_PROTO(struct batadv_priv *bat_priv,
-@@ -40,16 +38,13 @@ TRACE_EVENT(batadv_dbg,
- 	    TP_STRUCT__entry(
- 		    __string(device, bat_priv->soft_iface->name)
- 		    __string(driver, KBUILD_MODNAME)
--		    __dynamic_array(char, msg, BATADV_MAX_MSG_LEN)
-+		    __vstring(msg, vaf->fmt, vaf->va)
- 	    ),
- 
- 	    TP_fast_assign(
- 		    __assign_str(device, bat_priv->soft_iface->name);
- 		    __assign_str(driver, KBUILD_MODNAME);
--		    WARN_ON_ONCE(vsnprintf(__get_dynamic_array(msg),
--					   BATADV_MAX_MSG_LEN,
--					   vaf->fmt,
--					   *vaf->va) >= BATADV_MAX_MSG_LEN);
-+		    __assign_vstr(msg, vaf->fmt, vaf->va);
- 	    ),
- 
- 	    TP_printk(
 -- 
-2.35.1
-
-
+MST
 
