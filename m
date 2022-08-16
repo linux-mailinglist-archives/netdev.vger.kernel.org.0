@@ -2,80 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B11596448
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:13:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C93459646A
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbiHPVNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50976 "EHLO
+        id S237490AbiHPVPC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 17:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiHPVNV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:13:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C050853D19
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:13:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660684398;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AYi2WRVY0WJT21lyY1QoYwOC5FBNKCZk5dLPYuZKuSk=;
-        b=aGjAZi0UIzvJAI5rhVhq5OuA03XmOQcCq1+FOQxibxY8LgW7ip7t/V03NLIsgKOTLDVlyk
-        f74blQjgmoYq0ZG5iuXVwtxcxkEb/m3p0TtHR5a9D5DaY5D9W6TfAlBc/Xe92ku5FMP3LS
-        Ml1MRksi+LTW4ePopXGxTRE1AMNneMY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-186-kwQkCVbWMy6PTp9-6BSNsA-1; Tue, 16 Aug 2022 17:13:16 -0400
-X-MC-Unique: kwQkCVbWMy6PTp9-6BSNsA-1
-Received: by mail-wm1-f69.google.com with SMTP id j22-20020a05600c485600b003a5e4420552so5335190wmo.8
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:13:16 -0700 (PDT)
+        with ESMTP id S237476AbiHPVPB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:15:01 -0400
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F0A7E805;
+        Tue, 16 Aug 2022 14:15:00 -0700 (PDT)
+Received: by mail-io1-f52.google.com with SMTP id b142so6345783iof.10;
+        Tue, 16 Aug 2022 14:15:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc;
-        bh=AYi2WRVY0WJT21lyY1QoYwOC5FBNKCZk5dLPYuZKuSk=;
-        b=anfB5FachoSmg6o93UHZpup2kxXOByZ68Ss3tT2Gr5pVGNBlnTS/m51vV8lbwIqrZJ
-         U8DKtErznUl/F3509YDZy6A9nUgsIH5TMGaN667g2cBbVe5ZcbwIN8BW/Kszv414NK0t
-         FaXXPra9O1gXUqit7Xs97q+WrCRf2ubRYFjvsud2he/BivSmsRSBPJQR98AnR48Lldyi
-         jzgirCbEDcLMu2G+uVJcuBU3xlu68q60ZblZ5BlRbh/UWm4ZVnJ0fOjb7whHJJodjWeG
-         S1I6DCkJdTNXEdV1WZUyrwxofLzivRQSKN/Qrye0yAlw5xMMWmEamwF2T8jQpsz4TYiV
-         2Wcg==
-X-Gm-Message-State: ACgBeo3KLHD5jDST6Bw0mX5SWiCH1lj7Gt1tuXUrHc+s9tWtFWg6I+Fr
-        zAbtMAU0R35BcB8tgcGROyh6mkXZqNQEHczpnS8tVHn3feRcOcaHZxfHOGb3cNdT0sUiJojmAkm
-        wKs2D546xAQQh2MVy
-X-Received: by 2002:a5d:5949:0:b0:224:e674:534 with SMTP id e9-20020a5d5949000000b00224e6740534mr9977931wri.254.1660684395168;
-        Tue, 16 Aug 2022 14:13:15 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR55aKwS//DmXsaapDe8frvEPqPbRT1KPyjrWnb98GBtsRPDzvJ16TcKJ2nMrDKcC0LZ1eOhNg==
-X-Received: by 2002:a5d:5949:0:b0:224:e674:534 with SMTP id e9-20020a5d5949000000b00224e6740534mr9977924wri.254.1660684394894;
-        Tue, 16 Aug 2022 14:13:14 -0700 (PDT)
-Received: from redhat.com ([2.55.43.215])
-        by smtp.gmail.com with ESMTPSA id c21-20020a05600c149500b003a604a29a34sm4258950wmh.35.2022.08.16.14.13.12
+        bh=+IOZgKwOUJ0yyXI/vD5VmeYlLJhpEL4ag2WpyQni1K8=;
+        b=mPZKmh6XwLy/LRLGGeF9hNHBhOxfe/wYc6vAnPLmc4E7k9waDDxLQ9+bucM9KXsBzC
+         +dzaRW9uniY1rjM4icZ0GqAkM6avJJqimfaNu3VOKRkcMDiH15zPRs+xI+seClREwYiV
+         BvG+Wx/hayJPRhuxtWDAAdYfgOEsMNFuN8K5nnMw32R2i/dOPOva5s1BAj1cryuPwdac
+         C6HnAhCEIH0Kb9sCUPwhNvze+pImowJB+WmwYCJErXF0FzoMpNzU7eUYd9ZcRNR1xG56
+         gKOEeR3YLaD99UOiVoivUnNPr/KiraB5tnTEcyjGo+KquYzmlfMf5FmzgB0oIz4Q0iaz
+         Sjuw==
+X-Gm-Message-State: ACgBeo3P1OchT96Ly8F6s/sWF49gK8eakJF1nYhWctmIgVA6Ubm8ChSU
+        ipHGb1aalwXBqM2Nbh8Ipw==
+X-Google-Smtp-Source: AA6agR6EQ8bauAwsr4ENQXhnGEColpXLl7hTdDigEdxvjsKeYgVLQhBqtACdoLlYH97bXvEZuHHIgQ==
+X-Received: by 2002:a05:6602:2b14:b0:67b:8976:2945 with SMTP id p20-20020a0566022b1400b0067b89762945mr9685592iov.82.1660684499157;
+        Tue, 16 Aug 2022 14:14:59 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id o130-20020a022288000000b00343429c9cb6sm4841082jao.139.2022.08.16.14.14.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:13:14 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 17:13:11 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     Zhu Lingshan <lingshan.zhu@intel.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com, jasowang@redhat.com
-Subject: Re: [PATCH V5 4/6] vDPA: !FEATURES_OK should not block querying
- device config space
-Message-ID: <20220816171106-mutt-send-email-mst@kernel.org>
-References: <20220812104500.163625-1-lingshan.zhu@intel.com>
- <20220812104500.163625-5-lingshan.zhu@intel.com>
- <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
+        Tue, 16 Aug 2022 14:14:58 -0700 (PDT)
+Received: (nullmailer pid 2744716 invoked by uid 1000);
+        Tue, 16 Aug 2022 21:14:54 -0000
+Date:   Tue, 16 Aug 2022 15:14:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 5/7] dt-bindings: net: dsa: mediatek,mt7530: remove
+ unnecesary lines
+Message-ID: <20220816211454.GA2734299-robh@kernel.org>
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-6-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+In-Reply-To: <20220813154415.349091-6-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,64 +85,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:41:21AM -0700, Si-Wei Liu wrote:
-> Hi Michael,
-> 
-> I just noticed this patch got pulled to linux-next prematurely without
-> getting consensus on code review, am not sure why. Hope it was just an
-> oversight.
-> 
-> Unfortunately this introduced functionality regression to at least two cases
-> so far as I see:
-> 
-> 1. (bogus) VDPA_ATTR_DEV_NEGOTIATED_FEATURES are inadvertently exposed and
-> displayed in "vdpa dev config show" before feature negotiation is done.
-> Noted the corresponding features name shown in vdpa tool is called
-> "negotiated_features" rather than "driver_features". I see in no way the
-> intended change of the patch should break this user level expectation
-> regardless of any spec requirement. Do you agree on this point?
-> 
-> 2. There was also another implicit assumption that is broken by this patch.
-> There could be a vdpa tool query of config via
-> vdpa_dev_net_config_fill()->vdpa_get_config_unlocked() that races with the
-> first vdpa_set_features() call from VMM e.g. QEMU. Since the S_FEATURES_OK
-> blocking condition is removed, if the vdpa tool query occurs earlier than
-> the first set_driver_features() call from VMM, the following code will treat
-> the guest as legacy and then trigger an erroneous
-> vdpa_set_features_unlocked(... , 0) call to the vdpa driver:
-> 
->  374         /*
->  375          * Config accesses aren't supposed to trigger before features
-> are set.
->  376          * If it does happen we assume a legacy guest.
->  377          */
->  378         if (!vdev->features_valid)
->  379                 vdpa_set_features_unlocked(vdev, 0);
->  380         ops->get_config(vdev, offset, buf, len);
-> 
-> Depending on vendor driver's implementation, L380 may either return invalid
-> config data (or invalid endianness if on BE) or only config fields that are
-> valid in legacy layout. What's more severe is that, vdpa tool query in
-> theory shouldn't affect feature negotiation at all by making confusing calls
-> to the device, but now it is possible with the patch. Fixing this would
-> require more delicate work on the other paths involving the cf_lock
-> reader/write semaphore.
-> 
-> Not sure what you plan to do next, post the fixes for both issues and get
-> the community review? Or simply revert the patch in question? Let us know.
-> 
-> Thanks,
-> -Siwei
-> 
+On Sat, Aug 13, 2022 at 06:44:13PM +0300, ArÄ±nÃ§ ÃœNAL wrote:
+> Remove unnecessary lines as they are already included from the referred
+> dsa.yaml.
 
-I'm not sure who you are asking. I didn't realize this is so
-controversial. If you feel it should be reverted I suggest
-you post a revert patch with a detailed motivation and this
-will get the discussion going.
-It will also help if you stress whether you describe theoretical
-issues or something observed in practice above
-discussion does not make this clear.
+You are duplicating the schema and then removing parts twice. I would 
+combine patches 4 and 5 or reverse the order.
 
--- 
-MST
+> 
+> Signed-off-by: ArÄ±nÃ§ ÃœNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 27 -------------------
+>  1 file changed, 27 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index ff51a2f6875f..a27cb4fa490f 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -162,15 +162,8 @@ allOf:
+>  
+>        patternProperties:
+>          "^(ethernet-)?ports$":
+> -          type: object
+> -
+>            patternProperties:
+>              "^(ethernet-)?port@[0-9]+$":
+> -              type: object
+> -              description: Ethernet switch ports
+> -
+> -              unevaluatedProperties: false
+> -
+>                properties:
+>                  reg:
+>                    description:
+> @@ -178,7 +171,6 @@ allOf:
+>                      0 to 5 for user ports.
+>  
+>                allOf:
+> -                - $ref: dsa-port.yaml#
+>                  - if:
 
+This 'if' schema is the only part you need actually (though you have to 
+create the node structure).
+
+>                      properties:
+>                        label:
+> @@ -186,7 +178,6 @@ allOf:
+>                            - const: cpu
+>                    then:
+>                      required:
+> -                      - reg
+>                        - phy-mode
+>  
+>    - if:
+> @@ -200,15 +191,8 @@ allOf:
+>  
+>        patternProperties:
+>          "^(ethernet-)?ports$":
+> -          type: object
+> -
+>            patternProperties:
+>              "^(ethernet-)?port@[0-9]+$":
+> -              type: object
+> -              description: Ethernet switch ports
+> -
+> -              unevaluatedProperties: false
+> -
+>                properties:
+>                  reg:
+>                    description:
+> @@ -216,7 +200,6 @@ allOf:
+>                      0 to 5 for user ports.
+>  
+>                allOf:
+> -                - $ref: dsa-port.yaml#
+>                  - if:
+>                      properties:
+>                        label:
+> @@ -224,7 +207,6 @@ allOf:
+>                            - const: cpu
+>                    then:
+>                      required:
+> -                      - reg
+>                        - phy-mode
+>  
+>    - if:
+> @@ -238,15 +220,8 @@ allOf:
+>  
+>        patternProperties:
+>          "^(ethernet-)?ports$":
+> -          type: object
+> -
+>            patternProperties:
+>              "^(ethernet-)?port@[0-9]+$":
+> -              type: object
+> -              description: Ethernet switch ports
+> -
+> -              unevaluatedProperties: false
+> -
+>                properties:
+>                  reg:
+>                    description:
+> @@ -254,7 +229,6 @@ allOf:
+>                      0 to 5 for user ports.
+>  
+>                allOf:
+> -                - $ref: dsa-port.yaml#
+>                  - if:
+>                      properties:
+>                        label:
+> @@ -262,7 +236,6 @@ allOf:
+>                            - const: cpu
+>                    then:
+>                      required:
+> -                      - reg
+>                        - phy-mode
+>  
+>  unevaluatedProperties: false
+> -- 
+> 2.34.1
+> 
+> 
