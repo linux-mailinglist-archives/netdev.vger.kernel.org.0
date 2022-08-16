@@ -2,164 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86C665956A9
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:38:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 008F4595713
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233674AbiHPJhn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 05:37:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
+        id S233946AbiHPJvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 05:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233673AbiHPJhK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:37:10 -0400
-Received: from out199-2.us.a.mail.aliyun.com (out199-2.us.a.mail.aliyun.com [47.90.199.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E050CBE4CB;
-        Tue, 16 Aug 2022 00:59:14 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMPFee4_1660636724;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMPFee4_1660636724)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Aug 2022 15:58:44 +0800
-Date:   Tue, 16 Aug 2022 15:58:44 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 02/10] net/smc: fix SMC_CLC_DECL_ERR_REGRMB
- without smc_server_lgr_pending
-Message-ID: <YvtONMD7yodAZLia@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <cover.1660152975.git.alibuda@linux.alibaba.com>
- <01105a98ac715b6df6d019c0b6a9916814fdcff4.1660152975.git.alibuda@linux.alibaba.com>
+        with ESMTP id S233956AbiHPJuv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:50:51 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BE5D8106501
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:03:17 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-248-iRnsx6CYM8CFewHGlDfzjg-1; Tue, 16 Aug 2022 09:03:15 +0100
+X-MC-Unique: iRnsx6CYM8CFewHGlDfzjg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.38; Tue, 16 Aug 2022 09:03:14 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.040; Tue, 16 Aug 2022 09:03:14 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Kirill Tkhai' <tkhai@ya.ru>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "viro@zeniv.linux.org.uk" <viro@zeniv.linux.org.uk>
+Subject: RE: [PATCH v2 1/2] fs: Export __receive_fd()
+Thread-Topic: [PATCH v2 1/2] fs: Export __receive_fd()
+Thread-Index: AQHYsQ/E5egn5U5P0k6Simqj85Zt/a2xKtgw
+Date:   Tue, 16 Aug 2022 08:03:14 +0000
+Message-ID: <e3e2fe6a2b8f4a65a4e28d9d7fddd558@AcuMS.aculab.com>
+References: <0b07a55f-0713-7ba4-9b6b-88bc8cc6f1f5@ya.ru>
+ <3a8da760-d58b-04fe-e251-e0d143493df1@ya.ru>
+In-Reply-To: <3a8da760-d58b-04fe-e251-e0d143493df1@ya.ru>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <01105a98ac715b6df6d019c0b6a9916814fdcff4.1660152975.git.alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 01:47:33AM +0800, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> As commit "net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause
-> by server" mentioned, it works only when all connection creations are
+RnJvbTogS2lyaWxsIFRraGFpDQo+IFNlbnQ6IDE1IEF1Z3VzdCAyMDIyIDIyOjE1DQo+IA0KPiBU
+aGlzIGlzIG5lZWRlZCB0byBtYWtlIHJlY2VpdmVfZmRfdXNlcigpIGF2YWlsYWJsZSBpbiBtb2R1
+bGVzLCBhbmQgaXQgd2lsbCBiZSB1c2VkIGluIG5leHQgcGF0Y2guDQo+IA0KPiBTaWduZWQtb2Zm
+LWJ5OiBLaXJpbGwgVGtoYWkgPHRraGFpQHlhLnJ1Pg0KPiAtLS0NCj4gdjI6IE5ldw0KPiAgZnMv
+ZmlsZS5jIHwgICAgMSArDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykNCj4gDQo+
+IGRpZmYgLS1naXQgYS9mcy9maWxlLmMgYi9mcy9maWxlLmMNCj4gaW5kZXggM2JjYzFlY2MzMTRh
+Li5lNDVkNDVmMWRkNDUgMTAwNjQ0DQo+IC0tLSBhL2ZzL2ZpbGUuYw0KPiArKysgYi9mcy9maWxl
+LmMNCj4gQEAgLTExODEsNiArMTE4MSw3IEBAIGludCBfX3JlY2VpdmVfZmQoc3RydWN0IGZpbGUg
+KmZpbGUsIGludCBfX3VzZXIgKnVmZCwgdW5zaWduZWQgaW50IG9fZmxhZ3MpDQo+ICAJX19yZWNl
+aXZlX3NvY2soZmlsZSk7DQo+ICAJcmV0dXJuIG5ld19mZDsNCj4gIH0NCj4gK0VYUE9SVF9TWU1C
+T0xfR1BMKF9fcmVjZWl2ZV9mZCk7DQoNCkl0IGRvZXNuJ3Qgc2VlbSByaWdodCAodG8gbWUpIHRv
+IGJlIGV4cG9ydGluZyBhIGZ1bmN0aW9uDQp3aXRoIGEgX18gcHJlZml4Lg0KDQoJRGF2aWQNCg0K
+LQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0s
+IE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdh
+bGVzKQ0K
 
-This is a format issue, it's better to use:
-
-commit 4940a1fdf31c ("net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB
-error cause by server").
-
-> completely protected by smc_server_lgr_pending lock, since we already
-> cancel the lock, we need to re-fix the issues.
-> 
-> Fixes: 4940a1fdf31c ("net/smc: fix unexpected SMC_CLC_DECL_ERR_REGRMB error cause by server")
-> 
-^^^ This blank line is unnecessary.
-
-> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> ---
->  net/smc/af_smc.c   |  2 ++
->  net/smc/smc_core.c | 11 ++++++++---
->  net/smc/smc_core.h | 21 +++++++++++++++++++++
->  3 files changed, 31 insertions(+), 3 deletions(-)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index af4b0aa..c0842a9 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -2413,6 +2413,7 @@ static void smc_listen_work(struct work_struct *work)
->  		if (rc)
->  			goto out_unlock;
->  	}
-> +	smc_conn_leave_rtoken_pending(new_smc, ini);
->  	smc_conn_save_peer_info(new_smc, cclc);
->  	smc_listen_out_connected(new_smc);
->  	SMC_STAT_SERV_SUCC_INC(sock_net(newclcsock->sk), ini);
-> @@ -2422,6 +2423,7 @@ static void smc_listen_work(struct work_struct *work)
->  	if (ini->is_smcd)
->  		mutex_unlock(&smc_server_lgr_pending);
->  out_decl:
-> +	smc_conn_leave_rtoken_pending(new_smc, ini);
->  	smc_listen_decline(new_smc, rc, ini ? ini->first_contact_local : 0,
->  			   proposal_version);
->  out_free:
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index a3338cc..61a3854 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -2190,14 +2190,19 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
->  		     lgr->vlan_id == ini->vlan_id) &&
->  		    (role == SMC_CLNT || ini->is_smcd ||
->  		    (lgr->conns_num < SMC_RMBS_PER_LGR_MAX &&
-> -		      !bitmap_full(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)))) {
-> +		    (SMC_RMBS_PER_LGR_MAX -
-> +			bitmap_weight(lgr->rtokens_used_mask, SMC_RMBS_PER_LGR_MAX)
-> +				> atomic_read(&lgr->rtoken_pendings))))) {
->  			/* link group found */
->  			ini->first_contact_local = 0;
->  			conn->lgr = lgr;
->  			rc = smc_lgr_register_conn(conn, false);
->  			write_unlock_bh(&lgr->conns_lock);
-> -			if (!rc && delayed_work_pending(&lgr->free_work))
-> -				cancel_delayed_work(&lgr->free_work);
-> +			if (!rc) {
-> +				smc_conn_enter_rtoken_pending(smc, ini);
-> +				if (delayed_work_pending(&lgr->free_work))
-> +					cancel_delayed_work(&lgr->free_work);
-> +			}
->  			break;
->  		}
->  		write_unlock_bh(&lgr->conns_lock);
-> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-> index 199f533..acc2869 100644
-> --- a/net/smc/smc_core.h
-> +++ b/net/smc/smc_core.h
-> @@ -293,6 +293,9 @@ struct smc_link_group {
->  	struct rb_root		conns_all;	/* connection tree */
->  	rwlock_t		conns_lock;	/* protects conns_all */
->  	unsigned int		conns_num;	/* current # of connections */
-> +	atomic_t		rtoken_pendings;/* number of connection that
-> +						 * lgr assigned but no rtoken got yet
-> +						 */
->  	unsigned short		vlan_id;	/* vlan id of link group */
->  
->  	struct list_head	sndbufs[SMC_RMBE_SIZES];/* tx buffers */
-> @@ -603,6 +606,24 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
->  int smcr_nl_get_link(struct sk_buff *skb, struct netlink_callback *cb);
->  int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb);
->  
-> +static inline void smc_conn_enter_rtoken_pending(struct smc_sock *smc, struct smc_init_info *ini)
-> +{
-> +	struct smc_link_group *lgr;
-
-Consider this: struct smc_link_group *lgr = smc->conn.lgr ?
-
-> +
-> +	lgr = smc->conn.lgr;
-> +	if (lgr && !ini->first_contact_local)
-> +		atomic_inc(&lgr->rtoken_pendings);
-> +}
-> +
-> +static inline void smc_conn_leave_rtoken_pending(struct smc_sock *smc, struct smc_init_info *ini)
-> +{
-> +	struct smc_link_group *lgr;
-
-Ditto.
-
-> +
-> +	lgr = smc->conn.lgr;
-> +	if (lgr && !ini->first_contact_local)
-> +		atomic_dec(&lgr->rtoken_pendings);
-> +}
-> +
->  void smcr_lnk_cluster_on_lnk_state(struct smc_link *lnk);
->  
->  static inline struct smc_link_group *smc_get_lgr(struct smc_link *link)
-> -- 
-> 1.8.3.1
