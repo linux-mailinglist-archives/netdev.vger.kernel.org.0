@@ -2,109 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B23E59604D
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:32:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050D0595FE7
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234465AbiHPQbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 12:31:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59034 "EHLO
+        id S234899AbiHPQMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 12:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236503AbiHPQb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:31:28 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B9B7FF8A;
-        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id r69so9692615pgr.2;
-        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
+        with ESMTP id S233991AbiHPQMM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:12:12 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BA92715E
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 09:12:11 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id j7so13214003wrh.3
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 09:12:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=OWA+Z0+/O1EA7heD+/eE4RpipBhiyIekMqq5kYmUIfs=;
-        b=M+x6wNEzsTNJZ7HNuv5p+qPE7wTSY1jU1LA/N1j9ls2BfESkr9bENtx2G4I2WAOBKF
-         SkQJKneOmbCgTk6RXVwmBfB+X7o1CxRpt75aAXQ0PQwwjeyqaNs+9J9SFPpoDcgFCpBD
-         QTsu8P/88JljdjZwHHTxVnwlD5iNwhojAUJtMcfGEd5rEUgilpf6TW93ILO/ReyF2b/u
-         6kAdX+kWmMGsFFoP2Lstept34RYIto5bBB7N7eMczQ4x4aBT+ULxQmTTCNz+fNRb3dlL
-         HhiSp8Bfs9JRX/GWOBoTdZGw21+YdxcD6qy/pGmVy6rpbbsNetAZMcalJeZ3PxafFkOy
-         g1kQ==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=JyzOLGSlDwwbHl4waiYBkNo2oWmpsDaSyKB5IE9eaoM=;
+        b=gIhN7l/LFMqiLxmyLKRiT+ItUNIwnj5A87Eh5I/EabUrnRXCmIjaX/nFst1hQNH+XQ
+         zqLjhVB/Iq1GW2apk345iw0x5I8VqyVafr7OmfOZyeuEToiWAviAZ3Ti09CFaWFnsEd1
+         fOiJYcsY7XTD3wGclRim40ZJPKguHccsRC2cWXJviDNqm0EE9dFvbRPzIGinid4LBa1U
+         CSNqkfUhDxveYBPtBCXkZedq3GM5SgWGwleAz0H87AgNnsIGBqV2h/wCDt6FI00IcWTi
+         eCZvWNHh0DTD8wK/jKVhFXmWNcJ/RaLVfTpDdirROapGn5e/NfIp73LJbREwsIAz4ZcJ
+         hVvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=OWA+Z0+/O1EA7heD+/eE4RpipBhiyIekMqq5kYmUIfs=;
-        b=3BImHZ3WNIO9Xm/Xgi5nbJPo5darSJrUicDUpUdtR3yvP5DxESTLRtU1dS1JFPP4o6
-         HPFj4dOHnfLtA/lTbReSMQtgCK3YyiUc+9BH810u56JnhQPplvT43H/Tyds9UPzTDvAR
-         e2mbU6Inxvky0091NUpou1j+QHmVx6CFmpnydHgB+O+rc60a/A2YJlVizRIZsxjziq3Q
-         zNW3JAtI1YpnFAkkbrKAIhKLDv/poY3U5LyhBEbLea39e/E9NdsRNB65NaV/gwQBb8Ml
-         Z2W9+oZnLSBnKk+t6h+G+yQZXFVK68A/knt/pXiMOzhjp9yh6Ob38Yt+3ktK76PINIan
-         a6ig==
-X-Gm-Message-State: ACgBeo1DTFomwFpjNeRFnhncTG0CdzU7jDIIefDkm9C4Q67q5OnmqYUo
-        MwvRMO468Z0ZFBNIEFF824Y=
-X-Google-Smtp-Source: AA6agR4Fv7w4ALaSxKqngT2CxCuZQR5SwOw0ac8clzW30E3xAO5Swo+o0p0bAyGj+86t+OGTbYP67g==
-X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id k11-20020a63d10b000000b0041dbd7d7759mr18535300pgg.196.1660667487026;
-        Tue, 16 Aug 2022 09:31:27 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id k13-20020a170902ce0d00b0016d738d5dbbsm9257840plg.97.2022.08.16.09.31.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 09:31:26 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 02:35:42 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <YvsCftVUqurKIaCC@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <CAGxU2F7+L-UiNPtUm4EukOgTVJ1J6Orqs1LMvhWWvfL9zWb23g@mail.gmail.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=JyzOLGSlDwwbHl4waiYBkNo2oWmpsDaSyKB5IE9eaoM=;
+        b=mbwuq6NB6bRDnfkzF+GlKlWx7/mBQ2mbKzy3ui5UVLTUR0QO3hf9bJsXcMcBNWa3i6
+         BWm/pgx/y3VdQZkaZSwsHP5myWS/5cLKnG4aE5K9/fbit9qUCyqpsFvOFQeHCbVLjhnc
+         74J9qfa6ohZHobBfdXy6oPqiHEZcwS+8xKJ8538ikRBLUOWmU73fxXASDryx+aMBh/v/
+         bubnZRxQRYcFa5lWXNsysLsjlUqMPGLKs3IoR9luBUhhFO++AShZtN5bZ8Rmos2gBWzL
+         aRN7FE/XGXNXY0o2LYklmo5JarerL5xYkGLaW7+Ly1xlCArTtQkzb4di60PsfYeBAnr7
+         Gbxg==
+X-Gm-Message-State: ACgBeo2L1vFngYk6p2VDzmYOcYJ/NN0kjTScT138Pq5A6hWEpV5eIKSW
+        I+55mHCHboR6t8YB/U91WPvEdva9mFq0RPTBarW8vUvBJoY=
+X-Google-Smtp-Source: AA6agR5dVkssr5UQ8Z33sxNPzZ3FCjIYQNLajyoNa1J4BHxa3L0w68BgMXVESY3iiJ58D1PZZDVLA+IsV1ElRUYdxcg=
+X-Received: by 2002:a5d:5266:0:b0:21f:1280:85f with SMTP id
+ l6-20020a5d5266000000b0021f1280085fmr12394052wrc.412.1660666329566; Tue, 16
+ Aug 2022 09:12:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGxU2F7+L-UiNPtUm4EukOgTVJ1J6Orqs1LMvhWWvfL9zWb23g@mail.gmail.com>
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220815202900.3961097-1-jmeng@fb.com> <CADVnQy=hav-cLt5Dy0DBPiDCxgkpRCEktEoMNjq_uKG8hynLPg@mail.gmail.com>
+In-Reply-To: <CADVnQy=hav-cLt5Dy0DBPiDCxgkpRCEktEoMNjq_uKG8hynLPg@mail.gmail.com>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Tue, 16 Aug 2022 09:11:32 -0700
+Message-ID: <CAK6E8=cd7Q2=ZZeLmZdO25ZcPxcCEZ5oaO_jw92hA55peYE5HQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: Make SYN ACK RTO tunable by BPF programs
+ with TFO
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     Jie Meng <jmeng@fb.com>, netdev@vger.kernel.org, kafai@fb.com,
+        kuba@kernel.org, edumazet@google.com, bpf@vger.kernel.org,
+        Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 09:00:45AM +0200, Stefano Garzarella wrote:
-> Hi Bobby,
+On Tue, Aug 16, 2022 at 6:37 AM Neal Cardwell <ncardwell@google.com> wrote:
+>
+> On Mon, Aug 15, 2022 at 8:30 PM Jie Meng <jmeng@fb.com> wrote:
+> >
+> > Instead of the hardcoded TCP_TIMEOUT_INIT, this diff calls tcp_timeout_init
+> > to initiate req->timeout like the non TFO SYN ACK case.
+> >
+> > Tested using the following packetdrill script, on a host with a BPF
+> > program that sets the initial connect timeout to 10ms.
+> >
+> > `../../common/defaults.sh`
+> >
+> > // Initialize connection
+> >     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+> >    +0 setsockopt(3, SOL_TCP, TCP_FASTOPEN, [1], 4) = 0
+> >    +0 bind(3, ..., ...) = 0
+> >    +0 listen(3, 1) = 0
+> >
+> >    +0 < S 0:0(0) win 32792 <mss 1000,sackOK,FO TFO_COOKIE>
+> >    +0 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+> >    +.01 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+> >    +.02 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+> >    +.04 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+> >    +.01 < . 1:1(0) ack 1 win 32792
+> >
+> >    +0 accept(3, ..., ...) = 4
+> >
+> > Signed-off-by: Jie Meng <jmeng@fb.com>
+> > ---
+> >  net/ipv4/tcp_fastopen.c | 3 ++-
+> >  net/ipv4/tcp_timer.c    | 2 +-
+> >  2 files changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+> > index 825b216d11f5..45cc7f1ca296 100644
+> > --- a/net/ipv4/tcp_fastopen.c
+> > +++ b/net/ipv4/tcp_fastopen.c
+> > @@ -272,8 +272,9 @@ static struct sock *tcp_fastopen_create_child(struct sock *sk,
+> >          * The request socket is not added to the ehash
+> >          * because it's been added to the accept queue directly.
+> >          */
+> > +       req->timeout = tcp_timeout_init(child);
+> >         inet_csk_reset_xmit_timer(child, ICSK_TIME_RETRANS,
+> > -                                 TCP_TIMEOUT_INIT, TCP_RTO_MAX);
+> > +                                 req->timeout, TCP_RTO_MAX);
+> >
+> >         refcount_set(&req->rsk_refcnt, 2);
+> >
+> > diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+> > index b4dfb82d6ecb..cb79127f45c3 100644
+> > --- a/net/ipv4/tcp_timer.c
+> > +++ b/net/ipv4/tcp_timer.c
+> > @@ -428,7 +428,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
+> >         if (!tp->retrans_stamp)
+> >                 tp->retrans_stamp = tcp_time_stamp(tp);
+> >         inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
+> > -                         TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
+> > +                         req->timeout << req->num_timeout, TCP_RTO_MAX);
+> >  }
+> >
+> >
+> > --
+>
+> Looks good to me. Thanks for the feature!
+>
+> Acked-by: Neal Cardwell <ncardwell@google.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Would be great to have a companion patch on SYN timeout as well.
 
-..
-
-> 
-> Please send next versions of this series as RFC until we have at least an
-> agreement on the spec changes.
-> 
-> I think will be better to agree on the spec before merge Linux changes.
-> 
-> Thanks,
-> Stefano
-> 
-
-Duly noted, I'll tag it as RFC on the next send.
-
-
-Best,
-Bobby
+>
+> neal
