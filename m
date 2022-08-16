@@ -2,140 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 050D0595FE7
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F69C596002
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:19:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234899AbiHPQMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 12:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        id S235689AbiHPQTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 12:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233991AbiHPQMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:12:12 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35BA92715E
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 09:12:11 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id j7so13214003wrh.3
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 09:12:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=JyzOLGSlDwwbHl4waiYBkNo2oWmpsDaSyKB5IE9eaoM=;
-        b=gIhN7l/LFMqiLxmyLKRiT+ItUNIwnj5A87Eh5I/EabUrnRXCmIjaX/nFst1hQNH+XQ
-         zqLjhVB/Iq1GW2apk345iw0x5I8VqyVafr7OmfOZyeuEToiWAviAZ3Ti09CFaWFnsEd1
-         fOiJYcsY7XTD3wGclRim40ZJPKguHccsRC2cWXJviDNqm0EE9dFvbRPzIGinid4LBa1U
-         CSNqkfUhDxveYBPtBCXkZedq3GM5SgWGwleAz0H87AgNnsIGBqV2h/wCDt6FI00IcWTi
-         eCZvWNHh0DTD8wK/jKVhFXmWNcJ/RaLVfTpDdirROapGn5e/NfIp73LJbREwsIAz4ZcJ
-         hVvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=JyzOLGSlDwwbHl4waiYBkNo2oWmpsDaSyKB5IE9eaoM=;
-        b=mbwuq6NB6bRDnfkzF+GlKlWx7/mBQ2mbKzy3ui5UVLTUR0QO3hf9bJsXcMcBNWa3i6
-         BWm/pgx/y3VdQZkaZSwsHP5myWS/5cLKnG4aE5K9/fbit9qUCyqpsFvOFQeHCbVLjhnc
-         74J9qfa6ohZHobBfdXy6oPqiHEZcwS+8xKJ8538ikRBLUOWmU73fxXASDryx+aMBh/v/
-         bubnZRxQRYcFa5lWXNsysLsjlUqMPGLKs3IoR9luBUhhFO++AShZtN5bZ8Rmos2gBWzL
-         aRN7FE/XGXNXY0o2LYklmo5JarerL5xYkGLaW7+Ly1xlCArTtQkzb4di60PsfYeBAnr7
-         Gbxg==
-X-Gm-Message-State: ACgBeo2L1vFngYk6p2VDzmYOcYJ/NN0kjTScT138Pq5A6hWEpV5eIKSW
-        I+55mHCHboR6t8YB/U91WPvEdva9mFq0RPTBarW8vUvBJoY=
-X-Google-Smtp-Source: AA6agR5dVkssr5UQ8Z33sxNPzZ3FCjIYQNLajyoNa1J4BHxa3L0w68BgMXVESY3iiJ58D1PZZDVLA+IsV1ElRUYdxcg=
-X-Received: by 2002:a5d:5266:0:b0:21f:1280:85f with SMTP id
- l6-20020a5d5266000000b0021f1280085fmr12394052wrc.412.1660666329566; Tue, 16
- Aug 2022 09:12:09 -0700 (PDT)
+        with ESMTP id S233487AbiHPQTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:19:49 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3D3BCE9
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 09:19:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 73DE2CE19CF
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 16:19:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5423BC433C1;
+        Tue, 16 Aug 2022 16:19:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660666781;
+        bh=ubWJJpB6FlwS98BS2ErebUv6bhusNR1Ur0PtLHy6nDo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DnqNvYXF17TF9c+AcJfY7hvQ73llxyQ50G2xn48mFVKmLA9YSOU4cU3AkvjFEFMTO
+         OcAROcRAXnH7cAalR50LUq+wT+EEhOXz5dm/Xa/+a5ZpDuFNZKbbWziCiZwcsZO+3p
+         67Zr4GTVKDS3cYDkkcnL6Q4wu5i39CSL4Z5Tb7GkIc4RxLKWVjDzl0dtHEoWqvu3KR
+         KUHVSH6HnmwZjrGR+OMKTu05i3M5Sy9ECvVp3EgymF6V+4dd8ftbUgH0oaB8Z0s9Ms
+         3u3JH7hyEMIWtNnr9qCyWaMqT6cgCOxMobntZ3YTKrL7n5Ot6A9FMfRuD2gR4VFbJt
+         SxHnxNGvXEXBg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com,
+        johannes.berg@intel.com
+Subject: [PATCH net v2] net: genl: fix error path memory leak in policy dumping
+Date:   Tue, 16 Aug 2022 09:19:39 -0700
+Message-Id: <20220816161939.577583-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-References: <20220815202900.3961097-1-jmeng@fb.com> <CADVnQy=hav-cLt5Dy0DBPiDCxgkpRCEktEoMNjq_uKG8hynLPg@mail.gmail.com>
-In-Reply-To: <CADVnQy=hav-cLt5Dy0DBPiDCxgkpRCEktEoMNjq_uKG8hynLPg@mail.gmail.com>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Tue, 16 Aug 2022 09:11:32 -0700
-Message-ID: <CAK6E8=cd7Q2=ZZeLmZdO25ZcPxcCEZ5oaO_jw92hA55peYE5HQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: Make SYN ACK RTO tunable by BPF programs
- with TFO
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Jie Meng <jmeng@fb.com>, netdev@vger.kernel.org, kafai@fb.com,
-        kuba@kernel.org, edumazet@google.com, bpf@vger.kernel.org,
-        Wei Wang <weiwan@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 6:37 AM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Mon, Aug 15, 2022 at 8:30 PM Jie Meng <jmeng@fb.com> wrote:
-> >
-> > Instead of the hardcoded TCP_TIMEOUT_INIT, this diff calls tcp_timeout_init
-> > to initiate req->timeout like the non TFO SYN ACK case.
-> >
-> > Tested using the following packetdrill script, on a host with a BPF
-> > program that sets the initial connect timeout to 10ms.
-> >
-> > `../../common/defaults.sh`
-> >
-> > // Initialize connection
-> >     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
-> >    +0 setsockopt(3, SOL_TCP, TCP_FASTOPEN, [1], 4) = 0
-> >    +0 bind(3, ..., ...) = 0
-> >    +0 listen(3, 1) = 0
-> >
-> >    +0 < S 0:0(0) win 32792 <mss 1000,sackOK,FO TFO_COOKIE>
-> >    +0 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-> >    +.01 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-> >    +.02 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-> >    +.04 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
-> >    +.01 < . 1:1(0) ack 1 win 32792
-> >
-> >    +0 accept(3, ..., ...) = 4
-> >
-> > Signed-off-by: Jie Meng <jmeng@fb.com>
-> > ---
-> >  net/ipv4/tcp_fastopen.c | 3 ++-
-> >  net/ipv4/tcp_timer.c    | 2 +-
-> >  2 files changed, 3 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
-> > index 825b216d11f5..45cc7f1ca296 100644
-> > --- a/net/ipv4/tcp_fastopen.c
-> > +++ b/net/ipv4/tcp_fastopen.c
-> > @@ -272,8 +272,9 @@ static struct sock *tcp_fastopen_create_child(struct sock *sk,
-> >          * The request socket is not added to the ehash
-> >          * because it's been added to the accept queue directly.
-> >          */
-> > +       req->timeout = tcp_timeout_init(child);
-> >         inet_csk_reset_xmit_timer(child, ICSK_TIME_RETRANS,
-> > -                                 TCP_TIMEOUT_INIT, TCP_RTO_MAX);
-> > +                                 req->timeout, TCP_RTO_MAX);
-> >
-> >         refcount_set(&req->rsk_refcnt, 2);
-> >
-> > diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-> > index b4dfb82d6ecb..cb79127f45c3 100644
-> > --- a/net/ipv4/tcp_timer.c
-> > +++ b/net/ipv4/tcp_timer.c
-> > @@ -428,7 +428,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
-> >         if (!tp->retrans_stamp)
-> >                 tp->retrans_stamp = tcp_time_stamp(tp);
-> >         inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
-> > -                         TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
-> > +                         req->timeout << req->num_timeout, TCP_RTO_MAX);
-> >  }
-> >
-> >
-> > --
->
-> Looks good to me. Thanks for the feature!
->
-> Acked-by: Neal Cardwell <ncardwell@google.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Would be great to have a companion patch on SYN timeout as well.
+If construction of the array of policies fails when recording
+non-first policy we need to unwind.
 
->
-> neal
+netlink_policy_dump_add_policy() itself also needs fixing as
+it currently gives up on error without recording the allocated
+pointer in the pstate pointer.
+
+Reported-by: syzbot+dc54d9ba8153b216cae0@syzkaller.appspotmail.com
+Fixes: 50a896cf2d6f ("genetlink: properly support per-op policy dumping")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: johannes.berg@intel.com
+---
+ net/netlink/genetlink.c |  6 +++++-
+ net/netlink/policy.c    | 14 ++++++++++++--
+ 2 files changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
+index 1afca2a6c2ac..57010927e20a 100644
+--- a/net/netlink/genetlink.c
++++ b/net/netlink/genetlink.c
+@@ -1174,13 +1174,17 @@ static int ctrl_dumppolicy_start(struct netlink_callback *cb)
+ 							     op.policy,
+ 							     op.maxattr);
+ 			if (err)
+-				return err;
++				goto err_free_state;
+ 		}
+ 	}
+ 
+ 	if (!ctx->state)
+ 		return -ENODATA;
+ 	return 0;
++
++err_free_state:
++	netlink_policy_dump_free(ctx->state);
++	return err;
+ }
+ 
+ static void *ctrl_dumppolicy_prep(struct sk_buff *skb,
+diff --git a/net/netlink/policy.c b/net/netlink/policy.c
+index 8d7c900e27f4..87e3de0fde89 100644
+--- a/net/netlink/policy.c
++++ b/net/netlink/policy.c
+@@ -144,7 +144,7 @@ int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
+ 
+ 	err = add_policy(&state, policy, maxtype);
+ 	if (err)
+-		return err;
++		goto err_try_undo;
+ 
+ 	for (policy_idx = 0;
+ 	     policy_idx < state->n_alloc && state->policies[policy_idx].policy;
+@@ -164,7 +164,7 @@ int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
+ 						 policy[type].nested_policy,
+ 						 policy[type].len);
+ 				if (err)
+-					return err;
++					goto err_try_undo;
+ 				break;
+ 			default:
+ 				break;
+@@ -174,6 +174,16 @@ int netlink_policy_dump_add_policy(struct netlink_policy_dump_state **pstate,
+ 
+ 	*pstate = state;
+ 	return 0;
++
++err_try_undo:
++	/* Try to preserve reasonable unwind semantics - if we're starting from
++	 * scratch clean up fully, otherwise record what we got and caller will.
++	 */
++	if (!*pstate)
++		netlink_policy_dump_free(state);
++	else
++		*pstate = state;
++	return err;
+ }
+ 
+ static bool
+-- 
+2.37.2
+
