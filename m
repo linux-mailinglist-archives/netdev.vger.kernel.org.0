@@ -2,197 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8271595D2C
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C425E595D3C
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230398AbiHPNXD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 09:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33748 "EHLO
+        id S235807AbiHPN0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 09:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiHPNXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:23:01 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A645893516
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:23:00 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id fy5so18894990ejc.3
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
-        bh=koboAnBgyp2l/0qNMq3WX56XqOWq+PYKfGOYn+D0qKE=;
-        b=RkMnPesQ4BdYAejo9KknsYCaXBkY7IlsrAMeEiOSxlSB+GSnAUSItPs2ONEaBP0Vwe
-         QUXt5AM4qtNdpJRk2G2ZgYddxyuYE0st8Tsek1bKJIKJQD2JRn8cPbXLM4gwSquipX34
-         BHJxcbEoME4N4nUFSpT6yYIFnLTiZEVJh+ozfk8+W+e9TfvUI4utVOS315nWqs2PEVV7
-         AE/x2cALIzlwR/ihwavBtbcw/26kpBDJG6ovUESFSsVrwlHY/uyDJTPh/jB9TBoiv7x6
-         ef+VqwlrjbsHmhFpqt70/qTZ0a8nM1T8Hq7KsPJjcqiAL+NVVA3LDvnDKfv6tAe7NH/h
-         cwXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=koboAnBgyp2l/0qNMq3WX56XqOWq+PYKfGOYn+D0qKE=;
-        b=ZCcd93QDVKqosI7cp2yK31NwYs8JxAa9J+8k9PDccn54Mr4dM6nFvw9qrttwJp8OFV
-         HDgt75KCBdMZftrhRsFkPMGQM6p95PkUF6rRBNLXxFmMb+UXgh/LmbtnPBZWG7gcXUQ/
-         1KNCPpDOQsU+FEXVUdvekNDhR/8XLgyjYvFd6hhHTBUVg/z36XgBPo0dGwv5NC5l8W2W
-         9jfuIaQ8B29GkNqnjZ14ElA3WVRlMDOvQE9zljPpgBty9NXMCcDuERjezuvq/HB13zuE
-         gFZG2cVJ0lD68eG3di0iDkA9N4lLJKi46kpmGQmwk28wsY/OCW2tvzgqqU5ESiVafaK3
-         aq1w==
-X-Gm-Message-State: ACgBeo3B82UrRS1OYUBV+xY1zT99he/q1ErNkhoybE3qOY+1o9elwDXZ
-        AwAHETcfxD18YWWWuO/d+bE=
-X-Google-Smtp-Source: AA6agR7JCyVhSOJ21UoIwGYNDvo73RgbsvGum/PbKORayRgE5PDv4JGg/a98IPg8LFLmxDnRX7gFDQ==
-X-Received: by 2002:a17:906:8a42:b0:730:92dc:a831 with SMTP id gx2-20020a1709068a4200b0073092dca831mr13356027ejc.481.1660656179168;
-        Tue, 16 Aug 2022 06:22:59 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:c1cc:4400:b4c5:5676:e5f1:ad94? (dynamic-2a01-0c23-c1cc-4400-b4c5-5676-e5f1-ad94.c23.pool.telefonica.de. [2a01:c23:c1cc:4400:b4c5:5676:e5f1:ad94])
-        by smtp.googlemail.com with ESMTPSA id s1-20020aa7c541000000b00445b5874249sm99025edr.62.2022.08.16.06.22.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:22:58 -0700 (PDT)
-Message-ID: <ca814367-5147-67d1-8cdb-35f57c2cbb99@gmail.com>
-Date:   Tue, 16 Aug 2022 15:22:52 +0200
+        with ESMTP id S235803AbiHPN02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:26:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AC98769D
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:26:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660656386;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zxJ1v8+cjZ+tYJe90RAlV6rz4Psbcq8JkXLwBn2PQcI=;
+        b=VGrXdM35ZcqdfMZmHfwfAiEabt3liOAttCUYxwtqEXNrYzX1Cmdipk6T0ZvCPeBmggvcS+
+        75/gXItjonfe0nZqjwICyVD311WI+Bgq6iG/mSU+oZZzNkwGrVZB90HwZc8fGwfTSyXkRk
+        +CXOdnHg/H/gLBiADuqyk7VXjZ/6MGA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-373-JOp7kY0TNAutV_QSqaFoVA-1; Tue, 16 Aug 2022 09:26:21 -0400
+X-MC-Unique: JOp7kY0TNAutV_QSqaFoVA-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F123B2999B28;
+        Tue, 16 Aug 2022 13:26:20 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4263E492C3B;
+        Tue, 16 Aug 2022 13:26:20 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net v2] net: Fix suspicious RCU usage in
+ bpf_sk_reuseport_detach()
+From:   David Howells <dhowells@redhat.com>
+To:     yin31149@gmail.com
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        dhowells@redhat.com, linux-kernel@vger.kernel.org
+Date:   Tue, 16 Aug 2022 14:26:19 +0100
+Message-ID: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Content-Language: en-US
-To:     wei.fang@nxp.com, andrew@lunn.ch, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
-Cc:     xiaoning.wang@nxp.com
-References: <20220816194859.2369-1-wei.fang@nxp.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH V2 net-next] net: phy: realtek: add support for
- RTL8221F(D)(I)-VD-CG
-In-Reply-To: <20220816194859.2369-1-wei.fang@nxp.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16.08.2022 21:48, wei.fang@nxp.com wrote:
-> From: Clark Wang <xiaoning.wang@nxp.com>
-> 
-> RTL8221F(D)(I)-VD-CG is the pin-to-pin upgrade chip from
-> RTL8221F(D)(I)-CG.
+bpf_sk_reuseport_detach() calls __rcu_dereference_sk_user_data_with_flags()
+to obtain the value of sk->sk_user_data, but that function is only usable
+if the RCU read lock is held, and neither that function nor any of its
+callers hold it.
 
-Here you talk about RTL8221, in the driver struct definition you say RTL8211.
-You changed the naming already for v2. It would be time for you to clarify
-which chip you actually mean.
-RTL8221 is a 2.5Gbps PHY, however you don't handle this mode in your code.
+Fix this by adding a new helper,
+__rcu_dereference_sk_user_data_with_flags_check() that checks to see if
+sk->sk_callback_lock() is held and use that here instead.
 
-> 
-> Add new PHY ID for this chip.
-> It does not support RTL8211F_PHYCR2 anymore, so remove the w/r operation
-> of this register.
-> 
-> Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
-> ---
-> V2 change:
-> 1. Commit message changed, RTL8221 instead of RTL8821.
-> 2. Add has_phycr2 to struct rtl821x_priv.
-> ---
->  drivers/net/phy/realtek.c | 44 ++++++++++++++++++++++++++++-----------
->  1 file changed, 32 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-> index a5671ab896b3..3d99fd6664d7 100644
-> --- a/drivers/net/phy/realtek.c
-> +++ b/drivers/net/phy/realtek.c
-> @@ -70,6 +70,7 @@
->  #define RTLGEN_SPEED_MASK			0x0630
->  
->  #define RTL_GENERIC_PHYID			0x001cc800
-> +#define RTL_8211FVD_PHYID			0x001cc878
->  
->  MODULE_DESCRIPTION("Realtek PHY driver");
->  MODULE_AUTHOR("Johnson Leung");
-> @@ -78,6 +79,7 @@ MODULE_LICENSE("GPL");
->  struct rtl821x_priv {
->  	u16 phycr1;
->  	u16 phycr2;
-> +	bool has_phycr2;
->  };
->  
->  static int rtl821x_read_page(struct phy_device *phydev)
-> @@ -94,6 +96,7 @@ static int rtl821x_probe(struct phy_device *phydev)
->  {
->  	struct device *dev = &phydev->mdio.dev;
->  	struct rtl821x_priv *priv;
-> +	u32 phy_id = phydev->drv->phy_id;
->  	int ret;
->  
->  	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> @@ -108,13 +111,16 @@ static int rtl821x_probe(struct phy_device *phydev)
->  	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
->  		priv->phycr1 |= RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF;
->  
-> -	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
-> -	if (ret < 0)
-> -		return ret;
-> +	priv->has_phycr2 = !(phy_id == RTL_8211FVD_PHYID);
-> +	if (priv->has_phycr2) {
-> +		ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
-> +		if (ret < 0)
-> +			return ret;
->  
-> -	priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
-> -	if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
-> -		priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
-> +		priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
-> +		if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
-> +			priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
-> +	}
->  
->  	phydev->priv = priv;
->  
-> @@ -400,12 +406,14 @@ static int rtl8211f_config_init(struct phy_device *phydev)
->  			val_rxdly ? "enabled" : "disabled");
->  	}
->  
-> -	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
-> -			       RTL8211F_CLKOUT_EN, priv->phycr2);
-> -	if (ret < 0) {
-> -		dev_err(dev, "clkout configuration failed: %pe\n",
-> -			ERR_PTR(ret));
-> -		return ret;
-> +	if (priv->has_phycr2) {
-> +		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
-> +				       RTL8211F_CLKOUT_EN, priv->phycr2);
-> +		if (ret < 0) {
-> +			dev_err(dev, "clkout configuration failed: %pe\n",
-> +				ERR_PTR(ret));
-> +			return ret;
-> +		}
->  	}
->  
->  	return genphy_soft_reset(phydev);
-> @@ -923,6 +931,18 @@ static struct phy_driver realtek_drvs[] = {
->  		.resume		= rtl821x_resume,
->  		.read_page	= rtl821x_read_page,
->  		.write_page	= rtl821x_write_page,
-> +	}, {
-> +		PHY_ID_MATCH_EXACT(RTL_8211FVD_PHYID),
-> +		.name		= "RTL8211F-VD Gigabit Ethernet",
+__rcu_dereference_sk_user_data_with_flags() then calls that, supplying false
+as condition indicating only the RCU read lock should be checked.
 
-This conflicts with RTL8221 in the commit message.
+Without this, the following warning can be occasionally observed:
 
-> +		.probe		= rtl821x_probe,
-> +		.config_init	= &rtl8211f_config_init,
-> +		.read_status	= rtlgen_read_status,
-> +		.config_intr	= &rtl8211f_config_intr,
-> +		.handle_interrupt = rtl8211f_handle_interrupt,
-> +		.suspend	= genphy_suspend,
-> +		.resume		= rtl821x_resume,
-> +		.read_page	= rtl821x_read_page,
-> +		.write_page	= rtl821x_write_page,
->  	}, {
->  		.name		= "Generic FE-GE Realtek PHY",
->  		.match_phy_device = rtlgen_match_phy_device,
+=============================
+WARNING: suspicious RCU usage
+6.0.0-rc1-build2+ #563 Not tainted
+-----------------------------
+include/net/sock.h:592 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+rcu_scheduler_active = 2, debug_locks = 1
+5 locks held by locktest/29873:
+ #0: ffff88812734b550 (&sb->s_type->i_mutex_key#9){+.+.}-{3:3}, at: __sock_release+0x77/0x121
+ #1: ffff88812f5621b0 (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_close+0x1c/0x70
+ #2: ffff88810312f5c8 (&h->lhash2[i].lock){+.+.}-{2:2}, at: inet_unhash+0x76/0x1c0
+ #3: ffffffff83768bb8 (reuseport_lock){+...}-{2:2}, at: reuseport_detach_sock+0x18/0xdd
+ #4: ffff88812f562438 (clock-AF_INET){++..}-{2:2}, at: bpf_sk_reuseport_detach+0x24/0xa4
+
+stack backtrace:
+CPU: 1 PID: 29873 Comm: locktest Not tainted 6.0.0-rc1-build2+ #563
+Hardware name: ASUS All Series/H97-PLUS, BIOS 2306 10/09/2014
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x4c/0x5f
+ bpf_sk_reuseport_detach+0x6d/0xa4
+ reuseport_detach_sock+0x75/0xdd
+ inet_unhash+0xa5/0x1c0
+ tcp_set_state+0x169/0x20f
+ ? lockdep_sock_is_held+0x3a/0x3a
+ ? __lock_release.isra.0+0x13e/0x220
+ ? reacquire_held_locks+0x1bb/0x1bb
+ ? hlock_class+0x31/0x96
+ ? mark_lock+0x9e/0x1af
+ __tcp_close+0x50/0x4b6
+ tcp_close+0x28/0x70
+ inet_release+0x8e/0xa7
+ __sock_release+0x95/0x121
+ sock_close+0x14/0x17
+ __fput+0x20f/0x36a
+ task_work_run+0xa3/0xcc
+ exit_to_user_mode_prepare+0x9c/0x14d
+ syscall_exit_to_user_mode+0x18/0x44
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Changes
+=======
+ver #2)
+ - Changed to suggestion from Hawkins Jiawei to have a ..._check() function
+   and make the original a special case of that.
+
+Fixes: cf8c1e967224 ("net: refactor bpf_sk_reuseport_detach()")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Hawkins Jiawei <yin31149@gmail.com>
+cc: Jakub Kicinski <kuba@kernel.org>
+cc: netdev@vger.kernel.org
+Link: https://lore.kernel.org/r/166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk # v1
+---
+
+ include/net/sock.h           |   18 ++++++++++++++----
+ kernel/bpf/reuseport_array.c |    3 ++-
+ 2 files changed, 16 insertions(+), 5 deletions(-)
+
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 05a1bbdf5805..6464da28e842 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -578,18 +578,22 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
+ #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
+ 
+ /**
+- * __rcu_dereference_sk_user_data_with_flags - return the pointer
++ * __rcu_dereference_sk_user_data_with_flags_check - return the pointer
+  * only if argument flags all has been set in sk_user_data. Otherwise
+  * return NULL
+  *
+  * @sk: socket
+  * @flags: flag bits
++ * @condition: Condition under which non-RCU access may take place
++ *
++ * The caller must be holding the RCU read lock 
+  */
+ static inline void *
+-__rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
+-					  uintptr_t flags)
++__rcu_dereference_sk_user_data_with_flags_check(const struct sock *sk,
++						uintptr_t flags, bool condition)
+ {
+-	uintptr_t sk_user_data = (uintptr_t)rcu_dereference(__sk_user_data(sk));
++	uintptr_t sk_user_data =
++		(uintptr_t)rcu_dereference_check(__sk_user_data(sk), condition);
+ 
+ 	WARN_ON_ONCE(flags & SK_USER_DATA_PTRMASK);
+ 
+@@ -598,6 +602,12 @@ __rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
+ 	return NULL;
+ }
+ 
++static inline void *
++__rcu_dereference_sk_user_data_with_flags(const struct sock *sk, uintptr_t flags)
++{
++	return __rcu_dereference_sk_user_data_with_flags_check(sk, flags, false);
++}
++
+ #define rcu_dereference_sk_user_data(sk)				\
+ 	__rcu_dereference_sk_user_data_with_flags(sk, 0)
+ #define __rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
+diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
+index 85fa9dbfa8bf..856c360a591d 100644
+--- a/kernel/bpf/reuseport_array.c
++++ b/kernel/bpf/reuseport_array.c
+@@ -24,7 +24,8 @@ void bpf_sk_reuseport_detach(struct sock *sk)
+ 	struct sock __rcu **socks;
+ 
+ 	write_lock_bh(&sk->sk_callback_lock);
+-	socks = __rcu_dereference_sk_user_data_with_flags(sk, SK_USER_DATA_BPF);
++	socks = __rcu_dereference_sk_user_data_with_flags_check(
++		sk, SK_USER_DATA_BPF, lockdep_is_held(&sk->sk_callback_lock));
+ 	if (socks) {
+ 		WRITE_ONCE(sk->sk_user_data, NULL);
+ 		/*
+
 
