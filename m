@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66C665959FE
+	by mail.lfdr.de (Postfix) with ESMTP id AF69F5959FF
 	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233885AbiHPLZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 07:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
+        id S233556AbiHPLZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 07:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234501AbiHPLZV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:25:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D8BDEA168
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:39:38 -0700 (PDT)
+        with ESMTP id S234357AbiHPLZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:25:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C637E42F5
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:39:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CA7160FAD
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 10:39:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ABBDC433D6;
-        Tue, 16 Aug 2022 10:39:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41DB0B8169C
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 10:39:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A70EAC433D6;
+        Tue, 16 Aug 2022 10:39:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660646377;
-        bh=i+/C9NPsLe5QP8E7i/4CfrCCy4yxga8BJyF676GkJKU=;
+        s=k20201202; t=1660646365;
+        bh=tkNrqIdN9140UAR6xOufak3DaGJowm84cdYY27o54Ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fEiykNhfSwaoDipgEMj4YBJN+67+mRdPno41CvEOehVmsUHQkBMYaGR3u1FgZE9eU
-         sHCFHmEGiepHs564FLCM+uzPRc3O3pV28A5GSBL3jcnFuRWrzGTyIo6DzRcnileGjh
-         4r1bKsPgWXkC98cWTlH0vvSG5cg2FAQW3eqHxA2U+ASSgqj9eWl8OhSUzyQhOtmwci
-         2owCvDk/k3Yx7dP0ZCKKqEkWtE64o95fC0t6HbZEauNEFM6YmdPBp0Ob1iKEyfySfO
-         Zw2hx0tNl+vYteWORzP4eZA4Q0UYTEpslVn0C5q6P0HJosnjgodwNcwE1ISoqwFbxX
-         wJtcOgXyKDwxA==
+        b=m+0t46YcLo0OeST53QaaVnZNTHFOhel5ZgBshwiS/HfU0Pck8ezrqp36TMwinSznd
+         rBIPF6bgOQq0g3oZfvoRwNWIcJxSmtIIG6NAHStIfOtnurg3+mKgOdeBNPdiDmW3sk
+         gPIswu8t3y5XH45ey7+im4zgiIYCgOx1iVx7TWev+OU5WFaLx05dUTkDzYv8Oj4g60
+         HB92gBKOoORjj/1AV8MmuHAeCl5xaqhpf7IYWFd1rWUKBNppdq/RLV2Z0TI7VgFx/X
+         qwph1KVRHbmJCMzojmeocE6gL5GNcZyYrzIaiECcy4d8KPnXoh3foEyZ08pAxZM6Px
+         adnCsK88ppiyg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
         ipsec-devel <devel@linux-ipsec.org>
-Subject: [PATCH xfrm-next 11/26] net/mlx5e: Create Advanced Steering Operation object for IPsec
-Date:   Tue, 16 Aug 2022 13:37:59 +0300
-Message-Id: <afbcc0c5621ae15a1e05766ca111e66851ff4841.1660641154.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next 12/26] net/mlx5e: Create hardware IPsec full offload objects
+Date:   Tue, 16 Aug 2022 13:38:00 +0300
+Message-Id: <67bac0f27f98d86934853a95f96901a26c68a935.1660641154.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1660641154.git.leonro@nvidia.com>
 References: <cover.1660641154.git.leonro@nvidia.com>
@@ -60,123 +60,100 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Setup the ASO (Advanced Steering Operation) object that is needed
-for IPsec to interact with SW stack about various fast changing
-events: replay window, lifetime limits,  e.t.c
+Create initial hardware IPsec full offload object and connect it
+to advanced steering operation (ASO) context and queue, so the data
+path can communicate with the stack.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/ipsec.c       | 11 +++++++
- .../mellanox/mlx5/core/en_accel/ipsec.h       |  6 ++++
- .../mlx5/core/en_accel/ipsec_offload.c        | 30 +++++++++++++++++++
- 3 files changed, 47 insertions(+)
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |  1 +
+ .../mellanox/mlx5/core/en_accel/ipsec.h       |  1 +
+ .../mlx5/core/en_accel/ipsec_offload.c        | 31 ++++++++++++++++++-
+ 3 files changed, 32 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index f8ba2d7581e4..f65305281ac4 100644
+index f65305281ac4..9e936e9cc673 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -378,6 +378,12 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 		goto err_wq;
- 	}
+@@ -179,6 +179,7 @@ mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
+ 	memcpy(&attrs->saddr, x->props.saddr.a6, sizeof(attrs->saddr));
+ 	memcpy(&attrs->daddr, x->id.daddr.a6, sizeof(attrs->daddr));
+ 	attrs->family = x->props.family;
++	attrs->type = x->xso.type;
+ }
  
-+	if (mlx5_ipsec_device_caps(priv->mdev) & MLX5_IPSEC_CAP_FULL_OFFLOAD) {
-+		ret = mlx5e_ipsec_aso_init(ipsec);
-+		if (ret)
-+			goto err_aso;
-+	}
-+
- 	ret = mlx5e_accel_ipsec_fs_init(ipsec);
- 	if (ret)
- 		goto err_fs_init;
-@@ -388,6 +394,9 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
- 	return 0;
- 
- err_fs_init:
-+	if (mlx5_ipsec_device_caps(priv->mdev) & MLX5_IPSEC_CAP_FULL_OFFLOAD)
-+		mlx5e_ipsec_aso_cleanup(ipsec);
-+err_aso:
- 	destroy_workqueue(ipsec->wq);
- err_wq:
- 	kfree(ipsec);
-@@ -402,6 +411,8 @@ void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv)
- 		return;
- 
- 	mlx5e_accel_ipsec_fs_cleanup(ipsec);
-+	if (mlx5_ipsec_device_caps(priv->mdev) & MLX5_IPSEC_CAP_FULL_OFFLOAD)
-+		mlx5e_ipsec_aso_cleanup(ipsec);
- 	destroy_workqueue(ipsec->wq);
- 	kfree(ipsec);
- 	priv->ipsec = NULL;
+ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-index 3bba62f54604..2be7fb7db456 100644
+index 2be7fb7db456..9acb3e98c823 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
-@@ -39,6 +39,7 @@
- #include <linux/mlx5/device.h>
- #include <net/xfrm.h>
- #include <linux/idr.h>
-+#include "lib/aso.h"
- 
- #define MLX5E_IPSEC_SADB_RX_BITS 10
- #define MLX5E_IPSEC_ESN_SCOPE_MID 0x80000000L
-@@ -107,6 +108,8 @@ struct mlx5e_ipsec {
- 	struct mlx5e_ipsec_rx *rx_ipv4;
- 	struct mlx5e_ipsec_rx *rx_ipv6;
- 	struct mlx5e_ipsec_tx *tx;
-+	struct mlx5_aso *aso;
-+	u32 pdn;
+@@ -73,6 +73,7 @@ struct mlx5_accel_esp_xfrm_attrs {
+ 	u8 dir : 2;
+ 	u8 esn_overlap : 1;
+ 	u8 esn_trigger : 1;
++	u8 type : 2;
+ 	u8 family;
+ 	u32 replay_window;
  };
- 
- struct mlx5e_ipsec_esn_state {
-@@ -160,6 +163,9 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev);
- void mlx5_accel_esp_modify_xfrm(struct mlx5e_ipsec_sa_entry *sa_entry,
- 				const struct mlx5_accel_esp_xfrm_attrs *attrs);
- 
-+int mlx5e_ipsec_aso_init(struct mlx5e_ipsec *ipsec);
-+void mlx5e_ipsec_aso_cleanup(struct mlx5e_ipsec *ipsec);
-+
- static inline struct mlx5_core_dev *
- mlx5e_ipsec_sa2dev(struct mlx5e_ipsec_sa_entry *sa_entry)
- {
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-index 1e586db009be..7ebdfe560398 100644
+index 7ebdfe560398..4fc472722859 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
-@@ -211,3 +211,33 @@ void mlx5_accel_esp_modify_xfrm(struct mlx5e_ipsec_sa_entry *sa_entry,
+@@ -63,10 +63,12 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	struct aes_gcm_keymat *aes_gcm = &attrs->aes_gcm;
+ 	u32 out[MLX5_ST_SZ_DW(general_obj_out_cmd_hdr)];
+ 	u32 in[MLX5_ST_SZ_DW(create_ipsec_obj_in)] = {};
+-	void *obj, *salt_p, *salt_iv_p;
++	void *obj, *salt_p, *salt_iv_p, *aso_ctx;
++	u32 pdn = sa_entry->ipsec->pdn;
+ 	int err;
  
- 	memcpy(&sa_entry->attrs, attrs, sizeof(sa_entry->attrs));
- }
+ 	obj = MLX5_ADDR_OF(create_ipsec_obj_in, in, ipsec_object);
++	aso_ctx = MLX5_ADDR_OF(ipsec_obj, obj, ipsec_aso);
+ 
+ 	/* salt and seq_iv */
+ 	salt_p = MLX5_ADDR_OF(ipsec_obj, obj, salt);
+@@ -80,6 +82,17 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 		MLX5_SET(ipsec_obj, obj, esn_en, 1);
+ 		MLX5_SET(ipsec_obj, obj, esn_msb, attrs->esn);
+ 		MLX5_SET(ipsec_obj, obj, esn_overlap, attrs->esn_overlap);
 +
-+int mlx5e_ipsec_aso_init(struct mlx5e_ipsec *ipsec)
-+{
-+	struct mlx5_core_dev *mdev = ipsec->mdev;
-+	int err;
++		if (attrs->type == XFRM_DEV_OFFLOAD_FULL) {
++			MLX5_SET(ipsec_aso, aso_ctx, esn_event_arm, 1);
 +
-+	err = mlx5_core_alloc_pd(mdev, &ipsec->pdn);
-+	if (err)
-+		return err;
-+
-+	ipsec->aso = mlx5_aso_create(mdev, ipsec->pdn);
-+	if (IS_ERR(ipsec->aso)) {
-+		err = PTR_ERR(ipsec->aso);
-+		goto err_aso_create;
++			if (attrs->dir == XFRM_DEV_OFFLOAD_IN) {
++				MLX5_SET(ipsec_aso, aso_ctx, window_sz,
++					 attrs->replay_window / 64);
++				MLX5_SET(ipsec_aso, aso_ctx, mode,
++					 MLX5_IPSEC_ASO_REPLAY_PROTECTION);
++			}
++		}
+ 	}
+ 
+ 	MLX5_SET(ipsec_obj, obj, dekn, sa_entry->enc_key_id);
+@@ -90,6 +103,22 @@ static int mlx5_create_ipsec_obj(struct mlx5e_ipsec_sa_entry *sa_entry)
+ 	MLX5_SET(general_obj_in_cmd_hdr, in, obj_type,
+ 		 MLX5_GENERAL_OBJECT_TYPES_IPSEC);
+ 
++	/* ASO context */
++	if (attrs->type == XFRM_DEV_OFFLOAD_FULL) {
++		MLX5_SET(ipsec_obj, obj, ipsec_aso_access_pd, pdn);
++		MLX5_SET(ipsec_obj, obj, full_offload, 1);
++		MLX5_SET(ipsec_aso, aso_ctx, valid, 1);
++		/* MLX5_IPSEC_ASO_REG_C_4_5 is type C register that is used
++		 * in flow steering to perform matching against. Please be
++		 * aware that this register was chosen arbitrary and can't
++		 * be used in other places as long as IPsec full offload
++		 * active.
++		 */
++		MLX5_SET(ipsec_obj, obj, aso_return_reg, MLX5_IPSEC_ASO_REG_C_4_5);
++		if (attrs->dir == XFRM_DEV_OFFLOAD_OUT)
++			MLX5_SET(ipsec_aso, aso_ctx, mode, MLX5_IPSEC_ASO_INC_SN);
 +	}
 +
-+	return 0;
-+
-+err_aso_create:
-+	mlx5_core_dealloc_pd(mdev, ipsec->pdn);
-+	return err;
-+}
-+
-+void mlx5e_ipsec_aso_cleanup(struct mlx5e_ipsec *ipsec)
-+{
-+	struct mlx5_core_dev *mdev = ipsec->mdev;
-+
-+	mlx5_aso_destroy(ipsec->aso);
-+	mlx5_core_dealloc_pd(mdev, ipsec->pdn);
-+}
+ 	err = mlx5_cmd_exec(mdev, in, sizeof(in), out, sizeof(out));
+ 	if (!err)
+ 		sa_entry->ipsec_obj_id =
 -- 
 2.37.2
 
