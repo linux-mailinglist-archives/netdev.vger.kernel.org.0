@@ -2,153 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A128B5964EA
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:50:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A21C15964F5
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237733AbiHPVuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:50:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35992 "EHLO
+        id S237790AbiHPVv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 17:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237730AbiHPVtx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:49:53 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA116CD06
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:49:50 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id x3-20020a17090ab00300b001f731f28b82so53584pjq.3
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:49:50 -0700 (PDT)
+        with ESMTP id S237781AbiHPVvZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:51:25 -0400
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969908E0CC
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
+Received: by mail-oi1-x22a.google.com with SMTP id bb16so13492539oib.11
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=+IZonXkzDm1dEfVfdUlFehFeeEEGH9j0xN4V/zmAjFg=;
-        b=hUfqzQwnfCoU3faaWeSpDvoPKyMwGRIv0zbWcQPBPXQ24yDBBkjm74Nz0VOOeLO+CW
-         DQnhLkbbHAqAuPNnZ8ZtbPh035HjSDPyEi5noEEgV7u+tcLGcwURxBgJg7VqqUSRHlmR
-         HAWZVgAq82DZvdMQp2ce627ee8ArThgBWJsad6S3suURK4sQI/WB4tazSFyvcNr0yWYl
-         0Qr4rDYjMSir8BzoDnEv7qp82Oz7wGw3PA6zI5ZLen7qS/rR2nT8VZ3vOA9cuAVMWTgT
-         1P38iZhZa4EAYba+VYn87vYfl6Fq7bPNTzwcMhM9+yMhwrOuwHcRbIrtlzPIsHCJUWOA
-         cVfQ==
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
+        b=CJvwxuwd+0rt/bo4TkCNqYjlT4SJ6Aesn0zM6uXzP6TCT+LreKW44m+4ak4S4QcpN8
+         Z3emQFWvCmqT6EmdYqBJBiTKDxs25SPIFHJWRc2lCFCaMDG285aPNFHSJURzJUXrItiL
+         Ui0T4+b4CX6rGWwwzQfjXo8/X0Ju4rYSJ9xG3J7ltDjyoURr0U0yWlyr6RXfyYXVOrj/
+         dZni714OJ/a9KGzQWNmYg0CEkelbTwf73pNCb8n0Ac9BiqIv1/rm9RuUiqu/Zp2s8EQx
+         XozhxC5/9Z05RYEinUrW7q9aA6G43Pjq/Ad7nHIMnr1jM1fRLjCBEg6+JP0Ma1IBiniW
+         viLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=+IZonXkzDm1dEfVfdUlFehFeeEEGH9j0xN4V/zmAjFg=;
-        b=GUoYqBUjyNYJBQ2VnmgK7UfyW9lbiVMoyvPa2xCQVAIrcg+grV/v38HxvS/ezU2kHt
-         etivi3OQOYStEzzFyNu17qC35t6JGKJ8m1wpYqF1zZzSBrJXkb97bIJl75BdrW1b56fT
-         ASOa8uMXI0Ro44qitnDIX691rCR7P9EgvJNIitc+3NGJbReh9j00ujrjbSoK1O0i1ghf
-         AG0JGOqLJnZHC73FVq6BcU17dH8BrNulKat8bcIVAnUprjvTfvhfodw2Eur7IcwVlr+M
-         fOC0J5Xd2KKc6tNbtiud1qHoQ1uqI4A6geT+M5GiYvtZtCyD3F+vUlnvq6uA+Gx4vwAz
-         nWIQ==
-X-Gm-Message-State: ACgBeo0/IcKinqRQ0UulqqhuOt9+bigq2Pu4jlhRTGkAsaCIG2dzB7cJ
-        YyHfPxenpuO8SNuvqRE5eltWrPH37YM=
-X-Google-Smtp-Source: AA6agR7XFdifIKPgmL8Q6duKo79x0wbP/flH2ziJSlt3d5V2GIzO+qdqLZLi2pBy8ZVqMFQxqftWFICxFMk=
-X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:7e6e:c287:3dc6:d4d8])
- (user=haoluo job=sendgmr) by 2002:a17:902:ef96:b0:170:d01d:df13 with SMTP id
- iz22-20020a170902ef9600b00170d01ddf13mr23999754plb.53.1660686590091; Tue, 16
- Aug 2022 14:49:50 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 14:49:45 -0700
-Message-Id: <20220816214945.742924-1-haoluo@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH bpf-next] libbpf: allow disabling auto attach
-From:   Hao Luo <haoluo@google.com>
-To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Jiri Olsa <jolsa@kernel.org>, Hao Luo <haoluo@google.com>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
+        b=TOK+hGSvHm5RdpyAbnLYZ568JZct6NVD5vhCkFVVEP+6kezgoPLJY1MtayjD2ZQ4hb
+         oE/Lc3YB/hv9IF+ziGtRWM5x4g4eaq5yngjmfcQCJKtCKY2T5WqIPHiDpBLWdmEf6BPp
+         cZceic05OPG8i3alm52GKCZ6SlPwrhuX1/YrqxQS16+Iszfh2j3055Mkc9Y5NM1iNppZ
+         R9xMzDdA0OH2mKoqQ5UeTC5P+TE9eWxc5j2JlDN7oUQLJLNeGAmpw/UIrpg9wRJU0RfW
+         6QFyAqdwi2eJuXbqSkQeMbC3XO4LHDIZvM8mfndDWYQsAGiF3a/AanAY4DmvdKxvPnGG
+         j5Fw==
+X-Gm-Message-State: ACgBeo3hvlnwmKMiEvQJbqEu31MTyeLnROBnqBSna2q2mHWIrHy5ZRv/
+        XzsfBMMFCykd+yUN25hckzWx3AL2UpKBcjLSM679
+X-Google-Smtp-Source: AA6agR4ffEEKYkbE47q7/sRZQjQuSsIQ8phb3aTW9UCETN6ndapbDy186fFAcL9M3UIMnxT1iC01UQw6kwBHZYMTE0o=
+X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
+ h204-20020acab7d5000000b00343c47891c6mr257896oif.136.1660686682803; Tue, 16
+ Aug 2022 14:51:22 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220815162028.926858-1-fred@cloudflare.com>
+In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Tue, 16 Aug 2022 17:51:12 -0400
+Message-ID: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+To:     Frederick Lawler <fred@cloudflare.com>
+Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        ebiederm@xmission.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
+        tixxdz@gmail.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add libbpf APIs for disabling auto-attach for individual functions.
-This is motivated by the use case of cgroup iter [1]. Some iter
-types require their parameters to be non-zero, therefore applying
-auto-attach on them will fail. With these two new APIs, Users who
-want to use auto-attach and these types of iters can disable
-auto-attach for them and perform manual attach.
+On Mon, Aug 15, 2022 at 12:20 PM Frederick Lawler <fred@cloudflare.com> wrote:
+>
+> While user namespaces do not make the kernel more vulnerable, they are however
+> used to initiate exploits. Some users do not want to block namespace creation
+> for the entirety of the system, which some distributions provide. Instead, we
+> needed a way to have some applications be blocked, and others allowed. This is
+> not possible with those tools. Managing hierarchies also did not fit our case
+> because we're determining which tasks are allowed based on their attributes.
+>
+> While exploring a solution, we first leveraged the LSM cred_prepare hook
+> because that is the closest hook to prevent a call to create_user_ns().
+>
+> The calls look something like this:
+>
+>     cred = prepare_creds()
+>         security_prepare_creds()
+>             call_int_hook(cred_prepare, ...
+>     if (cred)
+>         create_user_ns(cred)
+>
+> We noticed that error codes were not propagated from this hook and
+> introduced a patch [1] to propagate those errors.
+>
+> The discussion notes that security_prepare_creds() is not appropriate for
+> MAC policies, and instead the hook is meant for LSM authors to prepare
+> credentials for mutation. [2]
+>
+> Additionally, cred_prepare hook is not without problems. Handling the clone3
+> case is a bit more tricky due to the user space pointer passed to it. This
+> makes checking the syscall subject to a possible TOCTTOU attack.
+>
+> Ultimately, we concluded that a better course of action is to introduce
+> a new security hook for LSM authors. [3]
+>
+> This patch set first introduces a new security_create_user_ns() function
+> and userns_create LSM hook, then marks the hook as sleepable in BPF. The
+> following patches after include a BPF test and a patch for an SELinux
+> implementation.
+>
+> We want to encourage use of user namespaces, and also cater the needs
+> of users/administrators to observe and/or control access. There is no
+> expectation of an impact on user space applications because access control
+> is opt-in, and users wishing to observe within a LSM context
+>
+>
+> Links:
+> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
+> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
+> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
+>
+> Past discussions:
+> V4: https://lore.kernel.org/all/20220801180146.1157914-1-fred@cloudflare.com/
+> V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
+> V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
+> V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
+>
+> Changes since v4:
+> - Update commit description
+> - Update cover letter
+> Changes since v3:
+> - Explicitly set CAP_SYS_ADMIN to test namespace is created given
+>   permission
+> - Simplify BPF test to use sleepable hook only
+> - Prefer unshare() over clone() for tests
+> Changes since v2:
+> - Rename create_user_ns hook to userns_create
+> - Use user_namespace as an object opposed to a generic namespace object
+> - s/domB_t/domA_t in commit message
+> Changes since v1:
+> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
+> - Add selinux: Implement create_user_ns hook patch
+> - Change function signature of security_create_user_ns() to only take
+>   struct cred
+> - Move security_create_user_ns() call after id mapping check in
+>   create_user_ns()
+> - Update documentation to reflect changes
+>
+> Frederick Lawler (4):
+>   security, lsm: Introduce security_create_user_ns()
+>   bpf-lsm: Make bpf_lsm_userns_create() sleepable
+>   selftests/bpf: Add tests verifying bpf lsm userns_create hook
+>   selinux: Implement userns_create hook
+>
+>  include/linux/lsm_hook_defs.h                 |   1 +
+>  include/linux/lsm_hooks.h                     |   4 +
+>  include/linux/security.h                      |   6 ++
+>  kernel/bpf/bpf_lsm.c                          |   1 +
+>  kernel/user_namespace.c                       |   5 +
+>  security/security.c                           |   5 +
+>  security/selinux/hooks.c                      |   9 ++
+>  security/selinux/include/classmap.h           |   2 +
+>  .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
+>  .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
+>  10 files changed, 168 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
 
-[1] https://lore.kernel.org/bpf/CAEf4BzZ+a2uDo_t6kGBziqdz--m2gh2_EUwkGLDtMd65uwxUjA@mail.gmail.com/
+I just merged this into the lsm/next tree, thanks for seeing this
+through Frederick, and thank you to everyone who took the time to
+review the patches and add their tags.
 
-Signed-off-by: Hao Luo <haoluo@google.com>
----
- tools/lib/bpf/libbpf.c | 16 ++++++++++++++++
- tools/lib/bpf/libbpf.h |  2 ++
- 2 files changed, 18 insertions(+)
+  git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm.git next
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index aa05a99b913d..25f654d25b46 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -417,6 +417,7 @@ struct bpf_program {
- 
- 	int fd;
- 	bool autoload;
-+	bool autoattach;
- 	bool mark_btf_static;
- 	enum bpf_prog_type type;
- 	enum bpf_attach_type expected_attach_type;
-@@ -755,6 +756,8 @@ bpf_object__init_prog(struct bpf_object *obj, struct bpf_program *prog,
- 		prog->autoload = true;
- 	}
- 
-+	prog->autoattach = true;
-+
- 	/* inherit object's log_level */
- 	prog->log_level = obj->log_level;
- 
-@@ -8314,6 +8317,16 @@ int bpf_program__set_autoload(struct bpf_program *prog, bool autoload)
- 	return 0;
- }
- 
-+bool bpf_program__autoattach(const struct bpf_program *prog)
-+{
-+	return prog->autoattach;
-+}
-+
-+void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach)
-+{
-+	prog->autoattach = autoattach;
-+}
-+
- const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog)
- {
- 	return prog->insns;
-@@ -12349,6 +12362,9 @@ int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
- 		if (!prog->autoload)
- 			continue;
- 
-+		if (!prog->autoattach)
-+			continue;
-+
- 		/* auto-attaching not supported for this program */
- 		if (!prog->sec_def || !prog->sec_def->prog_attach_fn)
- 			continue;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 61493c4cddac..88a1ac34b12a 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -260,6 +260,8 @@ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
- LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
- LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
- LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-+LIBBPF_API bool bpf_program__autoattach(const struct bpf_program *prog);
-+LIBBPF_API void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach);
- 
- struct bpf_insn;
- 
 -- 
-2.37.1.595.g718a3a8f04-goog
-
+paul-moore.com
