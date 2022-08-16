@@ -2,500 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A457596551
+	by mail.lfdr.de (Postfix) with ESMTP id 0662C59654F
 	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 00:17:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237569AbiHPWQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 18:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
+        id S237927AbiHPWQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 18:16:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237976AbiHPWQS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 18:16:18 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1946678BCE;
-        Tue, 16 Aug 2022 15:16:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660688137; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=bPMcKkRyVZfUCCU335HWN3m6zTrsaHlK3Btl7KbRFeYjBT3CNQxVK+IZhowIVhi5NKsxEvyKxR7fUGhzGbjZvY9gwbkQWGOxSSJsi7RB6UXThgDtGs0FayAilNjdCnyNhUih1SSDZX8rJcJexsL5aEsJ5fkGN4Z1MVCOHbi28l0=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660688137; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=SxBVhVumfgFXAdQqW2kPOpPPhvJtnmmOvTBSGY8R4R8=; 
-        b=L8JpVq9FoaMKGbicq99QYbsitH2gBv6Ibi0xo3ohhJosM+GLbRtNBVP0lOAn3DZPJllsf+BqLYmkjEkMj54WLoYUIbjspNq3jMZRvXuR5TAe/sBjviKXfFVpZzJg3/4besBpSW9fEbkj6G2RvaZccKrIJikvHnbnfHheX/6fIac=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660688137;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:From:From:Subject:Subject:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=SxBVhVumfgFXAdQqW2kPOpPPhvJtnmmOvTBSGY8R4R8=;
-        b=DmlpJKR3MvTM0N0qcTqT15C4TRmCQy6JO34GQgyjW9ua1VCRx/LlWQXuv431kc08
-        cn8fT4hYxyO9jcyDbdW1l5XYbgT1Ek/UTcgvSrEWhp2SmH2LZiaqq+GaK2MQKQ4anYw
-        He0lWbDSj9IgtZuI5uHzE8LoN6LbCanwXcpGbm30=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1660688134449648.2828314113265; Tue, 16 Aug 2022 15:15:34 -0700 (PDT)
-Message-ID: <53672ace-ad26-efdf-b3e5-bc8e4163c567@arinc9.com>
-Date:   Wed, 17 Aug 2022 01:15:16 +0300
+        with ESMTP id S237959AbiHPWQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 18:16:51 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BA54786EC
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 15:16:50 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id y4so7977401qvr.7
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 15:16:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=zAVoK2y0IblTkUtCF2+DJlXYzSXXXw12A5petDOhN5E=;
+        b=IP+BohMQzQjIx2VjirAenZa/lMePA7zPokS9BlYFTRN8m/nGjLgAQ/rTpaE9elClY7
+         LeObnzazdZXAcQxZ+7mv03rgF3EcrZsMotDhbdt4jZQ4KtN3R6y57tuD8Cy3ZbBotVZh
+         GrBeWl3KTeEfYXH606jCLEHMaBIYhCD6+bi2duKLThctxnxDArlUqsAV2s2IRzoJA514
+         5l0EOsva/nmhAYKFZdRuXIEZeGB90/CTD/gGDevfLJ/ymkbVc0dUR6DnN/BaNX6zZo59
+         BLMxOxTSp3Uqccmqb3QyNVBDXliGREWGBITeNloI4zvjEj0ZmJXkIL1/xqUMdZC6/ogh
+         Rrwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=zAVoK2y0IblTkUtCF2+DJlXYzSXXXw12A5petDOhN5E=;
+        b=ZMMzwhQWk5Kz3RtJK6a5KMbhpvCrUlnRdVpGCTMsmqwKpndHm7+DQRAlb5tnogN4sF
+         wiTFRWlvpf/1rn0ACAzRu9+LS27xittrCYinSCpPl5Dk2Pu1BbPz+YcXA+CHSDWxy0wE
+         alsBReclUOd+Zr7sX6YKN077+6eZ4dUzHbWn0ulCWKr7/YklDkCmt2HZKAhojsjW2edu
+         M7PO4nszk84sJ+ACsoXHMFVj7KyXAYeGgoVfkfLCREU1WCHa21AUERuuER5dqyQhv+DP
+         ailwPZi6t3lbNSTQ58Z/Pin/HpyoLBgtLYrD0tZHaKqc1DbzW3Rp+qbgz5jC5D8j0umy
+         f2/A==
+X-Gm-Message-State: ACgBeo2l60j7MfPxUVRF/J4SrwPpSdU2SLdK97FYRISN9jg+7BJxHL4s
+        BHuurMBat47NK82zVLQxkFHPqv+01jHJzahI7SfzigdGX93419SA
+X-Google-Smtp-Source: AA6agR4rcZ3y0cSZ5tIp/Q/Gtnd8PqnUBfvhciEjwRRV0JFXzi+SKPnM81czOBZvk96BaLNcdiEFk8k8DislOFP+L+8=
+X-Received: by 2002:a05:6214:20a8:b0:477:1882:3e7 with SMTP id
+ 8-20020a05621420a800b00477188203e7mr19871631qvd.44.1660688209597; Tue, 16 Aug
+ 2022 15:16:49 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Subject: Re: [PATCH v2 3/7] dt-bindings: net: dsa: mediatek,mt7530: update
- examples
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220813154415.349091-1-arinc.unal@arinc9.com>
- <20220813154415.349091-4-arinc.unal@arinc9.com>
- <20220816210223.GA2714004-robh@kernel.org>
-Content-Language: en-US
-In-Reply-To: <20220816210223.GA2714004-robh@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220816214945.742924-1-haoluo@google.com> <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
+In-Reply-To: <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Tue, 16 Aug 2022 15:16:38 -0700
+Message-ID: <CA+khW7hHGL1DAMSOjbJSj21wJYY=j4VrRJcFB1zv52Db20_MGA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: allow disabling auto attach
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Jiri Olsa <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17.08.2022 00:02, Rob Herring wrote:
-> On Sat, Aug 13, 2022 at 06:44:11PM +0300, Arınç ÜNAL wrote:
->> Update the examples on the binding.
->>
->> - Add examples which include a wide variation of configurations.
->> - Make example comments YAML comment instead of DT binding comment.
->> - Define examples from platform to make the bindings clearer.
->> - Add interrupt controller to the examples. Include header file for
->> interrupt.
->> - Change reset line for MT7621 examples.
->> - Pretty formatting for the examples.
->> - Change switch reg to 0.
->> - Change port labels to fit the example, change port 4 label to wan.
->> - Change ethernet-ports to ports.
-> 
-> Again, why?
+On Tue, Aug 16, 2022 at 3:01 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Aug 16, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > Add libbpf APIs for disabling auto-attach for individual functions.
+> > This is motivated by the use case of cgroup iter [1]. Some iter
+> > types require their parameters to be non-zero, therefore applying
+> > auto-attach on them will fail. With these two new APIs, Users who
+> > want to use auto-attach and these types of iters can disable
+> > auto-attach for them and perform manual attach.
+> >
+> > [1] https://lore.kernel.org/bpf/CAEf4BzZ+a2uDo_t6kGBziqdz--m2gh2_EUwkGLDtMd65uwxUjA@mail.gmail.com/
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > ---
+> >  tools/lib/bpf/libbpf.c | 16 ++++++++++++++++
+> >  tools/lib/bpf/libbpf.h |  2 ++
+> >  2 files changed, 18 insertions(+)
+> >
+> > diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> > index aa05a99b913d..25f654d25b46 100644
+> > --- a/tools/lib/bpf/libbpf.c
+> > +++ b/tools/lib/bpf/libbpf.c
+[...]
+> >  const struct bpf_insn *bpf_program__insns(const struct bpf_program *prog)
+> >  {
+> >         return prog->insns;
+> > @@ -12349,6 +12362,9 @@ int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
+> >                 if (!prog->autoload)
+> >                         continue;
+> >
+> > +               if (!prog->autoattach)
+> > +                       continue;
+> > +
+>
+> nit: I'd combine as if (!prog->autoload || !prog->autoattach), they
+> are very coupled in this sense
+>
 
-For wrong reasons as it seems. Will revert that one.
+Sure.
 
-> 
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 663 +++++++++++++-----
->>   1 file changed, 502 insertions(+), 161 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> index 4c99266ce82a..cc87f48d4d07 100644
->> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> @@ -210,144 +210,374 @@ allOf:
->>   unevaluatedProperties: false
->>   
->>   examples:
->> +  # Example 1: Standalone MT7530
->>     - |
->>       #include <dt-bindings/gpio/gpio.h>
->> -    mdio {
->> -        #address-cells = <1>;
->> -        #size-cells = <0>;
->> -        switch@0 {
->> -            compatible = "mediatek,mt7530";
->> -            reg = <0>;
->> -
->> -            core-supply = <&mt6323_vpa_reg>;
->> -            io-supply = <&mt6323_vemc3v3_reg>;
->> -            reset-gpios = <&pio 33 GPIO_ACTIVE_HIGH>;
->> -
->> -            ethernet-ports {
->> +
->> +    platform {
->> +        ethernet {
-> 
-> Don't need these nodes.
+> >                 /* auto-attaching not supported for this program */
+> >                 if (!prog->sec_def || !prog->sec_def->prog_attach_fn)
+> >                         continue;
+> > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> > index 61493c4cddac..88a1ac34b12a 100644
+> > --- a/tools/lib/bpf/libbpf.h
+> > +++ b/tools/lib/bpf/libbpf.h
+> > @@ -260,6 +260,8 @@ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
+> >  LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
+> >  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
+> >  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
+> > +LIBBPF_API bool bpf_program__autoattach(const struct bpf_program *prog);
+> > +LIBBPF_API void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach);
+>
+> please add these APIs to libbpf.map as well
+>
 
-Will remove.
+Ok. Which section? LIBBPF_1.0.0? Do the items in each section have a
+particular order?
 
-> 
->> +            mdio {
->>                   #address-cells = <1>;
->>                   #size-cells = <0>;
->> -                port@0 {
->> +
->> +                switch@0 {
->> +                    compatible = "mediatek,mt7530";
->>                       reg = <0>;
->> -                    label = "lan0";
->> -                };
->>   
->> -                port@1 {
->> -                    reg = <1>;
->> -                    label = "lan1";
->> -                };
->> +                    reset-gpios = <&pio 33 0>;
->>   
->> -                port@2 {
->> -                    reg = <2>;
->> -                    label = "lan2";
->> -                };
->> +                    core-supply = <&mt6323_vpa_reg>;
->> +                    io-supply = <&mt6323_vemc3v3_reg>;
->> +
->> +                    ports {
-> 
-> 'ports' is for the DT graph binding. 'ethernet-ports' is for DSA
-> binding. The former is allowed due to existing users. Don't add more.
+> it would be also nice to have a simple test validating that skeleton's
+> auto-attach doesn't attach program (no link will be created) if
+> bpf_program__set_autoattach(false) is called before. Can you please
+> add that as well?
+>
 
-Will fix.
+Ok. Will add a test and send v2.
 
-> 
->> +                        #address-cells = <1>;
->> +                        #size-cells = <0>;
->>   
->> -                port@3 {
->> -                    reg = <3>;
->> -                    label = "lan3";
->> +                        port@0 {
->> +                            reg = <0>;
->> +                            label = "lan1";
->> +                        };
->> +
->> +                        port@1 {
->> +                            reg = <1>;
->> +                            label = "lan2";
->> +                        };
->> +
->> +                        port@2 {
->> +                            reg = <2>;
->> +                            label = "lan3";
->> +                        };
->> +
->> +                        port@3 {
->> +                            reg = <3>;
->> +                            label = "lan4";
->> +                        };
->> +
->> +                        port@4 {
->> +                            reg = <4>;
->> +                            label = "wan";
->> +                        };
->> +
->> +                        port@6 {
->> +                            reg = <6>;
->> +                            label = "cpu";
->> +                            ethernet = <&gmac0>;
->> +                            phy-mode = "rgmii";
->> +
->> +                            fixed-link {
->> +                                speed = <1000>;
->> +                                full-duplex;
->> +                                pause;
->> +                            };
->> +                        };
->> +                    };
->>                   };
->> +            };
->> +        };
->> +    };
->>   
->> -                port@4 {
->> -                    reg = <4>;
->> -                    label = "wan";
->> +  # Example 2: MT7530 in MT7623AI SoC
-> 
-> Looks almost the same as example 1. Examples are not an enumeration of
-> every possible DT. Limit them to cases which are significantly
-> different.
-
-It seemed to me it would be useful to reference the reset line for the 
-MT7623AI SoC. Using mediatek,mcm and especially MT2701_ETHSYS_MCM_RST in 
-dt-bindings/reset/mt2701-resets.h.
-
-Should I remove anyway?
-
-> 
->> +  - |
->> +    #include <dt-bindings/reset/mt2701-resets.h>
->> +
->> +    platform {
->> +        ethernet {
->> +            mdio {
->> +                #address-cells = <1>;
->> +                #size-cells = <0>;
->> +
->> +                switch@0 {
->> +                    compatible = "mediatek,mt7530";
->> +                    reg = <0>;
->> +
->> +                    mediatek,mcm;
->> +                    resets = <&ethsys MT2701_ETHSYS_MCM_RST>;
->> +                    reset-names = "mcm";
->> +
->> +                    core-supply = <&mt6323_vpa_reg>;
->> +                    io-supply = <&mt6323_vemc3v3_reg>;
->> +
->> +                    ports {
->> +                        #address-cells = <1>;
->> +                        #size-cells = <0>;
->> +
->> +                        port@0 {
->> +                            reg = <0>;
->> +                            label = "lan1";
->> +                        };
->> +
->> +                        port@1 {
->> +                            reg = <1>;
->> +                            label = "lan2";
->> +                        };
->> +
->> +                        port@2 {
->> +                            reg = <2>;
->> +                            label = "lan3";
->> +                        };
->> +
->> +                        port@3 {
->> +                            reg = <3>;
->> +                            label = "lan4";
->> +                        };
->> +
->> +                        port@4 {
->> +                            reg = <4>;
->> +                            label = "wan";
->> +                        };
->> +
->> +                        port@6 {
->> +                            reg = <6>;
->> +                            label = "cpu";
->> +                            ethernet = <&gmac0>;
->> +                            phy-mode = "trgmii";
->> +
->> +                            fixed-link {
->> +                                speed = <1000>;
->> +                                full-duplex;
->> +                                pause;
->> +                            };
->> +                        };
->> +                    };
->>                   };
->> +            };
->> +        };
->> +    };
->> +
->> +  # Example 3: Standalone MT7531
->> +  - |
->> +    #include <dt-bindings/gpio/gpio.h>
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +
->> +    platform {
->> +        ethernet {
->> +            mdio {
->> +                #address-cells = <1>;
->> +                #size-cells = <0>;
->> +
->> +                switch@0 {
->> +                    compatible = "mediatek,mt7531";
->> +                    reg = <0>;
->> +
->> +                    reset-gpios = <&pio 54 0>;
->> +
->> +                    interrupt-controller;
->> +                    #interrupt-cells = <1>;
->> +                    interrupt-parent = <&pio>;
->> +                    interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
->> +
->> +                    ports {
->> +                        #address-cells = <1>;
->> +                        #size-cells = <0>;
->> +
->> +                        port@0 {
->> +                            reg = <0>;
->> +                            label = "lan1";
->> +                        };
->> +
->> +                        port@1 {
->> +                            reg = <1>;
->> +                            label = "lan2";
->> +                        };
->> +
->> +                        port@2 {
->> +                            reg = <2>;
->> +                            label = "lan3";
->> +                        };
->> +
->> +                        port@3 {
->> +                            reg = <3>;
->> +                            label = "lan4";
->> +                        };
->>   
->> -                port@6 {
->> -                    reg = <6>;
->> -                    label = "cpu";
->> -                    ethernet = <&gmac0>;
->> -                    phy-mode = "trgmii";
->> -                    fixed-link {
->> -                        speed = <1000>;
->> -                        full-duplex;
->> +                        port@4 {
->> +                            reg = <4>;
->> +                            label = "wan";
->> +                        };
->> +
->> +                        port@6 {
->> +                            reg = <6>;
->> +                            label = "cpu";
->> +                            ethernet = <&gmac0>;
->> +                            phy-mode = "2500base-x";
->> +
->> +                            fixed-link {
->> +                                speed = <2500>;
->> +                                full-duplex;
->> +                                pause;
->> +                            };
->> +                        };
->>                       };
->>                   };
->>               };
->>           };
->>       };
->>   
->> +  # Example 4: MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
->>     - |
->> -    //Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
->> -
->> -    ethernet {
->> -        #address-cells = <1>;
->> -        #size-cells = <0>;
->> -        gmac0: mac@0 {
->> -            compatible = "mediatek,eth-mac";
->> -            reg = <0>;
->> -            phy-mode = "rgmii";
->> -
->> -            fixed-link {
->> -                speed = <1000>;
->> -                full-duplex;
->> -                pause;
->> +    #include <dt-bindings/interrupt-controller/mips-gic.h>
->> +    #include <dt-bindings/reset/mt7621-reset.h>
->> +
->> +    platform {
->> +        ethernet {
->> +            mdio {
->> +                #address-cells = <1>;
->> +                #size-cells = <0>;
->> +
->> +                switch@0 {
->> +                    compatible = "mediatek,mt7621";
->> +                    reg = <0>;
->> +
->> +                    mediatek,mcm;
->> +                    resets = <&sysc MT7621_RST_MCM>;
->> +                    reset-names = "mcm";
->> +
->> +                    interrupt-controller;
->> +                    #interrupt-cells = <1>;
->> +                    interrupt-parent = <&gic>;
->> +                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
->> +
->> +                    ports {
->> +                        #address-cells = <1>;
->> +                        #size-cells = <0>;
->> +
->> +                        port@0 {
->> +                            reg = <0>;
->> +                            label = "lan1";
->> +                        };
->> +
->> +                        port@1 {
->> +                            reg = <1>;
->> +                            label = "lan2";
->> +                        };
->> +
->> +                        port@2 {
->> +                            reg = <2>;
->> +                            label = "lan3";
->> +                        };
->> +
->> +                        port@3 {
->> +                            reg = <3>;
->> +                            label = "lan4";
->> +                        };
->> +
->> +                        port@4 {
->> +                            reg = <4>;
->> +                            label = "wan";
->> +                        };
->> +
->> +                        port@6 {
->> +                            reg = <6>;
->> +                            label = "cpu";
->> +                            ethernet = <&gmac0>;
->> +                            phy-mode = "trgmii";
->> +
->> +                            fixed-link {
->> +                                speed = <1000>;
->> +                                full-duplex;
->> +                                pause;
->> +                            };
->> +                        };
->> +                    };
->> +                };
->>               };
->>           };
->> +    };
->>   
->> -        gmac1: mac@1 {
->> -            compatible = "mediatek,eth-mac";
->> -            reg = <1>;
->> -            phy-mode = "rgmii-txid";
->> -            phy-handle = <&phy4>;
->> +  # Example 5: MT7621: mux MT7530's phy4 to SoC's gmac1
->> +  - |
->> +    #include <dt-bindings/interrupt-controller/mips-gic.h>
->> +    #include <dt-bindings/reset/mt7621-reset.h>
->> +
->> +    platform {
->> +        pinctrl {
->> +            example5_rgmii2_pins: rgmii2-pins {
->> +                pinmux {
->> +                    groups = "rgmii2";
->> +                    function = "rgmii2";
->> +                };
->> +            };
-> 
-> No need to put this in the example. We don't put provide nodes in
-> the examples of the consumers. It's also incomplete and can't be
-> validated.
-
-Will remove.
-
-> 
->>           };
->>   
->> -        mdio: mdio-bus {
->> +        ethernet {
->>               #address-cells = <1>;
->>               #size-cells = <0>;
+> >
+> >  struct bpf_insn;
+> >
+> > --
+> > 2.37.1.595.g718a3a8f04-goog
+> >
