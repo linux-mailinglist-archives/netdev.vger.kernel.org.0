@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B43B75959F0
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D0D5959FB
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232986AbiHPLYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 07:24:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58076 "EHLO
+        id S232416AbiHPLZu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 07:25:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233256AbiHPLYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:24:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A454CA19B
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:38:29 -0700 (PDT)
+        with ESMTP id S234013AbiHPLYc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:24:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59FBFCD52D
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:38:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14C3460FAD
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 10:38:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8749C433C1;
-        Tue, 16 Aug 2022 10:38:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBA67B8169E
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 10:38:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18691C433C1;
+        Tue, 16 Aug 2022 10:38:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660646308;
-        bh=OwaLhpZTr9QUnMAP0q9r5lnpkQkLATPCUQZsrqYe+t4=;
+        s=k20201202; t=1660646328;
+        bh=UTXzR5oNk0lEJHBT5h3zfjuT4P6GnTsXO0gVBh+hb3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=crZ/Rgf5ULG8Zlv3TeBxUy6jwvhQu2jdqiH93v3wv7Krx0ut7VEao2ZSLpoCSrENk
-         qjxL5UjZuSA2b16yWDPYENPMY6XUr39hqiUS+5etJyAi8AkxT47Yjs9hcc/L/yPgSo
-         dGodogjTzF4ixQRFHBI6Vippy6LsbIsDJV8jivfLr9+shiDZzHCdHw2GUAdahB3BSD
-         qgIg+4ZcvKomi/bEgXB9IAK5tzuj5YLx3K9t2XobVqaaaUSo4obusgVJcX9fVzj260
-         8TnM97O/pEU5yk62NIiyJq3e6A9iOwvdJ2NmjXdPkMULyRNm+b6EOUiDG/ALF8bhgZ
-         BdHEh56PV2Ahw==
+        b=WZ+cYz26pTM5d6fkUX29fxH0mth13DfJPJZI8Z+hQG4uX5XssbkRQStEbZlt/d638
+         GTpJqJpvJ3DnLr2jqSxZrSxPzol2BaZO7TOWcjWlmACxZ05CO3uCo/z1rA86PlrCHg
+         SsOFu/GwSL7V3tkQ9wv07oDJL+8m0AP5bfymgbGEnl0eXTEcs9HP0txZ5KdbAYs8us
+         NLLPMEkU1cOAdnxD6/aIGTpWTZRwNvNHd/4PexmQ5EJFBhX0hV9lh1fdtV2k9JIgMy
+         3277sWaJ94W3CoVOW8LQsbsTx9a/M7X1AjhQBoq0vG1bi3tXJT/Tvku4uh3p7rQQE3
+         UC3lVYgd77U5g==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -40,9 +40,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
         ipsec-devel <devel@linux-ipsec.org>
-Subject: [PATCH xfrm-next 03/26] net/mlx5: Remove from FPGA IFC file not-needed definitions
-Date:   Tue, 16 Aug 2022 13:37:51 +0300
-Message-Id: <b511fc84523a18178be1bcdfcb214d074d4ce5be.1660641154.git.leonro@nvidia.com>
+Subject: [PATCH xfrm-next 04/26] net/mlx5e: Advertise IPsec full offload support
+Date:   Tue, 16 Aug 2022 13:37:52 +0300
+Message-Id: <c8ea82c205fa8ac6d10bf0a9e38c75e67cfe99c3.1660641154.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1660641154.git.leonro@nvidia.com>
 References: <cover.1660641154.git.leonro@nvidia.com>
@@ -60,78 +60,62 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Move IP layout bits definitions to be close to the place that actually
-uses it, together with removal extra defines that not in-use.
+Add needed capabilities check to determine if device supports IPsec
+full offload mode.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/linux/mlx5/mlx5_ifc.h      | 16 ++++++++++++++++
- include/linux/mlx5/mlx5_ifc_fpga.h | 24 ------------------------
- 2 files changed, 16 insertions(+), 24 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  1 +
+ .../mellanox/mlx5/core/en_accel/ipsec_offload.c        | 10 ++++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 57b4ae2dce07..c30036f7b517 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -479,6 +479,22 @@ struct mlx5_ifc_odp_per_transport_service_cap_bits {
- 	u8         reserved_at_6[0x1a];
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+index 16bcceec16c4..feea909d76c6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+@@ -88,6 +88,7 @@ struct mlx5_accel_esp_xfrm_attrs {
+ enum mlx5_ipsec_cap {
+ 	MLX5_IPSEC_CAP_CRYPTO		= 1 << 0,
+ 	MLX5_IPSEC_CAP_ESN		= 1 << 1,
++	MLX5_IPSEC_CAP_FULL_OFFLOAD	= 1 << 2,
  };
  
-+struct mlx5_ifc_ipv4_layout_bits {
-+	u8         reserved_at_0[0x60];
-+
-+	u8         ipv4[0x20];
-+};
-+
-+struct mlx5_ifc_ipv6_layout_bits {
-+	u8         ipv6[16][0x8];
-+};
-+
-+union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits {
-+	struct mlx5_ifc_ipv6_layout_bits ipv6_layout;
-+	struct mlx5_ifc_ipv4_layout_bits ipv4_layout;
-+	u8         reserved_at_0[0x80];
-+};
-+
- struct mlx5_ifc_fte_match_set_lyr_2_4_bits {
- 	u8         smac_47_16[0x20];
+ struct mlx5e_priv;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
+index 792724ce7336..e93775eb40b7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.c
+@@ -1,12 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
+ /* Copyright (c) 2017, Mellanox Technologies inc. All rights reserved. */
  
-diff --git a/include/linux/mlx5/mlx5_ifc_fpga.h b/include/linux/mlx5/mlx5_ifc_fpga.h
-index 45c7c0d67635..0596472923ad 100644
---- a/include/linux/mlx5/mlx5_ifc_fpga.h
-+++ b/include/linux/mlx5/mlx5_ifc_fpga.h
-@@ -32,30 +32,6 @@
- #ifndef MLX5_IFC_FPGA_H
- #define MLX5_IFC_FPGA_H
++#include <linux/mlx5/eswitch.h>
+ #include "mlx5_core.h"
+ #include "ipsec.h"
+ #include "lib/mlx5.h"
  
--struct mlx5_ifc_ipv4_layout_bits {
--	u8         reserved_at_0[0x60];
--
--	u8         ipv4[0x20];
--};
--
--struct mlx5_ifc_ipv6_layout_bits {
--	u8         ipv6[16][0x8];
--};
--
--union mlx5_ifc_ipv6_layout_ipv4_layout_auto_bits {
--	struct mlx5_ifc_ipv6_layout_bits ipv6_layout;
--	struct mlx5_ifc_ipv4_layout_bits ipv4_layout;
--	u8         reserved_at_0[0x80];
--};
--
--enum {
--	MLX5_FPGA_CAP_SANDBOX_VENDOR_ID_MLNX = 0x2c9,
--};
--
--enum {
--	MLX5_FPGA_CAP_SANDBOX_PRODUCT_ID_IPSEC    = 0x2,
--};
--
- struct mlx5_ifc_fpga_shell_caps_bits {
- 	u8         max_num_qps[0x10];
- 	u8         reserved_at_10[0x8];
+ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
+ {
++	bool esw_encap;
+ 	u32 caps = 0;
+ 
+ 	if (!MLX5_CAP_GEN(mdev, ipsec_offload))
+@@ -31,6 +33,14 @@ u32 mlx5_ipsec_device_caps(struct mlx5_core_dev *mdev)
+ 	    MLX5_CAP_ETH(mdev, insert_trailer) && MLX5_CAP_ETH(mdev, swp))
+ 		caps |= MLX5_IPSEC_CAP_CRYPTO;
+ 
++	esw_encap = mlx5_eswitch_get_encap_mode(mdev) !=
++		    DEVLINK_ESWITCH_ENCAP_MODE_NONE;
++	if (!esw_encap && MLX5_CAP_IPSEC(mdev, ipsec_full_offload) &&
++	    MLX5_CAP_FLOWTABLE_NIC_TX(mdev, reformat_add_esp_trasport) &&
++	    MLX5_CAP_FLOWTABLE_NIC_RX(mdev, reformat_del_esp_trasport) &&
++	    MLX5_CAP_FLOWTABLE_NIC_RX(mdev, decap))
++		caps |= MLX5_IPSEC_CAP_FULL_OFFLOAD;
++
+ 	if (!caps)
+ 		return 0;
+ 
 -- 
 2.37.2
 
