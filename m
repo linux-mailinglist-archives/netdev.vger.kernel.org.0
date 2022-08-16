@@ -2,265 +2,887 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B7D4595C30
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 14:47:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06FFC595C3F
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 14:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234999AbiHPMq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 08:46:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38738 "EHLO
+        id S232907AbiHPMtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 08:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233925AbiHPMpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 08:45:42 -0400
-Received: from mail-m11877.qiye.163.com (mail-m11877.qiye.163.com [115.236.118.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEE05FF47;
-        Tue, 16 Aug 2022 05:44:36 -0700 (PDT)
-Received: from [0.0.0.0] (unknown [IPV6:240e:3b7:3274:d420:f016:f71e:22e3:3c38])
-        by mail-m11877.qiye.163.com (Hmail) with ESMTPA id 14B7A400636;
-        Tue, 16 Aug 2022 20:44:33 +0800 (CST)
-Message-ID: <74f0969a-7b15-0ceb-4ae8-08c242cd1f83@sangfor.com.cn>
-Date:   Tue, 16 Aug 2022 20:44:28 +0800
+        with ESMTP id S233670AbiHPMtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 08:49:04 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCB1B442D;
+        Tue, 16 Aug 2022 05:47:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VMQNby5_1660654029;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMQNby5_1660654029)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 20:47:09 +0800
+Date:   Tue, 16 Aug 2022 20:47:08 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Jan Karcher <jaka@linux.ibm.com>
+Cc:     "D. Wythe" <alibuda@linux.alibaba.com>, kgraul@linux.ibm.com,
+        wenjia@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 01/10] net/smc: remove locks
+ smc_client_lgr_pending and smc_server_lgr_pending
+Message-ID: <YvuRzDltICisJ+qD@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <cover.1660152975.git.alibuda@linux.alibaba.com>
+ <075ff0be35660efac638448cdae7f7e7e04199d4.1660152975.git.alibuda@linux.alibaba.com>
+ <853f7c69-8690-1ceb-9256-af5c2a5b2ae0@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [net v2 1/1] ice: Fix crash by keep old cfg when update TCs more
- than queues
-Content-Language: en-US
-To:     Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, keescook@chromium.org,
-        intel-wired-lan@lists.osuosl.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hardening@vger.kernel.org
-References: <20220815011844.22193-1-dinghui@sangfor.com.cn>
- <dd4f9e5d-d8d7-3069-21ee-7897b3d10d3d@intel.com>
-From:   Ding Hui <dinghui@sangfor.com.cn>
-In-Reply-To: <dd4f9e5d-d8d7-3069-21ee-7897b3d10d3d@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVlCTU1DVktITUlNQ0xJH0JDSFUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUlPSx5BSBlMQUhJTE9BH09JS0EdS0pNQR1MSh5BSUkeSEFIGEhDWVdZFhoPEhUdFF
-        lBWU9LSFVKSktISkNVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Kz46NAw5LT0wARxONEMLMxkO
-        DCgwCgxVSlVKTU1LTU5IQ0xPSEpOVTMWGhIXVR8SFRwTDhI7CBoVHB0UCVUYFBZVGBVFWVdZEgtZ
-        QVlJT0seQUgZTEFISUxPQR9PSUtBHUtKTUEdTEoeQUlJHkhBSBhIQ1lXWQgBWUFKS0xKTDcG
-X-HM-Tid: 0a82a6af2ac42eb3kusn14b7a400636
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=gb2312
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <853f7c69-8690-1ceb-9256-af5c2a5b2ae0@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/8/16 17:13, Anatolii Gerasymenko wrote:
-> On 15.08.2022 03:18, Ding Hui wrote:
->> There are problems if allocated queues less than Traffic Classes.
->>
->> Commit a632b2a4c920 ("ice: ethtool: Prohibit improper channel config
->> for DCB") already disallow setting less queues than TCs.
->>
->> Another case is if we first set less queues, and later update more TCs
->> config due to LLDP, ice_vsi_cfg_tc() will failed but left dirty
->> num_txq/rxq and tc_cfg in vsi, that will cause invalid porinter access.
+On Tue, Aug 16, 2022 at 11:43:23AM +0200, Jan Karcher wrote:
 > 
-> Nice catch. Looks good to me.
+> 
+> On 10.08.2022 19:47, D. Wythe wrote:
+> > From: "D. Wythe" <alibuda@linux.alibaba.com>
+> > 
+> > This patch attempts to remove locks named smc_client_lgr_pending and
+> > smc_server_lgr_pending, which aim to serialize the creation of link
+> > group. However, once link group existed already, those locks are
+> > meaningless, worse still, they make incoming connections have to be
+> > queued one after the other.
+> > 
+> > Now, the creation of link group is no longer generated by competition,
+> > but allocated through following strategy.
+> > 
+> > 1. Try to find a suitable link group, if successd, current connection
+> > is considered as NON first contact connection. ends.
+> > 
+> > 2. Check the number of connections currently waiting for a suitable
+> > link group to be created, if it is not less that the number of link
+> > groups to be created multiplied by (SMC_RMBS_PER_LGR_MAX - 1), then
+> > increase the number of link groups to be created, current connection
+> > is considered as the first contact connection. ends.
+> > 
+> > 3. Increase the number of connections currently waiting, and wait
+> > for woken up.
+> > 
+> > 4. Decrease the number of connections currently waiting, goto 1.
+> > 
+> > We wake up the connection that was put to sleep in stage 3 through
+> > the SMC link state change event. Once the link moves out of the
+> > SMC_LNK_ACTIVATING state, decrease the number of link groups to
+> > be created, and then wake up at most (SMC_RMBS_PER_LGR_MAX - 1)
+> > connections.
+> > 
+> > In the iplementation, we introduce the concept of lnk cluster, which is
+> > a collection of links with the same characteristics (see
+> > smcr_lnk_cluster_cmpfn() with more details), which makes it possible to
+> > wake up efficiently in the scenario of N v.s 1.
+> > 
+> > Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> > ---
+> >   net/smc/af_smc.c   |  11 +-
+> >   net/smc/smc_core.c | 356 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+> >   net/smc/smc_core.h |  48 ++++++++
+> >   net/smc/smc_llc.c  |   9 +-
+> >   4 files changed, 411 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> > index 79c1318..af4b0aa 100644
+> > --- a/net/smc/af_smc.c
+> > +++ b/net/smc/af_smc.c
+> > @@ -1194,10 +1194,8 @@ static int smc_connect_rdma(struct smc_sock *smc,
+> >   	if (reason_code)
+> >   		return reason_code;
+> > 
+> > -	mutex_lock(&smc_client_lgr_pending);
+> >   	reason_code = smc_conn_create(smc, ini);
+> >   	if (reason_code) {
+> > -		mutex_unlock(&smc_client_lgr_pending);
+> >   		return reason_code;
+> >   	}
+> > 
+> > @@ -1289,7 +1287,6 @@ static int smc_connect_rdma(struct smc_sock *smc,
+> >   		if (reason_code)
+> >   			goto connect_abort;
+> >   	}
+> > -	mutex_unlock(&smc_client_lgr_pending);
+> > 
+> >   	smc_copy_sock_settings_to_clc(smc);
+> >   	smc->connect_nonblock = 0;
+> > @@ -1299,7 +1296,6 @@ static int smc_connect_rdma(struct smc_sock *smc,
+> >   	return 0;
+> >   connect_abort:
+> >   	smc_conn_abort(smc, ini->first_contact_local);
+> > -	mutex_unlock(&smc_client_lgr_pending);
+> >   	smc->connect_nonblock = 0;
+> > 
+> >   	return reason_code;
+> 
+> 
+> You are removing the locking mechanism out of this function completly, which
+> is fine because it is only called for a SMC-R connection.
+> 
+> 
+> > @@ -2377,7 +2373,8 @@ static void smc_listen_work(struct work_struct *work)
+> >   	if (rc)
+> >   		goto out_decl;
+> > 
+> > -	mutex_lock(&smc_server_lgr_pending);
+> > +	if (ini->is_smcd)
+> > +		mutex_lock(&smc_server_lgr_pending);
+> >   	smc_close_init(new_smc);
+> >   	smc_rx_init(new_smc);
+> >   	smc_tx_init(new_smc);
+> > @@ -2415,7 +2412,6 @@ static void smc_listen_work(struct work_struct *work)
+> >   					    ini->first_contact_local, ini);
+> >   		if (rc)
+> >   			goto out_unlock;
+> > -		mutex_unlock(&smc_server_lgr_pending);
+> >   	}
+> >   	smc_conn_save_peer_info(new_smc, cclc);
+> >   	smc_listen_out_connected(new_smc);
+> > @@ -2423,7 +2419,8 @@ static void smc_listen_work(struct work_struct *work)
+> >   	goto out_free;
+> > 
+> >   out_unlock:
+> > -	mutex_unlock(&smc_server_lgr_pending);
+> > +	if (ini->is_smcd)
+> > +		mutex_unlock(&smc_server_lgr_pending);
+> 
+> 
+> You want to remove the mutex lock for SMC-R so you are only locking for a
+> SMC-D connection. So far so good. I think you could also remove this unlock
+> call since it is only called in the case of a SMC-R connection - which means
+> it is obsolete:
+> 
+> l2398 ff. (with your patch on net-next)
+> 
+>     /* receive SMC Confirm CLC message */
+>     memset(buf, 0, sizeof(*buf));
+>     cclc = (struct smc_clc_msg_accept_confirm *)buf;
+>     rc = smc_clc_wait_msg(new_smc, cclc, sizeof(*buf),
+>                   SMC_CLC_CONFIRM, CLC_WAIT_TIME);
+>     if (rc) {
+> x        if (!ini->is_smcd)
+> x            goto out_unlock;
+>         goto out_decl;
+>     }
+> 
+> >   out_decl:
+> >   	smc_listen_decline(new_smc, rc, ini ? ini->first_contact_local : 0,
+> >   			   proposal_version);
+> > diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> > index ff49a11..a3338cc 100644
+> > --- a/net/smc/smc_core.c
+> > +++ b/net/smc/smc_core.c
+> > @@ -46,6 +46,10 @@ struct smc_lgr_list smc_lgr_list = {	/* established link groups */
+> >   	.num = 0,
+> >   };
+> > 
+> > +struct smc_lgr_manager smc_lgr_manager = {
+> > +	.lock = __SPIN_LOCK_UNLOCKED(smc_lgr_manager.lock),
+> > +};
+> > +
+> >   static atomic_t lgr_cnt = ATOMIC_INIT(0); /* number of existing link groups */
+> >   static DECLARE_WAIT_QUEUE_HEAD(lgrs_deleted);
+> > 
+> > @@ -55,6 +59,282 @@ static void smc_buf_free(struct smc_link_group *lgr, bool is_rmb,
+> > 
+> >   static void smc_link_down_work(struct work_struct *work);
+> > 
+> > +/* SMC-R lnk cluster compare func
+> > + * All lnks that meet the description conditions of this function
+> > + * are logically aggregated, called lnk cluster.
+> > + * For the server side, lnk cluster is used to determine whether
+> > + * a new group needs to be created when processing new imcoming connections.
+> > + * For the client side, lnk cluster is used to determine whether
+> > + * to wait for link ready (in other words, first contact ready).
+> > + */
+> > +static int smcr_lnk_cluster_cmpfn(struct rhashtable_compare_arg *arg, const void *obj)
+> > +{
+> > +	const struct smc_lnk_cluster_compare_arg *key = arg->key;
+> > +	const struct smc_lnk_cluster *lnkc = obj;
+> > +
+> > +	if (memcmp(key->peer_systemid, lnkc->peer_systemid, SMC_SYSTEMID_LEN))
+> > +		return 1;
+> > +
+> > +	if (memcmp(key->peer_gid, lnkc->peer_gid, SMC_GID_SIZE))
+> > +		return 1;
+> > +
+> > +	if ((key->role == SMC_SERV || key->clcqpn == lnkc->clcqpn) &&
+> > +	    (key->smcr_version == SMC_V2 ||
+> > +	    !memcmp(key->peer_mac, lnkc->peer_mac, ETH_ALEN)))
+> > +		return 0;
+> > +
+> > +	return 1;
+> > +}
+> > +
+> > +/* SMC-R lnk cluster hash func */
+> > +static u32 smcr_lnk_cluster_hashfn(const void *data, u32 len, u32 seed)
+> > +{
+> > +	const struct smc_lnk_cluster *lnkc = data;
+> > +
+> > +	return jhash2((u32 *)lnkc->peer_systemid, SMC_SYSTEMID_LEN / sizeof(u32), seed)
+> > +		+ (lnkc->role == SMC_SERV) ? 0 : lnkc->clcqpn;
+> > +}
+> > +
+> > +/* SMC-R lnk cluster compare arg hash func */
+> > +static u32 smcr_lnk_cluster_compare_arg_hashfn(const void *data, u32 len, u32 seed)
+> > +{
+> > +	const struct smc_lnk_cluster_compare_arg *key = data;
+> > +
+> > +	return jhash2((u32 *)key->peer_systemid, SMC_SYSTEMID_LEN / sizeof(u32), seed)
+> > +		+ (key->role == SMC_SERV) ? 0 : key->clcqpn;
+> > +}
+> > +
+> > +static const struct rhashtable_params smcr_lnk_cluster_rhl_params = {
+> > +	.head_offset = offsetof(struct smc_lnk_cluster, rnode),
+> > +	.key_len = sizeof(struct smc_lnk_cluster_compare_arg),
+> > +	.obj_cmpfn = smcr_lnk_cluster_cmpfn,
+> > +	.obj_hashfn = smcr_lnk_cluster_hashfn,
+> > +	.hashfn = smcr_lnk_cluster_compare_arg_hashfn,
+> > +	.automatic_shrinking = true,
+> > +};
+> > +
+> > +/* hold a reference for smc_lnk_cluster */
+> > +static inline void smc_lnk_cluster_hold(struct smc_lnk_cluster *lnkc)
+> > +{
+> > +	if (likely(lnkc))
+> > +		refcount_inc(&lnkc->ref);
+> > +}
+> > +
+> > +/* release a reference for smc_lnk_cluster */
+> > +static inline void smc_lnk_cluster_put(struct smc_lnk_cluster *lnkc)
+> > +{
+> > +	bool do_free = false;
+> > +
+> > +	if (!lnkc)
+> > +		return;
+> > +
+> > +	if (refcount_dec_not_one(&lnkc->ref))
+> > +		return;
+> > +
+> > +	spin_lock_bh(&smc_lgr_manager.lock);
+> > +	/* last ref */
+> > +	if (refcount_dec_and_test(&lnkc->ref)) {
+> > +		do_free = true;
+> > +		rhashtable_remove_fast(&smc_lgr_manager.lnk_cluster_maps, &lnkc->rnode,
+> > +				       smcr_lnk_cluster_rhl_params);
+> > +	}
+> > +	spin_unlock_bh(&smc_lgr_manager.lock);
+> > +	if (do_free)
+> > +		kfree(lnkc);
+> > +}
+> > +
+> > +/* Get or create smc_lnk_cluster by key
+> > + * This function will hold a reference of returned smc_lnk_cluster
+> > + * or create a new smc_lnk_cluster with the reference initialized to 1¡£
+> > + * caller MUST call smc_lnk_cluster_put after this.
+> > + */
+> > +static inline struct smc_lnk_cluster *
+> > +smcr_lnk_get_or_create_cluster(struct smc_lnk_cluster_compare_arg *key)
+> > +{
+> > +	struct smc_lnk_cluster *lnkc, *tmp_lnkc;
+> > +	bool busy_retry;
+> > +	int err;
+> > +
+> > +	/* serving a hardware or software interrupt, or preemption is disabled */
+> > +	busy_retry = !in_interrupt();
+> > +
+> > +	spin_lock_bh(&smc_lgr_manager.lock);
+> > +	lnkc = rhashtable_lookup_fast(&smc_lgr_manager.lnk_cluster_maps, key,
+> > +				      smcr_lnk_cluster_rhl_params);
+> > +	if (!lnkc) {
+> > +		lnkc = kzalloc(sizeof(*lnkc), GFP_ATOMIC);
+> > +		if (unlikely(!lnkc))
+> > +			goto fail;
+> > +
+> > +		/* init cluster */
+> > +		spin_lock_init(&lnkc->lock);
+> > +		lnkc->role = key->role;
+> > +		if (key->role == SMC_CLNT)
+> > +			lnkc->clcqpn = key->clcqpn;
+> > +		init_waitqueue_head(&lnkc->first_contact_waitqueue);
+> > +		memcpy(lnkc->peer_systemid, key->peer_systemid, SMC_SYSTEMID_LEN);
+> > +		memcpy(lnkc->peer_gid, key->peer_gid, SMC_GID_SIZE);
+> > +		memcpy(lnkc->peer_mac, key->peer_mac, ETH_ALEN);
+> > +		refcount_set(&lnkc->ref, 1);
+> > +
+> > +		do {
+> > +			err = rhashtable_insert_fast(&smc_lgr_manager.lnk_cluster_maps,
+> > +						     &lnkc->rnode, smcr_lnk_cluster_rhl_params);
+> > +
+> > +			/* success or fatal error */
+> > +			if (err != -EBUSY)
+> > +				break;
+> > +
+> > +			/* impossible in fact right now */
+> > +			if (unlikely(!busy_retry)) {
+> > +				pr_warn_ratelimited("smc: create lnk cluster in softirq\n");
+> > +				break;
+> > +			}
+> > +
+> > +			spin_unlock_bh(&smc_lgr_manager.lock);
+> > +			/* yeild */
+> > +			cond_resched();
+> > +			spin_lock_bh(&smc_lgr_manager.lock);
+> > +
+> > +			/* after spin_unlock_bh(), lnk_cluster_maps may be changed */
+> > +			tmp_lnkc = rhashtable_lookup_fast(&smc_lgr_manager.lnk_cluster_maps, key,
+> > +							  smcr_lnk_cluster_rhl_params);
+> > +
+> > +			if (unlikely(tmp_lnkc)) {
+> > +				pr_warn_ratelimited("smc: create cluster failed dues to duplicat key");
+> > +				kfree(lnkc);
+> > +				lnkc = NULL;
+> > +				goto fail;
+> > +			}
+> > +		} while (1);
+> > +
+> > +		if (unlikely(err)) {
+> > +			pr_warn_ratelimited("smc: rhashtable_insert_fast failed (%d)", err);
+> > +			kfree(lnkc);
+> > +			lnkc = NULL;
+> > +		}
+> > +	} else {
+> > +		smc_lnk_cluster_hold(lnkc);
+> > +	}
+> > +fail:
+> > +	spin_unlock_bh(&smc_lgr_manager.lock);
+> > +	return lnkc;
+> > +}
+> > +
+> > +/* Get or create a smc_lnk_cluster by lnk
+> > + * caller MUST call smc_lnk_cluster_put after this.
+> > + */
+> > +static inline struct smc_lnk_cluster *smcr_lnk_get_cluster(struct smc_link *lnk)
+> > +{
+> > +	struct smc_lnk_cluster_compare_arg key;
+> > +	struct smc_link_group *lgr;
+> > +
+> > +	lgr = lnk->lgr;
+> > +	if (!lgr || lgr->is_smcd)
+> > +		return NULL;
+> > +
+> > +	key.smcr_version = lgr->smc_version;
+> > +	key.peer_systemid = lgr->peer_systemid;
+> > +	key.peer_gid = lnk->peer_gid;
+> > +	key.peer_mac = lnk->peer_mac;
+> > +	key.role	 = lgr->role;
+> > +	if (key.role == SMC_CLNT)
+> > +		key.clcqpn = lnk->peer_qpn;
+> > +
+> > +	return smcr_lnk_get_or_create_cluster(&key);
+> > +}
+> > +
+> > +/* Get or create a smc_lnk_cluster by ini
+> > + * caller MUST call smc_lnk_cluster_put after this.
+> > + */
+> > +static inline struct smc_lnk_cluster *
+> > +smcr_lnk_get_cluster_by_ini(struct smc_init_info *ini, int role)
+> > +{
+> > +	struct smc_lnk_cluster_compare_arg key;
+> > +
+> > +	if (ini->is_smcd)
+> > +		return NULL;
+> > +
+> > +	key.smcr_version = ini->smcr_version;
+> > +	key.peer_systemid = ini->peer_systemid;
+> > +	key.peer_gid = ini->peer_gid;
+> > +	key.peer_mac = ini->peer_mac;
+> > +	key.role	= role;
+> > +	if (role == SMC_CLNT)
+> > +		key.clcqpn	= ini->ib_clcqpn;
+> > +
+> > +	return smcr_lnk_get_or_create_cluster(&key);
+> > +}
+> > +
+> > +/* callback when smc link state change */
+> > +void smcr_lnk_cluster_on_lnk_state(struct smc_link *lnk)
+> > +{
+> > +	struct smc_lnk_cluster *lnkc;
+> > +	int nr = 0;
+> > +
+> > +	/* barrier for lnk->state */
+> > +	smp_mb();
+> > +
+> > +	/* only first link can made connections block on
+> > +	 * first_contact_waitqueue
+> > +	 */
+> > +	if (lnk->link_idx != SMC_SINGLE_LINK)
+> > +		return;
+> > +
+> > +	/* state already seen  */
+> > +	if (lnk->state_record & SMC_LNK_STATE_BIT(lnk->state))
+> > +		return;
+> > +
+> > +	lnkc = smcr_lnk_get_cluster(lnk);
+> > +
+> > +	if (unlikely(!lnkc))
+> > +		return;
+> > +
+> > +	spin_lock_bh(&lnkc->lock);
+> > +
+> > +	/* all lnk state change should be
+> > +	 * 1. SMC_LNK_UNUSED -> SMC_LNK_TEAR_DWON (link init failed)
+> 
+> Should this really be DWON and not DOWN?
+> 
+> > +	 * 2. SMC_LNK_UNUSED -> SMC_LNK_ACTIVATING -> SMC_LNK_TEAR_DWON
+> > +	 * 3. SMC_LNK_UNUSED -> SMC_LNK_ACTIVATING -> SMC_LNK_INACTIVE -> SMC_LNK_TEAR_DWON
+> > +	 * 4. SMC_LNK_UNUSED -> SMC_LNK_ACTIVATING -> SMC_LNK_INACTIVE -> SMC_LNK_TEAR_DWON
+> > +	 * 5. SMC_LNK_UNUSED -> SMC_LNK_ATIVATING -> SMC_LNK_ACTIVE ->SMC_LNK_INACTIVE
+> > +	 * -> SMC_LNK_TEAR_DWON
+> > +	 */
+> > +	switch (lnk->state) {
+> > +	case SMC_LNK_ACTIVATING:
+> > +		/* It's safe to hold a reference without lock
+> > +		 * dues to the smcr_lnk_get_cluster already hold one
+> > +		 */
+> > +		smc_lnk_cluster_hold(lnkc);
+> > +		break;
+> > +	case SMC_LNK_TEAR_DWON:
+> > +		if (lnk->state_record & SMC_LNK_STATE_BIT(SMC_LNK_ACTIVATING))
+> > +			/* smc_lnk_cluster_hold in SMC_LNK_ACTIVATING */
+> > +			smc_lnk_cluster_put(lnkc);
+> > +		fallthrough;
+> > +	case SMC_LNK_ACTIVE:
+> > +	case SMC_LNK_INACTIVE:
+> > +		if (!(lnk->state_record &
+> > +			(SMC_LNK_STATE_BIT(SMC_LNK_ACTIVE)
+> > +			| SMC_LNK_STATE_BIT(SMC_LNK_INACTIVE)))) {
+> > +			lnkc->pending_capability -= (SMC_RMBS_PER_LGR_MAX - 1);
+> > +			/* TODO: wakeup just one to perfrom first contact
+> > +			 * if record state has no SMC_LNK_ACTIVE
+> > +			 */
+> 
+> 
+> Todo in a patch.
+> 
+> > +			nr = SMC_RMBS_PER_LGR_MAX - 1;
+> > +		}
+> > +		break;
+> > +	case SMC_LNK_UNUSED:
+> > +		pr_warn_ratelimited("net/smc: invalid lnk state. ");
+> > +		break;
+> > +	}
+> > +	SMC_LNK_STATE_RECORD(lnk, lnk->state);
+> > +	spin_unlock_bh(&lnkc->lock);
+> > +	if (nr)
+> > +		wake_up_nr(&lnkc->first_contact_waitqueue, nr);
+> > +	smc_lnk_cluster_put(lnkc);	/* smc_lnk_cluster_hold in smcr_lnk_get_cluster */
+> > +}
+> > +
+> >   /* return head of link group list and its lock for a given link group */
+> >   static inline struct list_head *smc_lgr_list_head(struct smc_link_group *lgr,
+> >   						  spinlock_t **lgr_lock)
+> > @@ -651,8 +931,10 @@ static void smcr_lgr_link_deactivate_all(struct smc_link_group *lgr)
+> >   	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+> >   		struct smc_link *lnk = &lgr->lnk[i];
+> > 
+> > -		if (smc_link_sendable(lnk))
+> > +		if (smc_link_sendable(lnk)) {
+> >   			lnk->state = SMC_LNK_INACTIVE;
+> > +			smcr_lnk_cluster_on_lnk_state(lnk);
+> > +		}
+> >   	}
+> >   	wake_up_all(&lgr->llc_msg_waiter);
+> >   	wake_up_all(&lgr->llc_flow_waiter);
+> > @@ -762,6 +1044,9 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+> >   	atomic_set(&lnk->conn_cnt, 0);
+> >   	smc_llc_link_set_uid(lnk);
+> >   	INIT_WORK(&lnk->link_down_wrk, smc_link_down_work);
+> > +	lnk->peer_qpn = ini->ib_clcqpn;
+> > +	memcpy(lnk->peer_gid, ini->peer_gid, SMC_GID_SIZE);
+> > +	memcpy(lnk->peer_mac, ini->peer_mac, sizeof(lnk->peer_mac));
+> >   	if (!lnk->smcibdev->initialized) {
+> >   		rc = (int)smc_ib_setup_per_ibdev(lnk->smcibdev);
+> >   		if (rc)
+> > @@ -792,6 +1077,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+> >   	if (rc)
+> >   		goto destroy_qp;
+> >   	lnk->state = SMC_LNK_ACTIVATING;
+> > +	smcr_lnk_cluster_on_lnk_state(lnk);
+> >   	return 0;
+> > 
+> >   destroy_qp:
+> > @@ -806,6 +1092,8 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+> >   	smc_ibdev_cnt_dec(lnk);
+> >   	put_device(&lnk->smcibdev->ibdev->dev);
+> >   	smcibdev = lnk->smcibdev;
+> > +	lnk->state = SMC_LNK_TEAR_DWON;
+> > +	smcr_lnk_cluster_on_lnk_state(lnk);
+> >   	memset(lnk, 0, sizeof(struct smc_link));
+> >   	lnk->state = SMC_LNK_UNUSED;
+> >   	if (!atomic_dec_return(&smcibdev->lnk_cnt))
+> > @@ -1263,6 +1551,8 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+> >   	if (!lnk->lgr || lnk->clearing ||
+> >   	    lnk->state == SMC_LNK_UNUSED)
+> >   		return;
+> > +	lnk->state = SMC_LNK_TEAR_DWON;
+> > +	smcr_lnk_cluster_on_lnk_state(lnk);
+> >   	lnk->clearing = 1;
+> >   	lnk->peer_qpn = 0;
+> >   	smc_llc_link_clear(lnk, log);
+> > @@ -1712,6 +2002,7 @@ void smcr_link_down_cond(struct smc_link *lnk)
+> >   {
+> >   	if (smc_link_downing(&lnk->state)) {
+> >   		trace_smcr_link_down(lnk, __builtin_return_address(0));
+> > +		smcr_lnk_cluster_on_lnk_state(lnk);
+> >   		smcr_link_down(lnk);
+> >   	}
+> >   }
+> > @@ -1721,6 +2012,7 @@ void smcr_link_down_cond_sched(struct smc_link *lnk)
+> >   {
+> >   	if (smc_link_downing(&lnk->state)) {
+> >   		trace_smcr_link_down(lnk, __builtin_return_address(0));
+> > +		smcr_lnk_cluster_on_lnk_state(lnk);
+> >   		schedule_work(&lnk->link_down_wrk);
+> >   	}
+> >   }
+> > @@ -1850,11 +2142,13 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+> >   {
+> >   	struct smc_connection *conn = &smc->conn;
+> >   	struct net *net = sock_net(&smc->sk);
+> > +	DECLARE_WAITQUEUE(wait, current);
+> > +	struct smc_lnk_cluster *lnkc = NULL;
+> 
+> Declared as NULL.
+> 
+> >   	struct list_head *lgr_list;
+> >   	struct smc_link_group *lgr;
+> >   	enum smc_lgr_role role;
+> >   	spinlock_t *lgr_lock;
+> > -	int rc = 0;
+> > +	int rc = 0, timeo = CLC_WAIT_TIME;
+> > 
+> >   	lgr_list = ini->is_smcd ? &ini->ism_dev[ini->ism_selected]->lgr_list :
+> >   				  &smc_lgr_list.list;
+> > @@ -1862,12 +2156,26 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+> >   				  &smc_lgr_list.lock;
+> >   	ini->first_contact_local = 1;
+> >   	role = smc->listen_smc ? SMC_SERV : SMC_CLNT;
+> > -	if (role == SMC_CLNT && ini->first_contact_peer)
+> > +
+> > +	if (!ini->is_smcd) {
+> > +		lnkc = smcr_lnk_get_cluster_by_ini(ini, role);
+> 
+> Here linkc is set if it is SMC-R.
+> 
+> > +		if (unlikely(!lnkc))
+> > +			return SMC_CLC_DECL_INTERR;
+> > +	}
+> > +
+> > +	if (role == SMC_CLNT && ini->first_contact_peer) {
+> > +		/* first_contact */
+> > +		spin_lock_bh(&lnkc->lock);
+> 
+> And here SMC-D dies because of the NULL address. This kills our Systems if
+> we try to talk via SMC-D.
 
-Thanks, I'll send v3 later, could I add Acked-by: tag too?
+Got it, thanks.
 
->   
->> [   95.968089] ice 0000:3b:00.1: More TCs defined than queues/rings allocated.
->> [   95.968092] ice 0000:3b:00.1: Trying to use more Rx queues (8), than were allocated (1)!
->> [   95.968093] ice 0000:3b:00.1: Failed to config TC for VSI index: 0
->> [   95.969621] general protection fault: 0000 [#1] SMP NOPTI
->> [   95.969705] CPU: 1 PID: 58405 Comm: lldpad Kdump: loaded Tainted: G     U  W  O     --------- -t - 4.18.0 #1
->> [   95.969867] Hardware name: O.E.M/BC11SPSCB10, BIOS 8.23 12/30/2021
->> [   95.969992] RIP: 0010:devm_kmalloc+0xa/0x60
->> [   95.970052] Code: 5c ff ff ff 31 c0 5b 5d 41 5c c3 b8 f4 ff ff ff eb f4 0f 1f 40 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 89 d1 <8b> 97 60 02 00 00 48 8d 7e 18 48 39 f7 72 3f 55 89 ce 53 48 8b 4c
->> [   95.970344] RSP: 0018:ffffc9003f553888 EFLAGS: 00010206
->> [   95.970425] RAX: dead000000000200 RBX: ffffea003c425b00 RCX: 00000000006080c0
->> [   95.970536] RDX: 00000000006080c0 RSI: 0000000000000200 RDI: dead000000000200
->> [   95.970648] RBP: dead000000000200 R08: 00000000000463c0 R09: ffff888ffa900000
->> [   95.970760] R10: 0000000000000000 R11: 0000000000000002 R12: ffff888ff6b40100
->> [   95.970870] R13: ffff888ff6a55018 R14: 0000000000000000 R15: ffff888ff6a55460
->> [   95.970981] FS:  00007f51b7d24700(0000) GS:ffff88903ee80000(0000) knlGS:0000000000000000
->> [   95.971108] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [   95.971197] CR2: 00007fac5410d710 CR3: 0000000f2c1de002 CR4: 00000000007606e0
->> [   95.971309] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> [   95.971419] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> [   95.971530] PKRU: 55555554
->> [   95.971573] Call Trace:
->> [   95.971622]  ice_setup_rx_ring+0x39/0x110 [ice]
->> [   95.971695]  ice_vsi_setup_rx_rings+0x54/0x90 [ice]
->> [   95.971774]  ice_vsi_open+0x25/0x120 [ice]
->> [   95.971843]  ice_open_internal+0xb8/0x1f0 [ice]
->> [   95.971919]  ice_ena_vsi+0x4f/0xd0 [ice]
->> [   95.971987]  ice_dcb_ena_dis_vsi.constprop.5+0x29/0x90 [ice]
->> [   95.972082]  ice_pf_dcb_cfg+0x29a/0x380 [ice]
->> [   95.972154]  ice_dcbnl_setets+0x174/0x1b0 [ice]
->> [   95.972220]  dcbnl_ieee_set+0x89/0x230
->> [   95.972279]  ? dcbnl_ieee_del+0x150/0x150
->> [   95.972341]  dcb_doit+0x124/0x1b0
->> [   95.972392]  rtnetlink_rcv_msg+0x243/0x2f0
->> [   95.972457]  ? dcb_doit+0x14d/0x1b0
->> [   95.972510]  ? __kmalloc_node_track_caller+0x1d3/0x280
->> [   95.972591]  ? rtnl_calcit.isra.31+0x100/0x100
->> [   95.972661]  netlink_rcv_skb+0xcf/0xf0
->> [   95.972720]  netlink_unicast+0x16d/0x220
->> [   95.972781]  netlink_sendmsg+0x2ba/0x3a0
->> [   95.975891]  sock_sendmsg+0x4c/0x50
->> [   95.979032]  ___sys_sendmsg+0x2e4/0x300
->> [   95.982147]  ? kmem_cache_alloc+0x13e/0x190
->> [   95.985242]  ? __wake_up_common_lock+0x79/0x90
->> [   95.988338]  ? __check_object_size+0xac/0x1b0
->> [   95.991440]  ? _copy_to_user+0x22/0x30
->> [   95.994539]  ? move_addr_to_user+0xbb/0xd0
->> [   95.997619]  ? __sys_sendmsg+0x53/0x80
->> [   96.000664]  __sys_sendmsg+0x53/0x80
->> [   96.003747]  do_syscall_64+0x5b/0x1d0
->> [   96.006862]  entry_SYSCALL_64_after_hwframe+0x65/0xca
->>
->> Only update num_txq/rxq when passed check, and restore tc_cfg if setup
->> queue map failed.
->>
->> Signed-off-by: Ding Hui <dinghui@sangfor.com.cn>
 > 
-> Please, also add Fixes tag.
+> [  779.516389] Failing address: 0000000000000000 TEID: 0000000000000483
+> [  779.516391] Fault in home space mode while using kernel ASCE.
+> [  779.516395] AS:0000000069628007 R3:00000000ffbf0007 S:00000000ffbef800
+> P:000000000000003d
+> [  779.516431] Oops: 0004 ilc:2 [#1] SMP
+> [  779.516436] Modules linked in: tcp_diag inet_diag ism mlx5_ib ib_uverbs
+> mlx5_core smc_diag smc ib_core nft_fib_inet nft_fib_ipv4
+> nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6
+> nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv
+> 6 nf_defrag_ipv4 ip_set nf_tables n
+> [  779.516470] CPU: 0 PID: 24 Comm: kworker/0:1 Not tainted
+> 5.19.0-13940-g22a46254655a #3
+> [  779.516476] Hardware name: IBM 8561 T01 701 (z/VM 7.2.0)
 > 
->> ---
->>   drivers/net/ethernet/intel/ice/ice_lib.c | 42 +++++++++++++++---------
->>   1 file changed, 26 insertions(+), 16 deletions(-)
->>
->> ---
->> v1:
->> https://patchwork.kernel.org/project/netdevbpf/patch/20220812123933.5481-1-dinghui@sangfor.com.cn/
->>
->> v2:
->>    rewrite subject
->>    rebase to net
->>
->> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
->> index a830f7f9aed0..6e64cca30351 100644
->> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
->> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
->> @@ -914,7 +914,7 @@ static void ice_set_dflt_vsi_ctx(struct ice_hw *hw, struct ice_vsi_ctx *ctxt)
->>    */
->>   static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
->>   {
->> -	u16 offset = 0, qmap = 0, tx_count = 0, pow = 0;
->> +	u16 offset = 0, qmap = 0, tx_count = 0, rx_count = 0, pow = 0;
->>   	u16 num_txq_per_tc, num_rxq_per_tc;
->>   	u16 qcount_tx = vsi->alloc_txq;
->>   	u16 qcount_rx = vsi->alloc_rxq;
->> @@ -981,23 +981,25 @@ static int ice_vsi_setup_q_map(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt)
->>   	 * at least 1)
->>   	 */
->>   	if (offset)
->> -		vsi->num_rxq = offset;
->> +		rx_count = offset;
->>   	else
->> -		vsi->num_rxq = num_rxq_per_tc;
->> +		rx_count = num_rxq_per_tc;
->>   
->> -	if (vsi->num_rxq > vsi->alloc_rxq) {
->> +	if (rx_count > vsi->alloc_rxq) {
->>   		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
->> -			vsi->num_rxq, vsi->alloc_rxq);
->> +			rx_count, vsi->alloc_rxq);
->>   		return -EINVAL;
->>   	}
->>   
->> -	vsi->num_txq = tx_count;
->> -	if (vsi->num_txq > vsi->alloc_txq) {
->> +	if (tx_count > vsi->alloc_txq) {
->>   		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
->> -			vsi->num_txq, vsi->alloc_txq);
->> +			tx_count, vsi->alloc_txq);
->>   		return -EINVAL;
->>   	}
->>   
->> +	vsi->num_txq = tx_count;
->> +	vsi->num_rxq = rx_count;
->> +
->>   	if (vsi->type == ICE_VSI_VF && vsi->num_txq != vsi->num_rxq) {
->>   		dev_dbg(ice_pf_to_dev(vsi->back), "VF VSI should have same number of Tx and Rx queues. Hence making them equal\n");
->>   		/* since there is a chance that num_rxq could have been changed
->> @@ -3492,6 +3494,7 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
->>   	int tc0_qcount = vsi->mqprio_qopt.qopt.count[0];
->>   	u8 netdev_tc = 0;
->>   	int i;
->> +	u16 new_txq, new_rxq;
+> [  779.522738] Workqueue: smc_hs_wq smc_listen_work [smc]
+> [  779.522755] Krnl PSW : 0704c00180000000 000003ff803da89c
+> (smc_conn_create+0x174/0x968 [smc])
+> [  779.522766]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0
+> RI:0 EA:3
+> [  779.522770] Krnl GPRS: 0000000000000002 0000000000000000 0000000000000001
+> 0000000000000000
+> [  779.522773]            000000008a4128a0 000003ff803f21aa 000000008e30d640
+> 0000000086d72000
+> [  779.522776]            0000000086d72000 000000008a412803 000000008a412800
+> 000000008e30d650
+> [  779.522779]            0000000080934200 0000000000000000 000003ff803cb954
+> 00000380002dfa88
+> [  779.522789] Krnl Code: 000003ff803da88e: e310f0e80024        stg
+> %r1,232(%r15)
+> [  779.522789]            000003ff803da894: a7180000            lhi %r1,0
+> [  779.522789]           #000003ff803da898: 582003ac            l %r2,940
+> [  779.522789]           >000003ff803da89c: ba123020            cs
+> %r1,%r2,32(%r3)
+> [  779.522789]            000003ff803da8a0: ec1603be007e        cij
+> %r1,0,6,000003ff803db01c
 > 
-> Please follow the Reverse Christmas Tree (RCT) convention.
+> [  779.522789]            000003ff803da8a6: 4110b002            la
+> %r1,2(%r11)
+> [  779.522789]            000003ff803da8aa: e310f0f00024        stg
+> %r1,240(%r15)
+> [  779.522789]            000003ff803da8b0: e310f0c00004        lg
+> %r1,192(%r15)
+> [  779.522870] Call Trace:
+> [  779.522873]  [<000003ff803da89c>] smc_conn_create+0x174/0x968 [smc]
+> [  779.522884]  [<000003ff803cb954>] smc_find_ism_v2_device_serv+0x1b4/0x300
+> [smc]
 > 
->>   	vsi->tc_cfg.ena_tc = ena_tc ? ena_tc : 1;
->>   
->> @@ -3530,21 +3533,24 @@ ice_vsi_setup_q_map_mqprio(struct ice_vsi *vsi, struct ice_vsi_ctx *ctxt,
->>   		}
->>   	}
->>   
->> -	/* Set actual Tx/Rx queue pairs */
->> -	vsi->num_txq = offset + qcount_tx;
->> -	if (vsi->num_txq > vsi->alloc_txq) {
->> +	new_txq = offset + qcount_tx;
->> +	if (new_txq > vsi->alloc_txq) {
->>   		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Tx queues (%u), than were allocated (%u)!\n",
->> -			vsi->num_txq, vsi->alloc_txq);
->> +			new_txq, vsi->alloc_txq);
->>   		return -EINVAL;
->>   	}
->>   
->> -	vsi->num_rxq = offset + qcount_rx;
->> -	if (vsi->num_rxq > vsi->alloc_rxq) {
->> +	new_rxq = offset + qcount_rx;
->> +	if (new_rxq > vsi->alloc_rxq) {
->>   		dev_err(ice_pf_to_dev(vsi->back), "Trying to use more Rx queues (%u), than were allocated (%u)!\n",
->> -			vsi->num_rxq, vsi->alloc_rxq);
->> +			new_rxq, vsi->alloc_rxq);
->>   		return -EINVAL;
->>   	}
->>   
->> +	/* Set actual Tx/Rx queue pairs */
->> +	vsi->num_txq = new_txq;
->> +	vsi->num_rxq = new_rxq;
->> +
->>   	/* Setup queue TC[0].qmap for given VSI context */
->>   	ctxt->info.tc_mapping[0] = cpu_to_le16(qmap);
->>   	ctxt->info.q_mapping[0] = cpu_to_le16(vsi->rxq_map[0]);
->> @@ -3580,6 +3586,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
->>   	struct device *dev;
->>   	int i, ret = 0;
->>   	u8 num_tc = 0;
->> +	struct ice_tc_cfg old_tc_cfg;
-> 
-> RCT here also.
->    
->>   	dev = ice_pf_to_dev(pf);
->>   	if (vsi->tc_cfg.ena_tc == ena_tc &&
->> @@ -3600,6 +3607,7 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
->>   			max_txqs[i] = vsi->num_txq;
->>   	}
->>   
->> +	memcpy(&old_tc_cfg, &vsi->tc_cfg, sizeof(old_tc_cfg));
->>   	vsi->tc_cfg.ena_tc = ena_tc;
->>   	vsi->tc_cfg.numtc = num_tc;
->>   
->> @@ -3616,8 +3624,10 @@ int ice_vsi_cfg_tc(struct ice_vsi *vsi, u8 ena_tc)
->>   	else
->>   		ret = ice_vsi_setup_q_map(vsi, ctx);
->>   
->> -	if (ret)
->> +	if (ret) {
->> +		memcpy(&vsi->tc_cfg, &old_tc_cfg, sizeof(vsi->tc_cfg));
->>   		goto out;
->> +	}
->>   
->>   	/* must to indicate which section of VSI context are being modified */
->>   	ctx->info.valid_sections = cpu_to_le16(ICE_AQ_VSI_PROP_RXQ_MAP_VALID);
 
+D. Wythe is on vacation now. We will fix it soon.
 
--- 
-Thanks,
-- Ding Hui
+Thanks again for your reviews. 
+
+Cheers,
+Tony Lu
+
+> > +		lnkc->pending_capability += (SMC_RMBS_PER_LGR_MAX - 1);
+> > +		spin_unlock_bh(&lnkc->lock);
+> >   		/* create new link group as well */
+> >   		goto create;
+> > +	}
+> > 
+> >   	/* determine if an existing link group can be reused */
+> >   	spin_lock_bh(lgr_lock);
+> > +	spin_lock(&lnkc->lock);
+> > +again:
+> >   	list_for_each_entry(lgr, lgr_list, list) {
+> >   		write_lock_bh(&lgr->conns_lock);
+> >   		if ((ini->is_smcd ?
+> > @@ -1894,9 +2202,33 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+> >   		}
+> >   		write_unlock_bh(&lgr->conns_lock);
+> >   	}
+> > +	if (lnkc && ini->first_contact_local) {
+> > +		if (lnkc->pending_capability > lnkc->conns_pending) {
+> > +			lnkc->conns_pending++;
+> > +			add_wait_queue(&lnkc->first_contact_waitqueue, &wait);
+> > +			spin_unlock(&lnkc->lock);
+> > +			spin_unlock_bh(lgr_lock);
+> > +			set_current_state(TASK_INTERRUPTIBLE);
+> > +			/* need to wait at least once first contact done */
+> > +			timeo = schedule_timeout(timeo);
+> > +			set_current_state(TASK_RUNNING);
+> > +			remove_wait_queue(&lnkc->first_contact_waitqueue, &wait);
+> > +			spin_lock_bh(lgr_lock);
+> > +			spin_lock(&lnkc->lock);
+> > +
+> > +			lnkc->conns_pending--;
+> > +			if (timeo)
+> > +				goto again;
+> > +		}
+> > +		if (role == SMC_SERV) {
+> > +			/* first_contact */
+> > +			lnkc->pending_capability += (SMC_RMBS_PER_LGR_MAX - 1);
+> > +		}
+> > +	}
+> > +	spin_unlock(&lnkc->lock);
+> >   	spin_unlock_bh(lgr_lock);
+> >   	if (rc)
+> > -		return rc;
+> > +		goto out;
+> > 
+> >   	if (role == SMC_CLNT && !ini->first_contact_peer &&
+> >   	    ini->first_contact_local) {
+> > @@ -1904,7 +2236,8 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+> >   		 * a new one
+> >   		 * send out_of_sync decline, reason synchr. error
+> >   		 */
+> > -		return SMC_CLC_DECL_SYNCERR;
+> > +		rc = SMC_CLC_DECL_SYNCERR;
+> > +		goto out;
+> >   	}
+> > 
+> >   create:
+> > @@ -1941,6 +2274,8 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+> >   #endif
+> > 
+> >   out:
+> > +	/* smc_lnk_cluster_hold in smcr_lnk_get_or_create_cluster */
+> > +	smc_lnk_cluster_put(lnkc);
+> >   	return rc;
+> >   }
+> > 
+> > @@ -2599,12 +2934,23 @@ static int smc_core_reboot_event(struct notifier_block *this,
+> > 
+> >   int __init smc_core_init(void)
+> >   {
+> > +	/* init smc lnk cluster maps */
+> > +	rhashtable_init(&smc_lgr_manager.lnk_cluster_maps, &smcr_lnk_cluster_rhl_params);
+> >   	return register_reboot_notifier(&smc_reboot_notifier);
+> >   }
+> > 
+> > +static void smc_lnk_cluster_free_cb(void *ptr, void *arg)
+> > +{
+> > +	pr_warn("smc: smc lnk cluster refcnt leak.\n");
+> > +	kfree(ptr);
+> > +}
+> > +
+> >   /* Called (from smc_exit) when module is removed */
+> >   void smc_core_exit(void)
+> >   {
+> >   	unregister_reboot_notifier(&smc_reboot_notifier);
+> >   	smc_lgrs_shutdown();
+> > +	/* destroy smc lnk cluster maps */
+> > +	rhashtable_free_and_destroy(&smc_lgr_manager.lnk_cluster_maps, smc_lnk_cluster_free_cb,
+> > +				    NULL);
+> >   }
+> > diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+> > index fe8b524..199f533 100644
+> > --- a/net/smc/smc_core.h
+> > +++ b/net/smc/smc_core.h
+> > @@ -15,6 +15,7 @@
+> >   #include <linux/atomic.h>
+> >   #include <linux/smc.h>
+> >   #include <linux/pci.h>
+> > +#include <linux/rhashtable.h>
+> >   #include <rdma/ib_verbs.h>
+> >   #include <net/genetlink.h>
+> > 
+> > @@ -29,18 +30,62 @@ struct smc_lgr_list {			/* list of link group definition */
+> >   	u32			num;	/* unique link group number */
+> >   };
+> > 
+> > +struct smc_lgr_manager {		/* manager for link group */
+> > +	struct rhashtable	lnk_cluster_maps;	/* maps of smc_lnk_cluster */
+> > +	spinlock_t		lock;	/* lock for lgr_cm_maps */
+> > +};
+> > +
+> > +struct smc_lnk_cluster {
+> > +	struct rhash_head	rnode;	/* node for rhashtable */
+> > +	struct wait_queue_head	first_contact_waitqueue;
+> > +					/* queue for non first contact to wait
+> > +					 * first contact to be established.
+> > +					 */
+> > +	spinlock_t		lock;	/* protection for link group */
+> > +	refcount_t		ref;	/* refcount for cluster */
+> > +	unsigned long		pending_capability;
+> > +					/* maximum pending number of connections that
+> > +					 * need wait first contact complete.
+> > +					 */
+> > +	unsigned long		conns_pending;
+> > +					/* connections that are waiting for first contact
+> > +					 * complete
+> > +					 */
+> > +	u8		peer_systemid[SMC_SYSTEMID_LEN];
+> > +	u8		peer_mac[ETH_ALEN];	/* = gid[8:10||13:15] */
+> > +	u8		peer_gid[SMC_GID_SIZE];	/* gid of peer*/
+> > +	int		clcqpn;
+> > +	int		role;
+> > +};
+> > +
+> >   enum smc_lgr_role {		/* possible roles of a link group */
+> >   	SMC_CLNT,	/* client */
+> >   	SMC_SERV	/* server */
+> >   };
+> > 
+> > +struct smc_lnk_cluster_compare_arg	/* key for smc_lnk_cluster */
+> > +{
+> > +	int	smcr_version;
+> > +	enum smc_lgr_role role;
+> > +	u8	*peer_systemid;
+> > +	u8	*peer_gid;
+> > +	u8	*peer_mac;
+> > +	int clcqpn;
+> > +};
+> > +
+> >   enum smc_link_state {			/* possible states of a link */
+> >   	SMC_LNK_UNUSED,		/* link is unused */
+> >   	SMC_LNK_INACTIVE,	/* link is inactive */
+> >   	SMC_LNK_ACTIVATING,	/* link is being activated */
+> >   	SMC_LNK_ACTIVE,		/* link is active */
+> > +	SMC_LNK_TEAR_DWON,	/* link is tear down */
+> >   };
+> > 
+> > +#define SMC_LNK_STATE_BIT(state)	(1 << (state))
+> > +
+> > +#define	SMC_LNK_STATE_RECORD(lnk, state)	\
+> > +	((lnk)->state_record |= SMC_LNK_STATE_BIT(state))
+> > +
+> >   #define SMC_WR_BUF_SIZE		48	/* size of work request buffer */
+> >   #define SMC_WR_BUF_V2_SIZE	8192	/* size of v2 work request buffer */
+> > 
+> > @@ -145,6 +190,7 @@ struct smc_link {
+> >   	int			ndev_ifidx; /* network device ifindex */
+> > 
+> >   	enum smc_link_state	state;		/* state of link */
+> > +	int			state_record;		/* record of previous state */
+> >   	struct delayed_work	llc_testlink_wrk; /* testlink worker */
+> >   	struct completion	llc_testlink_resp; /* wait for rx of testlink */
+> >   	int			llc_testlink_time; /* testlink interval */
+> > @@ -557,6 +603,8 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+> >   int smcr_nl_get_link(struct sk_buff *skb, struct netlink_callback *cb);
+> >   int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb);
+> > 
+> > +void smcr_lnk_cluster_on_lnk_state(struct smc_link *lnk);
+> > +
+> >   static inline struct smc_link_group *smc_get_lgr(struct smc_link *link)
+> >   {
+> >   	return link->lgr;
+> > diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+> > index 175026a..8134c15 100644
+> > --- a/net/smc/smc_llc.c
+> > +++ b/net/smc/smc_llc.c
+> > @@ -1099,6 +1099,7 @@ int smc_llc_cli_add_link(struct smc_link *link, struct smc_llc_qentry *qentry)
+> >   		goto out;
+> >   out_clear_lnk:
+> >   	lnk_new->state = SMC_LNK_INACTIVE;
+> > +	smcr_lnk_cluster_on_lnk_state(lnk_new);
+> >   	smcr_link_clear(lnk_new, false);
+> >   out_reject:
+> >   	smc_llc_cli_add_link_reject(qentry);
+> > @@ -1278,6 +1279,7 @@ static void smc_llc_delete_asym_link(struct smc_link_group *lgr)
+> >   		return; /* no asymmetric link */
+> >   	if (!smc_link_downing(&lnk_asym->state))
+> >   		return;
+> > +	smcr_lnk_cluster_on_lnk_state(lnk_asym);
+> >   	lnk_new = smc_switch_conns(lgr, lnk_asym, false);
+> >   	smc_wr_tx_wait_no_pending_sends(lnk_asym);
+> >   	if (!lnk_new)
+> > @@ -1492,6 +1494,7 @@ int smc_llc_srv_add_link(struct smc_link *link,
+> >   out_err:
+> >   	if (link_new) {
+> >   		link_new->state = SMC_LNK_INACTIVE;
+> > +		smcr_lnk_cluster_on_lnk_state(link_new);
+> >   		smcr_link_clear(link_new, false);
+> >   	}
+> >   out:
+> > @@ -1602,8 +1605,10 @@ static void smc_llc_process_cli_delete_link(struct smc_link_group *lgr)
+> >   	del_llc->reason = 0;
+> >   	smc_llc_send_message(lnk, &qentry->msg); /* response */
+> > 
+> > -	if (smc_link_downing(&lnk_del->state))
+> > +	if (smc_link_downing(&lnk_del->state)) {
+> > +		smcr_lnk_cluster_on_lnk_state(lnk);
+> >   		smc_switch_conns(lgr, lnk_del, false);
+> > +	}
+> >   	smcr_link_clear(lnk_del, true);
+> > 
+> >   	active_links = smc_llc_active_link_count(lgr);
+> > @@ -1676,6 +1681,7 @@ static void smc_llc_process_srv_delete_link(struct smc_link_group *lgr)
+> >   		goto out; /* asymmetric link already deleted */
+> > 
+> >   	if (smc_link_downing(&lnk_del->state)) {
+> > +		smcr_lnk_cluster_on_lnk_state(lnk);
+> >   		if (smc_switch_conns(lgr, lnk_del, false))
+> >   			smc_wr_tx_wait_no_pending_sends(lnk_del);
+> >   	}
+> > @@ -2167,6 +2173,7 @@ void smc_llc_link_active(struct smc_link *link)
+> >   		schedule_delayed_work(&link->llc_testlink_wrk,
+> >   				      link->llc_testlink_time);
+> >   	}
+> > +	smcr_lnk_cluster_on_lnk_state(link);
+> >   }
+> > 
+> >   /* called in worker context */
