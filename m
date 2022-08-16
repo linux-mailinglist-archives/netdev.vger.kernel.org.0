@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E13E59648B
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC5D4596518
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 00:02:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237565AbiHPVVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:21:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34268 "EHLO
+        id S237799AbiHPWBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 18:01:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232601AbiHPVVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:21:03 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD54A8A1FE;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id f30so10419494pfq.4;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
+        with ESMTP id S237279AbiHPWBW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 18:01:22 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F4D8F951;
+        Tue, 16 Aug 2022 15:01:20 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id p125so10495847pfp.2;
+        Tue, 16 Aug 2022 15:01:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=rZz8bTF2NcPtmVJ0WP5KDpOKcOl43ZBJ+1AR/XSbYLg=;
-        b=bV+k5Bi7aHC7OQ5MMSqyosvgyjzXZiK+iNX2RNdes6NMjMk7SbtPl5oivBva1PkcL8
-         rKwBzUVoOLc4QHdIN2suICc/baLJjosEkTBtp3cm11v+mqIyGwtNAiDUK0Su9i9YaSxi
-         SzTHPlzRpkPnDozzpDpTwXi0pZaxr+B2ne8tM3A6KrOkKJnYgF94ocw14WYt1gZYmJvg
-         S3i9JiB0F78nLKgq/HDabD7tBcDNDHeDrN2YllPbw/JIgJMEVYDojsAGALR1S9QtrUza
-         EfAtaXRi/oI90POA/6DJM94mGMJiqLkfqiaePIGR0tLCQI9DZFNfObPZGG4kYolPgXsa
-         Bk1w==
+        bh=aDqAZFANkrfjbb5xBv7SEPO2DhDRbGJc0EKtkzDbDQs=;
+        b=LYF5Hh1y2onyd8W8fQSoLlPYsE5y1JK91YpRleHxvVj9hm/9MY3oF8fgabM0B9+1VM
+         fUBY+DBPccaCMWczC8J8jQHjAB6K87UAY/cVdF9A2mq3+6RbrFbrqJ1czPtqxm0K4jhi
+         YPIjc7gQMWaR2uLbcAY4Wba0RJDd5SUUVMjyNRydqIWwrxTbY2XYrdrjBICEK/QeqC15
+         djx/j8oQIxSH1RJOa1oTTeOmHFdaM+EmheVI3SIC4fA0zuzGBt1ipQi0idQ/W6oluH2M
+         7HDGN8wEbGscPO1N789oUeJLmRflzTgNepDRBayUYu0U3ycVERSSKVbNF2Cf+cn7nN4a
+         6rig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=rZz8bTF2NcPtmVJ0WP5KDpOKcOl43ZBJ+1AR/XSbYLg=;
-        b=nCfNsV8vzNEUZv1KbXePRDu1u6eMpDo1SeiPiDu5u22FXxvqykDI7moLNigAUVLFbI
-         /XPdHBJOtNBvvbiWG60w1pZF9v5+GPjc489ok2POoJNL3ti899D/5OFzDQePUKh6HB+S
-         F6PFmC8q/RgQ1zuFOBb9n2Zaa13A80TtvO6QnqqOQEIrfGXaTl9t5wpDBok77j1pV40u
-         DC9YEW3s1yativIapq1Zrm5sdqHwR9tzMQOSGnLTdd3xzYroIZRqcch3jDr347z5p0sA
-         UvO4YAaqootraofL9g5YB3sooo3iv3IlkbqBr3fdGjWux3Xrxvi8x4QCnQ1go4ZWT3mw
-         D80w==
-X-Gm-Message-State: ACgBeo1NZ4KlvpuO0BJzZZlDrw2+VqTStvfU1wqcy95JsG57FIGpKsil
-        sm3sEpend1hZGxjsrUl2820=
-X-Google-Smtp-Source: AA6agR4YLR5lA1zKDCby2mqX+HJq2T8wb9mbU/S5aW4j2gvI5lNQI5i6E+T0F3z/J2jFYlIAzGfMOw==
-X-Received: by 2002:a63:284:0:b0:41d:9b60:497c with SMTP id 126-20020a630284000000b0041d9b60497cmr18960653pgc.29.1660684862179;
-        Tue, 16 Aug 2022 14:21:02 -0700 (PDT)
+        bh=aDqAZFANkrfjbb5xBv7SEPO2DhDRbGJc0EKtkzDbDQs=;
+        b=rjElzk0+aAcBpvKXf/MAOxLGPQEgOyJ+PLe3yQipZi2AAoGWoUjfX90OSOK534+oa/
+         HyUwX06GbrEDGVXmmJKGOgnGFjVNiAwfRASV39Zcx4uZ+oQPePXwRjzLlKWzw1nkUHmv
+         s3U+Kbg4RnDtAWoE7rwglxY4wXMrTsDVocXsJLZdbXCVkegA76hJvOE3JkRbzAS4tQZ7
+         6m/Bg9CTVFq7OqscEWUbenQqlmK3vhPKFozClU7hklEplVGLyrHVpJUdfjmzq2kodlTp
+         sSAfnMedKxH6TLYOZlJJA2kTcqe7RhHYKjphBQovcu7nY07abAWTd7EdTrP9PQ6uepWi
+         LTZg==
+X-Gm-Message-State: ACgBeo2Z5uczlfxir5OQyaoVwN8qF8tZOieU3Kynj9G7yjEYmBH4qwr0
+        GNXMLxNcVXQJVcZg/HRy7ezfBBZJjnWnVhB4WIM=
+X-Google-Smtp-Source: AA6agR6x6vy+y2PHqORcgSrXhqqwJpsTjczWMF1JON/I0nEYSqHNSw88p+Q6C+XgrH2niLMCZ7sPow==
+X-Received: by 2002:a63:e016:0:b0:427:e7f2:32b3 with SMTP id e22-20020a63e016000000b00427e7f232b3mr12469257pgh.194.1660687279851;
+        Tue, 16 Aug 2022 15:01:19 -0700 (PDT)
 Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id h10-20020a170902680a00b00172913c0e44sm951851plk.28.2022.08.16.14.21.01
+        by smtp.gmail.com with ESMTPSA id f12-20020aa7968c000000b0052d90521d02sm8914276pfk.126.2022.08.16.15.01.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:21:01 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 06:18:54 +0000
+        Tue, 16 Aug 2022 15:01:19 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 07:02:33 +0000
 From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
         Bobby Eshleman <bobby.eshleman@bytedance.com>,
         Cong Wang <cong.wang@bytedance.com>,
         Jiang Wang <jiang.wang@bytedance.com>,
@@ -59,19 +60,19 @@ Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
-Message-ID: <Yvs2qqx/sG0C3zvz@bullseye>
+Message-ID: <YvtAktdB09tM0Ykr@bullseye>
 References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
  <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
  <20220816123701-mutt-send-email-mst@kernel.org>
+ <20220816110717.5422e976@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220816123701-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20220816110717.5422e976@kernel.org>
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -82,74 +83,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:38:52PM -0400, Michael S. Tsirkin wrote:
-> On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
-> > In order to support usage of qdisc on vsock traffic, this commit
-> > introduces a struct net_device to vhost and virtio vsock.
+On Tue, Aug 16, 2022 at 11:07:17AM -0700, Jakub Kicinski wrote:
+> On Tue, 16 Aug 2022 12:38:52 -0400 Michael S. Tsirkin wrote:
+> > On Mon, Aug 15, 2022 at 10:56:06AM -0700, Bobby Eshleman wrote:
+> > > In order to support usage of qdisc on vsock traffic, this commit
+> > > introduces a struct net_device to vhost and virtio vsock.
+> > > 
+> > > Two new devices are created, vhost-vsock for vhost and virtio-vsock
+> > > for virtio. The devices are attached to the respective transports.
+> > > 
+> > > To bypass the usage of the device, the user may "down" the associated
+> > > network interface using common tools. For example, "ip link set dev
+> > > virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
+> > > simply using the FIFO logic of the prior implementation.  
 > > 
-> > Two new devices are created, vhost-vsock for vhost and virtio-vsock
-> > for virtio. The devices are attached to the respective transports.
-> > 
-> > To bypass the usage of the device, the user may "down" the associated
-> > network interface using common tools. For example, "ip link set dev
-> > virtio-vsock down" lets vsock bypass the net_device and qdisc entirely,
-> > simply using the FIFO logic of the prior implementation.
+> > Ugh. That's quite a hack. Mark my words, at some point we will decide to
+> > have down mean "down".  Besides, multiple net devices with link up tend
+> > to confuse userspace. So might want to keep it down at all times
+> > even short term.
 > 
-> Ugh. That's quite a hack. Mark my words, at some point we will decide to
-> have down mean "down".  Besides, multiple net devices with link up tend
-> to confuse userspace. So might want to keep it down at all times
-> even short term.
+> Agreed!
 > 
+> From a cursory look (and Documentation/ would be nice..) it feels
+> very wrong to me. Do you know of any uses of a netdev which would 
+> be semantically similar to what you're doing? Treating netdevs as
+> buildings blocks for arbitrary message passing solutions is something 
+> I dislike quite strongly.
 
-I have to admit, this choice was born more of perceived necessity than
-of a love for the design... but I can explain the pain points that led
-to the current state, which I hope sparks some discussion.
+The big difference between vsock and "arbitrary message passing" is that
+vsock is actually constrained by the virtio device that backs it (made
+up of virtqueues and the underlying protocol). That virtqueue pair is
+acting like the queues on a physical NIC, so it actually makes sense to
+manage the queuing of vsock's device like we would manage the queueing
+of a real device.
 
-When the state is down, dev_queue_xmit() will fail. To avoid this and
-preserve the "zero-configuration" guarantee of vsock, I chose to make
-transmission work regardless of device state by implementing this
-"ignore up/down state" hack.
+Still, I concede that ignoring the netdev state is a probably bad idea.
 
-This is unfortunate because what we are really after here is just packet
-scheduling, i.e., qdisc. We don't really need the rest of the
-net_device, and I don't think up/down buys us anything of value. The
-relationship between qdisc and net_device is so tightly knit together
-though, that using qdisc without a net_device doesn't look very
-practical (and maybe impossible).
+That said, I also think that using packet scheduling in vsock is a good
+idea, and that ideally we can reuse Linux's already robust library of
+packet scheduling algorithms by introducing qdisc somehow.
 
-Some alternative routes might be:
+> 
+> Could you recommend where I can learn more about vsocks?
 
-1) Default the state to up, and let users disable vsock by downing the
-   device if they'd like. It still works out-of-the-box, but if users
-   really want to disable vsock they may.
+I think the spec is probably the best place to start[1].
 
-2) vsock may simply turn the device to state up when a socket is first
-   used. For instance, the HCI device in net/bluetooth/hci_* uses a
-   technique where the net_device is turned to up when bind() is called on
-   any HCI socket (BTPROTO_HCI). It can also be turned up/down via
-   ioctl().
+[1]: https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html
 
-3) Modify net_device registration to allow us to have an invisible
-   device that is only known by the kernel. It may default to up and remain
-   unchanged. The qdisc controls alone may be exposed to userspace,
-   hopefully via netlink to still work with tc. This is not
-   currently supported by register_netdevice(), but a series from 2007 was
-   sent to the ML, tentatively approved in concept, but was never merged[1].
-
-4) Currently NETDEV_UP/NETDEV_DOWN commands can't be vetoed.
-   NETDEV_PRE_UP, however, is used to effectively veto NETDEV_UP
-   commands[2]. We could introduce NETDEV_PRE_DOWN to support vetoing of
-   NETDEV_DOWN. This would allow us to install a hook to determine if
-   we actually want to allow the device to be downed.
-
-In an ideal world, we could simply pass a set of netdev queues, a
-packet, and maybe a blob of state to qdisc and let it work its
-scheduling magic...
-
-Any thoughts?
-
-[1]: https://lore.kernel.org/netdev/20070129140958.0cf6880f@freekitty/
-[2]: https://lore.kernel.org/all/20090529.220906.243061042.davem@davemloft.net/
-
-Thanks,
+Best,
 Bobby
