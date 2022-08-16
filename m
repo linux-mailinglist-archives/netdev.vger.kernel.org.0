@@ -2,198 +2,349 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 601AB595705
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:49:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8AFD59573F
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234030AbiHPJtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 05:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S234092AbiHPJ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 05:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234012AbiHPJs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:48:59 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CEA26CF57
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id i4-20020a056e0212c400b002e5c72b3bd7so2957515ilm.6
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:35:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=xc5VZ38s5GsqCus/sbSSb0V5SsZ/HUPvReBQR7V5qUQ=;
-        b=XmyTKbkfgR/FZxuvMgbk9puZoffnzt9ZCjfYX6Sd/LdNck+VOG7U7gV+/npjXiKQ2i
-         RJbXH5bptDMC9GhmjMTUvKk8uUroNuuEhDZLsLRLbrNRq5fc8/55RvHQPJbnj/LzlsdO
-         7wv57FqTpjQqtNpHABcCk7OQo3yYmPCMzd2p/QgSgP99U7Luf25oFvIl9Ec6OzojaUZ1
-         inknyiZnZxOS3nLXD08vWPqizKUXo1GbtVPi583FMWwPBqawo+qME8COze2czUw1GVux
-         V2zYfstwvLG4kSXk3dubhOgcm1dzCqP0aytZS5sYBbBRS8sR3ipaz6o94XzyYZ19SL54
-         I2hw==
-X-Gm-Message-State: ACgBeo2C7+/wu+wqB2Mj41VlP+O96OsPqLl4iAlB+LwW2FOdTWH5rqWc
-        9Zl2pCYFgGQUkrnkOcccZEJOWV5H+ncCdWtAkW1+FbEkWa82
-X-Google-Smtp-Source: AA6agR4K1AqOP+5VpG6jIS2BuqX2hX3xDt0kEKp5BFPJRKCL3oVRnZlUp1DO/KF5vSVxFOGzwKcG+Sw7rCctrWYpmqx1I9EV6LNh
+        with ESMTP id S234183AbiHPJzW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:55:22 -0400
+Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B630399F0;
+        Tue, 16 Aug 2022 01:39:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMPRQlw_1660639065;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMPRQlw_1660639065)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 16:37:46 +0800
+Date:   Tue, 16 Aug 2022 16:37:45 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 08/10] net/smc: replace mutex rmbs_lock and
+ sndbufs_lock with rw_semaphore
+Message-ID: <YvtXWfnWTP5P9ePT@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <cover.1660152975.git.alibuda@linux.alibaba.com>
+ <b4e23c1ef29d567661de46a79c00e48a01344366.1660152975.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:2109:b0:343:59d7:3815 with SMTP id
- n9-20020a056638210900b0034359d73815mr9816658jaj.116.1660638929520; Tue, 16
- Aug 2022 01:35:29 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:35:29 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000007e8da905e657a184@google.com>
-Subject: [syzbot] upstream boot error: general protection fault in netdev_queue_update_kobjects
-From:   syzbot <syzbot+519ff9362a883a7a4865@syzkaller.appspotmail.com>
-To:     atenart@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b4e23c1ef29d567661de46a79c00e48a01344366.1660152975.git.alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Aug 11, 2022 at 01:47:39AM +0800, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
+> 
+> It's clear that rmbs_lock and sndbufs_lock are aims to protect the
+> rmbs list or the sndbufs list.
+> 
+> During conenction establieshment, smc_buf_get_slot() will always
 
-syzbot found the following issue on:
+conenction -> connection
 
-HEAD commit:    568035b01cfb Linux 6.0-rc1
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1562e2d3080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3b9175e0879a7749
-dashboard link: https://syzkaller.appspot.com/bug?extid=519ff9362a883a7a4865
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> be invoke, and it only performs read semantics in rmbs list and
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+519ff9362a883a7a4865@syzkaller.appspotmail.com
+invoke -> invoked.
 
-input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
-ACPI: button: Sleep Button [SLPF]
-ACPI: \_SB_.LNKC: Enabled at IRQ 11
-virtio-pci 0000:00:03.0: virtio_pci: leaving for legacy driver
-ACPI: \_SB_.LNKD: Enabled at IRQ 10
-virtio-pci 0000:00:04.0: virtio_pci: leaving for legacy driver
-ACPI: \_SB_.LNKB: Enabled at IRQ 10
-virtio-pci 0000:00:06.0: virtio_pci: leaving for legacy driver
-virtio-pci 0000:00:07.0: virtio_pci: leaving for legacy driver
-N_HDLC line discipline registered with maxframe=4096
-Serial: 8250/16550 driver, 4 ports, IRQ sharing enabled
-00:03: ttyS0 at I/O 0x3f8 (irq = 4, base_baud = 115200) is a 16550A
-00:04: ttyS1 at I/O 0x2f8 (irq = 3, base_baud = 115200) is a 16550A
-00:05: ttyS2 at I/O 0x3e8 (irq = 6, base_baud = 115200) is a 16550A
-00:06: ttyS3 at I/O 0x2e8 (irq = 7, base_baud = 115200) is a 16550A
-Non-volatile memory driver v1.3
-Linux agpgart interface v0.103
-ACPI: bus type drm_connector registered
-[drm] Initialized vgem 1.0.0 20120112 for vgem on minor 0
-[drm] Initialized vkms 1.0.0 20180514 for vkms on minor 1
-Console: switching to colour frame buffer device 128x48
-platform vkms: [drm] fb0: vkmsdrmfb frame buffer device
-usbcore: registered new interface driver udl
-brd: module loaded
-loop: module loaded
-zram: Added device: zram0
-null_blk: disk nullb0 created
-null_blk: module loaded
-Guest personality initialized and is inactive
-VMCI host device registered (name=vmci, major=10, minor=120)
-Initialized host personality
-usbcore: registered new interface driver rtsx_usb
-usbcore: registered new interface driver viperboard
-usbcore: registered new interface driver dln2
-usbcore: registered new interface driver pn533_usb
-nfcsim 0.2 initialized
-usbcore: registered new interface driver port100
-usbcore: registered new interface driver nfcmrvl
-Loading iSCSI transport class v2.0-870.
-scsi host0: Virtio SCSI HBA
-st: Version 20160209, fixed bufsize 32768, s/g segs 256
-Rounding down aligned max_sectors from 4294967295 to 4294967288
-db_root: cannot open: /etc/target
-slram: not enough parameters.
-ftl_cs: FTL header not found.
-wireguard: WireGuard 1.0.0 loaded. See www.wireguard.com for information.
-wireguard: Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
-eql: Equalizer2002: Simon Janes (simon@ncm.com) and David S. Miller (davem@redhat.com)
-MACsec IEEE 802.1AE
-tun: Universal TUN/TAP device driver, 1.6
-general protection fault, probably for non-canonical address 0xffff000000000800: 0000 [#1] PREEMPT SMP KASAN
-KASAN: maybe wild-memory-access in range [0xfff8200000004000-0xfff8200000004007]
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 6.0.0-rc1-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-RIP: 0010:freelist_dereference mm/slub.c:347 [inline]
-RIP: 0010:get_freepointer mm/slub.c:354 [inline]
-RIP: 0010:get_freepointer_safe mm/slub.c:368 [inline]
-RIP: 0010:slab_alloc_node mm/slub.c:3211 [inline]
-RIP: 0010:slab_alloc mm/slub.c:3251 [inline]
-RIP: 0010:kmem_cache_alloc_trace+0x164/0x3e0 mm/slub.c:3282
-Code: 8b 51 08 48 8b 01 48 83 79 10 00 48 89 44 24 08 0f 84 bf 01 00 00 48 85 c0 0f 84 b6 01 00 00 48 8b 7d 00 8b 4d 28 40 f6 c7 0f <48> 8b 1c 08 0f 85 c2 01 00 00 48 8d 4a 08 65 48 0f c7 0f 0f 94 c0
-RSP: 0000:ffffc90000067810 EFLAGS: 00010246
-RAX: ffff000000000000 RBX: 0000000000000000 RCX: 0000000000000800
-RDX: 0000000000002e30 RSI: 0000000000000dc0 RDI: 000000000003dce0
-RBP: ffff888011842140 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000001 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000dc0 R14: 0000000000000a20 R15: 0000000000000dc0
-FS:  0000000000000000(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: ffff88823ffff000 CR3: 000000000bc8e000 CR4: 00000000003506f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- kobject_uevent_env+0x230/0x1640 lib/kobject_uevent.c:524
- netdev_queue_add_kobject net/core/net-sysfs.c:1677 [inline]
- netdev_queue_update_kobjects+0x3d1/0x4e0 net/core/net-sysfs.c:1718
- register_queue_kobjects net/core/net-sysfs.c:1779 [inline]
- netdev_register_kobject+0x330/0x400 net/core/net-sysfs.c:2019
- register_netdevice+0xe01/0x1680 net/core/dev.c:10070
- virtnet_probe+0x1378/0x2f30 drivers/net/virtio_net.c:3929
- virtio_dev_probe+0x577/0x870 drivers/virtio/virtio.c:305
- call_driver_probe drivers/base/dd.c:530 [inline]
- really_probe+0x249/0xb90 drivers/base/dd.c:609
- __driver_probe_device+0x1df/0x4d0 drivers/base/dd.c:748
- driver_probe_device+0x4c/0x1a0 drivers/base/dd.c:778
- __driver_attach+0x223/0x550 drivers/base/dd.c:1150
- bus_for_each_dev+0x147/0x1d0 drivers/base/bus.c:301
- bus_add_driver+0x4c9/0x640 drivers/base/bus.c:618
- driver_register+0x220/0x3a0 drivers/base/driver.c:240
- virtio_net_driver_init+0x93/0xd2 drivers/net/virtio_net.c:4108
- do_one_initcall+0xfe/0x650 init/main.c:1296
- do_initcall_level init/main.c:1369 [inline]
- do_initcalls init/main.c:1385 [inline]
- do_basic_setup init/main.c:1404 [inline]
- kernel_init_freeable+0x6b1/0x73a init/main.c:1611
- kernel_init+0x1a/0x1d0 init/main.c:1500
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
-Modules linked in:
-----------------
-Code disassembly (best guess):
-   0:	8b 51 08             	mov    0x8(%rcx),%edx
-   3:	48 8b 01             	mov    (%rcx),%rax
-   6:	48 83 79 10 00       	cmpq   $0x0,0x10(%rcx)
-   b:	48 89 44 24 08       	mov    %rax,0x8(%rsp)
-  10:	0f 84 bf 01 00 00    	je     0x1d5
-  16:	48 85 c0             	test   %rax,%rax
-  19:	0f 84 b6 01 00 00    	je     0x1d5
-  1f:	48 8b 7d 00          	mov    0x0(%rbp),%rdi
-  23:	8b 4d 28             	mov    0x28(%rbp),%ecx
-  26:	40 f6 c7 0f          	test   $0xf,%dil
-* 2a:	48 8b 1c 08          	mov    (%rax,%rcx,1),%rbx <-- trapping instruction
-  2e:	0f 85 c2 01 00 00    	jne    0x1f6
-  34:	48 8d 4a 08          	lea    0x8(%rdx),%rcx
-  38:	65 48 0f c7 0f       	cmpxchg16b %gs:(%rdi)
-  3d:	0f 94 c0             	sete   %al
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> sndbufs list.
+> 
+> Based on the above considerations, we replace mutex with rw_semaphore.
+> Only smc_buf_get_slot() use down_read() to allow smc_buf_get_slot()
+> run concurrently, other part use down_write() to keep exclusive
+> semantics.
+> 
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>  net/smc/smc_core.c | 55 +++++++++++++++++++++++++++---------------------------
+>  net/smc/smc_core.h |  4 ++--
+>  net/smc/smc_llc.c  | 16 ++++++++--------
+>  3 files changed, 38 insertions(+), 37 deletions(-)
+> 
+> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> index 113804d..b90970a 100644
+> --- a/net/smc/smc_core.c
+> +++ b/net/smc/smc_core.c
+> @@ -1138,8 +1138,8 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
+>  	lgr->freeing = 0;
+>  	lgr->vlan_id = ini->vlan_id;
+>  	refcount_set(&lgr->refcnt, 1); /* set lgr refcnt to 1 */
+> -	mutex_init(&lgr->sndbufs_lock);
+> -	mutex_init(&lgr->rmbs_lock);
+> +	init_rwsem(&lgr->sndbufs_lock);
+> +	init_rwsem(&lgr->rmbs_lock);
+>  	rwlock_init(&lgr->conns_lock);
+>  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
+>  		INIT_LIST_HEAD(&lgr->sndbufs[i]);
+> @@ -1380,7 +1380,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+>  static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
+>  			   struct smc_link_group *lgr)
+>  {
+> -	struct mutex *lock;	/* lock buffer list */
+> +	struct rw_semaphore *lock;	/* lock buffer list */
+>  	int rc;
+>  
+>  	if (is_rmb && buf_desc->is_conf_rkey && !list_empty(&lgr->list)) {
+> @@ -1400,9 +1400,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
+>  		/* buf registration failed, reuse not possible */
+>  		lock = is_rmb ? &lgr->rmbs_lock :
+>  				&lgr->sndbufs_lock;
+> -		mutex_lock(lock);
+> +		down_write(lock);
+>  		list_del(&buf_desc->list);
+> -		mutex_unlock(lock);
+> +		up_write(lock);
+>  
+>  		smc_buf_free(lgr, is_rmb, buf_desc);
+>  	} else {
+> @@ -1506,15 +1506,16 @@ static void smcr_buf_unmap_lgr(struct smc_link *lnk)
+>  	int i;
+>  
+>  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
+> -		mutex_lock(&lgr->rmbs_lock);
+> +		down_write(&lgr->rmbs_lock);
+>  		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list)
+>  			smcr_buf_unmap_link(buf_desc, true, lnk);
+> -		mutex_unlock(&lgr->rmbs_lock);
+> -		mutex_lock(&lgr->sndbufs_lock);
+> +		up_write(&lgr->rmbs_lock);
+> +
+> +		down_write(&lgr->sndbufs_lock);
+>  		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i],
+>  					 list)
+>  			smcr_buf_unmap_link(buf_desc, false, lnk);
+> -		mutex_unlock(&lgr->sndbufs_lock);
+> +		up_write(&lgr->sndbufs_lock);
+>  	}
+>  }
+>  
+> @@ -2324,19 +2325,19 @@ int smc_uncompress_bufsize(u8 compressed)
+>   * buffer size; if not available, return NULL
+>   */
+>  static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
+> -					     struct mutex *lock,
+> +					     struct rw_semaphore *lock,
+>  					     struct list_head *buf_list)
+>  {
+>  	struct smc_buf_desc *buf_slot;
+>  
+> -	mutex_lock(lock);
+> +	down_read(lock);
+>  	list_for_each_entry(buf_slot, buf_list, list) {
+>  		if (cmpxchg(&buf_slot->used, 0, 1) == 0) {
+> -			mutex_unlock(lock);
+> +			up_read(lock);
+>  			return buf_slot;
+>  		}
+>  	}
+> -	mutex_unlock(lock);
+> +	up_read(lock);
+>  	return NULL;
+>  }
+>  
+> @@ -2445,13 +2446,13 @@ int smcr_link_reg_buf(struct smc_link *link, struct smc_buf_desc *buf_desc)
+>  	return 0;
+>  }
+>  
+> -static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
+> +static int _smcr_buf_map_lgr(struct smc_link *lnk, struct rw_semaphore *lock,
+>  			     struct list_head *lst, bool is_rmb)
+>  {
+>  	struct smc_buf_desc *buf_desc, *bf;
+>  	int rc = 0;
+>  
+> -	mutex_lock(lock);
+> +	down_write(lock);
+>  	list_for_each_entry_safe(buf_desc, bf, lst, list) {
+>  		if (!buf_desc->used)
+>  			continue;
+> @@ -2460,7 +2461,7 @@ static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
+>  			goto out;
+>  	}
+>  out:
+> -	mutex_unlock(lock);
+> +	up_write(lock);
+>  	return rc;
+>  }
+>  
+> @@ -2493,37 +2494,37 @@ int smcr_buf_reg_lgr(struct smc_link *lnk)
+>  	int i, rc = 0;
+>  
+>  	/* reg all RMBs for a new link */
+> -	mutex_lock(&lgr->rmbs_lock);
+> +	down_write(&lgr->rmbs_lock);
+>  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
+>  		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list) {
+>  			if (!buf_desc->used)
+>  				continue;
+>  			rc = smcr_link_reg_buf(lnk, buf_desc);
+>  			if (rc) {
+> -				mutex_unlock(&lgr->rmbs_lock);
+> +				up_write(&lgr->rmbs_lock);
+>  				return rc;
+>  			}
+>  		}
+>  	}
+> -	mutex_unlock(&lgr->rmbs_lock);
+> +	up_write(&lgr->rmbs_lock);
+>  
+>  	if (lgr->buf_type == SMCR_PHYS_CONT_BUFS)
+>  		return rc;
+>  
+>  	/* reg all vzalloced sndbufs for a new link */
+> -	mutex_lock(&lgr->sndbufs_lock);
+> +	down_write(&lgr->sndbufs_lock);
+>  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
+>  		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i], list) {
+>  			if (!buf_desc->used || !buf_desc->is_vm)
+>  				continue;
+>  			rc = smcr_link_reg_buf(lnk, buf_desc);
+>  			if (rc) {
+> -				mutex_unlock(&lgr->sndbufs_lock);
+> +				up_write(&lgr->sndbufs_lock);
+>  				return rc;
+>  			}
+>  		}
+>  	}
+> -	mutex_unlock(&lgr->sndbufs_lock);
+> +	up_write(&lgr->sndbufs_lock);
+>  	return rc;
+>  }
+>  
+> @@ -2641,7 +2642,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+>  	struct list_head *buf_list;
+>  	int bufsize, bufsize_short;
+>  	bool is_dgraded = false;
+> -	struct mutex *lock;	/* lock buffer list */
+> +	struct rw_semaphore *lock;	/* lock buffer list */
+>  	int sk_buf_size;
+>  
+>  	if (is_rmb)
+> @@ -2689,9 +2690,9 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
+>  		SMC_STAT_RMB_ALLOC(smc, is_smcd, is_rmb);
+>  		SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
+>  		buf_desc->used = 1;
+> -		mutex_lock(lock);
+> +		down_write(lock);
+>  		list_add(&buf_desc->list, buf_list);
+> -		mutex_unlock(lock);
+> +		up_write(lock);
+>  		break; /* found */
+>  	}
+>  
+> @@ -2765,9 +2766,9 @@ int smc_buf_create(struct smc_sock *smc, bool is_smcd)
+>  	/* create rmb */
+>  	rc = __smc_buf_create(smc, is_smcd, true);
+>  	if (rc) {
+> -		mutex_lock(&smc->conn.lgr->sndbufs_lock);
+> +		down_write(&smc->conn.lgr->sndbufs_lock);
+>  		list_del(&smc->conn.sndbuf_desc->list);
+> -		mutex_unlock(&smc->conn.lgr->sndbufs_lock);
+> +		up_write(&smc->conn.lgr->sndbufs_lock);
+>  		smc_buf_free(smc->conn.lgr, false, smc->conn.sndbuf_desc);
+>  		smc->conn.sndbuf_desc = NULL;
+>  	}
+> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+> index 559d330..008148c 100644
+> --- a/net/smc/smc_core.h
+> +++ b/net/smc/smc_core.h
+> @@ -300,9 +300,9 @@ struct smc_link_group {
+>  	unsigned short		vlan_id;	/* vlan id of link group */
+>  
+>  	struct list_head	sndbufs[SMC_RMBE_SIZES];/* tx buffers */
+> -	struct mutex		sndbufs_lock;	/* protects tx buffers */
+> +	struct rw_semaphore	sndbufs_lock;	/* protects tx buffers */
+>  	struct list_head	rmbs[SMC_RMBE_SIZES];	/* rx buffers */
+> -	struct mutex		rmbs_lock;	/* protects rx buffers */
+> +	struct rw_semaphore	rmbs_lock;	/* protects rx buffers */
+>  
+>  	u8			id[SMC_LGR_ID_SIZE];	/* unique lgr id */
+>  	struct delayed_work	free_work;	/* delayed freeing of an lgr */
+> diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+> index d744937..76f9906 100644
+> --- a/net/smc/smc_llc.c
+> +++ b/net/smc/smc_llc.c
+> @@ -642,7 +642,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
+>  
+>  	prim_lnk_idx = link->link_idx;
+>  	lnk_idx = link_new->link_idx;
+> -	mutex_lock(&lgr->rmbs_lock);
+> +	down_write(&lgr->rmbs_lock);
+>  	ext->num_rkeys = lgr->conns_num;
+>  	if (!ext->num_rkeys)
+>  		goto out;
+> @@ -662,7 +662,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
+>  	}
+>  	len += i * sizeof(ext->rt[0]);
+>  out:
+> -	mutex_unlock(&lgr->rmbs_lock);
+> +	up_write(&lgr->rmbs_lock);
+>  	return len;
+>  }
+>  
+> @@ -923,7 +923,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
+>  	int rc = 0;
+>  	int i;
+>  
+> -	mutex_lock(&lgr->rmbs_lock);
+> +	down_write(&lgr->rmbs_lock);
+>  	num_rkeys_send = lgr->conns_num;
+>  	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
+>  	do {
+> @@ -950,7 +950,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
+>  			break;
+>  	} while (num_rkeys_send || num_rkeys_recv);
+>  
+> -	mutex_unlock(&lgr->rmbs_lock);
+> +	up_write(&lgr->rmbs_lock);
+>  	return rc;
+>  }
+>  
+> @@ -1033,14 +1033,14 @@ static void smc_llc_save_add_link_rkeys(struct smc_link *link,
+>  	ext = (struct smc_llc_msg_add_link_v2_ext *)((u8 *)lgr->wr_rx_buf_v2 +
+>  						     SMC_WR_TX_SIZE);
+>  	max = min_t(u8, ext->num_rkeys, SMC_LLC_RKEYS_PER_MSG_V2);
+> -	mutex_lock(&lgr->rmbs_lock);
+> +	down_write(&lgr->rmbs_lock);
+>  	for (i = 0; i < max; i++) {
+>  		smc_rtoken_set(lgr, link->link_idx, link_new->link_idx,
+>  			       ext->rt[i].rmb_key,
+>  			       ext->rt[i].rmb_vaddr_new,
+>  			       ext->rt[i].rmb_key_new);
+>  	}
+> -	mutex_unlock(&lgr->rmbs_lock);
+> +	up_write(&lgr->rmbs_lock);
+>  }
+>  
+>  static void smc_llc_save_add_link_info(struct smc_link *link,
+> @@ -1349,7 +1349,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
+>  	int rc = 0;
+>  	int i;
+>  
+> -	mutex_lock(&lgr->rmbs_lock);
+> +	down_write(&lgr->rmbs_lock);
+>  	num_rkeys_send = lgr->conns_num;
+>  	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
+>  	do {
+> @@ -1374,7 +1374,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
+>  		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
+>  	} while (num_rkeys_send || num_rkeys_recv);
+>  out:
+> -	mutex_unlock(&lgr->rmbs_lock);
+> +	up_write(&lgr->rmbs_lock);
+>  	return rc;
+>  }
+>  
+> -- 
+> 1.8.3.1
