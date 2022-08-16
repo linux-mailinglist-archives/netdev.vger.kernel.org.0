@@ -2,167 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E685955FC
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:14:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9B5F595607
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232813AbiHPJOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 05:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S233155AbiHPJTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 05:19:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231583AbiHPJNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:13:49 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84D520BF1;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id k14so8673402pfh.0;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=mH1RjIhrn3aTtFyCwsCBvghOzpu3SOjgxxeBJokMeGs=;
-        b=bQ++3ewJ5b1mkfkRwtY/lFZjK+RQFbmhzW2sFLKkLiDVC/7jLmcJZao4iOMQm4R5Mn
-         eYlJPnqeRMLYwfRmHXqCpvxt2NxZ+nptfXn++9q06WT8LY4TgODwtxgXor+tnuYhIDeF
-         NFGhZt8MY2PzkWamFGJvCis/qHLTq0V64gIoxYov1ZSz8xJ35YUJxYETm0s/bNwNilvB
-         bywig2MG7n7YQDjaTCOPVDs6C3gSTDMjd6U8IIJ8rCejeUGYc9aRuTwdchoN0gaZvcJR
-         MX5JokCiDvsUWClL+wLFYSt1IPBWFvxa/uYzmr4tLCCGSADMpUDl7RlZf93DP4/LVBpL
-         WAxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=mH1RjIhrn3aTtFyCwsCBvghOzpu3SOjgxxeBJokMeGs=;
-        b=TeFXGQlF7nkn4d1keBTLGFDoQFhOJ2R/OUDDPG4SgEP3mlyxvSFOadifck69Mj+c1g
-         VlPYT7BtQiqQB6pOSvQFd724tRc5cTbPn0QdEbPcPjrmzJxYtDmxHYMK+GzMMvVfoGgX
-         o65Qvz0RKdgwAZfmP6tdbrvBZQHb6BMgjBHOSlnV4pWlIKdJmRv4FWrxyMTFLwNKZUkc
-         TYA1Z3nHqm3kcJ+yry44F/nUAG9fg5PwdRoAC2a8FbNYWxf6mg0E+HyfrY0oiMLxNBNG
-         WjSHiSs1TXboOmvfk+y3pmwwyt2b+TeGNdFZXZp7d09TIo60gVLFdTy8bOOL5aUQKWxG
-         cNPQ==
-X-Gm-Message-State: ACgBeo1f4rBR5qGxsnBER7HoMsGlZK7qOqRwEwP0k+LPy5Wg9nEQ9a8d
-        AsLBHHQrQYL/VsncWOL/zH0=
-X-Google-Smtp-Source: AA6agR4MGBJnpQx+M7cZDeNam6p/GTiltcfQJBve8I/U3lKM9dJRI6QW9Myzjt6hhQQvP+kf15uDXg==
-X-Received: by 2002:a62:7b8e:0:b0:535:2420:7fc2 with SMTP id w136-20020a627b8e000000b0053524207fc2mr3474466pfc.60.1660634951171;
-        Tue, 16 Aug 2022 00:29:11 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id y85-20020a626458000000b005286124df03sm7675410pfb.87.2022.08.16.00.29.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 00:29:10 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 15:29:04 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v3 2/2] bonding: 802.3ad: fix no transmission of
- LACPDUs
-Message-ID: <YvtHQCkyKBTiP4aw@Laptop-X1>
-References: <cover.1660572700.git.jtoppins@redhat.com>
- <0639f1e3d366c5098d561a947fd416fa5277e7f4.1660572700.git.jtoppins@redhat.com>
+        with ESMTP id S231434AbiHPJTM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:19:12 -0400
+Received: from out199-2.us.a.mail.aliyun.com (out199-2.us.a.mail.aliyun.com [47.90.199.2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E3F39B93;
+        Tue, 16 Aug 2022 00:34:56 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=13;SR=0;TI=SMTPD_---0VMP0xz3_1660635290;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMP0xz3_1660635290)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 15:34:51 +0800
+Date:   Tue, 16 Aug 2022 15:34:50 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     Matthew Rosato <mjrosato@linux.ibm.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        zmlcc@linux.alibaba.com, hans@linux.alibaba.com,
+        zhiyuan2048@linux.alibaba.com, herongguang@linux.alibaba.com
+Subject: Re: [RFC net-next 1/1] net/smc: SMC for inter-VM communication
+Message-ID: <YvtImtk0cqfhmZH+@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <20220720170048.20806-1-tonylu@linux.alibaba.com>
+ <0ccf9cc6-4916-7815-9ce2-990dc7884849@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=gb2312
 Content-Disposition: inline
-In-Reply-To: <0639f1e3d366c5098d561a947fd416fa5277e7f4.1660572700.git.jtoppins@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0ccf9cc6-4916-7815-9ce2-990dc7884849@linux.ibm.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 11:08:35AM -0400, Jonathan Toppins wrote:
-> This is caused by the global variable ad_ticks_per_sec being zero as
-> demonstrated by the reproducer script discussed below. This causes
-> all timer values in __ad_timer_to_ticks to be zero, resulting
-> in the periodic timer to never fire.
+On Wed, Aug 03, 2022 at 04:27:54PM -0400, Matthew Rosato wrote:
+> On 7/20/22 1:00 PM, Tony Lu wrote:
+> > Hi all,
+> > 
+> > # Background
+> > 
+> > We (Alibaba Cloud) have already used SMC in cloud environment to
+> > transparently accelerate TCP applications with ERDMA [1]. Nowadays,
+> > there is a common scenario that deploy containers (which runtime is
+> > based on lightweight virtual machine) on ECS (Elastic Compute Service),
+> > and the containers may want to be scheduled on the same host in order to
+> > get higher performance of network, such as AI, big data or other
+> > scenarios that are sensitive with bandwidth and latency. Currently, the
+> > performance of inter-VM is poor and CPU resource is wasted (see
+> > #Benchmark virtio). This scenario has been discussed many times, but a
+> > solution for a common scenario for applications is missing [2] [3] [4].
+> > 
+> > # Design
+> > 
+> > In inter-VM scenario, we use ivshmem (Inter-VM shared memory device)
+> > which is modeled by QEMU [5]. With it, multiple VMs can access one
+> > shared memory. This shared memory device is statically created by host
+> > and shared to desired guests. The device exposes as a PCI BAR, and can
+> > interrupt its peers (ivshmem-doorbell).
+> > 
+> > In order to use ivshmem in SMC, we write a draft device driver as a
+> > bridge between SMC and ivshmem PCI device. To make it easier, this
+> > driver acts like a SMC-D device in order to fit in SMC without modifying
+> > the code, which is named ivpci (see patch #1).
+> > 
+> >    ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´
+> >    ©¦  ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´ ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´  ©¦
+> >    ©¦  ©¦      VM1      ©¦ ©¦      VM2      ©¦  ©¦
+> >    ©¦  ©¦©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´©¦ ©¦©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´©¦  ©¦
+> >    ©¦  ©¦©¦ Application ©¦©¦ ©¦©¦ Application ©¦©¦  ©¦
+> >    ©¦  ©¦©À©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©È©¦ ©¦©À©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©È©¦  ©¦
+> >    ©¦  ©¦©¦     SMC     ©¦©¦ ©¦©¦     SMC     ©¦©¦  ©¦
+> >    ©¦  ©¦©À©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©È©¦ ©¦©À©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©È©¦  ©¦
+> >    ©¦  ©¦©¦    ivpci    ©¦©¦ ©¦©¦    ivpci    ©¦©¦  ©¦
+> >    ©¦  ©¸©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼©¼ ©¸©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼©¼  ©¦
+> >    ©¦        x  *               x  *        ©¦
+> >    ©¦        x  ****************x* *        ©¦
+> >    ©¦        x  xxxxxxxxxxxxxxxxx* *        ©¦
+> >    ©¦        x  x                * *        ©¦
+> >    ©¦  ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´ ©°©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©´  ©¦
+> >    ©¦  ©¦shared memories©¦ ©¦ivshmem-server ©¦  ©¦
+> >    ©¦  ©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼ ©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼  ©¦
+> >    ©¦                HOST A                 ©¦
+> >    ©¸©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¼
+> >     *********** Control flow (interrupt)
+> >     xxxxxxxxxxx Data flow (memory access)
+> > 
+> > Inside ivpci driver, it implements almost all the operations of SMC-D
+> > device. It can be divided into two parts:
+> > 
+> > - control flow, most of it is same with SMC-D, use ivshmem trigger
+> >    interruptions in ivpci and process CDC flow.
+> > 
+> > - data flow, the shared memory of each connection is one large region
+> >    and divided into two part for local and remote RMB. Every writer
+> >    syscall copies data to sndbuf and calls ISM's move_data() to move data
+> >    to remote RMB in ivshmem and interrupt remote. And reader then
+> >    receives interruption and check CDC message, consume data if cursor is
+> >    updated.
+> > 
+> > # Benchmark
+> > 
+> > Current POC of ivpci is unstable and only works for single SMC
+> > connection. Here is the brief data:
+> > 
+> > Items         Latency (pingpong)    Throughput (64KB)
+> > TCP (virtio)   19.3 us                3794.185 MBps
+> > TCP (SR-IOV)   13.2 us                3948.792 MBps
+> > SMC (ivshmem)   6.3 us               11900.269 MBps
+> > 
+> > Test environments:
+> > 
+> > - CPU Intel Xeon Platinum 8 core, mem 32 GiB
+> > - NIC Mellanox CX4 with 2 VFs in two different guests
+> > - using virsh to setup virtio-net + vhost
+> > - using sockperf and single connection
+> > - SMC + ivshmem throughput uses one-copy (userspace -> kernel copy)
+> >    with intrusive modification of SMC (see patch #1), latency (pingpong)
+> >    use two-copy (user -> kernel and move_data() copy, patch version).
+> > 
+> > With the comparison, SMC with ivshmem gets 3-4x bandwidth and a half
+> > latency.
+> > 
+> > TCP + virtio is the most usage solution for guest, it gains lower
+> > performance. Moreover, it consumes extra thread with full CPU core
+> > occupied in host to transfer data, wastes more CPU resource. If the host
+> > is very busy, the performance will be worse.
+> > 
 > 
-> To reproduce:
-> Run the script in
-> `tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh` which
-> puts bonding into a state where it never transmits LACPDUs.
+> Hi Tony,
 > 
-> line 44: ip link add fbond type bond mode 4 miimon 200 \
->             xmit_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
-> setting bond param: ad_actor_sys_prio
-> given:
->     params.ad_actor_system = 0
-> call stack:
->     bond_option_ad_actor_sys_prio()
->     -> bond_3ad_update_ad_actor_settings()
->        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->             params.ad_actor_system == 0
-> results:
->      ad.system.sys_mac_addr = bond->dev->dev_addr
+> Quite interesting!  FWIW for s390x we are also looking at passthrough of
+> host ISM devices to enable SMC-D in QEMU guests:
+> https://lore.kernel.org/kvm/20220606203325.110625-1-mjrosato@linux.ibm.com/
+> https://lore.kernel.org/kvm/20220606203614.110928-1-mjrosato@linux.ibm.com/
 > 
-> line 48: ip link set fbond address 52:54:00:3B:7C:A6
-> setting bond MAC addr
-> call stack:
->     bond->dev->dev_addr = new_mac
+> But seems to me an 'emulated ISM' of sorts could still be interesting even
+> on s390x e.g. for scenarios where host device passthrough is not
+> possible/desired.
 > 
-> line 52: ip link set fbond type bond ad_actor_sys_prio 65535
-> setting bond param: ad_actor_sys_prio
-> given:
->     params.ad_actor_system = 0
-> call stack:
->     bond_option_ad_actor_sys_prio()
->     -> bond_3ad_update_ad_actor_settings()
->        -> set ad.system.sys_priority = bond->params.ad_actor_sys_prio
->        -> ad.system.sys_mac_addr = bond->dev->dev_addr; because
->             params.ad_actor_system == 0
-> results:
->      ad.system.sys_mac_addr = bond->dev->dev_addr
+> Out of curiosity I tried this ivpci module on s390x but the device won't
+> probe -- This is possibly an issue with the s390x PCI emulation layer in
+> QEMU, I'll have to look into that.
 > 
-> line 60: ip link set veth1-bond down master fbond
-> given:
->     params.ad_actor_system = 0
->     params.mode = BOND_MODE_8023AD
->     ad.system.sys_mac_addr == bond->dev->dev_addr
-> call stack:
->     bond_enslave
->     -> bond_3ad_initialize(); because first slave
->        -> if ad.system.sys_mac_addr != bond->dev->dev_addr
->           return
-> results:
->      Nothing is run in bond_3ad_initialize() because dev_add equals
->      sys_mac_addr leaving the global ad_ticks_per_sec zero as it is
->      never initialized anywhere else.
+> > # Discussion
+> > 
+> > This RFC and solution is still in early stage, so we want to come it up
+> > as soon as possible and fully discuss with IBM and community. We have
+> > some topics putting on the table:
+> > 
+> > 1. SMC officially supports this scenario.
+> > 
+> > SMC + ivshmem shows huge improvement when communicating inter VMs. SMC-D
+> > and mocking ISM device might not be the official solution, maybe another
+> > extension for SMC besides SMC-R and SMC-D. So we are wondering if SMC
+> > would accept this idea to fix this scenario? Are there any other
+> > possibilities?
 > 
-> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
-> ---
+> I am curious about ivshmem and its current state though -- e.g. looking
+> around I see mention of v2 which you also referenced but don't see any
+> activity on it for a few years?  And as far as v1 ivshmem -- server "not for
+> production use", etc.
 > 
-> Notes:
->     v2:
->      * split this fix from the reproducer
->     v3:
->      * rebased to latest net/master
-> 
->  drivers/net/bonding/bond_3ad.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-> index d7fb33c078e8..957d30db6f95 100644
-> --- a/drivers/net/bonding/bond_3ad.c
-> +++ b/drivers/net/bonding/bond_3ad.c
-> @@ -84,7 +84,8 @@ enum ad_link_speed_type {
->  static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned = {
->  	0, 0, 0, 0, 0, 0
->  };
-> -static u16 ad_ticks_per_sec;
-> +
-> +static u16 ad_ticks_per_sec = 1000 / AD_TIMER_INTERVAL;
->  static const int ad_delta_in_ticks = (AD_TIMER_INTERVAL * HZ) / 1000;
->  
->  static const u8 lacpdu_mcast_addr[ETH_ALEN + 2] __long_aligned =
-> -- 
-> 2.31.1
+> Thanks,
+> Matt
 > 
 
-Acked-by: Hangbin Liu <liuhangbin@gmail.com>
+Hi Matt,
+
+Glad to hear that. And sorry for my late reply.
+
+Current POC version of ivpci for 'emulated ISM' is unstable and buggy,
+and depends on ivshmem [1] and a hypervisor process [2], maybe there are
+some issues blocks that. Please point them out, and I will fix them.
+
+The current state of ivshmem, yes, v1 is still unstable and v2 isn't
+active for a long time. This patch uses ivshmem to act as backend of
+emulated ISM device for prototype. And ivshmem doesn't suit for this
+scenario as a product-level solution, such as interruption, shared
+memory memory allocation and live migration etc.
+
+So we are planning to come up with a new device and the corresponding
+driver. We are trying to extend virtio for shared memory, so that it can
+use shared memory in s390 or others scenarios. We are working on the
+details and send out the proposal later. And what about your opinions?
+
+[1] https://www.qemu.org/docs/master/system/devices/ivshmem.html
+[2] https://github.com/qemu/qemu/tree/master/contrib/ivshmem-server
+
+Cheers,
+Tony Lu
