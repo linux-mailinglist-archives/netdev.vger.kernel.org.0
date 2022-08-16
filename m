@@ -2,113 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE16595E2A
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 16:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E925F595E2F
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 16:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235365AbiHPOOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 10:14:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        id S233810AbiHPOQ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 10:16:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiHPOOn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 10:14:43 -0400
+        with ESMTP id S231533AbiHPOQ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 10:16:28 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834A2AFAF9;
-        Tue, 16 Aug 2022 07:14:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1831B1BA8
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 07:16:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FB9561007;
-        Tue, 16 Aug 2022 14:14:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756B3C433C1;
-        Tue, 16 Aug 2022 14:14:37 +0000 (UTC)
-Date:   Tue, 16 Aug 2022 10:14:45 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
-        stern@rowland.harvard.edu, tglx@linutronix.de, vgoyal@redhat.com,
-        vkuznets@redhat.com, will@kernel.org,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Subject: Re: [PATCH v2 08/13] tracing: Improve panic/die notifiers
-Message-ID: <20220816101445.184ebb7c@gandalf.local.home>
-In-Reply-To: <20220719195325.402745-9-gpiccoli@igalia.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
-        <20220719195325.402745-9-gpiccoli@igalia.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A6A60FCA
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:16:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D205C433B5;
+        Tue, 16 Aug 2022 14:16:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660659386;
+        bh=hZ4gm5cAZEwvQ6ksizWao2p94DF6cvRGVeeX7yEOIMc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=udCQE+WACI8+9JCL6QArkC+BwW58WbbawBoH3IVaFVnNok+UvBQ/UKBY/ejdpc5hx
+         k7GAC2RySGPjxADV9uHAbZPMcLzx8+SkqYp+cLq4bjfQfbZ0Ha6u8jNaG7cDOEWPir
+         1G6f7lRUEtdlxoiGRTDmivHGhRoGAwzAYlNep/F4z8CjUt6RlNseMgS8gHNTThACzC
+         KWGc77j5XQAurAVPANaHWKIatp3aS/Lt/xuUv0qykHM6ZL/xa533f2wuILewKcRSBe
+         Cd2o6c4VgoJvIWliZayGeN25s0FP7+kj/Xd8K4SSiEQuhbhix+Mbjb5baw+R0xTohQ
+         kAxOxjTVhp3OQ==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
+        Mark-MC.Lee@mediatek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        linux-mediatek@lists.infradead.org, ilias.apalodimas@linaro.org,
+        lorenzo.bianconi@redhat.com, jbrouer@redhat.com
+Subject: [PATCH net] net: ethernet: mtk_eth_soc: fix possible NULL pointer dereference in mtk_xdp_run
+Date:   Tue, 16 Aug 2022 16:16:15 +0200
+Message-Id: <627a07d759020356b64473e09f0855960e02db28.1660659112.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jul 2022 16:53:21 -0300
-"Guilherme G. Piccoli" <gpiccoli@igalia.com> wrote:
+Fix possible NULL pointer dereference in mtk_xdp_run() if the
+ebpf program returns XDP_TX and xdp_convert_buff_to_frame routine fails
+returning NULL.
 
+Fixes: 5886d26fd25bb ("net: ethernet: mtk_eth_soc: add xmit XDP support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Sorry for the late review, but this fell to the bottom of my queue :-/
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index d9426b01f462..8aff4c0c28bd 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1732,7 +1732,7 @@ static u32 mtk_xdp_run(struct mtk_eth *eth, struct mtk_rx_ring *ring,
+ 	case XDP_TX: {
+ 		struct xdp_frame *xdpf = xdp_convert_buff_to_frame(xdp);
+ 
+-		if (mtk_xdp_submit_frame(eth, xdpf, dev, false)) {
++		if (!xdpf || mtk_xdp_submit_frame(eth, xdpf, dev, false)) {
+ 			count = &hw_stats->xdp_stats.rx_xdp_tx_errors;
+ 			act = XDP_DROP;
+ 			break;
+-- 
+2.37.2
 
-> +/*
-> + * The idea is to execute the following die/panic callback early, in order
-> + * to avoid showing irrelevant information in the trace (like other panic
-> + * notifier functions); we are the 2nd to run, after hung_task/rcu_stall
-> + * warnings get disabled (to prevent potential log flooding).
-> + */
-> +static int trace_die_panic_handler(struct notifier_block *self,
-> +				unsigned long ev, void *unused)
-> +{
-> +	if (!ftrace_dump_on_oops)
-> +		goto out;
-> +
-> +	if (self == &trace_die_notifier && ev != DIE_OOPS)
-> +		goto out;
-
-I really hate gotos that are not for clean ups.
-
-> +
-> +	ftrace_dump(ftrace_dump_on_oops);
-> +
-> +out:
-> +	return NOTIFY_DONE;
-> +}
-> +
-
-Just do:
-
-static int trace_die_panic_handler(struct notifier_block *self,
-				unsigned long ev, void *unused)
-{
-	if (!ftrace_dump_on_oops)
-		return NOTIFY_DONE;
-
-	/* The die notifier requires DIE_OOPS to trigger */
-	if (self == &trace_die_notifier && ev != DIE_OOPS)
-		return NOTIFY_DONE;
-
-	ftrace_dump(ftrace_dump_on_oops);
-
-	return NOTIFY_DONE;
-}
-
-
-Thanks,
-
-Other than that, Acked-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-
--- Steve
