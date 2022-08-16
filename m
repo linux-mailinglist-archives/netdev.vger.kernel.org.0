@@ -2,124 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D47B59632A
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 21:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AADE59636C
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 22:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237034AbiHPTbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 15:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
+        id S236831AbiHPUBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 16:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiHPTbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 15:31:14 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1495F86C38;
-        Tue, 16 Aug 2022 12:31:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=U25TPYOEeLX9ExDpmpCDFm7VeFIYKkpYVxR743uBycM=;
-        t=1660678273; x=1661887873; b=I4GQ0JJQQvdSGoXlIeBHvWVhu9ONhu9ULCu7QJJ0XsrRzoo
-        zF+pxWFHmAPe1SQpMY+HmGFK2T1KR6tg77A3Xo6AKEwgHryGYklisIWwBjcy5Ee3KUaweAnGOMTPb
-        tR7ibiSNcVUBc8lUOPgBZdxOeMxdBpRXXyW1KTLBfymbwzzl4z0hAPub6XXOXr6vGGDVdmJ5632va
-        UYw4FOjJWyu/Gnv67satFwVFUkFAllVsJb4EOsaab/Qr71fPebEDSNj+zBOZ2EcNZoJ5utAGAX1wl
-        7c6hLbflASCqy0BuEOn3VAU0raN3jYJg8GTS24hwxUvZ46TDd0ojS54olJNUaa5Q==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oO2H9-009deu-0U;
-        Tue, 16 Aug 2022 21:30:55 +0200
-Message-ID: <c4a4744c0f0a86433beec5035f2150b8427eb3d5.camel@sipsolutions.net>
-Subject: Re: [RFC net-next 2/4] ynl: add the schema for the schemas
-From:   Johannes Berg <johannes@sipsolutions.net>
+        with ESMTP id S233462AbiHPUBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 16:01:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B687E82A
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 13:01:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660680074;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6xCqrELniyhJBUUBRNURlNrorTl407Wr59qxH3GJIvA=;
+        b=KowLt9sVJkGJ/667uzuMME8DAiJSf0eDde1jzcGaQ89HEwmSpZ2C4V9BN8U+6PSgXTkTkQ
+        eif7S7JyOxj+s48rMJi7GtZs8LUl2e9g6ePsvNK2MVSONUpvizF14FXKalwzFN1ngUYQ7v
+        e57o1aQDijTCP+i5zDMNEkOeI2RDeZE=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-132-IxGidGdfP4Wypnus5uUmIw-1; Tue, 16 Aug 2022 16:01:09 -0400
+X-MC-Unique: IxGidGdfP4Wypnus5uUmIw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C90A23C0D84F;
+        Tue, 16 Aug 2022 20:01:08 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AA680140EBE3;
+        Tue, 16 Aug 2022 20:01:06 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220816112147.3aa8d35b@kernel.org>
+References: <20220816112147.3aa8d35b@kernel.org> <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk> <20220816103452.479281-1-yin31149@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
-        vadfed@fb.com, jiri@resnulli.us, dsahern@kernel.org,
-        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
-Date:   Tue, 16 Aug 2022 21:30:54 +0200
-In-Reply-To: <20220816085316.65fda789@kernel.org>
-References: <20220811022304.583300-1-kuba@kernel.org>
-         <20220811022304.583300-3-kuba@kernel.org>
-         <6b972ef603ff2bc3a3f3e489aa6638f6246c1e48.camel@sipsolutions.net>
-         <20220815174742.32b3611e@kernel.org>
-         <7241755af778426a2241cacd51119ba8dbd7c136.camel@sipsolutions.net>
-         <20220816085316.65fda789@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+Cc:     dhowells@redhat.com, Hawkins Jiawei <yin31149@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org, bpf@vger.kernel.org
+Subject: Re: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <592635.1660680066.1@warthog.procyon.org.uk>
+Date:   Tue, 16 Aug 2022 21:01:06 +0100
+Message-ID: <592636.1660680066@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-08-16 at 08:53 -0700, Jakub Kicinski wrote:
->=20
-> My guess was that some of the wrapping was for ease of canceling here
-> (cancel is used both on skip and on error).=C2=A0
->=20
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Not sure I'd say that, but can't say I really remember why I did it this
-way.
+> > +__rcu_dereference_sk_user_data_with_flags_check(const struct sock *sk,
+> 
+> This name is insanely long now.
 
-> What I think we should push
-> for is multi-attr, so the same attribute happens multiple times.
->=20
-> [msg]
->  [ATTR1]
->  [ATTR2] // elem 1
->    [SubATTR1]
->    [SubATTR2]
->  [ATTR2] // elem 2
->    [SubATTR1]
->    [SubATTR2]
->  [ATTR2] // elem 3
->    [SubATTR1]
->    [SubATTR2]
->  [ATTR3]
->  [ATTR4]
->=20
-> Instead of wrapping into an array and then elements.
+I know.  47 chars.  Do you have something you'd prefer?  Maybe
+get_sk_user_data_checked()?
 
-Hmm, ok, I guess that works.
+It's a shame C doesn't allow default arguments.
 
->=20
-> As Michal pointed out a number of times - the wrapping ends up limiting=
-=20
-> the size of the array to U16_MAX,
+David
 
-True.
-
-> and I have a suspicion that most of
-> wrapping is done because we tend to parse into a pointer array, which
-> makes multi-attr a little tricky. But we shouldn't let one parsing
-> technique in a relatively uncommon language like C dictate the format :)
-
-:-)
-
-To be fair, for cases where today we use nla_for_each_nested() we could
-also invent an "nlmsg_for_each_attr_of_type()" macro:
-
-#define nlmsg_for_each_attr_of_type(type, pos, nlh, hdrlen, rem) \
-	nlmsg_for_each_attr(pos, nlh, hdrlen, rem)               \
-		if (pos->nla_type =3D=3D type)
-
-and then that's basically all you need?
-
-In the policy we'd declare it as a normal nested (not array), and I
-think that's it because today if you give the same attribute type twice,
-the last one wins in the normal parsing anyway (IIRC)...
-
-> I'm leaning heavily towards defining a subset of the YAML spec as=20
-> "the way to do things in new family" which will allow only one form=20
-> of arrays.
-
-Fair enough.
-
-johannes
