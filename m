@@ -2,111 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A56595A37
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CAB595A7A
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:44:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234541AbiHPLeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 07:34:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
+        id S234320AbiHPLoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 07:44:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234523AbiHPLdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:33:50 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C557C1C5;
-        Tue, 16 Aug 2022 03:55:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660647333; x=1692183333;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ydczOs/B4f5E5PAGhD2udvBxWaaSFQ2xVkQP9xvCjU8=;
-  b=oTQzoV7YDMSyipRcfysxVCwIl8eYAFhxbhN38G9QCUwVU3uvdQIleI3Y
-   kahM2iMEBPswwj0IV1VBo3vLipO+KGBwKQk/RzOk1LW3ddU+/zhIRYyaG
-   6gvqX25GasRvTci3lEtuPT4xwuEgZiL8wucqGTvfUMK+Nqbj8KKgVdCAG
-   sRzjlRJo4z3jisqf/Q2TTHc7/5qrjEUlE2MmSTUQZzczyOLnWPTYwpmzK
-   DEHibJwbYVuu5/hbktrOGBa6wuafzsPYk1uEvMBQaI2C8Eosd7X5Rjiat
-   +OPU6r6RUqtq004icNz/HguJ8K5MsofZEfpfRSrvXiFvauEsYsPI8IMQ6
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="169486516"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Aug 2022 03:55:32 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 16 Aug 2022 03:55:30 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 16 Aug 2022 03:55:24 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S234752AbiHPLnc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:43:32 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF8957EFFD;
+        Tue, 16 Aug 2022 04:14:49 -0700 (PDT)
+Received: from [192.168.1.138] ([37.4.248.80]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MRn0U-1nueZP19cQ-00TFzV; Tue, 16 Aug 2022 13:14:17 +0200
+Message-ID: <6b3bfb9d-1acf-8445-7181-d5e1ecf4745d@i2se.com>
+Date:   Tue, 16 Aug 2022 13:14:16 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] dt-bindings: vertexcom-mse102x: Update email address
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [patch net v3] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
-Date:   Tue, 16 Aug 2022 16:25:16 +0530
-Message-ID: <20220816105516.18350-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        stefan.wahren@chargebyte.com
+References: <20220815080626.9688-1-stefan.wahren@i2se.com>
+ <dc0c6c80-7af0-ee7c-2019-cdb6eb96c3f5@linaro.org>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <dc0c6c80-7af0-ee7c-2019-cdb6eb96c3f5@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:pOCX+GXX40Vx23BOr6iX00cbtkHmQb4Gvfasmt2qC21ZW4G58+w
+ OUQOm+gRo4IhrTcwOJZGR3umsgerofXZPk6ZWKr1MFlFt4oWzP6RJXrJIT3q9tJNsT39QID
+ hHXlpmomgGgOWp1vXTM1ydd4zW4qMixcUUNZvRUaktdP78s9kMMl+prWxg2VRql0Cnz6X3B
+ BWAB/ey/8GrII5SFmj6sg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:6Bp8FceLDiA=:TKH4b9l3eIspLqYDlpNJrA
+ ip21YeKrzwpEhZL+FArtwDM84BQUJvSNXkUtZVgNVpq7khIAjDCSOyjuNTgtz8kn/yk7lBw+t
+ ggxo6iR4vDikXcNDcK8+0AX6/bBqkJcCT11yigy5eOuQNuGJJ+IIVoCpk9ia23HENQrrLaK/G
+ c9lYVNQkUWx9X+lC6XkUDdQa8HN1g5AR8umc0Ib/H14v5mFcEZcz4YdfbtrnHzijyV7r4AT05
+ 4Jb5uyJcIAZj7qeOiyXUglccZul0cWrX8YjGw7rvxBj5/lNuZ8MuMa2TAPOIBRnsEOnv01ibD
+ h2qVu6dZG/npurs7qlakAPbWF8ugYAjAfxTo/zYZ+CIMStmxxwaml2b0wzUEDkbRZig8HMkbU
+ uI9FKfJy5B1iCHKmRq59Sw9Sd53Is3d4uun3PTES9j6Zn0PCVfRorwnmg5KELmUZ11lcEYnuP
+ F5JEibhM7+Z4KV3H5nQIHy6cmE3wMKcajUrv4l4YGWNh2b1XWQgDlQ7DdXpnxzRjK0MrqDP06
+ vJy/d+9i+0apnrQiKT2ImINBgDZLrfQR+acds2Ztdoka0Vl5OcB5ONXQS/XASlfJVd2y+wYCV
+ EIPlQ51FBwAUyYamtkpVvJcj8lIbLJEciG5HC2WzvTISbF01rApGSBcLdPH4/XRg3IvS4NFXb
+ l1sCLDoplAivise4Rbc7RmSGu5isUuFxHfHmRmbjvkwvQR7a0d2nxVzlpFIxDzxshl8V28Euf
+ Sb4lyEK3YQsOT0yHS7Oe/Fol0iysm0XWmuCX1IFeEeOTZa2xJK9z0AcQ+7U=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the ksz9477_fdb_dump function it reads the ALU control register and
-exit from the timeout loop if there is valid entry or search is
-complete. After exiting the loop, it reads the alu entry and report to
-the user space irrespective of entry is valid. It works till the valid
-entry. If the loop exited when search is complete, it reads the alu
-table. The table returns all ones and it is reported to user space. So
-bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
-To fix it, after exiting the loop the entry is reported only if it is
-valid one.
+Hi Krzystof,
 
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
-changes in v3
-- changed the subject from net-next to net
+Am 16.08.22 um 12:24 schrieb Krzysztof Kozlowski:
+> On 15/08/2022 11:06, Stefan Wahren wrote:
+>> in-tech smart charging is now chargebyte. So update the email address
+>> accordingly.
+>>
+>> Signed-off-by: Stefan Wahren <stefan.wahren@i2se.com>
+> Yet you used third email address... which is fine, just a bit confusing.
+> Since in-tech.com still works and you might be (or not) different
+> Stefan, it's difficult to judge...
 
-changes in v2
-- changed the fixes commit id
-- reduced the indentation level by using ! and continue statement
+sorry about the confusion. I'm that person. Unfortuntely the other 
+accounts are using a M$ Exchange server, so i switched to the i2se 
+account for this setup before sending broken patches ...
 
- drivers/net/dsa/microchip/ksz9477.c | 3 +++
- 1 file changed, 3 insertions(+)
+in-tech was the parent company, but the accounts will unavailable in the 
+future.
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 4b14d80d27ed..e4f446db0ca1 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -613,6 +613,9 @@ int ksz9477_fdb_dump(struct ksz_device *dev, int port,
- 			goto exit;
- 		}
- 
-+		if (!(ksz_data & ALU_VALID))
-+			continue;
-+
- 		/* read ALU table */
- 		ksz9477_read_table(dev, alu_table);
- 
+Best regards
 
-base-commit: 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
--- 
-2.36.1
-
+>
+> Best regards,
+> Krzysztof
