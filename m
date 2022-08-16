@@ -2,66 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAE8F5960A6
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A10815960CC
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 19:05:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236655AbiHPQ4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 12:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57652 "EHLO
+        id S236769AbiHPRFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 13:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiHPQ4C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:56:02 -0400
-X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 16 Aug 2022 09:56:01 PDT
-Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D90F7C52E;
-        Tue, 16 Aug 2022 09:56:01 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1660668017; bh=YXaNHGMYKcjnJgddXdsTHTKJZxjmymYUBGBhAxB3I4o=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=DXfoS0miGmxKBA8B2KiiSBadXfu6qRGg+xljltxxTrQPrbTHAakuf4QR+TQvkn7vB
-         Y2GLQQHjCapNS7IUT9wfOkb0I/4RHmnuFIKaETruLe+ryJNv5WrDcHS47PZtIoaXq4
-         DOdDbdrukydiRLSsiBPGOzKxPIEWhzedQsLvG/uUFzgZhj5Y+EuUs9Pc9FIQQVTvPS
-         hrag/niyLG3+nXfzk7mHGo01m+3qpgYSp0oA/uIMbRnVAaW/a+tDwnM3rU1rKhypNM
-         JMnhCGlo2xPbAE91QARGMYQv1iRbkswK/Ympepn+JGj8x+F9exI9nsGEnTprtKn3Zr
-         oETRD+T/vUMwg==
-To:     Jilin Yuan <yuanjilin@cdjrlc.com>, kvalo@kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Jilin Yuan <yuanjilin@cdjrlc.com>
-Subject: Re: [PATCH] wifi: ath9k: fix repeated words in comments
-In-Reply-To: <87y1vouoqs.fsf@toke.dk>
-References: <20220709123724.46525-1-yuanjilin@cdjrlc.com>
- <87y1vouoqs.fsf@toke.dk>
-Date:   Tue, 16 Aug 2022 18:40:17 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87v8qsuopa.fsf@toke.dk>
+        with ESMTP id S236765AbiHPRFm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 13:05:42 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F9D72ECC;
+        Tue, 16 Aug 2022 10:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660669542; x=1692205542;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kea+2lE3x+13PZn61zhLys5N6n4jB/mv9M7i/1Ogtkc=;
+  b=pDlvtZ+soDpTsHkmEoBW1BMJFxuk1YaoEv3ViKxKYg79GykXHnXbjESS
+   /RqQVDJl51bVaz6ika0tMA9mejRPjC/OWa8P8/ey8H0Ca0dQGAk+HimFK
+   YIWU+pkAwfUjWUHTEhH4U7Tlwq7ghKa/bUme+5yao+S/QU5NTuM7ddq5u
+   U=;
+X-IronPort-AV: E=Sophos;i="5.93,241,1654560000"; 
+   d="scan'208";a="119917450"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 16:59:02 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1d-10222bbc.us-east-1.amazon.com (Postfix) with ESMTPS id 7FDC31A20C9;
+        Tue, 16 Aug 2022 16:59:00 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Tue, 16 Aug 2022 16:58:58 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.55) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Tue, 16 Aug 2022 16:58:56 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <kuba@kernel.org>
+CC:     <bpf@vger.kernel.org>, <daniel@iogearbox.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v1 net 00/15] sysctl: Fix data-races around net.core.XXX (Round 1)
+Date:   Tue, 16 Aug 2022 09:58:48 -0700
+Message-ID: <20220816165848.97512-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220816092703.7fe8cbb6@kernel.org>
+References: <20220816092703.7fe8cbb6@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.55]
+X-ClientProxiedBy: EX13D07UWA003.ant.amazon.com (10.43.160.35) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
+From:   Jakub Kicinski <kuba@kernel.org>
+Date:   Tue, 16 Aug 2022 09:27:03 -0700
+> On Mon, 15 Aug 2022 22:23:32 -0700 Kuniyuki Iwashima wrote:
+> >   bpf: Fix data-races around bpf_jit_enable.
+> >   bpf: Fix data-races around bpf_jit_harden.
+> >   bpf: Fix data-races around bpf_jit_kallsyms.
+> >   bpf: Fix a data-race around bpf_jit_limit.
+> 
+> The BPF stuff needs to go via the BPF tree, or get an ack from the BPF
+> maintainers. I see Daniel is CCed on some of the patches but not all.
 
-> Jilin Yuan <yuanjilin@cdjrlc.com> writes:
->
->>  Delete the redundant word 'the'.
->>  Delete the redundant word 'to'.
->>
->> Signed-off-by: Jilin Yuan <yuanjilin@cdjrlc.com>
->
-> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk>
-
-However, the patch does not apply cleanly to the ath-next tree. Please
-fix that and resubmit, retaining my ACK...
-
--Toke
+Sorry, I just added the author in CC.
+Thanks for CCing bpf mailing list, I'll wait an ACK from them.
