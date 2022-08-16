@@ -2,159 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8202E595EAA
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 16:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1326B595ED0
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 17:12:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236075AbiHPO7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 10:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        id S235736AbiHPPLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 11:11:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236078AbiHPO7W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 10:59:22 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 927E37CB7C
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 07:58:47 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id tl27so19450683ejc.1
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 07:58:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=BPh1t9fWrmqzEUf/7b/NYnDQ+7v6vHLNHxahZaSKaTw=;
-        b=INazlYm/jw0oWdvcSNQhGmogMFnfwiKplhqFF9RJkJNevzuIYEABBvzSPaOB9gfe0q
-         FB5jZMueXyGUVdPv6JwRVzuOimwI+mx9fYPdMkKuXS2+son7bEaceL15hzFHrx+H111b
-         /a51puXoYx4ObvkWz0xusAdQy8nLl/E7BiKQFBsOdt6cDZ4bNu0uDBrXXO2IDwhwRAc9
-         QQwkruGxZ5Elqae7goaIoDlVwfsxVPpxdzgtEXKY4ygpkMkgrfn367MYHwa4b9btphih
-         Hgc2XKGc1crinK0C+6BsiBG2ukdF1oS/5yt+07NqPip/C/K5PmB7WNlnfTDjYMZEEy3x
-         dSQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=BPh1t9fWrmqzEUf/7b/NYnDQ+7v6vHLNHxahZaSKaTw=;
-        b=uugDiPOdmuhboQb5zGGzp8KmFPZqUJs+JIVGsRi6a8nX4KnzL6v2767smt3jZJBq50
-         I/vmxtzm3h19QjIzVb/nI5N29wxNqD87fJXbOuwJ93R0OgnmdI3HVhhoZW/kCUFu+1pD
-         ZgXpUK4rmHpFf5adDLJvhzagdyXntT7DZT8C6umKwmFI6ZJVUFsaR36RxBrevxTqDbJY
-         6xrZn7atySL3cFXUbjg1ArCObosu5LKx+QH1egTp76HPRIGDI2i5jGXgS6U3V2At5XZY
-         bNBWPXCZrIphtJTr8AN0dz4/AblntJ9qnkly+21DVbzTBnFjfAkFgBk/It5gejmKTKXH
-         OwUg==
-X-Gm-Message-State: ACgBeo0Sc+NzJZ3zkG8YcWockEo8Sxg5RPcqudkf7RVLCvsQbF7OR2WY
-        9q//jHqP5zVkVGkePuyAGeJ5QIKJMus8t2a9
-X-Google-Smtp-Source: AA6agR5MSYp2DpOZNwt29NqrR4lRn7tN/2zGhtyQeBtuGqnn2kRQ2CT1fbeFlCNveK4q1VooQOmbwA==
-X-Received: by 2002:a17:906:8cb0:b0:739:4c35:75d8 with SMTP id qr48-20020a1709068cb000b007394c3575d8mr1184170ejc.711.1660661925759;
-        Tue, 16 Aug 2022 07:58:45 -0700 (PDT)
-Received: from debil.. (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id n6-20020aa7c686000000b0043d34ab7ad6sm8655990edq.49.2022.08.16.07.58.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 07:58:45 -0700 (PDT)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        kuba@kernel.org, Nikolay Aleksandrov <razor@blackwall.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH ipsec] xfrm: policy: fix md_dst skb->dev xmit null pointer dereference
-Date:   Tue, 16 Aug 2022 17:58:38 +0300
-Message-Id: <20220816145838.13951-1-razor@blackwall.org>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S235053AbiHPPLn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 11:11:43 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D980B1408A;
+        Tue, 16 Aug 2022 08:11:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:To:From:Subject:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=AnHbybbrXeCL0DxbE8ki5M5WAm/DsTNQ38HW5TopKkA=;
+        t=1660662700; x=1661872300; b=X3t6t0tv/ISzVUkt9rX9LMgyHDW7Uzp+0QEIu1Ih3ZtLTLT
+        UrC/AWjztf6aGBeWly8+SlkzvI98dv1KZ/yx/x/ha3veaMgf4Oy/0lXSuql2LWsQdDj1imsvbdMgZ
+        1xjeijBo4OZci3/CxeDG9y12dgI6Fgnof4GdNR+kvYfk8P8LWtqvO/G7TrqW+38N6n874Vd9UeWes
+        YApF5jsTNXy4HP0sOBBAZGuapXO165cq0otPOg5GDHBS3X6+ngkx2TNZWiijHJTTOwUbZWBQV5ApV
+        FkorQiQGiNSwbq7VqH4KT7+TVhS2xqfFhXBNBEnerJhFqbM/xOWTAWaKFGaoMycg==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oNyE9-009ZK8-2r;
+        Tue, 16 Aug 2022 17:11:33 +0200
+Message-ID: <6a7b0bc82647440a9036a8e637807da618552cc5.camel@sipsolutions.net>
+Subject: Re: [syzbot] upstream boot error: general protection fault in
+ nl80211_put_iface_combinations
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     syzbot <syzbot+684d4ca200fda0b2141e@syzkaller.appspotmail.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
+Date:   Tue, 16 Aug 2022 17:11:32 +0200
+In-Reply-To: <00000000000033169005e657a852@google.com>
+References: <00000000000033169005e657a852@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SORTED_RECIPS,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we try to transmit an skb with metadata_dst attached (i.e. skb->dev
-== NULL) through xfrm interface we can hit a null pointer dereference[1]
-in xfrmi_xmit2() -> xfrm_lookup_with_ifid() due to the check for a
-loopback skb device when there's no policy which dereferences skb->dev
-unconditionally. Not having skb->dev can be interepreted as it not being
-a loopback device, so just add a check for a null skb->dev.
+Hmm.
 
-With this fix xfrm interface's Tx error counters go up as usual.
+> HEAD commit:    568035b01cfb Linux 6.0-rc1
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=3D145d8a4708000=
+0
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=3D126b81cc3ce4f=
+07e
+>=20
 
-[1] net-next calltrace captured via netconsole:
-  BUG: kernel NULL pointer dereference, address: 00000000000000c0
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP
-  CPU: 1 PID: 7231 Comm: ping Kdump: loaded Not tainted 5.19.0+ #24
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.0-1.fc36 04/01/2014
-  RIP: 0010:xfrm_lookup_with_ifid+0x5eb/0xa60
-  Code: 8d 74 24 38 e8 26 a4 37 00 48 89 c1 e9 12 fc ff ff 49 63 ed 41 83 fd be 0f 85 be 01 00 00 41 be ff ff ff ff 45 31 ed 48 8b 03 <f6> 80 c0 00 00 00 08 75 0f 41 80 bc 24 19 0d 00 00 01 0f 84 1e 02
-  RSP: 0018:ffffb0db82c679f0 EFLAGS: 00010246
-  RAX: 0000000000000000 RBX: ffffd0db7fcad430 RCX: ffffb0db82c67a10
-  RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffb0db82c67a80
-  RBP: ffffb0db82c67a80 R08: ffffb0db82c67a14 R09: 0000000000000000
-  R10: 0000000000000000 R11: ffff8fa449667dc8 R12: ffffffff966db880
-  R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-  FS:  00007ff35c83f000(0000) GS:ffff8fa478480000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00000000000000c0 CR3: 000000001ebb7000 CR4: 0000000000350ee0
-  Call Trace:
-   <TASK>
-   xfrmi_xmit+0xde/0x460
-   ? tcf_bpf_act+0x13d/0x2a0
-   dev_hard_start_xmit+0x72/0x1e0
-   __dev_queue_xmit+0x251/0xd30
-   ip_finish_output2+0x140/0x550
-   ip_push_pending_frames+0x56/0x80
-   raw_sendmsg+0x663/0x10a0
-   ? try_charge_memcg+0x3fd/0x7a0
-   ? __mod_memcg_lruvec_state+0x93/0x110
-   ? sock_sendmsg+0x30/0x40
-   sock_sendmsg+0x30/0x40
-   __sys_sendto+0xeb/0x130
-   ? handle_mm_fault+0xae/0x280
-   ? do_user_addr_fault+0x1e7/0x680
-   ? kvm_read_and_reset_apf_flags+0x3b/0x50
-   __x64_sys_sendto+0x20/0x30
-   do_syscall_64+0x34/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-  RIP: 0033:0x7ff35cac1366
-  Code: eb 0b 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 72 c3 90 55 48 83 ec 30 44 89 4c 24 2c 4c 89
-  RSP: 002b:00007fff738e4028 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-  RAX: ffffffffffffffda RBX: 00007fff738e57b0 RCX: 00007ff35cac1366
-  RDX: 0000000000000040 RSI: 0000557164e4b450 RDI: 0000000000000003
-  RBP: 0000557164e4b450 R08: 00007fff738e7a2c R09: 0000000000000010
-  R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000040
-  R13: 00007fff738e5770 R14: 00007fff738e4030 R15: 0000001d00000001
-   </TASK>
-  Modules linked in: netconsole veth br_netfilter bridge bonding virtio_net [last unloaded: netconsole]
-  CR2: 00000000000000c0
+I can't reproduce this, and I don't see anything obviously wrong with
+the code there in hwsim either.
 
-CC: Steffen Klassert <steffen.klassert@secunet.com>
-CC: Daniel Borkmann <daniel@iogearbox.net>
-Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
----
-I wasn't sure if the target tree should be -net or -ipsec. The patch
-applies to both cleanly in case it should go through -net.
+Similarly with
+https://syzkaller.appspot.com/bug?extid=3D655209e079e67502f2da
 
-To test the fix I attached a very simple egress bpf program to the xfrm
-interface which just adds an empty md_dst to all transmitted skbs.
+Anyone have any ideas what to do next?
 
- net/xfrm/xfrm_policy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 4f8bbb825abc..cc6ab79609e2 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3162,7 +3162,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
- 	return dst;
- 
- nopol:
--	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
-+	if ((!dst_orig->dev || !(dst_orig->dev->flags & IFF_LOOPBACK)) &&
- 	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 		err = -EPERM;
- 		goto error;
--- 
-2.36.1
-
+johannes
