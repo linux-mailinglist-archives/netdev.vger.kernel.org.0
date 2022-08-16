@@ -2,52 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5471D595A16
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:28:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E72C595A18
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231130AbiHPL14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 07:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
+        id S233160AbiHPL23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 07:28:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234430AbiHPL0R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:26:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81267103608
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:41:28 -0700 (PDT)
+        with ESMTP id S234125AbiHPL2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:28:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADAA2CDF7;
+        Tue, 16 Aug 2022 03:43:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BCB1560FB1
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 10:41:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACA9AC433D7;
-        Tue, 16 Aug 2022 10:41:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03D99B8165D;
+        Tue, 16 Aug 2022 10:43:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EA3C433C1;
+        Tue, 16 Aug 2022 10:43:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660646487;
-        bh=LqRdpGHGQ3aFSJ3gl1hU/HgiVY2tr2Y1aC1u2Ndy4hk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nC4XfTARSd0fmztspYyXSlYcDrL02Fk4M1EGwavuP1877axxRvdgIf5uCJ1nXu2Kn
-         wNPUR0910Mr0gyddiIbB/BGyAozdxQGeiR9bxRAgrZVdY++H3qoaPdLXH6+NcWtM0U
-         kn6cSzCnYZbCGEYN9YAsRwqi79T5SZ0OdoGeG29FNoZkRc8gsIFwl8SYwMTWGZ+gPu
-         5jQjqBRpzj2jjDOUWGc+252zZ3ZReVpyb9Vc6GA/JkWcWgn2+f4maGdVN9jXRu4bB4
-         epK3NmpbYGNfF6h4vXwtGjQDm7cbuN24hZCaMSn4CvqZeIMm1GytsJdDP/0QSdzSNf
-         9ytbsr+DrjkeA==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>
-Subject: [PATCH xfrm-next 26/26] net/mlx5e: Open mlx5 driver to accept IPsec full offload
-Date:   Tue, 16 Aug 2022 13:38:14 +0300
-Message-Id: <4915aeee7df79e5c8a61195ff011a9a64faa7e19.1660641154.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <cover.1660641154.git.leonro@nvidia.com>
-References: <cover.1660641154.git.leonro@nvidia.com>
+        s=k20201202; t=1660646614;
+        bh=yqe/EMQmD3VLnGHghypui0+k7E1d1JAMjbBdNpJp/Ac=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=WmDtk6Cf5S1czeeVK0DAKEntmyWn/ucxbgRUOJ7EvCnJ+hlnMmXKs7d2LzLusOWjG
+         P9BZUnyFCygTSaBGyI+/ZMRsimDcw4lKZrmIl00p7YDKYDDZRS07+VkGYYjkDQNVZE
+         /NHOq/5udUF8/K0YgcGNQGgSV+Ea36YQkWf7qRPhQgneFDWP9m6nB5Vly8RrTfkWTj
+         Gx54EcrUu0WWbaHKs8uubbJDflr8MXwUMFtLvri3hNPrkYfanr9K/Ae48SXOeGfelg
+         0y7pVw8dF2stIh5VXYLv1fnS+4FQo+ZvQ2DKZC+sGfyc7TYLSt7uY6amkS3OtqU5wE
+         xT3sWq5r6idFg==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 0ED1D55F5FC; Tue, 16 Aug 2022 12:43:32 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Florian Westphal <fw@strlen.de>
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
+In-Reply-To: <CAADnVQLB1SQoYAYEzU_VuJ=q3azeyhBiK-NkU5OZC7rrumi0xQ@mail.gmail.com>
+References: <CAADnVQLB1SQoYAYEzU_VuJ=q3azeyhBiK-NkU5OZC7rrumi0xQ@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Tue, 16 Aug 2022 12:43:32 +0200
+Message-ID: <87v8qswjsb.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,89 +64,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-Enable configuration of IPsec full offload through XFRM state add
-interface together with moving specific to IPsec full mode limitations
-to specific switch-case section.
+> On Mon, Aug 15, 2022 at 3:40 PM Florian Westphal <fw@strlen.de> wrote:
+>>
+>> Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org> wrote:
+>> > > Support direct writes to nf_conn:mark from TC and XDP prog types. Th=
+is
+>> > > is useful when applications want to store per-connection metadata. T=
+his
+>> > > is also particularly useful for applications that run both bpf and
+>> > > iptables/nftables because the latter can trivially access this metad=
+ata.
+>> > >
+>> > > One example use case would be if a bpf prog is responsible for advan=
+ced
+>> > > packet classification and iptables/nftables is later used for routing
+>> > > due to pre-existing/legacy code.
+>> > >
+>> > > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+>> >
+>> > Didn't we agree the last time around that all field access should be
+>> > using helper kfuncs instead of allowing direct writes to struct nf_con=
+n?
+>>
+>> I don't see why ct->mark needs special handling.
+>>
+>> It might be possible we need to change accesses on nf/tc side to use
+>> READ/WRITE_ONCE though.
+>
+> +1
+> I don't think we need to have a hard rule.
+> If fields is safe to access directly than it's faster
+> to let bpf prog read/write it.
+> There are no backward compat concerns. If conntrack side decides
+> to make that field special we can disallow direct writes in
+> the same kernel version.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../mellanox/mlx5/core/en_accel/ipsec.c       | 46 +++++++++++++++----
- 1 file changed, 36 insertions(+), 10 deletions(-)
+Right, I was under the impression we wanted all fields to be wrapper by
+helpers so that the struct owner could change their semantics without
+affecting users (and solve the performance issue by figuring out a
+generic way to inline those helpers). I guess there could also be an API
+consistency argument for doing this.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 6017aaabaabd..b517d105cb55 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -219,11 +219,6 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
- 		netdev_info(netdev, "Only IPv4/6 xfrm states may be offloaded\n");
- 		return -EINVAL;
- 	}
--	if (x->props.mode != XFRM_MODE_TRANSPORT &&
--	    x->props.mode != XFRM_MODE_TUNNEL) {
--		dev_info(&netdev->dev, "Only transport and tunnel xfrm states may be offloaded\n");
--		return -EINVAL;
--	}
- 	if (x->id.proto != IPPROTO_ESP) {
- 		netdev_info(netdev, "Only ESP xfrm state may be offloaded\n");
- 		return -EINVAL;
-@@ -257,11 +252,32 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
- 		netdev_info(netdev, "Cannot offload xfrm states with geniv other than seqiv\n");
- 		return -EINVAL;
- 	}
--	if (x->xso.type != XFRM_DEV_OFFLOAD_CRYPTO) {
--		netdev_info(netdev, "Unsupported xfrm offload type\n");
--		return -EINVAL;
--	}
--	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL) {
-+	switch (x->xso.type) {
-+	case XFRM_DEV_OFFLOAD_CRYPTO:
-+		if (!(mlx5_ipsec_device_caps(priv->mdev) &
-+		      MLX5_IPSEC_CAP_CRYPTO)) {
-+			netdev_info(netdev, "Crypto offload is not supported\n");
-+			return -EINVAL;
-+		}
-+
-+		if (x->props.mode != XFRM_MODE_TRANSPORT &&
-+		    x->props.mode != XFRM_MODE_TUNNEL) {
-+			netdev_info(netdev, "Only transport and tunnel xfrm states may be offloaded\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	case XFRM_DEV_OFFLOAD_FULL:
-+		if (!(mlx5_ipsec_device_caps(priv->mdev) &
-+		      MLX5_IPSEC_CAP_FULL_OFFLOAD)) {
-+			netdev_info(netdev, "Full offload is not supported\n");
-+			return -EINVAL;
-+		}
-+
-+		if (x->props.mode != XFRM_MODE_TRANSPORT) {
-+			netdev_info(netdev, "Only transport xfrm states may be offloaded in full mode\n");
-+			return -EINVAL;
-+		}
-+
- 		if (x->replay_esn && x->replay_esn->replay_window != 32 &&
- 		    x->replay_esn->replay_window != 64 &&
- 		    x->replay_esn->replay_window != 128 &&
-@@ -271,6 +287,16 @@ static inline int mlx5e_xfrm_validate_state(struct xfrm_state *x)
- 				    x->replay_esn->replay_window);
- 			return -EINVAL;
- 		}
-+
-+		if (!x->props.reqid) {
-+			netdev_info(netdev, "Cannot ofload without reqid\n");
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		netdev_info(netdev, "Unsupported xfrm offload type %d\n",
-+			    x->xso.type);
-+		return -EINVAL;
- 	}
- 	return 0;
- }
--- 
-2.37.2
+However, I don't have a strong opinion on this, so if y'all prefer
+keeping these as direct field writes, that's OK with me.
 
+> These accesses, just like kfuncs, are unstable.
+
+Well, it will be interesting to see how that plays out the first time
+an application relying on one of these breaks on a kernel upgrade :)
+
+-Toke
