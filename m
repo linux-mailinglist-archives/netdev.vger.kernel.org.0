@@ -2,120 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B15625965BA
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 01:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 257405965DA
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 01:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236814AbiHPXAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 19:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59698 "EHLO
+        id S237280AbiHPXIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 19:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235959AbiHPXA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 19:00:28 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6086577EA2
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 16:00:27 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-32a09b909f6so189796927b3.0
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 16:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=ia+gWUguoxZfAy1Dg2ZzsdLR8URymW2ftEEeLv7mHds=;
-        b=Yd//NI6tGwsKJEtX6z8PRhifk+LuQiS1aOojM+MFA28Lu8+R5bhMsUQ6ynIAkNZrze
-         8vyihr/nj/DOBXHTpDmnvCQvjYx6VSIZEH5ptw08LL2k7akIFrov9i68o0LNb/DVMF33
-         I6R4HK28J6+SKN6RlbyxyG1U9sejG6tOZVHgYZ4zjQOjWTkSN04v4s3XVQZf6ObCcRJ+
-         SDoYrq/sWZLEHUgrsh7Mwm1dJaFYvFFHIoq//fEip6zwL+ckjoLEhnn9RoxtjkemSZuO
-         T9A2lm5sZDGXZcgIhlMODQxOm1mWr71ql/5sgS6Ly4ajPBuecTzbM99Sgdb5Yt7pw7jr
-         v0AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=ia+gWUguoxZfAy1Dg2ZzsdLR8URymW2ftEEeLv7mHds=;
-        b=hullCqb6wMxo6v0wHq8yqiiesrweMLSArwEeXdNoMNMDz6rDhuD4EQdBIHu67wizUC
-         8fK/DPeRM/KBujpOO55mjCfG7d7oelqPthxt/9HBW+k5pXhPMlsZKS+JvSCSk+/WAd9A
-         z+8vcJKbBT/WRwUhgGQOI4I+3gPkg3UvM2gA1D+aWefN+7Ic0NQawzI7IkiEZCXQ0Dol
-         4MZQZxzP6RueRWhm5qGQoCJDdWmlX0atGM/GXSDSysmT2YVN96ftpmxBXIQ6oag878Ld
-         8y7GGcI/0j1+dKB54/x5MaWWpseQtK86v3xP8jdvl8eso2BkODSqD5zA1/XA872SSnIq
-         nQqg==
-X-Gm-Message-State: ACgBeo1D86iMHzhlDmYUfkfC62rHWifHL2N5bi92auY4aSGHVy/pGcHn
-        JkKbUcJe+1fRuEq8qWc/S3Gy+rl/qc1FQzlQfF/32g==
-X-Google-Smtp-Source: AA6agR7i3ics6rMa6+rNF6jz5fcfliKyCvfj8cEvE52wQyRLeSajtUCH09+uQDf4N+H9qe9ZFH8JjuCnjEKDRfxG/Lc=
-X-Received: by 2002:a81:4806:0:b0:32f:f84c:f30a with SMTP id
- v6-20020a814806000000b0032ff84cf30amr11990225ywa.107.1660690826444; Tue, 16
- Aug 2022 16:00:26 -0700 (PDT)
+        with ESMTP id S230378AbiHPXIC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 19:08:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F04923C3;
+        Tue, 16 Aug 2022 16:08:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6371FCE1753;
+        Tue, 16 Aug 2022 23:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3497C433D6;
+        Tue, 16 Aug 2022 23:07:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660691277;
+        bh=3I4HbxQ36qW8/prxIbqH7YvR6fuZU21LN4L1X2Kb2sg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e5llqCh7O8nBtOrMA9+TzyfWvm5CaeM2Ep3MfsKwJ5uVHa92pouvc2X/aQBApBpLG
+         vPYhCwKdrOpYSE6q829srFpfR+EUJ5lUYYWle4diR4DkdlCCT18S6Gvu2/dRdXwsMH
+         Y4dNp4hYnDS5WEknTTuzqJINTsH6AN8zGVveGIc7x3EKcsA7F4Z/uqXKPAParFna7S
+         YTRGwwWImhnimSz5JuU1lbplIB2h0W7mnOIXnB2g6w0U+WIXDJMBWzJQuTUV3glnpW
+         wP8SKGtI8D00muBxE6+seIgcyZdNHf7KKQZ4VeAca8/i8HI7e+1TaKkMVk63A7eC6C
+         5o1O21Fn6yT6Q==
+Date:   Tue, 16 Aug 2022 16:07:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bobby Eshleman <bobbyeshleman@gmail.com>
+Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4?= =?UTF-8?B?aWxhbmQtSsO4cmdlbnNlbg==?= 
+        <toke@toke.dk>
+Subject: Re: [PATCH 3/6] vsock: add netdev to vhost/virtio vsock
+Message-ID: <20220816160755.7eb11d2e@kernel.org>
+In-Reply-To: <YvtAktdB09tM0Ykr@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+        <5a93c5aad99d79f028d349cb7e3c128c65d5d7e2.1660362668.git.bobby.eshleman@bytedance.com>
+        <20220816123701-mutt-send-email-mst@kernel.org>
+        <20220816110717.5422e976@kernel.org>
+        <YvtAktdB09tM0Ykr@bullseye>
 MIME-Version: 1.0
-References: <20220816214945.742924-1-haoluo@google.com> <CAEf4Bza1SMFvzofz4RkBF=pByFHp+Z1v16Z+TMAQZ6rD2m9Lxg@mail.gmail.com>
- <CA+khW7hHGL1DAMSOjbJSj21wJYY=j4VrRJcFB1zv52Db20_MGA@mail.gmail.com> <CAEf4BzbBOrVU+BWySMk_v3w6019+5VpNXZY03JpmiwoQPnV1yA@mail.gmail.com>
-In-Reply-To: <CAEf4BzbBOrVU+BWySMk_v3w6019+5VpNXZY03JpmiwoQPnV1yA@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Tue, 16 Aug 2022 16:00:15 -0700
-Message-ID: <CA+khW7g41jBCB3ePKpTgTC4iuvpWw7gp+272UWSdT5uSC2tG-A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: allow disabling auto attach
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 3:55 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, Aug 16, 2022 at 3:16 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > On Tue, Aug 16, 2022 at 3:01 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Tue, Aug 16, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
-> > > >
-> > > > Add libbpf APIs for disabling auto-attach for individual functions.
-> > > > This is motivated by the use case of cgroup iter [1]. Some iter
-> > > > types require their parameters to be non-zero, therefore applying
-> > > > auto-attach on them will fail. With these two new APIs, Users who
-> > > > want to use auto-attach and these types of iters can disable
-> > > > auto-attach for them and perform manual attach.
-> > > >
-> > > > [1] https://lore.kernel.org/bpf/CAEf4BzZ+a2uDo_t6kGBziqdz--m2gh2_EUwkGLDtMd65uwxUjA@mail.gmail.com/
-> > > >
-> > > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > > ---
-[...]
-> > > > diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-> > > > index 61493c4cddac..88a1ac34b12a 100644
-> > > > --- a/tools/lib/bpf/libbpf.h
-> > > > +++ b/tools/lib/bpf/libbpf.h
-> > > > @@ -260,6 +260,8 @@ LIBBPF_API const char *bpf_program__name(const struct bpf_program *prog);
-> > > >  LIBBPF_API const char *bpf_program__section_name(const struct bpf_program *prog);
-> > > >  LIBBPF_API bool bpf_program__autoload(const struct bpf_program *prog);
-> > > >  LIBBPF_API int bpf_program__set_autoload(struct bpf_program *prog, bool autoload);
-> > > > +LIBBPF_API bool bpf_program__autoattach(const struct bpf_program *prog);
-> > > > +LIBBPF_API void bpf_program__set_autoattach(struct bpf_program *prog, bool autoattach);
-> > >
-> > > please add these APIs to libbpf.map as well
-> > >
-> >
-> > Ok. Which section? LIBBPF_1.0.0? Do the items in each section have a
-> > particular order?
->
-> Yes, 1.0.0 section. All the functions are sorted alphabetically.
->
+On Tue, 16 Aug 2022 07:02:33 +0000 Bobby Eshleman wrote:
+> > From a cursory look (and Documentation/ would be nice..) it feels
+> > very wrong to me. Do you know of any uses of a netdev which would 
+> > be semantically similar to what you're doing? Treating netdevs as
+> > buildings blocks for arbitrary message passing solutions is something 
+> > I dislike quite strongly.  
+> 
+> The big difference between vsock and "arbitrary message passing" is that
+> vsock is actually constrained by the virtio device that backs it (made
+> up of virtqueues and the underlying protocol). That virtqueue pair is
+> acting like the queues on a physical NIC, so it actually makes sense to
+> manage the queuing of vsock's device like we would manage the queueing
+> of a real device.
+> 
+> Still, I concede that ignoring the netdev state is a probably bad idea.
+> 
+> That said, I also think that using packet scheduling in vsock is a good
+> idea, and that ideally we can reuse Linux's already robust library of
+> packet scheduling algorithms by introducing qdisc somehow.
 
-Thanks for confirming. :)
+We've been burnt in the past by people doing the "let me just pick
+these useful pieces out of netdev" thing. Makes life hard both for
+maintainers and users trying to make sense of the interfaces.
+
+What comes to mind if you're just after queuing is that we already
+bastardized the CoDel implementation (include/net/codel_impl.h).
+If CoDel is good enough for you maybe that's the easiest way?
+Although I suspect that you're after fairness not early drops.
+Wireless folks use CoDel as a second layer queuing. (CC: Toke)
+
+> > Could you recommend where I can learn more about vsocks?  
+> 
+> I think the spec is probably the best place to start[1].
+> 
+> [1]: https://docs.oasis-open.org/virtio/virtio/v1.2/virtio-v1.2.html
+
+Eh, I was hoping it was a side channel of an existing virtio_net 
+which is not the case. Given the zero-config requirement IDK if 
+we'll be able to fit this into netdev semantics :(
