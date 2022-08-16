@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1045B59641A
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:02:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99B8659643D
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:10:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235650AbiHPVCc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57400 "EHLO
+        id S237142AbiHPVKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 17:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233785AbiHPVCa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:02:30 -0400
-Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC8EB754A2;
-        Tue, 16 Aug 2022 14:02:27 -0700 (PDT)
-Received: by mail-io1-f48.google.com with SMTP id p184so5862880iod.6;
-        Tue, 16 Aug 2022 14:02:27 -0700 (PDT)
+        with ESMTP id S229524AbiHPVKC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:10:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E277E013
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:10:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660684200;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0xae14lVeh2kNhNnwg1cZQHDZVItFs4GvsbtmRqUK8w=;
+        b=Hoyd0dBWhbq7nhURAv6sFmQaDmCkcvrgGysin13/l1GnwjSyL//InFa5NeMqySmm9Kxu0K
+        iXqBUrrVVaYe61NhbJmQN0B0VwlBJSXj2V4FUaUIRPCqVCE9htaKgP8SMLZfMS04stkCWr
+        zM4I2rpeMIjyqpZGJrQNiRrjhq/BC+Y=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-517-6NRk65srP6q1jW18Na5Bqg-1; Tue, 16 Aug 2022 17:09:59 -0400
+X-MC-Unique: 6NRk65srP6q1jW18Na5Bqg-1
+Received: by mail-wm1-f69.google.com with SMTP id p19-20020a05600c1d9300b003a5c3141365so8183652wms.9
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:09:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc;
-        bh=l4egLvTsPGkFbTjp++Gcne3a5KH6iCWzI7mVj0VbmgI=;
-        b=OWSedXF4AOIGYO4YRW1ELMFaUvoY9gz/C6A8OM8DK8DP0RY5JlsGHv/lfU+Zp67dvv
-         LpEv7EVkJaUj7sVYzAvbd8EG7YLZWKueXsj9UvPgXtFZcwvYY4Oql48VlNYMRtColfBN
-         ZWuyzn2eb994K/Z9CLo0IHuuKA+523wEeq8I7LlaLkqL5AksGlNqbJhwR/TNsRyMOCOI
-         vs8rcVVLftnmlJJzB7Hk/u8eoNDbgUTCGEagwoTC49v8crw1UWbrzjpz3BM2EK9FyBCS
-         Yd72xtqgLN0NX/lscAe8rZf43W6ycdDTd114vA1mztmrxAPRKF2XJd1WSWG8XjkS6zUN
-         ZfyQ==
-X-Gm-Message-State: ACgBeo1crPgaZ7hR5fExzNz+JnfXAddusTtRs9MNE9pQO/T1c3PXQbOf
-        S+J3X2b47I0MGxOEdY4cDQ==
-X-Google-Smtp-Source: AA6agR4QVx4f7/PzkKYp7FkfrjXZT1iNJ6NCK9UlU9Kl3LCt/4FJGHK0mmR0kRChYXNr76/pRm4dfQ==
-X-Received: by 2002:a05:6638:25d6:b0:342:916c:d59a with SMTP id u22-20020a05663825d600b00342916cd59amr10135723jat.51.1660683746559;
-        Tue, 16 Aug 2022 14:02:26 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v30-20020a02b09e000000b00339dbd4c8d7sm4788423jah.45.2022.08.16.14.02.24
+        bh=0xae14lVeh2kNhNnwg1cZQHDZVItFs4GvsbtmRqUK8w=;
+        b=fbeCLXq+EUdTuyly0TuvmNj7hTGNl7A1mywYiQzyeXH+XTsOT/RdJaG0f4tkBzyZUl
+         ppWI0X0+4F2LFz27KBYQJFwP8vlB0Bt0ym00OklcsDqVTujUZz4kjxlm4/jPJHY3T7MW
+         Imp4mkNHi5lyrD+VnTM+uptTGUq6zfreCrxvBy5q8GqAVB2QSrfdL2SJUAUZRHTaS3VR
+         nOAjr3cYxEGyzEDFkgryhgqAF8QdqRNSsSCcxVqvdaT3LJrNlgbS0BBD+/2ik9wbvvR9
+         t42pKXN+4NdhuY5PUNhq+a+Oq1/W1RlU61FkqyN2sO7qTAZCY+slPr0NikCDJDAw8ugA
+         WcSw==
+X-Gm-Message-State: ACgBeo3OLJuEjwpRLFAa33GhTRsk642IR16NixcUCjgA+1KblP/viGyU
+        qPbVaX3OnZR47F0xmWnOWsv2jIEdbSIpybOyCYL476JfdzN8+YJ/oKabI2NoD4WNTbqj6D7Kkp9
+        wgKg0KQeGHROYu0hy
+X-Received: by 2002:a05:6000:178e:b0:220:635f:eb13 with SMTP id e14-20020a056000178e00b00220635feb13mr12680070wrg.634.1660684197861;
+        Tue, 16 Aug 2022 14:09:57 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR61GD6vmCsdhe0o/qF+vr5ZjerDcFyH4c3E/BWOKkmWXYXsvQWoq7RyRXoltM0F4/hZDJyhVA==
+X-Received: by 2002:a05:6000:178e:b0:220:635f:eb13 with SMTP id e14-20020a056000178e00b00220635feb13mr12680061wrg.634.1660684197625;
+        Tue, 16 Aug 2022 14:09:57 -0700 (PDT)
+Received: from redhat.com ([2.55.43.215])
+        by smtp.gmail.com with ESMTPSA id m17-20020a05600c3b1100b003a319b67f64sm5902435wms.0.2022.08.16.14.09.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 14:02:25 -0700 (PDT)
-Received: (nullmailer pid 2727395 invoked by uid 1000);
-        Tue, 16 Aug 2022 21:02:23 -0000
-Date:   Tue, 16 Aug 2022 15:02:23 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/7] dt-bindings: net: dsa: mediatek,mt7530: update
- examples
-Message-ID: <20220816210223.GA2714004-robh@kernel.org>
-References: <20220813154415.349091-1-arinc.unal@arinc9.com>
- <20220813154415.349091-4-arinc.unal@arinc9.com>
+        Tue, 16 Aug 2022 14:09:56 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 17:09:53 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        "jasowang@redhat.com" <jasowang@redhat.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "xieyongji@bytedance.com" <xieyongji@bytedance.com>,
+        "gautam.dawar@amd.com" <gautam.dawar@amd.com>
+Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+Message-ID: <20220816170753-mutt-send-email-mst@kernel.org>
+References: <20220815092638.504528-1-lingshan.zhu@intel.com>
+ <20220815092638.504528-3-lingshan.zhu@intel.com>
+ <PH0PR12MB54815EF8C19F70072169FA56DC6B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+ <4184a943-f1c0-a57b-6411-bdd21e0bc710@intel.com>
+ <PH0PR12MB5481EBA9E08963DEF0743063DC6B9@PH0PR12MB5481.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220813154415.349091-4-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+In-Reply-To: <PH0PR12MB5481EBA9E08963DEF0743063DC6B9@PH0PR12MB5481.namprd12.prod.outlook.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,399 +88,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 06:44:11PM +0300, Arınç ÜNAL wrote:
-> Update the examples on the binding.
+On Tue, Aug 16, 2022 at 09:02:17PM +0000, Parav Pandit wrote:
 > 
-> - Add examples which include a wide variation of configurations.
-> - Make example comments YAML comment instead of DT binding comment.
-> - Define examples from platform to make the bindings clearer.
-> - Add interrupt controller to the examples. Include header file for
-> interrupt.
-> - Change reset line for MT7621 examples.
-> - Pretty formatting for the examples.
-> - Change switch reg to 0.
-> - Change port labels to fit the example, change port 4 label to wan.
-> - Change ethernet-ports to ports.
-
-Again, why?
-
+> > From: Zhu, Lingshan <lingshan.zhu@intel.com>
+> > Sent: Tuesday, August 16, 2022 12:19 AM
+> > 
+> > 
+> > On 8/16/2022 10:32 AM, Parav Pandit wrote:
+> > >> From: Zhu Lingshan <lingshan.zhu@intel.com>
+> > >> Sent: Monday, August 15, 2022 5:27 AM
+> > >>
+> > >> Some fields of virtio-net device config space are conditional on the
+> > >> feature bits, the spec says:
+> > >>
+> > >> "The mac address field always exists
+> > >> (though is only valid if VIRTIO_NET_F_MAC is set)"
+> > >>
+> > >> "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ or
+> > >> VIRTIO_NET_F_RSS is set"
+> > >>
+> > >> "mtu only exists if VIRTIO_NET_F_MTU is set"
+> > >>
+> > >> so we should read MTU, MAC and MQ in the device config space only
+> > >> when these feature bits are offered.
+> > > Yes.
+> > >
+> > >> For MQ, if both VIRTIO_NET_F_MQ and VIRTIO_NET_F_RSS are not set,
+> > the
+> > >> virtio device should have one queue pair as default value, so when
+> > >> userspace querying queue pair numbers, it should return mq=1 than zero.
+> > > No.
+> > > No need to treat mac and max_qps differently.
+> > > It is meaningless to differentiate when field exist/not-exists vs value
+> > valid/not valid.
+> > as we discussed before, MQ has a default value 1, to be a functional virtio-
+> > net device, while MAC has no default value, if no VIRTIO_NET_F_MAC set,
+> > the driver should generate a random MAC.
+> > >
+> > >> For MTU, if VIRTIO_NET_F_MTU is not set, we should not read MTU from
+> > >> the device config sapce.
+> > >> RFC894 <A Standard for the Transmission of IP Datagrams over Ethernet
+> > >> Networks> says:"The minimum length of the data field of a packet sent
+> > >> Networks> over
+> > >> an Ethernet is 1500 octets, thus the maximum length of an IP datagram
+> > >> sent over an Ethernet is 1500 octets.  Implementations are encouraged
+> > >> to support full-length packets"
+> > > This line in the RFC 894 of 1984 is wrong.
+> > > Errata already exists for it at [1].
+> > >
+> > > [1] https://www.rfc-editor.org/errata_search.php?rfc=894&rec_status=0
+> > OK, so I think we should return nothing if _F_MTU not set, like handling the
+> > MAC
+> > >
+> > >> virtio spec says:"The virtio network device is a virtual ethernet
+> > >> card", so the default MTU value should be 1500 for virtio-net.
+> > >>
+> > > Practically I have seen 1500 and highe mtu.
+> > > And this derivation is not good of what should be the default mtu as above
+> > errata exists.
+> > >
+> > > And I see the code below why you need to work so hard to define a default
+> > value so that _MQ and _MTU can report default values.
+> > >
+> > > There is really no need for this complexity and such a long commit
+> > message.
+> > >
+> > > Can we please expose feature bits as-is and report config space field which
+> > are valid?
+> > >
+> > > User space will be querying both.
+> > I think MAC and MTU don't have default values, so return nothing if the
+> > feature bits not set, 
 > 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-> ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 663 +++++++++++++-----
->  1 file changed, 502 insertions(+), 161 deletions(-)
+> > for MQ, it is still max_vq_paris == 1 by default.
 > 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> index 4c99266ce82a..cc87f48d4d07 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-> @@ -210,144 +210,374 @@ allOf:
->  unevaluatedProperties: false
->  
->  examples:
-> +  # Example 1: Standalone MT7530
->    - |
->      #include <dt-bindings/gpio/gpio.h>
-> -    mdio {
-> -        #address-cells = <1>;
-> -        #size-cells = <0>;
-> -        switch@0 {
-> -            compatible = "mediatek,mt7530";
-> -            reg = <0>;
-> -
-> -            core-supply = <&mt6323_vpa_reg>;
-> -            io-supply = <&mt6323_vemc3v3_reg>;
-> -            reset-gpios = <&pio 33 GPIO_ACTIVE_HIGH>;
-> -
-> -            ethernet-ports {
-> +
-> +    platform {
-> +        ethernet {
+> I have stressed enough to highlight the fact that we don’t want to start digging default/no default, valid/no-valid part of the spec.
+> I prefer kernel to reporting fields that _exists_ in the config space and are valid.
+> I will let MST to handle the maintenance nightmare that this kind of patch brings in without any visible gain to user space/orchestration apps.
+> 
+> A logic that can be easily build in user space, should be written in user space.
+> I conclude my thoughts here for this discussion.
+> 
+> I will let MST to decide how he prefers to proceed.
+> 
+> >
+> > >> +	if ((features & BIT_ULL(VIRTIO_NET_F_MTU)) == 0)
+> > >> +		val_u16 = 1500;
+> > >> +	else
+> > >> +		val_u16 = __virtio16_to_cpu(true, config->mtu);
+> > >> +
+> > > Need to work hard to find default values and that too turned out had
+> > errata.
+> > > There are more fields that doesn’t have default values.
+> > >
+> > > There is no point in kernel doing this guess work, that user space can figure
+> > out of what is valid/invalid.
+> > It's not guest work, when guest finds no feature bits set, it can decide what
+> > to do. 
+> 
+> Above code of doing 1500 was probably an honest attempt to find a legitimate default value, and we saw that it doesn’t work.
+> This is second example after _MQ that we both agree should not return default.
+> 
+> And there are more fields coming in this area.
+> Hence, I prefer to not avoid returning such defaults for MAC, MTU, MQ and rest all fields which doesn’t _exists_.
+> 
+> I will let MST to decide how he prefers to proceed for every field to come next.
+> Thanks.
+> 
 
-Don't need these nodes.
 
-> +            mdio {
->                  #address-cells = <1>;
->                  #size-cells = <0>;
-> -                port@0 {
-> +
-> +                switch@0 {
-> +                    compatible = "mediatek,mt7530";
->                      reg = <0>;
-> -                    label = "lan0";
-> -                };
->  
-> -                port@1 {
-> -                    reg = <1>;
-> -                    label = "lan1";
-> -                };
-> +                    reset-gpios = <&pio 33 0>;
->  
-> -                port@2 {
-> -                    reg = <2>;
-> -                    label = "lan2";
-> -                };
-> +                    core-supply = <&mt6323_vpa_reg>;
-> +                    io-supply = <&mt6323_vemc3v3_reg>;
-> +
-> +                    ports {
+If MTU does not return a value without _F_MTU, and MAC does not return
+a value without _F_MAC then IMO yes, number of queues should not return
+a value without _F_MQ.
 
-'ports' is for the DT graph binding. 'ethernet-ports' is for DSA 
-binding. The former is allowed due to existing users. Don't add more.
 
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
->  
-> -                port@3 {
-> -                    reg = <3>;
-> -                    label = "lan3";
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            label = "lan1";
-> +                        };
-> +
-> +                        port@1 {
-> +                            reg = <1>;
-> +                            label = "lan2";
-> +                        };
-> +
-> +                        port@2 {
-> +                            reg = <2>;
-> +                            label = "lan3";
-> +                        };
-> +
-> +                        port@3 {
-> +                            reg = <3>;
-> +                            label = "lan4";
-> +                        };
-> +
-> +                        port@4 {
-> +                            reg = <4>;
-> +                            label = "wan";
-> +                        };
-> +
-> +                        port@6 {
-> +                            reg = <6>;
-> +                            label = "cpu";
-> +                            ethernet = <&gmac0>;
-> +                            phy-mode = "rgmii";
-> +
-> +                            fixed-link {
-> +                                speed = <1000>;
-> +                                full-duplex;
-> +                                pause;
-> +                            };
-> +                        };
-> +                    };
->                  };
-> +            };
-> +        };
-> +    };
->  
-> -                port@4 {
-> -                    reg = <4>;
-> -                    label = "wan";
-> +  # Example 2: MT7530 in MT7623AI SoC
+-- 
+MST
 
-Looks almost the same as example 1. Examples are not an enumeration of 
-every possible DT. Limit them to cases which are significantly 
-different.
-
-> +  - |
-> +    #include <dt-bindings/reset/mt2701-resets.h>
-> +
-> +    platform {
-> +        ethernet {
-> +            mdio {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                switch@0 {
-> +                    compatible = "mediatek,mt7530";
-> +                    reg = <0>;
-> +
-> +                    mediatek,mcm;
-> +                    resets = <&ethsys MT2701_ETHSYS_MCM_RST>;
-> +                    reset-names = "mcm";
-> +
-> +                    core-supply = <&mt6323_vpa_reg>;
-> +                    io-supply = <&mt6323_vemc3v3_reg>;
-> +
-> +                    ports {
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            label = "lan1";
-> +                        };
-> +
-> +                        port@1 {
-> +                            reg = <1>;
-> +                            label = "lan2";
-> +                        };
-> +
-> +                        port@2 {
-> +                            reg = <2>;
-> +                            label = "lan3";
-> +                        };
-> +
-> +                        port@3 {
-> +                            reg = <3>;
-> +                            label = "lan4";
-> +                        };
-> +
-> +                        port@4 {
-> +                            reg = <4>;
-> +                            label = "wan";
-> +                        };
-> +
-> +                        port@6 {
-> +                            reg = <6>;
-> +                            label = "cpu";
-> +                            ethernet = <&gmac0>;
-> +                            phy-mode = "trgmii";
-> +
-> +                            fixed-link {
-> +                                speed = <1000>;
-> +                                full-duplex;
-> +                                pause;
-> +                            };
-> +                        };
-> +                    };
->                  };
-> +            };
-> +        };
-> +    };
-> +
-> +  # Example 3: Standalone MT7531
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    platform {
-> +        ethernet {
-> +            mdio {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                switch@0 {
-> +                    compatible = "mediatek,mt7531";
-> +                    reg = <0>;
-> +
-> +                    reset-gpios = <&pio 54 0>;
-> +
-> +                    interrupt-controller;
-> +                    #interrupt-cells = <1>;
-> +                    interrupt-parent = <&pio>;
-> +                    interrupts = <53 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +                    ports {
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            label = "lan1";
-> +                        };
-> +
-> +                        port@1 {
-> +                            reg = <1>;
-> +                            label = "lan2";
-> +                        };
-> +
-> +                        port@2 {
-> +                            reg = <2>;
-> +                            label = "lan3";
-> +                        };
-> +
-> +                        port@3 {
-> +                            reg = <3>;
-> +                            label = "lan4";
-> +                        };
->  
-> -                port@6 {
-> -                    reg = <6>;
-> -                    label = "cpu";
-> -                    ethernet = <&gmac0>;
-> -                    phy-mode = "trgmii";
-> -                    fixed-link {
-> -                        speed = <1000>;
-> -                        full-duplex;
-> +                        port@4 {
-> +                            reg = <4>;
-> +                            label = "wan";
-> +                        };
-> +
-> +                        port@6 {
-> +                            reg = <6>;
-> +                            label = "cpu";
-> +                            ethernet = <&gmac0>;
-> +                            phy-mode = "2500base-x";
-> +
-> +                            fixed-link {
-> +                                speed = <2500>;
-> +                                full-duplex;
-> +                                pause;
-> +                            };
-> +                        };
->                      };
->                  };
->              };
->          };
->      };
->  
-> +  # Example 4: MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
->    - |
-> -    //Example 2: MT7621: Port 4 is WAN port: 2nd GMAC -> Port 5 -> PHY port 4.
-> -
-> -    ethernet {
-> -        #address-cells = <1>;
-> -        #size-cells = <0>;
-> -        gmac0: mac@0 {
-> -            compatible = "mediatek,eth-mac";
-> -            reg = <0>;
-> -            phy-mode = "rgmii";
-> -
-> -            fixed-link {
-> -                speed = <1000>;
-> -                full-duplex;
-> -                pause;
-> +    #include <dt-bindings/interrupt-controller/mips-gic.h>
-> +    #include <dt-bindings/reset/mt7621-reset.h>
-> +
-> +    platform {
-> +        ethernet {
-> +            mdio {
-> +                #address-cells = <1>;
-> +                #size-cells = <0>;
-> +
-> +                switch@0 {
-> +                    compatible = "mediatek,mt7621";
-> +                    reg = <0>;
-> +
-> +                    mediatek,mcm;
-> +                    resets = <&sysc MT7621_RST_MCM>;
-> +                    reset-names = "mcm";
-> +
-> +                    interrupt-controller;
-> +                    #interrupt-cells = <1>;
-> +                    interrupt-parent = <&gic>;
-> +                    interrupts = <GIC_SHARED 23 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +                    ports {
-> +                        #address-cells = <1>;
-> +                        #size-cells = <0>;
-> +
-> +                        port@0 {
-> +                            reg = <0>;
-> +                            label = "lan1";
-> +                        };
-> +
-> +                        port@1 {
-> +                            reg = <1>;
-> +                            label = "lan2";
-> +                        };
-> +
-> +                        port@2 {
-> +                            reg = <2>;
-> +                            label = "lan3";
-> +                        };
-> +
-> +                        port@3 {
-> +                            reg = <3>;
-> +                            label = "lan4";
-> +                        };
-> +
-> +                        port@4 {
-> +                            reg = <4>;
-> +                            label = "wan";
-> +                        };
-> +
-> +                        port@6 {
-> +                            reg = <6>;
-> +                            label = "cpu";
-> +                            ethernet = <&gmac0>;
-> +                            phy-mode = "trgmii";
-> +
-> +                            fixed-link {
-> +                                speed = <1000>;
-> +                                full-duplex;
-> +                                pause;
-> +                            };
-> +                        };
-> +                    };
-> +                };
->              };
->          };
-> +    };
->  
-> -        gmac1: mac@1 {
-> -            compatible = "mediatek,eth-mac";
-> -            reg = <1>;
-> -            phy-mode = "rgmii-txid";
-> -            phy-handle = <&phy4>;
-> +  # Example 5: MT7621: mux MT7530's phy4 to SoC's gmac1
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/mips-gic.h>
-> +    #include <dt-bindings/reset/mt7621-reset.h>
-> +
-> +    platform {
-> +        pinctrl {
-> +            example5_rgmii2_pins: rgmii2-pins {
-> +                pinmux {
-> +                    groups = "rgmii2";
-> +                    function = "rgmii2";
-> +                };
-> +            };
-
-No need to put this in the example. We don't put provide nodes in 
-the examples of the consumers. It's also incomplete and can't be 
-validated. 
-
->          };
->  
-> -        mdio: mdio-bus {
-> +        ethernet {
->              #address-cells = <1>;
->              #size-cells = <0>;
