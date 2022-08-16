@@ -2,60 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C425E595D3C
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:26:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65B56595D64
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235807AbiHPN0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 09:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39164 "EHLO
+        id S235766AbiHPNaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 09:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235803AbiHPN02 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:26:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AC98769D
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:26:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660656386;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=zxJ1v8+cjZ+tYJe90RAlV6rz4Psbcq8JkXLwBn2PQcI=;
-        b=VGrXdM35ZcqdfMZmHfwfAiEabt3liOAttCUYxwtqEXNrYzX1Cmdipk6T0ZvCPeBmggvcS+
-        75/gXItjonfe0nZqjwICyVD311WI+Bgq6iG/mSU+oZZzNkwGrVZB90HwZc8fGwfTSyXkRk
-        +CXOdnHg/H/gLBiADuqyk7VXjZ/6MGA=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-373-JOp7kY0TNAutV_QSqaFoVA-1; Tue, 16 Aug 2022 09:26:21 -0400
-X-MC-Unique: JOp7kY0TNAutV_QSqaFoVA-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id F123B2999B28;
-        Tue, 16 Aug 2022 13:26:20 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4263E492C3B;
-        Tue, 16 Aug 2022 13:26:20 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net v2] net: Fix suspicious RCU usage in
- bpf_sk_reuseport_detach()
-From:   David Howells <dhowells@redhat.com>
-To:     yin31149@gmail.com
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        dhowells@redhat.com, linux-kernel@vger.kernel.org
-Date:   Tue, 16 Aug 2022 14:26:19 +0100
-Message-ID: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        with ESMTP id S235826AbiHPNad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:30:33 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77D1B8A62
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:30:31 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so3727750wmb.4
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:30:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc;
+        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
+        b=p1uIS7iPRm5FqeZyBT0Rono6HWbv5ulB/bs5oZgYh6d9a1ptIjWxTqIf5fdui0UI7P
+         UiKMVSr+4RtXLv4oOr9y9VG9zkJ7wYmACViu7FoZAAHh0fx2AK3IeW287cwTA94pjy7W
+         58dOOYI3IkZoR37TVr4OI4CDMlz7EA6HMoFO3Ex0IHnawCAeW+LTa/T3QasiPuhhYTYG
+         mUk4SHi+5Q/GbXbDglXaTas5nW1FpgGGNDDHSmOKsKRkDWE1GvW1FLM0ls2tIh887+7e
+         gGI8c1mDEYenpo65eLgr7mEvWZmy3MQSEE91lN0cZg0rhMVt+ckyO47lwF8zoDEr71bJ
+         5C6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:references:cc:to:from:subject:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
+         :cc;
+        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
+        b=S8vV7vnrZbxUFX26IjhAkgW5oiGYNrTN2F6zbmsawKAy1DNsIv48DTsGPSr1YQmkS/
+         x1BbMrTPuDgyIMmwardIfBzvDQQlYUXRZaBBdnQc4Wt1g78zyZFGSA2/yEZH8SDZDXRC
+         SciW5lcvkx4Wk2tjlSwGiv4F843dx/RrX/hg8qrEx5MCQfOwSJxre+QLXfBWttzYz7bh
+         UZVx5Wf0ZeR1jcCpqjtLwar0yvXVT2lfMq1pN6JXTRi+5B+puMWkV1p9HsECfohYaagm
+         pbIu5uGoOzrxyhBtxCuFJ3FonWNPbv//mAE2Bbs9kbUlrTAr7Zrg9cIFv7oBN14cM9F8
+         pzVw==
+X-Gm-Message-State: ACgBeo0vd6N2dFuRF5u3P/efPH2+qWeAVk9DtwVxPtNzmM/S1A0tY9Yd
+        fGooP9Du8SLMsmGkRJ3P0heLfQ==
+X-Google-Smtp-Source: AA6agR5brmQT0VGVlB3KYey11S8HsfHLRIqrWymjHMuDRQM1mXOpHIasTetNNd2nw2J4QFqsRY8/MA==
+X-Received: by 2002:a1c:f217:0:b0:3a4:bfd4:21b4 with SMTP id s23-20020a1cf217000000b003a4bfd421b4mr12934932wmc.96.1660656630403;
+        Tue, 16 Aug 2022 06:30:30 -0700 (PDT)
+Received: from localhost (2a02-8388-6582-fe80-0000-0000-0000-0002.cable.dynamic.v6.surfer.at. [2a02:8388:6582:fe80::2])
+        by smtp.gmail.com with ESMTPSA id n6-20020a05600c3b8600b003a608d69a64sm1870148wms.21.2022.08.16.06.30.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 06:30:29 -0700 (PDT)
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date:   Tue, 16 Aug 2022 15:30:26 +0200
+Message-Id: <CM7HN6H9EAN4.2008QGJVIO14X@otso>
+Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state()
+ for now
+From:   "Luca Weiss" <luca.weiss@fairphone.com>
+To:     "Saravana Kannan" <saravanak@google.com>
+Cc:     "Tony Lindgren" <tony@atomide.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Kevin Hilman" <khilman@kernel.org>,
+        "Ulf Hansson" <ulf.hansson@linaro.org>,
+        "Pavel Machek" <pavel@ucw.cz>, "Len Brown" <len.brown@intel.com>,
+        "Andrew Lunn" <andrew@lunn.ch>,
+        "Heiner Kallweit" <hkallweit1@gmail.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>, <naresh.kamboju@linaro.org>,
+        <kernel-team@android.com>, <linux-kernel@vger.kernel.org>,
+        <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
+X-Mailer: aerc 0.11.0
+References: <20220727185012.3255200-1-saravanak@google.com>
+ <Yvonn9C/AFcRUefV@atomide.com> <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
+ <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
+In-Reply-To: <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,137 +87,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bpf_sk_reuseport_detach() calls __rcu_dereference_sk_user_data_with_flags()
-to obtain the value of sk->sk_user_data, but that function is only usable
-if the RCU read lock is held, and neither that function nor any of its
-callers hold it.
+Hi Saravana,
 
-Fix this by adding a new helper,
-__rcu_dereference_sk_user_data_with_flags_check() that checks to see if
-sk->sk_callback_lock() is held and use that here instead.
+On Tue Aug 16, 2022 at 1:36 AM CEST, Saravana Kannan wrote:
+> On Mon, Aug 15, 2022 at 9:57 AM Luca Weiss <luca.weiss@fairphone.com> wro=
+te:
+> >
+> > On Mon Aug 15, 2022 at 1:01 PM CEST, Tony Lindgren wrote:
+> > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
+> > > > More fixes/changes are needed before driver_deferred_probe_check_st=
+ate()
+> > > > can be deleted. So, bring it back for now.
+> > > >
+> > > > Greg,
+> > > >
+> > > > Can we get this into 5.19? If not, it might not be worth picking up=
+ this
+> > > > series. I could just do the other/more fixes in time for 5.20.
+> > >
+> > > Yes please pick this as fixes for v6.0-rc series, it fixes booting fo=
+r
+> > > me. I've replied with fixes tags for the two patches that were causin=
+g
+> > > regressions for me.
+> > >
+> >
+> > Hi,
+> >
+> > for me Patch 1+3 fix display probe on Qualcomm SM6350 (although display
+> > for this SoC isn't upstream yet, there are lots of other SoCs with very
+> > similar setup).
+> >
+> > Probe for DPU silently fails, with CONFIG_DEBUG_DRIVER=3Dy we get this:
+> >
+> > msm-mdss ae00000.mdss: __genpd_dev_pm_attach() failed to find PM domain=
+: -2
+> >
+> > While I'm not familiar with the specifics of fw_devlink, the dtsi has
+> > power-domains =3D <&dispcc MDSS_GDSC> for this node but it doesn't pick
+> > that up for some reason.
+> >
+> > We can also see that a bit later dispcc finally probes.
+>
+> Luca,
+>
+> Can you test with this series instead and see if it fixes this issue?
+> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com=
+/
+>
 
-__rcu_dereference_sk_user_data_with_flags() then calls that, supplying false
-as condition indicating only the RCU read lock should be checked.
+Unfortunately it doesn't seem to work with the 9 patches, and the
+attached diff also doesn't seem to make a difference. I do see this in
+dmesg which I haven't seen in the past:
 
-Without this, the following warning can be occasionally observed:
+[    0.056554] platform 1d87000.phy: Fixed dependency cycle(s) with /soc@0/=
+ufs@1d84000
+[    0.060070] platform ae00000.mdss: Fixed dependency cycle(s) with /soc@0=
+/clock-controller@af00000
+[    0.060150] platform ae00000.mdss: Failed to create device link with ae0=
+0000.mdss
+[    0.060188] platform ae00000.mdss: Failed to create device link with ae0=
+0000.mdss
+[    0.061135] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061157] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061180] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061198] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061215] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061231] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
+[    0.061252] platform c440000.spmi: Failed to create device link with c44=
+0000.spmi
 
-=============================
-WARNING: suspicious RCU usage
-6.0.0-rc1-build2+ #563 Not tainted
------------------------------
-include/net/sock.h:592 suspicious rcu_dereference_check() usage!
+Also I'm going to be on holiday from today for about 2 weeks so I won't
+be able to test anything in that time.
 
-other info that might help us debug this:
+And in case it's interesting, here's the full dmesg to initramfs:
+https://pastebin.com/raw/Fc8W4MVi
 
-rcu_scheduler_active = 2, debug_locks = 1
-5 locks held by locktest/29873:
- #0: ffff88812734b550 (&sb->s_type->i_mutex_key#9){+.+.}-{3:3}, at: __sock_release+0x77/0x121
- #1: ffff88812f5621b0 (sk_lock-AF_INET){+.+.}-{0:0}, at: tcp_close+0x1c/0x70
- #2: ffff88810312f5c8 (&h->lhash2[i].lock){+.+.}-{2:2}, at: inet_unhash+0x76/0x1c0
- #3: ffffffff83768bb8 (reuseport_lock){+...}-{2:2}, at: reuseport_detach_sock+0x18/0xdd
- #4: ffff88812f562438 (clock-AF_INET){++..}-{2:2}, at: bpf_sk_reuseport_detach+0x24/0xa4
+Regards
+Luca
 
-stack backtrace:
-CPU: 1 PID: 29873 Comm: locktest Not tainted 6.0.0-rc1-build2+ #563
-Hardware name: ASUS All Series/H97-PLUS, BIOS 2306 10/09/2014
-Call Trace:
- <TASK>
- dump_stack_lvl+0x4c/0x5f
- bpf_sk_reuseport_detach+0x6d/0xa4
- reuseport_detach_sock+0x75/0xdd
- inet_unhash+0xa5/0x1c0
- tcp_set_state+0x169/0x20f
- ? lockdep_sock_is_held+0x3a/0x3a
- ? __lock_release.isra.0+0x13e/0x220
- ? reacquire_held_locks+0x1bb/0x1bb
- ? hlock_class+0x31/0x96
- ? mark_lock+0x9e/0x1af
- __tcp_close+0x50/0x4b6
- tcp_close+0x28/0x70
- inet_release+0x8e/0xa7
- __sock_release+0x95/0x121
- sock_close+0x14/0x17
- __fput+0x20f/0x36a
- task_work_run+0xa3/0xcc
- exit_to_user_mode_prepare+0x9c/0x14d
- syscall_exit_to_user_mode+0x18/0x44
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Changes
-=======
-ver #2)
- - Changed to suggestion from Hawkins Jiawei to have a ..._check() function
-   and make the original a special case of that.
-
-Fixes: cf8c1e967224 ("net: refactor bpf_sk_reuseport_detach()")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Hawkins Jiawei <yin31149@gmail.com>
-cc: Jakub Kicinski <kuba@kernel.org>
-cc: netdev@vger.kernel.org
-Link: https://lore.kernel.org/r/166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk # v1
----
-
- include/net/sock.h           |   18 ++++++++++++++----
- kernel/bpf/reuseport_array.c |    3 ++-
- 2 files changed, 16 insertions(+), 5 deletions(-)
-
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 05a1bbdf5805..6464da28e842 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -578,18 +578,22 @@ static inline bool sk_user_data_is_nocopy(const struct sock *sk)
- #define __sk_user_data(sk) ((*((void __rcu **)&(sk)->sk_user_data)))
- 
- /**
-- * __rcu_dereference_sk_user_data_with_flags - return the pointer
-+ * __rcu_dereference_sk_user_data_with_flags_check - return the pointer
-  * only if argument flags all has been set in sk_user_data. Otherwise
-  * return NULL
-  *
-  * @sk: socket
-  * @flags: flag bits
-+ * @condition: Condition under which non-RCU access may take place
-+ *
-+ * The caller must be holding the RCU read lock 
-  */
- static inline void *
--__rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
--					  uintptr_t flags)
-+__rcu_dereference_sk_user_data_with_flags_check(const struct sock *sk,
-+						uintptr_t flags, bool condition)
- {
--	uintptr_t sk_user_data = (uintptr_t)rcu_dereference(__sk_user_data(sk));
-+	uintptr_t sk_user_data =
-+		(uintptr_t)rcu_dereference_check(__sk_user_data(sk), condition);
- 
- 	WARN_ON_ONCE(flags & SK_USER_DATA_PTRMASK);
- 
-@@ -598,6 +602,12 @@ __rcu_dereference_sk_user_data_with_flags(const struct sock *sk,
- 	return NULL;
- }
- 
-+static inline void *
-+__rcu_dereference_sk_user_data_with_flags(const struct sock *sk, uintptr_t flags)
-+{
-+	return __rcu_dereference_sk_user_data_with_flags_check(sk, flags, false);
-+}
-+
- #define rcu_dereference_sk_user_data(sk)				\
- 	__rcu_dereference_sk_user_data_with_flags(sk, 0)
- #define __rcu_assign_sk_user_data_with_flags(sk, ptr, flags)		\
-diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-index 85fa9dbfa8bf..856c360a591d 100644
---- a/kernel/bpf/reuseport_array.c
-+++ b/kernel/bpf/reuseport_array.c
-@@ -24,7 +24,8 @@ void bpf_sk_reuseport_detach(struct sock *sk)
- 	struct sock __rcu **socks;
- 
- 	write_lock_bh(&sk->sk_callback_lock);
--	socks = __rcu_dereference_sk_user_data_with_flags(sk, SK_USER_DATA_BPF);
-+	socks = __rcu_dereference_sk_user_data_with_flags_check(
-+		sk, SK_USER_DATA_BPF, lockdep_is_held(&sk->sk_callback_lock));
- 	if (socks) {
- 		WRITE_ONCE(sk->sk_user_data, NULL);
- 		/*
-
+> You might also need to add this delta on top of the series if the
+> series itself isn't sufficient.
+> diff --git a/drivers/base/core.c b/drivers/base/core.c
+> index 2f012e826986..866755d8ad95 100644
+> --- a/drivers/base/core.c
+> +++ b/drivers/base/core.c
+> @@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device=
+ *con,
+>                 device_links_write_unlock();
+>         }
+>
+> -       sup_dev =3D get_dev_from_fwnode(sup_handle);
+> +       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
+> +               sup_dev =3D fwnode_get_next_parent_dev(sup_handle);
+> +       else
+> +               sup_dev =3D get_dev_from_fwnode(sup_handle);
+> +
+>         if (sup_dev) {
+>                 /*
+>                  * If it's one of those drivers that don't actually bind =
+to
+>
+> -Saravana
 
