@@ -2,83 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90EBF595332
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:58:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A8C3595315
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:54:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230023AbiHPG6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 02:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43062 "EHLO
+        id S231235AbiHPGyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 02:54:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiHPG6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:58:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF86F1CB17A
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 20:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA68EB815D5
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 03:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6C98EC433C1;
-        Tue, 16 Aug 2022 03:00:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660618814;
-        bh=Yt1+TFv3XyUTJcvzDnRkhNBZAZrrpAeyw7+Dzpy4648=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nghcAVJB7z5wtyrhKa8Xz68mu9Dn3a4T27AKy1ghQmlWoxEuBjJsWuC2DVKKL05eZ
-         Boz6lF5lqapWycgWWlBP9SLMq5lHVkZK9JQiYV05ZqKFfqjoqan/mEU1ClzW5k9HFI
-         KidAN5HPJNqI9rNp1h6UjzEwAGXWwbNoMomRtFyaX1G7rH7xkDF1F/pCxKG/VhKcBu
-         FgkZ5nIv0s6VCtoTbZbzjQvv8Y8OvLYHI1iuMDvrSa8ro8dyxygPcVQYSl+Thj1nME
-         L6rGlZoLKXeOqbkGDigyS+h4VktS56DHs1Uc7Xyo0JL3tIth4Oola/tCytRM6mJctk
-         L7v1uHHhp32/A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A1B6E2A051;
-        Tue, 16 Aug 2022 03:00:14 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: moxa: pass pdev instead of ndev to DMA functions
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166061881429.6837.4839693513113568636.git-patchwork-notify@kernel.org>
-Date:   Tue, 16 Aug 2022 03:00:14 +0000
-References: <20220812171339.2271788-1-saproj@gmail.com>
-In-Reply-To: <20220812171339.2271788-1-saproj@gmail.com>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, kuba@kernel.org,
-        paskripkin@gmail.com, davem@davemloft.net, pabeni@redhat.com,
-        f.fainelli@gmail.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S231153AbiHPGyG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:54:06 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE6E2075B7;
+        Mon, 15 Aug 2022 20:09:13 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=15;SR=0;TI=SMTPD_---0VMOG.Le_1660619347;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VMOG.Le_1660619347)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 11:09:08 +0800
+Message-ID: <1660619231.7656944-2-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH v3 0/5] virtio: drop sizing vqs during init
+Date:   Tue, 16 Aug 2022 11:07:11 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+References: <20220815215938.154999-1-mst@redhat.com>
+In-Reply-To: <20220815215938.154999-1-mst@redhat.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Series:
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-On Fri, 12 Aug 2022 20:13:39 +0300 you wrote:
-> dma_map_single() calls fail in moxart_mac_setup_desc_ring() and
-> moxart_mac_start_xmit() which leads to an incessant output of this:
-> 
-> [   16.043925] moxart-ethernet 92000000.mac eth0: DMA mapping error
-> [   16.050957] moxart-ethernet 92000000.mac eth0: DMA mapping error
-> [   16.058229] moxart-ethernet 92000000.mac eth0: DMA mapping error
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2] net: moxa: pass pdev instead of ndev to DMA functions
-    https://git.kernel.org/netdev/net/c/3a12df22a8f6
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+There is also a commit, I just submitted, about the problem you pointed
+out about using container_of(). Can we submit together?
 
 
+On Mon, 15 Aug 2022 18:00:21 -0400, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+> Reporting after I botched up v2 posting. Sorry about the noise.
+>
+> Supplying size during init does not work for all transports.
+> In fact for legacy pci doing that causes a memory
+> corruption which was reported on Google Cloud.
+>
+> We might get away with changing size to size_hint so it's
+> safe to ignore and then fixing legacy to ignore the hint.
+>
+> But the benefit is unclear in any case, so let's revert for now.
+> Any new version will have to come with
+> - documentation of performance gains
+> - performance testing showing existing workflows
+>   are not harmed materially. especially ones with
+>   bursty traffic
+> - report of testing on legacy devices
+>
+>
+> Huge shout out to Andres Freund for the effort spent reproducing and
+> debugging!  Thanks to Guenter Roeck for help with testing!
+>
+>
+> changes from v2
+> 	drop unrelated patches
+> changes from v1
+> 	revert the ring size api, it's unused now
+>
+> Michael S. Tsirkin (5):
+>   virtio_net: Revert "virtio_net: set the default max ring size by
+>     find_vqs()"
+>   virtio: Revert "virtio: add helper virtio_find_vqs_ctx_size()"
+>   virtio-mmio: Revert "virtio_mmio: support the arg sizes of find_vqs()"
+>   virtio_pci: Revert "virtio_pci: support the arg sizes of find_vqs()"
+>   virtio: Revert "virtio: find_vqs() add arg sizes"
+>
+>  arch/um/drivers/virtio_uml.c             |  2 +-
+>  drivers/net/virtio_net.c                 | 42 +++---------------------
+>  drivers/platform/mellanox/mlxbf-tmfifo.c |  1 -
+>  drivers/remoteproc/remoteproc_virtio.c   |  1 -
+>  drivers/s390/virtio/virtio_ccw.c         |  1 -
+>  drivers/virtio/virtio_mmio.c             |  9 ++---
+>  drivers/virtio/virtio_pci_common.c       | 20 +++++------
+>  drivers/virtio/virtio_pci_common.h       |  3 +-
+>  drivers/virtio/virtio_pci_legacy.c       |  6 +---
+>  drivers/virtio/virtio_pci_modern.c       | 17 +++-------
+>  drivers/virtio/virtio_vdpa.c             |  1 -
+>  include/linux/virtio_config.h            | 26 +++------------
+>  12 files changed, 28 insertions(+), 101 deletions(-)
+>
+> --
+> MST
+>
