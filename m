@@ -2,140 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34AC7595254
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A27D595277
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:21:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229459AbiHPGFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 02:05:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S230019AbiHPGVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 02:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiHPGE0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:04:26 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34AF36C104
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 16:37:00 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-32fd97c199fso85846667b3.6
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 16:37:00 -0700 (PDT)
+        with ESMTP id S230011AbiHPGVO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:21:14 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FBF27869F
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 17:14:32 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id u6so9137608ljk.8
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 17:14:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=fVxetOgUQ7E/da9h0YyyPZnmDSU85aoRWSOGJovfDo4=;
-        b=KTUwHeoXz1fmYUOVhvzKJVtvXyuG8JHUHX6QB6FOxUcDm+t/hWHwoYNXr85HrUdaEK
-         tILQMJn5QrnwvIaiiGvh/gmofiK9boSEgGXMH8Td1nph3IGh7K9bPlvKvjyubLDSc0aS
-         fgP5ZpT/qNqLdbxAcPOnXoC06oDNK7j8waNQN+CBuASLQjDxP44f8T2h1FoyDYuG2qG0
-         BpVB8cB/sRH0nhHBKOSHQriJwZq8WNgL2+bZYuBEh1Bbls5R4A/XDMEyrwthkWrfMF+H
-         T+itPy2imckkoWZbnfArIsJ7JKc+W9DP9rqWida20tZuDHZyrdibJlDrRnzcRORJzbga
-         q56w==
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
+        bh=DJuMC9uSqOfhxPndYeVwtr9rxlpKg28GSgzlSwv/L28=;
+        b=BV4tp2k8RBXcCx1l8s/tFTKmUvWsMF/hxlKkZJmau4/wgSv3cnBpJFEzAaAnlEJ9mI
+         60u78fY4TWhUJiSaU1wuuda54nZJD7XGeg1IAlp+meHPw1doVWdW2basHPjaWKsz655g
+         ZbRKfwNS7O9xZwG+G9/HLBa62fPBftqFj891v6dh/kT9PhyBxwrT6QEQMQo86W8InOhl
+         Y4KLBokEBsuUhfs8zt3oesRsGyAmrRZ7mEppc3/8ulReClZ4TNQHBqiU8UjIA8EuKzHP
+         oPjviqxJOhK8SvEKWZTefZykRl0+EQrk+hjIloqaUUkRe//EbS4I8l/3+dqSeHgbGpl8
+         q3XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=fVxetOgUQ7E/da9h0YyyPZnmDSU85aoRWSOGJovfDo4=;
-        b=MCnJWENefczR14chEAcyuoTx6RlK3lN0tsOGmkiLEK62BTdbvEJrwLAScjQdAhmEnk
-         W6xKFig7HYmlIIJEYo+iyOyNQPQRrWH3xDej0UnXIigNk8SaBW7wrriwAdmyDAnH43x6
-         VL+GY6iIuyfdbpto9AnbJ+X2g0gCog6mAE6JpvUmUri22Wz0uhICF4QAIqpm/5YS7+Cw
-         RRXbm/0PFp7DgEV7XPMSFi1XwHsj4GtRxA9oAsAHiAEwLeYEUkDy/WVSZXLhLLBJ2AiW
-         AJ9B43Sb+Tno3RjGMGrQLllJM5L7fqO/6bTat9oZKxZjxf0Pb3hfAFWPJoE1FIhvBqzY
-         wQKw==
-X-Gm-Message-State: ACgBeo1Tw+x7OXeAl2xApUzdNb3EQtKRzUEtSZfyKtkAUb2b09ruHOmp
-        yDXqbO74KN/qRH+/DQ4LNVpozNzVUBRO2vMLzW/HEQ==
-X-Google-Smtp-Source: AA6agR5Np2WgcNsV8TjcwUEqg6oN6k4lKO8Wo6VF8E9ds7ny2Mlu9nLypvijdRBumVPbsaC27C1JZ/SudORTFk2byw8=
-X-Received: by 2002:a81:d8a:0:b0:333:38da:2a44 with SMTP id
- 132-20020a810d8a000000b0033338da2a44mr1203503ywn.518.1660606619221; Mon, 15
- Aug 2022 16:36:59 -0700 (PDT)
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=DJuMC9uSqOfhxPndYeVwtr9rxlpKg28GSgzlSwv/L28=;
+        b=jcEFBnGxaezqZhnGfxt9/bYa0zp6dlsu4ZTdh4GCMa2wjWYdGdtY+hmyD9rrB9ky3B
+         qDSwZbdPKsNGTB9E/CFrmYrbnSqesE0ONSIHY4eFNV+nsVNmc03Hr89L7/TxKx0cFzmk
+         MUOxy6FXt8bmtCLo9+3M5VkdRgZyseXrHH890JsWuV3aTD/2XJXzZHEtKHcOlDok1QiO
+         P10QB3c3tXoQfoo0bm8AV3KIewfmEj4Wm0ObSUrBtb2oqHd6YHSzrq0fWzNdIa2PrLaj
+         DdQ70L3kvKXnxS6v2uTWG64ht02NvVBbPa+27ZgRKwCuejHP96BVE34HxTArvs10a/PV
+         CS9A==
+X-Gm-Message-State: ACgBeo2WV+vsgOFD89mkrnmXBLQ/GjCts601O0XgaiFa2xmcRDg+MNBj
+        zUUZ8osvMGBU61ZNk9YJsEJec7sgVUza4/GNh70=
+X-Google-Smtp-Source: AA6agR6++SyMXn2wyE5DieTUPNAsFJS6y2O/a1w0bnkdCfje26h4WDLcvC+Loy4RZ1wiVV1G1yD5G7XkmdnFIIoF9II=
+X-Received: by 2002:a2e:8009:0:b0:25e:9d69:7cb with SMTP id
+ j9-20020a2e8009000000b0025e9d6907cbmr5625363ljg.405.1660608869779; Mon, 15
+ Aug 2022 17:14:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220727185012.3255200-1-saravanak@google.com>
- <Yvonn9C/AFcRUefV@atomide.com> <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
-In-Reply-To: <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Mon, 15 Aug 2022 16:36:23 -0700
-Message-ID: <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
-Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state() for now
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     Tony Lindgren <tony@atomide.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, naresh.kamboju@linaro.org,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, netdev@vger.kernel.org
+Received: by 2002:a05:6520:2b81:b0:1fe:ccf5:aa58 with HTTP; Mon, 15 Aug 2022
+ 17:14:29 -0700 (PDT)
+Reply-To: zjianxin700@gmail.com
+From:   Zong Jianxin <gitetumary8@gmail.com>
+Date:   Mon, 15 Aug 2022 17:14:29 -0700
+Message-ID: <CADiDABgariXGK-yF+b2t2AkCwRLHQMCMoaUHWNtHAoeEHvFbNw@mail.gmail.com>
+Subject: Deal
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:236 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4992]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [zjianxin700[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [gitetumary8[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [gitetumary8[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:57 AM Luca Weiss <luca.weiss@fairphone.com> wrote:
->
-> On Mon Aug 15, 2022 at 1:01 PM CEST, Tony Lindgren wrote:
-> > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > More fixes/changes are needed before driver_deferred_probe_check_state()
-> > > can be deleted. So, bring it back for now.
-> > >
-> > > Greg,
-> > >
-> > > Can we get this into 5.19? If not, it might not be worth picking up this
-> > > series. I could just do the other/more fixes in time for 5.20.
-> >
-> > Yes please pick this as fixes for v6.0-rc series, it fixes booting for
-> > me. I've replied with fixes tags for the two patches that were causing
-> > regressions for me.
-> >
->
-> Hi,
->
-> for me Patch 1+3 fix display probe on Qualcomm SM6350 (although display
-> for this SoC isn't upstream yet, there are lots of other SoCs with very
-> similar setup).
->
-> Probe for DPU silently fails, with CONFIG_DEBUG_DRIVER=y we get this:
->
-> msm-mdss ae00000.mdss: __genpd_dev_pm_attach() failed to find PM domain: -2
->
-> While I'm not familiar with the specifics of fw_devlink, the dtsi has
-> power-domains = <&dispcc MDSS_GDSC> for this node but it doesn't pick
-> that up for some reason.
->
-> We can also see that a bit later dispcc finally probes.
+-- 
+I have a deal for you
 
-Luca,
-
-Can you test with this series instead and see if it fixes this issue?
-https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com/
-
-You might also need to add this delta on top of the series if the
-series itself isn't sufficient.
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 2f012e826986..866755d8ad95 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device *con,
-                device_links_write_unlock();
-        }
-
--       sup_dev = get_dev_from_fwnode(sup_handle);
-+       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
-+               sup_dev = fwnode_get_next_parent_dev(sup_handle);
-+       else
-+               sup_dev = get_dev_from_fwnode(sup_handle);
-+
-        if (sup_dev) {
-                /*
-                 * If it's one of those drivers that don't actually bind to
-
--Saravana
+Thanks
+Zong Jianxin
