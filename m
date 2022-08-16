@@ -2,73 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2791F596480
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E97B059648A
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237528AbiHPVRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:17:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55538 "EHLO
+        id S237209AbiHPVVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 17:21:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237566AbiHPVRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:17:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C0B8B997
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:16:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660684616;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=2iqj6YUSsuItIPg1WhM2vpcdPov5sWXfn7fAfkdN2WE=;
-        b=XqXG4wc8LdKYZwL4TIySo+mcx4p3wKH1F8/xZ+wPZHBHEqHuJGREgl4w+TXCxHfvtZouZC
-        ExHT3gC7cKX0QEqRXOmWpVdU/ZD8nCXf57Dl1lRBDVg/AwFFNDJwrTiHuU4MUdaA7w+7e9
-        x/OnumOSFoLstlJhmPRpqvkxcWF6a1c=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-60_09m4xMDqeYoZnVse8mQ-1; Tue, 16 Aug 2022 17:16:50 -0400
-X-MC-Unique: 60_09m4xMDqeYoZnVse8mQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A80E61C13945;
-        Tue, 16 Aug 2022 21:16:48 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B088518ECC;
-        Tue, 16 Aug 2022 21:16:46 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220816103452.479281-1-yin31149@gmail.com>
-References: <20220816103452.479281-1-yin31149@gmail.com> <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
-To:     Hawkins Jiawei <yin31149@gmail.com>
-Cc:     dhowells@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237584AbiHPVVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:21:40 -0400
+Received: from mail-io1-f48.google.com (mail-io1-f48.google.com [209.85.166.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D0D8A7FA;
+        Tue, 16 Aug 2022 14:21:39 -0700 (PDT)
+Received: by mail-io1-f48.google.com with SMTP id i77so5759986ioa.7;
+        Tue, 16 Aug 2022 14:21:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=tuSisoMkl6+60tdPaffN493peiy7o2wWR1+PZsK1WiE=;
+        b=RxD83V9DmSk55jw9KQ3wJkm7sOXYE1JYuu4W7TaV5s/jLDNWdsoBpAl6BI0gPzWttC
+         nA4pD/xThlb65n0Vn/2bHMYl/XI+gTmy9Kd8+xaw1QpGOz4JkdwLskXAmEf+AAWF/vXQ
+         P3b+x4rtLjTngRBiQL43j+8ady4kpasu4Db0NQm2m89BC5wOOTLDfysCtTAqPOLRiU9X
+         wHRh72AJNydud5VGN+7X5i4WOPfvMx8iydevPj59Vv8IYJvZdjqpXLEzHKhJgfOM4S8R
+         zDMWv2OP6yZpsvP2jeB+OooDV7Miv628bNTcA34mgbJkAEl0zZr4ttysrIEZYRmFMeSW
+         ny6g==
+X-Gm-Message-State: ACgBeo1AQMDFgq9qGVocCbzNfiqCJZ9ZEo9iLEzLtf4TB2oYiv02iq6p
+        fzDgNc24UyD6GK9aQoneJA==
+X-Google-Smtp-Source: AA6agR44tAdtZC5+EJ1JbGySmbewN0vjdw3exH0tsi8qEIiGjppZgzRv1p3JPHSpnXbJNvAZX/sl8A==
+X-Received: by 2002:a02:a144:0:b0:343:5da5:f424 with SMTP id m4-20020a02a144000000b003435da5f424mr10161530jah.150.1660684898739;
+        Tue, 16 Aug 2022 14:21:38 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id h12-20020a056e021d8c00b002e127d59f63sm5198039ila.74.2022.08.16.14.21.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 14:21:38 -0700 (PDT)
+Received: (nullmailer pid 2754798 invoked by uid 1000);
+        Tue, 16 Aug 2022 21:21:35 -0000
+Date:   Tue, 16 Aug 2022 15:21:35 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 6/7] dt-bindings: net: dsa: mediatek,mt7530: define
+ phy-mode for each compatible
+Message-ID: <20220816212135.GA2747439-robh@kernel.org>
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-7-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <804152.1660684606.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Tue, 16 Aug 2022 22:16:46 +0100
-Message-ID: <804153.1660684606@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220813154415.349091-7-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,26 +85,163 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hawkins Jiawei <yin31149@gmail.com> wrote:
+On Sat, Aug 13, 2022 at 06:44:14PM +0300, Arınç ÜNAL wrote:
+> Define acceptable phy-mode values for CPU port of each compatible device.
+> Remove relevant information from the description of the binding.
 
-> +__rcu_dereference_sk_user_data_with_flags_check(const struct sock *sk,
-> +						uintptr_t flags, bool condition)
+I'm not really sure this is worth the complexity just to check 
+'phy-mode'...
 
-That doesn't work.  RCU_LOCKDEP_WARN() relies on anything passing on a
-condition down to it to be a macro so that it can vanish the 'condition'
-argument without causing an undefined symbol for 'lockdep_is_held' if lock=
-dep
-is disabled:
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 103 ++++++++++++++++--
+>  1 file changed, 92 insertions(+), 11 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index a27cb4fa490f..530ef5a75a2f 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -49,17 +49,6 @@ description: |
+>    * mt7621: phy-mode = "rgmii-txid";
+>    * mt7623: phy-mode = "rgmii";
+>  
+> -  CPU-Ports need a phy-mode property:
+> -    Allowed values on mt7530 and mt7621:
+> -      - "rgmii"
+> -      - "trgmii"
+> -    On mt7531:
+> -      - "1000base-x"
+> -      - "2500base-x"
+> -      - "rgmii"
+> -      - "sgmii"
+> -
+> -
+>  properties:
+>    compatible:
+>      oneOf:
+> @@ -177,6 +166,36 @@ allOf:
+>                          items:
+>                            - const: cpu
+>                    then:
+> +                    allOf:
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 5
+> +                        then:
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - gmii
+> +                                - mii
+> +                                - rgmii
+> +
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 6
+> +                        then:
 
-x86_64-linux-gnu-ld: kernel/bpf/reuseport_array.o: in function `bpf_sk_reu=
-seport_detach':
-/data/fs/linux-fs/build3/../kernel/bpf/reuseport_array.c:28: undefined ref=
-erence to `lockdep_is_held'
+You've restricted this to ports 5 or 6 already, so you just need an 
+'else' here. And you can then drop the 'allOf'.
 
-So either __rcu_dereference_sk_user_data_with_flags_check() has to be a ma=
-cro,
-or we need to go with something like the first version of my patch where I
-don't pass the condition through.  Do you have a preference?
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - rgmii
+> +                                - trgmii
+> +
+> +                    properties:
+> +                      reg:
+> +                        enum:
+> +                          - 5
+> +                          - 6
+> +
+>                      required:
+>                        - phy-mode
+>  
+> @@ -206,6 +225,38 @@ allOf:
+>                          items:
+>                            - const: cpu
+>                    then:
+> +                    allOf:
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 5
+> +                        then:
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - 1000base-x
+> +                                - 2500base-x
+> +                                - rgmii
+> +                                - sgmii
+> +
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 6
+> +                        then:
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - 1000base-x
+> +                                - 2500base-x
+> +                                - sgmii
+> +
+> +                    properties:
+> +                      reg:
+> +                        enum:
+> +                          - 5
+> +                          - 6
+> +
+>                      required:
+>                        - phy-mode
+>  
+> @@ -235,6 +286,36 @@ allOf:
+>                          items:
+>                            - const: cpu
+>                    then:
+> +                    allOf:
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 5
+> +                        then:
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - gmii
+> +                                - mii
+> +                                - rgmii
+> +
+> +                      - if:
+> +                          properties:
+> +                            reg:
+> +                              const: 6
+> +                        then:
+> +                          properties:
+> +                            phy-mode:
+> +                              enum:
+> +                                - rgmii
+> +                                - trgmii
+> +
+> +                    properties:
+> +                      reg:
+> +                        enum:
+> +                          - 5
+> +                          - 6
+> +
 
-David
+Looks like the same schema duplicated. You can put it under a '$defs' 
+and reference it twice.
 
+>                      required:
+>                        - phy-mode
+>  
+> -- 
+> 2.34.1
+> 
+> 
