@@ -2,336 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E7E9C59583E
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:31:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D5935957E7
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232916AbiHPKam (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 06:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47074 "EHLO
+        id S232786AbiHPKSh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 06:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiHPKaJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:30:09 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A4680B4A;
-        Tue, 16 Aug 2022 02:08:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660640897; x=1692176897;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=AHhuHzAtrFF5DEWgfegKMgUIgZts40mu6KwrMe8tknw=;
-  b=cA3P3CX8h1IUiFCLnUMJ9bbSmuW1YPd6sF6E/jMpbO45IMt7wLFVQBxN
-   59261lgvoK7yhcPfRJ7sTJhb3uPOPqZZFeu9705hwz8CRuBkyQBhRWUp3
-   ntuX4E4GP8UjrdULy7KPk/bShs2XkwPEf5cwFoAimd5U5ief6BqpT5w+J
-   Yd7ewwSew3IpVUwWikcGbbpSo/6KD/+aqitaQT7b+a6NKsuis+YFdA+pX
-   eUMWaClWa+M3UDP3USBTlXPWlGLJzW7lzEv3hRP/y08lldO8Dy2udRCPt
-   6PebaCQWkwDgpNituGMjJXtdBdnjK8xOTrOPm9iPNoKwUH6xYhzx2s6dE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="318161054"
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="318161054"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:08:17 -0700
-X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="667026274"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.29.22]) ([10.255.29.22])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 02:08:14 -0700
-Message-ID: <22e0236f-b556-c6a8-0043-b39b02928fd6@intel.com>
-Date:   Tue, 16 Aug 2022 17:08:12 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.12.0
-Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+        with ESMTP id S233370AbiHPKSD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:18:03 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2043.outbound.protection.outlook.com [40.107.20.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B2B3D5A9
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 02:10:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aLaM2hfSIkm9wcbb1lTi1B9q2vhLxQsl6lfRj+wQr7523M7CK6KdCzaoaB+1Ez88RSbF8CzzpSQbRGskcbkz1Q86ygRR3HmmI79KbC+pYwzZ++MdpB5YOZBQS5Ns1Wf7O4vkM5cndvzSruN8ZZeOCD522Jp7XYzwfzEzeAQCUyAif0niETmr4lIzTwvlkVko/e2T4TbmsHLfVkZ7b49e4TAoCdSQMXkQiAxa6RwgNAXlH3a8wMG+Arwm7arMfQlOhKppCq6dx/nZI2V1H5SOqkhD/yPXQ78txUUoztjtU7ezBq5zrSR9ppI9lBhZN6V295W6SoP+S566U8PAh68w4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xVNDR097mIVF9yY5OhVf9yPRRM6scwMTnYNbTh3bd+w=;
+ b=ZxhMsBkrxwvSppnemy2Nr+PUPVagoSAAgBvpNzdsP7MCRZXh/m5ZJR96iPSgaiAkeNYOMrfDFnehdXwy8qv2nHtU8eqGJOYgLJBqXXxGNyulB/rCupoO32K7R175Fm+C+m1b6eJtY8s4KSRSEoOPMSTBZGOwzQGLJC18Kb5Qc4JVgfUJb6jf2cTGwpMueEVJtrDTn0/qfXt4QkrzymHD71je7J94uxu0LFtvxluA9913gu7EcJTiR7EINgG+BY9ESoj7RNqDRKMlHO/CTo/9oUXpShuh5211t98iVT4ahDzqkL19/GdDe7K4ca/fDiR20RPmIrddD3itJlLS9hNKmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xVNDR097mIVF9yY5OhVf9yPRRM6scwMTnYNbTh3bd+w=;
+ b=XmE01e9KGwq43rwGq3NBRKZB9yVGDekSba2un7X6CT3ZsFI+vSr/+Ru9jg82hJniavSB4mENpsRfFD0GRd/Y0aGSIr5DmHj3p35aLZCYNVrBFzfJZ2MDgcYlLYyWj2Xba6Ye/AO5cKkbRKqMjbUQoj0UCeeh+GOX430hGSr98yg=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB5608.eurprd04.prod.outlook.com (2603:10a6:20b:a1::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Tue, 16 Aug
+ 2022 09:10:34 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
+ 09:10:34 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "marton12050@gmail.com" <marton12050@gmail.com>,
+        "peti.antal99@gmail.com" <peti.antal99@gmail.com>
+Subject: Re: igc: missing HW timestamps at TX
+Thread-Topic: igc: missing HW timestamps at TX
+Thread-Index: AQHYmepVJYOkQdQn8k+cRlOb7lKNfK2wqy+AgAANKICAAAtWgIAAqJKA
+Date:   Tue, 16 Aug 2022 09:10:34 +0000
+Message-ID: <20220816091033.n6zfyiastdugfvfr@skbuf>
+References: <87tu7emqb9.fsf@intel.com>
+ <695ec13e018d1111cf3e16a309069a72d55ea70e.camel@ericsson.com>
+ <d5571f0ea205e26bced51220044781131296aaac.camel@ericsson.com>
+ <87tu6i6h1k.fsf@intel.com>
+ <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
+ <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
+ <20220812201654.qx7e37otu32pxnbk@skbuf> <87v8qti3u2.fsf@intel.com>
+ <20220815222639.346wachaaq5zjwue@skbuf> <87k079hzry.fsf@intel.com>
+In-Reply-To: <87k079hzry.fsf@intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Si-Wei Liu <si-wei.liu@oracle.com>, jasowang@redhat.com,
-        mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com
-References: <20220815092638.504528-1-lingshan.zhu@intel.com>
- <20220815092638.504528-3-lingshan.zhu@intel.com>
- <c5075d3d-9d2c-2716-1cbf-cede49e2d66f@oracle.com>
- <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
- <9b6292f3-9bd5-ecd8-5e42-cd5d12f036e7@oracle.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <9b6292f3-9bd5-ecd8-5e42-cd5d12f036e7@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fd723dc0-6553-44a0-a163-08da7f672d4a
+x-ms-traffictypediagnostic: AM6PR04MB5608:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yLfgMQbvleUFBezK9drUW5xaDvFOovKiHhmESKM7IyIkItsodkVGFzG5VKPb+Uiuxe2xfkZau7zrCoxbdXk//MkFID+cQnIEX7FkMTyvskfodEz0iSHiFAibdvbP0TRqsBZurf/16HmiG0Kz/N2CkwDMnBwFwIlH62lSmSURGSf1405eDhxANdJEottuUZbnD16KvYVTzsgOvGifO10YB+ozV5g0LQxhEmDyepQSrWLVtzMESa9i3cFsaN0WxihViyQYtwaO8xu1Iw6JMdPfrCaYd8DDhQUE9qEn3ok3VO1WYQLweGD0hrUJfWZbXl0lVHaiYR8COY4AzV3PxmDkqmMO4urIn57gsU44g9/ju/dII1SHbsk345g3lo7jJFxPdtn62SsWU3SXhCuTpC3PL77VCPi7yPtSJDnZrIA/4CoLR81Y2DGgYixqKS91p46/XFDjXCVLUuc7fCtM0K1cin+uYSXe8DN2xoaZk1GzMsqYNfO5AJepdiWWgnsyfsxxdHsIu49UPTS3LJnU5uJdo1LHBNufNIZd2LtIC2oSO4lwyhfCa5M7KkNbD/iPmeOiEi+z7LkXRlO8l1DkXyWQg8HrSfFxfe+XaTgLx9EymZOb0UPjQKv8mPYduySMpYHh3Tj27U07ChZUWyznrKt8VQXAJ5fktS5FiJZh7rc71uIZy5g00Ru5yX9G/U+t0+6UkUc47RTTTn329c4OiCeNMq5carz5HbSvN+5/ZiCei4zXwYs6FwFGk8TAHU9CCGAEJfk7zbWagLiU2nkM9zLpiif9vY5mifuo671bNqKvPX8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(346002)(396003)(39860400002)(136003)(376002)(366004)(6506007)(26005)(6512007)(316002)(54906003)(86362001)(478600001)(6486002)(71200400001)(6916009)(33716001)(41300700001)(186003)(122000001)(9686003)(38100700002)(38070700005)(64756008)(1076003)(83380400001)(76116006)(66556008)(66946007)(5660300002)(91956017)(44832011)(66476007)(66446008)(4326008)(8676002)(8936002)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?p1BUx0FpY3q/wMxrciZX6H3fXuKZvE+KKdaaxeUJfdO0e9SCHX8MXu0m9wkR?=
+ =?us-ascii?Q?l2E7hWvjhHxtiK6cgszRvFGiEa0F8eem97pcv4/MpBXdq6D0XuTSdgG1o4nT?=
+ =?us-ascii?Q?BHmFT4LWNK1bxKhi37nORJbiSlybIpJR9B0qcr2mwGsjOzMnGAPflDzvTgAG?=
+ =?us-ascii?Q?Aw6URZ/lLleyUcBTmKnAWwZ5pSJm1Z4wkklHRY1MtuTjM6Q1rR5X7DCL1cGb?=
+ =?us-ascii?Q?RDyKDTRzIIIJfEDa/ZUjix3X1t0nXyltNu1bfK/uMgRuxixeeO4fP6Y0huU8?=
+ =?us-ascii?Q?/aYaGeGfbHCv83p8JRydyopUmHyPD/INb3V03TLlrUJNnWslLZdeCtyLs8pA?=
+ =?us-ascii?Q?zVo/G2RTiJOc14YsGPRdB1Jd73LfwvlVA8le0euXiAJcJ96DfGpLSzYlxvlY?=
+ =?us-ascii?Q?ekoULKJanG73LrT2dD3vjsjgx1ZyyfhzM3itaRy49gr7UN8JMEfNXQzKAinY?=
+ =?us-ascii?Q?2KQjMeqp7IT3afCTvWec+TXvYXaJczCUmLBoXQkCTPDYsOe9kwxAzkSPiucC?=
+ =?us-ascii?Q?B21KsPPi5VfBkBGeeky2SwzPxPgUjKu2hthuE8bb0VonddkjFATG3Bf/ojWz?=
+ =?us-ascii?Q?RuFM9EI8R8A2olzu2T7FfrG9bUgWEiIvkm76auNDPvwlfIHomPtM4o10TKrS?=
+ =?us-ascii?Q?pqBVLL4eiMXOoWoQm41E9Gad7dQibnG2CYT1YO4GjEr3KXod/CCot/0ZK42p?=
+ =?us-ascii?Q?9H5JQLoZ8JodbE6Q74erOk6jGj4dEpGwnqtKsQQwGz/w5towXLOumZn2ozvi?=
+ =?us-ascii?Q?EGAEFnh2CjADd5RD6migi3bWgbfw51nAez5+jTr8X/+CDhWYfYcYWm8K68cp?=
+ =?us-ascii?Q?uOZ8+QaBk9ZJ48fhdKOnweraeRRQjlMrm8oaAOwxVUEZvoXPVctsLz1LAi4T?=
+ =?us-ascii?Q?onlpO/9MJJChTpR/E8cDx+wRX3+g1Qp7o+iZ8KeLaEVDGt9jk+4feWciNAio?=
+ =?us-ascii?Q?yXOLW7TR/DJ1DpAsJRruRhX8XWBF4Q/sA2j3NMpdebWp52BrGf7rzNtGfDST?=
+ =?us-ascii?Q?a+MLowu+P+wLVTksP2aRAAjhuK7kmoLh9ucdfaGw8q4Y7MWDrR93WvZI11m9?=
+ =?us-ascii?Q?o2auJrqOE6OXYQA4R8bHGy/IM9xIhWTh9Zhls48CTuGrkZS1XrFL3/LWESlu?=
+ =?us-ascii?Q?c1bxoHiOg3Voia7x3Ki+zvmM2ZW83zBAV9Ug7TLbnOVD4/Xv04sZ4XSCbx9A?=
+ =?us-ascii?Q?GN0U9EEAJHuqvFHipReAfaSWeLNBqKCYZAG2al7aq6BYi4xEMUGqDImrILTu?=
+ =?us-ascii?Q?lVeFirHfpsSElFpHczDzCw8KOhI9RwK/zUYzM3etpSxZNO+ZzhSoEiPuWDPN?=
+ =?us-ascii?Q?aguixVgdkRc3b3JxeY8iaRh+NSdcqT4LvL1X9pDxey4hFipA9KGRe60T5H0R?=
+ =?us-ascii?Q?q2ef7CZlgW7LAL5+uprWTGo09piyzXO9uCAPPny3XYIhBWt7OCzNAHWgZBHJ?=
+ =?us-ascii?Q?8Edq+2yujef9/mBAVx5MtUH4OXdwXr1d8szTkIMAJPZpd4V6rxyhl48+O9QN?=
+ =?us-ascii?Q?sp/K6xLwcDjYTcGsoe++QEwqDLWJjok+Grdohpa08VUGwpno7ZWASjYoEc+G?=
+ =?us-ascii?Q?+Fx7hQZ6PVf0STflYy8Th+tJBjW3hiESeiD4u0eeui1gWfLRGoXZyMzpS/0i?=
+ =?us-ascii?Q?EQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <5732F81F2C234D4AA82899A2279B5B01@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fd723dc0-6553-44a0-a163-08da7f672d4a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2022 09:10:34.3946
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: WbKGYttQJG0iNCYqWyHMaFGI9OyjgNwui/SwGrGRKAUvFFu2qZYfTDu84JgiVldiut+oDlH66z/u/aflS78G0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5608
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Vinicius,
 
+On Mon, Aug 15, 2022 at 04:07:13PM -0700, Vinicius Costa Gomes wrote:
+> The interrupt that is generated is a general/misc interrupt, we have to
+> check on the interrupt cause bit that it's something TimeSync related,
+> and only then, we have to check that it's indeed a TX Timestamp that is
+> ready. And then, there's another register with some bits saying which
+> one of the 4 registers for timestamps that is ready. There are a few
+> levels of indirection, but no polling.
 
-On 8/16/2022 3:58 PM, Si-Wei Liu wrote:
->
->
-> On 8/15/2022 6:58 PM, Zhu, Lingshan wrote:
->>
->>
->> On 8/16/2022 7:32 AM, Si-Wei Liu wrote:
->>>
->>>
->>> On 8/15/2022 2:26 AM, Zhu Lingshan wrote:
->>>> Some fields of virtio-net device config space are
->>>> conditional on the feature bits, the spec says:
->>>>
->>>> "The mac address field always exists
->>>> (though is only valid if VIRTIO_NET_F_MAC is set)"
->>>>
->>>> "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ
->>>> or VIRTIO_NET_F_RSS is set"
->>>>
->>>> "mtu only exists if VIRTIO_NET_F_MTU is set"
->>>>
->>>> so we should read MTU, MAC and MQ in the device config
->>>> space only when these feature bits are offered.
->>>>
->>>> For MQ, if both VIRTIO_NET_F_MQ and VIRTIO_NET_F_RSS are
->>>> not set, the virtio device should have
->>>> one queue pair as default value, so when userspace querying queue 
->>>> pair numbers,
->>>> it should return mq=1 than zero.
->>>>
->>>> For MTU, if VIRTIO_NET_F_MTU is not set, we should not read
->>>> MTU from the device config sapce.
->>>> RFC894 <A Standard for the Transmission of IP Datagrams over 
->>>> Ethernet Networks>
->>>> says:"The minimum length of the data field of a packet sent over an
->>>> Ethernet is 1500 octets, thus the maximum length of an IP datagram
->>>> sent over an Ethernet is 1500 octets.  Implementations are encouraged
->>>> to support full-length packets"
->>> Noted there's a typo in the above "The *maximum* length of the data 
->>> field of a packet sent over an Ethernet is 1500 octets ..." and the 
->>> RFC was written 1984.
->> the spec RFC894 says it is 1500, see <a 
->> href="https://urldefense.com/v3/__https://www.rfc-editor.org/rfc/rfc894.txt__;!!ACWV5N9M2RV99hQ!MdgxZjw5sp5Qz-GKfwT1IWcw_L4Jo1-UekuJPFz1UrG3YuqirKz7P9ksdJFh1vB6zHJ7z8Q04fpT0-9jWXCtlWM$">https://www.rfc-editor.org/rfc/rfc894.txt</a>
->>>
->>> Apparently that is no longer true with the introduction of Jumbo 
->>> size frame later in the 2000s. I'm not sure what is the point of 
->>> mention this ancient RFC. It doesn't say default MTU of any Ethernet 
->>> NIC/switch should be 1500 in either  case.
->> This could be a larger number for sure, we are trying to find out the 
->> min value for Ethernet here, to support 1500 octets, MTU should be 
->> 1500 at least, so I assume 1500 should be the default value for MTU
->>>
->>>>
->>>> virtio spec says:"The virtio network device is a virtual ethernet 
->>>> card",
->>> Right,
->>>> so the default MTU value should be 1500 for virtio-net.
->>> ... but it doesn't say the default is 1500. At least, not in 
->>> explicit way. Why it can't be 1492 or even lower? In practice, if 
->>> the network backend has a MTU higher than 1500, there's nothing 
->>> wrong for guest to configure default MTU more than 1500.
->> same as above
->>>
->>>>
->>>> For MAC, the spec says:"If the VIRTIO_NET_F_MAC feature bit is set,
->>>> the configuration space mac entry indicates the “physical” address
->>>> of the network card, otherwise the driver would typically
->>>> generate a random local MAC address." So there is no
->>>> default MAC address if VIRTIO_NET_F_MAC not set.
->>>>
->>>> This commits introduces functions vdpa_dev_net_mtu_config_fill()
->>>> and vdpa_dev_net_mac_config_fill() to fill MTU and MAC.
->>>> It also fixes vdpa_dev_net_mq_config_fill() to report correct
->>>> MQ when _F_MQ is not present.
->>>>
->>>> These functions should check devices features than driver
->>>> features, and struct vdpa_device is not needed as a parameter
->>>>
->>>> The test & userspace tool output:
->>>>
->>>> Feature bit VIRTIO_NET_F_MTU, VIRTIO_NET_F_RSS, VIRTIO_NET_F_MQ
->>>> and VIRTIO_NET_F_MAC can be mask out by hardcode.
->>>>
->>>> However, it is challenging to "disable" the related fields
->>>> in the HW device config space, so let's just assume the values
->>>> are meaningless if the feature bits are not set.
->>>>
->>>> Before this change, when feature bits for RSS, MQ, MTU and MAC
->>>> are not set, iproute2 output:
->>>> $vdpa vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false mtu 
->>>> 1500
->>>>    negotiated_features
->>>>
->>>> without this commit, function vdpa_dev_net_config_fill()
->>>> reads all config space fields unconditionally, so let's
->>>> assume the MAC and MTU are meaningless, and it checks
->>>> MQ with driver_features, so we don't see max_vq_pairs.
->>>>
->>>> After applying this commit, when feature bits for
->>>> MQ, RSS, MAC and MTU are not set,iproute2 output:
->>>> $vdpa dev config show vdpa0
->>>> vdpa0: link up link_announce false max_vq_pairs 1 mtu 1500
->>>>    negotiated_features
->>>>
->>>> As explained above:
->>>> Here is no MAC, because VIRTIO_NET_F_MAC is not set,
->>>> and there is no default value for MAC. It shows
->>>> max_vq_paris = 1 because even without MQ feature,
->>>> a functional virtio-net must have one queue pair.
->>>> mtu = 1500 is the default value as ethernet
->>>> required.
->>>>
->>>> This commit also add supplementary comments for
->>>> __virtio16_to_cpu(true, xxx) operations in
->>>> vdpa_dev_net_config_fill() and vdpa_fill_stats_rec()
->>>>
->>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>>> ---
->>>>   drivers/vdpa/vdpa.c | 60 
->>>> +++++++++++++++++++++++++++++++++++----------
->>>>   1 file changed, 47 insertions(+), 13 deletions(-)
->>>>
->>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
->>>> index efb55a06e961..a74660b98979 100644
->>>> --- a/drivers/vdpa/vdpa.c
->>>> +++ b/drivers/vdpa/vdpa.c
->>>> @@ -801,19 +801,44 @@ static int vdpa_nl_cmd_dev_get_dumpit(struct 
->>>> sk_buff *msg, struct netlink_callba
->>>>       return msg->len;
->>>>   }
->>>>   -static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
->>>> -                       struct sk_buff *msg, u64 features,
->>>> +static int vdpa_dev_net_mq_config_fill(struct sk_buff *msg, u64 
->>>> features,
->>>>                          const struct virtio_net_config *config)
->>>>   {
->>>>       u16 val_u16;
->>>>   -    if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
->>>> -        return 0;
->>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0 &&
->>>> +        (features & BIT_ULL(VIRTIO_NET_F_RSS)) == 0)
->>>> +        val_u16 = 1;
->>>> +    else
->>>> +        val_u16 = __virtio16_to_cpu(true, 
->>>> config->max_virtqueue_pairs);
->>>>   -    val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
->>>>       return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
->>>>   }
->>>>   +static int vdpa_dev_net_mtu_config_fill(struct sk_buff *msg, u64 
->>>> features,
->>>> +                    const struct virtio_net_config *config)
->>>> +{
->>>> +    u16 val_u16;
->>>> +
->>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MTU)) == 0)
->>>> +        val_u16 = 1500;
->>> As said, there's no virtio spec defined value for MTU. Please leave 
->>> this field out if feature VIRTIO_NET_F_MTU is not negotiated.
->> same as above
->>>> +    else
->>>> +        val_u16 = __virtio16_to_cpu(true, config->mtu);
->>>> +
->>>> +    return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16);
->>>> +}
->>>> +
->>>> +static int vdpa_dev_net_mac_config_fill(struct sk_buff *msg, u64 
->>>> features,
->>>> +                    const struct virtio_net_config *config)
->>>> +{
->>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MAC)) == 0)
->>>> +        return 0;
->>>> +    else
->>>> +        return  nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR,
->>>> +                sizeof(config->mac), config->mac);
->>>> +}
->>>> +
->>>> +
->>>>   static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, 
->>>> struct sk_buff *msg)
->>>>   {
->>>>       struct virtio_net_config config = {};
->>>> @@ -822,18 +847,16 @@ static int vdpa_dev_net_config_fill(struct 
->>>> vdpa_device *vdev, struct sk_buff *ms
->>>>         vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
->>>>   -    if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, 
->>>> sizeof(config.mac),
->>>> -            config.mac))
->>>> -        return -EMSGSIZE;
->>>> +    /*
->>>> +     * Assume little endian for now, userspace can tweak this for
->>>> +     * legacy guest support.
->>> You can leave it as a TODO for kernel (vdpa core limitation), but 
->>> AFAIK there's nothing userspace needs to do to infer the endianness. 
->>> IMHO it's the kernel's job to provide an abstraction rather than 
->>> rely on userspace guessing it.
->> we have discussed it in another thread, and this comment is suggested 
->> by MST.
-> Can you provide the context or link? It shouldn't work like this, 
-> otherwise it is breaking uABI. E.g. how will a legacy/BE supporting 
-> kernel/device be backward compatible with older vdpa tool (which has 
-> knowledge of this endianness implication/assumption from day one)?
-https://www.spinics.net/lists/netdev/msg837114.html
+I used the word "poll" after being inspired by the code comments:
 
-The challenge is that the status filed is virtio16, not le16, so 
-le16_to_cpu(xxx) is wrong anyway. However we can not tell whether it is 
-a LE or BE device from struct vdpa_device, so for most cases, we assume 
-it is LE, and leave this comment.
+/**
+ * igc_ptp_tx_work
+ * @work: pointer to work struct
+ *
+ * This work function polls the TSYNCTXCTL valid bit to determine when a
+ * timestamp has been taken for the current stored skb.
+ */
 
-Thanks
->
-> -Siwei
->
->>>
->>>> +     */
->>>> +    val_u16 = __virtio16_to_cpu(true, config.status);
->>>>         val_u16 = __virtio16_to_cpu(true, config.status);
->>>>       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
->>>>           return -EMSGSIZE;
->>>>   -    val_u16 = __virtio16_to_cpu(true, config.mtu);
->>>> -    if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
->>>> -        return -EMSGSIZE;
->>>> -
->>>>       features_driver = vdev->config->get_driver_features(vdev);
->>>>       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, 
->>>> features_driver,
->>>>                     VDPA_ATTR_PAD))
->>>> @@ -846,7 +869,13 @@ static int vdpa_dev_net_config_fill(struct 
->>>> vdpa_device *vdev, struct sk_buff *ms
->>>>                     VDPA_ATTR_PAD))
->>>>           return -EMSGSIZE;
->>>>   -    return vdpa_dev_net_mq_config_fill(vdev, msg, 
->>>> features_driver, &config);
->>>> +    if (vdpa_dev_net_mac_config_fill(msg, features_device, &config))
->>>> +        return -EMSGSIZE;
->>>> +
->>>> +    if (vdpa_dev_net_mtu_config_fill(msg, features_device, &config))
->>>> +        return -EMSGSIZE;
->>>> +
->>>> +    return vdpa_dev_net_mq_config_fill(msg, features_device, 
->>>> &config);
->>>>   }
->>>>     static int
->>>> @@ -914,6 +943,11 @@ static int vdpa_fill_stats_rec(struct 
->>>> vdpa_device *vdev, struct sk_buff *msg,
->>>>       }
->>>>       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
->>>>   +    /*
->>>> +     * Assume little endian for now, userspace can tweak this for
->>>> +     * legacy guest support.
->>>> +     */
->>>> +
->>> Ditto.
->> same as above
->>
->> Thanks
->>>
->>> Thanks,
->>> -Siwei
->>>>       max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
->>>>       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
->>>>           return -EMSGSIZE;
->>>
->>
->
+> I think your question is more "why there's that workqueue on igc?"/"why
+> don't you retrieve the TX timestamp 'inline' with the interrupt?", if I
+> got that right, then, I don't have a good reason, apart from the feeling
+> that reading all those (5-6?) registers may take too long for a
+> interrupt handler. And it's something that's being done the same for
+> most (all?) Intel drivers.
 
+Ok, so basically it is an attempt of making the interrupt handler threaded,
+which doesn't run in hardirq context?
+
+Note that this decision makes the igc limitation of "single timestampable
+skb in flight" even much worse than it needs to be, because it prolongs
+the "in flight" period until the system_wq actually gets to run the work
+item we create.
+
+> I have a TODO to experiment with removing the workqueue, and retrieving
+> the TX timestamp in the same context as the interrupt handler, but other
+> things always come up.
+>=20
+>=20
+> Cheers,
+> --=20
+> Vinicius=
