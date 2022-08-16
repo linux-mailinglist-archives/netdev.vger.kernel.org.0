@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E72C595A18
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:29:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A56595A37
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 13:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233160AbiHPL23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 07:28:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48988 "EHLO
+        id S234541AbiHPLeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 07:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234125AbiHPL2E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:28:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADAA2CDF7;
-        Tue, 16 Aug 2022 03:43:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03D99B8165D;
-        Tue, 16 Aug 2022 10:43:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EA3C433C1;
-        Tue, 16 Aug 2022 10:43:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660646614;
-        bh=yqe/EMQmD3VLnGHghypui0+k7E1d1JAMjbBdNpJp/Ac=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=WmDtk6Cf5S1czeeVK0DAKEntmyWn/ucxbgRUOJ7EvCnJ+hlnMmXKs7d2LzLusOWjG
-         P9BZUnyFCygTSaBGyI+/ZMRsimDcw4lKZrmIl00p7YDKYDDZRS07+VkGYYjkDQNVZE
-         /NHOq/5udUF8/K0YgcGNQGgSV+Ea36YQkWf7qRPhQgneFDWP9m6nB5Vly8RrTfkWTj
-         Gx54EcrUu0WWbaHKs8uubbJDflr8MXwUMFtLvri3hNPrkYfanr9K/Ae48SXOeGfelg
-         0y7pVw8dF2stIh5VXYLv1fnS+4FQo+ZvQ2DKZC+sGfyc7TYLSt7uY6amkS3OtqU5wE
-         xT3sWq5r6idFg==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 0ED1D55F5FC; Tue, 16 Aug 2022 12:43:32 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Florian Westphal <fw@strlen.de>
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
-In-Reply-To: <CAADnVQLB1SQoYAYEzU_VuJ=q3azeyhBiK-NkU5OZC7rrumi0xQ@mail.gmail.com>
-References: <CAADnVQLB1SQoYAYEzU_VuJ=q3azeyhBiK-NkU5OZC7rrumi0xQ@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Tue, 16 Aug 2022 12:43:32 +0200
-Message-ID: <87v8qswjsb.fsf@toke.dk>
+        with ESMTP id S234523AbiHPLdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 07:33:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C557C1C5;
+        Tue, 16 Aug 2022 03:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660647333; x=1692183333;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ydczOs/B4f5E5PAGhD2udvBxWaaSFQ2xVkQP9xvCjU8=;
+  b=oTQzoV7YDMSyipRcfysxVCwIl8eYAFhxbhN38G9QCUwVU3uvdQIleI3Y
+   kahM2iMEBPswwj0IV1VBo3vLipO+KGBwKQk/RzOk1LW3ddU+/zhIRYyaG
+   6gvqX25GasRvTci3lEtuPT4xwuEgZiL8wucqGTvfUMK+Nqbj8KKgVdCAG
+   sRzjlRJo4z3jisqf/Q2TTHc7/5qrjEUlE2MmSTUQZzczyOLnWPTYwpmzK
+   DEHibJwbYVuu5/hbktrOGBa6wuafzsPYk1uEvMBQaI2C8Eosd7X5Rjiat
+   +OPU6r6RUqtq004icNz/HguJ8K5MsofZEfpfRSrvXiFvauEsYsPI8IMQ6
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="169486516"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Aug 2022 03:55:32 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Tue, 16 Aug 2022 03:55:30 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 16 Aug 2022 03:55:24 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: [patch net v3] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
+Date:   Tue, 16 Aug 2022 16:25:16 +0530
+Message-ID: <20220816105516.18350-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,55 +68,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+In the ksz9477_fdb_dump function it reads the ALU control register and
+exit from the timeout loop if there is valid entry or search is
+complete. After exiting the loop, it reads the alu entry and report to
+the user space irrespective of entry is valid. It works till the valid
+entry. If the loop exited when search is complete, it reads the alu
+table. The table returns all ones and it is reported to user space. So
+bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
+To fix it, after exiting the loop the entry is reported only if it is
+valid one.
 
-> On Mon, Aug 15, 2022 at 3:40 PM Florian Westphal <fw@strlen.de> wrote:
->>
->> Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org> wrote:
->> > > Support direct writes to nf_conn:mark from TC and XDP prog types. Th=
-is
->> > > is useful when applications want to store per-connection metadata. T=
-his
->> > > is also particularly useful for applications that run both bpf and
->> > > iptables/nftables because the latter can trivially access this metad=
-ata.
->> > >
->> > > One example use case would be if a bpf prog is responsible for advan=
-ced
->> > > packet classification and iptables/nftables is later used for routing
->> > > due to pre-existing/legacy code.
->> > >
->> > > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->> >
->> > Didn't we agree the last time around that all field access should be
->> > using helper kfuncs instead of allowing direct writes to struct nf_con=
-n?
->>
->> I don't see why ct->mark needs special handling.
->>
->> It might be possible we need to change accesses on nf/tc side to use
->> READ/WRITE_ONCE though.
->
-> +1
-> I don't think we need to have a hard rule.
-> If fields is safe to access directly than it's faster
-> to let bpf prog read/write it.
-> There are no backward compat concerns. If conntrack side decides
-> to make that field special we can disallow direct writes in
-> the same kernel version.
+Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+changes in v3
+- changed the subject from net-next to net
 
-Right, I was under the impression we wanted all fields to be wrapper by
-helpers so that the struct owner could change their semantics without
-affecting users (and solve the performance issue by figuring out a
-generic way to inline those helpers). I guess there could also be an API
-consistency argument for doing this.
+changes in v2
+- changed the fixes commit id
+- reduced the indentation level by using ! and continue statement
 
-However, I don't have a strong opinion on this, so if y'all prefer
-keeping these as direct field writes, that's OK with me.
+ drivers/net/dsa/microchip/ksz9477.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> These accesses, just like kfuncs, are unstable.
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 4b14d80d27ed..e4f446db0ca1 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -613,6 +613,9 @@ int ksz9477_fdb_dump(struct ksz_device *dev, int port,
+ 			goto exit;
+ 		}
+ 
++		if (!(ksz_data & ALU_VALID))
++			continue;
++
+ 		/* read ALU table */
+ 		ksz9477_read_table(dev, alu_table);
+ 
 
-Well, it will be interesting to see how that plays out the first time
-an application relying on one of these breaks on a kernel upgrade :)
+base-commit: 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
+-- 
+2.36.1
 
--Toke
