@@ -2,139 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6C9595763
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D478B595810
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233949AbiHPKCU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 06:02:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
+        id S234075AbiHPKXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 06:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233401AbiHPKBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:01:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ACB05EDC5
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:23:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660638208;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=V4oG1fGIfLDR5f50kJC3AlbvxuOG5rss32LyfKjRXLI=;
-        b=Iy0F1BOq0dw7xa27osJy8lOvM13Dh/r0NnzWGjGPj1BcUzn4SqvBUOItgwvPTUv/MxSunL
-        L4NqbinKwPeavvSRUArbJ7EBeb+4AzMTAgH/0ZqGIjHDKHv9EdNdunBD7uXdGDTA2gUO/F
-        S5pwCE+u2Z7C2FPyGMGrGJcNI67dsM4=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-29-chKZdQ5PP4aLKYqkWti9Mg-1; Tue, 16 Aug 2022 04:23:27 -0400
-X-MC-Unique: chKZdQ5PP4aLKYqkWti9Mg-1
-Received: by mail-wr1-f72.google.com with SMTP id d18-20020adf9b92000000b0022503144f4fso1168951wrc.9
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:23:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=V4oG1fGIfLDR5f50kJC3AlbvxuOG5rss32LyfKjRXLI=;
-        b=WP7m8ghGrGznnenwxMdAbM43bSDzfUTRBy4aAeMgiX1RZYUPgm+nTNc3lqivwaVqgx
-         duzaj1boW8ZGH8e+foYMRZDKbrKPzTwQRfGLDouh6MLYL8owB5VBiBW3Fn/1xkTeGUN1
-         I51FDnYosgHjSV+OwwVk/PiUIzhD65UerylmBmXnTWGzFQK96PWxM95gTonhWO4jsajC
-         lzKCAlLle9zb1ftWiIHJ/BsE576N7SqWfPRKUIa/Q9Ww5V/n7vEwMLqg2A7gBajmLwe1
-         5pATezqwpOSb5ErRWiRNxgJ5M652YdMc/K0owkj36Qw0ilOmcjklddf0TfysKGSmjlN5
-         Mjlw==
-X-Gm-Message-State: ACgBeo0ww4EI2yVKoCy340JTkgsg1Fh4Wets15C/+EEt7uNTm7mMkjZd
-        hNrvBC4XYfNOQSrI2aHZC7X9R/BJwgY5wNntvvdGzg2QzjwKOc/QJW7zYbXtTs25+I6qxtt4SDM
-        Tk+9MIlsS3y2U5FuO
-X-Received: by 2002:a5d:6da8:0:b0:221:7db8:de0a with SMTP id u8-20020a5d6da8000000b002217db8de0amr10846359wrs.405.1660638205979;
-        Tue, 16 Aug 2022 01:23:25 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4Be6LbtV7yTGqbSUu3sanvO4iZ86CjPJG2SNzqsNkmuRv69b6+YtLfJuQbl54PznhWVwsbJQ==
-X-Received: by 2002:a5d:6da8:0:b0:221:7db8:de0a with SMTP id u8-20020a5d6da8000000b002217db8de0amr10846349wrs.405.1660638205760;
-        Tue, 16 Aug 2022 01:23:25 -0700 (PDT)
-Received: from redhat.com ([2.55.43.215])
-        by smtp.gmail.com with ESMTPSA id j20-20020a05600c191400b003a5c1e916c8sm2328119wmq.1.2022.08.16.01.23.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 01:23:25 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 04:23:21 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     Zhu Lingshan <lingshan.zhu@intel.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com, jasowang@redhat.com
-Subject: Re: [PATCH V5 4/6] vDPA: !FEATURES_OK should not block querying
- device config space
-Message-ID: <20220816042157-mutt-send-email-mst@kernel.org>
-References: <20220812104500.163625-1-lingshan.zhu@intel.com>
- <20220812104500.163625-5-lingshan.zhu@intel.com>
- <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
+        with ESMTP id S234086AbiHPKXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:23:17 -0400
+Received: from out30-54.freemail.mail.aliyun.com (out30-54.freemail.mail.aliyun.com [115.124.30.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C48D1257B7;
+        Tue, 16 Aug 2022 01:25:12 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R521e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046051;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMPEg6J_1660638285;
+Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMPEg6J_1660638285)
+          by smtp.aliyun-inc.com;
+          Tue, 16 Aug 2022 16:24:46 +0800
+Date:   Tue, 16 Aug 2022 16:24:45 +0800
+From:   Tony Lu <tonylu@linux.alibaba.com>
+To:     "D. Wythe" <alibuda@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH net-next 07/10] net/smc: reduce unnecessary blocking in
+ smcr_lgr_reg_rmbs()
+Message-ID: <YvtUTY3pAQJx0vcQ@TonyMac-Alibaba>
+Reply-To: Tony Lu <tonylu@linux.alibaba.com>
+References: <cover.1660152975.git.alibuda@linux.alibaba.com>
+ <46f364ce7878b740e58bf44d3bed5fe23c64a260.1660152975.git.alibuda@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <46f364ce7878b740e58bf44d3bed5fe23c64a260.1660152975.git.alibuda@linux.alibaba.com>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:41:21AM -0700, Si-Wei Liu wrote:
-> Hi Michael,
+On Thu, Aug 11, 2022 at 01:47:38AM +0800, D. Wythe wrote:
+> From: "D. Wythe" <alibuda@linux.alibaba.com>
 > 
-> I just noticed this patch got pulled to linux-next prematurely without
-> getting consensus on code review, am not sure why. Hope it was just an
-> oversight.
+> Unlike smc_buf_create() and smcr_buf_unuse(), smcr_lgr_reg_rmbs() is
+> exclusive when assigned rmb_desc was not registered, although it can be
+> executed in parallel when assigned rmb_desc was registered already
+> and only performs read semtamics on it. Hence, we can not simply replace
+> it with read semaphore.
 > 
-> Unfortunately this introduced functionality regression to at least two cases
-> so far as I see:
+> The idea here is that if the assigned rmb_desc was registered already,
+> use read semaphore to protect the critical section, once the assigned
+> rmb_desc was not registered, keep using keep write semaphore still
+> to keep its exclusivity.
 > 
-> 1. (bogus) VDPA_ATTR_DEV_NEGOTIATED_FEATURES are inadvertently exposed and
-> displayed in "vdpa dev config show" before feature negotiation is done.
-> Noted the corresponding features name shown in vdpa tool is called
-> "negotiated_features" rather than "driver_features". I see in no way the
-> intended change of the patch should break this user level expectation
-> regardless of any spec requirement. Do you agree on this point?
+> Thanks to the reusable features of rmb_desc, which allows us to execute
+> in parallel in most cases.
 > 
-> 2. There was also another implicit assumption that is broken by this patch.
-> There could be a vdpa tool query of config via
-> vdpa_dev_net_config_fill()->vdpa_get_config_unlocked() that races with the
-> first vdpa_set_features() call from VMM e.g. QEMU. Since the S_FEATURES_OK
-> blocking condition is removed, if the vdpa tool query occurs earlier than
-> the first set_driver_features() call from VMM, the following code will treat
-> the guest as legacy and then trigger an erroneous
-> vdpa_set_features_unlocked(... , 0) call to the vdpa driver:
+> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+> ---
+>  net/smc/af_smc.c | 19 +++++++++++++++++--
+>  1 file changed, 17 insertions(+), 2 deletions(-)
 > 
->  374         /*
->  375          * Config accesses aren't supposed to trigger before features
-> are set.
->  376          * If it does happen we assume a legacy guest.
->  377          */
->  378         if (!vdev->features_valid)
->  379                 vdpa_set_features_unlocked(vdev, 0);
->  380         ops->get_config(vdev, offset, buf, len);
-> Depending on vendor driver's implementation, L380 may either return invalid
-> config data (or invalid endianness if on BE) or only config fields that are
-> valid in legacy layout. What's more severe is that, vdpa tool query in
-> theory shouldn't affect feature negotiation at all by making confusing calls
-> to the device, but now it is possible with the patch. Fixing this would
-> require more delicate work on the other paths involving the cf_lock
-> reader/write semaphore.
-> 
-> Not sure what you plan to do next, post the fixes for both issues and get
-> the community review? Or simply revert the patch in question? Let us know.
-> 
-> Thanks,
-> -Siwei
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index 51b90e2..39dbf39 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -516,10 +516,25 @@ static int smcr_lgr_reg_rmbs(struct smc_link *link,
+>  {
+>  	struct smc_link_group *lgr = link->lgr;
+>  	int i, rc = 0;
+> +	bool slow = false;
 
-If we can get fixes that's good. If not I can apply a revert.
-I'm on vacation next week, you guys will have the time
-to figure out the best plan of action.
+Consider do_slow?
 
--- 
-MST
+Reverse Christmas tree.
 
+>  
+>  	rc = smc_llc_flow_initiate(lgr, SMC_LLC_FLOW_RKEY);
+>  	if (rc)
+>  		return rc;
+> +
+> +	down_read(&lgr->llc_conf_mutex);
+> +	for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+> +		if (!smc_link_active(&lgr->lnk[i]))
+> +			continue;
+> +		if (!rmb_desc->is_reg_mr[link->link_idx]) {
+> +			up_read(&lgr->llc_conf_mutex);
+> +			goto slow_path;
+> +		}
+> +	}
+> +	/* mr register already */
+> +	goto fast_path;
+> +slow_path:
+> +	slow = true;
+>  	/* protect against parallel smc_llc_cli_rkey_exchange() and
+>  	 * parallel smcr_link_reg_buf()
+>  	 */
+> @@ -531,7 +546,7 @@ static int smcr_lgr_reg_rmbs(struct smc_link *link,
+>  		if (rc)
+>  			goto out;
+>  	}
+> -
+> +fast_path:
+>  	/* exchange confirm_rkey msg with peer */
+>  	rc = smc_llc_do_confirm_rkey(link, rmb_desc);
+>  	if (rc) {
+> @@ -540,7 +555,7 @@ static int smcr_lgr_reg_rmbs(struct smc_link *link,
+>  	}
+>  	rmb_desc->is_conf_rkey = true;
+>  out:
+> -	up_write(&lgr->llc_conf_mutex);
+> +	slow ? up_write(&lgr->llc_conf_mutex) : up_read(&lgr->llc_conf_mutex);
+>  	smc_llc_flow_stop(lgr, &lgr->llc_flow_lcl);
+>  	return rc;
+>  }
+> -- 
+> 1.8.3.1
