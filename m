@@ -2,349 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8AFD59573F
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:56:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C40C35956FC
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 11:48:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234092AbiHPJ4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 05:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57858 "EHLO
+        id S233891AbiHPJsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 05:48:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234183AbiHPJzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:55:22 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B630399F0;
-        Tue, 16 Aug 2022 01:39:10 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R861e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMPRQlw_1660639065;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VMPRQlw_1660639065)
-          by smtp.aliyun-inc.com;
-          Tue, 16 Aug 2022 16:37:46 +0800
-Date:   Tue, 16 Aug 2022 16:37:45 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, wenjia@linux.ibm.com, kuba@kernel.org,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: Re: [PATCH net-next 08/10] net/smc: replace mutex rmbs_lock and
- sndbufs_lock with rw_semaphore
-Message-ID: <YvtXWfnWTP5P9ePT@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <cover.1660152975.git.alibuda@linux.alibaba.com>
- <b4e23c1ef29d567661de46a79c00e48a01344366.1660152975.git.alibuda@linux.alibaba.com>
+        with ESMTP id S233885AbiHPJsG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 05:48:06 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7A4DB7D1
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id d6-20020a056e020c0600b002deca741bc2so6672858ile.18
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:41:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=QoJU5GGMy8v8yEZNFxM99bTCjQW1eFlhk+iiG3fJdLI=;
+        b=pLUvQG7RaBg4kku0X9elKN60FPwM2vCAOfIvXfqKLBR3eD3j08jpaAJYwIRA8bcx1Q
+         5NiOV7e/WPytOdZuWhhY99a8b8fFxh5ApBDuyG8KIPjdsR0BuwEaPVzew2EwB5FFSdQg
+         j0tqKfs1trke7OO5jIKQhYBSrUqwDPxJXx4eusRGGtjO9re2ArU6EFibUYDcaTrotQxF
+         MRpxsdjpTqQONJXp7v/aZQrZHPDU2+gzIezb7qdVTCLjjshZbSpB1iiTJT7PwQoKYH0w
+         Oy0FfDcsMJcJsKJ17GaLPNT2+5n6VwFpT3TdCXN6SpmMls+7wvLoj72Ejl7uYA+2Qohg
+         +ShQ==
+X-Gm-Message-State: ACgBeo364/QHnVCIODhWFrVZ6hjbOeA8fBnnLO6fAeuY0w8qPurQHLEg
+        KCOZfVEc2KB9oTUiNelWyGX1dlkAM5l7EMvx4pAu9Ks+nJyy
+X-Google-Smtp-Source: AA6agR72pfTFc5Nk70AuqknQizPu6jLKL7iJFFPqgDk7a5kQ7izKd/NlV+VSVv6WZrRf/Lm1ZySMpdIMRZk6PsLGPasFpCgAOzQH
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b4e23c1ef29d567661de46a79c00e48a01344366.1660152975.git.alibuda@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Received: by 2002:a05:6e02:2145:b0:2e4:b2f3:d6fb with SMTP id
+ d5-20020a056e02214500b002e4b2f3d6fbmr7270506ilv.163.1660639294552; Tue, 16
+ Aug 2022 01:41:34 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:41:34 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000040801b05e657b77f@google.com>
+Subject: [syzbot] upstream boot error: BUG: unable to handle kernel paging
+ request in __rhashtable_lookup
+From:   syzbot <syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        fw@strlen.de, harshit.m.mogalapalli@oracle.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 01:47:39AM +0800, D. Wythe wrote:
-> From: "D. Wythe" <alibuda@linux.alibaba.com>
-> 
-> It's clear that rmbs_lock and sndbufs_lock are aims to protect the
-> rmbs list or the sndbufs list.
-> 
-> During conenction establieshment, smc_buf_get_slot() will always
+Hello,
 
-conenction -> connection
+syzbot found the following issue on:
 
-> be invoke, and it only performs read semantics in rmbs list and
+HEAD commit:    4a9350597aff Merge tag 'sound-fix-6.0-rc1' of git://git.ke..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=16259e35080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=5d647c9572405910
+dashboard link: https://syzkaller.appspot.com/bug?extid=6fccf62d7c237e1b4c85
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-invoke -> invoked.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+6fccf62d7c237e1b4c85@syzkaller.appspotmail.com
 
-> sndbufs list.
-> 
-> Based on the above considerations, we replace mutex with rw_semaphore.
-> Only smc_buf_get_slot() use down_read() to allow smc_buf_get_slot()
-> run concurrently, other part use down_write() to keep exclusive
-> semantics.
-> 
-> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
-> ---
->  net/smc/smc_core.c | 55 +++++++++++++++++++++++++++---------------------------
->  net/smc/smc_core.h |  4 ++--
->  net/smc/smc_llc.c  | 16 ++++++++--------
->  3 files changed, 38 insertions(+), 37 deletions(-)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index 113804d..b90970a 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -1138,8 +1138,8 @@ static int smc_lgr_create(struct smc_sock *smc, struct smc_init_info *ini)
->  	lgr->freeing = 0;
->  	lgr->vlan_id = ini->vlan_id;
->  	refcount_set(&lgr->refcnt, 1); /* set lgr refcnt to 1 */
-> -	mutex_init(&lgr->sndbufs_lock);
-> -	mutex_init(&lgr->rmbs_lock);
-> +	init_rwsem(&lgr->sndbufs_lock);
-> +	init_rwsem(&lgr->rmbs_lock);
->  	rwlock_init(&lgr->conns_lock);
->  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
->  		INIT_LIST_HEAD(&lgr->sndbufs[i]);
-> @@ -1380,7 +1380,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
->  static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
->  			   struct smc_link_group *lgr)
->  {
-> -	struct mutex *lock;	/* lock buffer list */
-> +	struct rw_semaphore *lock;	/* lock buffer list */
->  	int rc;
->  
->  	if (is_rmb && buf_desc->is_conf_rkey && !list_empty(&lgr->list)) {
-> @@ -1400,9 +1400,9 @@ static void smcr_buf_unuse(struct smc_buf_desc *buf_desc, bool is_rmb,
->  		/* buf registration failed, reuse not possible */
->  		lock = is_rmb ? &lgr->rmbs_lock :
->  				&lgr->sndbufs_lock;
-> -		mutex_lock(lock);
-> +		down_write(lock);
->  		list_del(&buf_desc->list);
-> -		mutex_unlock(lock);
-> +		up_write(lock);
->  
->  		smc_buf_free(lgr, is_rmb, buf_desc);
->  	} else {
-> @@ -1506,15 +1506,16 @@ static void smcr_buf_unmap_lgr(struct smc_link *lnk)
->  	int i;
->  
->  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
-> -		mutex_lock(&lgr->rmbs_lock);
-> +		down_write(&lgr->rmbs_lock);
->  		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list)
->  			smcr_buf_unmap_link(buf_desc, true, lnk);
-> -		mutex_unlock(&lgr->rmbs_lock);
-> -		mutex_lock(&lgr->sndbufs_lock);
-> +		up_write(&lgr->rmbs_lock);
-> +
-> +		down_write(&lgr->sndbufs_lock);
->  		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i],
->  					 list)
->  			smcr_buf_unmap_link(buf_desc, false, lnk);
-> -		mutex_unlock(&lgr->sndbufs_lock);
-> +		up_write(&lgr->sndbufs_lock);
->  	}
->  }
->  
-> @@ -2324,19 +2325,19 @@ int smc_uncompress_bufsize(u8 compressed)
->   * buffer size; if not available, return NULL
->   */
->  static struct smc_buf_desc *smc_buf_get_slot(int compressed_bufsize,
-> -					     struct mutex *lock,
-> +					     struct rw_semaphore *lock,
->  					     struct list_head *buf_list)
->  {
->  	struct smc_buf_desc *buf_slot;
->  
-> -	mutex_lock(lock);
-> +	down_read(lock);
->  	list_for_each_entry(buf_slot, buf_list, list) {
->  		if (cmpxchg(&buf_slot->used, 0, 1) == 0) {
-> -			mutex_unlock(lock);
-> +			up_read(lock);
->  			return buf_slot;
->  		}
->  	}
-> -	mutex_unlock(lock);
-> +	up_read(lock);
->  	return NULL;
->  }
->  
-> @@ -2445,13 +2446,13 @@ int smcr_link_reg_buf(struct smc_link *link, struct smc_buf_desc *buf_desc)
->  	return 0;
->  }
->  
-> -static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
-> +static int _smcr_buf_map_lgr(struct smc_link *lnk, struct rw_semaphore *lock,
->  			     struct list_head *lst, bool is_rmb)
->  {
->  	struct smc_buf_desc *buf_desc, *bf;
->  	int rc = 0;
->  
-> -	mutex_lock(lock);
-> +	down_write(lock);
->  	list_for_each_entry_safe(buf_desc, bf, lst, list) {
->  		if (!buf_desc->used)
->  			continue;
-> @@ -2460,7 +2461,7 @@ static int _smcr_buf_map_lgr(struct smc_link *lnk, struct mutex *lock,
->  			goto out;
->  	}
->  out:
-> -	mutex_unlock(lock);
-> +	up_write(lock);
->  	return rc;
->  }
->  
-> @@ -2493,37 +2494,37 @@ int smcr_buf_reg_lgr(struct smc_link *lnk)
->  	int i, rc = 0;
->  
->  	/* reg all RMBs for a new link */
-> -	mutex_lock(&lgr->rmbs_lock);
-> +	down_write(&lgr->rmbs_lock);
->  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
->  		list_for_each_entry_safe(buf_desc, bf, &lgr->rmbs[i], list) {
->  			if (!buf_desc->used)
->  				continue;
->  			rc = smcr_link_reg_buf(lnk, buf_desc);
->  			if (rc) {
-> -				mutex_unlock(&lgr->rmbs_lock);
-> +				up_write(&lgr->rmbs_lock);
->  				return rc;
->  			}
->  		}
->  	}
-> -	mutex_unlock(&lgr->rmbs_lock);
-> +	up_write(&lgr->rmbs_lock);
->  
->  	if (lgr->buf_type == SMCR_PHYS_CONT_BUFS)
->  		return rc;
->  
->  	/* reg all vzalloced sndbufs for a new link */
-> -	mutex_lock(&lgr->sndbufs_lock);
-> +	down_write(&lgr->sndbufs_lock);
->  	for (i = 0; i < SMC_RMBE_SIZES; i++) {
->  		list_for_each_entry_safe(buf_desc, bf, &lgr->sndbufs[i], list) {
->  			if (!buf_desc->used || !buf_desc->is_vm)
->  				continue;
->  			rc = smcr_link_reg_buf(lnk, buf_desc);
->  			if (rc) {
-> -				mutex_unlock(&lgr->sndbufs_lock);
-> +				up_write(&lgr->sndbufs_lock);
->  				return rc;
->  			}
->  		}
->  	}
-> -	mutex_unlock(&lgr->sndbufs_lock);
-> +	up_write(&lgr->sndbufs_lock);
->  	return rc;
->  }
->  
-> @@ -2641,7 +2642,7 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
->  	struct list_head *buf_list;
->  	int bufsize, bufsize_short;
->  	bool is_dgraded = false;
-> -	struct mutex *lock;	/* lock buffer list */
-> +	struct rw_semaphore *lock;	/* lock buffer list */
->  	int sk_buf_size;
->  
->  	if (is_rmb)
-> @@ -2689,9 +2690,9 @@ static int __smc_buf_create(struct smc_sock *smc, bool is_smcd, bool is_rmb)
->  		SMC_STAT_RMB_ALLOC(smc, is_smcd, is_rmb);
->  		SMC_STAT_RMB_SIZE(smc, is_smcd, is_rmb, bufsize);
->  		buf_desc->used = 1;
-> -		mutex_lock(lock);
-> +		down_write(lock);
->  		list_add(&buf_desc->list, buf_list);
-> -		mutex_unlock(lock);
-> +		up_write(lock);
->  		break; /* found */
->  	}
->  
-> @@ -2765,9 +2766,9 @@ int smc_buf_create(struct smc_sock *smc, bool is_smcd)
->  	/* create rmb */
->  	rc = __smc_buf_create(smc, is_smcd, true);
->  	if (rc) {
-> -		mutex_lock(&smc->conn.lgr->sndbufs_lock);
-> +		down_write(&smc->conn.lgr->sndbufs_lock);
->  		list_del(&smc->conn.sndbuf_desc->list);
-> -		mutex_unlock(&smc->conn.lgr->sndbufs_lock);
-> +		up_write(&smc->conn.lgr->sndbufs_lock);
->  		smc_buf_free(smc->conn.lgr, false, smc->conn.sndbuf_desc);
->  		smc->conn.sndbuf_desc = NULL;
->  	}
-> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-> index 559d330..008148c 100644
-> --- a/net/smc/smc_core.h
-> +++ b/net/smc/smc_core.h
-> @@ -300,9 +300,9 @@ struct smc_link_group {
->  	unsigned short		vlan_id;	/* vlan id of link group */
->  
->  	struct list_head	sndbufs[SMC_RMBE_SIZES];/* tx buffers */
-> -	struct mutex		sndbufs_lock;	/* protects tx buffers */
-> +	struct rw_semaphore	sndbufs_lock;	/* protects tx buffers */
->  	struct list_head	rmbs[SMC_RMBE_SIZES];	/* rx buffers */
-> -	struct mutex		rmbs_lock;	/* protects rx buffers */
-> +	struct rw_semaphore	rmbs_lock;	/* protects rx buffers */
->  
->  	u8			id[SMC_LGR_ID_SIZE];	/* unique lgr id */
->  	struct delayed_work	free_work;	/* delayed freeing of an lgr */
-> diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-> index d744937..76f9906 100644
-> --- a/net/smc/smc_llc.c
-> +++ b/net/smc/smc_llc.c
-> @@ -642,7 +642,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
->  
->  	prim_lnk_idx = link->link_idx;
->  	lnk_idx = link_new->link_idx;
-> -	mutex_lock(&lgr->rmbs_lock);
-> +	down_write(&lgr->rmbs_lock);
->  	ext->num_rkeys = lgr->conns_num;
->  	if (!ext->num_rkeys)
->  		goto out;
-> @@ -662,7 +662,7 @@ static int smc_llc_fill_ext_v2(struct smc_llc_msg_add_link_v2_ext *ext,
->  	}
->  	len += i * sizeof(ext->rt[0]);
->  out:
-> -	mutex_unlock(&lgr->rmbs_lock);
-> +	up_write(&lgr->rmbs_lock);
->  	return len;
->  }
->  
-> @@ -923,7 +923,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
->  	int rc = 0;
->  	int i;
->  
-> -	mutex_lock(&lgr->rmbs_lock);
-> +	down_write(&lgr->rmbs_lock);
->  	num_rkeys_send = lgr->conns_num;
->  	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
->  	do {
-> @@ -950,7 +950,7 @@ static int smc_llc_cli_rkey_exchange(struct smc_link *link,
->  			break;
->  	} while (num_rkeys_send || num_rkeys_recv);
->  
-> -	mutex_unlock(&lgr->rmbs_lock);
-> +	up_write(&lgr->rmbs_lock);
->  	return rc;
->  }
->  
-> @@ -1033,14 +1033,14 @@ static void smc_llc_save_add_link_rkeys(struct smc_link *link,
->  	ext = (struct smc_llc_msg_add_link_v2_ext *)((u8 *)lgr->wr_rx_buf_v2 +
->  						     SMC_WR_TX_SIZE);
->  	max = min_t(u8, ext->num_rkeys, SMC_LLC_RKEYS_PER_MSG_V2);
-> -	mutex_lock(&lgr->rmbs_lock);
-> +	down_write(&lgr->rmbs_lock);
->  	for (i = 0; i < max; i++) {
->  		smc_rtoken_set(lgr, link->link_idx, link_new->link_idx,
->  			       ext->rt[i].rmb_key,
->  			       ext->rt[i].rmb_vaddr_new,
->  			       ext->rt[i].rmb_key_new);
->  	}
-> -	mutex_unlock(&lgr->rmbs_lock);
-> +	up_write(&lgr->rmbs_lock);
->  }
->  
->  static void smc_llc_save_add_link_info(struct smc_link *link,
-> @@ -1349,7 +1349,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
->  	int rc = 0;
->  	int i;
->  
-> -	mutex_lock(&lgr->rmbs_lock);
-> +	down_write(&lgr->rmbs_lock);
->  	num_rkeys_send = lgr->conns_num;
->  	buf_pos = smc_llc_get_first_rmb(lgr, &buf_lst);
->  	do {
-> @@ -1374,7 +1374,7 @@ static int smc_llc_srv_rkey_exchange(struct smc_link *link,
->  		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
->  	} while (num_rkeys_send || num_rkeys_recv);
->  out:
-> -	mutex_unlock(&lgr->rmbs_lock);
-> +	up_write(&lgr->rmbs_lock);
->  	return rc;
->  }
->  
-> -- 
-> 1.8.3.1
+8021q: adding VLAN 0 to HW filter on device bond0
+eql: remember to turn off Van-Jacobson compression on your slave devices
+BUG: unable to handle page fault for address: ffffdbffffffffc8
+#PF: supervisor read access in kernel mode
+#PF: error_code(0x0000) - not-present page
+PGD 11825067 P4D 11825067 PUD 0 
+Oops: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 3187 Comm: dhcpcd Not tainted 5.19.0-syzkaller-14090-g4a9350597aff #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
+RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
+Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
+RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
+RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
+RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
+R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
+FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ rhashtable_lookup include/linux/rhashtable.h:638 [inline]
+ rhashtable_lookup_fast include/linux/rhashtable.h:664 [inline]
+ __netlink_lookup net/netlink/af_netlink.c:518 [inline]
+ netlink_lookup+0x130/0x470 net/netlink/af_netlink.c:538
+ netlink_getsockbyportid net/netlink/af_netlink.c:1154 [inline]
+ netlink_unicast+0x244/0x7f0 net/netlink/af_netlink.c:1339
+ netlink_sendmsg+0x917/0xe10 net/netlink/af_netlink.c:1921
+ sock_sendmsg_nosec net/socket.c:714 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:734
+ ____sys_sendmsg+0x6eb/0x810 net/socket.c:2482
+ ___sys_sendmsg+0x110/0x1b0 net/socket.c:2536
+ __sys_sendmsg+0xf3/0x1c0 net/socket.c:2565
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fbe245ad163
+Code: 64 89 02 48 c7 c0 ff ff ff ff eb b7 66 2e 0f 1f 84 00 00 00 00 00 90 64 8b 04 25 18 00 00 00 85 c0 75 14 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 55 c3 0f 1f 40 00 48 83 ec 28 89 54 24 1c 48
+RSP: 002b:00007ffd4a7738f8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00007fbe244b56c8 RCX: 00007fbe245ad163
+RDX: 0000000000000000 RSI: 00007ffd4a787aa8 RDI: 0000000000000005
+RBP: 0000000000000005 R08: 0000000000000000 R09: 00007ffd4a787aa8
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 00007ffd4a787aa8 R14: 0000000000000030 R15: 0000000000000001
+ </TASK>
+Modules linked in:
+CR2: ffffdbffffffffc8
+---[ end trace 0000000000000000 ]---
+RIP: 0010:netlink_compare net/netlink/af_netlink.c:500 [inline]
+RIP: 0010:__rhashtable_lookup.constprop.0+0x2ae/0x5e0 include/linux/rhashtable.h:601
+Code: 01 44 89 e6 e8 83 19 e8 f9 45 84 e4 0f 85 8f 01 00 00 e8 f5 1c e8 f9 4d 8d 24 1f 49 8d bc 24 00 05 00 00 48 89 f8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 9c 02 00 00 45 8b ac 24 00
+RSP: 0018:ffffc9000351f818 EFLAGS: 00010a02
+RAX: 1fffdfffffffffc8 RBX: fffffffffffff940 RCX: 0000000000000000
+RDX: ffff88807cc7c140 RSI: ffffffff879318cb RDI: fffefffffffffe40
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000000 R12: fffefffffffff940
+R13: ffffffff9152ccc0 R14: dffffc0000000000 R15: ffff000000000000
+FS:  00007fbe244b5740(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: ffffdbffffffffc8 CR3: 0000000021e67000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+----------------
+Code disassembly (best guess):
+   0:	01 44 89 e6          	add    %eax,-0x1a(%rcx,%rcx,4)
+   4:	e8 83 19 e8 f9       	callq  0xf9e8198c
+   9:	45 84 e4             	test   %r12b,%r12b
+   c:	0f 85 8f 01 00 00    	jne    0x1a1
+  12:	e8 f5 1c e8 f9       	callq  0xf9e81d0c
+  17:	4d 8d 24 1f          	lea    (%r15,%rbx,1),%r12
+  1b:	49 8d bc 24 00 05 00 	lea    0x500(%r12),%rdi
+  22:	00
+  23:	48 89 f8             	mov    %rdi,%rax
+  26:	48 c1 e8 03          	shr    $0x3,%rax
+* 2a:	42 0f b6 04 30       	movzbl (%rax,%r14,1),%eax <-- trapping instruction
+  2f:	84 c0                	test   %al,%al
+  31:	74 08                	je     0x3b
+  33:	3c 03                	cmp    $0x3,%al
+  35:	0f 8e 9c 02 00 00    	jle    0x2d7
+  3b:	45                   	rex.RB
+  3c:	8b                   	.byte 0x8b
+  3d:	ac                   	lods   %ds:(%rsi),%al
+  3e:	24 00                	and    $0x0,%al
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
