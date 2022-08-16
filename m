@@ -2,136 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 90342595374
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 09:09:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F8905953C1
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 09:28:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiHPHJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 03:09:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33764 "EHLO
+        id S232059AbiHPH2O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 03:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229954AbiHPHIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 03:08:47 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028472DCE2D;
-        Mon, 15 Aug 2022 20:33:46 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id f22so11856656edc.7;
-        Mon, 15 Aug 2022 20:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=DEG/KDHanKqZe+WzYjSLFff9rFKakaJDsiFb2U0inBk=;
-        b=mKGK+oC2ul1JQ4Qvo5Z7bjRTwuhNeUSUZT2F104IIcGhRODQI9hKcwqVgyqlen0EUV
-         rR7YVa/tmyKEXPrbCW7inuTp2JtwxxmBA2wzRf3fthldXUdZ+dusMzpr6wggseeFg0zd
-         QFigtZ7xOkE8WtNGuy1VM1OAnLz/Hxthx5BT1fgy9qJB7WcBNlPMMdBDZtNVeJgurf72
-         OEk6PU6vFiyHOLQHL1bTIzpMFdlKfGyx/JLL07DJIH55CHS554o3zH63E+kTteDiwEYM
-         cBIIKMxWuhNo6AlnFOrgnGUj2gH1I1zh49J7XsTCTTmLulb7baETFZY9riKeqpA3OKS1
-         eNgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=DEG/KDHanKqZe+WzYjSLFff9rFKakaJDsiFb2U0inBk=;
-        b=ZB9FxrTCG5F8FbRWMhzztJkOK1MUWEfxGMw9DK/dEpG4bAxWVXcLjYCuWNY6WKvXj+
-         ZAdRP8YhGcKgLghQGPo79ZBaKmUCvUSsiYi7QF8oKeeBZe0vHURyDvw4H+06Pm+CIHy9
-         NFqawtY/lgNmJaQ6bapbiRCymODTw7RPYejge7LEn33yRPsA5rAx7Xh2bbElNx038kgJ
-         QO2yLiyZ89/tVYaK+M5VUIbeXkK30SB93n9PCFuQfb0n4oDVQQpOcu7T2LyxfH8hYzBe
-         KCyfxQODU2JH2pcNjGB069lc3GkyO/GcKowqcOEfiYZa3siMgkltrFjbJVVzrsjwzj4y
-         XOJQ==
-X-Gm-Message-State: ACgBeo0LWJd9ZP9V67fAhbgC9gUOuRcOL6yIU+3f/vGc782vuxeWyhVj
-        QTd1p9wqUD6gF4f0EeYB0rhB8R3vdqP7VU1DbgM=
-X-Google-Smtp-Source: AA6agR7o6+cbAmbBXWrOEVSD8/8jpNtunHuIYuQyyAHx1LwhKi1/Xxr3KRLSmAnNCs+diMAHKFF+AYFi8krAbUbaSjc=
-X-Received: by 2002:aa7:ccc4:0:b0:43d:9e0e:b7ff with SMTP id
- y4-20020aa7ccc4000000b0043d9e0eb7ffmr17529084edt.14.1660620825187; Mon, 15
- Aug 2022 20:33:45 -0700 (PDT)
+        with ESMTP id S231774AbiHPH1d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 03:27:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFE017DA92
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 21:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8506D61007
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 04:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D5812C433C1;
+        Tue, 16 Aug 2022 04:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660622414;
+        bh=EGMutGj+sCDCOgtLFTKlLQ/8GQMzHIdFbdQvevMwArU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=QEjlyjHMx5isjF2NGQZHtDG9rVKHmFTLEsKxERzC9bZsXAv+AW/tWhUDJtesishQN
+         iIaWg5ddTjoNuze7GpFrwCz5Vwc8B/1QR6/adwPB9zntnbBMGdlysAGzY8bJUbIWzq
+         l1ORc47KFkJIUf18XGSm/6bvlJtxERe3xE1eUe6AR20ysj/qzSBNjoIGLnUpngfwzV
+         SDk0iGTAkcsXQqBhlSSl9ple2vUL3IEjnTW5ZF3TLFdGbkpPUcWV05aoaFbgFfmP6j
+         RLVVJVcFvC3IgFuYQnodDtMmj0hWyaE7MWcjwIebRFUvxsA4r6ygg798ZbBoubMqzo
+         eHf86bi1Md/0w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B9BDDE2A051;
+        Tue, 16 Aug 2022 04:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220810190724.2692127-1-kafai@fb.com> <20220810190809.2698442-1-kafai@fb.com>
-In-Reply-To: <20220810190809.2698442-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 15 Aug 2022 20:33:33 -0700
-Message-ID: <CAEf4BzZqyE9XKePk0pf8U7-3ei17vO8jQiEBH_fTN7vOst+gWg@mail.gmail.com>
-Subject: Re: [PATCH v3 bpf-next 07/15] bpf: Initialize the bpf_run_ctx in bpf_iter_run_prog()
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/4][pull request] Intel Wired LAN Driver Updates
+ 2022-08-12 (iavf)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166062241475.31291.980988249605556689.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Aug 2022 04:00:14 +0000
+References: <20220812172309.853230-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220812172309.853230-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 10, 2022 at 12:11 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> The bpf-iter-prog for tcp and unix sk can do bpf_setsockopt()
-> which needs has_current_bpf_ctx() to decide if it is called by a
-> bpf prog.  This patch initializes the bpf_run_ctx in
-> bpf_iter_run_prog() for the has_current_bpf_ctx() to use.
->
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
->  include/linux/bpf.h   | 2 +-
->  kernel/bpf/bpf_iter.c | 5 +++++
->  2 files changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index 0a600b2013cc..15ab980e9525 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -1967,7 +1967,7 @@ static inline bool unprivileged_ebpf_enabled(void)
->  }
->
->  /* Not all bpf prog type has the bpf_ctx.
-> - * Only trampoline and cgroup-bpf have it.
-> + * Only trampoline, cgroup-bpf, and iter have it.
+Hello:
 
-Apart from this part which I'd drop, lgtm:
+This series was applied to netdev/net.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+On Fri, 12 Aug 2022 10:23:05 -0700 you wrote:
+> This series contains updates to iavf driver only.
+> 
+> Przemyslaw frees memory for admin queues in initialization error paths,
+> prevents freeing of vf_res which is causing null pointer dereference,
+> and adjusts calls in error path of reset to avoid iavf_close() which
+> could cause deadlock.
+> 
+> [...]
 
->   * For the bpf prog type that has initialized the bpf_ctx,
->   * this function can be used to decide if a kernel function
->   * is called by a bpf program.
-> diff --git a/kernel/bpf/bpf_iter.c b/kernel/bpf/bpf_iter.c
-> index 4b112aa8bba3..6476b2c03527 100644
-> --- a/kernel/bpf/bpf_iter.c
-> +++ b/kernel/bpf/bpf_iter.c
-> @@ -685,19 +685,24 @@ struct bpf_prog *bpf_iter_get_info(struct bpf_iter_meta *meta, bool in_stop)
->
->  int bpf_iter_run_prog(struct bpf_prog *prog, void *ctx)
->  {
-> +       struct bpf_run_ctx run_ctx, *old_run_ctx;
->         int ret;
->
->         if (prog->aux->sleepable) {
->                 rcu_read_lock_trace();
->                 migrate_disable();
->                 might_fault();
-> +               old_run_ctx = bpf_set_run_ctx(&run_ctx);
->                 ret = bpf_prog_run(prog, ctx);
-> +               bpf_reset_run_ctx(old_run_ctx);
->                 migrate_enable();
->                 rcu_read_unlock_trace();
->         } else {
->                 rcu_read_lock();
->                 migrate_disable();
-> +               old_run_ctx = bpf_set_run_ctx(&run_ctx);
->                 ret = bpf_prog_run(prog, ctx);
-> +               bpf_reset_run_ctx(old_run_ctx);
->                 migrate_enable();
->                 rcu_read_unlock();
->         }
-> --
-> 2.30.2
->
+Here is the summary with links:
+  - [net,1/4] iavf: Fix adminq error handling
+    https://git.kernel.org/netdev/net/c/419831617ed3
+  - [net,2/4] iavf: Fix NULL pointer dereference in iavf_get_link_ksettings
+    https://git.kernel.org/netdev/net/c/541a1af451b0
+  - [net,3/4] iavf: Fix reset error handling
+    https://git.kernel.org/netdev/net/c/31071173771e
+  - [net,4/4] iavf: Fix deadlock in initialization
+    https://git.kernel.org/netdev/net/c/cbe9e5112630
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
