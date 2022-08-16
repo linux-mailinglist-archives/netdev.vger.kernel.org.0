@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2C5E595491
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D9BC595482
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:08:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbiHPIGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 04:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
+        id S229890AbiHPIGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 04:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbiHPIFQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:05:16 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4DDF158377;
-        Mon, 15 Aug 2022 22:27:46 -0700 (PDT)
+        with ESMTP id S231911AbiHPIFS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:05:18 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B6E82644;
+        Mon, 15 Aug 2022 22:28:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660627667; x=1692163667;
+  t=1660627682; x=1692163682;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=HIa4AiWfwDtXrTlt3aMx/E4W69Ac0lB5I+w+tMoznn0=;
-  b=n8aW5bRv1em0O4uc+KbuSXICCKNY82ARuHFNfEyCl3jYfutyBjLIhjFi
-   Am1Suc+FLCXgOEaanK2WVDnsw68WK2bUQo2KruV2Km0uuMVgoiIpus3Ct
-   1SLyFhlkUY+KYExg3MILQXdxtF8UEXCdRf+Cz3MXtqoelPDGJfrIR5VG6
-   g=;
+  bh=ROg/26DfcY2/K1jwJJXHREca9UxCB+YTz15mnrjueV8=;
+  b=ZplOZfcVc7l/Aio+73tPG5eWx80AqSTtGg6JN9eAIInGFy1V88mtax3O
+   bsUOSQqFLQQGNHjE/ZECVETLZu2T94Bez+e+L58F7tE8dPPUqt1UmSGF+
+   Asjp85MC4PuOwf4pQB+LJPFfgzAyZPZG6JWFwwntSpX/9X8ZJBKuJounL
+   8=;
 X-IronPort-AV: E=Sophos;i="5.93,240,1654560000"; 
-   d="scan'208";a="233421147"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:27:46 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1e-0bfdb89e.us-east-1.amazon.com (Postfix) with ESMTPS id 2D02FE00AB;
-        Tue, 16 Aug 2022 05:27:44 +0000 (UTC)
+   d="scan'208";a="218222264"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 05:28:00 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com (Postfix) with ESMTPS id 79CF1449BE;
+        Tue, 16 Aug 2022 05:27:58 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 16 Aug 2022 05:27:43 +0000
+ id 15.0.1497.38; Tue, 16 Aug 2022 05:27:57 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.55) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 16 Aug 2022 05:27:41 +0000
+ Tue, 16 Aug 2022 05:27:55 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -46,10 +46,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Stephen Hemminger <shemminger@osdl.org>
-Subject: [PATCH v1 net 14/15] net: Fix a data-race around netdev_budget.
-Date:   Mon, 15 Aug 2022 22:23:46 -0700
-Message-ID: <20220816052347.70042-15-kuniyu@amazon.com>
+        Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
+Subject: [PATCH v1 net 15/15] net: Fix data-races around sysctl_max_skb_frags.
+Date:   Mon, 15 Aug 2022 22:23:47 -0700
+Message-ID: <20220816052347.70042-16-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220816052347.70042-1-kuniyu@amazon.com>
 References: <20220816052347.70042-1-kuniyu@amazon.com>
@@ -69,30 +69,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading netdev_budget, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_max_skb_frags, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 51b0bdedb8e7 ("[NET]: Separate two usages of netdev_max_backlog.")
+Fixes: 5f74f82ea34c ("net:Add sysctl_max_skb_frags")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
-CC: Stephen Hemminger <shemminger@osdl.org>
+CC: Hans Westgaard Ry <hans.westgaard.ry@oracle.com>
 ---
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp.c       | 4 ++--
+ net/mptcp/protocol.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4705e6630efa..c83e23cfc57d 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6666,7 +6666,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
- 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
- 	unsigned long time_limit = jiffies +
- 		usecs_to_jiffies(netdev_budget_usecs);
--	int budget = netdev_budget;
-+	int budget = READ_ONCE(netdev_budget);
- 	LIST_HEAD(list);
- 	LIST_HEAD(repoll);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 970e9a2cca4a..9a6fe3d6ab26 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1000,7 +1000,7 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
  
+ 	i = skb_shinfo(skb)->nr_frags;
+ 	can_coalesce = skb_can_coalesce(skb, i, page, offset);
+-	if (!can_coalesce && i >= sysctl_max_skb_frags) {
++	if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 		tcp_mark_push(tp, skb);
+ 		goto new_segment;
+ 	}
+@@ -1354,7 +1354,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+ 
+ 			if (!skb_can_coalesce(skb, i, pfrag->page,
+ 					      pfrag->offset)) {
+-				if (i >= sysctl_max_skb_frags) {
++				if (i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 					tcp_mark_push(tp, skb);
+ 					goto new_segment;
+ 				}
+diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
+index da4257504fad..d398f3810662 100644
+--- a/net/mptcp/protocol.c
++++ b/net/mptcp/protocol.c
+@@ -1263,7 +1263,7 @@ static int mptcp_sendmsg_frag(struct sock *sk, struct sock *ssk,
+ 
+ 		i = skb_shinfo(skb)->nr_frags;
+ 		can_coalesce = skb_can_coalesce(skb, i, dfrag->page, offset);
+-		if (!can_coalesce && i >= sysctl_max_skb_frags) {
++		if (!can_coalesce && i >= READ_ONCE(sysctl_max_skb_frags)) {
+ 			tcp_mark_push(tcp_sk(ssk), skb);
+ 			goto alloc_skb;
+ 		}
 -- 
 2.30.2
 
