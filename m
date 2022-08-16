@@ -2,134 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5929F595830
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:28:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF195957E4
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 12:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234580AbiHPK2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 06:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
+        id S232735AbiHPKRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 06:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234506AbiHPK10 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:27:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC698E089
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 01:47:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0D00B81661
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 08:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1891C433C1;
-        Tue, 16 Aug 2022 08:47:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660639656;
-        bh=Kx4qBNCc7R/7q8MhhpEHs06umv65XKuQ2khConZ/28k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=g8f/1bO5IBOPY296fMvnwZ5JBfF7TX3N2HAxhJn3ja5EoaNvhz16cV5rF9GCBCJ/A
-         AANu1UkF9chHMYBIL95EoVRqBM69Elbc8/PqZ7KkqFTMdXM7Qkq4KOJol+5WUfWUA+
-         MBr8fwfBu3wdoXgjPv+AO1QXd35m79p5OgSIdOyWw6vjf6Ggc8Dmx1Gj4XD3lzm9nd
-         Est4Oc0EswOW93588Gw1WLT5C/cdcHX9Qe5FWrb2slz0WwKcCnsJqz2DOGgMwV6v01
-         HHbMDH3s888YQZEhLMVk3wQE6TJHJj2JOA0Q89psFJiTCKrDDmXNWkZkQY3bHtGGVl
-         B1AJMRdFaW3Ow==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Lama Kayal <lkayal@nvidia.com>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>
-Subject: [PATCH net] net/mlx5e: Allocate flow steering storage during uplink initialization
-Date:   Tue, 16 Aug 2022 11:47:23 +0300
-Message-Id: <ae46fa5bed3c67f937bfdfc0370101278f5422f1.1660639564.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S234316AbiHPKLP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 06:11:15 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8989E5F109;
+        Tue, 16 Aug 2022 01:53:30 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id x5so7626257qtv.9;
+        Tue, 16 Aug 2022 01:53:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YnCIkno40KJuX3QeZtwItBffPailmAuhu9f01rahfzw=;
+        b=U+Xv3VUkbFZ75ATgYioKHUob55py8E0A8kpBjpKS5iy//nEaZbMprXx3p85fUAHykX
+         Y06ZTFC/cze5VAe4+1s6hPaXtQrCDPlSTKV4wFA4TPjUBR0tP3iFKTaAL6kt3XT/C3C2
+         fBrk2d/kIYDlZg1SrUwqoRC/YchA5SWC/3bbm5dEGPzCcsCq2bQk0wJ8zypR3Ax343Kh
+         gHaR95PbSmdDuRgWlEYUzButDm/lxQA7hAQGAHLvu1tas1c9iU1uKVaQpIwNliugV37P
+         zm1X4DXj0RuZc5vRssIL/DGXzRr9qfxD4XTKfT/6oA9JQW1m3aCU9ryKEoQnazGQMM58
+         BvuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YnCIkno40KJuX3QeZtwItBffPailmAuhu9f01rahfzw=;
+        b=kqy1gqvhI7wtOysotJtohIvqmCUUiI+KbKeB85urvqczfN/GOkceXSVo9wD3/Bj6d1
+         /tn9eBaXHoHiCa8xL7IHiHKl+QQDdVHzUPgKJFDo4aegc93nct6GlBGYZLeyaHlo469M
+         /+b5rBWAfzsR5oyoXHcE4FclDWSy386Dzxc9ZzVMOZRDLCTUe88YPjvUMGem2cbkO6n9
+         FYBsirB9Lz3v/vECUJM0J8bZb4NQVx7lYynMpLGMafevmdjfhej2NQIGmQNc8v69IqFg
+         8ZnRfV0zCQsJxZR/+vCbPduTQtzZ07CXGWZsmZ6ShJmHFoLJy5Aw+z4LStl6pWiwHUp+
+         QXKA==
+X-Gm-Message-State: ACgBeo0VNtis+jDJU0Yr7qtnlqZ0T2ZTks2GgpniNmpVuZGzCy8dLkiG
+        8WlZm+78fp6OyVcUTNM0LOsMVsbmbtuZI2RtfJg=
+X-Google-Smtp-Source: AA6agR69jEnG5Q0HBokBpcx/vkcvs7eeRrblCm1xMMS1Xgn0nvLpVip0jrGSheJsUrCS6jhxsdmujrIhlAyv9RZF0VY=
+X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
+ v6-20020ac85786000000b003433051170dmr17083982qta.429.1660640009425; Tue, 16
+ Aug 2022 01:53:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220815005553.1450359-1-colin.foster@in-advantage.com>
+ <20220815005553.1450359-9-colin.foster@in-advantage.com> <YvpV4cvwE0IQOax7@euler>
+ <YvpZoIN+5htY9Z1o@shredder>
+In-Reply-To: <YvpZoIN+5htY9Z1o@shredder>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 16 Aug 2022 11:52:53 +0300
+Message-ID: <CAHp75VeH_Gx4t+FSqH4LrTHNcwqGxDxRUF26kj3A=CopS=XkgQ@mail.gmail.com>
+Subject: Re: [PATCH v16 mfd 8/8] mfd: ocelot: add support for the vsc7512 chip
+ via spi
+To:     Ido Schimmel <idosch@idosch.org>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@debian.org>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        katie.morris@in-advantage.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Lee Jones <lee@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Aug 15, 2022 at 5:35 PM Ido Schimmel <idosch@idosch.org> wrote:
+>
+> On Mon, Aug 15, 2022 at 07:19:13AM -0700, Colin Foster wrote:
+> > Something is going on that I don't fully understand with <asm/byteorder.h>.
+> > I don't quite see how ocelot-core is throwing all sorts of errors in x86
+> > builds now:
+> >
+> > https://patchwork.hopto.org/static/nipa/667471/12942993/build_allmodconfig_warn/stderr
+> >
+> > Snippet from there:
+> >
+> > /home/nipa/nipa/tests/patch/build_32bit/build_32bit.sh: line 21: ccache gcc: command not found
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+> > ../arch/x86/include/asm/bitops.h:66:1: warning: unreplaced symbol 'return'
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ../include/linux/sched.h, ...):
+> > ../include/asm-generic/bitops/generic-non-atomic.h:29:9: warning: unreplaced symbol 'mask'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:30:9: warning: unreplaced symbol 'p'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:32:10: warning: unreplaced symbol 'p'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:32:16: warning: unreplaced symbol 'mask'
+> > ../include/asm-generic/bitops/generic-non-atomic.h:27:1: warning: unreplaced symbol 'return'
+> > ../drivers/mfd/ocelot-spi.c: note: in included file (through ../arch/x86/include/asm/bitops.h, ../include/linux/bitops.h, ../include/linux/kernel.h, ../arch/x86/include/asm/percpu.h, ../arch/x86/include/asm/current.h, ...):
+> > ../include/asm-generic/bitops/instrumented-non-atomic.h:26:1: warning: unreplaced symbol 'return'
+> >
+> >
+> > <asm/byteorder.h> was included in both drivers/mfd/ocelot-spi.c and
+> > drivers/mfd/ocelot.h previously, though Andy pointed out there didn't
+> > seem to be any users... and I didn't either. I'm sure there's something
+> > I must be missing.
+>
+> I got similar errors in our internal CI yesterday. Fixed by compiling
+> sparse from git:
+> https://git.kernel.org/pub/scm/devel/sparse/sparse.git/commit/?id=0e1aae55e49cad7ea43848af5b58ff0f57e7af99
+>
+> The update is also available in the "testing" repo in case you are
+> running Fedora 35 / 36:
+> https://bodhi.fedoraproject.org/updates/FEDORA-2022-c58b53730f
+> https://bodhi.fedoraproject.org/updates/FEDORA-2022-2bc333ccac
 
-IPsec code relies on valid priv->fs pointer that is the case in NIC
-flow, but not correct in uplink. Before commit that mentioned in the
-Fixes line, that pointer was valid in all flows as it was allocated
-together with priv struct.
+Debian still produces the same errors which makes sparse useless.
 
-In addition, the cleanup representors routine called to that
-not-initialized priv->fs pointer and its internals which caused NULL
-deference.
-
-So, move FS allocation to be as early as possible.
-
-Fixes: af8bbf730068 ("net/mlx5e: Convert mlx5e_flow_steering member of mlx5e_priv to pointer")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  | 25 +++++++++++++------
- 1 file changed, 17 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index 4c1599de652c..0c66774a1720 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -696,6 +696,13 @@ static int mlx5e_init_rep(struct mlx5_core_dev *mdev,
- {
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 
-+	priv->fs = mlx5e_fs_init(priv->profile, mdev,
-+				 !test_bit(MLX5E_STATE_DESTROYING, &priv->state));
-+	if (!priv->fs) {
-+		netdev_err(priv->netdev, "FS allocation failed\n");
-+		return -ENOMEM;
-+	}
-+
- 	mlx5e_build_rep_params(netdev);
- 	mlx5e_timestamp_init(priv);
- 
-@@ -708,12 +715,21 @@ static int mlx5e_init_ul_rep(struct mlx5_core_dev *mdev,
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	int err;
- 
-+	priv->fs = mlx5e_fs_init(priv->profile, mdev,
-+				 !test_bit(MLX5E_STATE_DESTROYING, &priv->state));
-+	if (!priv->fs) {
-+		netdev_err(priv->netdev, "FS allocation failed\n");
-+		return -ENOMEM;
-+	}
-+
- 	err = mlx5e_ipsec_init(priv);
- 	if (err)
- 		mlx5_core_err(mdev, "Uplink rep IPsec initialization failed, %d\n", err);
- 
- 	mlx5e_vxlan_set_netdev_info(priv);
--	return mlx5e_init_rep(mdev, netdev);
-+	mlx5e_build_rep_params(netdev);
-+	mlx5e_timestamp_init(priv);
-+	return 0;
- }
- 
- static void mlx5e_cleanup_rep(struct mlx5e_priv *priv)
-@@ -836,13 +852,6 @@ static int mlx5e_init_rep_rx(struct mlx5e_priv *priv)
- 	struct mlx5_core_dev *mdev = priv->mdev;
- 	int err;
- 
--	priv->fs = mlx5e_fs_init(priv->profile, mdev,
--				 !test_bit(MLX5E_STATE_DESTROYING, &priv->state));
--	if (!priv->fs) {
--		netdev_err(priv->netdev, "FS allocation failed\n");
--		return -ENOMEM;
--	}
--
- 	priv->rx_res = mlx5e_rx_res_alloc();
- 	if (!priv->rx_res) {
- 		err = -ENOMEM;
 -- 
-2.37.2
-
+With Best Regards,
+Andy Shevchenko
