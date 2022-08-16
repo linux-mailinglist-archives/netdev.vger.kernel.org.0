@@ -2,119 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 029ED595DD2
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:55:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA2E595B3F
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 14:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234484AbiHPNzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 09:55:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33656 "EHLO
+        id S235281AbiHPMGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 08:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiHPNya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:54:30 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10058.outbound.protection.outlook.com [40.107.1.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FFA14AD59
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:54:28 -0700 (PDT)
+        with ESMTP id S235371AbiHPMFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 08:05:55 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140089.outbound.protection.outlook.com [40.107.14.89])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2376391
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 04:55:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MbinaQ0lhy424Qdy/7cjVrz1IstTurOw/WMH/ykI06vtm6qo7SS9hxDm6jHGgjEgJeIkMfcS84mLN44sZ0uGIxyWgZk0w0yp25H/jkFIkE2IXQBWqHmY6YoBDIOu7nSeMsS8BER40hCiYmLmPlkX1nwfo5qWM3NWF4jXBgglzDUFzOqayXUoJfjNXAG9/nRAB9ECb+3LyfAnALbzJIfj67pkCNqzvVay5GMjpgfFxjKnrtJAQ4ZxC2IjsJMg4jlTRu5dDHPSjxzzuhZdDR+J19/4EdlOnY7Rm5nbCULcvuNALi79IRaWRK84R94j5lWLH8NU/sT/raGEzCCVjmXfkQ==
+ b=CU4KCXZEIaqA+cjf+rWrjL2KQ2sUGNqJ54qaIzMAtVIshApD4OiCLXyq9tQdAv95O7cAn3D3tlvlSofBgoKW51ohQkguZZmtZD2JoT7XdivoKMA8JeozOYHeaHE94tcMy/wm/tqhaBmIsbRYFuzgV4+qEDft+E5+n3EcHS9yAzCKdybHlre79m08D2uk5aGfFkLvkPhdcopGCEolHel/d6VVRhsXpl6NGg0ujZrVFgxIagH8FkoUmzKQNnoZSA4IIj0dNBUvDovaYGZEDx+KLzACUZz6gXeLS1IwtzD2guThFloBg9eSrR1UZ7HQ7qdOga+ocJgZ0jy34piW2sN13Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PgrrBpl9vdLCaqZojuQbk8Cis3CYki/goHKfDQqze/M=;
- b=XUOfV+Kfzdhe+6otmaaCcaIFlH7dJP3PFRt2Wl/eNmT+wRrYznjfN2sDSElquKx/VoNFIAojtdFNRYPq0bkWl56JGEw5wc/FT/hOoDqNcoG/58t7S3V99vmbdylVoORBCuiZy9NClVqGaDY53bqj8bK63GInXidscmI5fRn62tZT7yNTQNsBCnckcPzLpM6j46OXFxJ9bobhTRQvxPuoV24yyG/WJd1SFnejGiGPAa+h8HtRzUqHhtaiGRThKAUG4Xbsuwty01j1MuhqK/z/Qz+P9ZV/VfiEgKE/F6x0EMUsEbhTNeEeuNCNAQnJGk3w2HHXzt9is1AFzn93Wpkd+A==
+ bh=hUoJRjnehEDGGEAYaUOKR1vlLjacuk3kEschBPcJlFw=;
+ b=EAmxj5nU/HBkfN7I21ib7H3KXe9mQcetsbdgk3MkbS0JuwngL76SEtyEnm0XeRsgSx+YhpO6zVMlUMXnl62QuPVaUlizDAZSg+7TNKYc3sDKhe+N1qhRRfF9A7OE3E6N/T85lojUL5f3ExYQWEaSyomc/8kpCPXkIQ5lP+D3s58i7/2mCR9KHcHy72ZoZ7sspYfjbaCJiA594/RkZbe5cneQmJvaMCutDpnuyMLB50PY66IkJDZKVv/dAi2foY2qFWfRsCMkAqvafbi4GjdTY5Uwq7SXZ4NVQuAMioOZ4Ed1WlbLbMFp2ItfSSvle6zbzG5pQtvYhszcKETvbNKqlg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PgrrBpl9vdLCaqZojuQbk8Cis3CYki/goHKfDQqze/M=;
- b=nOrreDFFxl4II7FrNp20Pbil4osfwYe6nNJgdQtCIEFFgfqstK4nD46yB7oTbWK8OUqjbSWpjDGQTYqdek9r+w6ChmXPfdO8ikL6JvJgWfsV7Zke1/Zm/9MKs2pHOZocA+Z4weqNkxjluDGt67bg1P7KeErLQhEUkfO591dOYas=
+ bh=hUoJRjnehEDGGEAYaUOKR1vlLjacuk3kEschBPcJlFw=;
+ b=N+U9HqHkfNqpTVwsRbQerIxfTlJyNjYLxqH7Pa59g764WsCRtSwnDnfFO5rNkvPVUHV04UJMA9aKP3Zl9SFfVRKbeQbge5PslKSyc6xMb0VHxsixQL8agP8znZ+4Okb8dp7oTWwO8hV7/FgX19XLotUAJJ1uhfeaT13XWc2UHSo=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM6PR04MB5702.eurprd04.prod.outlook.com (2603:10a6:20b:b0::33) with
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by AM6PR04MB6005.eurprd04.prod.outlook.com (2603:10a6:20b:94::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Tue, 16 Aug
- 2022 13:54:20 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Tue, 16 Aug 2022
- 13:54:20 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH net 8/8] net: mscc: ocelot: report ndo_get_stats64 from the wraparound-resistant ocelot->stats
-Date:   Tue, 16 Aug 2022 16:53:52 +0300
-Message-Id: <20220816135352.1431497-9-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220816135352.1431497-1-vladimir.oltean@nxp.com>
-References: <20220816135352.1431497-1-vladimir.oltean@nxp.com>
+ 2022 11:55:28 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::5598:eebf:2288:f279%9]) with mapi id 15.20.5525.010; Tue, 16 Aug 2022
+ 11:55:28 +0000
+From:   wei.fang@nxp.com
+To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Cc:     xiaoning.wang@nxp.com
+Subject: [PATCH V2 net-next] net: phy: realtek: add support for RTL8221F(D)(I)-VD-CG
+Date:   Wed, 17 Aug 2022 05:48:59 +1000
+Message-Id: <20220816194859.2369-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: VI1PR08CA0244.eurprd08.prod.outlook.com
- (2603:10a6:803:dc::17) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+X-ClientProxiedBy: SG2PR02CA0111.apcprd02.prod.outlook.com
+ (2603:1096:4:92::27) To DB9PR04MB8106.eurprd04.prod.outlook.com
+ (2603:10a6:10:24b::13)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c374daca-ee55-4556-b9e6-08da7f8ed12d
-X-MS-TrafficTypeDiagnostic: AM6PR04MB5702:EE_
+X-MS-Office365-Filtering-Correlation-Id: c2422692-2752-45eb-bbdd-08da7f7e3659
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6005:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: D3d66UEGbZ0yli3mvTxlrROcsbSMx7/E8xhlB4Ue9vkLRnp5kfy75xuYzDFOR/H0xuw9tbjRTISiEaljRMUq/5HS7uUQFiJItQSmxUnPrOx6hpFunMHWYAGdDq/cjolSIi9yO/4feNXjaonULWGjt1zE6GLGRJHJV8Ampha4AdnKD/yJStYsYelbj/qRgE2epQ8vGIc9hBZMrZzEk7AvfzSSKSNRXW78PNuMG4TCkqQ9mUiliPRNOpzVg4B2UUENnUszCZpSSa4Mo4bgCVQQUED8yuXlbrucaNNBWOpFdT7Qqj+biWXlT+b0h+q5uugz5qEeRHcA1pr/72i30Zn1zvdicSLLfXV7KFNw5cmnd+i1eUP86f/5xgF0twC9Mnw+r19JAAKkyXwaEyXvqwbJ9zySa/BXIitIAnl4GKv6i0E+/xAI7n3XEmTgyzZmLsd8d6Dfzs9RXc6WHouwS30ITSzi/60qgBcRfaaFUfAj9mbJ7yZFz8gbPE0WTt+uZDnq8lppM6JQiCYyRMcEk+DnvgdQ+3WbltjuEBJGtrQJrs5+a2AFQuC2vOOdphlzXsOPgC6Etz/XCRnw9+v/PxsnJfUOmD09GNOKOy8osyYMXGjMSTvdHpXeoDoEVqr4hIPPx79HTnpyl0mxlJbikRUoVo49Tr64XN4xyzCKjJKaZH4URwZl7PSwj6EvvzL3iTXMAkVmtj1BfsyDSmIEglrViQyzHDsIZjTjm96KRUrqvH14fF/9BzvUwf2tpWZ1ElfOf+exjivdWY60OkHO7RmDZ/5Q5bKkt/uyis1u9aUYD4Y=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(54906003)(316002)(6916009)(83380400001)(52116002)(36756003)(1076003)(41300700001)(6512007)(6486002)(478600001)(7416002)(2616005)(186003)(6506007)(6666004)(5660300002)(26005)(8676002)(66946007)(2906002)(38350700002)(66476007)(86362001)(44832011)(8936002)(66556008)(4326008)(38100700002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: ocrX0puHls7qABoVmX/gawXOzJY7XuhPtF0fHSRWR8CF7dYRRVeYKEhGC2XSy1COBXxBq9n83Tm9of4R1Dq1IkLSNoArUx4dqxSXvlDl5wF42G2Elba7tapx+lVYxpmfVCvCrYMVBDW82GfMcenjfam3Inodv+NopLiz6f4Q9QDkQNP9hlvz6NdZTfNZJ5nOjZLwoWC/g3Yy/f5gGF1dJdBrs4J6r9nCgLg2RLumN22bmQg/wWzoj6qbmOdVhKceDr9NCO6+DDGrq/Q0eKvcVkGlK/IqnqDHAjOfufoDVViQVUAWi6fGIPrB5rYBd1atY25tzbdxUfR2c74JD03YBH0Jy2jn6W7oy3kCrN+ID1P13SuVPY6DCsB5qumcYuWqtfRCwikchQMdpdtvM83J/92vNmcVog4zxrKyriZNNy/oNMEGNENJnUycKkEsuOXK1GAUV0bbVmGfGUlnv7pMRPKxK+/HeK/ldKByKfxnc2H4K6TKTvzSfAcgGeC3WYzHdzI1rvfWot2dvaQeJVcSrs/EVOuv+iQrK2iehm/hOSGDGeorFXHGjXHCYDyWbdhFJvpYebnxcaHpv+wRmuCazhQO8unphwa2oqsQJaSG3vz+ovZ5ocima0IRQ1dLU67oUyIv5jRt5U8wWKtpGI7ZfkOY5YFngYuFWfzEvve1KNtXW1WrJv3rd5WnWPHJzLGRugqeCJHaaa4xcp/X3zPYkBn/QgDJOixLomhsymiWRpKR94w/S4NHqXwbrT7whue6QDqprqFEZxnuDWyIS0ktRxhHFlJ9hsUW/WX+CKctgDs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(346002)(396003)(366004)(39860400002)(376002)(186003)(38100700002)(36756003)(26005)(38350700002)(86362001)(52116002)(6666004)(6506007)(9686003)(1076003)(6512007)(2616005)(4326008)(83380400001)(41300700001)(478600001)(6486002)(66946007)(5660300002)(316002)(2906002)(66556008)(8676002)(8936002)(66476007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?8OJHulZPOFDRQ6vOMug7390fd2zz2ChWknAiclJSc0TNUhZHSXiegq7vsjRv?=
- =?us-ascii?Q?bsnplHKOYTV3aClVGYn3pby5rmKM1t8XG7PlPA7NoOBbXrp0qaMle2LkQsr8?=
- =?us-ascii?Q?VCGcERvR5AT8Q1E8RiBgoKbcUOfzsshffhQ2UsT9ahBwpoE5Ocqz09c9scYE?=
- =?us-ascii?Q?Yn+lHFr4fvwlBMaHtBc5SEEJfgtvGIkCAIllI9xJnsT+7Tp0fCUbv2RltyE3?=
- =?us-ascii?Q?g42//d/NKWVy9GciZV6RZ3TRO2BEIGfp4JrBoTFWXlhgrDKTHC7pv23hNi0D?=
- =?us-ascii?Q?C56dsrriw4hfhOsavuSBITDcT0C/JDALw13kFw5umvCkkgz7GSZ1zOa9t2AY?=
- =?us-ascii?Q?1BgRIc1jYz+sjosD1/BTEJLRpDg6hKYnuMI95WrZpmQGJO8THMaupifL86NW?=
- =?us-ascii?Q?d26M8Obzsl70Br7ZCRUH+Iqrfj+SXhiiW4X8DOY1TW9eZ8d0e7HPXfV17/tP?=
- =?us-ascii?Q?jrG5ZVIv8YhTTOqjwbL0UbDhRuamxaRluh2u7uyzMe/NcC6yQfE+4nhm8nDI?=
- =?us-ascii?Q?Gs9Lr1yJNpZuAEpxdYQjKwcaA75OijFWvRG+hA/UCFbKJE6/vq1SGKmgFj44?=
- =?us-ascii?Q?RntJB2QOdFqjqj49MUi5fXdU5UQK+BfDEQnWCWm2tSUuLcNkS4XA1hSEYZ0F?=
- =?us-ascii?Q?M17B9C9AhlHJC1m9zqAm0TB7+hS+OzGYRasM9DACf95hUACEfWaue2aHtPPm?=
- =?us-ascii?Q?wRv6wLLHwqFsWSggsEmet7Emb3pMn0td3xkyxQ7eDvzt0l72pDUt6ho87o50?=
- =?us-ascii?Q?SX05FlqTWdupMmfGCUSSh6/DNaH6v1bIwwPzNwO2sbFLNVyQOe5+TQrv/ohr?=
- =?us-ascii?Q?MUi7amVVpjqwIVT0J5WapL0QtUyqlE7+x3oyMij3AjbAhad4dqryTedEw3K9?=
- =?us-ascii?Q?BsqBnOcHdkG34DonB05OZlQomIaZiHGegEj9dd/ziQoNF0GIMAPhBAjxWP3i?=
- =?us-ascii?Q?ZWej5GMSy0VA2Wci53jbUJLN5Vv3jNieGprhkjJLrzJxdLd2Z6AjcHzvOx8N?=
- =?us-ascii?Q?NiBk0y8lFOBf9bCwTRa6rltVTgdbyFoj6xUMF9Ll8LIaN30hk8kRlCl+meYE?=
- =?us-ascii?Q?rBXOJwc84doxYGCPOR3cYTdaUjYcmiGV15Pv63hn1jjI9OtCYmp2BHS8IXWl?=
- =?us-ascii?Q?A72Etk8SYC76CuB6Blj7yrQ4+9V11L9k6p6MrfapXWqT5sz3wr/CmXLNin4e?=
- =?us-ascii?Q?5Nbf7nBiOVSGTor2nIosNOCQy0SN2G6MjKDJHgMG4zSmBadXoayvGXP7B5nJ?=
- =?us-ascii?Q?bOkKO6nwZ9PxEkHc9yGCM/latlombyh4A9uFKl7d+dP7smYHsnXdodXWS8Z0?=
- =?us-ascii?Q?3z69CFyevKnNtpU822ZenCf/MMOhY9/tv2DXQYeaZUa02H8X4GpyDxdQBVGk?=
- =?us-ascii?Q?usViM+Jt3A47tCDAhR7Ja4OMEtUeCYAi1n+gBr8BslH2RMihL2D0zhc85iWS?=
- =?us-ascii?Q?owfsFn4T1bsJFln9or8htXug9D4oVEKH8bayM1297na3+7tszhW19tSYd1zb?=
- =?us-ascii?Q?jPMjD+l3kjzcPvVApUVn+Z5iR+x9NVq/339MOUM4Owhr6gdbeO+ht7Tsl/8P?=
- =?us-ascii?Q?H0wuKgrCW1vSKk872K5sww+c2chjKa5S0YoWtR40Af1hthyJSsIa5v7xh6Zq?=
- =?us-ascii?Q?zg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fJjj+jk3cgStffwButS3cvaLwGGKJ+iS7Yd6ayDDmrrf4QrR0R9CZUJrOAAD?=
+ =?us-ascii?Q?q4SbbqZezudBEH9/lcxk/Dsyf/2Smzz8p2EykPr2IvshLmbdXjDh/X6eMeNO?=
+ =?us-ascii?Q?rakde+1dbQowr95KgMRXBrxd7ujGUtV9usKOit3bjzjbvFSRU55NWE5QzMDb?=
+ =?us-ascii?Q?XRLCAA6P/RpMzsgcb9CCsL7O638sYs5i8XrW6CdhckFhf2F0+6hhYzKK+i7D?=
+ =?us-ascii?Q?AzW9HqK/Cwwewq0SoMFr1COLao5NFg9NcjIijLUa7zs0A968dnTz2HphdX4B?=
+ =?us-ascii?Q?N+XWxyEyemVnYIxmsi36rQtVLIRoZa9v/ZER6BgzCtobTaM2gOPazPaEb5+2?=
+ =?us-ascii?Q?keiY1IVPHOhIASjC/ylZVa6dbu7i2osPBt5KCdSaXFWCMsA6B+pEvowusOMH?=
+ =?us-ascii?Q?Kc2kSQU8pBueD/YcEbaysDXiCtLyhxPbZMbnGzHz1DNtjYsjEkYzfJ7PD4BV?=
+ =?us-ascii?Q?Rk2H/WiURuwTQix7ATJQ5sZvkZ5DvzOUUSxqj5WbiVbbZhKsjv3GfePcY7pz?=
+ =?us-ascii?Q?dLcJtRk5WYMQcy95zJu8hFurk1SrRj0GmQSNKTa3ic9A8R8RLoxC8Akn8z9E?=
+ =?us-ascii?Q?+I90M3R20RB6fRPRb9qZTrvEV7nxe/Aodl8EN5gk2fF5bn8DforamgLmlQ3c?=
+ =?us-ascii?Q?QhzTYmLRuLo5pXRj6Y7w+jqhQP0DnLm+mgLV+ASAeLTxbjefa+uu38cNBuQo?=
+ =?us-ascii?Q?JEvCphPeymn8GTBqIhCk6VmUGru0rgeIL84EMTn8oP8F6P/S/Z4RYEH4eukf?=
+ =?us-ascii?Q?2m2TeaMnljRmJlvLzBUAPzhyOXYWLmsxe1IZeNFNNWcprDPh2h+rXGwerXoT?=
+ =?us-ascii?Q?Fq3eCum14ymzIsqu5We53lZvxILu9fkUb1qAgGm1iPlGxOoNwkCG7iYsxlW4?=
+ =?us-ascii?Q?gXll7Or9UTbeNTHhrTOUkX7dSelO4AxX7xjBKeAdTBawe5TwlHyAoCtm8Doi?=
+ =?us-ascii?Q?+m2dj1+MXgJgHMdO58PoCKqs0wL8wqOhWEg+dZenHTOZVTNpTROf4e1tq6L5?=
+ =?us-ascii?Q?VUTVtgMp7tDm5DcJuZbmHYPCmMMuHNSEVWnFZ1OjMTJR+rzkXQmnezNIIpZH?=
+ =?us-ascii?Q?lL/67/2TuodfOMTZXNd/9PlgATEbZb8gE+Qo1KC8U/SJDJ/6Ip0uPwcHkfZy?=
+ =?us-ascii?Q?l7Aa38Fe9pnXiPQIT1oopVtvtX8Ud4NGCMJZElLsvSTtQ3L/feiGMoME1X7j?=
+ =?us-ascii?Q?ozK/shc9FOeR2iaazn17gvfsExejrztZYCU5Q54dvrPXj9KQC+BfbsO6V57Z?=
+ =?us-ascii?Q?68TL+dVwOzRpm1sakYfBR26890av7UYoaDUd7zE351efnmZOFcGJMlIRA9UD?=
+ =?us-ascii?Q?ueaS+0WkhKL0RiXLnGGLnAK8nlB2N2udBjzuoZom45OJX8pVAcMZYRt3+6qi?=
+ =?us-ascii?Q?g+NtS9H1Z9ofVIJihRWTVIjVBVZpax+7GxsH2ApKZQnVUxMN+UtROfxOonfU?=
+ =?us-ascii?Q?FzodFHdrDg5r9Gp63b0XTHdwXLYA4LWqSkyrEoSIYhn1Y9ICrUVCzWsz4SiC?=
+ =?us-ascii?Q?DHACHsnoEK0YopQmJYyWpP0YGaqcAmpsRd50v43wFLdAS0YusBLTbOxRX7wa?=
+ =?us-ascii?Q?hMd0IeE//mEAIygOCtJ12GAI6V6OfeUNIPzcVUZU?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c374daca-ee55-4556-b9e6-08da7f8ed12d
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c2422692-2752-45eb-bbdd-08da7f7e3659
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 13:54:19.9583
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2022 11:55:28.3459
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WMy6LaPwCcbdqGzMTHz1hrkeIN92nxv5X3ixdQ7Z+IhqvukGfsG1ks3DLpttjXpJGePs/J6J5V7m3SOWuhclAg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5702
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+X-MS-Exchange-CrossTenant-UserPrincipalName: hDVBxlMIUBfRiEvUHyN7vmjQcymXA8Z7jZJaMRXXdxkUBzhT1oJFSiLS7VYedlvj+xoZTXHOeLqCZGDnORKciA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6005
+X-Spam-Status: No, score=-0.2 required=5.0 tests=BAYES_00,DATE_IN_FUTURE_06_12,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -123,102 +111,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rather than reading the stats64 counters directly from the 32-bit
-hardware, it's better to rely on the output produced by the periodic
-ocelot_port_update_stats().
+From: Clark Wang <xiaoning.wang@nxp.com>
 
-It would be even better to call ocelot_port_update_stats() right from
-ocelot_get_stats64() to make sure we report the current values rather
-than the ones from 2 seconds ago. But we need to export
-ocelot_port_update_stats() from the switch lib towards the switchdev
-driver for that, and future work will largely undo that.
+RTL8221F(D)(I)-VD-CG is the pin-to-pin upgrade chip from
+RTL8221F(D)(I)-CG.
 
-There are more ocelot-based drivers waiting to be introduced, an example
-of which is the SPI-controlled VSC7512. In that driver's case, it will
-be impossible to call ocelot_port_update_stats() from ndo_get_stats64
-context, since the latter is atomic, and reading the stats over SPI is
-sleepable. So the compromise taken here, which will also hold going
-forward, is to report 64-bit counters to stats64, which are not 100% up
-to date.
+Add new PHY ID for this chip.
+It does not support RTL8211F_PHYCR2 anymore, so remove the w/r operation
+of this register.
 
-Fixes: a556c76adc05 ("net: mscc: Add initial Ocelot switch support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Clark Wang <xiaoning.wang@nxp.com>
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot_net.c | 53 +++++++++++++-------------
- 1 file changed, 26 insertions(+), 27 deletions(-)
+V2 change:
+1. Commit message changed, RTL8221 instead of RTL8821.
+2. Add has_phycr2 to struct rtl821x_priv.
+---
+ drivers/net/phy/realtek.c | 44 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 32 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 6b9d37138844..330d30841cdc 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -725,41 +725,40 @@ static void ocelot_get_stats64(struct net_device *dev,
- 	struct ocelot_port_private *priv = netdev_priv(dev);
- 	struct ocelot *ocelot = priv->port.ocelot;
- 	int port = priv->port.index;
-+	u64 *s;
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index a5671ab896b3..3d99fd6664d7 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -70,6 +70,7 @@
+ #define RTLGEN_SPEED_MASK			0x0630
  
- 	spin_lock(&ocelot->stats_lock);
+ #define RTL_GENERIC_PHYID			0x001cc800
++#define RTL_8211FVD_PHYID			0x001cc878
  
--	/* Configure the port to read the stats from */
--	ocelot_write(ocelot, SYS_STAT_CFG_STAT_VIEW(port),
--		     SYS_STAT_CFG);
-+	s = &ocelot->stats[port * OCELOT_NUM_STATS];
+ MODULE_DESCRIPTION("Realtek PHY driver");
+ MODULE_AUTHOR("Johnson Leung");
+@@ -78,6 +79,7 @@ MODULE_LICENSE("GPL");
+ struct rtl821x_priv {
+ 	u16 phycr1;
+ 	u16 phycr2;
++	bool has_phycr2;
+ };
  
- 	/* Get Rx stats */
--	stats->rx_bytes = ocelot_read(ocelot, SYS_COUNT_RX_OCTETS);
--	stats->rx_packets = ocelot_read(ocelot, SYS_COUNT_RX_SHORTS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_FRAGMENTS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_JABBERS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_LONGS) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_64) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_65_127) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_128_255) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_256_511) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_512_1023) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_1024_1526) +
--			    ocelot_read(ocelot, SYS_COUNT_RX_1527_MAX);
--	stats->multicast = ocelot_read(ocelot, SYS_COUNT_RX_MULTICAST);
-+	stats->rx_bytes = s[OCELOT_STAT_RX_OCTETS];
-+	stats->rx_packets = s[OCELOT_STAT_RX_SHORTS] +
-+			    s[OCELOT_STAT_RX_FRAGMENTS] +
-+			    s[OCELOT_STAT_RX_JABBERS] +
-+			    s[OCELOT_STAT_RX_LONGS] +
-+			    s[OCELOT_STAT_RX_64] +
-+			    s[OCELOT_STAT_RX_65_127] +
-+			    s[OCELOT_STAT_RX_128_255] +
-+			    s[OCELOT_STAT_RX_256_511] +
-+			    s[OCELOT_STAT_RX_512_1023] +
-+			    s[OCELOT_STAT_RX_1024_1526] +
-+			    s[OCELOT_STAT_RX_1527_MAX];
-+	stats->multicast = s[OCELOT_STAT_RX_MULTICAST];
- 	stats->rx_dropped = dev->stats.rx_dropped;
+ static int rtl821x_read_page(struct phy_device *phydev)
+@@ -94,6 +96,7 @@ static int rtl821x_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	struct rtl821x_priv *priv;
++	u32 phy_id = phydev->drv->phy_id;
+ 	int ret;
  
- 	/* Get Tx stats */
--	stats->tx_bytes = ocelot_read(ocelot, SYS_COUNT_TX_OCTETS);
--	stats->tx_packets = ocelot_read(ocelot, SYS_COUNT_TX_64) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_65_127) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_128_255) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_256_511) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_512_1023) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_1024_1526) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_1527_MAX);
--	stats->tx_dropped = ocelot_read(ocelot, SYS_COUNT_TX_DROPS) +
--			    ocelot_read(ocelot, SYS_COUNT_TX_AGING);
--	stats->collisions = ocelot_read(ocelot, SYS_COUNT_TX_COLLISION);
-+	stats->tx_bytes = s[OCELOT_STAT_TX_OCTETS];
-+	stats->tx_packets = s[OCELOT_STAT_TX_64] +
-+			    s[OCELOT_STAT_TX_65_127] +
-+			    s[OCELOT_STAT_TX_128_255] +
-+			    s[OCELOT_STAT_TX_256_511] +
-+			    s[OCELOT_STAT_TX_512_1023] +
-+			    s[OCELOT_STAT_TX_1024_1526] +
-+			    s[OCELOT_STAT_TX_1527_MAX];
-+	stats->tx_dropped = s[OCELOT_STAT_TX_DROPS] +
-+			    s[OCELOT_STAT_TX_AGED];
-+	stats->collisions = s[OCELOT_STAT_TX_COLLISION];
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+@@ -108,13 +111,16 @@ static int rtl821x_probe(struct phy_device *phydev)
+ 	if (of_property_read_bool(dev->of_node, "realtek,aldps-enable"))
+ 		priv->phycr1 |= RTL8211F_ALDPS_PLL_OFF | RTL8211F_ALDPS_ENABLE | RTL8211F_ALDPS_XTAL_OFF;
  
- 	spin_unlock(&ocelot->stats_lock);
- }
+-	ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
+-	if (ret < 0)
+-		return ret;
++	priv->has_phycr2 = !(phy_id == RTL_8211FVD_PHYID);
++	if (priv->has_phycr2) {
++		ret = phy_read_paged(phydev, 0xa43, RTL8211F_PHYCR2);
++		if (ret < 0)
++			return ret;
+ 
+-	priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
+-	if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
+-		priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
++		priv->phycr2 = ret & RTL8211F_CLKOUT_EN;
++		if (of_property_read_bool(dev->of_node, "realtek,clkout-disable"))
++			priv->phycr2 &= ~RTL8211F_CLKOUT_EN;
++	}
+ 
+ 	phydev->priv = priv;
+ 
+@@ -400,12 +406,14 @@ static int rtl8211f_config_init(struct phy_device *phydev)
+ 			val_rxdly ? "enabled" : "disabled");
+ 	}
+ 
+-	ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
+-			       RTL8211F_CLKOUT_EN, priv->phycr2);
+-	if (ret < 0) {
+-		dev_err(dev, "clkout configuration failed: %pe\n",
+-			ERR_PTR(ret));
+-		return ret;
++	if (priv->has_phycr2) {
++		ret = phy_modify_paged(phydev, 0xa43, RTL8211F_PHYCR2,
++				       RTL8211F_CLKOUT_EN, priv->phycr2);
++		if (ret < 0) {
++			dev_err(dev, "clkout configuration failed: %pe\n",
++				ERR_PTR(ret));
++			return ret;
++		}
+ 	}
+ 
+ 	return genphy_soft_reset(phydev);
+@@ -923,6 +931,18 @@ static struct phy_driver realtek_drvs[] = {
+ 		.resume		= rtl821x_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
++	}, {
++		PHY_ID_MATCH_EXACT(RTL_8211FVD_PHYID),
++		.name		= "RTL8211F-VD Gigabit Ethernet",
++		.probe		= rtl821x_probe,
++		.config_init	= &rtl8211f_config_init,
++		.read_status	= rtlgen_read_status,
++		.config_intr	= &rtl8211f_config_intr,
++		.handle_interrupt = rtl8211f_handle_interrupt,
++		.suspend	= genphy_suspend,
++		.resume		= rtl821x_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	}, {
+ 		.name		= "Generic FE-GE Realtek PHY",
+ 		.match_phy_device = rtlgen_match_phy_device,
 -- 
-2.34.1
+2.25.1
 
