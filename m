@@ -2,137 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99CE3595FAE
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 17:55:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49B40595FBC
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 17:59:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234501AbiHPPzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 11:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
+        id S236343AbiHPP7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 11:59:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236383AbiHPPz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 11:55:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B05656A;
-        Tue, 16 Aug 2022 08:53:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 493C4B81A84;
-        Tue, 16 Aug 2022 15:53:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C5B4C433C1;
-        Tue, 16 Aug 2022 15:53:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660665198;
-        bh=hlkYJEYHyg2S6iWZ8XPY2X8XBAGgCaNjt7hhi5OwEtg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aZLNZDSVQi9fGX8AJl/etW3qEk8e5X77R7oncvw4Dy7CWKD7aeUpTcZQcKd5ncAOl
-         eWfB7+/HyOY/BaM2+DnFUIW8XkvjcF4cWD/5AW+YTqH5d2LTN24KX/14qbsUOkXDrA
-         R9owL/kjWlqRp8QK8JLbb8NL5NNnabyA2EgpAdjNuhLl8DLdDXK7i6bFVJr1BGQVpE
-         qpMJLvqTMF1k93dHQXniHrm0a8ILERBZDE7+vBbwt2tpKTL3Y/zl6FpRjIzEnVwOel
-         5YCpvXvsblhlVOs+nq8O+Fz5aG3z0Wl6NK3woRe8klg2R9zQ8cPcn+N7+6rYeBVmeg
-         FdRLYUVCnxiwQ==
-Date:   Tue, 16 Aug 2022 08:53:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
-        vadfed@fb.com, jiri@resnulli.us, dsahern@kernel.org,
-        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
-Subject: Re: [RFC net-next 2/4] ynl: add the schema for the schemas
-Message-ID: <20220816085316.65fda789@kernel.org>
-In-Reply-To: <7241755af778426a2241cacd51119ba8dbd7c136.camel@sipsolutions.net>
-References: <20220811022304.583300-1-kuba@kernel.org>
-        <20220811022304.583300-3-kuba@kernel.org>
-        <6b972ef603ff2bc3a3f3e489aa6638f6246c1e48.camel@sipsolutions.net>
-        <20220815174742.32b3611e@kernel.org>
-        <7241755af778426a2241cacd51119ba8dbd7c136.camel@sipsolutions.net>
+        with ESMTP id S235991AbiHPP6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 11:58:38 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF392B7D4
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 08:55:54 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id gp7so10100109pjb.4
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 08:55:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=S0TjqgZ/cpwhvqIRclTaRgLLFqhzUsXjGRreU5l1Dao=;
+        b=qTx7jEv4/nwmvCExtD6R89Dm1SBJ4SkhasuOIfOrwWZ6K1t2Zr0EaCkQWcJCS/uim+
+         8X9WP8VRmTcp17JN0SF1dTFzd9Oh4JZoisOJYrLLcIy4MM3xb74oG5Mscfg6rwcrXhJI
+         hQdCdNpKMiGt/+1SGkofKjc4IhOG8u/ztqpv2yctdU8Nuk2IMbHx6qI6TzuQQ0klWjGq
+         aFceiAkHInK+h5iWx+IC90K1AiFSPR3Plz+cYfA1om82VYY1xFn9WCIj5pzWRvWr0cZB
+         /NocanLC50/KXHrrK96ND8mMKm9IrEstRN/hRIk2ALjS9Xwx1q7bVX56kmoPPF2s2jMo
+         tW3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=S0TjqgZ/cpwhvqIRclTaRgLLFqhzUsXjGRreU5l1Dao=;
+        b=LlmjuzwC9AzRKqLEzKmBhBiulRukGDB1L6sgsy83HEF00UavInn+Z6FBH0/KdH6gsq
+         NFJkfuQCTyePhXO2ut54qJ7c6gtONvIX6Yb0tKGGSWFJH4YBSfHp/l2CD8AGllzOdnvi
+         9vt/n6oIjMoDQZUfaaEBosZ2xahLxtrnuoXb8FakWyCkEtIctBVrQD2HikkovKYmWP4U
+         Xhx+kIs7dWFPzUaQcwhBm0wwfYGqifRnGHYgJWbhzbtj6ysy2FPu7ZPssK9t932/A4nU
+         XUFznP+QMbPmAPofKm3cpm1UZP7hzzfGmZ60/qf8WZn9AIGyvlYsTL0nAm437zLuDSCg
+         n8RQ==
+X-Gm-Message-State: ACgBeo3wVQ1tdGDwnyPEYhGUvgdWGkIC0NmpmJ8G3zlCAYjrppqKj/Dl
+        iMCGGOM1GBxyz7Gkeo8Uu4+UT8afMpUJVBGIIeJ6pQ==
+X-Google-Smtp-Source: AA6agR7rNOEKD6nRN5Avv+ABuxkIhBYlnMLShbilL+t09HuhZ24Kqp5AE/3faQMwTl37shqIo4Nw0wBbJ21Udr/teco=
+X-Received: by 2002:a17:902:8683:b0:171:3114:7678 with SMTP id
+ g3-20020a170902868300b0017131147678mr22420060plo.172.1660665354218; Tue, 16
+ Aug 2022 08:55:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
+ <20220627123415.GA32052@shbuild999.sh.intel.com> <CANn89iJAoYCebNbXpNMXRoDUkFMhg9QagetVU9NZUq+GnLMgqQ@mail.gmail.com>
+ <20220627144822.GA20878@shbuild999.sh.intel.com> <CANn89iLSWm-c4XE79rUsxzOp3VwXVDhOEPTQnWgeQ48UwM=u7Q@mail.gmail.com>
+ <20220628034926.GA69004@shbuild999.sh.intel.com> <CALvZod71Fti8yLC08mdpDk-TLYJVyfVVauWSj1zk=BhN1-GPdA@mail.gmail.com>
+ <20220703104353.GB62281@shbuild999.sh.intel.com> <YsIeYzEuj95PWMWO@castle>
+ <20220705050326.GF62281@shbuild999.sh.intel.com> <YvswusNaC5yr+HwT@xsang-OptiPlex-9020>
+In-Reply-To: <YvswusNaC5yr+HwT@xsang-OptiPlex-9020>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 16 Aug 2022 08:55:43 -0700
+Message-ID: <CALvZod66HFiBX2N07gmCYDk_iH0bf4U+O=0DqUDmcebpOSyvwA@mail.gmail.com>
+Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
+To:     Oliver Sang <oliver.sang@intel.com>
+Cc:     Feng Tang <feng.tang@intel.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Eric Dumazet <edumazet@google.com>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        network dev <netdev@vger.kernel.org>,
+        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
+        Huang Ying <ying.huang@intel.com>,
+        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
+        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022 09:21:27 +0200 Johannes Berg wrote:
-> On Mon, 2022-08-15 at 17:47 -0700, Jakub Kicinski wrote:
-> > On Mon, 15 Aug 2022 22:09:11 +0200 Johannes Berg wrote:  
-> > It's the incredibly inventive nesting format used in genetlink policy
-> > dumps where the type of the sub-attr(s there are actually two levels)
-> > carry a value (index of the policy and attribute) rather than denoting
-> > a type :S :S :S  
-> 
-> Hmm, OK, in the policy dump (not specific to genetlink, btw, can be used
-> for any policy, but is only generically hooked up for genetlink), we
-> have
-> 
-> [policy_idx] = {
->   [attr_idx] = {
->     [NL_POLICY_TYPE_ATTR_...] = ...
->   }
-> }
-> 
-> Is that what you mean?
+On Mon, Aug 15, 2022 at 10:53 PM Oliver Sang <oliver.sang@intel.com> wrote:
+>
+> Hi all,
+>
+> now we noticed this commit has already merged into mainline, and in our tests
+> there is still similar regression. [1]
+>
+> not sure if there is a plan to merge some of the solutions that have been
+> discussed in this thread? we'll very glad to test patches if there is a request
+>
+> Thanks a lot!
 
-Yes.
+Hi Oliver, sorry for the delay. I will send out the patches in a day or two.
 
-> I guess I never really thought about this format much from a description
-> POV, no need to have a policy since you simply iterate (for_each_attr)
-> when reading it, and don't really need to care about the attribute
-> index, at least.
-> 
-> For future reference, how would you suggest to have done this instead?
-
-My guess was that some of the wrapping was for ease of canceling here
-(cancel is used both on skip and on error). What I think we should push
-for is multi-attr, so the same attribute happens multiple times.
-
-[msg]
- [ATTR1]
- [ATTR2] // elem 1
-   [SubATTR1]
-   [SubATTR2]
- [ATTR2] // elem 2
-   [SubATTR1]
-   [SubATTR2]
- [ATTR2] // elem 3
-   [SubATTR1]
-   [SubATTR2]
- [ATTR3]
- [ATTR4]
-
-Instead of wrapping into an array and then elements.
-
-As Michal pointed out a number of times - the wrapping ends up limiting 
-the size of the array to U16_MAX, and I have a suspicion that most of
-wrapping is done because we tend to parse into a pointer array, which
-makes multi-attr a little tricky. But we shouldn't let one parsing
-technique in a relatively uncommon language like C dictate the format :)
-
-> > Slightly guessing but I think I know what you mean -> the value of the
-> > array is a nest with index as the type and then inside that is the
-> > entry of the array with its attributes <- and that's where the space is
-> > applied, not at the first nest level?  
-> 
-> Right.
-> 
-> > Right, I should probably put that in the docs rather than the schema,
-> > array-nests are expected to strip one layer of nesting and put the
-> > value taken from the type (:D) into an @idx member of the struct
-> > representing the values of the array. Or at least that's what I do in
-> > the C codegen.  
-> 
-> Well mostly you're not supposed to care about the 'value'/'type', I
-> guess?
-
-Fair, I wasn't sure if it's ever used, but I figured if I have to parse
-it out why not save the values. Same for array-next indexes.
-
-I'm leaning heavily towards defining a subset of the YAML spec as 
-"the way to do things in new family" which will allow only one form 
-of arrays.
+thanks,
+Shakeel
