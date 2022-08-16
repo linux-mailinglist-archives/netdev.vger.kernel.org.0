@@ -2,114 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A014A5963E8
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 22:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC11B5963F8
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 22:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237194AbiHPUp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 16:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
+        id S237263AbiHPUtR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 16:49:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237025AbiHPUp4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 16:45:56 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2895988DEC
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 13:45:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660682756; x=1692218756;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=hCZyn0XASUQiYpVFt/664nMlYYX0sfN8DjTaw2BiDwc=;
-  b=cr8SF2jElyhq1xQnXlp+W8dMbeHipDRCxZAUH63zQ9y7TAKF5T9tscx+
-   FZu+Rn5VNlGyOzc506txQrdrY4Het56JQggtR7pYxTo6me2LNkS6DMdyx
-   Zap89RksP4oKX3VmLkkR1HFPsK5aIb02ua8BZgPQeFPMnkLIjwymJcwr+
-   vReAtgjD9OXiSvYrkL9SOmc5rSVUKFTyAj8zn9aMaiSQvLRPWJR6cV4xh
-   EUd9Sp27tvQi7FW03ZQlH75Mb6zMmz8i10eNZ78ENqRR4wAMf3IJMtTKT
-   z2D1vysHxD0lEDPk193O8k0w/vHXj5c3MsKjT7bUEKqCUqnKaOwKXKeHM
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293120941"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="293120941"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 13:45:55 -0700
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="607182100"
-Received: from vcostago-desk1.jf.intel.com (HELO vcostago-desk1) ([10.54.70.10])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 13:45:55 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Ferenc Fejes <ferenc.fejes@ericsson.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "marton12050@gmail.com" <marton12050@gmail.com>,
-        "peti.antal99@gmail.com" <peti.antal99@gmail.com>
-Subject: Re: igc: missing HW timestamps at TX
-In-Reply-To: <87edxgr2q0.fsf@kurt>
-References: <VI1PR07MB4080AED64AC8BFD3F9C1BE58E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
- <VI1PR07MB4080DC45051E112EEC6D7734E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
- <87tu7emqb9.fsf@intel.com>
- <695ec13e018d1111cf3e16a309069a72d55ea70e.camel@ericsson.com>
- <d5571f0ea205e26bced51220044781131296aaac.camel@ericsson.com>
- <87tu6i6h1k.fsf@intel.com>
- <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
- <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
- <20220812201654.qx7e37otu32pxnbk@skbuf> <87v8qti3u2.fsf@intel.com>
- <20220815222639.346wachaaq5zjwue@skbuf> <87k079hzry.fsf@intel.com>
- <87edxgr2q0.fsf@kurt>
-Date:   Tue, 16 Aug 2022 13:45:55 -0700
-Message-ID: <87v8qrhq7w.fsf@intel.com>
+        with ESMTP id S237097AbiHPUtP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 16:49:15 -0400
+Received: from mail-io1-f50.google.com (mail-io1-f50.google.com [209.85.166.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550AD5E67A;
+        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
+Received: by mail-io1-f50.google.com with SMTP id b142so6287683iof.10;
+        Tue, 16 Aug 2022 13:49:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=Igzpe2dfFh072dG7M9af7EwnEZkHHQlF9Pf46jZtejY=;
+        b=PqEGG3q64rKWeyKsEbJNiL3pY5X5LW7lCo1WACA46+Oe5m6JfwodqHOwqvsbtsoYPZ
+         JoZ1eU58aEm0crqWqRvxdlYlE3ddcz13NQxDM65t04ESBuHa7XmyDupBejzEB+800hct
+         BYYsK+bbxexiW0xU0i6S4BeYoJZjrKnvsCMT4DilH59YzLLbJbwqDfmxofGlnbyf7DXQ
+         1n9VcSoBMsmEmPrdDWDONthBL2xq7kW0NyQde3eP7yLCDYVFKm6xrg/bByGKGSXeQ7wi
+         iOV7rpiyjXgIPCGjabzbgJPb4cxZ+ZRKXhX6Ahi17VfQci4vEbES4eImgGLL4eEbsVoA
+         n6yw==
+X-Gm-Message-State: ACgBeo0y0bHH5a5QvS25JVX+WokbLaCQg82dlVJ25haRKOMvcM7+SiIL
+        Y0W5Xuy9GMWsPEe1h3MW3w==
+X-Google-Smtp-Source: AA6agR4JUMnAxe73i4k/USANa7oT8A2bvPIyHs4SYiN3MfNVQoRaN9YqHKUNH74CBK0dcaCnelKJeg==
+X-Received: by 2002:a5d:94d6:0:b0:67c:55f9:f355 with SMTP id y22-20020a5d94d6000000b0067c55f9f355mr9749658ior.133.1660682952543;
+        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id z25-20020a056602081900b00688b30a7812sm1312208iow.42.2022.08.16.13.49.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 13:49:12 -0700 (PDT)
+Received: (nullmailer pid 2709183 invoked by uid 1000);
+        Tue, 16 Aug 2022 20:49:08 -0000
+Date:   Tue, 16 Aug 2022 14:49:08 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Daniel Golle <daniel@makrotopia.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        devicetree@vger.kernel.org, erkin.bozoglu@xeront.com,
+        Eric Dumazet <edumazet@google.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Subject: Re: [PATCH v2 1/7] dt-bindings: net: dsa: mediatek,mt7530: make
+ trivial changes
+Message-ID: <20220816204908.GA2709132-robh@kernel.org>
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-2-arinc.unal@arinc9.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220813154415.349091-2-arinc.unal@arinc9.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kurt Kanzenbach <kurt@linutronix.de> writes:
+On Sat, 13 Aug 2022 18:44:09 +0300, Arınç ÜNAL wrote:
+> Make trivial changes on the binding.
+> 
+> - Update title to include MT7531 switch.
+> - Add me as a maintainer. List maintainers in alphabetical order by first
+> name.
+> - Add description to compatible strings.
+> - Stretch descriptions up to the 80 character limit.
+> - Remove quotes from $ref: "dsa.yaml#".
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 12 deletions(-)
+> 
 
-> Hi Vinicius,
->
-> On Mon Aug 15 2022, Vinicius Costa Gomes wrote:
->> I think your question is more "why there's that workqueue on igc?"/"why
->> don't you retrieve the TX timestamp 'inline' with the interrupt?", if I
->> got that right, then, I don't have a good reason, apart from the feeling
->> that reading all those (5-6?) registers may take too long for a
->> interrupt handler. And it's something that's being done the same for
->> most (all?) Intel drivers.
->
-> We do have one optimization for igb which attempts to read the Tx
-> timestamp directly from the ISR. If that's not ready *only* then we
-> schedule the worker. I do assume igb and igc have the same logic for
-> retrieving the timestamps here.
->
-
-That seems a sensible approach. And yes, the timestamping logic is the
-same.
-
-> The problem with workqueues is that under heavy system load, it might be
-> deferred and timestamps will be lost. I guess that workqueue was added
-> because of something like this: 1f6e8178d685 ("igb: Prevent dropped Tx
-> timestamps via work items and interrupts.").
->
->>
->> I have a TODO to experiment with removing the workqueue, and retrieving
->> the TX timestamp in the same context as the interrupt handler, but other
->> things always come up.
->
-> Let me know if you have interest in that igb patch.
-
-That would be great! Thanks.
-
->
-> Thanks,
-> Kurt
-
-
-Cheers,
--- 
-Vinicius
+Reviewed-by: Rob Herring <robh@kernel.org>
