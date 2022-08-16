@@ -2,99 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A27D595277
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:21:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCDC59528B
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 08:31:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiHPGVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 02:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51086 "EHLO
+        id S229800AbiHPGa7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 02:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiHPGVO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:21:14 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FBF27869F
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 17:14:32 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id u6so9137608ljk.8
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 17:14:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=DJuMC9uSqOfhxPndYeVwtr9rxlpKg28GSgzlSwv/L28=;
-        b=BV4tp2k8RBXcCx1l8s/tFTKmUvWsMF/hxlKkZJmau4/wgSv3cnBpJFEzAaAnlEJ9mI
-         60u78fY4TWhUJiSaU1wuuda54nZJD7XGeg1IAlp+meHPw1doVWdW2basHPjaWKsz655g
-         ZbRKfwNS7O9xZwG+G9/HLBa62fPBftqFj891v6dh/kT9PhyBxwrT6QEQMQo86W8InOhl
-         Y4KLBokEBsuUhfs8zt3oesRsGyAmrRZ7mEppc3/8ulReClZ4TNQHBqiU8UjIA8EuKzHP
-         oPjviqxJOhK8SvEKWZTefZykRl0+EQrk+hjIloqaUUkRe//EbS4I8l/3+dqSeHgbGpl8
-         q3XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=DJuMC9uSqOfhxPndYeVwtr9rxlpKg28GSgzlSwv/L28=;
-        b=jcEFBnGxaezqZhnGfxt9/bYa0zp6dlsu4ZTdh4GCMa2wjWYdGdtY+hmyD9rrB9ky3B
-         qDSwZbdPKsNGTB9E/CFrmYrbnSqesE0ONSIHY4eFNV+nsVNmc03Hr89L7/TxKx0cFzmk
-         MUOxy6FXt8bmtCLo9+3M5VkdRgZyseXrHH890JsWuV3aTD/2XJXzZHEtKHcOlDok1QiO
-         P10QB3c3tXoQfoo0bm8AV3KIewfmEj4Wm0ObSUrBtb2oqHd6YHSzrq0fWzNdIa2PrLaj
-         DdQ70L3kvKXnxS6v2uTWG64ht02NvVBbPa+27ZgRKwCuejHP96BVE34HxTArvs10a/PV
-         CS9A==
-X-Gm-Message-State: ACgBeo2WV+vsgOFD89mkrnmXBLQ/GjCts601O0XgaiFa2xmcRDg+MNBj
-        zUUZ8osvMGBU61ZNk9YJsEJec7sgVUza4/GNh70=
-X-Google-Smtp-Source: AA6agR6++SyMXn2wyE5DieTUPNAsFJS6y2O/a1w0bnkdCfje26h4WDLcvC+Loy4RZ1wiVV1G1yD5G7XkmdnFIIoF9II=
-X-Received: by 2002:a2e:8009:0:b0:25e:9d69:7cb with SMTP id
- j9-20020a2e8009000000b0025e9d6907cbmr5625363ljg.405.1660608869779; Mon, 15
- Aug 2022 17:14:29 -0700 (PDT)
+        with ESMTP id S229729AbiHPGag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 02:30:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56B3C365805;
+        Mon, 15 Aug 2022 17:47:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39C46611CA;
+        Tue, 16 Aug 2022 00:47:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 166FCC433D6;
+        Tue, 16 Aug 2022 00:47:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660610863;
+        bh=rivhVaF5P8dIsbt4rHeNA6xHf5uobphxrS9T5pIZWeQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Q4pzVYGgg9a3hCz6aB6GO6WMg6deuAfaAezLJfmPeKzGcK2mqExggbaGcTurQbohm
+         xkLRWvHluqnvPXX+Yk519XDp67JdiQuBOB3UlITtOIKpV3zIG763SHyFXLn9ldka0d
+         vmSvoG4vlhN036iZmC2FGocR7nNmVVWK9cwehULjdjDIDYpZ7QySXxu12YKIvckbj2
+         Hj3l7mxlrcIaZKk25Pv84OoQKAPpGGV6oLY0iq/mt8rAiowyGeeeAghafIxM5thbqa
+         pOp0xCM3POL6/mc+0HT4+5amvNYy1SBavOod+L8F5kdQ3nqIUkhDICShjDF6AXvqW0
+         iEmlCco7A9Tyg==
+Date:   Mon, 15 Aug 2022 17:47:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
+        vadfed@fb.com, jiri@resnulli.us, dsahern@kernel.org,
+        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
+Subject: Re: [RFC net-next 2/4] ynl: add the schema for the schemas
+Message-ID: <20220815174742.32b3611e@kernel.org>
+In-Reply-To: <6b972ef603ff2bc3a3f3e489aa6638f6246c1e48.camel@sipsolutions.net>
+References: <20220811022304.583300-1-kuba@kernel.org>
+        <20220811022304.583300-3-kuba@kernel.org>
+        <6b972ef603ff2bc3a3f3e489aa6638f6246c1e48.camel@sipsolutions.net>
 MIME-Version: 1.0
-Received: by 2002:a05:6520:2b81:b0:1fe:ccf5:aa58 with HTTP; Mon, 15 Aug 2022
- 17:14:29 -0700 (PDT)
-Reply-To: zjianxin700@gmail.com
-From:   Zong Jianxin <gitetumary8@gmail.com>
-Date:   Mon, 15 Aug 2022 17:14:29 -0700
-Message-ID: <CADiDABgariXGK-yF+b2t2AkCwRLHQMCMoaUHWNtHAoeEHvFbNw@mail.gmail.com>
-Subject: Deal
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:236 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4992]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [zjianxin700[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [gitetumary8[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [gitetumary8[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-I have a deal for you
+On Mon, 15 Aug 2022 22:09:11 +0200 Johannes Berg wrote:
+> On Wed, 2022-08-10 at 19:23 -0700, Jakub Kicinski wrote:
+> > 
+> > +        attributes:
+> > +          description: List of attributes in the space.
+> > +          type: array
+> > +          items:
+> > +            type: object
+> > +            required: [ name, type ]
+> > +            additionalProperties: False
+> > +            properties:
+> > +              name:
+> > +                type: string
+> > +              type: &attr-type
+> > +                enum: [ unused, flag, binary, u8, u16, u32, u64, s32, s64,
+> > +                        nul-string, multi-attr, nest, array-nest, nest-type-value ]  
+> 
+> nest-type-value?
 
-Thanks
-Zong Jianxin
+It's the incredibly inventive nesting format used in genetlink policy
+dumps where the type of the sub-attr(s there are actually two levels)
+carry a value (index of the policy and attribute) rather than denoting
+a type :S :S :S
+
+I really need to document the types, I know...
+
+> > +              description:
+> > +                description: Documentation of the attribute.
+> > +                type: string
+> > +              type-value:
+> > +                description: Name of the value extracted from the type of a nest-type-value attribute.
+> > +                type: array
+> > +                items:
+> > +                  type: string
+> > +              len:
+> > +                oneOf: [ { type: string }, { type: integer }]
+> > +              sub-type: *attr-type
+> > +              nested-attributes:
+> > +                description: Name of the space (sub-space) used inside the attribute.
+> > +                type: string  
+> 
+> Maybe expand that description a bit, it's not really accurate for
+> "array-nest"?
+
+Slightly guessing but I think I know what you mean -> the value of the
+array is a nest with index as the type and then inside that is the
+entry of the array with its attributes <- and that's where the space is
+applied, not at the first nest level?
+
+Right, I should probably put that in the docs rather than the schema,
+array-nests are expected to strip one layer of nesting and put the
+value taken from the type (:D) into an @idx member of the struct
+representing the values of the array. Or at least that's what I do in
+the C codegen.
+
+Not that any of these beautiful, precious formats should be encouraged
+going forward. multi-attr all the way!
+
+> > +              enum:
+> > +                description: Name of the enum used for the atttribute.  
+> 
+> typo - attribute
+
+Thanks!
+
+> Do you mean the "name of the enumeration" or the "name of the
+> enumeration constant"? (per C99 concepts) I'm a bit confused? I guess
+> you mean the "name of the enumeration constant" though I agree most
+> people probably don't know the names from C99 (I had to look them up too
+> for the sake of being precise here ...)
+
+I meant the type. I think. When u32 carries values of an enum.
+Enumeration constant for the attribute type is constructed from
+it's name and the prefix/suffix kludge.
