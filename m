@@ -2,180 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A21C15964F5
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:51:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D89635964FD
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 23:54:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237790AbiHPVv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 17:51:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
+        id S237328AbiHPVwR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 17:52:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237781AbiHPVvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:51:25 -0400
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969908E0CC
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
-Received: by mail-oi1-x22a.google.com with SMTP id bb16so13492539oib.11
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:51:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
-        b=CJvwxuwd+0rt/bo4TkCNqYjlT4SJ6Aesn0zM6uXzP6TCT+LreKW44m+4ak4S4QcpN8
-         Z3emQFWvCmqT6EmdYqBJBiTKDxs25SPIFHJWRc2lCFCaMDG285aPNFHSJURzJUXrItiL
-         Ui0T4+b4CX6rGWwwzQfjXo8/X0Ju4rYSJ9xG3J7ltDjyoURr0U0yWlyr6RXfyYXVOrj/
-         dZni714OJ/a9KGzQWNmYg0CEkelbTwf73pNCb8n0Ac9BiqIv1/rm9RuUiqu/Zp2s8EQx
-         XozhxC5/9Z05RYEinUrW7q9aA6G43Pjq/Ad7nHIMnr1jM1fRLjCBEg6+JP0Ma1IBiniW
-         viLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=cINbdQx9vuTQNR1x1rEsEZ4jjGMUWdf19tZ6cChgAaA=;
-        b=TOK+hGSvHm5RdpyAbnLYZ568JZct6NVD5vhCkFVVEP+6kezgoPLJY1MtayjD2ZQ4hb
-         oE/Lc3YB/hv9IF+ziGtRWM5x4g4eaq5yngjmfcQCJKtCKY2T5WqIPHiDpBLWdmEf6BPp
-         cZceic05OPG8i3alm52GKCZ6SlPwrhuX1/YrqxQS16+Iszfh2j3055Mkc9Y5NM1iNppZ
-         R9xMzDdA0OH2mKoqQ5UeTC5P+TE9eWxc5j2JlDN7oUQLJLNeGAmpw/UIrpg9wRJU0RfW
-         6QFyAqdwi2eJuXbqSkQeMbC3XO4LHDIZvM8mfndDWYQsAGiF3a/AanAY4DmvdKxvPnGG
-         j5Fw==
-X-Gm-Message-State: ACgBeo3hvlnwmKMiEvQJbqEu31MTyeLnROBnqBSna2q2mHWIrHy5ZRv/
-        XzsfBMMFCykd+yUN25hckzWx3AL2UpKBcjLSM679
-X-Google-Smtp-Source: AA6agR4ffEEKYkbE47q7/sRZQjQuSsIQ8phb3aTW9UCETN6ndapbDy186fFAcL9M3UIMnxT1iC01UQw6kwBHZYMTE0o=
-X-Received: by 2002:aca:b7d5:0:b0:343:c478:91c6 with SMTP id
- h204-20020acab7d5000000b00343c47891c6mr257896oif.136.1660686682803; Tue, 16
- Aug 2022 14:51:22 -0700 (PDT)
+        with ESMTP id S237476AbiHPVwH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 17:52:07 -0400
+Received: from forward104j.mail.yandex.net (forward104j.mail.yandex.net [5.45.198.247])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5288E9AE
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 14:51:58 -0700 (PDT)
+Received: from sas2-ffeb92823cb1.qloud-c.yandex.net (sas2-ffeb92823cb1.qloud-c.yandex.net [IPv6:2a02:6b8:c08:6803:0:640:ffeb:9282])
+        by forward104j.mail.yandex.net (Yandex) with ESMTP id 32BE02F98732;
+        Wed, 17 Aug 2022 00:51:56 +0300 (MSK)
+Received: by sas2-ffeb92823cb1.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id TbPrd8KOKM-pshawkU4;
+        Wed, 17 Aug 2022 00:51:55 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1660686715;
+        bh=/J5C9woEZLa6jrHE/LKFGPKwaK/dIC9IRwq0pORBYVg=;
+        h=Date:Message-ID:Cc:To:Subject:From;
+        b=ayRuyyata3zw4d/HFMgNpeIS93eD+pQQ9OQWQNP7m5kVnz+Ov51csBDMhrJKZdU+u
+         UhH02WSZpUjVwT24fEX0lnkYct14bbsP//RbMhGuPK8OWnsauXj5YUbzgG/0Z4lEDG
+         LXpjYJ9YVJ89t6CAiN0677AZv/cQuQRQ7iv68gJw=
+Authentication-Results: sas2-ffeb92823cb1.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
+From:   Kirill Tkhai <tkhai@ya.ru>
+Subject: [PATCH] af_unix: Show number of inflight fds for sockets in
+ TCP_LISTEN state too
+To:     netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Kirill Tkhai <tkhai@ya.ru>
+Message-ID: <1cae5809-26b5-00e8-1554-38fae6d2f991@ya.ru>
+Date:   Wed, 17 Aug 2022 00:51:54 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220815162028.926858-1-fred@cloudflare.com>
-In-Reply-To: <20220815162028.926858-1-fred@cloudflare.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 16 Aug 2022 17:51:12 -0400
-Message-ID: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-To:     Frederick Lawler <fred@cloudflare.com>
-Cc:     kpsingh@kernel.org, revest@chromium.org, jackmanb@chromium.org,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        ebiederm@xmission.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
-        tixxdz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 12:20 PM Frederick Lawler <fred@cloudflare.com> wrote:
->
-> While user namespaces do not make the kernel more vulnerable, they are however
-> used to initiate exploits. Some users do not want to block namespace creation
-> for the entirety of the system, which some distributions provide. Instead, we
-> needed a way to have some applications be blocked, and others allowed. This is
-> not possible with those tools. Managing hierarchies also did not fit our case
-> because we're determining which tasks are allowed based on their attributes.
->
-> While exploring a solution, we first leveraged the LSM cred_prepare hook
-> because that is the closest hook to prevent a call to create_user_ns().
->
-> The calls look something like this:
->
->     cred = prepare_creds()
->         security_prepare_creds()
->             call_int_hook(cred_prepare, ...
->     if (cred)
->         create_user_ns(cred)
->
-> We noticed that error codes were not propagated from this hook and
-> introduced a patch [1] to propagate those errors.
->
-> The discussion notes that security_prepare_creds() is not appropriate for
-> MAC policies, and instead the hook is meant for LSM authors to prepare
-> credentials for mutation. [2]
->
-> Additionally, cred_prepare hook is not without problems. Handling the clone3
-> case is a bit more tricky due to the user space pointer passed to it. This
-> makes checking the syscall subject to a possible TOCTTOU attack.
->
-> Ultimately, we concluded that a better course of action is to introduce
-> a new security hook for LSM authors. [3]
->
-> This patch set first introduces a new security_create_user_ns() function
-> and userns_create LSM hook, then marks the hook as sleepable in BPF. The
-> following patches after include a BPF test and a patch for an SELinux
-> implementation.
->
-> We want to encourage use of user namespaces, and also cater the needs
-> of users/administrators to observe and/or control access. There is no
-> expectation of an impact on user space applications because access control
-> is opt-in, and users wishing to observe within a LSM context
->
->
-> Links:
-> 1. https://lore.kernel.org/all/20220608150942.776446-1-fred@cloudflare.com/
-> 2. https://lore.kernel.org/all/87y1xzyhub.fsf@email.froward.int.ebiederm.org/
-> 3. https://lore.kernel.org/all/9fe9cd9f-1ded-a179-8ded-5fde8960a586@cloudflare.com/
->
-> Past discussions:
-> V4: https://lore.kernel.org/all/20220801180146.1157914-1-fred@cloudflare.com/
-> V3: https://lore.kernel.org/all/20220721172808.585539-1-fred@cloudflare.com/
-> V2: https://lore.kernel.org/all/20220707223228.1940249-1-fred@cloudflare.com/
-> V1: https://lore.kernel.org/all/20220621233939.993579-1-fred@cloudflare.com/
->
-> Changes since v4:
-> - Update commit description
-> - Update cover letter
-> Changes since v3:
-> - Explicitly set CAP_SYS_ADMIN to test namespace is created given
->   permission
-> - Simplify BPF test to use sleepable hook only
-> - Prefer unshare() over clone() for tests
-> Changes since v2:
-> - Rename create_user_ns hook to userns_create
-> - Use user_namespace as an object opposed to a generic namespace object
-> - s/domB_t/domA_t in commit message
-> Changes since v1:
-> - Add selftests/bpf: Add tests verifying bpf lsm create_user_ns hook patch
-> - Add selinux: Implement create_user_ns hook patch
-> - Change function signature of security_create_user_ns() to only take
->   struct cred
-> - Move security_create_user_ns() call after id mapping check in
->   create_user_ns()
-> - Update documentation to reflect changes
->
-> Frederick Lawler (4):
->   security, lsm: Introduce security_create_user_ns()
->   bpf-lsm: Make bpf_lsm_userns_create() sleepable
->   selftests/bpf: Add tests verifying bpf lsm userns_create hook
->   selinux: Implement userns_create hook
->
->  include/linux/lsm_hook_defs.h                 |   1 +
->  include/linux/lsm_hooks.h                     |   4 +
->  include/linux/security.h                      |   6 ++
->  kernel/bpf/bpf_lsm.c                          |   1 +
->  kernel/user_namespace.c                       |   5 +
->  security/security.c                           |   5 +
->  security/selinux/hooks.c                      |   9 ++
->  security/selinux/include/classmap.h           |   2 +
->  .../selftests/bpf/prog_tests/deny_namespace.c | 102 ++++++++++++++++++
->  .../selftests/bpf/progs/test_deny_namespace.c |  33 ++++++
->  10 files changed, 168 insertions(+)
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/deny_namespace.c
->  create mode 100644 tools/testing/selftests/bpf/progs/test_deny_namespace.c
+TCP_LISTEN sockets is a special case. They preserve skb with a newly
+connected sock till accept() makes it fully functional socket.
+Receive queue of such socket may grow after connected peer
+send messages there. Since these messages may contain scm_fds,
+we should expose correct fdinfo::scm_fds for listening socket too.
 
-I just merged this into the lsm/next tree, thanks for seeing this
-through Frederick, and thank you to everyone who took the time to
-review the patches and add their tags.
+Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
+---
+ net/unix/af_unix.c |   36 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 33 insertions(+), 3 deletions(-)
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm.git next
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 3c7e8049eba1..5c7756b57d2f 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -785,15 +785,45 @@ static int unix_set_peek_off(struct sock *sk, int val)
+ }
+ 
+ #ifdef CONFIG_PROC_FS
++static int unix_count_nr_fds(struct sock *sk)
++{
++	struct sk_buff *skb;
++	struct unix_sock *u;
++	int nr_fds = 0;
++
++	spin_lock(&sk->sk_receive_queue.lock);
++	skb = skb_peek(&sk->sk_receive_queue);
++	while (skb) {
++		u = unix_sk(skb->sk);
++		nr_fds += atomic_read(&u->scm_stat.nr_fds);
++		skb = skb_peek_next(skb, &sk->sk_receive_queue);
++	}
++	spin_unlock(&sk->sk_receive_queue.lock);
++
++	return nr_fds;
++}
++
+ static void unix_show_fdinfo(struct seq_file *m, struct socket *sock)
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct unix_sock *u;
++	int nr_fds;
+ 
+ 	if (sk) {
+-		u = unix_sk(sock->sk);
+-		seq_printf(m, "scm_fds: %u\n",
+-			   atomic_read(&u->scm_stat.nr_fds));
++		u = unix_sk(sk);
++		if (sock->type == SOCK_DGRAM) {
++			nr_fds = atomic_read(&u->scm_stat.nr_fds);
++			goto out_print;
++		}
++
++		unix_state_lock(sk);
++		if (sk->sk_state != TCP_LISTEN)
++			nr_fds = atomic_read(&u->scm_stat.nr_fds);
++		else
++			nr_fds = unix_count_nr_fds(sk);
++		unix_state_unlock(sk);
++out_print:
++		seq_printf(m, "scm_fds: %u\n", nr_fds);
+ 	}
+ }
+ #else
 
--- 
-paul-moore.com
+
