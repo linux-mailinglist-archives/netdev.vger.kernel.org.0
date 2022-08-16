@@ -2,108 +2,319 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92BEA5953FE
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 09:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1261E5953F9
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 09:37:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232335AbiHPHi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 03:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47474 "EHLO
+        id S232356AbiHPHhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 03:37:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbiHPHhp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 03:37:45 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A9AC2A607F;
-        Mon, 15 Aug 2022 21:27:12 -0700 (PDT)
+        with ESMTP id S232350AbiHPHhZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 03:37:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB08349303;
+        Mon, 15 Aug 2022 21:26:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1660624032; x=1692160032;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fdSIlNE493nsnthqOoE4vYDUbR0tqWMaglZ8U4RJbwc=;
-  b=T5h7ajq8TKrLMg6/ugegOpQnVG1h9VLPV84ti7tlh/pxtMiy7Rxdvop0
-   b1qYMthChgaCUmF8aE2MYgMKa0yA3y3mHgLL5Zw6k9lu0wWaOpDXfyTec
-   wEiNlUdK+TC8LuAQDcnJOwcXRNaGf6krX/hqf6Ym42R+s1Cyz8nfDPiv+
-   TxzsgIi8o7DseS2Ix+E4wlnpqere38rtpoYkx5cohq0l8a/5lJERcKcjC
-   hhR5WzbTVZJ3EkCsr25DRCuoRCPr7Sx2yHX18Vsg8mbW2eqWtAukcoCJR
-   N5VqPNh7RjchqQu7+mbDflaOsK7oDcQzEpOZFXGrll8uuJLI4Av3l2bEr
-   g==;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660624003; x=1692160003;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=1c4Ss2qZkGvTVAW8nCe9OXMHqzp0ul3+Xbg8jVK5SbM=;
+  b=BcuRqnWPuByut1AlNPu/7ra4o5EstY4gjp/U98wvLzFwdEUNtDEERzOU
+   FY5pIozGjJxgTrG6UmMteRD9q3m1Ni+XWyW5+AQxNNqAdsXAsrDtl1YXO
+   SL036O7kMKuqpRripRY4Zb1n/kUmSDrvPfO6s/Ny664+7pMgUomaVYYKr
+   Y3TtVUpKqeIt91OxVGAt0u0rqT3Q1kSYDBbDwmdVLA2z9GJ7p2xXLKa+Y
+   KK09hh15D3p6Tpohw3I1T4hve3Hxr9ln4/FeZZE/ay1bTJQzcFSeoX6sA
+   gAICBxnECdXWODLSPOD+n8bMSZViYaoEh/bkArj0f//KydDH/1NEg1YXj
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10440"; a="271891942"
 X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
-   d="scan'208";a="186610290"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Aug 2022 21:27:11 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Mon, 15 Aug 2022 21:27:11 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Mon, 15 Aug 2022 21:27:05 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [PATCH net-next v2] net: dsa: microchip: ksz9477: fix fdb_dump last invalid entry
-Date:   Tue, 16 Aug 2022 09:56:35 +0530
-Message-ID: <20220816042635.7229-1-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
+   d="scan'208";a="271891942"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 21:26:43 -0700
+X-IronPort-AV: E=Sophos;i="5.93,240,1654585200"; 
+   d="scan'208";a="666939141"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.29.22]) ([10.255.29.22])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Aug 2022 21:26:40 -0700
+Message-ID: <3872ea65-8de3-a44e-74b3-530a4d31d0bf@intel.com>
+Date:   Tue, 16 Aug 2022 12:26:39 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+Content-Language: en-US
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, jasowang@redhat.com,
+        mst@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com
+References: <20220815092638.504528-1-lingshan.zhu@intel.com>
+ <20220815092638.504528-3-lingshan.zhu@intel.com>
+ <c5075d3d-9d2c-2716-1cbf-cede49e2d66f@oracle.com>
+ <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
+In-Reply-To: <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the ksz9477_fdb_dump function it reads the ALU control register and
-exit from the timeout loop if there is valid entry or search is
-complete. After exiting the loop, it reads the alu entry and report to
-the user space irrespective of entry is valid. It works till the valid
-entry. If the loop exited when search is complete, it reads the alu
-table. The table returns all ones and it is reported to user space. So
-bridge fdb show gives ff:ff:ff:ff:ff:ff as last entry for every port.
-To fix it, after exiting the loop the entry is reported only if it is
-valid one.
 
-Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
----
-changes in v2
-- changed the fixes commit id
-- reduced the indentation level by using ! and continue statement
 
- drivers/net/dsa/microchip/ksz9477.c | 3 +++
- 1 file changed, 3 insertions(+)
+On 8/16/2022 9:58 AM, Zhu, Lingshan wrote:
+>
+>
+> On 8/16/2022 7:32 AM, Si-Wei Liu wrote:
+>>
+>>
+>> On 8/15/2022 2:26 AM, Zhu Lingshan wrote:
+>>> Some fields of virtio-net device config space are
+>>> conditional on the feature bits, the spec says:
+>>>
+>>> "The mac address field always exists
+>>> (though is only valid if VIRTIO_NET_F_MAC is set)"
+>>>
+>>> "max_virtqueue_pairs only exists if VIRTIO_NET_F_MQ
+>>> or VIRTIO_NET_F_RSS is set"
+>>>
+>>> "mtu only exists if VIRTIO_NET_F_MTU is set"
+>>>
+>>> so we should read MTU, MAC and MQ in the device config
+>>> space only when these feature bits are offered.
+>>>
+>>> For MQ, if both VIRTIO_NET_F_MQ and VIRTIO_NET_F_RSS are
+>>> not set, the virtio device should have
+>>> one queue pair as default value, so when userspace querying queue 
+>>> pair numbers,
+>>> it should return mq=1 than zero.
+>>>
+>>> For MTU, if VIRTIO_NET_F_MTU is not set, we should not read
+>>> MTU from the device config sapce.
+>>> RFC894 <A Standard for the Transmission of IP Datagrams over 
+>>> Ethernet Networks>
+>>> says:"The minimum length of the data field of a packet sent over an
+>>> Ethernet is 1500 octets, thus the maximum length of an IP datagram
+>>> sent over an Ethernet is 1500 octets.  Implementations are encouraged
+>>> to support full-length packets"
+>> Noted there's a typo in the above "The *maximum* length of the data 
+>> field of a packet sent over an Ethernet is 1500 octets ..." and the 
+>> RFC was written 1984.
+> the spec RFC894 says it is 1500, see 
+> https://www.rfc-editor.org/rfc/rfc894.txt
+I have seen 
+https://www.rfc-editor.org/errata_search.php?rfc=894&rec_status=0,
 
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-index 4b14d80d27ed..e4f446db0ca1 100644
---- a/drivers/net/dsa/microchip/ksz9477.c
-+++ b/drivers/net/dsa/microchip/ksz9477.c
-@@ -613,6 +613,9 @@ int ksz9477_fdb_dump(struct ksz_device *dev, int port,
- 			goto exit;
- 		}
- 
-+		if (!(ksz_data & ALU_VALID))
-+			continue;
-+
- 		/* read ALU table */
- 		ksz9477_read_table(dev, alu_table);
- 
+so I think we should return nothing if _F_MTU not set.
 
-base-commit: 7ebfc85e2cd7b08f518b526173e9a33b56b3913b
--- 
-2.36.1
+Thanks
+>>
+>> Apparently that is no longer true with the introduction of Jumbo size 
+>> frame later in the 2000s. I'm not sure what is the point of mention 
+>> this ancient RFC. It doesn't say default MTU of any Ethernet 
+>> NIC/switch should be 1500 in either  case.
+> This could be a larger number for sure, we are trying to find out the 
+> min value for Ethernet here, to support 1500 octets, MTU should be 
+> 1500 at least, so I assume 1500 should be the default value for MTU
+>>
+>>>
+>>> virtio spec says:"The virtio network device is a virtual ethernet 
+>>> card",
+>> Right,
+>>> so the default MTU value should be 1500 for virtio-net.
+>> ... but it doesn't say the default is 1500. At least, not in explicit 
+>> way. Why it can't be 1492 or even lower? In practice, if the network 
+>> backend has a MTU higher than 1500, there's nothing wrong for guest 
+>> to configure default MTU more than 1500.
+> same as above
+>>
+>>>
+>>> For MAC, the spec says:"If the VIRTIO_NET_F_MAC feature bit is set,
+>>> the configuration space mac entry indicates the “physical” address
+>>> of the network card, otherwise the driver would typically
+>>> generate a random local MAC address." So there is no
+>>> default MAC address if VIRTIO_NET_F_MAC not set.
+>>>
+>>> This commits introduces functions vdpa_dev_net_mtu_config_fill()
+>>> and vdpa_dev_net_mac_config_fill() to fill MTU and MAC.
+>>> It also fixes vdpa_dev_net_mq_config_fill() to report correct
+>>> MQ when _F_MQ is not present.
+>>>
+>>> These functions should check devices features than driver
+>>> features, and struct vdpa_device is not needed as a parameter
+>>>
+>>> The test & userspace tool output:
+>>>
+>>> Feature bit VIRTIO_NET_F_MTU, VIRTIO_NET_F_RSS, VIRTIO_NET_F_MQ
+>>> and VIRTIO_NET_F_MAC can be mask out by hardcode.
+>>>
+>>> However, it is challenging to "disable" the related fields
+>>> in the HW device config space, so let's just assume the values
+>>> are meaningless if the feature bits are not set.
+>>>
+>>> Before this change, when feature bits for RSS, MQ, MTU and MAC
+>>> are not set, iproute2 output:
+>>> $vdpa vdpa0: mac 00:e8:ca:11:be:05 link up link_announce false mtu 1500
+>>>    negotiated_features
+>>>
+>>> without this commit, function vdpa_dev_net_config_fill()
+>>> reads all config space fields unconditionally, so let's
+>>> assume the MAC and MTU are meaningless, and it checks
+>>> MQ with driver_features, so we don't see max_vq_pairs.
+>>>
+>>> After applying this commit, when feature bits for
+>>> MQ, RSS, MAC and MTU are not set,iproute2 output:
+>>> $vdpa dev config show vdpa0
+>>> vdpa0: link up link_announce false max_vq_pairs 1 mtu 1500
+>>>    negotiated_features
+>>>
+>>> As explained above:
+>>> Here is no MAC, because VIRTIO_NET_F_MAC is not set,
+>>> and there is no default value for MAC. It shows
+>>> max_vq_paris = 1 because even without MQ feature,
+>>> a functional virtio-net must have one queue pair.
+>>> mtu = 1500 is the default value as ethernet
+>>> required.
+>>>
+>>> This commit also add supplementary comments for
+>>> __virtio16_to_cpu(true, xxx) operations in
+>>> vdpa_dev_net_config_fill() and vdpa_fill_stats_rec()
+>>>
+>>> Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>> ---
+>>>   drivers/vdpa/vdpa.c | 60 
+>>> +++++++++++++++++++++++++++++++++++----------
+>>>   1 file changed, 47 insertions(+), 13 deletions(-)
+>>>
+>>> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>>> index efb55a06e961..a74660b98979 100644
+>>> --- a/drivers/vdpa/vdpa.c
+>>> +++ b/drivers/vdpa/vdpa.c
+>>> @@ -801,19 +801,44 @@ static int vdpa_nl_cmd_dev_get_dumpit(struct 
+>>> sk_buff *msg, struct netlink_callba
+>>>       return msg->len;
+>>>   }
+>>>   -static int vdpa_dev_net_mq_config_fill(struct vdpa_device *vdev,
+>>> -                       struct sk_buff *msg, u64 features,
+>>> +static int vdpa_dev_net_mq_config_fill(struct sk_buff *msg, u64 
+>>> features,
+>>>                          const struct virtio_net_config *config)
+>>>   {
+>>>       u16 val_u16;
+>>>   -    if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0)
+>>> -        return 0;
+>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MQ)) == 0 &&
+>>> +        (features & BIT_ULL(VIRTIO_NET_F_RSS)) == 0)
+>>> +        val_u16 = 1;
+>>> +    else
+>>> +        val_u16 = __virtio16_to_cpu(true, 
+>>> config->max_virtqueue_pairs);
+>>>   -    val_u16 = le16_to_cpu(config->max_virtqueue_pairs);
+>>>       return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, val_u16);
+>>>   }
+>>>   +static int vdpa_dev_net_mtu_config_fill(struct sk_buff *msg, u64 
+>>> features,
+>>> +                    const struct virtio_net_config *config)
+>>> +{
+>>> +    u16 val_u16;
+>>> +
+>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MTU)) == 0)
+>>> +        val_u16 = 1500;
+>> As said, there's no virtio spec defined value for MTU. Please leave 
+>> this field out if feature VIRTIO_NET_F_MTU is not negotiated.
+> same as above
+>>> +    else
+>>> +        val_u16 = __virtio16_to_cpu(true, config->mtu);
+>>> +
+>>> +    return nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16);
+>>> +}
+>>> +
+>>> +static int vdpa_dev_net_mac_config_fill(struct sk_buff *msg, u64 
+>>> features,
+>>> +                    const struct virtio_net_config *config)
+>>> +{
+>>> +    if ((features & BIT_ULL(VIRTIO_NET_F_MAC)) == 0)
+>>> +        return 0;
+>>> +    else
+>>> +        return  nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR,
+>>> +                sizeof(config->mac), config->mac);
+>>> +}
+>>> +
+>>> +
+>>>   static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, 
+>>> struct sk_buff *msg)
+>>>   {
+>>>       struct virtio_net_config config = {};
+>>> @@ -822,18 +847,16 @@ static int vdpa_dev_net_config_fill(struct 
+>>> vdpa_device *vdev, struct sk_buff *ms
+>>>         vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>>>   -    if (nla_put(msg, VDPA_ATTR_DEV_NET_CFG_MACADDR, 
+>>> sizeof(config.mac),
+>>> -            config.mac))
+>>> -        return -EMSGSIZE;
+>>> +    /*
+>>> +     * Assume little endian for now, userspace can tweak this for
+>>> +     * legacy guest support.
+>> You can leave it as a TODO for kernel (vdpa core limitation), but 
+>> AFAIK there's nothing userspace needs to do to infer the endianness. 
+>> IMHO it's the kernel's job to provide an abstraction rather than rely 
+>> on userspace guessing it.
+> we have discussed it in another thread, and this comment is suggested 
+> by MST.
+>>
+>>> +     */
+>>> +    val_u16 = __virtio16_to_cpu(true, config.status);
+>>>         val_u16 = __virtio16_to_cpu(true, config.status);
+>>>       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_STATUS, val_u16))
+>>>           return -EMSGSIZE;
+>>>   -    val_u16 = __virtio16_to_cpu(true, config.mtu);
+>>> -    if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MTU, val_u16))
+>>> -        return -EMSGSIZE;
+>>> -
+>>>       features_driver = vdev->config->get_driver_features(vdev);
+>>>       if (nla_put_u64_64bit(msg, VDPA_ATTR_DEV_NEGOTIATED_FEATURES, 
+>>> features_driver,
+>>>                     VDPA_ATTR_PAD))
+>>> @@ -846,7 +869,13 @@ static int vdpa_dev_net_config_fill(struct 
+>>> vdpa_device *vdev, struct sk_buff *ms
+>>>                     VDPA_ATTR_PAD))
+>>>           return -EMSGSIZE;
+>>>   -    return vdpa_dev_net_mq_config_fill(vdev, msg, 
+>>> features_driver, &config);
+>>> +    if (vdpa_dev_net_mac_config_fill(msg, features_device, &config))
+>>> +        return -EMSGSIZE;
+>>> +
+>>> +    if (vdpa_dev_net_mtu_config_fill(msg, features_device, &config))
+>>> +        return -EMSGSIZE;
+>>> +
+>>> +    return vdpa_dev_net_mq_config_fill(msg, features_device, &config);
+>>>   }
+>>>     static int
+>>> @@ -914,6 +943,11 @@ static int vdpa_fill_stats_rec(struct 
+>>> vdpa_device *vdev, struct sk_buff *msg,
+>>>       }
+>>>       vdpa_get_config_unlocked(vdev, 0, &config, sizeof(config));
+>>>   +    /*
+>>> +     * Assume little endian for now, userspace can tweak this for
+>>> +     * legacy guest support.
+>>> +     */
+>>> +
+>> Ditto.
+> same as above
+>
+> Thanks
+>>
+>> Thanks,
+>> -Siwei
+>>>       max_vqp = __virtio16_to_cpu(true, config.max_virtqueue_pairs);
+>>>       if (nla_put_u16(msg, VDPA_ATTR_DEV_NET_CFG_MAX_VQP, max_vqp))
+>>>           return -EMSGSIZE;
+>>
+>
 
