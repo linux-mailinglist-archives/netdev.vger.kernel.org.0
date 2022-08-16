@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42AC5954B5
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:14:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B815954A8
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232145AbiHPILQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 04:11:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
+        id S232343AbiHPILi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 04:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232611AbiHPIKp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:10:45 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F9FF7A754
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 22:36:52 -0700 (PDT)
+        with ESMTP id S232713AbiHPIK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:10:57 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3E8366A71
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 22:36:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660628211;
+        s=mimecast20190719; t=1660628213;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
         bh=7gwPm9xDUr2cS5ofMDcan9qf7hv2F2NrtQxh7A5E41E=;
-        b=SEdZtoG0AEFR8RK+kq5fnCOTuEFcOQH4cG+m8009UQrtkVXAh1l8yRMWtv0oZyqk+9E+lc
-        Ruhtb0Sqrfm1Pfk/Siuq5hpgQX53qFkIRyV8OdbSOVbahsJUE5MjJqPGobq3nMLrT3nNdL
-        Ci/1u3eSAjxPMwqTOrFEYLNNoxEdO0E=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        b=RzNbCe2P5JyCsULdVvUvKo7xnwRw3oaoVCPwz5VYg8gPYrish+gZ4jzw2hJ8TiPoky69Qh
+        9MiPgtLiURbWjtyYMmg4Hns/zmKobRdbrJ2n55hZsI+cmaAr/OnKS8Vn5nDPML6quhg59V
+        l2O2trDmUsK4s6a0k5T3dbMAIah93xE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-196-teipehGCP_ahh7-5eJVnLA-1; Tue, 16 Aug 2022 01:36:46 -0400
-X-MC-Unique: teipehGCP_ahh7-5eJVnLA-1
-Received: by mail-wm1-f70.google.com with SMTP id 203-20020a1c02d4000000b003a5f5bce876so1164980wmc.2
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 22:36:45 -0700 (PDT)
+ us-mta-283-4QBCfwugNoOQ9KUM5lpKSQ-1; Tue, 16 Aug 2022 01:36:52 -0400
+X-MC-Unique: 4QBCfwugNoOQ9KUM5lpKSQ-1
+Received: by mail-wm1-f69.google.com with SMTP id c189-20020a1c35c6000000b003a4bfb16d86so4469540wma.3
+        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 22:36:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
         bh=7gwPm9xDUr2cS5ofMDcan9qf7hv2F2NrtQxh7A5E41E=;
-        b=ZBK6aJu/vShGAON3acUcN7o7wyLTJZPbHVoEYRbfLkFALWwfkh1rtjZJuZ3vpf88tx
-         aEcCzrWUo1cAKYl9EqdTGugCk1IdCFpFINfWo7dk1sJ8NsRvVbzOTM8cj/uCS7Q0gar6
-         HYG+3SijgpIauMtcXJj52ix4jAeqeMUvn93H3Sj9kWf1XgAQWVqfdJdZ4BhDIvOckS3p
-         CdFx3Rx5mu1/txzacThRtEUxaRIr6UkOiUUzEJRDYvxoo/8eYCQ5E5KZuu3KPFHCDlq6
-         a+tuXn4oLeRx/H3QLeBOY4XcBrqHICn7wJxYPab3sHw+WxxDOv4fv0PejNwLGYV5/R+j
-         QZ4w==
-X-Gm-Message-State: ACgBeo1AXm/U3h7ZV1Ldjo6iBGlZ/XEOuFCT4Tjfy02n24ONtqJqZCuD
-        FSFG4C59mbEsTskdge+BNKWBmMLuKBWsjxL43pLxa43cQrOVE5nHPrY7xIWcerEmbt08Ciqw7Td
-        /XkeN/r2Tt5w/Isw3
-X-Received: by 2002:a05:600c:3492:b0:3a5:e1a0:24c9 with SMTP id a18-20020a05600c349200b003a5e1a024c9mr7684216wmq.177.1660628205029;
-        Mon, 15 Aug 2022 22:36:45 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7cl47H6aW+psCSXTD8lf2D+3OkxsNSPvJV6zikekDWgdM77/QiAz5BzR9Prm3rV3l9dztplA==
-X-Received: by 2002:a05:600c:3492:b0:3a5:e1a0:24c9 with SMTP id a18-20020a05600c349200b003a5e1a024c9mr7684208wmq.177.1660628204830;
-        Mon, 15 Aug 2022 22:36:44 -0700 (PDT)
+        b=vhR5+iop9vgbNqFrNrwVyheb05a3lx3Wq3fiby6O3S84bVWv43sXpUOOfytTWPd3JB
+         rOnF+WQTPZwzAIzY+yU09NeTkJ9QJHkyppROPIW4AGi/KH7fqm+yGrSkwSBXji5aufta
+         favXP0QUwSlg9blq3HaIMT3n01WpjXQZVb7R4EhIYOS3F6bNHzHktB8VzoO8CEd/6JPn
+         VRlUJiPaiefF1RaewNfHTwonH/VI+Yn4GaUe4aGULEArl2yj5xEZ504HH5wTuT3wTv30
+         ff4pk1XI0rNL4kHpyBGZmxLVV+g8m0KpMGzyUYN6byrPYGRSK4wXogXQx5TFHV9Xl75c
+         Dlug==
+X-Gm-Message-State: ACgBeo0lFJc4sDCv0oc9cECIBeOV9c7VzFeDnrtzjR2hhk+ELhtjOV0y
+        41bePetSc97g3I8k+BF3ek3yPTGEYZ5rMr6vVS3KqlT4srttO6arZS1AsCCguIfc5C5TxNz5LzH
+        E4Ss/79/6ukpZ5XZc
+X-Received: by 2002:a5d:6d42:0:b0:220:7ab1:9da9 with SMTP id k2-20020a5d6d42000000b002207ab19da9mr10493841wri.403.1660628211235;
+        Mon, 15 Aug 2022 22:36:51 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7d8A8k6M8JI6hmCoeeaJbBUK4Uy4I2ToLn096BssqGpPc9DKZ9IxX+tavz6eIPk8MWq4XyUg==
+X-Received: by 2002:a5d:6d42:0:b0:220:7ab1:9da9 with SMTP id k2-20020a5d6d42000000b002207ab19da9mr10493798wri.403.1660628209524;
+        Mon, 15 Aug 2022 22:36:49 -0700 (PDT)
 Received: from redhat.com ([2.55.4.37])
-        by smtp.gmail.com with ESMTPSA id q65-20020a1c4344000000b003a327b98c0asm11713634wma.22.2022.08.15.22.36.42
+        by smtp.gmail.com with ESMTPSA id by6-20020a056000098600b0021e571a99d5sm9163254wrb.17.2022.08.15.22.36.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 22:36:44 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 01:36:41 -0400
+        Mon, 15 Aug 2022 22:36:49 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 01:36:45 -0400
 From:   "Michael S. Tsirkin" <mst@redhat.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
@@ -70,9 +70,9 @@ Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Guenter Roeck <linux@roeck-us.net>,
         Greg KH <gregkh@linuxfoundation.org>,
         Bo Liu <liubo03@inspur.com>
-Subject: [PATCH v4 5/6] virtio: Revert "virtio_vdpa: support the arg sizes of
- find_vqs()"
-Message-ID: <20220816053602.173815-6-mst@redhat.com>
+Subject: [PATCH v4 5/6] virtio_vdpa: Revert "virtio_vdpa: support the arg
+ sizes of find_vqs()"
+Message-ID: <20220816053602.173815-7-mst@redhat.com>
 References: <20220816053602.173815-1-mst@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -80,9 +80,9 @@ Content-Disposition: inline
 In-Reply-To: <20220816053602.173815-1-mst@redhat.com>
 X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
 X-Mutt-Fcc: =sent
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
