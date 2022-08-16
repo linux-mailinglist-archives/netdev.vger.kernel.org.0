@@ -2,208 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95E4659657A
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 00:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35127596576
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 00:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237996AbiHPW0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 18:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56080 "EHLO
+        id S237984AbiHPW0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 18:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237995AbiHPW0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 18:26:45 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF68C90814;
-        Tue, 16 Aug 2022 15:26:44 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id p132so13620763oif.9;
-        Tue, 16 Aug 2022 15:26:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=CwyJ6GUKaEkPsKlT4efasHrB0kt/DM6/7ER1yUHSsiI=;
-        b=TTcyewG+T9Wi//ubAMpljSmvJgj/c00kw7sJ/Kz4AFxKfugrcGs1LIeL90hyTdh1/n
-         zHFkv/zpUhY3FQUnO5IMBL8HA1jZq8GWaPDFyzyz+7Swk2wSX6v4P3U4mPo8MIDLloR2
-         1BN04uO+3dfls7pqh7hM+l4pdy3ICm8ZQ7g2rmaWYCIeozqeg+vv3dlO+GgKHgScHb0i
-         tnBVA9JaPEONcXJ3apTmHyTVaS1x1mCQsY6Yr11yFD/h642ov7rQupKurNm6E9Io0Opg
-         1uHBvveRiRvFfko/J6Vwad5fNsvuUGLuB65p5TgZEqXiLtJTZYZTd+eOgzP5eWeaZ+yU
-         pohQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=CwyJ6GUKaEkPsKlT4efasHrB0kt/DM6/7ER1yUHSsiI=;
-        b=IBJBVrxHExKPTkBP1vfVEc9k2XHZsrGzGvdepV4oHFOXR9LJtNynjnOJpGFsN+amzV
-         77QThY/Xb4VjwFHqtsKiMx52wCm7vJsbuBgyF0MC3JPHRHDEDLHLdkSHx/uGL0L19gXv
-         NQ8HGj93q8QNaW1uwr7x4KDdbBL71h2RRhRPyqOexSPRSHrdXCGnegIQ1vSrpAlE5IAX
-         Sf4qfnePsDcmFVAtBlkNryxyKScXiktRbSl2G5tS0y+dYspQJf9k5bVAc8YxvIUX+H/4
-         ZvC2yGT+GPMYQNo8fmYh0zgXOwIJqs/slxMn9G52QjgzWA8CVQwrp4/4qHxLyXLJEijZ
-         KoiQ==
-X-Gm-Message-State: ACgBeo1PruwhFsJQepedVPKudz1Md24PdkE/gO4LbU8Q+Yc62sB5/kF5
-        /rcP3A06KtE6r3QFZaBmV3A=
-X-Google-Smtp-Source: AA6agR682aZxFQBk2EsMway+bI4HV3bR1eTLOKhCLig8pI3hw4sPKolUMPk/EOostjJB3af3CHgBCg==
-X-Received: by 2002:a05:6808:1596:b0:344:9136:8b1d with SMTP id t22-20020a056808159600b0034491368b1dmr297704oiw.250.1660688803750;
-        Tue, 16 Aug 2022 15:26:43 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id u12-20020a4aa34c000000b00432ac97ad09sm2622224ool.26.2022.08.16.15.26.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Aug 2022 15:26:43 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 15:24:31 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237741AbiHPW0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 18:26:30 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1458FD78;
+        Tue, 16 Aug 2022 15:26:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660688754; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=iPK7Jhd8ypbEHwD/n+VtVEaj5rJAQKANFd4jbZYUJqfyaHpikst0/xxoi9x4uZS49n27Lfcc9NYd/R34Wjsv8KiKpTM//U4ghN7MxqKNRw60srjH9/hl8Ov/6e4W1mmpgKie9yQoo4JejvmbC8by3ugeVTX5uF6vPJGnkm4xZjs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1660688754; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=qZYvwhY+9f843t/9+9YeemY82s4b/y6qSCIkArr4MHo=; 
+        b=LX0p2Bqi7yEFJCOKc5jBnZMoCsjDwBkAUDAe9VERP0ll/nwFaGWYNO3F3fIXrgfM+OmjTkm2NUH56R0gDXRDEvqZNOEQDUuXWr26TYBlTPlaEBTfV2gOLeHYbRONxoZZNgkVno2pR4B4rJA2a63Dv2OY/HiCwZ6XZuvTNrxLCTk=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660688754;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=qZYvwhY+9f843t/9+9YeemY82s4b/y6qSCIkArr4MHo=;
+        b=R191Jh7nPNErVKrhNalKb34SdbPW1G6pI6ieMvF9bSLuGQ8Y85GW6iNLP99Eo37x
+        AlvySHC3n41V4KyccZ5H8V/61wY8vzze6yzUyNiTUclYS/Kfc1JbsmWs7dQLW7cTSXu
+        MM0BG4eDpRyH35h3RUkTbxte2yVojwwvuDQf073M=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1660688751681828.667318330111; Tue, 16 Aug 2022 15:25:51 -0700 (PDT)
+Message-ID: <87f7dd90-d6b3-dad6-fe46-0b4ce38d9c29@arinc9.com>
+Date:   Wed, 17 Aug 2022 01:25:44 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/7] dt-bindings: net: dsa: mediatek,mt7530: fix reset
+ lines
+Content-Language: en-US
+To:     Rob Herring <robh@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH 2/5] cpumask: Introduce for_each_cpu_andnot()
-Message-ID: <YvwZH/q5rvT6JD5S@yury-laptop>
-References: <20220816180727.387807-1-vschneid@redhat.com>
- <20220816180727.387807-3-vschneid@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220816180727.387807-3-vschneid@redhat.com>
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220813154415.349091-1-arinc.unal@arinc9.com>
+ <20220813154415.349091-3-arinc.unal@arinc9.com>
+ <20220816205228.GA2709277-robh@kernel.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <20220816205228.GA2709277-robh@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 07:07:24PM +0100, Valentin Schneider wrote:
-> for_each_cpu_and() is very convenient as it saves having to allocate a
-> temporary cpumask to store the result of cpumask_and(). The same issue
-> applies to cpumask_andnot() which doesn't actually need temporary storage
-> for iteration purposes.
+On 16.08.2022 23:52, Rob Herring wrote:
+> On Sat, Aug 13, 2022 at 06:44:10PM +0300, Arınç ÜNAL wrote:
+>> - Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
+>> - Add description for reset-gpios.
+>> - Invalidate reset-gpios if mediatek,mcm is used.
+>> - Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
+>> - Require mediatek,mcm for the described MT7621 SoCs as the compatible
+>> string is only used for MT7530 which is a part of the multi-chip module.
 > 
-> Following what has been done for for_each_cpu_and(), introduce
-> for_each_cpu_andnot().
+> The commit message should answer 'why is this change needed/wanted?' not
+> 'what changed'. I can read the diff to see what changed.
+
+I'll explain why to invalidating reset-gpios and mediatek,mcm.
+
 > 
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
-> ---
->  include/linux/cpumask.h | 32 ++++++++++++++++++++++++++++++++
->  lib/cpumask.c           | 19 +++++++++++++++++++
->  2 files changed, 51 insertions(+)
-> 
-> diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-> index fe29ac7cc469..a8b2ca160e57 100644
-> --- a/include/linux/cpumask.h
-> +++ b/include/linux/cpumask.h
-> @@ -157,6 +157,13 @@ static inline unsigned int cpumask_next_and(int n,
->  	return n+1;
->  }
->  
-> +static inline unsigned int cpumask_next_andnot(int n,
-> +					    const struct cpumask *srcp,
-> +					    const struct cpumask *andp)
-> +{
-> +	return n+1;
-> +}
-> +
-
-It looks like the patch is not based on top of 6.0, where UP cpumask
-operations were fixed.  Can you please rebase?
-
-Thanks,
-Yury
-
->  static inline unsigned int cpumask_next_wrap(int n, const struct cpumask *mask,
->  					     int start, bool wrap)
->  {
-> @@ -194,6 +201,8 @@ static inline int cpumask_any_distribute(const struct cpumask *srcp)
->  	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask, (void)(start))
->  #define for_each_cpu_and(cpu, mask1, mask2)	\
->  	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask1, (void)mask2)
-> +#define for_each_cpu_andnot(cpu, mask1, mask2)	\
-> +	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask1, (void)mask2)
->  #else
->  /**
->   * cpumask_first - get the first cpu in a cpumask
-> @@ -259,6 +268,9 @@ static inline unsigned int cpumask_next_zero(int n, const struct cpumask *srcp)
->  }
->  
->  int __pure cpumask_next_and(int n, const struct cpumask *, const struct cpumask *);
-> +int __pure cpumask_next_andnot(int n,
-> +			       const struct cpumask *src1p,
-> +			       const struct cpumask *src2p);
->  int __pure cpumask_any_but(const struct cpumask *mask, unsigned int cpu);
->  unsigned int cpumask_local_spread(unsigned int i, int node);
->  int cpumask_any_and_distribute(const struct cpumask *src1p,
-> @@ -324,6 +336,26 @@ extern int cpumask_next_wrap(int n, const struct cpumask *mask, int start, bool
->  	for ((cpu) = -1;						\
->  		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
->  		(cpu) < nr_cpu_ids;)
-> +
-> +/**
-> + * for_each_cpu_andnot - iterate over every cpu in one mask but not in another
-> + * @cpu: the (optionally unsigned) integer iterator
-> + * @mask1: the first cpumask pointer
-> + * @mask2: the second cpumask pointer
-> + *
-> + * This saves a temporary CPU mask in many places.  It is equivalent to:
-> + *	struct cpumask tmp;
-> + *	cpumask_andnot(&tmp, &mask1, &mask2);
-> + *	for_each_cpu(cpu, &tmp)
-> + *		...
-> + *
-> + * After the loop, cpu is >= nr_cpu_ids.
-> + */
-> +#define for_each_cpu_andnot(cpu, mask1, mask2)				\
-> +	for ((cpu) = -1;						\
-> +		(cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)),	\
-> +		(cpu) < nr_cpu_ids;)
-> +
->  #endif /* SMP */
->  
->  #define CPU_BITS_NONE						\
-> diff --git a/lib/cpumask.c b/lib/cpumask.c
-> index a971a82d2f43..6896ff4a08fd 100644
-> --- a/lib/cpumask.c
-> +++ b/lib/cpumask.c
-> @@ -42,6 +42,25 @@ int cpumask_next_and(int n, const struct cpumask *src1p,
->  }
->  EXPORT_SYMBOL(cpumask_next_and);
->  
-> +/**
-> + * cpumask_next_andnot - get the next cpu in *src1p & ~*src2p
-> + * @n: the cpu prior to the place to search (ie. return will be > @n)
-> + * @src1p: the first cpumask pointer
-> + * @src2p: the second cpumask pointer
-> + *
-> + * Returns >= nr_cpu_ids if no further cpus set in *src1p & ~*src2p.
-> + */
-> +int cpumask_next_andnot(int n, const struct cpumask *src1p,
-> +		     const struct cpumask *src2p)
-> +{
-> +	/* -1 is a legal arg here. */
-> +	if (n != -1)
-> +		cpumask_check(n);
-> +	return find_next_andnot_bit(cpumask_bits(src1p), cpumask_bits(src2p),
-> +		nr_cpumask_bits, n + 1);
-> +}
-> +EXPORT_SYMBOL(cpumask_next_andnot);
-> +
->  /**
->   * cpumask_any_but - return a "random" in a cpumask, but not this one.
->   * @mask: the cpumask to search
-> -- 
-> 2.31.1
+> d>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
+>>   1 file changed, 28 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> index edf48e917173..4c99266ce82a 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> @@ -110,11 +110,15 @@ properties:
+>>     mediatek,mcm:
+>>       type: boolean
+>>       description:
+>> -      if defined, indicates that either MT7530 is the part on multi-chip
+>> -      module belong to MT7623A has or the remotely standalone chip as the
+>> -      function MT7623N reference board provided for.
+>> +      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
+>> +      switch is a part of the multi-chip module.
+>>   
+>>     reset-gpios:
+>> +    description:
+>> +      GPIO to reset the switch. Use this if mediatek,mcm is not used.
+>> +      This property is optional because some boards share the reset line with
+>> +      other components which makes it impossible to probe the switch if the
+>> +      reset line is used.
+>>       maxItems: 1
+>>   
+>>     reset-names:
+>> @@ -165,6 +169,9 @@ allOf:
+>>         required:
+>>           - mediatek,mcm
+>>       then:
+>> +      properties:
+>> +        reset-gpios: false
+>> +
+>>         required:
+>>           - resets
+>>           - reset-names
+>> @@ -182,6 +189,24 @@ allOf:
+>>           - core-supply
+>>           - io-supply
+>>   
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+>> +            - const: mediatek,mt7531
+>> +    then:
+>> +      properties:
+>> +        mediatek,mcm: false
+>> +
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+>> +            - const: mediatek,mt7621
+>> +    then:
+>> +      required:
+>> +        - mediatek,mcm
+>> +
+>>   unevaluatedProperties: false
+>>   
+>>   examples:
+>> -- 
+>> 2.34.1
+>>
+>>
