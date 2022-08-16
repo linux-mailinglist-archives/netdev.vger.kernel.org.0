@@ -2,106 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49B40595FBC
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 17:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2C2596023
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 18:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236343AbiHPP7G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 11:59:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55472 "EHLO
+        id S236365AbiHPQ0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 12:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235991AbiHPP6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 11:58:38 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF392B7D4
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 08:55:54 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id gp7so10100109pjb.4
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 08:55:54 -0700 (PDT)
+        with ESMTP id S236351AbiHPQ0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 12:26:09 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E44E7B29A;
+        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ha11so10184153pjb.2;
+        Tue, 16 Aug 2022 09:26:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=S0TjqgZ/cpwhvqIRclTaRgLLFqhzUsXjGRreU5l1Dao=;
-        b=qTx7jEv4/nwmvCExtD6R89Dm1SBJ4SkhasuOIfOrwWZ6K1t2Zr0EaCkQWcJCS/uim+
-         8X9WP8VRmTcp17JN0SF1dTFzd9Oh4JZoisOJYrLLcIy4MM3xb74oG5Mscfg6rwcrXhJI
-         hQdCdNpKMiGt/+1SGkofKjc4IhOG8u/ztqpv2yctdU8Nuk2IMbHx6qI6TzuQQ0klWjGq
-         aFceiAkHInK+h5iWx+IC90K1AiFSPR3Plz+cYfA1om82VYY1xFn9WCIj5pzWRvWr0cZB
-         /NocanLC50/KXHrrK96ND8mMKm9IrEstRN/hRIk2ALjS9Xwx1q7bVX56kmoPPF2s2jMo
-         tW3g==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
+        b=Am2ouX+tQrg3Qs4kMQHVsVlDKBFlmbflfJQCKuXndB3MHEu5WSgnWGi0F9EaSYN4xe
+         ZUSaOhQeIoRuynwiaW1dKomNhDpt8wKVUsEGQNd+IwEjZ3XgG8Com7hxykU7G+qmy5Bi
+         PTwBqnKH4Qk1YwqlPwRhgoUphKD7SMjylxX+1+xZkKGjHI6rwqwLu9J9FLoy4sjXxH9o
+         0TBIlt1c3Qe7Bqvcps2WC6/LxhZpB3S0HtOaiyd3gqaoFmSEc71xTqvHFPV4H3n+5oqu
+         WAxS9jWDTaL5YJeGlAA/EzZq3kmTgfgw4v4gSIAsitQckCD8neZgMjtVDeaosy6lpHum
+         1Qtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=S0TjqgZ/cpwhvqIRclTaRgLLFqhzUsXjGRreU5l1Dao=;
-        b=LlmjuzwC9AzRKqLEzKmBhBiulRukGDB1L6sgsy83HEF00UavInn+Z6FBH0/KdH6gsq
-         NFJkfuQCTyePhXO2ut54qJ7c6gtONvIX6Yb0tKGGSWFJH4YBSfHp/l2CD8AGllzOdnvi
-         9vt/n6oIjMoDQZUfaaEBosZ2xahLxtrnuoXb8FakWyCkEtIctBVrQD2HikkovKYmWP4U
-         Xhx+kIs7dWFPzUaQcwhBm0wwfYGqifRnGHYgJWbhzbtj6ysy2FPu7ZPssK9t932/A4nU
-         XUFznP+QMbPmAPofKm3cpm1UZP7hzzfGmZ60/qf8WZn9AIGyvlYsTL0nAm437zLuDSCg
-         n8RQ==
-X-Gm-Message-State: ACgBeo3wVQ1tdGDwnyPEYhGUvgdWGkIC0NmpmJ8G3zlCAYjrppqKj/Dl
-        iMCGGOM1GBxyz7Gkeo8Uu4+UT8afMpUJVBGIIeJ6pQ==
-X-Google-Smtp-Source: AA6agR7rNOEKD6nRN5Avv+ABuxkIhBYlnMLShbilL+t09HuhZ24Kqp5AE/3faQMwTl37shqIo4Nw0wBbJ21Udr/teco=
-X-Received: by 2002:a17:902:8683:b0:171:3114:7678 with SMTP id
- g3-20020a170902868300b0017131147678mr22420060plo.172.1660665354218; Tue, 16
- Aug 2022 08:55:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <CANn89i+6NPujMyiQxriZRt6vhv6hNrAntXxi1uOhJ0SSqnJ47w@mail.gmail.com>
- <20220627123415.GA32052@shbuild999.sh.intel.com> <CANn89iJAoYCebNbXpNMXRoDUkFMhg9QagetVU9NZUq+GnLMgqQ@mail.gmail.com>
- <20220627144822.GA20878@shbuild999.sh.intel.com> <CANn89iLSWm-c4XE79rUsxzOp3VwXVDhOEPTQnWgeQ48UwM=u7Q@mail.gmail.com>
- <20220628034926.GA69004@shbuild999.sh.intel.com> <CALvZod71Fti8yLC08mdpDk-TLYJVyfVVauWSj1zk=BhN1-GPdA@mail.gmail.com>
- <20220703104353.GB62281@shbuild999.sh.intel.com> <YsIeYzEuj95PWMWO@castle>
- <20220705050326.GF62281@shbuild999.sh.intel.com> <YvswusNaC5yr+HwT@xsang-OptiPlex-9020>
-In-Reply-To: <YvswusNaC5yr+HwT@xsang-OptiPlex-9020>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 16 Aug 2022 08:55:43 -0700
-Message-ID: <CALvZod66HFiBX2N07gmCYDk_iH0bf4U+O=0DqUDmcebpOSyvwA@mail.gmail.com>
-Subject: Re: [net] 4890b686f4: netperf.Throughput_Mbps -69.4% regression
-To:     Oliver Sang <oliver.sang@intel.com>
-Cc:     Feng Tang <feng.tang@intel.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=j5gA1OCNcP1/p4cG252GyiMT/LrZOUd2nqyA7sykVkM=;
+        b=bleyaWwODfiXEfQ2kH2w3akC+VIqvc8kDLIGY33ggoSZe2d8qDXKLru5y6O6afQdwu
+         bBpJ9y2f4B0KRQanKxm77u65OHStuxhGm0S9CSDClZixesQvjnJqbJHQknNoIuju2dok
+         Xe6Hbge72Y/gON3abGzIwPXe2NONM5zX6y+A8Q8++y/W1u3KRnZ3rnuW2B+iOHmyr8Mc
+         K0PfVk8OW20L7R+4TPyR7+1rvwQayWEKnD1Qge3x5Gc2tNKbonEScCJOzH68xV10cekt
+         iyRGLkkFjnPtgQ4zGN7hb8xF/u8LsPG105YLcV/+gsM7b163HbTX93c35oXRggOTjzz0
+         3+WA==
+X-Gm-Message-State: ACgBeo0oPqG6HpMWKnPDnjMexQZqLm11WLkvjm5/7KhY3Rf4MaRCMqSI
+        Vak/JeUmHqWIEiPZuve5pwI=
+X-Google-Smtp-Source: AA6agR5vDBZ3vhyHnItujfIaNht8KZtHXHBsEN9eLZCLlIMXA0vxLKU47fOf6q9VckZ/Tl9GAVjwjQ==
+X-Received: by 2002:a17:902:b182:b0:16e:e4ad:360c with SMTP id s2-20020a170902b18200b0016ee4ad360cmr21696621plr.21.1660667165525;
+        Tue, 16 Aug 2022 09:26:05 -0700 (PDT)
+Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
+        by smtp.gmail.com with ESMTPSA id b190-20020a621bc7000000b0052d87b76d12sm8660302pfb.68.2022.08.16.09.26.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Aug 2022 09:26:04 -0700 (PDT)
+Date:   Tue, 16 Aug 2022 02:29:53 +0000
+From:   Bobby Eshleman <bobbyeshleman@gmail.com>
+To:     Bobby Eshleman <bobby.eshleman@gmail.com>
+Cc:     virtio-dev@lists.oasis-open.org,
+        Bobby Eshleman <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Muchun Song <songmuchun@bytedance.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        network dev <netdev@vger.kernel.org>,
-        linux-s390@vger.kernel.org, MPTCP Upstream <mptcp@lists.linux.dev>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        lkp@lists.01.org, kbuild test robot <lkp@intel.com>,
-        Huang Ying <ying.huang@intel.com>,
-        Xing Zhengjun <zhengjun.xing@linux.intel.com>,
-        Yin Fengwei <fengwei.yin@intel.com>, Ying Xu <yinxu@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
+Message-ID: <YvsBIQU/DlHOpbEH@bullseye>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DATE_IN_PAST_12_24,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:53 PM Oliver Sang <oliver.sang@intel.com> wrote:
->
-> Hi all,
->
-> now we noticed this commit has already merged into mainline, and in our tests
-> there is still similar regression. [1]
->
-> not sure if there is a plan to merge some of the solutions that have been
-> discussed in this thread? we'll very glad to test patches if there is a request
->
-> Thanks a lot!
+CC'ing virtio-dev@lists.oasis-open.org
 
-Hi Oliver, sorry for the delay. I will send out the patches in a day or two.
-
-thanks,
-Shakeel
+On Mon, Aug 15, 2022 at 10:56:03AM -0700, Bobby Eshleman wrote:
+> Hey everybody,
+> 
+> This series introduces datagrams, packet scheduling, and sk_buff usage
+> to virtio vsock.
+> 
+> The usage of struct sk_buff benefits users by a) preparing vsock to use
+> other related systems that require sk_buff, such as sockmap and qdisc,
+> b) supporting basic congestion control via sock_alloc_send_skb, and c)
+> reducing copying when delivering packets to TAP.
+> 
+> The socket layer no longer forces errors to be -ENOMEM, as typically
+> userspace expects -EAGAIN when the sk_sndbuf threshold is reached and
+> messages are being sent with option MSG_DONTWAIT.
+> 
+> The datagram work is based off previous patches by Jiang Wang[1].
+> 
+> The introduction of datagrams creates a transport layer fairness issue
+> where datagrams may freely starve streams of queue access. This happens
+> because, unlike streams, datagrams lack the transactions necessary for
+> calculating credits and throttling.
+> 
+> Previous proposals introduce changes to the spec to add an additional
+> virtqueue pair for datagrams[1]. Although this solution works, using
+> Linux's qdisc for packet scheduling leverages already existing systems,
+> avoids the need to change the virtio specification, and gives additional
+> capabilities. The usage of SFQ or fq_codel, for example, may solve the
+> transport layer starvation problem. It is easy to imagine other use
+> cases as well. For example, services of varying importance may be
+> assigned different priorities, and qdisc will apply appropriate
+> priority-based scheduling. By default, the system default pfifo qdisc is
+> used. The qdisc may be bypassed and legacy queuing is resumed by simply
+> setting the virtio-vsock%d network device to state DOWN. This technique
+> still allows vsock to work with zero-configuration.
+> 
+> In summary, this series introduces these major changes to vsock:
+> 
+> - virtio vsock supports datagrams
+> - virtio vsock uses struct sk_buff instead of virtio_vsock_pkt
+>   - Because virtio vsock uses sk_buff, it also uses sock_alloc_send_skb,
+>     which applies the throttling threshold sk_sndbuf.
+> - The vsock socket layer supports returning errors other than -ENOMEM.
+>   - This is used to return -EAGAIN when the sk_sndbuf threshold is
+>     reached.
+> - virtio vsock uses a net_device, through which qdisc may be used.
+>  - qdisc allows scheduling policies to be applied to vsock flows.
+>   - Some qdiscs, like SFQ, may allow vsock to avoid transport layer congestion. That is,
+>     it may avoid datagrams from flooding out stream flows. The benefit
+>     to this is that additional virtqueues are not needed for datagrams.
+>   - The net_device and qdisc is bypassed by simply setting the
+>     net_device state to DOWN.
+> 
+> [1]: https://lore.kernel.org/all/20210914055440.3121004-1-jiang.wang@bytedance.com/
+> 
+> Bobby Eshleman (5):
+>   vsock: replace virtio_vsock_pkt with sk_buff
+>   vsock: return errors other than -ENOMEM to socket
+>   vsock: add netdev to vhost/virtio vsock
+>   virtio/vsock: add VIRTIO_VSOCK_F_DGRAM feature bit
+>   virtio/vsock: add support for dgram
+> 
+> Jiang Wang (1):
+>   vsock_test: add tests for vsock dgram
+> 
+>  drivers/vhost/vsock.c                   | 238 ++++----
+>  include/linux/virtio_vsock.h            |  73 ++-
+>  include/net/af_vsock.h                  |   2 +
+>  include/uapi/linux/virtio_vsock.h       |   2 +
+>  net/vmw_vsock/af_vsock.c                |  30 +-
+>  net/vmw_vsock/hyperv_transport.c        |   2 +-
+>  net/vmw_vsock/virtio_transport.c        | 237 +++++---
+>  net/vmw_vsock/virtio_transport_common.c | 771 ++++++++++++++++--------
+>  net/vmw_vsock/vmci_transport.c          |   9 +-
+>  net/vmw_vsock/vsock_loopback.c          |  51 +-
+>  tools/testing/vsock/util.c              | 105 ++++
+>  tools/testing/vsock/util.h              |   4 +
+>  tools/testing/vsock/vsock_test.c        | 195 ++++++
+>  13 files changed, 1176 insertions(+), 543 deletions(-)
+> 
+> -- 
+> 2.35.1
+> 
