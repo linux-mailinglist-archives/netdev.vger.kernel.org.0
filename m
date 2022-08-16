@@ -2,94 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13AAD5963A0
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 22:17:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB30E5963CE
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 22:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbiHPURR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 16:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51634 "EHLO
+        id S237145AbiHPUkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 16:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233421AbiHPURQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 16:17:16 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191C4895C2;
-        Tue, 16 Aug 2022 13:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pZZrETtmIKdExVtzVzQ8UXA3eX9WZ6xF2u4zNFYqj/s=; b=ptR8j4dyawkqM37lf86AbKOFwy
-        vqD50LNT3FK4b3Ha/zFTVqxf8zbh3as0oeroZaX2TnivXLllApZfmMbDzp8qAWTXqFTbpSfaGHF0M
-        fGxN+PX2kx8r82YMpSjijG5sV1i4AJ3z7/651SDn3tt7vvF34lL8Cw1zArzLWGGCqiDFTlnFroQ/O
-        5az02/1DGkptKGyHRtFk1d5VW8G2DCfsRqvfE6Zwy5OCe/NROVnv7MEnif7q2Ohiv81GpvC/S4Fqf
-        dBzhukKSo/tmSLNp0plhiwEcbku8B/ZsP+BOQSlMf5f1yudhZ/U0xeMxA3KNfSl3VsKfa80FtLsYm
-        TV6FA3wA==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oO2zs-00AHrG-K9; Tue, 16 Aug 2022 22:17:08 +0200
-Message-ID: <7da27e6f-ff45-9b28-5b67-ab8eabca1ed2@igalia.com>
-Date:   Tue, 16 Aug 2022 17:16:45 -0300
+        with ESMTP id S237142AbiHPUkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 16:40:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC75C78BEF;
+        Tue, 16 Aug 2022 13:40:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B742B81A7A;
+        Tue, 16 Aug 2022 20:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0BC6CC433D6;
+        Tue, 16 Aug 2022 20:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660682414;
+        bh=6Kdy2sX6SfzqIoarDDxH5HjCQdKlh11iDu5No703RFg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ME/r3ZAgPHsKu7kppV616PrCqBJ6Q4eNm5IUjpp2kTThw1MrV9ASwKUrUE0iVWp+U
+         zS5UDw8E7DbU5216k9NxuGae04t7M9V76y72+cycmSv/w2fYhMccNVGX7V3HSj63y6
+         kT9R8YN6TPjXDHEXQ9zAw2+HgrvAI49AODrReRYtPk8m63SBDQfYx1m3sJpH4OQCv6
+         x9E2SEZh15M+W2ZE89MPk7rmH72T5oTXkbxWqY6WHKyf98Ph9p/EHXJXewUTqdql4m
+         EqRpOeBp7K3svT8x/ogAi9DwGD9ZkDOq0vQko/DI24P+mz7823ie5c6vdjR9WdIIX5
+         +mdYemvOutD/A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E711BE2A04D;
+        Tue, 16 Aug 2022 20:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
-Content-Language: en-US
-To:     Dinh Nguyen <dinguyen@kernel.org>, kexec@lists.infradead.org,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        bp@alien8.de
-Cc:     akpm@linux-foundation.org, pmladek@suse.com, bhe@redhat.com,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com>
- <9f114876-d402-6e74-c1db-4e4983c2d695@kernel.org>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <9f114876-d402-6e74-c1db-4e4983c2d695@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2] selftests/bpf: fix attach point for non-x86
+ arches in test_progs/lsm
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166068241394.3762.3527471181032772772.git-patchwork-notify@kernel.org>
+Date:   Tue, 16 Aug 2022 20:40:13 +0000
+References: <20220816055231.717006-1-asavkov@redhat.com>
+In-Reply-To: <20220816055231.717006-1-asavkov@redhat.com>
+To:     Artem Savkov <asavkov@redhat.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/08/2022 15:44, Dinh Nguyen wrote:
-> [...] 
->> V2:
->> - new patch, based on the discussion in [0].
->> [0] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
->>
+Hello:
+
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Tue, 16 Aug 2022 07:52:31 +0200 you wrote:
+> Use SYS_PREFIX macro from bpf_misc.h instead of hard-coded '__x64_'
+> prefix for sys_setdomainname attach point in lsm test.
 > 
-> Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+> Signed-off-by: Artem Savkov <asavkov@redhat.com>
+> ---
+>  tools/testing/selftests/bpf/DENYLIST.s390x | 2 +-
+>  tools/testing/selftests/bpf/progs/lsm.c    | 3 ++-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
 
-Thanks a lot Dinh!
+Here is the summary with links:
+  - [bpf-next,v2] selftests/bpf: fix attach point for non-x86 arches in test_progs/lsm
+    https://git.kernel.org/bpf/bpf-next/c/807662cac66a
 
-There is something I'm asking for maintainers on patches in this series,
-so here it goes for you (CC Borislav / Tony): do you think it's possible
-to pick this one in your tree directly, from this series, or do you
-prefer I re-submit as a standalone patch, on linux-edac maybe?
-
-Thanks,
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Guilherme
