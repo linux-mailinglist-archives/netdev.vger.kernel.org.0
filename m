@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B45C559622E
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 20:13:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 893AC596248
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 20:20:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237038AbiHPSNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 14:13:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        id S236359AbiHPSTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 14:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236996AbiHPSNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 14:13:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5713196;
-        Tue, 16 Aug 2022 11:13:07 -0700 (PDT)
+        with ESMTP id S236490AbiHPSTo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 14:19:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E225385FB6
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 11:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BA9560F0E;
-        Tue, 16 Aug 2022 18:13:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38308C433D6;
-        Tue, 16 Aug 2022 18:13:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A38461389
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 18:19:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98794C433C1;
+        Tue, 16 Aug 2022 18:19:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660673586;
-        bh=XbAc7JtDFaqil7L7oXl65af6y1FHgq7Wjx4yuQUnwHM=;
+        s=k20201202; t=1660673982;
+        bh=x7wUEBhUv2Zsis1AZdvQCy+8Ehl79DaoJc+YIWDjSrU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KtZ0iolpEQnjcW68XqPt21LF5emDFaAIJyZfIQlqnA47PPWa5U4Pezhwfv6A08k2p
-         AnlnoTD86/pPVn9O+e3A5c/++uolriqnOBXLY3qb9H4y1TMmSSdEVFiaGRoa4mKTqU
-         TFuAqsxIGOSBuYmDw9OEoFokpD6tuWjN+WjGBDKGr3fHLOVDXYzLeCjvZAVi5KOgG7
-         uDOXeOzW2URSliuUpFTnvlf+7ANCFNnkWU5YN0f8dfLBoAZY74CUn948aaIvrs7n/w
-         k78khjKE2A7kohMdmMX1A2+w3j/YPpN2mAsu/cc3fA5JXTmcyDLKrETN7DKtghhbVY
-         RAUXLpB0eooJA==
-Date:   Tue, 16 Aug 2022 11:13:05 -0700
+        b=WOWAJAxOacp7lzoyOpYYGWLhKu8KY91l1/Xm2yMgRquyhqLxzjzjn1q6Ge2qsPsJK
+         4nNosgqdrOX1CEvYcXQnfd6TOxgoPmqyX0KiFBeuKniNyR20UHzDnc7G4PZrwfRrB7
+         pOWmRExPR5Hgo1ujROWEy4gnX5FM9aE5ihNQSmYdSstmJJxNAC/vTMy2V4QMl9Eqxn
+         WqasLB56eU9lQZrGz3i98IJxsmMc30a4PEYpNjCJKtyMl13lZjKormpSjAODOhIwIj
+         qXx8mOVjg8MKT/naoU9xjqCyz/Jkaqeq8XCKqiMZn+bH6NVeT4n5UagkXDX9G5SKGV
+         gL1ElMUX8j4SA==
+Date:   Tue, 16 Aug 2022 11:19:41 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     shaozhengchao <shaozhengchao@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>
-Subject: Re: [PATCH net-next,0/3] cleanup of qdisc offload function
-Message-ID: <20220816111305.4851a510@kernel.org>
-In-Reply-To: <694f07e3-d5ad-1bc5-1cdb-ae814b1a12f7@huawei.com>
-References: <20220816020423.323820-1-shaozhengchao@huawei.com>
-        <20220815201038.4321b77e@kernel.org>
-        <694f07e3-d5ad-1bc5-1cdb-ae814b1a12f7@huawei.com>
+To:     Oz Shlomo <ozsh@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        "Simon Horman" <simon.horman@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: Re: [ RFC  net-next 0/3] net: flow_offload: add support for per
+ action hw stats
+Message-ID: <20220816111941.04242d4f@kernel.org>
+In-Reply-To: <20220816092338.12613-1-ozsh@nvidia.com>
+References: <20220816092338.12613-1-ozsh@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,23 +58,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022 11:32:03 +0800 shaozhengchao wrote:
-> On 2022/8/16 11:10, Jakub Kicinski wrote:
-> > On Tue, 16 Aug 2022 10:04:20 +0800 Zhengchao Shao wrote:  
-> >> Some qdiscs don't care return value of qdisc offload function, so make
-> >> function void.  
-> > 
-> > How many of these patches do you have? Is there a goal you're working
-> > towards? I don't think the pure return value removals are worth the
-> > noise. They don't even save LoC:
-> > 
-> >   3 files changed, 9 insertions(+), 9 deletions(-)  
->
-> 	Thank you for your reply. Recently I've been studying the kernel code 
-> related to qdisc, and my goal is to understand how qdisc works. If the 
-> code can be optimized, I do what I can to modify the optimization. Is it 
-> more appropriate to add warning to the offload return value? I look 
-> forward to your reply. Thank you.
+On Tue, 16 Aug 2022 12:23:35 +0300 Oz Shlomo wrote:
+> This series provides the platform to query per action stats for in_hw flows.
 
-Understood. Please stop sending the cleanups removing return values
-unless the patches materially improve the code.
+I'd like to make sure we document the driver-facing APIs going forward,
+please consider adding a doc.
