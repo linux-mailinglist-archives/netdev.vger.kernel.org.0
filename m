@@ -2,312 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D88A59558E
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED0AC5955B2
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 10:57:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231586AbiHPIr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 04:47:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57338 "EHLO
+        id S232723AbiHPI5m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 04:57:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233257AbiHPIq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:46:58 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C8B14CEEC
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 23:52:25 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id y11so7263530qvn.3
-        for <netdev@vger.kernel.org>; Mon, 15 Aug 2022 23:52:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=H+QryRTUOZZqR0vf2O8cYSZqf6P6R6tUCcAZ2UjdGFQ=;
-        b=h4pX7HZUJqfqq8yzL16T+uncKDWeoGboy9s9qweLD2nh02VL7PHYr9g7wp5UObekV9
-         X86X0mYxFDK196e+cGnlD2LFxCVGiguwrI1lxjZZDizuEyjVVoOlTqpEq0eisE6sDsjx
-         UiH8TuRsxppQMo+cxEJw5x52I/Cx7mRTTXT7owLAiYMnRthi3zcH1IZcJjUS+8dqOfun
-         MXq7f6UnAyeh7ceGlxrKLLK2e0qurPv2ctTIE8DlQzDItDPu2BcUwiuqOUrhXkdA4D2g
-         t+p9Kl5jX2EDzfBkSFN238zSuQS29y4T12Yo/V7UtPNv2gg68jpAYr6UakU2cM6sjVth
-         I6OQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=H+QryRTUOZZqR0vf2O8cYSZqf6P6R6tUCcAZ2UjdGFQ=;
-        b=YZAiUnTMHaQGRhCR5uAICGZcNUNgzJrzGHZngvVP178EbrwJ9wYgO8wzmqPlVQpqzy
-         WUL7Ce/MljRCjb+AxxrIACUO0l0KXGzLxPE4kljCWsSKQjCWDUJJ3XQLljM4lpgrHY2V
-         BeQ9zSHTYs6ODAONC69Hai6Zvs0BTDMihTNAygbAiYHP4oDOya+geoWI8O04lwMIhKOe
-         V+D0bTVsq3JHJwoKziGur3SHkDbD+Gyb5qJ6Gn+UkPz/LH4nKuzlkc//HexnN40zsyph
-         Q7RJEqIVGwVG01gChQieElqGTJaPI6uL+6WtANANbaCSnNbwIGMmsil1VwznNeGKmSRv
-         FLaA==
-X-Gm-Message-State: ACgBeo3hyO23J0I7MWvarv6bSiumvHPaDlopAZslGPUfVq+YOkhGzhBV
-        VDsxuSx2d9xn/p+N9TGziTFmEOKW20E3ZAf1GjM/7g==
-X-Google-Smtp-Source: AA6agR6N30KlvjclYfzTHDfvMuY9eCRK0xq6hEedvonkB1ZWbLMDeYc/AFLfqy9p72rTh9qF5UtJV1iqOVC3rUv9g8I=
-X-Received: by 2002:a05:6214:2267:b0:474:8ff7:a21c with SMTP id
- gs7-20020a056214226700b004748ff7a21cmr16708427qvb.56.1660632743775; Mon, 15
- Aug 2022 23:52:23 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220805214821.1058337-1-haoluo@google.com> <20220805214821.1058337-5-haoluo@google.com>
- <CAEf4BzZHf89Ds8nQWFCH00fKs9-9GkJ0d+Hrp-LkMCDUP_td0A@mail.gmail.com>
- <CA+khW7hUVOkHBO3dhRze2_VKZuxD-LuNQdO3nHUkLCYmuuR6eg@mail.gmail.com>
- <20220809162325.hwgvys5n3rivuz7a@MacBook-Pro-3.local.dhcp.thefacebook.com>
- <CA+khW7j0kzP+W_Qgsim52J+HeR27XJcyMk73Hq93tsmNzT7q6w@mail.gmail.com>
- <CA+khW7j1Ni_PfvsGisUpUgFtgg=f_qEUVd1VUmocn6L3=kndhw@mail.gmail.com>
- <CAJD7tkY6ihK9PkaAwrdRr-3QyiVFf8h4WkLXx73zYwNUjS_7pw@mail.gmail.com> <CAEf4BzZTrsBOPpCTFouoWZJG9yXkz8LZgLQrqDREAY-XdGb7ew@mail.gmail.com>
-In-Reply-To: <CAEf4BzZTrsBOPpCTFouoWZJG9yXkz8LZgLQrqDREAY-XdGb7ew@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Mon, 15 Aug 2022 23:52:12 -0700
-Message-ID: <CA+khW7gR7XWaXLHtVYE3c3HTYTNmo5gp7mETAxTg=O9-URwu0w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 4/8] bpf: Introduce cgroup iter
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Cgroups <cgroups@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>
+        with ESMTP id S230190AbiHPI5C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 04:57:02 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 558FDA4B2D;
+        Tue, 16 Aug 2022 00:07:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=u2PBVMAPAV+XXqMRAYTwrHZEIjBBg3a7hXM7iFoy2Q8=;
+        t=1660633653; x=1661843253; b=l5mvFx+dN2ndKiYOHsAUq4qi6h85d19GZdmC6urT9W/1dIP
+        xhv95QXYYRsb2lAJ6a7Njt0GN6/m218WwlIPlyAAW3KjSZOm+lov0u7Wgv6Ty1XdyBTga4RrdD7hK
+        eljJKLbVayWszauFLcizi7w148DZw3gZLgAFemBGP1IwuwqUMKDRbJnuiXrX0r6Q6Dq85i6tUOQVl
+        yftKQ8hWleF4dHttxtFuAVBcwdsFRyyRjshKorAMzTEeoEZ2AD1aetVGfW0EVD30oBs/q4NTQkrCG
+        KikBwb74M+WKy3VJW3qFH5gqI2bBrTP7ZiruollLpuqr0ZAZK0k/eSMfuQd7jLOQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oNqfT-009NUz-1M;
+        Tue, 16 Aug 2022 09:07:15 +0200
+Message-ID: <b5f64bfb0bcb70b0ac89143b8aabb3e383e362c3.camel@sipsolutions.net>
+Subject: Re: [RFC net-next 1/4] ynl: add intro docs for the concept
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, sdf@google.com, jacob.e.keller@intel.com,
+        vadfed@fb.com, jiri@resnulli.us, dsahern@kernel.org,
+        stephen@networkplumber.org, fw@strlen.de, linux-doc@vger.kernel.org
+Date:   Tue, 16 Aug 2022 09:07:14 +0200
+In-Reply-To: <20220815173254.1809b44a@kernel.org>
+References: <20220811022304.583300-1-kuba@kernel.org>
+         <20220811022304.583300-2-kuba@kernel.org>
+         <273db0bc09c0e074a8875679e5e07ea047b61c27.camel@sipsolutions.net>
+         <20220815173254.1809b44a@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 9:13 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Thu, Aug 11, 2022 at 7:10 AM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > On Wed, Aug 10, 2022 at 8:10 PM Hao Luo <haoluo@google.com> wrote:
-> > >
-> > > On Tue, Aug 9, 2022 at 11:38 AM Hao Luo <haoluo@google.com> wrote:
-> > > >
-> > > > On Tue, Aug 9, 2022 at 9:23 AM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > On Mon, Aug 08, 2022 at 05:56:57PM -0700, Hao Luo wrote:
-> > > > > > On Mon, Aug 8, 2022 at 5:19 PM Andrii Nakryiko
-> > > > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > > > >
-> > > > > > > On Fri, Aug 5, 2022 at 2:49 PM Hao Luo <haoluo@google.com> wrote:
-> > > > > > > >
-> > > > > > > > Cgroup_iter is a type of bpf_iter. It walks over cgroups in four modes:
-> > > > > > > >
-> > > > > > > >  - walking a cgroup's descendants in pre-order.
-> > > > > > > >  - walking a cgroup's descendants in post-order.
-> > > > > > > >  - walking a cgroup's ancestors.
-> > > > > > > >  - process only the given cgroup.
-> > > > > > > >
-> > > > [...]
-> > > > > > > > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > > > > > > > index 59a217ca2dfd..4d758b2e70d6 100644
-> > > > > > > > --- a/include/uapi/linux/bpf.h
-> > > > > > > > +++ b/include/uapi/linux/bpf.h
-> > > > > > > > @@ -87,10 +87,37 @@ struct bpf_cgroup_storage_key {
-> > > > > > > >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
-> > > > > > > >  };
-> > > > > > > >
-> > > > > > > > +enum bpf_iter_order {
-> > > > > > > > +       BPF_ITER_ORDER_DEFAULT = 0,     /* default order. */
-> > > > > > >
-> > > > > > > why is this default order necessary? It just adds confusion (I had to
-> > > > > > > look up source code to know what is default order). I might have
-> > > > > > > missed some discussion, so if there is some very good reason, then
-> > > > > > > please document this in commit message. But I'd rather not do some
-> > > > > > > magical default order instead. We can set 0 to mean invalid and error
-> > > > > > > out, or just do SELF as the very first value (and if user forgot to
-> > > > > > > specify more fancy mode, they hopefully will quickly discover this in
-> > > > > > > their testing).
-> > > > > > >
-> > > > > >
-> > > > > > PRE/POST/UP are tree-specific orders. SELF applies on all iters and
-> > > > > > yields only a single object. How does task_iter express a non-self
-> > > > > > order? By non-self, I mean something like "I don't care about the
-> > > > > > order, just scan _all_ the objects". And this "don't care" order, IMO,
-> > > > > > may be the common case. I don't think everyone cares about walking
-> > > > > > order for tasks. The DEFAULT is intentionally put at the first value,
-> > > > > > so that if users don't care about order, they don't have to specify
-> > > > > > this field.
-> > > > > >
-> > > > > > If that sounds valid, maybe using "UNSPEC" instead of "DEFAULT" is better?
-> > > > >
-> > > > > I agree with Andrii.
-> > > > > This:
-> > > > > +       if (order == BPF_ITER_ORDER_DEFAULT)
-> > > > > +               order = BPF_ITER_DESCENDANTS_PRE;
-> > > > >
-> > > > > looks like an arbitrary choice.
-> > > > > imo
-> > > > > BPF_ITER_DESCENDANTS_PRE = 0,
-> > > > > would have been more obvious. No need to dig into definition of "default".
-> > > > >
-> > > > > UNSPEC = 0
-> > > > > is fine too if we want user to always be conscious about the order
-> > > > > and the kernel will error if that field is not initialized.
-> > > > > That would be my preference, since it will match the rest of uapi/bpf.h
-> > > > >
-> > > >
-> > > > Sounds good. In the next version, will use
-> > > >
-> > > > enum bpf_iter_order {
-> > > >         BPF_ITER_ORDER_UNSPEC = 0,
-> > > >         BPF_ITER_SELF_ONLY,             /* process only a single object. */
-> > > >         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
-> > > >         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
-> > > >         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
-> > > > };
-> > > >
-> > >
-> > > Sigh, I find that having UNSPEC=0 and erroring out when seeing UNSPEC
-> > > doesn't work. Basically, if we have a non-iter prog and a cgroup_iter
-> > > prog written in the same source file, I can't use
-> > > bpf_object__attach_skeleton to attach them. Because the default
-> > > prog_attach_fn for iter initializes `order` to 0 (that is, UNSPEC),
-> > > which is going to be rejected by the kernel. In order to make
-> > > bpf_object__attach_skeleton work on cgroup_iter, I think I need to use
-> > > the following
-> > >
-> > > enum bpf_iter_order {
->
-> so first of all, this can't be called "bpf_iter_order" as it doesn't
-> apply to BPF iterators in general. I think this should be called
-> bpf_iter_cgroup_order (or maybe bpf_cgroup_iter_order) and if/when we
-> add ability to iterate tasks within cgroups then we'll just reuse enum
-> bpf_iter_cgroup_order as an extra parameter for task iterator.
->
-> And with that future case in mind I do think that we should have 0
-> being "UNSPEC" case.
->
+On Mon, 2022-08-15 at 17:32 -0700, Jakub Kicinski wrote:
+> On Mon, 15 Aug 2022 22:09:29 +0200 Johannes Berg wrote:
+> > On Wed, 2022-08-10 at 19:23 -0700, Jakub Kicinski wrote:
+> > >=20
+> > > +Note that attribute spaces do not themselves nest, nested attributes=
+ refer to their internal
+> > > +space via a ``nested-attributes`` property, so the YAML spec does no=
+t resemble the format
+> > > +of the netlink messages directly. =20
+> >=20
+> > I find this a bit ... confusing.
+> >=20
+> > I think reading the other patch I know what you mean, but if I think of
+> > this I think more of the policy declarations than the message itself,
+> > and there we do refer to another policy?
+> >=20
+> > Maybe reword a bit and say
+> >=20
+> >    Note that attribute spaces do not themselves nest, nested attributes
+> >    refer to their internal space via a ``nested-attributes`` property
+> >    (the name of another or the same attribute space).
+> >=20
+> > or something?
+>=20
+> I think I put the cart before the horse in this looong sentence. How
+> about:
+>=20
+>   Note that the YAML spec is "flattened" and is not meant to visually
+>   resemble the format of the netlink messages (unlike certain ad-hoc docu=
+mentation
+>   formats seen in kernel comments). In the YAML spec subordinate attribut=
+e sets
+>   are not defined inline as a nest, but defined in a separate attribute s=
+et
+>   referred to with a ``nested-attributes`` property of the container.
+>=20
+Yeah, that makes sense.
 
-Ok.
+Like I said, I was already thinking of the policy structures (and the
+policy advertisement to userspace) which is exactly the same way, so I
+didn't see this as much different - but of course it _is_ different from
+the message itself.
 
-> > >         BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
-> > >         BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
-> > >         BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
-> > >         BPF_ITER_SELF_ONLY,             /* process only a single object. */
-> > > };
-> > >
-> > > So that when calling bpf_object__attach_skeleton() on cgroup_iter, a
-> > > link can be generated and the generated link defaults to pre-order
-> > > walk on the whole hierarchy. Is there a better solution?
-> > >
->
-> I was actually surprised that we specify these additional parameters
-> at attach (LINK_CREATE) time, and not at bpf_iter_create() call time.
-> It seems more appropriate to allow to specify such runtime parameters
-> very late, when we create a specific instance of seq_file. But I guess
-> this was done because one of the initial motivations for iterators was
-> to be pinned in BPFFS and read as a file, so it was more convenient to
-> store such parameters upfront at link creation time to keep
-> BPF_OBJ_PIN simpler. I guess it makes sense, worst case you'll need to
-> create multiple bpf_link files, one for each cgroup hierarchy you'd
-> like to query with the same single BPF program.
->
-
-Right. That was the design from the beginning.
-
-> But I digress.
->
-> As for not being able to auto-attach cgroup iterator. I think that's
-> sort of expected and is in line with not being able to auto-attach
-> cgroup programs, as you need cgroup FD at runtime. So even if you had
-> some reasonable default order, you still would need to specify target
-> cgroup (either through FD or ID).
->
-> So... either don't do skeleton auto-attach,
-
-This is not okay IMHO. It would be very inconvenient to use.
-
-> or let's teach libbpf code
-> to not auto-attach some iter types?
->
-
-I'm thinking of two options:
-
-1. Maybe we could add libbpf APIs for disabling auto-attach just like
-prog autoload. Like:
-
-bpf_program__set_auto_attach()
-bpf_program__get_auto_attach(...)
-
-2. In auto-attach, if the program's link is already set, attach will
-be skipped. So, we could just manually attach, which specifies the
-order, and set the link in skeleton. This way, no change in libbpf is
-needed. Does this sound good to you?
-
-> Alternatively, we could teach libbpf to parse some sort of cgroup
-> iterator spec, like:
->
-> SEC("iter/cgroup:/path/to/cgroup:descendants_pre")
->
-> But this approach won't work for a bunch of other parameterized
-> iterators (e.g., task iter, or map elem iter), so I'm hesitant about
-> adding this to libbpf as a generic functionality.
->
-
-Agree. Let's explore other options first.
-
-> >
-> > I think this can be handled by userspace? We can attach the
-> > cgroup_iter separately first (and maybe we will need to set prog->link
-> > as well) so that bpf_object__attach_skeleton() doesn't try to attach
-> > it? I am following this pattern in the selftest in the final patch,
-> > although I think I might be missing setting prog->link, so I am
-> > wondering why there are no issues in that selftest which has the same
-> > scenario that you are talking about.
-> >
-> > I think such a pattern will need to be used anyway if the users need
-> > to set any non-default arguments for the cgroup_iter prog (like the
-> > selftest), right? The only case we are discussing here is the case
-> > where the user wants to attach the cgroup_iter with all default
-> > options (in which case the default order will fail).
-> > I agree that it might be inconvenient if the default/uninitialized
-> > options don't work for cgroup_iter, but Alexei pointed out that this
-> > matches other bpf uapis.
-> >
-> > My concern is that in the future we try to reuse enum bpf_iter_order
-> > to set ordering for other iterators, and then the
-> > default/uninitialized value (BPF_ITER_DESCENDANTS_PRE) doesn't make
-> > sense for that iterator (e.g. not a tree). In this case, the same
-> > problem that we are avoiding for cgroup_iter here will show up for
-> > that iterator, and we can't easily change it at this point because
-> > it's uapi.
->
-> Yep, valid concern, I agree.
->
-
-Andrii, other than auto-attach, do you have any concern for the rest
-of this patchset?
-
-> >
-> >
-> > > > and explicitly list the values acceptable by cgroup_iter, error out if
-> > > > UNSPEC is detected.
-> > > >
-> > > > Also, following Andrii's comments, will change BPF_ITER_SELF to
-> > > > BPF_ITER_SELF_ONLY, which does seem a little bit explicit in
-> > > > comparison.
-> > > >
-> > > > > I applied the first 3 patches to ease respin.
-> > > >
-> > > > Thanks! This helps!
-> > > >
-> > > > > Thanks!
+johannes
