@@ -2,197 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65B56595D64
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:30:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C0A1595D7C
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235766AbiHPNaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 09:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
+        id S235834AbiHPNhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 09:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235826AbiHPNad (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:30:33 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77D1B8A62
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:30:31 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so3727750wmb.4
-        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:30:31 -0700 (PDT)
+        with ESMTP id S235831AbiHPNhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:37:06 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29B616BCED
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:37:02 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id h27so3646828qkk.9
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 06:37:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc;
-        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
-        b=p1uIS7iPRm5FqeZyBT0Rono6HWbv5ulB/bs5oZgYh6d9a1ptIjWxTqIf5fdui0UI7P
-         UiKMVSr+4RtXLv4oOr9y9VG9zkJ7wYmACViu7FoZAAHh0fx2AK3IeW287cwTA94pjy7W
-         58dOOYI3IkZoR37TVr4OI4CDMlz7EA6HMoFO3Ex0IHnawCAeW+LTa/T3QasiPuhhYTYG
-         mUk4SHi+5Q/GbXbDglXaTas5nW1FpgGGNDDHSmOKsKRkDWE1GvW1FLM0ls2tIh887+7e
-         gGI8c1mDEYenpo65eLgr7mEvWZmy3MQSEE91lN0cZg0rhMVt+ckyO47lwF8zoDEr71bJ
-         5C6A==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=h7XZUh4pcD7ssomSIPnFHEFK+MI/fUtvM+ERSPwsmlI=;
+        b=FLgZD7SnarqyFLEScMLmSpRfpLiu2ZSm87XTxPgz5IeWBYruh+fVGMycazoJh/LS1y
+         KZrg4hDjDdvPvB9cMSt8i/BaXgIRkLgD+awINz4MXbi2lFhjBicVsYzrhDb1LDrGDZC2
+         Vb+fvCd8JkOi12q+rhMyvKn2Y0TgbRa5kVTcaMNPBxJS/atmXKRW4lcCqPeh5bqQb2RV
+         1Twu2P7MyxGC2u+3XLc3+cOvm8k5n+GYGB6t0WhP9CJ0QtO7BH8Tb8gynmDwP8OmteKB
+         K9hlTZN9uynxPr9tL+iLmT1cnJFRD0+Dks9kG6PInHUyQwEf8631Pme0tTnyBhMEMa2L
+         MPtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-message-state:from:to
-         :cc;
-        bh=hc7qC7bI2uO2D4Qa+zC5gvmq4/4IvbZWBk2kTcS1e4g=;
-        b=S8vV7vnrZbxUFX26IjhAkgW5oiGYNrTN2F6zbmsawKAy1DNsIv48DTsGPSr1YQmkS/
-         x1BbMrTPuDgyIMmwardIfBzvDQQlYUXRZaBBdnQc4Wt1g78zyZFGSA2/yEZH8SDZDXRC
-         SciW5lcvkx4Wk2tjlSwGiv4F843dx/RrX/hg8qrEx5MCQfOwSJxre+QLXfBWttzYz7bh
-         UZVx5Wf0ZeR1jcCpqjtLwar0yvXVT2lfMq1pN6JXTRi+5B+puMWkV1p9HsECfohYaagm
-         pbIu5uGoOzrxyhBtxCuFJ3FonWNPbv//mAE2Bbs9kbUlrTAr7Zrg9cIFv7oBN14cM9F8
-         pzVw==
-X-Gm-Message-State: ACgBeo0vd6N2dFuRF5u3P/efPH2+qWeAVk9DtwVxPtNzmM/S1A0tY9Yd
-        fGooP9Du8SLMsmGkRJ3P0heLfQ==
-X-Google-Smtp-Source: AA6agR5brmQT0VGVlB3KYey11S8HsfHLRIqrWymjHMuDRQM1mXOpHIasTetNNd2nw2J4QFqsRY8/MA==
-X-Received: by 2002:a1c:f217:0:b0:3a4:bfd4:21b4 with SMTP id s23-20020a1cf217000000b003a4bfd421b4mr12934932wmc.96.1660656630403;
-        Tue, 16 Aug 2022 06:30:30 -0700 (PDT)
-Received: from localhost (2a02-8388-6582-fe80-0000-0000-0000-0002.cable.dynamic.v6.surfer.at. [2a02:8388:6582:fe80::2])
-        by smtp.gmail.com with ESMTPSA id n6-20020a05600c3b8600b003a608d69a64sm1870148wms.21.2022.08.16.06.30.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:30:29 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 16 Aug 2022 15:30:26 +0200
-Message-Id: <CM7HN6H9EAN4.2008QGJVIO14X@otso>
-Subject: Re: [PATCH v1 0/3] Bring back driver_deferred_probe_check_state()
- for now
-From:   "Luca Weiss" <luca.weiss@fairphone.com>
-To:     "Saravana Kannan" <saravanak@google.com>
-Cc:     "Tony Lindgren" <tony@atomide.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Kevin Hilman" <khilman@kernel.org>,
-        "Ulf Hansson" <ulf.hansson@linaro.org>,
-        "Pavel Machek" <pavel@ucw.cz>, "Len Brown" <len.brown@intel.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, <naresh.kamboju@linaro.org>,
-        <kernel-team@android.com>, <linux-kernel@vger.kernel.org>,
-        <linux-pm@vger.kernel.org>, <netdev@vger.kernel.org>
-X-Mailer: aerc 0.11.0
-References: <20220727185012.3255200-1-saravanak@google.com>
- <Yvonn9C/AFcRUefV@atomide.com> <CM6REZS9Z8AC.2KCR9N3EFLNQR@otso>
- <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
-In-Reply-To: <CAGETcx_6oh=GVLP7-1gN_4DW7UHJ1MZQ6T1U2hupc_ZYDnXcNA@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=h7XZUh4pcD7ssomSIPnFHEFK+MI/fUtvM+ERSPwsmlI=;
+        b=a+P+PNI2+afnjRtIrmu0FhUHnG9T5UkTYxCGWxtqyLQnuzmpPDEbsqBfavH2M4a4U1
+         /P0jdW0g8osMvxBidjL61IyDXpiJ6swFmP0odRMZs9LZ4eZMsRQqOQYb0xZF+TXE8kDf
+         +8V/MSgi0EHSQpbvXOoFxRdlCSvaHy3Wu1Csw343cNNSis8/zdKXn9JDXaxqDMoHPELO
+         zCwLdz/+eXHeRqYrSMKgIQIJD217/pZEXUh7GXdnVPNOoZVhZiJMrsHhZcirwMqBzx45
+         xEwWgN7ur9n/qJMLLZTtekoyLfFkwNtoNXrLjVF1qakHrHTNa4RUJ22o9vfRW/YTdwnn
+         t7NQ==
+X-Gm-Message-State: ACgBeo3adCspfB2MVeXDJwI3b5mCmrkRPwxhPt63vECW/tocHLBX9QYq
+        H80FtwyfX8dHCYcoiXsvsunebHlpe2EOga4xkN/ZWA==
+X-Google-Smtp-Source: AA6agR56MQhc8yY/e4J0iQxfMP/yjqWm+aaFIbXvhMb7fV1byW+RjJFaDggwE3FWTxkfzhYnN1CczW5iFfsbz4BwuiA=
+X-Received: by 2002:a05:620a:410c:b0:6b2:82d8:dcae with SMTP id
+ j12-20020a05620a410c00b006b282d8dcaemr14704044qko.259.1660657021099; Tue, 16
+ Aug 2022 06:37:01 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220815202900.3961097-1-jmeng@fb.com>
+In-Reply-To: <20220815202900.3961097-1-jmeng@fb.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Tue, 16 Aug 2022 09:36:44 -0400
+Message-ID: <CADVnQy=hav-cLt5Dy0DBPiDCxgkpRCEktEoMNjq_uKG8hynLPg@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: Make SYN ACK RTO tunable by BPF programs
+ with TFO
+To:     Jie Meng <jmeng@fb.com>
+Cc:     netdev@vger.kernel.org, kafai@fb.com, kuba@kernel.org,
+        edumazet@google.com, bpf@vger.kernel.org,
+        Yuchung Cheng <ycheng@google.com>, Wei Wang <weiwan@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Saravana,
-
-On Tue Aug 16, 2022 at 1:36 AM CEST, Saravana Kannan wrote:
-> On Mon, Aug 15, 2022 at 9:57 AM Luca Weiss <luca.weiss@fairphone.com> wro=
-te:
-> >
-> > On Mon Aug 15, 2022 at 1:01 PM CEST, Tony Lindgren wrote:
-> > > * Saravana Kannan <saravanak@google.com> [700101 02:00]:
-> > > > More fixes/changes are needed before driver_deferred_probe_check_st=
-ate()
-> > > > can be deleted. So, bring it back for now.
-> > > >
-> > > > Greg,
-> > > >
-> > > > Can we get this into 5.19? If not, it might not be worth picking up=
- this
-> > > > series. I could just do the other/more fixes in time for 5.20.
-> > >
-> > > Yes please pick this as fixes for v6.0-rc series, it fixes booting fo=
-r
-> > > me. I've replied with fixes tags for the two patches that were causin=
-g
-> > > regressions for me.
-> > >
-> >
-> > Hi,
-> >
-> > for me Patch 1+3 fix display probe on Qualcomm SM6350 (although display
-> > for this SoC isn't upstream yet, there are lots of other SoCs with very
-> > similar setup).
-> >
-> > Probe for DPU silently fails, with CONFIG_DEBUG_DRIVER=3Dy we get this:
-> >
-> > msm-mdss ae00000.mdss: __genpd_dev_pm_attach() failed to find PM domain=
-: -2
-> >
-> > While I'm not familiar with the specifics of fw_devlink, the dtsi has
-> > power-domains =3D <&dispcc MDSS_GDSC> for this node but it doesn't pick
-> > that up for some reason.
-> >
-> > We can also see that a bit later dispcc finally probes.
+On Mon, Aug 15, 2022 at 8:30 PM Jie Meng <jmeng@fb.com> wrote:
 >
-> Luca,
+> Instead of the hardcoded TCP_TIMEOUT_INIT, this diff calls tcp_timeout_init
+> to initiate req->timeout like the non TFO SYN ACK case.
 >
-> Can you test with this series instead and see if it fixes this issue?
-> https://lore.kernel.org/lkml/20220810060040.321697-1-saravanak@google.com=
-/
+> Tested using the following packetdrill script, on a host with a BPF
+> program that sets the initial connect timeout to 10ms.
 >
-
-Unfortunately it doesn't seem to work with the 9 patches, and the
-attached diff also doesn't seem to make a difference. I do see this in
-dmesg which I haven't seen in the past:
-
-[    0.056554] platform 1d87000.phy: Fixed dependency cycle(s) with /soc@0/=
-ufs@1d84000
-[    0.060070] platform ae00000.mdss: Fixed dependency cycle(s) with /soc@0=
-/clock-controller@af00000
-[    0.060150] platform ae00000.mdss: Failed to create device link with ae0=
-0000.mdss
-[    0.060188] platform ae00000.mdss: Failed to create device link with ae0=
-0000.mdss
-[    0.061135] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061157] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061180] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061198] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061215] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061231] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-[    0.061252] platform c440000.spmi: Failed to create device link with c44=
-0000.spmi
-
-Also I'm going to be on holiday from today for about 2 weeks so I won't
-be able to test anything in that time.
-
-And in case it's interesting, here's the full dmesg to initramfs:
-https://pastebin.com/raw/Fc8W4MVi
-
-Regards
-Luca
-
-> You might also need to add this delta on top of the series if the
-> series itself isn't sufficient.
-> diff --git a/drivers/base/core.c b/drivers/base/core.c
-> index 2f012e826986..866755d8ad95 100644
-> --- a/drivers/base/core.c
-> +++ b/drivers/base/core.c
-> @@ -2068,7 +2068,11 @@ static int fw_devlink_create_devlink(struct device=
- *con,
->                 device_links_write_unlock();
->         }
+> `../../common/defaults.sh`
 >
-> -       sup_dev =3D get_dev_from_fwnode(sup_handle);
-> +       if (sup_handle->flags & FWNODE_FLAG_NOT_DEVICE)
-> +               sup_dev =3D fwnode_get_next_parent_dev(sup_handle);
-> +       else
-> +               sup_dev =3D get_dev_from_fwnode(sup_handle);
-> +
->         if (sup_dev) {
->                 /*
->                  * If it's one of those drivers that don't actually bind =
-to
+> // Initialize connection
+>     0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+>    +0 setsockopt(3, SOL_TCP, TCP_FASTOPEN, [1], 4) = 0
+>    +0 bind(3, ..., ...) = 0
+>    +0 listen(3, 1) = 0
 >
-> -Saravana
+>    +0 < S 0:0(0) win 32792 <mss 1000,sackOK,FO TFO_COOKIE>
+>    +0 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+>    +.01 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+>    +.02 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+>    +.04 > S. 0:0(0) ack 1 <mss 1460,nop,nop,sackOK>
+>    +.01 < . 1:1(0) ack 1 win 32792
+>
+>    +0 accept(3, ..., ...) = 4
+>
+> Signed-off-by: Jie Meng <jmeng@fb.com>
+> ---
+>  net/ipv4/tcp_fastopen.c | 3 ++-
+>  net/ipv4/tcp_timer.c    | 2 +-
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+> index 825b216d11f5..45cc7f1ca296 100644
+> --- a/net/ipv4/tcp_fastopen.c
+> +++ b/net/ipv4/tcp_fastopen.c
+> @@ -272,8 +272,9 @@ static struct sock *tcp_fastopen_create_child(struct sock *sk,
+>          * The request socket is not added to the ehash
+>          * because it's been added to the accept queue directly.
+>          */
+> +       req->timeout = tcp_timeout_init(child);
+>         inet_csk_reset_xmit_timer(child, ICSK_TIME_RETRANS,
+> -                                 TCP_TIMEOUT_INIT, TCP_RTO_MAX);
+> +                                 req->timeout, TCP_RTO_MAX);
+>
+>         refcount_set(&req->rsk_refcnt, 2);
+>
+> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+> index b4dfb82d6ecb..cb79127f45c3 100644
+> --- a/net/ipv4/tcp_timer.c
+> +++ b/net/ipv4/tcp_timer.c
+> @@ -428,7 +428,7 @@ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
+>         if (!tp->retrans_stamp)
+>                 tp->retrans_stamp = tcp_time_stamp(tp);
+>         inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
+> -                         TCP_TIMEOUT_INIT << req->num_timeout, TCP_RTO_MAX);
+> +                         req->timeout << req->num_timeout, TCP_RTO_MAX);
+>  }
+>
+>
+> --
 
+Looks good to me. Thanks for the feature!
+
+Acked-by: Neal Cardwell <ncardwell@google.com>
+
+neal
