@@ -2,240 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C12ED595D22
-	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:21:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99079595D28
+	for <lists+netdev@lfdr.de>; Tue, 16 Aug 2022 15:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234611AbiHPNUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 09:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S235091AbiHPNV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 09:21:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235615AbiHPNUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:20:22 -0400
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E755A8;
-        Tue, 16 Aug 2022 06:20:19 -0700 (PDT)
-Received: by mail-qt1-f182.google.com with SMTP id x5so8040008qtv.9;
-        Tue, 16 Aug 2022 06:20:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=hDkAAnw+hHxd4arV3hgrWxC6jV6Ka7uhFxxYbXDlq84=;
-        b=Ie69SXBnTFwHYq+2qoaVNTMJqlSlP9rGPH8gDFzZrNLW3RVfxY+4H6NPLctCFAX7JJ
-         MX5LOnbaDo+nw1QfpqvH4maxInHlhgD9n+KbEMkUKI4z7Ytb5ne2Vm+4oLPdjrn1Qaiy
-         NV694j6yYFFJxw0Uzi/SjeBXkrZeL5JtZl3W5ohiVAHo7W9JIzDlTk9O60ed9rffZTJk
-         5X9BAXDzth5kHhlXJuDqRLV/tGiYDX5jiJi7eia1DxIqdRcUIeUqqbWJFL920Kz2agDA
-         LYav3MtVbAtITi5R1OGrUu8t2P5MuVyvReYX80e0lawG4+Khnh2SYVzp5TAkMLccfizw
-         IkIw==
-X-Gm-Message-State: ACgBeo3QAI8E62iaDX3FIU7RRLJc6/wTBsRdDMvjeoOjmMZQlwNAbSeI
-        xPT+fhgD3/pFI51iy7lBG4n2EP7qWPwQGQ==
-X-Google-Smtp-Source: AA6agR5mtz+9F5/sG4+zrfZmReY9+LbVHIt/DB8co+JfWJP78E9Xz7B2Q5oRDve48VIykbFBeatPaA==
-X-Received: by 2002:ac8:5b0d:0:b0:33b:f61b:d173 with SMTP id m13-20020ac85b0d000000b0033bf61bd173mr18273671qtw.668.1660656017223;
-        Tue, 16 Aug 2022 06:20:17 -0700 (PDT)
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com. [209.85.128.177])
-        by smtp.gmail.com with ESMTPSA id n17-20020a05620a295100b006b64d36342fsm12047357qkp.68.2022.08.16.06.20.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:20:16 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-3321c2a8d4cso97038637b3.5;
-        Tue, 16 Aug 2022 06:20:15 -0700 (PDT)
-X-Received: by 2002:a81:502:0:b0:32f:dcc4:146e with SMTP id
- 2-20020a810502000000b0032fdcc4146emr10295665ywf.316.1660656015710; Tue, 16
- Aug 2022 06:20:15 -0700 (PDT)
+        with ESMTP id S231131AbiHPNV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 09:21:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68E5582FA1;
+        Tue, 16 Aug 2022 06:21:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 348CBB819FE;
+        Tue, 16 Aug 2022 13:21:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A9C8C433C1;
+        Tue, 16 Aug 2022 13:21:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660656114;
+        bh=SGCFkEPXbuXFQ29cVAWMkukHHalqDiWVWCljeDC5JYE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bF2nLRyEGQ7BIRga6y5LKr4b6J/EniemAsTg8GNf3Vg20QerkiLCW3Rm/q2hcWeMJ
+         BrUQ8GR/JJUZk8eX1X78/f4StLK3mDKHrIxJULdx+Ww12lOkNtU4w4cHYeFtggZa/Z
+         YIjBAA7mnTZuYfaKqz6nfZyDPpMrVuLxnzvMfPNEeUuWDDJHNoUm6s1nYNTWg8z3Fp
+         Rg4Y2Fj19v77fS7d4OP76gMGwxyPSGwWHvAg5EwEb5fN3eLZYcg0jFP0gODXYL3RDb
+         lp2EKQgu6mg5MWqls63jwsYZyebcPrIMPT14KSVOhgDpPXPDuJr6ARRdM0iQRcl/0d
+         luuJEPT/bYvQg==
+Date:   Tue, 16 Aug 2022 16:21:50 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+Cc:     linux-rdma@vger.kernel.org, netdev@vger.kernel.org, jgg@nvidia.com,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, keescook@chromium.org, bharat@chelsio.com
+Subject: Re: [PATCH for-rc] RDMA/cxgb4: fix accept failure due to increased
+ cpl_t5_pass_accept_rpl size
+Message-ID: <YvuZ7h3Knz0xIGHU@unreal>
+References: <20220809184118.2029-1-rahul.lakkireddy@chelsio.com>
 MIME-Version: 1.0
-References: <20220801233403.258871-1-f.fainelli@gmail.com> <CGME20220812111948eucas1p2bf97e7f4558eb024f419346367a87b45@eucas1p2.samsung.com>
- <27016cc0-f228-748b-ea03-800dda4e5f0c@samsung.com> <8c21e530-8e8f-ce2a-239e-9d3a354996cf@gmail.com>
-In-Reply-To: <8c21e530-8e8f-ce2a-239e-9d3a354996cf@gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 16 Aug 2022 15:20:03 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdV8vsbFx+nikAwn1po1-PeZVhzotMaLLk+wXNquZceaRQ@mail.gmail.com>
-Message-ID: <CAMuHMdV8vsbFx+nikAwn1po1-PeZVhzotMaLLk+wXNquZceaRQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: phy: Warn about incorrect mdio_bus_phy_resume() state
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        netdev <netdev@vger.kernel.org>,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        Doug Berger <opendmb@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220809184118.2029-1-rahul.lakkireddy@chelsio.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Wed, Aug 10, 2022 at 12:11:18AM +0530, Rahul Lakkireddy wrote:
+> From: Potnuri Bharat Teja <bharat@chelsio.com>
+> 
+> Commit 'c2ed5611afd7' has increased the cpl_t5_pass_accept_rpl{} structure
+> size by 8B to avoid roundup. cpl_t5_pass_accept_rpl{} is a HW specific
+> structure and increasing its size will lead to unwanted adapter errors.
+> Current commit reverts the cpl_t5_pass_accept_rpl{} back to its original
+> and allocates zeroed skb buffer there by avoiding the memset for iss field.
+> Reorder code to minimize chip type checks.
+> 
+> Fixes: c2ed5611afd7 ("iw_cxgb4: Use memset_startat() for cpl_t5_pass_accept_rpl")
+> Signed-off-by: Potnuri Bharat Teja <bharat@chelsio.com>
+> Signed-off-by: Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>
+> ---
+>  drivers/infiniband/hw/cxgb4/cm.c            | 25 ++++++++-------------
+>  drivers/net/ethernet/chelsio/cxgb4/t4_msg.h |  2 +-
+>  2 files changed, 10 insertions(+), 17 deletions(-)
+> 
 
-On Fri, Aug 12, 2022 at 6:39 PM Florian Fainelli <f.fainelli@gmail.com> wrote:
-> On 8/12/22 04:19, Marek Szyprowski wrote:
-> > On 02.08.2022 01:34, Florian Fainelli wrote:
-> >> Calling mdio_bus_phy_resume() with neither the PHY state machine set to
-> >> PHY_HALTED nor phydev->mac_managed_pm set to true is a good indication
-> >> that we can produce a race condition looking like this:
-> >>
-> >> CPU0                                         CPU1
-> >> bcmgenet_resume
-> >>    -> phy_resume
-> >>      -> phy_init_hw
-> >>    -> phy_start
-> >>      -> phy_resume
-> >>                                                   phy_start_aneg()
-> >> mdio_bus_phy_resume
-> >>    -> phy_resume
-> >>       -> phy_write(..., BMCR_RESET)
-> >>        -> usleep()                                  -> phy_read()
-> >>
-> >> with the phy_resume() function triggering a PHY behavior that might have
-> >> to be worked around with (see bf8bfc4336f7 ("net: phy: broadcom: Fix
-> >> brcm_fet_config_init()") for instance) that ultimately leads to an error
-> >> reading from the PHY.
-> >>
-> >> Fixes: fba863b81604 ("net: phy: make PHY PM ops a no-op if MAC driver manages PHY PM")
-> >> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> >
-> > This patch, as probably intended, triggers a warning during system
-> > suspend/resume cycle in the SMSC911x driver. I've observed it on ARM
-> > Juno R1 board on the kernel compiled from next-202208010:
-> >
-> >    ------------[ cut here ]------------
-> >    WARNING: CPU: 1 PID: 398 at drivers/net/phy/phy_device.c:323
-> > mdio_bus_phy_resume+0x34/0xc8
-
-I am seeing the same on the ape6evm and kzm9g development
-boards with smsc911x Ethernet, and on various boards with Renesas
-Ethernet (sh_eth or ravb) if Wake-on-LAN is disabled.
-
-> Yes this is catching an actual issue in the driver in that the PHY state
-> machine is still running while the system is trying to suspend. We could
-> go about fixing it in a different number of ways, though I believe this
-> one is probably correct enough to work and fix the warning:
-
-> --- a/drivers/net/ethernet/smsc/smsc911x.c
-> +++ b/drivers/net/ethernet/smsc/smsc911x.c
-> @@ -1037,6 +1037,8 @@ static int smsc911x_mii_probe(struct net_device *dev)
->                  return ret;
->          }
->
-> +       /* Indicate that the MAC is responsible for managing PHY PM */
-> +       phydev->mac_managed_pm = true;
->          phy_attached_info(phydev);
->
->          phy_set_max_speed(phydev, SPEED_100);
-> @@ -2587,6 +2589,8 @@ static int smsc911x_suspend(struct device *dev)
->          if (netif_running(ndev)) {
->                  netif_stop_queue(ndev);
->                  netif_device_detach(ndev);
-> +               if (!device_may_wakeup(dev))
-> +                       phy_suspend(dev->phydev);
->          }
->
->          /* enable wake on LAN, energy detection and the external PME
-> @@ -2628,6 +2632,8 @@ static int smsc911x_resume(struct device *dev)
->          if (netif_running(ndev)) {
->                  netif_device_attach(ndev);
->                  netif_start_queue(ndev);
-> +               if (!device_may_wakeup(dev))
-> +                       phy_resume(dev->phydev);
->          }
->
->          return 0;
-
-Thanks for your patch, but unfortunately this does not work on ape6evm
-and kzm9g, where the smsc911x device is connected to a power-managed
-bus.  It looks like the PHY registers are accessed while the device
-is already suspended, causing a crash during system suspend:
-
-8<--- cut here ---
-Unhandled fault: imprecise external abort (0x1406) at 0x00000000
-[00000000] *pgd=00000000
-Internal error: : 1406 [#1] SMP ARM
-CPU: 2 PID: 75 Comm: kworker/2:2 Not tainted
-6.0.0-rc1-ape6evm-00977-gdc70725fbca5-dirty #375
-Hardware name: Generic R8A73A4 (Flattened Device Tree)
-Workqueue: events_power_efficient phy_state_machine
-PC is at smsc911x_reg_read+0x30/0x48
-LR is at smsc911x_reg_read+0x30/0x48
-pc : [<c03807cc>]    lr : [<c03807cc>]    psr: 20030093
-sp : f0891e30  ip : 00000000  fp : eff98605
-r10: c092af80  r9 : c202e6e8  r8 : 20030013
-r7 : c202e70c  r6 : 000000a4  r5 : 20030093  r4 : c202e6c0
-r3 : f0a31000  r2 : 00000002  r1 : f0a310a4  r0 : 00000000
-Flags: nzCv  IRQs off  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 10c5387d  Table: 4552006a  DAC: 00000051
-Register r0 information: NULL pointer
-Register r1 information: 0-page vmalloc region starting at 0xf0a31000
-allocated at smsc911x_drv_probe+0x108/0x934
-Register r2 information: non-paged memory
-Register r3 information: 0-page vmalloc region starting at 0xf0a31000
-allocated at smsc911x_drv_probe+0x108/0x934
-Register r4 information: slab kmalloc-4k start c202e000 pointer offset
-1728 size 4096
-Register r5 information: non-paged memory
-Register r6 information: non-paged memory
-Register r7 information: slab kmalloc-4k start c202e000 pointer offset
-1804 size 4096
-Register r8 information: non-paged memory
-Register r9 information: slab kmalloc-4k start c202e000 pointer offset
-1768 size 4096
-Register r10 information: non-slab/vmalloc memory
-Register r11 information: non-slab/vmalloc memory
-Register r12 information: NULL pointer
-Process kworker/2:2 (pid: 75, stack limit = 0x5239c21f)
-Stack: (0xf0891e30 to 0xf0892000)
-1e20:                                     c202e6c0 00000006 c19da000 c202e6c0
-1e40: 20030013 c03815bc 00000000 00000001 c19da000 c0381820 00000001 c19da000
-1e60: c19da000 00000000 c39eacc0 00000000 c092af80 c037e694 c19da000 00000001
-1e80: 00000000 c19da758 c19da000 00000001 00000000 c037e888 c29a0000 c29a03f4
-1ea0: 00000078 c29a0448 c39eacc0 c037c878 c29a0000 c037cab4 c29a0000 c29a03f4
-1ec0: c29a0000 c037fbc8 c29a0000 c29a03f4 c29a0000 c29a0448 00000004 c0377540
-1ee0: c3ac8f00 c29a03f4 c29a0000 c0378588 009a03f4 c07cce88 c3ac8f00 c29a03f4
-1f00: eff96780 00000000 eff98600 00000080 c092af80 c00426f0 00000001 00000000
-1f20: c00425c4 c07cce88 c07bb574 00000000 c13fa5b8 c0da3f6c 00000000 c071c1da
-1f40: 00000000 c07cce88 00000000 c3ac8f00 c3ac8f18 eff96780 c092a665 c07c9d00
-1f60: eff967bc c0934e20 00000000 c0042b30 c2b8a500 c2ba65c0 c3ac8880 f0901ebc
-1f80: c00428f0 c3ac8f00 00000000 c00494c4 c2ba65c0 c00493f4 00000000 00000000
-1fa0: 00000000 00000000 00000000 c0009108 00000000 00000000 00000000 00000000
-1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-1fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
- smsc911x_reg_read from smsc911x_mac_read+0x4c/0xa0
- smsc911x_mac_read from smsc911x_mii_read+0x38/0xb4
- smsc911x_mii_read from __mdiobus_read+0x70/0xc4
- __mdiobus_read from mdiobus_read+0x34/0x48
- mdiobus_read from genphy_update_link+0x10/0xc8
- genphy_update_link from genphy_read_status+0x10/0xc4
- genphy_read_status from lan87xx_read_status+0x10/0x11c
- lan87xx_read_status from phy_check_link_status+0x5c/0xbc
- phy_check_link_status from phy_state_machine+0x78/0x218
- phy_state_machine from process_one_work+0x2f0/0x4c4
- process_one_work from worker_thread+0x240/0x2d0
- worker_thread from kthread+0xd0/0xe0
- kthread from ret_from_fork+0x14/0x2c
-Exception stack(0xf0891fb0 to 0xf0891ff8)
-1fa0:                                     00000000 00000000 00000000 00000000
-1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-Code: e5933000 e1a05000 e1a00004 e12fff33 (e1a01005)
----[ end trace 0000000000000000 ]---
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Thanks, applied to -rc.
