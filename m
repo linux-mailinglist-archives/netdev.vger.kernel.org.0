@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2AF0597364
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 17:56:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 225AC597359
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 17:56:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237384AbiHQPvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 11:51:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S237552AbiHQPyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 11:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237220AbiHQPvX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 11:51:23 -0400
+        with ESMTP id S237310AbiHQPyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 11:54:18 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76ABA9BB65
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 08:51:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3708C45F;
+        Wed, 17 Aug 2022 08:54:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39253B81E1A
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 15:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F538C433C1;
-        Wed, 17 Aug 2022 15:51:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DBC9EB81E1A;
+        Wed, 17 Aug 2022 15:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 467AFC433D7;
+        Wed, 17 Aug 2022 15:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660751479;
-        bh=mRWaSwAWrVSW5xWS69xv2YwO0eCFBQtF69gVkM+CU4s=;
+        s=k20201202; t=1660751655;
+        bh=+TPtPHk/ZePyFoyYD4f8JLqqgbi4l9lYy2gA0NBPu6Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JfH+8pzazyKLgRpES8TDvrCY3UBRuJyhZqTXY7UifVl8yiMsRMacl3XP4jkABpfq2
-         kp1+73fb+vnUyiMnxeLQtkOkZpcpGOoIr942H48lF40kTVJdvIvCKH8c5UrXCLdhgq
-         A/qIfytwz1episvXJisn/l8MPy9B/Ztz1grNbCMLVrg80dciPKViX+oVxZ9CS94WzZ
-         ZCoFyAOggdXW0hNlDJjPHTWqT5Aj7CfYa8PYeYi5M9nYCr2JA5hbxqE8T7Zj1ipW00
-         LK/Ff+0BDUjLsGPsJZ+Y/U2UjVZoGkQnE42cKdce1kPvjGkSCdmitdFJS/1Lq6EXEX
-         Q/5eOdHPo0x4w==
-Date:   Wed, 17 Aug 2022 08:51:18 -0700
+        b=STJWsRxmu9+76KazBcwal9IKV2AviFQ7zSYeU3OTaKnuBrE729/ZOduJAlmzmkXVP
+         oyRDnK6MIz/Gg/K2eBvJujt9j9rplwoKZjM8W7HqaCjbHTvV2QlSYmIsZE8OCZuwVv
+         rmxWnhgcM1N0L1n2nQ4rLvnIWYE4BSzfheKNjBuP4Vir0WiDbvJxd9qyywvpHl76Ed
+         OC7GjPEuYrVX0m/B7stC+G1wS5n2bSSKsOr0atthJMB92NrYyMhrnWIoufHOVY58jn
+         4PhE7AAMRpDK4hYbSq+3qiYKCKh9gWLyOD64YqAnhNM74ixMwnBnGr6DUjFGk4bSH8
+         E1iIlGlYtWlrg==
+Date:   Wed, 17 Aug 2022 08:54:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jakub Sitnicki <jakub@cloudflare.com>
-Cc:     netdev@vger.kernel.org, kernel-team@cloudflare.com,
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Haowei Yan <g1042620637@gmail.com>,
-        Tom Parkin <tparkin@katalix.com>
-Subject: Re: [PATCH net v2] l2tp: Serialize access to sk_user_data with sock
- lock
-Message-ID: <20220817085118.0c45c690@kernel.org>
-In-Reply-To: <87edxfvsxs.fsf@cloudflare.com>
-References: <20220815130107.149345-1-jakub@cloudflare.com>
-        <20220816184150.78d6e3e3@kernel.org>
-        <87edxfvsxs.fsf@cloudflare.com>
+        linux-kernel@vger.kernel.org (open list)
+Subject: Re: [PATCH net-next 0/2] net: dsa: bcm_sf2: Utilize PHYLINK for all
+ ports
+Message-ID: <20220817085414.53eca40f@kernel.org>
+In-Reply-To: <20220815175009.2681932-1-f.fainelli@gmail.com>
+References: <20220815175009.2681932-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,13 +59,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Aug 2022 16:33:33 +0200 Jakub Sitnicki wrote:
-> > Note to other netdev maintainers that based on the discussion about 
-> > the reuseport locking it's unclear whether we shouldn't also take 
-> > the callback lock...  
+On Mon, 15 Aug 2022 10:50:07 -0700 Florian Fainelli wrote:
+> Hi all,
 > 
-> You're right. reuseport_array, psock, and kcm protect sk_user_data with
-> the callback lock, not the sock lock. Need to fix it.
+> This patch series has the bcm_sf2 driver utilize PHYLINK to configure
+> the CPU port link parameters to unify the configuration and pave the way
+> for DSA to utilize PHYLINK for all ports in the future.
+> 
+> Tested on BCM7445 and BCM7278
 
-Where 'it' == current patch? Would you mind adding to the kdoc on
-sk_user_data that it's protected by the callback lock while at it?
+Last call for reviews..
