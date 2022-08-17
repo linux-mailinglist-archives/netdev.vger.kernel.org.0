@@ -2,117 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC72596C48
+	by mail.lfdr.de (Postfix) with ESMTP id DA637596C49
 	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 11:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiHQJrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 05:47:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59642 "EHLO
+        id S234383AbiHQJrp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 05:47:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229980AbiHQJrT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 05:47:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F13AD6B161;
-        Wed, 17 Aug 2022 02:47:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F399B81BAB;
-        Wed, 17 Aug 2022 09:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3BF1C433D7;
-        Wed, 17 Aug 2022 09:47:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660729636;
-        bh=Qcruij7g38NyR2lHzkGqFZ8XU8XPZecu7Higao6ZkKE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RDSDvSPOpWDQ0dJ0qNKhdgc29+ejPMevlBuXxi4pal5VBqNzkzGygWNAWZ6PSIQBi
-         NGRY/+Hg3BxKPrHBoIu7lyWzA3iJyQtjaq1+p0pkzr7QD+5ucwPvSqY3xP3b7z1rzl
-         Ufq5FrRwEV4s1+chv28Er16uLSIIl/YYzFSwi4VJWsXkE1GJPP6qKN/iLyg3pLEtRP
-         6ToyiBs2JNB/QkfQ8/a9WXcrpqmSaLhVj5/eeFYjgWd2t+4zZUahPWkSG+rl4nJMv+
-         6Wa34mfh2rIvPSxy8LAxblKCHUvQT2lsTHiX9KaB+37clhVu/R5ksJ2XlRjvhtFmZ0
-         3hemODx1pPL8w==
-Date:   Wed, 17 Aug 2022 17:47:08 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, s.hauer@pengutronix.de,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, peng.fan@nxp.com,
-        ping.bai@nxp.com, sudeep.holla@arm.com,
-        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
-Subject: Re: [PATCH V4 2/3] arm64: dts: imx8ulp: Add the fec support
-Message-ID: <20220817094708.GC149610@dragon>
-References: <20220726143853.23709-1-wei.fang@nxp.com>
- <20220726143853.23709-3-wei.fang@nxp.com>
+        with ESMTP id S235174AbiHQJr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 05:47:27 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6FAE74E37
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 02:47:26 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id gk3so23573701ejb.8
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 02:47:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
+        bh=JIfDfXKs8K3oxhbnlS3K2h9y1e9IsTdORXqjVH+tm2I=;
+        b=NYVuLuR6IZjLdHhmYHO7cMZeKoHs/V5knTQx6mvbOJRNvKOsSW2zxSDZAUaBfyCCnU
+         Rb++sgcik8qtrGZBwqA6hWfPs4Hgr7iBEohuV+EeCIGQX96oVeSiDmlqocj3u0s6BjET
+         VwUQzHoxWqAMLhTijlVavOO3SovFwjeokHzKBVWbIswX/n+r7s7QDF9Xhg0sd0uhombh
+         kIyWBvf5moW99j+H6ZlSPrwX3omi+MGXTjfOsYw4ZGcD70N6XWmJgJbKKh8Yk2o2r78g
+         nuwyOaiEt4tG7prA7yRXs+CukG+ygLRBCOyzgxjv9ootkWShiNragAEbitKjQQkMJkME
+         uiww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=JIfDfXKs8K3oxhbnlS3K2h9y1e9IsTdORXqjVH+tm2I=;
+        b=JQdFPTx4Uq+tuP4hZo2LqNY4w0D1UpX/pSmrC+8HQGmJYtuAx04eQ9F7eIVjHwAdvo
+         NBAb0uy5wpoatcN577i3WUPHd0TorcMs/IcRMBMmuCiRzAzW/B/QFTHh/e6nM8ByoVFg
+         pGqtLlXvMjT7qViqLDV7byMmxP2oUd/nHCvmyDB9HmpUTngu9w6AAgudhx7C3xhaXHzv
+         yf0y51iR43XoR8LjeMtXg2cckI0dQihEZN0bZwKFc7QV9M5sp1f9CjZhRKl8YsmIoURQ
+         vuKswZHddrT7zxl0SfWau8gO/SoPr2k+9vJrIIS/8mM++YhPx6Q5y42M/EEyms36Ruga
+         cYTA==
+X-Gm-Message-State: ACgBeo09CJ17xRg7cJ6Psf6BfWjQy8NPCPn83T9b2acEmSBkS3TQm1To
+        3FKYHbJYrkDBr23m3i2yB+nJqO5nJ6P7twBK2eQ=
+X-Google-Smtp-Source: AA6agR6cbBETyvGDp7Qqwn0DxYsYYOxO1VKqB+WPD2BEiNWz6xUxecGKVP3QHbiVdmjkJ01mvL6ywN4Zem3exk6fDtQ=
+X-Received: by 2002:a17:907:781a:b0:730:ccea:7c29 with SMTP id
+ la26-20020a170907781a00b00730ccea7c29mr16204562ejc.85.1660729645202; Wed, 17
+ Aug 2022 02:47:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726143853.23709-3-wei.fang@nxp.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a17:907:8a14:b0:734:bc2f:7423 with HTTP; Wed, 17 Aug 2022
+ 02:47:23 -0700 (PDT)
+Reply-To: mr.adamyawo@gmail.com
+From:   Adama Yawo <dossoamadou4@gmail.com>
+Date:   Wed, 17 Aug 2022 09:47:23 +0000
+Message-ID: <CAKFgWkvCiULXR5y8aZ8j4511GB58uXDXE9fj5panhP_O+7RS+Q@mail.gmail.com>
+Subject: Re: GOLD FOR SALE FOR SBLC/DLC,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.4 required=5.0 tests=BAYES_50,DEAR_SOMETHING,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:636 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [dossoamadou4[at]gmail.com]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [dossoamadou4[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  2.0 DEAR_SOMETHING BODY: Contains 'Dear (something)'
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 12:38:52AM +1000, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> Add the fec support on i.MX8ULP platforms.
-> 
-> Signed-off-by: Wei Fang <wei.fang@nxp.com>
-> Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-> ---
-> V2 change:
-> Remove the external clocks which is related to specific board.
-> V3 change:
-> No change.
-> V4 Change:
-> Add Reviewed-by tag.
-> ---
->  arch/arm64/boot/dts/freescale/imx8ulp.dtsi | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-> index 60c1b018bf03..3e8a1e4f0fc2 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/imx8ulp.dtsi
-> @@ -16,6 +16,7 @@ / {
->  	#size-cells = <2>;
->  
->  	aliases {
-> +		ethernet0 = &fec;
->  		gpio0 = &gpiod;
->  		gpio1 = &gpioe;
->  		gpio2 = &gpiof;
-> @@ -365,6 +366,16 @@ usdhc2: mmc@298f0000 {
->  				bus-width = <4>;
->  				status = "disabled";
->  			};
-> +
-> +			fec: ethernet@29950000 {
-> +				compatible = "fsl,imx8ulp-fec", "fsl,imx6ul-fec", "fsl,imx6q-fec";
+-- 
+Dear Sir/Ma
 
-Since imx8ulp-fec is compatible with imx6ul-fec, what's the point of
-having imx6q-fec in there?  It can be dropped, I guess?
+We are interested to supply you gold bars at a considerable price, for
+serious buyer/ We pay Commission Per a Kilo for agent. and we accept
+SBLC/DLC for our gold bar guarantee as well. Contact us.
 
-Shawn
-
-> +				reg = <0x29950000 0x10000>;
-> +				interrupts = <GIC_SPI 107 IRQ_TYPE_LEVEL_HIGH>;
-> +				interrupt-names = "int0";
-> +				fsl,num-tx-queues = <1>;
-> +				fsl,num-rx-queues = <1>;
-> +				status = "disabled";
-> +			};
->  		};
->  
->  		gpioe: gpio@2d000080 {
-> -- 
-> 2.25.1
-> 
+Best Regards
+Adama Yawo,
