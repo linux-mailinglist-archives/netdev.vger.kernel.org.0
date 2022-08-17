@@ -2,64 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56012597A16
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 01:19:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA16C597A34
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 01:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239084AbiHQXPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 19:15:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43894 "EHLO
+        id S242346AbiHQXYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 19:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233622AbiHQXPO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 19:15:14 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EDD08E0D5
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 16:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660778112; x=1692314112;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=HvE7G+irDJXQMD+JqVwWi98XFYGjILwjySQTowuYHWA=;
-  b=Ww696gTX9PoM3UMdhSmIdD+ZpzQ43Ur/+miYh0STgi3L7IN28oUzYZ4D
-   mVQoygg3MqeWcaSAXeHI7Pj41BZL1D9oYrjMUbKkNlxtglNJiOIpMhSiK
-   fywElDc1ejdJrkE2hGrx/lPxTPQcN732bt+N3Ft47lfWn/ZBgjzASDrIo
-   eWV/92WtxUMniDBhathCZmp5QZRF45aRgUZHB8H8jrD23PUYkxdcVRnFB
-   yw1QassKKjJB5wv5di0Qzmobvt8uN9fbOu6UnPDAS5qa8LumGqmvuIopm
-   Vo2RRGRRMQrrWiC00vhgjHP+U658OLR+GxH9IGiPPp0xm7WhezkW3PImJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10442"; a="291376323"
-X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="291376323"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 16:15:12 -0700
-X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
-   d="scan'208";a="749884526"
-Received: from kyamada-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.212.63.87])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 16:15:11 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S234268AbiHQXYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 19:24:36 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B9463C0
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 16:24:33 -0700 (PDT)
+Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com [209.85.214.198])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 7916940AFC
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:24:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1660778671;
+        bh=0ITPAdonThQpOqsHuY/v+qY6IgwF7YWH4O5viBksCYM=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=L3N84VP/9YJFOquqJj7PqzEHQsE2WJBuxiFzYZn21FP0aWxLGAR+YnxvuxmoC64Hr
+         o8B3uFtnyEZ/HfYDmel5/InBdpbEopVXOFwDnWP3ceEgny9Z6xo5hkCnwickQiTPKl
+         8HoxmY2PEiUcPHNpoGNfeB4FC9VXNicqZ+mQYtJTCSd6cFlus6D+Y3xoW4Qy7VWjG6
+         iCbd7Jc5u/cotOFsnkLEC1SZZPOt9xf4KL3EArTR/8/2mjYueZh7W2hiKWgxL4sjsE
+         JGe6ZhY056nqRyCwB1PPNeuCwDH7vg/oBNu9UaRU/s8iwE75U8Z/Q85c2ncuopm9xF
+         o8eNfYMZiQckg==
+Received: by mail-pl1-f198.google.com with SMTP id s18-20020a170902ea1200b0016f11bfefe4so56439plg.14
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 16:24:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-transfer-encoding:mime-version:comments
+         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
+         :to:cc;
+        bh=0ITPAdonThQpOqsHuY/v+qY6IgwF7YWH4O5viBksCYM=;
+        b=5yrhlbgc7VUQjmN550orlxU7w1KRITJTwyc0IBaa/VuRHMKyt79526sp9AVO4Le8uJ
+         1EQ62ldu46HI6aiwy5HGoM1A21EdNwrmEvKIkYk2gcj8uBSLFwVV536lvwEVkfvFKkJc
+         jZ009zd6PYtnPfew9NUCW+NZTdJfFqIeqPkiHE7WJyo5QrqJZ1xFwskvnQu7KQXgEQXl
+         EZWMtr2f3eQx1LZFZkwLX4JEuutDSvVP6DLAvCDBbpV0SMN/39HHcVNuiwrKatXrQEpn
+         tdIx4+9haR86aX36dK8RBhC+36hu/xet3D0Rh3J1dgKdCw2LQWBpsae8tTyi6fTsNeg4
+         AnOw==
+X-Gm-Message-State: ACgBeo3oxKu3iiAjja992XEEr3KeOXJpbaieGgnns5igfJzbnqxoFxwN
+        5vxxTqs973y1fhReceB1rIV9YNYugdH4dFjCMeIiMHY09yplSXocYZ91Ibj1KG/2gkB//PcuJyY
+        WnFiPj8LrdcNs0O/Yq4yqeKi5w+dKMonKcw==
+X-Received: by 2002:a65:60d4:0:b0:419:9871:9cf with SMTP id r20-20020a6560d4000000b00419987109cfmr432328pgv.214.1660778668785;
+        Wed, 17 Aug 2022 16:24:28 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4hTiPVnAROAFPx2zsiqQIWUKIlMPRA9XYwYK+QRXA0+5W2GeHKnttWaDvaORUEIbOAiwgZdA==
+X-Received: by 2002:a65:60d4:0:b0:419:9871:9cf with SMTP id r20-20020a6560d4000000b00419987109cfmr432307pgv.214.1660778668308;
+        Wed, 17 Aug 2022 16:24:28 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id k5-20020a170902ce0500b0016d150c6c6dsm485329plg.45.2022.08.17.16.24.27
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Aug 2022 16:24:27 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 646E861193; Wed, 17 Aug 2022 16:24:27 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 5EEBC9FA79;
+        Wed, 17 Aug 2022 16:24:27 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     netdev@vger.kernel.org, liuhangbin@gmail.com,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>
-Subject: Re: [RFC PATCH net-next 2/7] net: ethtool: add support for Frame
- Preemption and MAC Merge layer
-In-Reply-To: <20220816222920.1952936-3-vladimir.oltean@nxp.com>
-References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
- <20220816222920.1952936-3-vladimir.oltean@nxp.com>
-Date:   Wed, 17 Aug 2022 16:15:11 -0700
-Message-ID: <87bksi31j4.fsf@intel.com>
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v3 2/2] bonding: 802.3ad: fix no transmission of LACPDUs
+In-reply-to: <3d76f4c3-916a-9abe-745f-e2781fad1b24@redhat.com>
+References: <cover.1660572700.git.jtoppins@redhat.com> <0639f1e3d366c5098d561a947fd416fa5277e7f4.1660572700.git.jtoppins@redhat.com> <17000.1660655501@famine> <3d55690a-8932-4560-4267-ab28816fdb47@redhat.com> <3d76f4c3-916a-9abe-745f-e2781fad1b24@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Tue, 16 Aug 2022 13:47:07 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 17 Aug 2022 16:24:27 -0700
+Message-ID: <7721.1660778667@famine>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,960 +92,174 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-> Frame preemption (IEEE 802.1Q-2018 clause 6.7.2) and the MAC merge
-> sublayer (IEEE 802.3-2018 clause 99) are 2 specifications, part of the
-> Time Sensitive Networking enhancements, which work together to minimize
-> latency caused by frame interference. The overall goal of TSN is for
-> normal traffic and traffic belonging to real-time control processes to
-> be able to cohabitate on the same L2 network and not bother each other
-> too much.
+>On 8/16/22 09:41, Jonathan Toppins wrote:
+>> On 8/16/22 09:11, Jay Vosburgh wrote:
+>>> Jonathan Toppins <jtoppins@redhat.com> wrote:
+>>>
+>>>> This is caused by the global variable ad_ticks_per_sec being zero as
+>>>> demonstrated by the reproducer script discussed below. This causes
+>>>> all timer values in __ad_timer_to_ticks to be zero, resulting
+>>>> in the periodic timer to never fire.
+>>>>
+>>>> To reproduce:
+>>>> Run the script in
+>>>> `tools/testing/selftests/drivers/net/bonding/bond-break-lacpdu-tx.sh`
+>>>> which
+>>>> puts bonding into a state where it never transmits LACPDUs.
+>>>>
+>>>> line 44: ip link add fbond type bond mode 4 miimon 200 \
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 xmi=
+t_hash_policy 1 ad_actor_sys_prio 65535 lacp_rate fast
+>>>> setting bond param: ad_actor_sys_prio
+>>>> given:
+>>>> =C2=A0=C2=A0=C2=A0 params.ad_actor_system =3D 0
+>>>> call stack:
+>>>> =C2=A0=C2=A0=C2=A0 bond_option_ad_actor_sys_prio()
+>>>> =C2=A0=C2=A0=C2=A0 -> bond_3ad_update_ad_actor_settings()
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -> set ad.system.sys_priority =3D=
+ bond->params.ad_actor_sys_prio
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -> ad.system.sys_mac_addr =3D bon=
+d->dev->dev_addr; because
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 par=
+ams.ad_actor_system =3D=3D 0
+>>>> results:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 ad.system.sys_mac_addr =3D bond->dev->dev_addr
+>>>>
+>>>> line 48: ip link set fbond address 52:54:00:3B:7C:A6
+>>>> setting bond MAC addr
+>>>> call stack:
+>>>> =C2=A0=C2=A0=C2=A0 bond->dev->dev_addr =3D new_mac
+>>>>
+>>>> line 52: ip link set fbond type bond ad_actor_sys_prio 65535
+>>>> setting bond param: ad_actor_sys_prio
+>>>> given:
+>>>> =C2=A0=C2=A0=C2=A0 params.ad_actor_system =3D 0
+>>>> call stack:
+>>>> =C2=A0=C2=A0=C2=A0 bond_option_ad_actor_sys_prio()
+>>>> =C2=A0=C2=A0=C2=A0 -> bond_3ad_update_ad_actor_settings()
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -> set ad.system.sys_priority =3D=
+ bond->params.ad_actor_sys_prio
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -> ad.system.sys_mac_addr =3D bon=
+d->dev->dev_addr; because
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 par=
+ams.ad_actor_system =3D=3D 0
+>>>> results:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 ad.system.sys_mac_addr =3D bond->dev->dev_addr
+>>>>
+>>>> line 60: ip link set veth1-bond down master fbond
+>>>> given:
+>>>> =C2=A0=C2=A0=C2=A0 params.ad_actor_system =3D 0
+>>>> =C2=A0=C2=A0=C2=A0 params.mode =3D BOND_MODE_8023AD
+>>>> =C2=A0=C2=A0=C2=A0 ad.system.sys_mac_addr =3D=3D bond->dev->dev_addr
+>>>> call stack:
+>>>> =C2=A0=C2=A0=C2=A0 bond_enslave
+>>>> =C2=A0=C2=A0=C2=A0 -> bond_3ad_initialize(); because first slave
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -> if ad.system.sys_mac_addr !=3D=
+ bond->dev->dev_addr
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return
+>>>> results:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 Nothing is run in bond_3ad_initialize() becau=
+se dev_add equals
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 sys_mac_addr leaving the global ad_ticks_per_=
+sec zero as it is
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 never initialized anywhere else.
+>>>>
+>>>> Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+>>>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>>>> ---
+>>>>
+>>>> Notes:
+>>>> =C2=A0=C2=A0=C2=A0 v2:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 * split this fix from the reproducer
+>>>> =C2=A0=C2=A0=C2=A0 v3:
+>>>> =C2=A0=C2=A0=C2=A0=C2=A0 * rebased to latest net/master
+>>>>
+>>>> drivers/net/bonding/bond_3ad.c | 3 ++-
+>>>> 1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/net/bonding/bond_3ad.c
+>>>> b/drivers/net/bonding/bond_3ad.c
+>>>> index d7fb33c078e8..957d30db6f95 100644
+>>>> --- a/drivers/net/bonding/bond_3ad.c
+>>>> +++ b/drivers/net/bonding/bond_3ad.c
+>>>> @@ -84,7 +84,8 @@ enum ad_link_speed_type {
+>>>> static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned =3D {
+>>>> =C2=A0=C2=A0=C2=A0=C2=A00, 0, 0, 0, 0, 0
+>>>> };
+>>>> -static u16 ad_ticks_per_sec;
+>>>> +
+>>>> +static u16 ad_ticks_per_sec =3D 1000 / AD_TIMER_INTERVAL;
+>>>> static const int ad_delta_in_ticks =3D (AD_TIMER_INTERVAL * HZ) / 1000;
+>>>
+>>> =C2=A0=C2=A0=C2=A0=C2=A0I still feel like this is kind of a hack, as it=
+'s not really
+>>> fixing bond_3ad_initialize to actually work (which is the real problem
+>>> as I understand it).=C2=A0 If it's ok to skip all that for this case, t=
+hen
+>>> why do we ever need to call bond_3ad_initialize?
+>>>
+>> The way it is currently written you still need to call
+>> bond_3ad_initialize() just not for setting the tick resolution. The
+>> issue here is ad_ticks_per_sec is used in several places to calculate
+>> timer periods, __ad_timer_to_ticks(), for various timers in the 802.3ad
+>> protocol. And if this variable, ad_ticks_per_sec, is left uninitialized
+>> all of these timer periods go to zero. Since the value passed in
+>> bond_3ad_initialize() is an immediate value I simply moved it off of the
+>> call stack and set the static global variable instead.
+>> To fix bond_3ad_initialize(), probably something like the below is
+>> needed, but I do not understand why the guard if check was placed in
+>> bond_3ad_initialize().
 >
-> They achieve this (partly) by introducing the concept of preemptable
-> traffic, i.e. Ethernet frames that have an altered Start-Of-Frame
-> delimiter, which can be fragmented and reassembled at L2 on a link-local
-> basis. The non-preemptable frames are called express traffic, and they
-> can preempt preemptable frames, therefore having lower latency, which
-> can matter at lower (100 Mbps) link speeds, or at high MTUs (jumbo
-> frames around 9K). Preemption is not recursive, i.e. a PT frame cannot
-> preempt another PT frame. Preemption also does not depend upon priority,
-> or otherwise said, an ET frame with prio 0 will still preempt a PT frame
-> with prio 7.
+>I looked at the history of the if guard in bond_3ad_initialize and it has
+>existed since the creation of the git tree. It appears since commit
+>5ee14e6d336f ("bonding: 3ad: apply ad_actor settings changes immediately")
+>the if guard is no longer needed and removing the if guard would also fix
+>the problem, I have not tested yet.
 
-I liked that in the API sense, using this "prio" concept we gain more
-flexibility, and we can express better what the hardware you work with
-can do, i.e. priority (for frame preemption purposes?) and queues are
-orthogonal.
+	The logic in bond_3ad_initialize probably came that way when the
+code was contributed sometime during 2.4.x.
 
-The problem I have is that the hardware I work with is more limited (as
-are some stmmac-based NICs that I am aware of) frame preemption
-capability and "priority" are attached to queues.
+	Curiosity got the better of me, and I looked at the 2.4.35 code.
+I'm not sure what the point of the test was even then, since
+bond_3ad_initialize is only called when adding a first interface to the
+bond, and there wasn't a way to tweak the sys_mac_addr then.
 
-From the API perspective, it seems that I could say that "fp-prio" 0 is
-associated with queue 0, fp-prio 1 to queue 1, and so on, and everything
-will work.
+	In the current code, I think the if test could fail if
+sys_mac_addr is set manually to be equal to the bond's MAC prior to
+adding the first interface to the bond.  As far as I can tell, the only
+result of failing the MAC test would be that the agg selection timer
+wouldn't be started, which is an optimization to reduce LACP aggregator
+flailing when multiple interfaces are added at the same time (IEEE
+802.1AX-2000 6.4.9 and 6.4.12.1.n).
 
-The only thing that I am not happy at all is that there are exactly 8
-fp-prios.
-
-The Linux network stack is more flexible than what 802.1Q defines, think
-skb->priority, number of TCs, as you said earlier, I would hate to
-impose some almost artificial limits here. And in future we are going to
-see TSN enabled devices with lots more queues.
-
-In short:
- - Comment: this section of the RFC is hardware independent, this
- behavior of queues and priorities being orthogonal is only valid for
- some implementations;
- - Question: would it be against the intention of the API to have a 1:1
- map of priorities to queues?
- - Deal breaker: fixed 8 prios;
-
+>I think this patch series can be accepted as-is because, it does fix the
+>issue as demonstrated by the kselftest accompanying the series and is the
+>smallest change to fix the issue.
 >
-> In terms of implementation, the specs talk about the fact that the
-> express traffic is handled by an express MAC (eMAC) and the preemptable
-> traffic by a preemptable MAC (pMAC), and these MACs are multiplexed on
-> the same MII by a MAC merge layer.
+>Further, I don't see why we want to set the file-scoped variable,
+>ad_ticks_per_sec, inside bond_3ad_initialize() as ad_ticks_per_sec is
+>utilized across all bonds. It seems like ad_ticks_per_sec should be
+>changed to a const and set at the top of the file. I see no value in
+>passing the value as an unnamed constant on the stack when
+>bond_3ad_initialize is called. These changes however could be done in the
+>net-next tree as follow-on cleanup patches.
 >
-> On RX, packets go to the eMAC or to the pMAC based on their SFD (the
-> definition of which was generalized to SMD, Start-of-mPacket-Delimiter,
-> where mPacket is essentially an Ethernet frame fragment, or a complete
-> frame). On TX, the eMAC/pMAC classification decision is taken by the
-> 802.1Q spec, based on packet priority (each of the 8 priority values may
-> have an admin-status of preemptable or express).
->
-> I have modeled both the Ethernet part of the spec and the queuing part
-> as separate netlink messages, with separate ethtool command sets
-> intended for them. I am slightly flexible as to where to place the FP
-> settings; there were previous discussions about placing them in tc.
-> At the moment I haven't received a good enough argument to move them out
-> of ethtool, so here they are.
-> https://patchwork.kernel.org/project/netdevbpf/cover/20220520011538.1098888-1-vinicius.gomes@intel.com/
->
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  include/linux/ethtool.h              |  59 ++++++
->  include/uapi/linux/ethtool.h         |  15 ++
->  include/uapi/linux/ethtool_netlink.h |  82 ++++++++
->  net/ethtool/Makefile                 |   3 +-
->  net/ethtool/fp.c                     | 295 +++++++++++++++++++++++++++
->  net/ethtool/mm.c                     | 228 +++++++++++++++++++++
->  net/ethtool/netlink.c                |  38 ++++
->  net/ethtool/netlink.h                |   8 +
->  8 files changed, 727 insertions(+), 1 deletion(-)
->  create mode 100644 net/ethtool/fp.c
->  create mode 100644 net/ethtool/mm.c
->
-> diff --git a/include/linux/ethtool.h b/include/linux/ethtool.h
-> index 99dc7bfbcd3c..fa504dd22bf6 100644
-> --- a/include/linux/ethtool.h
-> +++ b/include/linux/ethtool.h
-> @@ -453,6 +453,49 @@ struct ethtool_module_power_mode_params {
->  	enum ethtool_module_power_mode mode;
->  };
->  
-> +/**
-> + * struct ethtool_fp_param - 802.1Q Frame Preemption parameters
-> + */
-> +struct ethtool_fp_param {
-> +	u8 preemptable_prios;
-> +	u32 hold_advance;
-> +	u32 release_advance;
-> +};
-> +
-> +/**
-> + * struct ethtool_mm_state - 802.3 MAC merge layer state
-> + */
-> +struct ethtool_mm_state {
-> +	u32 verify_time;
-> +	enum ethtool_mm_verify_status verify_status;
-> +	bool supported;
-> +	bool enabled;
-> +	bool active;
-> +	u8 add_frag_size;
-> +};
-> +
-> +/**
-> + * struct ethtool_mm_cfg - 802.3 MAC merge layer configuration
-> + */
-> +struct ethtool_mm_cfg {
-> +	u32 verify_time;
-> +	bool verify_disable;
-> +	bool enabled;
-> +	u8 add_frag_size;
-> +};
-> +
-> +/* struct ethtool_mm_stats - 802.3 MAC merge layer statistics, as defined in
-> + * IEEE 802.3-2018 subclause 30.14.1 oMACMergeEntity managed object class
-> + */
-> +struct ethtool_mm_stats {
-> +	u64 MACMergeFrameAssErrorCount;
-> +	u64 MACMergeFrameSmdErrorCount;
-> +	u64 MACMergeFrameAssOkCount;
-> +	u64 MACMergeFragCountRx;
-> +	u64 MACMergeFragCountTx;
-> +	u64 MACMergeHoldCount;
-> +};
-> +
->  /**
->   * struct ethtool_ops - optional netdev operations
->   * @cap_link_lanes_supported: indicates if the driver supports lanes
-> @@ -624,6 +667,11 @@ struct ethtool_module_power_mode_params {
->   *	plugged-in.
->   * @set_module_power_mode: Set the power mode policy for the plug-in module
->   *	used by the network device.
-> + * @get_fp_param: Query the 802.1Q Frame Preemption parameters.
-> + * @set_fp_param: Set the 802.1Q Frame Preemption parameters.
-> + * @get_mm_state: Query the 802.3 MAC Merge layer state.
-> + * @set_mm_cfg: Set the 802.3 MAC Merge layer parameters.
-> + * @get_mm_stats: Query the 802.3 MAC Merge layer statistics.
->   *
->   * All operations are optional (i.e. the function pointer may be set
->   * to %NULL) and callers must take this into account.  Callers must
-> @@ -760,6 +808,17 @@ struct ethtool_ops {
->  	int	(*set_module_power_mode)(struct net_device *dev,
->  					 const struct ethtool_module_power_mode_params *params,
->  					 struct netlink_ext_ack *extack);
-> +	void	(*get_fp_param)(struct net_device *dev,
-> +				struct ethtool_fp_param *params);
-> +	int	(*set_fp_param)(struct net_device *dev,
-> +				const struct ethtool_fp_param *params,
-> +				struct netlink_ext_ack *extack);
-> +	void	(*get_mm_state)(struct net_device *dev,
-> +				struct ethtool_mm_state *state);
-> +	int	(*set_mm_cfg)(struct net_device *dev, struct ethtool_mm_cfg *cfg,
-> +			      struct netlink_ext_ack *extack);
-> +	void	(*get_mm_stats)(struct net_device *dev,
-> +				struct ethtool_mm_stats *stats);
->  };
->  
->  int ethtool_check_ops(const struct ethtool_ops *ops);
-> diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-> index 2d5741fd44bb..7a21fcb26a43 100644
-> --- a/include/uapi/linux/ethtool.h
-> +++ b/include/uapi/linux/ethtool.h
-> @@ -736,6 +736,21 @@ enum ethtool_module_power_mode {
->  	ETHTOOL_MODULE_POWER_MODE_HIGH,
->  };
->  
-> +/* Values from ieee8021FramePreemptionAdminStatus */
-> +enum ethtool_fp_admin_status {
-> +	ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_EXPRESS = 1,
-> +	ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_PREEMPTABLE = 2,
-> +};
-> +
-> +enum ethtool_mm_verify_status {
-> +	ETHTOOL_MM_VERIFY_STATUS_UNKNOWN,
-> +	ETHTOOL_MM_VERIFY_STATUS_INITIAL,
-> +	ETHTOOL_MM_VERIFY_STATUS_VERIFYING,
-> +	ETHTOOL_MM_VERIFY_STATUS_SUCCEEDED,
-> +	ETHTOOL_MM_VERIFY_STATUS_FAILED,
-> +	ETHTOOL_MM_VERIFY_STATUS_DISABLED,
-> +};
-> +
->  /**
->   * struct ethtool_gstrings - string set for data tagging
->   * @cmd: Command number = %ETHTOOL_GSTRINGS
-> diff --git a/include/uapi/linux/ethtool_netlink.h b/include/uapi/linux/ethtool_netlink.h
-> index d2fb4f7be61b..658810274c49 100644
-> --- a/include/uapi/linux/ethtool_netlink.h
-> +++ b/include/uapi/linux/ethtool_netlink.h
-> @@ -49,6 +49,10 @@ enum {
->  	ETHTOOL_MSG_PHC_VCLOCKS_GET,
->  	ETHTOOL_MSG_MODULE_GET,
->  	ETHTOOL_MSG_MODULE_SET,
-> +	ETHTOOL_MSG_FP_GET,
-> +	ETHTOOL_MSG_FP_SET,
-> +	ETHTOOL_MSG_MM_GET,
-> +	ETHTOOL_MSG_MM_SET,
->  
->  	/* add new constants above here */
->  	__ETHTOOL_MSG_USER_CNT,
-> @@ -94,6 +98,10 @@ enum {
->  	ETHTOOL_MSG_PHC_VCLOCKS_GET_REPLY,
->  	ETHTOOL_MSG_MODULE_GET_REPLY,
->  	ETHTOOL_MSG_MODULE_NTF,
-> +	ETHTOOL_MSG_FP_GET_REPLY,
-> +	ETHTOOL_MSG_FP_NTF,
-> +	ETHTOOL_MSG_MM_GET_REPLY,
-> +	ETHTOOL_MSG_MM_NTF,
->  
->  	/* add new constants above here */
->  	__ETHTOOL_MSG_KERNEL_CNT,
-> @@ -862,6 +870,80 @@ enum {
->  	ETHTOOL_A_MODULE_MAX = (__ETHTOOL_A_MODULE_CNT - 1)
->  };
->  
-> +/* FRAME PREEMPTION (802.1Q) */
-> +
-> +enum {
-> +	ETHTOOL_A_FP_PARAM_ENTRY_UNSPEC,
-> +	ETHTOOL_A_FP_PARAM_ENTRY_PRIO,		/* u8 */
-> +	ETHTOOL_A_FP_PARAM_ENTRY_ADMIN_STATUS,	/* u8 */
-> +
-> +	/* add new constants above here */
-> +	__ETHTOOL_A_FP_PARAM_ENTRY_CNT,
-> +	ETHTOOL_A_FP_PARAM_ENTRY_MAX = (__ETHTOOL_A_FP_PARAM_ENTRY_CNT - 1)
-> +};
-> +
-> +enum {
-> +	ETHTOOL_A_FP_PARAM_UNSPEC,
-> +	ETHTOOL_A_FP_PARAM_ENTRY,		/* nest */
-> +
-> +	/* add new constants above here */
-> +	__ETHTOOL_A_FP_PARAM_CNT,
-> +	ETHTOOL_A_FP_PARAM_MAX = (__ETHTOOL_A_FP_PARAM_CNT - 1)
-> +};
-> +
-> +enum {
-> +	ETHTOOL_A_FP_UNSPEC,
-> +	ETHTOOL_A_FP_HEADER,			/* nest - _A_HEADER_* */
-> +	ETHTOOL_A_FP_PARAM_TABLE,		/* nest */
-> +	ETHTOOL_A_FP_HOLD_ADVANCE,		/* u32 */
-> +	ETHTOOL_A_FP_RELEASE_ADVANCE,		/* u32 */
-> +
-> +	/* add new constants above here */
-> +	__ETHTOOL_A_FP_CNT,
-> +	ETHTOOL_A_FP_MAX = (__ETHTOOL_A_FP_CNT - 1)
-> +};
-> +
-> +/* MAC MERGE (802.3) */
-> +
-> +enum {
-> +	ETHTOOL_A_MM_STAT_UNSPEC,
-> +	ETHTOOL_A_MM_STAT_PAD,
-> +
-> +	/* aMACMergeFrameAssErrorCount */
-> +	ETHTOOL_A_MM_STAT_REASSEMBLY_ERRORS,	/* u64 */
-> +	/* aMACMergeFrameSmdErrorCount */
-> +	ETHTOOL_A_MM_STAT_SMD_ERRORS,		/* u64 */
-> +	/* aMACMergeFrameAssOkCount */
-> +	ETHTOOL_A_MM_STAT_REASSEMBLY_OK,	/* u64 */
-> +	/* aMACMergeFragCountRx */
-> +	ETHTOOL_A_MM_STAT_RX_FRAG_COUNT,	/* u64 */
-> +	/* aMACMergeFragCountTx */
-> +	ETHTOOL_A_MM_STAT_TX_FRAG_COUNT,	/* u64 */
-> +	/* aMACMergeHoldCount */
-> +	ETHTOOL_A_MM_STAT_HOLD_COUNT,		/* u64 */
-> +
-> +	/* add new constants above here */
-> +	__ETHTOOL_A_MM_STAT_CNT,
-> +	ETHTOOL_A_MM_STAT_MAX = (__ETHTOOL_A_MM_STAT_CNT - 1)
-> +};
-> +
-> +enum {
-> +	ETHTOOL_A_MM_UNSPEC,
-> +	ETHTOOL_A_MM_HEADER,			/* nest - _A_HEADER_* */
-> +	ETHTOOL_A_MM_VERIFY_STATUS,		/* u8 */
-> +	ETHTOOL_A_MM_VERIFY_DISABLE,		/* u8 */
-> +	ETHTOOL_A_MM_VERIFY_TIME,		/* u32 */
-> +	ETHTOOL_A_MM_SUPPORTED,			/* u8 */
-> +	ETHTOOL_A_MM_ENABLED,			/* u8 */
-> +	ETHTOOL_A_MM_ACTIVE,			/* u8 */
-> +	ETHTOOL_A_MM_ADD_FRAG_SIZE,		/* u8 */
-> +	ETHTOOL_A_MM_STATS,			/* nest - _A_MM_STAT_* */
-> +
-> +	/* add new constants above here */
-> +	__ETHTOOL_A_MM_CNT,
-> +	ETHTOOL_A_MM_MAX = (__ETHTOOL_A_MM_CNT - 1)
-> +};
-> +
->  /* generic netlink info */
->  #define ETHTOOL_GENL_NAME "ethtool"
->  #define ETHTOOL_GENL_VERSION 1
-> diff --git a/net/ethtool/Makefile b/net/ethtool/Makefile
-> index b76432e70e6b..31e056f17856 100644
-> --- a/net/ethtool/Makefile
-> +++ b/net/ethtool/Makefile
-> @@ -7,4 +7,5 @@ obj-$(CONFIG_ETHTOOL_NETLINK)	+= ethtool_nl.o
->  ethtool_nl-y	:= netlink.o bitset.o strset.o linkinfo.o linkmodes.o \
->  		   linkstate.o debug.o wol.o features.o privflags.o rings.o \
->  		   channels.o coalesce.o pause.o eee.o tsinfo.o cabletest.o \
-> -		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o
-> +		   tunnels.o fec.o eeprom.o stats.o phc_vclocks.o module.o \
-> +		   fp.o mm.o
-> diff --git a/net/ethtool/fp.c b/net/ethtool/fp.c
-> new file mode 100644
-> index 000000000000..20f19d8c1461
-> --- /dev/null
-> +++ b/net/ethtool/fp.c
-> @@ -0,0 +1,295 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright 2022 NXP
-> + */
-> +#include "common.h"
-> +#include "netlink.h"
-> +
-> +struct fp_req_info {
-> +	struct ethnl_req_info		base;
-> +};
-> +
-> +struct fp_reply_data {
-> +	struct ethnl_reply_data		base;
-> +	struct ethtool_fp_param		params;
-> +};
-> +
-> +#define FP_REPDATA(__reply_base) \
-> +	container_of(__reply_base, struct fp_reply_data, base)
-> +
-> +const struct nla_policy ethnl_fp_get_policy[ETHTOOL_A_FP_HEADER + 1] = {
-> +	[ETHTOOL_A_FP_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-> +};
-> +
-> +static int fp_prepare_data(const struct ethnl_req_info *req_base,
-> +			   struct ethnl_reply_data *reply_base,
-> +			   struct genl_info *info)
-> +{
-> +	struct fp_reply_data *data = FP_REPDATA(reply_base);
-> +	struct net_device *dev = reply_base->dev;
-> +	int ret;
-> +
-> +	if (!dev->ethtool_ops->get_fp_param)
-> +		return -EOPNOTSUPP;
-> +
-> +	ret = ethnl_ops_begin(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	dev->ethtool_ops->get_fp_param(dev, &data->params);
-> +	ethnl_ops_complete(dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static int fp_reply_size(const struct ethnl_req_info *req_base,
-> +			 const struct ethnl_reply_data *reply_base)
-> +{
-> +	int len = 0;
-> +
-> +	len += nla_total_size(0); /* _FP_PARAM_ENTRY */
-> +	len += nla_total_size(sizeof(u8)); /* _FP_PARAM_ENTRY_PRIO */
-> +	len += nla_total_size(sizeof(u8)); /* _FP_PARAM_ENTRY_ADMIN_STATUS */
-> +	len *= 8; /* 8 prios */
-> +	len += nla_total_size(0); /* _FP_PARAM_TABLE */
-> +	len += nla_total_size(sizeof(u32)); /* _FP_HOLD_ADVANCE */
-> +	len += nla_total_size(sizeof(u32)); /* _FP_RELEASE_ADVANCE */
-> +
-> +	return len;
-> +}
-> +
-> +static int fp_fill_reply(struct sk_buff *skb,
-> +			 const struct ethnl_req_info *req_base,
-> +			 const struct ethnl_reply_data *reply_base)
-> +{
-> +	const struct fp_reply_data *data = FP_REPDATA(reply_base);
-> +	const struct ethtool_fp_param *params = &data->params;
-> +	enum ethtool_fp_admin_status admin_status;
-> +	struct nlattr *nest_table, *nest_entry;
-> +	int prio;
-> +	int ret;
-> +
-> +	if (nla_put_u32(skb, ETHTOOL_A_FP_HOLD_ADVANCE, params->hold_advance) ||
-> +	    nla_put_u32(skb, ETHTOOL_A_FP_RELEASE_ADVANCE, params->release_advance))
-> +		return -EMSGSIZE;
-> +
-> +	nest_table = nla_nest_start(skb, ETHTOOL_A_FP_PARAM_TABLE);
-> +	if (!nest_table)
-> +		return -EMSGSIZE;
-> +
-> +	for (prio = 0; prio < 8; prio++) {
-> +		admin_status = (params->preemptable_prios & BIT(prio)) ?
-> +			ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_PREEMPTABLE :
-> +			ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_EXPRESS;
-> +
-> +		nest_entry = nla_nest_start(skb, ETHTOOL_A_FP_PARAM_ENTRY);
-> +		if (!nest_entry)
-> +			goto nla_nest_cancel_table;
-> +
-> +		if (nla_put_u8(skb, ETHTOOL_A_FP_PARAM_ENTRY_PRIO, prio))
-> +			goto nla_nest_cancel_entry;
-> +
-> +		if (nla_put_u8(skb, ETHTOOL_A_FP_PARAM_ENTRY_ADMIN_STATUS,
-> +			       admin_status))
-> +			goto nla_nest_cancel_entry;
-> +
-> +		nla_nest_end(skb, nest_entry);
-> +	}
-> +
-> +	nla_nest_end(skb, nest_table);
-> +
-> +	return 0;
-> +
-> +nla_nest_cancel_entry:
-> +	nla_nest_cancel(skb, nest_entry);
-> +nla_nest_cancel_table:
-> +	nla_nest_cancel(skb, nest_table);
-> +	return ret;
-> +}
-> +
-> +const struct ethnl_request_ops ethnl_fp_request_ops = {
-> +	.request_cmd		= ETHTOOL_MSG_FP_GET,
-> +	.reply_cmd		= ETHTOOL_MSG_FP_GET_REPLY,
-> +	.hdr_attr		= ETHTOOL_A_FP_HEADER,
-> +	.req_info_size		= sizeof(struct fp_req_info),
-> +	.reply_data_size	= sizeof(struct fp_reply_data),
-> +
-> +	.prepare_data		= fp_prepare_data,
-> +	.reply_size		= fp_reply_size,
-> +	.fill_reply		= fp_fill_reply,
-> +};
-> +
-> +static const struct nla_policy
-> +ethnl_fp_set_param_entry_policy[ETHTOOL_A_FP_PARAM_ENTRY_MAX  + 1] = {
-> +	[ETHTOOL_A_FP_PARAM_ENTRY_PRIO] = { .type = NLA_U8 },
-> +	[ETHTOOL_A_FP_PARAM_ENTRY_ADMIN_STATUS] = { .type = NLA_U8 },
-> +};
-> +
-> +static const struct nla_policy
-> +ethnl_fp_set_param_table_policy[ETHTOOL_A_FP_PARAM_MAX + 1] = {
-> +	[ETHTOOL_A_FP_PARAM_ENTRY] = NLA_POLICY_NESTED(ethnl_fp_set_param_entry_policy),
-> +};
-> +
-> +const struct nla_policy ethnl_fp_set_policy[ETHTOOL_A_FP_MAX + 1] = {
-> +	[ETHTOOL_A_FP_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-> +	[ETHTOOL_A_FP_PARAM_TABLE] = NLA_POLICY_NESTED(ethnl_fp_set_param_table_policy),
-> +};
-> +
-> +static int fp_parse_param_entry(const struct nlattr *nest,
-> +				struct ethtool_fp_param *params,
-> +				u8 *seen_prios, bool *mod,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	struct nlattr *tb[ARRAY_SIZE(ethnl_fp_set_param_entry_policy)];
-> +	u8 preemptable_prios = params->preemptable_prios;
-> +	u8 prio, admin_status;
-> +	int ret;
-> +
-> +	if (!nest)
-> +		return 0;
-> +
-> +	ret = nla_parse_nested(tb,
-> +			       ARRAY_SIZE(ethnl_fp_set_param_entry_policy) - 1,
-> +			       nest, ethnl_fp_set_param_entry_policy,
-> +			       extack);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!tb[ETHTOOL_A_FP_PARAM_ENTRY_PRIO]) {
-> +		NL_SET_ERR_MSG_ATTR(extack, nest,
-> +				    "Missing 'prio' attribute");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!tb[ETHTOOL_A_FP_PARAM_ENTRY_ADMIN_STATUS]) {
-> +		NL_SET_ERR_MSG_ATTR(extack, nest,
-> +				    "Missing 'admin_status' attribute");
-> +		return -EINVAL;
-> +	}
-> +
-> +	prio = nla_get_u8(tb[ETHTOOL_A_FP_PARAM_ENTRY_PRIO]);
-> +	if (prio >= 8) {
-> +		NL_SET_ERR_MSG_ATTR(extack, nest,
-> +				    "Range exceeded for 'prio' attribute");
-> +		return -ERANGE;
-> +	}
-> +
-> +	if (*seen_prios & BIT(prio)) {
-> +		NL_SET_ERR_MSG_ATTR(extack, nest,
-> +				    "Duplicate 'prio' attribute");
-> +		return -EINVAL;
-> +	}
-> +
-> +	*seen_prios |= BIT(prio);
-> +
-> +	admin_status = nla_get_u8(tb[ETHTOOL_A_FP_PARAM_ENTRY_ADMIN_STATUS]);
-> +	switch (admin_status) {
-> +	case ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_PREEMPTABLE:
-> +		preemptable_prios |= BIT(prio);
-> +		break;
-> +	case ETHTOOL_FP_PARAM_ENTRY_ADMIN_STATUS_EXPRESS:
-> +		preemptable_prios &= ~BIT(prio);
-> +		break;
-> +	default:
-> +		NL_SET_ERR_MSG_ATTR(extack, nest,
-> +				    "Unexpected value for 'admin_status' attribute");
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (preemptable_prios != params->preemptable_prios) {
-> +		params->preemptable_prios = preemptable_prios;
-> +		*mod = true;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int fp_parse_param_table(const struct nlattr *nest,
-> +				struct ethtool_fp_param *params, bool *mod,
-> +				struct netlink_ext_ack *extack)
-> +{
-> +	u8 seen_prios = 0;
-> +	struct nlattr *n;
-> +	int rem, ret;
-> +
-> +	if (!nest)
-> +		return 0;
-> +
-> +	nla_for_each_nested(n, nest, rem) {
-> +		struct sched_entry *entry;
-> +
-> +		if (nla_type(n) != ETHTOOL_A_FP_PARAM_ENTRY) {
-> +			NL_SET_ERR_MSG_ATTR(extack, n,
-> +					    "Attribute is not of type 'entry'");
-> +			continue;
-> +		}
-> +
-> +		ret = fp_parse_param_entry(n, params, &seen_prios, mod, extack);
-> +		if (ret < 0) {
-> +			kfree(entry);
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +int ethnl_set_fp_param(struct sk_buff *skb, struct genl_info *info)
-> +{
-> +	struct netlink_ext_ack *extack = info->extack;
-> +	struct ethnl_req_info req_info = {};
-> +	struct ethtool_fp_param params = {};
-> +	struct nlattr **tb = info->attrs;
-> +	const struct ethtool_ops *ops;
-> +	struct net_device *dev;
-> +	bool mod = false;
-> +	int ret;
-> +
-> +	ret = ethnl_parse_header_dev_get(&req_info, tb[ETHTOOL_A_FP_HEADER],
-> +					 genl_info_net(info), extack, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev = req_info.dev;
-> +	ops = dev->ethtool_ops;
-> +
-> +	if (!ops->get_fp_param || !ops->set_fp_param) {
-> +		ret = -EOPNOTSUPP;
-> +		goto out_dev;
-> +	}
-> +
-> +	rtnl_lock();
-> +	ret = ethnl_ops_begin(dev);
-> +	if (ret)
-> +		goto out_rtnl;
-> +
-> +	dev->ethtool_ops->get_fp_param(dev, &params);
-> +
-> +	ethnl_update_u32(&params.hold_advance, tb[ETHTOOL_A_FP_HOLD_ADVANCE],
-> +			 &mod);
-> +	ethnl_update_u32(&params.release_advance,
-> +			 tb[ETHTOOL_A_FP_RELEASE_ADVANCE], &mod);
-> +
-> +	ret = fp_parse_param_table(tb[ETHTOOL_A_FP_PARAM_TABLE], &params, &mod,
-> +				   extack);
-> +	if (ret || !mod)
-> +		goto out_ops;
-> +
-> +	ret = dev->ethtool_ops->set_fp_param(dev, &params, extack);
-> +	if (ret) {
-> +		if (!extack->_msg)
-> +			NL_SET_ERR_MSG(extack,
-> +				       "Failed to update frame preemption parameters");
-> +		goto out_ops;
-> +	}
-> +
-> +	ethtool_notify(dev, ETHTOOL_MSG_FP_NTF, NULL);
-> +
-> +out_ops:
-> +	ethnl_ops_complete(dev);
-> +out_rtnl:
-> +	rtnl_unlock();
-> +out_dev:
-> +	dev_put(dev);
-> +	return ret;
-> +}
-> diff --git a/net/ethtool/mm.c b/net/ethtool/mm.c
-> new file mode 100644
-> index 000000000000..d4731fb7aee4
-> --- /dev/null
-> +++ b/net/ethtool/mm.c
-> @@ -0,0 +1,228 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright 2022 NXP
-> + */
-> +#include "common.h"
-> +#include "netlink.h"
-> +
-> +struct mm_req_info {
-> +	struct ethnl_req_info		base;
-> +};
-> +
-> +struct mm_reply_data {
-> +	struct ethnl_reply_data		base;
-> +	struct ethtool_mm_state		state;
-> +	struct ethtool_mm_stats		stats;
-> +};
-> +
-> +#define MM_REPDATA(__reply_base) \
-> +	container_of(__reply_base, struct mm_reply_data, base)
-> +
-> +#define ETHTOOL_MM_STAT_CNT \
-> +	(__ETHTOOL_A_MM_STAT_CNT - (ETHTOOL_A_MM_STAT_PAD + 1))
-> +
-> +const struct nla_policy ethnl_mm_get_policy[ETHTOOL_A_MM_HEADER + 1] = {
-> +	[ETHTOOL_A_MM_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy_stats),
-> +};
-> +
-> +static int mm_prepare_data(const struct ethnl_req_info *req_base,
-> +			   struct ethnl_reply_data *reply_base,
-> +			   struct genl_info *info)
-> +{
-> +	struct mm_reply_data *data = MM_REPDATA(reply_base);
-> +	struct net_device *dev = reply_base->dev;
-> +	const struct ethtool_ops *ops;
-> +	int ret;
-> +
-> +	ops = dev->ethtool_ops;
-> +
-> +	if (!ops->get_mm_state)
-> +		return -EOPNOTSUPP;
-> +
-> +	ethtool_stats_init((u64 *)&data->stats,
-> +			   sizeof(data->stats) / sizeof(u64));
-> +
-> +	ret = ethnl_ops_begin(dev);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ops->get_mm_state(dev, &data->state);
-> +
-> +	if (ops->get_mm_stats && (req_base->flags & ETHTOOL_FLAG_STATS))
-> +		ops->get_mm_stats(dev, &data->stats);
-> +
-> +	ethnl_ops_complete(dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static int mm_reply_size(const struct ethnl_req_info *req_base,
-> +			 const struct ethnl_reply_data *reply_base)
-> +{
-> +	int len = 0;
-> +
-> +	len += nla_total_size(sizeof(u8)); /* _MM_VERIFY_STATUS */
-> +	len += nla_total_size(sizeof(u32)); /* _MM_VERIFY_TIME */
-> +	len += nla_total_size(sizeof(u8)); /* _MM_SUPPORTED */
-> +	len += nla_total_size(sizeof(u8)); /* _MM_ENABLED */
-> +	len += nla_total_size(sizeof(u8)); /* _MM_ACTIVE */
-> +	len += nla_total_size(sizeof(u8)); /* _MM_ADD_FRAG_SIZE */
-> +
-> +	if (req_base->flags & ETHTOOL_FLAG_STATS)
-> +		len += nla_total_size(0) + /* _MM_STATS */
-> +		       nla_total_size_64bit(sizeof(u64)) * ETHTOOL_MM_STAT_CNT;
-> +
-> +	return len;
-> +}
-> +
-> +static int mm_put_stat(struct sk_buff *skb, u64 val, u16 attrtype)
-> +{
-> +	if (val == ETHTOOL_STAT_NOT_SET)
-> +		return 0;
-> +	if (nla_put_u64_64bit(skb, attrtype, val, ETHTOOL_A_MM_STAT_PAD))
-> +		return -EMSGSIZE;
-> +	return 0;
-> +}
-> +
-> +static int mm_put_stats(struct sk_buff *skb,
-> +			const struct ethtool_mm_stats *stats)
-> +{
-> +	struct nlattr *nest;
-> +
-> +	nest = nla_nest_start(skb, ETHTOOL_A_MM_STATS);
-> +	if (!nest)
-> +		return -EMSGSIZE;
-> +
-> +	if (mm_put_stat(skb, stats->MACMergeFrameAssErrorCount,
-> +			ETHTOOL_A_MM_STAT_REASSEMBLY_ERRORS) ||
-> +	    mm_put_stat(skb, stats->MACMergeFrameSmdErrorCount,
-> +			ETHTOOL_A_MM_STAT_SMD_ERRORS) ||
-> +	    mm_put_stat(skb, stats->MACMergeFrameAssOkCount,
-> +			ETHTOOL_A_MM_STAT_REASSEMBLY_OK) ||
-> +	    mm_put_stat(skb, stats->MACMergeFragCountRx,
-> +			ETHTOOL_A_MM_STAT_RX_FRAG_COUNT) ||
-> +	    mm_put_stat(skb, stats->MACMergeFragCountTx,
-> +			ETHTOOL_A_MM_STAT_TX_FRAG_COUNT) ||
-> +	    mm_put_stat(skb, stats->MACMergeHoldCount,
-> +			ETHTOOL_A_MM_STAT_HOLD_COUNT))
-> +		goto err_cancel;
-> +
-> +	nla_nest_end(skb, nest);
-> +	return 0;
-> +
-> +err_cancel:
-> +	nla_nest_cancel(skb, nest);
-> +	return -EMSGSIZE;
-> +}
-> +
-> +static int mm_fill_reply(struct sk_buff *skb,
-> +			 const struct ethnl_req_info *req_base,
-> +			 const struct ethnl_reply_data *reply_base)
-> +{
-> +	const struct mm_reply_data *data = MM_REPDATA(reply_base);
-> +	const struct ethtool_mm_state *state = &data->state;
-> +
-> +	if (nla_put_u8(skb, ETHTOOL_A_MM_VERIFY_STATUS, state->verify_status) ||
-> +	    nla_put_u32(skb, ETHTOOL_A_MM_VERIFY_TIME, state->verify_time) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_MM_SUPPORTED, state->supported) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_MM_ENABLED, state->enabled) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_MM_ACTIVE, state->active) ||
-> +	    nla_put_u8(skb, ETHTOOL_A_MM_ADD_FRAG_SIZE, state->add_frag_size))
-> +		return -EMSGSIZE;
-> +
-> +	if (req_base->flags & ETHTOOL_FLAG_STATS &&
-> +	    mm_put_stats(skb, &data->stats))
-> +		return -EMSGSIZE;
-> +
-> +	return 0;
-> +}
-> +
-> +const struct ethnl_request_ops ethnl_mm_request_ops = {
-> +	.request_cmd		= ETHTOOL_MSG_MM_GET,
-> +	.reply_cmd		= ETHTOOL_MSG_MM_GET_REPLY,
-> +	.hdr_attr		= ETHTOOL_A_MM_HEADER,
-> +	.req_info_size		= sizeof(struct mm_req_info),
-> +	.reply_data_size	= sizeof(struct mm_reply_data),
-> +
-> +	.prepare_data		= mm_prepare_data,
-> +	.reply_size		= mm_reply_size,
-> +	.fill_reply		= mm_fill_reply,
-> +};
-> +
-> +const struct nla_policy ethnl_mm_set_policy[ETHTOOL_A_MM_MAX + 1] = {
-> +	[ETHTOOL_A_MM_HEADER] = NLA_POLICY_NESTED(ethnl_header_policy),
-> +	[ETHTOOL_A_MM_VERIFY_DISABLE] = { .type = NLA_U8 },
-> +	[ETHTOOL_A_MM_VERIFY_TIME] = { .type = NLA_U32 },
-> +	[ETHTOOL_A_MM_ENABLED] = { .type = NLA_U8 },
-> +	[ETHTOOL_A_MM_ADD_FRAG_SIZE] = { .type = NLA_U8 },
-> +};
-> +
-> +static void mm_state_to_cfg(const struct ethtool_mm_state *state,
-> +			    struct ethtool_mm_cfg *cfg)
-> +{
-> +	cfg->verify_disable =
-> +		state->verify_status == ETHTOOL_MM_VERIFY_STATUS_DISABLED;
-> +	cfg->verify_time = state->verify_time;
-> +	cfg->enabled = state->enabled;
-> +	cfg->add_frag_size = state->add_frag_size;
-> +}
-> +
-> +int ethnl_set_mm_cfg(struct sk_buff *skb, struct genl_info *info)
-> +{
-> +	struct netlink_ext_ack *extack = info->extack;
-> +	struct ethnl_req_info req_info = {};
-> +	struct ethtool_mm_state state = {};
-> +	struct nlattr **tb = info->attrs;
-> +	struct ethtool_mm_cfg cfg = {};
-> +	const struct ethtool_ops *ops;
-> +	struct net_device *dev;
-> +	bool mod = false;
-> +	int ret;
-> +
-> +	ret = ethnl_parse_header_dev_get(&req_info, tb[ETHTOOL_A_MM_HEADER],
-> +					 genl_info_net(info), extack, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	dev = req_info.dev;
-> +	ops = dev->ethtool_ops;
-> +
-> +	if (!ops->get_mm_state || !ops->set_mm_cfg) {
-> +		ret = -EOPNOTSUPP;
-> +		goto out_dev;
-> +	}
-> +
-> +	rtnl_lock();
-> +	ret = ethnl_ops_begin(dev);
-> +	if (ret)
-> +		goto out_rtnl;
-> +
-> +	ops->get_mm_state(dev, &state);
-> +
-> +	mm_state_to_cfg(&state, &cfg);
-> +
-> +	ethnl_update_bool(&cfg.verify_disable, tb[ETHTOOL_A_MM_VERIFY_DISABLE],
-> +			  &mod);
-> +	ethnl_update_u32(&cfg.verify_time, tb[ETHTOOL_A_MM_VERIFY_TIME], &mod);
-> +	ethnl_update_bool(&cfg.enabled, tb[ETHTOOL_A_MM_ENABLED], &mod);
-> +	ethnl_update_u8(&cfg.add_frag_size, tb[ETHTOOL_A_MM_ADD_FRAG_SIZE],
-> +			&mod);
-> +
-> +	ret = ops->set_mm_cfg(dev, &cfg, extack);
-> +	if (ret) {
-> +		if (!extack->_msg)
-> +			NL_SET_ERR_MSG(extack,
-> +				       "Failed to update MAC merge configuration");
-> +		goto out_ops;
-> +	}
-> +
-> +	ethtool_notify(dev, ETHTOOL_MSG_MM_NTF, NULL);
-> +
-> +out_ops:
-> +	ethnl_ops_complete(dev);
-> +out_rtnl:
-> +	rtnl_unlock();
-> +out_dev:
-> +	dev_put(dev);
-> +	return ret;
-> +}
-> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
-> index e26079e11835..82ad2bd92d70 100644
-> --- a/net/ethtool/netlink.c
-> +++ b/net/ethtool/netlink.c
-> @@ -286,6 +286,8 @@ ethnl_default_requests[__ETHTOOL_MSG_USER_CNT] = {
->  	[ETHTOOL_MSG_STATS_GET]		= &ethnl_stats_request_ops,
->  	[ETHTOOL_MSG_PHC_VCLOCKS_GET]	= &ethnl_phc_vclocks_request_ops,
->  	[ETHTOOL_MSG_MODULE_GET]	= &ethnl_module_request_ops,
-> +	[ETHTOOL_MSG_FP_GET]		= &ethnl_fp_request_ops,
-> +	[ETHTOOL_MSG_MM_GET]		= &ethnl_mm_request_ops,
->  };
->  
->  static struct ethnl_dump_ctx *ethnl_dump_context(struct netlink_callback *cb)
-> @@ -598,6 +600,8 @@ ethnl_default_notify_ops[ETHTOOL_MSG_KERNEL_MAX + 1] = {
->  	[ETHTOOL_MSG_EEE_NTF]		= &ethnl_eee_request_ops,
->  	[ETHTOOL_MSG_FEC_NTF]		= &ethnl_fec_request_ops,
->  	[ETHTOOL_MSG_MODULE_NTF]	= &ethnl_module_request_ops,
-> +	[ETHTOOL_MSG_FP_NTF]		= &ethnl_fp_request_ops,
-> +	[ETHTOOL_MSG_MM_NTF]		= &ethnl_mm_request_ops,
->  };
->  
->  /* default notification handler */
-> @@ -691,6 +695,8 @@ static const ethnl_notify_handler_t ethnl_notify_handlers[] = {
->  	[ETHTOOL_MSG_EEE_NTF]		= ethnl_default_notify,
->  	[ETHTOOL_MSG_FEC_NTF]		= ethnl_default_notify,
->  	[ETHTOOL_MSG_MODULE_NTF]	= ethnl_default_notify,
-> +	[ETHTOOL_MSG_FP_NTF]		= ethnl_default_notify,
-> +	[ETHTOOL_MSG_MM_NTF]		= ethnl_default_notify,
->  };
->  
->  void ethtool_notify(struct net_device *dev, unsigned int cmd, const void *data)
-> @@ -1020,6 +1026,38 @@ static const struct genl_ops ethtool_genl_ops[] = {
->  		.policy = ethnl_module_set_policy,
->  		.maxattr = ARRAY_SIZE(ethnl_module_set_policy) - 1,
->  	},
-> +	{
-> +		.cmd	= ETHTOOL_MSG_FP_GET,
-> +		.doit	= ethnl_default_doit,
-> +		.start	= ethnl_default_start,
-> +		.dumpit	= ethnl_default_dumpit,
-> +		.done	= ethnl_default_done,
-> +		.policy = ethnl_fp_get_policy,
-> +		.maxattr = ARRAY_SIZE(ethnl_fp_get_policy) - 1,
-> +	},
-> +	{
-> +		.cmd	= ETHTOOL_MSG_FP_SET,
-> +		.flags	= GENL_UNS_ADMIN_PERM,
-> +		.doit	= ethnl_set_fp_param,
-> +		.policy = ethnl_fp_set_policy,
-> +		.maxattr = ARRAY_SIZE(ethnl_fp_set_policy) - 1,
-> +	},
-> +	{
-> +		.cmd	= ETHTOOL_MSG_MM_GET,
-> +		.doit	= ethnl_default_doit,
-> +		.start	= ethnl_default_start,
-> +		.dumpit	= ethnl_default_dumpit,
-> +		.done	= ethnl_default_done,
-> +		.policy = ethnl_mm_get_policy,
-> +		.maxattr = ARRAY_SIZE(ethnl_mm_get_policy) - 1,
-> +	},
-> +	{
-> +		.cmd	= ETHTOOL_MSG_MM_SET,
-> +		.flags	= GENL_UNS_ADMIN_PERM,
-> +		.doit	= ethnl_set_mm_cfg,
-> +		.policy = ethnl_mm_set_policy,
-> +		.maxattr = ARRAY_SIZE(ethnl_mm_set_policy) - 1,
-> +	},
->  };
->  
->  static const struct genl_multicast_group ethtool_nl_mcgrps[] = {
-> diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
-> index 1653fd2cf0cf..a2e56df74c85 100644
-> --- a/net/ethtool/netlink.h
-> +++ b/net/ethtool/netlink.h
-> @@ -371,6 +371,8 @@ extern const struct ethnl_request_ops ethnl_module_eeprom_request_ops;
->  extern const struct ethnl_request_ops ethnl_stats_request_ops;
->  extern const struct ethnl_request_ops ethnl_phc_vclocks_request_ops;
->  extern const struct ethnl_request_ops ethnl_module_request_ops;
-> +extern const struct ethnl_request_ops ethnl_fp_request_ops;
-> +extern const struct ethnl_request_ops ethnl_mm_request_ops;
->  
->  extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
->  extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
-> @@ -409,6 +411,10 @@ extern const struct nla_policy ethnl_stats_get_policy[ETHTOOL_A_STATS_GROUPS + 1
->  extern const struct nla_policy ethnl_phc_vclocks_get_policy[ETHTOOL_A_PHC_VCLOCKS_HEADER + 1];
->  extern const struct nla_policy ethnl_module_get_policy[ETHTOOL_A_MODULE_HEADER + 1];
->  extern const struct nla_policy ethnl_module_set_policy[ETHTOOL_A_MODULE_POWER_MODE_POLICY + 1];
-> +extern const struct nla_policy ethnl_fp_get_policy[ETHTOOL_A_FP_HEADER + 1];
-> +extern const struct nla_policy ethnl_fp_set_policy[ETHTOOL_A_FP_MAX + 1];
-> +extern const struct nla_policy ethnl_mm_get_policy[ETHTOOL_A_MM_HEADER + 1];
-> +extern const struct nla_policy ethnl_mm_set_policy[ETHTOOL_A_MM_MAX + 1];
->  
->  int ethnl_set_linkinfo(struct sk_buff *skb, struct genl_info *info);
->  int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info);
-> @@ -428,6 +434,8 @@ int ethnl_tunnel_info_start(struct netlink_callback *cb);
->  int ethnl_tunnel_info_dumpit(struct sk_buff *skb, struct netlink_callback *cb);
->  int ethnl_set_fec(struct sk_buff *skb, struct genl_info *info);
->  int ethnl_set_module(struct sk_buff *skb, struct genl_info *info);
-> +int ethnl_set_fp_param(struct sk_buff *skb, struct genl_info *info);
-> +int ethnl_set_mm_cfg(struct sk_buff *skb, struct genl_info *info);
->  
->  extern const char stats_std_names[__ETHTOOL_STATS_CNT][ETH_GSTRING_LEN];
->  extern const char stats_eth_phy_names[__ETHTOOL_A_STATS_ETH_PHY_CNT][ETH_GSTRING_LEN];
-> -- 
-> 2.34.1
->
+>Jay, how would you like to proceed?
 
--- 
-Vinicius
+	I don't have issue with moving ad_ticks_per_sec to a file scope
+constant.  The minimal change here, though, is effectively making the
+tick_resolution parameter to bond_3ad_initialize be ignored, even though
+the compiler won't complain about it.
+
+	Given that there is already mystery in how some of this works,
+I'd prefer the patches to make the code clearer, so my vote is for the
+"fix it right" method, i.e., make ad_ticks_per_sec a real constant,
+remove the tick_resolution parameter from bond_3ad_initialize and drop
+the "if MAC_ADDRESS_COMPARE" test therein.
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
