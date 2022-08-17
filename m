@@ -2,136 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 255595978E4
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:25:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F9775978EA
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:32:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241687AbiHQVYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 17:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
+        id S241719AbiHQVaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 17:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233026AbiHQVYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:24:41 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A59E5AC4E;
-        Wed, 17 Aug 2022 14:24:39 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:40598)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oOQWj-00Efck-85; Wed, 17 Aug 2022 15:24:37 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:32940 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oOQWi-006mnP-7Y; Wed, 17 Aug 2022 15:24:36 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
-References: <20220815162028.926858-1-fred@cloudflare.com>
-        <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
-        <8735dux60p.fsf@email.froward.int.ebiederm.org>
-        <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
-        <871qte8wy3.fsf@email.froward.int.ebiederm.org>
-        <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
-        <8735du7fnp.fsf@email.froward.int.ebiederm.org>
-        <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
-Date:   Wed, 17 Aug 2022 16:24:28 -0500
-In-Reply-To: <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
-        (Paul Moore's message of "Wed, 17 Aug 2022 17:09:07 -0400")
-Message-ID: <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S241766AbiHQVaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:30:16 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C764390C56;
+        Wed, 17 Aug 2022 14:30:14 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id a7so26797366ejp.2;
+        Wed, 17 Aug 2022 14:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1WahhERX691CESd1ffbJud3Y+oZ8wMt9XQmOZisGAO4=;
+        b=Qe9HJqjJVkpt9ngOfi1SC4JuyFO279d6GmPGr+m7JUf5xARUiAYC82F8IYAoMRWUuH
+         Ick6Mncg5vhH1GPIkrgWo0M3oeah3nV7VGow9GlBeWAwGf+ptHvRze9Viu7DtJLqzEyq
+         CdbFGYMxHNVCCc3G2N/Xi6DssMJwvB5vrLa4dGm6j/oitdez+dT5fwD6PZxMXsvMObTS
+         gJHBo4eqg3dVCiio9YPKDBRvAe3YEttVP3X0KAJ1jA06JCwWql7+8EuLhq3JuX/N5w0O
+         +Tz9RP5geRhjqgeApy/HhGtteAUCvkF7Rob7w9WBr/ymI91naRV0C5rMz3Bjw1i+UiTE
+         yvLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1WahhERX691CESd1ffbJud3Y+oZ8wMt9XQmOZisGAO4=;
+        b=Ku0H0BW1ly9Ul5dyGBXjn1SFfNu4t3imCAqcu6umXyZ0ToXgHrMLN7bnrNr0chUyJw
+         cTKxqMOXbJupBisn2gLi5QQg8p521LC7Jx+CI8uFPESY69l+EHzywrOdUObYdYiEgLEe
+         l25J/X8r30smy2n6y+9Ei4mo+NjX8/XFBKAfZxibIhBj5AAgcXTLjgM4BAVsn4FaGhsO
+         UWyikRPDRq8OaAp888WAtIOawmKGKW9VH8IvgxN8hp9o15p07V67piFKdJxlFREH49Tp
+         Mf9EadQ13ttVNRuGw0M+sicnhPTx+Akb7ZKaDEQdure26IDZ1XutAPrXWa2O8VV2r+tS
+         YiEg==
+X-Gm-Message-State: ACgBeo3Gf2oE9kw4lgD+k9UadN7z05F+0AULaaK8l+bInIgDVxfMvLc0
+        cTGpb0gyxP85RNPk3Qskv8rEVkUOQWgzr/rka3o=
+X-Google-Smtp-Source: AA6agR4CMlusqqwkMYPqZBWzDqnHs10L6iaVvsd1N80IUKEqJWg8pd0K6sV2lnzisB10uvUvY41yjFw1xWJS629TJC4=
+X-Received: by 2002:a17:907:272a:b0:731:4699:b375 with SMTP id
+ d10-20020a170907272a00b007314699b375mr17814804ejl.633.1660771813165; Wed, 17
+ Aug 2022 14:30:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oOQWi-006mnP-7Y;;;mid=<87tu6a4l83.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/L7Q+eLO/zhN6zCRTrP7mmcvX3T2bbYZI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
+References: <cover.1660761470.git.dxu@dxuuu.xyz> <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
+In-Reply-To: <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 17 Aug 2022 14:30:01 -0700
+Message-ID: <CAADnVQ+G0Hju-OeN6e=JLPQzODxGXCsP7OuVbex1y-EYr6Z5Yw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 3/4] bpf: Add support for writing to nf_conn:mark
+To:     Daniel Xu <dxu@dxuuu.xyz>, Martin KaFai Lau <martin.lau@linux.dev>,
+        Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
-X-Spam-DCC: XMission; sa07 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: **;Paul Moore <paul@paul-moore.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 451 ms - load_scoreonly_sql: 0.03 (0.0%),
-        signal_user_changed: 11 (2.5%), b_tie_ro: 10 (2.2%), parse: 1.12
-        (0.2%), extract_message_metadata: 17 (3.7%), get_uri_detail_list: 2.4
-        (0.5%), tests_pri_-1000: 23 (5.2%), tests_pri_-950: 1.20 (0.3%),
-        tests_pri_-900: 1.02 (0.2%), tests_pri_-90: 62 (13.7%), check_bayes:
-        61 (13.4%), b_tokenize: 9 (2.1%), b_tok_get_all: 10 (2.1%),
-        b_comp_prob: 2.9 (0.6%), b_tok_touch_all: 35 (7.7%), b_finish: 0.88
-        (0.2%), tests_pri_0: 319 (70.7%), check_dkim_signature: 0.64 (0.1%),
-        check_dkim_adsp: 3.1 (0.7%), poll_dns_idle: 1.15 (0.3%), tests_pri_10:
-        2.7 (0.6%), tests_pri_500: 10 (2.2%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Moore <paul@paul-moore.com> writes:
-
-> On Wed, Aug 17, 2022 at 4:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> Paul Moore <paul@paul-moore.com> writes:
->> > On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> >> Paul Moore <paul@paul-moore.com> writes:
->> >>
->> >> > At the end of the v4 patchset I suggested merging this into lsm/next
->> >> > so it could get a full -rc cycle in linux-next, assuming no issues
->> >> > were uncovered during testing
->> >>
->> >> What in the world can be uncovered in linux-next for code that has no in
->> >> tree users.
->> >
->> > The patchset provides both BPF LSM and SELinux implementations of the
->> > hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
->> > If no one beats me to it, I plan to work on adding a test to the
->> > selinux-testsuite as soon as I'm done dealing with other urgent
->> > LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
->> > run these tests multiple times a week (multiple times a day sometimes)
->> > against the -rcX kernels with the lsm/next, selinux/next, and
->> > audit/next branches applied on top.  I know others do similar things.
->>
->> A layer of hooks that leaves all of the logic to userspace is not an
->> in-tree user for purposes of understanding the logic of the code.
+On Wed, Aug 17, 2022 at 11:43 AM Daniel Xu <dxu@dxuuu.xyz> wrote:
 >
-> The BPF LSM selftests which are part of this patchset live in-tree.
-> The SELinux hook implementation is completely in-tree with the
-> subject/verb/object relationship clearly described by the code itself.
-> After all, the selinux_userns_create() function consists of only two
-> lines, one of which is an assignment.  Yes, it is true that the
-> SELinux policy lives outside the kernel, but that is because there is
-> no singular SELinux policy for everyone.  From a practical
-> perspective, the SELinux policy is really just a configuration file
-> used to setup the kernel at runtime; it is not significantly different
-> than an iptables script, /etc/sysctl.conf, or any of the other myriad
-> of configuration files used to configure the kernel during boot.
+> +/* Check writes into `struct nf_conn` */
+> +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> +                                  const struct btf *btf,
+> +                                  const struct btf_type *t, int off,
+> +                                  int size, enum bpf_access_type atype,
+> +                                  u32 *next_btf_id,
+> +                                  enum bpf_type_flag *flag)
+> +{
+> +       const struct btf_type *nct = READ_ONCE(nf_conn_type);
+> +       s32 type_id;
+> +       size_t end;
+> +
+> +       if (!nct) {
+> +               type_id = btf_find_by_name_kind(btf, "nf_conn", BTF_KIND_STRUCT);
+> +               if (type_id < 0)
+> +                       return -EINVAL;
+> +
+> +               nct = btf_type_by_id(btf, type_id);
+> +               WRITE_ONCE(nf_conn_type, nct);
+> +       }
+> +
+> +       if (t != nct) {
+> +               bpf_log(log, "only read is supported\n");
+> +               return -EACCES;
+> +       }
+> +
+> +       switch (off) {
+> +#if defined(CONFIG_NF_CONNTRACK_MARK)
+> +       case offsetof(struct nf_conn, mark):
+> +               end = offsetofend(struct nf_conn, mark);
+> +               break;
+> +#endif
+> +       default:
+> +               bpf_log(log, "no write support to nf_conn at off %d\n", off);
+> +               return -EACCES;
+> +       }
+> +
+> +       if (off + size > end) {
+> +               bpf_log(log,
+> +                       "write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
+> +                       off, size, end);
+> +               return -EACCES;
+> +       }
+> +
+> +       return NOT_INIT;
 
-I object to adding the new system configuration knob.
+Took me a long time to realize that this is a copy-paste
+from net/ipv4/bpf_tcp_ca.c.
+It's not wrong, but misleading.
+When atype == BPF_READ the return value from
+btf_struct_access should only be error<0, SCALAR_VALUE, PTR_TO_BTF_ID.
+For atype == BPF_WRITE we should probably standardize on
+error<0, or 0.
 
-Especially when I don't see people explaining why such a knob is a good
-idea.  What is userspace going to do with this new feature that makes it
-worth maintaining in the kernel?
+The NOT_INIT happens to be zero, but explicit 0
+is cleaner to avoid confusion that this is somehow enum bpf_reg_type.
 
-That is always the conversation we have when adding new features, and
-that is exactly the conversation that has not happened here.
-
-Adding a layer of indirection should not exempt a new feature from
-needing to justify itself.
-
-Eric
-
+Martin,
+since you've added this code in bpf_tcp_ca, wdyt?
