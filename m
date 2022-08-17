@@ -2,215 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 358C0597534
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:43:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E48597531
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:43:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238484AbiHQRhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 13:37:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60256 "EHLO
+        id S238280AbiHQRme (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 13:42:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237343AbiHQRhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:37:24 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CE1BA1A7C
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:37:23 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id z187so12617554pfb.12
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:37:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=oHpVPbvxrCLs+hDQJtokFiFQV5w1hhX8KPbSuFBFMus=;
-        b=rkXX2+3DhpH5kPN0GuvNmEMmFMRAP3sHQ5WYgRJMM5myi3cBvZ/q4NRNEF46zlU1Y8
-         HYoLtM0bC6bV4iLJRtxfb3xwC8HfysVffnCg64kw188YZn0qe2H8IXB5kUfhGnNdQovY
-         Unc/T855gSBad+woJ0nWXAwLgEr4SADSozNIaI1T/Qjxrm7glwGhxJalJc6808Pb1Fio
-         zoNIgdU6LaIyKRXJX/GLgVSubRgeBqoW5ma75upr6jzK6HIXYBsM88owEvuHA/ox3nMH
-         5SRBEVum7KWTxcNgcl4amFHXe2oy6hVJ2ShckQGxQuta/LIJyBBbL2tyv7JO+sWMDmuJ
-         DWYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=oHpVPbvxrCLs+hDQJtokFiFQV5w1hhX8KPbSuFBFMus=;
-        b=7/a8bS9WNNIGq74byB8nInU/yxIJQNmx0nlpeKNip4wdSNDgp3Kt839uGmdm/2SWNN
-         NU383HljLEHUW+2cczLzKbCbEu9Md0lxCWlT7rZaackuaVaS38rTCI9W09K/ASeIBera
-         xyx1/Ru5FuUnIzODE48pKY61MyQYZl4ObYxvtb8/5ZBWaIOMx+5VL2dwLeKgGJogp+mY
-         4rF5FTLXrjpSaZAu8raqToK8+cwgvxUH6mzMhRQnU/QD7Ugfr10Cfw//GP1TNh+4DOrq
-         vXTlK/eBtLQ4gRF503iWuCg+YmFHdXXB7e+CdrvjBt7A35DpgHeROuVrcUqbyqsHU8Ym
-         ZUEg==
-X-Gm-Message-State: ACgBeo2KJPHLnF3zXvEnwFL89JLKsQ5lqFQq/YtdvsxR3jyaSB8Es+MG
-        9pI3FEQs+reQvkn7Wc7lJMwXOY1RPP9rrWSiD5HXNQ==
-X-Google-Smtp-Source: AA6agR7RM8hrx5k1uS+mUtIXdZYFeE1DilOpajIypSCuyaPr/6V8tDnU7J/6WG+v5atkr8lrNrO/QsL57Rc0ItJv19c=
-X-Received: by 2002:a63:5f8e:0:b0:429:c286:4ef7 with SMTP id
- t136-20020a635f8e000000b00429c2864ef7mr4419598pgb.166.1660757842439; Wed, 17
- Aug 2022 10:37:22 -0700 (PDT)
-MIME-Version: 1.0
-References: <CANOLnON11vzvVdyJfW+QJ36siWR4-s=HJ2aRKpRy7CP=aRPoSw@mail.gmail.com>
- <CANOLnOPeOi0gxYwd5+ybdv5w=RZEh5JakJPE9xgrSL1cecZHbw@mail.gmail.com> <Yv0h1PFxmK7rVWpy@cmpxchg.org>
-In-Reply-To: <Yv0h1PFxmK7rVWpy@cmpxchg.org>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 17 Aug 2022 10:37:11 -0700
-Message-ID: <CALvZod5_LVkOkF+gmefnctmx+bRjykSARm2JA9eqKJx85NYBGQ@mail.gmail.com>
-Subject: Re: UDP rx packet loss in a cgroup with a memory limit
-To:     Johannes Weiner <hannes@cmpxchg.org>,
+        with ESMTP id S237189AbiHQRmc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:42:32 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2087.outbound.protection.outlook.com [40.107.22.87])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB3C5A1D60
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:42:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UirMdyH7OYq2+0KV2EZKz3WLb7pbJbYGSvRMZfIP7wz8/tGrjc6RRGoKwG28Y6vB4RExNkWQCnM3thPoYs5JMW2wBxAt0o33fGKFBv9f+wnSW+IFKYY2JOcro89XAK9SDqTkm82T0HkbmgDKhUPxrFJFy8geVSDpKPzKK8wiu1pF3zpjHhHIO9yj36w7FL4ItRI1py+l9+mVIemhuApE26qF1z5vSTGWTjMnMHCltmtlTkps59YxVw9FeLVpWd67+0oaovV4A5biZvjygeZa1DEDb95SXP4nmnJ76k3ziKZ0gXc5nK/5NKFjepGojNNgv6svMgIG2AYcQypAIx+iFA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=r/4btbqLlTN6vrIkuvcjJ7fW44orccG5ZLTyTaofliY=;
+ b=fpCDFYDg6ZzmtQaOono1mfLDQAIwBkjdKgLAscL40FTB+ASfmQjJL/Ibi+46mCzZf9sv620AhtSkUrcbjgzKQ4da0HeD6DS8PpWdQ623UsvpDkY1tzC4EJvjL7Enzi9OjNgA6YanMHpwNnZIDGQdE/bU/Wt+/II/zhkhsEd8Fq637QZM46IPuCQjSoH+iWD7Ypo1Q82DiiBOZ1sKuD4mUs12MDTZP+p18+V/9/TMA1cIlDY8P2RBDwPgWO2trJ2XvyBdZAXM+/LxQZPrLfK81356u0dq5ZoW/NwC/wWm+LUuokZIEUF9UFxfFTZWFBrJSYYjDLZlXABXT7EwCF0EfA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=r/4btbqLlTN6vrIkuvcjJ7fW44orccG5ZLTyTaofliY=;
+ b=S5/G8zhWn19XYIwBcRFnMoguNLJmmZUy3ab4DaR7QuqnEiAx4RaDC0gIviK+Q/azu8AspkzDeQ/LTSOx9ZRjfS6qemAzz2l9llcjC4P4jC1AAx9SESXzV39wj7ToBYsJPBpY2XioF1+Wefu4xYk3ntbET8KXdU3eMHNFW74plY0=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by DB6PR0401MB2680.eurprd04.prod.outlook.com (2603:10a6:4:39::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Wed, 17 Aug
+ 2022 17:42:27 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Wed, 17 Aug 2022
+ 17:42:27 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        netdev <netdev@vger.kernel.org>
-Cc:     =?UTF-8?Q?Gra=C5=BEvydas_Ignotas?= <notasas@gmail.com>,
-        Wei Wang <weiwan@google.com>, Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <guro@fb.com>, Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH net 6/8] net: mscc: ocelot: make struct ocelot_stat_layout
+ array indexable
+Thread-Topic: [PATCH net 6/8] net: mscc: ocelot: make struct
+ ocelot_stat_layout array indexable
+Thread-Index: AQHYsXet4txs5KEUy0mU0hPxnOpCE62yp00AgABIogCAACEwgIAAI/GAgAApbgA=
+Date:   Wed, 17 Aug 2022 17:42:27 +0000
+Message-ID: <20220817174226.ih5aikph6qyc2xtz@skbuf>
+References: <20220816135352.1431497-1-vladimir.oltean@nxp.com>
+ <20220816135352.1431497-7-vladimir.oltean@nxp.com> <YvyO1kjPKPQM0Zw8@euler>
+ <20220817110644.bhvzl7fslq2l6g23@skbuf>
+ <20220817130531.5zludhgmobkdjc32@skbuf> <Yv0FwVuroXgUsWNo@colin-ia-desktop>
+In-Reply-To: <Yv0FwVuroXgUsWNo@colin-ia-desktop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2f615d35-af43-44ef-9c77-08da8077da0f
+x-ms-traffictypediagnostic: DB6PR0401MB2680:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: FEPx8L7U6GOTg2+h8sDn8Z7uwbFPXr0RSzgh/85Z6pnHc8i14NPK8jXMpJBpkb8hJWsvHVWM73N7T68cRxTm8IqmZw0rtS3PUN3g81Ni+o3At8Co164ZxSv5cs31yB4aX6OEC5r8YIlQZ2IxOlG/fgaqO/t89E6wVzN3AOi6dwfIfIC9hMCYBeucVe2Esz5IYta+X5vU0WMHPB4L40e1eiQjqzWpsA689DytPEXoRPaxhEnfP8IARAHHFhomf9FOtYFSbaAO4vnGEVJsCLPTTU+zNc/iGmZa57iYPRnk6Yoset4rraj7wpjjtDC68m8qe5UKT8nWomYLg3iuH2Ae7BLTuFzmCn6vn0si+sl1MhusMRxB9wW4gCUiGGtpuDqtnYz0lJFkLd6fnyRiTzrRpb+OPemq77BY2m7XwZiwuURYJIS/IeRzRJhKSnPSpVYiCRKcvyweHiYPY6VSUu4nNnyVfevfX6M0LLnW1i07yiJh/E3uZ8oC6rv0LkxVQ4UP9ypeLDP7UFXIaxr+lRbPbw/k2Gi+ZdzuTsgB81D0WN68jEd8ST7REZFWX07Ag2F63q+MZ5HnOH0iGst4sEWPSU8S3uNrDWXW55AaGNAu89irINQktmUq8UOwX2NPmO3LPs7l2g2cS8spseBDaJ/uducAy88JrxSexHTX3laOlSjx1FoaB/8SFwudPNswAYJrNOv6qsVp5+B0PUmdit6PFqMA9QRmH1dOwrs0kqvHRP2Gq1sBXHO09OEniSoSkeyJl2W/iBH4fDzPjl3kvvK/Z+DNH4X1FQKo1F75npj+RUI=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(136003)(39860400002)(366004)(346002)(376002)(396003)(478600001)(6506007)(38070700005)(186003)(86362001)(6512007)(26005)(1076003)(9686003)(6486002)(71200400001)(83380400001)(41300700001)(66446008)(54906003)(33716001)(5660300002)(66476007)(316002)(8676002)(76116006)(66556008)(64756008)(6916009)(4326008)(66946007)(38100700002)(122000001)(8936002)(7416002)(44832011)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?E/7m9EGL5afv9iRq+XxyFzQ60yIIFuJSmrkLAEiO6scyRvsF3+pciJgPhsOi?=
+ =?us-ascii?Q?W7Noul/h5QBZVlbNrkiog12KswW8AGu7inLgyJK5LEN4hRby/HqTZ8suhtWT?=
+ =?us-ascii?Q?TR7fnID39JtMdM2UfqkHDwtn8RvqdzOi7u1D+KXMSCXf3SUU08CKeTq4Utpy?=
+ =?us-ascii?Q?0nMYrRj5P9HYHDN/V4qC0K2gr1+xs0sF4TNzgXgTUGFz20vw46ei43doIzLl?=
+ =?us-ascii?Q?wWWf84JDUzrirAXUMdWZRI+kolVSOc+gR1tNNelxntX8tJKCNxJp++gkEPb0?=
+ =?us-ascii?Q?UOqWgQkloPOXLoLOUyiIUjPMi1wJ6C/5VoIB1ykgRba/MGxBt0hhSTUKalnB?=
+ =?us-ascii?Q?iMH/woZhfbn8uE7/McvsYUWCrha96yzhLotrEzBAXZZzswdIbMR5YzGybCtV?=
+ =?us-ascii?Q?VBcq2UXUWSXQargUchDrhmsk2H28bTrJ1EQy/9Q6Uho+pq/vOJVtw6nQyMUC?=
+ =?us-ascii?Q?DQVWTOPwnyXcsZ3v6yVwkMG1Q+kSAfw9tbFYQe9LpTku66n1EfobTJIs/q7s?=
+ =?us-ascii?Q?8hY2g0+QGxm4zeGKdFapHScW17u17DJd2W6dv1ll1HwNghxqhTWFEd8JOxzc?=
+ =?us-ascii?Q?P57xCjlV0rpAbfghKk3WGwQA9jXkOJN2JkYp7FYU/b0Zcs41OJyeWsAqXLWy?=
+ =?us-ascii?Q?DTGrvvcqxd7Gn6eo1urY5ZUWgbViROCwJBhCiZKJgQiFONftxLtHUOnNJXrm?=
+ =?us-ascii?Q?+Edg2ARhbc9MA7SOxAHcNshNu+Zc8agm1mXKnN1goiw5OeokkKnl/AzzXhhy?=
+ =?us-ascii?Q?0egTw3n+BKNXppjB/6ZubQib/OWNvsrZ7huFHoMn0nt9aeMQuVoBTylaHMSw?=
+ =?us-ascii?Q?5irjW9yD3nLDmYbKhXYErpmHZFdIbI1uaBOmFIzhYUoVa3iB6mv7SHuzVb/f?=
+ =?us-ascii?Q?EfhypjiFg0ySc1SQReGx2UwU5pKOfOk7acfyQeEPN2svWkxTbG6F5cXKAHbI?=
+ =?us-ascii?Q?Qga3tFR/rovR7KN+UyUGUmQUWKpdVo08NML99xsnKSjWr7jUCCfRBy0ljY0I?=
+ =?us-ascii?Q?9G609r6YeTiiR6WnWaR2EBcdVBwzfkLA3Xs9wXxubP54hOotLL7ADKRqdLtn?=
+ =?us-ascii?Q?YzNJcnRFXILxRN7MQBCIYsSRlOuaApWzMgnyAm2ZWbJ7LGWyNRFldDtQPFeH?=
+ =?us-ascii?Q?cyk8e2VhqXbHJ2XiUK3SajkIM1Z0wI2sXBgzSQhMeulj+XegfUf7UbIMIPKH?=
+ =?us-ascii?Q?LyNS8biJuN1TpGr9jKmSm/bCjP0RuaQohTLBHpowaoiODed2nMgkWSsdQr7+?=
+ =?us-ascii?Q?C+/Uw89/O/fHrAcuKtJyr9cmBZl3unR8H6tnsdJzPHFB/6okaZQMRq9qBuMr?=
+ =?us-ascii?Q?oNAsGN3G0uc2KL50FVKSiRobpO/BWTPAOwwuph5kEOb63tABd8C510V8EoUL?=
+ =?us-ascii?Q?EK1raAUqpVyyE+qtq2G/1Bp/qFtPhQUGOqZw/9CUYndlXEEiVkOKhr8ioY5U?=
+ =?us-ascii?Q?GI6l5SBYn+jql+ajtihnSoK9aSUJCIPgr01Qx9QGfghWKWUTVuUaVS/N3Y7P?=
+ =?us-ascii?Q?v6/BmqltOzCH51ANF/SCNuFqu8cAKqB6x/mDN+rQrtytvcjCukBX8CJoJAh4?=
+ =?us-ascii?Q?9N2CvbYFTgukbyb9iXSwg38pYrux0pTeD3QF2GBSPS4XW7QEMvX9vbfdle5c?=
+ =?us-ascii?Q?Tw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <611336985CF647489BA9BB905EB9D97E@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f615d35-af43-44ef-9c77-08da8077da0f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2022 17:42:27.3953
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9Mtb3RC9e/pJSXgfd1uJ8wT3L1FbKM7mH/T5kaHX+Ho588Z572c+svkBvxIPd8OsBOyharc2Lj9xBBCiHfx59A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0401MB2680
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Eric and netdev
+On Wed, Aug 17, 2022 at 08:14:09AM -0700, Colin Foster wrote:
+> On Wed, Aug 17, 2022 at 01:05:32PM +0000, Vladimir Oltean wrote:
+> > On Wed, Aug 17, 2022 at 02:06:44PM +0300, Vladimir Oltean wrote:
+> > > I think in practice this means that ocelot_prepare_stats_regions() wo=
+uld
+> > > need to be modified to first sort the ocelot_stat_layout array by "re=
+g"
+> > > value (to keep bulking efficient), and then, I think I'd have to keep=
+ to
+> > > introduce another array of u32 *ocelot->stat_indices (to keep specifi=
+c
+> > > indexing possible). Then I'd have to go through one extra layer of
+> > > indirection; RX_OCTETS would be available at
+> > >=20
+> > > ocelot->stats[port * OCELOT_NUM_STATS + ocelot->stat_indices[OCELOT_S=
+TAT_RX_OCTETS]].
+> > >=20
+> > > (I can wrap this behind a helper, of course)
+> > >=20
+> > > This is a bit complicated, but I'm not aware of something simpler tha=
+t
+> > > would do what you want and what I want. What are your thoughts?
+> >=20
+> > Or simpler, we can keep enum ocelot_stat sorted in ascending order of
+> > the associated SYS_COUNT_* register addresses. That should be very much
+> > possible, we just need to add a comment to watch out for that. Between
+> > switch revisions, the counter relative ordering won't differ. It's just
+> > that RX and TX counters have a larger space between each other.
+>=20
+> That's what I thought was done... enum order =3D=3D register order. But
+> that's a subtle, currently undocumented "feature" of my implementation
+> of the bulk reads. Also, it now relies on the fact that register order
+> is the same between hardware products - that's the new requirement that
+> I'm addressing.
+>=20
+> I agree it would be nice to not require specific ordering, either in the
+> display order of `ethtool -S` or the definition order of enum
+> ocelot_stat. That's telling me that at some point someone (likely me?)
+> should probably write a sorting routine to guarantee optimized reads,
+> regardless of how they're defined or if there are common / unique
+> register sets.
+>=20
+> The good thing about the current implementation is that the worst case
+> scenario is it will just fall back to the original behavior. That was
+> intentional.
 
-On Wed, Aug 17, 2022 at 10:13 AM Johannes Weiner <hannes@cmpxchg.org> wrote=
-:
->
-> On Wed, Aug 17, 2022 at 07:50:13PM +0300, Gra=C5=BEvydas Ignotas wrote:
-> > On Tue, Aug 16, 2022 at 9:52 PM Gra=C5=BEvydas Ignotas <notasas@gmail.c=
-om> wrote:
-> > > Basically, when there is git activity in the container with a memory
-> > > limit, other processes in the same container start to suffer (very)
-> > > occasional network issues (mostly DNS lookup failures).
-> >
-> > ok I've traced this and it's failing in try_charge_memcg(), which
-> > doesn't seem to be trying too hard because it's called from irq
-> > context.
-> >
-> > Here is the backtrace:
-> >  <IRQ>
-> >  ? fib_validate_source+0xb4/0x100
-> >  ? ip_route_input_slow+0xa11/0xb70
-> >  mem_cgroup_charge_skmem+0x4b/0xf0
-> >  __sk_mem_raise_allocated+0x17f/0x3e0
-> >  __udp_enqueue_schedule_skb+0x220/0x270
-> >  udp_queue_rcv_one_skb+0x330/0x5e0
-> >  udp_unicast_rcv_skb+0x75/0x90
-> >  __udp4_lib_rcv+0x1ba/0xca0
-> >  ? ip_rcv_finish_core.constprop.0+0x63/0x490
-> >  ip_protocol_deliver_rcu+0xd6/0x230
-> >  ip_local_deliver_finish+0x73/0xa0
-> >  __netif_receive_skb_one_core+0x8b/0xa0
-> >  process_backlog+0x8e/0x120
-> >  __napi_poll+0x2c/0x160
-> >  net_rx_action+0x2a2/0x360
-> >  ? rebalance_domains+0xeb/0x3b0
-> >  __do_softirq+0xeb/0x2eb
-> >  __irq_exit_rcu+0xb9/0x110
-> >  sysvec_apic_timer_interrupt+0xa2/0xd0
-> >  </IRQ>
-> >
-> > Calling mem_cgroup_print_oom_meminfo() in such a case reveals:
-> >
-> > memory: usage 7812476kB, limit 7812500kB, failcnt 775198
-> > swap: usage 0kB, limit 0kB, failcnt 0
-> > Memory cgroup stats for
-> > /kubepods.slice/kubepods-burstable.slice/kubepods-burstable-podb8f4f0e9=
-_fb95_4f2d_8443_e6a78f235c9a.slice/docker-9e7cad93b2e0774d49148474989b41fe6=
-d67a5985d059d08d9d64495f1539a81.scope:
-> > anon 348016640
-> > file 7502163968
-> > kernel 146997248
-> > kernel_stack 327680
-> > pagetables 2224128
-> > percpu 0
-> > sock 4096
-> > vmalloc 0
-> > shmem 0
-> > zswap 0
-> > zswapped 0
-> > file_mapped 112041984
-> > file_dirty 1181028352
-> > file_writeback 2686976
-> > swapcached 0
-> > anon_thp 44040192
-> > file_thp 0
-> > shmem_thp 0
-> > inactive_anon 350756864
-> > active_anon 36864
-> > inactive_file 3614003200
-> > active_file 3888070656
-> > unevictable 0
-> > slab_reclaimable 143692600
-> > slab_unreclaimable 545120
-> > slab 144237720
-> > workingset_refault_anon 0
-> > workingset_refault_file 2318
-> > workingset_activate_anon 0
-> > workingset_activate_file 2318
-> > workingset_restore_anon 0
-> > workingset_restore_file 0
-> > workingset_nodereclaim 0
-> > pgfault 334152
-> > pgmajfault 1238
-> > pgrefill 3400
-> > pgscan 819608
-> > pgsteal 791005
-> > pgactivate 949122
-> > pgdeactivate 1694
-> > pglazyfree 0
-> > pglazyfreed 0
-> > zswpin 0
-> > zswpout 0
-> > thp_fault_alloc 709
-> > thp_collapse_alloc 0
-> >
-> > So it basically renders UDP inoperable because of disk cache. I hope
-> > this is not the intended behavior. Naturally booting with
-> > cgroup.memory=3Dnosocket solves this issue.
->
-> This is most likely a regression caused by this patch:
->
-> commit 4b1327be9fe57443295ae86fe0fcf24a18469e9f
-> Author: Wei Wang <weiwan@google.com>
-> Date:   Tue Aug 17 12:40:03 2021 -0700
->
->     net-memcg: pass in gfp_t mask to mem_cgroup_charge_skmem()
->
->     Add gfp_t mask as an input parameter to mem_cgroup_charge_skmem(),
->     to give more control to the networking stack and enable it to change
->     memcg charging behavior. In the future, the networking stack may deci=
-de
->     to avoid oom-kills when fallbacks are more appropriate.
->
->     One behavior change in mem_cgroup_charge_skmem() by this patch is to
->     avoid force charging by default and let the caller decide when and if
->     force charging is needed through the presence or absence of
->     __GFP_NOFAIL.
->
->     Signed-off-by: Wei Wang <weiwan@google.com>
->     Reviewed-by: Shakeel Butt <shakeelb@google.com>
->     Signed-off-by: David S. Miller <davem@davemloft.net>
->
-> We never used to fail these allocations. Cgroups don't have a
-> kswapd-style watermark reclaimer, so the network relied on
-> force-charging and leaving reclaim to allocations that can block.
-> Now it seems network packets could just fail indefinitely.
->
-> The changelog is a bit terse given how drastic the behavior change
-> is. Wei, Shakeel, can you fill in why this was changed? Can we revert
-> this for the time being?
+How about we add this extra check?
 
-Does reverting the patch fix the issue? However I don't think it will.
+diff --git a/drivers/net/ethernet/mscc/ocelot_stats.c b/drivers/net/etherne=
+t/mscc/ocelot_stats.c
+index d39908c1c6c9..85259de86ec2 100644
+--- a/drivers/net/ethernet/mscc/ocelot_stats.c
++++ b/drivers/net/ethernet/mscc/ocelot_stats.c
+@@ -385,7 +385,7 @@ EXPORT_SYMBOL(ocelot_port_get_stats64);
+ static int ocelot_prepare_stats_regions(struct ocelot *ocelot)
+ {
+ 	struct ocelot_stats_region *region =3D NULL;
+-	unsigned int last;
++	unsigned int last =3D 0;
+ 	int i;
+=20
+ 	INIT_LIST_HEAD(&ocelot->stats_regions);
+@@ -402,6 +402,12 @@ static int ocelot_prepare_stats_regions(struct ocelot =
+*ocelot)
+ 			if (!region)
+ 				return -ENOMEM;
+=20
++			/* enum ocelot_stat must be kept sorted in the same
++			 * order as ocelot->stats_layout[i].reg in order to
++			 * have efficient bulking.
++			 */
++			WARN_ON(last >=3D ocelot->stats_layout[i].reg);
++
+ 			region->base =3D ocelot->stats_layout[i].reg;
+ 			region->count =3D 1;
+ 			list_add_tail(&region->node, &ocelot->stats_regions);
 
-Please note that we still have the force charging as before this
-patch. Previously when mem_cgroup_charge_skmem() force charges, it
-returns false and __sk_mem_raise_allocated takes suppress_allocation
-code path. Based on some heuristics, it may allow it or it may
-uncharge and return failure.
+If not, help me understand the concern better.
 
-The given patch has not changed any heuristic. It has only changed
-when forced charging happens. After the path the initial call
-mem_cgroup_charge_skmem() can fail and we take suppress_allocation
-code path and if heuristics allow, we force charge with __GFP_NOFAIL.
+> Tangentially related: I'm having a heck of a time getting the QSGMII
+> connection to the VSC8514 working correctly. I plan to write a tool to
+> print out human-readable register names. Am I right to assume this is
+> the job of a userspace application, translating the output of
+> /sys/kernel/debug/regmap/ reads to their datasheet-friendly names, and
+> not something that belongs in some sort of sysfs interface? I took a
+> peek at mv88e6xxx_dump but it didn't seem to be what I was looking for.
+
+Why is the mv88e6xxx_dump kind of program (using devlink regions) not
+what you're looking for?
+
+There's also ethtool --register-dump which some DSA drivers have support
+for (again, mv88e6xxx), but I think that's mainly per port.
+
+I tried to add support for devlink regions to dump the PGIDs, but doing
+this from the common ocelot switch lib is a PITA, because in the devlink
+callbacks, we need to access the struct ocelot *ocelot from the
+struct devlink *devlink. But DSA keeps the devlink pointer one way, and
+the ocelot switchdev driver another. To know how to retrieve the ocelot
+pointer from the devlink pointer, you'd need to know where to search for it=
+.
+
+So I'm thinking, if we add devlink regions to ocelot, it would be just
+for DSA for now.=
