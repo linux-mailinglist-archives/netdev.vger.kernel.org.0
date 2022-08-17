@@ -2,47 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 31DBE5966E8
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 03:41:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B76005966DB
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 03:40:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238266AbiHQBk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 21:40:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59588 "EHLO
+        id S238238AbiHQBjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 21:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237636AbiHQBkZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 21:40:25 -0400
-Received: from bg5.exmail.qq.com (bg4.exmail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD8C95E77;
-        Tue, 16 Aug 2022 18:40:23 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1660700377tn416pav
-Received: from harry-jrlc.. ( [182.148.12.144])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Wed, 17 Aug 2022 09:39:27 +0800 (CST)
-X-QQ-SSF: 0100000000000060D000000A0000000
-X-QQ-FEAT: znfcQSa1hKaB2KlE+v5lzICgo6c8CVEBiPhKwi69cBHnRXhUB0VZkEfsBjK9I
-        q2U780xj15yzCP7ciTU8g84Ve+NW5PaG1nnkwPSBRGLyzHfx3rV8r2Zzp7QKpuKtwYXzq9t
-        +TDCou31S6wMxrhevCwXnPYJ2nMOF/0oU3Plr8Ub+RCrk600tv2tlW5yNg6QYWCoj3Oes3O
-        7ZEo+BWClMJO8pJzkHXbEmQtRXpmnSTu25vjdB8D1lLujrvpsJtUjQEldppxWXAQoYkKWAI
-        PTlv6jNeVThmfhRKqj2YyR/FXrZvvsoqWXhzrK7oAXlEayR/su5k4hEVEwO5N+IqsLPLlUy
-        SGn2GXdNTCBmckdaqFS4Fiap8BopuAfM0wAvoPAtyFCYtfDdaA0HvFzE2+dqQ==
-X-QQ-GoodBg: 0
-From:   Xin Gao <gaoxin@cdjrlc.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, joannelkoong@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Xin Gao <gaoxin@cdjrlc.com>
-Subject: [PATCH] bpf: Variable type completion
-Date:   Wed, 17 Aug 2022 09:39:25 +0800
-Message-Id: <20220817013925.10714-1-gaoxin@cdjrlc.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S238042AbiHQBjg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 21:39:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5335995AFE;
+        Tue, 16 Aug 2022 18:39:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CAD8B81B8D;
+        Wed, 17 Aug 2022 01:39:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E42C433D6;
+        Wed, 17 Aug 2022 01:39:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660700372;
+        bh=WNI4T2l1xlFYKRJlgSA2O9Bc98a5ZBHH6E/B6tCD50A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EEknQiKrl/fuhzX2gYjfHuS2LhzKcvaeq3V/YtQcZVtcI78dfH+0IsdjveRIYTLHh
+         1grv26DVJhODDyf1ecCVDxMbjo1sSJ4DqiS37XphKS80Gl4NvqNQhdrIPoDTnt3Abz
+         QmkJq5ksZu/qUhsA29utPhTN2t2Qz3uH2BuTQSYGUxF52YZT8KVZcInAT4lYyTZO+Y
+         lDx+luMTE+zYuCCY/I1QGnAM3LhLa04WQaCJCog9XRcyZgpzcM340le5rc3eHddq+y
+         mP8yQCYrjv4h0HShV9WvfJ8uR2lQaw0H292s6ns2Y3uuqlSs4UD0nXtewuds+18bpf
+         VHHXp+xAm2gfQ==
+Date:   Tue, 16 Aug 2022 18:39:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     David Howells <dhowells@redhat.com>,
+        Hawkins Jiawei <yin31149@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        bpf@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>
+Subject: Re: [PATCH] net: Fix suspicious RCU usage in
+ bpf_sk_reuseport_detach()
+Message-ID: <20220816183930.2328d46d@kernel.org>
+In-Reply-To: <20220817004319.fd7dekpqeumbvmsh@kafai-mbp>
+References: <20220816103452.479281-1-yin31149@gmail.com>
+        <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
+        <804153.1660684606@warthog.procyon.org.uk>
+        <20220816164435.0558ef94@kernel.org>
+        <20220817004319.fd7dekpqeumbvmsh@kafai-mbp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,26 +70,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'unsigned int' is better than 'unsigned'.
+On Tue, 16 Aug 2022 17:43:19 -0700 Martin KaFai Lau wrote:
+> > I like your version because it documents what the lock protecting this
+> > field is.
+> > 
+> > In fact should we also add && sock_owned_by_user(). Martin, WDYT? Would
+> > that work for reuseport? Jakub S is fixing l2tp to hold the socket lock
+> > while setting this field, yet most places take the callback lock...  
+>
+> It needs to take a closer look at where the lock_sock() has already
+> been acquired and also need to consider the lock ordering with reuseport_lock.
+> It probably should work but may need a separate patch to discuss those
+> considerations ?
 
-Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
----
- net/core/bpf_sk_storage.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-index a25ec93729b9..b3c0bb601167 100644
---- a/net/core/bpf_sk_storage.c
-+++ b/net/core/bpf_sk_storage.c
-@@ -732,7 +732,7 @@ EXPORT_SYMBOL_GPL(bpf_sk_storage_diag_put);
- struct bpf_iter_seq_sk_storage_map_info {
- 	struct bpf_map *map;
- 	unsigned int bucket_id;
--	unsigned skip_elems;
-+	unsigned int skip_elems;
- };
- 
- static struct bpf_local_storage_elem *
--- 
-2.30.2
-
+Right, the users of the field with a bit allocated protect the writes
+with the callback lock, so we can hard code the check against the
+callback lock for now and revisit later if needed.
