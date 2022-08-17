@@ -2,70 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3518059760B
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 20:51:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 571E85975F0
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 20:50:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241197AbiHQSrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 14:47:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55554 "EHLO
+        id S241161AbiHQSqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 14:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241176AbiHQSrk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 14:47:40 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 792A5A3452;
-        Wed, 17 Aug 2022 11:47:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SkpJfRL2fEX0ZCrYY78UnGUy/KfqmdSThM2JF2kNt+A=; b=JMOw4iXvCN9lZfNf2OG/hB6Fo3
-        9NwE+OWODeKClqBL344u7qYRnOYGt54O3+aa26nsaE/f63tGSMQLJWKHqOmdEKGd9HT/CkTyz+dR6
-        r2dYvLK/Uaz3uD/r/hK40X6gA/3ZA85KA9wLfBiCi/F0U6bjBP/dRFr/WZ46adF+Qz28N/9b0nTQ5
-        o1EF5Xp228F+r4TdaX5Bz8dl4MpW12VOlh6PVN7GCys5HyvOALccfGYLcM5rg4DZet7XGUH/ymOWa
-        QGKvYg0ACpBZP/hJX1w8q8j6+HDvd4aLzmHbq+w1Z5n060anBDMvOsvu3LCP3w5qq/pwwsT7GDawh
-        Pq/3eSGA==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oOO3y-00AsZm-UT; Wed, 17 Aug 2022 20:46:47 +0200
-Message-ID: <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com>
-Date:   Wed, 17 Aug 2022 15:45:30 -0300
+        with ESMTP id S241122AbiHQSqq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 14:46:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A8E81C106
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 11:46:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8868F6142A
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 18:46:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8342BC433D6;
+        Wed, 17 Aug 2022 18:46:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660762003;
+        bh=dP5pKGzdtq8MBid6vK6mN2DfzfoYxt+dvTMnBsY9cgY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z/Yc2sl3cqBt/f7uMQbZ3tYkH3TwwGQT35HfeEzl37PUN21JioTWC1pOkX7Rryi/V
+         /fJk2yagH7lez8BIvUmJJUu6754xP9+NUz/kwCiGeN5nSCrL6qUeHDCOfl0jPx8iww
+         /oiKkSrmggOenu0A3uuKrUQWKKY2loELZbDtwCppMcEMwafQt1tppvfLRrJA+vzSSw
+         etbMt9mYO8wS4+maRGrTWGPLMmJ6mMfnOlB914hl7DxToO2BY0hnVNv0out5IxnjoD
+         kQruYKV6j+Wtv/kGybnFaCBRN6nL5dMYzNNIy8oPNUsuJAbvTQc1kWkzD9LvHrisFV
+         GP3z+m1y30HQg==
+Date:   Wed, 17 Aug 2022 11:46:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>
+Subject: Re: [RFC PATCH net-next 0/7] 802.1Q Frame Preemption and 802.3 MAC
+ Merge support via ethtool
+Message-ID: <20220817114642.4de48b52@kernel.org>
+In-Reply-To: <20220817115008.t56j2vkd6ludcuu6@skbuf>
+References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
+        <20220816203417.45f95215@kernel.org>
+        <20220817115008.t56j2vkd6ludcuu6@skbuf>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
-Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yv0mCY04heUXsGiC@zn.tnic>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,44 +65,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/08/2022 14:31, Borislav Petkov wrote:
-> [...]
+On Wed, 17 Aug 2022 11:50:09 +0000 Vladimir Oltean wrote:
+> On Tue, Aug 16, 2022 at 08:34:17PM -0700, Jakub Kicinski wrote:
+> > I have a couple of general questions. The mm and fp are related but fp
+> > can be implemented without mm or they must always come together? (I'd
+> > still split patch 2 for ease of review, tho.)  
 > 
-> How does the fact that kdump is loaded, obviate the need to print
-> information about the errors?
+> FP cannot be implemented without MM and MM makes limited (but some)
+> sense without FP. Since FP just decides which packets you TX via the
+> pMAC and which via the eMAC, you can configure just the MM layer such
+> that you interoperate with a FP-capable switch, but you don't actually
+> generate any preemptable traffic yourself.
 > 
-> Are you suggesting that people who have the whole vmcore would be able
-> to piece together the error information?
+> In fact, the reasons why I decided to split these are:
+> - because they are part of different specs, which call for different
+>   managed objects
+> - because in an SoC where IPs are mixed and matched from different
+>   vendors, it makes perfect sense to me that the FP portion (more
+>   related to the queue/classification system) is provided by one vendor,
+>   and the MM portion is provided by another. In the future, we may find
+>   enough commonalities to justify introducing the concept of a dedicated
+>   MAC driver, independent/reusable between Ethernet controller ("net_device")
+>   drivers. We have this today already with the PCS layer in phylink.
+>   So if there is a physical split between the layers, I think keeping a
+>   split in terms of callbacks makes some sense too.
+
+Hah, interesting. I was under the impression that FP can be done
+without MM, if frame is preempted it just gets scrambled (bad FCS 
+gets injected or a special symbol) and dropped by the receiver.
+I had it completely backwards, then.
+
+> > When we have separate set of stats for pMAC the normal stats are sum of
+> > all traffic, right? So normal - pMAC == eMAC, everything that's not
+> > preemptible is express?  
 > 
+> Actually not quite, or at least not for the LS1028A ENETC and Felix switch.
+> The normal counters report just what the eMAC sees, and the pMAC counters
+> just what the pMAC sees. After all, only the eMAC was enabled up until now.
+> Nobody does the addition currently.
 
-Hi Boris, thanks for chiming in.
+I see. And the netdev stats are the total?
 
-So, this is part of an effort to clean-up the panic path. Currently, if
-a kdump happens, *all* the panic notifiers are skipped by default,
-including this one. In this scenario, this patch seems like a no-op.
+> > Did you consider adding an attribute for switching between MAC and pMAC
+> > for stats rather than duplicating things?  
+> 
+> No. Could you expand on that idea a little? Add a netlink attribute
+> where, and this helps reduce duplication where, and how?
 
-But happens that in the refactor we are proposing [0], some notifiers
-should run before the kdump. We are basically putting some ordering in
-the way notifiers are executed, while documenting this properly and with
-the goal of not increasing the failure risk for kdump.
+Add a attribute to ETHTOOL_MSG_STATS_GET, let's call it
+ETHTOOL_A_STATS_EXPRESS, a flag.
 
-This patch is useful so we can bring the altera EDAC notifier to run
-earlier while not increasing the risk on kdump - this operation is a bit
-"delicate" to happen in the panic scenario. The origin of this patch was
-a discussion with Tony/Peter [1], guess we can call it a "compromise
-solution".
+Plumb thru to all the stats callback an extra argument 
+(a structure for future extensibility) with a bool pMAC;
 
-Let me know if you disagree or have more questions, and in case you'd
-like to check/participate in the whole panic notifiers refactor
-discussion, it would be great =)
-Cheers,
+Add a capability field to ethtool_ops to announce that
+driver will pay attention to the bool pMAC / has support.
 
+We can then use the existing callbacks.
 
-Guilherme
-
-
-[0]
-https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
-
-[1]
-https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
+Am I making sense?
