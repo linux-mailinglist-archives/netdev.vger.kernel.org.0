@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD66459707B
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59AF6597092
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:09:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239753AbiHQN6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 09:58:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S239818AbiHQN6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 09:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239482AbiHQN6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 09:58:07 -0400
+        with ESMTP id S239788AbiHQN62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 09:58:28 -0400
 Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB3D9675B;
-        Wed, 17 Aug 2022 06:58:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE332240BB;
+        Wed, 17 Aug 2022 06:58:19 -0700 (PDT)
 Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 9F4331008B38F;
-        Wed, 17 Aug 2022 21:57:59 +0800 (CST)
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 7CE131008B38F;
+        Wed, 17 Aug 2022 21:58:17 +0800 (CST)
 Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 8D49D2032D489;
-        Wed, 17 Aug 2022 21:57:56 +0800 (CST)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id D36002009BEAD;
+        Wed, 17 Aug 2022 21:58:10 +0800 (CST)
 X-Virus-Scanned: amavisd-new at 
 Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
         by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id SFMeObJ2TNmb; Wed, 17 Aug 2022 21:57:56 +0800 (CST)
+        with ESMTP id BeLQLT-bhQHC; Wed, 17 Aug 2022 21:58:10 +0800 (CST)
 Received: from localhost.localdomain (unknown [202.120.40.82])
         (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id E48B92009BEAD;
-        Wed, 17 Aug 2022 21:57:44 +0800 (CST)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 36ED6200BFDA8;
+        Wed, 17 Aug 2022 21:57:56 +0800 (CST)
 From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
 To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
         mst@redhat.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v2 2/7] vhost_test: batch used buffer
-Date:   Wed, 17 Aug 2022 21:57:13 +0800
-Message-Id: <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
+Subject: [RFC v2 3/7] vsock: batch buffers in tx
+Date:   Wed, 17 Aug 2022 21:57:14 +0800
+Message-Id: <20220817135718.2553-4-qtxuning1999@sjtu.edu.cn>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
 References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
@@ -49,45 +49,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only add to used ring when a batch of buffer have all been used.  And if
-in order feature negotiated, only add the last used descriptor for a
-batch of buffer.
+Vsock uses buffers in order, and for tx driver doesn't have to
+know the length of the buffer. So we can do a batch for vsock if
+in order negotiated, only write one used ring for a batch of buffers
 
 Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
 ---
- drivers/vhost/test.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/vhost/vsock.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-index bc8e7fb1e635..57cdb3a3edf6 100644
---- a/drivers/vhost/test.c
-+++ b/drivers/vhost/test.c
-@@ -43,6 +43,9 @@ struct vhost_test {
- static void handle_vq(struct vhost_test *n)
- {
- 	struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
-+	struct vring_used_elem *heads = kmalloc(sizeof(*heads)
-+			* vq->num, GFP_KERNEL);
-+	int batch_idx = 0;
- 	unsigned out, in;
- 	int head;
- 	size_t len, total_len = 0;
-@@ -84,11 +87,14 @@ static void handle_vq(struct vhost_test *n)
- 			vq_err(vq, "Unexpected 0 len for TX\n");
- 			break;
- 		}
--		vhost_add_used_and_signal(&n->dev, vq, head, 0);
-+		heads[batch_idx].id = cpu_to_vhost32(vq, head);
-+		heads[batch_idx++].len = cpu_to_vhost32(vq, len);
- 		total_len += len;
- 		if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
- 			break;
- 	}
-+	if (batch_idx)
-+		vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
+diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+index 368330417bde..b0108009c39a 100644
+--- a/drivers/vhost/vsock.c
++++ b/drivers/vhost/vsock.c
+@@ -500,6 +500,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 	int head, pkts = 0, total_len = 0;
+ 	unsigned int out, in;
+ 	bool added = false;
++	int last_head = -1;
  
- 	mutex_unlock(&vq->mutex);
- }
+ 	mutex_lock(&vq->mutex);
+ 
+@@ -551,10 +552,16 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+ 		else
+ 			virtio_transport_free_pkt(pkt);
+ 
+-		vhost_add_used(vq, head, 0);
++		if (!vhost_has_feature(vq, VIRTIO_F_IN_ORDER))
++			vhost_add_used(vq, head, 0);
++		else
++			last_head = head;
+ 		added = true;
+ 	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
+ 
++	/* If in order feature negotiaged, we can do a batch to increase performance */
++	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && last_head != -1)
++		vhost_add_used(vq, last_head, 0);
+ no_more_replies:
+ 	if (added)
+ 		vhost_signal(&vsock->dev, vq);
 -- 
 2.17.1
 
