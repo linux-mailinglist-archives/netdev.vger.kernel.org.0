@@ -2,134 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91813596893
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 07:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA075968A0
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 07:32:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236800AbiHQFYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 01:24:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S238255AbiHQF3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 01:29:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229758AbiHQFYW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 01:24:22 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052635D12E;
-        Tue, 16 Aug 2022 22:24:19 -0700 (PDT)
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27H0Jglr009857;
-        Tue, 16 Aug 2022 22:24:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- content-transfer-encoding : mime-version; s=facebook;
- bh=LIQFJeipEtsccSKdOTjgBOby6lZMBYOcYlwgv3mturE=;
- b=S5ZM12Psws24JUkr8U9QwujS5jRnm6xyFwsA/FcSh2jmmEKQ+OFcA3zEEcictWsZo3uy
- otzBPDTXh88DuaofQr25nnBplXsZubFlkrLhZ1uXnvZqMy2c0a4rdqsgWCrj+t2FbrFo
- caqgIo8GDrQu0jw7THQSvZpPQMzhhv9IUFc= 
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2109.outbound.protection.outlook.com [104.47.55.109])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3j0npd12ht-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 16 Aug 2022 22:24:01 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B3tB33earuHRL5NQw/L9Y9lH/XOi6dtASD3wfJWFj25McoF2pUCzFU3ANCdIIR6n9ldMUmNKbS4jMfjCma0tnTZdLFPmvibDA2T18a8imCOP2F3IrZn3dQG7rSl86d42z//eDiuTmq3YQPrkXMrZEGiPci9Pd0OZ18xQlPERdmDTUk+e/xxKKoyJoKC13B6nLq3KcHlV/tVzwUGM6nX1YC9fL/lfknxG/0i/cH12Ao131im0QsbnzheY4qKbuyWus36JsPE+GmVYbOHg6ygFxF9WYyZ18sQgE0n6ZixxmPFWjeC6cwBa/QwzyVfqZAyd1g4WBtHH83y94IvQvZYuMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3Z6WWroHH1Lr1Dm4x7FlamQsefzl7O06dq7RLwSLw90=;
- b=fjNraMjg+evJwuqpkiL/w0Ag19q9LuY1eKl/rWjDHiIXEiRutFnh4J/nxspoqLekqgIWFhRwLi24bwUwDDAdKv5xyKGtT0E9A3nsoDBsyt+OMjW8Yhoa5bfAttDTXi0p8FV/d9xR4T+ZlQXMix+7rKheIHTUCY/sRdc0be0IPmkiyxqxbL4INbEPeVtPCZx2OrIrlERGlqSBwL3hjeE/3StOXH+xeGXY+hdPhluir8CAruzeAWG+ZNrjc87RtIVmFzU3PSyUPPZytUojXE3sFl0ewiL6AOkbc/Hf5gfKzXysoj36Qv5tH+p2K7yzHHCHmjNmdA00Ws8fi0HrUxXeWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SJ0PR15MB4472.namprd15.prod.outlook.com (2603:10b6:a03:375::17)
- by MW5PR15MB5171.namprd15.prod.outlook.com (2603:10b6:303:199::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Wed, 17 Aug
- 2022 05:23:59 +0000
-Received: from SJ0PR15MB4472.namprd15.prod.outlook.com
- ([fe80::91e1:d581:e955:dd3a]) by SJ0PR15MB4472.namprd15.prod.outlook.com
- ([fe80::91e1:d581:e955:dd3a%9]) with mapi id 15.20.5525.019; Wed, 17 Aug 2022
- 05:23:59 +0000
-Date:   Tue, 16 Aug 2022 22:23:57 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     sdf@google.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S231709AbiHQF3A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 01:29:00 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB54B4E62A;
+        Tue, 16 Aug 2022 22:28:58 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id D1CD55FD08;
+        Wed, 17 Aug 2022 08:28:56 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1660714136;
+        bh=E45LUo5dnBIoo1JgEmeJ3I8mH7kcX+2NFKB8RJnjTmI=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=HIiMwRjTZJulm7QTAB2KCUgr/I+QW9JZH371Fv0r3aNy1ADNAa6gGcRH+Szp1SfRO
+         I1vspcK2HS40x9nbJDNFdWEQqqrgumGXGesgA8LGtzrKuEgUsYOhkXuMOMhtHflgLG
+         swMnBHgOQ+RAck2Hpvj55saliGuVXPJYipxlwyPwX0M3ugol3wqGG9sniPkDnKAfr3
+         1NmbVuI2xEvGIy2Ca2uNEdxHGd7J0IbfDdix1D9YnjuMxZfWoki4ARBWrMD8iQBSPT
+         PvwLo1ftjqLWtX/nVTGe3xNi79NUIekPLSWjIsOV2p8DUfbSiIVhhJVNeizlJbWgSr
+         PXucFNQwP3CRw==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 17 Aug 2022 08:28:54 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Bobby Eshleman <bobbyeshleman@gmail.com>,
+        Bobby Eshleman <bobby.eshleman@gmail.com>
+CC:     "virtio-dev@lists.oasis-open.org" <virtio-dev@lists.oasis-open.org>,
+        "Bobby Eshleman" <bobby.eshleman@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Jiang Wang <jiang.wang@bytedance.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v3 bpf-next 00/15] bpf: net: Remove duplicated code from
- bpf_setsockopt()
-Message-ID: <20220817052357.dcci7uqqlhsfabik@kafai-mbp>
-References: <20220810190724.2692127-1-kafai@fb.com>
- <YvU2md/W4YSlnkBH@google.com>
- <1b791103-1f8d-bc08-3f65-7c1b2316e2c3@iogearbox.net>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-In-Reply-To: <1b791103-1f8d-bc08-3f65-7c1b2316e2c3@iogearbox.net>
-X-ClientProxiedBy: BY5PR17CA0012.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::25) To SJ0PR15MB4472.namprd15.prod.outlook.com
- (2603:10b6:a03:375::17)
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: edf2d1b3-1e6e-41e4-da8b-08da8010b035
-X-MS-TrafficTypeDiagnostic: MW5PR15MB5171:EE_
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pa4l9OiQT5B1vopaav3DqvyQJBvHkalpIzC1iEiYodxKfLCFAAXOIcTEBHVh9p3/8fBqZHgWFUP08+3yMSdKwnqF8mfoiUPoLTlU7M6VMsUa7SvyXRoIzwim9/ZEu6j9umt4D4ppmCqGaBeIsHFVLUuGDmMjgxzenqQxaK/k95ovXE2iwBy2GMCAlNzJV+2hphBd3uHUdEtAQgPIi80Y9KNDrjevYcEd1F5YzDYRgCF8Hy4AxSgQUiHn1dkovRuos8omDy5G6qp1hVE8V0zwlHQXbp50CtCQXux38DWkZSFa6ZXw0W75isp1MLKQ1dAl30PTG8tV6JoxC1v0NEhvgJQ1QkVqbKfMdSoetV3nlzmBFTp1to1nl9otLsp6mVg/FyPSZMDqpfIC6TAcyDCdhuRC2nq1eXYLGgdldUDzbo17OFQbL/eXuJNkMYZUQ/uxXXx8MRWs125dIZUIk0dzc8NDZoyFtMHqeBbAU2ne5FLY5yI9vNFNnahmIM0SuoO5/arAhA5BeXOhOC3l7cfiaLsSTwwqjA3WEZ444fG5BHlb/IwMYGjSxw2P7mIk2oDQ6NOBFk7gK0/pa6c5Ax2luminM4IfmEr6GAjcGZbccZq1liNfi7ng/iIqma7LVnLHMfzi6fTDMATw4PzgpkabxIP9X9oBPaPWif1s5dgzbAws1Pra+MZAVfiV1alK8LDfqVsVHP7zwZLTOGqeTD98LiMfegb9aUngrgjvWpmgZwdjzqZiS+u+ZeWELnE83UXris00AxXWq1c+ptzSYT9Vuw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB4472.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(136003)(39860400002)(376002)(366004)(346002)(41300700001)(6506007)(6512007)(9686003)(966005)(38100700002)(478600001)(33716001)(6486002)(86362001)(83380400001)(53546011)(52116002)(6916009)(186003)(8936002)(7416002)(5660300002)(2906002)(54906003)(316002)(66946007)(66476007)(4326008)(8676002)(66556008)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?W+uBeXdG8/ahUlAM22svIhvN+6NzvbLtzbSN3aoFT0lTOnD8MedzwmYF28?=
- =?iso-8859-1?Q?9ZA4LxgtQ0jbD06R+ZppxVT5XhjBDwimDjL1xKjjndoJ3n2R+A8j2Cbazr?=
- =?iso-8859-1?Q?dVM5L+TmRDZRp1vddxtmmlfRloymIeG20NtaIEUkRZyyZGDu7sr9pn3iot?=
- =?iso-8859-1?Q?CL6PscuI2IqQTYXuWUrSY7Ap34r1Nzip9MLlxRvTVobsyQzKZa8Xqw46Ml?=
- =?iso-8859-1?Q?tOztUreS2DuAt2C45h2OEmz1NJu6z5uIBtFlia8c4znR9oUkdFg+mwcWq2?=
- =?iso-8859-1?Q?lkN+VOZtmQGHP3Qbec04SAmkN1JCHYgUo6A3T21oEx53+S6YMJbBmmZUcV?=
- =?iso-8859-1?Q?PYFegiXLt8PXuNhwL0UxJV7Qp6ZykFPYr0uJiSUBkt+1IBIgXZNTOsRuFR?=
- =?iso-8859-1?Q?JkLWKwIW/X8wnMhrXSnCHKnnzMQBqeWjc31B8p0hzqLvQ0iPBNWXeXd4jT?=
- =?iso-8859-1?Q?qBE8WQ22y1sfr7FSMKLQPV4JpCOO9LLiof/w/q5G11moMgSiK6NbU82fyb?=
- =?iso-8859-1?Q?Aw0EpH4zsrhsHImTjr0l4QB2JeuZkMeiBmoMJuUaGHzsM/1fGzyVlp59tl?=
- =?iso-8859-1?Q?1pD3I3QWKYqd3atefOyOb75JRxK+MqEkqXhbYUiQZBrgbDZsFeOwZvb6je?=
- =?iso-8859-1?Q?NlRlHZwEolHNmWwYB024x2DCdo5wsiR2cj1SRuzeHGSuorpr6Y6EshjdzG?=
- =?iso-8859-1?Q?NkHOyKE8/58sDe7KoZb2iML6tL5Nob/+ytW0ravTBwRZji3Kr9WFSq1eVk?=
- =?iso-8859-1?Q?dsLydcpmXPpq7oXB7ty3V7zRcJrOaAxOLTg83D41mFQYWfuBMMfYLKR/9z?=
- =?iso-8859-1?Q?6l6YbyUe0BcILswN9Z7I9lwfjdiQXuoKbWD9WTciaPo6Ue8lo9BoNIWvaJ?=
- =?iso-8859-1?Q?KaGSaN4rDUqbbIk5FAtsnanppiku5gw5/OptDDoL9779DGjgeSvSEC4Isa?=
- =?iso-8859-1?Q?oSjct402r1k0bjWqp6Iobzmup96cO1dLtGWY1RCSamAqxJRDYRHB9d4QgR?=
- =?iso-8859-1?Q?F4FA0jMyT/t3ZgBST5ejVrjCugI/DAZNqVhiImP0ABzIbA6UyJOhoB8zFN?=
- =?iso-8859-1?Q?dRw4tDlDmQQHoeTWkdDkJFu1nkp3O4w11vQ9cVzS6mOBtTkruFV/wwAV/d?=
- =?iso-8859-1?Q?b/394U5/kA4KaiWPIx9VxH2s5XVpXQCnRezrIK+JGGnbbKEqef6Vr+TGQz?=
- =?iso-8859-1?Q?gNxXK0zsXx3xHA8GqnAbZTZisgo9A1+nNebN1LOgy1xJkw0zQXDCELCTZd?=
- =?iso-8859-1?Q?XCZoSeZaVt5deZj1L0EEdI4BkYYqyxkjolX0/cgVPzpKpWqS/6XAldXkk4?=
- =?iso-8859-1?Q?anXhpV9ROYuOyx6MCeY95oFImrfORjk3hVNa1bj2CCFhA8S0KR8kiVFZ+R?=
- =?iso-8859-1?Q?m5pkmFIraERyvXMQh+wbysTBpsco1AVz1zDyTBPRaTwnM7LwacjjkRtcBL?=
- =?iso-8859-1?Q?QImTj2/7+5DGkRdZzYshFDLSBFZkDM54rjXJN+W1q6pwvISk3HWVYTvulA?=
- =?iso-8859-1?Q?7pmIlkEn+OFzoJ8JJxexA3syJ9HCS3Bl3Co1P5it5HS7H2iCEbys3c4S4u?=
- =?iso-8859-1?Q?UJpthSqMahJiM4B2key1AIeiyIUNbtQWWLHz3Fo10T1/6MDyO+CRn+lVCu?=
- =?iso-8859-1?Q?FuPeXSnwNn/iUj9QMmQLNWC0lj2LaPsnIE5LDibV+s/+WhF1CELF4MWw?=
- =?iso-8859-1?Q?=3D=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edf2d1b3-1e6e-41e4-da8b-08da8010b035
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB4472.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 05:23:59.2216
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2rjCD5i0bL+mRkqI8w8QLgeBudSN9dBvziqYU02GEQSU/JMNpF8IDz41YvAv4csW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR15MB5171
-X-Proofpoint-GUID: flu7ltptofVYbRPkynzFZt9bfh5wjQrR
-X-Proofpoint-ORIG-GUID: flu7ltptofVYbRPkynzFZt9bfh5wjQrR
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "Stephen Hemminger" <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+Subject: Re: [virtio-dev] Re: [PATCH 2/6] vsock: return errors other than
+ -ENOMEM to socket
+Thread-Topic: [virtio-dev] Re: [PATCH 2/6] vsock: return errors other than
+ -ENOMEM to socket
+Thread-Index: AQHYsY0HA9PuVtzJ6EGz2Q3NauAiZq2yXxWA
+Date:   Wed, 17 Aug 2022 05:28:43 +0000
+Message-ID: <fa74606c-36d9-a4eb-b62a-54631c7fa41c@sberdevices.ru>
+References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
+ <d81818b868216c774613dd03641fcfe63cc55a45.1660362668.git.bobby.eshleman@bytedance.com>
+ <YvsBYyPFnKRhvPfp@bullseye>
+In-Reply-To: <YvsBYyPFnKRhvPfp@bullseye>
+Accept-Language: en-US, ru-RU
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <6B57B3ABE02F19489494D8714B6D1A53@sberdevices.ru>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-17_04,2022-08-16_02,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/17 01:22:00 #20132227
+X-KSMG-AntiVirus-Status: Clean, skipped
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -138,73 +92,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 12:04:52AM +0200, Daniel Borkmann wrote:
-> On 8/11/22 7:04 PM, sdf@google.com wrote:
-> > On 08/10, Martin KaFai Lau wrote:
-> > > The code in bpf_setsockopt() is mostly a copy-and-paste from
-> > > the sock_setsockopt(), do_tcp_setsockopt(), do_ipv6_setsockopt(),
-> > > and do_ip_setsockopt().  As the allowed optnames in bpf_setsockopt()
-> > > grows, so are the duplicated code.  The code between the copies
-> > > also slowly drifted.
-> > 
-> > > This set is an effort to clean this up and reuse the existing
-> > > {sock,do_tcp,do_ipv6,do_ip}_setsockopt() as much as possible.
-> > 
-> > > After the clean up, this set also adds a few allowed optnames
-> > > that we need to the bpf_setsockopt().
-> > 
-> > > The initial attempt was to clean up both bpf_setsockopt() and
-> > > bpf_getsockopt() together.  However, the patch set was getting
-> > > too long.  It is beneficial to leave the bpf_getsockopt()
-> > > out for another patch set.  Thus, this set is focusing
-> > > on the bpf_setsockopt().
-> > 
-> > > v3:
-> > > - s/in_bpf/has_current_bpf_ctx/ (Andrii)
-> > > - Add comments to has_current_bpf_ctx() and sockopt_lock_sock()
-> > >    (Stanislav)
-> > > - Use vmlinux.h in selftest and add defines to bpf_tracing_net.h
-> > >    (Stanislav)
-> > > - Use bpf_getsockopt(SO_MARK) in selftest (Stanislav)
-> > > - Use BPF_CORE_READ_BITFIELD in selftest (Yonghong)
-> > 
-> > Reviewed-by: Stanislav Fomichev <sdf@google.com>
-> > 
-> > (I didn't go super deep on the selftest)
-> 
-> Looks like that one throws a build error, fwiw:
-> 
-> https://github.com/kernel-patches/bpf/runs/7844497492?check_suite_focus=true
-> 
->   [...]
->     CLNG-BPF [test_maps] kfunc_call_test_subprog.o
->     CLNG-BPF [test_maps] bpf_iter_test_kern6.o
->   progs/setget_sockopt.c:39:33: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = SO_REUSEADDR, .flip = 1, },
->                                          ^
->   progs/setget_sockopt.c:42:33: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = SO_KEEPALIVE, .flip = 1, },
->                                          ^
->   progs/setget_sockopt.c:44:33: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = SO_REUSEPORT, .flip = 1, },
->                                          ^
->     CLNG-BPF [test_maps] btf__core_reloc_type_id.o
->   progs/setget_sockopt.c:48:32: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = SO_TXREHASH, .flip = 1, },
->                                         ^
->   progs/setget_sockopt.c:53:32: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = TCP_NODELAY, .flip = 1, },
->                                         ^
->   progs/setget_sockopt.c:61:45: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = TCP_THIN_LINEAR_TIMEOUTS, .flip = 1, },
->                                                      ^
->   progs/setget_sockopt.c:75:39: error: implicit truncation from 'int' to bit-field changes value from 1 to -1 [-Werror,-Wbitfield-constant-conversion]
->           { .opt = IPV6_AUTOFLOWLABEL, .flip = 1, },
->                                                ^
->   7 errors generated.
->   make: *** [Makefile:521: /tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf/setget_sockopt.o] Error 1
->   make: *** Waiting for unfinished jobs....
->   make: Leaving directory '/tmp/runner/work/bpf/bpf/tools/testing/selftests/bpf'
->   Error: Process completed with exit code 2.
-Thanks for the report.  I also see it after moving from clang 15 to 16.
-I will address it in v4.
+T24gMTYuMDguMjAyMiAwNTozMCwgQm9iYnkgRXNobGVtYW4gd3JvdGU6DQo+IENDJ2luZyB2aXJ0
+aW8tZGV2QGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IA0KPiBPbiBNb24sIEF1ZyAxNSwgMjAyMiBh
+dCAxMDo1NjowNUFNIC0wNzAwLCBCb2JieSBFc2hsZW1hbiB3cm90ZToNCj4+IFRoaXMgY29tbWl0
+IGFsbG93cyB2c29jayBpbXBsZW1lbnRhdGlvbnMgdG8gcmV0dXJuIGVycm9ycw0KPj4gdG8gdGhl
+IHNvY2tldCBsYXllciBvdGhlciB0aGFuIC1FTk9NRU0uIE9uZSBpbW1lZGlhdGUgZWZmZWN0DQo+
+PiBvZiB0aGlzIGlzIHRoYXQgdXBvbiB0aGUgc2tfc25kYnVmIHRocmVzaG9sZCBiZWluZyByZWFj
+aGVkIC1FQUdBSU4NCj4+IHdpbGwgYmUgcmV0dXJuZWQgYW5kIHVzZXJzcGFjZSBtYXkgdGhyb3R0
+bGUgYXBwcm9wcmlhdGVseS4NCj4+DQo+PiBSZXN1bHRpbmdseSwgYSBrbm93biBpc3N1ZSB3aXRo
+IHVwZXJmIGlzIHJlc29sdmVkWzFdLg0KPj4NCj4+IEFkZGl0aW9uYWxseSwgdG8gcHJlc2VydmUg
+bGVnYWN5IGJlaGF2aW9yIGZvciBub24tdmlydGlvDQo+PiBpbXBsZW1lbnRhdGlvbnMsIGh5cGVy
+di92bWNpIGZvcmNlIGVycm9ycyB0byBiZSAtRU5PTUVNIHNvIHRoYXQgYmVoYXZpb3INCj4+IGlz
+IHVuY2hhbmdlZC4NCj4+DQo+PiBbMV06IGh0dHBzOi8vZ2l0bGFiLmNvbS92c29jay92c29jay8t
+L2lzc3Vlcy8xDQo+Pg0KPj4gU2lnbmVkLW9mZi1ieTogQm9iYnkgRXNobGVtYW4gPGJvYmJ5LmVz
+aGxlbWFuQGJ5dGVkYW5jZS5jb20+DQo+PiAtLS0NCj4+ICBpbmNsdWRlL2xpbnV4L3ZpcnRpb192
+c29jay5oICAgICAgICAgICAgfCAzICsrKw0KPj4gIG5ldC92bXdfdnNvY2svYWZfdnNvY2suYyAg
+ICAgICAgICAgICAgICB8IDMgKystDQo+PiAgbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0
+LmMgICAgICAgIHwgMiArLQ0KPj4gIG5ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21t
+b24uYyB8IDMgLS0tDQo+PiAgbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydC5jICAgICAgICAg
+IHwgOSArKysrKysrKy0NCj4+ICA1IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDYg
+ZGVsZXRpb25zKC0pDQo+Pg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
+b2NrLmggYi9pbmNsdWRlL2xpbnV4L3ZpcnRpb192c29jay5oDQo+PiBpbmRleCAxN2VkMDE0NjY4
+NzUuLjlhMzdlZGRiYjg3YSAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zz
+b2NrLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgNCj4+IEBAIC04LDYg
+KzgsOSBAQA0KPj4gICNpbmNsdWRlIDxuZXQvc29jay5oPg0KPj4gICNpbmNsdWRlIDxuZXQvYWZf
+dnNvY2suaD4NCj4+ICANCj4+ICsvKiBUaHJlc2hvbGQgZm9yIGRldGVjdGluZyBzbWFsbCBwYWNr
+ZXRzIHRvIGNvcHkgKi8NCj4+ICsjZGVmaW5lIEdPT0RfQ09QWV9MRU4gIDEyOA0KPj4gKw0KPj4g
+IGVudW0gdmlydGlvX3Zzb2NrX21ldGFkYXRhX2ZsYWdzIHsNCj4+ICAJVklSVElPX1ZTT0NLX01F
+VEFEQVRBX0ZMQUdTX1JFUExZCQk9IEJJVCgwKSwNCj4+ICAJVklSVElPX1ZTT0NLX01FVEFEQVRB
+X0ZMQUdTX1RBUF9ERUxJVkVSRUQJPSBCSVQoMSksDQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3Ztd192
+c29jay9hZl92c29jay5jIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBpbmRleCBlMzQ4
+YjJkMDllYWMuLjE4OTNmOGFhZmE0OCAxMDA2NDQNCj4+IC0tLSBhL25ldC92bXdfdnNvY2svYWZf
+dnNvY2suYw0KPj4gKysrIGIvbmV0L3Ztd192c29jay9hZl92c29jay5jDQo+PiBAQCAtMTg0NCw4
+ICsxODQ0LDkgQEAgc3RhdGljIGludCB2c29ja19jb25uZWN0aWJsZV9zZW5kbXNnKHN0cnVjdCBz
+b2NrZXQgKnNvY2ssIHN0cnVjdCBtc2doZHIgKm1zZywNCj4+ICAJCQl3cml0dGVuID0gdHJhbnNw
+b3J0LT5zdHJlYW1fZW5xdWV1ZSh2c2ssDQo+PiAgCQkJCQltc2csIGxlbiAtIHRvdGFsX3dyaXR0
+ZW4pOw0KPj4gIAkJfQ0KPj4gKw0KPj4gIAkJaWYgKHdyaXR0ZW4gPCAwKSB7DQo+PiAtCQkJZXJy
+ID0gLUVOT01FTTsNCj4+ICsJCQllcnIgPSB3cml0dGVuOw0KPj4gIAkJCWdvdG8gb3V0X2VycjsN
+Cj4+ICAJCX0NCklJVUMsIGZvciBzdHJlYW0sIHRoaXMgdGhpbmcgd2lsbCBoYXZlIGVmZmVjdCwg
+b25seSBvbmUgZmlyc3QgdHJhbnNwb3J0IGFjY2VzcyBmYWlscy4gSW4gdGhpcw0KY2FzZSAndG90
+YWxfd3JpdHRlbicgd2lsbCBiZSAwLCBzbyAnZXJyJyA9PSAnd3JpdHRlbicgd2lsbCBiZSByZXR1
+cm5lZC4gQnV0IHdoZW4gJ3RvdGFsX3dyaXR0ZW4gPiAwJywNCidlcnInIHdpbGwgYmUgb3Zlcndy
+aXR0ZW4gYnkgJ3RvdGFsX3dyaXR0ZW4nIGJlbG93LCBwcmVzZXJ2aW5nIGN1cnJlbnQgYmVoYXZp
+b3VyLiBJcyBpdCB3aGF0IFlvdQ0Kc3VwcG9zZWQ/DQoNClRoYW5rcw0KPj4gIA0KPj4gZGlmZiAt
+LWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jIGIvbmV0L3Ztd192c29jay9o
+eXBlcnZfdHJhbnNwb3J0LmMNCj4+IGluZGV4IGZkOTgyMjllM2RiMy4uZTk5YWVhNTcxZjZmIDEw
+MDY0NA0KPj4gLS0tIGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCj4+ICsrKyBi
+L25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQo+PiBAQCAtNjg3LDcgKzY4Nyw3IEBA
+IHN0YXRpYyBzc2l6ZV90IGh2c19zdHJlYW1fZW5xdWV1ZShzdHJ1Y3QgdnNvY2tfc29jayAqdnNr
+LCBzdHJ1Y3QgbXNnaGRyICptc2csDQo+PiAgCWlmIChieXRlc193cml0dGVuKQ0KPj4gIAkJcmV0
+ID0gYnl0ZXNfd3JpdHRlbjsNCj4+ICAJa2ZyZWUoc2VuZF9idWYpOw0KPj4gLQlyZXR1cm4gcmV0
+Ow0KPj4gKwlyZXR1cm4gcmV0IDwgMCA/IC1FTk9NRU0gOiByZXQ7DQo+PiAgfQ0KPj4gIA0KPj4g
+IHN0YXRpYyBzNjQgaHZzX3N0cmVhbV9oYXNfZGF0YShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0K
+Pj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyBi
+L25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KPj4gaW5kZXggOTIwNTc4
+NTk3YmI5Li5kNTc4MDU5OWZlOTMgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZpcnRp
+b190cmFuc3BvcnRfY29tbW9uLmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5z
+cG9ydF9jb21tb24uYw0KPj4gQEAgLTIzLDkgKzIzLDYgQEANCj4+ICAvKiBIb3cgbG9uZyB0byB3
+YWl0IGZvciBncmFjZWZ1bCBzaHV0ZG93biBvZiBhIGNvbm5lY3Rpb24gKi8NCj4+ICAjZGVmaW5l
+IFZTT0NLX0NMT1NFX1RJTUVPVVQgKDggKiBIWikNCj4+ICANCj4+IC0vKiBUaHJlc2hvbGQgZm9y
+IGRldGVjdGluZyBzbWFsbCBwYWNrZXRzIHRvIGNvcHkgKi8NCj4+IC0jZGVmaW5lIEdPT0RfQ09Q
+WV9MRU4gIDEyOA0KPj4gLQ0KPj4gIHN0YXRpYyBjb25zdCBzdHJ1Y3QgdmlydGlvX3RyYW5zcG9y
+dCAqDQo+PiAgdmlydGlvX3RyYW5zcG9ydF9nZXRfb3BzKHN0cnVjdCB2c29ja19zb2NrICp2c2sp
+DQo+PiAgew0KPj4gZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYyBi
+L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gaW5kZXggYjE0ZjBlZDc0MjdiLi5j
+OTI3YTkwZGM4NTkgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0
+LmMNCj4+ICsrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnQuYw0KPj4gQEAgLTE4Mzgs
+NyArMTgzOCwxNCBAQCBzdGF0aWMgc3NpemVfdCB2bWNpX3RyYW5zcG9ydF9zdHJlYW1fZW5xdWV1
+ZSgNCj4+ICAJc3RydWN0IG1zZ2hkciAqbXNnLA0KPj4gIAlzaXplX3QgbGVuKQ0KPj4gIHsNCj4+
+IC0JcmV0dXJuIHZtY2lfcXBhaXJfZW5xdWV2KHZtY2lfdHJhbnModnNrKS0+cXBhaXIsIG1zZywg
+bGVuLCAwKTsNCj4+ICsJaW50IGVycjsNCj4+ICsNCj4+ICsJZXJyID0gdm1jaV9xcGFpcl9lbnF1
+ZXYodm1jaV90cmFucyh2c2spLT5xcGFpciwgbXNnLCBsZW4sIDApOw0KPj4gKw0KPj4gKwlpZiAo
+ZXJyIDwgMCkNCj4+ICsJCWVyciA9IC1FTk9NRU07DQo+PiArDQo+PiArCXJldHVybiBlcnI7DQo+
+PiAgfQ0KPj4gIA0KPj4gIHN0YXRpYyBzNjQgdm1jaV90cmFuc3BvcnRfc3RyZWFtX2hhc19kYXRh
+KHN0cnVjdCB2c29ja19zb2NrICp2c2spDQo+PiAtLSANCj4+IDIuMzUuMQ0KPj4NCj4gDQo+IC0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLQ0KPiBUbyB1bnN1YnNjcmliZSwgZS1tYWlsOiB2aXJ0aW8tZGV2LXVuc3Vic2Ny
+aWJlQGxpc3RzLm9hc2lzLW9wZW4ub3JnDQo+IEZvciBhZGRpdGlvbmFsIGNvbW1hbmRzLCBlLW1h
+aWw6IHZpcnRpby1kZXYtaGVscEBsaXN0cy5vYXNpcy1vcGVuLm9yZw0KPiANCg0K
