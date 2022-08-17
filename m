@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40BCB59707C
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C14859706C
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:09:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239952AbiHQOCh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 10:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S239939AbiHQOCj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 10:02:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239954AbiHQOBx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:01:53 -0400
+        with ESMTP id S237185AbiHQOCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:02:02 -0400
 Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E64A09A973;
-        Wed, 17 Aug 2022 07:01:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AECE9A9A0;
+        Wed, 17 Aug 2022 07:01:33 -0700 (PDT)
 Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
         (envelope-from <fw@breakpoint.cc>)
-        id 1oOJbr-0008Qh-H8; Wed, 17 Aug 2022 16:01:27 +0200
+        id 1oOJbv-0008R2-LY; Wed, 17 Aug 2022 16:01:31 +0200
 From:   Florian Westphal <fw@strlen.de>
 To:     netdev@vger.kernel.org
 Cc:     <netfilter-devel@vger.kernel.org>,
@@ -24,11 +24,10 @@ Cc:     <netfilter-devel@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Westphal <fw@strlen.de>, Yi Chen <yiche@redhat.com>
-Subject: [PATCH net 09/17] netfilter: nfnetlink: re-enable conntrack expectation events
-Date:   Wed, 17 Aug 2022 16:00:07 +0200
-Message-Id: <20220817140015.25843-10-fw@strlen.de>
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net 10/17] netfilter: nf_tables: really skip inactive sets when allocating name
+Date:   Wed, 17 Aug 2022 16:00:08 +0200
+Message-Id: <20220817140015.25843-11-fw@strlen.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220817140015.25843-1-fw@strlen.de>
 References: <20220817140015.25843-1-fw@strlen.de>
@@ -43,161 +42,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To avoid allocation of the conntrack extension area when possible,
-the default behaviour was changed to only allocate the event extension
-if a userspace program is subscribed to a notification group.
+From: Pablo Neira Ayuso <pablo@netfilter.org>
 
-Problem is that while 'conntrack -E' does enable the event allocation
-behind the scenes, 'conntrack -E expect' does not: no expectation events
-are delivered unless user sets
-"net.netfilter.nf_conntrack_events" back to 1 (always on).
+While looping to build the bitmap of used anonymous set names, check the
+current set in the iteration, instead of the one that is being created.
 
-Fix the autodetection to also consider EXP type group.
-
-We need to track the 6 event groups (3+3, new/update/destroy for events and
-for expectations each) independently, else we'd disable events again
-if an expectation group becomes empty while there is still an active
-event group.
-
-Fixes: 2794cdb0b97b ("netfilter: nfnetlink: allow to detect if ctnetlink listeners exist")
-Reported-by: Yi Chen <yiche@redhat.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: 37a9cc525525 ("netfilter: nf_tables: add generation mask to sets")
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netns/conntrack.h |  2 +-
- net/netfilter/nfnetlink.c     | 83 ++++++++++++++++++++++++++++++-----
- 2 files changed, 72 insertions(+), 13 deletions(-)
+ net/netfilter/nf_tables_api.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/netns/conntrack.h b/include/net/netns/conntrack.h
-index 0677cd3de034..c396a3862e80 100644
---- a/include/net/netns/conntrack.h
-+++ b/include/net/netns/conntrack.h
-@@ -95,7 +95,7 @@ struct nf_ip_net {
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index d90434eadc1b..1b9459a364ba 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -3907,7 +3907,7 @@ static int nf_tables_set_alloc_name(struct nft_ctx *ctx, struct nft_set *set,
+ 		list_for_each_entry(i, &ctx->table->sets, list) {
+ 			int tmp;
  
- struct netns_ct {
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
--	bool ctnetlink_has_listener;
-+	u8 ctnetlink_has_listener;
- 	bool ecache_dwork_pending;
- #endif
- 	u8			sysctl_log_invalid; /* Log invalid packets */
-diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
-index c24b1240908f..9c44518cb70f 100644
---- a/net/netfilter/nfnetlink.c
-+++ b/net/netfilter/nfnetlink.c
-@@ -44,6 +44,10 @@ MODULE_DESCRIPTION("Netfilter messages via netlink socket");
- 
- static unsigned int nfnetlink_pernet_id __read_mostly;
- 
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+static DEFINE_SPINLOCK(nfnl_grp_active_lock);
-+#endif
-+
- struct nfnl_net {
- 	struct sock *nfnl;
- };
-@@ -654,6 +658,44 @@ static void nfnetlink_rcv(struct sk_buff *skb)
- 		netlink_rcv_skb(skb, nfnetlink_rcv_msg);
- }
- 
-+static void nfnetlink_bind_event(struct net *net, unsigned int group)
-+{
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	int type, group_bit;
-+	u8 v;
-+
-+	/* All NFNLGRP_CONNTRACK_* group bits fit into u8.
-+	 * The other groups are not relevant and can be ignored.
-+	 */
-+	if (group >= 8)
-+		return;
-+
-+	type = nfnl_group2type[group];
-+
-+	switch (type) {
-+	case NFNL_SUBSYS_CTNETLINK:
-+		break;
-+	case NFNL_SUBSYS_CTNETLINK_EXP:
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	group_bit = (1 << group);
-+
-+	spin_lock(&nfnl_grp_active_lock);
-+	v = READ_ONCE(net->ct.ctnetlink_has_listener);
-+	if ((v & group_bit) == 0) {
-+		v |= group_bit;
-+
-+		/* read concurrently without nfnl_grp_active_lock held. */
-+		WRITE_ONCE(net->ct.ctnetlink_has_listener, v);
-+	}
-+
-+	spin_unlock(&nfnl_grp_active_lock);
-+#endif
-+}
-+
- static int nfnetlink_bind(struct net *net, int group)
- {
- 	const struct nfnetlink_subsystem *ss;
-@@ -670,28 +712,45 @@ static int nfnetlink_bind(struct net *net, int group)
- 	if (!ss)
- 		request_module_nowait("nfnetlink-subsys-%d", type);
- 
--#ifdef CONFIG_NF_CONNTRACK_EVENTS
--	if (type == NFNL_SUBSYS_CTNETLINK) {
--		nfnl_lock(NFNL_SUBSYS_CTNETLINK);
--		WRITE_ONCE(net->ct.ctnetlink_has_listener, true);
--		nfnl_unlock(NFNL_SUBSYS_CTNETLINK);
--	}
--#endif
-+	nfnetlink_bind_event(net, group);
- 	return 0;
- }
- 
- static void nfnetlink_unbind(struct net *net, int group)
- {
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	int type, group_bit;
-+
- 	if (group <= NFNLGRP_NONE || group > NFNLGRP_MAX)
- 		return;
- 
--	if (nfnl_group2type[group] == NFNL_SUBSYS_CTNETLINK) {
--		nfnl_lock(NFNL_SUBSYS_CTNETLINK);
--		if (!nfnetlink_has_listeners(net, group))
--			WRITE_ONCE(net->ct.ctnetlink_has_listener, false);
--		nfnl_unlock(NFNL_SUBSYS_CTNETLINK);
-+	type = nfnl_group2type[group];
-+
-+	switch (type) {
-+	case NFNL_SUBSYS_CTNETLINK:
-+		break;
-+	case NFNL_SUBSYS_CTNETLINK_EXP:
-+		break;
-+	default:
-+		return;
-+	}
-+
-+	/* ctnetlink_has_listener is u8 */
-+	if (group >= 8)
-+		return;
-+
-+	group_bit = (1 << group);
-+
-+	spin_lock(&nfnl_grp_active_lock);
-+	if (!nfnetlink_has_listeners(net, group)) {
-+		u8 v = READ_ONCE(net->ct.ctnetlink_has_listener);
-+
-+		v &= ~group_bit;
-+
-+		/* read concurrently without nfnl_grp_active_lock held. */
-+		WRITE_ONCE(net->ct.ctnetlink_has_listener, v);
- 	}
-+	spin_unlock(&nfnl_grp_active_lock);
- #endif
- }
- 
+-			if (!nft_is_active_next(ctx->net, set))
++			if (!nft_is_active_next(ctx->net, i))
+ 				continue;
+ 			if (!sscanf(i->name, name, &tmp))
+ 				continue;
 -- 
 2.35.1
 
