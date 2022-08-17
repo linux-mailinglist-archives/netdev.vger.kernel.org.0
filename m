@@ -2,201 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57215596913
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:02:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AFEC596928
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:10:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233305AbiHQGAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 02:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58888 "EHLO
+        id S238832AbiHQGKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 02:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231167AbiHQGAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:00:16 -0400
-Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CB05F109;
-        Tue, 16 Aug 2022 23:00:13 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id A53F4C023; Wed, 17 Aug 2022 08:00:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1660716010; bh=oLawsTDNpKCPBs4WfqX5ZpLPu+XeYzk8pF8CByNEE9U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Q8kyToz4gT4qpFyv4SW3MaYKZeh1z/1Vtbq64ZONJx+68wN1zoFXakjvp09eIAP40
-         Us4DyYKA/qYnl5+XwdnCOH10431pAYXNxBFr+239yymvX98r33qK1kP0/cMP99GLUT
-         11BUvfYMy7buHGPfDBxfTj891YKpKjYTJSwDbadCyhsBMsiOxnfwUbiakiKE4kez3b
-         a3A5yd5xw8UYvf+RTyXGu6c0E0V7nv5pKuwirpSxrWZVlhUYMbIZMdtu0rJN7mbbBS
-         3wkTdj/Vkx2r3Gayq+P9BKTcyOgzP1Kov5zyNK4Vv2lmO6L9WiKOvRjsh4eITKHYLc
-         JzHDY71836eEA==
+        with ESMTP id S232678AbiHQGKM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:10:12 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7725F754A6
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 23:10:11 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1660716608;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qQN4bdKJtEm0SAhnURVpkP8zPxX8iHX5edk4kl8nVU8=;
+        b=oB8DS/MC1aCpOvlfxtVbuO4CZ9XQLZxDTqyMtl9TGUNdiC5zflajWNkT/GShI6aUKsdj0Q
+        qgZVX6GhkdexWpG038QB8m6FEGucrvG5uIKVnCFbQt0L2PCylD0//PTs/XMgK6+H/ST3TP
+        vDryLs8m+oAfTYk+bXxQP0y60ZrpUiqr7kTH3z1q2FTxXmuI3zrTjSE8FdaH3cmManos0b
+        /dhH/aFE8w8xdKW0SK6M9XWlBMVqAVMPMVdEVG2yFpCwXTb2izf7isno8/GdmEVLvoPXLq
+        BYRcmpTq2FURMdMNUxFhbzMmfEGrzFHyGELizavsF2l7tmZBD2TUpuOH0P/YBg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1660716608;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qQN4bdKJtEm0SAhnURVpkP8zPxX8iHX5edk4kl8nVU8=;
+        b=WstS5gwQg7z2VLx2B8cGHr70KDEiL0ysCAMKnWtu9RdtY0EYqkBsH2i3L0VkWaCwQ2OH9B
+        +WLkAWM4wdEDX2Dw==
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Ferenc Fejes <ferenc.fejes@ericsson.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "marton12050@gmail.com" <marton12050@gmail.com>,
+        "peti.antal99@gmail.com" <peti.antal99@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: igc: missing HW timestamps at TX
+In-Reply-To: <87v8qrhq7w.fsf@intel.com>
+References: <VI1PR07MB4080AED64AC8BFD3F9C1BE58E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
+ <VI1PR07MB4080DC45051E112EEC6D7734E18D9@VI1PR07MB4080.eurprd07.prod.outlook.com>
+ <87tu7emqb9.fsf@intel.com>
+ <695ec13e018d1111cf3e16a309069a72d55ea70e.camel@ericsson.com>
+ <d5571f0ea205e26bced51220044781131296aaac.camel@ericsson.com>
+ <87tu6i6h1k.fsf@intel.com>
+ <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
+ <252755c5f3b83c86fac5cb60c70931204b0ed6df.camel@ericsson.com>
+ <20220812201654.qx7e37otu32pxnbk@skbuf> <87v8qti3u2.fsf@intel.com>
+ <20220815222639.346wachaaq5zjwue@skbuf> <87k079hzry.fsf@intel.com>
+ <87edxgr2q0.fsf@kurt> <87v8qrhq7w.fsf@intel.com>
+Date:   Wed, 17 Aug 2022 08:10:05 +0200
+Message-ID: <87y1vno0xu.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 9C693C009;
-        Wed, 17 Aug 2022 08:00:05 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1660716009; bh=oLawsTDNpKCPBs4WfqX5ZpLPu+XeYzk8pF8CByNEE9U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=wIPUcYFMZFE6d29/F20PcsGJHWz99spLgop5LaFfEhHJY7aVmwEWCc0xuxGK81jzX
-         5gKyEZehHb67HXExYY1GozBD69Jogpu27xTayMLiwHdBRbUexiKSIXMIuNUNzUUcdy
-         sW5fEPWypWT3DZt8dxfpDMTiP+CeYMqWWx7Mgm5tMwRqYDbIAQ4+Lqt88ayGCJlcM1
-         tro98Mo8P4E14RTlW1BwaJxeadg83HQjfXtuTQhXO9UbVwbNFA6vctVwtv5NWtXG16
-         +2JZSL1kgiqv1ZCVpFKPRe3umCXMAeDMpVA0fwBwspi1JFbucsu7sREXMv06nwXAV4
-         y1c9aNpFiEgVQ==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id a01f3657;
-        Wed, 17 Aug 2022 06:00:02 +0000 (UTC)
-Date:   Wed, 17 Aug 2022 14:59:47 +0900
-From:   asmadeus@codewreck.org
-To:     syzbot <syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, syzkaller-bugs@googlegroups.com,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [syzbot] KASAN: use-after-free Read in p9_req_put
-Message-ID: <YvyD053bdbGE9xoo@codewreck.org>
-References: <0000000000001c3efc05e6693f06@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <0000000000001c3efc05e6693f06@google.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot having a fresh look at 9p?
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Well at least that one should be easy enough, the following (untested)
-probably should work around that issue:
+On Tue Aug 16 2022, Vinicius Costa Gomes wrote:
+> Kurt Kanzenbach <kurt@linutronix.de> writes:
+>
+>> Hi Vinicius,
+>>
+>> On Mon Aug 15 2022, Vinicius Costa Gomes wrote:
+>>> I think your question is more "why there's that workqueue on igc?"/"why
+>>> don't you retrieve the TX timestamp 'inline' with the interrupt?", if I
+>>> got that right, then, I don't have a good reason, apart from the feeling
+>>> that reading all those (5-6?) registers may take too long for a
+>>> interrupt handler. And it's something that's being done the same for
+>>> most (all?) Intel drivers.
+>>
+>> We do have one optimization for igb which attempts to read the Tx
+>> timestamp directly from the ISR. If that's not ready *only* then we
+>> schedule the worker. I do assume igb and igc have the same logic for
+>> retrieving the timestamps here.
+>>
+>
+> That seems a sensible approach. And yes, the timestamping logic is the
+> same.
+>
+>> The problem with workqueues is that under heavy system load, it might be
+>> deferred and timestamps will be lost. I guess that workqueue was added
+>> because of something like this: 1f6e8178d685 ("igb: Prevent dropped Tx
+>> timestamps via work items and interrupts.").
+>>
+>>>
+>>> I have a TODO to experiment with removing the workqueue, and retrieving
+>>> the TX timestamp in the same context as the interrupt handler, but other
+>>> things always come up.
+>>
+>> Let me know if you have interest in that igb patch.
+>
+> That would be great! Thanks.
 
------
-From 433138e5d36a5b29b46b043c542e14b9dc908460 Mon Sep 17 00:00:00 2001
-From: Dominique Martinet <asmadeus@codewreck.org>
-Date: Wed, 17 Aug 2022 14:49:29 +0900
-Subject: [PATCH] 9p: p9_client_create: use p9_client_destroy on failure
+Sure. See igb patch below.
 
-If trans was connected it's somehow possible to fail with requests in
-flight that could still be accessed after free if we just free the clnt
-on failure.
-Just use p9_client_destroy instead that has proper safeguards.
+I'm also wondering whether that delayed work should be replaced
+completely by the PTP AUX worker, because that one can be prioritized in
+accordance to the use case. And I see Vladimir already suggested this.
 
-Reported-by: syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+From=20c546621323ba325eccfcf6a9891681929d4b9b4f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 8 Jun 2021 15:38:43 +0200
+Subject: [PATCH] igb: Try to tread the timestamp from the ISR.
 
-diff --git a/net/9p/client.c b/net/9p/client.c
-index 5bf4dfef0c70..da5d43848600 100644
---- a/net/9p/client.c
-+++ b/net/9p/client.c
-@@ -948,7 +948,7 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 
- 	err = parse_opts(options, clnt);
- 	if (err < 0)
--		goto free_client;
-+		goto out;
- 
- 	if (!clnt->trans_mod)
- 		clnt->trans_mod = v9fs_get_default_trans();
-@@ -957,7 +957,7 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 		err = -EPROTONOSUPPORT;
- 		p9_debug(P9_DEBUG_ERROR,
- 			 "No transport defined or default transport\n");
--		goto free_client;
-+		goto out;
+Commit
+   1f6e8178d6851 ("igb: Prevent dropped Tx timestamps via work items and in=
+terrupts.")
+
+moved the read of the timestamp into a workqueue in order to retry the
+read process in case the timestamp is not immediatly available after the
+interrupt. The workqueue is scheduled immediatelly after sending a skb
+on 82576 and for all other card types once the timestamp interrupt
+occurs. Once scheduled, the workqueue will busy poll for the timestamp
+until the operation times out.
+
+By defferring the read of timestamp into a workqueue, the driver can
+drop the timestamp of a following packet if the read does not occur
+before the following packet is sent. This can happen if the system is
+busy and the workqueue is delayed so that it is scheduled after another
+skb.
+
+Attempt the of the timestamp directly in the ISR and schedule a
+workqueue in case the timestamp is not yet ready. Guard the read process
+with __IGB_PTP_TX_READ_IN_PROGRESS to ensure that only one process
+attempts to read the timestamp.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+=2D--
+ drivers/net/ethernet/intel/igb/igb.h      | 2 ++
+ drivers/net/ethernet/intel/igb/igb_main.c | 2 +-
+ drivers/net/ethernet/intel/igb/igb_ptp.c  | 7 +++++--
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/in=
+tel/igb/igb.h
+index 2d3daf022651..4c49550768ee 100644
+=2D-- a/drivers/net/ethernet/intel/igb/igb.h
++++ b/drivers/net/ethernet/intel/igb/igb.h
+@@ -705,6 +705,7 @@ enum e1000_state_t {
+ 	__IGB_RESETTING,
+ 	__IGB_DOWN,
+ 	__IGB_PTP_TX_IN_PROGRESS,
++	__IGB_PTP_TX_READ_IN_PROGRESS,
+ };
+=20
+ enum igb_boards {
+@@ -750,6 +751,7 @@ void igb_ptp_tx_hang(struct igb_adapter *adapter);
+ void igb_ptp_rx_rgtstamp(struct igb_q_vector *q_vector, struct sk_buff *sk=
+b);
+ int igb_ptp_rx_pktstamp(struct igb_q_vector *q_vector, void *va,
+ 			ktime_t *timestamp);
++void igb_ptp_tx_work(struct work_struct *work);
+ int igb_ptp_set_ts_config(struct net_device *netdev, struct ifreq *ifr);
+ int igb_ptp_get_ts_config(struct net_device *netdev, struct ifreq *ifr);
+ void igb_set_flag_queue_pairs(struct igb_adapter *, const u32);
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethern=
+et/intel/igb/igb_main.c
+index b88303351484..b74b305b5730 100644
+=2D-- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -6756,7 +6756,7 @@ static void igb_tsync_interrupt(struct igb_adapter *a=
+dapter)
+=20
+ 	if (tsicr & E1000_TSICR_TXTS) {
+ 		/* retrieve hardware timestamp */
+=2D		schedule_work(&adapter->ptp_tx_work);
++		igb_ptp_tx_work(&adapter->ptp_tx_work);
+ 		ack |=3D E1000_TSICR_TXTS;
  	}
- 
- 	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
-@@ -965,7 +965,7 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 
- 	err = clnt->trans_mod->create(clnt, dev_name, options);
- 	if (err)
--		goto put_trans;
-+		goto out;
- 
- 	if (clnt->msize > clnt->trans_mod->maxsize) {
- 		clnt->msize = clnt->trans_mod->maxsize;
-@@ -979,12 +979,12 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 		p9_debug(P9_DEBUG_ERROR,
- 			 "Please specify a msize of at least 4k\n");
- 		err = -EINVAL;
--		goto close_trans;
-+		goto out;
+=20
+diff --git a/drivers/net/ethernet/intel/igb/igb_ptp.c b/drivers/net/etherne=
+t/intel/igb/igb_ptp.c
+index 0011b15e678c..97b444f84b83 100644
+=2D-- a/drivers/net/ethernet/intel/igb/igb_ptp.c
++++ b/drivers/net/ethernet/intel/igb/igb_ptp.c
+@@ -680,7 +680,7 @@ static int igb_ptp_verify_pin(struct ptp_clock_info *pt=
+p, unsigned int pin,
+  * This work function polls the TSYNCTXCTL valid bit to determine when a
+  * timestamp has been taken for the current stored skb.
+  **/
+=2Dstatic void igb_ptp_tx_work(struct work_struct *work)
++void igb_ptp_tx_work(struct work_struct *work)
+ {
+ 	struct igb_adapter *adapter =3D container_of(work, struct igb_adapter,
+ 						   ptp_tx_work);
+@@ -705,7 +705,9 @@ static void igb_ptp_tx_work(struct work_struct *work)
  	}
- 
- 	err = p9_client_version(clnt);
- 	if (err)
--		goto close_trans;
-+		goto out;
- 
- 	/* P9_HDRSZ + 4 is the smallest packet header we can have that is
- 	 * followed by data accessed from userspace by read
-@@ -997,12 +997,8 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
- 
- 	return clnt;
- 
--close_trans:
--	clnt->trans_mod->close(clnt);
--put_trans:
--	v9fs_put_trans(clnt->trans_mod);
--free_client:
--	kfree(clnt);
-+out:
-+	p9_client_destroy(clnt);
- 	return ERR_PTR(err);
- }
- EXPORT_SYMBOL(p9_client_create);
------
+=20
+ 	tsynctxctl =3D rd32(E1000_TSYNCTXCTL);
+=2D	if (tsynctxctl & E1000_TSYNCTXCTL_VALID)
++	if (tsynctxctl & E1000_TSYNCTXCTL_VALID &&
++	    !test_and_set_bit_lock(__IGB_PTP_TX_READ_IN_PROGRESS,
++				   &adapter->state))
+ 		igb_ptp_tx_hwtstamp(adapter);
+ 	else
+ 		/* reschedule to check later */
+@@ -850,6 +852,7 @@ static void igb_ptp_tx_hwtstamp(struct igb_adapter *ada=
+pter)
+ 	 */
+ 	adapter->ptp_tx_skb =3D NULL;
+ 	clear_bit_unlock(__IGB_PTP_TX_IN_PROGRESS, &adapter->state);
++	clear_bit_unlock(__IGB_PTP_TX_READ_IN_PROGRESS, &adapter->state);
+=20
+ 	/* Notify the stack and free the skb after we've unlocked */
+ 	skb_tstamp_tx(skb, &shhwtstamps);
+=2D-=20
+2.30.2
 
-I'll test and submit to Linus over the next few weeks.
 
-I had a quick look at the other new syzbot warnings and:
- - 'possible deadlock in p9_req_put' is clear enough, we can just drop
-the lock before running through the cancel list and I don't think
-that'll cause any problem as everything has been moved to a local list
-and that lock is abused by trans fd for its local stuff. I'll also send
-that after quick testing.
-----
-From c46435a4af7c119bd040922886ed2ea3a2a842d7 Mon Sep 17 00:00:00 2001
-From: Dominique Martinet <asmadeus@codewreck.org>
-Date: Wed, 17 Aug 2022 14:58:44 +0900
-Subject: [PATCH] 9p: trans_fd/p9_conn_cancel: drop client lock earlier
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-syzbot reported a double-lock here and we no longer need this
-lock after requests have been moved off to local list:
-just drop the lock earlier.
+-----BEGIN PGP SIGNATURE-----
 
-Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
-
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index e758978b44be..60fcc6b30b46 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -205,6 +205,8 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
- 		list_move(&req->req_list, &cancel_list);
- 	}
- 
-+	spin_unlock(&m->client->lock);
-+
- 	list_for_each_entry_safe(req, rtmp, &cancel_list, req_list) {
- 		p9_debug(P9_DEBUG_ERROR, "call back req %p\n", req);
- 		list_del(&req->req_list);
-@@ -212,7 +214,6 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
- 			req->t_err = err;
- 		p9_client_cb(m->client, req, REQ_STATUS_ERROR);
- 	}
--	spin_unlock(&m->client->lock);
- }
- 
- static __poll_t
-----
-
- - but I don't get the two 'inconsistent lock state', the hint says it's
-possibly an interrupt while the lock was held but that doesn't seem to
-be the case from the stack trace (unless we leaked the lock, at which
-point anything goes)
-I'd need to take time to look at it, feel free to beat me to these.
-
---
-Dominique
+iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmL8hj0THGt1cnRAbGlu
+dXRyb25peC5kZQAKCRDBk9HyqkZzgiZvD/9+SXFekDpTf0QJ/vmry0PlYkjlfo4B
+BwzNwlxx/L+CtRxeYJ+YGde6PdVQZPpe0eeKxNuOWpm1ZRIVHU5BHjnpiwG7nq1S
+1LZsOxVxAAOJ+Gfy9U+MiLayk5Hu0BNZjHzl0HG4btBN2rEO4r15RU8/xMCrxoWt
+8tT8qHlO001tQ88lK20XMotNPo66vQFGyBUMqnq+wX7VpjYlM1irtmXmk6a041EY
+PVcWYKbW32AC7Cpru8uUqXqiZonIyPtmUCUaQVphEhtevEscpmvmDyaE98+oqDra
+lZDnXHKEiAPQpet1/9oTxGF341llAT5TFFC0F/U7VyX64FUSZjaAItd9/Km7/xxx
+IgeUPblwq5SjPbFmEm6ka+yWgnPDGwwLL7J7KOnFQigJHvif+1Xc8tuQKt54Myhr
+2ezYxxvO/MnmZ0P2YeHoMKx+qBBppb8EDKma0dnGoriQK7sxseXUIFX0956kiLN0
+GWmhFUTblvJ+meml5VwmfZTHI2OFMtgcXXZvAi9inlAXGRw1JAmHY2fYeAAbPDx+
+ClvflOkDJsaBejeDaewwwORABlqjgKnG/JoIGLJkGMp5UzwKeSohPyr7MXKWIRGO
+9Y4PokxYk5+QlxKH+HrOK9Ei8rTmUw0Va52lVql71QpmypFEvRJnOE2YAHHzSxsK
+6KdQhRFEHqsDBg==
+=7KQK
+-----END PGP SIGNATURE-----
+--=-=-=--
