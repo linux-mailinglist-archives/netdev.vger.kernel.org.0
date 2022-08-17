@@ -2,107 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADE159751B
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B10A597395
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 18:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238421AbiHQR3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 13:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49180 "EHLO
+        id S240737AbiHQQFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 12:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241106AbiHQR3c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:29:32 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EA5130;
-        Wed, 17 Aug 2022 10:29:32 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo2444640pjd.3;
-        Wed, 17 Aug 2022 10:29:32 -0700 (PDT)
+        with ESMTP id S240759AbiHQQEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 12:04:53 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17159FABC
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 09:04:25 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id y3so18109590eda.6
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 09:04:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=aM3wrL4Fp4MEnHsKbqc+hHkzDolBQyAgPj8hCdYOSxg=;
-        b=Rhxe4k4xHun8nsdmCVCBrJmiv1l4fwnoMler6GOgLSgZz205jK5YZ/0nhz9K9Q27Gq
-         lHlRqEMXVGqq1eW0XXb46wbt7WWByYxxk9oPLrHAYwRGoCA9u80k5T2Yof6Euj9UupmT
-         oBy/pcebDpgXE657jRwmVGCJJL2dPEQh3jH6Btdz0fC6aKVEmkcIUTmSZxuu+WkoVg/n
-         HZC5ckQ/fB5V9tdRPDYlqbt4EhsN0ZQwxhR0j5R9e11bMHUwA2NIbRuT2fNqX2bNaWHc
-         UcTmZEri35uQf1op67DuNSUl3No4SAegUxO3t6ubxjH6AXLmUDew/F3g3xomqhpyXMT1
-         6+jw==
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=U5jw3QHa+iaIPk1CEpZnETysV2acYZOZO5IcpVoLmmM=;
+        b=DAPJSc/u2ev6bYXSBrTqwGZ4PaTl8WKl6DiAoyMnKBgA+8zqmrgKU4aVMESdOKZMZT
+         SYoGZEdZ4zKG6vHrMZHRGM9k/zEgGqHhynaxUWM7PoNiqiL3sqU34A1ORMMSy9lm01+p
+         xih4rucikfbN8PfPcI3ROoqXZHnqdlxXa7TQ8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=aM3wrL4Fp4MEnHsKbqc+hHkzDolBQyAgPj8hCdYOSxg=;
-        b=0ClJKoLVCQWTInE85q0xx3yNeFFWImEo7IMzNm7gJBQjxC48F2vcYT9kO765Jw0Ork
-         EZ2uVxj5UK1uALz0uDSLPJaX8BzzMYWZPnLZ7GluJJ9mx1DRVJdJUgK0dpmGThPxGfRY
-         Q32YaPjA4uxV0ZDNG/LcWfQYqp32i3XaUvgfaf5jjKf0niptPNu69xIOgfWIMhNHEbOS
-         p57v2UpgwT7KKiL9wfpEb5RBQrg817gPpkhBbRrbqBQLvNd7NBC8aA6jx/PFkMca/RjO
-         rrbJ0Ab4jJEJ2Zx9r9JTO3cQMQ+xsViaGr0QdaxTv3D05vojJDY/EWhm130u06cy9xTI
-         w/hQ==
-X-Gm-Message-State: ACgBeo0qTeExYI1Ma51Y2SZRmDpzIxJJHyeZqZH3I5kQTOe0M5xTZQqB
-        u8qkN6hvbuN9hcK8EYtJi2I=
-X-Google-Smtp-Source: AA6agR63sQa3hgQVIDCnk8BJZi1Azr3oDTU0znMG3TzLEJCrYfTIX+5H+FG+ik/fWHtXQGSIQY3dRg==
-X-Received: by 2002:a17:90b:380b:b0:1fa:b6a7:87d7 with SMTP id mq11-20020a17090b380b00b001fab6a787d7mr3628620pjb.111.1660757371866;
-        Wed, 17 Aug 2022 10:29:31 -0700 (PDT)
-Received: from localhost (c-73-164-155-12.hsd1.wa.comcast.net. [73.164.155.12])
-        by smtp.gmail.com with ESMTPSA id c7-20020aa79527000000b0052dd7d0ad02sm10747149pfp.162.2022.08.17.10.29.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:29:31 -0700 (PDT)
-Date:   Tue, 16 Aug 2022 11:08:26 +0000
-From:   Bobby Eshleman <bobbyeshleman@gmail.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <Yvt6nxUYMfDrLd/A@bullseye>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <20220817025250-mutt-send-email-mst@kernel.org>
- <YvtmYpMieMFb80qR@bullseye>
- <20220817130044-mutt-send-email-mst@kernel.org>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=U5jw3QHa+iaIPk1CEpZnETysV2acYZOZO5IcpVoLmmM=;
+        b=meyRDyyllWq2DXxUA4hUVRHsvLVIddSTmQSea5aBiMMVZYQD5ehr9HtOMsQvuhn8B8
+         t/MeS1SYKpLYm52kSRPFfo7YgxmWBxzl1InQXQ0gYcrxc0M6h8Royxm7ecQzspnLLGz4
+         luop7IIO2+DMEj5rZTu3ub06Eq6lu10asDke8Yd+vMVTNNcOddxzHFKfXGzncwTX5Twr
+         LgXcBlXB3LcTXDlcmdYSlDPRv/ccq+fQ9E1OtwVnmWRzaJ/dywjE9QxRT4CRQWxV+iGH
+         hBXpjXZcovMfHD7vE6CvBKyEXnXjHV4aTANWstXVVwZal4t5dD3weU1v0jRLj8Eggzdt
+         D8cg==
+X-Gm-Message-State: ACgBeo3b+gz5LKl2018do+fW4WluzouKp0H9OurscWcVY6mu5YnIPiFe
+        BVgdi+n/jd00QtdG/kt9NlPUOKGO1OPJETSY43Q=
+X-Google-Smtp-Source: AA6agR6rYYOUFRP4WVlX2UjaHOD8ztr2vOdTjdBBUraZ6qlxzp2JqQXsVHBkHsvfe3VrrNEthtVnIA==
+X-Received: by 2002:a05:6402:90a:b0:443:8b10:bcad with SMTP id g10-20020a056402090a00b004438b10bcadmr16960788edz.416.1660752263380;
+        Wed, 17 Aug 2022 09:04:23 -0700 (PDT)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id h17-20020a056402095100b0043aba618bf6sm10987687edz.80.2022.08.17.09.04.22
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 17 Aug 2022 09:04:23 -0700 (PDT)
+Received: by mail-wm1-f46.google.com with SMTP id ay39-20020a05600c1e2700b003a5503a80cfso1161139wmb.2
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 09:04:22 -0700 (PDT)
+X-Received: by 2002:a05:600c:2195:b0:3a6:b3c:c100 with SMTP id
+ e21-20020a05600c219500b003a60b3cc100mr2523659wme.8.1660751916369; Wed, 17 Aug
+ 2022 08:58:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817130044-mutt-send-email-mst@kernel.org>
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DATE_IN_PAST_24_48,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220815113729-mutt-send-email-mst@kernel.org>
+ <20220815164503.jsoezxcm6q4u2b6j@awork3.anarazel.de> <20220815124748-mutt-send-email-mst@kernel.org>
+ <20220815174617.z4chnftzcbv6frqr@awork3.anarazel.de> <20220815161423-mutt-send-email-mst@kernel.org>
+ <20220815205330.m54g7vcs77r6owd6@awork3.anarazel.de> <20220815170444-mutt-send-email-mst@kernel.org>
+ <20220817061359.200970-1-dvyukov@google.com> <1660718191.3631961-1-xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1660718191.3631961-1-xuanzhuo@linux.alibaba.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 17 Aug 2022 08:58:20 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wghjyi5cyDY96m4LtQ_i8Rdgt9Rsmd028XoU6RU=bsy_w@mail.gmail.com>
+Message-ID: <CAHk-=wghjyi5cyDY96m4LtQ_i8Rdgt9Rsmd028XoU6RU=bsy_w@mail.gmail.com>
+Subject: Re: upstream kernel crashes
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Dmitry Vyukov <dvyukov@google.com>,
+        James.Bottomley@hansenpartnership.com, andres@anarazel.de,
+        axboe@kernel.dk, c@redhat.com, davem@davemloft.net,
+        edumazet@google.com, gregkh@linuxfoundation.org,
+        jasowang@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux@roeck-us.net, martin.petersen@oracle.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        kasan-dev@googlegroups.com, mst@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 01:02:52PM -0400, Michael S. Tsirkin wrote:
-> On Tue, Aug 16, 2022 at 09:42:51AM +0000, Bobby Eshleman wrote:
-> > > The basic question to answer then is this: with a net device qdisc
-> > > etc in the picture, how is this different from virtio net then?
-> > > Why do you still want to use vsock?
-> > > 
-> > 
-> > When using virtio-net, users looking for inter-VM communication are
-> > required to setup bridges, TAPs, allocate IP addresses or setup DNS,
-> > etc... and then finally when you have a network, you can open a socket
-> > on an IP address and port. This is the configuration that vsock avoids.
-> > For vsock, we just need a CID and a port, but no network configuration.
-> 
-> Surely when you mention DNS you are going overboard? vsock doesn't
-> remove the need for DNS as much as it does not support it.
-> 
+On Tue, Aug 16, 2022 at 11:47 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> +       BUG_ON(num != virtqueue_get_vring_size(vq));
+> +
 
-Oops, s/DNS/dhcp.
+Please, no more BUG_ON.
+
+Add a WARN_ON_ONCE() and return an  error.
+
+           Linus
