@@ -2,77 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D098D597954
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:55:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B97759795C
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:58:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242258AbiHQVvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 17:51:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
+        id S242445AbiHQV5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 17:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242360AbiHQVvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:51:13 -0400
-Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2996D3205F
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 14:51:11 -0700 (PDT)
-Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-11c896b879bso283182fac.3
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 14:51:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=/CTcFk+7lIOz0f66/sW+yd0rIladiacxraDVQHveddU=;
-        b=Z37nNyL7fO7ofqzBqhsC8MAbzHXk1QozG1ARlNgf2r4n9sGA4oerk97YgCUalxM2mT
-         fhO9INMD4HzzQ1aPLW8N0XehhCLxHPUPhhB2ZRsd51SQdMmoonliVtb6BNO3XaXqioUP
-         yEQ/n8yVyhV7BjCADUL3h32ZxYj9GekLs3//TVqThFKgw9sZdbJf86XYIr1DAlZ8bmwG
-         xzmKfuAuIDGZVS8TsOPgiMbuIvDri9visdfG8qtZqt2pulyENYyUXIOotM2uhDYmrwUt
-         GN+YjefZ6mInoiQ6Eclx15Ltm0cQmwqruPbM5Tyh00SFGnU2OPWk4LHlvYLnPX/vMlx7
-         IPbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=/CTcFk+7lIOz0f66/sW+yd0rIladiacxraDVQHveddU=;
-        b=D8rNj/+Dy/MCtFFQQaXmpl1Pa5j/ron2Xx+2c7UcslsG4cgRHNH7W7uF1cz16RGg5f
-         k/qvPnCj1XvmhF2c9pb+OVQT08Y3ijSH/PBQVN6ogD6fS9hVJcAwELCTkGOe/owo93gL
-         8SsHziMh9B8sURxrtyt47WJ9uAeCkCxOAIW8muzLq867x/q1yP6TdiPkwLULq2RFuavp
-         gokftP91bexsC39D4vlj+NKqrH2CJslOwD513B4sgeIXQLCLXS/+SUtzEEb+GiVMJHgA
-         OmQfGKGfykV/kdtdzto00uRayK1Cv5lLv4pdjDNA71dIRr6C94c6gXtWPjse+Sv+Uq8h
-         9Jww==
-X-Gm-Message-State: ACgBeo1bGvo+shmRGpeE93Y/vDGR6F8AfDYD0H5yniNRrpnFGUAg5+V6
-        tNsZGyetIxYIZb7KIJ2Rd5/v0ku5ONYSjfqK0sXi
-X-Google-Smtp-Source: AA6agR50Tcanb0vgcmzi8OeuXVsdfxGnJyO8cUD9VxdPHwqqDOjJ8rNBXuNdMQ+4DIsaFAJLlr1YMLOTZC7fMkQtyMY=
-X-Received: by 2002:a05:6870:9588:b0:101:c003:bfe6 with SMTP id
- k8-20020a056870958800b00101c003bfe6mr2769479oao.41.1660773070428; Wed, 17 Aug
- 2022 14:51:10 -0700 (PDT)
+        with ESMTP id S241904AbiHQV5x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:57:53 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C8EFA99FC;
+        Wed, 17 Aug 2022 14:57:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=zLpU54EftC0DXI+05o1Pu5PUXbOrHcHGmY2OTrh25Kc=; b=YHZgiYG91jjHXY2Gnwy4Usgvy2
+        TFABzMk/0AGVANObHyOolMepk3BROf0gG4ONkYmu5lZp9NvXd0fWhFHO5dUxdaZyv6psD8r7pwv+I
+        H1TtPUWfxN7QDOKRLKZnixIIFuh/GtJC8X43HqOCmdYDVUqCbH8XXJTZtAFJKT/vTvRS6S0LbkElv
+        Pn3GwIBtqKys5+zD172cQ1x5sJ1O1ohxPzvRJDGWTTDBrAL5VW+yPFSbWpw/SUEWJbdDP77xUoK5q
+        okvr9W9bth1I+LaRtmS8YJGnoU7AVDmz0EtrLF6HBQ52f33glb2ccuf4zji6DyiMY87JKzftYbNYj
+        w7sQBH+A==;
+Received: from [179.232.144.59] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oOR2T-00Axx5-9X; Wed, 17 Aug 2022 23:57:25 +0200
+Message-ID: <1ee275b3-97e8-4c2b-be88-d50898d17e23@igalia.com>
+Date:   Wed, 17 Aug 2022 18:56:11 -0300
 MIME-Version: 1.0
-References: <20220815162028.926858-1-fred@cloudflare.com> <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
- <8735dux60p.fsf@email.froward.int.ebiederm.org> <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
- <871qte8wy3.fsf@email.froward.int.ebiederm.org> <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
- <8735du7fnp.fsf@email.froward.int.ebiederm.org> <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
- <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
-In-Reply-To: <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 17 Aug 2022 17:50:59 -0400
-Message-ID: <CAHC9VhQnPAsmjmKo-e84XDJ1wmaOFkTKPjjztsOa9Yrq+AeAQA@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
+ loaded
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     pmladek@suse.com, Dinh Nguyen <dinguyen@kernel.org>,
+        Tony Luck <tony.luck@intel.com>, akpm@linux-foundation.org,
+        bhe@redhat.com, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-edac@vger.kernel.org
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
+ <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com> <Yv1C0Y25u2IB7PCs@zn.tnic>
+ <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com> <Yv1XVRmTXHLhOkER@zn.tnic>
+ <c0250075-ec87-189f-52c5-e0520325a015@igalia.com> <Yv1hn2ayPoyKBAj8@zn.tnic>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <Yv1hn2ayPoyKBAj8@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,57 +75,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 5:24 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> I object to adding the new system configuration knob.
->
-> Especially when I don't see people explaining why such a knob is a good
-> idea.  What is userspace going to do with this new feature that makes it
-> worth maintaining in the kernel?
+On 17/08/2022 18:46, Borislav Petkov wrote:
+> On Wed, Aug 17, 2022 at 06:39:07PM -0300, Guilherme G. Piccoli wrote:
+>> Sorry for the confusion, let me try to be a bit more clear:
+> 
+> I think you're missing the point. Lemme try again:
+> 
+> You *absolutely* must log those errors because they're important. It
+> doesn't matter if this is done in a panic notifier and you're changing
+> that whole shebang or through some other magic.
+> 
+> If you do, then this driver needs to *still* *log* those fatal errors -
+> regardless through a panic notifier or some novel contraption it wants
+> to use.
+> 
+> So if you want to change the panic notifiers, you *must* make sure those
+> errors still do get logged.
+> 
+> Better?
+> 
 
-From https://lore.kernel.org/all/CAEiveUdPhEPAk7Y0ZXjPsD=Vb5hn453CHzS9aG-tkyRa8bf_eg@mail.gmail.com/
+Boris, I understand the importance of the logs, for sure!
 
- "We have valid use cases not specifically related to the
-  attack surface, but go into the middle from bpf observability
-  to enforcement. As we want to track namespace creation, changes,
-  nesting and per task creds context depending on the nature of
-  the workload."
- -Djalal Harouni
-
-From https://lore.kernel.org/linux-security-module/CALrw=nGT0kcHh4wyBwUF-Q8+v8DgnyEJM55vfmABwfU67EQn=g@mail.gmail.com/
-
- "[W]e do want to embrace user namespaces in our code and some of
-  our workloads already depend on it. Hence we didn't agree to
-  Debian's approach of just having a global sysctl. But there is
-  "our code" and there is "third party" code, which might not even
-  be open source due to various reasons. And while the path exists
-  for that code to do something bad - we want to block it."
- -Ignat Korchagin
-
-From https://lore.kernel.org/linux-security-module/CAHC9VhSKmqn5wxF3BZ67Z+-CV7sZzdnO+JODq48rZJ4WAe8ULA@mail.gmail.com/
-
- "I've heard you talk about bugs being the only reason why people
-  would want to ever block user namespaces, but I think we've all
-  seen use cases now where it goes beyond that.  However, even if
-  it didn't, the need to build high confidence/assurance systems
-  where big chunks of functionality can be disabled based on a
-  security policy is a very real use case, and this patchset would
-  help enable that."
- -Paul Moore (with apologies for self-quoting)
-
-From https://lore.kernel.org/linux-security-module/CAHC9VhRSCXCM51xpOT95G_WVi=UQ44gNV=uvvG23p8wn16uYSA@mail.gmail.com/
-
- "One of the selling points of the BPF LSM is that it allows for
-  various different ways of reporting and logging beyond audit.
-  However, even if it was limited to just audit I believe that
-  provides some useful justification as auditing fork()/clone()
-  isn't quite the same and could be difficult to do at scale in
-  some configurations."
- -Paul Moore (my apologies again)
-
-From https://lore.kernel.org/linux-security-module/20220722082159.jgvw7jgds3qwfyqk@wittgenstein/
-
- "Nice and straightforward."
- -Christian Brauner
-
--- 
-paul-moore.com
+But do you agree that currently, in case of a kdump, that information
+*is not collected*, with our without my patch?
