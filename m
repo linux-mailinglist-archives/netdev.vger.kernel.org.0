@@ -2,42 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87FC359700C
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 15:40:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA55259704B
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 15:58:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236590AbiHQNgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 09:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S239295AbiHQN5l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 09:57:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234215AbiHQNgv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 09:36:51 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2A271987;
-        Wed, 17 Aug 2022 06:36:50 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oOJDz-00041R-AG; Wed, 17 Aug 2022 15:36:47 +0200
-Message-ID: <967ef480-2fac-9724-61c7-2d5e69c26ec3@leemhuis.info>
-Date:   Wed, 17 Aug 2022 15:36:44 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Content-Language: en-US
-To:     Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev <netdev@vger.kernel.org>, craig@mcqueen.id.au
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-Subject: Bug 216320 - KSZ8794 operation broken
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1660743410;4d681711;
-X-HE-SMSGID: 1oOJDz-00041R-AG
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        with ESMTP id S231609AbiHQN5k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 09:57:40 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C55B595E49;
+        Wed, 17 Aug 2022 06:57:38 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 03E1A1008B391;
+        Wed, 17 Aug 2022 21:57:33 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id DDAC62009BEAF;
+        Wed, 17 Aug 2022 21:57:32 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id drv0zevZDvRU; Wed, 17 Aug 2022 21:57:31 +0800 (CST)
+Received: from localhost.localdomain (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id C2FBF2009BEA0;
+        Wed, 17 Aug 2022 21:57:19 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Subject: [RFC v2 0/7] In order support for virtio_ring, vhost and vsock.
+Date:   Wed, 17 Aug 2022 21:57:11 +0800
+Message-Id: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,RCVD_IN_SORBS_WEB,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -45,53 +47,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker.
+In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER was introduced.
+When this feature has been negotiated, virtio driver will use
+descriptors in ring order: starting from offset 0 in the table, and
+wrapping around at the end of the table. Vhost devices will always use
+descriptors in the same order in which they have been made available.
+This can reduce virtio accesses to used ring.
 
-I noticed a regression report in bugzilla.kernel.org that afaics nobody
-acted upon since it was reported. That's why I decided to forward it by
-mail to those that afaics should handle this.
+Based on updated virtio-spec, this series realized IN_ORDER prototype
+in virtio driver and vhost. Currently IN_ORDER feature supported devices
+are *vhost_test* and *vsock*, and IN_ORDER feature works well combined with
+INDIRECT feature in this patch series.
 
-To quote from https://bugzilla.kernel.org/show_bug.cgi?id=216320 :
+Some work haven't been done in this patch series:
+1. Virtio driver in_order support for packed vq is left for the future.
 
-> After upgrading a Yocto build system from kernel 5.4 to 5.15, I found KSZ8794 switch operation was no longer functional. I got errors such as:
-> 
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.770912] ksz8795-switch spi2.0: Unsupported interface: gmii, port: 0
-> Aug  1 22:23:17 tv999996 kern.warn kernel: [   10.777562] ksz8795-switch spi2.0 wan (uninitialized): validation of gmii with support 0000000,00000000,000062cf and advertisement 0000000,00000000,000062cf failed: -22
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.792874] ksz8795-switch spi2.0 wan (uninitialized): failed to connect to PHY: -EINVAL
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.800978] ksz8795-switch spi2.0 wan (uninitialized): error -22 setting up PHY for tree 0, switch 0, port 0
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.829188] ksz8795-switch spi2.0: Unsupported interface: gmii, port: 1
-> Aug  1 22:23:17 tv999996 kern.warn kernel: [   10.835821] ksz8795-switch spi2.0 lan2 (uninitialized): validation of gmii with support 0000000,00000000,000062cf and advertisement 0000000,00000000,000062cf failed: -22
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.851156] ksz8795-switch spi2.0 lan2 (uninitialized): failed to connect to PHY: -EINVAL
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.859358] ksz8795-switch spi2.0 lan2 (uninitialized): error -22 setting up PHY for tree 0, switch 0, port 1
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.892821] ksz8795-switch spi2.0: Unsupported interface: gmii, port: 2
-> Aug  1 22:23:17 tv999996 kern.warn kernel: [   10.899466] ksz8795-switch spi2.0 lan1 (uninitialized): validation of gmii with support 0000000,00000000,000062cf and advertisement 0000000,00000000,000062cf failed: -22
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.914845] ksz8795-switch spi2.0 lan1 (uninitialized): failed to connect to PHY: -EINVAL
-> Aug  1 22:23:17 tv999996 kern.err kernel: [   10.923052] ksz8795-switch spi2.0 lan1 (uninitialized): error -22 setting up PHY for tree 0, switch 0, port 2
-> 
-> I found that if I reverted commit 2c709e0bdad4d996ec8925b9ee6d5b97458708f1, "net: dsa: microchip: ksz8795: add phylink support", then it worked properly again. The errors I saw were due to the checks in ksz8_validate() that were added in the above commit.
-Could somebody please take a look, especially if you're among the main
-recipients of this mail and not just CCed?
+Guo Zhi (7):
+  vhost: expose used buffers
+  vhost_test: batch used buffer
+  vsock: batch buffers in tx
+  vsock: announce VIRTIO_F_IN_ORDER in vsock
+  virtio: unmask F_NEXT flag in desc_extra
+  virtio: in order support for virtio_ring
+  virtio: annouce VIRTIO_F_IN_ORDER support
 
-Anyway, to ensure this is not forgotten I'll add it to the Linux kernel
-regression tracking bot:
+ drivers/vhost/test.c         |  8 ++++-
+ drivers/vhost/vhost.c        | 14 +++++++--
+ drivers/vhost/vhost.h        |  1 +
+ drivers/vhost/vsock.c        | 10 +++++-
+ drivers/virtio/virtio_ring.c | 61 ++++++++++++++++++++++++++++++------
+ 5 files changed, 80 insertions(+), 14 deletions(-)
 
-#regzbot introduced: 2c709e0bdad4d996ec8925b9ee6d5b97458708f1
-https://bugzilla.kernel.org/show_bug.cgi?id=216320
+-- 
+2.17.1
 
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report in bugzilla, as the kernel's documentation calls
-for; above page explains why this is important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
