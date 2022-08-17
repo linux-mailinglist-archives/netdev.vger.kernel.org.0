@@ -2,51 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EAA65967A6
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 05:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAB2C5967B9
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 05:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238518AbiHQDEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 16 Aug 2022 23:04:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44568 "EHLO
+        id S238119AbiHQDWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 16 Aug 2022 23:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238496AbiHQDEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 23:04:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 528FB9A9B8;
-        Tue, 16 Aug 2022 20:04:50 -0700 (PDT)
+        with ESMTP id S238103AbiHQDWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 16 Aug 2022 23:22:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 520EC6CF59
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 20:22:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E52086149B;
-        Wed, 17 Aug 2022 03:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C692FC433C1;
-        Wed, 17 Aug 2022 03:04:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3758B815DF
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 03:22:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41340C433D6;
+        Wed, 17 Aug 2022 03:22:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660705489;
-        bh=hoCcUCDekBnv7uptRjLsaq3Oa8ABTbxOy7tabbuoeEQ=;
+        s=k20201202; t=1660706530;
+        bh=vlAzK2QnwY2QT3K01cM3qSMA+j2jRcxWXvqpNbUz6L8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uxt5FAkslwdPocR18ObNyzePZxlC25vZ/FVvm7uSkQPBkd48TkOAyGCVpyhnN+IVm
-         CaZYsqCqh9K0jpJK1gf0s7JKdwqzQXi4xi1PCYfS8IYfsMMlMuzt96EpT7gXydSMce
-         2buYLdZLbEe4O6kRqEr39L1BLWwAv1FPBOGJzp35Xm6IeDZLuTAAegMmgHpuY9iCta
-         jtx7dRmIg/SmuBAdMW2K4nR69Re5Hulmv0MY2E+wmvffPsPUG+Q1yi4cWuSMQS3R3l
-         h9od2mLOSp95Tca3Ex/PogKiM8Bhi89gOI5knkaY52+PKjwanEWKZwmdSqVa40YfH6
-         d/JrPq23N8iTQ==
-Date:   Tue, 16 Aug 2022 20:04:47 -0700
+        b=oNMsnX/wy+XLMskCGst10/LMNDJHR5PJlnvZdPKF23JR6zTpVoqRet/rSAn/5e2+e
+         jbsmzwOIrfq1UbsiKEIL+lHM2YW6nTXoC4paZ9eiJ15X4BtT3Qv0EWbS3VUKSxCwPk
+         zhHKwb4aYJGnQ+lhX0XkZDCxHhOQok3wpEo42b2bKNEAPgDu0/iissiC5e4oaT+g7n
+         AFqtuuwMS3POzU3tMZTDp/prpO48Vk6jogUcjWz6r3efe4XPzCpCWq6LEjB9z8Bpy5
+         TIb6pw37LNNfFBXCxUiOoB/9z5XMsGFneHm1Y86XzUkAb0nWQP1SdLZxC1TDKcYlpG
+         YQ1VoNA8c6Gxg==
+Date:   Tue, 16 Aug 2022 20:22:09 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Frank <Frank.Sae@motor-comm.com>
-Cc:     Peter Geis <pgwipeout@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, yinghong.zhang@motor-comm.com,
-        fei.zhang@motor-comm.com, hua.sun@motor-comm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4.3] net: phy: Add driver for Motorcomm yt8521 gigabit
- ethernet phy
-Message-ID: <20220816200447.0f9ebb7b@kernel.org>
-In-Reply-To: <20220816111703.216-1-Frank.Sae@motor-comm.com>
-References: <20220816111703.216-1-Frank.Sae@motor-comm.com>
+        Paolo Abeni <pabeni@redhat.com>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Rui Sousa <rui.sousa@nxp.com>,
+        Ferenc Fejes <ferenc.fejes@ericsson.com>
+Subject: Re: [RFC PATCH net-next 2/7] net: ethtool: add support for Frame
+ Preemption and MAC Merge layer
+Message-ID: <20220816202209.1d9ae749@kernel.org>
+In-Reply-To: <20220816222920.1952936-3-vladimir.oltean@nxp.com>
+References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
+        <20220816222920.1952936-3-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,25 +63,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022 19:17:03 +0800 Frank wrote:
->  Add a driver for the motorcomm yt8521 gigabit ethernet phy. We have verified
->  the driver on StarFive VisionFive development board, which is developed by
->  Shanghai StarFive Technology Co., Ltd.. On the board, yt8521 gigabit ethernet
->  phy works in utp mode, RGMII interface, supports 1000M/100M/10M speeds, and
->  wol(magic package).
+On Wed, 17 Aug 2022 01:29:15 +0300 Vladimir Oltean wrote:
+> +/**
+> + * struct ethtool_mm_state - 802.3 MAC merge layer state
+> + */
+> +struct ethtool_mm_state {
+> +	u32 verify_time;
+> +	enum ethtool_mm_verify_status verify_status;
+> +	bool supported;
+> +	bool enabled;
+> +	bool active;
 
-Clang reports:
+The enabled vs active piqued my interest. Is there some handshake /
+aneg or such?
 
-drivers/net/phy/motorcomm.c:1121:6: warning: variable 'changed' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-        if (err > 0)
-            ^~~~~~~
-drivers/net/phy/motorcomm.c:1124:47: note: uninitialized use occurs here
-        return genphy_check_and_restart_aneg(phydev, changed);
-                                                     ^~~~~~~
-drivers/net/phy/motorcomm.c:1121:2: note: remove the 'if' if its condition is always true
-        if (err > 0)
-        ^~~~~~~~~~~~
-drivers/net/phy/motorcomm.c:1095:18: note: initialize the variable 'changed' to silence this warning
-        int err, changed;
-                        ^
-                         = 0
+> +	nest_table = nla_nest_start(skb, ETHTOOL_A_FP_PARAM_TABLE);
+> +	if (!nest_table)
+> +		return -EMSGSIZE;
+
+Don't warp tables in nests, let the elements repeat in the parent.
