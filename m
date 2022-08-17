@@ -2,136 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F9775978EA
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:32:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20E0B59790D
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241719AbiHQVaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 17:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
+        id S241815AbiHQVkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 17:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241766AbiHQVaQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:30:16 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C764390C56;
-        Wed, 17 Aug 2022 14:30:14 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id a7so26797366ejp.2;
-        Wed, 17 Aug 2022 14:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=1WahhERX691CESd1ffbJud3Y+oZ8wMt9XQmOZisGAO4=;
-        b=Qe9HJqjJVkpt9ngOfi1SC4JuyFO279d6GmPGr+m7JUf5xARUiAYC82F8IYAoMRWUuH
-         Ick6Mncg5vhH1GPIkrgWo0M3oeah3nV7VGow9GlBeWAwGf+ptHvRze9Viu7DtJLqzEyq
-         CdbFGYMxHNVCCc3G2N/Xi6DssMJwvB5vrLa4dGm6j/oitdez+dT5fwD6PZxMXsvMObTS
-         gJHBo4eqg3dVCiio9YPKDBRvAe3YEttVP3X0KAJ1jA06JCwWql7+8EuLhq3JuX/N5w0O
-         +Tz9RP5geRhjqgeApy/HhGtteAUCvkF7Rob7w9WBr/ymI91naRV0C5rMz3Bjw1i+UiTE
-         yvLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=1WahhERX691CESd1ffbJud3Y+oZ8wMt9XQmOZisGAO4=;
-        b=Ku0H0BW1ly9Ul5dyGBXjn1SFfNu4t3imCAqcu6umXyZ0ToXgHrMLN7bnrNr0chUyJw
-         cTKxqMOXbJupBisn2gLi5QQg8p521LC7Jx+CI8uFPESY69l+EHzywrOdUObYdYiEgLEe
-         l25J/X8r30smy2n6y+9Ei4mo+NjX8/XFBKAfZxibIhBj5AAgcXTLjgM4BAVsn4FaGhsO
-         UWyikRPDRq8OaAp888WAtIOawmKGKW9VH8IvgxN8hp9o15p07V67piFKdJxlFREH49Tp
-         Mf9EadQ13ttVNRuGw0M+sicnhPTx+Akb7ZKaDEQdure26IDZ1XutAPrXWa2O8VV2r+tS
-         YiEg==
-X-Gm-Message-State: ACgBeo3Gf2oE9kw4lgD+k9UadN7z05F+0AULaaK8l+bInIgDVxfMvLc0
-        cTGpb0gyxP85RNPk3Qskv8rEVkUOQWgzr/rka3o=
-X-Google-Smtp-Source: AA6agR4CMlusqqwkMYPqZBWzDqnHs10L6iaVvsd1N80IUKEqJWg8pd0K6sV2lnzisB10uvUvY41yjFw1xWJS629TJC4=
-X-Received: by 2002:a17:907:272a:b0:731:4699:b375 with SMTP id
- d10-20020a170907272a00b007314699b375mr17814804ejl.633.1660771813165; Wed, 17
- Aug 2022 14:30:13 -0700 (PDT)
+        with ESMTP id S235218AbiHQVk1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:40:27 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C1BA50F8;
+        Wed, 17 Aug 2022 14:40:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=Yb08U+n4Pko/rjKY9WxgXaG1dGWDv/+eoZWbzofjewc=; b=fDyOq8wY0X9n5uFhdxcg912LeC
+        Ep90b17TEg9NOJw8M4fQOGkQ69tZLrNvCWegUUhY2XdyIMvZOo1nV1jzYl/wAaNR0lG//tuUH0w2j
+        9v/5JPIGLtz9b44F+iLguiwWSQrbk1lfy+M3CWn5eqgaxcvQTjUUSQVyOOPWXYQXaKm6jjiSWEQ3N
+        Rn0QVv8hi9qDjXATTJF8XnpWzaRj95K/sAaus3u1NU7meLe9CbOwQaWGYZ4RXi4l39L4AWE1d3zf3
+        Sdy7DBnpfz63PWTEwm9IyfiCiWn2SNfGqtPNoyTxl7yQnLbTB9EQN1POKvjX566hKfuB88X9XWU1z
+        TBPSDBnQ==;
+Received: from [179.232.144.59] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1oOQlU-00AxTG-AY; Wed, 17 Aug 2022 23:39:52 +0200
+Message-ID: <c0250075-ec87-189f-52c5-e0520325a015@igalia.com>
+Date:   Wed, 17 Aug 2022 18:39:07 -0300
 MIME-Version: 1.0
-References: <cover.1660761470.git.dxu@dxuuu.xyz> <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
-In-Reply-To: <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 17 Aug 2022 14:30:01 -0700
-Message-ID: <CAADnVQ+G0Hju-OeN6e=JLPQzODxGXCsP7OuVbex1y-EYr6Z5Yw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 3/4] bpf: Add support for writing to nf_conn:mark
-To:     Daniel Xu <dxu@dxuuu.xyz>, Martin KaFai Lau <martin.lau@linux.dev>,
-        Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
+ loaded
+Content-Language: en-US
+To:     Borislav Petkov <bp@alien8.de>, pmladek@suse.com,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Tony Luck <tony.luck@intel.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-edac@vger.kernel.org
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
+ <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com> <Yv1C0Y25u2IB7PCs@zn.tnic>
+ <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com> <Yv1XVRmTXHLhOkER@zn.tnic>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <Yv1XVRmTXHLhOkER@zn.tnic>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 11:43 AM Daniel Xu <dxu@dxuuu.xyz> wrote:
->
-> +/* Check writes into `struct nf_conn` */
-> +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> +                                  const struct btf *btf,
-> +                                  const struct btf_type *t, int off,
-> +                                  int size, enum bpf_access_type atype,
-> +                                  u32 *next_btf_id,
-> +                                  enum bpf_type_flag *flag)
-> +{
-> +       const struct btf_type *nct = READ_ONCE(nf_conn_type);
-> +       s32 type_id;
-> +       size_t end;
-> +
-> +       if (!nct) {
-> +               type_id = btf_find_by_name_kind(btf, "nf_conn", BTF_KIND_STRUCT);
-> +               if (type_id < 0)
-> +                       return -EINVAL;
-> +
-> +               nct = btf_type_by_id(btf, type_id);
-> +               WRITE_ONCE(nf_conn_type, nct);
-> +       }
-> +
-> +       if (t != nct) {
-> +               bpf_log(log, "only read is supported\n");
-> +               return -EACCES;
-> +       }
-> +
-> +       switch (off) {
-> +#if defined(CONFIG_NF_CONNTRACK_MARK)
-> +       case offsetof(struct nf_conn, mark):
-> +               end = offsetofend(struct nf_conn, mark);
-> +               break;
-> +#endif
-> +       default:
-> +               bpf_log(log, "no write support to nf_conn at off %d\n", off);
-> +               return -EACCES;
-> +       }
-> +
-> +       if (off + size > end) {
-> +               bpf_log(log,
-> +                       "write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
-> +                       off, size, end);
-> +               return -EACCES;
-> +       }
-> +
-> +       return NOT_INIT;
+On 17/08/2022 18:02, Borislav Petkov wrote:
+> On Wed, Aug 17, 2022 at 05:28:34PM -0300, Guilherme G. Piccoli wrote:
+>> My understanding is the same as yours, i.e., this is not possible to
+>> collect from vmcore, it requires register reading. But again: if you
+>> kdump your machine today, you won't collect this information, patch
+>> changed nothing in that regard.
+> 
+> Why won't you be able to collect it? You can certainly access dmesg in
+> the vmcore and see those errors logged there.
 
-Took me a long time to realize that this is a copy-paste
-from net/ipv4/bpf_tcp_ca.c.
-It's not wrong, but misleading.
-When atype == BPF_READ the return value from
-btf_struct_access should only be error<0, SCALAR_VALUE, PTR_TO_BTF_ID.
-For atype == BPF_WRITE we should probably standardize on
-error<0, or 0.
+Sorry for the confusion, let me try to be a bit more clear:
 
-The NOT_INIT happens to be zero, but explicit 0
-is cleaner to avoid confusion that this is somehow enum bpf_reg_type.
+(1) if we kdump but we *didn't run* s10_edac_dberr_handler() before
+kdump, the information is lost, since s10_edac_dberr_handler() performs
+register readings. That information is not contained inside the vmcore.
 
-Martin,
-since you've added this code in bpf_tcp_ca, wdyt?
+(2) If for some reason the function s10_edac_dberr_handler() *was
+executed prior to kdump*, of course the registers information would be
+on dmesg, easy to collect in the vmcore.
+
+Makes sense?
+
+
+> 
+>> The one thing it changes is that you'd skip the altera register dump if
+>> kdump is set AND you managed to also set "crash_kexec_post_notifiers".
+> 
+> What your patch changes is, it prevents s10_edac_dberr_handler() from
+> logging potentially important fatal hw errors when kdump is loaded.
+
+Agreed. If kdump is loaded, we cannot log that information (modulo that
+we do not collect it today by default on kdump as well).
+The other part of story (the reason of the patch) is that we plan to
+start running this panic notifier a bit earlier, being able to collect
+such edac logs with pstore, for example.
+
+
+> 
+> If Dinh is fine with that, I'll take the patch. But it looks like a bad
+> idea to me.
+> 
+
+I think we should seek what the majority of the folks consider the best,
+in order to converge to some well-accepted solution. I'm completely OK
+in dropping this one and rework with some other idea, or we can leave
+this panic notifier as is, continue running that a bit later.
+
+Tony / Petr (when back), suggestions are welcome =)
+Cheers,
+
+
+Guilherme
