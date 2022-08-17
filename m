@@ -2,144 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBA2D5975DF
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 20:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4F25975EA
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 20:50:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232561AbiHQSlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 14:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45386 "EHLO
+        id S241217AbiHQSnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 14:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237435AbiHQSle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 14:41:34 -0400
+        with ESMTP id S240974AbiHQSnb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 14:43:31 -0400
 Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875249FAB8;
-        Wed, 17 Aug 2022 11:41:33 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.nyi.internal (Postfix) with ESMTP id E96C55C0055;
-        Wed, 17 Aug 2022 14:41:32 -0400 (EDT)
-Received: from imap42 ([10.202.2.92])
-  by compute2.internal (MEProxy); Wed, 17 Aug 2022 14:41:32 -0400
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A33185FEE;
+        Wed, 17 Aug 2022 11:43:17 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.nyi.internal (Postfix) with ESMTP id 355555C0180;
+        Wed, 17 Aug 2022 14:43:16 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Wed, 17 Aug 2022 14:43:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm3; t=1660761692; x=
-        1660848092; bh=KBkAVrFUWUiLnYz1HgB/kktwNXCcCNFrJP92tOCbhDk=; b=i
-        kSCWfDhzh9hREGc9NnjtCI/XLmrpunPU3M5N8WxiUoMsnKo0cUDYKCcUIFKOTgtF
-        +6TFAc1M/ixDcswGt0aKJ9BSLoT1dKD4+ow6CxfhKhJ7nlC4o3I3PY/QYRMhy3+j
-        Lt03MeQ52D9lQpUfNbSjAeHh9+UbPXZxySSP2kFJM7ynMzbKUiE9qnrPcDB2vvTX
-        +BbhwhbMRuBoFiWU0npqrL0DCJVpGyTJ4956cIX8AxJ7IEkMResR4POpQ4Y1Zgt0
-        0gTLlz3Cf8ezcyPX7FUQ6ixRwFgGgkXeGwcEbQbxlBDuosZe0NX8CeRV4RIST2Z1
-        lFmBvg+71tN/LxHUMLuEA==
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm3; t=1660761796; x=1660848196; bh=jdo+e+0Bg4eiX19+TskCBEv6l
+        gk9aqZm7MX54jqJxcU=; b=tpkSLIwCX8n2WaO9TdHjNYfChpm/5FcyKvBJLWrm9
+        A1ok251C65D1UDZDAVKLprAivuBc+jp321ezOGQhPzw7ohTLEi3lkFOySIGydPIC
+        54OGirmUv5Zoguy3+99R2wfc5ud8sHClCqwKRx+D+OUSQfaSoElAlp3CZp4XzzlQ
+        TcSTQPvdwMrmIu7L6FuHFZlDTE44ltFq3CfrlKrCyBjgzi+WO2jJaNJuxC+vE+2f
+        LqN2f4lqy6wTifiPNXFAnlsUt40m8cuw0IlbJtKZRjtjW126QUP1uMJ/tzfmUooh
+        IigDOSJiufsN2c3bryiI6ty7TI5ov5XSAPd87hiRlf4gQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1660761692; x=
-        1660848092; bh=KBkAVrFUWUiLnYz1HgB/kktwNXCcCNFrJP92tOCbhDk=; b=U
-        Dy6EGmSK7gzMimqN2Np815myw8KzJqgcF72m++jcMXieKMudfuKtm4o4pIthssx1
-        jJzVD6Yc2FOrUaOe3zW/5cHKGqJLSLAMd4UksqbU6tjF2/11FDlL2GmqL6NQICYf
-        HQf7kdvQg5h01FPOw57CsTicUHiA8E+egEGCtA5cPqo9BatnyuL+zsOGziXAn2EZ
-        b/9N6bW7bXJM+l1vM5vMh7EFOtWs5vTu5GY5lz1P8DXI+2qNAcrf6OO9WmIE0bJy
-        RpcdZa6wUlwvTUl4HPNHLI3Ys6WGTnySymfYcKBaVG4I2dIomm4iQDFBO5DLRIEK
-        7eSzQdx0Xr0P+90lPHfdQ==
-X-ME-Sender: <xms:XDb9YnFIagB7A2cBaaQ9vILES5qUY8hgnO2VQhhYng81is1f3NxtKQ>
-    <xme:XDb9YkV6eLgxdJ0xqtrcFHxCIAGsWTc-K38ygMoLkemAoHyfBQQvIpjATGxsIH_zJ
-    SpE9gyB3yfAaj03rA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedguddvlecutefuodetggdotefrod
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+        1660761796; x=1660848196; bh=jdo+e+0Bg4eiX19+TskCBEv6lgk9aqZm7MX
+        54jqJxcU=; b=RmC27Scg7eEXx3KQVry4BBq/20JQXG2jPpodn7kWim6PRGCy+dm
+        L+LmirRDyPLNAQLCjB6fn/WGTMfq7S32LmYXx8Shz9++8GCd/nNvNc/Hc2oEfwk5
+        Ujze5DhvnE2uErGuHOAriRJst9zFihf/h0xAMlczFDSCBvslJPxT2YGPd+TzrzmI
+        3M0MXeQwb8GjrN3wVu1kb+k+Pb4lgLWwWG1Ph9GeWFz1Xl+KBIevVMTfovdjcquK
+        /t4bRE9h8KCRGCryEanGf8x6nNV76MaOEC+GrkzZT3Pl4zNKrdPHu028JKdt9cIh
+        83Qc8CvY3nV8jRZHgqbUTTIr5fGO/uS78iA==
+X-ME-Sender: <xms:xDb9YvhRecJHIja9Wj-GnD507BftfBaYRXEKVDVYoCjAU6DOztgONA>
+    <xme:xDb9YsDS4rU1MwBEwsgyrJZzq889XUaWk4urwvtYkrNOH-5gnsIzZ9tD0mzyDSq87
+    rWiJDL-IrsTrnl8rQ>
+X-ME-Received: <xmr:xDb9YvGTTPs88huJ_PwU_odZdWwXcemYilyU7UiNprDhTcQ0zow3fzMiH-0yDD3HmbG6pkxCvrIJgkVe-ylIaaX3fhgY3LXve0KO>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehiedgudeftdcutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enfghrlhcuvffnffculddvfedmnecujfgurhepofgfggfkjghffffhvfevufgtgfesthhq
-    redtreerjeenucfhrhhomhepfdffrghnihgvlhcuighufdcuoegugihusegugihuuhhurd
-    ighiiiqeenucggtffrrghtthgvrhhnpeffheffhfdvfefgjeehfedviedvfeehgeefgeeu
-    jedvheeuteelkeevvdduvdeludenucffohhmrghinheplhhotghkrdhrvggrugenucevlh
-    hushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihu
-    uhhurdighiii
-X-ME-Proxy: <xmx:XDb9YpJlIk5i-V5nCszbe21XnXqF-pO9TMHo9Nw8cXdqfBlWoNl2nw>
-    <xmx:XDb9YlHXYa8YJJP43LNqim97aNApWqDSToNK0K1TjcFnMEeeSfZUNQ>
-    <xmx:XDb9YtU3C4346XXEp4OB1tOcRRXLxP952bpCHiZ0SSkOisQqX4-72Q>
-    <xmx:XDb9YprWXRms0hWDnATlbCgWhPHNu29K7_MI2QvQkq_MkujLAU0zdQ>
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephf
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeetueektdeuhfefvefggf
+    evgeffgfekfefhkeekteffheevtddvhedukeehffeltdenucffohhmrghinhepkhgvrhhn
+    vghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepugiguhesugiguhhuuhdrgiihii
+X-ME-Proxy: <xmx:xDb9YsTvlHEKGW9KGsJEsmCjvIwRQVTQ6q0wtxCMg60oCZX8aNdPzA>
+    <xmx:xDb9Yszyx2ihUaO3DR0UrrJVqupxJryPwqDzOFpOZnxB53lJZg_pSg>
+    <xmx:xDb9Yi5FPH6eX-djY7xwB_IUMJqWTy1BpALmyuCHK0_W6ozXK2NWWw>
+    <xmx:xDb9YhrQgD_rOhBj__CFlNou_aGDFoMTLDThljcRjgtGZWqbbZ655Q>
 Feedback-ID: i6a694271:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 90270BC0075; Wed, 17 Aug 2022 14:41:32 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-841-g7899e99a45-fm-20220811.002-g7899e99a
-Mime-Version: 1.0
-Message-Id: <668406b9-714f-4ade-889d-051cf42ceefc@www.fastmail.com>
-In-Reply-To: <20220817183453.GA24008@breakpoint.cc>
-References: <cover.1660592020.git.dxu@dxuuu.xyz>
- <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
- <871qth87r1.fsf@toke.dk> <20220815224011.GA9821@breakpoint.cc>
- <5c7ac2ab-942f-4ee7-8a9c-39948a40681c@www.fastmail.com>
- <20220817183453.GA24008@breakpoint.cc>
-Date:   Wed, 17 Aug 2022 12:41:12 -0600
-From:   "Daniel Xu" <dxu@dxuuu.xyz>
-To:     "Florian Westphal" <fw@strlen.de>
-Cc:     =?UTF-8?Q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Kumar Kartikeya Dwivedi" <memxor@gmail.com>, pablo@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 17 Aug 2022 14:43:15 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, memxor@gmail.com
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/4] Support direct writes to nf_conn:mark
+Date:   Wed, 17 Aug 2022 12:42:58 -0600
+Message-Id: <cover.1660761035.git.dxu@dxuuu.xyz>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=1.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
-        PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+        FROM_SUSPICIOUS_NTLD_FP,PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022, at 12:34 PM, Florian Westphal wrote:
-> Daniel Xu <dxu@dxuuu.xyz> wrote:
->> On Mon, Aug 15, 2022, at 4:40 PM, Florian Westphal wrote:
->> > Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org> wrote:
->> >> > Support direct writes to nf_conn:mark from TC and XDP prog types=
-. This
->> >> > is useful when applications want to store per-connection metadat=
-a. This
->> >> > is also particularly useful for applications that run both bpf a=
-nd
->> >> > iptables/nftables because the latter can trivially access this m=
-etadata.
->> >> >
->> >> > One example use case would be if a bpf prog is responsible for a=
-dvanced
->> >> > packet classification and iptables/nftables is later used for ro=
-uting
->> >> > due to pre-existing/legacy code.
->> >> >
->> >> > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
->> >>=20
->> >> Didn't we agree the last time around that all field access should =
-be
->> >> using helper kfuncs instead of allowing direct writes to struct nf=
-_conn?
->> >
->> > I don't see why ct->mark needs special handling.
->> >
->> > It might be possible we need to change accesses on nf/tc side to use
->> > READ/WRITE_ONCE though.
->>=20
->> I reviewed some of the LKMM literature and I would concur that
->> READ/WRITE_ONCE() is necessary. Especially after this patchset.
->>=20
->> However, it's unclear to me if this is a latent issue. IOW: is reading
->> ct->mark protected by a lock? I only briefly looked but it doesn't
->> seem like it.
->
-> No, its not protected by a lock.  READ/WRITE_ONCE is unrelated to your
-> patchset, this is a pre-existing "bug".
+Support direct writes to nf_conn:mark from TC and XDP prog types. This
+is useful when applications want to store per-connection metadata. This
+is also particularly useful for applications that run both bpf and
+iptables/nftables because the latter can trivially access this metadata.
 
-Thanks for confirming. Since it's pre-existing I will send out a followup
-patchset then.
+One example use case would be if a bpf prog is responsible for advanced
+packet classification and iptables/nftables is later used for routing
+due to pre-existing/legacy code.
 
-Thanks,
-Daniel
+Past discussion:
+- v1: https://lore.kernel.org/bpf/cover.1660592020.git.dxu@dxuuu.xyz/
+
+Changes since v1:
+- Add unimplemented stub for when !CONFIG_BPF_SYSCALL
+
+Daniel Xu (4):
+  bpf: Remove duplicate PTR_TO_BTF_ID RO check
+  bpf: Add stub for btf_struct_access()
+  bpf: Add support for writing to nf_conn:mark
+  selftests/bpf: Add tests for writing to nf_conn:mark
+
+ include/linux/bpf.h                           |  9 ++++
+ include/net/netfilter/nf_conntrack_bpf.h      | 18 +++++++
+ kernel/bpf/verifier.c                         |  3 --
+ net/core/filter.c                             | 34 +++++++++++++
+ net/netfilter/nf_conntrack_bpf.c              | 50 +++++++++++++++++++
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c |  1 +
+ .../testing/selftests/bpf/progs/test_bpf_nf.c |  6 ++-
+ .../selftests/bpf/progs/test_bpf_nf_fail.c    | 14 ++++++
+ 8 files changed, 130 insertions(+), 5 deletions(-)
+
+-- 
+2.37.1
+
