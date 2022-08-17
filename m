@@ -2,90 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A80597850
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:00:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F217597853
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:00:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbiHQU4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 16:56:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        id S242127AbiHQU4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 16:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233797AbiHQUz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:55:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12190A7231
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 13:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660769756;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UCPQMtqG0VB+k5U8mjKK0NLp4lpMVU6Bz0wA0P8dEHU=;
-        b=ikOG53/rIvP/+b5LsFG3ugJE4SVcS6pi0Mdrm3CWp+ywtHngZ3mz0aZfS2mVJmswBvU3R5
-        EWPaE5VXbWB9wMdw+6rto65cjEMlF/trRZpKLkUGj8xjXXxMfSTRZxKpkA4KVQzxHtlJon
-        3SQ1XlxqIM1dmBm4bxY5bGPtSZvu3TI=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-483-bPj_UI21ODiyJxAyER130Q-1; Wed, 17 Aug 2022 16:55:53 -0400
-X-MC-Unique: bPj_UI21ODiyJxAyER130Q-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B45B6802E5D;
-        Wed, 17 Aug 2022 20:55:52 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A05EAC15BB3;
-        Wed, 17 Aug 2022 20:55:50 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220816164435.0558ef94@kernel.org>
-References: <20220816164435.0558ef94@kernel.org> <20220816103452.479281-1-yin31149@gmail.com> <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk> <804153.1660684606@warthog.procyon.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     dhowells@redhat.com, Hawkins Jiawei <yin31149@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        bpf@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [PATCH] net: Fix suspicious RCU usage in bpf_sk_reuseport_detach()
+        with ESMTP id S242057AbiHQU4r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:56:47 -0400
+Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE86A99E9;
+        Wed, 17 Aug 2022 13:56:38 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:43026)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oOQ5c-007tAA-3N; Wed, 17 Aug 2022 14:56:36 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:44962 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oOQ5b-006es9-5Q; Wed, 17 Aug 2022 14:56:35 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Paul Moore <paul@paul-moore.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
+References: <20220815162028.926858-1-fred@cloudflare.com>
+        <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+        <8735dux60p.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
+        <871qte8wy3.fsf@email.froward.int.ebiederm.org>
+        <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+Date:   Wed, 17 Aug 2022 15:56:26 -0500
+In-Reply-To: <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+        (Paul Moore's message of "Wed, 17 Aug 2022 16:13:39 -0400")
+Message-ID: <8735du7fnp.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3974012.1660769749.1@warthog.procyon.org.uk>
-Date:   Wed, 17 Aug 2022 21:55:49 +0100
-Message-ID: <3974013.1660769749@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-XM-SPF: eid=1oOQ5b-006es9-5Q;;;mid=<8735du7fnp.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1/Xn3ZKbDRXVpMvUTRIq5cONwBCXE13Nz4=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-DCC: XMission; sa05 1397; Body=1 Fuz1=1 Fuz2=1 
+X-Spam-Combo: **;Paul Moore <paul@paul-moore.com>
+X-Spam-Relay-Country: 
+X-Spam-Timing: total 383 ms - load_scoreonly_sql: 0.07 (0.0%),
+        signal_user_changed: 10 (2.7%), b_tie_ro: 9 (2.3%), parse: 0.91 (0.2%),
+         extract_message_metadata: 14 (3.6%), get_uri_detail_list: 1.36 (0.4%),
+         tests_pri_-1000: 18 (4.7%), tests_pri_-950: 1.24 (0.3%),
+        tests_pri_-900: 1.00 (0.3%), tests_pri_-90: 74 (19.2%), check_bayes:
+        72 (18.8%), b_tokenize: 8 (2.1%), b_tok_get_all: 9 (2.4%),
+        b_comp_prob: 2.6 (0.7%), b_tok_touch_all: 49 (12.9%), b_finish: 0.77
+        (0.2%), tests_pri_0: 242 (63.1%), check_dkim_signature: 0.54 (0.1%),
+        check_dkim_adsp: 2.7 (0.7%), poll_dns_idle: 10 (2.7%), tests_pri_10:
+        1.71 (0.4%), tests_pri_500: 19 (4.8%), rewrite_mail: 0.00 (0.0%)
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
+Paul Moore <paul@paul-moore.com> writes:
 
-> I like your version because it documents what the lock protecting this
-> field is. 
-> 
-> In fact should we also add && sock_owned_by_user(). Martin, WDYT? Would
-> that work for reuseport? Jakub S is fixing l2tp to hold the socket lock
-> while setting this field, yet most places take the callback lock...
+> On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+>> Paul Moore <paul@paul-moore.com> writes:
+>>
+>> > At the end of the v4 patchset I suggested merging this into lsm/next
+>> > so it could get a full -rc cycle in linux-next, assuming no issues
+>> > were uncovered during testing
+>>
+>> What in the world can be uncovered in linux-next for code that has no in
+>> tree users.
+>
+> The patchset provides both BPF LSM and SELinux implementations of the
+> hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
+> If no one beats me to it, I plan to work on adding a test to the
+> selinux-testsuite as soon as I'm done dealing with other urgent
+> LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
+> run these tests multiple times a week (multiple times a day sometimes)
+> against the -rcX kernels with the lsm/next, selinux/next, and
+> audit/next branches applied on top.  I know others do similar things.
 
-So how do you want to proceed?  My first version of the patch with
-sock_owned_by_user()?
+A layer of hooks that leaves all of the logic to userspace is not an
+in-tree user for purposes of understanding the logic of the code.
 
-David
+
+The reason why I implemented user namespaces is so that all of linux's
+neat features could be exposed to non-root userspace processes, in
+a way that doesn't break suid root processes.
+
+
+The access control you are adding to user namespaces looks to take that
+away.  It looks to remove the whole point of user namespaces.
+
+
+So without any mention of how people intend to use this feature, without
+any code that uses this hook to implement semantics.  Without any talk
+about how this semantic change is reasonable.  I strenuously object.
+
+Eric
 
