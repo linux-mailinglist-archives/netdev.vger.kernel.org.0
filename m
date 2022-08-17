@@ -2,250 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B7E596CEF
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 12:42:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 575ED596CFB
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 12:48:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235632AbiHQKmh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 06:42:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52604 "EHLO
+        id S233456AbiHQKox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 06:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234805AbiHQKmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 06:42:36 -0400
-Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A766745F
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 03:42:35 -0700 (PDT)
-Received: by mail-il1-f197.google.com with SMTP id q10-20020a056e020c2a00b002dedb497c7fso8816688ilg.16
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 03:42:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=dGf0k+8gaWLKZF0802lbU+hBLQGSChCQvh1ajDWAcoA=;
-        b=BJWrBLMC7J7vFTqZsZsTxMQDItEutlMyiaFQ+q6w42D4VK7lgifnEba6y/r/G63OUY
-         dOfWc7wS+zzMzc4i0jTWPUz7mXwml3lyAavGKLpuozWS771OAVAatXHnmlvWpp27ke/f
-         7vyxQNRzntAe5Ta0KdkMVSi8+JSOJgAqd/JPY+nBL2V7EX2V3tFBP+5stfx32aZ6rfLZ
-         fak2zuDSrUrflzMqcyNt9RC0PgmzyOH+pKRP90tDPJnwH7OplIzLKWaoLEll1OX88Ctu
-         aF0jm4XnzlF+kwPM4yp0xBl8a0MiXByeCmGDh4hOTP7VdO+EBHgF2JeNME3Nn0lG1tzG
-         EHOg==
-X-Gm-Message-State: ACgBeo08K53Ik9I4CoHiH8d5qnTVDdIhBF11T1yKcneGB6Ch3uvH+YjC
-        XsmtGqYrpIX7FI2NgpgZm/9JuKLfQ7qrZexQ1vsDXtATAFGz
-X-Google-Smtp-Source: AA6agR5qkdM9MzspQ+NiB3humvMVExmDo8OhaPpID8tHtCE3K+O87UyGATco3xnjYi3pT0LdRl6zqFeGF2/OSkuAFVgMASf5IdBG
+        with ESMTP id S229930AbiHQKou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 06:44:50 -0400
+Received: from EUR03-AM7-obe.outbound.protection.outlook.com (mail-am7eur03on2109.outbound.protection.outlook.com [40.107.105.109])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 961BA63F32;
+        Wed, 17 Aug 2022 03:44:48 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B1Aj1jHEED+z1ZWU6oyH6x7VsedxLYDpxRFmeakgOeWDslv0BMo2Qd6TTNCSHV0Vu+DHvoasITmRC7SvKWQ7FVDtfiXrQhL3fdZtzM47sdVo93lTENHkfJQzxTEO+fUBBAsGUa/xgZXjA4/jNOLx8/pO0c8gkwzN9D9+P1lwzoaQ/khH4+c+tzT/woxEawCR7HytQeaYYG0G7Yg1tG38xJUZCcezZM63vdpe6wNSZA7/vI6WnC3zaOTgF5cWZV70kEYpMpob57UFtiU9oBqj/eJgdqIuojp/PC6fVw9msymUkvDuX2PC/u1AKQeOydBBvfGn9+eIpTjPX+5TKcRuxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=049QALEGnj3+HkCipPz3qgG0i5hg/RiwkwJWjG3RLwI=;
+ b=F+zWt5Bsz63JOGpqQkDhnfJtFXKpYg+dXTqUamLRT5YNUUDQPLHFPVgLeZVuYCfQYztaLIz/OGD9Vc38UTd3UOu4LluaRj0ipVRRADDAHooCxQd74Zymm11Ol9koal6XRSZpm6DvC7I6QO5w2zRRUuTAYGls573i+kKpsoWaZqcAB1Kq64hmfPUmFPZ8IUq8/PkLgWjMh9OuH2vstorOpjfG4VGOxuPrlTGR+nHAcIpq7IrKGl3J3Wl+tPKqv2Ka4yCcn1CDlwhGEP1/iunNf2bNGjvHhbKlnx7tYy5sehQQqTNgsPTurrZpMlw8S/mDmsIvocf3QVD0IALd8v//gg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=049QALEGnj3+HkCipPz3qgG0i5hg/RiwkwJWjG3RLwI=;
+ b=tPrSEmRw3T+2DfiqVHvX4lU7Kg1Jzpp5q5le+1K8lrxEEBFTGYSOIO7Fp0RSz07PnowH1JinMa2im6u8KHv/+VIx1eCreQtyIqBZaUedLbRL2YgdA+R+HOsEXOpNCxboYOf6GMzwShFVb5QLxM6FF+/PeRkVFqEnZxOgSMwttEE=
+Received: from VI1PR03MB3950.eurprd03.prod.outlook.com (2603:10a6:803:75::30)
+ by PA4PR03MB7071.eurprd03.prod.outlook.com (2603:10a6:102:ed::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.19; Wed, 17 Aug
+ 2022 10:44:45 +0000
+Received: from VI1PR03MB3950.eurprd03.prod.outlook.com
+ ([fe80::3965:8efc:7af6:756e]) by VI1PR03MB3950.eurprd03.prod.outlook.com
+ ([fe80::3965:8efc:7af6:756e%7]) with mapi id 15.20.5482.016; Wed, 17 Aug 2022
+ 10:44:45 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Kalle Valo <kvalo@kernel.org>
+CC:     =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <alvin@pqrs.dk>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wright Feng <wright.feng@cypress.com>,
+        Chi-hsien Lin <chi-hsien.lin@cypress.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [1/6] wifi: brcmfmac: fix continuous 802.1x tx pending timeout
+ error
+Thread-Topic: [1/6] wifi: brcmfmac: fix continuous 802.1x tx pending timeout
+ error
+Thread-Index: AQHYrHzFRe0HAvutf0m8wUpKE1fIQ62yz18AgAAjnMmAAADFgA==
+Date:   Wed, 17 Aug 2022 10:44:45 +0000
+Message-ID: <20220817104445.ji75o6ibduz2ndjk@bang-olufsen.dk>
+References: <20220722115632.620681-2-alvin@pqrs.dk>
+ <166011047689.24475.5790257380580454361.kvalo@kernel.org>
+ <20220817083432.wgkhhtihtv7wdwoq@bang-olufsen.dk> <871qtfm9sk.fsf@kernel.org>
+In-Reply-To: <871qtfm9sk.fsf@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a8e0b14f-d8f7-4f62-502d-08da803d8036
+x-ms-traffictypediagnostic: PA4PR03MB7071:EE_
+x-ms-exchange-atpmessageproperties: SA|SL
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: twx6Bc6kaD6OdcsvMRgzE4bKqxIHwJ+6rHMGPuwAh/yNHTI8kxCmsyBPdH7AbcFSWZsmXrYDxqG3YI6TfJe6YlzxB0CeW4guWPwn7HtotuHjIaPEbGK8DQDd1VEA2s5gpaxAOcA4qsLo2Sajkj+q7Nvh5tn5N+cxi7phNfkRPt3EpwarsGHUpT0S1je4injfDg1latWOUAlt9PCxAqh8wloLxNK4j5F68cy6J6lcywkgavWzThv19lJoG34p6HHOwd9EbQSaEo/8WmodFix+Gc8P4xJabM7D5xrUmMxMNfrOTNIuZKeb5Qa+TDiG9+40vb8ZYbArWhcR2yrMLzkhiQZKb4AYdJ8wk22MZgp7zPylsweZL5EC/0JWyizghhVtTHLZv5KruAO8IkIHrtgmhqgVYdmH5lGo/Pce3fWpQz2BuqA5YM/GglqR5ykDoiQdq9WoIa7j7n9wpY6ytUA6csv6+YbcdPn6Ud0nYvdsrK4+d/SAi0wHV+GWdgYIXLs9AEFYA4dxBoKo2/iaHs/JorQedO1I5cFFYxl2ZKQJHgLcQ12pdslxpwIwkB9Npxb7H3W4p3fRx24gxFc2I6dkhP44WGkRu9LOiDezXb+9bBdzF0RjI38hVVYnAzt8A4JVldCeGx+YxRzmH3MusyvMi/7ChmQKCZUSvJZAs7VKTMhvQATY/zKeI0xiaS//ngclru04y3lqslxz8iEZqb0MMTdPPpLhCJxh9ck7mgCf8rgAbDFNbCUY2/HwA2yNRzOvHCAsuSDT9tU6f5NoL/mMZK5Jeuhs2oSGejiwT9oqwgii4Dj7sLgrZok4nL4aYR61
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB3950.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(39850400004)(136003)(346002)(376002)(38070700005)(38100700002)(64756008)(8676002)(4326008)(91956017)(66446008)(66946007)(66556008)(66476007)(76116006)(36756003)(85202003)(85182001)(54906003)(6916009)(122000001)(86362001)(66574015)(1076003)(26005)(83380400001)(6512007)(478600001)(71200400001)(6506007)(41300700001)(6486002)(316002)(186003)(2906002)(5660300002)(2616005)(7416002)(8976002)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?RnZwMU83cTNOcjlSMzNwWWc1ZWliOGVvbkpmV1lHMVhtV3ZZdlpIUVI5Vy94?=
+ =?utf-8?B?R29heTA1Q2FLZlRYc2NoMWpybmQ1dHZxZXVZNmlqV2ZSSzAxaXdwK1ZMMGVz?=
+ =?utf-8?B?SnIzMVJFOUxHSzN5YzNzaXAxdEdCK1dvRGtrWklrZjNBYnFDMmF2NWdPYWo1?=
+ =?utf-8?B?MTNPVkxNVlpuZHpxK2NJeWZBQTBrd3RRamNVWWNwVGFLOXY1SlQ0LzlNRUpH?=
+ =?utf-8?B?M1g0MWxWNUsyNUVXdm9ZRlVNVUFDSjJiWGlLcHRnVkx1T29OR0tML3RDdllm?=
+ =?utf-8?B?eGRaKzZ0MEJheStBakNRVEZTZE9BUFRsamc3TGorMHBrWXExQ1lVd2VXTjhj?=
+ =?utf-8?B?NG5rYWYxSkRic2pEbjllWnNZSUF5Rks5MHBRcGFGK2U2YXZlMFliYzB1TVkz?=
+ =?utf-8?B?K3hSMkZYblVod3NmbUNqWGRJSWtzc2N6S1FHalpvZUJTWVNyV2pVSjlnNmo3?=
+ =?utf-8?B?YXhORGdqTjBLNjkvUnRxZy92UzVNUlRsNmw5S2NmaGpkOXkwZkIyNzVZQ2dU?=
+ =?utf-8?B?ZjZsVVY1dTUrVGtiZ3FCRWcrYnVZL1BrNWoxY1dyelZDbXp5TXZjRjRwQ3dy?=
+ =?utf-8?B?MWs2eVNJMlhVWlZHOG5rWVJvbmc3RDFvZEZKcWtwdUVxUUQ4b3VYWUd1L2d5?=
+ =?utf-8?B?UEY4aXRPcUZRT0lJRzM1WWtrVHU2cjV2S0ZoQitKTkViaDRXaDFQSmJzU1BF?=
+ =?utf-8?B?MjdTNTRDaTJEa0U1UGcwQ3doZC83Q3BzelVLbG9WaXZud2R0VHpVL0tGZklT?=
+ =?utf-8?B?Mll2UGJ0VnUrbDByVThGWmZZby8wMjNyVTI3RENwSkJtYmdoWS9GNW9lcWMw?=
+ =?utf-8?B?UTc1UXdmMHl1b1dCTzRsUGU2d1RGMUVjWTRYbm82eHJyVVREYjhLU3dDbHJG?=
+ =?utf-8?B?U3pSOTBlVmFtV2I1RFROcGEwWEhLd0NsV1FlVFBObVVUQ2tkNU9ZZDZ3aUtt?=
+ =?utf-8?B?c3FTNTVhNm5UUjdCWFN6Z2ZHcWJDYXErZkE4Y2FFWGZoamJxQjZYZUw5NmRL?=
+ =?utf-8?B?dmtYYk9LQkFEeVVYR3JqOW5iNTJweUFBZmZrWkxvcjRoNHpHaDM1NmZpWE8v?=
+ =?utf-8?B?ZGp4UElsNTFkN1JXbWtQcGtDYVp2RVB1S0labVZRSnh6di91TVNVajVEa1I5?=
+ =?utf-8?B?K2ZSUnF5NnhOaDF1YzU0SVRibTgwNXJzVmk4TTU1M0dnVi9seFZoWTRvTi92?=
+ =?utf-8?B?ZksrNW12RlAwZ1VTK3ZWRytSWHllYkFLWVJESmY0dmRrSjd6UW5hMkd2V2Q2?=
+ =?utf-8?B?Q3NOTks3M0NEWnZieW03RGEvZXl0SzJjNkpZSHRrSlBIaXZJb3hyc1MvaHp0?=
+ =?utf-8?B?d3E1Z0dycEVOMnFuY3R4b3dxbVJqWnk1T0pUbFhXUmpONTN2amdxUEFKdnJi?=
+ =?utf-8?B?a0NmNnNIQS8vMjdPcmxqYk5JdURCblJ3Y252RENod2xFRXlnVkJjVnhEOFVI?=
+ =?utf-8?B?U3d6QlFQM01hc2d6SUdLOHFTRDY1R1VuR0haaUkrVm9rSHhFQzZiT1YrSy9t?=
+ =?utf-8?B?TFN4a2xTL3M5WkZpSDBDckcvMXU5cDVBNHp6d0MzZklHdzNsSVZ0ejRsbjc0?=
+ =?utf-8?B?NE5qR3R5RUFEanU5VHViNk9od1lmZVlwdEhLTHI1UHN1aUM5aXJIb0ZHZ0pa?=
+ =?utf-8?B?dm5JNTZlQ2NmSkVJQnNiYU1BbndPZ1ZBb2xiWiswb3l0NWpqUmZJR0s0Sk9i?=
+ =?utf-8?B?d3FIbVlUSWZWWkxmbUJzVzFBQ1VNVDRwWjgyN3d6aGt2c0Ezd0VoNk9wc3Nw?=
+ =?utf-8?B?SGlQV2g3Y3RDZzZtWHBFM3lsdFVOTkdSbk9Qc3ViVTdrTEtHdm1WaFBPTVZR?=
+ =?utf-8?B?OVcyRWFHT0lyRmhrWk52Tis3eGUwdFlORTRLVW5FSUtGRW1WR1BZbkpkWFZu?=
+ =?utf-8?B?dFBIcTFaOHQvQlkvSlBBbU9IbjhOUmVxemwxei9BN3NCU1F1SHRQNnhtMGlT?=
+ =?utf-8?B?OWNNTFM0WmhoVDR4cG9sZEVQd3VVYW9BUkpNT2VZcmtBNnpSSUl4VWRuVTRL?=
+ =?utf-8?B?bVN5UTNiVU5EWHpPV2hxYXdvbTgyR3RkSEE2b0ZFZE1HUjFnd0Vqc2dnWU1E?=
+ =?utf-8?B?OEtzaWdaQkZ0MHQ1REtXVnQ2RWpVYzFqQWgzMElZVkh5YkttaFMwWnZUK3Yr?=
+ =?utf-8?B?eXF0akdUZHlDM1Z0dm9CaDhuenJtVWhRcXg2dEJpN0V5UmlkSXJSSlBUWi8w?=
+ =?utf-8?B?M2c9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D9F5DCD3CD78754C93690EC14A29BA2A@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1ca5:b0:2df:3283:b4a8 with SMTP id
- x5-20020a056e021ca500b002df3283b4a8mr12066898ill.131.1660732954380; Wed, 17
- Aug 2022 03:42:34 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 03:42:34 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d010b705e66d8520@google.com>
-Subject: [syzbot] KASAN: use-after-free Read in mgmt_pending_remove
-From:   syzbot <syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB3950.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8e0b14f-d8f7-4f62-502d-08da803d8036
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Aug 2022 10:44:45.8281
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AOqOYPkPvbgb7JGlJo8xJcpghkGe3AzPQYCcTk+IIn5QE76jkQ0ZDV+m5hCO7LuSvmn5C4ihqLja9B1IA+Rlfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR03MB7071
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    40b4ac880e21 net: lan966x: fix checking for return value o..
-git tree:       net
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=14d10915080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=924833c12349a8c0
-dashboard link: https://syzkaller.appspot.com/bug?extid=915a8416bf15895b8e07
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=115e3d15080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12917dc3080000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+915a8416bf15895b8e07@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: use-after-free in __list_del_entry_valid+0xde/0x110 lib/list_debug.c:46
-Read of size 8 at addr ffff888020a29408 by task syz-executor378/3646
-
-CPU: 1 PID: 3646 Comm: syz-executor378 Not tainted 5.19.0-syzkaller-13938-g40b4ac880e21 #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:317 [inline]
- print_report.cold+0x2ba/0x719 mm/kasan/report.c:433
- kasan_report+0xb1/0x1e0 mm/kasan/report.c:495
- __list_del_entry_valid+0xde/0x110 lib/list_debug.c:46
- __list_del_entry include/linux/list.h:134 [inline]
- list_del include/linux/list.h:148 [inline]
- mgmt_pending_remove+0x1a/0x160 net/bluetooth/mgmt_util.c:314
- remove_adv_monitor+0x1b9/0x1c0 net/bluetooth/mgmt.c:5057
- hci_mgmt_cmd net/bluetooth/hci_sock.c:1619 [inline]
- hci_sock_sendmsg+0x1dee/0x2490 net/bluetooth/hci_sock.c:1739
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- sock_write_iter+0x291/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2192 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9e9/0xdd0 fs/read_write.c:578
- ksys_write+0x1e8/0x250 fs/read_write.c:631
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f90195b9779
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 d1 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007fffc4302508 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00007f90195b9779
-RDX: 0000000000000008 RSI: 0000000020000080 RDI: 0000000000000004
-RBP: 00007fffc4302570 R08: 0000000000000001 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000003
-R13: 0000000000000011 R14: 00007fffc4302580 R15: 0000000000000000
- </TASK>
-
-Allocated by task 3646:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:437 [inline]
- ____kasan_kmalloc mm/kasan/common.c:516 [inline]
- ____kasan_kmalloc mm/kasan/common.c:475 [inline]
- __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:525
- kmalloc include/linux/slab.h:600 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- mgmt_pending_new+0x57/0x290 net/bluetooth/mgmt_util.c:269
- mgmt_pending_add+0x34/0x160 net/bluetooth/mgmt_util.c:296
- remove_adv_monitor+0x120/0x1c0 net/bluetooth/mgmt.c:5040
- hci_mgmt_cmd net/bluetooth/hci_sock.c:1619 [inline]
- hci_sock_sendmsg+0x1dee/0x2490 net/bluetooth/hci_sock.c:1739
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- sock_write_iter+0x291/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2192 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9e9/0xdd0 fs/read_write.c:578
- ksys_write+0x1e8/0x250 fs/read_write.c:631
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Freed by task 3646:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:367 [inline]
- ____kasan_slab_free+0x166/0x1c0 mm/kasan/common.c:329
- kasan_slab_free include/linux/kasan.h:200 [inline]
- slab_free_hook mm/slub.c:1754 [inline]
- slab_free_freelist_hook+0x8b/0x1c0 mm/slub.c:1780
- slab_free mm/slub.c:3534 [inline]
- kfree+0xe2/0x580 mm/slub.c:4562
- remove_adv_monitor+0x18b/0x1c0 net/bluetooth/mgmt.c:5050
- hci_mgmt_cmd net/bluetooth/hci_sock.c:1619 [inline]
- hci_sock_sendmsg+0x1dee/0x2490 net/bluetooth/hci_sock.c:1739
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:734
- sock_write_iter+0x291/0x3d0 net/socket.c:1108
- call_write_iter include/linux/fs.h:2192 [inline]
- new_sync_write fs/read_write.c:491 [inline]
- vfs_write+0x9e9/0xdd0 fs/read_write.c:578
- ksys_write+0x1e8/0x250 fs/read_write.c:631
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-The buggy address belongs to the object at ffff888020a29400
- which belongs to the cache kmalloc-96 of size 96
-The buggy address is located 8 bytes inside of
- 96-byte region [ffff888020a29400, ffff888020a29460)
-
-The buggy address belongs to the physical page:
-page:ffffea0000828a40 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x20a29
-flags: 0xfff00000000200(slab|node=0|zone=1|lastcpupid=0x7ff)
-raw: 00fff00000000200 ffffea0000953600 dead000000000004 ffff888011841780
-raw: 0000000000000000 0000000080200020 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 0, migratetype Unmovable, gfp_mask 0x12c40(GFP_NOFS|__GFP_NOWARN|__GFP_NORETRY), pid 2976, tgid 2976 (udevd), ts 23016454578, free_ts 23008667437
- prep_new_page mm/page_alloc.c:2532 [inline]
- get_page_from_freelist+0x109b/0x2ce0 mm/page_alloc.c:4283
- __alloc_pages+0x1c7/0x510 mm/page_alloc.c:5515
- alloc_pages+0x1a6/0x270 mm/mempolicy.c:2270
- alloc_slab_page mm/slub.c:1824 [inline]
- allocate_slab+0x27e/0x3d0 mm/slub.c:1969
- new_slab mm/slub.c:2029 [inline]
- ___slab_alloc+0x7f1/0xe10 mm/slub.c:3031
- __slab_alloc.constprop.0+0x4d/0xa0 mm/slub.c:3118
- slab_alloc_node mm/slub.c:3209 [inline]
- slab_alloc mm/slub.c:3251 [inline]
- __kmalloc+0x32b/0x340 mm/slub.c:4420
- kmalloc include/linux/slab.h:605 [inline]
- kzalloc include/linux/slab.h:733 [inline]
- tomoyo_encode2.part.0+0xe9/0x3a0 security/tomoyo/realpath.c:45
- tomoyo_encode2 security/tomoyo/realpath.c:31 [inline]
- tomoyo_encode+0x28/0x50 security/tomoyo/realpath.c:80
- tomoyo_realpath_from_path+0x186/0x620 security/tomoyo/realpath.c:288
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_perm+0x21b/0x400 security/tomoyo/file.c:822
- security_inode_getattr+0xcf/0x140 security/security.c:1345
- vfs_getattr fs/stat.c:157 [inline]
- vfs_statx+0x16a/0x390 fs/stat.c:232
- vfs_fstatat+0x8c/0xb0 fs/stat.c:255
- __do_sys_newfstatat+0x91/0x110 fs/stat.c:425
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1449 [inline]
- free_pcp_prepare+0x5e4/0xd20 mm/page_alloc.c:1499
- free_unref_page_prepare mm/page_alloc.c:3380 [inline]
- free_unref_page+0x19/0x4d0 mm/page_alloc.c:3476
- qlink_free mm/kasan/quarantine.c:168 [inline]
- qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
- kasan_quarantine_reduce+0x180/0x200 mm/kasan/quarantine.c:294
- __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:447
- kasan_slab_alloc include/linux/kasan.h:224 [inline]
- slab_post_alloc_hook mm/slab.h:727 [inline]
- slab_alloc_node mm/slub.c:3243 [inline]
- slab_alloc mm/slub.c:3251 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
- kmem_cache_alloc+0x267/0x3b0 mm/slub.c:3268
- getname_flags.part.0+0x50/0x4f0 fs/namei.c:139
- getname_flags include/linux/audit.h:321 [inline]
- getname+0x8e/0xd0 fs/namei.c:218
- do_sys_openat2+0xf5/0x4c0 fs/open.c:1305
- do_sys_open fs/open.c:1327 [inline]
- __do_sys_openat fs/open.c:1343 [inline]
- __se_sys_openat fs/open.c:1338 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1338
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Memory state around the buggy address:
- ffff888020a29300: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
- ffff888020a29380: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
->ffff888020a29400: fa fb fb fb fb fb fb fb fb fb fb fb fc fc fc fc
-                      ^
- ffff888020a29480: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
- ffff888020a29500: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-==================================================================
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this issue, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+T24gV2VkLCBBdWcgMTcsIDIwMjIgYXQgMDE6NDE6NDdQTSArMDMwMCwgS2FsbGUgVmFsbyB3cm90
+ZToNCj4gQWx2aW4gxaBpcHJhZ2EgPEFMU0lAYmFuZy1vbHVmc2VuLmRrPiB3cml0ZXM6DQo+IA0K
+PiA+IEhpIEthbGxlLA0KPiA+DQo+ID4gT24gV2VkLCBBdWcgMTAsIDIwMjIgYXQgMDU6NDg6MDFB
+TSArMDAwMCwgS2FsbGUgVmFsbyB3cm90ZToNCj4gPj4gQWx2aW4gxaBpcHJhZ2EgPGFsdmluQHBx
+cnMuZGs+IHdyb3RlOg0KPiA+PiANCj4gPj4gPiBGcm9tOiBXcmlnaHQgRmVuZyA8d3JpZ2h0LmZl
+bmdAY3lwcmVzcy5jb20+DQo+ID4+ID4gDQo+ID4+ID4gVGhlIHJhY2UgY29uZGl0aW9uIGluIGJy
+Y21mX21zZ2J1Zl90eGZsb3cgYW5kIGJyY21mX21zZ2J1Zl9kZWxldGVfZmxvd3JpbmcNCj4gPj4g
+PiBtYWtlcyB0eF9tc2doZHIgd3JpdGluZyBhZnRlciBicmNtZl9tc2didWZfcmVtb3ZlX2Zsb3dy
+aW5nLiBIb3N0DQo+ID4+ID4gZHJpdmVyIHNob3VsZCBkZWxldGUgZmxvd3JpbmcgYWZ0ZXIgdHhm
+bG93IGNvbXBsZXRlIGFuZCBhbGwgdHhzdGF0dXMgYmFjaywNCj4gPj4gPiBvciBwZW5kXzgwMjF4
+X2NudCB3aWxsIG5ldmVyIGJlIHplcm8gYW5kIGNhdXNlIGV2ZXJ5IGNvbm5lY3Rpb24gOTUwDQo+
+ID4+ID4gbWlsbGlzZWNvbmRzKE1BWF9XQUlUX0ZPUl84MDIxWF9UWCkgZGVsYXkuDQo+ID4+ID4g
+DQo+ID4+ID4gU2lnbmVkLW9mZi1ieTogV3JpZ2h0IEZlbmcgPHdyaWdodC5mZW5nQGN5cHJlc3Mu
+Y29tPg0KPiA+PiA+IFNpZ25lZC1vZmYtYnk6IENoaS1oc2llbiBMaW4gPGNoaS1oc2llbi5saW5A
+Y3lwcmVzcy5jb20+DQo+ID4+ID4gU2lnbmVkLW9mZi1ieTogQWhtYWQgRmF0b3VtIDxhLmZhdG91
+bUBwZW5ndXRyb25peC5kZT4NCj4gPj4gPiBTaWduZWQtb2ZmLWJ5OiBBbHZpbiDFoGlwcmFnYSA8
+YWxzaUBiYW5nLW9sdWZzZW4uZGs+DQo+ID4+IA0KPiA+PiA1IHBhdGNoZXMgYXBwbGllZCB0byB3
+aXJlbGVzcy1uZXh0LmdpdCwgdGhhbmtzLg0KPiA+PiANCj4gPj4gMGZhMjQxOTZlNDI1IHdpZmk6
+IGJyY21mbWFjOiBmaXggY29udGludW91cyA4MDIuMXggdHggcGVuZGluZyB0aW1lb3V0IGVycm9y
+DQo+ID4+IDA5YmU3NTQ2YTYwMiB3aWZpOiBicmNtZm1hYzogZml4IHNjaGVkdWxpbmcgd2hpbGUg
+YXRvbWljIGlzc3VlIHdoZW4NCj4gPj4gZGVsZXRpbmcgZmxvd3JpbmcNCj4gPj4gYWE2NjZiNjhl
+NzNmIHdpZmk6IGJyY21mbWFjOiBmaXggaW52YWxpZCBhZGRyZXNzIGFjY2VzcyB3aGVuIGVuYWJs
+aW5nIFNDQU4gbG9nIGxldmVsDQo+ID4+IDU2MDZhZWFhZDAxZSB3aWZpOiBicmNtZm1hYzogRml4
+IHRvIGFkZCBicmNtZl9jbGVhcl9hc3NvY19pZXMgd2hlbiBybW1vZA0KPiA+PiAyZWVlM2RiNzg0
+YTAgd2lmaTogYnJjbWZtYWM6IEZpeCB0byBhZGQgc2tiIGZyZWUgZm9yIFRJTSB1cGRhdGUgaW5m
+bw0KPiA+PiB3aGVuIHR4IGlzIGNvbXBsZXRlZA0KPiA+DQo+ID4gVGhhbmtzLiBEbyB5b3UgbWlu
+ZCBlbGFib3JhdGluZyBvbiB3aHkgdGhlIDZ0aCBwYXRjaDoNCj4gPg0KPiA+ICAgICBicmNtZm1h
+YzogVXBkYXRlIFNTSUQgb2YgaGlkZGVuIEFQIHdoaWxlIGluZm9ybWluZyBpdHMgYnNzIHRvIGNm
+ZzgwMjExIGxheWVyDQo+ID4NCj4gPiB3YXMgbm90IGFwcGxpZWQ/DQo+IA0KPiBCZWNhdXNlIG9m
+IG1pc21hdGNoIGJldHdlZW4gRnJvbSBhbmQgcy1vLWIuIEkgd2lsbCBsb29rIGF0IHRoYXQgaW4N
+Cj4gZGV0YWlsIGFmdGVyIG15IHZhY2F0aW9uLg0KDQpPSywgdGhhbmtzLiBGWUkgU3llZCBoYXMg
+bGVmdCBJbmZpbmVvbiAtIG5vdCBzdXJlIHdoYXQgaGlzIG5ldyBlbWFpbCBpcy4uLg==
