@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EABE559767A
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 21:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D25559766D
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 21:30:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241482AbiHQTac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 15:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        id S233656AbiHQTaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 15:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238600AbiHQTaa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 15:30:30 -0400
+        with ESMTP id S241477AbiHQTab (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 15:30:31 -0400
 Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6AB5926F
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429B15F22B
         for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 12:30:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
@@ -20,21 +20,21 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=zckj8k6uCN/WE6xx3JVeWu91O/6PVc4uBd/GLK0/UBk=; b=GTmVXgBVdPSYuhNgx31s3zmesQ
-        DTsdlA+ndlJ/SuUNCyfEWEJ3JJ+LIka+9vVL0dEG8S6Sa9VZNUXhNYjiPzv6YXqMTpvDBDnsZ4Q+2
-        pEg6PsOpfzN3w/siKPLbHYaRaWm1r7KenZ+3L2PDMWwnGx1HKTwLOKMx4fQxLdXT0zQA=;
+        bh=nk5o9S7C4iyM2Kyh90CemQ6FeWHJ5QuNbLwoaA5Da9s=; b=iyWWysy6s0v63nVaS1dTlVPZgB
+        EkBelBtLVPtnzdFa4aXiN4tvb0AdV5w8onQt93Tgm2ZojC8a1oeuWWAmvBTiPboJGFPq7KCDId2zJ
+        bYM5+M2glAOukXIlfxqTZf/vma8xXuynutlxmjIi+1g8I3t4ysf6pxqYGTqm/aOJkkuM=;
 Received: from 88-117-52-3.adsl.highway.telekom.at ([88.117.52.3] helo=hornet.engleder.at)
         by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <gerhard@engleder-embedded.com>)
-        id 1oOOkC-0006Vi-O8; Wed, 17 Aug 2022 21:30:24 +0200
+        id 1oOOkD-0006Vi-Cq; Wed, 17 Aug 2022 21:30:25 +0200
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 2/5] tsnep: Add loopback support
-Date:   Wed, 17 Aug 2022 21:30:14 +0200
-Message-Id: <20220817193017.44063-3-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next 3/5] tsnep: Improve TX length handling
+Date:   Wed, 17 Aug 2022 21:30:15 +0200
+Message-Id: <20220817193017.44063-4-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220817193017.44063-1-gerhard@engleder-embedded.com>
 References: <20220817193017.44063-1-gerhard@engleder-embedded.com>
@@ -51,128 +51,148 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for NETIF_F_LOOPBACK feature. Loopback mode is used for
-testing.
+TX length can by calculated more efficient during map and unmap of
+fragments. Another reason is that, by moving TX statistic counting to
+tsnep_tx_poll() it can be used there for XDP too.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
 ---
- drivers/net/ethernet/engleder/tsnep_main.c | 71 ++++++++++++++++------
- 1 file changed, 54 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/engleder/tsnep_main.c | 32 ++++++++++++++--------
+ 1 file changed, 21 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index a5f7152a1716..7fe6a897ce00 100644
+index 7fe6a897ce00..9f8ca6d9a010 100644
 --- a/drivers/net/ethernet/engleder/tsnep_main.c
 +++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -124,30 +124,51 @@ static int tsnep_mdiobus_write(struct mii_bus *bus, int addr, int regnum,
- 	return 0;
+@@ -262,14 +262,14 @@ static int tsnep_tx_ring_init(struct tsnep_tx *tx)
+ 	return retval;
  }
  
-+static void tsnep_set_link_mode(struct tsnep_adapter *adapter)
-+{
-+	u32 mode;
-+
-+	switch (adapter->phydev->speed) {
-+	case SPEED_100:
-+		mode = ECM_LINK_MODE_100;
-+		break;
-+	case SPEED_1000:
-+		mode = ECM_LINK_MODE_1000;
-+		break;
-+	default:
-+		mode = ECM_LINK_MODE_OFF;
-+		break;
-+	}
-+	iowrite32(mode, adapter->addr + ECM_STATUS);
-+}
-+
- static void tsnep_phy_link_status_change(struct net_device *netdev)
+-static void tsnep_tx_activate(struct tsnep_tx *tx, int index, bool last)
++static void tsnep_tx_activate(struct tsnep_tx *tx, int index, int length,
++			      bool last)
  {
- 	struct tsnep_adapter *adapter = netdev_priv(netdev);
- 	struct phy_device *phydev = netdev->phydev;
--	u32 mode;
+ 	struct tsnep_tx_entry *entry = &tx->entry[index];
  
--	if (phydev->link) {
--		switch (phydev->speed) {
--		case SPEED_100:
--			mode = ECM_LINK_MODE_100;
--			break;
--		case SPEED_1000:
--			mode = ECM_LINK_MODE_1000;
--			break;
--		default:
--			mode = ECM_LINK_MODE_OFF;
--			break;
--		}
--		iowrite32(mode, adapter->addr + ECM_STATUS);
--	}
-+	if (phydev->link)
-+		tsnep_set_link_mode(adapter);
+ 	entry->properties = 0;
+ 	if (entry->skb) {
+-		entry->properties =
+-			skb_pagelen(entry->skb) & TSNEP_DESC_LENGTH_MASK;
++		entry->properties = length & TSNEP_DESC_LENGTH_MASK;
+ 		entry->properties |= TSNEP_DESC_INTERRUPT_FLAG;
+ 		if (skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS)
+ 			entry->properties |= TSNEP_DESC_EXTENDED_WRITEBACK_FLAG;
+@@ -334,6 +334,7 @@ static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int count)
+ 	struct tsnep_tx_entry *entry;
+ 	unsigned int len;
+ 	dma_addr_t dma;
++	int map_len = 0;
+ 	int i;
  
- 	phy_print_status(netdev->phydev);
+ 	for (i = 0; i < count; i++) {
+@@ -356,15 +357,18 @@ static int tsnep_tx_map(struct sk_buff *skb, struct tsnep_tx *tx, int count)
+ 		dma_unmap_addr_set(entry, dma, dma);
+ 
+ 		entry->desc->tx = __cpu_to_le64(dma);
++
++		map_len += len;
+ 	}
+ 
+-	return 0;
++	return map_len;
  }
  
-+static int tsnep_phy_loopback(struct tsnep_adapter *adapter, bool enable)
-+{
-+	int retval;
-+
-+	retval = phy_loopback(adapter->phydev, enable);
-+
-+	/* PHY link state change is not signaled if loopback is enabled, it
-+	 * would delay a working loopback anyway, let's ensure that loopback
-+	 * is working immediately by setting link mode directly
-+	 */
-+	if (!retval && enable)
-+		tsnep_set_link_mode(adapter);
-+
-+	return retval;
-+}
-+
- static int tsnep_phy_open(struct tsnep_adapter *adapter)
+-static void tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
++static int tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
  {
- 	struct phy_device *phydev;
-@@ -1017,6 +1038,22 @@ static int tsnep_netdev_set_mac_address(struct net_device *netdev, void *addr)
- 	return 0;
+ 	struct device *dmadev = tx->adapter->dmadev;
+ 	struct tsnep_tx_entry *entry;
++	int map_len = 0;
+ 	int i;
+ 
+ 	for (i = 0; i < count; i++) {
+@@ -381,9 +385,12 @@ static void tsnep_tx_unmap(struct tsnep_tx *tx, int index, int count)
+ 					       dma_unmap_addr(entry, dma),
+ 					       dma_unmap_len(entry, len),
+ 					       DMA_TO_DEVICE);
++			map_len += entry->len;
+ 			entry->len = 0;
+ 		}
+ 	}
++
++	return map_len;
  }
  
-+static int tsnep_netdev_set_features(struct net_device *netdev,
-+				     netdev_features_t features)
-+{
-+	struct tsnep_adapter *adapter = netdev_priv(netdev);
-+	netdev_features_t changed = netdev->features ^ features;
-+	bool enable;
-+	int retval = 0;
-+
-+	if (changed & NETIF_F_LOOPBACK) {
-+		enable = !!(features & NETIF_F_LOOPBACK);
-+		retval = tsnep_phy_loopback(adapter, enable);
-+	}
-+
-+	return retval;
-+}
-+
- static ktime_t tsnep_netdev_get_tstamp(struct net_device *netdev,
- 				       const struct skb_shared_hwtstamps *hwtstamps,
- 				       bool cycles)
-@@ -1038,9 +1075,9 @@ static const struct net_device_ops tsnep_netdev_ops = {
- 	.ndo_start_xmit = tsnep_netdev_xmit_frame,
- 	.ndo_eth_ioctl = tsnep_netdev_ioctl,
- 	.ndo_set_rx_mode = tsnep_netdev_set_multicast,
+ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+@@ -392,6 +399,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+ 	unsigned long flags;
+ 	int count = 1;
+ 	struct tsnep_tx_entry *entry;
++	int length;
+ 	int i;
+ 	int retval;
+ 
+@@ -415,7 +423,7 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+ 	entry->skb = skb;
+ 
+ 	retval = tsnep_tx_map(skb, tx, count);
+-	if (retval != 0) {
++	if (retval < 0) {
+ 		tsnep_tx_unmap(tx, tx->write, count);
+ 		dev_kfree_skb_any(entry->skb);
+ 		entry->skb = NULL;
+@@ -428,12 +436,13 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+ 
+ 		return NETDEV_TX_OK;
+ 	}
++	length = retval;
+ 
+ 	if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)
+ 		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
+ 
+ 	for (i = 0; i < count; i++)
+-		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE,
++		tsnep_tx_activate(tx, (tx->write + i) % TSNEP_RING_SIZE, length,
+ 				  i == (count - 1));
+ 	tx->write = (tx->write + count) % TSNEP_RING_SIZE;
+ 
+@@ -449,9 +458,6 @@ static netdev_tx_t tsnep_xmit_frame_ring(struct sk_buff *skb,
+ 		netif_stop_queue(tx->adapter->netdev);
+ 	}
+ 
+-	tx->packets++;
+-	tx->bytes += skb_pagelen(entry->skb) + ETH_FCS_LEN;
 -
- 	.ndo_get_stats64 = tsnep_netdev_get_stats64,
- 	.ndo_set_mac_address = tsnep_netdev_set_mac_address,
-+	.ndo_set_features = tsnep_netdev_set_features,
- 	.ndo_get_tstamp = tsnep_netdev_get_tstamp,
- 	.ndo_setup_tc = tsnep_tc_setup,
- };
-@@ -1225,7 +1262,7 @@ static int tsnep_probe(struct platform_device *pdev)
- 	netdev->netdev_ops = &tsnep_netdev_ops;
- 	netdev->ethtool_ops = &tsnep_ethtool_ops;
- 	netdev->features = NETIF_F_SG;
--	netdev->hw_features = netdev->features;
-+	netdev->hw_features = netdev->features | NETIF_F_LOOPBACK;
+ 	spin_unlock_irqrestore(&tx->lock, flags);
  
- 	/* carrier off reporting is important to ethtool even BEFORE open */
- 	netif_carrier_off(netdev);
+ 	return NETDEV_TX_OK;
+@@ -463,6 +469,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+ 	int budget = 128;
+ 	struct tsnep_tx_entry *entry;
+ 	int count;
++	int length;
+ 
+ 	spin_lock_irqsave(&tx->lock, flags);
+ 
+@@ -485,7 +492,7 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+ 		if (skb_shinfo(entry->skb)->nr_frags > 0)
+ 			count += skb_shinfo(entry->skb)->nr_frags;
+ 
+-		tsnep_tx_unmap(tx, tx->read, count);
++		length = tsnep_tx_unmap(tx, tx->read, count);
+ 
+ 		if ((skb_shinfo(entry->skb)->tx_flags & SKBTX_IN_PROGRESS) &&
+ 		    (__le32_to_cpu(entry->desc_wb->properties) &
+@@ -512,6 +519,9 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
+ 
+ 		tx->read = (tx->read + count) % TSNEP_RING_SIZE;
+ 
++		tx->packets++;
++		tx->bytes += length + ETH_FCS_LEN;
++
+ 		budget--;
+ 	} while (likely(budget));
+ 
 -- 
 2.30.2
 
