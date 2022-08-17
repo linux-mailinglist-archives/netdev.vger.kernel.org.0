@@ -2,122 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F217597853
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B83597886
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 23:07:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242127AbiHQU4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 16:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47570 "EHLO
+        id S242224AbiHQVCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 17:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242057AbiHQU4r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:56:47 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EE86A99E9;
-        Wed, 17 Aug 2022 13:56:38 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:43026)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oOQ5c-007tAA-3N; Wed, 17 Aug 2022 14:56:36 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:44962 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oOQ5b-006es9-5Q; Wed, 17 Aug 2022 14:56:35 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Paul Moore <paul@paul-moore.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, serge@hallyn.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
-        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
-        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-team@cloudflare.com, cgzones@googlemail.com,
-        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
-References: <20220815162028.926858-1-fred@cloudflare.com>
-        <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
-        <8735dux60p.fsf@email.froward.int.ebiederm.org>
-        <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
-        <871qte8wy3.fsf@email.froward.int.ebiederm.org>
-        <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
-Date:   Wed, 17 Aug 2022 15:56:26 -0500
-In-Reply-To: <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
-        (Paul Moore's message of "Wed, 17 Aug 2022 16:13:39 -0400")
-Message-ID: <8735du7fnp.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S242227AbiHQVCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 17:02:21 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DA53AB427;
+        Wed, 17 Aug 2022 14:02:19 -0700 (PDT)
+Received: from zn.tnic (p200300ea971b98b0329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:971b:98b0:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 751AA1EC050F;
+        Wed, 17 Aug 2022 23:02:13 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1660770133;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=uZECItNhJdPNjavGxubtrXL0+yXBikF6DOM/KqS2u80=;
+        b=b7hT+f/JsqrlDXJwGOmfuimkYKB0/oh33XvT0jx0BM2Bc4a4tijQHcHePAxE0BR9Fy9hu+
+        8Fy2/lMRzSkD3Pm0ODl6fqBgv8Ov0DWOXe2bQ/wNfgDKKHKkgY8Z7dpY0ES764epXpTN62
+        dh5wMxHfa75JuW2trzFMuEyQ3QGfiG4=
+Date:   Wed, 17 Aug 2022 23:02:13 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, linux-edac@vger.kernel.org,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Tony Luck <tony.luck@intel.com>
+Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump
+ is loaded
+Message-ID: <Yv1XVRmTXHLhOkER@zn.tnic>
+References: <20220719195325.402745-1-gpiccoli@igalia.com>
+ <20220719195325.402745-11-gpiccoli@igalia.com>
+ <Yv0mCY04heUXsGiC@zn.tnic>
+ <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com>
+ <Yv1C0Y25u2IB7PCs@zn.tnic>
+ <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oOQ5b-006es9-5Q;;;mid=<8735du7fnp.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1/Xn3ZKbDRXVpMvUTRIq5cONwBCXE13Nz4=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-DCC: XMission; sa05 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: **;Paul Moore <paul@paul-moore.com>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 383 ms - load_scoreonly_sql: 0.07 (0.0%),
-        signal_user_changed: 10 (2.7%), b_tie_ro: 9 (2.3%), parse: 0.91 (0.2%),
-         extract_message_metadata: 14 (3.6%), get_uri_detail_list: 1.36 (0.4%),
-         tests_pri_-1000: 18 (4.7%), tests_pri_-950: 1.24 (0.3%),
-        tests_pri_-900: 1.00 (0.3%), tests_pri_-90: 74 (19.2%), check_bayes:
-        72 (18.8%), b_tokenize: 8 (2.1%), b_tok_get_all: 9 (2.4%),
-        b_comp_prob: 2.6 (0.7%), b_tok_touch_all: 49 (12.9%), b_finish: 0.77
-        (0.2%), tests_pri_0: 242 (63.1%), check_dkim_signature: 0.54 (0.1%),
-        check_dkim_adsp: 2.7 (0.7%), poll_dns_idle: 10 (2.7%), tests_pri_10:
-        1.71 (0.4%), tests_pri_500: 19 (4.8%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Paul Moore <paul@paul-moore.com> writes:
+On Wed, Aug 17, 2022 at 05:28:34PM -0300, Guilherme G. Piccoli wrote:
+> My understanding is the same as yours, i.e., this is not possible to
+> collect from vmcore, it requires register reading. But again: if you
+> kdump your machine today, you won't collect this information, patch
+> changed nothing in that regard.
 
-> On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
->> Paul Moore <paul@paul-moore.com> writes:
->>
->> > At the end of the v4 patchset I suggested merging this into lsm/next
->> > so it could get a full -rc cycle in linux-next, assuming no issues
->> > were uncovered during testing
->>
->> What in the world can be uncovered in linux-next for code that has no in
->> tree users.
->
-> The patchset provides both BPF LSM and SELinux implementations of the
-> hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
-> If no one beats me to it, I plan to work on adding a test to the
-> selinux-testsuite as soon as I'm done dealing with other urgent
-> LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
-> run these tests multiple times a week (multiple times a day sometimes)
-> against the -rcX kernels with the lsm/next, selinux/next, and
-> audit/next branches applied on top.  I know others do similar things.
+Why won't you be able to collect it? You can certainly access dmesg in
+the vmcore and see those errors logged there.
 
-A layer of hooks that leaves all of the logic to userspace is not an
-in-tree user for purposes of understanding the logic of the code.
+> The one thing it changes is that you'd skip the altera register dump if
+> kdump is set AND you managed to also set "crash_kexec_post_notifiers".
 
+What your patch changes is, it prevents s10_edac_dberr_handler() from
+logging potentially important fatal hw errors when kdump is loaded.
 
-The reason why I implemented user namespaces is so that all of linux's
-neat features could be exposed to non-root userspace processes, in
-a way that doesn't break suid root processes.
+If Dinh is fine with that, I'll take the patch. But it looks like a bad
+idea to me.
 
+-- 
+Regards/Gruss,
+    Boris.
 
-The access control you are adding to user namespaces looks to take that
-away.  It looks to remove the whole point of user namespaces.
-
-
-So without any mention of how people intend to use this feature, without
-any code that uses this hook to implement semantics.  Without any talk
-about how this semantic change is reasonable.  I strenuously object.
-
-Eric
-
+https://people.kernel.org/tglx/notes-about-netiquette
