@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A6C559778D
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 245DD597778
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241749AbiHQUK0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 16:10:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59440 "EHLO
+        id S233922AbiHQUKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 16:10:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238882AbiHQUJ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:09:56 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69170A59B2;
-        Wed, 17 Aug 2022 13:09:52 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id p18so12898192plr.8;
-        Wed, 17 Aug 2022 13:09:52 -0700 (PDT)
+        with ESMTP id S238316AbiHQUJ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:09:57 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124C1A7210;
+        Wed, 17 Aug 2022 13:09:53 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id f28so12978745pfk.1;
+        Wed, 17 Aug 2022 13:09:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=5Tc1J+3nkbeFXeW5rw4qdzoUxX/ySdhtba/bXV/Uwm0=;
-        b=VbjZYZjDo+LvYTJxT90VLTeVmWvSDY5K0zCeX0CTKD0n0XqK2d//IG3cRtyOk9v6FE
-         yeyEFEAz7sXvZxxS+VyQMBFDOfuAvXash/aSRs8JDygHT2n29FkWY72FfSBdzOX8Wh8r
-         AiYj2MPyAt0l71aYdiOII4PiAe303BPx6999w2wPt6ciyd/BKsnj/YeYCPSESADvkQ0o
-         l3529/Ukoo7PXADlJNAxidHrg8Zzrf1JilpcNeTBGTJHZKSwjqyJGD+HM7rt1S6DfbY1
-         H5G1TuEv3Cu70W5QvaeZH8anzy++mlm3lgPx+97tDWOSQYwwZ622f7I827vx9+/XS4cM
-         MlGw==
+        bh=xZe6r1C8DxnDB1lgIetglHDFDWXdgEn/2INYt0Dyr9k=;
+        b=PDuGWk8N8wXWla0kwv9yxioCV1rP/qYq2TiDbFbmxYpGraFDyvhoMaRupTLpPKCqhX
+         rP/HbeAAZz5MuHHXeQQhtEnNTnAZFK3UGHkBN3M63bP1411v6IcvOgp3BFKYTJxiLL8q
+         jf9YfK5uMp4ayOiTaEX7DQ+gOOJrqk8jLl4Ng2zjOWFL04nufLq1FYU7LxpDS/LgcZqY
+         S3vzX/5Dmn1DRnOPyByksLOLZziVLiaem3W6+y+92JDR42DKdnyGeycSMlWLpk3V5peD
+         VjWksnddC1PYzLBwh2eYVSsb3stR/3WfBUQqEBPR0p++e/S0LmtGLRoukTjIsrD7R/FR
+         YV3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=5Tc1J+3nkbeFXeW5rw4qdzoUxX/ySdhtba/bXV/Uwm0=;
-        b=Zope8UxAfywlQN4T7ZIzdow+7vQbGUAEEqm56PMqu3YLR0XE8hdHhF1bz3M1lVq5Z8
-         z8AswAnRZErudxTyzmhVH5LU5zVVZ/AfFBMoedMjt2aFvC4wiRl92MI/kYeBP67p5zQ0
-         HGSpdpfdlj6YeD9d0k2NCyTYV0xaepZtd83s4gof58Z004rsYfW1092LVC3iCkZV0ii8
-         DAvumC2q4fbCxeaHI0az8JCFPzWbMc5v9xu83UdLJ5RaLbAwttaE+lFIIa1eFpqjCFgY
-         ssi+FS1y7McYHZR52XnTaz4+oE7PlpTE5DzyIQYwY8aLZvS7TQoHtu1KdvVSKZPx1Uv+
-         VFHQ==
-X-Gm-Message-State: ACgBeo26PfwejdVz4ZLgjIabB5TJb6QjBqKvBHD3sJJxNvCcw7R5qIET
-        ypE9nZuEGVlhHBKC/n3S8Jw=
-X-Google-Smtp-Source: AA6agR7j6GqmpSOvILaHPfB/FN+YD5t9IsvpmWq/5d+9kwNcIlUW9PpmjfA/hJAbLCrQSl8kMT3JcA==
-X-Received: by 2002:a17:902:ca0b:b0:16d:d562:42dc with SMTP id w11-20020a170902ca0b00b0016dd56242dcmr26593030pld.26.1660766991376;
-        Wed, 17 Aug 2022 13:09:51 -0700 (PDT)
-Received: from localhost (fwdproxy-prn-006.fbsv.net. [2a03:2880:ff:6::face:b00c])
-        by smtp.gmail.com with ESMTPSA id u10-20020a170902e5ca00b0016c78aaae7fsm347605plf.23.2022.08.17.13.09.50
+        bh=xZe6r1C8DxnDB1lgIetglHDFDWXdgEn/2INYt0Dyr9k=;
+        b=pHUMVuRB7GuAnHa7o+FMiQuEqU/HQcoY0rfV0PMZjIjjoqAu3kFkaH5+adD94W4Vll
+         Oc3ACDSGH0CUpcMl+pQUT2ToQ2REgONR1+QfHJDCR7UVBnI7AJP+eb7GZ3YEH0ob6OM1
+         N90qLH1y5hGNT5f15sNRriFXVh0y4JbgUrvU3HDaoFVz+zcoqKliHsnNUpGZve3hKOoj
+         FkCs64o+AZs/IuTpFBWgnh3Qbn8uacfeaj6AllLCaYZ/r+UXdmLc080wPIxFxx4vKoGo
+         hWMulXZo64ueYB2wi/BOk4tcSeOdJXTF2PIBHp3zrj4OTk4XfUtrQNcC9y/rifVnMdft
+         bFHw==
+X-Gm-Message-State: ACgBeo32NSfaaeGZhIFykqmooA228fwXV9d7yKLHbNiUe30VqxUNDmTx
+        7Els6992ozW0MvKA+ve7X3I=
+X-Google-Smtp-Source: AA6agR5x4iMhTMXRmatZQSLgj6kIcNsaLUAY0nPJYbc7xm/w/Lfk8uDsqgGiiRnMU1i7YQtPgorOmw==
+X-Received: by 2002:a62:1c04:0:b0:52e:d2b4:c029 with SMTP id c4-20020a621c04000000b0052ed2b4c029mr27359994pfc.60.1660766992304;
+        Wed, 17 Aug 2022 13:09:52 -0700 (PDT)
+Received: from localhost (fwdproxy-prn-022.fbsv.net. [2a03:2880:ff:16::face:b00c])
+        by smtp.gmail.com with ESMTPSA id mt15-20020a17090b230f00b001f4f40763b1sm1945650pjb.29.2022.08.17.13.09.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:09:51 -0700 (PDT)
+        Wed, 17 Aug 2022 13:09:52 -0700 (PDT)
 From:   Adel Abouchaev <adel.abushaev@gmail.com>
 To:     kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
         imagedong@tencent.com, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [net-next v2 5/6] Add flow counters and Tx processing error counter
-Date:   Wed, 17 Aug 2022 13:09:39 -0700
-Message-Id: <20220817200940.1656747-6-adel.abushaev@gmail.com>
+Subject: [net-next v2 6/6] Add self tests for ULP operations, flow setup and crypto tests
+Date:   Wed, 17 Aug 2022 13:09:40 -0700
+Message-Id: <20220817200940.1656747-7-adel.abushaev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220817200940.1656747-1-adel.abushaev@gmail.com>
 References: <Adel Abouchaev <adel.abushaev@gmail.com>
@@ -64,264 +64,1280 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added flow counters. Total flow counter is accumulative, the current shows
-the number of flows currently in flight, the error counters is accumulating
-the number of errors during Tx processing.
+Add self tests for ULP operations, flow setup and crypto tests.
 
 Signed-off-by: Adel Abouchaev <adel.abushaev@gmail.com>
 
 ---
 
-Updated enum bracket to follow enum keyword. Removed extra blank lines.
----
- include/net/netns/mib.h   |  3 +++
- include/net/quic.h        | 10 +++++++++
- include/net/snmp.h        |  6 +++++
- include/uapi/linux/snmp.h |  9 ++++++++
- net/quic/Makefile         |  2 +-
- net/quic/quic_main.c      | 46 +++++++++++++++++++++++++++++++++++++++
- net/quic/quic_proc.c      | 45 ++++++++++++++++++++++++++++++++++++++
- 7 files changed, 120 insertions(+), 1 deletion(-)
- create mode 100644 net/quic/quic_proc.c
+Restored the test build. Changed the QUIC context reference variable
+names for the keys and iv to match the uAPI.
 
-diff --git a/include/net/netns/mib.h b/include/net/netns/mib.h
-index 7e373664b1e7..dcbba3d1ceec 100644
---- a/include/net/netns/mib.h
-+++ b/include/net/netns/mib.h
-@@ -24,6 +24,9 @@ struct netns_mib {
- #if IS_ENABLED(CONFIG_TLS)
- 	DEFINE_SNMP_STAT(struct linux_tls_mib, tls_statistics);
- #endif
-+#if IS_ENABLED(CONFIG_QUIC)
-+	DEFINE_SNMP_STAT(struct linux_quic_mib, quic_statistics);
-+#endif
- #ifdef CONFIG_MPTCP
- 	DEFINE_SNMP_STAT(struct mptcp_mib, mptcp_statistics);
- #endif
-diff --git a/include/net/quic.h b/include/net/quic.h
-index cafe01174e60..6362d827d266 100644
---- a/include/net/quic.h
-+++ b/include/net/quic.h
-@@ -25,6 +25,16 @@
- #define QUIC_MAX_PLAIN_PAGES		16
- #define QUIC_MAX_CIPHER_PAGES_ORDER	4
- 
-+#define __QUIC_INC_STATS(net, field)				\
-+	__SNMP_INC_STATS((net)->mib.quic_statistics, field)
-+#define QUIC_INC_STATS(net, field)				\
-+	SNMP_INC_STATS((net)->mib.quic_statistics, field)
-+#define QUIC_DEC_STATS(net, field)				\
-+	SNMP_DEC_STATS((net)->mib.quic_statistics, field)
-+
-+int __net_init quic_proc_init(struct net *net);
-+void __net_exit quic_proc_fini(struct net *net);
-+
- struct quic_internal_crypto_context {
- 	struct quic_connection_info	conn_info;
- 	struct crypto_skcipher		*header_tfm;
-diff --git a/include/net/snmp.h b/include/net/snmp.h
-index 468a67836e2f..f94680a3e9e8 100644
---- a/include/net/snmp.h
-+++ b/include/net/snmp.h
-@@ -117,6 +117,12 @@ struct linux_tls_mib {
- 	unsigned long	mibs[LINUX_MIB_TLSMAX];
- };
- 
-+/* Linux QUIC */
-+#define LINUX_MIB_QUICMAX	__LINUX_MIB_QUICMAX
-+struct linux_quic_mib {
-+	unsigned long	mibs[LINUX_MIB_QUICMAX];
-+};
-+
- #define DEFINE_SNMP_STAT(type, name)	\
- 	__typeof__(type) __percpu *name
- #define DEFINE_SNMP_STAT_ATOMIC(type, name)	\
-diff --git a/include/uapi/linux/snmp.h b/include/uapi/linux/snmp.h
-index 4d7470036a8b..ca1e626dbdb4 100644
---- a/include/uapi/linux/snmp.h
-+++ b/include/uapi/linux/snmp.h
-@@ -349,4 +349,13 @@ enum
- 	__LINUX_MIB_TLSMAX
- };
- 
-+/* linux QUIC mib definitions */
-+enum {
-+	LINUX_MIB_QUICNUM = 0,
-+	LINUX_MIB_QUICCURRTXSW,			/* QuicCurrTxSw */
-+	LINUX_MIB_QUICTXSW,			/* QuicTxSw */
-+	LINUX_MIB_QUICTXSWERROR,		/* QuicTxSwError */
-+	__LINUX_MIB_QUICMAX
-+};
-+
- #endif	/* _LINUX_SNMP_H */
-diff --git a/net/quic/Makefile b/net/quic/Makefile
-index 928239c4d08c..a885cd8bc4e0 100644
---- a/net/quic/Makefile
-+++ b/net/quic/Makefile
-@@ -5,4 +5,4 @@
- 
- obj-$(CONFIG_QUIC) += quic.o
- 
--quic-y := quic_main.o
-+quic-y := quic_main.o quic_proc.o
-diff --git a/net/quic/quic_main.c b/net/quic/quic_main.c
-index 95de3a961479..4f2484fe43ed 100644
---- a/net/quic/quic_main.c
-+++ b/net/quic/quic_main.c
-@@ -335,6 +335,8 @@ static int do_quic_conn_add_tx(struct sock *sk, sockptr_t optval,
- 	if (rc < 0)
- 		goto err_free_ciphers;
- 
-+	QUIC_INC_STATS(sock_net(sk), LINUX_MIB_QUICCURRTXSW);
-+	QUIC_INC_STATS(sock_net(sk), LINUX_MIB_QUICTXSW);
- 	return 0;
- 
- err_free_ciphers:
-@@ -383,6 +385,7 @@ static int do_quic_conn_del_tx(struct sock *sk, sockptr_t optval,
- 	crypto_free_aead(crypto_ctx->packet_aead);
- 	memzero_explicit(crypto_ctx, sizeof(*crypto_ctx));
- 	kfree(connhash);
-+	QUIC_DEC_STATS(sock_net(sk), LINUX_MIB_QUICCURRTXSW);
- 
- 	return 0;
- }
-@@ -408,6 +411,9 @@ static int do_quic_setsockopt(struct sock *sk, int optname, sockptr_t optval,
- 		break;
- 	}
- 
-+	if (rc)
-+		QUIC_INC_STATS(sock_net(sk), LINUX_MIB_QUICTXSWERROR);
-+
- 	return rc;
- }
- 
-@@ -1213,6 +1219,9 @@ static int quic_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	quic_put_plain_user_pages(plain_pages, nr_plain_pages);
- 
- out:
-+	if (unlikely(ret < 0))
-+		QUIC_INC_STATS(sock_net(sk), LINUX_MIB_QUICTXSWERROR);
-+
- 	return ret;
- }
- 
-@@ -1345,6 +1354,36 @@ static void quic_release(struct sock *sk)
- 	release_sock(sk);
- }
- 
-+static int __net_init quic_init_net(struct net *net)
-+{
-+	int err;
-+
-+	net->mib.quic_statistics = alloc_percpu(struct linux_quic_mib);
-+	if (!net->mib.quic_statistics)
-+		return -ENOMEM;
-+
-+	err = quic_proc_init(net);
-+	if (err)
-+		goto err_free_stats;
-+
-+	return 0;
-+
-+err_free_stats:
-+	free_percpu(net->mib.quic_statistics);
-+	return err;
-+}
-+
-+static void __net_exit quic_exit_net(struct net *net)
-+{
-+	quic_proc_fini(net);
-+	free_percpu(net->mib.quic_statistics);
-+}
-+
-+static struct pernet_operations quic_proc_ops = {
-+	.init = quic_init_net,
-+	.exit = quic_exit_net,
-+};
-+
- static struct udp_ulp_ops quic_ulp_ops __read_mostly = {
- 	.name		= "quic-crypto",
- 	.owner		= THIS_MODULE,
-@@ -1354,6 +1393,12 @@ static struct udp_ulp_ops quic_ulp_ops __read_mostly = {
- 
- static int __init quic_register(void)
- {
-+	int err;
-+
-+	err = register_pernet_subsys(&quic_proc_ops);
-+	if (err)
-+		return err;
-+
- 	udp_register_ulp(&quic_ulp_ops);
- 	return 0;
- }
-@@ -1361,6 +1406,7 @@ static int __init quic_register(void)
- static void __exit quic_unregister(void)
- {
- 	udp_unregister_ulp(&quic_ulp_ops);
-+	unregister_pernet_subsys(&quic_proc_ops);
- }
- 
- module_init(quic_register);
-diff --git a/net/quic/quic_proc.c b/net/quic/quic_proc.c
+Updated alignment, added SPDX license line.
+
+v3: Added Chacha20-Poly1305 test.
+---
+ tools/testing/selftests/net/.gitignore |    4 +-
+ tools/testing/selftests/net/Makefile   |    3 +-
+ tools/testing/selftests/net/quic.c     | 1153 ++++++++++++++++++++++++
+ tools/testing/selftests/net/quic.sh    |   46 +
+ 4 files changed, 1204 insertions(+), 2 deletions(-)
+ create mode 100644 tools/testing/selftests/net/quic.c
+ create mode 100755 tools/testing/selftests/net/quic.sh
+
+diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+index 0e5751af6247..9e4d00e13238 100644
+--- a/tools/testing/selftests/net/.gitignore
++++ b/tools/testing/selftests/net/.gitignore
+@@ -39,4 +39,6 @@ toeplitz
+ tun
+ cmsg_sender
+ unix_connect
+-tap
+\ No newline at end of file
++tap
++unix_connect
++quic
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index c0ee2955fe54..1a6cbb24a636 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -42,6 +42,7 @@ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+ TEST_PROGS += ndisc_unsolicited_na_test.sh
+ TEST_PROGS += arp_ndisc_untracked_subnets.sh
+ TEST_PROGS += stress_reuseport_listen.sh
++TEST_PROGS += quic.sh
+ TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+ TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+ TEST_GEN_FILES =  socket nettest
+@@ -57,7 +58,7 @@ TEST_GEN_FILES += ipsec
+ TEST_GEN_FILES += ioam6_parser
+ TEST_GEN_FILES += gro
+ TEST_GEN_PROGS = reuseport_bpf reuseport_bpf_cpu reuseport_bpf_numa
+-TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls tun tap
++TEST_GEN_PROGS += reuseport_dualstack reuseaddr_conflict tls tun tap quic
+ TEST_GEN_FILES += toeplitz
+ TEST_GEN_FILES += cmsg_sender
+ TEST_GEN_FILES += stress_reuseport_listen
+diff --git a/tools/testing/selftests/net/quic.c b/tools/testing/selftests/net/quic.c
 new file mode 100644
-index 000000000000..cb4fe7a589b5
+index 000000000000..2aa5e1564f5f
 --- /dev/null
-+++ b/net/quic/quic_proc.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+/* Copyright (C) 2019 Meta Platforms, Inc. */
++++ b/tools/testing/selftests/net/quic.c
+@@ -0,0 +1,1153 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+#include <linux/proc_fs.h>
-+#include <linux/seq_file.h>
-+#include <net/snmp.h>
-+#include <net/quic.h>
++#define _GNU_SOURCE
 +
-+#ifdef CONFIG_PROC_FS
-+static const struct snmp_mib quic_mib_list[] = {
-+	SNMP_MIB_ITEM("QuicCurrTxSw", LINUX_MIB_QUICCURRTXSW),
-+	SNMP_MIB_ITEM("QuicTxSw", LINUX_MIB_QUICTXSW),
-+	SNMP_MIB_ITEM("QuicTxSwError", LINUX_MIB_QUICTXSWERROR),
-+	SNMP_MIB_SENTINEL
++#include <arpa/inet.h>
++#include <errno.h>
++#include <error.h>
++#include <fcntl.h>
++#include <poll.h>
++#include <sched.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++#include <linux/limits.h>
++#include <linux/quic.h>
++#include <linux/socket.h>
++#include <linux/tls.h>
++#include <linux/tcp.h>
++#include <linux/types.h>
++#include <linux/udp.h>
++
++#include <sys/ioctl.h>
++#include <sys/types.h>
++#include <sys/sendfile.h>
++#include <sys/socket.h>
++#include <sys/stat.h>
++
++#include "../kselftest_harness.h"
++
++#define UDP_ULP		105
++
++#ifndef SOL_UDP
++#define SOL_UDP		17
++#endif
++
++// 1. QUIC ULP Registration Test
++
++FIXTURE(quic_ulp)
++{
++	int sfd;
++	socklen_t len_s;
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} server;
++	int default_net_ns_fd;
++	int server_net_ns_fd;
 +};
 +
-+static int quic_statistics_seq_show(struct seq_file *seq, void *v)
++FIXTURE_VARIANT(quic_ulp)
 +{
-+	unsigned long buf[LINUX_MIB_QUICMAX] = {};
-+	struct net *net = seq->private;
++	unsigned int af_server;
++	char *server_address;
++	unsigned short server_port;
++};
++
++FIXTURE_VARIANT_ADD(quic_ulp, ipv4)
++{
++	.af_server = AF_INET,
++	.server_address = "10.0.0.2",
++	.server_port = 7101,
++};
++
++FIXTURE_VARIANT_ADD(quic_ulp, ipv6)
++{
++	.af_server = AF_INET6,
++	.server_address = "2001::2",
++	.server_port = 7102,
++};
++
++FIXTURE_SETUP(quic_ulp)
++{
++	char path[PATH_MAX];
++	int optval = 1;
++
++	snprintf(path, sizeof(path), "/proc/%d/ns/net", getpid());
++	self->default_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->default_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns2");
++	self->server_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->server_net_ns_fd, 0);
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	self->sfd = socket(variant->af_server, SOCK_DGRAM, 0);
++	ASSERT_NE(setsockopt(self->sfd, SOL_SOCKET, SO_REUSEPORT, &optval,
++			     sizeof(optval)), -1);
++	if (variant->af_server == AF_INET) {
++		self->len_s = sizeof(self->server.addr);
++		self->server.addr.sin_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr.sin_addr);
++		self->server.addr.sin_port = htons(variant->server_port);
++		ASSERT_EQ(bind(self->sfd, &self->server.addr, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr,
++				      &self->len_s), 0);
++	} else {
++		self->len_s = sizeof(self->server.addr6);
++		self->server.addr6.sin6_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr6.sin6_addr);
++		self->server.addr6.sin6_port = htons(variant->server_port);
++		ASSERT_EQ(bind(self->sfd, &self->server.addr6, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr6,
++				      &self->len_s), 0);
++	}
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++};
++
++FIXTURE_TEARDOWN(quic_ulp)
++{
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	close(self->sfd);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++};
++
++TEST_F(quic_ulp, request_nonexistent_udp_ulp)
++{
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_ULP,
++			     "nonexistent", sizeof("nonexistent")), -1);
++	// If UDP_ULP option is not present, the error would be ENOPROTOOPT.
++	ASSERT_EQ(errno, ENOENT);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++};
++
++TEST_F(quic_ulp, request_quic_crypto_udp_ulp)
++{
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_ULP,
++			     "quic-crypto", sizeof("quic-crypto")), 0);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++};
++
++// 2. QUIC Data Path Operation Tests
++
++#define DO_NOT_SETUP_FLOW 0
++#define SETUP_FLOW 1
++
++#define DO_NOT_USE_CLIENT 0
++#define USE_CLIENT 1
++
++FIXTURE(quic_data)
++{
++	int sfd, c1fd, c2fd;
++	socklen_t len_c1;
++	socklen_t len_c2;
++	socklen_t len_s;
++
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} client_1;
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} client_2;
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} server;
++	int default_net_ns_fd;
++	int client_1_net_ns_fd;
++	int client_2_net_ns_fd;
++	int server_net_ns_fd;
++};
++
++FIXTURE_VARIANT(quic_data)
++{
++	unsigned int af_client_1;
++	char *client_1_address;
++	unsigned short client_1_port;
++	uint8_t conn_id_1[8];
++	uint8_t conn_1_key[16];
++	uint8_t conn_1_iv[12];
++	uint8_t conn_1_hdr_key[16];
++	size_t conn_id_1_len;
++	bool setup_flow_1;
++	bool use_client_1;
++	unsigned int af_client_2;
++	char *client_2_address;
++	unsigned short client_2_port;
++	uint8_t conn_id_2[8];
++	uint8_t conn_2_key[16];
++	uint8_t conn_2_iv[12];
++	uint8_t conn_2_hdr_key[16];
++	size_t conn_id_2_len;
++	bool setup_flow_2;
++	bool use_client_2;
++	unsigned int af_server;
++	char *server_address;
++	unsigned short server_port;
++};
++
++FIXTURE_VARIANT_ADD(quic_data, ipv4)
++{
++	.af_client_1 = AF_INET,
++	.client_1_address = "10.0.0.1",
++	.client_1_port = 6667,
++	.conn_id_1 = {0x11, 0x12, 0x13, 0x14},
++	.conn_id_1_len = 4,
++	.setup_flow_1 = SETUP_FLOW,
++	.use_client_1 = USE_CLIENT,
++	.af_client_2 = AF_INET,
++	.client_2_address = "10.0.0.3",
++	.client_2_port = 6668,
++	.conn_id_2 = {0x21, 0x22, 0x23, 0x24},
++	.conn_id_2_len = 4,
++	.setup_flow_2 = SETUP_FLOW,
++	//.use_client_2 = USE_CLIENT,
++	.af_server = AF_INET,
++	.server_address = "10.0.0.2",
++	.server_port = 6669,
++};
++
++FIXTURE_VARIANT_ADD(quic_data, ipv6_mapped_ipv4_two_conns)
++{
++	.af_client_1 = AF_INET6,
++	.client_1_address = "::ffff:10.0.0.1",
++	.client_1_port = 6670,
++	.conn_id_1 = {0x11, 0x12, 0x13, 0x14},
++	.conn_id_1_len = 4,
++	.setup_flow_1 = SETUP_FLOW,
++	.use_client_1 = USE_CLIENT,
++	.af_client_2 = AF_INET6,
++	.client_2_address = "::ffff:10.0.0.3",
++	.client_2_port = 6671,
++	.conn_id_2 = {0x21, 0x22, 0x23, 0x24},
++	.conn_id_2_len = 4,
++	.setup_flow_2 = SETUP_FLOW,
++	.use_client_2 = USE_CLIENT,
++	.af_server = AF_INET6,
++	.server_address = "::ffff:10.0.0.2",
++	.server_port = 6672,
++};
++
++FIXTURE_VARIANT_ADD(quic_data, ipv6_mapped_ipv4_setup_ipv4_one_conn)
++{
++	.af_client_1 = AF_INET,
++	.client_1_address = "10.0.0.3",
++	.client_1_port = 6676,
++	.conn_id_1 = {0x11, 0x12, 0x13, 0x14},
++	.conn_id_1_len = 4,
++	.setup_flow_1 = SETUP_FLOW,
++	.use_client_1 = DO_NOT_USE_CLIENT,
++	.af_client_2 = AF_INET6,
++	.client_2_address = "::ffff:10.0.0.3",
++	.client_2_port = 6676,
++	.conn_id_2 = {0x11, 0x12, 0x13, 0x14},
++	.conn_id_2_len = 4,
++	.setup_flow_2 = DO_NOT_SETUP_FLOW,
++	.use_client_2 = USE_CLIENT,
++	.af_server = AF_INET6,
++	.server_address = "::ffff:10.0.0.2",
++	.server_port = 6677,
++};
++
++FIXTURE_VARIANT_ADD(quic_data, ipv6_mapped_ipv4_setup_ipv6_one_conn)
++{
++	.af_client_1 = AF_INET6,
++	.client_1_address = "::ffff:10.0.0.3",
++	.client_1_port = 6678,
++	.conn_id_1 = {0x11, 0x12, 0x13, 0x14},
++	.setup_flow_1 = SETUP_FLOW,
++	.use_client_1 = DO_NOT_USE_CLIENT,
++	.af_client_2 = AF_INET,
++	.client_2_address = "10.0.0.3",
++	.client_2_port = 6678,
++	.conn_id_2 = {0x11, 0x12, 0x13, 0x14},
++	.setup_flow_2 = DO_NOT_SETUP_FLOW,
++	.use_client_2 = USE_CLIENT,
++	.af_server = AF_INET6,
++	.server_address = "::ffff:10.0.0.2",
++	.server_port = 6679,
++};
++
++FIXTURE_SETUP(quic_data)
++{
++	char path[PATH_MAX];
++	int optval = 1;
++
++	if (variant->af_client_1 == AF_INET) {
++		self->len_c1 = sizeof(self->client_1.addr);
++		self->client_1.addr.sin_family = variant->af_client_1;
++		inet_pton(variant->af_client_1, variant->client_1_address,
++			  &self->client_1.addr.sin_addr);
++		self->client_1.addr.sin_port = htons(variant->client_1_port);
++	} else {
++		self->len_c1 = sizeof(self->client_1.addr6);
++		self->client_1.addr6.sin6_family = variant->af_client_1;
++		inet_pton(variant->af_client_1, variant->client_1_address,
++			  &self->client_1.addr6.sin6_addr);
++		self->client_1.addr6.sin6_port = htons(variant->client_1_port);
++	}
++
++	if (variant->af_client_2 == AF_INET) {
++		self->len_c2 = sizeof(self->client_2.addr);
++		self->client_2.addr.sin_family = variant->af_client_2;
++		inet_pton(variant->af_client_2, variant->client_2_address,
++			  &self->client_2.addr.sin_addr);
++		self->client_2.addr.sin_port = htons(variant->client_2_port);
++	} else {
++		self->len_c2 = sizeof(self->client_2.addr6);
++		self->client_2.addr6.sin6_family = variant->af_client_2;
++		inet_pton(variant->af_client_2, variant->client_2_address,
++			  &self->client_2.addr6.sin6_addr);
++		self->client_2.addr6.sin6_port = htons(variant->client_2_port);
++	}
++
++	if (variant->af_server == AF_INET) {
++		self->len_s = sizeof(self->server.addr);
++		self->server.addr.sin_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr.sin_addr);
++		self->server.addr.sin_port = htons(variant->server_port);
++	} else {
++		self->len_s = sizeof(self->server.addr6);
++		self->server.addr6.sin6_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr6.sin6_addr);
++		self->server.addr6.sin6_port = htons(variant->server_port);
++	}
++
++	snprintf(path, sizeof(path), "/proc/%d/ns/net", getpid());
++	self->default_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->default_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns11");
++	self->client_1_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->client_1_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns12");
++	self->client_2_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->client_2_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns2");
++	self->server_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->server_net_ns_fd, 0);
++
++	if (variant->use_client_1) {
++		ASSERT_NE(setns(self->client_1_net_ns_fd, 0), -1);
++		self->c1fd = socket(variant->af_client_1, SOCK_DGRAM, 0);
++		ASSERT_NE(setsockopt(self->c1fd, SOL_SOCKET, SO_REUSEPORT,
++				     &optval, sizeof(optval)), -1);
++		if (variant->af_client_1 == AF_INET) {
++			ASSERT_EQ(bind(self->c1fd, &self->client_1.addr,
++				       self->len_c1), 0);
++			ASSERT_EQ(getsockname(self->c1fd, &self->client_1.addr,
++					      &self->len_c1), 0);
++		} else {
++			ASSERT_EQ(bind(self->c1fd, &self->client_1.addr6,
++				       self->len_c1), 0);
++			ASSERT_EQ(getsockname(self->c1fd, &self->client_1.addr6,
++					      &self->len_c1), 0);
++		}
++	}
++
++	if (variant->use_client_2) {
++		ASSERT_NE(setns(self->client_2_net_ns_fd, 0), -1);
++		self->c2fd = socket(variant->af_client_2, SOCK_DGRAM, 0);
++		ASSERT_NE(setsockopt(self->c2fd, SOL_SOCKET, SO_REUSEPORT,
++				     &optval, sizeof(optval)), -1);
++		if (variant->af_client_2 == AF_INET) {
++			ASSERT_EQ(bind(self->c2fd, &self->client_2.addr,
++				       self->len_c2), 0);
++			ASSERT_EQ(getsockname(self->c2fd, &self->client_2.addr,
++					      &self->len_c2), 0);
++		} else {
++			ASSERT_EQ(bind(self->c2fd, &self->client_2.addr6,
++				       self->len_c2), 0);
++			ASSERT_EQ(getsockname(self->c2fd, &self->client_2.addr6,
++					      &self->len_c2), 0);
++		}
++	}
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	self->sfd = socket(variant->af_server, SOCK_DGRAM, 0);
++	ASSERT_NE(setsockopt(self->sfd, SOL_SOCKET, SO_REUSEPORT, &optval,
++			     sizeof(optval)), -1);
++	if (variant->af_server == AF_INET) {
++		ASSERT_EQ(bind(self->sfd, &self->server.addr, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr,
++				      &self->len_s), 0);
++	} else {
++		ASSERT_EQ(bind(self->sfd, &self->server.addr6, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr6,
++				      &self->len_s), 0);
++	}
++
++	ASSERT_EQ(setsockopt(self->sfd, IPPROTO_UDP, UDP_ULP,
++			     "quic-crypto", sizeof("quic-crypto")), 0);
++
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++}
++
++FIXTURE_TEARDOWN(quic_data)
++{
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	close(self->sfd);
++	ASSERT_NE(setns(self->client_1_net_ns_fd, 0), -1);
++	close(self->c1fd);
++	ASSERT_NE(setns(self->client_2_net_ns_fd, 0), -1);
++	close(self->c2fd);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++}
++
++TEST_F(quic_data, send_fail_no_flow)
++{
++	char const *test_str = "test_read";
++	int send_len = 10;
++
++	ASSERT_EQ(strlen(test_str) + 1, send_len);
++	EXPECT_EQ(sendto(self->sfd, test_str, send_len, 0,
++			 &self->client_1.addr, self->len_c1), -1);
++};
++
++TEST_F(quic_data, encrypt_two_conn_gso_1200_iov_2_size_9000_aesgcm128)
++{
++	size_t cmsg_tx_len = sizeof(struct quic_tx_ancillary_data);
++	uint8_t cmsg_buf[CMSG_SPACE(cmsg_tx_len)];
++	struct quic_connection_info conn_1_info;
++	struct quic_connection_info conn_2_info;
++	struct quic_tx_ancillary_data *anc_data;
++	socklen_t recv_addr_len_1;
++	socklen_t recv_addr_len_2;
++	struct cmsghdr *cmsg_hdr;
++	int frag_size = 1200;
++	int send_len = 9000;
++	struct iovec iov[2];
++	int msg_len = 4500;
++	struct msghdr msg;
++	char *test_str_1;
++	char *test_str_2;
++	char *buf_1;
++	char *buf_2;
 +	int i;
 +
-+	snmp_get_cpu_field_batch(buf, quic_mib_list, net->mib.quic_statistics);
-+	for (i = 0; quic_mib_list[i].name; i++)
-+		seq_printf(seq, "%-32s\t%lu\n", quic_mib_list[i].name, buf[i]);
++	test_str_1 = (char *)malloc(9000);
++	test_str_2 = (char *)malloc(9000);
++	memset(test_str_1, 0, 9000);
++	memset(test_str_2, 0, 9000);
 +
-+	return 0;
++	buf_1 = (char *)malloc(10000);
++	buf_2 = (char *)malloc(10000);
++	for (i = 0; i < 9000; i += (1200 - 16)) {
++		test_str_1[i] = 0x40;
++		memcpy(&test_str_1[i + 1], &variant->conn_id_1,
++		       variant->conn_id_1_len);
++		test_str_1[i + 1 + variant->conn_id_1_len] = 0xca;
++
++		test_str_2[i] = 0x40;
++		memcpy(&test_str_2[i + 1], &variant->conn_id_2,
++		       variant->conn_id_2_len);
++		test_str_2[i + 1 + variant->conn_id_2_len] = 0xca;
++	}
++
++	// program the connection into the offload
++	conn_1_info.cipher_type = TLS_CIPHER_AES_GCM_128;
++	memset(&conn_1_info.key, 0, sizeof(struct quic_connection_info_key));
++	conn_1_info.key.conn_id_length = variant->conn_id_1_len;
++	memcpy(conn_1_info.key.conn_id,
++	       &variant->conn_id_1,
++	       variant->conn_id_1_len);
++
++	conn_2_info.cipher_type = TLS_CIPHER_AES_GCM_128;
++	memset(&conn_2_info.key, 0, sizeof(struct quic_connection_info_key));
++	conn_2_info.key.conn_id_length = variant->conn_id_2_len;
++	memcpy(conn_2_info.key.conn_id,
++	       &variant->conn_id_2,
++	       variant->conn_id_2_len);
++
++	memcpy(&conn_1_info.aes_gcm_128.payload_key,
++	       &variant->conn_1_key, 16);
++	memcpy(&conn_1_info.aes_gcm_128.payload_iv,
++	       &variant->conn_1_iv, 12);
++	memcpy(&conn_1_info.aes_gcm_128.header_key,
++	       &variant->conn_1_hdr_key, 16);
++	memcpy(&conn_2_info.aes_gcm_128.payload_key,
++	       &variant->conn_2_key, 16);
++	memcpy(&conn_2_info.aes_gcm_128.payload_iv,
++	       &variant->conn_2_iv, 12);
++	memcpy(&conn_2_info.aes_gcm_128.header_key,
++	       &variant->conn_2_hdr_key,
++	       16);
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &frag_size,
++			     sizeof(frag_size)), 0);
++
++	if (variant->setup_flow_1)
++		ASSERT_EQ(setsockopt(self->sfd, SOL_UDP,
++				     UDP_QUIC_ADD_TX_CONNECTION,
++				     &conn_1_info, sizeof(conn_1_info)), 0);
++
++	if (variant->setup_flow_2)
++		ASSERT_EQ(setsockopt(self->sfd, SOL_UDP,
++				     UDP_QUIC_ADD_TX_CONNECTION,
++				     &conn_2_info, sizeof(conn_2_info)), 0);
++
++	recv_addr_len_1 = self->len_c1;
++	recv_addr_len_2 = self->len_c2;
++
++	iov[0].iov_base = test_str_1;
++	iov[0].iov_len = msg_len;
++	iov[1].iov_base = (void *)test_str_1 + 4500;
++	iov[1].iov_len = msg_len;
++
++	msg.msg_name = (self->client_1.addr.sin_family == AF_INET)
++		       ? (void *)&self->client_1.addr
++		       : (void *)&self->client_1.addr6;
++	msg.msg_namelen = self->len_c1;
++	msg.msg_iov = iov;
++	msg.msg_iovlen = 2;
++	msg.msg_control = cmsg_buf;
++	msg.msg_controllen = sizeof(cmsg_buf);
++	cmsg_hdr = CMSG_FIRSTHDR(&msg);
++	cmsg_hdr->cmsg_level = IPPROTO_UDP;
++	cmsg_hdr->cmsg_type = UDP_QUIC_ENCRYPT;
++	cmsg_hdr->cmsg_len = CMSG_LEN(cmsg_tx_len);
++	anc_data = (struct quic_tx_ancillary_data *)CMSG_DATA(cmsg_hdr);
++	anc_data->next_pkt_num = 0x0d65c9;
++	anc_data->flags = 0;
++	anc_data->conn_id_length = variant->conn_id_1_len;
++
++	if (variant->use_client_1)
++		EXPECT_EQ(sendmsg(self->sfd, &msg, 0), send_len);
++
++	iov[0].iov_base = test_str_2;
++	iov[0].iov_len = msg_len;
++	iov[1].iov_base = (void *)test_str_2 + 4500;
++	iov[1].iov_len = msg_len;
++	msg.msg_name = (self->client_2.addr.sin_family == AF_INET)
++		       ? (void *)&self->client_2.addr
++		       : (void *)&self->client_2.addr6;
++	msg.msg_namelen = self->len_c2;
++	cmsg_hdr = CMSG_FIRSTHDR(&msg);
++	anc_data = (struct quic_tx_ancillary_data *)CMSG_DATA(cmsg_hdr);
++	anc_data->next_pkt_num = 0x0d65c9;
++	anc_data->conn_id_length = variant->conn_id_2_len;
++	anc_data->flags = 0;
++
++	if (variant->use_client_2)
++		EXPECT_EQ(sendmsg(self->sfd, &msg, 0), send_len);
++
++	if (variant->use_client_1) {
++		ASSERT_NE(setns(self->client_1_net_ns_fd, 0), -1);
++		if (variant->af_client_1 == AF_INET) {
++			for (i = 0; i < 7; ++i) {
++				EXPECT_EQ(recvfrom(self->c1fd, buf_1, 9000, 0,
++						   &self->client_1.addr,
++						   &recv_addr_len_1),
++					  1200);
++				// Validate framing is intact.
++				EXPECT_EQ(memcmp((void *)buf_1 + 1,
++						 &variant->conn_id_1,
++						 variant->conn_id_1_len), 0);
++			}
++			EXPECT_EQ(recvfrom(self->c1fd, buf_1, 9000, 0,
++					   &self->client_1.addr,
++					   &recv_addr_len_1),
++				  728);
++			EXPECT_EQ(memcmp((void *)buf_1 + 1,
++					 &variant->conn_id_1,
++					 variant->conn_id_1_len), 0);
++		} else {
++			for (i = 0; i < 7; ++i) {
++				EXPECT_EQ(recvfrom(self->c1fd, buf_1, 9000, 0,
++						   &self->client_1.addr6,
++						   &recv_addr_len_1),
++					1200);
++			}
++			EXPECT_EQ(recvfrom(self->c1fd, buf_1, 9000, 0,
++					   &self->client_1.addr6,
++					   &recv_addr_len_1),
++				  728);
++			EXPECT_EQ(memcmp((void *)buf_1 + 1,
++					 &variant->conn_id_1,
++					 variant->conn_id_1_len), 0);
++		}
++		EXPECT_NE(memcmp(buf_1, test_str_1, send_len), 0);
++	}
++
++	if (variant->use_client_2) {
++		ASSERT_NE(setns(self->client_2_net_ns_fd, 0), -1);
++		if (variant->af_client_2 == AF_INET) {
++			for (i = 0; i < 7; ++i) {
++				EXPECT_EQ(recvfrom(self->c2fd, buf_2, 9000, 0,
++						   &self->client_2.addr,
++						   &recv_addr_len_2),
++					  1200);
++				EXPECT_EQ(memcmp((void *)buf_2 + 1,
++						 &variant->conn_id_2,
++						 variant->conn_id_2_len), 0);
++			}
++			EXPECT_EQ(recvfrom(self->c2fd, buf_2, 9000, 0,
++					   &self->client_2.addr,
++					   &recv_addr_len_2),
++				  728);
++			EXPECT_EQ(memcmp((void *)buf_2 + 1,
++					 &variant->conn_id_2,
++					 variant->conn_id_2_len), 0);
++		} else {
++			for (i = 0; i < 7; ++i) {
++				EXPECT_EQ(recvfrom(self->c2fd, buf_2, 9000, 0,
++						   &self->client_2.addr6,
++						   &recv_addr_len_2),
++					  1200);
++				EXPECT_EQ(memcmp((void *)buf_2 + 1,
++						 &variant->conn_id_2,
++						 variant->conn_id_2_len), 0);
++			}
++			EXPECT_EQ(recvfrom(self->c2fd, buf_2, 9000, 0,
++					   &self->client_2.addr6,
++					   &recv_addr_len_2),
++				  728);
++			EXPECT_EQ(memcmp((void *)buf_2 + 1,
++					 &variant->conn_id_2,
++					 variant->conn_id_2_len), 0);
++		}
++		EXPECT_NE(memcmp(buf_2, test_str_2, send_len), 0);
++	}
++
++	if (variant->use_client_1 && variant->use_client_2)
++		EXPECT_NE(memcmp(buf_1, buf_2, send_len), 0);
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	if (variant->setup_flow_1) {
++		ASSERT_EQ(setsockopt(self->sfd, SOL_UDP,
++				     UDP_QUIC_DEL_TX_CONNECTION,
++				     &conn_1_info, sizeof(conn_1_info)),
++			  0);
++	}
++	if (variant->setup_flow_2) {
++		ASSERT_EQ(setsockopt(self->sfd, SOL_UDP,
++				     UDP_QUIC_DEL_TX_CONNECTION,
++				     &conn_2_info, sizeof(conn_2_info)),
++			  0);
++	}
++	free(test_str_1);
++	free(test_str_2);
++	free(buf_1);
++	free(buf_2);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
 +}
-+#endif
 +
-+int __net_init quic_proc_init(struct net *net)
++// 3. QUIC Encryption Tests
++
++FIXTURE(quic_crypto)
 +{
-+#ifdef CONFIG_PROC_FS
-+	if (!proc_create_net_single("quic_stat", 0444, net->proc_net,
-+				    quic_statistics_seq_show, NULL))
-+		return -ENOMEM;
-+#endif /* CONFIG_PROC_FS */
++	int sfd, cfd;
++	socklen_t len_c;
++	socklen_t len_s;
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} client;
++	union {
++		struct sockaddr_in addr;
++		struct sockaddr_in6 addr6;
++	} server;
++	int default_net_ns_fd;
++	int client_net_ns_fd;
++	int server_net_ns_fd;
++};
 +
-+	return 0;
-+}
-+
-+void __net_exit quic_proc_fini(struct net *net)
++FIXTURE_VARIANT(quic_crypto)
 +{
-+	remove_proc_entry("quic_stat", net->proc_net);
++	unsigned int af_client;
++	char *client_address;
++	unsigned short client_port;
++	uint32_t algo;
++	size_t conn_key_len;
++	uint8_t conn_id[8];
++	union {
++		uint8_t conn_key_16[16];
++		uint8_t conn_key_32[32];
++	} conn_key;
++	uint8_t conn_iv[12];
++	union {
++		uint8_t conn_hdr_key_16[16];
++		uint8_t conn_hdr_key_32[32];
++	} conn_hdr_key;
++	size_t conn_id_len;
++	bool setup_flow;
++	bool use_client;
++	unsigned int af_server;
++	char *server_address;
++	unsigned short server_port;
++	char plain[128];
++	size_t plain_len;
++	char match[128];
++	size_t match_len;
++	uint32_t next_pkt_num;
++};
++
++FIXTURE_SETUP(quic_crypto)
++{
++	char path[PATH_MAX];
++	int optval = 1;
++
++	if (variant->af_client == AF_INET) {
++		self->len_c = sizeof(self->client.addr);
++		self->client.addr.sin_family = variant->af_client;
++		inet_pton(variant->af_client, variant->client_address,
++			  &self->client.addr.sin_addr);
++		self->client.addr.sin_port = htons(variant->client_port);
++	} else {
++		self->len_c = sizeof(self->client.addr6);
++		self->client.addr6.sin6_family = variant->af_client;
++		inet_pton(variant->af_client, variant->client_address,
++			  &self->client.addr6.sin6_addr);
++		self->client.addr6.sin6_port = htons(variant->client_port);
++	}
++
++	if (variant->af_server == AF_INET) {
++		self->len_s = sizeof(self->server.addr);
++		self->server.addr.sin_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr.sin_addr);
++		self->server.addr.sin_port = htons(variant->server_port);
++	} else {
++		self->len_s = sizeof(self->server.addr6);
++		self->server.addr6.sin6_family = variant->af_server;
++		inet_pton(variant->af_server, variant->server_address,
++			  &self->server.addr6.sin6_addr);
++		self->server.addr6.sin6_port = htons(variant->server_port);
++	}
++
++	snprintf(path, sizeof(path), "/proc/%d/ns/net", getpid());
++	self->default_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->default_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns11");
++	self->client_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->client_net_ns_fd, 0);
++	strcpy(path, "/var/run/netns/ns2");
++	self->server_net_ns_fd = open(path, O_RDONLY);
++	ASSERT_GE(self->server_net_ns_fd, 0);
++
++	if (variant->use_client) {
++		ASSERT_NE(setns(self->client_net_ns_fd, 0), -1);
++		self->cfd = socket(variant->af_client, SOCK_DGRAM, 0);
++		ASSERT_NE(setsockopt(self->cfd, SOL_SOCKET, SO_REUSEPORT,
++				     &optval, sizeof(optval)), -1);
++		if (variant->af_client == AF_INET) {
++			ASSERT_EQ(bind(self->cfd, &self->client.addr,
++				       self->len_c), 0);
++			ASSERT_EQ(getsockname(self->cfd, &self->client.addr,
++					      &self->len_c), 0);
++		} else {
++			ASSERT_EQ(bind(self->cfd, &self->client.addr6,
++				       self->len_c), 0);
++			ASSERT_EQ(getsockname(self->cfd, &self->client.addr6,
++					      &self->len_c), 0);
++		}
++	}
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	self->sfd = socket(variant->af_server, SOCK_DGRAM, 0);
++	ASSERT_NE(setsockopt(self->sfd, SOL_SOCKET, SO_REUSEPORT, &optval,
++			     sizeof(optval)), -1);
++	if (variant->af_server == AF_INET) {
++		ASSERT_EQ(bind(self->sfd, &self->server.addr, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr,
++				      &self->len_s),
++			  0);
++	} else {
++		ASSERT_EQ(bind(self->sfd, &self->server.addr6, self->len_s), 0);
++		ASSERT_EQ(getsockname(self->sfd, &self->server.addr6,
++				      &self->len_s),
++			  0);
++	}
++
++	ASSERT_EQ(setsockopt(self->sfd, IPPROTO_UDP, UDP_ULP,
++			     "quic-crypto", sizeof("quic-crypto")), 0);
++
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
 +}
++
++FIXTURE_TEARDOWN(quic_crypto)
++{
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	close(self->sfd);
++	ASSERT_NE(setns(self->client_net_ns_fd, 0), -1);
++	close(self->cfd);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++}
++
++FIXTURE_VARIANT_ADD(quic_crypto, ipv4_aes_gcm_128)
++{
++	.af_client = AF_INET,
++	.client_address = "10.0.0.1",
++	.client_port = 7667,
++	.algo = TLS_CIPHER_AES_GCM_128,
++	.conn_key_len = 16,
++	.conn_id = {0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12, 0x49},
++	.conn_key = {
++		.conn_key_16 = {0x87, 0x71, 0xea, 0x1d,
++				0xfb, 0xbe, 0x7a, 0x45,
++				0xbb, 0xe2, 0x7e, 0xbc,
++				0x0b, 0x53, 0x94, 0x99
++		},
++	},
++	.conn_iv = {0x3A, 0xA7, 0x46, 0x72, 0xE9, 0x83, 0x6B, 0x55, 0xDA,
++		0x66, 0x7B, 0xDA},
++	.conn_hdr_key = {
++		.conn_hdr_key_16 = {0xc9, 0x8e, 0xfd, 0xf2,
++				    0x0b, 0x64, 0x8c, 0x57,
++				    0xb5, 0x0a, 0xb2, 0xd2,
++				    0x21, 0xd3, 0x66, 0xa5},
++	},
++	.conn_id_len = 8,
++	.setup_flow = SETUP_FLOW,
++	.use_client = USE_CLIENT,
++	.af_server = AF_INET,
++	.server_address = "10.0.0.2",
++	.server_port = 7669,
++	.plain = { 0x40, 0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12,
++		   0x49, 0xca,
++		   // payload
++		   0x02, 0x80, 0xde, 0x40, 0x39, 0x40, 0xf6, 0x00,
++		   0x01, 0x0b, 0x00, 0x0f, 0x65, 0x63, 0x68, 0x6f,
++		   0x20, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
++		   0x37, 0x38, 0x39
++	},
++	.plain_len = 37,
++	.match = {
++		   0x46, 0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12,
++		   0x49, 0x1c, 0x44, 0xb8, 0x41, 0xbb, 0xcf, 0x6e,
++		   0x0a, 0x2a, 0x24, 0xfb, 0xb4, 0x79, 0x62, 0xea,
++		   0x59, 0x38, 0x1a, 0x0e, 0x50, 0x1e, 0x59, 0xed,
++		   0x3f, 0x8e, 0x7e, 0x5a, 0x70, 0xe4, 0x2a, 0xbc,
++		   0x2a, 0xfa, 0x2b, 0x54, 0xeb, 0x89, 0xc3, 0x2c,
++		   0xb6, 0x8c, 0x1e, 0xab, 0x2d
++	},
++	.match_len = 53,
++	.next_pkt_num = 0x0d65c9,
++};
++
++FIXTURE_VARIANT_ADD(quic_crypto, ipv4_chacha20_poly1305)
++{
++	.af_client = AF_INET,
++	.client_address = "10.0.0.1",
++	.client_port = 7801,
++	.algo = TLS_CIPHER_CHACHA20_POLY1305,
++	.conn_key_len = 32,
++	.conn_id = {},
++	.conn_id_len = 0,
++	.conn_key = {
++		.conn_key_32 = {
++			0x3b, 0xfc, 0xdd, 0xd7, 0x2b, 0xcf, 0x02, 0x54,
++			0x1d, 0x7f, 0xa0, 0xdd, 0x1f, 0x5f, 0x9e, 0xee,
++			0xa8, 0x17, 0xe0, 0x9a, 0x69, 0x63, 0xa0, 0xe6,
++			0xc7, 0xdf, 0x0f, 0x9a, 0x1b, 0xab, 0x90, 0xf2,
++		},
++	},
++	.conn_iv = {
++		0xa6, 0xb5, 0xbc, 0x6a, 0xb7, 0xda, 0xfc, 0xe3,
++		0x0f, 0xff, 0xf5, 0xdd,
++	},
++	.conn_hdr_key = {
++		.conn_hdr_key_32 = {
++			0xd6, 0x59, 0x76, 0x0d, 0x2b, 0xa4, 0x34, 0xa2,
++			0x26, 0xfd, 0x37, 0xb3, 0x5c, 0x69, 0xe2, 0xda,
++			0x82, 0x11, 0xd1, 0x0c, 0x4f, 0x12, 0x53, 0x87,
++			0x87, 0xd6, 0x56, 0x45, 0xd5, 0xd1, 0xb8, 0xe2,
++		},
++	},
++	.setup_flow = SETUP_FLOW,
++	.use_client = USE_CLIENT,
++	.af_server = AF_INET,
++	.server_address = "10.0.0.2",
++	.server_port = 7802,
++	.plain = { 0x42, 0x00, 0xbf, 0xf4, 0x01 },
++	.plain_len = 5,
++	.match = { 0x55, 0x58, 0xb1, 0xc6, 0x0a, 0xe7, 0xb6, 0xb9,
++		   0x32, 0xbc, 0x27, 0xd7, 0x86, 0xf4, 0xbc, 0x2b,
++		   0xb2, 0x0f, 0x21, 0x62, 0xba },
++	.match_len = 21,
++	.next_pkt_num = 0x2700bff5,
++};
++
++FIXTURE_VARIANT_ADD(quic_crypto, ipv6_aes_gcm_128)
++{
++	.af_client = AF_INET6,
++	.client_address = "2001::1",
++	.client_port = 7673,
++	.algo = TLS_CIPHER_AES_GCM_128,
++	.conn_key_len = 16,
++	.conn_id = {0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12, 0x49},
++	.conn_key = {
++		.conn_key_16 = {0x87, 0x71, 0xea, 0x1d,
++				0xfb, 0xbe, 0x7a, 0x45,
++				0xbb, 0xe2, 0x7e, 0xbc,
++				0x0b, 0x53, 0x94, 0x99
++		},
++	},
++	.conn_iv = {0x3a, 0xa7, 0x46, 0x72, 0xe9, 0x83, 0x6b, 0x55, 0xda,
++		0x66, 0x7b, 0xda},
++	.conn_hdr_key = {
++		.conn_hdr_key_16 = {0xc9, 0x8e, 0xfd, 0xf2,
++				    0x0b, 0x64, 0x8c, 0x57,
++				    0xb5, 0x0a, 0xb2, 0xd2,
++				    0x21, 0xd3, 0x66, 0xa5},
++	},
++	.conn_id_len = 8,
++	.setup_flow = SETUP_FLOW,
++	.use_client = USE_CLIENT,
++	.af_server = AF_INET6,
++	.server_address = "2001::2",
++	.server_port = 7675,
++	.plain = { 0x40, 0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12,
++		   0x49, 0xca,
++		   // Payload
++		   0x02, 0x80, 0xde, 0x40, 0x39, 0x40, 0xf6, 0x00,
++		   0x01, 0x0b, 0x00, 0x0f, 0x65, 0x63, 0x68, 0x6f,
++		   0x20, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36,
++		   0x37, 0x38, 0x39
++	},
++	.plain_len = 37,
++	.match = {
++		   0x46, 0x08, 0x6b, 0xbf, 0x88, 0x82, 0xb9, 0x12,
++		   0x49, 0x1c, 0x44, 0xb8, 0x41, 0xbb, 0xcf, 0x6e,
++		   0x0a, 0x2a, 0x24, 0xfb, 0xb4, 0x79, 0x62, 0xea,
++		   0x59, 0x38, 0x1a, 0x0e, 0x50, 0x1e, 0x59, 0xed,
++		   0x3f, 0x8e, 0x7e, 0x5a, 0x70, 0xe4, 0x2a, 0xbc,
++		   0x2a, 0xfa, 0x2b, 0x54, 0xeb, 0x89, 0xc3, 0x2c,
++		   0xb6, 0x8c, 0x1e, 0xab, 0x2d
++	},
++	.match_len = 53,
++	.next_pkt_num = 0x0d65c9,
++};
++
++FIXTURE_VARIANT_ADD(quic_crypto, ipv6_chacha20_poly1305)
++{
++	.af_client = AF_INET6,
++	.client_address = "2001::1",
++	.client_port = 7803,
++	.algo = TLS_CIPHER_CHACHA20_POLY1305,
++	.conn_key_len = 32,
++	.conn_id = {},
++	.conn_id_len = 0,
++	.conn_key = {
++		.conn_key_32 = {
++			0x3b, 0xfc, 0xdd, 0xd7, 0x2b, 0xcf, 0x02, 0x54,
++			0x1d, 0x7f, 0xa0, 0xdd, 0x1f, 0x5f, 0x9e, 0xee,
++			0xa8, 0x17, 0xe0, 0x9a, 0x69, 0x63, 0xa0, 0xe6,
++			0xc7, 0xdf, 0x0f, 0x9a, 0x1b, 0xab, 0x90, 0xf2,
++		},
++	},
++	.conn_iv = {
++		0xa6, 0xb5, 0xbc, 0x6a, 0xb7, 0xda, 0xfc, 0xe3,
++		0x0f, 0xff, 0xf5, 0xdd,
++	},
++	.conn_hdr_key = {
++		.conn_hdr_key_32 = {
++			0xd6, 0x59, 0x76, 0x0d, 0x2b, 0xa4, 0x34, 0xa2,
++			0x26, 0xfd, 0x37, 0xb3, 0x5c, 0x69, 0xe2, 0xda,
++			0x82, 0x11, 0xd1, 0x0c, 0x4f, 0x12, 0x53, 0x87,
++			0x87, 0xd6, 0x56, 0x45, 0xd5, 0xd1, 0xb8, 0xe2,
++		},
++	},
++	.setup_flow = SETUP_FLOW,
++	.use_client = USE_CLIENT,
++	.af_server = AF_INET6,
++	.server_address = "2001::2",
++	.server_port = 7804,
++	.plain = { 0x42, 0x00, 0xbf, 0xf4, 0x01 },
++	.plain_len = 5,
++	.match = { 0x55, 0x58, 0xb1, 0xc6, 0x0a, 0xe7, 0xb6, 0xb9,
++		   0x32, 0xbc, 0x27, 0xd7, 0x86, 0xf4, 0xbc, 0x2b,
++		   0xb2, 0x0f, 0x21, 0x62, 0xba },
++	.match_len = 21,
++	.next_pkt_num = 0x2700bff5,
++};
++
++TEST_F(quic_crypto, encrypt_test_vector_single_flow_gso_in_control)
++{
++	uint8_t cmsg_buf[CMSG_SPACE(sizeof(struct quic_tx_ancillary_data))
++			 + CMSG_SPACE(sizeof(uint16_t))];
++	struct quic_tx_ancillary_data *anc_data;
++	struct quic_connection_info conn_info;
++	uint16_t frag_size = 1200;
++	struct cmsghdr *cmsg_hdr;
++	int wrong_frag_size = 26;
++	socklen_t recv_addr_len;
++	struct iovec iov;
++	struct msghdr msg;
++	char *buf;
++
++	buf = (char *)malloc(9000);
++	conn_info.cipher_type = variant->algo;
++	memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
++	conn_info.key.conn_id_length = variant->conn_id_len;
++	memcpy(conn_info.key.conn_id,
++	       &variant->conn_id,
++	       variant->conn_id_len);
++	ASSERT_TRUE(variant->algo == TLS_CIPHER_AES_GCM_128 ||
++		    variant->algo == TLS_CIPHER_CHACHA20_POLY1305);
++	switch (variant->algo) {
++	case TLS_CIPHER_AES_GCM_128:
++		memcpy(&conn_info.aes_gcm_128.payload_key,
++		       &variant->conn_key, 16);
++		memcpy(&conn_info.aes_gcm_128.payload_iv,
++		       &variant->conn_iv, 12);
++		memcpy(&conn_info.aes_gcm_128.header_key,
++		       &variant->conn_hdr_key, 16);
++		break;
++	case TLS_CIPHER_CHACHA20_POLY1305:
++		memcpy(&conn_info.chacha20_poly1305.payload_key,
++		       &variant->conn_key, 32);
++		memcpy(&conn_info.chacha20_poly1305.payload_iv,
++		       &variant->conn_iv, 12);
++		memcpy(&conn_info.chacha20_poly1305.header_key,
++		       &variant->conn_hdr_key, 32);
++		break;
++	}
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &wrong_frag_size,
++			     sizeof(wrong_frag_size)), 0);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_QUIC_ADD_TX_CONNECTION,
++			     &conn_info, sizeof(conn_info)), 0);
++
++	recv_addr_len = self->len_c;
++	iov.iov_base = (void *)variant->plain;
++	iov.iov_len = variant->plain_len;
++	memset(cmsg_buf, 0, sizeof(cmsg_buf));
++	msg.msg_name = (self->client.addr.sin_family == AF_INET)
++		       ? (void *)&self->client.addr
++		       : (void *)&self->client.addr6;
++	msg.msg_namelen = self->len_c;
++	msg.msg_iov = &iov;
++	msg.msg_iovlen = 1;
++	msg.msg_control = cmsg_buf;
++	msg.msg_controllen = sizeof(cmsg_buf);
++	cmsg_hdr = CMSG_FIRSTHDR(&msg);
++	cmsg_hdr->cmsg_level = IPPROTO_UDP;
++	cmsg_hdr->cmsg_type = UDP_QUIC_ENCRYPT;
++	cmsg_hdr->cmsg_len = CMSG_LEN(sizeof(struct quic_tx_ancillary_data));
++	anc_data = (struct quic_tx_ancillary_data *)CMSG_DATA(cmsg_hdr);
++	anc_data->flags = 0;
++	anc_data->next_pkt_num = variant->next_pkt_num;
++	anc_data->conn_id_length = variant->conn_id_len;
++	cmsg_hdr = CMSG_NXTHDR(&msg, cmsg_hdr);
++	cmsg_hdr->cmsg_level = IPPROTO_UDP;
++	cmsg_hdr->cmsg_type = UDP_SEGMENT;
++	cmsg_hdr->cmsg_len = CMSG_LEN(sizeof(uint16_t));
++	memcpy(CMSG_DATA(cmsg_hdr), (void *)&frag_size, sizeof(frag_size));
++
++	EXPECT_EQ(sendmsg(self->sfd, &msg, 0), variant->plain_len);
++	ASSERT_NE(setns(self->client_net_ns_fd, 0), -1);
++	if (variant->af_client == AF_INET) {
++		EXPECT_EQ(recvfrom(self->cfd, buf, 9000, 0,
++				   &self->client.addr, &recv_addr_len),
++			  variant->match_len);
++	} else {
++		EXPECT_EQ(recvfrom(self->cfd, buf, 9000, 0,
++				   &self->client.addr6, &recv_addr_len),
++			  variant->match_len);
++	}
++	EXPECT_STREQ(buf, variant->match);
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_QUIC_DEL_TX_CONNECTION,
++			     &conn_info, sizeof(conn_info)), 0);
++	free(buf);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++}
++
++TEST_F(quic_crypto, encrypt_test_vector_single_flow_gso_in_setsockopt)
++{
++	uint8_t cmsg_buf[CMSG_SPACE(sizeof(struct quic_tx_ancillary_data))];
++	struct quic_tx_ancillary_data *anc_data;
++	struct quic_connection_info conn_info;
++	int frag_size = 1200;
++	struct cmsghdr *cmsg_hdr;
++	socklen_t recv_addr_len;
++	struct iovec iov;
++	struct msghdr msg;
++	char *buf;
++
++	buf = (char *)malloc(9000);
++	conn_info.cipher_type = variant->algo;
++	memset(&conn_info.key, 0, sizeof(struct quic_connection_info_key));
++	conn_info.key.conn_id_length = variant->conn_id_len;
++	memcpy(conn_info.key.conn_id,
++	       &variant->conn_id,
++	       variant->conn_id_len);
++	ASSERT_TRUE(variant->algo == TLS_CIPHER_AES_GCM_128 ||
++		    variant->algo == TLS_CIPHER_CHACHA20_POLY1305);
++	switch (variant->algo) {
++	case TLS_CIPHER_AES_GCM_128:
++		memcpy(&conn_info.aes_gcm_128.payload_key,
++		       &variant->conn_key, 16);
++		memcpy(&conn_info.aes_gcm_128.payload_iv,
++		       &variant->conn_iv, 12);
++		memcpy(&conn_info.aes_gcm_128.header_key,
++		       &variant->conn_hdr_key, 16);
++		break;
++	case TLS_CIPHER_CHACHA20_POLY1305:
++		memcpy(&conn_info.chacha20_poly1305.payload_key,
++		       &variant->conn_key, 32);
++		memcpy(&conn_info.chacha20_poly1305.payload_iv,
++		       &variant->conn_iv, 12);
++		memcpy(&conn_info.chacha20_poly1305.header_key,
++		       &variant->conn_hdr_key, 32);
++		break;
++	}
++
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_SEGMENT, &frag_size,
++			     sizeof(frag_size)), 0);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_QUIC_ADD_TX_CONNECTION,
++			     &conn_info, sizeof(conn_info)), 0);
++
++	recv_addr_len = self->len_c;
++	iov.iov_base = (void *)variant->plain;
++	iov.iov_len = variant->plain_len;
++	memset(cmsg_buf, 0, sizeof(cmsg_buf));
++	msg.msg_name = (self->client.addr.sin_family == AF_INET)
++		       ? (void *)&self->client.addr
++		       : (void *)&self->client.addr6;
++	msg.msg_namelen = self->len_c;
++	msg.msg_iov = &iov;
++	msg.msg_iovlen = 1;
++	msg.msg_control = cmsg_buf;
++	msg.msg_controllen = sizeof(cmsg_buf);
++	cmsg_hdr = CMSG_FIRSTHDR(&msg);
++	cmsg_hdr->cmsg_level = IPPROTO_UDP;
++	cmsg_hdr->cmsg_type = UDP_QUIC_ENCRYPT;
++	cmsg_hdr->cmsg_len = CMSG_LEN(sizeof(struct quic_tx_ancillary_data));
++	anc_data = (struct quic_tx_ancillary_data *)CMSG_DATA(cmsg_hdr);
++	anc_data->flags = 0;
++	anc_data->next_pkt_num = variant->next_pkt_num;
++	anc_data->conn_id_length = variant->conn_id_len;
++
++	EXPECT_EQ(sendmsg(self->sfd, &msg, 0), variant->plain_len);
++	ASSERT_NE(setns(self->client_net_ns_fd, 0), -1);
++	if (variant->af_client == AF_INET) {
++		EXPECT_EQ(recvfrom(self->cfd, buf, 9000, 0,
++				   &self->client.addr, &recv_addr_len),
++			  variant->match_len);
++	} else {
++		EXPECT_EQ(recvfrom(self->cfd, buf, 9000, 0,
++				   &self->client.addr6, &recv_addr_len),
++			  variant->match_len);
++	}
++	EXPECT_STREQ(buf, variant->match);
++	ASSERT_NE(setns(self->server_net_ns_fd, 0), -1);
++	ASSERT_EQ(setsockopt(self->sfd, SOL_UDP, UDP_QUIC_DEL_TX_CONNECTION,
++			     &conn_info, sizeof(conn_info)), 0);
++	free(buf);
++	ASSERT_NE(setns(self->default_net_ns_fd, 0), -1);
++}
++
++TEST_HARNESS_MAIN
+diff --git a/tools/testing/selftests/net/quic.sh b/tools/testing/selftests/net/quic.sh
+new file mode 100755
+index 000000000000..8ff8bc494671
+--- /dev/null
++++ b/tools/testing/selftests/net/quic.sh
+@@ -0,0 +1,46 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++sudo ip netns add ns11
++sudo ip netns add ns12
++sudo ip netns add ns2
++sudo ip link add veth11 type veth peer name br-veth11
++sudo ip link add veth12 type veth peer name br-veth12
++sudo ip link add veth2 type veth peer name br-veth2
++sudo ip link set veth11 netns ns11
++sudo ip link set veth12 netns ns12
++sudo ip link set veth2 netns ns2
++sudo ip netns exec ns11 ip addr add 10.0.0.1/24 dev veth11
++sudo ip netns exec ns11 ip addr add ::ffff:10.0.0.1/96 dev veth11
++sudo ip netns exec ns11 ip addr add 2001::1/64 dev veth11
++sudo ip netns exec ns12 ip addr add 10.0.0.3/24 dev veth12
++sudo ip netns exec ns12 ip addr add ::ffff:10.0.0.3/96 dev veth12
++sudo ip netns exec ns12 ip addr add 2001::3/64 dev veth12
++sudo ip netns exec ns2 ip addr add 10.0.0.2/24 dev veth2
++sudo ip netns exec ns2 ip addr add ::ffff:10.0.0.2/96 dev veth2
++sudo ip netns exec ns2 ip addr add 2001::2/64 dev veth2
++sudo ip link add name br1 type bridge forward_delay 0
++sudo ip link set br1 up
++sudo ip link set br-veth11 up
++sudo ip link set br-veth12 up
++sudo ip link set br-veth2 up
++sudo ip netns exec ns11 ip link set veth11 up
++sudo ip netns exec ns12 ip link set veth12 up
++sudo ip netns exec ns2 ip link set veth2 up
++sudo ip link set br-veth11 master br1
++sudo ip link set br-veth12 master br1
++sudo ip link set br-veth2 master br1
++sudo ip netns exec ns2 cat /proc/net/quic_stat
++
++printf "%s" "Waiting for bridge to start fowarding ..."
++while ! timeout 0.5 sudo ip netns exec ns2 ping -c 1 -n 2001::1 &> /dev/null
++do
++	printf "%c" "."
++done
++printf "\n%s\n"  "Bridge is operational"
++
++sudo ./quic
++sudo ip netns exec ns2 cat /proc/net/quic_stat
++sudo ip netns delete ns2
++sudo ip netns delete ns12
++sudo ip netns delete ns11
 -- 
 2.30.2
 
