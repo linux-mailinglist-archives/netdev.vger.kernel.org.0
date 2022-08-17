@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DFAD5974C7
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544FA5974CD
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240506AbiHQRDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 13:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
+        id S238024AbiHQRKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 13:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238200AbiHQRDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:03:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53599C1D3
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:03:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660755782;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iKDI4wZP72dFon1h0J2l9ajfalLVCP4U7tsE8KQrHV8=;
-        b=GlNZRmvBygQNFcWF2DZ8eBpULCvxpT8yeMiAn3KPCKdyFEFO2Giv7fiWXBqIy6xDfkBwuP
-        IaKK0vMpMZWfQuLHpTVOOpNnM5Gm7KSxS797RjfgGznC4jzPnDYMjTfigyrJekY4YMRet9
-        18JKGAEMYNF/uFS+Pq6mZIWMDI2teTQ=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-534-8P3a0DjtPzah1xqwf2s2dg-1; Wed, 17 Aug 2022 13:03:00 -0400
-X-MC-Unique: 8P3a0DjtPzah1xqwf2s2dg-1
-Received: by mail-wr1-f69.google.com with SMTP id i29-20020adfa51d000000b002251fd0ff14so911602wrb.16
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:03:00 -0700 (PDT)
+        with ESMTP id S237342AbiHQRKJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:10:09 -0400
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BD561D42
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:10:07 -0700 (PDT)
+Received: by mail-oi1-x22c.google.com with SMTP id w197so16052921oie.5
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 10:10:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=liA8sIEE7LH4n5y05JVSRt5VQvO59ez/QUOReNCYsxM=;
+        b=f2OI8WfPdjKXAcs7paiG1HY5d6s404gX5B2dmkrKi6Y1PmLUXQZqVDymiRkxmq8e2d
+         dnTbDnioaV35aVMkMkNARzS8f4kx4grLBod+u8RI0fV6HAy8fPATuFwBgdSqMjdd8cpW
+         swXiOjg9sw5y05vYJeuoI0hEW65clZFLkkPtJqVoMRhY0p836vKSkTKSB8UZka/sPEPE
+         eRm/uOx3LNWnkUiqiZ4RLe1Yrgk/qQjlgnZiOnbv4ZJRUpYs7lzCcvrJsKeX4lHGhQtY
+         evv/9A1dNvCTJ0JDGyKAShDlhCG0/yrNe5y2EoCKBcXOKKGIpNVF/Fph5XHKNuU0iFKA
+         xVhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=iKDI4wZP72dFon1h0J2l9ajfalLVCP4U7tsE8KQrHV8=;
-        b=ea6GdirSjeCALbqKxrvriTvhPMVhLHSPRw43tlRAhcnPnOkLDRGsRHOOLyMIu6mPMV
-         dcNI1BVGfxs1Kz+S4YLgkrjkxuuBWbcAfI791SZXssW4bvT+tR3nQIBJ7R9+1YUIWRWv
-         21JZ7+tzrw0GCoeHBEkxlkzSkgV0PT2gmV/yC74XiASgOKGH6Fxnew9Q1hdjT8zUNHYE
-         cLmTUs4BJcBfRdCBhsd+kbr6XdIkIuDENy2izOtGSYBsuhogpGBd5fppiNvKZxFs/Q5y
-         qFKP8ZgUZnvZNuv+y09tOofU64G6ztAX/yZueE0KtJ6M3F1gKZCUyyj8Dp26YDMqDz6q
-         LWqg==
-X-Gm-Message-State: ACgBeo22WoOo1rQSGk4XRptgz4I/Mf56tagp39bUdantGIPiuyrkaeWi
-        I4TWb6n103YsCZDGixliE78a53sdtoNeomOOyT7A8IIuzo0PbDs7cWnY4ZEUE2c13gAoGq7pXYZ
-        fymcTge5Hp+B+OUhA
-X-Received: by 2002:a5d:440b:0:b0:225:2106:2f30 with SMTP id z11-20020a5d440b000000b0022521062f30mr3175262wrq.533.1660755779411;
-        Wed, 17 Aug 2022 10:02:59 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5AuDbo8GcZEnqQiqOeyM94DlUbLxyqrhdFN62DfedDuMFRt+WAj8nSt4Xs7jQmlw2zs7JUow==
-X-Received: by 2002:a5d:440b:0:b0:225:2106:2f30 with SMTP id z11-20020a5d440b000000b0022521062f30mr3175243wrq.533.1660755779078;
-        Wed, 17 Aug 2022 10:02:59 -0700 (PDT)
-Received: from redhat.com ([2.55.43.215])
-        by smtp.gmail.com with ESMTPSA id h82-20020a1c2155000000b003a319bd3278sm2825504wmh.40.2022.08.17.10.02.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:02:58 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 13:02:52 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Bobby Eshleman <bobbyeshleman@gmail.com>
-Cc:     Bobby Eshleman <bobby.eshleman@gmail.com>,
-        Bobby Eshleman <bobby.eshleman@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Jiang Wang <jiang.wang@bytedance.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-hyperv@vger.kernel.org
-Subject: Re: [PATCH 0/6] virtio/vsock: introduce dgrams, sk_buff, and qdisc
-Message-ID: <20220817130044-mutt-send-email-mst@kernel.org>
-References: <cover.1660362668.git.bobby.eshleman@bytedance.com>
- <20220817025250-mutt-send-email-mst@kernel.org>
- <YvtmYpMieMFb80qR@bullseye>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=liA8sIEE7LH4n5y05JVSRt5VQvO59ez/QUOReNCYsxM=;
+        b=aMglipafr2Ove05vr2C6TbGleUMsjaZhDyFbb0FQziYCgolgUAips+DbewP/tv+QML
+         cjDVO+JQRIgE3A9go2G3swgVsSGOqHv4SfBmEaMMzfOZvbvvrt52AnBVEYQSpRsRYb28
+         IdSOlc2aleE74pX6e9jsVTKRBsK6jGs04KoJApzdqFOvZVaEqFlytCc+y30PRkKdm8/c
+         prl5TIXSuE8GHWynErHkD5moD+4V7l+KBua9tqXdr+NTO88+szXWkq2JUtneEXHBwSjU
+         Qf/MgG8K7S3Iwn9eHbAsq8Myo9EmC2hRyL6sP0t7ZtjR9vr+pbMscvEmRuz3dAICX/QK
+         Zt+A==
+X-Gm-Message-State: ACgBeo1eSti1H1OH/q+WQ1kwmKUSMc9DGsUdiITiXWjHKUQKASXjckju
+        baiiaz1CTbPu0/QGirtSOZgB0Gvivs+hO2wejbI=
+X-Google-Smtp-Source: AA6agR5Qe8nmbumnDA95mXGcBIWwDmfDo75zi0sHAf0F+xqlmC20F7fQowqOdBBUS0V84t45cD8bcv/3N/1n3IhHxV0=
+X-Received: by 2002:a05:6808:1b25:b0:342:ff09:2c32 with SMTP id
+ bx37-20020a0568081b2500b00342ff092c32mr2006228oib.26.1660756206848; Wed, 17
+ Aug 2022 10:10:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YvtmYpMieMFb80qR@bullseye>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+References: <20220810082745.1466895-1-saproj@gmail.com> <20220810100818.greurtz6csgnfggv@skbuf>
+ <CABikg9zb7z8p7tE0H+fpmB_NSK3YVS-Sy4sqWbihziFdPBoL+Q@mail.gmail.com>
+ <20220810133531.wia2oznylkjrgje2@skbuf> <CABikg9yVpQaU_cf+iuPn5EV0Hn9ydwigdmZrrdStq7y-y+=YsQ@mail.gmail.com>
+ <20220810193825.vq7rdgwx7xua5amj@skbuf> <CABikg9wUtyNGJ+SvASGC==qezh2eghJ=SyM5hECYVguR3BmGQQ@mail.gmail.com>
+ <YvUOSWxZPXa2JX8o@lunn.ch>
+In-Reply-To: <YvUOSWxZPXa2JX8o@lunn.ch>
+From:   Sergei Antonov <saproj@gmail.com>
+Date:   Wed, 17 Aug 2022 20:09:55 +0300
+Message-ID: <CABikg9x4LbOR25aLJ_=EE5SxDQJXj5_dod6rCgmeQXxmKAR+SA@mail.gmail.com>
+Subject: Re: [PATCH] net: dsa: mv88e6060: report max mtu 1536
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 09:42:51AM +0000, Bobby Eshleman wrote:
-> > The basic question to answer then is this: with a net device qdisc
-> > etc in the picture, how is this different from virtio net then?
-> > Why do you still want to use vsock?
-> > 
-> 
-> When using virtio-net, users looking for inter-VM communication are
-> required to setup bridges, TAPs, allocate IP addresses or setup DNS,
-> etc... and then finally when you have a network, you can open a socket
-> on an IP address and port. This is the configuration that vsock avoids.
-> For vsock, we just need a CID and a port, but no network configuration.
+On Thu, 11 Aug 2022 at 17:12, Andrew Lunn <andrew@lunn.ch> wrote:
+> > The driver does not know its MAC address initially. On my hardware it
+> > is stored in a flash memory chip, so I assign it using "ip link set
+> > ..." either manually or from an /etc/init.d script. A solution with
+> > early MAC assignment in the moxart_mac_probe() function is doable. Do
+> > you think I should implement it?
+>
+> I would suggest a few patches:
+>
+> 1) Use eth_hw_addr_random() to assign a random MAC address during probe.
+> 2) Remove is_valid_ether_addr() from moxart_mac_open()
+> 3) Add a call to platform_get_ethdev_address() during probe
+> 4) Remove is_valid_ether_addr() from moxart_set_mac_address(). The core does this
+>
+> platform_get_ethdev_address() will call of_get_mac_addr_nvmem() which
+> might be able to get your MAC address out of flash, without user space
+> being involved.
 
-Surely when you mention DNS you are going overboard? vsock doesn't
-remove the need for DNS as much as it does not support it.
-
--- 
-MST
-
+Great suggestions! So I am submitting a patch named
+"net: moxa: MAC address reading, generating, validity checking"
