@@ -2,119 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA541596B0A
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 10:10:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19306596B37
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 10:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234499AbiHQIKO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 04:10:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59474 "EHLO
+        id S234409AbiHQIO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 04:14:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbiHQIKI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 04:10:08 -0400
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF2264D24C;
-        Wed, 17 Aug 2022 01:10:06 -0700 (PDT)
-Received: by mail-pl1-x62c.google.com with SMTP id x19so293386plc.5;
-        Wed, 17 Aug 2022 01:10:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=yDyqXXuN5rFWHjE/u6lA6dNFJY0ydf5Bv6weQesHpqQ=;
-        b=G4iZu8kyTF8Phd/KPNzRcRZjC3rK20PbbPKdSDgBBYre6kr/7C4KCnjlxGmtQ/N9o4
-         hU/WwhXlTtq7l00OBoiu+cBz7kC4Kxik07W34up2RsAf66OmiNTImZMluELf+MfVloAr
-         Y/o9TIb1qzd6xOO2d8ooV9OZXkWrXr66kgXfxYIxYSw1e7slziQ62yXPVXFZvrZELXXb
-         EsAn2OWB50OStemwwvrjyN84g78zhYsb7Etm5kasilu0PunW0NmPhqVssZtrN0qejPI8
-         bl6GyJ3COZztOl6nfZM1tE19ZMO4F8hTsmeOgz72Oj6LC4HaTBWdtCJnRDF7PiJYA2c9
-         HZdA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=yDyqXXuN5rFWHjE/u6lA6dNFJY0ydf5Bv6weQesHpqQ=;
-        b=v9UlhbHSMbMyMrRX98oixo3QAGvcOIXNXJ684TMHXH11KeiVAVW79rW8kB7p8jzVID
-         QrnDgpE+mIL4qtiREMfxtRWigj5cE9A/yDnYADDttjR9pQMm8FwsvdhAPlLDYgcLb1IO
-         pmE86qngvbZPa/CPGrVvUJMCDo2zvo29K5lq/xoOkixNoICJ9tG8+VfEo5+W17QlK2sD
-         Msh6DIU21eEBXOXyplJD1effofWGpqpDATSpgOHpjAtbTDXCBgT1EqYf/N+MqHrtSk+j
-         wzw4N6U7g4H8zQhs6JCeRSNsywVexJ9vJVp8i0twpreDxxuZUXtqQFJ7o13XhNEKAyGC
-         yEwg==
-X-Gm-Message-State: ACgBeo0KQyuQvU9IFUmwUuT57GirgjiO9fM5rLBSMEwwn7I1hC6GJuFb
-        Fk+bqbokgBqvck1C/y2g2Ndzqu0lBOc=
-X-Google-Smtp-Source: AA6agR4Q1ekOzxu8bNgBdEWsUOpMG80+bN++7dVn0UiLLFkrbLbpLJRyjmFeIHN9N9PojENdJCGPMA==
-X-Received: by 2002:a17:902:cf43:b0:172:86f3:586a with SMTP id e3-20020a170902cf4300b0017286f3586amr5533184plg.71.1660723806255;
-        Wed, 17 Aug 2022 01:10:06 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-75.three.co.id. [180.214.232.75])
-        by smtp.gmail.com with ESMTPSA id p4-20020a631e44000000b00429e093cbadsm58164pgm.10.2022.08.17.01.10.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 17 Aug 2022 01:10:05 -0700 (PDT)
-Message-ID: <68e3a841-3c03-9d70-8c89-b7c05788e077@gmail.com>
-Date:   Wed, 17 Aug 2022 15:09:58 +0700
+        with ESMTP id S234506AbiHQIO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 04:14:26 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D013954670;
+        Wed, 17 Aug 2022 01:14:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660724060; x=1692260060;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=WSvGEjuAiVX5neKeHcOX4QCFy/+sM1+tD4NRxZl6qQA=;
+  b=JTsEOZVYFxw/zel/cY+7au8ZYbfFgiyW8BpEE/RUR48aGqGmMmQX+Knf
+   /bGxMncOt7zy3uwaU3iydMNwKrm/ut8+a8xWYqGMGKcLQED5hLYoPmJYp
+   ThQ88WGRIM8pYszql+NOeiQ8bLC+uPt3FRArew9pTZ5bFHvedQcqdcxr5
+   EnXcpgZsTCOEidXU0hFJCJ8FscwglTb9O1bUKO+uIOg6oT14xMYVShlM+
+   7FTbRJFjYX8LsLyL1P9nN4xG9P9G0Wctqeu/qGhgIMc4sEJOAC43KKkb1
+   9mctERyJEL5fega9tZUHlN1r2wBLse45bp05lv80QIIO8NQ+wvXUPbIe/
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="293228766"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="293228766"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Aug 2022 01:14:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="583668044"
+Received: from lkp-server02.sh.intel.com (HELO 81d7e1ade3ba) ([10.239.97.151])
+  by orsmga006.jf.intel.com with ESMTP; 17 Aug 2022 01:14:14 -0700
+Received: from kbuild by 81d7e1ade3ba with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOEBq-0000is-0o;
+        Wed, 17 Aug 2022 08:14:14 +0000
+Date:   Wed, 17 Aug 2022 16:13:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>, yin31149@gmail.com
+Cc:     kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2] net: Fix suspicious RCU usage in
+ bpf_sk_reuseport_detach()
+Message-ID: <202208171521.JiKYmnhP-lkp@intel.com>
+References: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [net-next 0/6] net: support QUIC crypto
-Content-Language: en-US
-To:     Adel Abouchaev <adel.abushaev@gmail.com>, kuba@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
-        imagedong@tencent.com, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-References: <Adel Abouchaev <adel.abushaev@gmail.com>
- <20220816181150.3507444-1-adel.abushaev@gmail.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <20220816181150.3507444-1-adel.abushaev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <166065637961.4008018.10420960640773607710.stgit@warthog.procyon.org.uk>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/17/22 01:11, Adel Abouchaev wrote:
-> QUIC requires end to end encryption of the data. The application usually
-> prepares the data in clear text, encrypts and calls send() which implies
-> multiple copies of the data before the packets hit the networking stack.
-> Similar to kTLS, QUIC kernel offload of cryptography reduces the memory
-> pressure by reducing the number of copies.
-> 
-> The scope of kernel support is limited to the symmetric cryptography,
-> leaving the handshake to the user space library. For QUIC in particular,
-> the application packets that require symmetric cryptography are the 1RTT
-> packets with short headers. Kernel will encrypt the application packets
-> on transmission and decrypt on receive. This series implements Tx only,
-> because in QUIC server applications Tx outweighs Rx by orders of
-> magnitude.
-> 
-> Supporting the combination of QUIC and GSO requires the application to
-> correctly place the data and the kernel to correctly slice it. The
-> encryption process appends an arbitrary number of bytes (tag) to the end
-> of the message to authenticate it. The GSO value should include this
-> overhead, the offload would then subtract the tag size to parse the
-> input on Tx before chunking and encrypting it.
-> 
-> With the kernel cryptography, the buffer copy operation is conjoined
-> with the encryption operation. The memory bandwidth is reduced by 5-8%.
-> When devices supporting QUIC encryption in hardware come to the market,
-> we will be able to free further 7% of CPU utilization which is used
-> today for crypto operations.
-> 
+Hi David,
 
-Hmmm...
+I love your patch! Yet something to improve:
 
-I can't cleanly applied this series on top of current net-next. Exactly
-on what commit this series is based on?
+[auto build test ERROR on net/master]
 
-Also, I see two whitespace warnings when applying. Please fixup and resend.
-When resending, don't forget to pass --base to git-format-patch(1).
+url:    https://github.com/intel-lab-lkp/linux/commits/David-Howells/net-Fix-suspicious-RCU-usage-in-bpf_sk_reuseport_detach/20220816-212744
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git ae806c7805571a9813e41bf6763dd08d0706f4ed
+config: x86_64-rhel-8.3-kvm (https://download.01.org/0day-ci/archive/20220817/202208171521.JiKYmnhP-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/fe74fdc1e7fe8aa84006265deb7b55f40bcc8736
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review David-Howells/net-Fix-suspicious-RCU-usage-in-bpf_sk_reuseport_detach/20220816-212744
+        git checkout fe74fdc1e7fe8aa84006265deb7b55f40bcc8736
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Thanks.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   ld: kernel/bpf/reuseport_array.o: in function `bpf_sk_reuseport_detach':
+>> kernel/bpf/reuseport_array.c:28: undefined reference to `lockdep_is_held'
+
+
+vim +28 kernel/bpf/reuseport_array.c
+
+    20	
+    21	/* The caller must hold the reuseport_lock */
+    22	void bpf_sk_reuseport_detach(struct sock *sk)
+    23	{
+    24		struct sock __rcu **socks;
+    25	
+    26		write_lock_bh(&sk->sk_callback_lock);
+    27		socks = __rcu_dereference_sk_user_data_with_flags_check(
+  > 28			sk, SK_USER_DATA_BPF, lockdep_is_held(&sk->sk_callback_lock));
+    29		if (socks) {
+    30			WRITE_ONCE(sk->sk_user_data, NULL);
+    31			/*
+    32			 * Do not move this NULL assignment outside of
+    33			 * sk->sk_callback_lock because there is
+    34			 * a race with reuseport_array_free()
+    35			 * which does not hold the reuseport_lock.
+    36			 */
+    37			RCU_INIT_POINTER(*socks, NULL);
+    38		}
+    39		write_unlock_bh(&sk->sk_callback_lock);
+    40	}
+    41	
 
 -- 
-An old man doll... just what I always wanted! - Clara
+0-DAY CI Kernel Test Service
+https://01.org/lkp
