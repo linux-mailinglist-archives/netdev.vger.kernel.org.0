@@ -2,90 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA07597513
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:28:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25AA459751E
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 19:30:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238596AbiHQR1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 13:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        id S241211AbiHQRaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 13:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238035AbiHQR1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:27:09 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8360A031C;
-        Wed, 17 Aug 2022 10:27:08 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w3so18417484edc.2;
-        Wed, 17 Aug 2022 10:27:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=wZI3tld/QNucTFtbrUt7UlOI+G9nC5bXjdIDXeunuuU=;
-        b=o9/QqRtP0PXeKhucl+cs0Ac5sNYNh7KvuMZec5/liF8Tue6Vm/HbH0jenXByiQlbQh
-         2VxgIaZXbP7YS6TYVqSMMNLokE5fXNlgpSsriwyMt/NtieyPKITQd/7LTskuwP5rXG4n
-         fM7ykT6iqS27mztynRBaQj6/C65TJet2NA8NV2ja34zTvxYErfnV3HneRLzgXj+XG9oo
-         yYp99phiV/9Jjzkm7+55lKvnPoYblEXnUyh9LBfOjIRYtHnf7Z0U0whEYJUUqGDl0yUV
-         lV6CODOH4srpX/EbTx/Lcd/NNUeRv41GBeloSlq3isKIKwJmTuHNvXJUTBovIuHqrPoB
-         Ul1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=wZI3tld/QNucTFtbrUt7UlOI+G9nC5bXjdIDXeunuuU=;
-        b=1slrIbZzfAXL3g1KIPeHvWcaNdVX0R4LcWzXV3VRQy7R43WWxsOKGhwClvfKKhSHdY
-         27V8kZxYb6k32h+srQ4ZbhWnSMttMEAGxrswZ0Fg8/dGxVrU6yZ1OUWV+/OUTUNkLT38
-         MHDahOTz2+JlKfQ9k4yD23u55bSqkD73M3BL4m1S0SwP5gG++WtedYOm+iiIZcxCO1Z4
-         +cjVsr9rJozEhzGIE2tcunOS0RO+QNFdi8NioNMx65VczDTPGcQ7Y1ZPfJPhiFhmSUVH
-         5BsLulDr1uKSVQuxFjQ0zVVDauUf8fGS40z62EiEtBzspzVzwUwnBi4wMJg+9VPppjYb
-         o3Vw==
-X-Gm-Message-State: ACgBeo1PdewGvVgOCk8esEEXxESiV+kJP9g9NfjakiNq2PHKePGXm1/f
-        5Xoi1PFzOY4BKb9TgSjjJ58=
-X-Google-Smtp-Source: AA6agR5XbwlsjSwC7+Y/qAB6qjRysLq5+bXTKf0VLMQ7e9XSIqBIOCpgjiU7bmwKesvqXCNbSOEsAg==
-X-Received: by 2002:a05:6402:3304:b0:43e:8623:c402 with SMTP id e4-20020a056402330400b0043e8623c402mr24187784eda.200.1660757227343;
-        Wed, 17 Aug 2022 10:27:07 -0700 (PDT)
-Received: from skbuf ([188.26.184.170])
-        by smtp.gmail.com with ESMTPSA id mu8-20020a1709068a8800b00730860b6c43sm7103646ejc.173.2022.08.17.10.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 10:27:06 -0700 (PDT)
-Date:   Wed, 17 Aug 2022 20:27:04 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] net: dsa: bcm_sf2: Utilize PHYLINK for all
- ports
-Message-ID: <20220817172704.ne3cwqcfzplt2pgp@skbuf>
-References: <20220815175009.2681932-1-f.fainelli@gmail.com>
- <20220817085414.53eca40f@kernel.org>
+        with ESMTP id S238193AbiHQRaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 13:30:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47DD8D7A;
+        Wed, 17 Aug 2022 10:30:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7D3B612D6;
+        Wed, 17 Aug 2022 17:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3C865C433D7;
+        Wed, 17 Aug 2022 17:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660757415;
+        bh=QQurvPROr0COx5gjVSIWquos59ckDeR9FG6jNTrlN+0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CR+0KKbcQUzXt4+3bCCBl4wndO7eP4wsqR5/LtKy3V4PQEl95J3zfPgzu6AGjYLlH
+         nG3699Q8nJwbJGIPVTvVLoDs2a0vNOs6FOls58e/xKP53/KSoZPkibx9mdrhFHncMI
+         +kG2maVgQPSy6cx9G5V24h4ufJF3y6DjDCBrNb3Dh55EqvDq3C976LWggpKc3Xd+a1
+         8XPpfS5gPQMZgsVIyxxfswIrO6XyC1gtfT6bAFn8Nb2elp6JaZEi0+YG6Zd+Es1SpO
+         uIT1JHPlphTSYYjxL8+oO6c4xNmh/Y7OA/EiUIMogFX5a/QHJTLx36vt+afnnd9t5H
+         rBn3Es3tJhiGA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1C710E2A052;
+        Wed, 17 Aug 2022 17:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817085414.53eca40f@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: sfp: use simplified HWMON_CHANNEL_INFO macro
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166075741511.18749.15672219198322368784.git-patchwork-notify@kernel.org>
+Date:   Wed, 17 Aug 2022 17:30:15 +0000
+References: <20220813204658.848372-1-beniaminsandu@gmail.com>
+In-Reply-To: <20220813204658.848372-1-beniaminsandu@gmail.com>
+To:     Beniamin Sandu <beniaminsandu@gmail.com>
+Cc:     linux@armlinux.org.uk, andrew@lunn.ch, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 08:54:14AM -0700, Jakub Kicinski wrote:
-> On Mon, 15 Aug 2022 10:50:07 -0700 Florian Fainelli wrote:
-> > Hi all,
-> > 
-> > This patch series has the bcm_sf2 driver utilize PHYLINK to configure
-> > the CPU port link parameters to unify the configuration and pave the way
-> > for DSA to utilize PHYLINK for all ports in the future.
-> > 
-> > Tested on BCM7445 and BCM7278
-> 
-> Last call for reviews..
+Hello:
 
-My review is: let's see what breaks...
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sat, 13 Aug 2022 23:46:58 +0300 you wrote:
+> This makes the code look cleaner and easier to read.
+> 
+> Signed-off-by: Beniamin Sandu <beniaminsandu@gmail.com>
+> ---
+>  drivers/net/phy/sfp.c | 121 +++++++++++++-----------------------------
+>  1 file changed, 38 insertions(+), 83 deletions(-)
+
+Here is the summary with links:
+  - net: sfp: use simplified HWMON_CHANNEL_INFO macro
+    https://git.kernel.org/netdev/net-next/c/815f5f574144
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
