@@ -2,481 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 802C2597180
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:45:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16CF25971A9
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:46:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240206AbiHQOjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 10:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37406 "EHLO
+        id S240304AbiHQOiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 10:38:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240218AbiHQOjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:39:01 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875219C52A;
-        Wed, 17 Aug 2022 07:38:00 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M79Ww5WM7z1N7L5;
-        Wed, 17 Aug 2022 22:34:36 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 22:37:57 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 17 Aug 2022 22:37:56 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <idosch@nvidia.com>,
-        <linux@rempel-privat.de>, <mkubecek@suse.cz>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <shenjian15@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net-next 2/2] net: hns3: support set/get VxLAN rule of rx flow director by ethtool
-Date:   Wed, 17 Aug 2022 22:35:38 +0800
-Message-ID: <20220817143538.43717-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220817143538.43717-1-huangguangbin2@huawei.com>
-References: <20220817143538.43717-1-huangguangbin2@huawei.com>
+        with ESMTP id S240278AbiHQOhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:37:38 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430759C1E0;
+        Wed, 17 Aug 2022 07:37:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BOdRtnICa+P3uRyNUaMVCz7ocKwyevcDR+j7zQah+gBxrDtxl2Q9TqqhgZtqnpP14LPjEwpf8hqKZwRSzjtcIkmurMeU/W+JAdeTD/JLzU7Htj1ylM8uSCZOy+B/gX2zAQtoRPwU2+Go/HOaAsJaXomG3AUsZsRReVV/EIqIFYOEvcERkDrCjiXTAbYFxun1yW2COw0SPzSfdPYlxvZx2Bn050RLGD/mpJkMoFidgWJe1U7luEVUiV1QNpg0aJ/c6/V2O3sPahIqDrrO5gupKlLgsKlfQXyX7m5KpRndIjWrX+nVoguGBU0g8od3Gd7Ffl0gQEHpScYzDDfPIXVHJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5zZA7Bv+h8EsWM/tjV8dnRR1iuNXUURUDPqlaIALA7I=;
+ b=JC7VJbI2P0ZuJSOx+KjEDU6WH17OrdditARl+vPpG64o96W2M0Xcd8eqD9PJnvbQae0KwkwaVx2Qv50V9gf3UDawCxAd7xogWEHZDz8ZQC6bqWVIhW3GRHWRbhWy6S/rwH/AULj5xUGKGtJl4hOie0zIuVEsE8mPA3oqg1dflPL5ez+Gt5GSS2ku9yIhD99JSt39qMM1mAEFEY0EsKn15LAiKnV5XN1IHGnNvSABg/1pHhmoNvTB6AIvp+dmlzXQC63lreAGBnPYnmeTpW2y9Og9a3UVNrcnx99CceWCzRcNjhPm8Om2GvxtK2vIvMWhQ1ckX1+WhQ0y2d1liuB1/Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5zZA7Bv+h8EsWM/tjV8dnRR1iuNXUURUDPqlaIALA7I=;
+ b=OEhZWZgOsLCYjKf0ZfknD2I13VIikkoSWK5H+zmkNhGoTQJSPZE+Abm0NtzCiUISaroAGg3N5RKUNKEgtBPPT1sNTVPglrWZhxJ9wzY7pwXHKxSOdMctGsPXkyzpsDntKu0vGXzv5BWKYFip9DgWdYIsoy643KbNhF1fzEesupCm+QoDAeRG2qRsnWu9bLcm1t3KK+heOf+IqNgea9ztLRWEtC/thdfep9NLLaa2fMJBaLfibSTLsmpmbyX/Z9qQRVtFQ+5NbJ6UHq4rMyjW8wB2VOJsHNlGdZ61T1nKQOkEOvHRRJiNqibfJ/u7U1AWZOcDazRFF7vtDsEwZB1+Sg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
+ by MN2PR12MB4320.namprd12.prod.outlook.com (2603:10b6:208:15f::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.19; Wed, 17 Aug
+ 2022 14:37:01 +0000
+Received: from IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
+ ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5504.027; Wed, 17 Aug 2022
+ 14:37:01 +0000
+Date:   Wed, 17 Aug 2022 17:36:56 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vadimp@mellanox.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, vadimp@nvidia.com, petrm@nvidia.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Subject: Re: [PATCH v3 2/2] Revert "mlxsw: core: Add the hottest thermal zone
+ detection"
+Message-ID: <Yvz9CIelQSbGuqCg@shredder>
+References: <20220817130227.2268127-1-daniel.lezcano@linaro.org>
+ <20220817130227.2268127-2-daniel.lezcano@linaro.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220817130227.2268127-2-daniel.lezcano@linaro.org>
+X-ClientProxiedBy: VI1PR09CA0089.eurprd09.prod.outlook.com
+ (2603:10a6:802:29::33) To IA1PR12MB6163.namprd12.prod.outlook.com
+ (2603:10b6:208:3e9::22)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 323e8a9f-98f5-44db-1b3a-08da805df27f
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4320:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TIXy/4W3KNIUyJeelIrmBWwMKmC6SpC14Xq+LlSdP18mxrhIi+l5wUF06scAIBOhl9nrRqVVDk0ITBMpNWrX5OkKve0S5Ji4XdNAeUjcJ/Ioc1ZYihdcLOj8MIfpT4J04+edPSEKjIV0pxqE5CBHaAHMjvnghc2g0KxL9531WCxWxd0RscuhNdedxonddyR/Bh8zcDUS6PuELTgqUEZVH2mv5SvM9AeGZ+C3uCcW2dK9AOpkDotTbe8s+SxHxXz2/S2GLZ+YCy8WOd1rqLrXNvZP5SM6RcXIpZLr9Cj6MdbopKnFgBOGipKAyaoC3wrCGtdlT5szXFO5Iz/xDdci4Pp0htHCAUFusvk0rpPwIY5qjy1jmXEL5xoa4FYkmmQxm8NFakQbtRdZBiHFSf3bUrGpnJjZgm88MVwktoh1TPORImCfr/ZdK7SpjNOLv0IA7Bcdsj1UCov+UW+4ogpIL11hrmqrHyQkQkZeZR9WHkDPOt7Xj5U9V7Mw7NlmrmhPmEvLwhE6pBHQqKEHO4qhJilWJHti7cBdN96i8l55Bfvc3yocRNQI8Xbx5Z9AHpIbegl4E7XTt1WaIqaNKHdvPTU9gEn71ivjnq++JsMklYm57IACaK861TYAccGoPTTMuEB1y2wmWH6pdXQ5+7oLDxM33dg2XVxqGCaTt+sKPmqjfSUOSa1NYOcqNs1MHhGj4dpfJ7Ulbad+wBBcdwM9X6U++tdIH2u17cU8DTKWnGnRugYgAQ88Uavqwq8MRL/C
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(136003)(366004)(396003)(376002)(346002)(9686003)(6512007)(6506007)(26005)(86362001)(186003)(33716001)(38100700002)(83380400001)(5660300002)(4744005)(478600001)(6486002)(66946007)(8936002)(41300700001)(8676002)(4326008)(66476007)(66556008)(2906002)(6666004)(6916009)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MrK/IqKt9wf5TOsYstctZvFNNGg43DlQt0IdGjiinsLfK2WrX5yQuhfcQoHc?=
+ =?us-ascii?Q?UhFbTd9u4sQEY85uobO+HIObXqnM4VuXxpwCu8hprxzpg8nx7F2aX6d9G/aA?=
+ =?us-ascii?Q?km1Sbg5jFQ0E/9Zd2Q/dc4cQ6II8seDVviQGa6qnAu8hv9xJHM828NmZSILu?=
+ =?us-ascii?Q?m8JvZQwqzE9AVGsVKF5fmaHbm251KQyH/vBGArIQL+kGZNmjOJgqcPjBR7Xq?=
+ =?us-ascii?Q?vLZXH221jiMg3a26x8Z14p3MYe27mRDoYtj45KVEZ7nUc02HOdpZ+qf+kEWD?=
+ =?us-ascii?Q?nrud4GC+5oz2maf0+l7C8TA/KWcIvAxw1KWA8cE6tKX4Jf3b8AmtMii/ISUT?=
+ =?us-ascii?Q?WfTfFCo26xSFDgpFgcOH0r8umNB8h8FcGBHsqnbJaFBQABW+mV+3BdC0Famz?=
+ =?us-ascii?Q?7NPGpSU2PTtXk8AILamyOnKWF8+R9u08pC5UQqVO05hFEv4fPeDbtkY1w/lo?=
+ =?us-ascii?Q?CoOOc3cr/oJ6tNCRxW9qc1TbvHQGgGxF6z7ZR97HHmaGNY5kFMrKIlVEaijH?=
+ =?us-ascii?Q?1MsLJphIuU5IQEGKTmnE15Lqd98T5MwZGp/po1JmgOdaq4ousxnjsB0tHilR?=
+ =?us-ascii?Q?DtfY4J5q//pCToVZImvdFvdSLEciNa+Q3uT4rzd/LVxGoh5sqeVEVdwpMksy?=
+ =?us-ascii?Q?ujY5NV0sv3HPfTRh63XdlXGywC4QXqi48rJn+1bDuBL2pMQKjKpVrRU+a6Bu?=
+ =?us-ascii?Q?dxjRxOUzdVArnJJc8pCjAkzmbyKTutmHQ0Te7EA+GV0kPOYaqbn6NPgeDoPM?=
+ =?us-ascii?Q?AZwJnqwHRkujVZuj+1ortle7T1ZZ5EiZH+kAoQQI289N59HlaSfDqxYJsmdV?=
+ =?us-ascii?Q?4q/8JiyihR191oy8s/W3M8tv6gftmPK0K5t+geXag6uh3HGv8k9MP+tx4JGh?=
+ =?us-ascii?Q?haVtCNFC+O19SBQietgDuJrDcPxYqSGHiOjr+G0kpDxwprb4wInINtF02YJB?=
+ =?us-ascii?Q?AuiGKHG8XzYRXxS86oORN95gJ/3+OSEadwaXi1hlTJLdK4G36fFqCyItfrJJ?=
+ =?us-ascii?Q?4TTA7nt3OHkLEyHSKgBLjfxA+AtTZyn6gOtnWK44dHWTHLfULrswebdqBdZf?=
+ =?us-ascii?Q?yZZVLm6Rx+0ewkxHcz/3hAQeVrt8uIVo9ZrvtNYYteXF70tBMU1h7/rpm1lg?=
+ =?us-ascii?Q?3SNX4EztphuzIaA/0ggKXHdPiWsozwVRK7PnEAR1lIT2n8CO8MPmq+MsbIYa?=
+ =?us-ascii?Q?Y5pqb5JuNgrD8B0dA9Mjwm0cKsSPtB8BwTMEnTICzQPnSafxr0p6UG5ai3bP?=
+ =?us-ascii?Q?AWVKphpDRzn4StoFD0wyrv3xy/vsSbWjw+rUI0lUnY7fUJ7VLhsQ5PXQqwBh?=
+ =?us-ascii?Q?O30reS/v6zJy8S0bsuR6JfsVT/Al8mJZcGqOTsmVKeh6X2zGwaTtRn6E5gZv?=
+ =?us-ascii?Q?M4WS/BhKbBRrXQ9m4DqYoRYTliUJV4H0t+7fJaoRz/nH6V5uack6PJdOoMGH?=
+ =?us-ascii?Q?bTDXAy8zrFI1UrHW+4PTP8+r+M9lKWdq55GMo1shgzaRW12P69aIb8G5xluA?=
+ =?us-ascii?Q?bJ+NEDDoGIrqzVqgOP5rBCZRzPHn5TuYfxWivipofuLaOk6VjvB3cBOHjXxp?=
+ =?us-ascii?Q?DqxfAEJ/AqE/0BtLVfrBon2edOW6R/Hhg7n/be6s?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 323e8a9f-98f5-44db-1b3a-08da805df27f
+X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 14:37:01.6326
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SmHH6xr8MsY3MWEu9M7dTX/3YXZ7GhweKcdjK/bo/GkZ0dY03uWiZU7Ag1+OXHgJOS1NSjqBe9yvrchLYqeHHg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4320
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support rule type of vxlan4 and vxlan6 for rx flow
-director by command ethtool -u/-U.
+On Wed, Aug 17, 2022 at 03:02:27PM +0200, Daniel Lezcano wrote:
+> @@ -285,10 +254,8 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
+>  		dev_err(dev, "Failed to query temp sensor\n");
+>  		return err;
+>  	}
+> +
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- .../hisilicon/hns3/hns3pf/hclge_main.c        | 272 +++++++++++++++++-
- .../hisilicon/hns3/hns3pf/hclge_main.h        |   2 +
- 2 files changed, 271 insertions(+), 3 deletions(-)
+Unnecessary blank line
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index fae79764dc44..ed4e6732a287 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -15,6 +15,7 @@
- #include <linux/crash_dump.h>
- #include <net/ipv6.h>
- #include <net/rtnetlink.h>
-+#include <net/vxlan.h>
- #include "hclge_cmd.h"
- #include "hclge_dcb.h"
- #include "hclge_main.h"
-@@ -427,7 +428,9 @@ static const struct key_info tuple_key_info[] = {
- 	{ OUTER_SRC_PORT, 16, KEY_OPT_LE16, -1, -1 },
- 	{ OUTER_DST_PORT, 16, KEY_OPT_LE16, -1, -1 },
- 	{ OUTER_L4_RSV, 32, KEY_OPT_LE32, -1, -1 },
--	{ OUTER_TUN_VNI, 24, KEY_OPT_VNI, -1, -1 },
-+	{ OUTER_TUN_VNI, 24, KEY_OPT_VNI,
-+	  offsetof(struct hclge_fd_rule, tuples.outer_tun_vni),
-+	  offsetof(struct hclge_fd_rule, tuples_mask.outer_tun_vni) },
- 	{ OUTER_TUN_FLOW_ID, 8, KEY_OPT_U8, -1, -1 },
- 	{ INNER_DST_MAC, 48, KEY_OPT_MAC,
- 	  offsetof(struct hclge_fd_rule, tuples.dst_mac),
-@@ -5369,8 +5372,9 @@ static int hclge_init_fd_config(struct hclge_dev *hdev)
- 
- 	/* If use max 400bit key, we can support tuples for ether type */
- 	if (hdev->fd_cfg.fd_mode == HCLGE_FD_MODE_DEPTH_2K_WIDTH_400B_STAGE_1) {
--		key_cfg->tuple_active |=
--				BIT(INNER_DST_MAC) | BIT(INNER_SRC_MAC);
-+		key_cfg->tuple_active |= BIT(INNER_DST_MAC) |
-+					 BIT(INNER_SRC_MAC) |
-+					 BIT(OUTER_TUN_VNI);
- 		if (hdev->ae_dev->dev_version >= HNAE3_DEVICE_VERSION_V3)
- 			key_cfg->tuple_active |= HCLGE_FD_TUPLE_USER_DEF_TUPLES;
- 	}
-@@ -5482,6 +5486,8 @@ static int hclge_fd_ad_config(struct hclge_dev *hdev, u8 stage, int loc,
- static bool hclge_fd_convert_tuple(u32 tuple_bit, u8 *key_x, u8 *key_y,
- 				   struct hclge_fd_rule *rule)
- {
-+#define HCLGE_VNI_LENGTH	3
-+
- 	int offset, moffset, ip_offset;
- 	enum HCLGE_FD_KEY_OPT key_opt;
- 	u16 tmp_x_s, tmp_y_s;
-@@ -5534,6 +5540,14 @@ static bool hclge_fd_convert_tuple(u32 tuple_bit, u8 *key_x, u8 *key_y,
- 		*(__le32 *)key_x = cpu_to_le32(tmp_x_l);
- 		*(__le32 *)key_y = cpu_to_le32(tmp_y_l);
- 
-+		return true;
-+	case KEY_OPT_VNI:
-+		calc_x(tmp_x_l, *(u32 *)(&p[offset]), *(u32 *)(&p[moffset]));
-+		calc_y(tmp_y_l, *(u32 *)(&p[offset]), *(u32 *)(&p[moffset]));
-+		for (i = 0; i < HCLGE_VNI_LENGTH; i++) {
-+			key_x[i] = (cpu_to_le32(tmp_x_l) >> (i * BITS_PER_BYTE)) & 0xFF;
-+			key_y[i] = (cpu_to_le32(tmp_y_l) >> (i * BITS_PER_BYTE)) & 0xFF;
-+		}
- 		return true;
- 	default:
- 		return false;
-@@ -5756,6 +5770,45 @@ static int hclge_fd_check_ip4_tuple(struct ethtool_usrip4_spec *spec,
- 	return 0;
- }
- 
-+static int hclge_fd_check_vxlan4_tuple(struct ethtool_rx_flow_spec *fs,
-+				       u32 *unused_tuple)
-+{
-+	struct ethtool_vxlan4_spec *spec = &fs->h_u.vxlan_ip4_spec;
-+	struct ethtool_vxlan4_spec *mask = &fs->m_u.vxlan_ip4_spec;
-+
-+	/* Vni is only 24 bits and must be greater than 0, and it can not be
-+	 * masked.
-+	 */
-+	if (!spec->vni || be32_to_cpu(spec->vni) >= VXLAN_N_VID ||
-+	    mask->vni != HCLGE_FD_VXLAN_VNI_UNMASK || !unused_tuple)
-+		return -EINVAL;
-+
-+	*unused_tuple |= BIT(INNER_SRC_PORT) | BIT(INNER_DST_PORT);
-+
-+	if (is_zero_ether_addr(spec->src))
-+		*unused_tuple |= BIT(INNER_SRC_MAC);
-+
-+	if (is_zero_ether_addr(spec->dst))
-+		*unused_tuple |= BIT(INNER_DST_MAC);
-+
-+	if (!spec->eth_type)
-+		*unused_tuple |= BIT(INNER_ETH_TYPE);
-+
-+	if (!spec->ip4src)
-+		*unused_tuple |= BIT(INNER_SRC_IP);
-+
-+	if (!spec->ip4dst)
-+		*unused_tuple |= BIT(INNER_DST_IP);
-+
-+	if (!spec->tos)
-+		*unused_tuple |= BIT(INNER_IP_TOS);
-+
-+	if (!spec->l4_proto)
-+		*unused_tuple |= BIT(INNER_IP_PROTO);
-+
-+	return 0;
-+}
-+
- static int hclge_fd_check_tcpip6_tuple(struct ethtool_tcpip6_spec *spec,
- 				       u32 *unused_tuple)
- {
-@@ -5811,6 +5864,45 @@ static int hclge_fd_check_ip6_tuple(struct ethtool_usrip6_spec *spec,
- 	return 0;
- }
- 
-+static int hclge_fd_check_vxlan6_tuple(struct ethtool_rx_flow_spec *fs,
-+				       u32 *unused_tuple)
-+{
-+	struct ethtool_vxlan6_spec *spec = &fs->h_u.vxlan_ip6_spec;
-+	struct ethtool_vxlan6_spec *mask = &fs->m_u.vxlan_ip6_spec;
-+
-+	/* Vni is only 24 bits and must be greater than 0, and it can not be
-+	 * masked.
-+	 */
-+	if (!spec->vni || be32_to_cpu(spec->vni) >= VXLAN_N_VID ||
-+	    mask->vni != HCLGE_FD_VXLAN_VNI_UNMASK || !unused_tuple)
-+		return -EINVAL;
-+
-+	*unused_tuple |= BIT(INNER_SRC_PORT) | BIT(INNER_DST_PORT);
-+
-+	if (is_zero_ether_addr(spec->src))
-+		*unused_tuple |= BIT(INNER_SRC_MAC);
-+
-+	if (is_zero_ether_addr(spec->dst))
-+		*unused_tuple |= BIT(INNER_DST_MAC);
-+
-+	if (!spec->eth_type)
-+		*unused_tuple |= BIT(INNER_ETH_TYPE);
-+
-+	if (ipv6_addr_any((struct in6_addr *)spec->ip6src))
-+		*unused_tuple |= BIT(INNER_SRC_IP);
-+
-+	if (ipv6_addr_any((struct in6_addr *)spec->ip6dst))
-+		*unused_tuple |= BIT(INNER_DST_IP);
-+
-+	if (!spec->tclass)
-+		*unused_tuple |= BIT(INNER_IP_TOS);
-+
-+	if (!spec->l4_proto)
-+		*unused_tuple |= BIT(INNER_IP_PROTO);
-+
-+	return 0;
-+}
-+
- static int hclge_fd_check_ether_tuple(struct ethhdr *spec, u32 *unused_tuple)
- {
- 	if (!spec || !unused_tuple)
-@@ -5993,6 +6085,9 @@ static int hclge_fd_check_spec(struct hclge_dev *hdev,
- 		ret = hclge_fd_check_ip4_tuple(&fs->h_u.usr_ip4_spec,
- 					       unused_tuple);
- 		break;
-+	case VXLAN_V4_FLOW:
-+		ret = hclge_fd_check_vxlan4_tuple(fs, unused_tuple);
-+		break;
- 	case SCTP_V6_FLOW:
- 	case TCP_V6_FLOW:
- 	case UDP_V6_FLOW:
-@@ -6003,6 +6098,9 @@ static int hclge_fd_check_spec(struct hclge_dev *hdev,
- 		ret = hclge_fd_check_ip6_tuple(&fs->h_u.usr_ip6_spec,
- 					       unused_tuple);
- 		break;
-+	case VXLAN_V6_FLOW:
-+		ret = hclge_fd_check_vxlan6_tuple(fs, unused_tuple);
-+		break;
- 	case ETHER_FLOW:
- 		if (hdev->fd_cfg.fd_mode !=
- 			HCLGE_FD_MODE_DEPTH_2K_WIDTH_400B_STAGE_1) {
-@@ -6085,6 +6183,37 @@ static void hclge_fd_get_ip4_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ether_proto = 0xFFFF;
- }
- 
-+static void hclge_fd_get_vxlan4_tuple(struct ethtool_rx_flow_spec *fs,
-+				      struct hclge_fd_rule *rule)
-+{
-+	struct ethtool_vxlan4_spec *h = &fs->h_u.vxlan_ip4_spec;
-+	struct ethtool_vxlan4_spec *m = &fs->m_u.vxlan_ip4_spec;
-+
-+	rule->tuples.outer_tun_vni = be32_to_cpu(h->vni);
-+	rule->tuples_mask.outer_tun_vni = be32_to_cpu(m->vni);
-+
-+	ether_addr_copy(rule->tuples.src_mac, h->src);
-+	ether_addr_copy(rule->tuples_mask.src_mac, m->src);
-+
-+	ether_addr_copy(rule->tuples.dst_mac, h->dst);
-+	ether_addr_copy(rule->tuples_mask.dst_mac, m->dst);
-+
-+	rule->tuples.ether_proto = be16_to_cpu(h->eth_type);
-+	rule->tuples_mask.ether_proto = be16_to_cpu(m->eth_type);
-+
-+	rule->tuples.ip_tos = h->tos;
-+	rule->tuples_mask.ip_tos = m->tos;
-+
-+	rule->tuples.ip_proto = h->l4_proto;
-+	rule->tuples_mask.ip_proto = m->l4_proto;
-+
-+	rule->tuples.src_ip[IPV4_INDEX] = be32_to_cpu(h->ip4src);
-+	rule->tuples_mask.src_ip[IPV4_INDEX] = be32_to_cpu(m->ip4src);
-+
-+	rule->tuples.dst_ip[IPV4_INDEX] = be32_to_cpu(h->ip4dst);
-+	rule->tuples_mask.dst_ip[IPV4_INDEX] = be32_to_cpu(m->ip4dst);
-+}
-+
- static void hclge_fd_get_tcpip6_tuple(struct hclge_dev *hdev,
- 				      struct ethtool_rx_flow_spec *fs,
- 				      struct hclge_fd_rule *rule, u8 ip_proto)
-@@ -6139,6 +6268,37 @@ static void hclge_fd_get_ip6_tuple(struct hclge_dev *hdev,
- 	rule->tuples_mask.ether_proto = 0xFFFF;
- }
- 
-+static void hclge_fd_get_vxlan6_tuple(struct ethtool_rx_flow_spec *fs,
-+				      struct hclge_fd_rule *rule)
-+{
-+	struct ethtool_vxlan6_spec *h = &fs->h_u.vxlan_ip6_spec;
-+	struct ethtool_vxlan6_spec *m = &fs->m_u.vxlan_ip6_spec;
-+
-+	rule->tuples.outer_tun_vni = be32_to_cpu(h->vni);
-+	rule->tuples_mask.outer_tun_vni = be32_to_cpu(m->vni);
-+
-+	ether_addr_copy(rule->tuples.src_mac, h->src);
-+	ether_addr_copy(rule->tuples_mask.src_mac, m->src);
-+
-+	ether_addr_copy(rule->tuples.dst_mac, h->dst);
-+	ether_addr_copy(rule->tuples_mask.dst_mac, m->dst);
-+
-+	rule->tuples.ether_proto = be16_to_cpu(h->eth_type);
-+	rule->tuples_mask.ether_proto = be16_to_cpu(m->eth_type);
-+
-+	rule->tuples.ip_tos = h->tclass;
-+	rule->tuples_mask.ip_tos = m->tclass;
-+
-+	rule->tuples.ip_proto = h->l4_proto;
-+	rule->tuples_mask.ip_proto = m->l4_proto;
-+
-+	be32_to_cpu_array(rule->tuples.src_ip, h->ip6src, IPV6_SIZE);
-+	be32_to_cpu_array(rule->tuples_mask.src_ip, m->ip6src, IPV6_SIZE);
-+
-+	be32_to_cpu_array(rule->tuples.dst_ip, h->ip6dst, IPV6_SIZE);
-+	be32_to_cpu_array(rule->tuples_mask.dst_ip, m->ip6dst, IPV6_SIZE);
-+}
-+
- static void hclge_fd_get_ether_tuple(struct hclge_dev *hdev,
- 				     struct ethtool_rx_flow_spec *fs,
- 				     struct hclge_fd_rule *rule)
-@@ -6196,6 +6356,9 @@ static int hclge_fd_get_tuple(struct hclge_dev *hdev,
- 	case IP_USER_FLOW:
- 		hclge_fd_get_ip4_tuple(hdev, fs, rule);
- 		break;
-+	case VXLAN_V4_FLOW:
-+		hclge_fd_get_vxlan4_tuple(fs, rule);
-+		break;
- 	case SCTP_V6_FLOW:
- 		hclge_fd_get_tcpip6_tuple(hdev, fs, rule, IPPROTO_SCTP);
- 		break;
-@@ -6208,6 +6371,9 @@ static int hclge_fd_get_tuple(struct hclge_dev *hdev,
- 	case IPV6_USER_FLOW:
- 		hclge_fd_get_ip6_tuple(hdev, fs, rule);
- 		break;
-+	case VXLAN_V6_FLOW:
-+		hclge_fd_get_vxlan6_tuple(fs, rule);
-+		break;
- 	case ETHER_FLOW:
- 		hclge_fd_get_ether_tuple(hdev, fs, rule);
- 		break;
-@@ -6554,6 +6720,48 @@ static void hclge_fd_get_ip4_info(struct hclge_fd_rule *rule,
- 	spec->ip_ver = ETH_RX_NFC_IP4;
- }
- 
-+static void hclge_fd_get_vxlan4_info(struct hclge_fd_rule *rule,
-+				     struct ethtool_vxlan4_spec *spec,
-+				     struct ethtool_vxlan4_spec *spec_mask)
-+{
-+	spec->vni = cpu_to_be32(rule->tuples.outer_tun_vni);
-+	spec_mask->vni = rule->unused_tuple & BIT(OUTER_TUN_VNI) ? 0 :
-+			 cpu_to_be32(rule->tuples_mask.outer_tun_vni);
-+
-+	ether_addr_copy(spec->src, rule->tuples.src_mac);
-+	ether_addr_copy(spec->dst, rule->tuples.dst_mac);
-+
-+	if (rule->unused_tuple & BIT(INNER_SRC_MAC))
-+		eth_zero_addr(spec_mask->src);
-+	else
-+		ether_addr_copy(spec_mask->src, rule->tuples_mask.src_mac);
-+
-+	if (rule->unused_tuple & BIT(INNER_DST_MAC))
-+		eth_zero_addr(spec_mask->dst);
-+	else
-+		ether_addr_copy(spec_mask->dst, rule->tuples_mask.dst_mac);
-+
-+	spec->eth_type = cpu_to_be16(rule->tuples.ether_proto);
-+	spec_mask->eth_type = rule->unused_tuple & BIT(INNER_ETH_TYPE) ? 0 :
-+			     cpu_to_be16(rule->tuples_mask.ether_proto);
-+
-+	spec->tos = rule->tuples.ip_tos;
-+	spec_mask->tos = rule->unused_tuple & BIT(INNER_IP_TOS) ? 0 :
-+			 rule->tuples_mask.ip_tos;
-+
-+	spec->l4_proto = rule->tuples.ip_proto;
-+	spec_mask->l4_proto = rule->unused_tuple & BIT(INNER_IP_PROTO) ? 0 :
-+			     rule->tuples_mask.ip_proto;
-+
-+	spec->ip4src = cpu_to_be32(rule->tuples.src_ip[IPV4_INDEX]);
-+	spec_mask->ip4src = rule->unused_tuple & BIT(INNER_SRC_IP) ? 0 :
-+			    cpu_to_be32(rule->tuples_mask.src_ip[IPV4_INDEX]);
-+
-+	spec->ip4dst = cpu_to_be32(rule->tuples.dst_ip[IPV4_INDEX]);
-+	spec_mask->ip4dst = rule->unused_tuple & BIT(INNER_DST_IP) ? 0 :
-+			    cpu_to_be32(rule->tuples_mask.dst_ip[IPV4_INDEX]);
-+}
-+
- static void hclge_fd_get_tcpip6_info(struct hclge_fd_rule *rule,
- 				     struct ethtool_tcpip6_spec *spec,
- 				     struct ethtool_tcpip6_spec *spec_mask)
-@@ -6614,6 +6822,56 @@ static void hclge_fd_get_ip6_info(struct hclge_fd_rule *rule,
- 			0 : rule->tuples_mask.ip_proto;
- }
- 
-+static void hclge_fd_get_vxlan6_info(struct hclge_fd_rule *rule,
-+				     struct ethtool_vxlan6_spec *spec,
-+				     struct ethtool_vxlan6_spec *spec_mask)
-+{
-+	spec->vni = cpu_to_be32(rule->tuples.outer_tun_vni);
-+	spec_mask->vni = rule->unused_tuple & BIT(OUTER_TUN_VNI) ? 0 :
-+			 cpu_to_be32(rule->tuples_mask.outer_tun_vni);
-+
-+	ether_addr_copy(spec->src, rule->tuples.src_mac);
-+	ether_addr_copy(spec->dst, rule->tuples.dst_mac);
-+
-+	if (rule->unused_tuple & BIT(INNER_SRC_MAC))
-+		eth_zero_addr(spec_mask->src);
-+	else
-+		ether_addr_copy(spec_mask->src, rule->tuples_mask.src_mac);
-+
-+	if (rule->unused_tuple & BIT(INNER_DST_MAC))
-+		eth_zero_addr(spec_mask->dst);
-+	else
-+		ether_addr_copy(spec_mask->dst, rule->tuples_mask.dst_mac);
-+
-+	spec->eth_type = cpu_to_be16(rule->tuples.ether_proto);
-+	spec_mask->eth_type = rule->unused_tuple & BIT(INNER_ETH_TYPE) ? 0 :
-+			     cpu_to_be16(rule->tuples_mask.ether_proto);
-+
-+	spec->tclass = rule->tuples.ip_tos;
-+	spec_mask->tclass = rule->unused_tuple & BIT(INNER_IP_TOS) ? 0 :
-+			    rule->tuples_mask.ip_tos;
-+
-+	spec->l4_proto = rule->tuples.ip_proto;
-+	spec_mask->l4_proto = rule->unused_tuple & BIT(INNER_IP_PROTO) ? 0 :
-+			     rule->tuples_mask.ip_proto;
-+
-+	cpu_to_be32_array(spec->ip6src,
-+			  rule->tuples.src_ip, IPV6_SIZE);
-+	cpu_to_be32_array(spec->ip6dst,
-+			  rule->tuples.dst_ip, IPV6_SIZE);
-+	if (rule->unused_tuple & BIT(INNER_SRC_IP))
-+		memset(spec_mask->ip6src, 0, sizeof(spec_mask->ip6src));
-+	else
-+		cpu_to_be32_array(spec_mask->ip6src, rule->tuples_mask.src_ip,
-+				  IPV6_SIZE);
-+
-+	if (rule->unused_tuple & BIT(INNER_DST_IP))
-+		memset(spec_mask->ip6dst, 0, sizeof(spec_mask->ip6dst));
-+	else
-+		cpu_to_be32_array(spec_mask->ip6dst, rule->tuples_mask.dst_ip,
-+				  IPV6_SIZE);
-+}
-+
- static void hclge_fd_get_ether_info(struct hclge_fd_rule *rule,
- 				    struct ethhdr *spec,
- 				    struct ethhdr *spec_mask)
-@@ -6740,6 +6998,10 @@ static int hclge_get_fd_rule_info(struct hnae3_handle *handle,
- 		hclge_fd_get_ip4_info(rule, &fs->h_u.usr_ip4_spec,
- 				      &fs->m_u.usr_ip4_spec);
- 		break;
-+	case VXLAN_V4_FLOW:
-+		hclge_fd_get_vxlan4_info(rule, &fs->h_u.vxlan_ip4_spec,
-+					 &fs->m_u.vxlan_ip4_spec);
-+		break;
- 	case SCTP_V6_FLOW:
- 	case TCP_V6_FLOW:
- 	case UDP_V6_FLOW:
-@@ -6750,6 +7012,10 @@ static int hclge_get_fd_rule_info(struct hnae3_handle *handle,
- 		hclge_fd_get_ip6_info(rule, &fs->h_u.usr_ip6_spec,
- 				      &fs->m_u.usr_ip6_spec);
- 		break;
-+	case VXLAN_V6_FLOW:
-+		hclge_fd_get_vxlan6_info(rule, &fs->h_u.vxlan_ip6_spec,
-+					 &fs->m_u.vxlan_ip6_spec);
-+		break;
- 	/* The flow type of fd rule has been checked before adding in to rule
- 	 * list. As other flow types have been handled, it must be ETHER_FLOW
- 	 * for the default case
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index 18caddd541f8..db1681709868 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -594,6 +594,7 @@ struct key_info {
- #define HCLGE_FD_USER_DEF_DATA		GENMASK(15, 0)
- #define HCLGE_FD_USER_DEF_OFFSET	GENMASK(15, 0)
- #define HCLGE_FD_USER_DEF_OFFSET_UNMASK	GENMASK(15, 0)
-+#define HCLGE_FD_VXLAN_VNI_UNMASK	GENMASK(31, 0)
- 
- /* assigned by firmware, the real filter number for each pf may be less */
- #define MAX_FD_FILTER_NUM	4096
-@@ -687,6 +688,7 @@ struct hclge_fd_rule_tuples {
- 	u32 l4_user_def;
- 	u8 ip_tos;
- 	u8 ip_proto;
-+	u32 outer_tun_vni;
- };
- 
- struct hclge_fd_rule {
--- 
-2.33.0
+>  	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
+> -	if (temp > 0)
+> -		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
+> -					      temp);
+>  
+>  	*p_temp = temp;
+>  	return 0;
+> @@ -349,22 +316,6 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
+>  	return 0;
+>  }
 
+[...]
+
+> @@ -680,6 +623,7 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
+>  							MLXSW_THERMAL_TRIP_MASK,
+>  							module_tz,
+>  							&mlxsw_thermal_module_ops,
+> +
+
+Likewise
+
+>  							&mlxsw_thermal_params,
+>  							0,
+>  							module_tz->parent->polling_delay);
+> -- 
+> 2.34.1
+> 
