@@ -2,286 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2908596986
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:26:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01A059698A
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230333AbiHQGXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 02:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        id S238383AbiHQG0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 02:26:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232113AbiHQGXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:23:50 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F2FE01D;
-        Tue, 16 Aug 2022 23:23:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660717428; x=1692253428;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yVbG+n0uGEK9+bGx/SxNj01c0Z0Jil+zP8BYLGKVpck=;
-  b=lnWq++7t1A4acphsViqa3uY4qtum5bvGC8GCkEsqlYpMWpyUq1+5VIzp
-   NENAU/D4qT3+aooKlY++LPcieKq6LW1xyWSG90hfmQ5m6V+OnIJbewr4e
-   8r9UjCo958XOHqDqA7JE7GGEC47LquFzUnIN8w+kLjWzEPPbasldSrcZB
-   l5/N2kX36yL42wToZ9IEll3dYzW0TmjQ9uKKIacldpORCfbvGJZS7PlMt
-   kVmyZea3CFHL+4YhcSjUd5jAPhBR96iLGKH+0hm7yAi6vXANvZJyVY3uF
-   Op4znhaMLmz1ZQF9sZcZa1acXvGKd+cRPEIeRAqjxFGJEugNmDy3RkQz0
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="292411360"
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="292411360"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 23:23:47 -0700
-X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
-   d="scan'208";a="667465777"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.30.246]) ([10.255.30.246])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 23:23:44 -0700
-Message-ID: <b489413e-e933-e9b6-a719-45090a4e922c@intel.com>
-Date:   Wed, 17 Aug 2022 14:23:42 +0800
+        with ESMTP id S232602AbiHQG0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:26:10 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2128.outbound.protection.outlook.com [40.107.243.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7ED7B29A
+        for <netdev@vger.kernel.org>; Tue, 16 Aug 2022 23:26:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WlJgJG5G8tIOEmUc2w3UZKvzvCBN7C9O64UzFgAUnKnFDMTZuNzBfeNZ8kcmfNEXbEpxNL3VZd/WdtWN+VFVdTk9eeFd6zCOQaP/uKDB+sU+/ZnidUXiNI+sqVyEbgkiXiKxXZrPL+I3RnQM+MtyBYM8MfF2n9A+6MYkG6wBWgCb9xFuOuypzhsuLo12Es59VPUPV0LydeG9QpQ7v8PT2YmttyGYD217gnOHrNP0O5h2sHQgpEFUBkvmzxI4MmyDskMtrbVF9oKZzLLpmAqVaHauiR6Y5KfcHltrsi9LcV8cz5Tw1DYYJqsketgtvOfO8TGGXjsvFnxh7nVsBnzZvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=cjHJf0CBGEvuFiiHY3L0zSwErmytZrEVqJaan/EQQFo=;
+ b=OeirYrL3eXrroug6YpnugkUmjGaDJDT97oygQ18K1KecqEEBXGhvX2woSaMzbBvo/kjUeIJewI9mzy9Amgy/1Y6uSqNyoHQjcjCZxSo1y45xy8Etvih9i7QXQ4zaaNcDz/+2xBC3BhZPd9rUhauIETVf+3JtU9eac4MxVMXFBn+t9ILBzhoZkWGuMYdtmdGYCHRPbaH0Q249HIZ80Km6S/VKJucZhenpWyO5uNRD0uVdlbke8WvdVajDOPo8XN4YSS7EvljTEQBnftk2IuWNaHY2ClxCXMvwXbWlxBO53Vs7aEsjd60N6iQpV3IWq8nHwJsrljU2HZXFG2Ux4R8auA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cjHJf0CBGEvuFiiHY3L0zSwErmytZrEVqJaan/EQQFo=;
+ b=EUNQ5A5kIh+fhSxE1nbPk1wpY6/XSROHcudA5jEUv0f7iqBVXDZNKrZ65Brlcq8hMT9zkUMpWmr6HZnseREYaGK4/JACiTuuKc2blLV451BUFDDHfLrsmKdEGHI04h6UmMtPX9iF6oa1/3bX9epP6nFUDd9d8lpoqG/269aMpIA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by CO1PR10MB4786.namprd10.prod.outlook.com
+ (2603:10b6:303:6d::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.17; Wed, 17 Aug
+ 2022 06:26:04 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee%4]) with mapi id 15.20.5504.027; Wed, 17 Aug 2022
+ 06:26:04 +0000
+Date:   Tue, 16 Aug 2022 23:26:00 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH net 2/8] net: mscc: ocelot: fix incorrect ndo_get_stats64
+ packet counters
+Message-ID: <YvyJ+FNELJsfxCWX@euler>
+References: <20220816135352.1431497-1-vladimir.oltean@nxp.com>
+ <20220816135352.1431497-3-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816135352.1431497-3-vladimir.oltean@nxp.com>
+X-ClientProxiedBy: BYAPR07CA0069.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::46) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.12.0
-Subject: Re: [PATCH V5 4/6] vDPA: !FEATURES_OK should not block querying
- device config space
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Si-Wei Liu <si-wei.liu@oracle.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
-        gautam.dawar@amd.com, jasowang@redhat.com
-References: <20220812104500.163625-1-lingshan.zhu@intel.com>
- <20220812104500.163625-5-lingshan.zhu@intel.com>
- <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
- <f2864c96-cddd-129e-7dd8-a3743fe7e0d0@intel.com>
- <2cbec85b-58f6-626f-df4a-cb1bb418fec1@oracle.com>
- <a488a17a-b716-52aa-cc31-2e51f8f972d2@intel.com>
- <20220817021324-mutt-send-email-mst@kernel.org>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <20220817021324-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5930ed23-4145-4166-cb49-08da80195c79
+X-MS-TrafficTypeDiagnostic: CO1PR10MB4786:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ff2o+vUawa5wITdF34AHEQbemULkDT6v80REI+2BievbLKChfdCk+rGAV/gO+Hf5Qyi0niaFzp/uEp0Ety0S/muAo4L0Y/v+G5Wt8NzRiWtD3LOZx2PaNHIY2UjEFk+wB+ZKwxzOYEwv5HMTV/0nQr8M2/MCiYuHKR/gEQnVJ2WjldLMO2jFhQySVDCazkhSgcAu1/AXi4oTxURgNNmF3TKJPPLzVCJ36N876e5u/I1buH2QMlScG6sdxZQdlvPklxEtZPxZx69Yg+Xx0MO4PZNY2oPddBQVJSIst8zr5gja+EtFqXnlUGI3giYufBV5+L+YtLbPYO3DCRsPQIFU4VuaB7UdgVcCsAu7tNChnG/DmYJ8L6d1f+a1uAcNu641VDoRqpJBGGqiZxtUzO7UAXpFcS8yGvoZp0PL4opx5wMkc4GbQywclAkCo9DpysQGkkPcEFNrLCsf4VY1ZiDKq5tMo3Oi37T9hOIUNTMudl9THAlgW0ryx+F0s1xzA+ygEpoul32aq2nRacKWm9jVOhci/cB0cHE9JjoMQo2BN8MhXJJN7w7GRMfDN3EKvkO7v1d+9Y02B6GnigyRMMxBPzcLele4Q3ztWVNqLXKlLb5BGjCRrqEzdOEvGNZPXB4PkyjheK0zC3sivPNbvgl0yQdnVRGJLvPy5H5B5eXvcRCb5gyMzTDE6rbB19dpFMFBvp5506zXInFZS88vYpPheP5a8lR67Wa3h0t7PBEke7L1yp88IbOchrW1mViDw4IfMlpbutFWUd7SU7vAvaUBbxoLv68qjNzCYWkQ61in3f4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(396003)(39830400003)(136003)(376002)(346002)(366004)(66946007)(38100700002)(8676002)(66476007)(66556008)(4326008)(5660300002)(186003)(478600001)(26005)(41300700001)(6666004)(9686003)(316002)(6916009)(44832011)(33716001)(7416002)(6506007)(8936002)(86362001)(2906002)(6486002)(6512007)(54906003)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?31mGkMd5T7DbGTACh/QyXQB/kSOXIcr1HhOs85bnfcSUgxZ7eryh8SIOA9SG?=
+ =?us-ascii?Q?UkzPOcj4cBr14U3xpvmDOaXeUFL4299TUMOy0wDEuATa2vS3FXp5X94+cJEJ?=
+ =?us-ascii?Q?IbafwCd68Vm8a84TnGPrisyo6OR4C30g1SgNZqKIcnG+wCN71Uqvp+2r/9aW?=
+ =?us-ascii?Q?UmKRC4yE2UfypJksVMDslZwmE446me55v9gf5jxtLA5Ns6pkqjphaVxvp5Rx?=
+ =?us-ascii?Q?ZIvs7EuVHvMCmSdbd96ANGb6VtPZdkFYtCIc4DvLzAkNLsbbEEeBDn8CjMc3?=
+ =?us-ascii?Q?jUWnp2zqxvLgPVGjfZUdcR9B5Ts/JBH8yYht6tJ9xLRf14bGj+YuXJt4FB+3?=
+ =?us-ascii?Q?3lEZOcCMs5S7argIMV4HYKwexRbsiauOlP8dpi6Xsped4Zw6Ek8pAFGkHQOi?=
+ =?us-ascii?Q?FJv7rGf02t7r/VHPJfRCPAl/FeXcavc2PNbH0UthPC5Ds5AUVYQQfS9IeRfP?=
+ =?us-ascii?Q?zhPIWfkN1CxJTW3Ix9i7/PcE4+aEDC9G800nNEOZEMqNFsKliNswobjI1ou4?=
+ =?us-ascii?Q?gFQ2ig/prhkdOB78oBXHlf0UuNneL1ir4dAEg346btijNVeJBBhdUm3IjLY6?=
+ =?us-ascii?Q?Nns7EY84caXuQjj6BkuAY7iJgjYKxB3ZSabw/PBiGmZQDNnM0gOe68mD8+R8?=
+ =?us-ascii?Q?1tHtRlBFwsPRonClJb+azYEwtMamdWGggvEpylJzvgpUSdRj5b3yacrW6Xu5?=
+ =?us-ascii?Q?exW4raXOSJaxAgeo8ZFclFNUyR+F6qY844dK4hMQqxWHWr6eRZGNsd1takZV?=
+ =?us-ascii?Q?5o+NPJe7lq9oYSIE7RS2XZW+x0krRZuxvZlGZ3NPKcDKnOxX6vR5gC01o/Rz?=
+ =?us-ascii?Q?pgmcrI1TCbWbFe5WwykrHxQ1d+HtEWpV8Qq+7xdzckSUcwuttZT53I3+oXxj?=
+ =?us-ascii?Q?tdGVEXw54TuMeiyyHOu/ii7uvT7UhXfdY+wxuI3CF3I8TFQlwoIlbjm55Fw4?=
+ =?us-ascii?Q?WF1a3+AgFXodCLTSShdqC/GJn2DGHnBSY7g1BWcUj/X5+arKvPs0PU1jilB8?=
+ =?us-ascii?Q?NJI9TS9yAhIqmzWZlbjeU+oX/b4WMe9xntR1/vY2AvLiYtp2RLvmn1xMxoQ5?=
+ =?us-ascii?Q?0JHx62d1rJt53UqilO04ikGFEqRtCZkqQkKs1KOV+VvR8ggRO2uq8E8OOqOw?=
+ =?us-ascii?Q?IIaloj4sfPTZTDApgKM4KkoWQPAIXf9YT9LHziIurrO8j3HLZvTLnKiJzNbe?=
+ =?us-ascii?Q?NToEXnCupiFFC0KDIPwSarMzXu+8dp5PmbOkXsjO5/XrsqEfQvgCNnMP8cUC?=
+ =?us-ascii?Q?RblcApE5k5LWuOkSkHf4dP8VY0AS7pHBoo+pjUKzpsjKhCiyA6U4ELh8sIhI?=
+ =?us-ascii?Q?785yggvLiC4AWTaq9mc4WHLbma2EURKwglYI0Qhk4RvVfTiTaztnJX/DZAtl?=
+ =?us-ascii?Q?a8lVfj8uzaoLPhqR0PCZV83CHNjJixeyIkE8OtDTEs/M6PUlTvZ7daWeRsgA?=
+ =?us-ascii?Q?fJjHNG3QNwK4kc7RTeaVpu1QM8pJyWZA1vEBnrBem7x4DkF6r5JMJ7waIGXi?=
+ =?us-ascii?Q?wJA815V+mVWEsm43gMM/yVYHXhDquNBSiqUFYq2MC3uwXXKmMN0mQl4dfz5m?=
+ =?us-ascii?Q?uQPDzJrmNch/zQuiuQbV3cSVSM3O+F0qQSFYMWv3qJaBpitRwR+RjrF6qvLQ?=
+ =?us-ascii?Q?QkQ+uPTkD8MO2Rbf3pnZH0g=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5930ed23-4145-4166-cb49-08da80195c79
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 06:26:04.2088
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 20Qd7NeVaWinU1/2racoSVx+i4FQ5yj4wqQFHrjFo3jEHCYU5LKeRc09tmeV04yO8pmU73AYZZYzu6VrB6mqL3eC7z/kSu9FBrZAQdysixI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4786
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> --- a/drivers/net/ethernet/mscc/vsc7514_regs.c
+> +++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
+> @@ -180,13 +180,14 @@ const u32 vsc7514_sys_regmap[] = {
+>  	REG(SYS_COUNT_RX_64,				0x000024),
+>  	REG(SYS_COUNT_RX_65_127,			0x000028),
+>  	REG(SYS_COUNT_RX_128_255,			0x00002c),
+> -	REG(SYS_COUNT_RX_256_1023,			0x000030),
+> -	REG(SYS_COUNT_RX_1024_1526,			0x000034),
+> -	REG(SYS_COUNT_RX_1527_MAX,			0x000038),
+> -	REG(SYS_COUNT_RX_PAUSE,				0x00003c),
+> -	REG(SYS_COUNT_RX_CONTROL,			0x000040),
+> -	REG(SYS_COUNT_RX_LONGS,				0x000044),
+> -	REG(SYS_COUNT_RX_CLASSIFIED_DROPS,		0x000048),
+> +	REG(SYS_COUNT_RX_256_511,			0x000030),
+> +	REG(SYS_COUNT_RX_512_1023,			0x000034),
+> +	REG(SYS_COUNT_RX_1024_1526,			0x000038),
+> +	REG(SYS_COUNT_RX_1527_MAX,			0x00003c),
+> +	REG(SYS_COUNT_RX_PAUSE,				0x000040),
+> +	REG(SYS_COUNT_RX_CONTROL,			0x000044),
+> +	REG(SYS_COUNT_RX_LONGS,				0x000048),
+> +	REG(SYS_COUNT_RX_CLASSIFIED_DROPS,		0x00004c),
 
+Hi Vladimir,
 
-On 8/17/2022 2:14 PM, Michael S. Tsirkin wrote:
-> On Wed, Aug 17, 2022 at 10:11:36AM +0800, Zhu, Lingshan wrote:
->>
->> On 8/17/2022 6:48 AM, Si-Wei Liu wrote:
->>
->>
->>
->>      On 8/16/2022 1:29 AM, Zhu, Lingshan wrote:
->>
->>
->>
->>          On 8/16/2022 3:41 PM, Si-Wei Liu wrote:
->>
->>              Hi Michael,
->>
->>              I just noticed this patch got pulled to linux-next prematurely
->>              without getting consensus on code review, am not sure why. Hope it
->>              was just an oversight.
->>
->>              Unfortunately this introduced functionality regression to at least
->>              two cases so far as I see:
->>
->>              1. (bogus) VDPA_ATTR_DEV_NEGOTIATED_FEATURES are inadvertently
->>              exposed and displayed in "vdpa dev config show" before feature
->>              negotiation is done. Noted the corresponding features name shown in
->>              vdpa tool is called "negotiated_features" rather than
->>              "driver_features". I see in no way the intended change of the patch
->>              should break this user level expectation regardless of any spec
->>              requirement. Do you agree on this point?
->>
->>          I will post a patch for iptour2, doing:
->>          1) if iprout2 does not get driver_features from the kernel, then don't
->>          show negotiated features in the command output
->>
->>      This won't work as the vdpa userspace tool won't know *when* features are
->>      negotiated. There's no guarantee in the kernel to assume 0 will be returned
->>      from vendor driver during negotiation. On the other hand, with the supposed
->>      change, userspace can't tell if there's really none of features negotiated,
->>      or the feature negotiation is over. Before the change the userspace either
->>      gets all the attributes when feature negotiation is over, or it gets
->>      nothing when it's ongoing, so there was a distinction.This expectation of
->>      what "negotiated_features" represents is established from day one, I see no
->>      reason the intended kernel change to show other attributes should break
->>      userspace behavior and user's expectation.
->>
->> User space can only read valid *driver_features* after the features negotiation
->> is done, *device_features* does not require the negotiation.
->>
->> If you want to prevent random values read from driver_features, here I propose
->> a fix: only read driver_features when the negotiation is done, this means to
->> check (status & VIRTIO_CONFIG_S_FEATURES_OK) before reading the
->> driver_features.
->> Sounds good?
->>
->> @MST, if this is OK, I can include this change in my next version patch series.
->>
->> Thanks,
->> Zhu Lingshan
-> Sorry I don't get it. Is there going to be a new version? Do you want me
-> to revert this one and then apply a new one? It's ok if yes.
-Not a new version, it is a new patch, though I still didn't get the race 
-condition, but I believe it
-is reasonable to block reading the *driver_features* before FEATURES_OK.
+Good catch! From a 7512/7514 point, these all look good. There's a
+couple conflicts I'll have to deal with to test the whole series.
 
-So, I added code to check whether _FEATURES_OK is set:
-
-  861         /* only read driver features after the feature negotiation 
-is done */
-  862         status = vdev->config->get_status(vdev);
-  863         if (status & VIRTIO_CONFIG_S_FEATURES_OK) {
-  864                 features_driver = 
-vdev->config->get_driver_features(vdev);
-  865                 if (nla_put_u64_64bit(msg, 
-VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
-  866                                       VDPA_ATTR_PAD))
-  867                 return -EMSGSIZE;
-  868         }
-
-If this solution looks good, I will add this patch in my V2 series.
-
-Thanks
-Zhu Lingshan
-
->
->
->>          2) process and decoding the device features.
->>
->>
->>              2. There was also another implicit assumption that is broken by
->>              this patch. There could be a vdpa tool query of config via
->>              vdpa_dev_net_config_fill()->vdpa_get_config_unlocked() that races
->>              with the first vdpa_set_features() call from VMM e.g. QEMU. Since
->>              the S_FEATURES_OK blocking condition is removed, if the vdpa tool
->>              query occurs earlier than the first set_driver_features() call from
->>              VMM, the following code will treat the guest as legacy and then
->>              trigger an erroneous vdpa_set_features_unlocked(... , 0) call to
->>              the vdpa driver:
->>
->>               374         /*
->>               375          * Config accesses aren't supposed to trigger before
->>              features are set.
->>               376          * If it does happen we assume a legacy guest.
->>               377          */
->>               378         if (!vdev->features_valid)
->>               379                 vdpa_set_features_unlocked(vdev, 0);
->>               380         ops->get_config(vdev, offset, buf, len);
->>
->>              Depending on vendor driver's implementation, L380 may either return
->>              invalid config data (or invalid endianness if on BE) or only config
->>              fields that are valid in legacy layout. What's more severe is that,
->>              vdpa tool query in theory shouldn't affect feature negotiation at
->>              all by making confusing calls to the device, but now it is possible
->>              with the patch. Fixing this would require more delicate work on the
->>              other paths involving the cf_lock reader/write semaphore.
->>
->>              Not sure what you plan to do next, post the fixes for both issues
->>              and get the community review? Or simply revert the patch in
->>              question? Let us know.
->>
->>          The spec says:
->>          The device MUST allow reading of any device-specific configuration
->>          field before FEATURES_OK is set by
->>          the driver. This includes fields which are conditional on feature bits,
->>          as long as those feature bits are offered
->>          by the device.
->>
->>          so whether FEATURES_OK should not block reading the device config
->>          space. vdpa_get_config_unlocked() will read the features, I don't know
->>          why it has a comment:
->>                  /*
->>                   * Config accesses aren't supposed to trigger before features
->>          are set.
->>                   * If it does happen we assume a legacy guest.
->>                   */
->>
->>          This conflicts with the spec.
->>
->>          vdpa_get_config_unlocked() checks vdev->features_valid, if not valid,
->>          it will set the drivers_features 0, I think this intends to prevent
->>          reading random driver_features. This function does not hold any locks,
->>          and didn't change anything.
->>
->>          So what is the race?
->>     
->>      You'll see the race if you keep 'vdpa dev config show ...' running in a
->>      tight loop while launching a VM with the vDPA device under query.
->>
->>      -Siwei
->>
->>
->>
->>         
->>          Thanks
->>
->>         
->>
->>              Thanks,
->>              -Siwei
->>
->>
->>              On 8/12/2022 3:44 AM, Zhu Lingshan wrote:
->>
->>                  Users may want to query the config space of a vDPA device,
->>                  to choose a appropriate one for a certain guest. This means the
->>                  users need to read the config space before FEATURES_OK, and
->>                  the existence of config space contents does not depend on
->>                  FEATURES_OK.
->>
->>                  The spec says:
->>                  The device MUST allow reading of any device-specific
->>                  configuration
->>                  field before FEATURES_OK is set by the driver. This includes
->>                  fields which are conditional on feature bits, as long as those
->>                  feature bits are offered by the device.
->>
->>                  Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
->>                  ---
->>                    drivers/vdpa/vdpa.c | 8 --------
->>                    1 file changed, 8 deletions(-)
->>
->>                  diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
->>                  index 6eb3d972d802..bf312d9c59ab 100644
->>                  --- a/drivers/vdpa/vdpa.c
->>                  +++ b/drivers/vdpa/vdpa.c
->>                  @@ -855,17 +855,9 @@ vdpa_dev_config_fill(struct vdpa_device
->>                  *vdev, struct sk_buff *msg, u32 portid,
->>                    {
->>                        u32 device_id;
->>                        void *hdr;
->>                  -    u8 status;
->>                        int err;
->>                          down_read(&vdev->cf_lock);
->>                  -    status = vdev->config->get_status(vdev);
->>                  -    if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
->>                  -        NL_SET_ERR_MSG_MOD(extack, "Features negotiation not
->>                  completed");
->>                  -        err = -EAGAIN;
->>                  -        goto out;
->>                  -    }
->>                  -
->>                        hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family,
->>                  flags,
->>                                  VDPA_CMD_DEV_CONFIG_GET);
->>                        if (!hdr) {
->>
->>
->>
->>
->>
->>
->>
->>
-
+>  	REG(SYS_COUNT_TX_OCTETS,			0x000100),
+>  	REG(SYS_COUNT_TX_UNICAST,			0x000104),
+>  	REG(SYS_COUNT_TX_MULTICAST,			0x000108),
+> @@ -196,10 +197,11 @@ const u32 vsc7514_sys_regmap[] = {
+>  	REG(SYS_COUNT_TX_PAUSE,				0x000118),
+>  	REG(SYS_COUNT_TX_64,				0x00011c),
+>  	REG(SYS_COUNT_TX_65_127,			0x000120),
+> -	REG(SYS_COUNT_TX_128_511,			0x000124),
+> -	REG(SYS_COUNT_TX_512_1023,			0x000128),
+> -	REG(SYS_COUNT_TX_1024_1526,			0x00012c),
+> -	REG(SYS_COUNT_TX_1527_MAX,			0x000130),
+> +	REG(SYS_COUNT_TX_128_255,			0x000124),
+> +	REG(SYS_COUNT_TX_256_511,			0x000128),
+> +	REG(SYS_COUNT_TX_512_1023,			0x00012c),
+> +	REG(SYS_COUNT_TX_1024_1526,			0x000130),
+> +	REG(SYS_COUNT_TX_1527_MAX,			0x000134),
+>  	REG(SYS_COUNT_TX_AGING,				0x000170),
+>  	REG(SYS_RESET_CFG,				0x000508),
+>  	REG(SYS_CMID,					0x00050c),
+> diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+> index ac151ecc7f19..e7e5b06deb2d 100644
+> --- a/include/soc/mscc/ocelot.h
+> +++ b/include/soc/mscc/ocelot.h
+> @@ -335,7 +335,8 @@ enum ocelot_reg {
+>  	SYS_COUNT_RX_64,
+>  	SYS_COUNT_RX_65_127,
+>  	SYS_COUNT_RX_128_255,
+> -	SYS_COUNT_RX_256_1023,
+> +	SYS_COUNT_RX_256_511,
+> +	SYS_COUNT_RX_512_1023,
+>  	SYS_COUNT_RX_1024_1526,
+>  	SYS_COUNT_RX_1527_MAX,
+>  	SYS_COUNT_RX_PAUSE,
+> @@ -351,7 +352,8 @@ enum ocelot_reg {
+>  	SYS_COUNT_TX_PAUSE,
+>  	SYS_COUNT_TX_64,
+>  	SYS_COUNT_TX_65_127,
+> -	SYS_COUNT_TX_128_511,
+> +	SYS_COUNT_TX_128_255,
+> +	SYS_COUNT_TX_256_511,
+>  	SYS_COUNT_TX_512_1023,
+>  	SYS_COUNT_TX_1024_1526,
+>  	SYS_COUNT_TX_1527_MAX,
+> -- 
+> 2.34.1
+> 
