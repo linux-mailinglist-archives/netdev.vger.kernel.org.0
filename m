@@ -2,101 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E198597989
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 00:15:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C473D59798E
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 00:18:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241965AbiHQWK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 18:10:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
+        id S241732AbiHQWP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 18:15:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242202AbiHQWKn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 18:10:43 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4A5E9F777;
-        Wed, 17 Aug 2022 15:10:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=S/5eXt6qxPOjrifOXrTAqDLvDo7S1RMnGh1w0oxBNRY=; b=LuyJGMy9jrbLt9nYppeNddgYWU
-        D/BfJy4BBV8fYYFviGZU4XVL/QzXZPDbrkVGEDaAqgWdY+l4F6rDBMTYMIxabfCBvNerOk1eEaDUZ
-        moCxBNac2IOqmQnsvQoD3HPI4Vw8tWBZg3rB1tJmJqzoYQYtr9dDZ4usgITC9y9+OZgvUlzUwb7yy
-        8X3q/mtluoXia0VGjRR9uSR4jN0UYUHw4VGCgA+HCrJytPNQkdeyITxLZSVcXH0WuO39MGZ+LjC8O
-        BHwntmREeJLccSE+kvCKiOqQaFNx1V1uuOKqDiUBOKSAJ67vcQCsz0udizEBpAhokvUi5fP0/9AVG
-        G3ZOi+3w==;
-Received: from [179.232.144.59] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oOREw-00Aycc-0j; Thu, 18 Aug 2022 00:10:18 +0200
-Message-ID: <2f21b91c-4fb0-42f8-0820-a6036405cb29@igalia.com>
-Date:   Wed, 17 Aug 2022 19:09:26 -0300
+        with ESMTP id S241903AbiHQWPX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 18:15:23 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39119A98D5
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 15:15:22 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 34B4740006;
+        Wed, 17 Aug 2022 22:15:13 +0000 (UTC)
+Message-ID: <495de273-9679-5186-3d6c-41f44e9280e4@ovn.org>
+Date:   Thu, 18 Aug 2022 00:15:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 10/13] EDAC/altera: Skip the panic notifier if kdump is
- loaded
+ Thunderbird/91.9.0
+Cc:     i.maximets@ovn.org, dev@openvswitch.org, brauner@kernel.org,
+        edumazet@google.com, avagin@google.com,
+        alexander.mikhalitsyn@virtuozzo.com, kuba@kernel.org,
+        pabeni@redhat.com, davem@davemloft.net, ptikhomirov@virtuozzo.com,
+        Aaron Conole <aconole@redhat.com>
 Content-Language: en-US
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     pmladek@suse.com, Dinh Nguyen <dinguyen@kernel.org>,
-        Tony Luck <tony.luck@intel.com>, akpm@linux-foundation.org,
-        bhe@redhat.com, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, linux-edac@vger.kernel.org
-References: <20220719195325.402745-1-gpiccoli@igalia.com>
- <20220719195325.402745-11-gpiccoli@igalia.com> <Yv0mCY04heUXsGiC@zn.tnic>
- <46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com> <Yv1C0Y25u2IB7PCs@zn.tnic>
- <7f016d7f-a546-a45d-c65c-bc35269b4faa@igalia.com> <Yv1XVRmTXHLhOkER@zn.tnic>
- <c0250075-ec87-189f-52c5-e0520325a015@igalia.com> <Yv1hn2ayPoyKBAj8@zn.tnic>
- <1ee275b3-97e8-4c2b-be88-d50898d17e23@igalia.com> <Yv1lGpisQVFpUOGP@zn.tnic>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <Yv1lGpisQVFpUOGP@zn.tnic>
+To:     Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org
+References: <20220817124909.83373-1-andrey.zhadchenko@virtuozzo.com>
+ <38c9c698-6304-dfa8-7b79-a1cb1e00860b@ovn.org>
+ <bc6f197b-37a5-89ea-1311-16f93b5cefed@virtuozzo.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net-next 0/1] openvswitch: allow specifying
+ ifindex of new interfaces
+In-Reply-To: <bc6f197b-37a5-89ea-1311-16f93b5cefed@virtuozzo.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/08/2022 19:00, Borislav Petkov wrote:
-> On Wed, Aug 17, 2022 at 06:56:11PM -0300, Guilherme G. Piccoli wrote:
->> But do you agree that currently, in case of a kdump, that information
->> *is not collected*, with our without my patch?
+On 8/17/22 22:35, Andrey Zhadchenko wrote:
 > 
-> If for some reason that panic notifier does not get run before kdump,
-> then that's a bug and that driver should not use a panic notifier to log
-> hw errors in the first place.
 > 
+> On 8/17/22 21:19, Ilya Maximets wrote:
+>> On 8/17/22 14:49, Andrey Zhadchenko via dev wrote:
+>>> Hi!
+>>>
+>>> CRIU currently do not support checkpoint/restore of OVS configurations, but
+>>> there was several requests for it. For example,
+>>> https://github.com/lxc/lxc/issues/2909
+>>>
+>>> The main problem is ifindexes of newly created interfaces. We realy need to
+>>> preserve them after restore. Current openvswitch API does not allow to
+>>> specify ifindex. Most of the time we can just create an interface via
+>>> generic netlink requests and plug it into ovs but datapaths (generally any
+>>> OVS_VPORT_TYPE_INTERNAL) can only be created via openvswitch requests which
+>>> do not support selecting ifindex.
+>>
+>> Hmm.  Assuming you restored network interfaces by re-creating them
+>> on a target system, but I'm curious how do you restore the upcall PID?
+>> Are you somehow re-creating the netlink socket with the same PID?
+>> If that will not be done, no traffic will be able to flow through OVS
+>> anyway until you remove/re-add the port in userspace or re-start OVS.
+>> Or am I missing something?
+>>
+>> Best regards, Ilya Maximets.
+> 
+> Yes, CRIU is able to restore socket nl_pid. We get it via NDIAG_PROTO_ALL
+> netlink protocol requests (see net/netlink/diag.c)  Upcall pid is exported
+> by get requests via OVS_VPORT_ATTR_UPCALL_PID.
+> So everything is fine here.
 
-Indeed, the notifiers don't run before kdump by default, in a conscious
-decision of the kdump maintainers.
+I didn't dig deep into how that works, but sounds interesting.
+Thanks for the pointers!
 
-You might be right, in the sense that maybe the edac error handler
-shouldn't run as a panic notifier. Let's see if Tony / Dinh can chime in
-on that discussion - we could move it to run in the kexec event as well,
-so it'd always run before a kdump, but maybe the risk it offers during
-panic time is not worth.
+> 
+> I should note that I did not test *complicated* setups with ovs-vswitchd,
+> mostly basic ones like veth plugging and several containers in network. We
+> mainly supported Weave Net k8s SDN  which is based on ovs but do not use its
+> daemon.
+> 
+> Maybe if this is merged and people start use this we will find more problems
+> with checkpoint/restore, but for now the only problem is volatile ifindex.
 
-Again - a matter of a trade-off, a good compromise must be agreed by all
-parties (kdump maintainers are usually extremely afraid of taking risks
-to not break kdump).
+Current implementation even with ifindexes sorted out will not work for
+at least one reason for recent versions of OVS.  Since last year OVS doesn't
+use OVS_VPORT_ATTR_UPCALL_PID if kernel supports OVS_DP_ATTR_PER_CPU_PIDS
+instead.  It's a datapath-wide CPU ID to PID mapping for per-CPU upcall
+dispatch mode.  It is used by default starting with OVS 2.16.
 
-Cheers!
+So, you need to make sure you're correctly restoring 'user_features' and
+the OVS_DP_ATTR_PER_CPU_PIDS.  Problem here is that OVS_DP_ATTR_PER_CPU_PIDS
+currently not dumped to userpsace via GET request, simply because ovs-vswitchd
+has no use for it.  So, you'll need to add that as well.
+
+And there could be some issues when starting OVS from a checkpoint created
+on a system with different number of CPU cores.  Traffic will not be broken,
+but performance may be affected, and there might be some kernel warnings.
+
+If you won't restore OVS_DP_ATTR_PER_CPU_PIDS, traffic will not work on
+recent versions of OVS, including 2.17 LTS, on more or less recent kernels.
+
+Another fairly recent addition is OVS_DP_ATTR_MASKS_CACHE_SIZE, which is
+not critical, but would be nice to restore as well, if you're not doing
+that already.
+
+> 
+> Best regards, Andrey Zhadchenko
+>>
+>>>
+>>> This patch allows to do so.
+>>> For new datapaths I decided to use dp_infindex in header as infindex
+>>> because it control ifindex for other requests too.
+>>> For internal vports I reused OVS_VPORT_ATTR_IFINDEX.
+>>>
+>>> The only concern I have is that previously dp_ifindex was not used for
+>>> OVS_DP_VMD_NEW requests and some software may not set it to zero. However
+>>> we have been running this patch at Virtuozzo for 2 years and have not
+>>> encountered this problem. Not sure if it is worth to add new
+>>> ovs_datapath_attr instead.
+>>>
+>>>
+>>> As a broader solution, another generic approach is possible: modify
+>>> __dev_change_net_namespace() to allow changing ifindexes within the same
+>>> netns. Yet we will still need to ignore NETIF_F_NETNS_LOCAL and I am not
+>>> sure that all its users are ready for ifindex change.
+>>> This will be indeed better for CRIU so we won't need to change every SDN
+>>> module to be able to checkpoint/restore it. And probably avoid some bloat.
+>>> What do you think of this?
+>>>
+>>> Andrey Zhadchenko (1):
+>>>    openvswitch: allow specifying ifindex of new interfaces
+>>>
+>>>   include/uapi/linux/openvswitch.h     |  4 ++++
+>>>   net/openvswitch/datapath.c           | 16 ++++++++++++++--
+>>>   net/openvswitch/vport-internal_dev.c |  1 +
+>>>   net/openvswitch/vport.h              |  2 ++
+>>>   4 files changed, 21 insertions(+), 2 deletions(-)
+>>>
+>>
+
