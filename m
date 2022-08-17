@@ -2,112 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F346959766C
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 21:30:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BD6459767D
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 21:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238683AbiHQTag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 15:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S240302AbiHQTav (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 15:30:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241480AbiHQTab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 15:30:31 -0400
-Received: from mx23lb.world4you.com (mx23lb.world4you.com [81.19.149.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C090A58DE3
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 12:30:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=engleder-embedded.com; s=dkim11; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=oOT1uaV40B5mG7pR4HrHdTNR4UXdyRqLoUrp6UOyGMw=; b=sBYq3ziZPsgv/Rp1cH2vgmlx0S
-        QHFAE3fRmE4RWGITKffkaCDG1rVxX1y+ntiIWNt4NOW68aetscSwkPGUOaVv2ISpgExV88XF1v617
-        HxeM+o3dfyc9Ogi43LrilJx9WjpAws89vzbDAxACHwrXp8SimpnXFnAFwrx3GKpxPSlI=;
-Received: from 88-117-52-3.adsl.highway.telekom.at ([88.117.52.3] helo=hornet.engleder.at)
-        by mx23lb.world4you.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <gerhard@engleder-embedded.com>)
-        id 1oOOkE-0006Vi-Ol; Wed, 17 Aug 2022 21:30:26 +0200
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next 5/5] tsnep: Record RX queue
-Date:   Wed, 17 Aug 2022 21:30:17 +0200
-Message-Id: <20220817193017.44063-6-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220817193017.44063-1-gerhard@engleder-embedded.com>
-References: <20220817193017.44063-1-gerhard@engleder-embedded.com>
+        with ESMTP id S238432AbiHQTau (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 15:30:50 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFC35B042;
+        Wed, 17 Aug 2022 12:30:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1660764648; x=1692300648;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=tyTSNq5F9hK0d+h8MFDvRwJmttjYl2ZU/nazL7KLnpw=;
+  b=twHEcr3ZwpUmwVuqFDnAZmhUbeH6HfEqhm7ld+LebaOaMHRQGPkYmkwJ
+   +L59dHFuBw3cCfpH6xSkuLhQmFJrSX4mznxR2hLJCVJi9xAbMloikeJFI
+   TdF6BDOUl7y9yqiQIu0NcThP6r6hje81dS7KfhAZvPAjVsxbWZfw4Tue7
+   CHmhEYX/KPo3q9YcpdlXJJIWH8il2Y7ZCuVO7VOTjkmEsItUSQGoOA8ri
+   4JlOKRzYVzPgrG71euBC4TznqZRdEXsxc/rM6u3QISrGCezTT1zDVEyud
+   90YrgttDozgtNOYAZpY8xi8Enj0LCl8ZKZze4X6+aZIbW01hhTO7eWyY1
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,244,1654585200"; 
+   d="scan'208";a="176816539"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Aug 2022 12:30:46 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Wed, 17 Aug 2022 12:30:46 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Wed, 17 Aug 2022 12:30:43 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <UNGLinuxDriver@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <linux@armlinux.org.uk>, <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net-next v4 0/8] net: lan966x: Add lag support
+Date:   Wed, 17 Aug 2022 21:34:41 +0200
+Message-ID: <20220817193449.1673002-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-AV-Do-Run: Yes
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Other drivers record RX queue so it should make sense to do that also.
+Add lag support for lan966x.
+First 4 patches don't do any changes to the current behaviour, they
+just prepare for lag support. While the rest is to add the lag support.
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
----
- drivers/net/ethernet/engleder/tsnep.h      | 1 +
- drivers/net/ethernet/engleder/tsnep_main.c | 5 ++++-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+v3->v4:
+- aggregation configuration is global for all bonds, so make sure that
+  there can't be enabled multiple configurations at the same time
+- return error faster from lan966x_foreign_bridging_check, don't
+  continue the search if the error is seen already
+- flush fdb workqueue when a port leaves a bridge or lag.
 
-diff --git a/drivers/net/ethernet/engleder/tsnep.h b/drivers/net/ethernet/engleder/tsnep.h
-index 23bbece6b7de..147fe03ca979 100644
---- a/drivers/net/ethernet/engleder/tsnep.h
-+++ b/drivers/net/ethernet/engleder/tsnep.h
-@@ -87,6 +87,7 @@ struct tsnep_rx_entry {
- struct tsnep_rx {
- 	struct tsnep_adapter *adapter;
- 	void __iomem *addr;
-+	int queue_index;
- 
- 	void *page[TSNEP_RING_PAGE_COUNT];
- 	dma_addr_t page_dma[TSNEP_RING_PAGE_COUNT];
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 415ae6a4b32c..19db8b1dddc4 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -749,6 +749,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 				hwtstamps->netdev_data = rx_inline;
- 			}
- 			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
-+			skb_record_rx_queue(skb, rx->queue_index);
- 			skb->protocol = eth_type_trans(skb,
- 						       rx->adapter->netdev);
- 
-@@ -783,7 +784,7 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- }
- 
- static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
--			 struct tsnep_rx *rx)
-+			 int queue_index, struct tsnep_rx *rx)
- {
- 	dma_addr_t dma;
- 	int i;
-@@ -792,6 +793,7 @@ static int tsnep_rx_open(struct tsnep_adapter *adapter, void __iomem *addr,
- 	memset(rx, 0, sizeof(*rx));
- 	rx->adapter = adapter;
- 	rx->addr = addr;
-+	rx->queue_index = queue_index;
- 
- 	retval = tsnep_rx_ring_init(rx);
- 	if (retval)
-@@ -878,6 +880,7 @@ static int tsnep_netdev_open(struct net_device *netdev)
- 		if (adapter->queue[i].rx) {
- 			addr = adapter->addr + TSNEP_QUEUE(rx_queue_index);
- 			retval = tsnep_rx_open(adapter, addr,
-+					       rx_queue_index,
- 					       adapter->queue[i].rx);
- 			if (retval)
- 				goto failed;
+v2->v3:
+- return error code from 'switchdev_bridge_port_offload()'
+- fix lan966x_foreign_dev_check(), it was missing lag support
+- remove lan966x_lag_mac_add_entry and lan966x_mac_del_entry as
+  they are not needed
+- fix race conditions when accessing port->bond
+- move FDB entries when a new port joins the lag if it has a lower
+
+v1->v2:
+- fix the LAG PGIDs when ports go down, in this way is not
+  needed anymore the last patch of the series.
+
+Horatiu Vultur (8):
+  net: lan966x: Add registers used to configure lag interfaces
+  net: lan966x: Split lan966x_fdb_event_work
+  net: lan966x: Flush fdb workqueue when port is leaving a bridge.
+  net: lan966x: Expose lan966x_switchdev_nb and
+    lan966x_switchdev_blocking_nb
+  net: lan966x: Extend lan966x_foreign_bridging_check
+  net: lan966x: Add lag support for lan966x
+  net: lan966x: Extend FDB to support also lag
+  net: lan966x: Extend MAC to support also lag interfaces.
+
+ .../net/ethernet/microchip/lan966x/Kconfig    |   1 +
+ .../net/ethernet/microchip/lan966x/Makefile   |   2 +-
+ .../ethernet/microchip/lan966x/lan966x_fdb.c  | 155 +++++---
+ .../ethernet/microchip/lan966x/lan966x_lag.c  | 363 ++++++++++++++++++
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 104 ++++-
+ .../ethernet/microchip/lan966x/lan966x_main.h |  39 ++
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  45 +++
+ .../microchip/lan966x/lan966x_switchdev.c     | 138 +++++--
+ 8 files changed, 741 insertions(+), 106 deletions(-)
+ create mode 100644 drivers/net/ethernet/microchip/lan966x/lan966x_lag.c
+
 -- 
-2.30.2
+2.33.0
 
