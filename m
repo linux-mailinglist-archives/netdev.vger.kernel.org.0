@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD769597769
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C1F597770
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241475AbiHQUJ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 16:09:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59290 "EHLO
+        id S241489AbiHQUKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 16:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233098AbiHQUJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:09:50 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CB0166A4B;
-        Wed, 17 Aug 2022 13:09:49 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id u133so12940686pfc.10;
-        Wed, 17 Aug 2022 13:09:49 -0700 (PDT)
+        with ESMTP id S237343AbiHQUJv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:09:51 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39CC010AC;
+        Wed, 17 Aug 2022 13:09:50 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id a22so12376291pfg.3;
+        Wed, 17 Aug 2022 13:09:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=u22jiSFhNbA3v1/UjcAzv8b6+vq2T9VqdxW19p88ScY=;
-        b=c6mi7ctjdif6l/zcWZzpuh1/xa2mp36w+XuAcRNlJt92k1FtW73Wt2B5yThmazOItF
-         6d55oqi2GnxZDAIJX0tCqICzn66gJvMDA9Dm0XC5hUGrqiyimJlZqMFIT7YSWBKo7wnB
-         +bExvEI6MnI/GOKcToZRdmi06HfZN2oY7AQgjDZkTlF/AxI+G9rQfDcOlTrt+71Ydunh
-         FxI0N7pagxnn6C96efwfxsR/cz3S7zEtJiE15+vQMss7ColPzujXzzM0pqVyn6wAK/ob
-         jRGqw39bttqDhmnGz2uCf1bO3RnIMw4qYS7V/UIX4oPoYEIFU3whY6SmdnK26K32ixwV
-         O5aA==
+        bh=zYptNEdA4OIuRfuihURjUt2dQgZ0CMKwdUnqy9iumU0=;
+        b=TfhqBuRsXrl32wW8gOc4y5PTRDO9BS2qNw6A8v/Rq+CKtlYVwpiugKypCdF273YXYo
+         vPBZPeAtPwOGX+jhBtgeann9RoT60K4HKzQJtL348h+dP7302cdaAx4pdCL9wQ0dbRzh
+         CTbn++u/BlbD1ztA2UL2mibKaI25XH/8HjlkzvzQGCCDEtfVCZ9q5dt5rLZKHzb/pPMw
+         Qoo99zCSjG3vhm+674BjziCyWIQbX0E0oUORp4Rgsz97+d0zG3tkVxXLKQLNQ+dRkNkv
+         YjD11AWdpPkYgKBLXSFpu56PMoBVRiz0x2sldpPy8kKvXHeF7WeGE4P++u4UE8QQI6hZ
+         dnYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=u22jiSFhNbA3v1/UjcAzv8b6+vq2T9VqdxW19p88ScY=;
-        b=RCAeIANxYVV4wOLx2Q4E9viTyUUi59obRryEB32uxeqWM/mJKgksvoUbxJwTHrPee6
-         zmzVEeFdZwovq/7aUt9fg8Bd2zGAJ1D2t9GkVZ1nq7hNaspgBGXBRQrYbvBh1kPObuDV
-         00+qg9vSmX3qWQlT7YGkLp6ZeacBBhg/CRlIugBPGjAvaEdYaiqQQ5mzaBxFPTNrw+R6
-         B5OUAtAhwBkW/eKprIjNGf/XliFbybhp/PSBRFcutgyp+aiibDal1XeaJpf9iehntTie
-         iCTw3DmwAmXYMNHUkZhCsxdBn85sUS+QKLma5lUnTNzhESdP+PBZLVNMKQKfCrmJaKkB
-         XfAA==
-X-Gm-Message-State: ACgBeo0b4qcYKbYIGkW6je3eoBQ9KOUBxKHN31GxY3dcNx+g0ekhZkoU
-        qKR1gVZwmCzhnmNhhC6Rh314aItt+fm2/Q==
-X-Google-Smtp-Source: AA6agR5OOgnUV6Gxwr95HJ5jmoAHznHk1zUZoERe0azzE4I4g9Ay8PIh5fzCPF9VlfV6M9xkTWL73Q==
-X-Received: by 2002:a63:ec04:0:b0:41c:1149:4523 with SMTP id j4-20020a63ec04000000b0041c11494523mr22618445pgh.62.1660766988533;
-        Wed, 17 Aug 2022 13:09:48 -0700 (PDT)
-Received: from localhost (fwdproxy-prn-008.fbsv.net. [2a03:2880:ff:8::face:b00c])
-        by smtp.gmail.com with ESMTPSA id x7-20020a628607000000b0053554e0e950sm107630pfd.147.2022.08.17.13.09.48
+        bh=zYptNEdA4OIuRfuihURjUt2dQgZ0CMKwdUnqy9iumU0=;
+        b=Epthq7IYI9ZQOPXTzy+8klI/ydpOXug+JWT5Z7T7Ex4r0R7ur5uKRVcRryaLJWa+nh
+         gdlHDPk4Unj6IBnfBoiTx4paiz3vEnx/hbHl+3bKDeEVPaFVaUwgD087UlJRfPcqycel
+         ForF03b++gkwlbJ2+2dovrLjmVKenVfmHB/BNVR2sH0AG8B3jeqA3Gh1ZrXMkGISVguM
+         DgAPkNleYuK+qe2pwM0pMnRkl2C20t8UpZpfRx87fskxIESXZANqswAqwuHoW54hHwQP
+         pPdeKYaE98jXCewwM7ODjA5a47nbOUYHoxE2MizO8NPDFPAU5d41GdEC95t+2Zkgx0AG
+         52zA==
+X-Gm-Message-State: ACgBeo1LRQH8OE1lx7WpP7gmxLheqWsJvlbZbVV71rEwydPHA5qf7rsU
+        vfdsvJQ4hjo8jG6z/yZo//o=
+X-Google-Smtp-Source: AA6agR6Z0XZnT+jLhHTg6LJk6xFd5ekrXGX0I0zcymvG2z0NplI6emwOasyo3nnaNjHlo51vnZdJrg==
+X-Received: by 2002:a05:6a00:986:b0:52d:8c68:7b4 with SMTP id u6-20020a056a00098600b0052d8c6807b4mr27111198pfg.35.1660766989580;
+        Wed, 17 Aug 2022 13:09:49 -0700 (PDT)
+Received: from localhost (fwdproxy-prn-007.fbsv.net. [2a03:2880:ff:7::face:b00c])
+        by smtp.gmail.com with ESMTPSA id b14-20020a63930e000000b004297b8cd589sm4791337pge.21.2022.08.17.13.09.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Aug 2022 13:09:48 -0700 (PDT)
+        Wed, 17 Aug 2022 13:09:49 -0700 (PDT)
 From:   Adel Abouchaev <adel.abushaev@gmail.com>
 To:     kuba@kernel.org
 Cc:     davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
         corbet@lwn.net, dsahern@kernel.org, shuah@kernel.org,
         imagedong@tencent.com, netdev@vger.kernel.org,
         linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [net-next v2 2/6] Define QUIC specific constants, control and data plane structures
-Date:   Wed, 17 Aug 2022 13:09:36 -0700
-Message-Id: <20220817200940.1656747-3-adel.abushaev@gmail.com>
+Subject: [net-next v2 3/6] Add UDP ULP operations, initialization and handling prototype functions.
+Date:   Wed, 17 Aug 2022 13:09:37 -0700
+Message-Id: <20220817200940.1656747-4-adel.abushaev@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220817200940.1656747-1-adel.abushaev@gmail.com>
 References: <Adel Abouchaev <adel.abushaev@gmail.com>
@@ -72,97 +72,343 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define control and data plane structures to pass in control plane for
-flow add/remove and during packet send within ancillary data. Define
-constants to use within SOL_UDP to program QUIC sockets.
+Define functions to add UDP ULP handling, registration with UDP protocol
+and supporting data structures. Create structure for QUIC ULP and add empty
+prototype functions to support it.
 
 Signed-off-by: Adel Abouchaev <adel.abushaev@gmail.com>
----
- include/uapi/linux/quic.h | 60 +++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/udp.h  |  3 ++
- 2 files changed, 63 insertions(+)
- create mode 100644 include/uapi/linux/quic.h
 
-diff --git a/include/uapi/linux/quic.h b/include/uapi/linux/quic.h
-new file mode 100644
-index 000000000000..38c54ff62d37
---- /dev/null
-+++ b/include/uapi/linux/quic.h
-@@ -0,0 +1,60 @@
-+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) */
+---
+
+Removed reference to net/quic/Kconfig from this patch into the next.
+
+Fixed formatting around brackets.
+---
+ include/net/inet_sock.h  |   2 +
+ include/net/udp.h        |  33 +++++++
+ include/uapi/linux/udp.h |   1 +
+ net/Makefile             |   1 +
+ net/ipv4/Makefile        |   3 +-
+ net/ipv4/udp.c           |   6 ++
+ net/ipv4/udp_ulp.c       | 192 +++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 237 insertions(+), 1 deletion(-)
+ create mode 100644 net/ipv4/udp_ulp.c
+
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index bf5654ce711e..650e332bdb50 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -249,6 +249,8 @@ struct inet_sock {
+ 	__be32			mc_addr;
+ 	struct ip_mc_socklist __rcu	*mc_list;
+ 	struct inet_cork_full	cork;
++	const struct udp_ulp_ops	*udp_ulp_ops;
++	void __rcu		*ulp_data;
+ };
+ 
+ #define IPCORK_OPT	1	/* ip-options has been held in ipcork.opt */
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 5ee88ddf79c3..f22ebabbb186 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -523,4 +523,37 @@ struct proto *udp_bpf_get_proto(struct sock *sk, struct sk_psock *psock);
+ int udp_bpf_update_proto(struct sock *sk, struct sk_psock *psock, bool restore);
+ #endif
+ 
++/*
++ * Interface for adding Upper Level Protocols over UDP
++ */
 +
-+#ifndef _UAPI_LINUX_QUIC_H
-+#define _UAPI_LINUX_QUIC_H
++#define UDP_ULP_NAME_MAX	16
++#define UDP_ULP_MAX		128
 +
-+#include <linux/types.h>
-+#include <linux/tls.h>
++struct udp_ulp_ops {
++	struct list_head	list;
 +
-+#define QUIC_MAX_CONNECTION_ID_SIZE 20
++	/* initialize ulp */
++	int (*init)(struct sock *sk);
++	/* cleanup ulp */
++	void (*release)(struct sock *sk);
 +
-+/* Side by side data for QUIC egress operations */
-+#define QUIC_BYPASS_ENCRYPTION 0x01
-+
-+struct quic_tx_ancillary_data {
-+	__aligned_u64	next_pkt_num;
-+	__u8	flags;
-+	__u8	conn_id_length;
++	char		name[UDP_ULP_NAME_MAX];
++	struct module	*owner;
 +};
 +
-+struct quic_connection_info_key {
-+	__u8	conn_id[QUIC_MAX_CONNECTION_ID_SIZE];
-+	__u8	conn_id_length;
-+};
++int udp_register_ulp(struct udp_ulp_ops *type);
++void udp_unregister_ulp(struct udp_ulp_ops *type);
++int udp_set_ulp(struct sock *sk, const char *name);
++void udp_get_available_ulp(char *buf, size_t len);
++void udp_cleanup_ulp(struct sock *sk);
++int udp_setsockopt_ulp(struct sock *sk, sockptr_t optval,
++		       unsigned int optlen);
++int udp_getsockopt_ulp(struct sock *sk, char __user *optval,
++		       int __user *optlen);
 +
-+struct quic_aes_gcm_128 {
-+	__u8	header_key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
-+	__u8	payload_key[TLS_CIPHER_AES_GCM_128_KEY_SIZE];
-+	__u8	payload_iv[TLS_CIPHER_AES_GCM_128_IV_SIZE];
-+};
++#define MODULE_ALIAS_UDP_ULP(name)\
++	__MODULE_INFO(alias, alias_userspace, name);\
++	__MODULE_INFO(alias, alias_udp_ulp, "udp-ulp-" name)
 +
-+struct quic_aes_gcm_256 {
-+	__u8	header_key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
-+	__u8	payload_key[TLS_CIPHER_AES_GCM_256_KEY_SIZE];
-+	__u8	payload_iv[TLS_CIPHER_AES_GCM_256_IV_SIZE];
-+};
-+
-+struct quic_aes_ccm_128 {
-+	__u8	header_key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
-+	__u8	payload_key[TLS_CIPHER_AES_CCM_128_KEY_SIZE];
-+	__u8	payload_iv[TLS_CIPHER_AES_CCM_128_IV_SIZE];
-+};
-+
-+struct quic_chacha20_poly1305 {
-+	__u8	header_key[TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE];
-+	__u8	payload_key[TLS_CIPHER_CHACHA20_POLY1305_KEY_SIZE];
-+	__u8	payload_iv[TLS_CIPHER_CHACHA20_POLY1305_IV_SIZE];
-+};
-+
-+struct quic_connection_info {
-+	__u16	cipher_type;
-+	struct quic_connection_info_key		key;
-+	union {
-+		struct quic_aes_gcm_128 aes_gcm_128;
-+		struct quic_aes_gcm_256 aes_gcm_256;
-+		struct quic_aes_ccm_128 aes_ccm_128;
-+		struct quic_chacha20_poly1305 chacha20_poly1305;
-+	};
-+};
-+
-+#endif
+ #endif	/* _UDP_H */
 diff --git a/include/uapi/linux/udp.h b/include/uapi/linux/udp.h
-index 4828794efcf8..0ee4c598e70b 100644
+index 0ee4c598e70b..893691f0108a 100644
 --- a/include/uapi/linux/udp.h
 +++ b/include/uapi/linux/udp.h
-@@ -34,6 +34,9 @@ struct udphdr {
+@@ -34,6 +34,7 @@ struct udphdr {
  #define UDP_NO_CHECK6_RX 102	/* Disable accpeting checksum for UDP6 */
  #define UDP_SEGMENT	103	/* Set GSO segmentation size */
  #define UDP_GRO		104	/* This socket can receive UDP GRO packets */
-+#define UDP_QUIC_ADD_TX_CONNECTION	106 /* Add QUIC Tx crypto offload */
-+#define UDP_QUIC_DEL_TX_CONNECTION	107 /* Del QUIC Tx crypto offload */
-+#define UDP_QUIC_ENCRYPT		108 /* QUIC encryption parameters */
++#define UDP_ULP		105	/* Attach ULP to a UDP socket */
+ #define UDP_QUIC_ADD_TX_CONNECTION	106 /* Add QUIC Tx crypto offload */
+ #define UDP_QUIC_DEL_TX_CONNECTION	107 /* Del QUIC Tx crypto offload */
+ #define UDP_QUIC_ENCRYPT		108 /* QUIC encryption parameters */
+diff --git a/net/Makefile b/net/Makefile
+index fbfeb8a0bb37..28565bfe29cb 100644
+--- a/net/Makefile
++++ b/net/Makefile
+@@ -16,6 +16,7 @@ obj-y				+= ethernet/ 802/ sched/ netlink/ bpf/ ethtool/
+ obj-$(CONFIG_NETFILTER)		+= netfilter/
+ obj-$(CONFIG_INET)		+= ipv4/
+ obj-$(CONFIG_TLS)		+= tls/
++obj-$(CONFIG_QUIC)		+= quic/
+ obj-$(CONFIG_XFRM)		+= xfrm/
+ obj-$(CONFIG_UNIX_SCM)		+= unix/
+ obj-y				+= ipv6/
+diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
+index bbdd9c44f14e..88d3baf4af95 100644
+--- a/net/ipv4/Makefile
++++ b/net/ipv4/Makefile
+@@ -14,7 +14,8 @@ obj-y     := route.o inetpeer.o protocol.o \
+ 	     udp_offload.o arp.o icmp.o devinet.o af_inet.o igmp.o \
+ 	     fib_frontend.o fib_semantics.o fib_trie.o fib_notifier.o \
+ 	     inet_fragment.o ping.o ip_tunnel_core.o gre_offload.o \
+-	     metrics.o netlink.o nexthop.o udp_tunnel_stub.o
++	     metrics.o netlink.o nexthop.o udp_tunnel_stub.o \
++	     udp_ulp.o
  
- /* UDP encapsulation types */
- #define UDP_ENCAP_ESPINUDP_NON_IKE	1 /* draft-ietf-ipsec-nat-t-ike-00/01 */
+ obj-$(CONFIG_BPFILTER) += bpfilter/
+ 
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 34eda973bbf1..027c4513a9cd 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2779,6 +2779,9 @@ int udp_lib_setsockopt(struct sock *sk, int level, int optname,
+ 		up->pcflag |= UDPLITE_RECV_CC;
+ 		break;
+ 
++	case UDP_ULP:
++		return udp_setsockopt_ulp(sk, optval, optlen);
++
+ 	default:
+ 		err = -ENOPROTOOPT;
+ 		break;
+@@ -2847,6 +2850,9 @@ int udp_lib_getsockopt(struct sock *sk, int level, int optname,
+ 		val = up->pcrlen;
+ 		break;
+ 
++	case UDP_ULP:
++		return udp_getsockopt_ulp(sk, optval, optlen);
++
+ 	default:
+ 		return -ENOPROTOOPT;
+ 	}
+diff --git a/net/ipv4/udp_ulp.c b/net/ipv4/udp_ulp.c
+new file mode 100644
+index 000000000000..138818690151
+--- /dev/null
++++ b/net/ipv4/udp_ulp.c
+@@ -0,0 +1,192 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Pluggable UDP upper layer protocol support, based on pluggable TCP upper
++ * layer protocol support.
++ *
++ * Copyright (c) 2016-2017, Mellanox Technologies. All rights reserved.
++ * Copyright (c) 2016-2017, Dave Watson <davejwatson@fb.com>. All rights
++ * reserved.
++ * Copyright (c) 2021-2022, Meta Platforms, Inc. All rights reserved.
++ */
++
++#include <linux/gfp.h>
++#include <linux/list.h>
++#include <linux/module.h>
++#include <linux/mm.h>
++#include <linux/types.h>
++#include <linux/skmsg.h>
++#include <net/tcp.h>
++#include <net/udp.h>
++
++static DEFINE_SPINLOCK(udp_ulp_list_lock);
++static LIST_HEAD(udp_ulp_list);
++
++/* Simple linear search, don't expect many entries! */
++static struct udp_ulp_ops *udp_ulp_find(const char *name)
++{
++	struct udp_ulp_ops *e;
++
++	list_for_each_entry_rcu(e, &udp_ulp_list, list,
++				lockdep_is_held(&udp_ulp_list_lock)) {
++		if (strcmp(e->name, name) == 0)
++			return e;
++	}
++
++	return NULL;
++}
++
++static const struct udp_ulp_ops *__udp_ulp_find_autoload(const char *name)
++{
++	const struct udp_ulp_ops *ulp = NULL;
++
++	rcu_read_lock();
++	ulp = udp_ulp_find(name);
++
++#ifdef CONFIG_MODULES
++	if (!ulp && capable(CAP_NET_ADMIN)) {
++		rcu_read_unlock();
++		request_module("udp-ulp-%s", name);
++		rcu_read_lock();
++		ulp = udp_ulp_find(name);
++	}
++#endif
++	if (!ulp || !try_module_get(ulp->owner))
++		ulp = NULL;
++
++	rcu_read_unlock();
++	return ulp;
++}
++
++/* Attach new upper layer protocol to the list
++ * of available protocols.
++ */
++int udp_register_ulp(struct udp_ulp_ops *ulp)
++{
++	int ret = 0;
++
++	spin_lock(&udp_ulp_list_lock);
++	if (udp_ulp_find(ulp->name))
++		ret = -EEXIST;
++	else
++		list_add_tail_rcu(&ulp->list, &udp_ulp_list);
++
++	spin_unlock(&udp_ulp_list_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(udp_register_ulp);
++
++void udp_unregister_ulp(struct udp_ulp_ops *ulp)
++{
++	spin_lock(&udp_ulp_list_lock);
++	list_del_rcu(&ulp->list);
++	spin_unlock(&udp_ulp_list_lock);
++
++	synchronize_rcu();
++}
++EXPORT_SYMBOL_GPL(udp_unregister_ulp);
++
++void udp_cleanup_ulp(struct sock *sk)
++{
++	struct inet_sock *inet = inet_sk(sk);
++
++	/* No sock_owned_by_me() check here as at the time the
++	 * stack calls this function, the socket is dead and
++	 * about to be destroyed.
++	 */
++	if (!inet->udp_ulp_ops)
++		return;
++
++	if (inet->udp_ulp_ops->release)
++		inet->udp_ulp_ops->release(sk);
++	module_put(inet->udp_ulp_ops->owner);
++
++	inet->udp_ulp_ops = NULL;
++}
++
++static int __udp_set_ulp(struct sock *sk, const struct udp_ulp_ops *ulp_ops)
++{
++	struct inet_sock *inet = inet_sk(sk);
++	int err;
++
++	err = -EEXIST;
++	if (inet->udp_ulp_ops)
++		goto out_err;
++
++	err = ulp_ops->init(sk);
++	if (err)
++		goto out_err;
++
++	inet->udp_ulp_ops = ulp_ops;
++	return 0;
++
++out_err:
++	module_put(ulp_ops->owner);
++	return err;
++}
++
++int udp_set_ulp(struct sock *sk, const char *name)
++{
++	struct sk_psock *psock = sk_psock_get(sk);
++	const struct udp_ulp_ops *ulp_ops;
++
++	if (psock) {
++		sk_psock_put(sk, psock);
++		return -EINVAL;
++	}
++
++	sock_owned_by_me(sk);
++	ulp_ops = __udp_ulp_find_autoload(name);
++	if (!ulp_ops)
++		return -ENOENT;
++
++	return __udp_set_ulp(sk, ulp_ops);
++}
++
++int udp_setsockopt_ulp(struct sock *sk, sockptr_t optval, unsigned int optlen)
++{
++	char name[UDP_ULP_NAME_MAX];
++	int val, err;
++
++	if (!optlen || optlen > UDP_ULP_NAME_MAX)
++		return -EINVAL;
++
++	val = strncpy_from_sockptr(name, optval, optlen);
++	if (val < 0)
++		return -EFAULT;
++
++	if (val == UDP_ULP_NAME_MAX)
++		return -EINVAL;
++
++	name[val] = 0;
++	lock_sock(sk);
++	err = udp_set_ulp(sk, name);
++	release_sock(sk);
++	return err;
++}
++
++int udp_getsockopt_ulp(struct sock *sk, char __user *optval, int __user *optlen)
++{
++	struct inet_sock *inet = inet_sk(sk);
++	int len;
++
++	if (get_user(len, optlen))
++		return -EFAULT;
++
++	len = min_t(unsigned int, len, UDP_ULP_NAME_MAX);
++	if (len < 0)
++		return -EINVAL;
++
++	if (!inet->udp_ulp_ops) {
++		if (put_user(0, optlen))
++			return -EFAULT;
++		return 0;
++	}
++
++	if (put_user(len, optlen))
++		return -EFAULT;
++	if (copy_to_user(optval, inet->udp_ulp_ops->name, len))
++		return -EFAULT;
++
++	return 0;
++}
 -- 
 2.30.2
 
