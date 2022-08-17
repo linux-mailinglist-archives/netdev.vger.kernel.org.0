@@ -2,163 +2,286 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D283B596973
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2908596986
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 08:26:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238935AbiHQGWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 02:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49738 "EHLO
+        id S230333AbiHQGXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 02:23:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238777AbiHQGWK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:22:10 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B7557C1DF;
-        Tue, 16 Aug 2022 23:21:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SeQHqAZxxd4Unpuw4b+Ie9tSSGO9rfYVj+5wPH/HkfrTS9QkH4y2YPLtXWa1DMUIS0zENyjQj9QuZwLOO0sZbCsS/EmXs/yWWEhDRfdiKxotxCxX1d+rxcoFL7gYVN5DldnIx2I3IHPAn4oujMG613kj8uiNXYn/fjPOSUydAAumhWY2HbUixyqFL0echGczZ/2Ls0OcQ0vcaEMzedMVaLQeKLHd7Va8WnLOjfpmtCl0wIRESFowtPp8eeRcXFgX2pdPsqetb90OL6ayix7gH4XPsCvMwFj6gw2CThs0RwwK1rQrTs+Cg5oSmMJvUYdGUHTLw/qKJvQZIdsflhdqXA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2G4esfYTxHELQd8ei6tadwaUmwXAofdum1wcfAogHWU=;
- b=BYJErOgmFhsa+jw+9pyBYSpGAlkRk/HoGDCkNd06mjLD+Wtk8ZR5UeCoJSQTxE2trbBo9IaPa+NCmYI9y62cb1qPz5oFJwInJ+84Sx20C69Cv7yuBP3OImynw7kdOkvoT2GBC4ZNRHQMDyaW4m+FDV7b3xY4UF8exwysoqrurRAgl8pp/fRkjHsfhKY8dbycuTPkzGP9pqFO0lZDFwLoPF4CanUny8w4qJUNqch07bvEcg6iFcyuVklu8cJBA3P/GQB/9qIGYx2BX4g/wxDe84dcOtsiCTos7WnAI+2KjtnU4zHCX9hGq4Cc1jqXAWWCMrejNVN3Y8aBW2vNZLm8Uw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2G4esfYTxHELQd8ei6tadwaUmwXAofdum1wcfAogHWU=;
- b=UNz3qqV/oXl3P3J4mgCzuv2XV2Iy9n8SHRPgEcllHDj078gOKXy7JPMI6Xm0jeoAS4j8nNY4nuyK3iXx+DDhPInqYFjC39ymIO/eYhXsf0PQ8kZKZVw9tj1lboLHrkIJnvBjAuhJjZ9ZjZ5qHAisg5U39klpFNt8XwPLRgU/ocB1di43mLGyCRLBhvCzS8ZY2k8Fg6wsFyTVzcqfSFFLVwHXqCUw9t2FW8uLSkUBaL+Ee5XI+67CE9T1KmnNDBBqMQxraiBD+zNkWBetjwAmOr6cidQYKdf2CpFp3pPpeBWQMNzVHMK0c3zpSNigg980pqVbQTPhwEpnjrojDC9MHA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
- by BY5PR12MB4002.namprd12.prod.outlook.com (2603:10b6:a03:1ad::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Wed, 17 Aug
- 2022 06:21:49 +0000
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5504.027; Wed, 17 Aug 2022
- 06:21:49 +0000
-Date:   Wed, 17 Aug 2022 09:21:44 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <YvyI+NrYOXAJHzQZ@shredder>
-References: <20220708115624.rrjzjtidlhcqczjv@skbuf>
- <723e2995314b41ff323272536ef27341@kapio-technology.com>
- <YsqPWK67U0+Iw2Ru@shredder>
- <d3f674dc6b4f92f2fda3601685c78ced@kapio-technology.com>
- <Ys69DiAwT0Md+6ai@shredder>
- <79683d9cf122e22b66b5da3bbbb0ee1f@kapio-technology.com>
- <YvIm+OvXvxbH6POv@shredder>
- <6c6fe135ce7b5b118289dc370135b0d3@kapio-technology.com>
- <YvNcitNnyFxTw8bs@shredder>
- <a1fc2c378816489e15995eb481c318eb@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <a1fc2c378816489e15995eb481c318eb@kapio-technology.com>
-X-ClientProxiedBy: AS9PR06CA0066.eurprd06.prod.outlook.com
- (2603:10a6:20b:464::11) To IA1PR12MB6163.namprd12.prod.outlook.com
- (2603:10b6:208:3e9::22)
+        with ESMTP id S232113AbiHQGXu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 02:23:50 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44F2FE01D;
+        Tue, 16 Aug 2022 23:23:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660717428; x=1692253428;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=yVbG+n0uGEK9+bGx/SxNj01c0Z0Jil+zP8BYLGKVpck=;
+  b=lnWq++7t1A4acphsViqa3uY4qtum5bvGC8GCkEsqlYpMWpyUq1+5VIzp
+   NENAU/D4qT3+aooKlY++LPcieKq6LW1xyWSG90hfmQ5m6V+OnIJbewr4e
+   8r9UjCo958XOHqDqA7JE7GGEC47LquFzUnIN8w+kLjWzEPPbasldSrcZB
+   l5/N2kX36yL42wToZ9IEll3dYzW0TmjQ9uKKIacldpORCfbvGJZS7PlMt
+   kVmyZea3CFHL+4YhcSjUd5jAPhBR96iLGKH+0hm7yAi6vXANvZJyVY3uF
+   Op4znhaMLmz1ZQF9sZcZa1acXvGKd+cRPEIeRAqjxFGJEugNmDy3RkQz0
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10441"; a="292411360"
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="292411360"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 23:23:47 -0700
+X-IronPort-AV: E=Sophos;i="5.93,242,1654585200"; 
+   d="scan'208";a="667465777"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.30.246]) ([10.255.30.246])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Aug 2022 23:23:44 -0700
+Message-ID: <b489413e-e933-e9b6-a719-45090a4e922c@intel.com>
+Date:   Wed, 17 Aug 2022 14:23:42 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: db89820b-0b47-49e7-eaa6-08da8018c489
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4002:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vX6i1aNtNvj2IgXm0CRkaBLWiJqmWhHpM+oxG6AOilkn2j/6Vorer6QBbba3TelgEydj8/SBgdWGnIpSAPHPE1AsGiBv7mc4pNIWtqDEDESSTONfZLXK/OMjzuG/p/F42IEjCT3oyLpWShOme8RIeGwLJhkLxO0SZczH8AdfHOCjpwCjEdZB88fFQrd4vQuR3m3/zK+F7fs4bnOCkNIrBAwtBNl7vLICANg+ax4eVhRMDGUM4DTuPcPJcp3o1p6kb3+78G8fw87uTp1dYeRTbODUY9NBoDi+Ye4vvzjtisPfoW0P7h8/jRDgLpnP3EMpwe0g1PDQbs7e4raETubNZD2YBMRYTFQqeWfQFl7lFJriwuoYj1b9p+7/iOBU5t7WoUeb6HXbc1a51GHEyYAcm3nKDgQo2SrwiJQJAoJOGKMVIgeVZCsPrbhfiYqNBmyAU/8g0ieoBsyxKSUA2OZFefV+YUgSc/VmVwK2dHEbVQFoqZdJ3yFwRX85SXClwuQNTse1xDGOsxnd7A6sic60KG8su/sOQ+sQya930Of+8AUhYWjcVi/OGlnkFMgP9SNbBUz2SKpGWLa58gjEoQq2131eRONszEvkWiZEg6xPZ2Vnrzt0SXOE7tTF2dQzCs6lMtv6rjfb5laNrN8m+4ghLdT/C4mNn5U4gYqzWpNLsFHqUn7qtId5hWHmHGqJ0mus+dl1JfRbCRXlatEJMy6ilwC7Pt/0RsbgKQHkikFmKxpsd76XWPjN1Ucy2pDyVHWzeNchUcUoVn52tzSMoa0r9aZU5EzFTQv3t3j9nzuLmWk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(366004)(136003)(376002)(396003)(39860400002)(346002)(2906002)(38100700002)(7416002)(186003)(83380400001)(4326008)(54906003)(6666004)(9686003)(26005)(86362001)(6512007)(8936002)(41300700001)(5660300002)(6506007)(53546011)(6916009)(8676002)(478600001)(66476007)(6486002)(33716001)(316002)(66556008)(66946007)(67856001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?BclCIUlnXkB28kS+By+MPyJdpnxsoN4lyM0RfHDET+62ZYymw3B/fqHes3Rj?=
- =?us-ascii?Q?KevMSHkTMlp+tscxg0FYBy2A4TzrufYyGOdw66frQoX1Xin9h7hPCsP/3ZQw?=
- =?us-ascii?Q?DKvw6+nEcaWeL1NgQimWmNVo3l3Xa5DuKj4e7souO9yzn4OwWZFawKlA4ssv?=
- =?us-ascii?Q?G5Qohxz/rnZloEi5zhNEd2iAQW1lkXbnMtu+pnXFBbhddRwo0gaRWrE5ONgg?=
- =?us-ascii?Q?qXgMilmgpj4qg+laX/0V1tNX5i/aj4829gUr+HKzLCEqg1Yhe2I2/UhHQda3?=
- =?us-ascii?Q?iM7p872ryDjHXd51/OkYmPhp+8+lWCSzv6tsBmcjBvjrqeskR2IQt/KCHQLC?=
- =?us-ascii?Q?vgq4JNstVHMepmPROJ2YfUyRbV0O4CkW1w9FkqRGZCwRzmZeHGu145ki9ozL?=
- =?us-ascii?Q?QUediSn+BjPs/5wHOXIuHNqBkIsN6hPnO9NekHYvlJOE6jkQwSEkU4Z7pDNZ?=
- =?us-ascii?Q?jC2LKaYxHA7HEv4hcZkLDigSjgRe0NlVGEC9xLdhAksDT6V2mTUi1uGmr6d7?=
- =?us-ascii?Q?9Kwm7O5mrekcQG/84KJsPH9xtmeiWqJqZhfWJTKYnvNUJOFFC1MytNNFoMOT?=
- =?us-ascii?Q?C6v15BQqyDxnBBKKT6o4fGwz70JMCx/b8iSjxWjRiZKlil3e3KdKG5uuHCGD?=
- =?us-ascii?Q?+peS/x13MmKjacM8pAC1svQkjPCfjPlV/85iUWiwT7ypMzKD/An0vPDsLMUq?=
- =?us-ascii?Q?3ALXNwdA8SKLlqKKkxD/8LIujuq3djrZregXXAyEQ2a43HSqlT1lIjQsu++q?=
- =?us-ascii?Q?vzrZVvUiSRpqtCSI7cIGcX/CW0U1USyJjNXTnYPw4kUpY00I2kqIO/uxKD/X?=
- =?us-ascii?Q?xOD3Inf0BODPO/rejT7dguBpdiw7F/YSwOmzbQcruQBIe5u5IS3Z3Ii5Gm78?=
- =?us-ascii?Q?YvDPgP6zd47Umc1+x9DRc/PYjvSK20eO1u7DpxgztFTMYvH2LFaygyzuQGQ1?=
- =?us-ascii?Q?wZUJ2bbguzI6lDiRvb1fhed1O2Pjb2En3Mc1/fn81CCIo5aRDqkga7RnorXJ?=
- =?us-ascii?Q?f3KzHZX/CKxvrQgLDBzFgTWDM8v0yNqmwClpYQ1EFBB76f1L2fNJS48A8mq3?=
- =?us-ascii?Q?PrgAHsc93qE1BaH1WdVknOn/wKWu0eauLXxYI7C0piFSdNUNZ9fBebHil2D1?=
- =?us-ascii?Q?hbW4x5x2xVDETXHlJ4HobcH5UKDxec65W0oSwW8tYBM5TrF5l47LE7VY/6Ju?=
- =?us-ascii?Q?vkXSakBLROpHwR85TirqYNhj6ARQ5ThVEjrBfjmRGDzwwmMegCCxNGQjt31B?=
- =?us-ascii?Q?9hBvIqf+0KI0ahnOGdhawYbk5LtMlmdLO4wOgwyutHIDR+dYuJizOk1WxUYk?=
- =?us-ascii?Q?MmVee0YX76tDg0qO2Y2/FlkowJA0kJdYjNVKuIcrfh8+DDwl59ntNqAgNOSH?=
- =?us-ascii?Q?4o1Hx+bLpYAqhsg0NqqrzZtQgnBnaxQYfsYcdyJwIyZGgI/yev/deJxfbaPm?=
- =?us-ascii?Q?Hb3UfjMFXNIxpouBuBfoXO0Hk9t+gyRj22Jp7F2yhWbKu4HrHvWZ3SXfPv11?=
- =?us-ascii?Q?XZkP2HOVmbT7mdSqxqcFrWSDd2VlAywqi9ewJ0gQTipuykBzYjEC66cLWEUw?=
- =?us-ascii?Q?47Tw+CKkCfShmIMFDCl0RqjSj2Ogl3pmzcxgbZ9m?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: db89820b-0b47-49e7-eaa6-08da8018c489
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 06:21:49.3164
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eJXvVF9U5rbG8jjrsM8RaM/I0yXuQ/GWRkFaPH4b/GcL7fVZYk235eKJmyknzhwpPP3btL/rIBekVMKW0UP+pw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4002
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.12.0
+Subject: Re: [PATCH V5 4/6] vDPA: !FEATURES_OK should not block querying
+ device config space
+Content-Language: en-US
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, parav@nvidia.com, xieyongji@bytedance.com,
+        gautam.dawar@amd.com, jasowang@redhat.com
+References: <20220812104500.163625-1-lingshan.zhu@intel.com>
+ <20220812104500.163625-5-lingshan.zhu@intel.com>
+ <e99e6d81-d7d5-e1ff-08e0-c22581c1329a@oracle.com>
+ <f2864c96-cddd-129e-7dd8-a3743fe7e0d0@intel.com>
+ <2cbec85b-58f6-626f-df4a-cb1bb418fec1@oracle.com>
+ <a488a17a-b716-52aa-cc31-2e51f8f972d2@intel.com>
+ <20220817021324-mutt-send-email-mst@kernel.org>
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <20220817021324-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 09:51:32AM +0200, netdev@kapio-technology.com wrote:
-> On 2022-08-10 09:21, Ido Schimmel wrote:
-> > > >
-> > > > 1. It discards packets with matching DMAC, regardless of ingress port. I
-> > > > read the document [1] you linked to in a different reply and could not
-> > > > find anything against this approach, so this might be fine or at least
-> > > > not very significant.
-> > > >
-> > > > Note that this means that "locked" entries need to be notified to device
-> > > > drivers so that they will install a matching entry in the HW FDB.
-> > > 
-> 
-> I just want to be completely sure as what should be done in version 5 with
-> locked entries from the bridge, as - if I should implement it so that they
-> are sent to all the drivers, and the drivers then ignore them if they don't
-> need to take action? (for the mv88e6xxx driver, it does not need them and
-> can ignore but other drivers might need.)
 
-Yes, I think that would be best. At least when mlxsw starts supporting
-MAB it will need to program the locked entry as an FDB with discard
-action.
 
-To be clear, I'm aware that all drivers other than mv88e6xxx currently
-forbid a port from being locked, making it unlikely that they will
-receive such notifications, but if you do it now then we will not need
-more changes in the bridge when other drivers gain support for
-802.1X/MAB.
+On 8/17/2022 2:14 PM, Michael S. Tsirkin wrote:
+> On Wed, Aug 17, 2022 at 10:11:36AM +0800, Zhu, Lingshan wrote:
+>>
+>> On 8/17/2022 6:48 AM, Si-Wei Liu wrote:
+>>
+>>
+>>
+>>      On 8/16/2022 1:29 AM, Zhu, Lingshan wrote:
+>>
+>>
+>>
+>>          On 8/16/2022 3:41 PM, Si-Wei Liu wrote:
+>>
+>>              Hi Michael,
+>>
+>>              I just noticed this patch got pulled to linux-next prematurely
+>>              without getting consensus on code review, am not sure why. Hope it
+>>              was just an oversight.
+>>
+>>              Unfortunately this introduced functionality regression to at least
+>>              two cases so far as I see:
+>>
+>>              1. (bogus) VDPA_ATTR_DEV_NEGOTIATED_FEATURES are inadvertently
+>>              exposed and displayed in "vdpa dev config show" before feature
+>>              negotiation is done. Noted the corresponding features name shown in
+>>              vdpa tool is called "negotiated_features" rather than
+>>              "driver_features". I see in no way the intended change of the patch
+>>              should break this user level expectation regardless of any spec
+>>              requirement. Do you agree on this point?
+>>
+>>          I will post a patch for iptour2, doing:
+>>          1) if iprout2 does not get driver_features from the kernel, then don't
+>>          show negotiated features in the command output
+>>
+>>      This won't work as the vdpa userspace tool won't know *when* features are
+>>      negotiated. There's no guarantee in the kernel to assume 0 will be returned
+>>      from vendor driver during negotiation. On the other hand, with the supposed
+>>      change, userspace can't tell if there's really none of features negotiated,
+>>      or the feature negotiation is over. Before the change the userspace either
+>>      gets all the attributes when feature negotiation is over, or it gets
+>>      nothing when it's ongoing, so there was a distinction.This expectation of
+>>      what "negotiated_features" represents is established from day one, I see no
+>>      reason the intended kernel change to show other attributes should break
+>>      userspace behavior and user's expectation.
+>>
+>> User space can only read valid *driver_features* after the features negotiation
+>> is done, *device_features* does not require the negotiation.
+>>
+>> If you want to prevent random values read from driver_features, here I propose
+>> a fix: only read driver_features when the negotiation is done, this means to
+>> check (status & VIRTIO_CONFIG_S_FEATURES_OK) before reading the
+>> driver_features.
+>> Sounds good?
+>>
+>> @MST, if this is OK, I can include this change in my next version patch series.
+>>
+>> Thanks,
+>> Zhu Lingshan
+> Sorry I don't get it. Is there going to be a new version? Do you want me
+> to revert this one and then apply a new one? It's ok if yes.
+Not a new version, it is a new patch, though I still didn't get the race 
+condition, but I believe it
+is reasonable to block reading the *driver_features* before FEATURES_OK.
+
+So, I added code to check whether _FEATURES_OK is set:
+
+  861         /* only read driver features after the feature negotiation 
+is done */
+  862         status = vdev->config->get_status(vdev);
+  863         if (status & VIRTIO_CONFIG_S_FEATURES_OK) {
+  864                 features_driver = 
+vdev->config->get_driver_features(vdev);
+  865                 if (nla_put_u64_64bit(msg, 
+VDPA_ATTR_DEV_NEGOTIATED_FEATURES, features_driver,
+  866                                       VDPA_ATTR_PAD))
+  867                 return -EMSGSIZE;
+  868         }
+
+If this solution looks good, I will add this patch in my V2 series.
+
+Thanks
+Zhu Lingshan
+
+>
+>
+>>          2) process and decoding the device features.
+>>
+>>
+>>              2. There was also another implicit assumption that is broken by
+>>              this patch. There could be a vdpa tool query of config via
+>>              vdpa_dev_net_config_fill()->vdpa_get_config_unlocked() that races
+>>              with the first vdpa_set_features() call from VMM e.g. QEMU. Since
+>>              the S_FEATURES_OK blocking condition is removed, if the vdpa tool
+>>              query occurs earlier than the first set_driver_features() call from
+>>              VMM, the following code will treat the guest as legacy and then
+>>              trigger an erroneous vdpa_set_features_unlocked(... , 0) call to
+>>              the vdpa driver:
+>>
+>>               374         /*
+>>               375          * Config accesses aren't supposed to trigger before
+>>              features are set.
+>>               376          * If it does happen we assume a legacy guest.
+>>               377          */
+>>               378         if (!vdev->features_valid)
+>>               379                 vdpa_set_features_unlocked(vdev, 0);
+>>               380         ops->get_config(vdev, offset, buf, len);
+>>
+>>              Depending on vendor driver's implementation, L380 may either return
+>>              invalid config data (or invalid endianness if on BE) or only config
+>>              fields that are valid in legacy layout. What's more severe is that,
+>>              vdpa tool query in theory shouldn't affect feature negotiation at
+>>              all by making confusing calls to the device, but now it is possible
+>>              with the patch. Fixing this would require more delicate work on the
+>>              other paths involving the cf_lock reader/write semaphore.
+>>
+>>              Not sure what you plan to do next, post the fixes for both issues
+>>              and get the community review? Or simply revert the patch in
+>>              question? Let us know.
+>>
+>>          The spec says:
+>>          The device MUST allow reading of any device-specific configuration
+>>          field before FEATURES_OK is set by
+>>          the driver. This includes fields which are conditional on feature bits,
+>>          as long as those feature bits are offered
+>>          by the device.
+>>
+>>          so whether FEATURES_OK should not block reading the device config
+>>          space. vdpa_get_config_unlocked() will read the features, I don't know
+>>          why it has a comment:
+>>                  /*
+>>                   * Config accesses aren't supposed to trigger before features
+>>          are set.
+>>                   * If it does happen we assume a legacy guest.
+>>                   */
+>>
+>>          This conflicts with the spec.
+>>
+>>          vdpa_get_config_unlocked() checks vdev->features_valid, if not valid,
+>>          it will set the drivers_features 0, I think this intends to prevent
+>>          reading random driver_features. This function does not hold any locks,
+>>          and didn't change anything.
+>>
+>>          So what is the race?
+>>     
+>>      You'll see the race if you keep 'vdpa dev config show ...' running in a
+>>      tight loop while launching a VM with the vDPA device under query.
+>>
+>>      -Siwei
+>>
+>>
+>>
+>>         
+>>          Thanks
+>>
+>>         
+>>
+>>              Thanks,
+>>              -Siwei
+>>
+>>
+>>              On 8/12/2022 3:44 AM, Zhu Lingshan wrote:
+>>
+>>                  Users may want to query the config space of a vDPA device,
+>>                  to choose a appropriate one for a certain guest. This means the
+>>                  users need to read the config space before FEATURES_OK, and
+>>                  the existence of config space contents does not depend on
+>>                  FEATURES_OK.
+>>
+>>                  The spec says:
+>>                  The device MUST allow reading of any device-specific
+>>                  configuration
+>>                  field before FEATURES_OK is set by the driver. This includes
+>>                  fields which are conditional on feature bits, as long as those
+>>                  feature bits are offered by the device.
+>>
+>>                  Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
+>>                  ---
+>>                    drivers/vdpa/vdpa.c | 8 --------
+>>                    1 file changed, 8 deletions(-)
+>>
+>>                  diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+>>                  index 6eb3d972d802..bf312d9c59ab 100644
+>>                  --- a/drivers/vdpa/vdpa.c
+>>                  +++ b/drivers/vdpa/vdpa.c
+>>                  @@ -855,17 +855,9 @@ vdpa_dev_config_fill(struct vdpa_device
+>>                  *vdev, struct sk_buff *msg, u32 portid,
+>>                    {
+>>                        u32 device_id;
+>>                        void *hdr;
+>>                  -    u8 status;
+>>                        int err;
+>>                          down_read(&vdev->cf_lock);
+>>                  -    status = vdev->config->get_status(vdev);
+>>                  -    if (!(status & VIRTIO_CONFIG_S_FEATURES_OK)) {
+>>                  -        NL_SET_ERR_MSG_MOD(extack, "Features negotiation not
+>>                  completed");
+>>                  -        err = -EAGAIN;
+>>                  -        goto out;
+>>                  -    }
+>>                  -
+>>                        hdr = genlmsg_put(msg, portid, seq, &vdpa_nl_family,
+>>                  flags,
+>>                                  VDPA_CMD_DEV_CONFIG_GET);
+>>                        if (!hdr) {
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+>>
+
