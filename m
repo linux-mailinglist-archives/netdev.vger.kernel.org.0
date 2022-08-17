@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 801CF597776
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D2459776B
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 22:11:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241640AbiHQUIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 16:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53406 "EHLO
+        id S240997AbiHQUJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 16:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241725AbiHQUIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:08:05 -0400
+        with ESMTP id S241590AbiHQUIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 16:08:20 -0400
 Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D392A8302;
-        Wed, 17 Aug 2022 13:07:57 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id b142so8513264iof.10;
-        Wed, 17 Aug 2022 13:07:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1FBE1025;
+        Wed, 17 Aug 2022 13:08:19 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id q74so7380686iod.9;
+        Wed, 17 Aug 2022 13:08:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=RPBe8i5t9YkFakRKumgcWRqJOP8cLatXe+PCl+sDINk=;
-        b=Yqmtuq3oHwQ7GENInJRLA2NVz3QyU6Bi5/3j6LXsfNmoed7E0iRHgH9SXxVfAhP6Ja
-         8MEwJJK/bAsZHhZtaSVFCrPO1tzlESZj8Siq4vfOonWmLfkeDj7O+I/1a+mAX/PT5L0L
-         fT6WRnoI0B3cf72w5NqrGvas12QXiP2Zbf1u+WZ3mlGp6saj2D2UHQ8pudZDbk3hIiGm
-         SU+38mlFlYnU5DwaJPYYKP9L6SQEk6FrT1ivx+bB1b9/bCemqTxvYQsafuQLnjpvQqZw
-         mqahIx4ZuYCWO8OJPTJoKJgTljss0aYZV/11FtU4CnkqtTvmJ1ajtRW5393lcSZUs64u
-         XTpw==
+        bh=JCgNCnBmoMTmDvvCiS4lXyw582xnOmRe3hBk8pGv54A=;
+        b=Jw3DxXzUB1rR7pOYgySvosGI70W3Z4JpmQOZUAIlOMR2rfMjlBBAT9xnsrQus8QDCy
+         hK6SCOF8Ki+W1NDTasXIFK1Jtp0xOfSTpnxpfLtNePSjMgmBUTHFeNZqo6rGAjMKpEv5
+         T2DN0lvCgmWG9YxPuEyOkSUs5Oj9/eMsdUSZWW2fpCWmDBGrwM/TrRH6JQtHyLsejUzl
+         2CQnXHIWutGaeP2TyqfMbPjlhxMs6FOOwDGxgcXKEBj/ccRrVcFv77rMOpzBTtsCjpD7
+         qSn8SzOTtCbMsnlET3H9dDgnli69SBpxNqhghAnfgqokaQyypoR4dx4mFzNh8rw4mtnN
+         baZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=RPBe8i5t9YkFakRKumgcWRqJOP8cLatXe+PCl+sDINk=;
-        b=DqJ1VluIRT0gxMEXp8RoMRSpLo2fVMywHCaeTmwfb4K8JPzDQjeKOte54pKJfXlp8z
-         ZoaOQJn2YkMqN8SumbGi8Bkjc1PcvcMQ61VMgBhHbyXo1jcZ6Vc/Xwunj58sMQvyHl2L
-         r9Pz7T+fZwo948yhw6US3dLP0bjaBXalpA0VsRskxX5MIhi4o1mwjchGbatw6oljq4Q7
-         Jzhk+Ua3/NroyWUoNzji04RowywPYe8Rz8Fqp6BZaqIGy7qgb8bBAK9lV7+n/g1ihHY0
-         rUEscvqC103DaCuJQmB0u5Y8ldIA5Hzh8n1mZXT2QxBSaiCr4wq2CKFwlt7ChJJLg5Jm
-         PyEQ==
-X-Gm-Message-State: ACgBeo358BGrC0bzMYU/QX+5ywhh6m8XIiJtgkHuSu0CaQolGW6p7OyG
-        +0qf7/7hdphDj42PYqyOv+QFQxwc+OxNEYa5PL8=
-X-Google-Smtp-Source: AA6agR5D/kwF9stJjFFWI6o/HfMzkp9F9fpq74Lp1raW33ZdL3BcDbxG5oEwa8Av42aaTNMuMUQUPgMe516EGipkNKQ=
-X-Received: by 2002:a6b:2ac4:0:b0:688:3a14:2002 with SMTP id
- q187-20020a6b2ac4000000b006883a142002mr7225597ioq.62.1660766876361; Wed, 17
- Aug 2022 13:07:56 -0700 (PDT)
+        bh=JCgNCnBmoMTmDvvCiS4lXyw582xnOmRe3hBk8pGv54A=;
+        b=sNGeACltLTtiqw9uL2s8aCOdsVcwcfC7WS/W/GnpwtLOIg1WMSeziy0OrOcyu/xddd
+         XCpYh5iCWbnzidyaQk+CcNgVeR2s81FojVilRWYn36sMzvBmUQOXhz25d+3zDISyUiXy
+         StlXXbs7sCNdymwLIAb4WM0O0JFuHNBKBnwD1Czr4MZLZkm+2G8/g4GBdIl3oyEohZk2
+         iHrxwI7EsLmjV+v5nb/6XJtk2n53/WIGJfgnkVJXUjFbWbWXmtOLy89ghec0iXjxesrf
+         LUBq20YWhxIr9KP1bUgOmsWBZhNIHHUozlOQSwIjjdPE+fMFzj2+OTLrTcwrJXEnnDTX
+         fIMg==
+X-Gm-Message-State: ACgBeo3DAglrqwg8OFrO6hffTuedU84SqAzzW3I7tP3AUnFacjqvSu2+
+        lb/Ku1ec2lvTaD5hYHct2kazewswgMcsPrAz9QI=
+X-Google-Smtp-Source: AA6agR4Z9yJ9LvneZHFRhrCvN4J6stu2Qk3WYhEcKR4FDLl5XM5VN3tFVf4DBBjoVdEEMKKhv/6zN3seiz3wtZMGCcM=
+X-Received: by 2002:a05:6602:150c:b0:67c:149b:a349 with SMTP id
+ g12-20020a056602150c00b0067c149ba349mr11920881iow.168.1660766899208; Wed, 17
+ Aug 2022 13:08:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1660761470.git.dxu@dxuuu.xyz> <3268db8bc504f4118e1baee5e49f917f0e2767fa.1660761470.git.dxu@dxuuu.xyz>
-In-Reply-To: <3268db8bc504f4118e1baee5e49f917f0e2767fa.1660761470.git.dxu@dxuuu.xyz>
+References: <cover.1660761470.git.dxu@dxuuu.xyz> <3a707dd1ec4a2441425a8882072c69ffb774ed4d.1660761470.git.dxu@dxuuu.xyz>
+In-Reply-To: <3a707dd1ec4a2441425a8882072c69ffb774ed4d.1660761470.git.dxu@dxuuu.xyz>
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Wed, 17 Aug 2022 22:07:20 +0200
-Message-ID: <CAP01T74Sgn354dXGiFWFryu4vg+o8b9s9La1d9zEbC4LGvH4qg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/4] bpf: Remove duplicate PTR_TO_BTF_ID RO check
+Date:   Wed, 17 Aug 2022 22:07:43 +0200
+Message-ID: <CAP01T76-nocaXY9B28a6cvwLY_3irFyOTF8xgoV9ZdcChj4T+A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 2/4] bpf: Add stub for btf_struct_access()
 To:     Daniel Xu <dxu@dxuuu.xyz>
 Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
@@ -69,29 +69,7 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, 17 Aug 2022 at 20:43, Daniel Xu <dxu@dxuuu.xyz> wrote:
 >
-> Since commit 27ae7997a661 ("bpf: Introduce BPF_PROG_TYPE_STRUCT_OPS")
-> there has existed bpf_verifier_ops:btf_struct_access. When
-> btf_struct_access is _unset_ for a prog type, the verifier runs the
-> default implementation, which is to enforce read only:
->
->         if (env->ops->btf_struct_access) {
->                 [...]
->         } else {
->                 if (atype != BPF_READ) {
->                         verbose(env, "only read is supported\n");
->                         return -EACCES;
->                 }
->
->                 [...]
->         }
->
-> When btf_struct_access is _set_, the expectation is that
-> btf_struct_access has full control over accesses, including if writes
-> are allowed.
->
-> Rather than carve out an exception for each prog type that may write to
-> BTF ptrs, delete the redundant check and give full control to
-> btf_struct_access.
+> Add corresponding unimplemented stub for when CONFIG_BPF_SYSCALL=n
 >
 > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 > ---
