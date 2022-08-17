@@ -2,154 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 16CF25971A9
-	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:46:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B6005971A5
+	for <lists+netdev@lfdr.de>; Wed, 17 Aug 2022 16:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240304AbiHQOiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 10:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38242 "EHLO
+        id S240274AbiHQOnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 10:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240278AbiHQOhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:37:38 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2074.outbound.protection.outlook.com [40.107.92.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430759C1E0;
-        Wed, 17 Aug 2022 07:37:03 -0700 (PDT)
+        with ESMTP id S240064AbiHQOnR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 10:43:17 -0400
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam07on2068.outbound.protection.outlook.com [40.107.212.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 526AEB0C
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 07:43:14 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOdRtnICa+P3uRyNUaMVCz7ocKwyevcDR+j7zQah+gBxrDtxl2Q9TqqhgZtqnpP14LPjEwpf8hqKZwRSzjtcIkmurMeU/W+JAdeTD/JLzU7Htj1ylM8uSCZOy+B/gX2zAQtoRPwU2+Go/HOaAsJaXomG3AUsZsRReVV/EIqIFYOEvcERkDrCjiXTAbYFxun1yW2COw0SPzSfdPYlxvZx2Bn050RLGD/mpJkMoFidgWJe1U7luEVUiV1QNpg0aJ/c6/V2O3sPahIqDrrO5gupKlLgsKlfQXyX7m5KpRndIjWrX+nVoguGBU0g8od3Gd7Ffl0gQEHpScYzDDfPIXVHJw==
+ b=bI91XXGRoijfgkhhZxfyP4qz+YVkQ1IAIpI0uSuRCHLTNYqQzWh5xKxkxZebnhkG6VWkU2/4QOUxxI9wUeqeo6rgBPrpVIjA6AN9eYBYMqE5B6wGKiLG1pKsrWLLsXsbrLbgbwA5aJAz+Dtv43tEC/DBf//JFPL0cKXbf2/AFDBuzgiIQKXZ69sGb+89tCxlxerMz1xScdoj66Hizqz029QwVBXoCTcBe1hfAIHdK/tHPxRXr+SLvUInYB+jeV75MwyvVrr5G7N8mEHTkZHjS5z10DKRt4AY05RVCEf7Pzd5/an1Q+a6sJLvpL/HPhxGv0JhK0h4/+9zvdBuVdrOrA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5zZA7Bv+h8EsWM/tjV8dnRR1iuNXUURUDPqlaIALA7I=;
- b=JC7VJbI2P0ZuJSOx+KjEDU6WH17OrdditARl+vPpG64o96W2M0Xcd8eqD9PJnvbQae0KwkwaVx2Qv50V9gf3UDawCxAd7xogWEHZDz8ZQC6bqWVIhW3GRHWRbhWy6S/rwH/AULj5xUGKGtJl4hOie0zIuVEsE8mPA3oqg1dflPL5ez+Gt5GSS2ku9yIhD99JSt39qMM1mAEFEY0EsKn15LAiKnV5XN1IHGnNvSABg/1pHhmoNvTB6AIvp+dmlzXQC63lreAGBnPYnmeTpW2y9Og9a3UVNrcnx99CceWCzRcNjhPm8Om2GvxtK2vIvMWhQ1ckX1+WhQ0y2d1liuB1/Q==
+ bh=J6n9rsDtTjphDpGW8ET+i6x9z7f2sD03j9DNLAH7b4Q=;
+ b=kbn3+nDVbUXIbrvz3b+CgT2QpJnwr9XAb35VauvtQZQ7NFs5G154q70zSjcdSl7IKuQ9dUoTRz6ErfBb7wV6+JkgqpzGINCd4nHTJBMoDnlNGMisX4ZZ5X5K1awE2wREuNP3m9BTQGrymzODPeCCRskB8pvnXpzzdPYoXL9GiHPwjCJC5+D8sa8l17CqXozLIEt+ZGp3aCQ1SFA80jRQkrCUFE+gnK3grrAtRU/3c6cTCT3iImlc4zK4D3AWATve26iZqHT48QkYUVyjrE5ni48djjKAphgqssJmlvtpEROtp3ujzZi5L4ZCAh6xQGQ1LyUZOExzaNAY2FR6U94A1A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5zZA7Bv+h8EsWM/tjV8dnRR1iuNXUURUDPqlaIALA7I=;
- b=OEhZWZgOsLCYjKf0ZfknD2I13VIikkoSWK5H+zmkNhGoTQJSPZE+Abm0NtzCiUISaroAGg3N5RKUNKEgtBPPT1sNTVPglrWZhxJ9wzY7pwXHKxSOdMctGsPXkyzpsDntKu0vGXzv5BWKYFip9DgWdYIsoy643KbNhF1fzEesupCm+QoDAeRG2qRsnWu9bLcm1t3KK+heOf+IqNgea9ztLRWEtC/thdfep9NLLaa2fMJBaLfibSTLsmpmbyX/Z9qQRVtFQ+5NbJ6UHq4rMyjW8wB2VOJsHNlGdZ61T1nKQOkEOvHRRJiNqibfJ/u7U1AWZOcDazRFF7vtDsEwZB1+Sg==
+ bh=J6n9rsDtTjphDpGW8ET+i6x9z7f2sD03j9DNLAH7b4Q=;
+ b=ezfmJe5Lq+y/tbX9N21jsElCOv2/iN0wUQlRjRZKJ1HWjeOWrW2aSU0+P3YEi+RUekWqdEc5xRlT5xDRzCPyUYBpELKOqBm2t6wnMdEBCv2LXEXwz28NN19HZClwCfvAoRijl3Q51k1bHxhHDGglVVEOHArVtARtPFsdeTjoSZxHFlfCipduNAX5IvG+QWaYK3XA+rj7M75/uSnZOR3Ds7b3msPCbYgmUM5eT1/RovniXJYDDelPZCpewCH5ApW+8ngv+rZPLidqoZKC1QkQB38XeM4Xl0NhlaqhgY3c3/PQHIyJkcMb9s4Cd9YDP3kcG/Twv/ujuTLDPm4hUMng+Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
- by MN2PR12MB4320.namprd12.prod.outlook.com (2603:10b6:208:15f::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.19; Wed, 17 Aug
- 2022 14:37:01 +0000
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5504.027; Wed, 17 Aug 2022
- 14:37:01 +0000
-Date:   Wed, 17 Aug 2022 17:36:56 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vadimp@mellanox.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vadimp@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH v3 2/2] Revert "mlxsw: core: Add the hottest thermal zone
- detection"
-Message-ID: <Yvz9CIelQSbGuqCg@shredder>
-References: <20220817130227.2268127-1-daniel.lezcano@linaro.org>
- <20220817130227.2268127-2-daniel.lezcano@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817130227.2268127-2-daniel.lezcano@linaro.org>
-X-ClientProxiedBy: VI1PR09CA0089.eurprd09.prod.outlook.com
- (2603:10a6:802:29::33) To IA1PR12MB6163.namprd12.prod.outlook.com
- (2603:10b6:208:3e9::22)
+Received: from DM5PR12MB1307.namprd12.prod.outlook.com (2603:10b6:3:79::21) by
+ CY4PR12MB1141.namprd12.prod.outlook.com (2603:10b6:903:44::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5525.19; Wed, 17 Aug 2022 14:43:11 +0000
+Received: from DM5PR12MB1307.namprd12.prod.outlook.com
+ ([fe80::a46b:2fd0:ed07:ed7e]) by DM5PR12MB1307.namprd12.prod.outlook.com
+ ([fe80::a46b:2fd0:ed07:ed7e%3]) with mapi id 15.20.5525.019; Wed, 17 Aug 2022
+ 14:43:11 +0000
+Message-ID: <d45b0b59-485b-9fa5-b328-1a7991653b75@nvidia.com>
+Date:   Wed, 17 Aug 2022 17:43:04 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+From:   Oz Shlomo <ozsh@nvidia.com>
+Subject: Re: [ RFC net-next 2/3] net: flow_offload: add action stats api
+To:     Edward Cree <ecree.xilinx@gmail.com>, netdev@vger.kernel.org
+Cc:     Jiri Pirko <jiri@nvidia.com>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Vlad Buslov <vladbu@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, Roi Dayan <roid@nvidia.com>
+References: <20220816092338.12613-1-ozsh@nvidia.com>
+ <20220816092338.12613-3-ozsh@nvidia.com>
+ <8415607a-04b2-1640-1c01-5d2f94330917@gmail.com>
+Content-Language: en-US
+In-Reply-To: <8415607a-04b2-1640-1c01-5d2f94330917@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR07CA0207.eurprd07.prod.outlook.com
+ (2603:10a6:802:3f::31) To DM5PR12MB1307.namprd12.prod.outlook.com
+ (2603:10b6:3:79::21)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 323e8a9f-98f5-44db-1b3a-08da805df27f
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4320:EE_
+X-MS-Office365-Filtering-Correlation-Id: e53d236e-64db-4ca1-1069-08da805eceef
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1141:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TIXy/4W3KNIUyJeelIrmBWwMKmC6SpC14Xq+LlSdP18mxrhIi+l5wUF06scAIBOhl9nrRqVVDk0ITBMpNWrX5OkKve0S5Ji4XdNAeUjcJ/Ioc1ZYihdcLOj8MIfpT4J04+edPSEKjIV0pxqE5CBHaAHMjvnghc2g0KxL9531WCxWxd0RscuhNdedxonddyR/Bh8zcDUS6PuELTgqUEZVH2mv5SvM9AeGZ+C3uCcW2dK9AOpkDotTbe8s+SxHxXz2/S2GLZ+YCy8WOd1rqLrXNvZP5SM6RcXIpZLr9Cj6MdbopKnFgBOGipKAyaoC3wrCGtdlT5szXFO5Iz/xDdci4Pp0htHCAUFusvk0rpPwIY5qjy1jmXEL5xoa4FYkmmQxm8NFakQbtRdZBiHFSf3bUrGpnJjZgm88MVwktoh1TPORImCfr/ZdK7SpjNOLv0IA7Bcdsj1UCov+UW+4ogpIL11hrmqrHyQkQkZeZR9WHkDPOt7Xj5U9V7Mw7NlmrmhPmEvLwhE6pBHQqKEHO4qhJilWJHti7cBdN96i8l55Bfvc3yocRNQI8Xbx5Z9AHpIbegl4E7XTt1WaIqaNKHdvPTU9gEn71ivjnq++JsMklYm57IACaK861TYAccGoPTTMuEB1y2wmWH6pdXQ5+7oLDxM33dg2XVxqGCaTt+sKPmqjfSUOSa1NYOcqNs1MHhGj4dpfJ7Ulbad+wBBcdwM9X6U++tdIH2u17cU8DTKWnGnRugYgAQ88Uavqwq8MRL/C
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(39860400002)(136003)(366004)(396003)(376002)(346002)(9686003)(6512007)(6506007)(26005)(86362001)(186003)(33716001)(38100700002)(83380400001)(5660300002)(4744005)(478600001)(6486002)(66946007)(8936002)(41300700001)(8676002)(4326008)(66476007)(66556008)(2906002)(6666004)(6916009)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?a213aVh4Uk1BOWlsN3FDMkhSU0I2Q094c3Vyb2xNVk1WZGthKzJFQ1B5WlF4?=
+ =?utf-8?B?NVEwWlNXeHJpM1ZYMkNBdFh1eFVFczNoMTVMaTdBamlBWXpnVXJwbHZJeWRH?=
+ =?utf-8?B?d2xLT0h1akRJdU81cFVDcEU2ZWZoQUlYaTQxVjJRTnJuaVR0RXBhWVY2TDBB?=
+ =?utf-8?B?M0ZGOG9udlRTdlllQUYzdnhhZ3VhMFk5S0FNOFMzdVdyL2FQT3oxSjRKU0Fo?=
+ =?utf-8?B?ZllOLzVmUUw3V3lOLzhEMjdHVzhzZ3lud2VGbGMzRGhhSXFCcCtCN0hpVXlI?=
+ =?utf-8?B?R05lVll0dDRuc3A2ZFcva1dNRkFORHJMY00vV2ZneEJMU3JDQ1AwKzY2ZXpX?=
+ =?utf-8?B?WnFXV0Vxa2xodFc5TXcwNElra1ZQd2xnd01HTHB5WFM0eVl1eHU3UXBVNVk3?=
+ =?utf-8?B?UjlvQzV1bGIwS09XWmZkRFcwUUZpSEZzWW10bTZhNitRbDFwaGRUMk9BalJi?=
+ =?utf-8?B?bjhiM2JJNmhDK29rcUdSNzN4UDVVQU1qV0wwamgxcFpOUTBtRjlhNEt2anhN?=
+ =?utf-8?B?MGJTTDZ4TmV1b2NVSHpaa3hkRDh2elRrQTNUU1VNamUzK0xSWk9qdVUvdU93?=
+ =?utf-8?B?bi9DLzgvaGJYUWtPai9mWmRkRHpUQUltekpzekprdXhpcTlQSUJGNVptM1dF?=
+ =?utf-8?B?bDlTNDV5SzhITXM5a3hENTBvVkcvU2lSc2lJdTJRRmN2eW1jUWdVUGJUUzRT?=
+ =?utf-8?B?ejdnTmhWNzJOMWtNbTB5SmVDV29Pd0lWTFNyNHFOdUVVbjlkOUZJUU1uVzJ4?=
+ =?utf-8?B?WVVFYWdjWnppUzdLOXlZQXpSV1RzMkI3LzFPZ1EyTXBQZkxRRkJSd2ZBd29H?=
+ =?utf-8?B?RzluU2VZWjY5dTdXRkM1ZklBQStaazdOdit6Y1g4MVd0Y2FhVUhjMS90b2lS?=
+ =?utf-8?B?ZUkvNG5OUFhjQmR6dXBsTGg5c2dUbUtEc1JxWHVvcU0wZy9FcDdkbGg5QWpH?=
+ =?utf-8?B?VUQyOHFDWEc0NHJ3R2xoc1FpR3g3emswQVpudTZMdGNlOFAxRU84YUlmNlQr?=
+ =?utf-8?B?RWZ5MUFxdTFMT0Z2dHZwRmNLREEvQldBVTFpcXpwTE1PQkczV3ZXTCtWcitx?=
+ =?utf-8?B?aDM4NDBGMVNpR2R0VU5aQ2gwckZ3bFptZHlQNVlvaUZEZWp0Z3FWdnVwMDBj?=
+ =?utf-8?B?Yk92N2FMVndPQll0Qk91UzZPR0c5OUpyNmU1SzhqcVpNSEZTWm81L25nQ3py?=
+ =?utf-8?B?Vk9vZUVxaklGQ2p1UWwwUmlKU3pFK1lsanZwWHl1dHlqMHJkQXZZWTR4VU5i?=
+ =?utf-8?B?eDlkUnkreGh4NndTMk1FTFRYSkxmOGpXZ1l0KzN6THM3RjlxUT09?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR12MB1307.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(366004)(396003)(346002)(2616005)(186003)(107886003)(83380400001)(38100700002)(5660300002)(8936002)(4326008)(66946007)(66556008)(36756003)(8676002)(66476007)(2906002)(478600001)(6486002)(966005)(6666004)(6512007)(6506007)(53546011)(41300700001)(26005)(316002)(54906003)(31686004)(86362001)(31696002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?MrK/IqKt9wf5TOsYstctZvFNNGg43DlQt0IdGjiinsLfK2WrX5yQuhfcQoHc?=
- =?us-ascii?Q?UhFbTd9u4sQEY85uobO+HIObXqnM4VuXxpwCu8hprxzpg8nx7F2aX6d9G/aA?=
- =?us-ascii?Q?km1Sbg5jFQ0E/9Zd2Q/dc4cQ6II8seDVviQGa6qnAu8hv9xJHM828NmZSILu?=
- =?us-ascii?Q?m8JvZQwqzE9AVGsVKF5fmaHbm251KQyH/vBGArIQL+kGZNmjOJgqcPjBR7Xq?=
- =?us-ascii?Q?vLZXH221jiMg3a26x8Z14p3MYe27mRDoYtj45KVEZ7nUc02HOdpZ+qf+kEWD?=
- =?us-ascii?Q?nrud4GC+5oz2maf0+l7C8TA/KWcIvAxw1KWA8cE6tKX4Jf3b8AmtMii/ISUT?=
- =?us-ascii?Q?WfTfFCo26xSFDgpFgcOH0r8umNB8h8FcGBHsqnbJaFBQABW+mV+3BdC0Famz?=
- =?us-ascii?Q?7NPGpSU2PTtXk8AILamyOnKWF8+R9u08pC5UQqVO05hFEv4fPeDbtkY1w/lo?=
- =?us-ascii?Q?CoOOc3cr/oJ6tNCRxW9qc1TbvHQGgGxF6z7ZR97HHmaGNY5kFMrKIlVEaijH?=
- =?us-ascii?Q?1MsLJphIuU5IQEGKTmnE15Lqd98T5MwZGp/po1JmgOdaq4ousxnjsB0tHilR?=
- =?us-ascii?Q?DtfY4J5q//pCToVZImvdFvdSLEciNa+Q3uT4rzd/LVxGoh5sqeVEVdwpMksy?=
- =?us-ascii?Q?ujY5NV0sv3HPfTRh63XdlXGywC4QXqi48rJn+1bDuBL2pMQKjKpVrRU+a6Bu?=
- =?us-ascii?Q?dxjRxOUzdVArnJJc8pCjAkzmbyKTutmHQ0Te7EA+GV0kPOYaqbn6NPgeDoPM?=
- =?us-ascii?Q?AZwJnqwHRkujVZuj+1ortle7T1ZZ5EiZH+kAoQQI289N59HlaSfDqxYJsmdV?=
- =?us-ascii?Q?4q/8JiyihR191oy8s/W3M8tv6gftmPK0K5t+geXag6uh3HGv8k9MP+tx4JGh?=
- =?us-ascii?Q?haVtCNFC+O19SBQietgDuJrDcPxYqSGHiOjr+G0kpDxwprb4wInINtF02YJB?=
- =?us-ascii?Q?AuiGKHG8XzYRXxS86oORN95gJ/3+OSEadwaXi1hlTJLdK4G36fFqCyItfrJJ?=
- =?us-ascii?Q?4TTA7nt3OHkLEyHSKgBLjfxA+AtTZyn6gOtnWK44dHWTHLfULrswebdqBdZf?=
- =?us-ascii?Q?yZZVLm6Rx+0ewkxHcz/3hAQeVrt8uIVo9ZrvtNYYteXF70tBMU1h7/rpm1lg?=
- =?us-ascii?Q?3SNX4EztphuzIaA/0ggKXHdPiWsozwVRK7PnEAR1lIT2n8CO8MPmq+MsbIYa?=
- =?us-ascii?Q?Y5pqb5JuNgrD8B0dA9Mjwm0cKsSPtB8BwTMEnTICzQPnSafxr0p6UG5ai3bP?=
- =?us-ascii?Q?AWVKphpDRzn4StoFD0wyrv3xy/vsSbWjw+rUI0lUnY7fUJ7VLhsQ5PXQqwBh?=
- =?us-ascii?Q?O30reS/v6zJy8S0bsuR6JfsVT/Al8mJZcGqOTsmVKeh6X2zGwaTtRn6E5gZv?=
- =?us-ascii?Q?M4WS/BhKbBRrXQ9m4DqYoRYTliUJV4H0t+7fJaoRz/nH6V5uack6PJdOoMGH?=
- =?us-ascii?Q?bTDXAy8zrFI1UrHW+4PTP8+r+M9lKWdq55GMo1shgzaRW12P69aIb8G5xluA?=
- =?us-ascii?Q?bJ+NEDDoGIrqzVqgOP5rBCZRzPHn5TuYfxWivipofuLaOk6VjvB3cBOHjXxp?=
- =?us-ascii?Q?DqxfAEJ/AqE/0BtLVfrBon2edOW6R/Hhg7n/be6s?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TUFIeC9GNnhJN0pWZTBvTFNJK1QwanFSUU5ta3FCamRFWUZReXFJV010aS91?=
+ =?utf-8?B?T3RDb0hWa3ZSSTJVSmg3anVwTnFKcEtIOVVrLzFhUkcxK1hJd1F0ZkNEK20x?=
+ =?utf-8?B?a1ptaDdRbndDU3MyR1dKdVd5SnRkSWF5M1gvdUpFbC9OYjMzeEs3RnpKditk?=
+ =?utf-8?B?OWVCSzdOdWxBK2NpV2k0UWwremJpaVhsQ3VVUGdZaG5WRitIM3lMckNJRUZT?=
+ =?utf-8?B?SmlKSExkTnk4Sko2V3F0UXlOR1hwRXYyeXdoU1hIaGIxekpya3BYZlFNaVZP?=
+ =?utf-8?B?UHNKekhVS3RLeVZCdWRWVzh0S3NjWktyYVRpNUJEWlIvSmtmTUpYODRQRWxQ?=
+ =?utf-8?B?MWtzTlBKaEk0NC81anlMUkxwcG9pR2V0TU1HcldCVTFoV1hnTk15OU9ZWmc4?=
+ =?utf-8?B?bEw5L2RwM0UzNVRhS1JQY3Rlb0NQSVErNTg4bzJYb2JRN1k4c2xPZFkxR00w?=
+ =?utf-8?B?S1luVk1tanR3blV4N3JvTDVDU1Y0N0t5K3dGZkNmalJXSGZLVDRPNnV2WVM1?=
+ =?utf-8?B?ZXhtdzNpUU5VYzdkWGZkUUhSaGMwSXdqaUZ3U0M1bGszSTVoVUVZQlNENGFs?=
+ =?utf-8?B?cW5YbHJkaHJiVjU2RXFlT0FrMXRPdmF3VGN6VmdueGtGM2NoTEFlbEtGU3Bn?=
+ =?utf-8?B?eGFjSGxNR2poSHRMa2RkZ0RMRzYwa2VyR09iVERqWHBaUG91MEJDTUl3b3Z2?=
+ =?utf-8?B?MkZnTWVwRmtRVGR0TU1BTkM3VExubnJrME1VTXd0aFJaOVQzTTRETnIrazY5?=
+ =?utf-8?B?ZFFha0xReGF1RnlLYm8rU0hHY2kwaTlkRUQ3Qis4QTNqOU5ZS1BYbS81OGtD?=
+ =?utf-8?B?TW9ZOTYxdjhRREZwRHlCWHBGQmUrMHorM3VEZzltRGFrMGl3b0IxeDZ0T2Y3?=
+ =?utf-8?B?Y1luQStxYUhLcllMU1JqQ3QycmEwQ3E4UFJXeWcxM1IxNkZhWHNBekxLdkVa?=
+ =?utf-8?B?ajBvZi9DZU93K1FpbXV2Tmh2bzd5T2dCZjNiYVBDWmNtNDJkOWt1V2RaT0xo?=
+ =?utf-8?B?cjUwTjE3NVMxcHBUdGhNcE5sSmZTdVlrUklaS2lOalNIYkhBbHk4YWNaWkJE?=
+ =?utf-8?B?bHJ0c0FwSFNZZE5Tb2JPT1VZS0Jrckw0RDM0SHYxTFNJQkdLSXAxcHc3c1Q1?=
+ =?utf-8?B?ODhFZnlpdUNhVkNmSUJVNzhDK2pndVhLaktlYWtyZmlnS1JIUjhVNEJ0RGRV?=
+ =?utf-8?B?SVFXV2pyNUpiS1dHUjR4bGdjUi91RnFSNXA4Tzc2MXhlWW5MeHZNcm1BK014?=
+ =?utf-8?B?UnpleXZiRGhSRy9lYXhEcFBQb0RMRWMzeXpiVm5QNUF6TTFvaGtSb0pZREhp?=
+ =?utf-8?B?c3FoVGdzcWI2VmtPM3FMQzJhV0lCUjlUYkVVVkczdlFUdHpLTERpbnFZNVJj?=
+ =?utf-8?B?S1ZMUW8zRW1HMHFlM0hOQk9tMDVzb1BvOEFzZ2ZjM1RIMkE5MkVnT3pGbGhn?=
+ =?utf-8?B?VzJONkxVbUt3S3JDWTJxcXRVSlBpQWh1YW40MXlJQjVGeHZldEtHaU5MNG94?=
+ =?utf-8?B?TkZXVjl3YXVHM05WM3cxY3FlMCtFYXpDVEQwemplaUZFVkRPLytRRDBnREN6?=
+ =?utf-8?B?Wk8yeWhXNVJNMG8vNWcydUZlaFpGU0tWTVdUenVURTJlN2hnQk1RWmgvczhk?=
+ =?utf-8?B?TjVWdWhIK3pPbU1ER2dmblgzbUZUL3VlbnZTUlhLS3pPeDNubWJ6djZTOEtK?=
+ =?utf-8?B?bkhXR0RLNmFoRG0yUzhjMTlrU1c0Q0ZhTkgvb3lvMml1a09XVEF1b2pVRkNY?=
+ =?utf-8?B?aUlEdmJyNkIyZTVZZUZ3aUtEeXlCY25OcHVWVm0rTDVrMjV4enkwbnlKVGVZ?=
+ =?utf-8?B?ZmhRL3NmUlBiblIwNGpPcE96dEJ4R3QwMXE1RVBmbk0vOU5OQmFpSjFhalFG?=
+ =?utf-8?B?UW1EVUtEUkNZcGNyY3h1bG5oR0pCS3JjOFAwWkt6enU4OE4wdm5aSW80SDRM?=
+ =?utf-8?B?NGwyQWJraVRGNTNVMTZvQXpVRnNlVnhqUkRSQWh0VlBIazBiUmxWdHB4ekl5?=
+ =?utf-8?B?a0lWenhDdG4zMWZCTGI0aDloR0xrYlJrai9EZ3JHWWxsYnpZNm1FRjVGenZS?=
+ =?utf-8?B?Y1h1dVlvK1g2VmZLem5iYUZDQ3crNFlkR09JamZUVk0reUhYOE5Ndlk3R2tN?=
+ =?utf-8?Q?x7ck=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 323e8a9f-98f5-44db-1b3a-08da805df27f
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e53d236e-64db-4ca1-1069-08da805eceef
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1307.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 14:37:01.6326
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2022 14:43:11.6057
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SmHH6xr8MsY3MWEu9M7dTX/3YXZ7GhweKcdjK/bo/GkZ0dY03uWiZU7Ag1+OXHgJOS1NSjqBe9yvrchLYqeHHg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4320
+X-MS-Exchange-CrossTenant-UserPrincipalName: IlIn96hS5yZpfaGjnMdP8ZcUAds3v1l+vvulmkQAL80pirZQ//h4s1ENy0+9rgJV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1141
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 03:02:27PM +0200, Daniel Lezcano wrote:
-> @@ -285,10 +254,8 @@ static int mlxsw_thermal_get_temp(struct thermal_zone_device *tzdev,
->  		dev_err(dev, "Failed to query temp sensor\n");
->  		return err;
->  	}
-> +
+Hi Edward,
 
-Unnecessary blank line
-
->  	mlxsw_reg_mtmp_unpack(mtmp_pl, &temp, NULL, NULL, NULL, NULL);
-> -	if (temp > 0)
-> -		mlxsw_thermal_tz_score_update(thermal, tzdev, thermal->trips,
-> -					      temp);
->  
->  	*p_temp = temp;
->  	return 0;
-> @@ -349,22 +316,6 @@ static int mlxsw_thermal_set_trip_hyst(struct thermal_zone_device *tzdev,
->  	return 0;
->  }
-
-[...]
-
-> @@ -680,6 +623,7 @@ mlxsw_thermal_module_tz_init(struct mlxsw_thermal_module *module_tz)
->  							MLXSW_THERMAL_TRIP_MASK,
->  							module_tz,
->  							&mlxsw_thermal_module_ops,
-> +
-
-Likewise
-
->  							&mlxsw_thermal_params,
->  							0,
->  							module_tz->parent->polling_delay);
-> -- 
-> 2.34.1
+On 8/16/2022 4:42 PM, Edward Cree wrote:
+> On 16/08/2022 10:23, Oz Shlomo wrote:
+>> The current offload api provides visibility to flow hw stats.
+>> This works as long as the flow stats values apply to all the flow's
+>> actions. However, this assumption breaks when an action, such as police,
+>> decides to drop or jump over other actions.
+>>
+>> Extend the flow_offload api to return stat record per action instance.
+>> Use the per action stats value, if available, when updating the action
+>> instance counters.
+>>
+>> Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
 > 
+> When I worked on this before I tried with a similar "array of action
+>   stats" API [1], but after some discussion it seemed cleaner to have
+>   a "get stats for one single action" callback [2] which then could
+>   be called in a loop for filter dumps but also called singly for
+>   action dumps (RTM_GETACTION).  I recommend this approach to your
+>   consideration.
+> 
+> [1]: https://lore.kernel.org/all/9804a392-c9fd-8d03-7900-e01848044fea@solarflare.com/
+> [2]: https://lore.kernel.org/all/a3f0a79a-7e2c-4cdc-8c97-dfebe959ab1f@solarflare.com/
+> 
+
+The recent hw_actions infrastructure provides the platform for updating 
+stats per action.
+However, the platform does introduce performance penalties as it invokes 
+a driver api method call per action (compared to the current single api 
+call). It also requires the driver to lookup the specific action counter 
+- requiring more processing compared to the current flow cookie lookup.
+Further more, the current single stats per filter (rather than per 
+action) design only breaks when using branching actions (e.g. police), 
+which probably applies to a small subset of the rules.
+
+This series proposes two apis:
+1. High performance api for filter dump update (ovs triggers a dump per 
+rule per second) - extending the current api providing the driver an 
+option to update stats per action, if required.
+2. Re-use the hw_actions api for tc action list update (see patch #3)
+
+>> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+>> index 7da3337c4356..7dc8a62796b5 100644
+>> --- a/net/sched/cls_flower.c
+>> +++ b/net/sched/cls_flower.c
+>> @@ -499,7 +499,9 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
+>>   	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
+>>   			 rtnl_held);
+>>   
+>> -	tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats);
+>> +	tcf_exts_hw_stats_update(&f->exts, &cls_flower.stats, cls_flower.act_stats);
+>> +
+>> +	kfree(cls_flower.act_stats);
+>>   }
+> 
+> Perhaps I'm being dumb, but I don't see this being allocated
+>   anywhere.  Is the driver supposed to be responsible for doing so?
+>   That seems inelegant.
+
+You are right, the intention is for the driver to allocate the array and 
+for the calling method to free it.
+
+While the proposed design is indeed inelegant, it is efficient compared 
+to the possible other alternatives:
+1. Dynamically allocated stats array - this will introduce an alloc/free 
+calls per stats query (1 / filter/ second), even if per action stats is 
+not required.
+2. Static action stats array - this has size issues, as this api is 
+shared for both tc and nft. Perhaps we can use a hard coded size and 
+return an error if the actual counter array size is larger.
+
+
+> 
+> -ed
