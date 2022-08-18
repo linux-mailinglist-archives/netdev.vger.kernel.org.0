@@ -2,52 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CDA8598A98
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:42:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7318D598AAC
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:45:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345071AbiHRRkj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:40:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
+        id S245424AbiHRRpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345175AbiHRRki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:40:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE7467475;
-        Thu, 18 Aug 2022 10:40:37 -0700 (PDT)
+        with ESMTP id S1345082AbiHRRpL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:45:11 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D44C7172B;
+        Thu, 18 Aug 2022 10:45:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EA9661727;
-        Thu, 18 Aug 2022 17:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C1801C43141;
-        Thu, 18 Aug 2022 17:40:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D15F9CE2245;
+        Thu, 18 Aug 2022 17:45:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBD4C433D6;
+        Thu, 18 Aug 2022 17:45:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660844436;
-        bh=dhx9HrKlGUFYVgsBoFTlqHauQLHY8DsGHnvTarCNASA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IHoTq0qySSJVSYIWrpq7lGzuqyUwF5CHqq3cVTRK1IOLTYcgtpmjH/22DgGS8byhX
-         P1kqd9C/Mm2wZWyFZYjemuHv+drtuMOBIlzUsXoTXloaJel4F3SWHrw50JTEF/UhaJ
-         mjDm+bzf5u6uBRI63wK6U3McL7Vcy2a5E4wOk8Um47YfmejkIIQbGpWKoZntL4vI53
-         PpNJiZ9aAzjmq2a1yG5WE9lDwR9LiqrX9OKLHxc5mDiOpISEE2aQGbRobseLL78vjI
-         /SXN23yS8rB6vmOCGv0m4MnbFM5PsFIhUelKdSlATCfwVu6uTvz1sQ/1z9gLICiNVa
-         ysrnKrB4mqk0w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AF2C2E2A04D;
-        Thu, 18 Aug 2022 17:40:36 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1660844707;
+        bh=Yy+ZnKIzuSTYizYHaXdO9bWgHRUoHQWc79KX44UlvY4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DH2c+E+iUEBbOPOkg3JnkMIfh2S9eUN+Ph2tqIo7cnYaoMvXzKjwg2PvcSxggEyWA
+         xDeJAejwcJPD8pZ3xuJ7bXMxXIfjKxNEtGy96/yXsYb5U5Bc106kr/y/P4hYbkdOAy
+         OhwQ5O4ImY4ap94LKkm15HQphjZDS8KOuMcystSwpopcP7j3t0ObIdCeo9+yZbDETs
+         kkTgnYuSyfjbq14PHiZ9z3dds9CIYihMEnppb1gNBSSGIP5fqrM5xaHfDKydKMWtUK
+         MmIu/y8g5jlm43FO7k9gmOwEp9ko0UQc49D1uWmCvKElcP5xoyOWAM6bQC/0j/RU0e
+         i4rW8G2pylAQQ==
+Date:   Thu, 18 Aug 2022 10:45:05 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
+Message-ID: <20220818104505.010ff950@kernel.org>
+In-Reply-To: <Yv5v1E6mfpcxjnLV@linutronix.de>
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+        <20220817162703.728679-10-bigeasy@linutronix.de>
+        <20220817112745.4efd8217@kernel.org>
+        <Yv5aSquR9S2KxUr2@linutronix.de>
+        <20220818090200.4c6889f2@kernel.org>
+        <Yv5v1E6mfpcxjnLV@linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] net: ethernet: altera: Add use of ethtool_op_get_ts_info
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166084443671.19225.5767240093658511173.git-patchwork-notify@kernel.org>
-Date:   Thu, 18 Aug 2022 17:40:36 +0000
-References: <20220817095725.97444-1-maxime.chevallier@bootlin.com>
-In-Reply-To: <20220817095725.97444-1-maxime.chevallier@bootlin.com>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        richardcochran@gmail.com, joyce.ooi@intel.com, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,27 +61,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 17 Aug 2022 11:57:25 +0200 you wrote:
-> Add the ethtool_op_get_ts_info() callback to ethtool ops, so that we can
-> at least use software timestamping.
+On Thu, 18 Aug 2022 18:59:00 +0200 Sebastian Andrzej Siewior wrote:
+> On 2022-08-18 09:02:00 [-0700], Jakub Kicinski wrote:
+> > No ack, I'd much rather you waited for after the next merge window 
+> > and queued this refactoring to net-next. Patch 9 is changing 70
+> > files in networking. Unless I'm missing something and this is time
+> > sensitive.  
 > 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> ---
->  drivers/net/ethernet/altera/altera_tse_ethtool.c | 1 +
->  1 file changed, 1 insertion(+)
+> It started with the clean up of the mess that has been made in the merge
+> and then it went on a little.
+> 
+> Any opinion on 8/9? It could wait for the next merge window if you want
+> to avoid a feature branch to pull from.
 
-Here is the summary with links:
-  - [net] net: ethernet: altera: Add use of ethtool_op_get_ts_info
-    https://git.kernel.org/netdev/net-next/c/fb8d784b531e
+A question of priority, hard for me to judge how urgent any of it is.
+But practically speaking the chances of a conflict on that one header
+are pretty small, so ack if needed.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Regarding 9/9. This is a clean up, which is possible after 8/9. It can
+> definitely be applied later.
+> I assume you want only see the networking bits so I would split the
+> other subsystem out. I guess instead the big net patch I split them on
+> per driver vendor basis + net/ subsys?
 
+Oh, don't care for per vendor split on a big refactoring like that.
+You can split out the SPI patch and maybe BPF, the rest can be one 
+big chunk AFAICT.
 
+BTW, I have a hazy memory of people saying they switched to the _irq()
+version because it reduced the number of retries significantly under
+traffic. Dunno how practical that is but would you be willing to scan
+the git history to double check that's not some of the motivation?
