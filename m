@@ -2,207 +2,445 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE375986DC
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A262A5986F2
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:09:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344139AbiHRPGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36736 "EHLO
+        id S1344049AbiHRPHu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:07:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344008AbiHRPGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:06:48 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2126.outbound.protection.outlook.com [40.107.21.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD3472699
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:06:47 -0700 (PDT)
+        with ESMTP id S1344052AbiHRPHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:07:48 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2067.outbound.protection.outlook.com [40.107.243.67])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 565F1B600C;
+        Thu, 18 Aug 2022 08:07:46 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dQ7219JhqyBpvmHsUKDocIKL83L1f3te6Ish9VKXFYAePEDrm6JlqDaT8xlFu7UgVdsA1jk11p+U/raDAecNWdPu1+l1R5Pwiybo9LZRwS+csCYN+BgTJ9uCvClVSlBHyWfQDLyGPAkpgNrgTminpja1t2MOSP1ye3XiZViKnZO1EwsmMs6ac7MOtl5Cg4pxu+CXDnoDiyc+j3zNP7s/hXHjw1uW3szFdG8vKnXEP33zjYnNSbnVUSQhy08TYh2mP87UKDTeR8ekMVRVMpSskbPU3ggc8MrzhPFafKJ9fudbkzumWPsgVqQaAZA8iqZvagZEaQK7z9Pp2Dzv5/doOg==
+ b=i05iyWPRg51OSjZv+8cHEkBvhVWu81CHJEbCSYO0BN3SBKC7G3l5Hux5vzpbcYQ8FYdbd3y3CtmQxbrf9eG9+9xh1xDzSz/3MwJT5FzdplSMiXnq2QJyr7VHvCf5ixkO+CbKymS+i1lizCYsVgNGZ+RmAOrBrt/TCA9Jvnli8bHhm5VNIFblHlR6JCYlmJxTE3K49PRsOCxEdWc6QVTEev0hiUrBoMuFSvc76+y31Ci0qssR0Z+ewbRVZQGAzyRRYJ6NvjKj98gIjyk1Yhp6NwtKAuGanswBobD07IqBZ4Y6DQVDhmEl8LXunGlbs5Q4ucTP17wZ8lzzaZomRhydrg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XwbBkJCfLSnOTasPAaB83wEUxjEbt8uwcK85T0vErwc=;
- b=RlPn5QF51ypI6yNLsru53fpEct9CTwmGUXdadwq3/CRdtgzE/d6hPk+W2ozFyJDxbOQmaLGm+ltA5LcbPInWql/MVTgCyHcj4cTgil1L0WfjmHCDvcZ804+d07EaDmHABNNvNxvyynFt4MERCbQMdeeo9nxdZTx2zywOe124tQSTJSkpJjyyUZg3jPcVw0OW4ty4qZdttwI3lhRSe+zgdmB8oN7e40jVYcqc5qF0XvgpDxYPKP5UIzpFARgWsku3ysKpfQySQR2UERF6yGQdjmxfsYYZCM4sSZm9Vb2NTKNkn7rF/B3aP5EvzDArRhZJGwZxavcG1OKOOfAZ5H8XCg==
+ bh=NIY6JG3r3Dh7dd1nnRz0fbb6olJ8aY5shnfDvI0cZiQ=;
+ b=bc8E7uVe5QkCWlzkGuNsXm5VnJQIwiUEeSTVVstYXmp8GCIb5TfgimgWbUzuokK5y89hSYMcl+fZKeda2Dxos+5huqR5TIxDxqMUIvDZbG+iVxKukh9BmYGBsMw66Fgc5LPt8ht63vTNzdAGeHhYTntC4X5JDeYy2gi/t9uwnsSxCE1qEhJlTWqouKfIbEZf3oDuk08AqTGbJL4BR6gYWsLV+KtMUiFAPt101tXIa/jrxUCahuTI8blyAtHGdLCSwbcu6UBOaMQlt7FX9stiZGRCea/y/qYz1zpui0E85z5Qwu6Sbv8LlUU/N6jO6jaJS/L5KNKkIX/ynY8e7MF52Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
- header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
- s=selector1;
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XwbBkJCfLSnOTasPAaB83wEUxjEbt8uwcK85T0vErwc=;
- b=HL4BHNzFnPw3fsuZ/JtacAbO2j26eqZJcj4Dpzkwb/xj0byJxdyjRW5djN/qYBzPDHQ2AdQ4RAiEyd+GaDRID9FFQWS/Cn2GnDezW+Vq+OoTQybmm5UEf0JFOIFmUHLTYutYUQmqoF8CAYTvmyawSJR8t01IdyyQ+T+6r6tvawQ=
-Received: from VI1PR03MB3950.eurprd03.prod.outlook.com (2603:10a6:803:75::30)
- by AS8PR03MB6887.eurprd03.prod.outlook.com (2603:10a6:20b:29f::24) with
+ bh=NIY6JG3r3Dh7dd1nnRz0fbb6olJ8aY5shnfDvI0cZiQ=;
+ b=K2xM/fJl3vu17i1CLK2eLKW+v4uwVZpd99xHPrByK1dDViS0/0nDdYQANNw7iPgC4bq94B0b/kjrEavjz4RBTYIDXPOq817G1GOXIyqiuUznn2tByrJtPnCSi8N0W3Z6CsyEnd2ULRMDXjyExvDhOjEX4Yjus2QW6yz9ryhGsWFUP4C61Au6UewRScoIAyPlt5u5IiwlgI2Sw5aJgJiTb4xykUJaGJjhB1jNLwf6btL7G+OwJgyTgquhvIrN5pkXeQAVy/ywf0EV8FVElc3+4VwlbueVYlPEEMicRtYFs/io4Z5AIL94lCENszJF9Jl5Sba81YeWLSApA7jQHWjPYQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from CH0PR12MB5330.namprd12.prod.outlook.com (2603:10b6:610:d5::7)
+ by CH2PR12MB3816.namprd12.prod.outlook.com (2603:10b6:610:2f::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 15:06:44 +0000
-Received: from VI1PR03MB3950.eurprd03.prod.outlook.com
- ([fe80::3965:8efc:7af6:756e]) by VI1PR03MB3950.eurprd03.prod.outlook.com
- ([fe80::3965:8efc:7af6:756e%7]) with mapi id 15.20.5482.016; Thu, 18 Aug 2022
- 15:06:44 +0000
-From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Craig McQueen <craig@mcqueen.id.au>
-Subject: Re: [PATCH net] net: dsa: microchip: keep compatibility with device
- tree blobs with no phy-mode
-Thread-Topic: [PATCH net] net: dsa: microchip: keep compatibility with device
- tree blobs with no phy-mode
-Thread-Index: AQHYsw9zHhN3dtpaN0uEx4R4ZuVmoa20wiIA
-Date:   Thu, 18 Aug 2022 15:06:44 +0000
-Message-ID: <20220818150644.ic6pf5arbh34lr5z@bang-olufsen.dk>
-References: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Thu, 18 Aug
+ 2022 15:07:44 +0000
+Received: from CH0PR12MB5330.namprd12.prod.outlook.com
+ ([fe80::e034:e0b9:a75e:3478]) by CH0PR12MB5330.namprd12.prod.outlook.com
+ ([fe80::e034:e0b9:a75e:3478%8]) with mapi id 15.20.5546.016; Thu, 18 Aug 2022
+ 15:07:44 +0000
+Message-ID: <5edbd360-7afb-2605-21ba-7337be15e235@nvidia.com>
+Date:   Thu, 18 Aug 2022 18:07:34 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101
+ Thunderbird/104.0
+Subject: Re: [RFC PATCH v2 net-next] docs: net: add an explanation of VF (and
+ other) Representors
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 55cd8fcf-14ef-4bff-f298-08da812b43b3
-x-ms-traffictypediagnostic: AS8PR03MB6887:EE_
-x-ms-exchange-atpmessageproperties: SA|SL
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hN3RWLRwBQcjYiVjMKuU71k/Or9h6YPgruMzUGyAopjkaMeipfLUt2yrJ5kOMo9FcPxm0MNH/7yMhUrO4QR25gbTXQ4bXkYCcTVaLifTwRyEBe5uQ0OJ+KW23q4bVqZ4qclQ0+nYcVR4/54WUnv4OdSQOaRdLt4TB3eRIWpKT9SSWs4QC60jkfYqU7VeOM/C3gztRl+fRE5/UtU0My3SJJc1PpYT6uHmjXBlCTTpg5ClbZD0pN5Eg5p77ZmGq3DKlfA2V7oNM0QxOUyNG1Hy2BUKqY7UAzePw1HeK6KM7awkRQPj109ojO7ARA5MAclMk4K8d4MVtc9FWfK+qJ2gexEPmeMiFJXUvMDBg3Wuvn/en5YkGjbg5ttJ/puTnNGM6xCnZCThEURb1x9IRDTY58Ax2ylTJ20cdUk3v4+SnMeuRe1We1rR5kTKuL2wdD07ivs+fKWJjvTggBqmcZfWxj5+GF0x0yTYPgkszkn0cPEzerEFJoMuTXHj6/NbdhEYZBsZaeIl8hVg2PmIfg04hLvTBS1nvKedgDc40sNaMcPjXHkA86hpQ3D9F6RCm5kbsxdFUnzMscKNmDhhcq4/vX/mbqBsLbnbLQMMGXSxLyZ/T6XE2uZEasl7gqiOnX8fkvkyrxL4DjhlcfG0zdcLigxKawnEZBSB7BHjrGnMnmqvkQiLwTjPu/PFl5ewinAeP9ZNqCM0NTlrbWhaKf0DYJW21Dfjxv4VXRdodfl3HUUrUM+UOS/IR36QTKH3pxql+uWsD07SPVDCXzHkNU2dbQN/MkXW1ngtJj/+iOR8iJI=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB3950.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(346002)(366004)(136003)(39850400004)(41300700001)(38100700002)(122000001)(85182001)(85202003)(36756003)(8676002)(83380400001)(54906003)(316002)(64756008)(66556008)(91956017)(76116006)(66946007)(6916009)(66446008)(4326008)(2616005)(186003)(66574015)(1076003)(38070700005)(66476007)(6506007)(8976002)(8936002)(2906002)(966005)(6486002)(7416002)(5660300002)(71200400001)(86362001)(478600001)(26005)(6512007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NVJsYVRNemtUUW5ZL0k2VGJ1Uk1rbGVRVHhYb3Nxd1RXd1NVMXZHRitGbFVE?=
- =?utf-8?B?a1hjSU1obWgvQysyUytXWFB0cmpuczZva1pnQUtjaUhDYUhuVmUzSktSaWVh?=
- =?utf-8?B?aElISm5tL3pENmFMYnFUSEUxSC9VbkRwV3E3SkdJeWs2dXV4YjNaNlVqK3lC?=
- =?utf-8?B?aUNuQVlsU3dtY0hYbzJiOHZuallyamhyTEs1cy9PbXZxdkg1U2ZQOCtTVncw?=
- =?utf-8?B?SVA0RDBxRlZ0b296U3Rmc09VN2s3cE5sSmFjZXNuTW9VUEoyRmJ6NFk0NGln?=
- =?utf-8?B?QU4xS0o4d0VJNGFRWWIwbkQ3RjFtcGZ2TmJoV2FVSEdCbkFpMW9ObDFxc1B3?=
- =?utf-8?B?VXRzSzl2emVsYW9IbzRVK0YrQU1sZUxRR3FESHFnZFJBVjMzVUlGRFRaRkti?=
- =?utf-8?B?OFlMYWNWUWxvM3hZZVJEL1RMbWlOR3BZbUFsK2ZLV0RKSUFKcndVY25Zd28w?=
- =?utf-8?B?RjV6TVJUbXRjbFZ2bW1mYnRGWWdva1UvZEViVXdOUGZRODUzM0tsUTM0VE13?=
- =?utf-8?B?TGRKeUpSRll0Yld6OTRaOXdtd0hZKzZ5aFZObWxsVGNLQlZ1UCtXZE1VTUhT?=
- =?utf-8?B?OWNtOVhRR2FwMnp4ZnlmUExmTnQ5TXU0ZmJFUlo2clN0azJnSjA1UHkva2lV?=
- =?utf-8?B?ajhtMW0xRVZ2eUJCK3VuVzAyWm5ZZWd0VzB3NjhtakNBZlUwSnFuQlFIWlFV?=
- =?utf-8?B?TEFORExnbjVwaGhINkQrVmhoMFhTaDRtd1MzaEI4MFo1TTlwenVtQ3JRMytZ?=
- =?utf-8?B?ZHYzdDhWYXhTWlIvMTJrKzRlNnN3ejJlaDFYeE00VjhqYzZVUmFIQ21WMTNl?=
- =?utf-8?B?UG9zRnRmc1A4QjJtUUFzNEtpUlBkUWN0M1Q0bGFmY3dSZGdoUHFBQmNpcXRI?=
- =?utf-8?B?RlhGcmxIRk9YT2NLWXZ3dFdsd0NOaDhEYks3dWhCaWVvK1JsZXJCclhKdGtx?=
- =?utf-8?B?OXEzTUZQTmcwTzBKU0I3a2M4VVVqeFFlWGtwcUsxT3ZENWFwWC9jclR6WnpU?=
- =?utf-8?B?Y0lBUDg1U2hYMGhrSVVpeXJINmtzb2FyeFJlMG1UbGxBaGZrSzU2YjI0OFNB?=
- =?utf-8?B?UTF2VW1RTTFlZ0ZzM200TUNKdXk4aFNycUlVMkpjOVJsRi9aRGczaVQxYXB5?=
- =?utf-8?B?NFpSQm82cXQyVW5jNTB6bExQbW93R2w4VXBSNS9qQ1B6cXdlMndPeEM5ZmM1?=
- =?utf-8?B?VnhCTnpUdVVmY1F1UG43T3U2VUhLN2IvTXRKSkp5MkFHMFUzQmEzSmcvbzhx?=
- =?utf-8?B?dSsyeHhTMVN6U3ZtVzhHVDFtVXNwZkxURkJDL09sTWhBdkhFTy9rdWcxNEpD?=
- =?utf-8?B?Wit6UCtIeTB3MWdHaE45T0s2RDBYdDUwYlUwUGFRR1kvSjI2U3BYZWF3YzhD?=
- =?utf-8?B?UkZCN3BtbWkyd0NLZHMxWTRrNmNSNC9QZU1WZnA5MG1nRzhhdjY5MjhvaEdR?=
- =?utf-8?B?c1dTWDdiQzVHSUp4U1NML2FIV2FGTlYyTFNjR0k4cXVOQ3hZV3FIOWtJMWFY?=
- =?utf-8?B?VmpNZFJLaWdiclNPWXk0SjRzZmVBREJWTGtJTWJDT2Erd3JnYk4xUFFOcUNn?=
- =?utf-8?B?RUROWlQ4WjArRjFZcDZvT3FrOG5Fcmp5SjIza3BEWmI1WXFMUEdaemJFNWhH?=
- =?utf-8?B?QkhWajBBTXhDbjk3VHhReFZmMG44MHdPTmtVVFpHWmxYWkFhbm5LWkxhQnpE?=
- =?utf-8?B?WVJ6SG52TitJQkZxZW83TkVjem1Sb2hhMUMrM01URkRncUpTbVROeDZUQ3U1?=
- =?utf-8?B?bmhMSit1MCtCZWVoWjUrRCtuQk1JZDE4QjVuZXE5Z0F2a1BFNmZON0ZnWGM1?=
- =?utf-8?B?eDdleXBlVE5hODNwaGVha0o3WXZ2Ylc1VzFvMnZZS0U1TmFhQnRaYlMzZEJF?=
- =?utf-8?B?bVdYeG96NHdyalNTdHFHdzdGcjhvVUVBZ3RZUThIUnlqM2lFTjNUMDA3YXUz?=
- =?utf-8?B?cDdvOGY5b0lPbDdKTTF0ZkV3QlFmMklPK0lRd0pKSlYzQzZOQVJ5SzFaSldt?=
- =?utf-8?B?V1JKc1h0MFVvdFpjMEJiUk4zaWFYNDBaK2pzMnlTQzk1Umd6YjlONU8yY2R3?=
- =?utf-8?B?bUNtdUp4M1B3QTFmOVZKRUxGTk9oNStUdG95T1BlYTc5RW9NWDI0V0I4VTI5?=
- =?utf-8?B?U2VPTkdBMFZyV21WdHBtUUlaWTNzWEVNNXMvZThLempnTnVhOGlDdEJvaVFj?=
- =?utf-8?B?R0E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <413C6D1877408F47851CD3CF94DB29AB@eurprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+To:     ecree@xilinx.com, netdev@vger.kernel.org, linux-net-drivers@amd.com
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, corbet@lwn.net, linux-doc@vger.kernel.org,
+        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
+        michael.chan@broadcom.com, andy@greyhouse.net, saeed@kernel.org,
+        jiri@resnulli.us, snelson@pensando.io, simon.horman@corigine.com,
+        alexander.duyck@gmail.com, rdunlap@infradead.org,
+        Edward Cree <ecree.xilinx@gmail.com>
+References: <20220815142251.8909-1-ecree@xilinx.com>
+From:   Roi Dayan <roid@nvidia.com>
+In-Reply-To: <20220815142251.8909-1-ecree@xilinx.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO2P265CA0003.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:62::15) To CH0PR12MB5330.namprd12.prod.outlook.com
+ (2603:10b6:610:d5::7)
 MIME-Version: 1.0
-X-OriginatorOrg: bang-olufsen.dk
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6e23030c-1567-4bff-6c34-08da812b66d1
+X-MS-TrafficTypeDiagnostic: CH2PR12MB3816:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: //D2bJ77MmpYHPw+zZ6ddRWVO7VhPPWv7Pk8Kv/77AJgU4AHxA+IQZJ3rQvqpOUMthWUXCitGoxBeKXtiE00PRX4hfud66/dfmzt+hhMK0waTBqFUews53N6sfKQ8TSkgeN1zJhvkQf2F2tV5VzPvYEgNv7bZjZoq2MGuF6JiGRRUpdtiNOl+GRm6bJV7Vev4AX8b1siOtueoKgID2vIN16riwM0UIml9uIVvp+6ZfsCbagk8LEOawwJ0NMvOMTt5kUpdcyI8kW9TP1NQn2mUR5qJvKI2mb5Vy2+COT+rx7X5n3JvRTnADAWzohlISM5R0ifBalzoNsfbHJOplrUKU0aCk9q37KgU8m8WWrRi0Hh/BgvdD+PKB4XftErGRHo+4GVL5SnC3YatkGx8wJhxpqeoc9Iq6nUjY1U0rPwthz9U9YfW3kk3Iec2UdVc5tdGehfrTSiDOdvYXRKDe7o0UZb6J3xOuK1BpXCmSU0h8An1G2xrZyqCozjSb1mdzh8ojwpq099XgcfwweNJ7BaEj/ctItv0FzPIaZTzYaLCBAOGW2mbotdHi7zpmhwVEb9UYlGQ4F2WZiSCLTnXe8nTIQSxhAeES0ewaKngPIwSF0+jmSy6af2CisoYk9aPLKITxH9350psE5U+dt/MWcTDij6DojKbjHDSYCVZ+Vltm50sUh2HhgSCroltiHXy9GOXPA4bLh7q2TiBId6M4VHP9VufAtygCEJZBKfpXBhds5PVwLkKxadl0D+s4wansq6Lk8V8g8KbawG7WyFoczh8HLH0eRjnfTTiUW/HgFM0+k=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5330.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(376002)(136003)(346002)(8676002)(66946007)(66556008)(31686004)(4326008)(316002)(38100700002)(5660300002)(66476007)(30864003)(8936002)(7416002)(2906002)(36756003)(31696002)(86362001)(478600001)(53546011)(41300700001)(6506007)(26005)(2616005)(6486002)(6512007)(83380400001)(6666004)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZHF5QnN4NEI3ajNXK3QvRndCdDJlaDd5STJmVHBQaEYyUk1HUHdobVpFREpR?=
+ =?utf-8?B?SWxsQnNSY0JLVE53Z09GbEkzTnF5elMwOFZUNG5MT1VHdWZ0bXFoYXJYdXZJ?=
+ =?utf-8?B?bzZMK0x3aytJdU1LNkVyb2F4RWF0empQbzB0b2NKQ1FrcFVrQ3F3Qm1CTFpB?=
+ =?utf-8?B?Qzdva0duU2JudTBTSEs1SXdpWUZjS0pPOWtKYk5QV2VtY1hMQjhXVXBJOXFO?=
+ =?utf-8?B?bHZZNC9DUlhEV0plNEZyQkorT3ErcFNibS9QSXFxeW1YV0JvcktIVUFpRHVu?=
+ =?utf-8?B?RjB1b3Mvdmpad2lhdDdPS2cwWkpGT2JLcmgwM2dpaW80cGNwNStwS1Mwb29Y?=
+ =?utf-8?B?YVhURVNNUjIzdnlHMHdCNEtpc1lCbmJmY05qOGxiV1JOYjhkNmZqc25kK1hi?=
+ =?utf-8?B?c0tGckVGN3Zzazd6QnpoYmN3dW9BQ3pZdytuelBOb05UN3BDY2pzWjBuUW56?=
+ =?utf-8?B?TlhXKy9udGF6YVh1MEplWnFVMjNYY2E1Si9uZGI5T0pURHNidzltN3Y4dXZo?=
+ =?utf-8?B?MXNpWW9MN01iUkhXbFhGRGsrZGJwcWZFTVI5bW50dWVxSENVYnhhL3hPbE9L?=
+ =?utf-8?B?MjhxZWFiQ3YxUmRRa1puT2V6Vks3TkV1SUhBT2xTZlVXYWgzaERUekFtOHNu?=
+ =?utf-8?B?aHdHK2trU0oxbFZvQWx3KzJiS0d4ZjhEdnFCa3FrQ2NrWmVqSkZPdU85MHRz?=
+ =?utf-8?B?Mk5GQ2NSU0ZJOGNydjZQKzRxWFZCM3djdzVwNE9xZEgxNHQzdnhNOUFsOUJS?=
+ =?utf-8?B?Q0Rad2I0cjloa1FhVEI3WHBUcm9mSGF4emJVRk13VWFxbThRK1B3SFk1eHFy?=
+ =?utf-8?B?SE5FaFJEOC83aTdKT1U0emw4TzhMQmE1dWZmTXBibUpRWlZzalNxVkpGdjR2?=
+ =?utf-8?B?aUt2cGZudlByUWZxd1dicWhDUGl4Qmcwa3o4R3ZKS1p4TFVTa1hPNDRNYTlE?=
+ =?utf-8?B?ZHVqeTZYYmt3YUdOcTN6aUFBWmYxR0tQbnlkZllUNWo2VzVBZWxTQ2U2TFBo?=
+ =?utf-8?B?SDNtTEpLNndqLzRkMmREbkxyYWdyTlRMMVQxV0t2bDFYVkR6am5LRjNOVHZz?=
+ =?utf-8?B?OUljd1hxVzR4WkZyRGFiYXM3UktLc1hpdDJZRUZFcWFsMTlmOVFUSmltWStl?=
+ =?utf-8?B?SFlqRVluZGtmNjRkOWp1MjhWTTRZMmg4VHJOdHVGWmJrbEJiK3BZRUhEUHBv?=
+ =?utf-8?B?SHA0NUhuWTBJWUNQc2pTdzk0NWEzNVpqditwaHZ0VCtRY0ZZR25tMjA2WW9j?=
+ =?utf-8?B?WnhCY3l6SU9kKzVCVXVGaEpMN2NkUlNYdlk3VW1xN0xCclN3anpjdE1YUXd6?=
+ =?utf-8?B?UGVWcGZmOGh3WjBCS0dubmk2MVJGSUJpL2Q3QXdMWDdmYlNpZE1vTUNwZmk5?=
+ =?utf-8?B?WHNwMUpNR0ZMU29vc215WGhpK2krUHJVU1M2S29LVmhSVUIyTUpJSUdiUlU5?=
+ =?utf-8?B?RWxGZlVrbEdTSTFPalBFVGlKcUdwODJUZnVHWCtLaFd0Y1F0TERmYmtlZW9o?=
+ =?utf-8?B?cEQ3M0lXRE0zRks0alNRUC9YTWtLMlhuZURqSG56VW9na2QrRFFPK1BaWVd6?=
+ =?utf-8?B?V1dlRU1CMm0vS3FFdTFhVy9iMnFJdDFOWURBVGlHTWhBdDdoRU0veHV3eFFW?=
+ =?utf-8?B?SHpRbktzaTE4THkyMmpFM3JYU2E4OUF1V28za29lc25lTjBXRmxQWVlGVlVk?=
+ =?utf-8?B?aFZabFloRnRTK3lhd3dhMXlqM1FnSmlCc2tUamRjQTZnKytPdGIxRzcvamxQ?=
+ =?utf-8?B?cllWMlRneVV2cDlBYUk0WnAzQjlVMVB1Vlk2YTJHTVMrZlR0MTRmTHVuNHdn?=
+ =?utf-8?B?S2R3VzB2RnZ0RExNQVNXL3lCTjhSOEt0WTZHcW8vRENTQnRaWG5BTmszSmt5?=
+ =?utf-8?B?WXBoWnhvWCtHcGRVRUNGMXkzcmtNMzExc1dGZFl6YUNBbVBBOFhKcUhZalQ0?=
+ =?utf-8?B?Rkd1enlNNnlKRWZMTkU0SkNiMGljMWEzNmN3NU9tN0ZEQk55VkJRa1N4MmpX?=
+ =?utf-8?B?a1pxSlJJcW9XVHhyYitqemo0SVY1N1hrNU5reE9JcmQ1NGxvWHF1dytRRXR6?=
+ =?utf-8?B?V2ZCRGwvTUFnZlFYYldMdzBMb2E1MU05bHhSNmVoVzMvalVCeVhvelVoYUxj?=
+ =?utf-8?Q?fzudDIn8L/cSBFBkvVSqmQ60t?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e23030c-1567-4bff-6c34-08da812b66d1
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5330.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB3950.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55cd8fcf-14ef-4bff-f298-08da812b43b3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2022 15:06:44.5164
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 15:07:43.9298
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lT8u5WRZqRsKyGEHhVcNbU4NVHjrWH0/5hWd5CmtpWpCjwORmLdYoSzVxdQB2m2t1XfFNgXG98TdR7MVu6Rnpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB6887
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hHfQh5OeN94IBJNQ+8nEMYX2x46i1S/ZIHXVEusU9HhWi0C0FHoykegsSP+nxgVf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3816
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBBdWcgMTgsIDIwMjIgYXQgMDU6MzI6NTBQTSArMDMwMCwgVmxhZGltaXIgT2x0ZWFu
-IHdyb3RlOg0KPiBEU0EgaGFzIG11bHRpcGxlIHdheXMgb2Ygc3BlY2lmeWluZyBhIE1BQyBjb25u
-ZWN0aW9uIHRvIGFuIGludGVybmFsIFBIWS4NCj4gT25lIHJlcXVpcmVzIGEgRFQgZGVzY3JpcHRp
-b24gbGlrZSB0aGlzOg0KPiANCj4gCXBvcnRAMCB7DQo+IAkJcmVnID0gPDA+Ow0KPiAJCXBoeS1o
-YW5kbGUgPSA8JmludGVybmFsX3BoeT47DQo+IAkJcGh5LW1vZGUgPSAiaW50ZXJuYWwiOw0KPiAJ
-fTsNCj4gDQo+ICh3aGljaCBpcyBJTU8gdGhlIHJlY29tbWVuZGVkIGFwcHJvYWNoLCBhcyBpdCBp
-cyB0aGUgY2xlYXJlc3QNCj4gZGVzY3JpcHRpb24pDQo+IA0KPiBidXQgaXQgaXMgYWxzbyBwb3Nz
-aWJsZSB0byBsZWF2ZSB0aGUgc3BlY2lmaWNhdGlvbiBhcyBqdXN0Og0KPiANCj4gCXBvcnRAMCB7
-DQo+IAkJcmVnID0gPDA+Ow0KPiAJfQ0KPiANCj4gYW5kIGlmIHRoZSBkcml2ZXIgaW1wbGVtZW50
-cyBkcy0+b3BzLT5waHlfcmVhZCBhbmQgZHMtPm9wcy0+cGh5X3dyaXRlLA0KPiB0aGUgRFNBIGZy
-YW1ld29yayAia25vd3MiIGl0IHNob3VsZCBjcmVhdGUgYSBkcy0+c2xhdmVfbWlpX2J1cywgYW5k
-IGl0DQo+IHNob3VsZCBjb25uZWN0IHRvIGEgbm9uLU9GLWJhc2VkIGludGVybmFsIFBIWSBvbiB0
-aGlzIE1ESU8gYnVzLCBhdCBhbg0KPiBNRElPIGFkZHJlc3MgZXF1YWwgdG8gdGhlIHBvcnQgYWRk
-cmVzcy4NCj4gDQo+IFRoZXJlIGlzIGFsc28gYW4gaW50ZXJtZWRpYXJ5IHdheSBvZiBkZXNjcmli
-aW5nIHRoaW5nczoNCj4gDQo+IAlwb3J0QDAgew0KPiAJCXJlZyA9IDwwPjsNCj4gCQlwaHktaGFu
-ZGxlID0gPCZpbnRlcm5hbF9waHk+Ow0KPiAJfTsNCj4gDQo+IEluIGNhc2UgMiwgRFNBIGNhbGxz
-IHBoeWxpbmtfY29ubmVjdF9waHkoKSBhbmQgaW4gY2FzZSAzLCBpdCBjYWxscw0KPiBwaHlsaW5r
-X29mX3BoeV9jb25uZWN0KCkuIEluIGJvdGggY2FzZXMsIHBoeWxpbmtfY3JlYXRlKCkgaGFzIGJl
-ZW4NCj4gY2FsbGVkIHdpdGggYSBwaHlfaW50ZXJmYWNlX3Qgb2YgUEhZX0lOVEVSRkFDRV9NT0RF
-X05BLCBhbmQgaW4gYm90aA0KPiBjYXNlcywgUEhZX0lOVEVSRkFDRV9NT0RFX05BIGlzIHRyYW5z
-bGF0ZWQgaW50byBwaHktPmludGVyZmFjZS4NCj4gDQo+IEl0IGlzIGltcG9ydGFudCB0byBub3Rl
-IHRoYXQgcGh5X2RldmljZV9jcmVhdGUoKSBpbml0aWFsaXplcw0KPiBkZXYtPmludGVyZmFjZSA9
-IFBIWV9JTlRFUkZBQ0VfTU9ERV9HTUlJLCBhbmQgc28sIHdoZW4gd2UgdXNlDQo+IHBoeWxpbmtf
-Y3JlYXRlKFBIWV9JTlRFUkZBQ0VfTU9ERV9OQSksIG5vIG9uZSB3aWxsIG92ZXJyaWRlIHRoaXMs
-IGFuZCB3ZQ0KPiB3aWxsIGVuZCB1cCB3aXRoIGEgUEhZX0lOVEVSRkFDRV9NT0RFX0dNSUkgaW50
-ZXJmYWNlIGluaGVyaXRlZCBmcm9tIHRoZQ0KPiBQSFkuDQo+IA0KPiBBbGwgdGhpcyBtZWFucyB0
-aGF0IGluIG9yZGVyIHRvIG1haW50YWluIGNvbXBhdGliaWxpdHkgd2l0aCBkZXZpY2UgdHJlZQ0K
-PiBibG9icyB3aGVyZSB0aGUgcGh5LW1vZGUgcHJvcGVydHkgaXMgbWlzc2luZywgd2UgbmVlZCB0
-byBhbGxvdyB0aGUNCj4gImdtaWkiIHBoeS1tb2RlIGFuZCB0cmVhdCBpdCBhcyAiaW50ZXJuYWwi
-Lg0KPiANCj4gRml4ZXM6IDJjNzA5ZTBiZGFkNCAoIm5ldDogZHNhOiBtaWNyb2NoaXA6IGtzejg3
-OTU6IGFkZCBwaHlsaW5rIHN1cHBvcnQiKQ0KPiBMaW5rOiBodHRwczovL2J1Z3ppbGxhLmtlcm5l
-bC5vcmcvc2hvd19idWcuY2dpP2lkPTIxNjMyMA0KPiBSZXBvcnRlZC1ieTogQ3JhaWcgTWNRdWVl
-biA8Y3JhaWdAbWNxdWVlbi5pZC5hdT4NCj4gU2lnbmVkLW9mZi1ieTogVmxhZGltaXIgT2x0ZWFu
-IDx2bGFkaW1pci5vbHRlYW5AbnhwLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9kc2EvbWlj
-cm9jaGlwL2tzel9jb21tb24uYyB8IDggKysrKysrKy0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA3IGlu
-c2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkNCg0KUmV2aWV3ZWQtYnk6IEFsdmluIMWgaXByYWdh
-IDxhbHNpQGJhbmctb2x1ZnNlbi5kaz4NCg0KU29tZSBxdWljayBncmVwcGluZyBzaG93cyBhdCBs
-ZWFzdCBhIGZldyBvdGhlciBkcml2ZXJzIHdoaWNoIGRvIG5vdCBzZXQNClBIWV9JTlRFUkZBQ0Vf
-TU9ERV9HTUlJIGZvciB0aGVpciBwb3J0cyB3aXRoIGludGVybmFsIFBIWToNCg0KICAgIGJjbV9z
-ZjINCiAgICBhcjkzMzEgKCopDQogICAgbGFudGlxX2dzd2lwDQoNClNob3VsZCB0aGVzZSBiZSAi
-Zml4ZWQiIHRvbz8gT3Igb25seSBpZiBzb21lYm9keSByZXBvcnRzIGEgcmVncmVzc2lvbj8NCg0K
-KCopIEkgbm90ZSB0aGF0IGFyOTMzMSBvdWdodCBub3QgdG8gcmVseSBvbiBEU0Egd29ya2Fyb3Vu
-ZHMsIHBlciB5b3VyDQpvdGhlciBwYXRjaHNldCwgc28gSSB0aGVyZSBpcyBhY3R1YWxseSBubyBu
-ZWVkIHRvICJmaXgiIHRoYXQgb25lLCBzaW5jZQ0KdGhlIG5ldyB2YWxpZGF0aW9uIHlvdSBhcmUg
-aW50cm9kdWNpbmcgd2lsbCByZXF1aXJlIGEgcGh5LW1vZGUgdG8gYmUNCnNwZWNpZmllZCBmb3Ig
-dGhvc2Ugc3dpdGNoZXMnIHBvcnRzIGFueXdheS4NCg0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZl
-cnMvbmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jIGIvZHJpdmVycy9uZXQvZHNhL21pY3Jv
-Y2hpcC9rc3pfY29tbW9uLmMNCj4gaW5kZXggZWQ3ZDEzN2NiYTk5Li43NDYxMjcyYTZkNDEgMTAw
-NjQ0DQo+IC0tLSBhL2RyaXZlcnMvbmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jDQo+ICsr
-KyBiL2RyaXZlcnMvbmV0L2RzYS9taWNyb2NoaXAva3N6X2NvbW1vbi5jDQo+IEBAIC04MDMsOSAr
-ODAzLDE1IEBAIHN0YXRpYyB2b2lkIGtzel9waHlsaW5rX2dldF9jYXBzKHN0cnVjdCBkc2Ffc3dp
-dGNoICpkcywgaW50IHBvcnQsDQo+ICAJaWYgKGRldi0+aW5mby0+c3VwcG9ydHNfcmdtaWlbcG9y
-dF0pDQo+ICAJCXBoeV9pbnRlcmZhY2Vfc2V0X3JnbWlpKGNvbmZpZy0+c3VwcG9ydGVkX2ludGVy
-ZmFjZXMpOw0KPiAgDQo+IC0JaWYgKGRldi0+aW5mby0+aW50ZXJuYWxfcGh5W3BvcnRdKQ0KPiAr
-CWlmIChkZXYtPmluZm8tPmludGVybmFsX3BoeVtwb3J0XSkgew0KPiAgCQlfX3NldF9iaXQoUEhZ
-X0lOVEVSRkFDRV9NT0RFX0lOVEVSTkFMLA0KPiAgCQkJICBjb25maWctPnN1cHBvcnRlZF9pbnRl
-cmZhY2VzKTsNCj4gKwkJLyogQ29tcGF0aWJpbGl0eSBmb3IgcGh5bGliJ3MgZGVmYXVsdCBpbnRl
-cmZhY2UgdHlwZSB3aGVuIHRoZQ0KPiArCQkgKiBwaHktbW9kZSBwcm9wZXJ0eSBpcyBhYnNlbnQN
-Cj4gKwkJICovDQo+ICsJCV9fc2V0X2JpdChQSFlfSU5URVJGQUNFX01PREVfR01JSSwNCj4gKwkJ
-CSAgY29uZmlnLT5zdXBwb3J0ZWRfaW50ZXJmYWNlcyk7DQo+ICsJfQ0KPiAgDQo+ICAJaWYgKGRl
-di0+ZGV2X29wcy0+Z2V0X2NhcHMpDQo+ICAJCWRldi0+ZGV2X29wcy0+Z2V0X2NhcHMoZGV2LCBw
-b3J0LCBjb25maWcpOw0KPiAtLSANCj4gMi4zNC4xDQo+
+
+
+On 2022-08-15 5:22 PM, ecree@xilinx.com wrote:
+> From: Edward Cree <ecree.xilinx@gmail.com>
+> 
+> There's no clear explanation of what VF Representors are for, their
+>   semantics, etc., outside of vendor docs and random conference slides.
+> Add a document explaining Representors and defining what drivers that
+>   implement them are expected to do.
+> 
+> Signed-off-by: Edward Cree <ecree.xilinx@gmail.com>
+> ---
+> Changed in v2:
+>   - incorporated feedback from Jakub including rewrite of the Motivation section,
+>     representors for uplink/phys port, replace phys_port_name conventions with
+>     devlink port.
+>   - fixed archaic spelling (Randy)
+>   - painted the bike shed blue ("master PF") for now, we can always change it
+>     again later
+>   - added Definitions section
+> 
+>   Documentation/networking/index.rst        |   1 +
+>   Documentation/networking/representors.rst | 228 ++++++++++++++++++++++
+>   Documentation/networking/switchdev.rst    |   1 +
+>   3 files changed, 230 insertions(+)
+>   create mode 100644 Documentation/networking/representors.rst
+> 
+> diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+> index 03b215bddde8..c37ea2b54c29 100644
+> --- a/Documentation/networking/index.rst
+> +++ b/Documentation/networking/index.rst
+> @@ -93,6 +93,7 @@ Contents:
+>      radiotap-headers
+>      rds
+>      regulatory
+> +   representors
+>      rxrpc
+>      sctp
+>      secid
+> diff --git a/Documentation/networking/representors.rst b/Documentation/networking/representors.rst
+> new file mode 100644
+> index 000000000000..be7cc4752d11
+> --- /dev/null
+> +++ b/Documentation/networking/representors.rst
+> @@ -0,0 +1,228 @@
+> +.. SPDX-License-Identifier: GPL-2.0
+> +
+> +=============================
+> +Network Function Representors
+> +=============================
+> +
+> +This document describes the semantics and usage of representor netdevices, as
+> +used to control internal switching on SmartNICs.  For the closely-related port
+> +representors on physical (multi-port) switches, see
+> +:ref:`Documentation/networking/switchdev.rst <switchdev>`.
+> +
+> +Motivation
+> +----------
+> +
+> +Since the mid-2010s, network cards have started offering more complex
+> +virtualisation capabilities than the legacy SR-IOV approach (with its simple
+> +MAC/VLAN-based switching model) can support.  This led to a desire to offload
+> +software-defined networks (such as OpenVSwitch) to these NICs to specify the
+> +network connectivity of each function.  The resulting designs are variously
+> +called SmartNICs or DPUs.
+> +
+> +Network function representors bring the standard Linux networking stack to
+> +virtual switches and IOV devices.  Just as each port of a Linux-controlled
+> +switch has a separate netdev, so each virtual function has one.  When the system
+> +boots, and before any offload is configured, all packets from the virtual
+> +functions appear in the networking stack of the PF via the representors.
+> +The PF can thus always communicate freely with the virtual functions.
+> +The PF can configure standard Linux forwarding between representors, the uplink
+> +or any other netdev (routing, bridging, TC classifiers).
+> +
+> +Thus, a representor is both a control plane object (representing the function in
+> +administrative commands) and a data plane object (one end of a virtual pipe).
+> +As a virtual link endpoint, the representor can be configured like any other
+> +netdevice; in some cases (e.g. link state) the representee will follow the
+> +representor's configuration, while in others there are separate APIs to
+> +configure the representee.
+> +
+> +Definitions
+> +-----------
+> +
+> +This document uses the term "master PF" to refer to the PCIe function which has
+> +administrative control over the virtual switch on the device.  Conceivably a NIC
+> +could be configured to grant these administrative privileges instead to a VF or
+> +SF (subfunction); the terminology is not meant to exclude this case.
+> +Depending on NIC design, a multi-port NIC might have a single master PF for the
+> +whole device or might have a separate virtual switch, and hence master PF, for
+> +each physical network port.
+> +If the NIC supports nested switching, there might be separate "master PFs" for
+> +each nested switch, in which case each "master PF" should only create
+> +representors for the ports on the (sub-)switch it directly administers.
+> +
+> +A "representee" is the object that a representor represents.  So for example in
+> +the case of a VF representor, the representee is the corresponding VF.
+> +
+> +What does a representor do?
+> +---------------------------
+> +
+> +A representor has three main roles.
+> +
+> +1. It is used to configure the network connection the representee sees, e.g.
+> +   link up/down, MTU, etc.  For instance, bringing the representor
+> +   administratively UP should cause the representee to see a link up / carrier
+> +   on event.
+> +2. It provides the slow path for traffic which does not hit any offloaded
+> +   fast-path rules in the virtual switch.  Packets transmitted on the
+> +   representor netdevice should be delivered to the representee; packets
+> +   transmitted to the representee which fail to match any switching rule should
+> +   be received on the representor netdevice.  (That is, there is a virtual pipe
+> +   connecting the representor to the representee, similar in concept to a veth
+> +   pair.)
+> +   This allows software switch implementations (such as OpenVSwitch or a Linux
+> +   bridge) to forward packets between representees and the rest of the network.
+> +3. It acts as a handle by which switching rules (such as TC filters) can refer
+> +   to the representee, allowing these rules to be offloaded.
+> +
+> +The combination of 2) and 3) means that the behaviour (apart from performance)
+> +should be the same whether a TC filter is offloaded or not.  E.g. a TC rule
+> +on a VF representor applies in software to packets received on that representor
+> +netdevice, while in hardware offload it would apply to packets transmitted by
+> +the representee VF.  Conversely, a mirred egress redirect to a VF representor
+> +corresponds in hardware to delivery directly to the representee VF.
+> +
+> +What functions should have a representor?
+> +-----------------------------------------
+> +
+> +Essentially, for each virtual port on the device's internal switch, there
+> +should be a representor.
+> +Some vendors have chosen to omit representors for the uplink and the physical
+> +network port, which can simplify usage (the uplink netdev becomes in effect the
+> +physical port's representor) but does not generalise to devices with multiple
+> +ports or uplinks.
+> +
+> +Thus, the following should all have representors:
+> +
+> + - VFs belonging to the master PF.
+> + - Other PFs on the local PCIe controller, and any VFs belonging to them.
+> + - PFs and VFs on other PCIe controllers on the device (e.g. for any embedded
+> +   System-on-Chip within the SmartNIC).
+> + - PFs and VFs with other personalities, including network block devices (such
+> +   as a vDPA virtio-blk PF backed by remote/distributed storage), if their
+> +   network access is implemented through a virtual switch port.
+> +   Note that such functions can require a representor despite the representee
+> +   not having a netdev.
+> + - Subfunctions (SFs) belonging to any of the above PFs or VFs, if they have
+> +   their own port on the switch (as opposed to using their parent PF's port).
+> + - Any accelerators or plugins on the device whose interface to the network is
+> +   through a virtual switch port, even if they do not have a corresponding PCIe
+> +   PF or VF.
+> +
+> +This allows the entire switching behaviour of the NIC to be controlled through
+> +representor TC rules.
+> +
+> +A PCIe function which does not have network access through the internal switch
+> +(not even indirectly through the hardware implementation of whatever services
+> +the function provides) should *not* have a representor (even if it has a
+> +netdev).
+> +Such a function has no switch virtual port for the representor to configure or
+> +to be the other end of the virtual pipe.
+> +
+> +How are representors created?
+> +-----------------------------
+> +
+> +The driver instance attached to the master PF should enumerate the virtual ports
+> +on the switch, and for each representee, create a pure-software netdevice which
+> +has some form of in-kernel reference to the PF's own netdevice or driver private
+> +data (``netdev_priv()``).
+> +If switch ports can dynamically appear/disappear, the PF driver should create
+> +and destroy representors appropriately.
+> +The operations of the representor netdevice will generally involve acting
+> +through the master PF.  For example, ``ndo_start_xmit()`` might send the packet
+> +through a hardware TX queue attached to the master PF, with either packet
+> +metadata or queue configuration marking it for delivery to the representee.
+> +
+> +How are representors identified?
+> +--------------------------------
+> +
+> +The representor netdevice should *not* directly refer to a PCIe device (e.g.
+> +through ``net_dev->dev.parent`` / ``SET_NETDEV_DEV()``), either of the
+> +representee or of the master PF.
+
+Hi,
+maybe I'm confused here, but why representor should not refer to pci
+device ? it does exists today for systemd renaming.
+and this is used beside of implementing the other ndos you mention
+below.
+
+     udevadm output after linking to PCI device:
+     $ udevadm test-builtin net_id /sys/class/net/eth6
+     Load module index
+     Network interface NamePolicy= disabled on kernel command line, 
+ignoring.
+     Parsed configuration file /usr/lib/systemd/network/99-default.link
+     Created link configuration context.
+     Using default interface naming scheme 'v243'.
+     ID_NET_NAMING_SCHEME=v243
+     ID_NET_NAME_PATH=enp0s8f0npf0vf0
+     Unload module index
+     Unloaded link configuration context.
+
+$  git grep SET_NETDEV_DEV|grep rep
+drivers/net/ethernet/intel/ice/ice_repr.c: 
+SET_NETDEV_DEV(repr->netdev, ice_pf_to_dev(vf->pf));
+drivers/net/ethernet/mellanox/mlx5/core/en_rep.c: 
+SET_NETDEV_DEV(netdev, mdev->device);
+drivers/net/ethernet/netronome/nfp/flower/main.c: 
+SET_NETDEV_DEV(repr, &priv->nn->pdev->dev);
+
+
+> +Instead, it should implement the ``ndo_get_devlink_port()`` netdevice op, which
+> +the kernel uses to provide the ``phys_switch_id`` and ``phys_port_name`` sysfs
+> +nodes.  (Some legacy drivers implement ``ndo_get_port_parent_id()`` and
+> +``ndo_get_phys_port_name`` directly, but this is deprecated.)  See
+> +:ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>` for the
+> +details of this API.
+> +
+> +It is expected that userland will use this information (e.g. through udev rules)
+> +to construct an appropriately informative name or alias for the netdevice.  For
+> +instance if the master PF is ``eth4`` then a representor with a
+> +``phys_port_name`` of ``p0pf1vf2`` might be renamed ``eth4pf1vf2rep``.
+> +
+> +There are as yet no established conventions for naming representors which do not
+> +correspond to PCIe functions (e.g. accelerators and plugins).
+> +
+> +How do representors interact with TC rules?
+> +-------------------------------------------
+> +
+> +Any TC rule on a representor applies (in software TC) to packets received by
+> +that representor netdevice.  Thus, if the delivery part of the rule corresponds
+> +to another port on the virtual switch, the driver may choose to offload it to
+> +hardware, applying it to packets transmitted by the representee.
+> +
+> +Similarly, since a TC mirred egress action targeting the representor would (in
+> +software) send the packet through the representor (and thus indirectly deliver
+> +it to the representee), hardware offload should interpret this as delivery to
+> +the representee.
+> +
+> +As a simple example, if ``eth0`` is the master PF's netdevice and ``eth1`` is a
+> +VF representor, the following rules::
+> +
+> +    tc filter add dev eth1 parent ffff: protocol ipv4 flower \
+> +        action mirred egress redirect dev eth0
+> +    tc filter add dev eth0 parent ffff: protocol ipv4 flower \
+> +        action mirred egress mirror dev eth1
+> +
+> +would mean that all IPv4 packets from the VF are sent out the physical port, and
+> +all IPv4 packets received on the physical port are delivered to the VF in
+> +addition to the master PF.
+> +
+> +Of course the rules can (if supported by the NIC) include packet-modifying
+> +actions (e.g. VLAN push/pop), which should be performed by the virtual switch.
+> +
+> +Tunnel encapsulation and decapsulation are rather more complicated, as they
+> +involve a third netdevice (a tunnel netdev operating in metadata mode, such as
+> +a VxLAN device created with ``ip link add vxlan0 type vxlan external``) and
+> +require an IP address to be bound to the underlay device (e.g. master PF or port
+> +representor).  TC rules such as::
+> +
+> +    tc filter add dev eth1 parent ffff: flower \
+> +        action tunnel_key set id $VNI src_ip $LOCAL_IP dst_ip $REMOTE_IP \
+> +                              dst_port 4789 \
+> +        action mirred egress redirect dev vxlan0
+> +    tc filter add dev vxlan0 parent ffff: flower enc_src_ip $REMOTE_IP \
+> +        enc_dst_ip $LOCAL_IP enc_key_id $VNI enc_dst_port 4789 \
+> +        action tunnel_key unset action mirred egress redirect dev eth1
+> +
+> +where ``LOCAL_IP`` is an IP address bound to ``eth0``, and ``REMOTE_IP`` is
+> +another IP address on the same subnet, mean that packets sent by the VF should
+> +be VxLAN encapsulated and sent out the physical port (the driver has to deduce
+> +this by a route lookup of ``LOCAL_IP`` leading to ``eth0``, and also perform an
+> +ARP/neighbour table lookup to find the MAC addresses to use in the outer
+> +Ethernet frame), while UDP packets received on the physical port with UDP port
+> +4789 should be parsed as VxLAN and, if their VSID matches ``$VNI``, decapsulated
+> +and forwarded to the VF.
+> +
+> +If this all seems complicated, just remember the 'golden rule' of TC offload:
+> +the hardware should ensure the same final results as if the packets were
+> +processed through the slow path, traversed software TC and were transmitted or
+> +received through the representor netdevices.
+> +
+> +Configuring the representee's MAC
+> +---------------------------------
+> +
+> +The representee's link state is controlled through the representor.  Setting the
+> +representor administratively UP or DOWN should cause carrier ON or OFF at the
+> +representee.
+> +
+> +Setting an MTU on the representor should cause that same MTU to be reported to
+> +the representee.
+> +(On hardware that allows configuring separate and distinct MTU and MRU values,
+> +the representor MTU should correspond to the representee's MRU and vice-versa.)
+> +
+> +Currently there is no way to use the representor to set the station permanent
+> +MAC address of the representee; other methods available to do this include:
+> +
+> + - legacy SR-IOV (``ip link set DEVICE vf NUM mac LLADDR``)
+> + - devlink port function (see **devlink-port(8)** and
+> +   :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`)
+> diff --git a/Documentation/networking/switchdev.rst b/Documentation/networking/switchdev.rst
+> index f1f4e6a85a29..21e80c8e661b 100644
+> --- a/Documentation/networking/switchdev.rst
+> +++ b/Documentation/networking/switchdev.rst
+> @@ -1,5 +1,6 @@
+>   .. SPDX-License-Identifier: GPL-2.0
+>   .. include:: <isonum.txt>
+> +.. _switchdev:
+>   
+>   ===============================================
+>   Ethernet switch device driver model (switchdev)
