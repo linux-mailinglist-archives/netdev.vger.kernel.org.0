@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95DEB5985E2
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E5E45985F0
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245306AbiHRObt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:31:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53528 "EHLO
+        id S245305AbiHRObz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:31:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245180AbiHRObq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:31:46 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51CB6B9F89;
-        Thu, 18 Aug 2022 07:31:46 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id d20so1703046pfq.5;
-        Thu, 18 Aug 2022 07:31:46 -0700 (PDT)
+        with ESMTP id S245180AbiHRObw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:31:52 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7945B9F89;
+        Thu, 18 Aug 2022 07:31:51 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id u22so1642189plq.12;
+        Thu, 18 Aug 2022 07:31:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=51S9dT2G3aXePCnrE/PN1X8bOnyFVMn8Ux5epyAQWQw=;
-        b=Snljo/+katzYm1S8ojYVqCaSaKESK1ljndsaJlzs3c8AhsrzYbRv9I6T1bQBxxgppR
-         7T6YPv9CGg2pRiOTwx3jg27WxnB2YzkNqvaGBFMBO3Fw6+lCfz4SR3H/Cpmf/xlPbMaw
-         J2aNdyXVOC5eliet6WkG0q/QNdHtRprClQoOLyotQNi7Vi2ynk2mepc4SAZtc773bHyh
-         o9ykJMmMhaQz8teEky3Vke6Xn8Ppy5/K3jtvJXBpc2ssuO0anMN7Dpuwo312FLtSlW6B
-         3vZ57EgRgMqllC8fRv5gzJQZS4151OfxP0rQE/n+geleYz4CO38s8n3Uo8ai/1Jevdf8
-         ipTw==
+        bh=ZuUr0Lmb/ZOxk9PY5AfEZVtv5LOeYubF7wGlzoETmHE=;
+        b=d1Dmx23BuvVjJGEdABIJqux0UqGU7kR857GG+nUy3p5Gl+JFQRPnacYR5C1E11Ofv+
+         VQzRJXyagtlUyX2PsvUhvwbBEGI5jCo8K1MXP9YC9jrYwQ1ql3E23yGsomtt3aLtLkyG
+         6jlsslfX7hAUQnLnftrWYWKn1ckbPQdwKng7PSX/hzD0DU1ebls3NA0vJ28f+kCAbJzx
+         Dnbnw+RjYZUrzVphtx6OF+YrhmHnSp3Z5NGEX6Pky5rHNvrD7tahg66442kAz7OJTR+Q
+         Xfox1U4JtTXiJmuNH/IzeI1IAXmH9WYKpr67CkHaEi1FWvYNxiP6kgVw4yJMKC3uCG38
+         /OMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=51S9dT2G3aXePCnrE/PN1X8bOnyFVMn8Ux5epyAQWQw=;
-        b=JAjoJgZLusL2qPhRX/qTCVGaSepFyti/W4TlFwxZVGtYPlhgq8o7jKSnA4ZqF8HTkJ
-         qxqS8iIm6iwNHS5w7lnKKL1Pz07oqLCiNfqYh2fMdfpeqehMnrzpIfDwpZIVtFoUbBGz
-         /kZC+a79mNkyi8NBooyYxC8mmxKH/V25/PruWh3q5FV620p92RJrNeM61bP/k/kHBXZg
-         FbzcESb4l2asmh/64oCrugyUz9Iaj3I7nfUXe/KnH8uiXwphLNujOPx8ggKPWYLsybGl
-         T/XgBMD546C6DR9o44r8DZomRL46eWavnEhG82cBEukiq0T7ApdlUhZSUQHmBrek4XFX
-         /tZw==
-X-Gm-Message-State: ACgBeo0aZuHctLnbxrAa6qBLks2Up50nLpJy0gIvmiPCCjOMMJkl66wf
-        KDRiacbkGItyHoQ67Xn/I7Q=
-X-Google-Smtp-Source: AA6agR4/IcIPwFl8NjZf201BmyQdHaE6fvOSIZxi9N2e4RlcPtMrgMGi0rFoxp19D9oRoi7uY7hWEg==
-X-Received: by 2002:a05:6a00:3691:b0:535:d465:45c5 with SMTP id dw17-20020a056a00369100b00535d46545c5mr2313132pfb.30.1660833105886;
-        Thu, 18 Aug 2022 07:31:45 -0700 (PDT)
+        bh=ZuUr0Lmb/ZOxk9PY5AfEZVtv5LOeYubF7wGlzoETmHE=;
+        b=kg4D9J16c5QEOT3Cm1UbAFfKFtAmBiXruh3108X1k4fa3g45cew7SVxAX2FwP/K61A
+         sK3s8xh0h95mjfTt2phwcBDxtXOwi2BKx2FjdxJxg0dsDteWfgohkd25lVDjn4MfuPDL
+         e1pYE92YEAtL1zPtt+dkCuS/lN7Z0FxkpzZ2gcMkjAdvp+o72J9cWN42Sp/9ykUBrmrQ
+         gQiM1NPSJ9Xo9IEWKvjPDB5Zu6gbuBbYuNr6rjO69oAp7khx9+wQhasM7jM2auxufSiF
+         A9SWV8iFpxbLC5f8CbasUbZUDNW6H9xq9U/2X8aU5eBOV4dUY2sldtushRvCMzDy/gAZ
+         SArA==
+X-Gm-Message-State: ACgBeo0/hB8EKaaEkczfh4+5sezxvfFlcuVDHMR61FA36vgIwdqGAF2n
+        UcBoupMU1pv3aufZc/DQFDM=
+X-Google-Smtp-Source: AA6agR7c8t/UNHEBNrrIWCnH4P2UoAcPiCKseHMm/BYgU8xvPNvxWD6o9PWbAC1k+VmB22rXaSPvww==
+X-Received: by 2002:a17:902:a5c5:b0:16f:1e31:daab with SMTP id t5-20020a170902a5c500b0016f1e31daabmr2876148plq.82.1660833111438;
+        Thu, 18 Aug 2022 07:31:51 -0700 (PDT)
 Received: from vultr.guest ([45.32.72.237])
-        by smtp.gmail.com with ESMTPSA id h5-20020a63f905000000b003fdc16f5de2sm1379124pgi.15.2022.08.18.07.31.42
+        by smtp.gmail.com with ESMTPSA id h5-20020a63f905000000b003fdc16f5de2sm1379124pgi.15.2022.08.18.07.31.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 07:31:45 -0700 (PDT)
+        Thu, 18 Aug 2022 07:31:50 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -58,9 +58,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
 Cc:     cgroups@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-mm@kvack.org,
         Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next v2 03/12] bpf: Define bpf_map_{get,put}_memcg for !CONFIG_MEMCG_KMEM
-Date:   Thu, 18 Aug 2022 14:31:09 +0000
-Message-Id: <20220818143118.17733-4-laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v2 04/12] bpf: Call bpf_map_init_from_attr() immediately after map creation
+Date:   Thu, 18 Aug 2022 14:31:10 +0000
+Message-Id: <20220818143118.17733-5-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220818143118.17733-1-laoar.shao@gmail.com>
 References: <20220818143118.17733-1-laoar.shao@gmail.com>
@@ -76,111 +76,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can use this helper when CONFIG_MEMCG_KMEM or CONFIG_MEMCG is not set.
-It also moves bpf_map_{get,put}_memcg into include/linux/bpf.h, so
-these two helpers can be used in other source files.
+In order to make all other map related memory allocations been allocated
+after memcg is saved in the map, we should save the memcg immediately
+after map creation. But the map is created in bpf_map_area_alloc(),
+within which we can't get the related bpf_map (except with a pointer
+casting which may be error prone), so we can do it in
+bpf_map_init_from_attr(), which is used by all bpf maps.
+
+bpf_map_init_from_attr() is executed immediately after
+bpf_map_area_alloc() for almost all bpf maps except bpf_struct_ops,
+devmap and hashmap, so this patch changes these three maps.
+
+In the future we will change the return type of bpf_map_init_from_attr()
+from void to int for error cases, so put it immediately after
+bpf_map_area_alloc() will make it eary to handle the error case.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- include/linux/bpf.h        | 26 ++++++++++++++++++++++++++
- include/linux/memcontrol.h | 10 ++++++++++
- kernel/bpf/syscall.c       | 13 -------------
- 3 files changed, 36 insertions(+), 13 deletions(-)
+ kernel/bpf/bpf_struct_ops.c | 2 +-
+ kernel/bpf/devmap.c         | 5 ++---
+ kernel/bpf/hashtab.c        | 4 ++--
+ 3 files changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index a627a02..ded7d23 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -27,6 +27,7 @@
- #include <linux/bpfptr.h>
- #include <linux/btf.h>
- #include <linux/rcupdate_trace.h>
-+#include <linux/memcontrol.h>
+diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
+index 84b2d9d..36f24f8 100644
+--- a/kernel/bpf/bpf_struct_ops.c
++++ b/kernel/bpf/bpf_struct_ops.c
+@@ -624,6 +624,7 @@ static struct bpf_map *bpf_struct_ops_map_alloc(union bpf_attr *attr)
  
- struct bpf_verifier_env;
- struct bpf_verifier_log;
-@@ -2572,4 +2573,29 @@ static inline void bpf_cgroup_atype_get(u32 attach_btf_id, int cgroup_atype) {}
- static inline void bpf_cgroup_atype_put(int cgroup_atype) {}
- #endif /* CONFIG_BPF_LSM */
+ 	st_map->st_ops = st_ops;
+ 	map = &st_map->map;
++	bpf_map_init_from_attr(map, attr);
  
-+#ifdef CONFIG_MEMCG_KMEM
-+static inline struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
-+{
-+	if (map->objcg)
-+		return get_mem_cgroup_from_objcg(map->objcg);
-+
-+	return root_mem_cgroup;
-+}
-+
-+static inline void bpf_map_put_memcg(struct mem_cgroup *memcg)
-+{
-+	mem_cgroup_put(memcg);
-+}
-+
-+#else
-+static inline struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
-+{
-+	return root_memcg();
-+}
-+
-+static inline void bpf_map_put_memcg(struct mem_cgroup *memcg)
-+{
-+}
-+#endif
-+
- #endif /* _LINUX_BPF_H */
-diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-index 9ecead1..2f0a611 100644
---- a/include/linux/memcontrol.h
-+++ b/include/linux/memcontrol.h
-@@ -361,6 +361,11 @@ struct mem_cgroup {
+ 	st_map->uvalue = bpf_map_area_alloc(vt->size, NUMA_NO_NODE);
+ 	st_map->links =
+@@ -637,7 +638,6 @@ static struct bpf_map *bpf_struct_ops_map_alloc(union bpf_attr *attr)
  
- extern struct mem_cgroup *root_mem_cgroup;
+ 	mutex_init(&st_map->lock);
+ 	set_vm_flush_reset_perms(st_map->image);
+-	bpf_map_init_from_attr(map, attr);
  
-+static inline struct mem_cgroup *root_memcg(void)
-+{
-+	return root_mem_cgroup;
-+}
-+
- enum page_memcg_data_flags {
- 	/* page->memcg_data is a pointer to an objcgs vector */
- 	MEMCG_DATA_OBJCGS = (1UL << 0),
-@@ -1138,6 +1143,11 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
- #define MEM_CGROUP_ID_SHIFT	0
- #define MEM_CGROUP_ID_MAX	0
- 
-+static inline struct mem_cgroup *root_memcg(void)
-+{
-+	return NULL;
-+}
-+
- static inline struct mem_cgroup *folio_memcg(struct folio *folio)
- {
- 	return NULL;
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 2f18ae2..19c3a81 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -433,19 +433,6 @@ static void bpf_map_release_memcg(struct bpf_map *map)
- 		obj_cgroup_put(map->objcg);
+ 	return map;
  }
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index f9a87dc..20decc7 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -127,9 +127,6 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 	 */
+ 	attr->map_flags |= BPF_F_RDONLY_PROG;
  
--static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
--{
--	if (map->objcg)
--		return get_mem_cgroup_from_objcg(map->objcg);
 -
--	return root_mem_cgroup;
--}
+-	bpf_map_init_from_attr(&dtab->map, attr);
 -
--static void bpf_map_put_memcg(struct mem_cgroup *memcg)
--{
--	mem_cgroup_put(memcg);
--}
+ 	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		dtab->n_buckets = roundup_pow_of_two(dtab->map.max_entries);
+ 
+@@ -167,6 +164,8 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+ 	if (!dtab)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	bpf_map_init_from_attr(&dtab->map, attr);
++
+ 	err = dev_map_init_map(dtab, attr);
+ 	if (err) {
+ 		bpf_map_area_free(dtab);
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 8392f7f..48dc04c 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -499,10 +499,10 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+ 	if (!htab)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	lockdep_register_key(&htab->lockdep_key);
 -
- void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
- 			   int node)
- {
+ 	bpf_map_init_from_attr(&htab->map, attr);
+ 
++	lockdep_register_key(&htab->lockdep_key);
++
+ 	if (percpu_lru) {
+ 		/* ensure each CPU's lru list has >=1 elements.
+ 		 * since we are at it, make each lru list has the same
 -- 
 1.8.3.1
 
