@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BBFF5985E7
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:33:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 797F6598600
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245311AbiHROb6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:31:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53596 "EHLO
+        id S239109AbiHROcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:32:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245180AbiHROb4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:31:56 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75ABB9FAD;
-        Thu, 18 Aug 2022 07:31:54 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id 20so1645811plo.10;
-        Thu, 18 Aug 2022 07:31:54 -0700 (PDT)
+        with ESMTP id S245159AbiHROb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:31:59 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4605B9F89;
+        Thu, 18 Aug 2022 07:31:57 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id x15so814278pfp.4;
+        Thu, 18 Aug 2022 07:31:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=uJuEbaEmBO8baBGpsUUDvamw98XhcvJRwwJ2WD0RIKw=;
-        b=a32b18qRUiOvyUNSMksCfLkNXdnc7+RSMEY3p3IUko8sb/JQoiH2hxEMjoZycrvXnS
-         0iC2w6VtQMhmRB1jHZlmC1CjR8zwB959WEhgCy3pucrqEp/PSzKQvqRMS3YsQfa4/SKP
-         sIZ4tVv9TxKTlopZKiypxfutt1uWjpMbfuFbBCtX5M7/3t4cdR/H9XtCa2ok6v6cocGD
-         UHv7ks6YOSLlraiamjEQrgJLooUm3IVy6UyD3MtBaqNwMje8LyzhSNTu4eUjCh90HGyQ
-         V3wnqES6JRfW+br157liVGS0sesB/gXndHwy3lB7xFswmNrqfAGYxV6WUt1w33X9qXL4
-         lPBA==
+        bh=QGQz0k6TbsAnAJbmJctQ4nS+LAE6qyUHyo74uqh9bAo=;
+        b=Y2IslTLwaCFiHWqssLCfkPf+GGGOThTb2gxHQ79SNgpleMW8s4rGovLpPXzuR2pnq4
+         LwEdC329T4CN+tdTQZBQukw+i521mkCLJDVAjqbYz31H5XsQo6tsZWSjRz23E41w7pxQ
+         5OGbzZaYJz255Zg+9bOLI6U1pnduB5nu2p47FCd79gNvhz5vTNj5wetgJPcpnw/b+pHo
+         ypXJIQJadBkoTnCyZPDJL3/fLIynj6cyay52sAlPvmb4vAsPkBRdSOnYqr4A0cKTLWBo
+         JZ14gSbNC2WUV4vQlXkQ0QPudDeQBbXAmrQ78mxhGjIPmy70UW7AUOAATwtZEIinSrqy
+         vIDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=uJuEbaEmBO8baBGpsUUDvamw98XhcvJRwwJ2WD0RIKw=;
-        b=EtwcqNwaF23aFi/8u0lkeIRAvQM4Rk8gb63Aehp7sUk4rzznPFAtxuBlhdqcbPL5GG
-         VkgSXARMOWiwrdesWP75jPc6bX4q0rs2D883HzrTkIwlyNmDQMiz0t4fRVectZ2eJZix
-         p6qyYFnRsctQzE1JRg8qaBZ+t2GDqcBeEa27pjFCVxiUVo1tX6ElHLw7ZNcBIVJIgBzl
-         LjvjDduPQAb2++vIvNryVRYDw5TF2nYBXvll+nBqGghRTAI/f/q3PLA25DmXRK8cG74E
-         fYMwu0vJMfAF0P/MnO2YQgLHknUsY99Z9yllr7RAo/rqjpLDw6IyL3sY/W41lK/j6m3V
-         z+Vw==
-X-Gm-Message-State: ACgBeo3PJMnJN0qXXNyPAqwnTXbVbZlKuVVis6APzVTKJM5xRvEwZSKC
-        jF/x6En0oMfceS5daHiHJL8=
-X-Google-Smtp-Source: AA6agR4dAEPSIrjJLVed0oJ5tPjhwG4QUWaDBvIeFaeBMGQUBcy2h7+UJGNA2nNEPs40mtDFB4sijA==
-X-Received: by 2002:a17:90b:5096:b0:1fa:59f6:a442 with SMTP id rt22-20020a17090b509600b001fa59f6a442mr9062340pjb.81.1660833114252;
-        Thu, 18 Aug 2022 07:31:54 -0700 (PDT)
+        bh=QGQz0k6TbsAnAJbmJctQ4nS+LAE6qyUHyo74uqh9bAo=;
+        b=VlzjSfKeZOZKXGmTjQ5qMZoKXDKfIWav/MqQyAALBu07dw7CMuOGYaH1WoxkfCIxtA
+         yPmBddg6QzEz7b8jJRpiiwATNbLjnzR/aQmytjROAluvJJ6L6AGibTgRIZfgoVudD2od
+         7yf0j2xYCGaeWtXFov7OhGIR4yyZ9nJfeaHV0lcqzYmHARvFLCPKXahViGFWe8TBQ0Ae
+         ADcoD4vb/H/RmHg57xdA4t1yMuy9HnsdOjJOSJoLPMbla04VLek7LqinGfxA7cavTqg9
+         50aNY5+j40VmDv4h0IARIvSBTdgaPztp26gGBD63RvcLa4F/cfF1oQqWeiLMa4d1uXvC
+         IxLQ==
+X-Gm-Message-State: ACgBeo3Ij7pPogrmqhLnm3JSaziYrrpGzNvH3zpNEK5bisyHARgObZdU
+        ha1wk70ook7VPCSeUUiQaSk=
+X-Google-Smtp-Source: AA6agR72O7XCUYbrdl0F9W19fLbiqcTPDipxkOWq0k58kGZZmD+rdPMbQu98Agw1M7MO/RJWdnjVJg==
+X-Received: by 2002:a63:415:0:b0:422:6de7:d9b7 with SMTP id 21-20020a630415000000b004226de7d9b7mr2715524pge.432.1660833116970;
+        Thu, 18 Aug 2022 07:31:56 -0700 (PDT)
 Received: from vultr.guest ([45.32.72.237])
-        by smtp.gmail.com with ESMTPSA id h5-20020a63f905000000b003fdc16f5de2sm1379124pgi.15.2022.08.18.07.31.51
+        by smtp.gmail.com with ESMTPSA id h5-20020a63f905000000b003fdc16f5de2sm1379124pgi.15.2022.08.18.07.31.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 07:31:53 -0700 (PDT)
+        Thu, 18 Aug 2022 07:31:56 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -58,9 +58,9 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
 Cc:     cgroups@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-mm@kvack.org,
         Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next v2 05/12] bpf: Save memcg in bpf_map_init_from_attr()
-Date:   Thu, 18 Aug 2022 14:31:11 +0000
-Message-Id: <20220818143118.17733-6-laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v2 06/12] bpf: Use scoped-based charge in bpf_map_area_alloc
+Date:   Thu, 18 Aug 2022 14:31:12 +0000
+Message-Id: <20220818143118.17733-7-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220818143118.17733-1-laoar.shao@gmail.com>
 References: <20220818143118.17733-1-laoar.shao@gmail.com>
@@ -76,554 +76,443 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move bpf_map_save_memcg() into bpf_map_init_from_attr(), then all other
-map related memory allocation will be allocated after saving the memcg.
-And then we can get memcg from the map in the followup memory allocation.
-
-To pair with this change, bpf_map_release_memcg() is moved into
-bpf_map_area_free(). A new parameter struct bpf_map is introduced into
-bpf_map_area_free() for this purpose.
+Currently bpf_map_area_alloc() is used to allocate a container of struct
+bpf_map or members in this container.  To distinguish the map creation
+and the other case, a new parameter struct bpf_map is added into
+bpf_map_area_alloc(). Then for the non-map-creation case, we could get
+the memcg from the map instead of using the current memcg.
 
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
  include/linux/bpf.h            |  2 +-
- kernel/bpf/arraymap.c          |  8 +++---
+ kernel/bpf/arraymap.c          |  2 +-
  kernel/bpf/bloom_filter.c      |  2 +-
- kernel/bpf/bpf_local_storage.c |  4 +--
- kernel/bpf/bpf_struct_ops.c    |  6 ++---
- kernel/bpf/cpumap.c            |  6 ++---
- kernel/bpf/devmap.c            |  8 +++---
- kernel/bpf/hashtab.c           | 10 +++----
+ kernel/bpf/bpf_local_storage.c |  2 +-
+ kernel/bpf/bpf_struct_ops.c    |  6 +++---
+ kernel/bpf/cpumap.c            |  5 +++--
+ kernel/bpf/devmap.c            | 13 ++++++++-----
+ kernel/bpf/hashtab.c           |  8 +++++---
  kernel/bpf/local_storage.c     |  2 +-
  kernel/bpf/lpm_trie.c          |  2 +-
- kernel/bpf/offload.c           |  4 +--
+ kernel/bpf/offload.c           |  2 +-
  kernel/bpf/queue_stack_maps.c  |  2 +-
  kernel/bpf/reuseport_array.c   |  2 +-
- kernel/bpf/ringbuf.c           |  8 +++---
- kernel/bpf/stackmap.c          |  8 +++---
- kernel/bpf/syscall.c           | 60 ++++++++++++++++++++++--------------------
- net/core/sock_map.c            | 12 ++++-----
+ kernel/bpf/ringbuf.c           | 15 +++++++++------
+ kernel/bpf/stackmap.c          |  5 +++--
+ kernel/bpf/syscall.c           | 16 ++++++++++++++--
+ net/core/sock_map.c            | 10 ++++++----
  net/xdp/xskmap.c               |  2 +-
- 18 files changed, 76 insertions(+), 72 deletions(-)
+ 18 files changed, 61 insertions(+), 37 deletions(-)
 
 diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index ded7d23..6f85137 100644
+index 6f85137..066f351d 100644
 --- a/include/linux/bpf.h
 +++ b/include/linux/bpf.h
-@@ -1637,7 +1637,7 @@ struct bpf_prog *bpf_prog_get_type_dev(u32 ufd, enum bpf_prog_type type,
+@@ -1635,7 +1635,7 @@ struct bpf_prog *bpf_prog_get_type_dev(u32 ufd, enum bpf_prog_type type,
+ struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map);
+ void bpf_map_put_with_uref(struct bpf_map *map);
  void bpf_map_put(struct bpf_map *map);
- void *bpf_map_area_alloc(u64 size, int numa_node);
+-void *bpf_map_area_alloc(u64 size, int numa_node);
++void *bpf_map_area_alloc(u64 size, int numa_node, struct bpf_map *map);
  void *bpf_map_area_mmapable_alloc(u64 size, int numa_node);
--void bpf_map_area_free(void *base);
-+void bpf_map_area_free(void *base, struct bpf_map *map);
+ void bpf_map_area_free(void *base, struct bpf_map *map);
  bool bpf_map_write_active(const struct bpf_map *map);
- void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr);
- int  generic_map_lookup_batch(struct bpf_map *map,
 diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
-index d3e734b..9ce4d1b 100644
+index 9ce4d1b..80974c5 100644
 --- a/kernel/bpf/arraymap.c
 +++ b/kernel/bpf/arraymap.c
-@@ -147,7 +147,7 @@ static struct bpf_map *array_map_alloc(union bpf_attr *attr)
- 	array->elem_size = elem_size;
- 
- 	if (percpu && bpf_array_alloc_percpu(array)) {
--		bpf_map_area_free(array);
-+		bpf_map_area_free(array, &array->map);
- 		return ERR_PTR(-ENOMEM);
+@@ -135,7 +135,7 @@ static struct bpf_map *array_map_alloc(union bpf_attr *attr)
+ 		array = data + PAGE_ALIGN(sizeof(struct bpf_array))
+ 			- offsetof(struct bpf_array, value);
+ 	} else {
+-		array = bpf_map_area_alloc(array_size, numa_node);
++		array = bpf_map_area_alloc(array_size, numa_node, NULL);
  	}
- 
-@@ -430,9 +430,9 @@ static void array_map_free(struct bpf_map *map)
- 		bpf_array_free_percpu(array);
- 
- 	if (array->map.map_flags & BPF_F_MMAPABLE)
--		bpf_map_area_free(array_map_vmalloc_addr(array));
-+		bpf_map_area_free(array_map_vmalloc_addr(array), map);
- 	else
--		bpf_map_area_free(array);
-+		bpf_map_area_free(array, map);
- }
- 
- static void array_map_seq_show_elem(struct bpf_map *map, void *key,
-@@ -774,7 +774,7 @@ static void fd_array_map_free(struct bpf_map *map)
- 	for (i = 0; i < array->map.max_entries; i++)
- 		BUG_ON(array->ptrs[i] != NULL);
- 
--	bpf_map_area_free(array);
-+	bpf_map_area_free(array, map);
- }
- 
- static void *fd_array_map_lookup_elem(struct bpf_map *map, void *key)
+ 	if (!array)
+ 		return ERR_PTR(-ENOMEM);
 diff --git a/kernel/bpf/bloom_filter.c b/kernel/bpf/bloom_filter.c
-index b9ea539..e59064d 100644
+index e59064d..6691f79 100644
 --- a/kernel/bpf/bloom_filter.c
 +++ b/kernel/bpf/bloom_filter.c
-@@ -168,7 +168,7 @@ static void bloom_map_free(struct bpf_map *map)
- 	struct bpf_bloom_filter *bloom =
- 		container_of(map, struct bpf_bloom_filter, map);
+@@ -142,7 +142,7 @@ static struct bpf_map *bloom_map_alloc(union bpf_attr *attr)
+ 	}
  
--	bpf_map_area_free(bloom);
-+	bpf_map_area_free(bloom, map);
- }
+ 	bitset_bytes = roundup(bitset_bytes, sizeof(unsigned long));
+-	bloom = bpf_map_area_alloc(sizeof(*bloom) + bitset_bytes, numa_node);
++	bloom = bpf_map_area_alloc(sizeof(*bloom) + bitset_bytes, numa_node, NULL);
  
- static void *bloom_map_lookup_elem(struct bpf_map *map, void *key)
+ 	if (!bloom)
+ 		return ERR_PTR(-ENOMEM);
 diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storage.c
-index 4ee2e72..77e075b 100644
+index 77e075b..67ab249 100644
 --- a/kernel/bpf/bpf_local_storage.c
 +++ b/kernel/bpf/bpf_local_storage.c
-@@ -582,7 +582,7 @@ void bpf_local_storage_map_free(struct bpf_local_storage_map *smap,
- 	synchronize_rcu();
+@@ -610,7 +610,7 @@ struct bpf_local_storage_map *bpf_local_storage_map_alloc(union bpf_attr *attr)
+ 	unsigned int i;
+ 	u32 nbuckets;
  
- 	kvfree(smap->buckets);
--	bpf_map_area_free(smap);
-+	bpf_map_area_free(smap, &smap->map);
- }
- 
- int bpf_local_storage_map_alloc_check(union bpf_attr *attr)
-@@ -623,7 +623,7 @@ struct bpf_local_storage_map *bpf_local_storage_map_alloc(union bpf_attr *attr)
- 	smap->buckets = kvcalloc(sizeof(*smap->buckets), nbuckets,
- 				 GFP_USER | __GFP_NOWARN | __GFP_ACCOUNT);
- 	if (!smap->buckets) {
--		bpf_map_area_free(smap);
-+		bpf_map_area_free(smap, &smap->map);
+-	smap = bpf_map_area_alloc(sizeof(*smap), NUMA_NO_NODE);
++	smap = bpf_map_area_alloc(sizeof(*smap), NUMA_NO_NODE, NULL);
+ 	if (!smap)
  		return ERR_PTR(-ENOMEM);
- 	}
- 
+ 	bpf_map_init_from_attr(&smap->map, attr);
 diff --git a/kernel/bpf/bpf_struct_ops.c b/kernel/bpf/bpf_struct_ops.c
-index 36f24f8..9fb8ad1 100644
+index 9fb8ad1..37ba5c0 100644
 --- a/kernel/bpf/bpf_struct_ops.c
 +++ b/kernel/bpf/bpf_struct_ops.c
-@@ -577,10 +577,10 @@ static void bpf_struct_ops_map_free(struct bpf_map *map)
+@@ -618,7 +618,7 @@ static struct bpf_map *bpf_struct_ops_map_alloc(union bpf_attr *attr)
+ 		 */
+ 		(vt->size - sizeof(struct bpf_struct_ops_value));
  
- 	if (st_map->links)
- 		bpf_struct_ops_map_put_progs(st_map);
--	bpf_map_area_free(st_map->links);
-+	bpf_map_area_free(st_map->links, NULL);
- 	bpf_jit_free_exec(st_map->image);
--	bpf_map_area_free(st_map->uvalue);
--	bpf_map_area_free(st_map);
-+	bpf_map_area_free(st_map->uvalue, NULL);
-+	bpf_map_area_free(st_map, map);
- }
+-	st_map = bpf_map_area_alloc(st_map_size, NUMA_NO_NODE);
++	st_map = bpf_map_area_alloc(st_map_size, NUMA_NO_NODE, NULL);
+ 	if (!st_map)
+ 		return ERR_PTR(-ENOMEM);
  
- static int bpf_struct_ops_map_alloc_check(union bpf_attr *attr)
+@@ -626,10 +626,10 @@ static struct bpf_map *bpf_struct_ops_map_alloc(union bpf_attr *attr)
+ 	map = &st_map->map;
+ 	bpf_map_init_from_attr(map, attr);
+ 
+-	st_map->uvalue = bpf_map_area_alloc(vt->size, NUMA_NO_NODE);
++	st_map->uvalue = bpf_map_area_alloc(vt->size, NUMA_NO_NODE, map);
+ 	st_map->links =
+ 		bpf_map_area_alloc(btf_type_vlen(t) * sizeof(struct bpf_links *),
+-				   NUMA_NO_NODE);
++				   NUMA_NO_NODE, map);
+ 	st_map->image = bpf_jit_alloc_exec(PAGE_SIZE);
+ 	if (!st_map->uvalue || !st_map->links || !st_map->image) {
+ 		bpf_struct_ops_map_free(map);
 diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index b5ba34d..7de2ae6 100644
+index 7de2ae6..b593157 100644
 --- a/kernel/bpf/cpumap.c
 +++ b/kernel/bpf/cpumap.c
-@@ -118,7 +118,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+@@ -97,7 +97,7 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+ 	    attr->map_flags & ~BPF_F_NUMA_NODE)
+ 		return ERR_PTR(-EINVAL);
  
- 	return &cmap->map;
- free_cmap:
--	bpf_map_area_free(cmap);
-+	bpf_map_area_free(cmap, &cmap->map);
- 	return ERR_PTR(err);
- }
+-	cmap = bpf_map_area_alloc(sizeof(*cmap), NUMA_NO_NODE);
++	cmap = bpf_map_area_alloc(sizeof(*cmap), NUMA_NO_NODE, NULL);
+ 	if (!cmap)
+ 		return ERR_PTR(-ENOMEM);
  
-@@ -622,8 +622,8 @@ static void cpu_map_free(struct bpf_map *map)
- 		/* bq flush and cleanup happens after RCU grace-period */
- 		__cpu_map_entry_replace(cmap, i, NULL); /* call_rcu */
- 	}
--	bpf_map_area_free(cmap->cpu_map);
--	bpf_map_area_free(cmap);
-+	bpf_map_area_free(cmap->cpu_map, NULL);
-+	bpf_map_area_free(cmap, map);
- }
+@@ -112,7 +112,8 @@ static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
+ 	/* Alloc array for possible remote "destination" CPUs */
+ 	cmap->cpu_map = bpf_map_area_alloc(cmap->map.max_entries *
+ 					   sizeof(struct bpf_cpu_map_entry *),
+-					   cmap->map.numa_node);
++					   cmap->map.numa_node,
++					   &cmap->map);
+ 	if (!cmap->cpu_map)
+ 		goto free_cmap;
  
- /* Elements are kept alive by RCU; either by rcu_read_lock() (from syscall) or
 diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
-index 20decc7..3268ce7 100644
+index 3268ce7..807a4cd 100644
 --- a/kernel/bpf/devmap.c
 +++ b/kernel/bpf/devmap.c
-@@ -168,7 +168,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+@@ -89,12 +89,13 @@ struct bpf_dtab {
+ static LIST_HEAD(dev_map_list);
  
- 	err = dev_map_init_map(dtab, attr);
- 	if (err) {
--		bpf_map_area_free(dtab);
-+		bpf_map_area_free(dtab, &dtab->map);
- 		return ERR_PTR(err);
- 	}
+ static struct hlist_head *dev_map_create_hash(unsigned int entries,
+-					      int numa_node)
++					      int numa_node,
++					      struct bpf_map *map)
+ {
+ 	int i;
+ 	struct hlist_head *hash;
  
-@@ -221,7 +221,7 @@ static void dev_map_free(struct bpf_map *map)
- 			}
- 		}
+-	hash = bpf_map_area_alloc((u64) entries * sizeof(*hash), numa_node);
++	hash = bpf_map_area_alloc((u64) entries * sizeof(*hash), numa_node, map);
+ 	if (hash != NULL)
+ 		for (i = 0; i < entries; i++)
+ 			INIT_HLIST_HEAD(&hash[i]);
+@@ -136,7 +137,8 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
  
--		bpf_map_area_free(dtab->dev_index_head);
-+		bpf_map_area_free(dtab->dev_index_head, NULL);
+ 	if (attr->map_type == BPF_MAP_TYPE_DEVMAP_HASH) {
+ 		dtab->dev_index_head = dev_map_create_hash(dtab->n_buckets,
+-							   dtab->map.numa_node);
++							   dtab->map.numa_node,
++							   &dtab->map);
+ 		if (!dtab->dev_index_head)
+ 			return -ENOMEM;
+ 
+@@ -144,7 +146,8 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
  	} else {
- 		for (i = 0; i < dtab->map.max_entries; i++) {
- 			struct bpf_dtab_netdev *dev;
-@@ -236,10 +236,10 @@ static void dev_map_free(struct bpf_map *map)
- 			kfree(dev);
- 		}
- 
--		bpf_map_area_free(dtab->netdev_map);
-+		bpf_map_area_free(dtab->netdev_map, NULL);
+ 		dtab->netdev_map = bpf_map_area_alloc((u64) dtab->map.max_entries *
+ 						      sizeof(struct bpf_dtab_netdev *),
+-						      dtab->map.numa_node);
++						      dtab->map.numa_node,
++						      &dtab->map);
+ 		if (!dtab->netdev_map)
+ 			return -ENOMEM;
  	}
+@@ -160,7 +163,7 @@ static struct bpf_map *dev_map_alloc(union bpf_attr *attr)
+ 	if (!capable(CAP_NET_ADMIN))
+ 		return ERR_PTR(-EPERM);
  
--	bpf_map_area_free(dtab);
-+	bpf_map_area_free(dtab, &dtab->map);
- }
+-	dtab = bpf_map_area_alloc(sizeof(*dtab), NUMA_NO_NODE);
++	dtab = bpf_map_area_alloc(sizeof(*dtab), NUMA_NO_NODE, NULL);
+ 	if (!dtab)
+ 		return ERR_PTR(-ENOMEM);
  
- static int dev_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
 diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 48dc04c..1b3653d 100644
+index 1b3653d..e9a6d2c4 100644
 --- a/kernel/bpf/hashtab.c
 +++ b/kernel/bpf/hashtab.c
-@@ -290,7 +290,7 @@ static void htab_free_elems(struct bpf_htab *htab)
- 		cond_resched();
- 	}
- free_elems:
--	bpf_map_area_free(htab->elems);
-+	bpf_map_area_free(htab->elems, NULL);
- }
+@@ -332,7 +332,8 @@ static int prealloc_init(struct bpf_htab *htab)
+ 		num_entries += num_possible_cpus();
  
- /* The LRU list has a lock (lru_lock). Each htab bucket has a lock
-@@ -576,10 +576,10 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
- free_map_locked:
- 	for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
- 		free_percpu(htab->map_locked[i]);
--	bpf_map_area_free(htab->buckets);
-+	bpf_map_area_free(htab->buckets, NULL);
- free_htab:
- 	lockdep_unregister_key(&htab->lockdep_key);
--	bpf_map_area_free(htab);
-+	bpf_map_area_free(htab, &htab->map);
- 	return ERR_PTR(err);
- }
+ 	htab->elems = bpf_map_area_alloc((u64)htab->elem_size * num_entries,
+-					 htab->map.numa_node);
++					 htab->map.numa_node,
++					 &htab->map);
+ 	if (!htab->elems)
+ 		return -ENOMEM;
  
-@@ -1492,11 +1492,11 @@ static void htab_map_free(struct bpf_map *map)
+@@ -495,7 +496,7 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+ 	struct bpf_htab *htab;
+ 	int err, i;
  
- 	bpf_map_free_kptr_off_tab(map);
- 	free_percpu(htab->extra_elems);
--	bpf_map_area_free(htab->buckets);
-+	bpf_map_area_free(htab->buckets, NULL);
- 	for (i = 0; i < HASHTAB_MAP_LOCK_COUNT; i++)
- 		free_percpu(htab->map_locked[i]);
- 	lockdep_unregister_key(&htab->lockdep_key);
--	bpf_map_area_free(htab);
-+	bpf_map_area_free(htab, map);
- }
+-	htab = bpf_map_area_alloc(sizeof(*htab), NUMA_NO_NODE);
++	htab = bpf_map_area_alloc(sizeof(*htab), NUMA_NO_NODE, NULL);
+ 	if (!htab)
+ 		return ERR_PTR(-ENOMEM);
  
- static void htab_map_seq_show_elem(struct bpf_map *map, void *key,
+@@ -534,7 +535,8 @@ static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+ 	err = -ENOMEM;
+ 	htab->buckets = bpf_map_area_alloc(htab->n_buckets *
+ 					   sizeof(struct bucket),
+-					   htab->map.numa_node);
++					   htab->map.numa_node,
++					   &htab->map);
+ 	if (!htab->buckets)
+ 		goto free_htab;
+ 
 diff --git a/kernel/bpf/local_storage.c b/kernel/bpf/local_storage.c
-index 098cf33..c705d66 100644
+index c705d66..fcc7ece 100644
 --- a/kernel/bpf/local_storage.c
 +++ b/kernel/bpf/local_storage.c
-@@ -345,7 +345,7 @@ static void cgroup_storage_map_free(struct bpf_map *_map)
- 	WARN_ON(!RB_EMPTY_ROOT(&map->root));
- 	WARN_ON(!list_empty(&map->list));
+@@ -313,7 +313,7 @@ static struct bpf_map *cgroup_storage_map_alloc(union bpf_attr *attr)
+ 		/* max_entries is not used and enforced to be 0 */
+ 		return ERR_PTR(-EINVAL);
  
--	bpf_map_area_free(map);
-+	bpf_map_area_free(map, _map);
- }
+-	map = bpf_map_area_alloc(sizeof(struct bpf_cgroup_storage_map), numa_node);
++	map = bpf_map_area_alloc(sizeof(struct bpf_cgroup_storage_map), numa_node, NULL);
+ 	if (!map)
+ 		return ERR_PTR(-ENOMEM);
  
- static int cgroup_storage_delete_elem(struct bpf_map *map, void *key)
 diff --git a/kernel/bpf/lpm_trie.c b/kernel/bpf/lpm_trie.c
-index d833496..fd99360 100644
+index fd99360..3d329ae 100644
 --- a/kernel/bpf/lpm_trie.c
 +++ b/kernel/bpf/lpm_trie.c
-@@ -609,7 +609,7 @@ static void trie_free(struct bpf_map *map)
- 	}
+@@ -558,7 +558,7 @@ static struct bpf_map *trie_alloc(union bpf_attr *attr)
+ 	    attr->value_size > LPM_VAL_SIZE_MAX)
+ 		return ERR_PTR(-EINVAL);
  
- out:
--	bpf_map_area_free(trie);
-+	bpf_map_area_free(trie, map);
- }
+-	trie = bpf_map_area_alloc(sizeof(*trie), NUMA_NO_NODE);
++	trie = bpf_map_area_alloc(sizeof(*trie), NUMA_NO_NODE, NULL);
+ 	if (!trie)
+ 		return ERR_PTR(-ENOMEM);
  
- static int trie_get_next_key(struct bpf_map *map, void *_key, void *_next_key)
 diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-index 13e4efc..c9941a9 100644
+index c9941a9..87c59da 100644
 --- a/kernel/bpf/offload.c
 +++ b/kernel/bpf/offload.c
-@@ -404,7 +404,7 @@ struct bpf_map *bpf_map_offload_map_alloc(union bpf_attr *attr)
- err_unlock:
- 	up_write(&bpf_devs_lock);
- 	rtnl_unlock();
--	bpf_map_area_free(offmap);
-+	bpf_map_area_free(offmap, &offmap->map);
- 	return ERR_PTR(err);
- }
+@@ -372,7 +372,7 @@ struct bpf_map *bpf_map_offload_map_alloc(union bpf_attr *attr)
+ 	    attr->map_type != BPF_MAP_TYPE_HASH)
+ 		return ERR_PTR(-EINVAL);
  
-@@ -428,7 +428,7 @@ void bpf_map_offload_map_free(struct bpf_map *map)
- 	up_write(&bpf_devs_lock);
- 	rtnl_unlock();
+-	offmap = bpf_map_area_alloc(sizeof(*offmap), NUMA_NO_NODE);
++	offmap = bpf_map_area_alloc(sizeof(*offmap), NUMA_NO_NODE, NULL);
+ 	if (!offmap)
+ 		return ERR_PTR(-ENOMEM);
  
--	bpf_map_area_free(offmap);
-+	bpf_map_area_free(offmap, map);
- }
- 
- int bpf_map_offload_lookup_elem(struct bpf_map *map, void *key, void *value)
 diff --git a/kernel/bpf/queue_stack_maps.c b/kernel/bpf/queue_stack_maps.c
-index 8a5e060..f2ec0c4 100644
+index f2ec0c4..bf57e45 100644
 --- a/kernel/bpf/queue_stack_maps.c
 +++ b/kernel/bpf/queue_stack_maps.c
-@@ -92,7 +92,7 @@ static void queue_stack_map_free(struct bpf_map *map)
- {
- 	struct bpf_queue_stack *qs = bpf_queue_stack(map);
+@@ -74,7 +74,7 @@ static struct bpf_map *queue_stack_map_alloc(union bpf_attr *attr)
+ 	size = (u64) attr->max_entries + 1;
+ 	queue_size = sizeof(*qs) + size * attr->value_size;
  
--	bpf_map_area_free(qs);
-+	bpf_map_area_free(qs, map);
- }
+-	qs = bpf_map_area_alloc(queue_size, numa_node);
++	qs = bpf_map_area_alloc(queue_size, numa_node, NULL);
+ 	if (!qs)
+ 		return ERR_PTR(-ENOMEM);
  
- static int __queue_map_get(struct bpf_map *map, void *value, bool delete)
 diff --git a/kernel/bpf/reuseport_array.c b/kernel/bpf/reuseport_array.c
-index e2618fb..594cdb0 100644
+index 594cdb0..52c7e77 100644
 --- a/kernel/bpf/reuseport_array.c
 +++ b/kernel/bpf/reuseport_array.c
-@@ -146,7 +146,7 @@ static void reuseport_array_free(struct bpf_map *map)
- 	 * Once reaching here, all sk->sk_user_data is not
- 	 * referencing this "array". "array" can be freed now.
- 	 */
--	bpf_map_area_free(array);
-+	bpf_map_area_free(array, map);
- }
+@@ -158,7 +158,7 @@ static struct bpf_map *reuseport_array_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-EPERM);
  
- static struct bpf_map *reuseport_array_alloc(union bpf_attr *attr)
+ 	/* allocate all map elements and zero-initialize them */
+-	array = bpf_map_area_alloc(struct_size(array, ptrs, attr->max_entries), numa_node);
++	array = bpf_map_area_alloc(struct_size(array, ptrs, attr->max_entries), numa_node, NULL);
+ 	if (!array)
+ 		return ERR_PTR(-ENOMEM);
+ 
 diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
-index b483aea..74dd8dc 100644
+index 74dd8dc..5eb7820 100644
 --- a/kernel/bpf/ringbuf.c
 +++ b/kernel/bpf/ringbuf.c
-@@ -116,7 +116,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
- err_free_pages:
- 	for (i = 0; i < nr_pages; i++)
- 		__free_page(pages[i]);
--	bpf_map_area_free(pages);
-+	bpf_map_area_free(pages, NULL);
- 	return NULL;
- }
+@@ -59,7 +59,8 @@ struct bpf_ringbuf_hdr {
+ 	u32 pg_off;
+ };
  
-@@ -172,7 +172,7 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
- 
- 	rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
- 	if (!rb_map->rb) {
--		bpf_map_area_free(rb_map);
-+		bpf_map_area_free(rb_map, &rb_map->map);
- 		return ERR_PTR(-ENOMEM);
- 	}
- 
-@@ -190,7 +190,7 @@ static void bpf_ringbuf_free(struct bpf_ringbuf *rb)
- 	vunmap(rb);
- 	for (i = 0; i < nr_pages; i++)
- 		__free_page(pages[i]);
--	bpf_map_area_free(pages);
-+	bpf_map_area_free(pages, NULL);
- }
- 
- static void ringbuf_map_free(struct bpf_map *map)
-@@ -199,7 +199,7 @@ static void ringbuf_map_free(struct bpf_map *map)
- 
- 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
- 	bpf_ringbuf_free(rb_map->rb);
--	bpf_map_area_free(rb_map);
-+	bpf_map_area_free(rb_map, map);
- }
- 
- static void *ringbuf_map_lookup_elem(struct bpf_map *map, void *key)
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index 1adbe67..042b7d2 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -62,7 +62,7 @@ static int prealloc_elems_and_freelist(struct bpf_stack_map *smap)
- 	return 0;
- 
- free_elems:
--	bpf_map_area_free(smap->elems);
-+	bpf_map_area_free(smap->elems, NULL);
- 	return err;
- }
- 
-@@ -120,7 +120,7 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
- put_buffers:
- 	put_callchain_buffers();
- free_smap:
--	bpf_map_area_free(smap);
-+	bpf_map_area_free(smap, &smap->map);
- 	return ERR_PTR(err);
- }
- 
-@@ -648,9 +648,9 @@ static void stack_map_free(struct bpf_map *map)
+-static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
++static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node,
++						  struct bpf_map *map)
  {
- 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
+ 	const gfp_t flags = GFP_KERNEL_ACCOUNT | __GFP_RETRY_MAYFAIL |
+ 			    __GFP_NOWARN | __GFP_ZERO;
+@@ -89,7 +90,7 @@ static struct bpf_ringbuf *bpf_ringbuf_area_alloc(size_t data_sz, int numa_node)
+ 	 * user-space implementations significantly.
+ 	 */
+ 	array_size = (nr_meta_pages + 2 * nr_data_pages) * sizeof(*pages);
+-	pages = bpf_map_area_alloc(array_size, numa_node);
++	pages = bpf_map_area_alloc(array_size, numa_node, map);
+ 	if (!pages)
+ 		return NULL;
  
--	bpf_map_area_free(smap->elems);
-+	bpf_map_area_free(smap->elems, NULL);
- 	pcpu_freelist_destroy(&smap->freelist);
--	bpf_map_area_free(smap);
-+	bpf_map_area_free(smap, map);
- 	put_callchain_buffers();
+@@ -127,11 +128,12 @@ static void bpf_ringbuf_notify(struct irq_work *work)
+ 	wake_up_all(&rb->waitq);
  }
  
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 19c3a81..01d8d4a 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -293,6 +293,34 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
- 	return err;
- }
- 
-+#ifdef CONFIG_MEMCG_KMEM
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+	/* Currently if a map is created by a process belonging to the root
-+	 * memory cgroup, get_obj_cgroup_from_current() will return NULL.
-+	 * So we have to check map->objcg for being NULL each time it's
-+	 * being used.
-+	 */
-+	map->objcg = get_obj_cgroup_from_current();
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+	if (map->objcg)
-+		obj_cgroup_put(map->objcg);
-+}
-+
-+#else
-+static void bpf_map_save_memcg(struct bpf_map *map)
-+{
-+}
-+
-+static void bpf_map_release_memcg(struct bpf_map *map)
-+{
-+}
-+
-+#endif
-+
- /* Please, do not use this function outside from the map creation path
-  * (e.g. in map update path) without taking care of setting the active
-  * memory cgroup (see at bpf_map_kmalloc_node() for example).
-@@ -344,8 +372,10 @@ void *bpf_map_area_mmapable_alloc(u64 size, int numa_node)
- 	return __bpf_map_area_alloc(size, numa_node, true);
- }
- 
--void bpf_map_area_free(void *area)
-+void bpf_map_area_free(void *area, struct bpf_map *map)
+-static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node)
++static struct bpf_ringbuf *bpf_ringbuf_alloc(size_t data_sz, int numa_node,
++					     struct bpf_map *map)
  {
-+	if (map)
-+		bpf_map_release_memcg(map);
- 	kvfree(area);
- }
+ 	struct bpf_ringbuf *rb;
  
-@@ -363,6 +393,7 @@ static u32 bpf_map_flags_retain_permanent(u32 flags)
+-	rb = bpf_ringbuf_area_alloc(data_sz, numa_node);
++	rb = bpf_ringbuf_area_alloc(data_sz, numa_node, map);
+ 	if (!rb)
+ 		return NULL;
  
- void bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr)
- {
-+	bpf_map_save_memcg(map);
- 	map->map_type = attr->map_type;
- 	map->key_size = attr->key_size;
- 	map->value_size = attr->value_size;
-@@ -417,22 +448,6 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock)
- }
- 
- #ifdef CONFIG_MEMCG_KMEM
--static void bpf_map_save_memcg(struct bpf_map *map)
--{
--	/* Currently if a map is created by a process belonging to the root
--	 * memory cgroup, get_obj_cgroup_from_current() will return NULL.
--	 * So we have to check map->objcg for being NULL each time it's
--	 * being used.
--	 */
--	map->objcg = get_obj_cgroup_from_current();
--}
--
--static void bpf_map_release_memcg(struct bpf_map *map)
--{
--	if (map->objcg)
--		obj_cgroup_put(map->objcg);
--}
--
- void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
- 			   int node)
- {
-@@ -477,14 +492,6 @@ void __percpu *bpf_map_alloc_percpu(const struct bpf_map *map, size_t size,
- 	return ptr;
- }
- 
--#else
--static void bpf_map_save_memcg(struct bpf_map *map)
--{
--}
--
--static void bpf_map_release_memcg(struct bpf_map *map)
--{
--}
+@@ -164,13 +166,14 @@ static struct bpf_map *ringbuf_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-E2BIG);
  #endif
  
- static int bpf_map_kptr_off_cmp(const void *a, const void *b)
-@@ -605,7 +612,6 @@ static void bpf_map_free_deferred(struct work_struct *work)
+-	rb_map = bpf_map_area_alloc(sizeof(*rb_map), NUMA_NO_NODE);
++	rb_map = bpf_map_area_alloc(sizeof(*rb_map), NUMA_NO_NODE, NULL);
+ 	if (!rb_map)
+ 		return ERR_PTR(-ENOMEM);
  
- 	security_bpf_map_free(map);
- 	kfree(map->off_arr);
--	bpf_map_release_memcg(map);
- 	/* implementation dependent freeing, map_free callback also does
- 	 * bpf_map_free_kptr_off_tab, if needed.
- 	 */
-@@ -1154,8 +1160,6 @@ static int map_create(union bpf_attr *attr)
- 	if (err)
- 		goto free_map_sec;
+ 	bpf_map_init_from_attr(&rb_map->map, attr);
  
--	bpf_map_save_memcg(map);
--
- 	err = bpf_map_new_fd(map, f_flags);
- 	if (err < 0) {
- 		/* failed to allocate fd.
+-	rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node);
++	rb_map->rb = bpf_ringbuf_alloc(attr->max_entries, rb_map->map.numa_node,
++				       &rb_map->map);
+ 	if (!rb_map->rb) {
+ 		bpf_map_area_free(rb_map, &rb_map->map);
+ 		return ERR_PTR(-ENOMEM);
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index 042b7d2..9440fab 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -49,7 +49,8 @@ static int prealloc_elems_and_freelist(struct bpf_stack_map *smap)
+ 	int err;
+ 
+ 	smap->elems = bpf_map_area_alloc(elem_size * smap->map.max_entries,
+-					 smap->map.numa_node);
++					 smap->map.numa_node,
++					 &smap->map);
+ 	if (!smap->elems)
+ 		return -ENOMEM;
+ 
+@@ -100,7 +101,7 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+ 		return ERR_PTR(-E2BIG);
+ 
+ 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+-	smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr));
++	smap = bpf_map_area_alloc(cost, bpf_map_attr_numa_node(attr), NULL);
+ 	if (!smap)
+ 		return ERR_PTR(-ENOMEM);
+ 
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 01d8d4a..02ce7e9 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -362,9 +362,21 @@ static void *__bpf_map_area_alloc(u64 size, int numa_node, bool mmapable)
+ 			flags, numa_node, __builtin_return_address(0));
+ }
+ 
+-void *bpf_map_area_alloc(u64 size, int numa_node)
++void *bpf_map_area_alloc(u64 size, int numa_node, struct bpf_map *map)
+ {
+-	return __bpf_map_area_alloc(size, numa_node, false);
++	struct mem_cgroup *memcg, *old_memcg;
++	void *ptr;
++
++	if (!map)
++		return __bpf_map_area_alloc(size, numa_node, false);
++
++	memcg = bpf_map_get_memcg(map);
++	old_memcg = set_active_memcg(memcg);
++	ptr = __bpf_map_area_alloc(size, numa_node, false);
++	set_active_memcg(old_memcg);
++	bpf_map_put_memcg(memcg);
++
++	return ptr;
+ }
+ 
+ void *bpf_map_area_mmapable_alloc(u64 size, int numa_node)
 diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index d0c4338..e8f414a 100644
+index e8f414a..2b3b24e 100644
 --- a/net/core/sock_map.c
 +++ b/net/core/sock_map.c
-@@ -52,7 +52,7 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
- 				       sizeof(struct sock *),
- 				       stab->map.numa_node);
- 	if (!stab->sks) {
--		bpf_map_area_free(stab);
-+		bpf_map_area_free(stab, &stab->map);
+@@ -41,7 +41,7 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
+ 	    attr->map_flags & ~SOCK_CREATE_FLAG_MASK)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	stab = bpf_map_area_alloc(sizeof(*stab), NUMA_NO_NODE);
++	stab = bpf_map_area_alloc(sizeof(*stab), NUMA_NO_NODE, NULL);
+ 	if (!stab)
  		return ERR_PTR(-ENOMEM);
- 	}
  
-@@ -360,8 +360,8 @@ static void sock_map_free(struct bpf_map *map)
- 	/* wait for psock readers accessing its map link */
- 	synchronize_rcu();
+@@ -50,7 +50,8 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
  
--	bpf_map_area_free(stab->sks);
--	bpf_map_area_free(stab);
-+	bpf_map_area_free(stab->sks, NULL);
-+	bpf_map_area_free(stab, map);
- }
+ 	stab->sks = bpf_map_area_alloc((u64) stab->map.max_entries *
+ 				       sizeof(struct sock *),
+-				       stab->map.numa_node);
++				       stab->map.numa_node,
++				       &stab->map);
+ 	if (!stab->sks) {
+ 		bpf_map_area_free(stab, &stab->map);
+ 		return ERR_PTR(-ENOMEM);
+@@ -1076,7 +1077,7 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
+ 	if (attr->key_size > MAX_BPF_STACK)
+ 		return ERR_PTR(-E2BIG);
  
- static void sock_map_release_progs(struct bpf_map *map)
-@@ -1106,7 +1106,7 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
+-	htab = bpf_map_area_alloc(sizeof(*htab), NUMA_NO_NODE);
++	htab = bpf_map_area_alloc(sizeof(*htab), NUMA_NO_NODE, NULL);
+ 	if (!htab)
+ 		return ERR_PTR(-ENOMEM);
  
- 	return &htab->map;
- free_htab:
--	bpf_map_area_free(htab);
-+	bpf_map_area_free(htab, &htab->map);
- 	return ERR_PTR(err);
- }
+@@ -1093,7 +1094,8 @@ static struct bpf_map *sock_hash_alloc(union bpf_attr *attr)
  
-@@ -1158,8 +1158,8 @@ static void sock_hash_free(struct bpf_map *map)
- 	/* wait for psock readers accessing its map link */
- 	synchronize_rcu();
- 
--	bpf_map_area_free(htab->buckets);
--	bpf_map_area_free(htab);
-+	bpf_map_area_free(htab->buckets, NULL);
-+	bpf_map_area_free(htab, map);
- }
- 
- static void *sock_hash_lookup_sys(struct bpf_map *map, void *key)
+ 	htab->buckets = bpf_map_area_alloc(htab->buckets_num *
+ 					   sizeof(struct bpf_shtab_bucket),
+-					   htab->map.numa_node);
++					   htab->map.numa_node,
++					   &htab->map);
+ 	if (!htab->buckets) {
+ 		err = -ENOMEM;
+ 		goto free_htab;
 diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
-index acc8e52..5abb87e 100644
+index 5abb87e..beb11fd 100644
 --- a/net/xdp/xskmap.c
 +++ b/net/xdp/xskmap.c
-@@ -90,7 +90,7 @@ static void xsk_map_free(struct bpf_map *map)
- 	struct xsk_map *m = container_of(map, struct xsk_map, map);
+@@ -75,7 +75,7 @@ static struct bpf_map *xsk_map_alloc(union bpf_attr *attr)
+ 	numa_node = bpf_map_attr_numa_node(attr);
+ 	size = struct_size(m, xsk_map, attr->max_entries);
  
- 	synchronize_net();
--	bpf_map_area_free(m);
-+	bpf_map_area_free(m, map);
- }
+-	m = bpf_map_area_alloc(size, numa_node);
++	m = bpf_map_area_alloc(size, numa_node, NULL);
+ 	if (!m)
+ 		return ERR_PTR(-ENOMEM);
  
- static int xsk_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
 -- 
 1.8.3.1
 
