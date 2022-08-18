@@ -2,56 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6ABD59864A
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:47:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0282598659
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343551AbiHROps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48374 "EHLO
+        id S244941AbiHROre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245445AbiHROpr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:45:47 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D0C422CA;
-        Thu, 18 Aug 2022 07:45:46 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id BFB3B22248;
-        Thu, 18 Aug 2022 16:45:43 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1660833943;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=tqSBNQl1mf/1igPF5XqlRtw3O/1RNBIhVB5yzX6jyns=;
-        b=fUpmdZM2jjYTYnlEoHOBwU/Fw/2/aKXZW+MBNbtArIe/fYkSwtng5ZQ7zGtWG3E4RgriDx
-        OUh08ziwON4iWeApYeNfn0Yq/3hXMe+tdJ1FfBgMXM3ImrruqGjni4jcN4B6bd88yyEWGt
-        +ESDbQuz9fB41FVFcdp6+Z0vTCiEI80=
+        with ESMTP id S245520AbiHROrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:47:23 -0400
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69885BBA43;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
+Received: by mail-qk1-f171.google.com with SMTP id b9so1263559qka.2;
+        Thu, 18 Aug 2022 07:47:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gdljhD4izytPCTwhmdt8DBVVfc0NydPAltPgDipKvog=;
+        b=z21x2EFoAdNeIjrz68Au7PO2e9cPtW0hiwQpPagWD378YKOU24Kiv1WLGGLpLtisUR
+         qBk1cmhmh7sPvwMU6eHzIXmgq+kg2d4NgE7GPDq+clkNTZWsKVrEkvZHry8FMONDW8J9
+         4iyi6nFbvprD/o0eEeck5HAahW/0disiGm6noXG21VzPGXb/RMwxvQ7/uVMkG85ronW6
+         8XN593sIqFSPghnVuC1jOYMbZZrT5j9/A1BN7SBDsaej93rC4JGzkUNA0qsKEi6pxiij
+         YjLgrpuureSyFZwfk1xtddwhKp4WQvLJWgZc1C3Pikmm1CUdimKmpKPNKsCyl+whQ5nd
+         Lipg==
+X-Gm-Message-State: ACgBeo3Lvc0nxCHMN1kJlXgiwEYJAiFy5FrXDoCOIJu4RxxQJadrpjOJ
+        xCzgVISjm1KCKluhLunPMw==
+X-Google-Smtp-Source: AA6agR6os7Il7llhYeMa4bR2kBtfZkcv6PCsh86UdfBNsIhRKKgO+IREW4lBHpdZzuhJU3WR6VLMIQ==
+X-Received: by 2002:a05:620a:2286:b0:6bb:5fa4:58 with SMTP id o6-20020a05620a228600b006bb5fa40058mr2241995qkh.202.1660834040446;
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:25d2:ea0d:b91c:d10a:6423:3870])
+        by smtp.gmail.com with ESMTPSA id n1-20020ac86741000000b0031eebfcb369sm1049301qtp.97.2022.08.18.07.47.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 07:47:20 -0700 (PDT)
+Received: (nullmailer pid 1843176 invoked by uid 1000);
+        Thu, 18 Aug 2022 14:47:13 -0000
+Date:   Thu, 18 Aug 2022 08:47:13 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        linux-i2c@vger.kernel.org, linux-media@vger.kernel.org,
+        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-crypto@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-watchdog@vger.kernel.org,
+        Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH] MAINTAINERS: Update email of Neil Armstrong
+Message-ID: <20220818144713.GC1829017-robh@kernel.org>
+References: <20220816095617.948678-1-narmstrong@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 18 Aug 2022 16:45:43 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH devicetree 1/3] arm64: dts: ls1028a: move DSA CPU port
- property to the common SoC dtsi
-In-Reply-To: <20220818140519.2767771-2-vladimir.oltean@nxp.com>
-References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
- <20220818140519.2767771-2-vladimir.oltean@nxp.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <125791f71a27edd4c2d989125c55de3a@walle.cc>
-X-Sender: michael@walle.cc
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220816095617.948678-1-narmstrong@baylibre.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,80 +68,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-08-18 16:05, schrieb Vladimir Oltean:
-> Since the CPU port 4 of the switch is hardwired inside the SoC to go to
-> the enetc port 2, this shouldn't be something that the board files need
-> to set (but whether that CPU port is used or not is another 
-> discussion).
+On Tue, Aug 16, 2022 at 11:56:17AM +0200, Neil Armstrong wrote:
+> From: Neil Armstrong <neil.armstrong@linaro.org>
 > 
-> So move the DSA "ethernet" property to the common dtsi.
+> My professional e-mail will change and the BayLibre one will
+> bounce after mid-september of 2022.
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> This updates the MAINTAINERS file, the YAML bindings and adds an
+> entry in the .mailmap file.
+> 
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 > ---
->  .../boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts     | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts  | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts                | 1 -
->  arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi                   | 1 +
->  4 files changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> index 6b575efd84a7..52ef2e8e5492 100644
-> --- 
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> +++ 
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-> @@ -104,7 +104,6 @@ &mscc_felix_port3 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> 
-> diff --git
-> a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> index 330e34f933a3..37c20cb6c152 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-> @@ -60,6 +60,5 @@ &mscc_felix_port1 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> index e0cd1516d05b..7285bdcf2302 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-> @@ -278,7 +278,6 @@ &mscc_felix_port3 {
->  };
-> 
->  &mscc_felix_port4 {
-> -	ethernet = <&enetc_port2>;
->  	status = "okay";
->  };
-> 
-> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> index 5627dd7734f3..3da105119d82 100644
-> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
-> @@ -1157,6 +1157,7 @@ mscc_felix_port4: port@4 {
->  						reg = <4>;
->  						phy-mode = "internal";
->  						status = "disabled";
-> +						ethernet = <&enetc_port2>;
+>  .mailmap                                      |  1 +
+>  .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 +-
+>  .../display/amlogic,meson-dw-hdmi.yaml        |  2 +-
+>  .../bindings/display/amlogic,meson-vpu.yaml   |  2 +-
+>  .../display/bridge/analogix,anx7814.yaml      |  2 +-
+>  .../bindings/display/bridge/ite,it66121.yaml  |  2 +-
+>  .../display/panel/sgd,gktw70sdae4se.yaml      |  2 +-
+>  .../bindings/i2c/amlogic,meson6-i2c.yaml      |  2 +-
+>  .../mailbox/amlogic,meson-gxbb-mhu.yaml       |  2 +-
+>  .../bindings/media/amlogic,axg-ge2d.yaml      |  2 +-
+>  .../bindings/media/amlogic,gx-vdec.yaml       |  2 +-
+>  .../media/amlogic,meson-gx-ao-cec.yaml        |  2 +-
+>  .../devicetree/bindings/mfd/khadas,mcu.yaml   |  2 +-
+>  .../bindings/net/amlogic,meson-dwmac.yaml     |  2 +-
+>  .../bindings/phy/amlogic,axg-mipi-dphy.yaml   |  2 +-
+>  .../phy/amlogic,meson-g12a-usb2-phy.yaml      |  2 +-
+>  .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml |  2 +-
+>  .../bindings/power/amlogic,meson-ee-pwrc.yaml |  2 +-
+>  .../bindings/reset/amlogic,meson-reset.yaml   |  2 +-
+>  .../bindings/rng/amlogic,meson-rng.yaml       |  2 +-
+>  .../bindings/serial/amlogic,meson-uart.yaml   |  2 +-
+>  .../bindings/soc/amlogic/amlogic,canvas.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson-gx-spicc.yaml  |  2 +-
+>  .../bindings/spi/amlogic,meson6-spifc.yaml    |  2 +-
+>  .../usb/amlogic,meson-g12a-usb-ctrl.yaml      |  2 +-
+>  .../watchdog/amlogic,meson-gxbb-wdt.yaml      |  2 +-
+>  MAINTAINERS                                   | 20 +++++++++----------
+>  27 files changed, 36 insertions(+), 35 deletions(-)
 
-same here, status should probably the last one.
+Applied, thanks!
 
-except from that:
-Acked-by: Michael Walle <michael@walle.cc>
-
-> 
->  						fixed-link {
->  							speed = <2500>;
+Rob
