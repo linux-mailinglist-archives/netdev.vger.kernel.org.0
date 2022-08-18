@@ -2,186 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A772E598912
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADA6859892F
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:45:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344861AbiHRQlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59428 "EHLO
+        id S1344902AbiHRQoA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:44:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344884AbiHRQlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:41:36 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4097C00D9
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 09:41:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660840895; x=1692376895;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A62wNNnyRHyyzxZ6tSE+cebI/CQZDEfNq/drzCzLzj8=;
-  b=DP0FQuPyPAcl0JLeuSlxpZh+heIXLMXTcp1fDdgmOmwxpQ83bFAV9YMu
-   iFJ8Ov7EsFjWRHot5dKpY+VB742wZLw4+p7LXjGkprittLwW4F3oM6FzC
-   TWbeIxY+IaD+BhbMPCfS3P3IBa90GNgBiSoKWlkogNU81ruomPCTUdkaL
-   0=;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654560000"; 
-   d="scan'208";a="219007245"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 16:41:16 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id 9F1FF44E57;
-        Thu, 18 Aug 2022 16:41:14 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 18 Aug 2022 16:41:14 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.158) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 18 Aug 2022 16:41:11 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <nathan@kernel.org>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <kbuild-all@lists.01.org>, <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <lkp@intel.com>, <llvm@lists.linux.dev>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>
-Subject: Re: [PATCH v2 net 13/17] net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
-Date:   Thu, 18 Aug 2022 09:41:04 -0700
-Message-ID: <20220818164104.33802-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <Yv5nd3cVX2ZKysC/@dev-arch.thelio-3990X>
-References: <Yv5nd3cVX2ZKysC/@dev-arch.thelio-3990X>
+        with ESMTP id S244720AbiHRQn7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:43:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD76C72FC9
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 09:43:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1660841037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eqToihXW7UPc5fyH33OBT/OedZIImlp+Kc9bZc6ly0A=;
+        b=VB0JeSuqVWSjoRAFSG89e/vlPzbLsmuh0/kSzlRpEjYpKA8OA/APqsMpItIooyt1FQrRf7
+        a9gE+qnWOeN6rdO51IkddXFf+JbaJhB+qFXTmi/8MHtjzLHY4rwPzq/KdUhdn3PfEJFOoG
+        6ZqTzmmXWskvUWkYg3w4+3krTc8MOjU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-261-GT36AfAhMjChvBi-u_YnMw-1; Thu, 18 Aug 2022 12:43:56 -0400
+X-MC-Unique: GT36AfAhMjChvBi-u_YnMw-1
+Received: by mail-wm1-f69.google.com with SMTP id i132-20020a1c3b8a000000b003a537064611so1176173wma.4
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 09:43:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=eqToihXW7UPc5fyH33OBT/OedZIImlp+Kc9bZc6ly0A=;
+        b=rpv/N8SwIp2orWEf7+rLECMS8kMGOHMuc76/Pd+5qjbvCOOWmpHS3fC/4huny0DU6t
+         OGboyBflszLVNv/w0vYx5ecbHMi1mAr6vGKfO6ouw4H4U9X28PHsWT3EpkyngCu8c8s0
+         VnV2pCbReihYVL2tKUKEnTZFNTQSsmgyYcR6/1K9j/wWkXd/DkPKY3jD1P0eN9+WnhQV
+         6TnrwYOPmJILDKehpzOKk4L0fmbfKvy7frBFSmxKNG14+AZ/zBR/qoMcfu2XiqWW2xYu
+         nDbYvDtwFZuE335XYz0224/8ig3ZIaKtAGlCYSe4ualnVKBSOvvZoQTu54zE+GfOM2HP
+         QdoA==
+X-Gm-Message-State: ACgBeo1hRxrUQBc/ISybcW3e6U7osfcUm/SSTSnfVshA53hjGdqofBnv
+        e0j2T39+54Xv7GO1d7Q70YfveF9LmO+W3/XcusmimWEW7Z9Bzu775LtZnmZSLdnBbO9KbPy2YAI
+        YtzPwcmsrplEDZemX
+X-Received: by 2002:a05:600c:34c5:b0:3a5:f6e5:1cb4 with SMTP id d5-20020a05600c34c500b003a5f6e51cb4mr2462954wmq.71.1660841035507;
+        Thu, 18 Aug 2022 09:43:55 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6zVAvV4ZDxfM+xoVbsQJM08MqXGQTOR77bBLXVroW/ZlJy6DF/9cr8lI/MZsemart2GDI+Og==
+X-Received: by 2002:a05:600c:34c5:b0:3a5:f6e5:1cb4 with SMTP id d5-20020a05600c34c500b003a5f6e51cb4mr2462928wmq.71.1660841035373;
+        Thu, 18 Aug 2022 09:43:55 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id l17-20020a05600c4f1100b003a1980d55c4sm6660692wmq.47.2022.08.18.09.43.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 09:43:54 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Mel Gorman <mgorman@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <song.bao.hua@hisilicon.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
+Subject: Re: [PATCH v2 0/5] sched, net: NUMA-aware CPU spreading interface
+In-Reply-To: <9b062b28-e6dd-3af1-da02-1bc511ed6939@intel.com>
+References: <20220817175812.671843-1-vschneid@redhat.com>
+ <9b062b28-e6dd-3af1-da02-1bc511ed6939@intel.com>
+Date:   Thu, 18 Aug 2022 17:43:53 +0100
+Message-ID: <xhsmhzgg1a4dy.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.158]
-X-ClientProxiedBy: EX13D45UWA001.ant.amazon.com (10.43.160.91) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Nathan Chancellor <nathan@kernel.org>
-Date:   Thu, 18 Aug 2022 09:23:19 -0700
-> On Thu, Aug 18, 2022 at 08:01:54AM -0700, Kuniyuki Iwashima wrote:
-> > From:   kernel test robot <lkp@intel.com>
-> > Date:   Thu, 18 Aug 2022 16:51:37 +0800
-> > > Hi Kuniyuki,
-> > > 
-> > > Thank you for the patch! Yet something to improve:
-> > > 
-> > > [auto build test ERROR on net/master]
-> > > 
-> > > url:    https://github.com/intel-lab-lkp/linux/commits/Kuniyuki-Iwashima/net-sysctl-Fix-data-races-around-net-core-XXX/20220818-115941
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git fc4aaf9fb3c99bcb326d52f9d320ed5680bd1cee
-> > > config: riscv-randconfig-r032-20220818 (https://download.01.org/0day-ci/archive/20220818/202208181615.Lu9xjiEv-lkp@intel.com/config)
-> > > compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-> > > reproduce (this is a W=1 build):
-> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> > >         chmod +x ~/bin/make.cross
-> > >         # install riscv cross compiling tool for clang build
-> > >         # apt-get install binutils-riscv64-linux-gnu
-> > >         # https://github.com/intel-lab-lkp/linux/commit/6bc3dfb3dc4862f4e00ba93c45cd5c0251b85d5b
-> > >         git remote add linux-review https://github.com/intel-lab-lkp/linux
-> > >         git fetch --no-tags linux-review Kuniyuki-Iwashima/net-sysctl-Fix-data-races-around-net-core-XXX/20220818-115941
-> > >         git checkout 6bc3dfb3dc4862f4e00ba93c45cd5c0251b85d5b
-> > >         # save the config file
-> > >         mkdir build_dir && cp config build_dir/.config
-> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-> > > 
-> > > If you fix the issue, kindly add following tag where applicable
-> > > Reported-by: kernel test robot <lkp@intel.com>
-> > > 
-> > > All errors (new ones prefixed by >>):
-> > > 
-> > > >> ld.lld: error: undefined symbol: sysctl_fb_tunnels_only_for_init_net
-> > >    >>> referenced by ip_tunnel.c
-> > >    >>>               ipv4/ip_tunnel.o:(ip_tunnel_init_net) in archive net/built-in.a
-> > >    >>> referenced by ip_tunnel.c
-> > >    >>>               ipv4/ip_tunnel.o:(ip_tunnel_init_net) in archive net/built-in.a
-> > 
-> > Hmm... I tested allmodconfig with x86_64 but it seems not enough...
-> > 
-> > I don't think just using READ_ONCE() causes regression.
-> > Is this really regression or always-broken stuff in some arch,
-> > or ... clang 16?
-> > 
-> > Anyway, I'll take a look.
-> 
-> You'll see the same error with the same configuration and GCC:
-> 
-> riscv64-linux-gnu-ld: net/ipv4/ip_tunnel.o: in function `.L536':
-> ip_tunnel.c:(.text+0x1d4a): undefined reference to `sysctl_fb_tunnels_only_for_init_net'
-> riscv64-linux-gnu-ld: ip_tunnel.c:(.text+0x1d4e): undefined reference to `sysctl_fb_tunnels_only_for_init_net'
-> 
-> $ scripts/config --file build/riscv/.config -s SYSCTL
-> undef
-> 
-> Prior to your change, the '!IS_ENABLED(CONFIG_SYSCTL)' would cause
-> net_has_fallback_tunnels() to unconditionally 'return 1' in the
-> CONFIG_SYSCTL=n case,
+On 18/08/22 09:28, Jesse Brandeburg wrote:
+> On 8/17/2022 10:58 AM, Valentin Schneider wrote:
+>> Hi folks,
+>>
+>> Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
+>> from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
+>> it).
+>>
+>> The proposed interface involved an array of CPUs and a temporary cpumask, and
+>> being my difficult self what I'm proposing here is an interface that doesn't
+>> require any temporary storage other than some stack variables (at the cost of
+>> one wild macro).
+>>
+>> Patch 5/5 is just there to showcase how the thing would be used. If this doesn't
+>> get hated on, I'll let Tariq pick this up and push it with his networking driver
+>> changes (with actual changelogs).
+>
+> I am interested in this work, but it seems that at least on lore and in
+> my inbox, patch 3,4,5 didn't show up.
 
-Yes, you are right.
-I've just noticed it and this fixed the error.
-Also, I did the same mistake in the 14th patch...
-Thank you, Nathan!
+I used exactly the same git send-email command for this than for v1 (which
+shows up in its entirety on lore), but I can't see these either. I'm going
+to assume they got lost and will resend them.
 
----8<---
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 2563d30736e9..78dd63a5c7c8 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -640,9 +640,14 @@ extern int sysctl_devconf_inherit_init_net;
-  */
- static inline bool net_has_fallback_tunnels(const struct net *net)
- {
--	return !IS_ENABLED(CONFIG_SYSCTL) ||
--	       !sysctl_fb_tunnels_only_for_init_net ||
--	       (net == &init_net && sysctl_fb_tunnels_only_for_init_net == 1);
-+#if IS_ENABLED(CONFIG_SYSCTL)
-+	int fb_tunnels_only_for_init_net = READ_ONCE(sysctl_fb_tunnels_only_for_init_net);
-+
-+	return !fb_tunnels_only_for_init_net ||
-+		(net_eq(net, &init_net) && fb_tunnels_only_for_init_net == 1);
-+#else
-+	return true;
-+#endif
- }
- 
- static inline int netdev_queue_numa_node_read(const struct netdev_queue *q)
----8<---
-
-
-> meaning 'fb_tunnels_only_for_init_net' was never
-> emitted in the final assembly so the linker would not complain about it
-> never being defined (the kernel relies on this trick a lot, which is why
-> you cannot build the kernel with -O0).
-> 
-> After your change, sysctl_fb_tunnels_only_for_init_net is
-> unconditionally used but it is only defined in sysctl_net_core.c, which
-> is only built when CONFIG_SYSCTL=y, hence the link error.
-> 
-> I suspect hoisting '!IS_ENABLED(CONFIG_SYSCTL)' out of the return into
-> its own conditional would fix the error:
-> 
->   static inline bool net_has_fallback_tunnels(const struct net *net)
->   {
->       int fb_tunnels_only_for_init_net;
-> 
->       if (!IS_ENABLED(CONFIG_SYSCTL))
->           return true;
-> 
->       fb_tunnels_only_for_init_net = READ_ONCE(sysctl_fb_tunnels_only_for_init_net);
-> 
->       return !fb_tunnels_only_for_init_net ||
->              (net == &init_net && fb_tunnels_only_for_init_net == 1)
->   }
-> 
-> Cheers,
-> Nathan
