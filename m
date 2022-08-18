@@ -2,93 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7318D598AAC
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:45:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B4F2598AB5
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:51:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245424AbiHRRpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
+        id S1343557AbiHRRuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:50:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345082AbiHRRpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:45:11 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D44C7172B;
-        Thu, 18 Aug 2022 10:45:10 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D15F9CE2245;
-        Thu, 18 Aug 2022 17:45:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEBD4C433D6;
-        Thu, 18 Aug 2022 17:45:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660844707;
-        bh=Yy+ZnKIzuSTYizYHaXdO9bWgHRUoHQWc79KX44UlvY4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DH2c+E+iUEBbOPOkg3JnkMIfh2S9eUN+Ph2tqIo7cnYaoMvXzKjwg2PvcSxggEyWA
-         xDeJAejwcJPD8pZ3xuJ7bXMxXIfjKxNEtGy96/yXsYb5U5Bc106kr/y/P4hYbkdOAy
-         OhwQ5O4ImY4ap94LKkm15HQphjZDS8KOuMcystSwpopcP7j3t0ObIdCeo9+yZbDETs
-         kkTgnYuSyfjbq14PHiZ9z3dds9CIYihMEnppb1gNBSSGIP5fqrM5xaHfDKydKMWtUK
-         MmIu/y8g5jlm43FO7k9gmOwEp9ko0UQc49D1uWmCvKElcP5xoyOWAM6bQC/0j/RU0e
-         i4rW8G2pylAQQ==
-Date:   Thu, 18 Aug 2022 10:45:05 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
-Message-ID: <20220818104505.010ff950@kernel.org>
-In-Reply-To: <Yv5v1E6mfpcxjnLV@linutronix.de>
-References: <20220817162703.728679-1-bigeasy@linutronix.de>
-        <20220817162703.728679-10-bigeasy@linutronix.de>
-        <20220817112745.4efd8217@kernel.org>
-        <Yv5aSquR9S2KxUr2@linutronix.de>
-        <20220818090200.4c6889f2@kernel.org>
-        <Yv5v1E6mfpcxjnLV@linutronix.de>
+        with ESMTP id S245146AbiHRRux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:50:53 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3814F45064
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:50:52 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id tl27so4628955ejc.1
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:50:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=+udMhoflNILtLwMziy9QxbssD2QG4JpM06SxHHpbxCA=;
+        b=NIFQwkNUiiLFi8Kjt5lNwduVmw8vZNrnkydVranhuX0VDQLaXP8rdwO6iHupijdwu4
+         YXvINWRetkI8m/oPV2ppzNtRa+zS7ekhe735BIHqWol3mnYKxcWl2pHdmtWWZ3JMXWu2
+         besgRXCgcXwerlm7kZFSHvID0lfS0iRiD22Ys=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=+udMhoflNILtLwMziy9QxbssD2QG4JpM06SxHHpbxCA=;
+        b=vWQow//MsCQ/t3WmmFWFFLd6xdaKfm1Lq6vrfzbZvUV4QbpBG2M6hHMW7VB19uNwcq
+         bI7dsg0so15+NFZINUTBUP3gzhRTyJGEbOIuUwmwjl6Qt4qSU0LZhGkkNg5ReJs7Dwgh
+         7IeA+79YdYJpE22IiAAub8hLA8PuDgtuEdumKbED2xserKbMs6Doh520wr07O4KR2oTI
+         iL2AeWGD14Dgsf4+oJ+d9q8qZYGnU548rHaMeq39ts12wk+uYz4UhusjNfkHPMda+wx5
+         S+zrJIwNXmm9WX0hF08b5jQZsFm5K7nuOG+J1dQkw5aUiMTHr35GSdGXrryBrbIXQezU
+         DniQ==
+X-Gm-Message-State: ACgBeo31p/GnMIgIN8wOoRZ+B1Y1tEGxHypJ/KCqvnxC8KZzqM7nzLmk
+        TXfNHrUIXilZaG8BjtNAMHKOUIZaKnGdyOxo
+X-Google-Smtp-Source: AA6agR6n/Reqf9ey57IKnHfy+uwaaErm+tBADRHa68gG7sSDbNOwG0MDNNWmqQrg2QN/bna3Wv2bcQ==
+X-Received: by 2002:a17:907:2e0d:b0:731:7afa:f14f with SMTP id ig13-20020a1709072e0d00b007317afaf14fmr2658785ejc.704.1660845050523;
+        Thu, 18 Aug 2022 10:50:50 -0700 (PDT)
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com. [209.85.128.48])
+        by smtp.gmail.com with ESMTPSA id q3-20020a056402040300b00445e1489313sm1480760edv.94.2022.08.18.10.50.48
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 10:50:48 -0700 (PDT)
+Received: by mail-wm1-f48.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so1317863wmb.4
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:50:48 -0700 (PDT)
+X-Received: by 2002:a05:600c:657:b0:3a5:e4e6:ee24 with SMTP id
+ p23-20020a05600c065700b003a5e4e6ee24mr5555143wmm.68.1660845047779; Thu, 18
+ Aug 2022 10:50:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220721204404.388396-1-weiwan@google.com> <ca408271-8730-eb2b-f12e-3f66df2e643a@kernel.org>
+ <CADVnQymVXMamTRP-eSKhwq1M612zx0ZoNd=rs4MtipJNGm5Wcw@mail.gmail.com>
+ <e318ba59-d58a-5826-82c9-6cfc2409cbd4@kernel.org> <f3301080-78c6-a65a-d8b1-59b759a077a4@kernel.org>
+ <CADVnQykRMcumBjxND9E4nSxqA-s3exR3AzJ6+Nf0g+s5H6dqeQ@mail.gmail.com>
+ <21869cb9-d1af-066a-ba73-b01af60d9d3a@kernel.org> <CADVnQy=AnJY9NZ3w_xNghEG80-DhsXL0r_vEtkr=dmz0ugcoVw@mail.gmail.com>
+ <eca0e388-bdd1-7d83-76a8-971de8e3a0ce@kernel.org>
+In-Reply-To: <eca0e388-bdd1-7d83-76a8-971de8e3a0ce@kernel.org>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 18 Aug 2022 10:50:31 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjMKztOKfaqqPeEyM+9eHrfkJfrSrsaWx3EXDrRtyO98Q@mail.gmail.com>
+Message-ID: <CAHk-=wjMKztOKfaqqPeEyM+9eHrfkJfrSrsaWx3EXDrRtyO98Q@mail.gmail.com>
+Subject: Re: python-eventlet test broken in 5.19 [was: Revert "tcp: change
+ pingpong threshold to 3"]
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Neal Cardwell <ncardwell@google.com>, Wei Wang <weiwan@google.com>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        LemmyHuang <hlm3280@163.com>, stable <stable@vger.kernel.org>,
+        temotor@gmail.com, jakub@stasiak.at
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 18:59:00 +0200 Sebastian Andrzej Siewior wrote:
-> On 2022-08-18 09:02:00 [-0700], Jakub Kicinski wrote:
-> > No ack, I'd much rather you waited for after the next merge window 
-> > and queued this refactoring to net-next. Patch 9 is changing 70
-> > files in networking. Unless I'm missing something and this is time
-> > sensitive.  
-> 
-> It started with the clean up of the mess that has been made in the merge
-> and then it went on a little.
-> 
-> Any opinion on 8/9? It could wait for the next merge window if you want
-> to avoid a feature branch to pull from.
+On Tue, Aug 16, 2022 at 11:44 PM Jiri Slaby <jirislaby@kernel.org> wrote:
+>
+> Thanks a lot, Neal! So for the time being, until this is resolved in
+> eventlet, I pushed a change to disable the test in openSUSE.
 
-A question of priority, hard for me to judge how urgent any of it is.
-But practically speaking the chances of a conflict on that one header
-are pretty small, so ack if needed.
+Yes, that is the right approach in this case, since it really does
+seem to be purely about timing.
 
-> Regarding 9/9. This is a clean up, which is possible after 8/9. It can
-> definitely be applied later.
-> I assume you want only see the networking bits so I would split the
-> other subsystem out. I guess instead the big net patch I split them on
-> per driver vendor basis + net/ subsys?
+Note that "breaks user space" is not about random test suites. For all
+we know, a test suite can exist literally to check for known bugs etc.
 
-Oh, don't care for per vendor split on a big refactoring like that.
-You can split out the SPI patch and maybe BPF, the rest can be one 
-big chunk AFAICT.
+No user space breakage is about real loads by real people, ie "I used
+to do this, and now that no longer works".
 
-BTW, I have a hazy memory of people saying they switched to the _irq()
-version because it reduced the number of retries significantly under
-traffic. Dunno how practical that is but would you be willing to scan
-the git history to double check that's not some of the motivation?
+The test suites showing behavioral differences are certainly always a
+cause of worry - because the test may exist for a very particular
+reason, and may be indicative that yes, there are actual real programs
+depending on this behavior - but isn't in itself necessarily a problem
+in itself.
+
+            Linus
