@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E845059907F
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:29:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5641A599087
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:29:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343980AbiHRW2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48126 "EHLO
+        id S1344508AbiHRW2T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:28:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241578AbiHRW15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:27:57 -0400
+        with ESMTP id S242629AbiHRW17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:27:59 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C66BDB7D7
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 15:27:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D62DB7DB;
+        Thu, 18 Aug 2022 15:27:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660861675; x=1692397675;
+  t=1660861677; x=1692397677;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=w6/IiuU+lXWgLNBK1Ibywnsaa0VckO8jW8eCsQKns7k=;
-  b=ffoGB2nbpe0Zgop0DGKURyd8uZc1FeQkMW8z49HvODRNVt4sW3LBLEr9
-   qcJYPd8yB0WmgzRPkp+MuPWbWdw1IC/DUgp63SVy/AxdB2UDE0e5K9JSb
-   0O6ItDT53NTcz+9f/KMMHE8SofWqJ2nN1IRONWF0B1gswQ//Yh+RQQXyD
-   2howauGEtEgqeDDz+cM8UJnbdpvJ3Xb6DSAC7RYLCmn3UElF6/RsJf0Gw
-   CuSJsghfgfcoI6pkkxto3BpT4zA9dSwZ7D0jI2TA70p+9WQT1hzXjJ5q8
-   c+2mK1AhyL3jpI5O3M0EH2X+eJtNel+gSoRLKTlDfnBRb9fv78ZY5OTip
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292881599"
+  bh=gze0YxKCusqgNfKoiL93qLcI04RmJIw/YD+nbLgFGZM=;
+  b=Q17Dg6n89Ro1zRim7wF1JhFG0oBRxCrIY4vVyoVu7jDFM7x/T4q3S4Og
+   JTNhgSKsx2FVM5qt66h+buAHFLtqmpJeXcF0OdNHqreOlQKuWT1KwkAlL
+   s/DZV39KuazSt8wurVvtLmmXuWMblfo3jkaJkDmUF1F99RUIzsx7Gk4GT
+   ZWlgUzzoG1MRm0UjhmKwrVV4VQ759wuNkExb15lItuQIMvj8r8xRsE+hB
+   BD+6ziav8SjqCMpp9oiZSM/Z5oGiLJSvDI5daol/2zF2vUaaHC+v/Bo/B
+   rGKSZ0gO/GOnmAfJtXa98ioOaKx2VnHDGgc1CiaoDAS4Ij5I76G4Ifccp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292881602"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="292881599"
+   d="scan'208";a="292881602"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:27:54 -0700
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="558717098"
+   d="scan'208";a="558717102"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:27:54 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -81,10 +81,10 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Wan Jiabing <wanjiabing@vivo.com>,
         Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>,
-        UNGLinuxDriver@microchip.com
-Subject: [net-next 10/14] ptp: lan743x: convert to .adjfine and diff_by_scaled_ppm
-Date:   Thu, 18 Aug 2022 15:27:38 -0700
-Message-Id: <20220818222742.1070935-11-jacob.e.keller@intel.com>
+        linux-renesas-soc@vger.kernel.org
+Subject: [net-next 11/14] ptp: ravb: convert to .adjfine and adjust_by_scaled_ppm
+Date:   Thu, 18 Aug 2022 15:27:39 -0700
+Message-Id: <20220818222742.1070935-12-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
 In-Reply-To: <20220818222742.1070935-1-jacob.e.keller@intel.com>
 References: <20220818222742.1070935-1-jacob.e.keller@intel.com>
@@ -100,79 +100,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The lan743x implementation of .adjfreq is implemented in terms of a
+The ravb implementation of .adjfreq is implemented in terms of a
 straight forward "base * ppb / 1 billion" calculation.
 
-Convert this driver to .adjfine and use diff_by_scaled_ppm to calculate the
-difference value for the PTP_CLOCK_RATE_ADJ csr.
+Convert this driver to .adjfine and use the adjust_by_scaled_ppm helper
+function to calculate the new addend.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Bryan Whitehead <bryan.whitehead@microchip.com>
-Cc: UNGLinuxDriver@microchip.com
+Cc: Sergey Shtylyov <s.shtylyov@omp.ru>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>
+Cc: Phil Edworthy <phil.edworthy@renesas.com>
+Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: linux-renesas-soc@vger.kernel.org
 ---
 
 I do not have this hardware, and have only compile tested the change.
 
- drivers/net/ethernet/microchip/lan743x_ptp.c | 28 ++++++++------------
- 1 file changed, 11 insertions(+), 17 deletions(-)
+ drivers/net/ethernet/renesas/ravb_ptp.c | 16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_ptp.c b/drivers/net/ethernet/microchip/lan743x_ptp.c
-index 6a11e2ceb013..a88606236710 100644
---- a/drivers/net/ethernet/microchip/lan743x_ptp.c
-+++ b/drivers/net/ethernet/microchip/lan743x_ptp.c
-@@ -365,33 +365,27 @@ static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long scaled_ppm)
- 	return 0;
+diff --git a/drivers/net/ethernet/renesas/ravb_ptp.c b/drivers/net/ethernet/renesas/ravb_ptp.c
+index 87c4306d66ec..941aa3b0e8a0 100644
+--- a/drivers/net/ethernet/renesas/ravb_ptp.c
++++ b/drivers/net/ethernet/renesas/ravb_ptp.c
+@@ -88,24 +88,18 @@ static int ravb_ptp_update_compare(struct ravb_private *priv, u32 ns)
  }
  
--static int lan743x_ptpci_adjfreq(struct ptp_clock_info *ptpci, s32 delta_ppb)
-+static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long delta)
+ /* PTP clock operations */
+-static int ravb_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
++static int ravb_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  {
- 	struct lan743x_ptp *ptp =
- 		container_of(ptpci, struct lan743x_ptp, ptp_clock_info);
- 	struct lan743x_adapter *adapter =
- 		container_of(ptp, struct lan743x_adapter, ptp);
--	u32 lan743x_rate_adj = 0;
--	bool positive = true;
--	u32 u32_delta = 0;
--	u64 u64_delta = 0;
-+	u64 lan743x_rate_adj;
-+	s32 delta_ppb;
-+	u64 diff;
+ 	struct ravb_private *priv = container_of(ptp, struct ravb_private,
+ 						 ptp.info);
+ 	struct net_device *ndev = priv->ndev;
+ 	unsigned long flags;
+-	u32 diff, addend;
+-	bool neg_adj = false;
++	u32 addend;
+ 	u32 gccr;
  
-+	delta_ppb = scaled_ppm_to_ppb(delta);
- 	if ((delta_ppb < (-LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB)) ||
- 	    delta_ppb > LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB) {
- 		return -EINVAL;
- 	}
--	if (delta_ppb > 0) {
--		u32_delta = (u32)delta_ppb;
--		positive = true;
--	} else {
--		u32_delta = (u32)(-delta_ppb);
--		positive = false;
+-	if (ppb < 0) {
+-		neg_adj = true;
+-		ppb = -ppb;
 -	}
--	u64_delta = (((u64)u32_delta) << 35);
--	lan743x_rate_adj = div_u64(u64_delta, 1000000000);
+ 	addend = priv->ptp.default_addend;
+-	diff = div_u64((u64)addend * ppb, NSEC_PER_SEC);
+-
+-	addend = neg_adj ? addend - diff : addend + diff;
++	addend = (u32)adjust_by_scaled_ppm(priv->ptp.default_addend,
++					   scaled_ppm);
  
--	if (positive)
--		lan743x_rate_adj |= PTP_CLOCK_RATE_ADJ_DIR_;
-+	/* diff_by_scaled_ppm returns true if the difference is negative */
-+	if (diff_by_scaled_ppm(1ULL << 35, delta, &diff))
-+		lan743_rate_adj = (u32)diff;
-+	else
-+		lan74e_rage_adj = (u32)diff | PTP_CLOCK_RATE_ADJ_DIR_;
+ 	spin_lock_irqsave(&priv->lock, flags);
  
- 	lan743x_csr_write(adapter, PTP_CLOCK_RATE_ADJ,
- 			  lan743x_rate_adj);
-@@ -1576,7 +1570,7 @@ int lan743x_ptp_open(struct lan743x_adapter *adapter)
- 	ptp->ptp_clock_info.pps = LAN743X_PTP_N_PPS;
- 	ptp->ptp_clock_info.pin_config = ptp->pin_config;
- 	ptp->ptp_clock_info.adjfine = lan743x_ptpci_adjfine;
--	ptp->ptp_clock_info.adjfreq = lan743x_ptpci_adjfreq;
-+	ptp->ptp_clock_info.adjfine = lan743x_ptpci_adjfine;
- 	ptp->ptp_clock_info.adjtime = lan743x_ptpci_adjtime;
- 	ptp->ptp_clock_info.gettime64 = lan743x_ptpci_gettime64;
- 	ptp->ptp_clock_info.getcrosststamp = NULL;
+@@ -295,7 +289,7 @@ static const struct ptp_clock_info ravb_ptp_info = {
+ 	.max_adj	= 50000000,
+ 	.n_ext_ts	= N_EXT_TS,
+ 	.n_per_out	= N_PER_OUT,
+-	.adjfreq	= ravb_ptp_adjfreq,
++	.adjfine	= ravb_ptp_adjfine,
+ 	.adjtime	= ravb_ptp_adjtime,
+ 	.gettime64	= ravb_ptp_gettime64,
+ 	.settime64	= ravb_ptp_settime64,
 -- 
 2.37.1.208.ge72d93e88cb2
 
