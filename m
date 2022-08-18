@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AFEF597E84
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 08:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71D06597E81
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 08:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243558AbiHRGRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 02:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
+        id S243565AbiHRGSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 02:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243552AbiHRGRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 02:17:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C6E294120
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:17:19 -0700 (PDT)
+        with ESMTP id S243333AbiHRGSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 02:18:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960115F9A9
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:18:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660803438;
+        s=mimecast20190719; t=1660803519;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=ot2vwFR1T222PfgSIh5m6p32mZzeyGGRnrrO3d0V6sE=;
-        b=clm3hCaU4fxQBa2REfiv9L+jOdzd+06kcesl/yAGs6gdima8g+J/5EXJW4CN9SXciWYpqs
-        AvVBFWoloN3S1CxUs1PZqAdUFV2Li2ZRwTTNfWrcWc80UVlcXb98h7I9LGnpUAVCTgzqbq
-        CMXg0PS9cQn19l40v//jvJ/90mlgsYo=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
+        b=dyT7TP049tBceHakkiUgJVhigd9y7vFTfM/VZFdQq725cZBCw4B2OcHZbt3tqw7WeqNFyW
+        VO/5fTQ7CFpIq2oCoucpHU9nY0bBiF0IMPTQrYTR6GDddTrC8Dl9Jci5JSc9m4HikGfGlG
+        PboDdqyEX04PbWZ9bzO6ewXkIc4pep8=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-43-wKWcsEEfP2K2nyAewBgDEQ-1; Thu, 18 Aug 2022 02:17:17 -0400
-X-MC-Unique: wKWcsEEfP2K2nyAewBgDEQ-1
-Received: by mail-qt1-f197.google.com with SMTP id h19-20020ac85493000000b00343408bd8e5so524346qtq.4
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:17:17 -0700 (PDT)
+ us-mta-144-0N4UGYh9PaOL1sqwvCmmBg-1; Thu, 18 Aug 2022 02:18:38 -0400
+X-MC-Unique: 0N4UGYh9PaOL1sqwvCmmBg-1
+Received: by mail-qt1-f200.google.com with SMTP id s2-20020ac85cc2000000b00342f8ad1f40so513833qta.12
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:18:38 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ot2vwFR1T222PfgSIh5m6p32mZzeyGGRnrrO3d0V6sE=;
-        b=ILO93zW/5Fcqtau9+5jN9qhtsyp6WqXuGGzLBv29FUcICGPJ4aqx/FdjFsExZ2h9Bm
-         dtitlXGz7ilYQqswJ0tXPhDOnGeehdAy/Ah6/UXDdXnBJk7h6nWfd1c7MGqo4SRB9yY+
-         Lr08pA3QHw06q5U4QjgFxahhEbgYj8GR3H+j4tadwazZhz7pcyWdzX7BzEmlOcb0p/ma
-         Qw5vkWzh1CBihBlyevcSr0zaF+POv8uJH/SMEq97VxcQspiPo5/O6lHUv5DFM08DhTin
-         VnumbofuqBHEKUl8N5v7c20Qguya4PAqPoELvYJMK1jzjkfL526zBYLsLUF6DikSG+Vt
-         uugg==
-X-Gm-Message-State: ACgBeo3aFLv2tcxEGrLS4wCp7Kwi1RfAaWJJoqtJBi6mOdL725XPMW/M
-        NNMEQo4Ue0p+88ZINXpIhptNlJvRI+GdGjR83QMBJjvE1U9YxJ5eBpMPwDluVPmK0DxLwe67eyw
-        nsDpx9TGc5mEz3Mh87MZzx1+6aAQoTNTq
-X-Received: by 2002:a05:6214:238e:b0:470:8ee8:52e6 with SMTP id fw14-20020a056214238e00b004708ee852e6mr1168248qvb.45.1660803436755;
-        Wed, 17 Aug 2022 23:17:16 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4jOUEuptwDAtnL8E4DdAIzT5M/rSapK91fG0oRQXL0a2bCI0/d5RqvVeH6gz5JpjOR1xu8CsXuvg+Q3SwTLBM=
-X-Received: by 2002:a05:6214:238e:b0:470:8ee8:52e6 with SMTP id
- fw14-20020a056214238e00b004708ee852e6mr1168238qvb.45.1660803436530; Wed, 17
- Aug 2022 23:17:16 -0700 (PDT)
+        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
+        b=TSPYvaJhZFNLVZP/Scki8TOViWoG5d7I5J9Notlq9v+cJz8KDyVEWObeixTPZWfiYr
+         bJ9oGGCC1+2AZ4QWLsjyETr7EgSxxg50VqxXSkWj6EFEaOTZCEUn68Z8Q2F4DLZWZOCP
+         LxCqmOCJ6kIUTbK6Qdqllt8IrdY8dDRDR6nEOFS1Io63G9Wasy5+mQrauT6UHaXfCNFP
+         nNxEgBwNBKHfFkFoQejXnTO9wPIjlUl9BanUWlamdtNYCW+XSzJ33jP2IbjntmpXerpr
+         MmLK7Eh8cAZMZB+Z0YAJxsDHnzo9ndVaTI8HUKzdsYsFDy0fgfEEjBNqXOvoKeKbxLdW
+         67AQ==
+X-Gm-Message-State: ACgBeo1fs30y+Pa0iakI9+e0GDJC1MG0clh1WWf4t4LdIMwSF/TICrPz
+        nTkJgklpfwZwcpiABsdIi9WyzhTVjdpSH1OMubO/M+50wLOq8Kogz5NGkdO8C6dnpsbWyfS8QkF
+        sbhV+Di9cjjYVLe6TCj0eBUZ7YBrEio75
+X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id t7-20020ad45bc7000000b0048be9ed47a8mr1226314qvt.108.1660803517637;
+        Wed, 17 Aug 2022 23:18:37 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7i9tzI1gIYnxOQajZ5xPDocGxVzPwJg4mYMy5d4vyh7LD7T4c/zanv9nEMIkZnzlA6roXFACDL2aVIZunCvdQ=
+X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id
+ t7-20020ad45bc7000000b0048be9ed47a8mr1226308qvt.108.1660803517434; Wed, 17
+ Aug 2022 23:18:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-2-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220817135718.2553-2-qtxuning1999@sjtu.edu.cn>
+References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
 From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 18 Aug 2022 08:16:40 +0200
-Message-ID: <CAJaqyWcq++TmtMsGnn-j=6oAb7+f32P-WC5XRz0L2rEKJ4Sotw@mail.gmail.com>
-Subject: Re: [RFC v2 1/7] vhost: expose used buffers
+Date:   Thu, 18 Aug 2022 08:18:01 +0200
+Message-ID: <CAJaqyWdTjREaPLHLfo8ZyHoA3u5PpdX_=5-iTZOfa9fGpLMnfw@mail.gmail.com>
+Subject: Re: [RFC v2 2/7] vhost_test: batch used buffer
 To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
 Cc:     Jason Wang <jasowang@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -66,9 +66,9 @@ Cc:     Jason Wang <jasowang@redhat.com>,
         kvm list <kvm@vger.kernel.org>,
         virtualization <virtualization@lists.linux-foundation.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,73 +78,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Aug 17, 2022 at 3:58 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
 >
-> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
-> of descriptors.
+> Only add to used ring when a batch of buffer have all been used.  And if
+> in order feature negotiated, only add the last used descriptor for a
+> batch of buffer.
 >
 > Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
 > ---
->  drivers/vhost/vhost.c | 14 ++++++++++++--
->  drivers/vhost/vhost.h |  1 +
->  2 files changed, 13 insertions(+), 2 deletions(-)
+>  drivers/vhost/test.c | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 40097826cff0..7b20fa5a46c3 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->         vring_used_elem_t __user *used;
->         u16 old, new;
->         int start;
-> +       int copy_n = count;
->
-> +       /**
-> +        * If in order feature negotiated, devices can notify the use of a batch of buffers to
-> +        * the driver by only writing out a single used ring entry with the id corresponding
-> +        * to the head entry of the descriptor chain describing the last buffer in the batch.
-> +        */
-> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-> +               copy_n = 1;
-> +               heads = &heads[count - 1];
-> +       }
->         start = vq->last_used_idx & (vq->num - 1);
->         used = vq->used->ring + start;
-> -       if (vhost_put_used(vq, heads, start, count)) {
-> +       if (vhost_put_used(vq, heads, start, copy_n)) {
->                 vq_err(vq, "Failed to write used");
->                 return -EFAULT;
+> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+> index bc8e7fb1e635..57cdb3a3edf6 100644
+> --- a/drivers/vhost/test.c
+> +++ b/drivers/vhost/test.c
+> @@ -43,6 +43,9 @@ struct vhost_test {
+>  static void handle_vq(struct vhost_test *n)
+>  {
+>         struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
+> +       struct vring_used_elem *heads = kmalloc(sizeof(*heads)
+> +                       * vq->num, GFP_KERNEL);
+
+It seems to me we can use kmalloc_array here.
+
+Thanks!
+
+> +       int batch_idx = 0;
+>         unsigned out, in;
+>         int head;
+>         size_t len, total_len = 0;
+> @@ -84,11 +87,14 @@ static void handle_vq(struct vhost_test *n)
+>                         vq_err(vq, "Unexpected 0 len for TX\n");
+>                         break;
+>                 }
+> -               vhost_add_used_and_signal(&n->dev, vq, head, 0);
+> +               heads[batch_idx].id = cpu_to_vhost32(vq, head);
+> +               heads[batch_idx++].len = cpu_to_vhost32(vq, len);
+>                 total_len += len;
+>                 if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
+>                         break;
 >         }
-> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
+> +       if (batch_idx)
+> +               vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
 >
->         start = vq->last_used_idx & (vq->num - 1);
->         n = vq->num - start;
-> -       if (n < count) {
-> +       if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
->                 r = __vhost_add_used_n(vq, heads, n);
->                 if (r < 0)
->                         return r;
-
-It would be simpler to use vhost_add_used in vsock/vhost_test to add a
-batch of used descriptors, and leave vhost_add_used_n untouched.
-
-Since it's the upper layer the one that manages the in_order in this
-version, we could:
-* Always call vhost_add_used(vq, last_head_of_batch, ...) for the tx
-queue, that does not need used length info.
-* Call vhost_add_used_n for the rx queue, since the driver needs the
-used length info.
-
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index d9109107af08..0d5c49a30421 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -236,6 +236,7 @@ enum {
->         VHOST_FEATURES = (1ULL << VIRTIO_F_NOTIFY_ON_EMPTY) |
->                          (1ULL << VIRTIO_RING_F_INDIRECT_DESC) |
->                          (1ULL << VIRTIO_RING_F_EVENT_IDX) |
-> +                        (1ULL << VIRTIO_F_IN_ORDER) |
->                          (1ULL << VHOST_F_LOG_ALL) |
->                          (1ULL << VIRTIO_F_ANY_LAYOUT) |
->                          (1ULL << VIRTIO_F_VERSION_1)
+>         mutex_unlock(&vq->mutex);
+>  }
 > --
 > 2.17.1
 >
