@@ -2,186 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F5C1597C25
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:17:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7928597C73
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:56:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243063AbiHRDRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 23:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54478 "EHLO
+        id S242931AbiHRDxA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 23:53:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242979AbiHRDRF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:17:05 -0400
-Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6349AA831D;
-        Wed, 17 Aug 2022 20:17:02 -0700 (PDT)
-Received: from mta90.sjtu.edu.cn (unknown [10.118.0.90])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 07BE91008B389;
-        Thu, 18 Aug 2022 11:16:59 +0800 (CST)
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mta90.sjtu.edu.cn (Postfix) with ESMTP id D920F37C894;
-        Thu, 18 Aug 2022 11:16:59 +0800 (CST)
-X-Virus-Scanned: amavisd-new at 
-Received: from mta90.sjtu.edu.cn ([127.0.0.1])
-        by localhost (mta90.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id g2F2qLtILvBE; Thu, 18 Aug 2022 11:16:59 +0800 (CST)
-Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
-        by mta90.sjtu.edu.cn (Postfix) with ESMTP id A3DBD37C893;
-        Thu, 18 Aug 2022 11:16:59 +0800 (CST)
-Date:   Thu, 18 Aug 2022 11:16:59 +0800 (CST)
-From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        eperezma <eperezma@redhat.com>, jasowang <jasowang@redhat.com>,
-        sgarzare <sgarzare@redhat.com>, Michael Tsirkin <mst@redhat.com>
-Message-ID: <1091620326.8333566.1660792619533.JavaMail.zimbra@sjtu.edu.cn>
-In-Reply-To: <1660792318.4436166-3-xuanzhuo@linux.alibaba.com>
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-7-qtxuning1999@sjtu.edu.cn> <1660792318.4436166-3-xuanzhuo@linux.alibaba.com>
-Subject: Re: [RFC v2 6/7] virtio: in order support for virtio_ring
+        with ESMTP id S240154AbiHRDw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:52:57 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC65D5A2C1
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 20:52:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1660794777; x=1692330777;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=sRHQwGOzqmz2VL7LPSwSD+inAmzz1OJ9kOO5xGTrV6Q=;
+  b=fnzxE3G1Zpk2sC/wkrOT0BZYqlBtNqFmryrnuWwkTpGgwp/PnbtfMkhr
+   XZfcWwIWh6Cwmm16ud/z8oIG+y58nQphX+YM78gZxMejp9k3K4p1Mw65M
+   UiEER9gKvpFgFTYgb6wP8r/dF8RiWFHRGvnN1ydH6FpiPbi98Q8Gy45V4
+   s=;
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1e-f771ae83.us-east-1.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 03:52:46 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
+        by email-inbound-relay-iad-1e-f771ae83.us-east-1.amazon.com (Postfix) with ESMTPS id 431441200AB;
+        Thu, 18 Aug 2022 03:52:44 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Thu, 18 Aug 2022 03:52:43 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.160.55) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Thu, 18 Aug 2022 03:52:41 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net 00/17] net: sysctl: Fix data-races around net.core.XXX
+Date:   Wed, 17 Aug 2022 20:52:10 -0700
+Message-ID: <20220818035227.81567-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=GB2312
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [36.148.65.198]
-X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC103 (Mac)/8.8.15_GA_3928)
-Thread-Topic: virtio: in order support for virtio_ring
-Thread-Index: V9KFug4AVD63FIQF+R2n8Bnz0889Jw==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.160.55]
+X-ClientProxiedBy: EX13D29UWA002.ant.amazon.com (10.43.160.63) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series fixes data-races around knobs in net_core_table and
+netns_core_table except for bpf stuff.
+
+These knobs are skipped:
+
+  - 4 bpf knobs
+  - netdev_rss_key: Written only once by net_get_random_once() and
+                    read-only knob
+  - rps_sock_flow_entries: Protected with sock_flow_mutex
+  - flow_limit_cpu_bitmap: Protected with flow_limit_update_mutex
+  - flow_limit_table_len: Protected with flow_limit_update_mutex
+  - default_qdisc: Protected with qdisc_mod_lock
+  - warnings: Unused
+  - high_order_alloc_disable: Protected with static_key_mutex
+  - skb_defer_max: Already using READ_ONCE()
+  - sysctl_txrehash: Already using READ_ONCE()
+
+Note 5th patch fixes net.core.message_cost and net.core.message_burst,
+and lib/ratelimit.c does not have an explicit maintainer.
 
 
------ Original Message -----
-> From: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
-> To: "Guo Zhi" <qtxuning1999@sjtu.edu.cn>
-> Cc: "netdev" <netdev@vger.kernel.org>, "linux-kernel" <linux-kernel@vger.kernel.org>, "kvm list" <kvm@vger.kernel.org>,
-> "virtualization" <virtualization@lists.linux-foundation.org>, "Guo Zhi" <qtxuning1999@sjtu.edu.cn>, "eperezma"
-> <eperezma@redhat.com>, "jasowang" <jasowang@redhat.com>, "sgarzare" <sgarzare@redhat.com>, "Michael Tsirkin"
-> <mst@redhat.com>
-> Sent: Thursday, August 18, 2022 11:11:58 AM
-> Subject: Re: [RFC v2 6/7] virtio: in order support for virtio_ring
+Changes:
+  v2
+    * Split 4 bpf knobs and added 6 net knobs.
 
-> On Wed, 17 Aug 2022 21:57:17 +0800, Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->> If in order feature negotiated, we can skip the used ring to get
->> buffer's desc id sequentially.
->>
->> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
->> ---
->>  drivers/virtio/virtio_ring.c | 53 ++++++++++++++++++++++++++++++------
->>  1 file changed, 45 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
->> index 1c1b3fa376a2..143184ebb5a1 100644
->> --- a/drivers/virtio/virtio_ring.c
->> +++ b/drivers/virtio/virtio_ring.c
->> @@ -144,6 +144,9 @@ struct vring_virtqueue {
->>  			/* DMA address and size information */
->>  			dma_addr_t queue_dma_addr;
->>  			size_t queue_size_in_bytes;
->> +
->> +			/* In order feature batch begin here */
->> +			u16 next_desc_begin;
->>  		} split;
->>
->>  		/* Available for packed ring */
->> @@ -702,8 +705,13 @@ static void detach_buf_split(struct vring_virtqueue *vq,
->> unsigned int head,
->>  	}
->>
->>  	vring_unmap_one_split(vq, i);
->> -	vq->split.desc_extra[i].next = vq->free_head;
->> -	vq->free_head = head;
->> +	/* In order feature use desc in order,
->> +	 * that means, the next desc will always be free
->> +	 */
->> +	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
-> 
-> Call virtio_has_feature() here is not good.
-> 
-> Thanks.
-> 
+  v1: https://lore.kernel.org/netdev/20220816052347.70042-1-kuniyu@amazon.com/
 
-Maybe I can use a variable like vq->indiret?
-Thanks.
 
->> +		vq->split.desc_extra[i].next = vq->free_head;
->> +		vq->free_head = head;
->> +	}
->>
->>  	/* Plus final descriptor */
->>  	vq->vq.num_free++;
->> @@ -745,7 +753,7 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue
->> *_vq,
->>  {
->>  	struct vring_virtqueue *vq = to_vvq(_vq);
->>  	void *ret;
->> -	unsigned int i;
->> +	unsigned int i, j;
->>  	u16 last_used;
->>
->>  	START_USE(vq);
->> @@ -764,11 +772,38 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue
->> *_vq,
->>  	/* Only get used array entries after they have been exposed by host. */
->>  	virtio_rmb(vq->weak_barriers);
->>
->> -	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
->> -	i = virtio32_to_cpu(_vq->vdev,
->> -			vq->split.vring.used->ring[last_used].id);
->> -	*len = virtio32_to_cpu(_vq->vdev,
->> -			vq->split.vring.used->ring[last_used].len);
->> +	if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
->> +		/* Skip used ring and get used desc in order*/
->> +		i = vq->split.next_desc_begin;
->> +		j = i;
->> +		/* Indirect only takes one descriptor in descriptor table */
->> +		while (!vq->indirect && (vq->split.desc_extra[j].flags & VRING_DESC_F_NEXT))
->> +			j = (j + 1) % vq->split.vring.num;
->> +		/* move to next */
->> +		j = (j + 1) % vq->split.vring.num;
->> +		/* Next buffer will use this descriptor in order */
->> +		vq->split.next_desc_begin = j;
->> +		if (!vq->indirect) {
->> +			*len = vq->split.desc_extra[i].len;
->> +		} else {
->> +			struct vring_desc *indir_desc =
->> +				vq->split.desc_state[i].indir_desc;
->> +			u32 indir_num = vq->split.desc_extra[i].len, buffer_len = 0;
->> +
->> +			if (indir_desc) {
->> +				for (j = 0; j < indir_num / sizeof(struct vring_desc); j++)
->> +					buffer_len += indir_desc[j].len;
->> +			}
->> +
->> +			*len = buffer_len;
->> +		}
->> +	} else {
->> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
->> +		i = virtio32_to_cpu(_vq->vdev,
->> +				    vq->split.vring.used->ring[last_used].id);
->> +		*len = virtio32_to_cpu(_vq->vdev,
->> +				       vq->split.vring.used->ring[last_used].len);
->> +	}
->>
->>  	if (unlikely(i >= vq->split.vring.num)) {
->>  		BAD_RING(vq, "id %u out of range\n", i);
->> @@ -2236,6 +2271,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int
->> index,
->>  	vq->split.avail_flags_shadow = 0;
->>  	vq->split.avail_idx_shadow = 0;
->>
->> +	vq->split.next_desc_begin = 0;
->> +
->>  	/* No callback?  Tell other side not to bother us. */
->>  	if (!callback) {
->>  		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
->> --
->> 2.17.1
->>
+Kuniyuki Iwashima (17):
+  net: Fix data-races around sysctl_[rw]mem_(max|default).
+  net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
+  net: Fix data-races around netdev_max_backlog.
+  net: Fix data-races around netdev_tstamp_prequeue.
+  ratelimit: Fix data-races in ___ratelimit().
+  net: Fix data-races around sysctl_optmem_max.
+  net: Fix a data-race around sysctl_tstamp_allow_data.
+  net: Fix a data-race around sysctl_net_busy_poll.
+  net: Fix a data-race around sysctl_net_busy_read.
+  net: Fix a data-race around netdev_budget.
+  net: Fix data-races around sysctl_max_skb_frags.
+  net: Fix a data-race around netdev_budget_usecs.
+  net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
+  net: Fix data-races around sysctl_devconf_inherit_init_net.
+  net: Fix a data-race around gro_normal_batch.
+  net: Fix a data-race around netdev_unregister_timeout_secs.
+  net: Fix a data-race around sysctl_somaxconn.
+
+ Documentation/admin-guide/sysctl/net.rst |  2 +-
+ include/linux/netdevice.h                |  6 ++++--
+ include/net/busy_poll.h                  |  2 +-
+ include/net/gro.h                        |  2 +-
+ lib/ratelimit.c                          |  8 +++++---
+ net/core/bpf_sk_storage.c                |  5 +++--
+ net/core/dev.c                           | 20 ++++++++++----------
+ net/core/filter.c                        | 13 +++++++------
+ net/core/gro_cells.c                     |  2 +-
+ net/core/skbuff.c                        |  2 +-
+ net/core/sock.c                          | 18 ++++++++++--------
+ net/core/sysctl_net_core.c               |  6 ++++--
+ net/ipv4/devinet.c                       |  6 ++++--
+ net/ipv4/ip_output.c                     |  2 +-
+ net/ipv4/ip_sockglue.c                   |  6 +++---
+ net/ipv4/tcp.c                           |  4 ++--
+ net/ipv4/tcp_output.c                    |  2 +-
+ net/ipv6/addrconf.c                      |  2 +-
+ net/ipv6/ipv6_sockglue.c                 |  4 ++--
+ net/mptcp/protocol.c                     |  2 +-
+ net/netfilter/ipvs/ip_vs_sync.c          |  4 ++--
+ net/sched/sch_generic.c                  |  2 +-
+ net/socket.c                             |  2 +-
+ net/xfrm/espintcp.c                      |  2 +-
+ net/xfrm/xfrm_input.c                    |  2 +-
+ 25 files changed, 69 insertions(+), 57 deletions(-)
+
+-- 
+2.30.2
+
