@@ -2,309 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4173B598D72
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 22:12:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BEA8598D6F
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 22:12:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345889AbiHRUGQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 16:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34684 "EHLO
+        id S1345891AbiHRUIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 16:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345707AbiHRUEP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 16:04:15 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23464D25D5;
-        Thu, 18 Aug 2022 13:01:07 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id w19so5178946ejc.7;
-        Thu, 18 Aug 2022 13:01:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=snEf9OD+gQs4ZebjjnqGpAcw3jq2Lx6aCo0inZJ5Zo4=;
-        b=QwN2QCrSjmsdi98whEUUFujiZDlZK1nzjGSWCJW0jYDdiQkr+L3GLfC5fbl3nYYA0j
-         t2JvtzU7ufiA/qttGmoNuJ3minGhGHoMCZj5RwI/W3tTeejJMW7nXMvlkBUHCIh3QxgD
-         Ggn6N46x9LNBwBmi0jUI6MHSl8y+kiuh9FeOp4SUrYRnSQPZ1FF7iJHso0hqYukM7Jc4
-         hEcaH7X6S7NxBtvcWn8hl2XQFq1/OUckfcVFi7DURKdnj+kfuU0HjbsWXwbwI+QINgyO
-         H9D4SypAl5KR4efFILgyf/w33OJvTjjHobo4bLeVu2JKhFpPyDHHqDNSIkjGbj2e/Gf3
-         i+Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=snEf9OD+gQs4ZebjjnqGpAcw3jq2Lx6aCo0inZJ5Zo4=;
-        b=tjMSLw78ZpDAvzpXuCsw56vR6QYl3Nh1uNzqzwxwuYOb7aTiaCS3W7ftPfsL5kmZhD
-         SCVzpm+He9XZ6BiwcuyZrL1VMleybdGtzjd5iIURN58S56h9FmLIOurrPRXy0IUkhd1w
-         CuJdXPuunVlbmG2fC0lCfbIpgwveaRRPWt5+i8FA4hRqESXxf3ifPaLhz5r7cCoi7JhI
-         rI1rd9oIlpKiQc7R1ZygFBA4iHL+8KqIN2N44KsRzOn+B+MbqOFaS6JQW5vTUu+7KmOx
-         EWBd3u1ZJiNkyXpyJyxIgcu5an3IwIGrTbIdv4iIaqp7VFZ5t6AYmseEmPWSXhJEFJyJ
-         SUEQ==
-X-Gm-Message-State: ACgBeo2/fVRSe14ExdzpXsJUeFYSbDAByPKCoKAq8fPWrS0Wxk1EVcgN
-        YZpr2QaI1WUmSGW6fT1uzkc=
-X-Google-Smtp-Source: AA6agR5pu60HdIqBlook7t+r1LQxKBqXsv/pbYMnQ1gFBZ+l+8hPH31KNXIEok2B2uOJPIhdrVdn8w==
-X-Received: by 2002:a17:907:b02:b0:731:3f2d:f09 with SMTP id h2-20020a1709070b0200b007313f2d0f09mr2902611ejl.122.1660852865525;
-        Thu, 18 Aug 2022 13:01:05 -0700 (PDT)
-Received: from localhost.localdomain ([2a04:241e:502:a080:17c8:ba1c:b6f3:3fe0])
-        by smtp.gmail.com with ESMTPSA id fw30-20020a170907501e00b00722e4bab163sm1215087ejc.200.2022.08.18.13.01.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 13:01:04 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Philip Paeps <philip@trouble.is>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        with ESMTP id S1345529AbiHRUIY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 16:08:24 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 134D13AE59;
+        Thu, 18 Aug 2022 13:03:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660853006; x=1692389006;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hK4joLjW67roEfSg9L3o4RSW3LVg032fexmMiJB4qHE=;
+  b=GkDAWOARvETiowcvSZ4tteFXcJrlxFrfCe5AHfrbu16u9Wj7WV70WEcQ
+   gLSanioLOadt4kCSOC7NVO8RbgzaH1sTlxCtU3ZWYbnEjV5naMPe6UQeB
+   UJrTaZYuLGUGOy4c4pK0KrWQUSNXRT9AA8n8Hh3Fv7ajHVuFXNrFik7+E
+   KKpbtj7eD1QIiXUXcM8bDQ3o+bNXO4DjPxb3wKz/W/+jlcu3R9h5INmob
+   AS6rtmtsMpaq0lBAGqlN0eOdPG11JV8GsmuuEpVitS314RaKQ+niuPkGP
+   qDaEB1GDUWDeafAt46lfPqXdZ5Hu0v/pvJdyB37nvehljvKIiwmG6KSjY
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="293648497"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="293648497"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 13:02:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="734179034"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 18 Aug 2022 13:02:07 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOliR-0000WH-01;
+        Thu, 18 Aug 2022 20:02:07 +0000
+Date:   Fri, 19 Aug 2022 04:01:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Daniel Xu <dxu@dxuuu.xyz>, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, memxor@gmail.com
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v7 26/26] tcp: authopt: Initial implementation of TCP_REPAIR_AUTHOPT
-Date:   Thu, 18 Aug 2022 23:00:00 +0300
-Message-Id: <817b877b44d6946bc9285d1518dda48787555644.1660852705.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1660852705.git.cdleonard@gmail.com>
-References: <cover.1660852705.git.cdleonard@gmail.com>
+Subject: Re: [PATCH bpf-next 2/3] bpf: Add support for writing to nf_conn:mark
+Message-ID: <202208190318.HygywK17-lkp@intel.com>
+References: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f850bb7e20950736d9175c61d7e0691098e06182.1660592020.git.dxu@dxuuu.xyz>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to support TCP_REPAIR for connections using RFC5925
-Authentication Option add a sockopt to get/set ISN and SNE values.
+Hi Daniel,
 
-The TCP_REPAIR_AUTHOxpTP sockopt is only allowed when the socket is
-already in "repair" mode, this behavior is shared with other sockopts
-relevant to TCP_REPAIR.
+Thank you for the patch! Yet something to improve:
 
-The setsockopt further requires the TCP_ESTABLISHED state, this is
-because it relies on snd_nxt which is only initialized after connect().
+[auto build test ERROR on bpf-next/master]
 
-For SNE restoration we provide a full 64-bit sequence number on "get" and
-handle any recent 64-bit sequence number on "set", where recent means
-"within ~2GB to the current window".
+url:    https://github.com/intel-lab-lkp/linux/commits/Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: arm-versatile_defconfig (https://download.01.org/0day-ci/archive/20220819/202208190318.HygywK17-lkp@intel.com/config)
+compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://github.com/intel-lab-lkp/linux/commit/c7b21d163eb9c61514dd86baf4281deb4d4387bb
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Daniel-Xu/Support-direct-writes-to-nf_conn-mark/20220816-060429
+        git checkout c7b21d163eb9c61514dd86baf4281deb4d4387bb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-Linux tracks snd_sne and rcv_sne as the extension of snd_nxt and
-rcv_nxt but this is an implementation detail and snd_nxt doesn't even
-seem to be one of the values that can be read by userspace. Handling SNE
-with 64-bit values means userspace doesn't need to worry about matching
-snd_nxt.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
----
- include/net/tcp_authopt.h |  2 ++
- include/uapi/linux/tcp.h  | 19 +++++++++++
- net/ipv4/tcp.c            | 23 ++++++++++++++
- net/ipv4/tcp_authopt.c    | 66 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 110 insertions(+)
+All errors (new ones prefixed by >>):
 
-diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
-index 4f83d8e54fef..fda6dc4b5d57 100644
---- a/include/net/tcp_authopt.h
-+++ b/include/net/tcp_authopt.h
-@@ -231,10 +231,12 @@ static inline void tcp_authopt_update_snd_sne(struct tcp_sock *tp, u32 seq)
- 						 lockdep_sock_is_held((struct sock *)tp));
- 		if (info)
- 			__tcp_authopt_update_snd_sne(tp, info, seq);
- 	}
- }
-+int tcp_get_authopt_repair_val(struct sock *sk, struct tcp_authopt_repair *opt);
-+int tcp_set_authopt_repair(struct sock *sk, sockptr_t optval, unsigned int optlen);
- #else
- static inline void tcp_authopt_clear(struct sock *sk)
- {
- }
- static inline int tcp_authopt_openreq(struct sock *newsk,
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index 5ca8aa9d5e43..ee6836f87cf8 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -128,10 +128,11 @@ enum {
- #define TCP_CM_INQ		TCP_INQ
- 
- #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
- #define TCP_AUTHOPT		38	/* TCP Authentication Option (RFC5925) */
- #define TCP_AUTHOPT_KEY		39	/* TCP Authentication Option Key (RFC5925) */
-+#define TCP_REPAIR_AUTHOPT	40
- 
- 
- #define TCP_REPAIR_ON		1
- #define TCP_REPAIR_OFF		0
- #define TCP_REPAIR_OFF_NO_WP	-1	/* Turn off without window probes */
-@@ -490,10 +491,28 @@ struct tcp_authopt_key {
- 	 * address match is performed.
- 	 */
- 	int	prefixlen;
- };
- 
-+/**
-+ * struct tcp_authopt_repair - TCP_REPAIR information related to Authentication Option
-+ * @src_isn: Local Initial Sequence Number
-+ * @dst_isn: Remote Initial Sequence Number
-+ * @snd_sne: Sequence Number Extension for Send (upper 32 bits of snd_seq)
-+ * @rcv_sne: Sequence Number Extension for Recv (upper 32 bits of rcv_seq)
-+ * @snd_seq: Recent Send Sequence Number (lower 32 bits of snd_sne)
-+ * @rcv_seq: Recent Recv Sequence Number (lower 32 bits of rcv_sne)
-+ */
-+struct tcp_authopt_repair {
-+	__u32	src_isn;
-+	__u32	dst_isn;
-+	__u32	snd_sne;
-+	__u32	rcv_sne;
-+	__u32	snd_seq;
-+	__u32	rcv_seq;
-+};
-+
- /* setsockopt(fd, IPPROTO_TCP, TCP_ZEROCOPY_RECEIVE, ...) */
- 
- #define TCP_RECEIVE_ZEROCOPY_FLAG_TLB_CLEAN_HINT 0x1
- struct tcp_zerocopy_receive {
- 	__u64 address;		/* in: address of mapping */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 205534d501ec..ad0af4efd265 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3715,10 +3715,13 @@ static int do_tcp_setsockopt(struct sock *sk, int level, int optname,
- 		err = tcp_set_authopt(sk, optval, optlen);
- 		break;
- 	case TCP_AUTHOPT_KEY:
- 		err = tcp_set_authopt_key(sk, optval, optlen);
- 		break;
-+	case TCP_REPAIR_AUTHOPT:
-+		err = tcp_set_authopt_repair(sk, optval, optlen);
-+		break;
- #endif
- 	case TCP_USER_TIMEOUT:
- 		/* Cap the max time in ms TCP will retry or probe the window
- 		 * before giving up and aborting (ETIMEDOUT) a connection.
- 		 */
-@@ -4387,10 +4390,30 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
- 			return -EFAULT;
- 		if (copy_to_user(optval, &info, len))
- 			return -EFAULT;
- 		return 0;
- 	}
-+	case TCP_REPAIR_AUTHOPT: {
-+		struct tcp_authopt_repair val;
-+		int err;
-+
-+		if (get_user(len, optlen))
-+			return -EFAULT;
-+
-+		lock_sock(sk);
-+		err = tcp_get_authopt_repair_val(sk, &val);
-+		release_sock(sk);
-+
-+		if (err)
-+			return err;
-+		len = min_t(unsigned int, len, sizeof(val));
-+		if (put_user(len, optlen))
-+			return -EFAULT;
-+		if (copy_to_user(optval, &val, len))
-+			return -EFAULT;
-+		return 0;
-+	}
- #endif
- 
- 	default:
- 		return -ENOPROTOOPT;
- 	}
-diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
-index 933a4bbddb70..a77067c0498b 100644
---- a/net/ipv4/tcp_authopt.c
-+++ b/net/ipv4/tcp_authopt.c
-@@ -1775,10 +1775,76 @@ int __tcp_authopt_inbound_check(struct sock *sk, struct sk_buff *skb,
- 
- 	return 1;
- }
- EXPORT_SYMBOL(__tcp_authopt_inbound_check);
- 
-+int tcp_get_authopt_repair_val(struct sock *sk, struct tcp_authopt_repair *opt)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	struct tcp_authopt_info *info;
-+	int err;
-+
-+	memset(opt, 0, sizeof(*opt));
-+	sock_owned_by_me(sk);
-+	err = check_sysctl_tcp_authopt();
-+	if (err)
-+		return err;
-+	if (!tp->repair)
-+		return -EPERM;
-+
-+	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
-+	if (!info)
-+		return -ENOENT;
-+
-+	opt->dst_isn = info->dst_isn;
-+	opt->src_isn = info->src_isn;
-+	opt->rcv_sne = info->rcv_sne;
-+	opt->snd_sne = info->snd_sne;
-+	opt->rcv_seq = tp->rcv_nxt;
-+	opt->snd_seq = tp->snd_nxt;
-+
-+	return 0;
-+}
-+
-+int tcp_set_authopt_repair(struct sock *sk, sockptr_t optval, unsigned int optlen)
-+{
-+	struct tcp_sock *tp = tcp_sk(sk);
-+	struct tcp_authopt_info *info;
-+	struct tcp_authopt_repair val;
-+	int err;
-+
-+	sock_owned_by_me(sk);
-+	err = check_sysctl_tcp_authopt();
-+	if (err)
-+		return err;
-+
-+	if (optlen != sizeof(val))
-+		return -EFAULT;
-+	if (copy_from_sockptr(&val, optval, sizeof(val)))
-+		return -EFAULT;
-+
-+	/* tcp_authopt repair relies on fields that are only initialized after
-+	 * tcp_connect. Doing this setsockopt before connect() can't be correct
-+	 * so return an error.
-+	 */
-+	if (sk->sk_state != TCP_ESTABLISHED)
-+		return -EPERM;
-+
-+	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
-+	if (!info)
-+		return -ENOENT;
-+	if (!tp->repair)
-+		return -EPERM;
-+
-+	info->dst_isn = val.dst_isn;
-+	info->src_isn = val.src_isn;
-+	info->rcv_sne = compute_sne(val.rcv_sne, val.rcv_seq, tp->rcv_nxt);
-+	info->snd_sne = compute_sne(val.snd_sne, val.snd_seq, tp->snd_nxt);
-+
-+	return 0;
-+}
-+
- #ifdef CONFIG_PROC_FS
- struct tcp_authopt_iter_state {
- 	struct seq_net_private p;
- };
- 
+>> net/core/filter.c:8723:10: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+                          ^
+   net/core/filter.c:8797:10: error: call to undeclared function 'btf_struct_access'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                   return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+                          ^
+   2 errors generated.
+
+
+vim +/btf_struct_access +8723 net/core/filter.c
+
+  8714	
+  8715	static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
+  8716						const struct btf *btf,
+  8717						const struct btf_type *t, int off,
+  8718						int size, enum bpf_access_type atype,
+  8719						u32 *next_btf_id,
+  8720						enum bpf_type_flag *flag)
+  8721	{
+  8722		if (atype == BPF_READ)
+> 8723			return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+  8724						 flag);
+  8725	
+  8726		return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
+  8727						      next_btf_id, flag);
+  8728	}
+  8729	
+
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
