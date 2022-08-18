@@ -2,47 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EDDD5983BC
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:06:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D18D85983C9
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:10:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244915AbiHRNGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 09:06:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
+        id S244626AbiHRNIc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 09:08:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244382AbiHRNGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:06:43 -0400
-Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EF21A3A0;
-        Thu, 18 Aug 2022 06:06:40 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VMauZyi_1660827996;
-Received: from 30.227.95.9(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VMauZyi_1660827996)
-          by smtp.aliyun-inc.com;
-          Thu, 18 Aug 2022 21:06:36 +0800
-Message-ID: <4a79203b-a8a9-3f16-3b8d-5240f535ae10@linux.alibaba.com>
-Date:   Thu, 18 Aug 2022 21:06:35 +0800
+        with ESMTP id S244117AbiHRNIa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:08:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 068AB357EE
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:08:29 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oOfG1-0000TO-Va; Thu, 18 Aug 2022 15:08:22 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AD3B1CD860;
+        Thu, 18 Aug 2022 13:08:14 +0000 (UTC)
+Date:   Thu, 18 Aug 2022 15:08:14 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com, Dario Binacchi <dariobin@libero.it>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] can: bxcan: add support for ST bxCAN controller
+Message-ID: <20220818130814.z7b4rvmld6wvk4fg@pengutronix.de>
+References: <20220817143529.257908-1-dario.binacchi@amarulasolutions.com>
+ <20220817143529.257908-5-dario.binacchi@amarulasolutions.com>
+ <20220818103031.m7bl6gbzcc76etig@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH net-next 00/10] net/smc: optimize the parallelism of SMC-R
- connections
-Content-Language: en-US
-To:     Jan Karcher <jaka@linux.ibm.com>, kgraul@linux.ibm.com,
-        wenjia@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-References: <cover.1660152975.git.alibuda@linux.alibaba.com>
- <2182efbc-99f8-17ba-d344-95a467536b05@linux.ibm.com>
- <9da41595-977f-5026-0ea1-f18a5fa1de4c@linux.alibaba.com>
- <0f0718d1-eeb4-6440-5367-db9cc8104f43@linux.ibm.com>
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-In-Reply-To: <0f0718d1-eeb4-6440-5367-db9cc8104f43@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="dtkjkszqd6mas3zd"
+Content-Disposition: inline
+In-Reply-To: <20220818103031.m7bl6gbzcc76etig@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -50,107 +58,82 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--dtkjkszqd6mas3zd
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 8/18/22 12:52 AM, Jan Karcher wrote:
-> 
-> 
-> On 17.08.2022 06:55, D. Wythe wrote:
->>
->>
->> On 8/16/22 5:35 PM, Jan Karcher wrote:
->>>
->>>
->>> On 10.08.2022 19:47, D. Wythe wrote:
->>>> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>>>
->>>> This patch set attempts to optimize the parallelism of SMC-R connections,
->>>> mainly to reduce unnecessary blocking on locks, and to fix exceptions that
->>>> occur after thoses optimization.
->>>>
->>>
->>> Thank you again for your submission!
->>> Let me give you a quick update from our side:
->>> We tested your patches on top of the net-next kernel on our s390 systems. They did crash our systems. After verifying our environment we pulled console logs and now we can tell that there is indeed a problem with your patches regarding SMC-D. So please do not integrate this change as of right now. I'm going to do more in depth reviews of your patches but i need some time for them so here is a quick a description of the problem:
->>
->> Sorry for the late reply, and thanks a lot for your comment.
->>
->> I'm sorry for the low-level mistake. In the early design, I hoped that lnkc can also work on SMC-D,
->> but in later tests I found out that we don't have SMC-D environment to test, so I have to canceled this logic.
->> But dues to the rollback isn't thorough enough, leaving this issues, we are very sorry for that.
->>
-> 
-> One more comment:
-> If the only reason why you do not touch SMC-D is that you do not have the environment to test it we strongly encourage you to change it anyway.
-> 
-> At some point doing kernel development, especially driver development you are going to reach the point where you do not have the environment to test it. It is on the maintainers to test those changes and verify that nothing is broken.
-> 
-> So please:
-> If testing is the only reason change SMC-D as well and we are going to test it for you verifying if it does work or not.
-> 
-> Thank you
-> Jan
+On 18.08.2022 12:30:31, Marc Kleine-Budde wrote:
+> One step at a time, let's look at the TX path:
+>=20
+> On 17.08.2022 16:35:29, Dario Binacchi wrote:
+> > +static netdev_tx_t bxcan_start_xmit(struct sk_buff *skb,
+> > +				    struct net_device *ndev)
+> > +{
+> > +	struct bxcan_priv *priv =3D netdev_priv(ndev);
+> > +	struct can_frame *cf =3D (struct can_frame *)skb->data;
+> > +	struct bxcan_regs *regs =3D priv->regs;
+> > +	struct bxcan_mb *mb_regs;
+>=20
+> __iomem?
+>=20
+> > +	unsigned int mb_id;
+> > +	u32 id, tsr;
+> > +	int i, j;
+> > +
+> > +	if (can_dropped_invalid_skb(ndev, skb))
+> > +		return NETDEV_TX_OK;
+> > +
+> > +	tsr =3D readl(&regs->tsr);
+> > +	mb_id =3D ffs((tsr & BXCAN_TSR_TME) >> BXCAN_TSR_TME_SHIFT);
+>=20
+> We want to send the CAN frames in the exact order they are pushed into
+> the driver, so don't pick the first free mailbox you find. How a
+                                                                 are
+> priorities for the TX mailboxes handled?
+>=20
+> Is the mailbox with the lowest number send first? Is there a priority
+> field in the mailbox?
 
-Actually, this is not the only reason. The purpose of remove smc_server_lgr_pending & smc_client_lgr_pending
-is mainly to solve the problem of excessive lock granularity in SMC-R. In SMC-R those locks protect
-a complete CLC message exchange process, including sending and receiving. This results in a large number of
-connections having to be queued. But this is not the case with SMC-D. SMC-D releases the lock in advance
-before receiving the CLC message, which makes the problem less severe in SMC-D than in SMC-R.
+I just had a look into the data sheet and it says that the TX mailboxes
+are handled in transmit request order. This is good.
 
-Of course, lnkc can be used for SMC-D, but considering that we have no way to test it,
-and it is not the core bottleneck of SMC-D, so we gave up it.
+[...]
 
-I will fix the panic problem first in the next revison. If you have a strong demand for this feature,
-I may commit a separate PATCH to support it, dues to current patch is quite complicated, adding SMC-D support
-will exacerbate its complexity, which may affect the other reviewer progress.
+> The mcp251xfd has a proper hardware FIFO ring buffer for TX, the bxcan
+> probably doesn't. The get_tx_free() check is a bit different. Look at
+> c_can_get_tx_free() in:
 
+This means you can use the simpler get_tx_free from the mcp251xfd driver.
+>=20
+> | https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/comm=
+it/?id=3D28e86e9ab522e65b08545e5008d0f1ac5b19dad1
+>=20
+> This patch is a good example for the relevant changes.
 
-Thanks
-D. Wythe
+This patch is non the less a good example for the TX path.
 
->>
->>> It is a SMC-D problem, that occurs while building up the connection. In smc_conn_create you set struct smc_lnk_cluster *lnkc = NULL. For the SMC-R path you do grab the pointer, for SMC-D that never happens. Still you are using this refernce for SMC-D => Crash. This problem can be reproduced using the SMC-D path. Here is an example console output:
->>>
->>> [  779.516382] Unable to handle kernel pointer dereference in virtual kernel address space
->>> [  779.516389] Failing address: 0000000000000000 TEID: 0000000000000483
->>> [  779.516391] Fault in home space mode while using kernel ASCE.
->>> [  779.516395] AS:0000000069628007 R3:00000000ffbf0007 S:00000000ffbef800 P:000000000000003d
->>> [  779.516431] Oops: 0004 ilc:2 [#1] SMP
->>> [  779.516436] Modules linked in: tcp_diag inet_diag ism mlx5_ib ib_uverbs mlx5_core smc_diag smc ib_core nft_fib_inet nft_fib_ipv4
->>> nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv
->>> 6 nf_defrag_ipv4 ip_set nf_tables n
->>> [  779.516470] CPU: 0 PID: 24 Comm: kworker/0:1 Not tainted 5.19.0-13940-g22a46254655a #3
->>> [  779.516476] Hardware name: IBM 8561 T01 701 (z/VM 7.2.0)
->>>
->>> [  779.522738] Workqueue: smc_hs_wq smc_listen_work [smc]
->>> [  779.522755] Krnl PSW : 0704c00180000000 000003ff803da89c (smc_conn_create+0x174/0x968 [smc])
->>> [  779.522766]            R:0 T:1 IO:1 EX:1 Key:0 M:1 W:0 P:0 AS:3 CC:0 PM:0 RI:0 EA:3
->>> [  779.522770] Krnl GPRS: 0000000000000002 0000000000000000 0000000000000001 0000000000000000
->>> [  779.522773]            000000008a4128a0 000003ff803f21aa 000000008e30d640 0000000086d72000
->>> [  779.522776]            0000000086d72000 000000008a412803 000000008a412800 000000008e30d650
->>> [  779.522779]            0000000080934200 0000000000000000 000003ff803cb954 00000380002dfa88
->>> [  779.522789] Krnl Code: 000003ff803da88e: e310f0e80024        stg %r1,232(%r15)
->>> [  779.522789]            000003ff803da894: a7180000            lhi %r1,0
->>> [  779.522789]           #000003ff803da898: 582003ac            l %r2,940
->>> [  779.522789]           >000003ff803da89c: ba123020            cs %r1,%r2,32(%r3)
->>> [  779.522789]            000003ff803da8a0: ec1603be007e        cij %r1,0,6,000003ff803db01c
->>>
->>> [  779.522789]            000003ff803da8a6: 4110b002            la %r1,2(%r11)
->>> [  779.522789]            000003ff803da8aa: e310f0f00024        stg %r1,240(%r15)
->>> [  779.522789]            000003ff803da8b0: e310f0c00004        lg %r1,192(%r15)
->>> [  779.522870] Call Trace:
->>> [  779.522873]  [<000003ff803da89c>] smc_conn_create+0x174/0x968 [smc]
->>> [  779.522884]  [<000003ff803cb954>] smc_find_ism_v2_device_serv+0x1b4/0x300 [smc]
->>> 01: HCPGSP2629I The virtual machine is placed in CP mode due to a SIGP stop from CPU 01.
->>> 01: HCPGSP2629I The virtual machine is placed in CP mode due to a SIGP stop from CPU 00.
->>> [  779.522894]  [<000003ff803cbace>] smc_listen_find_device+0x2e/0x370 [smc]
->>>
->>>
->>> I'm going to send the review for the first patch right away (which is the one causing the crash), so far I'm done with it. The others are going to follow. Maybe you can look over the problem and come up with a solution, otherwise we are going to decide if we want to look into it as soon as I'm done with the reviews. Thank you for your patience.
->>
->> In the next revision, I will add additional judgment to protect the SMC-D environment,
->> thanks for your comments.
->>
->> And Looking forward to your other comments, thanks again.
->>
->> D. Wythe
->>
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--dtkjkszqd6mas3zd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmL+OboACgkQrX5LkNig
+0111dwgAsKHBnsZaWy6rH4/lkSd7m7BsivcwGcyfFO0SqgkUt/hKtV9luwypGM5y
+0EpYLPJJDxJyZHtcv9Xc65ceMWYAu/KrodPF9gYvHdPusZLer42UZX7OSCZjRKg/
+rg5QNEmMSFGsaXuOV13F2vkdUgCHqO+RMQzA1QkrCWXfGBfP8KEOBEyGkWRBWV3B
+EOiXp+XK1KLoHTD7cCCh0usmj+OqTc98mntbSq92UUB6UQph0PecyrNYU07PIvAW
+bZ9zoUdVC/0aAEGLHWY3pUXj7/nj8GxUiLCQiPH+Vvv+xYT2pe1kHpMWL7qp03WH
+NIfB5M8Vu2g7sAF39XW6q0VdHXTu0g==
+=JlUx
+-----END PGP SIGNATURE-----
+
+--dtkjkszqd6mas3zd--
