@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7764D598822
+	by mail.lfdr.de (Postfix) with ESMTP id BFF3B598823
 	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344560AbiHRPyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:54:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
+        id S1344466AbiHRPzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344421AbiHRPyZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:54:25 -0400
+        with ESMTP id S1344465AbiHRPyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:54:43 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B23CC650F
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:53:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAE6267C
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:53:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660837982; x=1692373982;
+  t=1660838000; x=1692374000;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=K6xAOfYF4wti2+D4DZEcF9W27P/xT12OoGFHWkTP3qs=;
-  b=m4SuUFevYFC9N1lEdwfwkIqDURUDN0ThVgmtoIBCalRbQr37tJ6X3zeO
-   BdP35Uh0sy/a8E2CcMVkJ71TPAmtIYYwAHFq/4bsjQHV5rql+HYxXS4Jf
-   EmkcGyAGixta096neYKsD+EDq0Q1eWZRVQlrCqxMnU78pf1OL0CaFNWp1
-   Yhj6VqnXsX6iCa2wtZ1HRIop6RmW5HYT5WezpLBge3hlgvPPrTFgF0AiH
-   GgefqpV9m+pER3X3rYedbtR8GTUwGLrfXQ/kiYpPB9XQGNg05dTJHkhFR
-   3sojM6nbcIDE06fQwtT/g0jAhlL5rRxvxEr3KxgpYRtg8Aj1fhyG1uzsL
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318817390"
+  bh=+XSlFo76cz0brYvMzxLon8+5AyYb5F0MG+zsGZdkCx8=;
+  b=jRqk4SxwNMuVSvtXuKg5Zq2sU1advDloCGrEKppJ4FSxlvVivSd3B6HV
+   1BbUx2kA/nfzu8473F7Zur7McOo2O8Is4TOOu5QEx5D6rAgJfCVmMHNBs
+   Ct0WkOL1gWDWFvXlwMxyyNyyMm4EA5a2dXmjyiDlipbYEBrO0eRqOoUk0
+   HRTICSYyYL0XMCuiA7HRRQELMMs3vXiAk2r6zsUfA2zBC/eyUKLbhx6XE
+   dI/XknePqYNdWJaGVx1FjiOsifZsLfymv4o36voLAdF7lvJ+GJadtKTad
+   0a1lS76le01Gyce5FFjlEnYMAi+BPRkrgsadVSLkEG/9i809eKUxLRlCa
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318817396"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="318817390"
+   d="scan'208";a="318817396"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
   by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 08:52:13 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="676104311"
+   d="scan'208";a="676104316"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2022 08:52:12 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2022 08:52:13 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
+Cc:     Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 2/5] ice: Implement FCS/CRC and VLAN stripping co-existence policy
-Date:   Thu, 18 Aug 2022 08:52:04 -0700
-Message-Id: <20220818155207.996297-3-anthony.l.nguyen@intel.com>
+        Chinh T Cao <chinh.t.cao@intel.com>,
+        Mikael Barsehyan <mikael.barsehyan@intel.com>,
+        Kavya AV <kavyax.av@intel.com>
+Subject: [PATCH net-next 3/5] ice: Allow 100M speeds for some devices
+Date:   Thu, 18 Aug 2022 08:52:05 -0700
+Message-Id: <20220818155207.996297-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220818155207.996297-1-anthony.l.nguyen@intel.com>
 References: <20220818155207.996297-1-anthony.l.nguyen@intel.com>
@@ -62,120 +64,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
 
-Make sure that only the valid combinations of FCS/CRC stripping and
-VLAN stripping offloads are allowed.
+For certain devices, 100M speeds are supported. Do not mask off
+100M speed for these devices.
 
-You cannot have FCS/CRC stripping disabled while VLAN stripping is
-enabled - this breaks the correctness of the FCS/CRC.
-
-If administrator tries to enable VLAN stripping when FCS/CRC stripping is
-disabled, the request should be rejected.
-
-If administrator tries to disable FCS/CRC stripping when VLAN stripping
-is enabled, the request should be rejected if VLANs are configured. If
-there is no VLAN configured, then both FCS/CRC and VLAN stripping should
-be disabled.
-
-Testing Hints:
-The default settings after driver load are:
-- VLAN C-Tag offloads are enabled
-- VLAN S-Tag offloads are disabled
-- FCS/CRC stripping is enabled
-
-Restore the default settings before each test with the command:
-ethtool -K eth0 rx-fcs off rxvlan on txvlan on rx-vlan-stag-hw-parse off
-tx-vlan-stag-hw-insert off
-
-Test 1:
-Disable FCS/CRC and VLAN stripping:
-ethtool -K eth0 rx-fcs on rxvlan off
-Try to enable VLAN stripping:
-ethtool -K eth0 rxvlan on
-
-Expected: VLAN stripping request is rejected
-
-Test 2:
-Try to disable FCS/CRC stripping:
-ethtool -K eth0 rx-fcs on
-
-Expected: VLAN stripping is also disabled, as there are no VLAN
-configured
-
-Test 3:
-Add a VLAN:
-ip link add link eth0 eth0.42 type vlan id 42
-ip link set eth0 up
-Try to disable FCS/CRC stripping:
-ethtool -K eth0 rx-fcs on
-
-Expected: FCS/CRC stripping request is rejected
-
-Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Signed-off-by: Anirudh Venkataramanan <anirudh.venkataramanan@intel.com>
+Co-developed-by: Chinh T Cao <chinh.t.cao@intel.com>
+Signed-off-by: Chinh T Cao <chinh.t.cao@intel.com>
+Signed-off-by: Mikael Barsehyan <mikael.barsehyan@intel.com>
+Tested-by: Kavya AV <kavyax.av@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c | 25 +++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_common.c  | 20 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_common.h  |  1 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 11 +++++++----
+ 3 files changed, 28 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index a827045198cc..8dfecdc74a18 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -5722,6 +5722,9 @@ ice_fdb_del(struct ndmsg *ndm, __always_unused struct nlattr *tb[],
- 					 NETIF_F_HW_VLAN_STAG_RX | \
- 					 NETIF_F_HW_VLAN_STAG_TX)
- 
-+#define NETIF_VLAN_STRIPPING_FEATURES	(NETIF_F_HW_VLAN_CTAG_RX | \
-+					 NETIF_F_HW_VLAN_STAG_RX)
-+
- #define NETIF_VLAN_FILTERING_FEATURES	(NETIF_F_HW_VLAN_CTAG_FILTER | \
- 					 NETIF_F_HW_VLAN_STAG_FILTER)
- 
-@@ -5808,6 +5811,14 @@ ice_fix_features(struct net_device *netdev, netdev_features_t features)
- 			      NETIF_F_HW_VLAN_STAG_TX);
- 	}
- 
-+	if (!(netdev->features & NETIF_F_RXFCS) &&
-+	    (features & NETIF_F_RXFCS) &&
-+	    (features & NETIF_VLAN_STRIPPING_FEATURES) &&
-+	    !ice_vsi_has_non_zero_vlans(np->vsi)) {
-+		netdev_warn(netdev, "Disabling VLAN stripping as FCS/CRC stripping is also disabled and there is no VLAN configured\n");
-+		features &= ~NETIF_VLAN_STRIPPING_FEATURES;
-+	}
-+
- 	return features;
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
+index 27d0cbbd29da..c8d95b299fee 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.c
++++ b/drivers/net/ethernet/intel/ice/ice_common.c
+@@ -2775,6 +2775,26 @@ ice_aq_set_port_params(struct ice_port_info *pi, bool double_vlan,
+ 	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
  }
  
-@@ -5901,6 +5912,13 @@ ice_set_vlan_features(struct net_device *netdev, netdev_features_t features)
- 	current_vlan_features = netdev->features & NETIF_VLAN_OFFLOAD_FEATURES;
- 	requested_vlan_features = features & NETIF_VLAN_OFFLOAD_FEATURES;
- 	if (current_vlan_features ^ requested_vlan_features) {
-+		if ((features & NETIF_F_RXFCS) &&
-+		    (features & NETIF_VLAN_STRIPPING_FEATURES)) {
-+			dev_err(ice_pf_to_dev(vsi->back),
-+				"To enable VLAN stripping, you must first enable FCS/CRC stripping\n");
-+			return -EIO;
-+		}
++/**
++ * ice_is_100m_speed_supported
++ * @hw: pointer to the HW struct
++ *
++ * returns true if 100M speeds are supported by the device,
++ * false otherwise.
++ */
++bool ice_is_100m_speed_supported(struct ice_hw *hw)
++{
++	switch (hw->device_id) {
++	case ICE_DEV_ID_E822C_SGMII:
++	case ICE_DEV_ID_E822L_SGMII:
++	case ICE_DEV_ID_E823L_1GBE:
++	case ICE_DEV_ID_E823C_SGMII:
++		return true;
++	default:
++		return false;
++	}
++}
 +
- 		err = ice_set_vlan_offload_features(vsi, features);
- 		if (err)
- 			return err;
-@@ -5986,6 +6004,13 @@ ice_set_features(struct net_device *netdev, netdev_features_t features)
- 	 * flag the packet data will have the 4 byte CRC appended
- 	 */
- 	if (changed & NETIF_F_RXFCS) {
-+		if ((features & NETIF_F_RXFCS) &&
-+		    (features & NETIF_VLAN_STRIPPING_FEATURES)) {
-+			dev_err(ice_pf_to_dev(vsi->back),
-+				"To disable FCS/CRC stripping, you must first disable VLAN stripping\n");
-+			return -EIO;
-+		}
-+
- 		ice_vsi_cfg_crc_strip(vsi, !!(features & NETIF_F_RXFCS));
- 		ret = ice_down_up(vsi);
- 		if (ret)
+ /**
+  * ice_get_link_speed_based_on_phy_type - returns link speed
+  * @phy_type_low: lower part of phy_type
+diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
+index 61b7c60db689..d08f7f9ea8b7 100644
+--- a/drivers/net/ethernet/intel/ice/ice_common.h
++++ b/drivers/net/ethernet/intel/ice/ice_common.h
+@@ -204,6 +204,7 @@ ice_aq_set_gpio(struct ice_hw *hw, u16 gpio_ctrl_handle, u8 pin_idx, bool value,
+ int
+ ice_aq_get_gpio(struct ice_hw *hw, u16 gpio_ctrl_handle, u8 pin_idx,
+ 		bool *value, struct ice_sq_cd *cd);
++bool ice_is_100m_speed_supported(struct ice_hw *hw);
+ int
+ ice_aq_set_lldp_mib(struct ice_hw *hw, u8 mib_type, void *buf, u16 buf_size,
+ 		    struct ice_sq_cd *cd);
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index ad6cffb2d3e0..b7be84bbe72d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -1470,20 +1470,22 @@ ice_get_ethtool_stats(struct net_device *netdev,
+ 
+ /**
+  * ice_mask_min_supported_speeds
++ * @hw: pointer to the HW structure
+  * @phy_types_high: PHY type high
+  * @phy_types_low: PHY type low to apply minimum supported speeds mask
+  *
+  * Apply minimum supported speeds mask to PHY type low. These are the speeds
+  * for ethtool supported link mode.
+  */
+-static
+-void ice_mask_min_supported_speeds(u64 phy_types_high, u64 *phy_types_low)
++static void
++ice_mask_min_supported_speeds(struct ice_hw *hw,
++			      u64 phy_types_high, u64 *phy_types_low)
+ {
+ 	/* if QSFP connection with 100G speed, minimum supported speed is 25G */
+ 	if (*phy_types_low & ICE_PHY_TYPE_LOW_MASK_100G ||
+ 	    phy_types_high & ICE_PHY_TYPE_HIGH_MASK_100G)
+ 		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_25G;
+-	else
++	else if (!ice_is_100m_speed_supported(hw))
+ 		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_1G;
+ }
+ 
+@@ -1533,7 +1535,8 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
+ 		phy_types_low = le64_to_cpu(pf->nvm_phy_type_lo);
+ 		phy_types_high = le64_to_cpu(pf->nvm_phy_type_hi);
+ 
+-		ice_mask_min_supported_speeds(phy_types_high, &phy_types_low);
++		ice_mask_min_supported_speeds(&pf->hw, phy_types_high,
++					      &phy_types_low);
+ 		/* determine advertised modes based on link override only
+ 		 * if it's supported and if the FW doesn't abstract the
+ 		 * driver from having to account for link overrides
 -- 
 2.35.1
 
