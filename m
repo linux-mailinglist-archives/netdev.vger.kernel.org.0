@@ -2,163 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 387E05990AE
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:44:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FA4B5990BA
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:50:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343941AbiHRWm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
+        id S239255AbiHRWuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245337AbiHRWm4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:42:56 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00842DC5D9;
-        Thu, 18 Aug 2022 15:42:54 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@breakpoint.cc>)
-        id 1oOoE0-0003vt-Ns; Fri, 19 Aug 2022 00:42:52 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     <netfilter-devel@vger.kernel.org>
-Cc:     ncardwell@google.com, Eric Dumazet <edumazet@google.com>,
-        <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>
-Subject: [PATCH nf] netfilter: conntrack: work around exceeded receive window
-Date:   Fri, 19 Aug 2022 00:42:31 +0200
-Message-Id: <20220818224231.11583-1-fw@strlen.de>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S231467AbiHRWuD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:50:03 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9968956B7;
+        Thu, 18 Aug 2022 15:49:59 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id x21so3643705edd.3;
+        Thu, 18 Aug 2022 15:49:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=rNlsaCWVcW80MXzpUrUNFhKEvE2cJ8XPhPWA7oScFPI=;
+        b=DZk0NhIGutHPUO2B4xEIhG3JWTiDn/g9IJQRoTawhDK1/alblLFPa696umNPIgsKel
+         +FwF8KacumP5wrXSUW5Ju7v+qhtWhCBh/mRM/Va4tDAITDnADixOMSN0K+sFfovL/0PL
+         JS+pj6z2sX4FQ5Ye7/NH2ltzO9B6dXElXXxR87eSx3nxlg5ZS8Xc+sE36wFFZTXOAOOR
+         rQAGbTwcb4gHYDymzgWL4nyFkZIPB3COoJiBZr7R5yxuFmJzUQhU40/Sc/EMckTqkMlv
+         N/ZPaRDySlCHjX3IXmV9GaYjGOjMxB6BMgAdL0hLWgkUn2bxGCPc9KmjSVtLxbL1VTTT
+         9FxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=rNlsaCWVcW80MXzpUrUNFhKEvE2cJ8XPhPWA7oScFPI=;
+        b=K8zjtM8pRUN2ZlbV1k9fQHL3/l3HIMWiByu0fWynFgvxybzVSAMeI7E9GH3eV2brzN
+         CohemztdeG9tEMCULy9gN5pOJ6IGS2MeUpMF0T63dvfGZe8HTi31bbAnQu9OnsWYXxF3
+         wahj5mpvufrAgJscn4ds8CcFRPzzSdL6x8nG98DjEbIIS2Ib+sfaSJhO5SfkH7RqDsbc
+         1TpC0oHZ1sOsqIJOssPU4OuEfc1y1qWhZBx65pnb5pZCwO1hlW87r/tnn0ARj+3oS2NK
+         gb6my2L+2Gt4GAkRfEB0jUV/IwkMTub/Qbh87nESpL8ZYNwfxfxuABOMdITJwAwBDJs9
+         SJpQ==
+X-Gm-Message-State: ACgBeo3j9Pp9WXwbGRcR15RjEfCRUXpEqC2wQB5aMiiNQULjSSJNr1HK
+        SR/7trGhLyqur94Pu18mePIgOlIzI+H5L1wuBkw=
+X-Google-Smtp-Source: AA6agR6isVgBYEvS3X6rTm5FLMn3TFrONnRZzvfP5aOxu1SR1SvL4Sm4B9G4mF67Nj9DF8wr/0BY7Ii6e96K80fF0/c=
+X-Received: by 2002:aa7:ce0f:0:b0:445:f488:51ca with SMTP id
+ d15-20020aa7ce0f000000b00445f48851camr3824300edv.6.1660862998092; Thu, 18 Aug
+ 2022 15:49:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220818042339.82992-1-kuniyu@amazon.com> <20220818042339.82992-2-kuniyu@amazon.com>
+In-Reply-To: <20220818042339.82992-2-kuniyu@amazon.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 18 Aug 2022 15:49:46 -0700
+Message-ID: <CAADnVQ+H2n5-Gwgq-OZu-WZKRsg=kq7FtOGXJu6YNHoCEBap6w@mail.gmail.com>
+Subject: Re: [PATCH v1 bpf 1/4] bpf: Fix data-races around bpf_jit_enable.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a TCP sends more bytes than allowed by the receive window, all future
-packets can be marked as invalid.
-This can clog up the conntrack table because of 5-day default timeout.
+On Wed, Aug 17, 2022 at 9:24 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> A sysctl variable bpf_jit_enable is accessed concurrently, and there is
+> always a chance of data-race.  So, all readers and a writer need some
+> basic protection to avoid load/store-tearing.
+>
+> Fixes: 0a14842f5a3c ("net: filter: Just In Time compiler for x86-64")
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  arch/arm/net/bpf_jit_32.c        | 2 +-
+>  arch/arm64/net/bpf_jit_comp.c    | 2 +-
+>  arch/mips/net/bpf_jit_comp.c     | 2 +-
+>  arch/powerpc/net/bpf_jit_comp.c  | 5 +++--
+>  arch/riscv/net/bpf_jit_core.c    | 2 +-
+>  arch/s390/net/bpf_jit_comp.c     | 2 +-
+>  arch/sparc/net/bpf_jit_comp_32.c | 5 +++--
+>  arch/sparc/net/bpf_jit_comp_64.c | 5 +++--
+>  arch/x86/net/bpf_jit_comp.c      | 2 +-
+>  arch/x86/net/bpf_jit_comp32.c    | 2 +-
+>  include/linux/filter.h           | 2 +-
+>  net/core/sysctl_net_core.c       | 4 ++--
+>  12 files changed, 19 insertions(+), 16 deletions(-)
+>
+> diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
+> index 6a1c9fca5260..4b6b62a6fdd4 100644
+> --- a/arch/arm/net/bpf_jit_32.c
+> +++ b/arch/arm/net/bpf_jit_32.c
+> @@ -1999,7 +1999,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+>         }
+>         flush_icache_range((u32)header, (u32)(ctx.target + ctx.idx));
+>
+> -       if (bpf_jit_enable > 1)
+> +       if (READ_ONCE(bpf_jit_enable) > 1)
 
-Sequence of packets:
- 01 initiator > responder: [S], seq 171, win 5840, options [mss 1330,sackOK,TS val 63 ecr 0,nop,wscale 1]
- 02 responder > initiator: [S.], seq 33211, ack 172, win 65535, options [mss 1460,sackOK,TS val 010 ecr 63,nop,wscale 8]
- 03 initiator > responder: [.], ack 33212, win 2920, options [nop,nop,TS val 068 ecr 010], length 0
- 04 initiator > responder: [P.], seq 172:240, ack 33212, win 2920, options [nop,nop,TS val 279 ecr 010], length 68
-
-Window is 5840 starting from 33212 -> 39052.
-
- 05 responder > initiator: [.], ack 240, win 256, options [nop,nop,TS val 872 ecr 279], length 0
- 06 responder > initiator: [.], seq 33212:34530, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-This is fine, conntrack will flag the connection as having outstanding
-data (UNACKED), which lowers the conntrack timeout to 300s.
-
- 07 responder > initiator: [.], seq 34530:35848, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 08 responder > initiator: [.], seq 35848:37166, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 09 responder > initiator: [.], seq 37166:38484, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 10 responder > initiator: [.], seq 38484:39802, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-Packet 10 is already sending more than permitted, but conntrack doesn't
-validate this (only seq is tested vs. maxend, not 'seq+len').
-
-38484 is acceptable, but only up to 39052, so this packet should
-not have been sent (or only 568 bytes, not 1318).
-
-At this point, connection is still in '300s' mode.
-
-Next packet however will get flagged:
- 11 responder > initiator: [P.], seq 39802:40128, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 326
-
-nf_ct_proto_6: SEQ is over the upper bound (over the window of the receiver) .. LEN=378 .. SEQ=39802 ACK=240 ACK PSH ..
-
-Now, a couple of replies/acks comes in:
-
- 12 initiator > responder: [.], ack 34530, win 4368,
-[.. irrelevant acks removed ]
- 16 initiator > responder: [.], ack 39802, win 8712, options [nop,nop,TS val 296201291 ecr 2982371892], length 0
-
-This ack is significant -- this acks the last packet send by the
-responder that conntrack considered valid.
-
-This means that ack == td_end.  This will withdraw the
-'unacked data' flag, the connection moves back to the 5-day timeout
-of established conntracks.
-
- 17 initiator > responder: ack 40128, win 10030, ...
-
-This packet is also flagged as invalid.
-
-Because conntrack only updates state based on packets that are
-considered valid, packet 11 'did not exist' and that gets us:
-
-nf_ct_proto_6: ACK is over upper bound 39803 (ACKed data not seen yet) .. SEQ=240 ACK=40128 WINDOW=10030 RES=0x00 ACK URG
-
-Because this received and processed by the endpoints, the conntrack entry
-remains in a bad state, no packets will ever be considered valid again:
-
- 30 responder > initiator: [F.], seq 40432, ack 2045, win 391, ..
- 31 initiator > responder: [.], ack 40433, win 11348, ..
- 32 initiator > responder: [F.], seq 2045, ack 40433, win 11348 ..
-
-... all trigger 'ACK is over bound' test and we end up with
-non-early-evictable 5-day default timeout.
-
-NB: This patch triggers a bunch of checkpatch warnings because of silly
-indent.  I will resend the cleanup series linked below to reduce the
-indent level once this change has propagated to net-next.
-
-I could route the cleanup via nf but that causes extra backport work for
-stable maintainers.
-
-Link: https://lore.kernel.org/netfilter-devel/20220720175228.17880-1-fw@strlen.de/T/#mb1d7147d36294573cc4f81d00f9f8dadfdd06cd8
-Signed-off-by: Florian Westphal <fw@strlen.de>
----
- net/netfilter/nf_conntrack_proto_tcp.c | 31 ++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
-
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index a63b51dceaf2..a634c72b1ffc 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -655,6 +655,37 @@ static bool tcp_in_window(struct nf_conn *ct,
- 		    tn->tcp_be_liberal)
- 			res = true;
- 		if (!res) {
-+			bool seq_ok = before(seq, sender->td_maxend + 1);
-+
-+			if (!seq_ok) {
-+				u32 overshot = end - sender->td_maxend + 1;
-+				bool ack_ok;
-+
-+				ack_ok = after(sack, receiver->td_end - MAXACKWINDOW(sender) - 1);
-+
-+				if (in_recv_win &&
-+				    ack_ok &&
-+				    overshot <= receiver->td_maxwin &&
-+				    before(sack, receiver->td_end + 1)) {
-+					/* Work around TCPs that send more bytes than allowed by
-+					 * the receive window.
-+					 *
-+					 * If the (marked as invalid) packet is allowed to pass by
-+					 * the ruleset and the peer acks this data, then its possible
-+					 * all future packets will trigger 'ACK is over upper bound' check.
-+					 *
-+					 * Thus if only the sequence check fails then do update td_end so
-+					 * possible ACK for this data can update internal state.
-+					 */
-+					sender->td_end = end;
-+					sender->flags |= IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED;
-+
-+					nf_ct_l4proto_log_invalid(skb, ct, hook_state,
-+								  "%u bytes more than expected", overshot);
-+					return res;
-+				}
-+			}
-+
- 			nf_ct_l4proto_log_invalid(skb, ct, hook_state,
- 			"%s",
- 			before(seq, sender->td_maxend + 1) ?
--- 
-2.35.1
-
+Nack.
+Even if the compiler decides to use single byte loads for some
+odd reason there is no issue here.
