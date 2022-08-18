@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A955980B4
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59A055980B0
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237238AbiHRJRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 05:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
+        id S237096AbiHRJRd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 05:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbiHRJRb (ORCPT
+        with ESMTP id S232900AbiHRJRb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 05:17:31 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D2367CA7;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CB067CA5;
         Thu, 18 Aug 2022 02:17:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660814199; cv=none; 
+ARC-Seal: i=1; a=rsa-sha256; t=1660814205; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=USXBYp2MxaiuDHGWU5W4eTLantEidntEZ8iCdnHk6M3ctHr1EFg/JSPl9CjVy8LWnFXXxo1lZ919QZSqM8HScTrTroB4JCq6X0ic8GiHMXWu6DHE8Gfj6cQrCNkbpGFIE+Lq8QecvqyjOwTctPYGLpfKKjIYUkOvjEr4liDx4hc=
+        b=mfWE9788EDfsm55K8i8vHWwCMzj+jvHGrVXjWFgD+3NI0Se/zUBg9SkK0YE/x6QeCrndEwoqdKIJCTjbS0EQg27O2zkigNB8VS3q9yMVIn9t7g1UXMcHKXH4piZv66ftIYjiw3/QJsStbQcgMADRbZfYe5Ks1OCqcRjO1NLtdu4=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1660814199; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=r2yFPxeJOW4FSx26rqzEDXZD6XX1GgOaFnrmsBkM89Y=; 
-        b=JuBycRjfQCsne9NV697b4UJuqzp7TqQ4dsrb41e56q6FX3l67Y9m2fCfWMXbyW8SuUM91bf9pFXsar7HedVOZK3Sv3S59BNga3Ui5Dk0o73mTS0qFH39TXo+qby885GywPHWeW6iqFgPXKxvp7nx0vuF2MsebBeUqnDZ2zI/wh0=
+        t=1660814205; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=wpAUAfc07ylNY9oSdQ6DPJcvSW66IDwq4Ksnwpr1SWA=; 
+        b=RrhhNRiX/4mh+bl6eE4oNd45nR2F9ndMoUvmHxhFfHJgGxeYmmBmdcDORsRbmfSQorB7Q8sDBeyD9WhZ0XJzFQtqP8hzP1sKAB4kH4aK/swQ2nlaHb3oZ18T0HBgAnh8BSSBDozFShu366PuAKjS7MX80IO2FmIhb3xUvUMINOY=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660814199;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660814205;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=r2yFPxeJOW4FSx26rqzEDXZD6XX1GgOaFnrmsBkM89Y=;
-        b=YfauaA1pzQgStKULF51J08iaNkprUoc07njXNwtD2NWTdF4UoECdHCRrotXKmfz5
-        MdeEz9Hm6C1ignB1OgYiFEZb1K2nR87ZvCf2KalgtFUIOedweqHOg9g/ETSl3Mucw3H
-        nQUgNRXfIIyRF3VKllU60iDwodXYmAVVHz+h5rBw=
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=wpAUAfc07ylNY9oSdQ6DPJcvSW66IDwq4Ksnwpr1SWA=;
+        b=d/Te43mme5wi6A1Qtwq2i2032uIc1QxhgO7Ypz5rcxXD7UyirsmOCWREZT6Bksnb
+        bw/MMHGfs7OSIHA7QUx2+Rj0IjUXk4kTmtyb17oSCU2gb/2q3B9bq4hsyw7D4KGOxmI
+        pAkYVq/EHYXnoKMzf0GpIx+QveGvhNHuUIrbuf1Y=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1660814196048527.2976968417031; Thu, 18 Aug 2022 02:16:36 -0700 (PDT)
+        with SMTPS id 166081420373773.15587554921001; Thu, 18 Aug 2022 02:16:43 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -58,11 +58,14 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v3 0/6] completely rework mediatek,mt7530 binding
-Date:   Thu, 18 Aug 2022 12:16:21 +0300
-Message-Id: <20220818091627.51878-1-arinc.unal@arinc9.com>
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 1/6] dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+Date:   Thu, 18 Aug 2022 12:16:22 +0300
+Message-Id: <20220818091627.51878-2-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220818091627.51878-1-arinc.unal@arinc9.com>
+References: <20220818091627.51878-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -77,46 +80,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Make trivial changes on the binding.
 
-This patch series brings complete rework of the mediatek,mt7530 binding.
+- Update title to include MT7531 switch.
+- Add me as a maintainer. List maintainers in alphabetical order by first
+name.
+- Add description to compatible strings.
+- Stretch descriptions up to the 80 character limit.
+- Remove quotes from $ref: "dsa.yaml#".
 
-The binding is checked with "make dt_binding_check
-DT_SCHEMA_FILES=mediatek,mt7530.yaml".
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
+ 1 file changed, 24 insertions(+), 12 deletions(-)
 
-If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
-MT7623AI SoC, let me know. I'll add it to the examples.
-
-If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
-
-v3:
-- Add Rob's Reviewed-by: to first patch.
-- Explain why to invalidating reset-gpios and mediatek,mcm.
-- Do not change ethernet-ports to ports on examples.
-- Remove platform and, when possible, ethernet nodes from examples.
-- Remove pinctrl binding from examples.
-- Combine removing unnecesary lines patch with relocating port binding.
-- Define $defs of mt7530 and mt7531 port binding and refer to them in each
-compatible device.
-- Remove allOf: for cases where there's only a single if:.
-- Use else: for cpu port 6 which simplifies the binding.
-- State clearly that the DSA driver does not support the MT7530 switch in
-MT7620 SoCs.
-
-v2:
-- Change the way of adding descriptions for each compatible string.
-- Split the patch for updating the json-schema.
-- Make slight changes on the patch for the binding description.
-
-Arınç ÜNAL (6):
-  dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
-  dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
-  dt-bindings: net: dsa: mediatek,mt7530: update examples
-  dt-bindings: net: dsa: mediatek,mt7530: define port binding per switch
-  dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for switch models
-  dt-bindings: net: dsa: mediatek,mt7530: update binding description
-
- .../bindings/net/dsa/mediatek,mt7530.yaml       | 680 +++++++++++++++----
- 1 file changed, 545 insertions(+), 135 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+index 17ab6c69ecc7..edf48e917173 100644
+--- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+@@ -4,12 +4,13 @@
+ $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: Mediatek MT7530 Ethernet switch
++title: Mediatek MT7530 and MT7531 Ethernet Switches
+ 
+ maintainers:
+-  - Sean Wang <sean.wang@mediatek.com>
++  - Arınç ÜNAL <arinc.unal@arinc9.com>
+   - Landen Chao <Landen.Chao@mediatek.com>
+   - DENG Qingfang <dqfext@gmail.com>
++  - Sean Wang <sean.wang@mediatek.com>
+ 
+ description: |
+   Port 5 of mt7530 and mt7621 switch is muxed between:
+@@ -61,10 +62,21 @@ description: |
+ 
+ properties:
+   compatible:
+-    enum:
+-      - mediatek,mt7530
+-      - mediatek,mt7531
+-      - mediatek,mt7621
++    oneOf:
++      - description:
++          Standalone MT7530 and multi-chip module MT7530 in MT7623AI SoC
++        items:
++          - const: mediatek,mt7530
++
++      - description:
++          Standalone MT7531
++        items:
++          - const: mediatek,mt7531
++
++      - description:
++          Multi-chip module MT7530 in MT7621AT, MT7621DAT and MT7621ST SoCs
++        items:
++          - const: mediatek,mt7621
+ 
+   reg:
+     maxItems: 1
+@@ -79,7 +91,7 @@ properties:
+   gpio-controller:
+     type: boolean
+     description:
+-      if defined, MT7530's LED controller will run on GPIO mode.
++      If defined, MT7530's LED controller will run on GPIO mode.
+ 
+   "#interrupt-cells":
+     const: 1
+@@ -92,8 +104,8 @@ properties:
+   io-supply:
+     description:
+       Phandle to the regulator node necessary for the I/O power.
+-      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt
+-      for details for the regulator setup on these boards.
++      See Documentation/devicetree/bindings/regulator/mt6323-regulator.txt for
++      details for the regulator setup on these boards.
+ 
+   mediatek,mcm:
+     type: boolean
+@@ -110,8 +122,8 @@ properties:
+ 
+   resets:
+     description:
+-      Phandle pointing to the system reset controller with line index for
+-      the ethsys.
++      Phandle pointing to the system reset controller with line index for the
++      ethsys.
+     maxItems: 1
+ 
+ patternProperties:
+@@ -148,7 +160,7 @@ required:
+   - reg
+ 
+ allOf:
+-  - $ref: "dsa.yaml#"
++  - $ref: dsa.yaml#
+   - if:
+       required:
+         - mediatek,mcm
+-- 
+2.34.1
 
