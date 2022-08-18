@@ -2,140 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4279A598750
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9496D598760
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:25:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344191AbiHRPV0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36512 "EHLO
+        id S1344248AbiHRPV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:21:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344249AbiHRPVP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:21:15 -0400
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10070.outbound.protection.outlook.com [40.107.1.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E026C768
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:21:10 -0700 (PDT)
+        with ESMTP id S241485AbiHRPVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:21:23 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2078.outbound.protection.outlook.com [40.107.20.78])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491FE7268D;
+        Thu, 18 Aug 2022 08:21:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N8ZuutXoaDmGwLWb2hUGRQtNragBIXhmjXqJ854Ol/R4RlupvzHuU0cunMwsdB2jgx7FN4VnR6oU63DlgGe+AI2MAMY5pvanszDBQWr9t66Mn7hThlk1umaYGAr0w6IWteOq3oS/YF+0S8kyeE3MzCiZBvfTe+lZ3Lx2I2QybQw8a054yUn3KbXLpUHP3ZSE/f3ovzLy1ZguR1qXOAcAkmeXazMpUt9j3J3GRqW8NyONU0S4xXKv+6CaEDbMaDx9oKBn6iwZRqckjAPcNHvO2/kV5X5KqPnEtjZb3A3x5XxLwZlzPtGTbzyVihAfik+SLgSQO9xexcqTNo0h53hl3g==
+ b=mXWf3ceyfvmouUa3XawFukJy7bpkFgVK3wAVtYYYVFk2PcgZ37YCbTg39ydFuQlfuPQmMdxUNmbGwPLEIFRzW6P0RfBzYtr85tRaTfYsyZFqQ5VQWch/J6AF8tQqdjISF/Rftc9JPPvpmLT844Tn3OIP/PQSXiXQzWhqKXDgLH3O8g0fSBAacMRd735ad/NWT0iLwGi9EEvK8uYKNMkCqxa0/ivaxbs2fmiufXLOhNDack7mOP6Km4noTKlZuSjc+Sr5CSr8z2N7DLZF49LmRN2rn3wMAONRSvbpNEwVjuvF0XA2h0MQWIU0mtlH+pl7F9sbDt8R/GvZB89TKQ8/vw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wh8FKb556ur/J2b1fXq0h0aMzCMhAa7tQ/3YXkkSvk0=;
- b=TCIryqWFVprUhf2QqF7/qaNipnryq/WBdBeWLp9hNcV9NKcxoScsrTLPGWL0C45Kugfn3Ck67n2SpNqz9D4dQG68nJFtzd8AMC140s/tCL4EdXltc0nxa2Vg2TjsvcmgJhryjKED96ICwVVllWxsp1pCZkavUhU2Xdha7oPmLBIk0rCSLxRcZD2uJvzuXeahEPJ9XVObX50Yaw1Ip2SJpDu7gl2X/hcWGrDlLmkTaA2eBIosOKw/DKe4t5pa/H5aSCkfds9PuMf9TiQ2XY84CmlUyWvKaGtRr149DJrYGnWFkiuaaEMU/J5PQ7PapLaE//4eac5DPSR0fSnLy5APjw==
+ bh=jytnf0FOsZMz6rb+lR1xq2SeS1KuH/duhqpdzBlCdNw=;
+ b=F3zWZ0bCVvOHMUGjZ3fNT4LBAxPH+VqNZJ/RT4vI+771/Fzp5sHpjv+3K/7S3IdvCS7YJPBwfpOyOl9pRfD/D1pGbbEo4/rHTCLVvf5DfYPxU3uqoLHnW5cPiEDgx5ZgtCjyABrzxL0UcGiHL74SBl5ua8akj0gen5jwW8y+At+M+tDCwV3PmE5I+A626hgFbV1D/Funx2b7NUUS/PTbrqolMRrHQstkZY4bVBg/8PDjOm1AVX8dwO7VjVfp8iyq81LG/lCR/d9RZPO4UN9g9DaEMJ5KHkVRkECUd3uYg7KUrAmONU6RJhQdCMNq3yJc4j/rkBcn0U3Tf+CFF1o1Fw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wh8FKb556ur/J2b1fXq0h0aMzCMhAa7tQ/3YXkkSvk0=;
- b=dXUN5vvitmzNO9VUyrYQexv8W/3BLbb9pgY6Fz+RKJpsqGEpBgvhWtAf20Uii0Hmf5TBY5fVnRfFyvmEpsfw0wu1kzs3CNvsSktmOTYeIhXRdvNRoUpzlYSSMhjYX4FqQ3U9rqSSjQjJH11O7fzAq/GNF9ppYNFBvpBtiXNeXqg=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB5341.eurprd04.prod.outlook.com (2603:10a6:803:3d::19) with
+ bh=jytnf0FOsZMz6rb+lR1xq2SeS1KuH/duhqpdzBlCdNw=;
+ b=BMKIrZWz0w90xmFKamNSLzlyZLtJ5kNVEzgHgHbTSCxWnLC9kYtmm0JouUjquVbtYyPtdXVW/5r9bwi4au1qHmoWFzbltjleu9jugdQwvpI/WhM/DdHFvOsuMHgf0njkj5zaqo4p0qsS8MPvc0EhbuDvTROQ/94UYBMogxscuYpCQFW5IWkDq2DqQ4gSsuPrdbokSCwNbXuHrqFWLplVwTHbMQXma11eIHHb5p2ejKpjnxN/DzTP5fNx06U/lca4eALdh2ASbHoIDIHFY0TQFaclMxzSPwANp/8FMb4N1HxySC/iDjVmRsrplTQZd1bjGWiKvIG+yDgeW06cMgRD6w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from VI1PR03MB4973.eurprd03.prod.outlook.com (2603:10a6:803:c5::12)
+ by PAXPR03MB7965.eurprd03.prod.outlook.com (2603:10a6:102:218::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 15:21:07 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
- 15:21:07 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Russell King <rmk+kernel@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+ 2022 15:21:18 +0000
+Received: from VI1PR03MB4973.eurprd03.prod.outlook.com
+ ([fe80::fd39:2209:b2dd:5f0a]) by VI1PR03MB4973.eurprd03.prod.outlook.com
+ ([fe80::fd39:2209:b2dd:5f0a%6]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
+ 15:21:18 +0000
+Subject: Re: [PATCH v3 00/11] net: phy: Add support for rate adaptation
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        =?gb2312?B?QWx2aW4gqeCoomlwcmFnYQ==?= <alsi@bang-olufsen.dk>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Craig McQueen <craig@mcqueen.id.au>
-Subject: Re: [PATCH net] net: dsa: microchip: keep compatibility with device
- tree blobs with no phy-mode
-Thread-Topic: [PATCH net] net: dsa: microchip: keep compatibility with device
- tree blobs with no phy-mode
-Thread-Index: AQHYsw9wTPJvcSDZh0qzuivUfmRwaa20xB+AgAACBwA=
-Date:   Thu, 18 Aug 2022 15:21:07 +0000
-Message-ID: <20220818152106.qqd2q3leiaooh3fk@skbuf>
-References: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
- <Yv5XL4KTLxukVhck@lunn.ch>
-In-Reply-To: <Yv5XL4KTLxukVhck@lunn.ch>
-Accept-Language: en-US
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        Bhadram Varka <vbhadram@nvidia.com>,
+        Camelia Alexandra Groza <camelia.groza@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Madalin Bucur <madalin.bucur@nxp.com>,
+        linux-doc@vger.kernel.org
+References: <20220725153730.2604096-1-sean.anderson@seco.com>
+From:   Sean Anderson <sean.anderson@seco.com>
+Message-ID: <f6707ee4-b735-52ad-4f02-be2f58eb3f9b@seco.com>
+Date:   Thu, 18 Aug 2022 11:21:10 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20220725153730.2604096-1-sean.anderson@seco.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 21ba01e8-5977-4067-b382-08da812d45e6
-x-ms-traffictypediagnostic: VI1PR04MB5341:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: trtF/KbPvhu4OaxQQrev7ZQmYyfRQnRbHr9RacIibfWu3kvLPUX0048/Zfcw0nUMDXIzlCSV1HFF93hSdKGuPjAVYndmxy0fszIXieI2XmtkiAYbVx1rgNIJBfTtYTZgKD42kmQ3JecOJTyyedadiC+6vBU9XtQ2Ljs3hC5LGfgnMaNT0Ghnn5pMYjNvH2btC1Fz1Xx9Hi4BGzq9HMRlijFO6cKoF+e2XXjbLpnzrurwNaGyjDqRSUwze1PSAZ+kxl93//aTFQ/C9j7BN++j/T9lOcejO2CW6kPztK7l32dPgvl5hRFQphr6uGRBCY7l+xh4oTZNb8SOOKrzBfA+MmwUCfOa29AbkQbMgha1WUqjZf8xDXhlKmlRO5r7jDRz/zyIf5ENUUs8VEodFMA3jISNzuk7PNbeVTezwwpyz47Z+oSrloieHhjDfID7Sp6wZRf+vS7aF3j66oH1zGsEuUUDU4GL8QnAdkcynNcG6D0ZhY/vjL2HHdRpTH74EtP97LagYjewDbVsQ8IHLyM6y5xC6MYVdOs8F2Zi8EZBN7yWJ23wZea7nz3qt6tE3g9w8Qb0zviuIK+79NDoVoPHd8+oOApMAjAJQbHP2szobOnI706k1crZ/nN/7ffDTIMpEoSmB/PqtJB+2XItu4YcLsjLCtpuEF5yL3+QVZv1+rOh/Xif6f/zs0zMWJAoNuFgkW3SxpgZH3sNb16O1L9LqSexfUVNwOcNhhJeC5NBjJuKrIvW1resietXKvlyca1cU7WVJBrj5AShpT4Ty4MfZA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(376002)(39860400002)(136003)(346002)(396003)(366004)(6506007)(66946007)(64756008)(66556008)(7416002)(66446008)(76116006)(66476007)(4326008)(1076003)(186003)(26005)(91956017)(6486002)(8676002)(5660300002)(41300700001)(8936002)(6512007)(44832011)(83380400001)(9686003)(38070700005)(478600001)(2906002)(38100700002)(86362001)(316002)(122000001)(33716001)(54906003)(6916009)(71200400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?b1JhTVhaMU9uVFk2dkMyYkx1T05nemFVTm11RFQvVXpPWTVNOW1PbHRBeVlZ?=
- =?gb2312?B?OHhyaFVobXNObXkvaEJuQUVUNUdUaEY5by9kczVLTUdnZ2hubDRsN0lYRHMy?=
- =?gb2312?B?SnByQW1pcXVhNysrR0QxOWl1OWF4MlR3VFdFdHJCTkF4QXJYb2cvSngvWFBL?=
- =?gb2312?B?MHhPUzhIbFc0UHh2clZ6c3lHQ3h3ZjRpUlhmUDExdHl1WDM1TkxJQmRYOWVi?=
- =?gb2312?B?QTBJTDdCTEhLVDJEV1FnSi9tcFJCblkwQURhY0RBdldGbjRkemNxTE0rNXgx?=
- =?gb2312?B?dDluNWY0a3licjRtbVdqUGJqclRDSldTeDNUOE5qQk4yMWdNZTg2TkRKNHF4?=
- =?gb2312?B?bHhxNVdBL1lQY2ZzQ3JXRWRqdGVBb0kxVkhDWVg0YUNTbUVrOWdCUWk5RzdF?=
- =?gb2312?B?L1g1VDhBMTN6U3VKQVQxbmFCUzFnYktFN29jM2hnSVRoTXlnRUNvUm0zczlw?=
- =?gb2312?B?dWlLaGNjRUhOdjMyWnlteFVPU2pXaGl4WjlRNEUyN2owRkZJU2hKeHBPS05m?=
- =?gb2312?B?dlVlbEQweDF1U0oxam0xUGorVHJhajB6dVBGOEF0Znd4d2xMemxhT3c2RkpS?=
- =?gb2312?B?dC9oRjFTNE4rc1lJa1JZanBSdGcyeEFYS2dIaFZrdXEva1UxdGU0WXFrR2Q1?=
- =?gb2312?B?alU2NTVWSmRwUUk3WWFYNmozc05XVGxlbzVpZzlaMXdtR21xVU80K2xFenMr?=
- =?gb2312?B?V1lQL0FySHVuSjdCUVU5R2dCOUZuMmNFK1drQ3NqK0g1VU56ZXVOam9vQzZn?=
- =?gb2312?B?Tk9oTzVUWGhrbHFiSEhSU2xqdTdXZHRaOHdNM2pxTzRyVCtNV0lEcWZQYXpa?=
- =?gb2312?B?VWxnRUJ1ZmVXOEdmQm1sNE5hSE83V3lGcHNia24zTmp0OEVVWThoMTRINjRP?=
- =?gb2312?B?d0J2di9aTHhpd25WUWtCdXRIT0RXZncrdXREdXMwNThRc0ZPZUNhUUpFNEkz?=
- =?gb2312?B?ZE95ZFhRMHlzNFRvTkFYbFFJeTYra0hVaWNRUlVYKyt2cHVrU1pJcVZzWmhS?=
- =?gb2312?B?SzhQQUtJMFZocFZWS0ZFa09DUzdJRm00RlBvd1pRbnQzb1Vpb2V2N2JFT2xk?=
- =?gb2312?B?MEcvV2QwSmMrZVdTOW13V3JDazJOVnVEUm9lVEJaUlUzVnNsc1pWUTBCNDg5?=
- =?gb2312?B?RVg5YWhyR2ZKUHFoY0l2bHJJWXdLY2ZoTWxObko2NlBjSVV1YWZ2VTVkanVj?=
- =?gb2312?B?dENuY1lYalFFUDh5cXI5RHdteXBjOWJKOGZRZWFuL3B4L1hVbjhLcEpQYXJ0?=
- =?gb2312?B?dnNvQklSTXdndUI3WUI4Nk5qOU1TSTlJT2JVeDNteXVtbXFOcUorOWt0LzJl?=
- =?gb2312?B?ajRheFR1VTluQW9LWkVCcU0rRW5kMmFOWG1sV3I0YXlMcVhKT1lGYUVYZ1pz?=
- =?gb2312?B?MHFLZTUxOElNOGdoUk8xS29VeG1aRHlZZHMrdGdSUHdGRWNGZjlqVzUrR01r?=
- =?gb2312?B?RHFCWlRxSFppQUQrdkZyZUlqa2VNWEZtZjd3dytuUGNDRi9GWEsvcGlXSU9l?=
- =?gb2312?B?a3g3VUNZSitRZCtQeEI4Nk9EZXJkSWd3S1pZSDJBZmo4VEdURFlYbjY1UEpZ?=
- =?gb2312?B?c1lqeExVN3VyYm9DblZ2V3RObllRdktlWENldERnVjJBblBvei83ZytZQ1VU?=
- =?gb2312?B?ZEZ6enJaZlNVK0JsVnlKd2NsOVU2YmZRQTk1NTZnMG9OY2lSMStMNGxCcFFs?=
- =?gb2312?B?dWkxcXgzNjY4MmN6RlpuVXVIWUNHSkovM3B2YXVvVTJsZUV3RzV0bzdncVdX?=
- =?gb2312?B?Rk4waUpoRHBOZC83Y0RzYzNzR1g2dDU0RDVReHdVNFQ2aEVJT2EvVGMzYmFR?=
- =?gb2312?B?N05zMXcwYzRMdFJhZnBvRkhTVWlzSlFQQjE0aGY4TlY2VHVUQWRObTE0Mkw5?=
- =?gb2312?B?RDFmSnJFd0RWdFVRT092a0xHSUNWM2JkTmpCWWxjSmNFRndNVzhIYWl4QnNo?=
- =?gb2312?B?RXhXaHB6SXdWb1N6djBqVmtMWEkrUGpXS25ibFlqWTVDdXRaaFpWcUJuZWpr?=
- =?gb2312?B?clFublZLdkt0OFYyVWcxc0p3WXpsMkEyTURuMVBwNUtBK3RiaW5uaEc1ZkdS?=
- =?gb2312?B?cUR1SzZFa29lSDhYTDdsdldwWTM3RzNHZmlDR1hRYXlNUHh2MGtFQ3dKME5T?=
- =?gb2312?B?ZU0rSHQrbFVUendMNFU4UUlzbmZoSDhJa09WKzk0NXcra3lSOHIvczY1SkVO?=
- =?gb2312?B?clE9PQ==?=
-Content-Type: text/plain; charset="gb2312"
-Content-ID: <DE3A4327FEC42C4CB9D39C879B0B347B@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR08CA0020.namprd08.prod.outlook.com
+ (2603:10b6:610:33::25) To VI1PR03MB4973.eurprd03.prod.outlook.com
+ (2603:10a6:803:c5::12)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3f35228d-6988-44a5-cd3d-08da812d4c82
+X-MS-TrafficTypeDiagnostic: PAXPR03MB7965:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CE5VdzQXoYn1yoZNmkDCQZ2zR7UYxvpEOAYEzQkROhIl89IP/WSKCkn3sqUYIsoGwWAcSiH/iNJVEZOwEA9mxIFR3DuHgZrd1MzNBG8DsdgLR/JZD2s/ltBYwya9ovMuRFjV2KIIEJD5TaP3B1X9uufecdfq2oK2Sr+ePaP/1MEJ+PJDWj7wOcpwtP4tYVtHkm13PvYrJcADHUjQLqkfR7wOnk+7aoENoPTjPOZZ2iiRTYU1nOBFNw0aHntEgnoRm8SfdSpxQNg2L67YZMzHE8mNcWe8RFZebmvaTiFZj6YLYB7xKpFXkMeKYWumh1LG30ZCc0Ph0q2WPrP6qWITjiDYS/NiJ/b8ah97l3uNFo9GZtH2LQ5PEWA4nSnIRyap3RnEXwoLmT1H9P8Q2ikeEaJAMtAL8ZbkmNOOJFw2lyObMLkPxRYld03xdzRPhI2D//aGEtSKrUhOBc3lKW/zxpBoPuul1wqw4I4G430YPscdVPge3PAcgKaP4iIzjBewI3Pj//gW7l5UWCFlCT6r62XZopZY4b0GVZmx4w33fEs2CsgzuV9NEAi1BEaIiqp9Pj2R+banCrPCKeVVqMFQpyop2mceNErpt9qBCJmR0NF+FOxixTpZXAx2AoA/lHPF0orsSwO5M3p/KH54l7h3/xj8RSarX4YKDZ5nJ15uTWdbecoaSOOx4CYfJpenvI6QNM0eqFZlk6+ZhYC04RDiH/FJ7lFwO0O9prBSfs2/FXYvcGG4OXptqksAal8BFAeNLmwXxp0CZeYS3/FtYB9rZKlX0gRLTxJPWAsLJZR6iBG9yijE5siAQXom/qvaN3C2pRnSzBvgxk7nTtLhuF0ABYEjV0VtkfvOSKeKgpbQiQ4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR03MB4973.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(136003)(346002)(39850400004)(396003)(376002)(31686004)(316002)(186003)(36756003)(54906003)(110136005)(83380400001)(38350700002)(38100700002)(2616005)(6506007)(52116002)(53546011)(4326008)(66946007)(66476007)(66556008)(8676002)(31696002)(2906002)(966005)(6486002)(86362001)(6512007)(26005)(41300700001)(478600001)(6666004)(8936002)(44832011)(5660300002)(7416002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U3NjQTVoQTQvOElkaUlnVHdpOTRmTFI3ZUhJU2JjeE5sZit4MkVrYXo5dnRD?=
+ =?utf-8?B?TitVMjB3Zm0zUEczZGhGcEFRNmd6ZS80RHZ5TWNrUXR5OUdVbEFrZ21jU2tq?=
+ =?utf-8?B?QmxVY0xZc0lNNDkybDRISFRvQzhWZEFIaFQrYWRsVFhLcDFlUTdaMEt1aWVi?=
+ =?utf-8?B?bE5SQW1KV2hnWUQ1eW5aNG5Dbm82VVpyWmFDc1JjbE5qWTlqckN0enpaemdk?=
+ =?utf-8?B?S3p2T0RoUFVlS3VYcm9INlhPcEZFQ0E3WkJLaHJPRXRWRU42MWhuTVJ5bVBa?=
+ =?utf-8?B?cTZtVWpMSXpsclU1Nlh6VlBsdzQ4NVZNVDJtWUdHRTNGbkFOc3NQTi9KQjF4?=
+ =?utf-8?B?b2pGTC95RCtxS1NxTmE2b2JHRFJZYkx6ZGp5aFZRNmdHY01jbXljRFhzWTJT?=
+ =?utf-8?B?Q1hyV2hKV04zb0FzVXhkSGRKMDJCcjlMaGIxNHh6aTFDMGtOZHlWOWhBQUxp?=
+ =?utf-8?B?T2JkL0djR2JHUmZiRk1kTjIwc2J1djhkRlpnR0svVzQxKzJZTFZ5d041L0sr?=
+ =?utf-8?B?OW9FY2FsZVNHbEUvMHpyc0s1cHBTajErdER5cEY4Qjc4bHdpdmxncFYyZEVL?=
+ =?utf-8?B?VnpmRDNLbm1Jb2E4TjlZR25qeUx2UVprT0pEeEhqQVJxaDZ3aUM1UFB6cUZY?=
+ =?utf-8?B?dHNWZ0dvV3JYUzNGdGY2ZnpFUXFJNGpaNUtHMmNKUytNcGlTMkZvYVljL3Jr?=
+ =?utf-8?B?T0ZyQ2VnaXRjZ2tHZDlLYTNBS3B1ZkFxaEprWGkzRHRueENzbDlOcHJNNVhL?=
+ =?utf-8?B?YUJEM3ErVGlwYmVQUTBtRDNKNWtIUjUrUm5rY0xoL0Yxd1I4Q25FNll2NFBE?=
+ =?utf-8?B?bk5ET1FaUnl6bnZoK2VQZ1RmcytVQ0Q1RjRQYkcyS3ZsNzFGdWEvZTRYWEIz?=
+ =?utf-8?B?MXBJenphMkFMak56VFhZNjZiUGpwY1Z0M01HRG1wb3VOcEpYL1FwUzdHdkp1?=
+ =?utf-8?B?eXJiclhjUU00TkoyaDRCMVAvYVJURi9hMk90QVlXOEFTVFVpTzlEQXk0d2Nm?=
+ =?utf-8?B?TXRpT0paazlTL1FCOVZKcnUzQU9oSkY5TFFWVWFTVEw2NWlIaHIzYmFTVkln?=
+ =?utf-8?B?NW9ib0hjNnN1NEQ3VWwyVVgvTkNzdXROK3ZXbFhNUjg0dStjUXFyUU05aDdt?=
+ =?utf-8?B?eGF5N1VSSFhxeEgzZFEra3Jhd0NuRDRldUV5bmw4U29vb3ZoRXdNWDFwQXNG?=
+ =?utf-8?B?cnZBL2FuZEhidkNaaEFnS1hDcURONTZqcS9qVzQ2SFZXaG5LTlgxK3JiQVRk?=
+ =?utf-8?B?TDB5a0VqZ2plcFZabGhBQmhQL1NTclNJcXNQTDdmSTI4ZXlWQm4ycHE4QWtJ?=
+ =?utf-8?B?czNyenp0eGZVZEhFdThRVkt3L2ZQazJkeG9zemVpYWdIcVdJSFVFYXM2a2tB?=
+ =?utf-8?B?VVpRU1U1Y0NMYUF4dXNnMW5sTDh6SThOQ2g0Q1dYWmlMN3E3dlNjcW1BOFRo?=
+ =?utf-8?B?eUlvejNqcW5HcWZhdWpUVWJnam5tRUVyUGJDZysrNVpGWURDSUxES3c2dnpH?=
+ =?utf-8?B?b2E1dk9sRC9wMkRwWUNOY1p1RFVBVU10QSt1eTFSMHRTTkREMnh6THJlQlM2?=
+ =?utf-8?B?VmlLL2hLU1hscVpCTGY2ME13NkpsamN5SUp0Sjh6RWhUd2w5dnVXU05wKzMy?=
+ =?utf-8?B?RlRMZThNNUhwdEYwaHFUQ1FRQjd4SUcybm9hblhDb3BiTGRKbjVmbnJjZ2Ir?=
+ =?utf-8?B?WnNvanFJeVRWbFVoQkd2cHBMcVp5V0lYc1JMbXl6S2VPb2dseDFyVENyV2Fn?=
+ =?utf-8?B?UzAwZ1V6Yy9qajlhUDdiZHRkS2ZlNm1Ta3c0TCt2d08yWVJ3UFgxbjJpVFRN?=
+ =?utf-8?B?WmRNVUJZK3RtZ2hCVG5paWpuNERwd2xYV01FZmJTQmFkZ3ljZlB1UWcreFNC?=
+ =?utf-8?B?ZVFPSnFJQlUwT0tjcVBFTUlsK0JpWUtpWmNVQnNoRUJqSjBtSllhbitnU244?=
+ =?utf-8?B?amhBSUxDb3VBa2M2Ty9seXlRd3FITFVwU3dEa2h1S25takNnZit4UlovT0RK?=
+ =?utf-8?B?V2lOY0ZsS3ZERkFrbTVEbGVJNTA4NVhDd3htMnVQamRGbnZjTjNJVTRUL2RK?=
+ =?utf-8?B?MEtTUG5veCt5d1lUd0RBUldaRVRQMDArQzkrV0YwMHhXeXBqN1ovaGIwODZV?=
+ =?utf-8?B?NFJVS2RVSElsZHdacXh0WWk2eXdGK2lkaVFCZEQvMWowTkFwc3hZU2F6Q0xL?=
+ =?utf-8?B?Nnc9PQ==?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f35228d-6988-44a5-cd3d-08da812d4c82
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR03MB4973.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21ba01e8-5977-4067-b382-08da812d45e6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2022 15:21:07.2136
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 15:21:18.5842
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kMWzPSvrzpwBvqSAKQm67je0E6q/VVd9ir2gxOdzA9akoXGZ3M5Biyktvm9BpR/rszyqzEi7L82j5DgGsQfMUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5341
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wmUZPAdZgo8HeQ366f4L1Gm+CZgKBYr9QJ9ElV9xW5gA3FqQJFUUGK7OodbQ73IFNcypHa/9HvDEMqx1g4OO1g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7965
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
         URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -144,36 +137,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBBdWcgMTgsIDIwMjIgYXQgMDU6MTM6NTFQTSArMDIwMCwgQW5kcmV3IEx1bm4gd3Jv
-dGU6DQo+ID4gSXQgaXMgaW1wb3J0YW50IHRvIG5vdGUgdGhhdCBwaHlfZGV2aWNlX2NyZWF0ZSgp
-IGluaXRpYWxpemVzDQo+ID4gZGV2LT5pbnRlcmZhY2UgPSBQSFlfSU5URVJGQUNFX01PREVfR01J
-SSwgYW5kIHNvLCB3aGVuIHdlIHVzZQ0KPiA+IHBoeWxpbmtfY3JlYXRlKFBIWV9JTlRFUkZBQ0Vf
-TU9ERV9OQSksIG5vIG9uZSB3aWxsIG92ZXJyaWRlIHRoaXMsIGFuZCB3ZQ0KPiA+IHdpbGwgZW5k
-IHVwIHdpdGggYSBQSFlfSU5URVJGQUNFX01PREVfR01JSSBpbnRlcmZhY2UgaW5oZXJpdGVkIGZy
-b20gdGhlDQo+ID4gUEhZLg0KPiANCj4gSXMgdGhpcyBhY3R1YWxseSBhIGJ1Zz8NCj4gDQo+IFdp
-dGggcHVyZSBwaHlsaWIsIHlvdSBzaG91bGQgY2FsbCBvbmUgb2YgdGhlIGNvbm5lY3QgZnVuY3Rp
-b25zLCB3aGljaA0KPiB1bmRlcm5lYXRoIGNhbGxzIHBoeV9hdHRhY2hfZGlyZWN0KCkgd2hpY2gg
-aGFzIGEgcGh5X2ludGVyZmFjZV90LiBTbw0KPiB0aGUgZGVmYXVsdCBpbiBwcmFjdGljZSBkb2Vz
-IG5vdCBtYXR0ZXIuDQoNCldoYXQgZG8geW91IGNvbnNpZGVyICJidWciPyBJIHRoaW5rIGhlcmUg
-aXMgd2hlcmUgcGh5bGluayBpbmhlcml0cyB3aGF0DQpwaHlfZGV2aWNlX2NyZWF0ZSgpIHNldCBh
-cyBkZWZhdWx0Og0KDQppbnQgcGh5bGlua19jb25uZWN0X3BoeShzdHJ1Y3QgcGh5bGluayAqcGws
-IHN0cnVjdCBwaHlfZGV2aWNlICpwaHkpDQp7DQoJaW50IHJldDsNCg0KCS8qIFVzZSBQSFkgZGV2
-aWNlL2RyaXZlciBpbnRlcmZhY2UgKi8NCglpZiAocGwtPmxpbmtfaW50ZXJmYWNlID09IFBIWV9J
-TlRFUkZBQ0VfTU9ERV9OQSkgew0KCQlwbC0+bGlua19pbnRlcmZhY2UgPSBwaHktPmludGVyZmFj
-ZTsNCgkJcGwtPmxpbmtfY29uZmlnLmludGVyZmFjZSA9IHBsLT5saW5rX2ludGVyZmFjZTsgPC0g
-aGVyZQ0KCX0NCg0KCXJldCA9IHBoeWxpbmtfYXR0YWNoX3BoeShwbCwgcGh5LCBwbC0+bGlua19p
-bnRlcmZhY2UpOyA8LSBoZXJlIGlzIHRoZSBwaHlfYXR0YWNoX2RpcmVjdCgpDQoJaWYgKHJldCA8
-IDApDQoJCXJldHVybiByZXQ7DQoNCglyZXQgPSBwaHlsaW5rX2JyaW5ndXBfcGh5KHBsLCBwaHks
-IHBsLT5saW5rX2NvbmZpZy5pbnRlcmZhY2UpOw0KCWlmIChyZXQpDQoJCXBoeV9kZXRhY2gocGh5
-KTsNCg0KCXJldHVybiByZXQ7DQp9DQoNClNvIHllcywgYWx0aG91Z2ggeW91J3JlIHJpZ2h0IGlu
-IHRoYXQgaWYgeW91IGNhbGwgcGh5X2F0dGFjaF9kaXJlY3QoKQ0KdGhpcyBkb2Vzbid0IGhhcHBl
-biwgYnV0IGlmIHlvdSBnbyB0aHJvdWdoIHBoeWxpbmtfY29ubmVjdF9waHkoKSBJIHRoaW5rDQpp
-dCdzIGV4cGVjdGVkIHRoYXQgaXQgd2lsbC4NCg0KPiA+IEFsbCB0aGlzIG1lYW5zIHRoYXQgaW4g
-b3JkZXIgdG8gbWFpbnRhaW4gY29tcGF0aWJpbGl0eSB3aXRoIGRldmljZSB0cmVlDQo+ID4gYmxv
-YnMgd2hlcmUgdGhlIHBoeS1tb2RlIHByb3BlcnR5IGlzIG1pc3NpbmcsIHdlIG5lZWQgdG8gYWxs
-b3cgdGhlDQo+ID4gImdtaWkiIHBoeS1tb2RlIGFuZCB0cmVhdCBpdCBhcyAiaW50ZXJuYWwiLg0K
-PiANCj4gb2ZfZ2V0X3BoeV9tb2RlKCkgcmV0dXJucyBQSFlfSU5URVJGQUNFX01PREVfTkEgaWYg
-dGhlIHByb3BlcnR5IGlzDQo+IG1pc3NpbmcsIHdoaWNoIGFsc28gc3VnZ2VzdHMgdGhpcyBpcyBh
-IGJ1Zy4NCj4gDQo+IEkgd29uZGVyIGlmIHdlIGhhdmUgYW55IHBvcnRzIHdoaWNoIGFjdHVhbGx5
-IHJlbHkgb24NCj4gUEhZX0lOVEVSRkFDRV9NT0RFX0dNSUk/DQoNCldoYXQgZG8geW91IG1lYW4s
-IHlvdSBtZWFuIGFjdHVhbCBHTUlJIHdpcmVkIHRvIGNoaXAgcGlub3V0Pw==
+
+
+On 7/25/22 11:37 AM, Sean Anderson wrote:
+> This adds support for phy rate adaptation: when a phy adapts between
+> differing phy interface and link speeds. It was originally submitted as
+> part of [1], which is considered "v1" of this series.
+> 
+> We need support for rate adaptation for two reasons. First, the phy
+> consumer needs to know if the phy will perform rate adaptation in order to
+> program the correct advertising. An unaware consumer will only program
+> support for link modes at the phy interface mode's native speed. This
+> will cause autonegotiation to fail if the link partner only advertises
+> support for lower speed link modes. Second, to reduce packet loss it may
+> be desirable to throttle packet throughput.
+> 
+> There have been several past discussions [2-4] around adding rate
+> adaptation support. One point is that we must be certain that rate
+> adaptation is possible before enabling it. It is the opinion of some
+> developers that it is the responsibility of the system integrator or end
+> user to set the link settings appropriately for rate adaptation. In
+> particular, it was argued that (due to differing firmware) it might not
+> be clear if a particular phy has rate adaptation enabled. Additionally,
+> upper-layer protocols must already be tolerant of packet loss caused by
+> differing rates. Packet loss may happen anyway, such as if a faster link
+> is used with a slower switch or repeater. So adjusting pause settings
+> for rate adaptation is not strictly necessary.
+> 
+> I believe that our current approach is limiting, especially when
+> considering that rate adaptation (in two forms) has made it into IEEE
+> standards. In general, when we have appropriate information we should
+> set sensible defaults. To consider use a contrasting example, we enable
+> pause frames by default for link partners which autonegotiate for them.
+> When it's the phy itself generating these frames, we don't even have to
+> autonegotiate to know that we should enable pause frames.
+> 
+> Our current approach also encourages workarounds, such as commit
+> 73a21fa817f0 ("dpaa_eth: support all modes with rate adapting PHYs").
+> These workarounds are fine for phylib drivers, but phylink drivers cannot
+> use this approach (since there is no direct access to the phy).
+> 
+> Although in earlier versions of this series, userspace could disable
+> rate adaptation, now it is only possible to determine the current rate
+> adaptation type. Disabling or otherwise configuring rate adaptation has
+> been left for future work. However, because currently only
+> RATE_ADAPT_PAUSE is implemented, it is possible to disable rate
+> adaptation by modifying the advertisement appropriately.
+> 
+> [1] https://lore.kernel.org/netdev/20220715215954.1449214-1-sean.anderson@seco.com/T/#t
+> [2] https://lore.kernel.org/netdev/1579701573-6609-1-git-send-email-madalin.bucur@oss.nxp.com/
+> [3] https://lore.kernel.org/netdev/1580137671-22081-1-git-send-email-madalin.bucur@oss.nxp.com/
+> [4] https://lore.kernel.org/netdev/20200116181933.32765-1-olteanv@gmail.com/
+> 
+> Changes in v3:
+> - Document MAC_(A)SYM_PAUSE
+> - Add some helpers for working with mac caps
+> - Modify link settings directly in phylink_link_up, instead of doing
+>   things more indirectly via link_*.
+> - Add phylink_cap_from_speed_duplex to look up the mac capability
+>   corresponding to the interface's speed.
+> - Include RATE_ADAPT_CRS; it's a few lines and it doesn't hurt.
+> - Move unused defines to next commit (where they will be used)
+> - Remove "Support differing link/interface speed/duplex". It has been
+>   rendered unnecessary due to simplification of the rate adaptation
+>   patches. Thanks Russell!
+> - Rewrite cover letter to better reflect the opinions of the developers
+>   involved
+> 
+> Changes in v2:
+> - Use int/defines instead of enum to allow for use in ioctls/netlink
+> - Add locking to phy_get_rate_adaptation
+> - Add (read-only) ethtool support for rate adaptation
+> - Move part of commit message to cover letter, as it gives a good
+>   overview of the whole series, and allows this patch to focus more on
+>   the specifics.
+> - Use the phy's rate adaptation setting to determine whether to use its
+>   link speed/duplex or the MAC's speed/duplex with MLO_AN_INBAND.
+> - Always use the rate adaptation setting to determine the interface
+>   speed/duplex (instead of sometimes using the interface mode).
+> - Determine the interface speed and max mac speed directly instead of
+>   guessing based on the caps.
+> - Add comments clarifying the register defines
+> - Reorder variables in aqr107_read_rate
+> 
+> Sean Anderson (11):
+>   net: dpaa: Fix <1G ethernet on LS1046ARDB
+>   net: phy: Add 1000BASE-KX interface mode
+>   net: phylink: Document MAC_(A)SYM_PAUSE
+>   net: phylink: Export phylink_caps_to_linkmodes
+>   net: phylink: Generate caps and convert to linkmodes separately
+>   net: phylink: Add some helpers for working with mac caps
+>   net: phy: Add support for rate adaptation
+>   net: phylink: Adjust link settings based on rate adaptation
+>   net: phylink: Adjust advertisement based on rate adaptation
+>   net: phy: aquantia: Add some additional phy interfaces
+>   net: phy: aquantia: Add support for rate adaptation
+> 
+>  Documentation/networking/ethtool-netlink.rst  |   2 +
+>  .../net/ethernet/freescale/dpaa/dpaa_eth.c    |   6 +-
+>  drivers/net/phy/aquantia_main.c               |  68 +++-
+>  drivers/net/phy/phy-core.c                    |  15 +
+>  drivers/net/phy/phy.c                         |  28 ++
+>  drivers/net/phy/phylink.c                     | 302 ++++++++++++++++--
+>  include/linux/phy.h                           |  26 +-
+>  include/linux/phylink.h                       |  29 +-
+>  include/uapi/linux/ethtool.h                  |  18 +-
+>  include/uapi/linux/ethtool_netlink.h          |   1 +
+>  net/ethtool/ioctl.c                           |   1 +
+>  net/ethtool/linkmodes.c                       |   5 +
+>  12 files changed, 466 insertions(+), 35 deletions(-)
+> 
+
+ping?
+
+Are there any comments on this series other than about the tags for patch 6?
+
+--Sean
