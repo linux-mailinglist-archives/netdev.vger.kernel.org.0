@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FAE7599088
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:29:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55CF659907D
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:29:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245508AbiHRW2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:28:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
+        id S1344485AbiHRW2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:28:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241901AbiHRW15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:27:57 -0400
+        with ESMTP id S231771AbiHRW17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:27:59 -0400
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE7EDB7CE
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 15:27:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549CEDB7DA
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 15:27:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660861676; x=1692397676;
+  t=1660861677; x=1692397677;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Rq9K54UJpIrZjGBz1cxVb8wBx724sgGtVrCELKjaoVc=;
-  b=baUVggJL6fPT2uRaFcL6nr3nWSmP09O7/RNIsuVndLeDiRAjDlzHoM0l
-   r6vzYifsq1r4hfykPc0F2sBqtKZJxQaezshCaemVJQLPlOHtCTBugYvFl
-   Mr70T6Uay1yTr74G2OAZhMUH1Z9n27SD7vZRYF7cG9KGlt3VeIm7AChHJ
-   C7u8A8ykx3ZLua7SLZ3zAd4pOvbSlp8LuUOS2h6bPmaB5ZzKRjWU1iWF2
-   LZlIaVheKfRybEXRuJ+HouPOGoX69kYnhCnHEkit1IBP+wJ6Sl3E/p4IC
-   obc2sA8/NDoV6hj2X12f3PXsdAwq8qCioz5cfAcTJD7LpZ5iuTv/9Y5SW
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="275928701"
+  bh=N3xYETlH/lk4y+Qv74GWZa9UPoyeeG6r6TJ/CzgH7DM=;
+  b=E5MMIjy42BBlAoQEAwxmzyiIlc6IMb5QQjGPslRV70RxxC7CVEI7diba
+   YoKv2aWfFdJ2F0MPXI58fBtlJe5PJdcw9PffiPeGXRYYWWvG/GKGy4fWJ
+   Kwqiv/f8rnfkBDcxjmQzrI08Q0w0UUHmpgeCjv2tjAXe4MYlbo5u/EYlh
+   EmblZ9pXTdKzLuICJDmrWlb+1UNxTHgIDm2c/V9ItiQHuJUry1ym93Lps
+   YgqqJrS5MCf761Bbi4AdpIx1bGug565W7s3QcxEZTpV1pZGzv6vjHnJhu
+   qurBqzmkf2qHKvfVewt3erTGUgiHhQPVQb3o2+h9WhToJg72sGludDaDu
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="275928705"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="275928701"
+   d="scan'208";a="275928705"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:27:53 -0700
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="558717082"
+   d="scan'208";a="558717086"
 Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
   by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:27:53 -0700
 From:   Jacob Keller <jacob.e.keller@intel.com>
@@ -81,9 +81,9 @@ Cc:     Jacob Keller <jacob.e.keller@intel.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Wan Jiabing <wanjiabing@vivo.com>,
         Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
-Subject: [net-next 05/14] ptp_ixp46x: convert to .adjfine and adjust_by_scaled_ppm
-Date:   Thu, 18 Aug 2022 15:27:33 -0700
-Message-Id: <20220818222742.1070935-6-jacob.e.keller@intel.com>
+Subject: [net-next 06/14] ptp: tg3: convert to .adjfine and diff_by_scaled_ppm
+Date:   Thu, 18 Aug 2022 15:27:34 -0700
+Message-Id: <20220818222742.1070935-7-jacob.e.keller@intel.com>
 X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
 In-Reply-To: <20220818222742.1070935-1-jacob.e.keller@intel.com>
 References: <20220818222742.1070935-1-jacob.e.keller@intel.com>
@@ -99,66 +99,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ptp_ixp46x implementation of .adjfreq is implemented in terms of a
+The tg3 implementation of .adjfreq is implemented in terms of a
 straight forward "base * ppb / 1 billion" calculation.
 
-Convert this driver to .adjfine and use the adjust_by_scaled_ppm helper
-function.
+Convert this driver to the .adjfine implementation, and use
+diff_by_scaled_ppm to calculate the correction value.
 
 Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Wan Jiabing <wanjiabing@vivo.com>
+Cc: Siva Reddy Kallam <siva.kallam@broadcom.com>
+Cc: Prashant Sreedharan <prashant@broadcom.com>
+Cc: Michael Chan <mchan@broadcom.com>
 ---
 
 I do not have this hardware, and have only compile tested this change.
 
- drivers/net/ethernet/xscale/ptp_ixp46x.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/broadcom/tg3.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/xscale/ptp_ixp46x.c b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-index 9abbdb71e629..dcdfd6e69d42 100644
---- a/drivers/net/ethernet/xscale/ptp_ixp46x.c
-+++ b/drivers/net/ethernet/xscale/ptp_ixp46x.c
-@@ -120,24 +120,13 @@ static irqreturn_t isr(int irq, void *priv)
-  * PTP clock operations
-  */
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index db1e9d810b41..c5dcbd83ae66 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -6179,27 +6179,23 @@ static int tg3_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
+ 	return 0;
+ }
  
--static int ptp_ixp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
-+static int ptp_ixp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+-static int tg3_ptp_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
++static int tg3_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
  {
--	u64 adj;
--	u32 diff, addend;
--	int neg_adj = 0;
-+	u32 addend;
- 	struct ixp_clock *ixp_clock = container_of(ptp, struct ixp_clock, caps);
- 	struct ixp46x_ts_regs *regs = ixp_clock->regs;
- 
+ 	struct tg3 *tp = container_of(ptp, struct tg3, ptp_info);
+-	bool neg_adj = false;
+-	u32 correction = 0;
+-
 -	if (ppb < 0) {
--		neg_adj = 1;
+-		neg_adj = true;
 -		ppb = -ppb;
 -	}
--	addend = DEFAULT_ADDEND;
--	adj = addend;
--	adj *= ppb;
--	diff = div_u64(adj, 1000000000ULL);
--
--	addend = neg_adj ? addend - diff : addend + diff;
-+	addend = (u32)adjust_by_scaled_ppm(DEFAULT_ADDEND, scaled_ppm);
++	u32 correction;
++	bool neg_adj;
++	u64 diff;
  
- 	__raw_writel(addend, &regs->addend);
+ 	/* Frequency adjustment is performed using hardware with a 24 bit
+ 	 * accumulator and a programmable correction value. On each clk, the
+ 	 * correction value gets added to the accumulator and when it
+ 	 * overflows, the time counter is incremented/decremented.
+ 	 *
+-	 * So conversion from ppb to correction value is
+-	 *		ppb * (1 << 24) / 1000000000
++	 * So conversion from scaled_ppm to correction value is
++	 *		(1 << 24) * scaled_ppm / (1000000 << 16)
+ 	 */
+-	correction = div_u64((u64)ppb * (1 << 24), 1000000000ULL) &
+-		     TG3_EAV_REF_CLK_CORRECT_MASK;
++	neg_adj = diff_by_scaled_ppm(1 << 24, scaled_ppm, &diff);
++	correction = diff & TG3_EAV_REF_CLK_CORRECT_MASK;
  
-@@ -230,7 +219,7 @@ static const struct ptp_clock_info ptp_ixp_caps = {
- 	.n_ext_ts	= N_EXT_TS,
+ 	tg3_full_lock(tp, 0);
+ 
+@@ -6330,7 +6326,7 @@ static const struct ptp_clock_info tg3_ptp_caps = {
+ 	.n_per_out	= 1,
  	.n_pins		= 0,
  	.pps		= 0,
--	.adjfreq	= ptp_ixp_adjfreq,
-+	.adjfine	= ptp_ixp_adjfine,
- 	.adjtime	= ptp_ixp_adjtime,
- 	.gettime64	= ptp_ixp_gettime,
- 	.settime64	= ptp_ixp_settime,
+-	.adjfreq	= tg3_ptp_adjfreq,
++	.adjfine	= tg3_ptp_adjfine,
+ 	.adjtime	= tg3_ptp_adjtime,
+ 	.gettimex64	= tg3_ptp_gettimex,
+ 	.settime64	= tg3_ptp_settime,
 -- 
 2.37.1.208.ge72d93e88cb2
 
