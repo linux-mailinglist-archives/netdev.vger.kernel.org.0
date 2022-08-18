@@ -2,496 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B71598617
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5D38598624
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:41:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343633AbiHROef (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:34:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58380 "EHLO
+        id S245611AbiHROi0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:38:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343542AbiHROd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:33:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8948237DB
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660833221; x=1692369221;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=65V/BdZVZ8zojImbAOXOkdCE5OBUmP1lpFDgHs0EPy8=;
-  b=ZJc8sVqUzVxeQTZAQfvkePJCgY1LPGg3yk5S8BFBUnA2ErC8WIzk9h3d
-   2Onk0yQEZpuf/9dsOB/5Bc14MOvOEjbOVrJ7SEJq1tCrw2LVVhAdH39cc
-   oyex4gLNkooqiOVS16RoS7+GOrNMWI6KYW/e6mOgGS+romzMPYwa1stqY
-   bQ020kH9zekf1uy31KqNyukVSbyZ0DhN+4o8sWSYylynBxli00gnfpmRb
-   NVTstbjEivSRGGdS1yUfo52TOXqOtvJQckQpoXgNv+nvaT6/6NALGEHHx
-   MFtRCIEiOt/SLMpYLzSKvC22VgAvtb5R1k21Fw/KtJatFDGlPW+1Rdm0/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="275818472"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="275818472"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:33:36 -0700
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="668126008"
-Received: from dursu-mobl1.ger.corp.intel.com ([10.249.42.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:33:33 -0700
-Date:   Thu, 18 Aug 2022 17:33:31 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     m.chetan.kumar@intel.com
-cc:     Netdev <netdev@vger.kernel.org>, kuba@kernel.org,
-        davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, m.chetan.kumar@linux.intel.com,
-        linuxwwan@intel.com,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
-Subject: Re: [PATCH net-next 4/5] net: wwan: t7xx: Enable devlink based fw
- flashing and coredump collection
-In-Reply-To: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
-Message-ID: <487238cc-4bdf-b5aa-cedb-61ed1a299f41@linux.intel.com>
-References: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
+        with ESMTP id S245458AbiHROiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:38:25 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60073.outbound.protection.outlook.com [40.107.6.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EB5DEB9
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:38:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Glh7//Hq/LD9y6NIhVdofpEvIYZIz0JsGRm6F/Ae9N6CkcM6tY9GARr8gmBaTLOe09udndW1LgEySIEUGhWCsfiDlc7f8fvwonSRrmk7oTh8WBIkxdgU21U/RXOR2PUqO7ALvvHw5U+xXsle9m+EdtXJ3Uh6zKYMjGMYFAx8GdV/UUD8lOCGWF/+BqwWgQtI3ejAxNB36uCpIQyxXIvR1lIBR2IKAlLvuXTA74Pu07LGUfZf3dceuEKMoALjwlMyjMAiTr+070R3YmjjHY65r1u5NSjoloGHMffteorBhG699XNSbewl0ND8kgt1aKXIQwLPfQd7ZB0IFH09X4GmWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3Uu5/cWSbcC9L+bmV8kzgZVP+GtjiTYqHJjtlJQol1A=;
+ b=Hi2Z/L45pab71mIP/aqJlXqjASAldST34Zje25kljEwboO3NGmy1PNZzZsBCLKFOux3G5qVCia2CUuQ3ViOcDEEnxAIIFV7JrQbcCEuhMH+7Wi9Ru2KjfSoYg2tvyi9qIR/2QzjlYR3LCpHkqiPBZnjzEt1hdzK4f9G98BQt6HPzifQNhmLLr7znJWlLRdWu5j0zCtPGEA/ZKPV9M7UewsC1QSq5USUVvhNMAMCd3XvmInCN5DrpIf387Up5KPlBQ6rUfT5CRQZxdHSTVIknwckwrDDtvFgGUIopiZAYgd9tWPvAAfRWyJP6NaicM1fE3o54k9W2EIIvm5O2rmxoDA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3Uu5/cWSbcC9L+bmV8kzgZVP+GtjiTYqHJjtlJQol1A=;
+ b=CopOI6iDXvoCBiTz8CODr7M2HeVWhI/cHmCOCdOjjgyw5jh5v+37ozEQ0kXcYfsZaamSPGbDyF6KJsiRavoLWKTQ2gDjXH6teSWI/QpvJ9YPCITlCHBQa84bQLSLY0u271Do0j8lZ/eBj/Z+o0gXFTUcJWiAgsFQzN6CDsawI0k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB4805.eurprd04.prod.outlook.com (2603:10a6:20b:d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Thu, 18 Aug
+ 2022 14:38:18 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
+ 14:38:18 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: [PATCH net-next] net: dsa: tag_8021q: remove old comment regarding dsa_8021q_netdev_ops
+Date:   Thu, 18 Aug 2022 17:38:08 +0300
+Message-Id: <20220818143808.2808393-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR10CA0100.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:e6::17) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: aa4cfcd4-ba87-4d6d-e22a-08da81274abc
+X-MS-TrafficTypeDiagnostic: AM6PR04MB4805:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: WLE3u/YOnvPixoZLApep/rkRiEPqSmyeUSxymeW+ItEllVcwzgCH4sSqFtCp0CXXHayt1jBpbJlQ7ZoUGwZyF31+e9o8qQ6sYjfreKPawy0Hpmdh9/yI3mw9cTP/s83XDkB3cdYpKHJIhCoDAS2b1U1FuoR8eG5hjYzxWR4PrcpablQRpKaGgURqRooqo0Mt4mg0KuZ8i0DUd1FPL9iCeztR2ysLp4JDQfhDvU20uiIOVIdLn40P/Cs+WBbFZ41MM3BY1U4woMSYUR2mL8VT0twFntwR6K1diLFAdVOTgmHmwIclOeh2PNd+wdXbViBSqCwPVcnKdU4Qsn/9s73awpJQLMzbUkqe1KpYKZGq0Fdmly+g5Mi0TW8+6JSBFpNJKUUd9Ado4Wa88uZ9m8Dsb0w2w3qwHERhWeWEgVQLjGG6VOrqd0O5oF0B1XWcxsto+GzflJUaiqKuRLv+bIhuRULePxpJ8zTnBRhK+02ithKsUXGEEuaqMAF2obHXC0t3v9o0E60tb0wVT0xwpOXF4Y0Z9U541rpJ/msvWEclLTQ5fwPkwgLMZKEUe9e2jSPdq9IZ8lK/YviLIWiEDm0r/tsUx6uc1NkyBgJbbXVU1wlhDf/I94Kpf+fKBnSqMjpAmisK2hFJ3aKosaep+08eRMfG72CQl8t0Y8uQwBFS9r/b7z2Ed5e8dXeRkHcbBRMHUblyWrLP2kXwwD2YBamveqv6NrOwZVL9KKxXk/9+fqFG44wffdUp5HhY00CWyv/A
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(396003)(376002)(39860400002)(346002)(54906003)(38100700002)(41300700001)(1076003)(2616005)(186003)(478600001)(6486002)(38350700002)(6916009)(316002)(26005)(86362001)(6666004)(83380400001)(66556008)(6506007)(8936002)(6512007)(4326008)(52116002)(2906002)(44832011)(66946007)(8676002)(5660300002)(4744005)(66476007)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?k4kYd68U1vDGFKoaeDIAadXO7lQk6aAVytkphcKF5XTlKuSSXyQTaVJIv3WW?=
+ =?us-ascii?Q?tijeoopTQHV/QOFZl03aupdNZQQgObGuXmjvlIN1s5egzXZTfgU3qAWNLheN?=
+ =?us-ascii?Q?LY8BvVIVvJR7fZK2dC+Hbn75h0j/Y0laUV0E8o8kwes6ccpnWA6jQCJ6Q0MH?=
+ =?us-ascii?Q?asE8RtOAFvHm7M/RsdoulRn4l0YvoPkH167vTlBI+69Gj09RgAZpZQE9sGqR?=
+ =?us-ascii?Q?DqEVlK286sKSDP3SOQxL/8MYLuPLtdUQXbDK/RixPyrjXpAlqub8oQtL0vTh?=
+ =?us-ascii?Q?QrXCjONlvGtTs39rYrvAmzgNxmZEQylwXYJhdt4A5H7C39W+vdkBeXd7Pvly?=
+ =?us-ascii?Q?VftUIPTZmEaa3RVyIr1hneQpV2Ysy+jZEevMSO9T1hVNNuxv8kwra7gXjb4q?=
+ =?us-ascii?Q?sOX/1y6LdWjfirI/lydgmU1LNTyfBa9LQ/zmSaRAG8fmPOceThY/N+pCqPN8?=
+ =?us-ascii?Q?s1qvhcqGiHmfq5ftd+8oYavPXV7Qu35Juo/wbV7qOwLoF2Dip4gMJOh7rkqu?=
+ =?us-ascii?Q?5X68mIkrLY4rU1v6O3pkagx1JFSc4m6xOjpmLQpIYXHumq0GQEeo15uMiKMM?=
+ =?us-ascii?Q?rd7ocRkpuJsZslChp6tLdd0JWjY+NA6au5OAblCDKs/rx/O3eYdv+7DVTX7u?=
+ =?us-ascii?Q?g1SESz3yjC19pEQW/6n01KsRUowgffGz5KghxxBSqgCkzQ6LHHk/UiIWJ/X4?=
+ =?us-ascii?Q?UdPCBxcTgrBBUQylVjZ1fmjbvzqeLypiJIBfrQ22NWFpNaiwu1QDkcEjijcb?=
+ =?us-ascii?Q?EE2yuZKSmAKXdABauxTMUXQbq5U6p+GfI1WArlUHaE/2ssF1souH614qxypA?=
+ =?us-ascii?Q?LPT0UPkOoyohDG09Anm+yki7J2aZz4H9R/f9HqC8HTKOn6JtnPusjJPhAhWx?=
+ =?us-ascii?Q?ZU/F1yf6pJAG1Z2SZkDCCQnTtuXgJlLsiMPVS6dYIfT8cyzGIms+vbA6osVo?=
+ =?us-ascii?Q?CMJUz4FaZxQpbWrD65gG+YGyXT34uOY2hwhOjMLKKmIHKCT9M/X1KStrMBp3?=
+ =?us-ascii?Q?ecyatgAfUC+LSScuoRQqsYgRv2GCPrFvOW3rb8A6xVrJeEis9s8vaWhd0k6Y?=
+ =?us-ascii?Q?JDGvzKSouxWZdPZxNJnYU0OJd/H3JRCrdMzyhqZ1nY8tH7q8V/YuqXVOzw1V?=
+ =?us-ascii?Q?muJEoXhMhn+LxbINUcm8NHHOJh3DG0cCfu6yG/cUNvi7hG7Rm8P2Q4ibvXAY?=
+ =?us-ascii?Q?N2NEnJgw1EGxF6rkyfTjEqZVFF4Z/yvqUnPNr1cFq0HCn9wKmQbbldpEpNqS?=
+ =?us-ascii?Q?PXFtl2KFQfiKnZO0UDK7kuk6DQeoruVIo5jiUNsORrc5iOyqn+sT9jIZxR++?=
+ =?us-ascii?Q?c7gm4we4l8Of4Nw5nQFxxMrdvYnYSTkBmA02fvpbtxowNXMzU8PnGrjDfwRs?=
+ =?us-ascii?Q?waIKb5Cw5nIvV5B9ltFX6AgVJHvJd0kPjjrNokg9NF/WxBXIWmQpGRKKLmhk?=
+ =?us-ascii?Q?WcdD3EDXi9YqIvvRJw0LBtxvQvPQcZ0BrQhTq9o9whDvbHdOmzQuMq2GHmQr?=
+ =?us-ascii?Q?XgrF9l1MtA/luJbJBX3eCoIBIaaCdvDScpdlAoajNhtCYEBYj2aFqjAwhOiI?=
+ =?us-ascii?Q?PuemhEpF+IwBssZPQtc8k92g7VrKGVAlgpVO+yCUJx+MN2Gv4+9KyZThmVMO?=
+ =?us-ascii?Q?xQ=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa4cfcd4-ba87-4d6d-e22a-08da81274abc
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 14:38:18.5821
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P5a0yy9RW/VguPqeI+Dop4+468ct+rsQAA0IqvTiQfWC5ROtJam+jti5MUZcqBEXwoZQ2k7yN+EaFLtPayfjcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4805
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022, m.chetan.kumar@intel.com wrote:
+Since commit 129bd7ca8ac0 ("net: dsa: Prevent usage of NET_DSA_TAG_8021Q
+as tagging protocol"), dsa_8021q_netdev_ops no longer exists, so remove
+the comment that talks about it.
 
-> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> 
-> This patch brings-in support for t7xx wwan device firmware flashing &
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/dsa/tag_8021q.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-Just say "Add support for ..."
-
-> coredump collection using devlink.
->
-> Driver Registers with Devlink framework.
-> Implements devlink ops flash_update callback that programs modem firmware.
-> Creates region & snapshot required for device coredump log collection.
-> On early detection of wwan device in fastboot mode driver sets up CLDMA0 HW
-> tx/rx queues for raw data transfer then registers with devlink framework.
-> Upon receiving firmware image & partition details driver sends fastboot
-> commands for flashing the firmware.
-
-Things don't seem to connect well between sentences in this paragraph.
-
-> In this flow the fastboot command & response gets exchanged between driver
-> and device. Once firmware flashing is success completion status is reported
-> to user space application.
-> 
-> Below is the devlink command usage for firmware flashing
-> 
-> $devlink dev flash pci/$BDF file ABC.img component ABC
-> 
-> Note: ABC.img is the firmware to be programmed to "ABC" partition.
-> 
-> In case of coredump collection when wwan device encounters an exception
-> it reboots & stays in fastboot mode for coredump collection by host driver.
-> On detecting exception state driver collects the core dump, creates the
-> devlink region & reports an event to user space application for dump
-> collection. The user space application invokes devlink region read command
-> for dump collection.
-> 
-> Below are the devlink commands used for coredump collection.
-> 
-> devlink region new pci/$BDF/mr_dump
-> devlink region read pci/$BDF/mr_dump snapshot $ID address $ADD length $LEN
-> devlink region del pci/$BDF/mr_dump snapshot $ID
-> 
-> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-> Signed-off-by: Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
-> ---
-
-> +static int t7xx_devlink_port_read(struct t7xx_port *port, char *buf, size_t count)
-> +{
-> +	int ret = 0, read_len;
-> +	struct sk_buff *skb;
-> +
-> +	spin_lock_irq(&port->rx_wq.lock);
-> +	if (skb_queue_empty(&port->rx_skb_list)) {
-> +		ret = wait_event_interruptible_locked_irq(port->rx_wq,
-> +							  !skb_queue_empty(&port->rx_skb_list));
-> +		if (ret == -ERESTARTSYS) {
-> +			spin_unlock_irq(&port->rx_wq.lock);
-> +			return -EINTR;
-> +		}
-> +	}
-> +	skb = skb_dequeue(&port->rx_skb_list);
-> +	spin_unlock_irq(&port->rx_wq.lock);
-> +
-> +	read_len = count > skb->len ? skb->len : count;
-
-max_t()
-
-> +	memcpy(buf, skb->data, read_len);
-> +	dev_kfree_skb(skb);
-> +
-> +	return ret ? ret : read_len;
-
-Can ret actually be non-zero here since -ERESTARTSYS is covered above?
-
-> +}
-> +
-> +static int t7xx_devlink_port_write(struct t7xx_port *port, const char *buf, size_t count)
-> +{
-> +	const struct t7xx_port_conf *port_conf = port->port_conf;
-> +	size_t actual_count;
-> +	struct sk_buff *skb;
-> +	int ret, txq_mtu;
-> +
-> +	txq_mtu = t7xx_get_port_mtu(port);
-> +	if (txq_mtu < 0)
-> +		return -EINVAL;
-> +
-> +	actual_count = count > txq_mtu ? txq_mtu : count;
-
-max_t()
-
-> +	skb = __dev_alloc_skb(actual_count, GFP_KERNEL);
-> +	if (!skb)
-> +		return -ENOMEM;
-> +
-> +	skb_put_data(skb, buf, actual_count);
-> +	ret = t7xx_port_send_raw_skb(port, skb);
-> +	if (ret) {
-> +		dev_err(port->dev, "write error on %s, size: %zu, ret: %d\n",
-> +			port_conf->name, actual_count, ret);
-> +		dev_kfree_skb(skb);
-> +		return ret;
-> +	}
-> +
-> +	return actual_count;
-> +}
-> +
-> +static int t7xx_devlink_fb_handle_response(struct t7xx_port *port, int *data)
-> +{
-> +	int ret = 0, index = 0, return_data = 0, read_bytes;
-
-I'd move return_data declaration into block where it is used. I don't 
-think it needs to be initialized or does the compiler complain about it?
-
-
-> +	char status[T7XX_FB_RESPONSE_SIZE + 1];
-> +
-> +	while (index < T7XX_FB_RESP_COUNT) {
-> +		index++;
-
-for (index = 0; index < T7XX_FB_RESP_COUNT; index++) {
-
-> +		read_bytes = t7xx_devlink_port_read(port, status, T7XX_FB_RESPONSE_SIZE);
-> +		if (read_bytes < 0) {
-> +			dev_err(port->dev, "status read failed");
-
-Printing "read failed" for -ERESTARTSYS/-EINTR??
-
-> +static int t7xx_devlink_fb_download(struct t7xx_port *port, const u8 *buf, size_t size)
-> +{
-> +	int ret;
-> +
-> +	if (size <= 0 || size > SIZE_MAX) {
-> +		dev_err(port->dev, "file is too large to download");
-> +		return -EINVAL;
-
-The if condition is effectively if (!size) because unsigned cannot be <0 
-nor can size_t be > (~(size_t)0). Given that, the error message is pretty 
-bogus. I'd tend to think returning just -EINVAL in case of !size w/o any 
-printingis sufficient here.
-
-> +static int t7xx_devlink_fb_get_core(struct t7xx_port *port)
-> +{
-> +	struct t7xx_devlink_region_info *mrdump_region;
-> +	char mrdump_complete_event[T7XX_FB_EVENT_SIZE];
-> +	u32 mrd_mb = T7XX_MRDUMP_SIZE / (1024 * 1024);
-> +	struct t7xx_devlink *dl = port->dl;
-> +	int clen, dlen = 0, result = 0;
-
-No need to init dlen.
-
-> +	unsigned long long zipsize = 0;
-> +	char mcmd[T7XX_FB_MCMD_SIZE];
-> +	size_t offset_dlen = 0;
-> +	char *mdata;
-> +
-> +	set_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +	mdata = kmalloc(T7XX_FB_MDATA_SIZE, GFP_KERNEL);
-> +	if (!mdata) {
-> +		result = -ENOMEM;
-> +		goto get_core_exit;
-> +	}
-> +
-> +	mrdump_region = dl->dl_region_info[T7XX_MRDUMP_INDEX];
-> +	mrdump_region->dump = vmalloc(mrdump_region->default_size);
-> +	if (!mrdump_region->dump) {
-> +		kfree(mdata);
-> +		result = -ENOMEM;
-> +		goto get_core_exit;
-> +	}
-
-Error handling/cleanup paths need to be cleaned up here.
-
-> +	result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_MRDUMP, port, NULL);
-> +	if (result) {
-> +		dev_err(port->dev, "%s command failed\n", T7XX_FB_CMD_OEM_MRDUMP);
-> +		vfree(mrdump_region->dump);
-> +		kfree(mdata);
-> +		goto get_core_exit;
-> +	}
-
-Ditto.
-
-> +	while (mrdump_region->default_size > offset_dlen) {
-> +		clen = t7xx_devlink_port_read(port, mcmd, sizeof(mcmd));
-> +		if (clen == strlen(T7XX_FB_CMD_RTS) &&
-> +		    (!strncmp(mcmd, T7XX_FB_CMD_RTS, strlen(T7XX_FB_CMD_RTS)))) {
-> +			memset(mdata, 0, T7XX_FB_MDATA_SIZE);
-> +			dlen = 0;
-
-Unnecessary assignment.
-
-> +			memset(mcmd, 0, sizeof(mcmd));
-> +			clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_CTS);
-> +
-> +			if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-> +				dev_err(port->dev, "write for _CTS failed:%d\n", clen);
-> +				goto get_core_free_mem;
-> +			}
-> +
-> +			dlen = t7xx_devlink_port_read(port, mdata, T7XX_FB_MDATA_SIZE);
-> +			if (dlen <= 0) {
-> +				dev_err(port->dev, "read data error(%d)\n", dlen);
-> +				goto get_core_free_mem;
-> +			}
-> +
-> +			zipsize += (unsigned long long)(dlen);
-> +			memcpy(mrdump_region->dump + offset_dlen, mdata, dlen);
-> +			offset_dlen += dlen;
-
-Why both offset_dlen and zipsize???
-
-> +			memset(mcmd, 0, sizeof(mcmd));
-> +			clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_FIN);
-> +			if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-> +				dev_err(port->dev, "%s: _FIN failed, (Read %05d:%05llu)\n",
-> +					__func__, clen, zipsize);
-
-Printing __func__ probably isn't that helpful here.
-
-> +				goto get_core_free_mem;
-> +			}
-> +		} else if ((clen == strlen(T7XX_FB_RESP_MRDUMP_DONE)) &&
-> +			  (!strncmp(mcmd, T7XX_FB_RESP_MRDUMP_DONE,
-> +				    strlen(T7XX_FB_RESP_MRDUMP_DONE)))) {
-
-strcmp()
-
-> +			dev_dbg(port->dev, "%s! size:%zd\n", T7XX_FB_RESP_MRDUMP_DONE, offset_dlen);
-> +			mrdump_region->actual_size = offset_dlen;
-> +			snprintf(mrdump_complete_event, sizeof(mrdump_complete_event),
-> +				 "%s size=%zu", T7XX_UEVENT_MRDUMP_READY, offset_dlen);
-> +			t7xx_uevent_send(dl->dev, mrdump_complete_event);
-> +			kfree(mdata);
-> +			result = 0;
-> +			goto get_core_exit;
-> +		} else {
-> +			dev_err(port->dev, "getcore protocol error (read len %05d)\n", clen);
-> +			goto get_core_free_mem;
-> +		}
-> +	}
-> +
-> +	dev_err(port->dev, "mrdump exceeds %uMB size. Discarded!", mrd_mb);
-> +	t7xx_uevent_send(port->dev, T7XX_UEVENT_MRD_DISCD);
-> +
-> +get_core_free_mem:
-> +	kfree(mdata);
-> +	vfree(mrdump_region->dump);
-> +	clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +	return -EPROTO;
-> +
-> +get_core_exit:
-> +	clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +	return result;
-
-Error handling/cleanup paths need to be cleaned up here.
-
-> +}
-> +
-> +static int t7xx_devlink_fb_dump_log(struct t7xx_port *port)
-> +{
-> +	struct t7xx_devlink_region_info *lkdump_region;
-> +	char lkdump_complete_event[T7XX_FB_EVENT_SIZE];
-> +	struct t7xx_devlink *dl = port->dl;
-> +	int dlen, datasize = 0, result;
-> +	size_t offset_dlen = 0;
-> +	u8 *data;
-> +
-> +	set_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +	result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_LKDUMP, port, &datasize);
-> +	if (result) {
-> +		dev_err(port->dev, "%s command returns failure\n", T7XX_FB_CMD_OEM_LKDUMP);
-> +		goto lkdump_exit;
-> +	}
-> +
-> +	lkdump_region = dl->dl_region_info[T7XX_LKDUMP_INDEX];
-> +	if (datasize > lkdump_region->default_size) {
-> +		dev_err(port->dev, "lkdump size is more than %dKB. Discarded!",
-> +			T7XX_LKDUMP_SIZE / 1024);
-> +		t7xx_uevent_send(dl->dev, T7XX_UEVENT_LKD_DISCD);
-> +		result = -EPROTO;
-> +		goto lkdump_exit;
-> +	}
-> +
-> +	data = kzalloc(datasize, GFP_KERNEL);
-> +	if (!data) {
-> +		result = -ENOMEM;
-> +		goto lkdump_exit;
-> +	}
-> +
-> +	lkdump_region->dump = vmalloc(lkdump_region->default_size);
-> +	if (!lkdump_region->dump) {
-> +		kfree(data);
-> +		result = -ENOMEM;
-> +		goto lkdump_exit;
-
-Ditto.
-
-> +	}
-> +
-> +	while (datasize > 0) {
-> +		dlen = t7xx_devlink_port_read(port, data, datasize);
-> +		if (dlen <= 0) {
-> +			dev_err(port->dev, "lkdump read error ret = %d", dlen);
-> +			kfree(data);
-> +			result = -EPROTO;
-> +			goto lkdump_exit;
-
-Ditto.
-
-> +		}
-> +
-> +		memcpy(lkdump_region->dump + offset_dlen, data, dlen);
-> +		datasize -= dlen;
-> +		offset_dlen += dlen;
-> +	}
-> +
-> +	dev_dbg(port->dev, "LKDUMP DONE! size:%zd\n", offset_dlen);
-> +	lkdump_region->actual_size = offset_dlen;
-> +	snprintf(lkdump_complete_event, sizeof(lkdump_complete_event), "%s size=%zu",
-> +		 T7XX_UEVENT_LKDUMP_READY, offset_dlen);
-> +	t7xx_uevent_send(dl->dev, lkdump_complete_event);
-> +	kfree(data);
-> +	clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +	return t7xx_devlink_fb_handle_response(port, NULL);
-> +
-> +lkdump_exit:
-> +	clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +	return result;
-> +}
-
-
-> +/* To create regions for dump files */
-> +static int t7xx_devlink_create_region(struct t7xx_devlink *dl)
-> +{
-> +	struct devlink_region_ops *region_ops;
-> +	int rc, i;
-> +
-> +	region_ops = dl->dl_region_ops;
-> +	for (i = 0; i < T7XX_TOTAL_REGIONS; i++) {
-
-Perhaps this is a matter of taste thing but I'd use
-ARRAY_SIZE(t7xx_devlink_region_list).
-
-> +		region_ops[i].name = t7xx_devlink_region_list[i].region_name;
-> +		region_ops[i].snapshot = t7xx_devlink_region_snapshot;
-> +		region_ops[i].destructor = vfree;
-> +		dl->dl_region[i] =
-> +		devlink_region_create(dl->dl_ctx, &region_ops[i], T7XX_MAX_SNAPSHOTS,
-> +				      t7xx_devlink_region_list[i].default_size);
-
-Indentation.
-
-> +		if (IS_ERR(dl->dl_region[i])) {
-> +			rc = PTR_ERR(dl->dl_region[i]);
-> +			dev_err(dl->dev, "devlink region fail,err %d", rc);
-
-Please fix message formatting.
-
-> +	rc = t7xx_devlink_create_region(dl);
-> +	if (rc) {
-> +		dev_err(dl->dev, "devlink region creation failed, rc %d", rc);
-
-Since this is user visible error, "rc" should be replaced with something
-meaningful.
-
-
-> +static int t7xx_devlink_init(struct t7xx_port *port)
-> +{
-> +	struct t7xx_devlink_work *dl_work;
-> +	struct workqueue_struct *wq;
-> +
-> +	dl_work = kmalloc(sizeof(*dl_work), GFP_KERNEL);
-> +	if (!dl_work)
-> +		return -ENOMEM;
-> +
-> +	wq = create_workqueue("t7xx_devlink");
-> +	if (!wq) {
-> +		kfree(dl_work);
-> +		dev_err(port->dev, "create_workqueue failed\n");
-> +		return -ENODATA;
-> +	}
-> +
-> +	INIT_WORK(&dl_work->work, t7xx_devlink_work_handler);
-> +	dl_work->port = port;
-> +	port->rx_length_th = T7XX_MAX_QUEUE_LENGTH;
-> +
-> +	if (!t7xx_devlink_region_init(port, dl_work, wq))
-> +		return -ENOMEM;
-
-Leaks?
-
-> +static int t7xx_devlink_disable_chl(struct t7xx_port *port)
-> +{
-> +	spin_lock(&port->port_update_lock);
-> +	port->chan_enable = false;
-> +	spin_unlock(&port->port_update_lock);
-> +
-> +	return 0;
-> +}
-
-This is identical to t7xx_port_wwan_disable_chl().
-
-> +struct t7xx_devlink_region_info {
-> +	char region_name[T7XX_MAX_REGION_NAME_LENGTH];
-> +	u32 default_size;
-> +	u32 actual_size;
-> +	u32 entry;
-
-entry seems pretty useless, used only to show an index within a debug 
-message.
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_reg.h b/drivers/net/wwan/t7xx/t7xx_reg.h
-> index 60e025e57baa..3a758bf79a4e 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_reg.h
-> +++ b/drivers/net/wwan/t7xx/t7xx_reg.h
-> @@ -101,11 +101,17 @@ enum t7xx_pm_resume_state {
->  	PM_RESUME_REG_STATE_L2_EXP,
->  };
->  
-> +enum host_event_e {
-> +	HOST_EVENT_INIT = 0,
-> +	FASTBOOT_DL_NOTY = 0x3,
-
-NOTIFY?
-
-
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index b91c2894b6fd..34e5ec5d3e23 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -2,9 +2,7 @@
+ /* Copyright (c) 2019, Vladimir Oltean <olteanv@gmail.com>
+  *
+  * This module is not a complete tagger implementation. It only provides
+- * primitives for taggers that rely on 802.1Q VLAN tags to use. The
+- * dsa_8021q_netdev_ops is registered for API compliance and not used
+- * directly by callers.
++ * primitives for taggers that rely on 802.1Q VLAN tags to use.
+  */
+ #include <linux/if_vlan.h>
+ #include <linux/dsa/8021q.h>
 -- 
- i.
+2.34.1
 
