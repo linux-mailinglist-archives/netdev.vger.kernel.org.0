@@ -2,115 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CDC15980BF
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7DB5980C1
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:25:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbiHRJXJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 05:23:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S237768AbiHRJXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 05:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231439AbiHRJXH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 05:23:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB8299279;
-        Thu, 18 Aug 2022 02:23:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDC4A6135E;
-        Thu, 18 Aug 2022 09:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF7BC433D6;
-        Thu, 18 Aug 2022 09:23:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660814585;
-        bh=s6c6ydJJJfHjse+r0+DqdY7QAzCBMOBNADyhfdHK1zk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=mNzlrg87y4yH5fKwRgzCcPKS8208gG5XXWb5Vtk1LYKufkzT+4ilSpt5nJpYHKvFG
-         K1xiFRaHInj2KtLYeRRA0qe0DT8ihfdgmD/dvbVfKFCB9VS4cte9oQ7cOoZuK9AFOC
-         3VHfuK2CF7bIJOs214lqqHtBy2u3gdrvt1gJwk4qQFh0UAvCiENazzDHqu7TpPj1aQ
-         XvjY2s+iIYkZTHGZRv94OigOIKBmx7xWNt8TSMg6/QATH7DouNm5QDGXKF2Q+hfem/
-         wR8mwd/Z5Y9YDUvG2agkQzusiZ7EPNLQlBe/FghYRK0dg9QjcnXXZRaeM78K836b+K
-         W8neUNaL0UXng==
-Date:   Thu, 18 Aug 2022 17:22:57 +0800
-From:   Shawn Guo <shawnguo@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Wei Fang <wei.fang@nxp.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        s.hauer@pengutronix.de, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
-        peng.fan@nxp.com, ping.bai@nxp.com, sudeep.holla@arm.com,
-        linux-arm-kernel@lists.infradead.org, aisheng.dong@nxp.com
-Subject: Re: [PATCH 1/3] dt-bings: net: fsl,fec: update compatible item
-Message-ID: <20220818092257.GF149610@dragon>
-References: <20220704101056.24821-1-wei.fang@nxp.com>
- <20220704101056.24821-2-wei.fang@nxp.com>
- <ef7e501a-b351-77f9-c4f7-74ab10283ed6@linaro.org>
- <20220818013344.GE149610@dragon>
- <fd41a409-d0e0-0026-4644-9058d1177c45@linaro.org>
+        with ESMTP id S233637AbiHRJXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 05:23:24 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC03A17E29
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 02:23:22 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id h5so1095798lfk.3
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 02:23:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=fy11hHSBfw6tbZCmF+XdaAcG07rNzd6gb9ZhcH1WlmA=;
+        b=ldiGdAAiryOI+cUky1qB6f1OerYNGgnVBxIoHN2Twsx3f/9O5/Ym0btxUCu3sPbxS6
+         jyLSpkuNzi3SusJw6pMHzWDmpRBH3Nb1ljAslPK1asaonrK16BHHWE+LcP0K8Qui9o1n
+         bn7UgwL09eOP9zETyunsPdd9s6Y2x9DWq0tzfaiUXHj6KReq4VmnJX7AE+eezSi9Omjw
+         YdFwpjVV2II/ICtpTg/truGD347UYcwL/Zntjr8JDBRxHEXDmCn6Vm0oF2NW7gR+Op3E
+         sfnqFmLs2S9m74YTLbk6HaU15k8LxIdFC8hOg0FeEQ2xd175sHXACfaw7xATjJTEziYe
+         mW7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=fy11hHSBfw6tbZCmF+XdaAcG07rNzd6gb9ZhcH1WlmA=;
+        b=3ZiSdwjiRaAJKZAVxdwOUrvpq9epW+OGXioF8jHRGLnALR6MQTyAipaQeNhSAlNSxL
+         KroHAchHD6p1TXUZMWAtBF1o2m21PhELJf7J8hzge2MHHqZLvrV9yWSvh70Q5O1H3hty
+         qgPMrHPOBXUTzq+/ubDBS7RXzqXv0ppMtybvIG7+QFoXgy2brYcDSTUs5Urx9TVJOl+S
+         zKBbxQF4+8u3pTohKIk/Xkavdn7FiTUKxuJ61N81SOHnQfaER6eJxL6gLM+GlTpKcOdA
+         WOxgzCwlGUyplE8ztsRoSN8fsQf1BfqO5ElISmsRj4PoBn3/A/gEwSPFjKr7ZhvSmZd/
+         E11A==
+X-Gm-Message-State: ACgBeo0/CLZ2AEU7+er9sG7pL8ZrFwMNorTdQgPG49Yr3nYujGtQ29Az
+        GyPvRel5l1iUqsvJdXd+4J6Z3j2+DmZQDsaS
+X-Google-Smtp-Source: AA6agR74KQxf7MYFkW38aQvcgw3MtmNVZVV6nmB3HUj3bCKS1ycW/FADm2HdegA8/91Ai6vQ+w354A==
+X-Received: by 2002:a05:6512:48d:b0:48b:1bee:6833 with SMTP id v13-20020a056512048d00b0048b1bee6833mr633919lfq.389.1660814601056;
+        Thu, 18 Aug 2022 02:23:21 -0700 (PDT)
+Received: from saproj-Latitude-5501.yandex.net ([2a02:6b8:0:40c:41e5:9890:65ed:5ae7])
+        by smtp.gmail.com with ESMTPSA id t10-20020a056512208a00b0048aeff37812sm144472lfr.308.2022.08.18.02.23.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 02:23:20 -0700 (PDT)
+From:   Sergei Antonov <saproj@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Sergei Antonov <saproj@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Guobin Huang <huangguobin4@huawei.com>,
+        Yang Wei <yang.wei9@zte.com.cn>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH v2] net: moxa: MAC address reading, generating, validity checking
+Date:   Thu, 18 Aug 2022 12:23:17 +0300
+Message-Id: <20220818092317.529557-1-saproj@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fd41a409-d0e0-0026-4644-9058d1177c45@linaro.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:51:02AM +0300, Krzysztof Kozlowski wrote:
-> On 18/08/2022 04:33, Shawn Guo wrote:
-> > On Mon, Jul 04, 2022 at 11:12:09AM +0200, Krzysztof Kozlowski wrote:
-> >>> diff --git a/Documentation/devicetree/bindings/net/fsl,fec.yaml b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> >>> index daa2f79a294f..6642c246951b 100644
-> >>> --- a/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> >>> +++ b/Documentation/devicetree/bindings/net/fsl,fec.yaml
-> >>> @@ -40,6 +40,10 @@ properties:
-> >>>            - enum:
-> >>>                - fsl,imx7d-fec
-> >>>            - const: fsl,imx6sx-fec
-> >>> +      - items:
-> >>> +          - enum:
-> >>> +              - fsl,imx8ulp-fec
-> >>> +          - const: fsl,imx6ul-fec
-> >>
-> >> This is wrong.  fsl,imx6ul-fec has to be followed by fsl,imx6q-fec. I
-> >> think someone made similar mistakes earlier so this is a mess.
-> > 
-> > Hmm, not sure I follow this.  Supposing we want to have the following
-> > compatible for i.MX8ULP FEC, why do we have to have "fsl,imx6q-fec"
-> > here?
-> > 
-> > 	fec: ethernet@29950000 {
-> > 		compatible = "fsl,imx8ulp-fec", "fsl,imx6ul-fec";
-> > 		...
-> > 	};
-> 
-> Because a bit earlier this bindings is saying that fsl,imx6ul-fec must
-> be followed by fsl,imx6q-fec.
+This device does not remember its MAC address, so add a possibility
+to get it from the platform. If it fails, generate a random address.
+This will provide a MAC address early during boot without user space
+being involved.
 
-The FEC driver OF match table suggests that fsl,imx6ul-fec and fsl,imx6q-fec
-are not really compatible.
+Also remove extra calls to is_valid_ether_addr().
 
-static const struct of_device_id fec_dt_ids[] = {
-        { .compatible = "fsl,imx25-fec", .data = &fec_devtype[IMX25_FEC], },
-        { .compatible = "fsl,imx27-fec", .data = &fec_devtype[IMX27_FEC], },
-        { .compatible = "fsl,imx28-fec", .data = &fec_devtype[IMX28_FEC], },
-        { .compatible = "fsl,imx6q-fec", .data = &fec_devtype[IMX6Q_FEC], },
-        { .compatible = "fsl,mvf600-fec", .data = &fec_devtype[MVF600_FEC], },
-        { .compatible = "fsl,imx6sx-fec", .data = &fec_devtype[IMX6SX_FEC], },
-        { .compatible = "fsl,imx6ul-fec", .data = &fec_devtype[IMX6UL_FEC], },
-        { .compatible = "fsl,imx8mq-fec", .data = &fec_devtype[IMX8MQ_FEC], },
-        { .compatible = "fsl,imx8qm-fec", .data = &fec_devtype[IMX8QM_FEC], },
-        { /* sentinel */ }
-};
-MODULE_DEVICE_TABLE(of, fec_dt_ids);
+Made after suggestions by Andrew Lunn:
+1) Use eth_hw_addr_random() to assign a random MAC address during probe.
+2) Remove is_valid_ether_addr() from moxart_mac_open()
+3) Add a call to platform_get_ethdev_address() during probe
+4) Remove is_valid_ether_addr() from moxart_set_mac_address(). The core does this
 
-Should we fix the binding doc?
+v1 -> v2:
+Handle EPROBE_DEFER returned from platform_get_ethdev_address().
+Move MAC reading code to the beginning of the probe function.
 
-Shawn
+Signed-off-by: Sergei Antonov <saproj@gmail.com>
+Suggested-by: Andrew Lunn <andrew@lunn.ch>
+CC: Jakub Kicinski <kuba@kernel.org>
+CC: Vladimir Oltean <olteanv@gmail.com>
+CC: Yang Yingliang <yangyingliang@huawei.com>
+CC: Pavel Skripkin <paskripkin@gmail.com>
+CC: Guobin Huang <huangguobin4@huawei.com>
+CC: Yang Wei <yang.wei9@zte.com.cn>
+CC: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/ethernet/moxa/moxart_ether.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/moxa/moxart_ether.c b/drivers/net/ethernet/moxa/moxart_ether.c
+index f11f1cb92025..402fea7505e6 100644
+--- a/drivers/net/ethernet/moxa/moxart_ether.c
++++ b/drivers/net/ethernet/moxa/moxart_ether.c
+@@ -62,9 +62,6 @@ static int moxart_set_mac_address(struct net_device *ndev, void *addr)
+ {
+ 	struct sockaddr *address = addr;
+ 
+-	if (!is_valid_ether_addr(address->sa_data))
+-		return -EADDRNOTAVAIL;
+-
+ 	eth_hw_addr_set(ndev, address->sa_data);
+ 	moxart_update_mac_address(ndev);
+ 
+@@ -172,9 +169,6 @@ static int moxart_mac_open(struct net_device *ndev)
+ {
+ 	struct moxart_mac_priv_t *priv = netdev_priv(ndev);
+ 
+-	if (!is_valid_ether_addr(ndev->dev_addr))
+-		return -EADDRNOTAVAIL;
+-
+ 	napi_enable(&priv->napi);
+ 
+ 	moxart_mac_reset(ndev);
+@@ -488,6 +482,14 @@ static int moxart_mac_probe(struct platform_device *pdev)
+ 	}
+ 	ndev->base_addr = res->start;
+ 
++	// MAC address
++	ret = platform_get_ethdev_address(p_dev, ndev);
++	if (ret == -EPROBE_DEFER) // EEPROM has not probed yet?
++		goto init_fail;
++	if (ret)
++		eth_hw_addr_random(ndev);
++	moxart_update_mac_address(ndev);
++
+ 	spin_lock_init(&priv->txlock);
+ 
+ 	priv->tx_buf_size = TX_BUF_SIZE;
+-- 
+2.32.0
+
