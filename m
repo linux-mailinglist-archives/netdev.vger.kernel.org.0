@@ -2,78 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B167B598A4E
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:27:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84450598A5E
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344778AbiHRRWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:22:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53546 "EHLO
+        id S1344398AbiHRRZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:25:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344791AbiHRRV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:21:56 -0400
-Received: from mail-pj1-f53.google.com (mail-pj1-f53.google.com [209.85.216.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 256422CCAA;
-        Thu, 18 Aug 2022 10:21:21 -0700 (PDT)
-Received: by mail-pj1-f53.google.com with SMTP id e19so1123888pju.1;
-        Thu, 18 Aug 2022 10:21:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=vanZygsLh7oEj5y254592X3RdUXrhVJF3OLlXailxjk=;
-        b=7F0Uu1mDJIo/Hf5FyXeMv989Wz2p8I5njd+yNqW8hkkyKlbhHBC+9p7r2nFubxhxCK
-         6TvRvdZPgoBHLd5xu05I06st3NSzX0sTk1AkGbpOHMThBhasNVEedgU3Qiw6lo4QDIfm
-         Y7PSVEZC8u5UHAM+5YgN13wWoIG9qGQ5ILpcxH0MSopXDmnqUv58ZMmB5KdfBeLD29JD
-         htfkOStn5H6oic3h6lv1RtMcI5rrLr8Kv1umi9mqidJguC0340EjO+W/5w1fXipb5iRQ
-         xiWYeIeVNYd7FkMdrRxMdYbtq+81bFBcnRvILNUMmDAwA5zlOZked0OBbsg8eL1XgKEk
-         k6Yw==
-X-Gm-Message-State: ACgBeo13jAB95fDCcC2iZYBPlW0FhpLlzglJQLE1KujrydkbPNhxVSVv
-        OebDXjQJRseV8Kdb0xLM94qnjQxEcg==
-X-Google-Smtp-Source: AA6agR7IVR3vJCScPvq4DpLDESckyA04q28EqUlUq4SYrZ+JK1pHP4nu6RmPbgMkAcvrhWT7LsZw4g==
-X-Received: by 2002:a17:90a:a08:b0:1fa:b43d:68cf with SMTP id o8-20020a17090a0a0800b001fab43d68cfmr9002070pjo.41.1660843280416;
-        Thu, 18 Aug 2022 10:21:20 -0700 (PDT)
-Received: from robh.at.kernel.org ([2607:fb90:647:4ff2:3529:f8cd:d6cd:ac54])
-        by smtp.gmail.com with ESMTPSA id d11-20020a170902aa8b00b00172b5adb78asm1424901plr.147.2022.08.18.10.21.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:21:19 -0700 (PDT)
-Received: (nullmailer pid 2058883 invoked by uid 1000);
-        Thu, 18 Aug 2022 17:21:16 -0000
-Date:   Thu, 18 Aug 2022 11:21:16 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     andrei.tachici@stud.acs.upb.ro
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
-        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org
-Subject: Re: [net-next v4 3/3] dt-bindings: net: adin1110: Add docs
-Message-ID: <20220818172116.GA2055664-robh@kernel.org>
-References: <20220817160236.53586-1-andrei.tachici@stud.acs.upb.ro>
- <20220817160236.53586-4-andrei.tachici@stud.acs.upb.ro>
+        with ESMTP id S1345396AbiHRRZH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:25:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274CB5303E;
+        Thu, 18 Aug 2022 10:24:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADFB8B822AF;
+        Thu, 18 Aug 2022 17:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC51C433C1;
+        Thu, 18 Aug 2022 17:24:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660843484;
+        bh=2/qTlGQln3Nv+8rAcrymTWvvaveGe+xOUXTae4CDc0g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lc6jiokWVQbHT7gAI0h0qGY+PfPKmB2tBwAlvYLce0tJMtopKk6+66z/RFIxfztRo
+         Q6/YwhwihLhSKRlbgtOs4o/VhAd+1nujEd9Bty8CwEBMsg7QPPY+V859CHPsOi7YrK
+         LooJdkyuK52sa/pvMmywj9PazyAbJvezQQgoxdV6HjbsvM/A6be7WeUi4uOKEaB3Te
+         ZuBy7dmDkFtXQEy0eYIWo2Iv4X+3c6T4vxY2soCjtFcAqwWCLzX1YOaxkaaZqaKd6j
+         DUme5Wk9YFcvOicHhgBne9Q7j2ug5HfcG1SYizh7QVKevCinLpX5J/vo2Lb3eGfLJK
+         c2QH91Nm1B5Dw==
+Date:   Thu, 18 Aug 2022 10:24:43 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net] net: phy: Warn if phy is attached when removing
+Message-ID: <20220818102443.4c7c50e8@kernel.org>
+In-Reply-To: <20220816163701.1578850-1-sean.anderson@seco.com>
+References: <20220816163701.1578850-1-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817160236.53586-4-andrei.tachici@stud.acs.upb.ro>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 07:02:36PM +0300, andrei.tachici@stud.acs.upb.ro wrote:
-> From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Tue, 16 Aug 2022 12:37:01 -0400 Sean Anderson wrote:
+> netdevs using phylib can be oopsed from userspace in the following
+> manner:
 > 
-> Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
+> $ ip link set $iface up
+> $ echo $(basename $(readlink /sys/class/net/$iface/phydev)) > \
+>       /sys/class/net/$iface/phydev/driver/unbind
+> $ ip link set $iface down
 > 
-> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
-> ---
->  .../devicetree/bindings/net/adi,adin1110.yaml | 77 +++++++++++++++++++
->  1 file changed, 77 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+> However, the traceback provided is a bit too late, since it does not
+> capture the root of the problem (unbinding the driver). It's also
+> possible that the memory has been reallocated if sufficient time passes
+> between when the phy is detached and when the netdev touches the phy
+> (which could result in silent memory corruption). Add a warning at the
+> source of the problem. A future patch could make this more robust by
+> calling dev_close.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Hm, so we're adding the warning to get more detailed reports "from the
+field"? Guess we've all done that, so fair.
+
+Acks? It can still make -rc2 if that matters...
