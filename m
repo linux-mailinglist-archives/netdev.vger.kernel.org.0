@@ -2,207 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA7759854C
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:06:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0624598540
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245656AbiHROGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49754 "EHLO
+        id S245753AbiHROF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245688AbiHROFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:05:43 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2078.outbound.protection.outlook.com [40.107.21.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C9A6F542;
-        Thu, 18 Aug 2022 07:05:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nvWmsUwLP5P/+kvsYe2xq6fgy/IzLfG4TWzwYLOuMomM5vAxT+ihAqgdIXP7YBg8+U+wjD2D8LkEUiixIithetxZWW/NdqcPrB30QG+FPtTLW0VZywXXpxdpMOJ5w6JeHlc65Ocx/yZjZgXJabhykbItVo+1bulZG3xb6yvJ/Owhft0dk2a15i3cs4WJ10NSmWoRc8V3W4oGe4mBKwZFloNrNirnSiHr2q9QWONHJhspZRI3XqIv5bqbI6X7vosKbXGqZ8VFARCudsE5AcIWW8vVNiBaLAS92LAnroewuZj/NOpfYOSQ2yIU+vxqWl+kpytvQfjJNVXGZ7lmCwjkUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OKa4Z2iyWUrrAKXbepNTqtqochQ+INajI4dRmE7VC8I=;
- b=BByz+f5nXNntMTiMUDMawXrUL1ZdW5x3MhoEOKCE9e2eueLp2xPSC5KHhohiSxyGhP/NE4ioLDMZqsLNyQVC1qO+PS3Ad16rRP9dpyQ1p+G1gK9lDETN1fxSknTm/yaLDXgTDvoC4o+nFvddYtLMQe6MDtb5srz6aEsk1+N+Ns8zi+QbdxkJ1mPxf5cNI713WiYmWvI74NW73p/8Dyvs08RMcKQry7mcy5zge8RlqedF1mWrHJ7ZR2/dsUI1FijiR7hU1AIzpVzEQjhjjiGFY8GxFMjjizxLqZyikZnN1kumhVl9vuFVFJtTYb9LD50t67M/t8oZdCgJQyxEpWgIeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OKa4Z2iyWUrrAKXbepNTqtqochQ+INajI4dRmE7VC8I=;
- b=eOB1+6mdjcUy9JV1jzQPJZkueeeaZyqQecCjcXq8AZCx2VMe4Ig0WdNmJ1St5fZ6VEwHExR6sH47S610Ma+EVamXrWwApv65Wc5sonT4JpdLMWbuHMtzA2PBdST0L7QEEAPLMrfehZKwggvfjRLfHgaYkgNl3+F8vGzJWEWiCCM=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB3PR0402MB3883.eurprd04.prod.outlook.com (2603:10a6:8:e::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 14:05:40 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
- 14:05:40 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     devicetree@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Shawn Guo <shawnguo@kernel.org>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH devicetree 3/3] arm64: dts: ls1028a: enable swp5 and eno3 for all boards
-Date:   Thu, 18 Aug 2022 17:05:19 +0300
-Message-Id: <20220818140519.2767771-4-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
-References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AS4P190CA0023.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:20b:5d0::9) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S245133AbiHROF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:05:26 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A6236F542;
+        Thu, 18 Aug 2022 07:05:23 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id BBD2A77A; Thu, 18 Aug 2022 09:05:21 -0500 (CDT)
+Date:   Thu, 18 Aug 2022 09:05:21 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, serge@hallyn.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        shuah@kernel.org, brauner@kernel.org, casey@schaufler-ca.com,
+        bpf@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kernel-team@cloudflare.com, cgzones@googlemail.com,
+        karl@bigbadwolfsecurity.com, tixxdz@gmail.com
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+Message-ID: <20220818140521.GA1000@mail.hallyn.com>
+References: <20220815162028.926858-1-fred@cloudflare.com>
+ <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+ <8735dux60p.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
+ <871qte8wy3.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+ <8735du7fnp.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
+ <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: caafe0d1-24a8-400d-ed1e-08da8122bb52
-X-MS-TrafficTypeDiagnostic: DB3PR0402MB3883:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: sukCfs49hZU198aTW9b4xu/ubLHSociGk712hEa1ZNdgxPF+qQa5qKIIJrHE/h4qtvCxsjhpwadoEoQrQbFjfUTEgeYDj+VJyZFTGYwTPBLHkuE800SCMpmFr7AblVmBPArVTQ1lvdeY4poHuEc4dzUYMr8r8VJhdAp7iMBLZo3dbedHdRfW8nTr0eIGB40Jxk9VNbTbPOa42tj8crv5TGOsNY0UHaLE/Qu5Sz+nQKY9GKTbInZT49e/MU0F1UvpRR7v1gjWWRZGBpZ2LZhViGpbRX3TIcgPb2QxzL13lRmX7OeHxEU6OknLdRi5b5TL4bh44U1pUGESrHBm4M/etrusVSccVBVCVrPBjvH1+QCMZAHGTzXPNFZ2rsshDDL8+ULh6INzyiKd+15JlSM6WSQgQyVIeukvSY5wp8oma5gRSv+e8f/2VJX4hU4w6l0cFDLDblKZSPiWOMmMEZsfyP5+isDr/4b0AaXLzLU++ayh8ihOcKsBNXYmz5+AVift4UkaRpJYH371YFzW5pKk4geI1HHxOwBkAf4noyAbim2taC40RSnDBgfqwYOpGlvYsznHq1P3U0tjLPNBpJKPC+J19L/FpQKPHdHphXEvk3j0jX1t13kdP/NfTcU/XrGg+ckJaTI0+uf/dnOPJM7vHqKIhf3GPSquyjVX/Q2d7LFByr3Q11cmnkWmqTS4s6Jo/Lej/3wJwoF0lT03XUOUXaQxz3oX+hmdKN81tYeLlO+sNTcCMjlOxg3T2SveVKQv0CLSubJJNg9YqT3BjRMkuQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(39860400002)(396003)(376002)(346002)(66476007)(66946007)(5660300002)(44832011)(8936002)(4326008)(8676002)(6916009)(54906003)(86362001)(316002)(38100700002)(38350700002)(66556008)(2906002)(36756003)(478600001)(6666004)(6486002)(41300700001)(83380400001)(26005)(52116002)(6512007)(6506007)(1076003)(186003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?xZLlPulnWhGCjgiB1rMx5hEtxoSuFDsfswF2YtkPHG3xr4q94PD56lw/t0CI?=
- =?us-ascii?Q?dqawLg5IruH9BudXqaOhz6g9IC0LFr4X74VKKGOvEbiNJ+Mu+rwZj3dYr+oT?=
- =?us-ascii?Q?9sesiNUDqiyLq14esjqi5lagcA4m5v/pQhP4GK1jporV2O1cfyVSzfpcQY6s?=
- =?us-ascii?Q?UCZkfF8aa8jJJSA3w7EVf0GfLnYIAaYybzKprXDyew1AkAvaAFYvaUpLIwfO?=
- =?us-ascii?Q?WRO3z/oyiafK/M3Yhpb0jtYbhuBLiO6s3ObBeA5n5umCuB2knKd0wROHGysA?=
- =?us-ascii?Q?hwE4fI5hVJETCxUG8TIsiS6xHX6cWQKjfvWNBKdje7fLcAZtbI0jM7Mfzu5K?=
- =?us-ascii?Q?IZnEKDJrV/NtVvJmC6hrH3IrX3Jq8AgT1bGa04EPSS9w30Vtbc6ZGfeIGlMk?=
- =?us-ascii?Q?xBSVrRuDTnIIm2d1tQrpiKxHttgdWFHx+7MCYrnfzlYdUubPrau4U6p9f9TO?=
- =?us-ascii?Q?zcNI8DtrshHiUd0twRduWCEqw7u5/3iX5WTyb403Olpf/t7qkdo96k0+3s/X?=
- =?us-ascii?Q?Id5XZMexF78DYF2REu2TKA8KLjFFYYwUMTZP/6s98gK6Ksnw8HA/LiEPIxva?=
- =?us-ascii?Q?KcdU74NEOMqxS1N7ixdmlTt9auOEDp3zh6gFgLayvFDJKaBjQnX1YhGtigTV?=
- =?us-ascii?Q?9NyOgIqRHOfhkGq8gPXhj0wI4DxpcRFpmZOG6xLFNLuTgZ7rtkK76mYaeZ7n?=
- =?us-ascii?Q?pkV33iO9ewdZwhOaORF7WUe0EQ0agvNag9hfEPk90zAg047BBN36RQOlg9Jj?=
- =?us-ascii?Q?QSSIGXcGA5lSpqmB0DXIX/Xy51H21F5f9u7GgiIHos4Kb0hO9PnQ+O5q+LCj?=
- =?us-ascii?Q?fQi9SRCWeNh4GvuZY5mIgUMAQxU4GuoA7ppDcrN1+mhmojllWxnOcQYtiHxZ?=
- =?us-ascii?Q?B0pCy9bRsFkbrMdIJI4YyjyGxGKkzYH4FUDofoA1dIq+lEbArk7oFBsy8V5w?=
- =?us-ascii?Q?vzJ/6M5yldmVGz+oUwdNPqbO/OBARnD2OZQIObNbG5I+XkpLMg9lUGNJqzNg?=
- =?us-ascii?Q?8bB2fFuNp8lK2QFJNj/PB+2HAhIQxiRrOokjXmm2SZcXnz0O3rSLyk5FC41u?=
- =?us-ascii?Q?x80WWZOdmzN/sN7vM2DhNglco9XxBMzcgJjaAWevQjx1b11r7uxNVyPMO3pN?=
- =?us-ascii?Q?2diErr5cQ8BvWmjfvJECDL56FcIRwTwb0nVWs6g2pvOewlKmdBg29Zei4fus?=
- =?us-ascii?Q?3qz7wMIIxI50TtY5pK4QlmdApnjOa7O2mRfiRKnaRx+dMOQ3UwpuVfgZ9W7v?=
- =?us-ascii?Q?UAmmt7zSu4YWknGKinZqYxs5hAV/R5tz8NT3yMEfSttL/fopczhkzMxC1ssg?=
- =?us-ascii?Q?hU9N51hY/020syjrsoejFE/3VIFB7ygWB4uLql5cvqMjuDphTDrat3s8HZzU?=
- =?us-ascii?Q?SK/dU2en9kwdaIxb37yCiaL6cHAUtBfjF8YvOTC3pIkHknCCvd7BlvIfpXsZ?=
- =?us-ascii?Q?bLDoWlXOM7bzWBcPcy5C2l9bWQjWg57grP/KB7AmabEcXDH/yKiI9mUBmX6Z?=
- =?us-ascii?Q?e5beHmN73fS24c2nJnVUr7A8DBa/uwScsyTR4EYigmwTI3dVU7MLdS2YGWsm?=
- =?us-ascii?Q?nPYiIA8lk3CUnnqcWxjucWq6aZJbaijYcXwb2ojaY/zj+3niXRSADxLRabS+?=
- =?us-ascii?Q?Yw=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: caafe0d1-24a8-400d-ed1e-08da8122bb52
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 14:05:39.9554
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FOoKjwwcwgHdo6LvNpGNsJtHz4QL4FknfOj6ZpNEo6Xd9b9RS94SIUgiT7GTT9xNp9Nvr3KNTomYrjdYfq7Yaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3883
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order for the LS1028A based boards to benefit from support for
-multiple CPU ports, the second DSA master and its associated CPU port
-must be enabled in the device trees. This does not change the default
-CPU port from the current port 4.
+On Wed, Aug 17, 2022 at 04:24:28PM -0500, Eric W. Biederman wrote:
+> Paul Moore <paul@paul-moore.com> writes:
+> 
+> > On Wed, Aug 17, 2022 at 4:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> >> Paul Moore <paul@paul-moore.com> writes:
+> >> > On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> >> >> Paul Moore <paul@paul-moore.com> writes:
+> >> >>
+> >> >> > At the end of the v4 patchset I suggested merging this into lsm/next
+> >> >> > so it could get a full -rc cycle in linux-next, assuming no issues
+> >> >> > were uncovered during testing
+> >> >>
+> >> >> What in the world can be uncovered in linux-next for code that has no in
+> >> >> tree users.
+> >> >
+> >> > The patchset provides both BPF LSM and SELinux implementations of the
+> >> > hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
+> >> > If no one beats me to it, I plan to work on adding a test to the
+> >> > selinux-testsuite as soon as I'm done dealing with other urgent
+> >> > LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
+> >> > run these tests multiple times a week (multiple times a day sometimes)
+> >> > against the -rcX kernels with the lsm/next, selinux/next, and
+> >> > audit/next branches applied on top.  I know others do similar things.
+> >>
+> >> A layer of hooks that leaves all of the logic to userspace is not an
+> >> in-tree user for purposes of understanding the logic of the code.
+> >
+> > The BPF LSM selftests which are part of this patchset live in-tree.
+> > The SELinux hook implementation is completely in-tree with the
+> > subject/verb/object relationship clearly described by the code itself.
+> > After all, the selinux_userns_create() function consists of only two
+> > lines, one of which is an assignment.  Yes, it is true that the
+> > SELinux policy lives outside the kernel, but that is because there is
+> > no singular SELinux policy for everyone.  From a practical
+> > perspective, the SELinux policy is really just a configuration file
+> > used to setup the kernel at runtime; it is not significantly different
+> > than an iptables script, /etc/sysctl.conf, or any of the other myriad
+> > of configuration files used to configure the kernel during boot.
+> 
+> I object to adding the new system configuration knob.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- .../dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts   | 8 ++++++++
- .../boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts  | 8 ++++++++
- arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts         | 8 ++++++++
- 3 files changed, 24 insertions(+)
+I do strongly sympathize with Eric's points.  It will be very easy, once
+user namespace creation has been further restricted in some distros, to
+say "well see this stuff is silly" and go back to simply requiring root
+to create all containers and namespaces, which is generally quite a bit
+easier anywway.  And then, of course, give everyone root so they can
+start containers.
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-index 52ef2e8e5492..73eb6061c73e 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-kbox-a-230-ls.dts
-@@ -59,6 +59,10 @@ &enetc_port2 {
- 	status = "okay";
- };
- 
-+&enetc_port3 {
-+	status = "okay";
-+};
-+
- &i2c3 {
- 	eeprom@57 {
- 		compatible = "atmel,24c32";
-@@ -107,6 +111,10 @@ &mscc_felix_port4 {
- 	status = "okay";
- };
- 
-+&mscc_felix_port5 {
-+	status = "okay";
-+};
-+
- &sata {
- 	status = "okay";
- };
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-index 37c20cb6c152..113b1df74bf8 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-kontron-sl28-var2.dts
-@@ -39,6 +39,10 @@ &enetc_port2 {
- 	status = "okay";
- };
- 
-+&enetc_port3 {
-+	status = "okay";
-+};
-+
- &mscc_felix {
- 	status = "okay";
- };
-@@ -62,3 +66,7 @@ &mscc_felix_port1 {
- &mscc_felix_port4 {
- 	status = "okay";
- };
-+
-+&mscc_felix_port5 {
-+	status = "okay";
-+};
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-index 7285bdcf2302..e33725c60169 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-rdb.dts
-@@ -151,6 +151,10 @@ &enetc_port2 {
- 	status = "okay";
- };
- 
-+&enetc_port3 {
-+	status = "okay";
-+};
-+
- &esdhc {
- 	sd-uhs-sdr104;
- 	sd-uhs-sdr50;
-@@ -281,6 +285,10 @@ &mscc_felix_port4 {
- 	status = "okay";
- };
- 
-+&mscc_felix_port5 {
-+	status = "okay";
-+};
-+
- &optee {
- 	status = "okay";
- };
--- 
-2.34.1
+As Eric said,
 
+ | Further adding a random failure mode to user namespace creation if it is
+ | used at all will just encourage userspace to use a setuid application to
+ | perform the namespace creation instead.  Creating a less secure system
+ | overall.
+
+However, I'm also looking at e.g. CVE-2022-2588 and CVE-2022-2586, and
+yes there are two issues which do require discussion (three if you
+count reportability, which is mainly a tool in guarding against the others).
+
+The first is, indeed, configuration knobs.  There are tools, including
+chrome, which use user namespaces to make things better.  The hope is
+that more and more tools will do so.
+
+The second is damage control.  When an 0day has been announced, things
+change.  You can say "well the bug was there all along", but it is
+different when every lazy ne'erdowell can pick an exploit off a mailing
+list and use it against a product for which spinning a new version with
+a new kernel and getting customers to update is probably a months-long
+endeavor.  Some of these products do in fact require namespaces (user
+and otherwise) as part of their function.  And - to my chagrin - I suspect
+most of them create usernamespace as the root user, before possibly processing
+untrusted user input, so unprivileged_userns_clone isn't a good fit.
+
+SELinux (and LSMs in generaly) do in fact seem like a useful place to
+add some configuration, because they tend to assign different domains
+to tasks with different purposes and trust levels.  But another such
+place is the init system / service manager.  And in most cases these
+days, this will use cgroups to collect tasks of certain types.  So I
+wonder (this is ALMOST ENTIRELY thinking out loud, not thought through
+sufficiently) whether we should be setting a cgroup.nslock or
+somesuch.
+
+Of course, kernel livepatch is another potentially useful mitigation.
+Currently that's not possible for everyone.
+
+Maybe there is a more fundamental way we can approach this.  Part of me
+still likes the idea of splitting the id mapping and capability-in-userns
+parts, but that's not sufficient.  Maybe looking over all the relevant
+CVEs would give a better hint.
+
+Eric, you said
+
+ | If the concern is to reduce the attack surface everything this
+ | proposed hook can do is already possible with the security_capable
+ | security hook.
+
+I suppose I could envision an LSM which gets activated when we find
+out there was a net-ns-exacerbated 0-day, which refuses CAP_NET_ADMIN
+for a task not in init_user_ns?  Ideally it would be more flexible
+than that.
+
+> idea.  What is userspace going to do with this new feature that makes it
+> worth maintaining in the kernel?
+> 
+> That is always the conversation we have when adding new features, and
+> that is exactly the conversation that has not happened here.
+
+Eric and Paul, I wonder, will you - or some people you'd like to represent
+you - be at plumbers in September?  Should there be a BOF session there?  (I
+won't be there, but could join over video)  I think a brainstorming session 
+for solutions to the above problems would be good.
+
+> Adding a layer of indirection should not exempt a new feature from
+> needing to justify itself.
+> 
+> Eric
