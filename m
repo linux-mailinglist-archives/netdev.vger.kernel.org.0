@@ -2,56 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A516259902A
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:09:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83A65599040
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345587AbiHRWIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
+        id S243198AbiHRWKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:10:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344516AbiHRWHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:07:54 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF2AD31FA;
-        Thu, 18 Aug 2022 15:07:29 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id l1so3323965lfk.8;
-        Thu, 18 Aug 2022 15:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=+yl8RAHKGrw9azpH8jGfAjFkV6Z6RsFEnaQjPufoQPA=;
-        b=cN5F6QslIcwGT6/dfOprpGCV5dVAvcXHysxqBMyCu/jmn57/4WS3DHrGdVXI6SXOHu
-         hhL3jZlaLj8fyM01SYuKS9X32lbjuW54Daytwq5HFx6qxt/BG4EHMa2h/UCPIPblr9k8
-         KuWrUaf7wjcFeCgqgPByTJWiaaLE/bJxw86UF2zZjvaEoq8LbnmYoyZ29BSKiuBX1zVf
-         TETkMEfA54mFwyYTTIv3oHNXGdx+1hVAb65da6BvzL5WrxMy1aMjhpsfDcHyyyW8hStZ
-         yJ7DfNnDgxxcHmm0yMz/Mknw2krIkZGBmcOB2mJDtsibIm1+p9wvFVEAOrNjCaT8Emha
-         q5eA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=+yl8RAHKGrw9azpH8jGfAjFkV6Z6RsFEnaQjPufoQPA=;
-        b=md5DtfKp6ZL8+oy43rbhrLBZZgwZjiQXgwtwcrLGtMfb5SPw1g14rD87d2IC76Ojf/
-         Nxxa1a51eVwSZOFhDW5W2l9xq5kRXf3Qvobwz1C3PgcjDiPp/i/Jodhfy0Lu6yrR8fEy
-         tljUGpxITC0CT8Hbjcw+A50pXsNiJjDdr3g4YkmPOxaAAn7S9S7OX4T3RqTkrFmR4vHS
-         PNyKFPzvYQ9v+QdjOgEDgNGC9DEhRlucPeu4qB6yF/mlO7lcqd7ZPbFHbv9IChrPRhh2
-         +36QJkBEdKK85g/p3eg6+YXrdJNmCF6cDNSXmiBqYbFP1Mf0Q30LBcd25VFyl/mdtWdI
-         l3Ig==
-X-Gm-Message-State: ACgBeo0LeofyOahOPMtF8nATpooeskulyHztwVnPtcI4c0/0jPulU/cR
-        FzUfXu2aMgt3UiKHULACq9ewZERebV/sHQc9f4I=
-X-Google-Smtp-Source: AA6agR5I5SyNWeoIXRkrTr0mrCf8ys41KVuUPF4EqcfpqkG4wwaLuV3zQu72gC/MnSVKrWrwH4LSr6pBwfbmAJlBagI=
-X-Received: by 2002:a05:6512:3fa8:b0:48c:ffd1:625d with SMTP id
- x40-20020a0565123fa800b0048cffd1625dmr1378923lfa.251.1660860446956; Thu, 18
- Aug 2022 15:07:26 -0700 (PDT)
+        with ESMTP id S232990AbiHRWKB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:10:01 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E882B74DD4;
+        Thu, 18 Aug 2022 15:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+        bh=rhe9mRJIjYEKwxbWZZXiWC3KccVlD0FV8SeE2CPzCxk=; b=emHQbCQYIBaojp9O77oJuGSh9t
+        Ha3atEwW9Ozs6ZJi5gNsPgvfANBMXT3YLiX5ddzwgNr/M2fpl6MWDycLqRR8lwYM/IeEbpgeNDaRx
+        ZB7DEXdXrcJyTZ/NQI9wfnMtB1Hq2oDOL2X6DUh0A3JuevdWF1NGZN0JtJuWhT9lTs7mYMwCmJPKv
+        gkfeIONW84YV0a+MQmoE1qgTfGtMtH0lVbCE6DkQ9fP7/c6UT6+0IzECvJpaQ/9Jd2UIwGrwXfxSO
+        jr3tvRYeCw0SOjLF5SrbpJHjbr3bxpWiwugWRQB7FcM2LXZKLY28nSn6e4dtckefAEG+mktoc3miB
+        kggujMOQ==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oOni5-00AGgL-RJ; Thu, 18 Aug 2022 22:09:54 +0000
+Message-ID: <c323f4ed-1083-8eb6-95ba-10b0def2c936@infradead.org>
+Date:   Thu, 18 Aug 2022 15:09:52 -0700
 MIME-Version: 1.0
-References: <20220818210207.8323-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220818210207.8323-1-wsa+renesas@sang-engineering.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Thu, 18 Aug 2022 15:07:15 -0700
-Message-ID: <CABBYNZ+Z=3kiA1jSiGH1KQCG6SHSDPp6MCA1pqU8CjtGRNYqqQ@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: move from strlcpy with unused retval to strscpy
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] Bluetooth: move from strlcpy with unused retval to
+ strscpy
+Content-Language: en-US
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
 Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Marcel Holtmann <marcel@holtmann.org>,
         Johan Hedberg <johan.hedberg@gmail.com>,
@@ -61,10 +46,15 @@ Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <20220818210207.8323-1-wsa+renesas@sang-engineering.com>
+ <CABBYNZ+Z=3kiA1jSiGH1KQCG6SHSDPp6MCA1pqU8CjtGRNYqqQ@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CABBYNZ+Z=3kiA1jSiGH1KQCG6SHSDPp6MCA1pqU8CjtGRNYqqQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,49 +62,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Wolfram,
 
-On Thu, Aug 18, 2022 at 2:05 PM Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
->
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
 
-The link below doesn't seem to work.
+On 8/18/22 15:07, Luiz Augusto von Dentz wrote:
+> Hi Wolfram,
+> 
+> On Thu, Aug 18, 2022 at 2:05 PM Wolfram Sang
+> <wsa+renesas@sang-engineering.com> wrote:
+>>
+>> Follow the advice of the below link and prefer 'strscpy' in this
+>> subsystem. Conversion is 1:1 because the return value is not used.
+>> Generated by a coccinelle script.
+> 
+> The link below doesn't seem to work.
 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  net/bluetooth/hidp/core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
-> index 5940744a8cd8..cc20e706c639 100644
-> --- a/net/bluetooth/hidp/core.c
-> +++ b/net/bluetooth/hidp/core.c
-> @@ -83,14 +83,14 @@ static void hidp_copy_session(struct hidp_session *session, struct hidp_conninfo
->                 ci->product = session->input->id.product;
->                 ci->version = session->input->id.version;
->                 if (session->input->name)
-> -                       strlcpy(ci->name, session->input->name, 128);
-> +                       strscpy(ci->name, session->input->name, 128);
->                 else
-> -                       strlcpy(ci->name, "HID Boot Device", 128);
-> +                       strscpy(ci->name, "HID Boot Device", 128);
->         } else if (session->hid) {
->                 ci->vendor  = session->hid->vendor;
->                 ci->product = session->hid->product;
->                 ci->version = session->hid->version;
-> -               strlcpy(ci->name, session->hid->name, 128);
-> +               strscpy(ci->name, session->hid->name, 128);
->         }
->  }
->
-> --
-> 2.35.1
->
+Works for me.
 
+>> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+>> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+>> ---
+>>  net/bluetooth/hidp/core.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/net/bluetooth/hidp/core.c b/net/bluetooth/hidp/core.c
+>> index 5940744a8cd8..cc20e706c639 100644
+>> --- a/net/bluetooth/hidp/core.c
+>> +++ b/net/bluetooth/hidp/core.c
+>> @@ -83,14 +83,14 @@ static void hidp_copy_session(struct hidp_session *session, struct hidp_conninfo
+>>                 ci->product = session->input->id.product;
+>>                 ci->version = session->input->id.version;
+>>                 if (session->input->name)
+>> -                       strlcpy(ci->name, session->input->name, 128);
+>> +                       strscpy(ci->name, session->input->name, 128);
+>>                 else
+>> -                       strlcpy(ci->name, "HID Boot Device", 128);
+>> +                       strscpy(ci->name, "HID Boot Device", 128);
+>>         } else if (session->hid) {
+>>                 ci->vendor  = session->hid->vendor;
+>>                 ci->product = session->hid->product;
+>>                 ci->version = session->hid->version;
+>> -               strlcpy(ci->name, session->hid->name, 128);
+>> +               strscpy(ci->name, session->hid->name, 128);
+>>         }
+>>  }
+>>
+>> --
+>> 2.35.1
+>>
+> 
+> 
 
 -- 
-Luiz Augusto von Dentz
+~Randy
