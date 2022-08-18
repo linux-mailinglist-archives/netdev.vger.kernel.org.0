@@ -2,47 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B340C598FF1
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44464598FFE
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345934AbiHRWDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33540 "EHLO
+        id S243354AbiHRWEi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:04:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345873AbiHRWC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:02:58 -0400
+        with ESMTP id S1346061AbiHRWE2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:04:28 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89029D21C9;
-        Thu, 18 Aug 2022 15:02:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE76050054;
+        Thu, 18 Aug 2022 15:04:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XhUCvUk0FjYJlbhwmGOWTu4qKoisWXmd1WdcglrWl3A=; b=5rdpkCkcekw9D/Yf0EuLx7VjYl
-        G9FPLdcorL4RUkWdqGdtX/eq2Ykdd+6MEzfmCuYjXhPxpwirEnvMLdJYPp9qIqPM3IJS3nR+tPRzo
-        zvtdc7gKpIUe+/sOd+YbgEWF92qxx8nRNOIrWbHGy3RSWZOYDbC/WCSWWJ14h1IeZyz0=;
+        bh=TwzkiQpDimOCFo9I1urYAGSujGIok+UgpBPq/OoMrWc=; b=kcoyVXsDbzoltVhhawj/7b75LG
+        ALbcBmJz0UaQBxPD/C8DMXpPw73a8ljtM9XyX0TCxGi3WR7Qgt1IW7gRcFU2HfP9r6fxVq3mz35gd
+        RlXGTRwEMmD+0TrqlsbwcWfesgsNbqV/628fuTTka2Q646iJ8zh1pqoLe4yF5FRkFjAU=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oOnbE-00DqiX-S0; Fri, 19 Aug 2022 00:02:48 +0200
-Date:   Fri, 19 Aug 2022 00:02:48 +0200
+        id 1oOncf-00Dqj0-3H; Fri, 19 Aug 2022 00:04:17 +0200
+Date:   Fri, 19 Aug 2022 00:04:17 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marcus Carlberg <marcus.carlberg@axis.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kernel@axis.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: dsa: mv88e6xxx: support RGMII cmode
-Message-ID: <Yv63CGDPnfe6baoz@lunn.ch>
-References: <20220816114534.10407-1-marcus.carlberg@axis.com>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next RESEND v4 3/4] net: phy: Add helper to derive
+ the number of ports from a phy mode
+Message-ID: <Yv63Yen0zBY8RhKh@lunn.ch>
+References: <20220817123255.111130-1-maxime.chevallier@bootlin.com>
+ <20220817123255.111130-4-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220816114534.10407-1-marcus.carlberg@axis.com>
+In-Reply-To: <20220817123255.111130-4-maxime.chevallier@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -53,19 +57,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 01:45:34PM +0200, Marcus Carlberg wrote:
-> Since the probe defaults all interfaces to the highest speed possible
-> (10GBASE-X in mv88e6393x) before the phy mode configuration from the
-> devicetree is considered it is currently impossible to use port 0 in
-> RGMII mode.
+On Wed, Aug 17, 2022 at 02:32:54PM +0200, Maxime Chevallier wrote:
+> Some phy modes such as QSGMII multiplex several MAC<->PHY links on one
+> single physical interface. QSGMII used to be the only one supported, but
+> other modes such as QUSGMII also carry multiple links.
 > 
-> This change will allow RGMII modes to be configurable for port 0
-> enabling port 0 to be configured as RGMII as well as serial depending
-> on configuration.
+> This helper allows getting the number of links that are multiplexed
+> on a given interface.
+> 
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-Hi Marcus
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Can ports 9 and 10 do RGMII? I think not. So you should validate the
-phy-mode in mv88e6393x_port_set_cmode().
-
-	 Andrew
+    Andrew
