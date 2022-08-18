@@ -2,99 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B67CC597F2C
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 09:25:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E36C6597F27
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 09:22:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiHRHXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 03:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36340 "EHLO
+        id S242416AbiHRHWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 03:22:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243538AbiHRHXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 03:23:15 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD2815FB2
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 00:23:12 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id h204-20020a1c21d5000000b003a5b467c3abso2121176wmh.5
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 00:23:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=uvXm0RZumj0mZgTh7JDm1cAJdvIkjg/M0gZNRFsBcbE=;
-        b=WctPc8ihRxgLEWgb8uuHyWvfBh9syJKPte5nZSCDHMMvQjY4s0tCWphV0veBT2KQDI
-         r6bJVpXK3Gr3Swbbn7Q125sT7V7X/nFvF0RiX9S+mADB59V13sdKcruTgbCP7f3KXEdn
-         kboE0EwDAX1uEHWrdor2e15L6NbvYQiI1SG4Uhf2hxblkKyaux+ovasAZdNLe41L4zpr
-         mUGApu6cMNMCW1jdtodNm1VZohGK1BaaeWoWMeOWs98rBKlYHFnJ9MjfI3UDK5vaZ56n
-         O/n/+HoUlA6GWeqsZzBvBfo4fuQ6K+fE6/3Mo5zSkgLFlP8fY0ZbTpg6AHCFthZPQkCE
-         P7iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=uvXm0RZumj0mZgTh7JDm1cAJdvIkjg/M0gZNRFsBcbE=;
-        b=OiOWGzPwPfnqn9mV0oFUJ7pigVgTOcNkPCh+5WqLNrOOAwuPAn0u6LO9mLP3hxK81d
-         9gDUN+xt9QA6QZjeqKMyZeQU0vTw5SNuGOOfPWcoJOawMUi2zNZ9taWpR7IE1DHkKW2n
-         JEEi3BMCTupfJk86IZTNaFpQ4BmuUXkEAvR0cfJPWkSOokaNT++SNjGMMzUw0qmOdS0g
-         c68fcfq1h3OvNu3nCrLYBNBfAr8XegMYBWTWCG4H7L7Q9WSbZXtFgv6AAPygnMDI5UVm
-         95ge/ull5KLBkFfirH+13O+htlMlXxzIRPu4tGrd1TTt+pRK0bINksSgmbTuhJbU3O1W
-         pjCA==
-X-Gm-Message-State: ACgBeo3OBvW0kyG882szm7kIJ0XIJ/q0KbFjnqJplH8y57mR8GWgkc9g
-        +lOjG7PtxHLPSmqPd3/4JRem4w==
-X-Google-Smtp-Source: AA6agR6nObt5E7+iDPx/bOg98ioOd1CfUD4q5gu+vTlcSGOcSpqZzeCm7LadDRmozdqUZ0oNlPTFlw==
-X-Received: by 2002:a7b:c5c5:0:b0:3a5:3e42:fa18 with SMTP id n5-20020a7bc5c5000000b003a53e42fa18mr943938wmk.178.1660807390890;
-        Thu, 18 Aug 2022 00:23:10 -0700 (PDT)
-Received: from [192.168.42.79] ([37.171.155.54])
-        by smtp.googlemail.com with ESMTPSA id r14-20020a056000014e00b00223678fe95asm732216wrx.18.2022.08.18.00.23.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 00:23:10 -0700 (PDT)
-Message-ID: <5008ef00-6e64-ca89-7ff0-0bcf85bd4b54@linaro.org>
-Date:   Thu, 18 Aug 2022 09:23:09 +0200
+        with ESMTP id S231552AbiHRHWI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 03:22:08 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FD07A0601;
+        Thu, 18 Aug 2022 00:22:07 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4M7bnW1RWkzXdj4;
+        Thu, 18 Aug 2022 15:17:51 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 18 Aug
+ 2022 15:22:03 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
+        <shaozhengchao@huawei.com>
+Subject: [PATCH net-next] net: sched: remove duplicate check of user rights in qdisc
+Date:   Thu, 18 Aug 2022 15:25:00 +0800
+Message-ID: <20220818072500.278410-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4] Revert "mlxsw: core: Add the hottest thermal zone
- detection"
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@nvidia.com>
-Cc:     rafael@kernel.org, linux-pm@vger.kernel.org, vadimp@mellanox.com,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, vadimp@nvidia.com, petrm@nvidia.com,
-        edumazet@google.com, pabeni@redhat.com
-References: <20220817153040.2464245-1-daniel.lezcano@linaro.org>
- <Yv0TIH0LsjFJwV0L@shredder> <20220817112110.6ad4c3ef@kernel.org>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <20220817112110.6ad4c3ef@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/08/2022 20:21, Jakub Kicinski wrote:
-> On Wed, 17 Aug 2022 19:11:12 +0300 Ido Schimmel wrote:
->> Jakub, Daniel wants to route this patch via his tree. Do you mind?
->> I spoke with Vadim earlier this week and we do not expect changes to
->> this file during the current cycle.
-> 
-> I don't understand why this couldn't have gotten in during the merge
-> window for 6.0, avoiding the risk of conflicts. But yeah, you said
-> conflicts are unlikely here anyway, so no objections:
-> 
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
+In rtnetlink_rcv_msg function, the permission for all user operations
+is checked except the GET operation, which is the same as the checking
+in qdisc. Therefore, remove the user rights check in qdisc.
 
-Applied, thanks
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ net/sched/act_api.c |  4 ----
+ net/sched/cls_api.c | 10 ----------
+ net/sched/sch_api.c | 11 -----------
+ 3 files changed, 25 deletions(-)
 
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 817065aa2833..b69fcde546ba 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -1993,10 +1993,6 @@ static int tc_ctl_action(struct sk_buff *skb, struct nlmsghdr *n,
+ 	u32 flags = 0;
+ 	int ret = 0;
+ 
+-	if ((n->nlmsg_type != RTM_GETACTION) &&
+-	    !netlink_capable(skb, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	ret = nlmsg_parse_deprecated(n, sizeof(struct tcamsg), tca,
+ 				     TCA_ROOT_MAX, NULL, extack);
+ 	if (ret < 0)
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 790d6809be81..1ebab4b11262 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1977,9 +1977,6 @@ static int tc_new_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	bool rtnl_held = false;
+ 	u32 flags;
+ 
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ replay:
+ 	tp_created = 0;
+ 
+@@ -2208,9 +2205,6 @@ static int tc_del_tfilter(struct sk_buff *skb, struct nlmsghdr *n,
+ 	int err;
+ 	bool rtnl_held = false;
+ 
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
+@@ -2826,10 +2820,6 @@ static int tc_ctl_chain(struct sk_buff *skb, struct nlmsghdr *n,
+ 	unsigned long cl;
+ 	int err;
+ 
+-	if (n->nlmsg_type != RTM_GETCHAIN &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ replay:
+ 	q = NULL;
+ 	err = nlmsg_parse_deprecated(n, sizeof(*t), tca, TCA_MAX,
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index bf87b50837a8..6c687e77d68b 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1424,10 +1424,6 @@ static int tc_get_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+ 	struct Qdisc *p = NULL;
+ 	int err;
+ 
+-	if ((n->nlmsg_type != RTM_GETQDISC) &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
+@@ -1508,9 +1504,6 @@ static int tc_modify_qdisc(struct sk_buff *skb, struct nlmsghdr *n,
+ 	struct Qdisc *q, *p;
+ 	int err;
+ 
+-	if (!netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ replay:
+ 	/* Reinit, just in case something touches this. */
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+@@ -1992,10 +1985,6 @@ static int tc_ctl_tclass(struct sk_buff *skb, struct nlmsghdr *n,
+ 	u32 qid;
+ 	int err;
+ 
+-	if ((n->nlmsg_type != RTM_GETTCLASS) &&
+-	    !netlink_ns_capable(skb, net->user_ns, CAP_NET_ADMIN))
+-		return -EPERM;
+-
+ 	err = nlmsg_parse_deprecated(n, sizeof(*tcm), tca, TCA_MAX,
+ 				     rtm_tca_policy, extack);
+ 	if (err < 0)
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.17.1
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
