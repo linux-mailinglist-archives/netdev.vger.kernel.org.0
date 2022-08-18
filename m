@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E43B0597DCB
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 07:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B79E597DE9
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 07:11:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243491AbiHRFBg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 01:01:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
+        id S242996AbiHRFKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 01:10:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242683AbiHRFBf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 01:01:35 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2162495E77
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 22:01:34 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id u9so682279lfg.11
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 22:01:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=r4rJdvHK9Uejgurp/zzqjNfe8hbrR+MHgAvSS9UTA+A=;
-        b=jJx0XeBwUX04oH+nMocHYwHkcVLGMr2iOq4E5u+1KRGBiAi9ICcn2TXNCYec3F/PRr
-         PANX2SiNceJlQkAj42Vq+l19WKcX2rFvu66jLO9ngUmOUwxnvOpQRPW89yiRPG7Tmro2
-         nf2RD3rNpVZ2is7WOw4qPRvkAZvP3ZgIP9EIPMmZF1rQ4Ll5XgdkXizGfauBT1ukKUYO
-         GgljTpDXRtPwcwFG/1n4ebPOYe8DNsYcAN3bXKjRWgYw/GpJo1mR0MewwkLCtvYRO0DB
-         1RG2lfghhXXTDzQGTlIo8cGEB/qJjNAwXm5XGJQtRHDyvMShPWOc3V9ZPnz0PDD5CCL3
-         ZNJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=r4rJdvHK9Uejgurp/zzqjNfe8hbrR+MHgAvSS9UTA+A=;
-        b=kItiM4uqC0u7s7t1mF3ftvFrb2AJAJmHrvy15X7C0OZQ8MH6FHDbtS3nL3aTnhBSXP
-         AV8Z8jzjmlLlYwEQcQXs0kG4lauXB6rGYkCzu3E9uN80ugxKjcN/ERwIYS6BA96wengB
-         a5c8bY7f39/HqugIQ41mNo8oZwFKEl31xR1JM2yXXyqDsdy4QSQ/BtpSEaxSBFKol8my
-         WDPnNp6usetPyiawnhBxv/akYw2bCwgRCYQme+q3BRlADU9VbbUAJ2cvqXtOnZoaED7d
-         Z6+N5oV9GZbCn3F0yEpBeQNOdONHksW5LAFSIIkJZQfmefVGqp7XeeBhnONvmTZzs2eG
-         d/aQ==
-X-Gm-Message-State: ACgBeo13FtqdjC2HkKeiCDKHsoEZaHRYM+Oby3QUeE3RKFLqFq+X/O9Y
-        K9OnRCQZiQDouhaoLd3dD3IKw9N/u4Hec1gOBA0=
-X-Google-Smtp-Source: AA6agR4HkqVa3ZVJ8+4jlx1JF+zxWWDG6Zaks1ax8/M/BHZYH/orv/EMMbIX217INMOKoaliy8cUJhd3jw9K8sBxvFg=
-X-Received: by 2002:a05:6512:3e1d:b0:492:b9b1:bc1 with SMTP id
- i29-20020a0565123e1d00b00492b9b10bc1mr397355lfv.278.1660798892408; Wed, 17
- Aug 2022 22:01:32 -0700 (PDT)
+        with ESMTP id S243309AbiHRFKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 01:10:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EB81AB1A2;
+        Wed, 17 Aug 2022 22:10:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2506BB81FFF;
+        Thu, 18 Aug 2022 05:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B338FC433B5;
+        Thu, 18 Aug 2022 05:10:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660799420;
+        bh=4ae3i0q5b5HwJXNLQUUBhZ5ijQQtlV0e8gvuMz1tkNk=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=W36wGlzWU+L7zl9YKmEyIm7udqKJ+HLMLtFMcmd714sOMT9yrFeeIOOLTnbABEWz3
+         JeaJ6XIRtP9hR5TWx9GzGZboxpstfvi2M7hpheJ62F6JB/WIH5c83Tr8LmcN1klYlF
+         XoVK9HU/iZr14enubPCcitBukFcU/l4VERn1ejlOy3MM8NQK4bX6rn+w6P3gIzzGfa
+         mW0Yh7RnzkOOPOmqdi+Xiorlb/xKDd6Tu+TvvaKUPTCiXK3OK9Jy+QKpGR3/RGAwml
+         9t6IyHB6bXRU+i+6vk/dqZrAuT0MuiNKj1kV9oYno5r9nEE0MebHdF4MZkwPJrbjmC
+         mWuNm9mr7v8zA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 97C27E2A04D;
+        Thu, 18 Aug 2022 05:10:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220816102537.33986-1-chenfeiyang@loongson.cn> <Yv2hlkIpd8A66+iP@lunn.ch>
-In-Reply-To: <Yv2hlkIpd8A66+iP@lunn.ch>
-From:   Feiyang Chen <chris.chenfeiyang@gmail.com>
-Date:   Thu, 18 Aug 2022 13:01:20 +0800
-Message-ID: <CACWXhK=YF+z0wofjDAo7XW8cSV2NZgHpAK3u5=rkvvKTd8MjFQ@mail.gmail.com>
-Subject: Re: [PATCH] stmmac: pci: Add LS7A support for dwmac-loongson
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, Feiyang Chen <chenfeiyang@loongson.cn>,
-        zhangqing@loongson.cn, Huacai Chen <chenhuacai@loongson.cn>,
-        netdev@vger.kernel.org, loongarch@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: pull-request: bpf-next 2022-08-17
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166079942061.2023.10562666009950418218.git-patchwork-notify@kernel.org>
+Date:   Thu, 18 Aug 2022 05:10:20 +0000
+References: <20220817215656.1180215-1-andrii@kernel.org>
+In-Reply-To: <20220817215656.1180215-1-andrii@kernel.org>
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 at 10:19, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Tue, Aug 16, 2022 at 06:25:37PM +0800, Feiyang Chen wrote:
-> > Current dwmac-loongson only support LS2K in the "probed with PCI and
-> > configured with DT" manner. We add LS7A support on which the devices
-> > are fully PCI (non-DT).
->
-> Please could you break this patch up into a number of smaller
-> patches. It is very hard to follow what you are changing here.
->
-> Ideally you want lots of small patches, each with a good commit
-> message, which are obviously correct.
->
+Hello:
 
-Hi, Andrew,
+This pull request was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-OK, I will have a try.
+On Wed, 17 Aug 2022 14:56:56 -0700 you wrote:
+> Hi David, hi Jakub, hi Paolo, hi Eric,
+> 
+> The following pull-request contains BPF updates for your *net-next* tree.
+> 
+> We've added 45 non-merge commits during the last 14 day(s) which contain
+> a total of 61 files changed, 986 insertions(+), 372 deletions(-).
+> 
+> [...]
 
-Thanks,
-Feiyang
+Here is the summary with links:
+  - pull-request: bpf-next 2022-08-17
+    https://git.kernel.org/netdev/net-next/c/3f5f728a7296
 
->       Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
