@@ -2,175 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C29D6598708
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DEDB598712
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245258AbiHRPLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47532 "EHLO
+        id S1344200AbiHRPMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245167AbiHRPLW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:11:22 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0E8BE4CF
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:11:18 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-11ba6e79dd1so2077108fac.12
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:11:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=GANP9vLRwQ2YLUROnRwlZNpTwcMjsaJ3VgtSa/PtcQA=;
-        b=0qFr3gX8grFcH8xmET6oC1qTaE9YXfJGFQ2GhO7NEnI8UJe/rml2OLbEr4Jw1nQKgR
-         d12kPSjSQe3qNmXickEgFu68t4SIk6+fn1KvnQautrJRDdPKcPRfC9kt1hvPEgu+ijXD
-         7iHrt1dL8Pek8n+C/DBvnSz5bNp5udDpG9vzcJ4mjVl2uLAsjvPjxzZNC3uc1Sn9d8BN
-         jgZh1sTFXRnSeYNTo+wlZfynZ0xcbCj8IKq0w2RsVpncFi6U9vN4TxyRRKmoNsvJJQvH
-         8z5x3IrwifZWro1HnNJlG0tBICYV2T1LywfHD7Dw228ev4nd3JbJBYgF/S7hFYBg6Rd0
-         xVCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=GANP9vLRwQ2YLUROnRwlZNpTwcMjsaJ3VgtSa/PtcQA=;
-        b=A97Di9Vk/5/Oa4Q36T2RKCSegMIYWckX255G9ncZ4KxlZHBJWb7/tJOyxXvFDFV5Rp
-         tDChwqAWNdA7Ovf7uMDtrmq1RiewbIbPDebmHeBwOKwzYXysPNg23z4SiNcy/HkOiSUF
-         Ef5U7eElC2azU44rioQUjz/5vSNOgkE5LjK9lBdItydDRGZRsEBKbiAZ4vQlQQcK1yhB
-         vwFIbNHLZ0J0TTINzOpdjhM+KVDwIRJU30RUGVEO/H9rd3EkF0KegmP2FmJWW+zELw87
-         mU1k2Z0f8k8MsqU8rJGFyVGPlv0uwU4k7wZf++Qke8637BWsU3HsmmbB2caZZmjWZU6b
-         tD9w==
-X-Gm-Message-State: ACgBeo3OncO5mX3u42S/e2hK9Gs0ueAsmWOHk3juH63j1ePIFZvHOHTT
-        Sr4tMCZFvrE/pBCyq3SrSFf92SlmynQSITWpqZmj
-X-Google-Smtp-Source: AA6agR66YXOH5oppw7egFiDoyCC8ej5Sf5Kmv975mn8bSRsO6rpaEhSZQdqJw2zGnbq9Y7af7ZLG1mLeF4J63BZuPNo=
-X-Received: by 2002:a05:6870:a78d:b0:11c:437b:ec70 with SMTP id
- x13-20020a056870a78d00b0011c437bec70mr1643477oao.136.1660835477277; Thu, 18
- Aug 2022 08:11:17 -0700 (PDT)
+        with ESMTP id S1344179AbiHRPMd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:12:33 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC989BFA8D;
+        Thu, 18 Aug 2022 08:12:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=IaeNReyR52ej9/tS6s/KAFhEesm0POJXHliyXuIE5Ho=; b=DFphwx+kUSC2kPYk8B5cLq0V2v
+        DLWvFY8986Tb+7pbZRCd6hf5vmkAeX3AFl/mGcI0YSVwpefRCttymkqv+DxOhILfRxFQU3AcUUAIa
+        cUrjm6Fu2/v4RdkBqwvWXl4l1u1wtixjWuMV/pIREomlKh1T5UyzuSYKf/UcQClWRmUY9wwsZ11kV
+        s2S2cH7ZtRNmF/9VV9QCaPD9JSXOqYIVmseB4D8TGiOjCDqkYsZcxd76cQ7/7n+psKtnZGyHSYCUH
+        2S7DfOX1dPPfSNLggpNtLmHkvq1aigmnddpEDnR61DYecB3tASKgwXcs+kffUyGlQYKdnl4QjJa0U
+        Ow/3imWV1swdHtYBOdGFrBN65BgPaKoCr7blg5OmHECpMqwYpSL+o5kDodFawBEcCmlwgM/jcgpHi
+        93fVwJObhkUoEsG4l31zN14OpP/UIBo8wZQrMxpOQxeV2OR/iiXYGuafJ+2DIkHnVJx4dnRMR0ZnO
+        MBqVVDObXDyMERo9qMPNkZ2jjP7s3gqEhKeLDp96LsXZK3S4fUjrHdhspwyBXrBvW/GHPjGq4U1lu
+        rzHgXYym/J96vzKHh5ckA4x8Td7IznksQpj2llWpRAhEjHRN+OPT7NyvtEEoUJK20UekpPZAtXXNT
+        +6Ar+5m3839LWTt9KOi5z5RwNRzZQJ8PbvkFIibEM=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     syzbot <syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com>,
+        asmadeus@codewreck.org
+Cc:     davem@davemloft.net, edumazet@google.com, ericvh@gmail.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, lucho@ionkov.net,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com,
+        v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] KASAN: use-after-free Read in p9_req_put
+Date:   Thu, 18 Aug 2022 17:12:17 +0200
+Message-ID: <2207113.SgyDDyVIbp@silver>
+In-Reply-To: <YvyD053bdbGE9xoo@codewreck.org>
+References: <0000000000001c3efc05e6693f06@google.com> <YvyD053bdbGE9xoo@codewreck.org>
 MIME-Version: 1.0
-References: <20220815162028.926858-1-fred@cloudflare.com> <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
- <8735dux60p.fsf@email.froward.int.ebiederm.org> <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
- <871qte8wy3.fsf@email.froward.int.ebiederm.org> <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
- <8735du7fnp.fsf@email.froward.int.ebiederm.org> <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
- <87tu6a4l83.fsf@email.froward.int.ebiederm.org> <20220818140521.GA1000@mail.hallyn.com>
-In-Reply-To: <20220818140521.GA1000@mail.hallyn.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Thu, 18 Aug 2022 11:11:06 -0400
-Message-ID: <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-To:     "Serge E. Hallyn" <serge@hallyn.com>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
-        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        jmorris@namei.org, stephen.smalley.work@gmail.com,
-        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
-        casey@schaufler-ca.com, bpf@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-team@cloudflare.com,
-        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
-        tixxdz@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:05 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> On Wed, Aug 17, 2022 at 04:24:28PM -0500, Eric W. Biederman wrote:
-> > Paul Moore <paul@paul-moore.com> writes:
-> > > On Wed, Aug 17, 2022 at 4:56 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > >> Paul Moore <paul@paul-moore.com> writes:
-> > >> > On Wed, Aug 17, 2022 at 3:58 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> > >> >> Paul Moore <paul@paul-moore.com> writes:
-> > >> >>
-> > >> >> > At the end of the v4 patchset I suggested merging this into lsm/next
-> > >> >> > so it could get a full -rc cycle in linux-next, assuming no issues
-> > >> >> > were uncovered during testing
-> > >> >>
-> > >> >> What in the world can be uncovered in linux-next for code that has no in
-> > >> >> tree users.
-> > >> >
-> > >> > The patchset provides both BPF LSM and SELinux implementations of the
-> > >> > hooks along with a BPF LSM test under tools/testing/selftests/bpf/.
-> > >> > If no one beats me to it, I plan to work on adding a test to the
-> > >> > selinux-testsuite as soon as I'm done dealing with other urgent
-> > >> > LSM/SELinux issues (io_uring CMD passthrough, SCTP problems, etc.); I
-> > >> > run these tests multiple times a week (multiple times a day sometimes)
-> > >> > against the -rcX kernels with the lsm/next, selinux/next, and
-> > >> > audit/next branches applied on top.  I know others do similar things.
-> > >>
-> > >> A layer of hooks that leaves all of the logic to userspace is not an
-> > >> in-tree user for purposes of understanding the logic of the code.
-> > >
-> > > The BPF LSM selftests which are part of this patchset live in-tree.
-> > > The SELinux hook implementation is completely in-tree with the
-> > > subject/verb/object relationship clearly described by the code itself.
-> > > After all, the selinux_userns_create() function consists of only two
-> > > lines, one of which is an assignment.  Yes, it is true that the
-> > > SELinux policy lives outside the kernel, but that is because there is
-> > > no singular SELinux policy for everyone.  From a practical
-> > > perspective, the SELinux policy is really just a configuration file
-> > > used to setup the kernel at runtime; it is not significantly different
-> > > than an iptables script, /etc/sysctl.conf, or any of the other myriad
-> > > of configuration files used to configure the kernel during boot.
-> >
-> > I object to adding the new system configuration knob.
->
-> I do strongly sympathize with Eric's points.  It will be very easy, once
-> user namespace creation has been further restricted in some distros, to
-> say "well see this stuff is silly" and go back to simply requiring root
-> to create all containers and namespaces, which is generally quite a bit
-> easier anywway.  And then, of course, give everyone root so they can
-> start containers.
+On Mittwoch, 17. August 2022 07:59:47 CEST asmadeus@codewreck.org wrote:
+> syzbot having a fresh look at 9p?
+> 
+> Well at least that one should be easy enough, the following (untested)
+> probably should work around that issue:
+> 
+> -----
+> From 433138e5d36a5b29b46b043c542e14b9dc908460 Mon Sep 17 00:00:00 2001
+> From: Dominique Martinet <asmadeus@codewreck.org>
+> Date: Wed, 17 Aug 2022 14:49:29 +0900
+> Subject: [PATCH] 9p: p9_client_create: use p9_client_destroy on failure
+> 
+> If trans was connected it's somehow possible to fail with requests in
+> flight that could still be accessed after free if we just free the clnt
+> on failure.
+> Just use p9_client_destroy instead that has proper safeguards.
+> 
+> Reported-by: syzbot+de52531662ebb8823b26@syzkaller.appspotmail.com
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> 
+> diff --git a/net/9p/client.c b/net/9p/client.c
+> index 5bf4dfef0c70..da5d43848600 100644
+> --- a/net/9p/client.c
+> +++ b/net/9p/client.c
+> @@ -948,7 +948,7 @@ struct p9_client *p9_client_create(const char *dev_name,
+> char *options)
+> 
+>  	err = parse_opts(options, clnt);
+>  	if (err < 0)
+> -		goto free_client;
+> +		goto out;
+> 
+>  	if (!clnt->trans_mod)
+>  		clnt->trans_mod = v9fs_get_default_trans();
+> @@ -957,7 +957,7 @@ struct p9_client *p9_client_create(const char *dev_name,
+> char *options) err = -EPROTONOSUPPORT;
+>  		p9_debug(P9_DEBUG_ERROR,
+>  			 "No transport defined or default transport\n");
+> -		goto free_client;
+> +		goto out;
+>  	}
+> 
+>  	p9_debug(P9_DEBUG_MUX, "clnt %p trans %p msize %d protocol %d\n",
+> @@ -965,7 +965,7 @@ struct p9_client *p9_client_create(const char *dev_name,
+> char *options)
+> 
+>  	err = clnt->trans_mod->create(clnt, dev_name, options);
+>  	if (err)
+> -		goto put_trans;
+> +		goto out;
+> 
+>  	if (clnt->msize > clnt->trans_mod->maxsize) {
+>  		clnt->msize = clnt->trans_mod->maxsize;
+> @@ -979,12 +979,12 @@ struct p9_client *p9_client_create(const char
+> *dev_name, char *options) p9_debug(P9_DEBUG_ERROR,
+>  			 "Please specify a msize of at least 4k\n");
+>  		err = -EINVAL;
+> -		goto close_trans;
+> +		goto out;
+>  	}
+> 
+>  	err = p9_client_version(clnt);
+>  	if (err)
+> -		goto close_trans;
+> +		goto out;
+> 
+>  	/* P9_HDRSZ + 4 is the smallest packet header we can have that is
+>  	 * followed by data accessed from userspace by read
+> @@ -997,12 +997,8 @@ struct p9_client *p9_client_create(const char
+> *dev_name, char *options)
+> 
+>  	return clnt;
+> 
+> -close_trans:
+> -	clnt->trans_mod->close(clnt);
+> -put_trans:
+> -	v9fs_put_trans(clnt->trans_mod);
+> -free_client:
+> -	kfree(clnt);
+> +out:
+> +	p9_client_destroy(clnt);
+>  	return ERR_PTR(err);
+>  }
+>  EXPORT_SYMBOL(p9_client_create);
 
-That's assuming a lot.  Many years have passed since namespaces were
-first introduced, and awareness of good security practices has
-improved, perhaps not as much as any of us would like, but to say that
-distros, system builders, and even users are the same as they were so
-many years ago is a bit of a stretch in my opinion.
+Looks like a nice reduction to me!
 
-However, even ignoring that for a moment, do we really want to go to a
-place where we dictate how users compose and secure their systems?
-Linux "took over the world" because it offered a level of flexibility
-that wasn't really possible before, and it has flourished because it
-has kept that mentality.  The Linux Kernel can be shoehorned onto most
-hardware that you can get your hands on these days, with driver
-support for most anything you can think to plug into the system.  Do
-you want a single-user environment with no per-user separation?  We
-can do that.  Do you want a traditional DAC based system that leans
-heavy on ACLs and capabilities?  We can do that.  Do you want a
-container host that allows you to carve up the system with a high
-degree of granularity thanks to the different namespaces?  We can do
-that.  How about a system that leverages the LSM to enforce a least
-privilege ideal, even on the most privileged root user?  We can do
-that too.  This patchset is about giving distro, system builders, and
-users another choice in how they build their system.  We've seen both
-in this patchset and in previously failed attempts that there is a
-definite want from a user perspective for functionality such as this,
-and I think it's time we deliver it in the upstream kernel so they
-don't have to keep patching their own systems with out-of-tree
-patches.
+As p9_client_destroy() is doing a bit more than current code, I would probably 
+additionally do s/kmalloc/kzmalloc/ at the start of the function, which would 
+add more safety & reduction.
 
-> Eric and Paul, I wonder, will you - or some people you'd like to represent
-> you - be at plumbers in September?  Should there be a BOF session there?  (I
-> won't be there, but could join over video)  I think a brainstorming session
-> for solutions to the above problems would be good.
+> -----
+> 
+> I'll test and submit to Linus over the next few weeks.
+> 
+> I had a quick look at the other new syzbot warnings and:
+>  - 'possible deadlock in p9_req_put' is clear enough, we can just drop
+> the lock before running through the cancel list and I don't think
+> that'll cause any problem as everything has been moved to a local list
+> and that lock is abused by trans fd for its local stuff. I'll also send
+> that after quick testing.
+> ----
+> From c46435a4af7c119bd040922886ed2ea3a2a842d7 Mon Sep 17 00:00:00 2001
+> From: Dominique Martinet <asmadeus@codewreck.org>
+> Date: Wed, 17 Aug 2022 14:58:44 +0900
+> Subject: [PATCH] 9p: trans_fd/p9_conn_cancel: drop client lock earlier
+> 
+> syzbot reported a double-lock here and we no longer need this
+> lock after requests have been moved off to local list:
+> just drop the lock earlier.
+> 
+> Reported-by: syzbot+50f7e8d06c3768dd97f3@syzkaller.appspotmail.com
+> Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+> 
+> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+> index e758978b44be..60fcc6b30b46 100644
+> --- a/net/9p/trans_fd.c
+> +++ b/net/9p/trans_fd.c
+> @@ -205,6 +205,8 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
+>  		list_move(&req->req_list, &cancel_list);
+>  	}
+> 
+> +	spin_unlock(&m->client->lock);
+> +
+>  	list_for_each_entry_safe(req, rtmp, &cancel_list, req_list) {
+>  		p9_debug(P9_DEBUG_ERROR, "call back req %p\n", req);
+>  		list_del(&req->req_list);
+> @@ -212,7 +214,6 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
+>  			req->t_err = err;
+>  		p9_client_cb(m->client, req, REQ_STATUS_ERROR);
+>  	}
+> -	spin_unlock(&m->client->lock);
+>  }
 
-Regardless of if Eric or I will be at LPC, it is doubtful that all of
-the people who have participated in this discussion will be able to
-attend, and I think it's important that the users who are asking for
-this patchset have a chance to be heard in each forum where this is
-discussed.  While conferences are definitely nice - I definitely
-missed them over the past couple of years - we can't use them as a
-crutch to help us reach a conclusion on this issue; we've debated much
-more difficult things over the mailing lists, I see no reason why this
-would be any different.
+Are you sure that would resolve that (other) syzbot report? I just had a 
+glimpse at it yet, but I don't see this list iteration portion being involved 
+in the backtrace provided by the report, is it?
 
--- 
-paul-moore.com
+> 
+>  static __poll_t
+> ----
+> 
+>  - but I don't get the two 'inconsistent lock state', the hint says it's
+> possibly an interrupt while the lock was held but that doesn't seem to
+> be the case from the stack trace (unless we leaked the lock, at which
+> point anything goes)
+> I'd need to take time to look at it, feel free to beat me to these.
+> 
+> --
+> Dominique
+
+
+
+
