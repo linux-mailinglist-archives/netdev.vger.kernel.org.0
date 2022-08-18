@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F573598631
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:43:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F4040598637
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:43:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343634AbiHROli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:41:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39228 "EHLO
+        id S245603AbiHROna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:43:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343621AbiHROld (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:41:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8763DBA9EC
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660833691;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0pjfkbUvBiJzKdQKwHEM6d08ZGwc4hgOmUXE/oC5QcU=;
-        b=NQJMYVnw13aQ1xWFVOKpRJJkBjKKyveom1C6nGyQix/QF5iNmYsPzUPcBkkGupPNva/81a
-        fIQIYFHIbaCDpkLIz1nVlyXxPJ/fTSozrPwQm2BuAHC+fAlwzrt5NNHSWOaet3ugT6WJd9
-        CfMUaUSoLvwiyZGnhCt4UGmy7tx0gHs=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-274-xdB4WKmLM-69nHyXEUe2rQ-1; Thu, 18 Aug 2022 10:41:28 -0400
-X-MC-Unique: xdB4WKmLM-69nHyXEUe2rQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 17C6A1824602;
-        Thu, 18 Aug 2022 14:41:28 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.33.98])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A655840CFD05;
-        Thu, 18 Aug 2022 14:41:27 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     netdev@vger.kernel.org, jay.vosburgh@canonical.com
-Cc:     liuhangbin@gmail.com, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH net v4 3/3] bonding: 3ad: make ad_ticks_per_sec a const
-Date:   Thu, 18 Aug 2022 10:41:12 -0400
-Message-Id: <2d2bdb267ac504b1e197fa7316470462a2e8b7a7.1660832962.git.jtoppins@redhat.com>
-In-Reply-To: <cover.1660832962.git.jtoppins@redhat.com>
-References: <cover.1660832962.git.jtoppins@redhat.com>
+        with ESMTP id S245095AbiHROn2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:43:28 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657DA55A9
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:43:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660833806; x=1692369806;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=JzUFa9YldVMdLaPygK6tHVrioF1m7gNGQI7xZePx82M=;
+  b=SnbEwaDor/79KEUbGh/U4zc0BCW5VQeqeWs5CL7oIOWYz5ojQa4zIJN2
+   WCO5T2VRKi6ZF+jnV1RDuFxS5B1zxVow2VOWtjVyEJefpT9HIkm3RndY1
+   jYhTYduWXXKN8X7EKG2fv7ChJVuVPd5DZ4YDJjsehiwECW+aGsSTSWsmh
+   X3PB7TPjlmlBQ79mViZtm6uTwdpQkUamXZdMuc2NZXCRN2Dv0et3W5+TZ
+   Jw/nFFUmgHGJK9ybyUkRfE2LQSTX9ADe7Zif3ZjAJ4ox7UoSlPdG81/Ey
+   v3CidZMxgRV6yECKo60f0a/oNiQtcNZnbG2po0GPFgNdhR3St/D6f5nku
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292771538"
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="292771538"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:43:25 -0700
+X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
+   d="scan'208";a="668131283"
+Received: from dursu-mobl1.ger.corp.intel.com ([10.249.42.244])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:43:22 -0700
+Date:   Thu, 18 Aug 2022 17:43:20 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     m.chetan.kumar@intel.com
+cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
+        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com,
+        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
+Subject: Re: [PATCH net-next 5/5] net: wwan: t7xx: Devlink documentation
+In-Reply-To: <20220816042417.2416988-1-m.chetan.kumar@intel.com>
+Message-ID: <fd6e3c45-e074-122b-53c7-d622a337fbd@linux.intel.com>
+References: <20220816042417.2416988-1-m.chetan.kumar@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,85 +60,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The value is only ever set once in bond_3ad_initialize and only ever
-read otherwise. There seems to be no reason to set the variable via
-bond_3ad_initialize when setting the global variable will do. Change
-ad_ticks_per_sec to a const to enforce its read-only usage.
+On Tue, 16 Aug 2022, m.chetan.kumar@intel.com wrote:
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
+> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+> 
+> Document the t7xx devlink commands usage for fw flashing &
+> coredump collection.
+> 
+> Refer to t7xx.rst file for details.
+> 
+> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
+> ---
 
-Notes:
-    v4:
-     * remove passing the value of ad_ticks_per_sec on the stack and
-       set ad_ticks_per_sec and make as const
+> +``t7xx`` driver uses fastboot protocol for fw flashing. In the fw flashing
+> +procedure, fastboot command's & response's are exchanged between driver
 
- drivers/net/bonding/bond_3ad.c  | 10 +++-------
- drivers/net/bonding/bond_main.c |  2 +-
- include/net/bond_3ad.h          |  2 +-
- 3 files changed, 5 insertions(+), 9 deletions(-)
+Using 's here seems incorrect.
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index 1f0120cbe9e8..2946290ca517 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -84,7 +84,8 @@ enum ad_link_speed_type {
- static const u8 null_mac_addr[ETH_ALEN + 2] __long_aligned = {
- 	0, 0, 0, 0, 0, 0
- };
--static u16 ad_ticks_per_sec;
-+
-+static const u16 ad_ticks_per_sec = 1000 / AD_TIMER_INTERVAL;
- static const int ad_delta_in_ticks = (AD_TIMER_INTERVAL * HZ) / 1000;
- 
- static const u8 lacpdu_mcast_addr[ETH_ALEN + 2] __long_aligned =
-@@ -2005,7 +2006,7 @@ void bond_3ad_initiate_agg_selection(struct bonding *bond, int timeout)
-  *
-  * Can be called only after the mac address of the bond is set.
-  */
--void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
-+void bond_3ad_initialize(struct bonding *bond)
- {
- 	BOND_AD_INFO(bond).aggregator_identifier = 0;
- 	BOND_AD_INFO(bond).system.sys_priority =
-@@ -2017,11 +2018,6 @@ void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution)
- 		BOND_AD_INFO(bond).system.sys_mac_addr =
- 		    *((struct mac_addr *)bond->params.ad_actor_system);
- 
--	/* initialize how many times this module is called in one
--	 * second (should be about every 100ms)
--	 */
--	ad_ticks_per_sec = tick_resolution;
--
- 	bond_3ad_initiate_agg_selection(bond,
- 					AD_AGGREGATOR_SELECTION_TIMER *
- 					ad_ticks_per_sec);
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 50e60843020c..2f4da2c13c0a 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -2081,7 +2081,7 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
- 			/* Initialize AD with the number of times that the AD timer is called in 1 second
- 			 * can be called only after the mac address of the bond is set
- 			 */
--			bond_3ad_initialize(bond, 1000/AD_TIMER_INTERVAL);
-+			bond_3ad_initialize(bond);
- 		} else {
- 			SLAVE_AD_INFO(new_slave)->id =
- 				SLAVE_AD_INFO(prev_slave)->id + 1;
-diff --git a/include/net/bond_3ad.h b/include/net/bond_3ad.h
-index 184105d68294..be2992e6de5d 100644
---- a/include/net/bond_3ad.h
-+++ b/include/net/bond_3ad.h
-@@ -290,7 +290,7 @@ static inline const char *bond_3ad_churn_desc(churn_state_t state)
- }
- 
- /* ========== AD Exported functions to the main bonding code ========== */
--void bond_3ad_initialize(struct bonding *bond, u16 tick_resolution);
-+void bond_3ad_initialize(struct bonding *bond);
- void bond_3ad_bind_slave(struct slave *slave);
- void bond_3ad_unbind_slave(struct slave *slave);
- void bond_3ad_state_machine_handler(struct work_struct *);
+> +and wwan device.
+
+> +Note: component "value" represents the partition type to be programmed.
+
+"value" is hard to understand here. I'd just say "component selects the 
+partition type to be programmed."
+
+> +      - The detailed modem components log are captured in this region
+
+"components log are" seems inconsistent.
+
+
 -- 
-2.31.1
-
+ i.
