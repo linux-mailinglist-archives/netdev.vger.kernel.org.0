@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE3125989FB
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35F675989E6
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:12:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345438AbiHRRDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35024 "EHLO
+        id S1343873AbiHRRD1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:03:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345324AbiHRRCC (ORCPT
+        with ESMTP id S1345327AbiHRRCC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:02:02 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC769C743D
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so2899083wme.1
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094CFC12C3
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:01:00 -0700 (PDT)
+Received: by mail-wm1-x333.google.com with SMTP id s23so1125872wmj.4
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:01:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=U38qHd/2cGlOOAg9pewo5FAQzc3pYM6VmdaPe+uIwj8=;
-        b=RQd+UFIs0SItVBdpap6AY/bqtkLF6gQ7kPCFT2t/uc6OaxbIMNc0fvu2koX9/fZovt
-         kIuNGj6aqCXoSc8Pzi+cALXicvAV59guElq29dlBWi8B0faouQKgng+Io6oF4tMSuv2Z
-         psxmKmWudXEQLPwPArFDPDI6/ZfjzMA3wxrGk/yNBEHht93btOp7ak+N0Z3rrQudrBu+
-         78qN25ylO3h/dWpdPV4R7sUujRI9hWAiBLXNc8LktmLNO1m5X1yoG2cfijbBsqqgJsvX
-         74t7hbMLY3mBL+gdwmnnPdbSSCUs44TfhCTndomcjyu/0JF9s51rSlavFvGuO6JSHCf7
-         QemA==
+        bh=vGJ3kSV/z/TY65CJkdoX1ty3nkbmUWg0sp73bEAPcbA=;
+        b=PAKnbCxzEPjKKW8rQZu8e88trGKV/fqMnjKHbjjMMqV3BcNsDJXiKH2AXuI8XOFruU
+         iRCafCjXQxnb0+POUBqsDg63j21LCUIfjyUij2EiD45SlF5IcZZAwvzzcrBIYZZIgvTc
+         AalNfgI5T7J9WSZ2sbEqK5iW/qjLM28JisLtLK4VgHjR2tHgkUdZ0tm+moXKCMg3Te4c
+         X7VTqIyCgZP5GHTO63jHjyjfzVh9AJIdBM+bhLiMRbXDUh/PXdawezqqJ+FxtqW6lvo9
+         mrsVrMg1x448DKOsyNdFRqL/bIEIMGbeQhOZ8ZtxW6j4uO6+Tz2cQCSBF/WlEAjRzmd4
+         WJ3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=U38qHd/2cGlOOAg9pewo5FAQzc3pYM6VmdaPe+uIwj8=;
-        b=2GdMSFTrYZiBGvGbCKToVFB/YJ3mcb811yiSoQAFHVQCT+7SX8/wvPAWR9wqOweiA3
-         LyVuXTmRN7b2IdvwyctK0BtLdS8iQEHD45w8kzw302ie6ww10x8EaZVD1z7V5JAWWB5S
-         UjgM2M7TtIReZGm0u3MP0Elx9DlKHii1HXxNfhFZR3drXyHIq+FJZERkf8weZcw3TjiO
-         RHFuI16Bgh0J1/+lY5gDgK++zfh8vM17hmG1hBvr2ViCAp7WsPLUyL4+JeA5yV+Df09Z
-         yBE6KzOdqdvxoXx/Scxuo8Rr7+i6pFgb+ltlgbK9WaePTjqsfK5ivzWud7kg6uVTDIIr
-         i0kA==
-X-Gm-Message-State: ACgBeo1qkGU99MjLDSUGQCcLbRLLxc/Yvf0cjCWdn8s9P14j9X5otQX6
-        ETJftmTU0Pnv2VKfuu4vs1mLEw==
-X-Google-Smtp-Source: AA6agR41YtCFfv/EsSG0bgllPR+qSDHdhEhW2gheQ0gifo1FbARk9CeevXX5xGmRsopK3bRFn2t8lw==
-X-Received: by 2002:a1c:ed05:0:b0:3a5:3af:f5c3 with SMTP id l5-20020a1ced05000000b003a503aff5c3mr2495651wmh.52.1660842057922;
-        Thu, 18 Aug 2022 10:00:57 -0700 (PDT)
+        bh=vGJ3kSV/z/TY65CJkdoX1ty3nkbmUWg0sp73bEAPcbA=;
+        b=aPf5IUrJucoI4wS/01Yfx98aApOmuqaToturuWL6rTlmiBwsBCPf1aTwbtE/5O6cmo
+         0c1lKJXWNaAHrBps8vCJFtjowj6EH74BCh1wYVXl4RzNAUdMmTsIbw2/N93JJDpsObzm
+         KjAT+2qhc3fIsP5mUg2zEYvbZYXYrCJDFyzlcWbd1AAei0aDoml68IdbZprA6iW6vD+k
+         rTyyhsIRjyEjuqSmNq6ldiFH4rTi4N49X0Oh/LmYkVUveDCZk/31POeaLmYf1/RfG+nP
+         T9Aae2IZjIa6Z6t6wuqdJ3c1oKwkimZBjEUKEeqRiK/0rucNj0GnnXqnePQnvF/fXUod
+         BlCA==
+X-Gm-Message-State: ACgBeo2KcCU7ASZHN1Cm4C25Xcx7JAd7LSVvsEKLbx44W7iqAjbFWvl8
+        oZU0uqmHrmLlAr/uZXh9yf4nzQ==
+X-Google-Smtp-Source: AA6agR5JSdaI9bPTfugpkhEIC8ftyWaZ99ZRXRF7BxYWMWvNsktzFJ24qQazTIKhwI6axSPP7UqgFQ==
+X-Received: by 2002:a1c:a187:0:b0:3a5:e055:715b with SMTP id k129-20020a1ca187000000b003a5e055715bmr2516003wme.171.1660842059332;
+        Thu, 18 Aug 2022 10:00:59 -0700 (PDT)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.56
+        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:00:57 -0700 (PDT)
+        Thu, 18 Aug 2022 10:00:58 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -68,9 +68,9 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: [PATCH 30/31] selftests/tcp-ao: Add TCP-AO + TCP-MD5 + no sign listen socket tests
-Date:   Thu, 18 Aug 2022 18:00:04 +0100
-Message-Id: <20220818170005.747015-31-dima@arista.com>
+Subject: [PATCH 31/31] selftests/aolib: Add test/benchmark for removing MKTs
+Date:   Thu, 18 Aug 2022 18:00:05 +0100
+Message-Id: <20220818170005.747015-32-dima@arista.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220818170005.747015-1-dima@arista.com>
 References: <20220818170005.747015-1-dima@arista.com>
@@ -86,571 +86,485 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The test plan was (most of tests have all 3 client types):
-1. TCP-AO listen (INADDR_ANY)
-2. TCP-MD5 listen (INADDR_ANY)
-3. non-signed listen (INADDR_ANY)
-4. TCP-AO + TCP-MD5 listen (prefix)
-5. TCP-AO subprefix add failure [checked in setsockopt-closed.c]
-6. TCP-AO out of prefix connect [checked in connect-deny.c]
-7. TCP-AO + TCP-MD5 on connect()
-8. TCP-AO intersect with TCP-MD5 failure
-9. Established TCP-AO: add TCP-MD5 key
-10. Established TCP-MD5: add TCP-AO key
-11. Established non-signed: add TCP-AO key
+Sample output:
+> 1..36
+> # 1106[lib/setup.c:207] rand seed 1660754406
+> TAP version 13
+> ok 1   Worst case connect       512 keys: min=0ms max=1ms mean=0.583329ms stddev=0.076376
+> ok 2 Connect random-search      512 keys: min=0ms max=1ms mean=0.53412ms stddev=0.0516779
+> ok 3    Worst case delete       512 keys: min=2ms max=11ms mean=6.04139ms stddev=0.245792
+> ok 4        Add a new key       512 keys: min=0ms max=13ms mean=0.673415ms stddev=0.0820618
+> ok 5 Remove random-search       512 keys: min=5ms max=9ms mean=6.65969ms stddev=0.258064
+> ok 6         Remove async       512 keys: min=0ms max=0ms mean=0.041825ms stddev=0.0204512
+> ok 7   Worst case connect       1024 keys: min=0ms max=2ms mean=0.520357ms stddev=0.0721358
+> ok 8 Connect random-search      1024 keys: min=0ms max=2ms mean=0.535312ms stddev=0.0517355
+> ok 9    Worst case delete       1024 keys: min=5ms max=9ms mean=8.27219ms stddev=0.287614
+> ok 10        Add a new key      1024 keys: min=0ms max=1ms mean=0.688121ms stddev=0.0829531
+> ok 11 Remove random-search      1024 keys: min=5ms max=9ms mean=8.37649ms stddev=0.289422
+> ok 12         Remove async      1024 keys: min=0ms max=0ms mean=0.0457096ms stddev=0.0213798
+> ok 13   Worst case connect      2048 keys: min=0ms max=2ms mean=0.748804ms stddev=0.0865335
+> ok 14 Connect random-search     2048 keys: min=0ms max=2ms mean=0.782993ms stddev=0.0625697
+> ok 15    Worst case delete      2048 keys: min=5ms max=10ms mean=8.23106ms stddev=0.286898
+> ok 16        Add a new key      2048 keys: min=0ms max=1ms mean=0.812988ms stddev=0.0901658
+> ok 17 Remove random-search      2048 keys: min=8ms max=9ms mean=8.84949ms stddev=0.297481
+> ok 18         Remove async      2048 keys: min=0ms max=0ms mean=0.0297223ms stddev=0.0172402
+> ok 19   Worst case connect      4096 keys: min=1ms max=5ms mean=1.53352ms stddev=0.123836
+> ok 20 Connect random-search     4096 keys: min=1ms max=5ms mean=1.52226ms stddev=0.0872429
+> ok 21    Worst case delete      4096 keys: min=5ms max=9ms mean=8.25874ms stddev=0.28738
+> ok 22        Add a new key      4096 keys: min=0ms max=3ms mean=1.67382ms stddev=0.129376
+> ok 23 Remove random-search      4096 keys: min=5ms max=10ms mean=8.26178ms stddev=0.287433
+> ok 24         Remove async      4096 keys: min=0ms max=0ms mean=0.0340009ms stddev=0.0184393
+> ok 25   Worst case connect      8192 keys: min=2ms max=4ms mean=2.86208ms stddev=0.169177
+> ok 26 Connect random-search     8192 keys: min=2ms max=4ms mean=2.87592ms stddev=0.119915
+> ok 27    Worst case delete      8192 keys: min=6ms max=11ms mean=7.55291ms stddev=0.274826
+> ok 28        Add a new key      8192 keys: min=1ms max=5ms mean=2.56797ms stddev=0.160249
+> ok 29 Remove random-search      8192 keys: min=5ms max=10ms mean=7.14002ms stddev=0.267208
+> ok 30         Remove async      8192 keys: min=0ms max=0ms mean=0.0320066ms stddev=0.0178904
+> ok 31   Worst case connect      16384 keys: min=5ms max=6ms mean=5.55334ms stddev=0.235655
+> ok 32 Connect random-search     16384 keys: min=5ms max=6ms mean=5.52614ms stddev=0.166225
+> ok 33    Worst case delete      16384 keys: min=5ms max=11ms mean=7.39109ms stddev=0.271866
+> ok 34        Add a new key      16384 keys: min=2ms max=4ms mean=3.35799ms stddev=0.183248
+> ok 35 Remove random-search      16384 keys: min=5ms max=8ms mean=6.86078ms stddev=0.261931
+> ok 36         Remove async      16384 keys: min=0ms max=0ms mean=0.0302384ms stddev=0.0173892
+> # Totals: pass:36 fail:0 xfail:0 xpass:0 skip:0 error:0
 
-Output produced:
-1..42
-TAP version 13
-ok 1 AO server (INADDR_ANY): AO client: connected
-ok 2 AO server (INADDR_ANY): AO client: counter TCPAOGood increased 0 => 2
-ok 3 AO server (INADDR_ANY): MD5 client
-ok 4 AO server (INADDR_ANY): MD5 client: counter TCPMD5Unexpected increased 0 => 1
-ok 5 AO server (INADDR_ANY): no sign client: counter TCPAORequired increased 0 => 1
-ok 6 AO server (INADDR_ANY): unsigned client
-ok 7 MD5 server (INADDR_ANY): AO client: counter TCPAOKeyNotFound increased 0 => 1
-ok 8 MD5 server (INADDR_ANY): AO client
-ok 9 MD5 server (INADDR_ANY): MD5 client: connected
-ok 10 MD5 server (INADDR_ANY): no sign client: counter TCPMD5NotFound increased 0 => 1
-ok 11 MD5 server (INADDR_ANY): no sign client
-ok 12 no sign server: AO client
-ok 13 no sign server: AO client: counter TCPAOKeyNotFound increased 1 => 2
-ok 14 no sign server: MD5 client
-ok 15 no sign server: MD5 client: counter TCPMD5Unexpected increased 1 => 2
-ok 16 no sign server: no sign client: connected
-ok 17 no sign server: no sign client: counter CurrEstab increased 0 => 1
-ok 18 AO+MD5 server: AO client (matching): connected
-ok 19 AO+MD5 server: AO client (matching): counter TCPAOGood increased 4 => 6
-ok 20 AO+MD5 server: AO client (misconfig, matching MD5)
-ok 21 AO+MD5 server: AO client (misconfig, matching MD5): counter TCPAOKeyNotFound increased 2 => 3
-ok 22 AO+MD5 server: AO client (misconfig, non-matching): counter TCPAOKeyNotFound increased 3 => 4
-ok 23 AO+MD5 server: AO client (misconfig, non-matching)
-ok 24 AO+MD5 server: MD5 client (matching): connected
-ok 25 AO+MD5 server: MD5 client (misconfig, matching AO)
-ok 26 AO+MD5 server: MD5 client (misconfig, matching AO): counter TCPMD5Unexpected increased 2 => 3
-ok 27 AO+MD5 server: MD5 client (misconfig, non-matching): counter TCPMD5Unexpected increased 3 => 4
-ok 28 AO+MD5 server: MD5 client (misconfig, non-matching)
-ok 29 AO+MD5 server: no sign client (unmatched): connected
-ok 30 AO+MD5 server: no sign client (unmatched): counter CurrEstab increased 0 => 1
-ok 31 AO+MD5 server: no sign client (misconfig, matching AO)
-ok 32 AO+MD5 server: no sign client (misconfig, matching AO): counter TCPAORequired increased 1 => 2
-ok 33 AO+MD5 server: no sign client (misconfig, matching MD5)
-ok 34 AO+MD5 server: no sign client (misconfig, matching MD5): counter TCPMD5NotFound increased 1 => 2
-ok 35 AO+MD5 server: client with both [TCP-MD5] and TCP-AO keys: connect() was prevented
-ok 36 AO+MD5 server: client with both TCP-MD5 and [TCP-AO] keys: connect() was prevented
-ok 37 TCP-AO established: add TCP-MD5 key: postfailed as expected
-ok 38 TCP-AO established: add TCP-MD5 key: counter TCPAOGood increased 7 => 9
-ok 39 TCP-MD5 established: add TCP-AO key: postfailed as expected
-ok 40 non-signed established: add TCP-AO key: postfailed as expected
-ok 41 non-signed established: add TCP-AO key: counter CurrEstab increased 0 => 1
-ok 42 TCP-AO key intersects with TCP-MD5 key: prefailed as expected
+From it it's visible that the current simplified approach with
+linked-list of MKTs scales quite fine even for thousands of keys.
+And that also means that the majority of the time for delete is eaten by
+synchronize_rcu() [which I can confirm separately by tracing].
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- tools/testing/selftests/net/tcp_ao/Makefile   |   2 +-
- .../selftests/net/tcp_ao/unsigned-md5.c       | 483 ++++++++++++++++++
- 2 files changed, 484 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/tcp_ao/unsigned-md5.c
+ tools/testing/selftests/net/tcp_ao/Makefile   |   4 +-
+ .../selftests/net/tcp_ao/bench-lookups.c      | 403 ++++++++++++++++++
+ 2 files changed, 406 insertions(+), 1 deletion(-)
+ create mode 100644 tools/testing/selftests/net/tcp_ao/bench-lookups.c
 
 diff --git a/tools/testing/selftests/net/tcp_ao/Makefile b/tools/testing/selftests/net/tcp_ao/Makefile
-index a001dc2aed4e..da44966f3687 100644
+index da44966f3687..a4af7d4da169 100644
 --- a/tools/testing/selftests/net/tcp_ao/Makefile
 +++ b/tools/testing/selftests/net/tcp_ao/Makefile
 @@ -1,6 +1,6 @@
  # SPDX-License-Identifier: GPL-2.0
  TEST_BOTH_AF := connect icmps-discard icmps-accept connect-deny \
--		setsockopt-closed
-+		setsockopt-closed unsigned-md5
+-		setsockopt-closed unsigned-md5
++		setsockopt-closed unsigned-md5 bench-lookups
  
  TEST_IPV4_PROGS := $(TEST_BOTH_AF:%=%_ipv4)
  TEST_IPV6_PROGS := $(TEST_BOTH_AF:%=%_ipv6)
-diff --git a/tools/testing/selftests/net/tcp_ao/unsigned-md5.c b/tools/testing/selftests/net/tcp_ao/unsigned-md5.c
+@@ -46,3 +46,5 @@ $(OUTPUT)/%_ipv6: %.c
+ 
+ $(OUTPUT)/icmps-accept_ipv4: CFLAGS+= -DTEST_ICMPS_ACCEPT
+ $(OUTPUT)/icmps-accept_ipv6: CFLAGS+= -DTEST_ICMPS_ACCEPT
++$(OUTPUT)/bench-lookups_ipv4: LDFLAGS+= -lm
++$(OUTPUT)/bench-lookups_ipv6: LDFLAGS+= -lm
+diff --git a/tools/testing/selftests/net/tcp_ao/bench-lookups.c b/tools/testing/selftests/net/tcp_ao/bench-lookups.c
 new file mode 100644
-index 000000000000..d62c47617dbf
+index 000000000000..41456d85e06a
 --- /dev/null
-+++ b/tools/testing/selftests/net/tcp_ao/unsigned-md5.c
-@@ -0,0 +1,483 @@
++++ b/tools/testing/selftests/net/tcp_ao/bench-lookups.c
+@@ -0,0 +1,403 @@
 +// SPDX-License-Identifier: GPL-2.0
 +/* Author: Dmitry Safonov <dima@arista.com> */
++#include <arpa/inet.h>
 +#include <inttypes.h>
-+#include "aolib.h"
++#include <math.h>
++#include <stdlib.h>
++#include <stdio.h>
++#include <time.h>
++
 +#include "../../../../include/linux/bits.h"
++#include "../../../../include/linux/kernel.h"
++#include "aolib.h"
 +
-+typedef uint8_t fault_t;
-+#define F_TIMEOUT	1
-+#define F_KEYREJECT	2
-+#define F_PREINSTALL	3
-+#define F_POSTINSTALL	4
++#define AO_KEY_SZ	300 /* ~= sizeof(struct tcp_ao_key) */
++#define NR_ITERS	100 /* number of times to run gathering statistics */
 +
-+#define fault(type)	(inj == type)
-+
-+static const char *md5_password = "Some evil genius, enemy to mankind, must have been the first contriver.";
-+static const char *ao_password = "In this hour, I do not believe that any darkness will endure.";
-+
-+static union tcp_addr client2;
-+static union tcp_addr client3;
-+
-+static int test_set_md5(int sk, const union tcp_addr in_addr, uint8_t prefix)
++#ifdef IPV6_TEST
++typedef struct in6_addr ipaddr_t;
++static ipaddr_t get_ipaddr_t(ipaddr_t net, size_t n)
 +{
-+	size_t pwd_len = strlen(md5_password);
-+	struct tcp_md5sig md5sig = {};
++	ipaddr_t ret = net;
++
++	ret.s6_addr32[3] = htonl(n & (BIT(32) - 1));
++	ret.s6_addr32[2] = htonl((n >> 32) & (BIT(32) - 1));
++
++	return ret;
++}
++#else
++typedef struct in_addr ipaddr_t;
++static ipaddr_t get_ipaddr_t(ipaddr_t net, size_t n)
++{
++	ipaddr_t ret;
++
++	ret.s_addr = htonl(ntohl(net.s_addr) + n);
++	return ret;
++}
++#endif
++
++static void gen_test_ips(ipaddr_t *ips, size_t ips_nr, bool use_rand)
++{
++	ipaddr_t net;
++	size_t i, j;
++
++	if (inet_pton(TEST_FAMILY, TEST_NETWORK, &net) != 1)
++		test_error("Can't convert ip address %s", TEST_NETWORK);
++
++	if (!use_rand) {
++		for (i = 0; i < ips_nr; i++)
++			ips[i] = get_ipaddr_t(net, 2 * i + 1);
++		return;
++	}
++	for (i = 0; i < ips_nr; i++) {
++		size_t r = (size_t)random() | 0x1;
++
++		ips[i] = get_ipaddr_t(net, r);
++
++		for (j = i - 1; j > 0 && i > 0; j--) {
++			if (!memcmp(&ips[i], &ips[j], sizeof(ipaddr_t))) {
++				i--; /* collision */
++				break;
++			}
++		}
++	}
++}
++
++static void test_add_routes(ipaddr_t *ips, size_t ips_nr)
++{
++	size_t i;
++
++	for (i = 0; i < ips_nr; i++) {
++		union tcp_addr *p = (union tcp_addr *)&ips[i];
++
++		if (ip_route_add(veth_name, TEST_FAMILY, this_ip_addr, *p))
++			test_error("Failed to add route");
++	}
++}
++
++static void server_apply_keys(int lsk, ipaddr_t *ips, size_t ips_nr)
++{
++	size_t i;
++
++	for (i = 0; i < ips_nr; i++) {
++		union tcp_addr *p = (union tcp_addr *)&ips[i];
++
++		if (test_set_ao(lsk, "password", 0, *p, -1, 100, 100))
++			test_error("setsockopt(TCP_AO)");
++	}
++}
++
++static const size_t nr_keys[] = { 512, 1024, 2048, 4096, 8192, 16384 };
++static ipaddr_t *test_ips;
++
++struct bench_stats {
++	uint64_t min;
++	uint64_t max;
++	uint64_t nr;
++	double mean;
++	double s2;
++};
++
++static struct bench_tests {
++	struct bench_stats delete_last_key;
++	struct bench_stats add_key;
++	struct bench_stats delete_rand_key;
++	struct bench_stats connect_last_key;
++	struct bench_stats connect_rand_key;
++	struct bench_stats delete_async;
++} bench_results[ARRAY_SIZE(nr_keys)];
++
++#define NSEC_PER_SEC 1000000000ULL
++
++static void measure_call(struct bench_stats *st,
++			 void (*f)(int, void *), int sk, void *arg)
++{
++	struct timespec start = {}, end = {};
++	double delta;
++	uint64_t nsec;
++
++	if (clock_gettime(CLOCK_MONOTONIC, &start))
++		test_error("clock_gettime()");
++
++	f(sk, arg);
++
++	if (clock_gettime(CLOCK_MONOTONIC, &end))
++		test_error("clock_gettime()");
++
++	nsec = (end.tv_sec - start.tv_sec) * NSEC_PER_SEC;
++	if (end.tv_nsec >= start.tv_nsec)
++		nsec += end.tv_nsec - start.tv_nsec;
++	else
++		nsec -= start.tv_nsec - end.tv_nsec;
++
++	if (st->nr == 0) {
++		st->min = st->max = nsec;
++	} else {
++		if (st->min > nsec)
++			st->min = nsec;
++		if (st->max < nsec)
++			st->max = nsec;
++	}
++
++	/* Welford-Knuth algorithm */
++	st->nr++;
++	delta = (double)nsec - st->mean;
++	st->mean += delta / st->nr;
++	st->s2 += delta * ((double)nsec - st->mean);
++}
++
++static void delete_mkt(int sk, void *arg)
++{
++	struct tcp_ao_del *ao = arg;
++
++	if (setsockopt(sk, IPPROTO_TCP, TCP_AO_DEL, ao, sizeof(*ao)))
++		test_error("setsockopt(TCP_AO_DEL)");
++}
++
++static void add_back_mkt(int sk, void *arg)
++{
++	union tcp_addr *p = arg;
++
++	if (test_set_ao(sk, "password", 0, *p, -1, 100, 100))
++		test_error("setsockopt(TCP_AO)");
++}
++
++static void memcpy_sockaddr(void *dest, union tcp_addr *in_addr)
++{
 +#ifdef IPV6_TEST
 +	struct sockaddr_in6 addr = {
 +		.sin6_family	= AF_INET6,
 +		.sin6_port	= 0,
-+		.sin6_addr	= in_addr.a6,
++		.sin6_addr	= in_addr->a6,
 +	};
 +#else
 +	struct sockaddr_in addr = {
 +		.sin_family	= AF_INET,
 +		.sin_port	= 0,
-+		.sin_addr	= in_addr.a4,
++		.sin_addr	= in_addr->a4,
 +	};
 +#endif
 +
-+	if (prefix > DEFAULT_TEST_PREFIX)
-+		prefix = DEFAULT_TEST_PREFIX;
-+
-+	md5sig.tcpm_keylen = pwd_len;
-+	memcpy(md5sig.tcpm_key, md5_password, pwd_len);
-+	md5sig.tcpm_flags = TCP_MD5SIG_FLAG_PREFIX;
-+	md5sig.tcpm_prefixlen = prefix;
-+	memcpy(&md5sig.tcpm_addr, &addr, sizeof(addr));
-+
-+	return setsockopt(sk, IPPROTO_TCP, TCP_MD5SIG_EXT,
-+			  &md5sig, sizeof(md5sig));
++	memcpy(dest, &addr, sizeof(addr));
 +}
 +
-+static void try_accept(const char *tst_name, unsigned port,
-+		       union tcp_addr *md5_addr, uint8_t md5_prefix,
-+		       union tcp_addr *ao_addr, uint8_t ao_prefix,
-+		       uint8_t sndid, uint8_t rcvid, const char *cnt_name,
-+		       fault_t inj)
++static void bench_delete(int lsk, struct bench_stats *add,
++			 struct bench_stats *del,
++			 ipaddr_t *ips, size_t ips_nr,
++			 bool rand_order, bool async)
 +{
-+	uint64_t before_cnt, after_cnt;
-+	int lsk, err, sk = 0;
-+	time_t timeout;
++	struct tcp_ao_del ao_del = {};
++	union tcp_addr *p;
++	size_t i;
 +
-+	lsk = test_listen_socket(this_ip_addr, port, 1);
++	ao_del.tcpa_sndid = 100;
++	ao_del.tcpa_rcvid = 100;
++	if (async)
++		ao_del.tcpa_flags = TCP_AO_CMDF_DEL_ASYNC;
++	ao_del.tcpa_prefix = DEFAULT_TEST_PREFIX;
 +
-+	if (md5_addr && test_set_md5(lsk, *md5_addr, md5_prefix))
-+		test_error("setsockopt(TCP_MD5SIG_EXT)");
++	/* Remove the first added */
++	p = (union tcp_addr *)&ips[0];
++	memcpy_sockaddr(&ao_del.tcpa_addr, p);
 +
-+	if (ao_addr && test_set_ao(lsk, ao_password, 0, *ao_addr,
-+				   ao_prefix, sndid, rcvid))
-+		test_error("setsockopt(TCP_AO)");
++	for (i = 0; i < NR_ITERS; i++) {
++		measure_call(del, delete_mkt, lsk, (void *)&ao_del);
 +
-+	if (cnt_name)
-+		before_cnt = netstat_get_one(cnt_name, NULL);
++		/* Restore it back */
++		measure_call(add, add_back_mkt, lsk, (void *)p);
 +
-+	synchronize_threads(); /* preparations done */
++		/*
++		 * Slowest for FILO-linked-list:
++		 * on (i) iteration removing ips[i] element. When it gets
++		 * added to the list back - it becomes first to fetch, so
++		 * on (i + 1) iteration go to ips[i + 1] element.
++		 */
++		if (rand_order)
++			p = (union tcp_addr *)&ips[rand() % ips_nr];
++		else
++			p = (union tcp_addr *)&ips[i % ips_nr];
++		memcpy_sockaddr(&ao_del.tcpa_addr, p);
++	}
++}
 +
-+	timeout = fault(F_TIMEOUT) ? TEST_RETRANSMIT_SEC : TEST_TIMEOUT_SEC;
-+	err = test_wait_fd(lsk, timeout, 0);
-+	if (err < 0)
-+		test_error("test_wait_fd()");
-+	else if (!err) {
-+		if (!fault(F_TIMEOUT))
-+			test_fail("timeouted for accept()");
-+	} else {
-+		if (fault(F_TIMEOUT))
-+			test_fail("ready to accept");
++static void bench_connect_srv(int lsk, ipaddr_t *ips, size_t ips_nr)
++{
++	size_t i;
++
++	for (i = 0; i < NR_ITERS; i++) {
++		int err, sk;
++
++		synchronize_threads();
++
++		err = test_wait_fd(lsk, TEST_TIMEOUT_SEC, 0);
++		if (!err)
++			test_error("timeouted for accept()");
++		else if (err < 0)
++			test_error("test_wait_fd()");
 +
 +		sk = accept(lsk, NULL, NULL);
-+		if (sk < 0) {
++		if (sk < 0)
 +			test_error("accept()");
-+		} else {
-+			if (fault(F_TIMEOUT))
-+				test_fail("%s: accepted", tst_name);
-+		}
-+	}
 +
-+	close(lsk);
-+
-+	if (!cnt_name)
-+		goto out;
-+
-+	after_cnt = netstat_get_one(cnt_name, NULL);
-+
-+	if (after_cnt <= before_cnt) {
-+		test_fail("%s: %s counter did not increase: %zu <= %zu",
-+				tst_name, cnt_name, after_cnt, before_cnt);
-+	} else {
-+		test_ok("%s: counter %s increased %zu => %zu",
-+			tst_name, cnt_name, before_cnt, after_cnt);
-+	}
-+
-+out:
-+	synchronize_threads(); /* close() */
-+	if (sk > 0)
 +		close(sk);
++	}
 +}
 +
-+static void server_add_routes(void)
++static void test_print_stats(const char *desc, size_t nr, struct bench_stats *bs)
 +{
-+	int family = TEST_FAMILY;
-+
-+	synchronize_threads(); /* client_add_ips() */
-+
-+	if (ip_route_add(veth_name, family, this_ip_addr, client2))
-+		test_error("Failed to add route");
-+	if (ip_route_add(veth_name, family, this_ip_addr, client3))
-+		test_error("Failed to add route");
-+}
-+
-+static void server_add_fail_tests(unsigned *port)
-+{
-+	union tcp_addr addr_any = {};
-+
-+	try_accept("TCP-AO established: add TCP-MD5 key", (*port)++, NULL, 0,
-+		   &addr_any, 0, 100, 100, "TCPAOGood", 0);
-+	try_accept("TCP-MD5 established: add TCP-AO key", (*port)++, &addr_any, 0,
-+		   NULL, 0, 0, 0, NULL, 0);
-+	try_accept("non-signed established: add TCP-AO key", (*port)++, NULL, 0,
-+		   NULL, 0, 0, 0, "CurrEstab", 0);
++	test_ok("%20s\t%zu keys: min=%" PRIu64 "ms max=%" PRIu64 "ms mean=%gms stddev=%g",
++		desc, nr, bs->min / 1000000, bs->max / 1000000,
++		bs->mean / 1000000, sqrt((bs->mean / 1000000) / bs->nr));
 +}
 +
 +static void *server_fn(void *arg)
 +{
-+	unsigned port = test_server_port;
-+	union tcp_addr addr_any = {};
++	size_t i;
 +
-+	server_add_routes();
++	for (i = 0; i < ARRAY_SIZE(nr_keys); i++) {
++		struct bench_tests *bt = &bench_results[i];
++		int lsk;
 +
-+	try_accept("AO server (INADDR_ANY): AO client", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, "TCPAOGood", 0);
-+	try_accept("AO server (INADDR_ANY): MD5 client", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, "TCPMD5Unexpected", F_TIMEOUT);
-+	try_accept("AO server (INADDR_ANY): no sign client", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, "TCPAORequired", F_TIMEOUT);
++		test_ips = malloc(nr_keys[i] * sizeof(ipaddr_t));
++		if (!test_ips)
++			test_error("malloc()");
 +
-+	try_accept("MD5 server (INADDR_ANY): AO client", port++, &addr_any, 0,
-+		   NULL, 0, 0, 0, "TCPAOKeyNotFound", F_TIMEOUT);
-+	try_accept("MD5 server (INADDR_ANY): MD5 client", port++, &addr_any, 0,
-+		   NULL, 0, 0, 0, NULL, 0);
-+	try_accept("MD5 server (INADDR_ANY): no sign client", port++, &addr_any, 0,
-+		   NULL, 0, 0, 0, "TCPMD5NotFound", F_TIMEOUT);
++		lsk = test_listen_socket(this_ip_addr, test_server_port + i, 1);
 +
-+	try_accept("no sign server: AO client", port++, NULL, 0,
-+		   NULL, 0, 0, 0, "TCPAOKeyNotFound", F_TIMEOUT);
-+	try_accept("no sign server: MD5 client", port++, NULL, 0,
-+		   NULL, 0, 0, 0, "TCPMD5Unexpected", F_TIMEOUT);
-+	try_accept("no sign server: no sign client", port++, NULL, 0,
-+		   NULL, 0, 0, 0, "CurrEstab", 0);
++		gen_test_ips(test_ips, nr_keys[i], false);
++		test_add_routes(test_ips, nr_keys[i]);
++		test_set_optmem(AO_KEY_SZ * nr_keys[i]);
++		server_apply_keys(lsk, test_ips, nr_keys[i]);
 +
-+	try_accept("AO+MD5 server: AO client (matching)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPAOGood", 0);
-+	try_accept("AO+MD5 server: AO client (misconfig, matching MD5)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPAOKeyNotFound", F_TIMEOUT);
-+	try_accept("AO+MD5 server: AO client (misconfig, non-matching)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPAOKeyNotFound", F_TIMEOUT);
-+	try_accept("AO+MD5 server: MD5 client (matching)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, NULL, 0);
-+	try_accept("AO+MD5 server: MD5 client (misconfig, matching AO)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPMD5Unexpected", F_TIMEOUT);
-+	try_accept("AO+MD5 server: MD5 client (misconfig, non-matching)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPMD5Unexpected", F_TIMEOUT);
-+	try_accept("AO+MD5 server: no sign client (unmatched)", port++,
-+		&this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "CurrEstab", 0);
-+	try_accept("AO+MD5 server: no sign client (misconfig, matching AO)",
-+		port++, &this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPAORequired", F_TIMEOUT);
-+	try_accept("AO+MD5 server: no sign client (misconfig, matching MD5)",
-+		port++, &this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, "TCPMD5NotFound", F_TIMEOUT);
++		synchronize_threads();
++		bench_connect_srv(lsk, test_ips, nr_keys[i]);
++		bench_connect_srv(lsk, test_ips, nr_keys[i]);
 +
-+	try_accept("AO+MD5 server: client with both [TCP-MD5] and TCP-AO keys",
-+		port++, &this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, NULL, F_TIMEOUT);
-+	try_accept("AO+MD5 server: client with both TCP-MD5 and [TCP-AO] keys",
-+		port++, &this_ip_dest, TEST_PREFIX, &client2, TEST_PREFIX,
-+		100, 100, NULL, F_TIMEOUT);
++		/* The worst case for FILO-list */
++		bench_delete(lsk, &bt->add_key, &bt->delete_last_key,
++			     test_ips, nr_keys[i], false, false);
++		test_print_stats("Worst case delete",
++				nr_keys[i], &bt->delete_last_key);
++		test_print_stats("Add a new key",
++				nr_keys[i], &bt->add_key);
 +
-+	server_add_fail_tests(&port);
++		bench_delete(lsk, &bt->add_key, &bt->delete_rand_key,
++			     test_ips, nr_keys[i], true, false);
++		test_print_stats("Remove random-search",
++				nr_keys[i], &bt->delete_rand_key);
 +
-+	/* client exits */
-+	synchronize_threads();
++		bench_delete(lsk, &bt->add_key, &bt->delete_async,
++			     test_ips, nr_keys[i], false, true);
++		test_print_stats("Remove async", nr_keys[i], &bt->delete_async);
++
++		free(test_ips);
++		close(lsk);
++	}
++
 +	return NULL;
 +}
 +
-+static int client_bind(int sk, union tcp_addr bind_addr)
++static void connect_client(int sk, void *arg)
++{
++	size_t *p = arg;
++
++	if (test_connect_socket(sk, this_ip_dest, test_server_port + *p) <= 0)
++		test_error("failed to connect()");
++}
++
++static void client_addr_setup(int sk, union tcp_addr taddr)
 +{
 +#ifdef IPV6_TEST
 +	struct sockaddr_in6 addr = {
 +		.sin6_family	= AF_INET6,
 +		.sin6_port	= 0,
-+		.sin6_addr	= bind_addr.a6,
++		.sin6_addr	= taddr.a6,
 +	};
 +#else
 +	struct sockaddr_in addr = {
 +		.sin_family	= AF_INET,
 +		.sin_port	= 0,
-+		.sin_addr	= bind_addr.a4,
++		.sin_addr	= taddr.a4,
 +	};
 +#endif
-+	return bind(sk, &addr, sizeof(addr));
-+}
++	int ret;
 +
-+static void try_connect(const char *tst_name, unsigned port,
-+		       union tcp_addr *md5_addr, uint8_t md5_prefix,
-+		       union tcp_addr *ao_addr, uint8_t ao_prefix,
-+		       uint8_t sndid, uint8_t rcvid, fault_t inj,
-+		       union tcp_addr *bind_addr)
-+{
-+	time_t timeout;
-+	int sk, ret;
-+
-+	sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
-+	if (sk < 0)
-+		test_error("socket()");
-+
-+	if (bind_addr && client_bind(sk, *bind_addr))
-+		test_error("bind()");
-+
-+	if (md5_addr && test_set_md5(sk, *md5_addr, md5_prefix))
-+		test_error("setsockopt(TCP_MD5SIG_EXT)");
-+
-+	if (ao_addr && test_set_ao(sk, ao_password, 0, *ao_addr,
-+				   ao_prefix, sndid, rcvid))
-+		test_error("setsockopt(TCP_AO)");
-+
-+	synchronize_threads(); /* preparations done */
-+
-+	timeout = fault(F_TIMEOUT) ? TEST_RETRANSMIT_SEC : TEST_TIMEOUT_SEC;
-+	ret = _test_connect_socket(sk, this_ip_dest, port, timeout);
-+
-+	if (ret < 0) {
-+		if (fault(F_KEYREJECT) && ret == -EKEYREJECTED) {
-+			test_ok("%s: connect() was prevented", tst_name);
-+			goto out;
-+		} else if (ret == -ECONNREFUSED &&
-+				(fault(F_TIMEOUT) || fault(F_KEYREJECT))) {
-+			test_ok("%s: refused to connect", tst_name);
-+			goto out;
-+		} else {
-+			test_error("%s: connect() returned %d", tst_name, ret);
-+		}
-+	}
-+
-+	if (ret == 0) {
-+		if (fault(F_TIMEOUT))
-+			test_ok("%s", tst_name);
-+		else
-+			test_fail("%s: failed to connect()", tst_name);
-+	} else {
-+		if (fault(F_TIMEOUT) || fault(F_KEYREJECT))
-+			test_fail("%s: connected", tst_name);
-+		else
-+			test_ok("%s: connected", tst_name);
-+	}
-+
-+out:
-+	synchronize_threads(); /* close() */
-+	/* _test_connect_socket() cleans up on failure */
-+	if (ret > 0)
-+		close(sk);
-+}
-+
-+#define PREINSTALL_MD5	BIT(1)
-+#define POSTINSTALL_MD5	BIT(2)
-+#define PREINSTALL_AO	BIT(3)
-+#define POSTINSTALL_AO	BIT(4)
-+
-+static void try_to_add(const char *tst_name, unsigned port,
-+		       unsigned strategy,
-+		       union tcp_addr md5_addr, uint8_t md5_prefix,
-+		       union tcp_addr ao_addr, uint8_t ao_prefix,
-+		       uint8_t sndid, uint8_t rcvid, fault_t inj)
-+{
-+	time_t timeout;
-+	int sk, ret;
-+
-+	sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
-+	if (sk < 0)
-+		test_error("socket()");
-+
-+	if (client_bind(sk, this_ip_addr))
-+		test_error("bind()");
-+
-+	if (strategy & PREINSTALL_MD5) {
-+		if (test_set_md5(sk, md5_addr, md5_prefix))
-+			test_error("setsockopt(TCP_MD5SIG_EXT)");
-+	}
-+
-+	if (strategy & PREINSTALL_AO) {
-+		if (test_set_ao(sk, ao_password, 0, ao_addr,
-+				ao_prefix, sndid, rcvid)) {
-+			if (fault(F_PREINSTALL)) {
-+				test_ok("%s: prefailed as expected", tst_name);
-+				goto out_no_sync;
-+			} else {
-+				test_error("setsockopt(TCP_AO)");
-+			}
-+		} else if (fault(F_PREINSTALL)) {
-+			test_fail("%s: setsockopt()s were expected to fail", tst_name);
-+			goto out_no_sync;
-+		}
-+	}
-+
-+	synchronize_threads(); /* preparations done */
-+
-+	timeout = fault(F_TIMEOUT) ? TEST_RETRANSMIT_SEC : TEST_TIMEOUT_SEC;
-+	ret = _test_connect_socket(sk, this_ip_dest, port, timeout);
-+
-+	if (ret <= 0) {
-+		test_error("%s: connect() returned %d", tst_name, ret);
-+		goto out;
-+	}
-+
-+	if (strategy & POSTINSTALL_MD5) {
-+		if (test_set_md5(sk, md5_addr, md5_prefix)) {
-+			if (fault(F_POSTINSTALL)) {
-+				test_ok("%s: postfailed as expected", tst_name);
-+				goto out;
-+			} else {
-+				test_error("setsockopt(TCP_MD5SIG_EXT)");
-+			}
-+		} else if (fault(F_POSTINSTALL)) {
-+			test_fail("%s: post setsockopt() was expected to fail", tst_name);
-+			goto out;
-+		}
-+	}
-+
-+	if (strategy & POSTINSTALL_AO) {
-+		if (test_set_ao(sk, ao_password, 0, ao_addr,
-+				ao_prefix, sndid, rcvid)) {
-+			if (fault(F_POSTINSTALL)) {
-+				test_ok("%s: postfailed as expected", tst_name);
-+				goto out;
-+			} else {
-+				test_error("setsockopt(TCP_AO)");
-+			}
-+		} else if (fault(F_POSTINSTALL)) {
-+			test_fail("%s: post setsockopt() was expected to fail", tst_name);
-+			goto out;
-+		}
-+	}
-+
-+out:
-+	synchronize_threads(); /* close() */
-+out_no_sync:
-+	/* _test_connect_socket() cleans up on failure */
-+	if (ret > 0)
-+		close(sk);
-+}
-+
-+static void client_add_ip(union tcp_addr *client, const char *ip)
-+{
-+	int family = TEST_FAMILY;
-+
-+	if (inet_pton(family, ip, client) != 1)
-+		test_error("Can't convert ip address %s", ip);
-+
-+	if (ip_addr_add(veth_name, family, *client, TEST_PREFIX))
++	ret = ip_addr_add(veth_name, TEST_FAMILY, taddr, TEST_PREFIX);
++	if (ret && ret != -EEXIST)
 +		test_error("Failed to add ip address");
-+	if (ip_route_add(veth_name, family, *client, this_ip_dest))
++	ret = ip_route_add(veth_name, TEST_FAMILY, taddr, this_ip_dest);
++	if (ret && ret != -EEXIST)
 +		test_error("Failed to add route");
++
++	if (bind(sk, &addr, sizeof(addr)))
++		test_error("bind()");
 +}
 +
-+static void client_add_ips(void)
++static void bench_connect_client(size_t port_off, struct bench_tests *bt,
++		ipaddr_t *ips, size_t ips_nr, bool rand_order)
 +{
-+	client_add_ip(&client2, __TEST_CLIENT_IP(2));
-+	client_add_ip(&client3, __TEST_CLIENT_IP(3));
-+	synchronize_threads(); /* server_add_routes() */
-+}
++	struct bench_stats *con;
++	union tcp_addr *p;
++	size_t i;
 +
-+static void client_add_fail_tests(unsigned *port)
-+{
-+	try_to_add("TCP-AO established: add TCP-MD5 key",
-+		   (*port)++, POSTINSTALL_MD5 | PREINSTALL_AO,
-+		   this_ip_dest, TEST_PREFIX, this_ip_dest, TEST_PREFIX,
-+		   100, 100, F_POSTINSTALL);
-+	try_to_add("TCP-MD5 established: add TCP-AO key",
-+		   (*port)++, PREINSTALL_MD5 | POSTINSTALL_AO,
-+		   this_ip_dest, TEST_PREFIX, this_ip_dest, TEST_PREFIX,
-+		   100, 100, F_POSTINSTALL);
-+	try_to_add("non-signed established: add TCP-AO key",
-+		   (*port)++, POSTINSTALL_AO,
-+		   this_ip_dest, TEST_PREFIX, this_ip_dest, TEST_PREFIX,
-+		   100, 100, F_POSTINSTALL);
++	if (rand_order)
++		con = &bt->connect_rand_key;
++	else
++		con = &bt->connect_last_key;
 +
-+	try_to_add("TCP-AO key intersects with TCP-MD5 key",
-+		   (*port), PREINSTALL_MD5 | PREINSTALL_AO,
-+		   this_ip_addr, TEST_PREFIX, this_ip_addr, TEST_PREFIX,
-+		   100, 100, F_PREINSTALL);
++	p = (union tcp_addr *)&ips[0];
++
++	for (i = 0; i < NR_ITERS; i++) {
++		int sk = socket(test_family, SOCK_STREAM, IPPROTO_TCP);
++
++		if (sk < 0)
++			test_error("socket()");
++
++		client_addr_setup(sk, *p);
++		if (test_set_ao(sk, "password", 0, this_ip_dest, -1, 100, 100))
++			test_error("setsockopt(TCP_AO)");
++
++		synchronize_threads();
++
++		measure_call(con, connect_client, sk, (void *)&port_off);
++
++		close(sk);
++
++		/*
++		 * Slowest for FILO-linked-list:
++		 * on (i) iteration removing ips[i] element. When it gets
++		 * added to the list back - it becomes first to fetch, so
++		 * on (i + 1) iteration go to ips[i + 1] element.
++		 */
++		if (rand_order)
++			p = (union tcp_addr *)&ips[rand() % ips_nr];
++		else
++			p = (union tcp_addr *)&ips[i % ips_nr];
++	}
 +}
 +
 +static void *client_fn(void *arg)
 +{
-+	unsigned port = test_server_port;
-+	union tcp_addr addr_any = {};
++	size_t i;
 +
-+	client_add_ips();
++	for (i = 0; i < ARRAY_SIZE(nr_keys); i++) {
++		struct bench_tests *bt = &bench_results[i];
 +
-+	try_connect("AO server (INADDR_ANY): AO client", port++, NULL, 0,
-+		    &addr_any, 0, 100, 100, 0, &this_ip_addr);
-+	try_connect("AO server (INADDR_ANY): MD5 client", port++, &addr_any, 0,
-+		    NULL, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+	try_connect("AO server (INADDR_ANY): unsigned client", port++, NULL, 0,
-+		    NULL, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
++		synchronize_threads();
++		bench_connect_client(i, bt, test_ips, nr_keys[i], false);
++		test_print_stats("Worst case connect",
++				nr_keys[i], &bt->connect_last_key);
 +
-+	try_connect("MD5 server (INADDR_ANY): AO client", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+	try_connect("MD5 server (INADDR_ANY): MD5 client", port++, &addr_any, 0,
-+		   NULL, 0, 100, 100, 0, &this_ip_addr);
-+	try_connect("MD5 server (INADDR_ANY): no sign client", port++, NULL, 0,
-+		   NULL, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+
-+	try_connect("no sign server: AO client", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+	try_connect("no sign server: MD5 client", port++, &addr_any, 0,
-+		   NULL, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+	try_connect("no sign server: no sign client", port++, NULL, 0,
-+		   NULL, 0, 100, 100, 0, &this_ip_addr);
-+
-+	try_connect("AO+MD5 server: AO client (matching)", port++, NULL, 0,
-+		   &addr_any, 0, 100, 100, 0, &client2);
-+	try_connect("AO+MD5 server: AO client (misconfig, matching MD5)",
-+		   port++, NULL, 0, &addr_any, 0, 100, 100,
-+		   F_TIMEOUT, &this_ip_addr);
-+	try_connect("AO+MD5 server: AO client (misconfig, non-matching)",
-+		   port++, NULL, 0, &addr_any, 0, 100, 100,
-+		   F_TIMEOUT, &client3);
-+	try_connect("AO+MD5 server: MD5 client (matching)", port++, &addr_any, 0,
-+		   NULL, 0, 100, 100, 0, &this_ip_addr);
-+	try_connect("AO+MD5 server: MD5 client (misconfig, matching AO)",
-+		   port++, &addr_any, 0, NULL, 0, 100, 100, F_TIMEOUT, &client2);
-+	try_connect("AO+MD5 server: MD5 client (misconfig, non-matching)",
-+		   port++, &addr_any, 0, NULL, 0, 100, 100, F_TIMEOUT, &client3);
-+	try_connect("AO+MD5 server: no sign client (unmatched)",
-+		   port++, NULL, 0, NULL, 0, 100, 100, 0, &client3);
-+	try_connect("AO+MD5 server: no sign client (misconfig, matching AO)",
-+		   port++, NULL, 0, NULL, 0, 100, 100, F_TIMEOUT, &client2);
-+	try_connect("AO+MD5 server: no sign client (misconfig, matching MD5)",
-+		   port++, NULL, 0, NULL, 0, 100, 100, F_TIMEOUT, &this_ip_addr);
-+
-+	try_connect("AO+MD5 server: client with both [TCP-MD5] and TCP-AO keys",
-+		   port++, &this_ip_addr, TEST_PREFIX,
-+		   &client2, TEST_PREFIX, 100, 100, F_KEYREJECT, &this_ip_addr);
-+	try_connect("AO+MD5 server: client with both TCP-MD5 and [TCP-AO] keys",
-+		   port++, &this_ip_addr, TEST_PREFIX,
-+		   &client2, TEST_PREFIX, 100, 100, F_KEYREJECT, &client2);
-+
-+	client_add_fail_tests(&port);
-+
++		bench_connect_client(i, bt, test_ips, nr_keys[i], false);
++		test_print_stats("Connect random-search",
++				nr_keys[i], &bt->connect_last_key);
++	}
++	synchronize_threads();
 +	return NULL;
 +}
 +
 +int main(int argc, char *argv[])
 +{
-+	test_init(42, server_fn, client_fn);
++	test_init(36, server_fn, client_fn);
 +	return 0;
 +}
 -- 
