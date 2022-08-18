@@ -2,214 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 11ADA597E0A
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 07:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA4F5597E58
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 08:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242818AbiHRFYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 01:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51256 "EHLO
+        id S243483AbiHRGCF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 02:02:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242905AbiHRFYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 01:24:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9E92E9C6
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 22:24:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22D6A61632
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 05:24:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA23C433C1;
-        Thu, 18 Aug 2022 05:24:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660800257;
-        bh=XGJKwz7xl4XUDCREE6ONBs224plF6srFS7KbhYhAD+c=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=twWWspO99OEFBb12gJscX/AMTGTOpupO2+YjsgdKvgg7+/aEDM7salYjoMAOD7wde
-         9xP//KMYheYNxon/LfAmkI80h3IjfuttVN9eo3A3ilbq+sKVG5GKC79p2V5tmHz8le
-         klEX7ocQvQGQcefr1Ytjq3X2fLLvApZPB9gRcafEkYTvJYYTOgfBtEP5wYCjEtHLbP
-         7oBjA9td0qr1QjgOGcaD3x/LfWR1gC46jjfvEjeS1VVE2iIamArPTbOWMFoGFy9e5M
-         zyqh22LkmLjukMy074wdTESO4KBpslMtaw0Xn4tciQ+2oY4ehJKQVXwRHDlQuRPSQl
-         QLFux2Don6vew==
-Date:   Thu, 18 Aug 2022 08:24:13 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <Yv3M/T5K/f35R5UM@unreal>
-References: <cover.1660639789.git.leonro@nvidia.com>
- <20220816195408.56eec0ed@kernel.org>
- <Yvx6+qLPWWfCmDVG@unreal>
- <20220817111052.0ddf40b0@kernel.org>
-MIME-Version: 1.0
+        with ESMTP id S238407AbiHRGCD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 02:02:03 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2091.outbound.protection.outlook.com [40.107.237.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A057CAA7
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:01:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JBcuiAG6biWTfqu92w9rEfXaLO+05SvMaMC/QnRuzeJUJ1t26KTFJRqbxFNtlKT7j5hUNsg+sloJ3UA87K6280pSg7FRS38c0kVgSRrOlBOEy2w3KBdTNwhFqVJNezOacknRzN2RaWyKVIezVikm0bivrWOW68B+hBifUpKlE0mLFXYQU9MqbxAu5F1/XRyIej+Q09178BlqkMegVXOGyxtZowoEiAAXDvtekbjBjJC5ujy8idH5kK8GpiACpdYbRfTC+yY27V1GtZOEF4ZStDIDG2NL4TQsvXRaWPmo6zMua5HENgyWGUD953ckhBNhOX8VpKkJvT1nQN3llyS66w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pkf6Y3J2nuuUz2srwVw5mBFFwfPBwtUhh5fNbx2Ewjg=;
+ b=bs0OZlqEqLyqJ71qGAvAh64jwqfFOEaCDMKu1X0IsaxgWtXX+IXxlS9nmZpHQa/NcSpID5LxvXsA9UePSFHv9yrsQq3pQRbdIWMyhu1MwfHe/HcQocsqKbFTPB8ZOBvTYWUEc2qdx9DgXnc57xX1bXoIpe7vesCbM0+FcDTrbQ7FQjlfdJaRYw6Ktg9fVM5qQ9QYEYRvAlnDtF31Ecy64nTpW5zxOLrcHPHvs8xPSbK2Q1hasJ5KuuqMYoZ8RlI12WQJEFvO46cVFEytgkdphV44QuYPocoh3pXxFfEMtArPD69/3mE8qEM+BMFUrAwR3DMUQDKDJW0Mdd2VSO30xw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pkf6Y3J2nuuUz2srwVw5mBFFwfPBwtUhh5fNbx2Ewjg=;
+ b=NTeaJ/1oKjyRS5ZnFDASYrP7Q2u6htlQlJj2KTOZe9t7WLsbl68GOyKlizJLtWzWe03beMxeAWsBYaSgrBW0za7StthBz7AK7zcf9DHDby36UqpXG3zYhbDjF4y1uU+rzY+ad3kcJEXq3+tv7fYdVpfcak3E/My0mlYZKrBKLrM=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MWHPR10MB1389.namprd10.prod.outlook.com
+ (2603:10b6:300:21::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.16; Thu, 18 Aug
+ 2022 06:01:55 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::b869:6c52:7a8d:ddee%4]) with mapi id 15.20.5504.027; Thu, 18 Aug 2022
+ 06:01:55 +0000
+Date:   Wed, 17 Aug 2022 23:01:51 -0700
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH net 6/8] net: mscc: ocelot: make struct
+ ocelot_stat_layout array indexable
+Message-ID: <Yv3VzwXNdGMRAYfc@euler>
+References: <20220816135352.1431497-1-vladimir.oltean@nxp.com>
+ <20220816135352.1431497-7-vladimir.oltean@nxp.com>
+ <YvyO1kjPKPQM0Zw8@euler>
+ <20220817110644.bhvzl7fslq2l6g23@skbuf>
+ <20220817130531.5zludhgmobkdjc32@skbuf>
+ <Yv0FwVuroXgUsWNo@colin-ia-desktop>
+ <20220817174226.ih5aikph6qyc2xtz@skbuf>
+ <Yv1Tyy7mmHW1ltCP@colin-ia-desktop>
+ <20220817220351.j6pzwufbdfqz3vat@skbuf>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220817111052.0ddf40b0@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220817220351.j6pzwufbdfqz3vat@skbuf>
+X-ClientProxiedBy: SJ0PR05CA0190.namprd05.prod.outlook.com
+ (2603:10b6:a03:330::15) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1417f5fc-46b4-43a9-8362-08da80df2744
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1389:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: e2mTMSWA1nt8sfXMjnF9BUE0/+yg3UyMSmKzj7rBmLfxk5oALpPOJudF9LVKcPO3me6K9bShHqQ7c/z5O8LslLjf1/SEnxa9yBO9uWo8qaxTSkzYKWYxyTXS9LWgF+f9VWmcuidB6JeqytJtq8bQgOOxJZ2MdmlWSqgwexMrmNuEqW5UG9Wbdo3XWgypaBhc52HMFo8uLd47VmIoEKpKxQkRlV4lBQVNM7IeFDjhxilRXnQSPAHnw8FO6f6B4Ud4AgcZhDxu7WoloBODiy1BsweXmm77JIj/cl9E7YwaszABxSxkvJVbFjZkcLwreHZbu0sz6LZKhYEhekI17QGkxUDpRTU5/dQQ0iHIhMboJs4DJB5oExm5hbtQHyFlxxYJZ9wBq+DG7UgzH7YCjh3un3zQIm/fnpxxwv/MAj/tpUvUOguc58pEKYP19d4R9psYb5qaiTUqFWKKEMBDWTZ3+BVQKmYbGMpVjpiiLuiLniEYndjUZ38CH45aYlpaib9vkJfaDWwhdYcbvKZrqHfyy+tEIQiKyH2pwCIOBBLIwWJyVGsMLtfq14toDMrgiL5BDWxaSI4PSwr9Jp5CNn2fDx3WwdXmIDGTQ6e/MujmGxFfsOTicbbmZhN5B//JfsJqBLxw34zVAC19iC6/WCf6FKB8uH5jh07KT/cEPxjzz4WKP97/7ouFnxypYFlq3Sk9IT7KAp7SrHGJfZ5kXi2kWw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(376002)(396003)(366004)(39830400003)(346002)(83380400001)(186003)(38100700002)(5660300002)(7416002)(44832011)(8936002)(66946007)(66476007)(4326008)(8676002)(478600001)(6512007)(2906002)(41300700001)(9686003)(6486002)(6506007)(6666004)(26005)(316002)(54906003)(66556008)(6916009)(86362001)(33716001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z/CHLJ9hXrV7JpJJ9sqdEhr1pvUE+mGttINoDLpzfRusiPmITGOnpJBRq+Is?=
+ =?us-ascii?Q?DRRUctFpQL4bfAbVllA541aKQRE6TEkAq28AgrsHDFA3O3V8K0mCWK51lzvZ?=
+ =?us-ascii?Q?pFlj/QDmVJmSsfUw3MuPtwdO9k0BEi57UGJVzIEsHN+4uXy6Ipp5GfBBLz+u?=
+ =?us-ascii?Q?nkJc6+AZez+lW9HcyBkGC6Z3dbI8x1HHHUGRJxcuvA6KFT6oyCJ6PZOKOb3S?=
+ =?us-ascii?Q?+tXwg1TDTsegzSkGDLpRVwzu8UobCoJdktxWSV3lOLy+BZCwSG/Ixtv4yvKu?=
+ =?us-ascii?Q?HnHwCOUjARcPX31Q25QB+8bs751nXYI0xP37CmVuN3YB8Sml/jZpX3f+nD/P?=
+ =?us-ascii?Q?x35fYLg4tVrpGJf5L/5yecQMg2Yd+OOL9XaNYBUPXKImd7dBHKlLG5WG+LZa?=
+ =?us-ascii?Q?1FFMaBmmkBJUAWCDAvU/Wa0yXhoKWDyREZpBXTwX4NQ9jw6hhy6R21PjnAYc?=
+ =?us-ascii?Q?3C9kGDQq5YvPAwEp2nD32i0P5RqVDgC6r54N9JzzEIkoSyWNg6WTVyS5Ms8W?=
+ =?us-ascii?Q?VOeH5TNhyjNixviSG9beVcr20sJmDvflUtQFjlN28rBzm9HmUx08x8O/3WF9?=
+ =?us-ascii?Q?f/xRW13fWPykcF53VMANFhEHxR3/V8YpWhxDbQ+xaS2YASZBnJPS84hfE5Mg?=
+ =?us-ascii?Q?KsdAF2Ha/ei1XdwCZrPyYiojEsKzosCFsbtb09FThlevb4Yc8I+gov8Z9NcC?=
+ =?us-ascii?Q?qgqcgqwDhkchV/fSvWwFICBpM/7FErK7HKIM63GZPLoWUWSxzXJf9NF6+lSu?=
+ =?us-ascii?Q?HhC7FjiEMkATSbqn2mfrKY8yr8KZYBWAOyUeIGJD53PjO8QrOx2RbIVl7mev?=
+ =?us-ascii?Q?CidJJnOaHhbRf+Dsy+xTEWtol37t2OxVdzOo9nY/5i5ymRzXBm9pCBN1ltEO?=
+ =?us-ascii?Q?unRMfNk78kro1vJIGO69/+6gbhGeJElHb3asDzttXf6v3DyrDwPVmjIPQWSG?=
+ =?us-ascii?Q?423iKOIjtkPHnMyt3QMhCw3+IPMq84YQx9UbGKYfYWgobeltg4qLxY/5qqQe?=
+ =?us-ascii?Q?QtaweugdRyV5NBkoH1You6fhWvYVsD8tVymWmyshi0BhmaleFS5VL7lBHzo9?=
+ =?us-ascii?Q?woLMw8SABSI0/9MA66ZauYUQRaBw6khfo9llC1bCJRkIARD0nlKB4vxi5nfJ?=
+ =?us-ascii?Q?WfSW25T07vKjEziAdYYK4RIo1l32pWVAWtwnqrntVfqihjjKQpiC+CfA/Na7?=
+ =?us-ascii?Q?a92is2aO6uUwRRzVb53BiNx+S41kr/7q02V5I6S6SVQDoFJLtZbHaGxQW4FO?=
+ =?us-ascii?Q?1AP27gYh6OlwygIcLuDGBNPwtoTXV/0axoi4Ov/S5mm2WlGPJ6guL4K5LEZe?=
+ =?us-ascii?Q?ca5Bfq9zMEiPYakRo/uVEYXeXPgCiUa1uMsI32brvNko3gJr9H5JBwiJqgia?=
+ =?us-ascii?Q?B52s3M381bq/l4LcQVaWaHXWyO8Y1WuNAwgw8Rf5BTeyjZbqvUtVEvO7auh7?=
+ =?us-ascii?Q?Jy84eSFjoK0zJRhZ+ZiCN/YbWhib4rZ7q5oTFYsTEn8bbc6JDi+xI34riUOE?=
+ =?us-ascii?Q?zq4GhKt1ruZhuvDBf993LL8ig7o+UBojp6JxfOS+x0h1bRBgmdrk39Pf7iwe?=
+ =?us-ascii?Q?IVYjtelQcl9ASZJY3/ZAReu8asEP9dHn7siSwKIleH7tzoDD9+XsS6Fuw7EQ?=
+ =?us-ascii?Q?vA=3D=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1417f5fc-46b4-43a9-8362-08da80df2744
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 06:01:55.3085
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: q2asMmpgTuiRZfgnY1ujhA+9Cd40okeXA3D3jtq/7nQ5MnRiOEDJ4EJNd6Is7SBqm/LgdhSFvQcStXjqJpNNOR+hm3QtR4gJA/tEY2/0bnk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1389
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 11:10:52AM -0700, Jakub Kicinski wrote:
-> On Wed, 17 Aug 2022 08:22:02 +0300 Leon Romanovsky wrote:
-> > On Tue, Aug 16, 2022 at 07:54:08PM -0700, Jakub Kicinski wrote:
-> > > This is making a precedent for full tunnel offload in netdev, right?  
+On Wed, Aug 17, 2022 at 10:03:51PM +0000, Vladimir Oltean wrote:
+> On Wed, Aug 17, 2022 at 01:47:07PM -0700, Colin Foster wrote:
+> > > > Tangentially related: I'm having a heck of a time getting the QSGMII
+> > > > connection to the VSC8514 working correctly. I plan to write a tool to
+> > > > print out human-readable register names. Am I right to assume this is
+> > > > the job of a userspace application, translating the output of
+> > > > /sys/kernel/debug/regmap/ reads to their datasheet-friendly names, and
+> > > > not something that belongs in some sort of sysfs interface? I took a
+> > > > peek at mv88e6xxx_dump but it didn't seem to be what I was looking for.
+> > > 
+> > > Why is the mv88e6xxx_dump kind of program (using devlink regions) not
+> > > what you're looking for?
 > > 
-> > Not really. SW IPsec supports two modes: tunnel and transport.
-> > 
-> > However HW and SW stack supports only offload of transport mode.
-> > This is the case for already merged IPsec crypto offload mode and
-> > the case for this full offload.
+> > I suspect the issue I'm seeing is that there's something wrong with the
+> > HSIO registers that control the QSGMII interface between the 7512 and
+> > the 8514. Possibly something with PLL configuration / calibration? I
+> > don't really know yet, and bouncing between the source
+> > (ocelot_vsc7514.c, {felix,ocelot-ext}.c, phy-ocelot-serdes.c), the
+> > reference design software, and the datasheet is slowing me down quite a
+> > bit. Unless I am mistaken, it feels like the problems I'm chasing down
+> > are at the register <> datasheet interface and not something exposed
+> > through any existing interfaces.
 > 
-> My point is on what you called "full offload" vs "crypto offload".
-> The policy so far has always been that Linux networking stack should
-> populate all the headers and instruct the device to do crypto, no
-> header insertion. Obviously we do header insertion in switch/router
-> offloads but that's different and stateless.
-> 
-> I believe the reasoning was to provide as much flexibility and control
-> to the software as possible while retaining most of the performance
-> gains.
+> So you mean you suspect that the HSIO register definitions are somehow
+> wrong? You mean the phy-ocelot-serdes.c driver seems to behave strangely
+> in a way that could possibly indicate it's accessing the wrong stuff?
+> Do you have any indication that this is the case? I'm not familiar at
+> all with blocks that weren't instantiated on NXP hardware (we have our
+> own SERDES), and I see you're already monitoring the right source files,
+> so I'm afraid there isn't much that I can help you with.
 
-I honestly don't know the reasoning, but "performance gains" are very
-limited as long as IPsec stack involved with various policy/state
-lookups. These lookups are expensive in terms of CPU and they can't
-hold 400 Gb/s line rate.
+So I was crafting my response with an explanation of how I'd gotten to
+where I was (starting in the footsteps of ocelot_vsc7512.c). Of course,
+while trying to explain that, a couple things jumped out at me to try.
 
-https://docs.nvidia.com/networking/display/connectx7en/Introduction#Introduction-ConnectX-7400GbEAdapterCards
+Long story short, phylink_ops wasn't getting invoked by anything. In
+ocelot_vsc7512.c they get invoked by the net_device (I think) but in
+ocelot-ext, while they were registered to the phylink, only the
+felix pcs_config (and other phylink_pcs_ops). I had all the pieces,
+but just didn't tie them all together.
 
-> 
-> You must provide a clear analysis (as in examination in data) and
-> discussion (as in examination in writing) if you're intending to 
-> change the "let's keep packet formation in the SW" policy. What you 
-> got below is a good start but not sufficient.
+So my current status is there's at least some full communication between
+the 7512 and the 8514 to the external ports. I'll do some more thorough
+testing as well. Now that I have more than 3 ports, I should be able to
+run more of the elaborate kernel test scenarios. But also I'll have to
+do a lot more validation and testing.
 
-Can you please point me to an example of such analysis, so I will know
-what is needed/expected?
 
-> 
-> > > Could you indulge us with a more detailed description, motivation,
-> > > performance results, where the behavior of offload may differ (if at
-> > > all), what visibility users have, how SW and HW work together on the
-> > > datapath? Documentation would be great.  
-> > 
-> > IPsec full offload is actually improved version of IPsec crypto mode,
-> > In full mode, HW is responsible to trim/add headers in addition to
-> > decrypt/encrypt. In this mode, the packet arrives to the stack as already
-> > decrypted and vice versa for TX (exits to HW as not-encrypted).
-> > 
-> > My main motivation is to perform IPsec on RoCE traffic and in our
-> > preliminary results, we are able to do IPsec full offload in line
-> > rate. The same goes for ETH traffic.
-> 
-> If the motivation is RoCE I personally see no reason to provide the
-> configuration of this functionality via netdev interfaces, but I'll
-> obviously leave the final decision to Steffen.
-
-This is not limited to RoCE, our customers use this offload for ethernet
-traffic as well.
-
-RoCE is a good example of traffic that performs all headers magic in HW,
-without SW involved.
-
-IPsec clearly belongs to netdev and we don't want to duplicate netdev
-functionality in RDMA. Like I said above, this feature is needed for
-regular ETH traffic as well.
-
-Right now, RoCE and iWARP devices are based on netdev and long-standing
-agreement ( >20 years ????) that all netdev configurations are done
-there they belong - in netdev.
-
-If you think that RDMA<->netdev binding should be untied and netdev
-functionality should be duplicated, feel free to submit topic to LPC
-and/or catch me and/or Jason to discuss it during the venue.
+Thanks for the hints Vladimir! And for being helpful in this rubber-duck
+debugging session :-)
 
 > 
-> > Regarding behavior differences - they are not expected.
-> > 
-> > We (Raed and me) tried very hard to make sure that IPsec full offload
-> > will behave exactly as SW path.
-> > 
-> > There are some limitations to reduce complexity, but they can be removed
-> > later if needs will arise. Right now, none of them are "real" limitations
-> > for various *swarn forks, which we extend as well.
-> > 
-> > Some of them:
-> > 1. Request to have reqid for policy and state. I use reqid for HW
-> > matching between policy and state.
+> > I plan to get some internal support on that front that can hopefully
+> > point me in the right direction, or find what I have set up incorrectly.
+> > Otherwise it probably doesn't even make sense to send out anything for
+> > review until the MFD set gets accepted. Though maybe I'm wrong there.
 > 
-> reqid?
-
-Policy and state are matched based on their selectors (src/deet IP, direction ...),
-but they independent. The reqid is XFRM identification that this specific policy
-is connected to this specific state.
-https://www.man7.org/linux/man-pages/man8/ip-xfrm.8.html
-https://docs.kernel.org/networking/xfrm_device.html
-ip x s add ....
-   reqid 0x07 ...
-   offload dev eth4 dir in
-
-IPsec SW allows to do not set this field. In offload mode, we want to be
-explicit and require from user to say which policy belongs to which state.
-
-I personally never saw anyone who configures IPsec without reqid.
-
+> IDK, if you have a concrete description of the problem, I suppose the
+> contributors to the SERDES driver may be able to come up with a
+> suggestion or two?
 > 
-> > 2. Automatic separation between HW and SW priorities, because HW sees
-> > packet first.
+> I suggest you try to cover all bases; is the HSIO PLL locked and at the
+> right frequency for QSGMII? Does the lane acquire CDR lock? Are in-band
+> autoneg settings in sync between the PCS and the PHY? Does the PCS
+> report link up?
 > 
-> More detail needed on that.
-
-I have description in the commit message of relevant commit.
-https://lore.kernel.org/all/191be9b9c0367d4554b208533f5d75f498784889.1660639789.git.leonro@nvidia.com/
------
-Devices that implement IPsec full offload mode offload policies too.
-In RX path, it causes to the situation that HW can't effectively handle
-mixed SW and HW priorities unless users make sure that HW offloaded
-policies have higher priorities.
-
-In order to make sure that users have coherent picture, let's require
-that HW offloaded policies have always (both RX and TX) higher priorities
-than SW ones.
-
-To do not over engineer the code, HW policies are treated as SW ones and
-don't take into account netdev to allow reuse of same priorities for
-different devices.
------
-
-> 
-> > 3. Only main template is supported.
-> > 4. No fallback to SW if IPsec HW failed to handle packet. HW should drop
-> > such packet.
-> 
-> Not great for debug.
-
-For now, there are various vendor tools to inspect FW/HW state. We have some
-rough ideas on how can we improve it and forward bad packets to SW for analysis,
-but it is much advanced topic and needs this series to be merged first.
-
-> 
-> > Visibility:
-> > Users can see the mode through iproute2
-> > https://lore.kernel.org/netdev/cover.1652179360.git.leonro@nvidia.com/
-> > and see statistics through ethtool.
-> 
-> Custom vendor stats?
-
-XFRM doesn't have much to offer. There are bunch of LINUX_MIB_XFRM*
-counters, but nothing more.
-
-> 
-> > Documentation will come as well. I assume that IPsec folks are familiar
-> > with this topic as it was discussed in IPsec coffee hour. 
+> > I'd also like to try to keep my patch version count down to one nibble
+> > next time, so I'm planning on keeping ports 0-3 and ports 4-7+ in
+> > separate patch sets :D
