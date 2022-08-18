@@ -2,177 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD95D598EC3
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 23:07:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F409B598F33
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 23:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346494AbiHRVGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 17:06:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36872 "EHLO
+        id S1346884AbiHRVLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 17:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346669AbiHRVF5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 17:05:57 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9C56DAA19
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 14:02:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660856569; x=1692392569;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=xODQHIuZAEidsfRhFlUvazcwFAFsVQrV6jqcXYhHhCQ=;
-  b=gwzxBIITejY8Nfrx1mhY6vz6d3K0kujA5rFDuY/7uW7mUiCGC379nMwt
-   SzsG1qarGT0JJMwNDu7R8DVqooUdXBoF4/kKCPRrvmj085uePPLxc3WD2
-   O8D883AoYsnj1RDFKP1lFmFcmFT0BKOtXX269FBQkK0UUQothoVOV5Ii8
-   +MQgb6rRw4XbSL1eNy4ApOTcP7IgAjUhJhwurQ1911WGoG7zsxpEwtA6G
-   ruE9lPSeZizJP5bSlIBr3kMNlq0IG2ENahvajSysEtrR7ciI/OwkxML/R
-   EA62dSlISqK/Cj7a54adPF9hDjYvWoej73WRi0/SZHnot8CV7ePMZ5IFC
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="290436717"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="290436717"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 14:02:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="611136792"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga007.fm.intel.com with ESMTP; 18 Aug 2022 14:02:26 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 18 Aug 2022 14:02:26 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Thu, 18 Aug 2022 14:02:26 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Thu, 18 Aug 2022 14:02:26 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Thu, 18 Aug 2022 14:02:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=khX1oSgfbHzp5t0vnrQ53M6exhjWx6vsfvzAYT7FeNHOFpirwzsvfdXECrhghpiCWWj+zUIVzHqKOFyrb83KahTU8onsipuo8OQzb6aACwMReTnZvuzOQXzRVjHmfFbsxw8YRDCLeZ36xwlLBjNTSPu4qH5WRNzSLLOpmKajsQWHgbERoDLFozwIuXOjnX+WLj3BHlXcC9v3VEGTyNy0L5r1rjL1MwN3hCTwxF45FDdQ6YJrhafiXnYr6sJFfkIhwCkYdN0ZM/fbxrqr8gLerI8qwsXWeOYRGjjdNGWA0wLUyRllmhAhwM290omAqBL6ycWnNw7K992ktZAkvD0lCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xODQHIuZAEidsfRhFlUvazcwFAFsVQrV6jqcXYhHhCQ=;
- b=iylrPxtINt1BIutIGmJ7V+Kw+GvqCl3BEyaPXhz8pxYV0bIvd15q/+wGVqBjjMCEX2wlbix/qMMCguQg2xCpRtpaoZcROtZFVEoAeykE1Yj1RWqcZVeq77ai8/r40Q1QHhWHLLY3L5RVy5mWLDGBv5ED2bv4xxNsHKQEL0E66lJaLRkPUCU/o5S/jcBzUXtnkWoven3toLeaCtrp47/09eLi+OLRAAG7VRimwZ5ROQcSI8mymiwtq5cXwhaOP4usiX8itqjEdeUdVuNLwqpmQFCCu8HAMu87YGdSNPoNzIIOnBtvOON11o0kvEvEbtcMZYyreKuDW2f3bzd9GAqauw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by PH8PR11MB6778.namprd11.prod.outlook.com (2603:10b6:510:1c9::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.19; Thu, 18 Aug
- 2022 21:02:24 +0000
-Received: from CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5874:aaae:2f96:918a]) by CO1PR11MB5089.namprd11.prod.outlook.com
- ([fe80::5874:aaae:2f96:918a%9]) with mapi id 15.20.5525.010; Thu, 18 Aug 2022
- 21:02:24 +0000
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "dsahern@gmail.com" <dsahern@gmail.com>,
-        "moshe@nvidia.com" <moshe@nvidia.com>
-Subject: RE: [patch iproute2-main] devlink: load port-ifname map on demand
-Thread-Topic: [patch iproute2-main] devlink: load port-ifname map on demand
-Thread-Index: AQHYsty1vjaLBUJtzUyZBg/Utpu7l620Z2kAgAC+WBA=
-Date:   Thu, 18 Aug 2022 21:02:24 +0000
-Message-ID: <CO1PR11MB5089EA4C3AAEB9DCF621229DD66D9@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220818082856.413480-1-jiri@resnulli.us>
- <Yv4JFNvAQ7jCyLlw@nanopsycho>
-In-Reply-To: <Yv4JFNvAQ7jCyLlw@nanopsycho>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8e5408c1-a29d-4427-876f-08da815cf314
-x-ms-traffictypediagnostic: PH8PR11MB6778:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zHx2sRJofY28qlqvtTVuhqMUhSbSISTjzyRK/9rInxeDlGG2gjTmW5gU+Fph7k0KAPZWd+zLeLYBS/QL/kvWajssApqKNPMafzm52pBRjNJmoM5ZjnX9MPntvL2QBvEYvzF3+/brzV6S+tSeer4taG4TNJxB884CN6XlKRk1sfN6RgM5J6vq/VP1HpxeXMbIcyA2GsYLjl8Td8s0TdS0jOwMTYNiQqDrVi5O/GCrQsoXOM1j40n9OK6xEcD02Jb5JZ575p3SEdtsMxdv2wIV0DuX+aSZdwMplc1pNgzch54gpXHiHybOQ0Z2Uwfh4MvNXIKqrPVpSH5rOG7xbKPkaSif1Q2oZj2lO7zryZs7rhRu7oapG6lcQ9/QUYqjJQu8yunya00i7+eTcBMq+3sVr+bQzC9YYUSHoRUijfG1IY1fjZtMuZjkR/v2D0lLJ7dNjuXhzfA7zwMo2RU7i//IM01NnXFpFHSBXhKChN3nh/DGU7bBemgG6VVMP+LKin2tlTqPn7svDvKoaU745q7ThK8Glk0LxOG+9mR86/GcbjytmtC42xBXbc7pDl7fyZUfXMiIcC+JjjbaElCEMNpQQ+Lm5MiWfo06JnmGIqLyjGxqzf6gOoQMPSCk8VSLoRrcNEX2HBtENdIKbPMTsadMVbrG3/MWViElMv1sHPbO0toAhitfBgVCc7a/Ny7J978IbcnXh+v666NukiPOgSHaYj0BJ8fFbS+JxD/rJdYb9H5Kf5UQElwTWPc5fBnrfp51
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(39860400002)(346002)(396003)(366004)(54906003)(26005)(9686003)(316002)(41300700001)(45080400002)(33656002)(86362001)(55016003)(110136005)(38070700005)(2906002)(8676002)(66946007)(64756008)(5660300002)(7696005)(66556008)(66446008)(4326008)(38100700002)(122000001)(6506007)(66476007)(186003)(478600001)(83380400001)(71200400001)(53546011)(8936002)(52536014)(76116006)(82960400001)(4744005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?69QAZ3hceed+3xws31e0PxkDrsebVPzX9i3n2k6p4sRduhvvknoW1WUZd5AV?=
- =?us-ascii?Q?bp/wqLA7YY34i2WUoEPpRG3UMNCsqU3hAwnb1K3h6MklwupY+gy32UFokddq?=
- =?us-ascii?Q?ZurPALcSWuzm9RoPVxdlGoT5P0hG9yJSMEMyYiXi+FuLkzMoZY+JZvIYMxwk?=
- =?us-ascii?Q?idzceW+lDIPDqzYkMMYZb+D1XCvKOCF7RueTxzhA02qHjkOE8ILZfRNOQajm?=
- =?us-ascii?Q?W5lPnd9JXO6Cq3EzgwvIbDUD3PtQkUR+F72vqGji53AHd5IDUVQt1/hLG4AD?=
- =?us-ascii?Q?etHgsMGt32AVTe8Vp6prMK0jznPh42iTwqnWs73GfSXKfsCtcRldK8rd28ne?=
- =?us-ascii?Q?AoZtxnU1WPPEYwd+5Pifi/vkYdjicPL3si6ShSLO8ajXvBUqdG5IpH4rNIz/?=
- =?us-ascii?Q?Ew1anW58G7L/xqlbmIzWjqhbf5K8diRsTlOI42XQqQHknZ+EK4tsWWkA02aa?=
- =?us-ascii?Q?nfqb3IZfjMtV4GO4m8Fsz5CWQWnzI4MeFFmNV1yMlC+jjbX+hWMUtP9W5jUk?=
- =?us-ascii?Q?2TaSSfdYCmXAwiJO5s7VJFx7yLJ8VlAWY5i2acub8he3yh/im9DNvKttB6wz?=
- =?us-ascii?Q?n5Bl577mmHnvshbJ75rRBRSzMxJjhXHck07wBTkvf6DF5POSMU5IY29A385/?=
- =?us-ascii?Q?K8z+QBSBC3U4V39/izFVdIPTqZjXQgAhC3ifqs+LsH6AdefHIZt601Z4lBJL?=
- =?us-ascii?Q?lQDydJRlFJxiQtMec5WSVnauj1eVkjeDsMFHHHK6Hboc8VZRJbRG5n2c9WxI?=
- =?us-ascii?Q?HlWm2EDNz529PAGnfoOtKO8MwK6YrCGmlTz9UrKj3X1DfQU/J5meOOkiGDtO?=
- =?us-ascii?Q?XvQvlMfkuMftyail37JyGhYJUcCKDDNSVdopD9azpVMvkjlOrHStCBrYxSTh?=
- =?us-ascii?Q?uTGX+YKRaSMh0w4npBSSuQ+rFNA+iOm+2e03e+qCGn/BBYdcvm2t6meqQxOY?=
- =?us-ascii?Q?6g54cAOtTlBAMx5cIFUOalyQFz2f435cFoAD4UNMhA98d8554rawRrEzsFxQ?=
- =?us-ascii?Q?LWaCehhjrSj7j8yxq7asbwVmClyTbPT5Em+3iPO/V/1vqOSRt65hMJHo/Sjh?=
- =?us-ascii?Q?6P0Z+3jX3yGV6tD1e8ewmga6EXCW12vclbFUjpuMdtOosiphBpI1P3lHDfKf?=
- =?us-ascii?Q?KtrC0986WycrQ2bhI7t/JLmVusxfJRPB3AXHiqyh6ywxYWm8Y/fSi5+7wOsk?=
- =?us-ascii?Q?csny97nTshWJbPIr8zWsJUoXyVAd87A4BlmwrqFA9i/JGI2iAKcMfdZlzNkK?=
- =?us-ascii?Q?4ZWc1qLCbJrdB9QNXiaoafznOzMSWzAPSBXKGPiD9g+3HOf0LjPoZXCQidwi?=
- =?us-ascii?Q?DYzlMSH6adTQxHqL1X7feOYL17pJl1clIjmQjxfhWZrvlZR4J6UIu95UiRUy?=
- =?us-ascii?Q?9YwNevvokCj3QXGo9NRxBLXVbP95gDguFRvG3ljD3iINRg5xKNPN7eVyxm6L?=
- =?us-ascii?Q?Q2q2gWKd0LPYyHiMjRZL1Iyasl7sUSsmZuyLocJjQV8isGM3JLqdgOLc7vCO?=
- =?us-ascii?Q?9cKZEcBVGPysYlJSVNel/Z5YY/HqmI6vvd3EU7yPQeeXDefFZQe2W8QePIDZ?=
- =?us-ascii?Q?p8A1JFipL6IZc8PJmvWFrW0qm7BHm516EKWBquGk?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1346878AbiHRVKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 17:10:42 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B339D9D4D
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 14:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:mime-version
+        :content-transfer-encoding; s=k1; bh=RA2w/36JYK/N5a93gnOj0211yhM
+        29baV46azSB3f5us=; b=vz8kjQXZZgU36dV28vr5PUMoPSEJJSxRK5MK+6O/+Rj
+        gX8LqFHkpANoRCGHxdm6Dn2eha5vrPyw9XDo7zYEJmfK7a3QJGeIQxKbOY5VjKob
+        Vn4Ue4CFZG9UAfuJ5UvrlwL5a5JB49jEu95d9o1vGYtNJQiV8nnxtoCgiGqYiLxk
+        =
+Received: (qmail 3963250 invoked from network); 18 Aug 2022 23:02:25 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Aug 2022 23:02:25 +0200
+X-UD-Smtp-Session: l3s3148p1@W8lhTIrm5asucref
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Simon Horman <horms@verge.net.au>,
+        Julian Anastasov <ja@ssi.bg>, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        lvs-devel@vger.kernel.org
+Subject: [PATCH] netfilter: move from strlcpy with unused retval to strscpy
+Date:   Thu, 18 Aug 2022 23:02:24 +0200
+Message-Id: <20220818210224.8563-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e5408c1-a29d-4427-876f-08da815cf314
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Aug 2022 21:02:24.0904
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bMIxl0HqbnG2fP8aga+E47u5OXh3IGPmX+D1uP3x76o3PS8/EDPZDT+Y3qAf9frMDA1PJ07V6kEtf0dXEWY73Zrapu1t4/XsoUYqRr4YRjY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR11MB6778
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Follow the advice of the below link and prefer 'strscpy' in this
+subsystem. Conversion is 1:1 because the return value is not used.
+Generated by a coccinelle script.
 
+Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
+ net/netfilter/ipset/ip_set_core.c |  4 ++--
+ net/netfilter/ipvs/ip_vs_ctl.c    |  8 ++++----
+ net/netfilter/nf_log.c            |  4 ++--
+ net/netfilter/nf_tables_api.c     |  2 +-
+ net/netfilter/nft_osf.c           |  2 +-
+ net/netfilter/x_tables.c          | 20 ++++++++++----------
+ net/netfilter/xt_RATEEST.c        |  2 +-
+ 7 files changed, 21 insertions(+), 21 deletions(-)
 
-> -----Original Message-----
-> From: Jiri Pirko <jiri@resnulli.us>
-> Sent: Thursday, August 18, 2022 2:41 AM
-> To: netdev@vger.kernel.org
-> Cc: sthemmin@microsoft.com; dsahern@gmail.com; moshe@nvidia.com; Keller,
-> Jacob E <jacob.e.keller@intel.com>
-> Subject: Re: [patch iproute2-main] devlink: load port-ifname map on deman=
-d
->=20
-> Actually, please scratch this for now. Depends on Jacob's "devlink:
-> remove dl_argv_parse_put" patch. Somehow I got the impression it is
-> already merged.
->=20
-> Sorry for the fuzz.
-
-
-I'm about to send this series. Sorry for the delay, I got a bad cold earlie=
-r this week which knocked me out for a couple days.
-
-Thanks,
-Jake
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index 16ae92054baa..97130bca3ecb 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -353,7 +353,7 @@ ip_set_init_comment(struct ip_set *set, struct ip_set_comment *comment,
+ 	c = kmalloc(sizeof(*c) + len + 1, GFP_ATOMIC);
+ 	if (unlikely(!c))
+ 		return;
+-	strlcpy(c->str, ext->comment, len + 1);
++	strscpy(c->str, ext->comment, len + 1);
+ 	set->ext_size += sizeof(*c) + strlen(c->str) + 1;
+ 	rcu_assign_pointer(comment->c, c);
+ }
+@@ -1072,7 +1072,7 @@ static int ip_set_create(struct sk_buff *skb, const struct nfnl_info *info,
+ 	if (!set)
+ 		return -ENOMEM;
+ 	spin_lock_init(&set->lock);
+-	strlcpy(set->name, name, IPSET_MAXNAMELEN);
++	strscpy(set->name, name, IPSET_MAXNAMELEN);
+ 	set->family = family;
+ 	set->revision = revision;
+ 
+diff --git a/net/netfilter/ipvs/ip_vs_ctl.c b/net/netfilter/ipvs/ip_vs_ctl.c
+index efab2b06d373..83e14c704310 100644
+--- a/net/netfilter/ipvs/ip_vs_ctl.c
++++ b/net/netfilter/ipvs/ip_vs_ctl.c
+@@ -2611,7 +2611,7 @@ ip_vs_copy_service(struct ip_vs_service_entry *dst, struct ip_vs_service *src)
+ 	dst->addr = src->addr.ip;
+ 	dst->port = src->port;
+ 	dst->fwmark = src->fwmark;
+-	strlcpy(dst->sched_name, sched_name, sizeof(dst->sched_name));
++	strscpy(dst->sched_name, sched_name, sizeof(dst->sched_name));
+ 	dst->flags = src->flags;
+ 	dst->timeout = src->timeout / HZ;
+ 	dst->netmask = src->netmask;
+@@ -2805,13 +2805,13 @@ do_ip_vs_get_ctl(struct sock *sk, int cmd, void __user *user, int *len)
+ 		mutex_lock(&ipvs->sync_mutex);
+ 		if (ipvs->sync_state & IP_VS_STATE_MASTER) {
+ 			d[0].state = IP_VS_STATE_MASTER;
+-			strlcpy(d[0].mcast_ifn, ipvs->mcfg.mcast_ifn,
++			strscpy(d[0].mcast_ifn, ipvs->mcfg.mcast_ifn,
+ 				sizeof(d[0].mcast_ifn));
+ 			d[0].syncid = ipvs->mcfg.syncid;
+ 		}
+ 		if (ipvs->sync_state & IP_VS_STATE_BACKUP) {
+ 			d[1].state = IP_VS_STATE_BACKUP;
+-			strlcpy(d[1].mcast_ifn, ipvs->bcfg.mcast_ifn,
++			strscpy(d[1].mcast_ifn, ipvs->bcfg.mcast_ifn,
+ 				sizeof(d[1].mcast_ifn));
+ 			d[1].syncid = ipvs->bcfg.syncid;
+ 		}
+@@ -3561,7 +3561,7 @@ static int ip_vs_genl_new_daemon(struct netns_ipvs *ipvs, struct nlattr **attrs)
+ 	      attrs[IPVS_DAEMON_ATTR_MCAST_IFN] &&
+ 	      attrs[IPVS_DAEMON_ATTR_SYNC_ID]))
+ 		return -EINVAL;
+-	strlcpy(c.mcast_ifn, nla_data(attrs[IPVS_DAEMON_ATTR_MCAST_IFN]),
++	strscpy(c.mcast_ifn, nla_data(attrs[IPVS_DAEMON_ATTR_MCAST_IFN]),
+ 		sizeof(c.mcast_ifn));
+ 	c.syncid = nla_get_u32(attrs[IPVS_DAEMON_ATTR_SYNC_ID]);
+ 
+diff --git a/net/netfilter/nf_log.c b/net/netfilter/nf_log.c
+index edee7fa944c1..8a29290149bd 100644
+--- a/net/netfilter/nf_log.c
++++ b/net/netfilter/nf_log.c
+@@ -443,9 +443,9 @@ static int nf_log_proc_dostring(struct ctl_table *table, int write,
+ 		mutex_lock(&nf_log_mutex);
+ 		logger = nft_log_dereference(net->nf.nf_loggers[tindex]);
+ 		if (!logger)
+-			strlcpy(buf, "NONE", sizeof(buf));
++			strscpy(buf, "NONE", sizeof(buf));
+ 		else
+-			strlcpy(buf, logger->name, sizeof(buf));
++			strscpy(buf, logger->name, sizeof(buf));
+ 		mutex_unlock(&nf_log_mutex);
+ 		r = proc_dostring(&tmp, write, buffer, lenp, ppos);
+ 	}
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 3cc88998b879..4ef8d723b495 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -743,7 +743,7 @@ __printf(2, 3) int nft_request_module(struct net *net, const char *fmt,
+ 		return -ENOMEM;
+ 
+ 	req->done = false;
+-	strlcpy(req->module, module_name, MODULE_NAME_LEN);
++	strscpy(req->module, module_name, MODULE_NAME_LEN);
+ 	list_add_tail(&req->list, &nft_net->module_list);
+ 
+ 	return -EAGAIN;
+diff --git a/net/netfilter/nft_osf.c b/net/netfilter/nft_osf.c
+index 0053a697c931..5d2b88091e5d 100644
+--- a/net/netfilter/nft_osf.c
++++ b/net/netfilter/nft_osf.c
+@@ -51,7 +51,7 @@ static void nft_osf_eval(const struct nft_expr *expr, struct nft_regs *regs,
+ 			snprintf(os_match, NFT_OSF_MAXGENRELEN, "%s:%s",
+ 				 data.genre, data.version);
+ 		else
+-			strlcpy(os_match, data.genre, NFT_OSF_MAXGENRELEN);
++			strscpy(os_match, data.genre, NFT_OSF_MAXGENRELEN);
+ 
+ 		strncpy((char *)dest, os_match, NFT_OSF_MAXGENRELEN);
+ 	}
+diff --git a/net/netfilter/x_tables.c b/net/netfilter/x_tables.c
+index 54a489f16b17..470282cf3fae 100644
+--- a/net/netfilter/x_tables.c
++++ b/net/netfilter/x_tables.c
+@@ -766,7 +766,7 @@ void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
+ 
+ 	msize += off;
+ 	m->u.user.match_size = msize;
+-	strlcpy(name, match->name, sizeof(name));
++	strscpy(name, match->name, sizeof(name));
+ 	module_put(match->me);
+ 	strncpy(m->u.user.name, name, sizeof(m->u.user.name));
+ 
+@@ -1146,7 +1146,7 @@ void xt_compat_target_from_user(struct xt_entry_target *t, void **dstptr,
+ 
+ 	tsize += off;
+ 	t->u.user.target_size = tsize;
+-	strlcpy(name, target->name, sizeof(name));
++	strscpy(name, target->name, sizeof(name));
+ 	module_put(target->me);
+ 	strncpy(t->u.user.name, name, sizeof(t->u.user.name));
+ 
+@@ -1827,7 +1827,7 @@ int xt_proto_init(struct net *net, u_int8_t af)
+ 	root_uid = make_kuid(net->user_ns, 0);
+ 	root_gid = make_kgid(net->user_ns, 0);
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_TABLES, sizeof(buf));
+ 	proc = proc_create_net_data(buf, 0440, net->proc_net, &xt_table_seq_ops,
+ 			sizeof(struct seq_net_private),
+@@ -1837,7 +1837,7 @@ int xt_proto_init(struct net *net, u_int8_t af)
+ 	if (uid_valid(root_uid) && gid_valid(root_gid))
+ 		proc_set_user(proc, root_uid, root_gid);
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
+ 	proc = proc_create_seq_private(buf, 0440, net->proc_net,
+ 			&xt_match_seq_ops, sizeof(struct nf_mttg_trav),
+@@ -1847,7 +1847,7 @@ int xt_proto_init(struct net *net, u_int8_t af)
+ 	if (uid_valid(root_uid) && gid_valid(root_gid))
+ 		proc_set_user(proc, root_uid, root_gid);
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_TARGETS, sizeof(buf));
+ 	proc = proc_create_seq_private(buf, 0440, net->proc_net,
+ 			 &xt_target_seq_ops, sizeof(struct nf_mttg_trav),
+@@ -1862,12 +1862,12 @@ int xt_proto_init(struct net *net, u_int8_t af)
+ 
+ #ifdef CONFIG_PROC_FS
+ out_remove_matches:
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
+ 	remove_proc_entry(buf, net->proc_net);
+ 
+ out_remove_tables:
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_TABLES, sizeof(buf));
+ 	remove_proc_entry(buf, net->proc_net);
+ out:
+@@ -1881,15 +1881,15 @@ void xt_proto_fini(struct net *net, u_int8_t af)
+ #ifdef CONFIG_PROC_FS
+ 	char buf[XT_FUNCTION_MAXNAMELEN];
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_TABLES, sizeof(buf));
+ 	remove_proc_entry(buf, net->proc_net);
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_TARGETS, sizeof(buf));
+ 	remove_proc_entry(buf, net->proc_net);
+ 
+-	strlcpy(buf, xt_prefix[af], sizeof(buf));
++	strscpy(buf, xt_prefix[af], sizeof(buf));
+ 	strlcat(buf, FORMAT_MATCHES, sizeof(buf));
+ 	remove_proc_entry(buf, net->proc_net);
+ #endif /*CONFIG_PROC_FS*/
+diff --git a/net/netfilter/xt_RATEEST.c b/net/netfilter/xt_RATEEST.c
+index 8aec1b529364..80f6624e2355 100644
+--- a/net/netfilter/xt_RATEEST.c
++++ b/net/netfilter/xt_RATEEST.c
+@@ -144,7 +144,7 @@ static int xt_rateest_tg_checkentry(const struct xt_tgchk_param *par)
+ 		goto err1;
+ 
+ 	gnet_stats_basic_sync_init(&est->bstats);
+-	strlcpy(est->name, info->name, sizeof(est->name));
++	strscpy(est->name, info->name, sizeof(est->name));
+ 	spin_lock_init(&est->lock);
+ 	est->refcnt		= 1;
+ 	est->params.interval	= info->interval;
+-- 
+2.35.1
 
