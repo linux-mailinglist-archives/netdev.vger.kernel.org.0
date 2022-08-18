@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84450598A5E
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:28:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D793D598A6E
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:28:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344398AbiHRRZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:25:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
+        id S1344687AbiHRR1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345396AbiHRRZH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:25:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274CB5303E;
-        Thu, 18 Aug 2022 10:24:47 -0700 (PDT)
+        with ESMTP id S1344896AbiHRR06 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:26:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C2F5FF7F;
+        Thu, 18 Aug 2022 10:26:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADFB8B822AF;
-        Thu, 18 Aug 2022 17:24:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EC51C433C1;
-        Thu, 18 Aug 2022 17:24:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D72086170D;
+        Thu, 18 Aug 2022 17:26:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9397C433D6;
+        Thu, 18 Aug 2022 17:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660843484;
-        bh=2/qTlGQln3Nv+8rAcrymTWvvaveGe+xOUXTae4CDc0g=;
+        s=k20201202; t=1660843617;
+        bh=yO4Sdmeb0urmwPNXABS7U51vtDrMnVAyJ4gHwuD5HPA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lc6jiokWVQbHT7gAI0h0qGY+PfPKmB2tBwAlvYLce0tJMtopKk6+66z/RFIxfztRo
-         Q6/YwhwihLhSKRlbgtOs4o/VhAd+1nujEd9Bty8CwEBMsg7QPPY+V859CHPsOi7YrK
-         LooJdkyuK52sa/pvMmywj9PazyAbJvezQQgoxdV6HjbsvM/A6be7WeUi4uOKEaB3Te
-         ZuBy7dmDkFtXQEy0eYIWo2Iv4X+3c6T4vxY2soCjtFcAqwWCLzX1YOaxkaaZqaKd6j
-         DUme5Wk9YFcvOicHhgBne9Q7j2ug5HfcG1SYizh7QVKevCinLpX5J/vo2Lb3eGfLJK
-         c2QH91Nm1B5Dw==
-Date:   Thu, 18 Aug 2022 10:24:43 -0700
+        b=GSF6+YcexksGUVSCpWzf+c8HwvVElVoE7FgGFo+GGm2JtyWMO4zlpkpas6KlMfcps
+         Fu8KbSTMkZ10HWj2QeQ2QztUqPrR8RomdcgBaAusrElIKwWRCWEfjGgQ80oa/U3QP/
+         RdMLchl48kyLg5Em0y/u9V/VM91cSK4GdKCensTNxs7yHir+MIJaVgKIUgrRVth6rg
+         GWxFD+9IM7lBZH8iwythMEELFF9S5urFN2jXl4bmGy5NHyvHYjZ0z0A0N4h/aCCQ/S
+         qP9W2oSkp7cDeKp5Yv5+byfpsQrnm6TPlXu+ktXKKEzw3PW9sj2ib/3xPslOS5+Q2x
+         I/ytUCMiuS8nw==
+Date:   Thu, 18 Aug 2022 10:26:56 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Sean Anderson <sean.anderson@seco.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net] net: phy: Warn if phy is attached when removing
-Message-ID: <20220818102443.4c7c50e8@kernel.org>
-In-Reply-To: <20220816163701.1578850-1-sean.anderson@seco.com>
-References: <20220816163701.1578850-1-sean.anderson@seco.com>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Joyce Ooi <joyce.ooi@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net] net: ethernet: altera: Add use of
+ ethtool_op_get_ts_info
+Message-ID: <20220818102656.5913ef0d@kernel.org>
+In-Reply-To: <20220817095725.97444-1-maxime.chevallier@bootlin.com>
+References: <20220817095725.97444-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,24 +58,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022 12:37:01 -0400 Sean Anderson wrote:
-> netdevs using phylib can be oopsed from userspace in the following
-> manner:
+On Wed, 17 Aug 2022 11:57:25 +0200 Maxime Chevallier wrote:
+> Add the ethtool_op_get_ts_info() callback to ethtool ops, so that we can
+> at least use software timestamping.
 > 
-> $ ip link set $iface up
-> $ echo $(basename $(readlink /sys/class/net/$iface/phydev)) > \
->       /sys/class/net/$iface/phydev/driver/unbind
-> $ ip link set $iface down
-> 
-> However, the traceback provided is a bit too late, since it does not
-> capture the root of the problem (unbinding the driver). It's also
-> possible that the memory has been reallocated if sufficient time passes
-> between when the phy is detached and when the netdev touches the phy
-> (which could result in silent memory corruption). Add a warning at the
-> source of the problem. A future patch could make this more robust by
-> calling dev_close.
+> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 
-Hm, so we're adding the warning to get more detailed reports "from the
-field"? Guess we've all done that, so fair.
-
-Acks? It can still make -rc2 if that matters...
+I think our definition of bug is too narrow to fit this. It falls into
+"never worked" category AFAICT so to net-next it goes.
