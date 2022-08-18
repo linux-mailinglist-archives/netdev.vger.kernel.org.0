@@ -2,77 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE6C0598C4A
+	by mail.lfdr.de (Postfix) with ESMTP id 768BF598C49
 	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 21:02:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345576AbiHRTBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 15:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58326 "EHLO
+        id S1345547AbiHRTBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 15:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345561AbiHRTBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 15:01:10 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBD260519;
-        Thu, 18 Aug 2022 12:01:08 -0700 (PDT)
+        with ESMTP id S243653AbiHRTBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 15:01:07 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F69E60519;
+        Thu, 18 Aug 2022 12:01:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660849268; x=1692385268;
+  t=1660849266; x=1692385266;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/uzU0E8lxeXRnqHNkzeua+Yt6mytWG/uTafpsWnGjCw=;
-  b=K7SfhjC2OR/h5CDmakVMGzbc9TaJDc50aVWeu+S9OSLYDwuTyAn/KWDA
-   ExhmQzG4/OQ/l5G7Wgs9kpaNZG+IVVxS0mfBeFQp0PbLcbY2kHDSk/0Gi
-   KxvnFPL5WdpolKuy4mye1+hW3arrzYQ/+9hp4uCcKnlRkUFBBl0vOaf1T
-   Z6dXYovIWUvdZL/SF5xBHaispVgZjV4hLSX9qxybiWpqJUYy97V9C78lt
-   2d1s0nQcT2Kr6H9QMb1i9dvFBZj7PiroQAPkMO1xyRQ4BrqUbYVNaBmP2
-   a7TTdKIu9NyJgxEW/h2K4+zOT0Yo6HgJ6QTVxlDPzTQ4HrZffWvxzqolY
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="294123575"
+  bh=UT56lC7QOp4MxlyojoBS7ZXz7FiD5TK+NpgYdHE5Hws=;
+  b=mseMCnBDmoUe/eWq3UdJJS+7jjqoq4P1XWGZas+itOs7uezXwlQVyzc0
+   qFDR0BtPiJsGYFDf+u2Vy0x+DvH8RCXFIis2B+VkJ+l0EZzkh6sEuVRmB
+   im6eN5PO8ISiyFOWAhEKZRrTeiLtXwqsmcoH32FDSWiPg/cT3gDVU99hC
+   jKy77z7q0LE9T+WGoN8kdNby3pK0Qxz92udx0nEFJV8ZvOClTPT/rf96a
+   cMg6oxZylml+2wf3uG/alOkec/BDJNJa1g7iT23tFLU8o6o8wqSP70SYH
+   cjH+tqxZP6E049V5Bm4+ebR4KqEPs1sng34oXOAEfOZWGOvIQMysKxn3T
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292844776"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="294123575"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 12:01:08 -0700
+   d="scan'208";a="292844776"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 12:01:06 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="711062157"
+   d="scan'208";a="676174804"
 Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Aug 2022 12:01:03 -0700
+  by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2022 12:01:03 -0700
 Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oOklK-0000Qd-1w;
+        id 1oOklK-0000Qh-26;
         Thu, 18 Aug 2022 19:01:02 +0000
-Date:   Fri, 19 Aug 2022 03:00:32 +0800
+Date:   Fri, 19 Aug 2022 03:00:33 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Dmitry Safonov <dima@arista.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Dmitry Safonov <dima@arista.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leonard Crestez <cdleonard@gmail.com>,
+To:     Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>
+Cc:     kbuild-all@lists.01.org, "David S . Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        linux-crypto@vger.kernel.org
-Subject: Re: [PATCH 12/31] net/tcp: Add tcp_parse_auth_options()
-Message-ID: <202208190256.Kj0PqjuN-lkp@intel.com>
-References: <20220818170005.747015-13-dima@arista.com>
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH net-next v4 08/10] net: phylink: Adjust advertisement
+ based on rate adaptation
+Message-ID: <202208190223.zfo3KG9D-lkp@intel.com>
+References: <20220818164616.2064242-9-sean.anderson@seco.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818170005.747015-13-dima@arista.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+In-Reply-To: <20220818164616.2064242-9-sean.anderson@seco.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -81,59 +72,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dmitry,
+Hi Sean,
 
-Thank you for the patch! Perhaps something to improve:
+I love your patch! Yet something to improve:
 
-[auto build test WARNING on e34cfee65ec891a319ce79797dda18083af33a76]
+[auto build test ERROR on net-next/master]
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628
-base:   e34cfee65ec891a319ce79797dda18083af33a76
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220819/202208190256.Kj0PqjuN-lkp@intel.com/config)
+url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220819-005121
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git e34cfee65ec891a319ce79797dda18083af33a76
+config: i386-randconfig-a005 (https://download.01.org/0day-ci/archive/20220819/202208190223.zfo3KG9D-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
 reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/c206ead11e78dec4ec0058427d494521f9d53c3f
+        # https://github.com/intel-lab-lkp/linux/commit/f4857d8d4f852b1cc3ae278785c209a7a0da0f67
         git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628
-        git checkout c206ead11e78dec4ec0058427d494521f9d53c3f
+        git fetch --no-tags linux-review Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220819-005121
+        git checkout f4857d8d4f852b1cc3ae278785c209a7a0da0f67
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/phy/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
->> net/ipv4/tcp_ipv4.c:665:7: warning: "CONFIG_TCP_MD5SIG" is not defined, evaluates to 0 [-Wundef]
-     665 | #elif CONFIG_TCP_MD5SIG
-         |       ^~~~~~~~~~~~~~~~~
+   drivers/net/phy/phylink.c: In function 'phylink_get_capabilities':
+>> drivers/net/phy/phylink.c:543:21: error: implicit declaration of function 'phylink_cap_from_speed_duplex' [-Werror=implicit-function-declaration]
+     543 |                     phylink_cap_from_speed_duplex(max_speed, DUPLEX_FULL)) {
+         |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
-vim +/CONFIG_TCP_MD5SIG +665 net/ipv4/tcp_ipv4.c
+vim +/phylink_cap_from_speed_duplex +543 drivers/net/phy/phylink.c
 
-   649	
-   650	/*
-   651	 *	This routine will send an RST to the other tcp.
-   652	 *
-   653	 *	Someone asks: why I NEVER use socket parameters (TOS, TTL etc.)
-   654	 *		      for reset.
-   655	 *	Answer: if a packet caused RST, it is not for a socket
-   656	 *		existing in our system, if it is matched to a socket,
-   657	 *		it is just duplicate segment or bug in other side's TCP.
-   658	 *		So that we build reply only basing on parameters
-   659	 *		arrived with segment.
-   660	 *	Exception: precedence violation. We do not implement it in any case.
-   661	 */
-   662	
-   663	#ifdef CONFIG_TCP_AO
-   664	#define OPTION_BYTES MAX_TCP_OPTION_SPACE
- > 665	#elif CONFIG_TCP_MD5SIG
-   666	#define OPTION_BYTES TCPOLEN_MD5SIG_ALIGNED
-   667	#else
-   668	#define OPTION_BYTES sizeof(__be32)
-   669	#endif
-   670	
+   431	
+   432	/**
+   433	 * phylink_get_capabilities() - get capabilities for a given MAC
+   434	 * @interface: phy interface mode defined by &typedef phy_interface_t
+   435	 * @mac_capabilities: bitmask of MAC capabilities
+   436	 * @rate_adaptation: type of rate adaptation being performed
+   437	 *
+   438	 * Get the MAC capabilities that are supported by the @interface mode and
+   439	 * @mac_capabilities.
+   440	 */
+   441	unsigned long phylink_get_capabilities(phy_interface_t interface,
+   442					       unsigned long mac_capabilities,
+   443					       int rate_adaptation)
+   444	{
+   445		int max_speed = phylink_interface_max_speed(interface);
+   446		unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
+   447		unsigned long adapted_caps = 0;
+   448	
+   449		switch (interface) {
+   450		case PHY_INTERFACE_MODE_USXGMII:
+   451			caps |= MAC_10000FD | MAC_5000FD | MAC_2500FD;
+   452			fallthrough;
+   453	
+   454		case PHY_INTERFACE_MODE_RGMII_TXID:
+   455		case PHY_INTERFACE_MODE_RGMII_RXID:
+   456		case PHY_INTERFACE_MODE_RGMII_ID:
+   457		case PHY_INTERFACE_MODE_RGMII:
+   458		case PHY_INTERFACE_MODE_QSGMII:
+   459		case PHY_INTERFACE_MODE_SGMII:
+   460		case PHY_INTERFACE_MODE_GMII:
+   461			caps |= MAC_1000HD | MAC_1000FD;
+   462			fallthrough;
+   463	
+   464		case PHY_INTERFACE_MODE_REVRMII:
+   465		case PHY_INTERFACE_MODE_RMII:
+   466		case PHY_INTERFACE_MODE_SMII:
+   467		case PHY_INTERFACE_MODE_REVMII:
+   468		case PHY_INTERFACE_MODE_MII:
+   469			caps |= MAC_10HD | MAC_10FD;
+   470			fallthrough;
+   471	
+   472		case PHY_INTERFACE_MODE_100BASEX:
+   473			caps |= MAC_100HD | MAC_100FD;
+   474			break;
+   475	
+   476		case PHY_INTERFACE_MODE_TBI:
+   477		case PHY_INTERFACE_MODE_MOCA:
+   478		case PHY_INTERFACE_MODE_RTBI:
+   479		case PHY_INTERFACE_MODE_1000BASEX:
+   480			caps |= MAC_1000HD;
+   481			fallthrough;
+   482		case PHY_INTERFACE_MODE_1000BASEKX:
+   483		case PHY_INTERFACE_MODE_TRGMII:
+   484			caps |= MAC_1000FD;
+   485			break;
+   486	
+   487		case PHY_INTERFACE_MODE_2500BASEX:
+   488			caps |= MAC_2500FD;
+   489			break;
+   490	
+   491		case PHY_INTERFACE_MODE_5GBASER:
+   492			caps |= MAC_5000FD;
+   493			break;
+   494	
+   495		case PHY_INTERFACE_MODE_XGMII:
+   496		case PHY_INTERFACE_MODE_RXAUI:
+   497		case PHY_INTERFACE_MODE_XAUI:
+   498		case PHY_INTERFACE_MODE_10GBASER:
+   499		case PHY_INTERFACE_MODE_10GKR:
+   500			caps |= MAC_10000FD;
+   501			break;
+   502	
+   503		case PHY_INTERFACE_MODE_25GBASER:
+   504			caps |= MAC_25000FD;
+   505			break;
+   506	
+   507		case PHY_INTERFACE_MODE_XLGMII:
+   508			caps |= MAC_40000FD;
+   509			break;
+   510	
+   511		case PHY_INTERFACE_MODE_INTERNAL:
+   512			caps |= ~0;
+   513			break;
+   514	
+   515		case PHY_INTERFACE_MODE_NA:
+   516		case PHY_INTERFACE_MODE_MAX:
+   517			break;
+   518		}
+   519	
+   520		switch (rate_adaptation) {
+   521		case RATE_ADAPT_OPEN_LOOP:
+   522			/* TODO */
+   523			fallthrough;
+   524		case RATE_ADAPT_NONE:
+   525			adapted_caps = 0;
+   526			break;
+   527		case RATE_ADAPT_PAUSE: {
+   528			/* The MAC must support asymmetric pause towards the local
+   529			 * device for this. We could allow just symmetric pause, but
+   530			 * then we might have to renegotiate if the link partner
+   531			 * doesn't support pause. This is because there's no way to
+   532			 * accept pause frames without transmitting them if we only
+   533			 * support symmetric pause.
+   534			 */
+   535			if (!(mac_capabilities & MAC_SYM_PAUSE) ||
+   536			    !(mac_capabilities & MAC_ASYM_PAUSE))
+   537				break;
+   538	
+   539			/* We can't adapt if the MAC doesn't support the interface's
+   540			 * max speed at full duplex.
+   541			 */
+   542			if (mac_capabilities &
+ > 543			    phylink_cap_from_speed_duplex(max_speed, DUPLEX_FULL)) {
+   544				/* Although a duplex-adapting phy might exist, we
+   545				 * conservatively remove these modes because the MAC
+   546				 * will not be aware of the half-duplex nature of the
+   547				 * link.
+   548				 */
+   549				adapted_caps = GENMASK(__fls(caps), __fls(MAC_10HD));
+   550				adapted_caps &= ~(MAC_1000HD | MAC_100HD | MAC_10HD);
+   551			}
+   552			break;
+   553		}
+   554		case RATE_ADAPT_CRS:
+   555			/* The MAC must support half duplex at the interface's max
+   556			 * speed.
+   557			 */
+   558			if (mac_capabilities &
+   559			    phylink_cap_from_speed_duplex(max_speed, DUPLEX_HALF)) {
+   560				adapted_caps = GENMASK(__fls(caps), __fls(MAC_10HD));
+   561				adapted_caps &= mac_capabilities;
+   562			}
+   563			break;
+   564		}
+   565	
+   566		return (caps & mac_capabilities) | adapted_caps;
+   567	}
+   568	EXPORT_SYMBOL_GPL(phylink_get_capabilities);
+   569	
 
 -- 
 0-DAY CI Kernel Test Service
