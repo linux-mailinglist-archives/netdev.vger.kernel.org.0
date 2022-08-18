@@ -2,55 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DE8F597AFC
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 03:23:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA239597AF8
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 03:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242539AbiHRBUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 21:20:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        id S242506AbiHRBWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 21:22:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiHRBUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 21:20:21 -0400
+        with ESMTP id S231627AbiHRBWF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 21:22:05 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3069F9C2D4;
-        Wed, 17 Aug 2022 18:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED8B9D8EB;
+        Wed, 17 Aug 2022 18:22:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1wjNnEeWUlQ11d/DDSaV1am9RVfAubnHe8nnYNJpOAw=; b=miOb4XZuseYEdMTWbsL+Kt8p38
-        lSKwWOMnNOj26DexFexCKZY/z4OQTmdQmoqUX80Y98C6xn3zfRspyUoA7NMduLU9P0rr4AsftzTrZ
-        1QXm7X2wI2/rDn2VhMVNApabtaq39PMeeb629xgLdEJycITLY62uhEcK8ZuI7zkM+a70=;
+        bh=i72VD66WgCVZTQVjy1dTMukabastibOoJBga/T4/dVA=; b=DXp1IR7Ibis2k80vTHqcm89YA7
+        PAe0aWbJlixIOkObm3miN5MB0v3xlidMdQdMpaLNc7pmmsr0HXh9/4dS0pW7yr9HVL0LuUFsEp3pt
+        ZBEbgdH7adSKbK/MIUZ+w66a9VuqMnjU16tTKcuutJtbLkcc77JMudSYvpJXqTerwTiU=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oOUCY-00DgZC-7A; Thu, 18 Aug 2022 03:20:02 +0200
-Date:   Thu, 18 Aug 2022 03:20:02 +0200
+        id 1oOUEL-00DgZu-Ks; Thu, 18 Aug 2022 03:21:53 +0200
+Date:   Thu, 18 Aug 2022 03:21:53 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Wei Fang <wei.fang@nxp.com>
-Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 1/2] dt: ar803x: Document disable-hibernation property
-Message-ID: <Yv2TwkThceuU+m5l@lunn.ch>
-References: <20220812145009.1229094-1-wei.fang@nxp.com>
- <20220812145009.1229094-2-wei.fang@nxp.com>
- <YvZggGkdlAUuQ1NG@lunn.ch>
- <DB9PR04MB8106F2BFD8150A1C76669F9C88689@DB9PR04MB8106.eurprd04.prod.outlook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
+        Beniamin Sandu <beniaminsandu@gmail.com>, hkallweit1@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: sfp: use simplified HWMON_CHANNEL_INFO macro
+Message-ID: <Yv2UMcVUSwiaFyH6@lunn.ch>
+References: <20220813204658.848372-1-beniaminsandu@gmail.com>
+ <20220817085429.4f7e4aac@kernel.org>
+ <Yv0TaF+So0euV0DR@shell.armlinux.org.uk>
+ <20220817101916.10dec387@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DB9PR04MB8106F2BFD8150A1C76669F9C88689@DB9PR04MB8106.eurprd04.prod.outlook.com>
+In-Reply-To: <20220817101916.10dec387@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
@@ -61,20 +52,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hi Andrew,
+On Wed, Aug 17, 2022 at 10:19:16AM -0700, Jakub Kicinski wrote:
+> On Wed, 17 Aug 2022 17:12:24 +0100 Russell King (Oracle) wrote:
+> > On Wed, Aug 17, 2022 at 08:54:29AM -0700, Jakub Kicinski wrote:
+> > > On Sat, 13 Aug 2022 23:46:58 +0300 Beniamin Sandu wrote:  
+> > > > This makes the code look cleaner and easier to read.  
+> > > 
+> > > Last call for reviews..  
+> > 
+> > I had a quick look and couldn't see anything obviously wrong, but then
+> > I'm no expert with the hwmon code.
 > 
-> 	Your suggestion is indeed an effective solution, but I checked both the datasheet
-> and the driver of AR803x PHYs and found that the qca,clk-out-frequency and the
-> qca,keep-pll-enabled properties are associated with the CLK_25M pin of AR803x PHYs.
-> But there is a case that CLK_25M pin is not used on some platforms.
-> Taking our i.MX8DXL platform as an example, the stmmac and AR8031 PHY are applied
-> on this platform, but the CLK_25M pin of AR8031 is not used. So when I used the method
-> you mentioned above, it did not work as expected. In this case, we can only disable the
-> hibernation mode of AR803x PHYs and keep the RX_CLK always outputting a valid clock
-> so that the stmmac can complete the software reset operation.
+> That makes two of us, good enough! :) Thanks for taking a look.
 
-What happens to the RX_CLK when you unplug the cable? It is no longer
-receiving anything, so i would expect the RX_CLK to stop ticking. Does
-that cause problems for the MAC?
+It would of been nice to Cc: the HWMON maintainer. His input would of
+been just as valuable as a PHY Maintainer.
 
      Andrew
