@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32134598940
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B36598948
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:51:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345029AbiHRQqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
+        id S1345043AbiHRQqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:46:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345012AbiHRQqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:46:36 -0400
+        with ESMTP id S1345014AbiHRQqh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:46:37 -0400
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2080.outbound.protection.outlook.com [40.107.22.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF1CBFA9F;
-        Thu, 18 Aug 2022 09:46:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0F9BFC67;
+        Thu, 18 Aug 2022 09:46:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IntrSFmcWSuwsIQ2b9D3nUo7ku5wgzScj2C2XoQBk/SlUtsoTVkCf4MOOQGK87D2DV7MCesZ1SMx1orDYclhtbVE1BpbwBgeRUeNXyxm3FonOJyWpNaGrVCBZ+aE5ed1QCA5Pvu0iXooROuXdkHrD/YEHhhKr+6l5a6TOONnLMAunfzeeLE/foEkztKXPbEEgAKCJOZlBPqAPBvOtsIs8b/rkBJOnT9hc4Y2NnKTxkVagsFlYWxfUB2/J9tBdfpPAjfPjIGO4V+rw0cm6p0x0CxEaYsxxdCsEMequ3oAUJzj6kCJMagpmsl7JjCwlPwjF3zUAkSBYbzzcykrsZ3Zog==
+ b=eeHcxDJjReSkx96j1kaD/0fKF7TRCprADaax5frCG68n+RInyzLLDZBRLPLyus9B1r77RlPEhxrhEjTWf0OigIRxMTfNFNoBBuOTofs8h8V82USSVtwEcib080fDu6Q0EBW/f6NlMpznHiN182GEPVVCXXthmdqK/YsC5GdFMYdyguz416egpMny6F1l/KFDN7KFttW+XDoOsou5YvGWGvYHggaqe8jwNWJlugvtQAx45d5Rsvvsgf4p51gykV8y0uoR5M7NAZyFSwwAj2YhKVCB8TKW/Mee6f5AF4SrrPIMteHPRzK+7wyi9J7TuTmRphrDxKx+EHX/aBwCNx3M1w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0jJ1221tKVunCESv1du32WcB+bJC4tZ6d5/Onqpe3VQ=;
- b=c0a44C1NEUq5mAem7IGwZ9+xvA2JYA72SOQJm/bxnU8eLafUzPtSYBGXD/A1aOVSEFeEIOkhZyVFgtDXyNNOIz2KM0DTRQ8VEI9luqK7ED5o7Jd0i/KED46REyNkxuJggvcy5c1c2jphYzctq0O2E8Z6hq570nWVHuAEn0Sj+TvkXvk6pxaL/sPeDN1YpKOrpDnTMJUvaqFpt4K2QcbW5lGoBM2hEJHcZb8f0w20wa0cexwDnfnwS+FzEDTLk+3M0U81bbMyhKJJi2ir2KPvwAXZ8gkB4z0RvigFntubW2yxPnZePyHkuacm0lmEtU7HfBnb8VQts8F2Or49LDZ4iA==
+ bh=U5iFmrfwwkbvAIW1DiuwmjTQzQA6j27fMaHDaUsHht0=;
+ b=H+vBiK+2pR1XK2NG+Tv8orzRlhTWNe5+tb3gPwsIQVJqtP7w9ghd3h//PviVTzd6lGy/+2wT0viU6QYgjfaMwitbdXXw1ZwY2hIoO4u3Zg84C/EC/AvibFIsnvO5AQVnQqkHHCypYWG7YaxC/Kno8uWRKU7t4jGgc3BJ4N1Xm8/pYTHEwewh2GJTSp0YzhQWwmkII6fSXtND+wwHC0Ryto2R0E9LH1FteXiz0B6qhmdLnLeI3oYzPf8uR1JxNmg8V1CtQLELwCkWpDbs2qZpeIULl/BS+narPFv4DcqeeeVOes1nGiMAzptMeBLV0YcEoN2VBN/EAuqzAQDih5GrrQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0jJ1221tKVunCESv1du32WcB+bJC4tZ6d5/Onqpe3VQ=;
- b=sMIMarbrgd9Cl/Ef1Jh2C8wyTcUiN2l3J3SlluKnSIyq8AbViNT8PYI2sKNoYwk51BCS0mUb12toIrukTtZFEhS4NLSnbzncw+KOkhsLu6Ny1RppvU6uIU5+IGQLQXD5j96aEO4HZPgy4WahwHDzDnAWQirQflUANQaToqmm43+qrFwaZmFMeqHI1z4gEMi5envXjUF/+ZpFh5AeePry23AD1PmdplnRcBBGgfvMR6ooEI+oiZrGvURB7px1unLadLzowgfFIEYsJnc1JJ0D5NrrsLkdbxbL6yGNS8cSMMs47ad2aQ3xtyeezUy/5fsWEYTj6Uz3lnvNjM7X9TqNqw==
+ bh=U5iFmrfwwkbvAIW1DiuwmjTQzQA6j27fMaHDaUsHht0=;
+ b=Gxhyeev612xdWPVePtk5xZRvQM+B7/1MVlsXRYRr/6GQfH5wAx1jIncewsp/fF6+LrELzt7bZeEGH6vRBoPdyMCD9aRBlJK98UYtle6THKuty5iy9OjaOAWSK9dQy1LslYpq+exHNDyVNSJtLxGmG5HeeZZtSDX3y1xn/72KqbOTosfwqRI3oqVZHgbynLqEVK9L6zZmL2J1dFf8xPamQXTN/qV7/5w4GIHGSr0vCMrpJ6oSRNEPfyjIzUoC2/eBHh8rwqtekBQZunBFHoRAQq3eNcd8/I33Sg4yk1zW03zle2q2m6dzfcnCtMhEEe1MxRNWcNgvBfGlmU5aMDwafg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7649.eurprd03.prod.outlook.com (2603:10a6:102:1dc::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 16:46:31 +0000
+ 2022 16:46:33 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Thu, 18 Aug 2022
- 16:46:31 +0000
+ 16:46:33 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v4 03/10] net: phylink: Export phylink_caps_to_linkmodes
-Date:   Thu, 18 Aug 2022 12:46:09 -0400
-Message-Id: <20220818164616.2064242-4-sean.anderson@seco.com>
+Subject: [PATCH net-next v4 04/10] net: phylink: Generate caps and convert to linkmodes separately
+Date:   Thu, 18 Aug 2022 12:46:10 -0400
+Message-Id: <20220818164616.2064242-5-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220818164616.2064242-1-sean.anderson@seco.com>
 References: <20220818164616.2064242-1-sean.anderson@seco.com>
@@ -63,52 +63,52 @@ X-ClientProxiedBy: MN2PR07CA0019.namprd07.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 71392dc4-a816-4cbc-eeda-08da81393422
+X-MS-Office365-Filtering-Correlation-Id: 9128ab41-a051-4d8b-cac5-08da81393526
 X-MS-TrafficTypeDiagnostic: PAXPR03MB7649:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: DhNh/lWdUPuqqJ/AKNqmv01V+9PGLhGfLBSyjaSVQaG1NxlhGO2VTZq+1yNpWHtuMc73pt/ijwNx/TRqSjdn4GAjTzbmNuZN0N7Gh/qyqyBNH9o2R8LlfyWgZaPf2KxOufZcg9y9yE4Yf0E2dPc/w3+hJN2QJ5sq+10NEkhfTYTTD/eMdYmN9eju714SKpTDqph2sB5LnaXFIs4K/ciO3yZ/os3uLsrZyXsJ1SP6QhB6t1mC8ZzpZ2oHqpDdJJd8LfA1mhOMf/DTSEtM77dqqhWt7gvmdBurVXOpbstvxpATg2BJNGfxTT3mxIDJXf+P1/l0FnTPw/HjDoVRusXe4UFMabohl645nkg7r62vsbC4YzVqrQsQmd/l9oj+hQ/El3y8y59OzYvb9oSxUiDZclF1luBkOcSOsWIJ7bcXof1nGAFY8xBmQP+EcDwawh8HJlxFjPnZlUswlvtTciXsZH2PlIxYA/DSiLshCHbfvzB6h53rfxQ1nU8aIwTWWx0acuQXEd286XraQlTUAFiw5fO4LGn3NMR3yzWZlj0h9jOsicYSGiTCuPP0HTuVLJKXQDDqRGbHv5Nziww3JuXRjtN2K5zVHm24AsY9y10jTPRErGlLGfDBz8FktrzEcZkokiLva7EX+7LByNP+hGzO27Dilzv6G6Vb0SouCEhbh30si4Dqsys+gYd5Qm+ZTurvLfnurnnH7Q/k7lnPXaLdmQ1c2GEtn87SJzuIHJ7jEycj1G4fIogEo2TH19r0jf/EHqVntiHViZgiwZP2cOVqig==
+X-Microsoft-Antispam-Message-Info: D4UJxDuNtAWrHBYbiCZaowD7H/JVqJmunko70lr95FHROgpnSQJGvsb6nlw4a9geiFIlyzceDdLWZpkJiO+0lMTkaIIHiwdxs4I1hHHIugBIStRSbKoV9OdVlaCJCMpYTL8koVpZll2vQhS9nYIPKYtufxmv1ZGf1RyvwaRMFqjX3GWvXZaagchSgcOGAWQehVFvRIqwAGhoFiia7ay8L4j1Sd+VFoYzxC9Y2/nWKYgNnf+HgmGlza2HMLdDcm2zZ8fmVCY3RiYkzjLYpSeLRmjoGZIC8zRQX6tI8ydoOkUakp2Vyn/vs24ZXA+zQwlic8KD/9TWWL3cwoNwZ6VDafElAomSCxveYYsEuCQYlZ0HFEpHYnlXNDcLBYEHII0nByvTORcCk27Q7AJbh/vZU0tbxLjHQDTzrTzz+Gv3OrdyPzh2VqfWUFhsK2z1pIfW1UnXZMsejt1iu1DAToTb8DrDBZ+bHkmmfDsfJS+/5/XGAmC/SJS3WBMT2qD1pcUriS2PyeDFLTldOOwzlmY0rKzkitM6+OZMG5pai+w2SEpcgaCW91t5jAQMfs2m3rqem5fK95MnFVg0Wm7yjBhsJJn3znUotQXHI750lk0JCNh146QtAkDMDFJyk6/Q+llrrvqYi6TG5l/rsPz9eZsxKWGXjfRY+oe/ey5kZfzYL9NBqqfWHVN4OUyF5ZJks1QZ2oLehZKdnef5Bm0gP7YuYxMr+Ot2j/J5tdUgTvIhlJP1HH99qY/fpMWiWUj8AmYcauS8ElgPxo4eCtlcY4qS6g==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(396003)(346002)(376002)(366004)(136003)(66476007)(66946007)(478600001)(66556008)(6486002)(8676002)(2906002)(41300700001)(107886003)(6512007)(86362001)(52116002)(4326008)(6666004)(186003)(1076003)(2616005)(7416002)(44832011)(5660300002)(26005)(8936002)(36756003)(54906003)(110136005)(6506007)(38350700002)(38100700002)(316002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?og3wc0X4fDq/BmX3waPefDBTgJwLJyStT2dKkuUz4YFj2JpSRtjEbxVop76r?=
- =?us-ascii?Q?4dnqx8qpSS1un4KNia56Ny4MZK7DOCwkGIMQl6Tj6N+t/R6W6XBNEWm4WILK?=
- =?us-ascii?Q?DcPDl+k3odKHfpYH1b9g18PBwFhmRGZciQbIhO138jC/k7FHmf8nQsI/d5cI?=
- =?us-ascii?Q?439yZQkuA9ptU0vL+25+n/NcilaDYJtzqZlbldIsGvnzNYhxu841S4A0NDBD?=
- =?us-ascii?Q?Kfm4i9yomWPZCyzPv4GwNhWZ7j42W/p3FRKSqecPwtzErg0ZC8k8UeQPfeKw?=
- =?us-ascii?Q?6BlUq6BhUArhTodWS/eTCn7UY9+l7CLrrwBGrhyBJNZHjObyJcgUB2VvNcre?=
- =?us-ascii?Q?p6Q/xl2Uzk4iPg2hkzxkdR6Cr/fnB+brjrtAD4Io7y/x8Cu427gH5eFJeb9S?=
- =?us-ascii?Q?/kr3U12jJZMdOLLbzeXwWYoeX7xgJLqGkQAcOwQdze4P29L9coM9/fgaHfor?=
- =?us-ascii?Q?FAeIxRpGUEs3TyS4s8anu03Axb+0WJlJvPoLSIWeb4Qk+AsgFfQo40gr5IXt?=
- =?us-ascii?Q?pJ9PSGfM1FlDBA2ZAHwzDC5yhTifkdGag2s9nggemfysSOfC3cMJIH/i05X7?=
- =?us-ascii?Q?dJJz8xzlA2wYlHeQ0SIabimE2/4bQeSrpAu9gIcVmOjPfda7Wm7sPAQ/EA3C?=
- =?us-ascii?Q?vEc6aN4QXQ575uQUyuCst7lDIJkkY0slMVoe6slFNU8t5fDOFZy4PGsSH3zn?=
- =?us-ascii?Q?rCVB244Xjkc13Gh+ytR/XzDAj/jFhrqhBY5iEhYWSFO/lqrtMOmZjCikqufO?=
- =?us-ascii?Q?Qd+GaQYx2JcqNilpMPRPhukyzWC3JXL54JDfJHLCs4BGZWeHQcWivVfMHjeP?=
- =?us-ascii?Q?tA4nqgXY4eWyEKGa29B0zHWdRtbcqlI92ETw+AOTTvq3hN2B0gJejIYgwwev?=
- =?us-ascii?Q?C4irhWz5sC/GKhTjrm14/w+kdknrFVByajhxlEgSz9fstW0GARJm1SfJra8E?=
- =?us-ascii?Q?LIcSxj3Lavv/eHQ3OEBQ7fDbG4xL/iwfnPs7JUqg85wirAZjGDojM88zV8el?=
- =?us-ascii?Q?yejAYp9Mn+sPtnev3BarjW/vSlKDifNwICwqliFIRyxUzkPnLeYfE9RHsjKL?=
- =?us-ascii?Q?JrWgHH5ghEDNtIUCpRnfHLqE0+SAPi8pmSrtL/REo/zJ1kpw7JtPMhLv8eeW?=
- =?us-ascii?Q?CICtJQVP/F/2yqEf2DdQNFNcx6Nyf3xhGOd6oALXxR6PwHHze9vMV+nPNqQg?=
- =?us-ascii?Q?slbT3hStUwYWBGA9OI+93RINjQCv2LOY8xzZ0v7TOs/NlA94hL26/G8CMTHy?=
- =?us-ascii?Q?5E9SASZg7P9eJ2B+ncaJQXsV9ynqqOj48e02PPXPI3hVJSG78QpufJ5U2miS?=
- =?us-ascii?Q?dghX/Q0EZXObrpXynq3/a/S9pY5Udlms5cilxgg+zAcgjwmn1SwJvXgiO1Kq?=
- =?us-ascii?Q?MyWRMh6hVRd0/VAVsnKIEYl9QZD1Dl5O1PIhomGx1XnLJIA+RfVr1GMy1uuW?=
- =?us-ascii?Q?8itKRqkm+N7YRl3SsQe5vuln/2bOeu/29prvNfxxUgpA8t8We4osb1HC1FFj?=
- =?us-ascii?Q?qa4907oOato83IeRKe3e3pYywAVNn7M7Q2lcND3+72qFnYnMGEZk/Bua6IrY?=
- =?us-ascii?Q?WBFw1Bnsj+B82fi2v1Nvjf3jzdZ5Gx8uvsEO22FNe8RMeYyj1/WqMQSmqcNS?=
- =?us-ascii?Q?Hg=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hyYBn09OHaUBehqhVLQchuWstE3FNMvxjKClryK1a9wby5pv5JbJKGlwLKuy?=
+ =?us-ascii?Q?hAUUvJLpqg3ZdW7vTEWujXayN2crcbXLbXvNohI2zbRKxQ1/tVYjZ8pfuY86?=
+ =?us-ascii?Q?nZuyFQyGUY3KS52YammjH6jxmFpEdAuggsAOFuoBIy0fC7dyNwzyX+z0TAbm?=
+ =?us-ascii?Q?DJQInZqK9zQolDuBgAQHJEDOPmUVj3f7A2i/GuVsiJTtaPAyGbCJZ58M3IJo?=
+ =?us-ascii?Q?TgWzYOQLWEo7YHUxF0ewy3ohg48gttJvcu4XifUKy/2Fvgy4XphWgwSJePn3?=
+ =?us-ascii?Q?JfolqmqX2QCuJTEbAcpJyL+mYQwg39kn6cezwrEqKafEE5qFpYxPsob+Eihc?=
+ =?us-ascii?Q?Jajd2kSJpyOVI9C+gIZkrtS6uk/G3uMcHqJhPxROlcIi4dgrrHdrfNvGoHRL?=
+ =?us-ascii?Q?ZNggQRNm7hvlS3+4cLnSDzWZH83nr3OFH/Gdp4qaoQBCP7EDJ3O7R6OoEKhg?=
+ =?us-ascii?Q?Z+2p817dCfoqGRBAEJg187qutBe/R725B/XBWamfBJJ40HYcQgnTLKlULwUg?=
+ =?us-ascii?Q?5+ndSmFLwNsr2K0x+TpGEpfzuUZuC2pR7sMV6Q64v7P2S00DXrg/zowwxXJv?=
+ =?us-ascii?Q?fRxC8JL0AMb8O8TCP4TrLE9FeoWmy4r8J1dFfkrJuBJ3tn0YUorSTNXeEdHW?=
+ =?us-ascii?Q?/QD48Egyh5FQSyHff+LvTdmJLAQRzr8EMDd2peFR3XjesSQ9lXTXZ9L1811j?=
+ =?us-ascii?Q?LrPv7VosQppYLcX9Mc4NyPsSwUvO1Q6jBhfTnHKfX7MqdX0zF6ewHG7TA+LO?=
+ =?us-ascii?Q?xms77ys5XRWyKwKnRM0GzfJ/0DHdt9yOqt8Du1l2mlW0kwYyfCKMI+9a1tNJ?=
+ =?us-ascii?Q?D7QnwiCaM2F94L6WO9jnaVUWZIC7b0p1/990ygk9gkiLYX/1pKVtr2r+WnC3?=
+ =?us-ascii?Q?tQpUg98v3L8GMa2F4FcGS1Lsi3GAnqqor0Dye2jzO+P+wJcZ2JIw9k6BBobS?=
+ =?us-ascii?Q?Ba8eZMXdUyxr8F1lFqRdi4Rbtyy/SC4WtVLRbHk42RFlpvdR4Spua2wbzfIz?=
+ =?us-ascii?Q?jeOA7P0lHh4+j7DQfH66A1PJJxZ1ZpcouM44Gfij2uOmqX1tHv5SutNYkZV0?=
+ =?us-ascii?Q?8KI/WZyQLdeJMn9GPithhrdcDAjvH/acEW1FOd1+EQfkc+prNpYqVPdAjEut?=
+ =?us-ascii?Q?/C/hO8qOgynLnFWPJzzVpcK6tA8yv9F486GBfTgsq4rxJGF8Keo8Z0CjFNAp?=
+ =?us-ascii?Q?khOfbQkW3UBpMo43Mt1fO6mQynBtc/i9b7fCLfCkN4PpB3kOHavS3g//Xl/8?=
+ =?us-ascii?Q?pGyWWXAmFWtyAmdzk+KRa5x4MhXG//SBqjZ/u6BVzFQnpfrVT13YvUfr1MZ8?=
+ =?us-ascii?Q?jdumZSJyKBNqMtefMeX5Gp28L1Y9GOjv+JHsZkK5KGQqDRlDi84Xf/QZvuPD?=
+ =?us-ascii?Q?p64HkYKFtA4DzkO9KGAteqnKsbh3D3aNFSkU4V9rFGXEFKCp3cZJo7+c9+aC?=
+ =?us-ascii?Q?76B50zxNZtDbxW2aHEEJEwWSlAkAChRcV1C9XUWr4os8pe3UcTliXyghlLjV?=
+ =?us-ascii?Q?9pZ99uHtSVYUklCVzMcmScmlP2GL4ZkyGu4RQLDOMXX+M/WS5+Yz0q/rFEbb?=
+ =?us-ascii?Q?GgLo6rs8MY7s5aNPSRYBp+So7c95ZL1hkI6PjO5fhOMrrBisiosZIE7+Z894?=
+ =?us-ascii?Q?rw=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71392dc4-a816-4cbc-eeda-08da81393422
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9128ab41-a051-4d8b-cac5-08da81393526
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:46:31.6513
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:46:33.2450
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: l/w9MdXoFa+1k3d+DX6S+e77U+aZavQYkH5ITrISfpQyLWQR7zCH9pbK84qnbZGu2URKPq1d/9d/qCgWXz8rPw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HllbtHbLm/O2t6ZYyQ7VmxzYkhhOKaT4yDSeNIsSPLWJMBPxGZTZLvtqcVJQLQ9voRGSdXbppjosMdF3xARKlg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7649
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,61 +120,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This function is convenient for MAC drivers. They can use it to add or
-remove particular link modes based on capabilities (such as if half
-duplex is not supported for a particular interface mode).
+If we call phylink_caps_to_linkmodes directly from
+phylink_get_linkmodes, it is difficult to re-use this functionality in
+MAC drivers. This is because MAC drivers must then work with an ethtool
+linkmode bitmap, instead of with mac capabilities. Instead, let the
+caller of phylink_get_linkmodes do the conversion. To reflect this
+change, rename the function to phylink_get_capabilities.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
 (no changes since v1)
 
- drivers/net/phy/phylink.c | 12 ++++++++++--
- include/linux/phylink.h   |  1 +
- 2 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/net/phy/phylink.c | 21 +++++++++++----------
+ include/linux/phylink.h   |  4 ++--
+ 2 files changed, 13 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index b08716fe22c1..51e66320526f 100644
+index 51e66320526f..68a58ab6a8ed 100644
 --- a/drivers/net/phy/phylink.c
 +++ b/drivers/net/phy/phylink.c
-@@ -155,8 +155,15 @@ static const char *phylink_an_mode_str(unsigned int mode)
- 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
- }
- 
--static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
--				      unsigned long caps)
-+/**
-+ * phylink_caps_to_linkmodes() - Convert capabilities to ethtool link modes
-+ * @linkmodes: ethtool linkmode mask (must be already initialised)
-+ * @caps: bitmask of MAC capabilities
-+ *
-+ * Set all possible pause, speed and duplex linkmodes in @linkmodes that are
-+ * supported by the @caps. @linkmodes must have been initialised previously.
-+ */
-+void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps)
- {
- 	if (caps & MAC_SYM_PAUSE)
- 		__set_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes);
-@@ -295,6 +302,7 @@ static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
- 		__set_bit(ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT, linkmodes);
- 	}
- }
-+EXPORT_SYMBOL_GPL(phylink_caps_to_linkmodes);
+@@ -305,17 +305,15 @@ void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps)
+ EXPORT_SYMBOL_GPL(phylink_caps_to_linkmodes);
  
  /**
-  * phylink_get_linkmodes() - get acceptable link modes
+- * phylink_get_linkmodes() - get acceptable link modes
+- * @linkmodes: ethtool linkmode mask (must be already initialised)
++ * phylink_get_capabilities() - get capabilities for a given MAC
+  * @interface: phy interface mode defined by &typedef phy_interface_t
+  * @mac_capabilities: bitmask of MAC capabilities
+  *
+- * Set all possible pause, speed and duplex linkmodes in @linkmodes that
+- * are supported by the @interface mode and @mac_capabilities. @linkmodes
+- * must have been initialised previously.
++ * Get the MAC capabilities that are supported by the @interface mode and
++ * @mac_capabilities.
+  */
+-void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+-			   unsigned long mac_capabilities)
++unsigned long phylink_get_capabilities(phy_interface_t interface,
++				       unsigned long mac_capabilities)
+ {
+ 	unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
+ 
+@@ -390,9 +388,9 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 		break;
+ 	}
+ 
+-	phylink_caps_to_linkmodes(linkmodes, caps & mac_capabilities);
++	return caps & mac_capabilities;
+ }
+-EXPORT_SYMBOL_GPL(phylink_get_linkmodes);
++EXPORT_SYMBOL_GPL(phylink_get_capabilities);
+ 
+ /**
+  * phylink_generic_validate() - generic validate() callback implementation
+@@ -408,11 +406,14 @@ void phylink_generic_validate(struct phylink_config *config,
+ 			      unsigned long *supported,
+ 			      struct phylink_link_state *state)
+ {
++	unsigned long caps;
+ 	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+ 
+ 	phylink_set_port_modes(mask);
+ 	phylink_set(mask, Autoneg);
+-	phylink_get_linkmodes(mask, state->interface, config->mac_capabilities);
++	caps = phylink_get_capabilities(state->interface,
++					config->mac_capabilities);
++	phylink_caps_to_linkmodes(mask, caps);
+ 
+ 	linkmode_and(supported, supported, mask);
+ 	linkmode_and(state->advertising, state->advertising, mask);
 diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 9629bcd594b1..2a6d2f7a7ebb 100644
+index 2a6d2f7a7ebb..661d1d4fdbec 100644
 --- a/include/linux/phylink.h
 +++ b/include/linux/phylink.h
-@@ -534,6 +534,7 @@ void pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
- 		 phy_interface_t interface, int speed, int duplex);
+@@ -535,8 +535,8 @@ void pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
  #endif
  
-+void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps);
- void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
- 			   unsigned long mac_capabilities);
+ void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps);
+-void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+-			   unsigned long mac_capabilities);
++unsigned long phylink_get_capabilities(phy_interface_t interface,
++				       unsigned long mac_capabilities);
  void phylink_generic_validate(struct phylink_config *config,
+ 			      unsigned long *supported,
+ 			      struct phylink_link_state *state);
 -- 
 2.35.1.1320.gc452695387.dirty
 
