@@ -2,67 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D5C4597B81
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 04:31:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B886F597B8B
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 04:37:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240728AbiHRC33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 22:29:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
+        id S242776AbiHRCfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 22:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239403AbiHRC32 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 22:29:28 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37974DB04
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 19:29:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=3Q3HE+D5YQ4YxJbHPiJRwAI28kmD0AtZkeVh5fzzryg=; b=gHPrvRBavCgtxv+1Q28ubdgds7
-        O229kVw8iRoS8yCpQ+Zv68nAXknenmpMUDpkPElBVdcZjoLxUFPifF0lsezAixUGpdTKTnMrD7E/M
-        N/JIySc5RDy8bEUlLikJh2FZHI60SU2Cn4RTP8MIQHUDVbS3hMdrc2cY1r3jl6BDYZzQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oOVHc-00DhDw-OV; Thu, 18 Aug 2022 04:29:20 +0200
-Date:   Thu, 18 Aug 2022 04:29:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Sergei Antonov <saproj@gmail.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Yang Wei <yang.wei9@zte.com.cn>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: Re: [PATCH] net: moxa: MAC address reading, generating, validity
- checking
-Message-ID: <Yv2kAO5l4uFcqh7D@lunn.ch>
-References: <20220817171043.459267-1-saproj@gmail.com>
+        with ESMTP id S240545AbiHRCfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 22:35:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE4098A66
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 19:35:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD9E261483
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 02:35:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FFD4C433C1;
+        Thu, 18 Aug 2022 02:35:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660790106;
+        bh=pF2fCZvdjORPHZyyTeF0268/iTNYNV7ft+X54kgOEkQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=gPOUAqpKvcQxV4qKUtAlbAvGOAUkhbOBj+NHhYf84JiEKGuMjXWU62ihdyxtCwNEA
+         xAaSYbF/Q2Jm9VGEgl8UPPtqL7v9VCKsj1f+OOFS4T2h1pdqSxlrZ/rzdRPuHEwvo3
+         h/xU/8DZeZiNb+v5KreL9feeKqIC+y/WT6zUReipTbwANjILhReqUleWv00tWptMmr
+         EutPjzqx8QN7Zx+YClFyXMhJHgsuprv9oZpcn1VMyK+yx033B2aS+4sJXym0v/naf/
+         NxXtTsBBkZJquIcAUTZpThOdkNPBwX0TuFRG1yd0eWwAJE4h94rLFXof8IO+G41yN1
+         Lo0wK9WnYOW5g==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 1/2] net: improve and fix netlink kdoc
+Date:   Wed, 17 Aug 2022 19:35:03 -0700
+Message-Id: <20220818023504.105565-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817171043.459267-1-saproj@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -539,6 +533,11 @@ static int moxart_mac_probe(struct platform_device *pdev)
->  
->  	SET_NETDEV_DEV(ndev, &pdev->dev);
->  
-> +	ret = platform_get_ethdev_address(p_dev, ndev);
-> +	if (ret)
-> +		eth_hw_addr_random(ndev);
+Subsequent patch will render the kdoc from
+include/uapi/linux/netlink.h into Documentation.
+We need to fix the warnings. While at it move
+the comments on struct nlmsghdr to a proper
+kdoc comment.
 
-You should look at the return value. It could be EPROBE_DEFFER,
-because the EEPROM has not probed yet. You need to return this value,
-so that the device core will probe other devices, including the
-EEPROM, and then later reprobe this driver.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ include/uapi/linux/netlink.h | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-	Andrew
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index 855dffb4c1c3..9b5bd4ba6ed4 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -41,12 +41,20 @@ struct sockaddr_nl {
+        	__u32		nl_groups;	/* multicast groups mask */
+ };
+ 
++/**
++ * struct nlmsghdr - fixed format metadata header of Netlink messages
++ * @nlmsg_len:   Length of message including header
++ * @nlmsg_type:  Message content type
++ * @nlmsg_flags: Additional flags
++ * @nlmsg_seq:   Sequence number
++ * @nlmsg_pid:   Sending process port ID
++ */
+ struct nlmsghdr {
+-	__u32		nlmsg_len;	/* Length of message including header */
+-	__u16		nlmsg_type;	/* Message content */
+-	__u16		nlmsg_flags;	/* Additional flags */
+-	__u32		nlmsg_seq;	/* Sequence number */
+-	__u32		nlmsg_pid;	/* Sending process port ID */
++	__u32		nlmsg_len;
++	__u16		nlmsg_type;
++	__u16		nlmsg_flags;
++	__u32		nlmsg_seq;
++	__u32		nlmsg_pid;
+ };
+ 
+ /* Flags values */
+@@ -337,6 +345,9 @@ enum netlink_attribute_type {
+  *	bitfield32 type (U32)
+  * @NL_POLICY_TYPE_ATTR_MASK: mask of valid bits for unsigned integers (U64)
+  * @NL_POLICY_TYPE_ATTR_PAD: pad attribute for 64-bit alignment
++ *
++ * @__NL_POLICY_TYPE_ATTR_MAX: number of attributes
++ * @NL_POLICY_TYPE_ATTR_MAX: highest attribute number
+  */
+ enum netlink_policy_type_attr {
+ 	NL_POLICY_TYPE_ATTR_UNSPEC,
+-- 
+2.37.2
+
