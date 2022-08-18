@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 357035989DC
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1820C5989DF
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 19:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345270AbiHRRBH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 13:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34926 "EHLO
+        id S1345287AbiHRRBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 13:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345371AbiHRRAg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:00:36 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 943A4C12C3
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:22 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id s11-20020a1cf20b000000b003a52a0945e8so1262202wmc.1
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:22 -0700 (PDT)
+        with ESMTP id S1345353AbiHRRAc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 13:00:32 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55576C12D3
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:24 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id s23so1124862wmj.4
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 10:00:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=arista.com; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=L90WBYS3C60aaBnYTHmtkcCSIx2kDWekzsfS4mQsNSY=;
-        b=HU96OM3Z5VzLoORJIFvHYxlRG0o+lr/JjMn01/psIAnXn5nPMh+SSVML8zirIFlH2R
-         C4Y9yO1Hu6M+rr9aeA8ru1LsHe3OLxf2vn0L1kBV1ksId09AMOZqQO7CWeaPHoNdesG2
-         DHFDaPStrSa0XdofkFnzmpGyLJ4tTx9Uu1ErMG1G92mIBRVBO0TWO0tzIJexJPUeC6zq
-         S5dk6lvabGJqyVhdo6lNQ/TbOgLWZrIWUuro9/bCvbcptoeYC+Zc5n8RjtTvSeRYT7Hk
-         WyoNfjDPID6TSt1Zz5c7FxOW3WfPxpXOfh95YIBXmFTiUegtMThgyCuxKz+IhdNsdHyz
-         gajg==
+        bh=R5vc7GzcNWumOn9JquR429nbSMPLXQ9P0kN3Q20wPUs=;
+        b=fn9uEdA5s99SWlPIZ9yzvDZ6XG4grd7Osb95QfV38sHKteVwmelB+SJpJwvpUE/tJU
+         Ghti1+Tqi5ZnbB7Mv7wyYYoXdnQFvRY7HBRrJHvoyuyQRZceh9poBiK4yeoU6dEJ1mKq
+         9eFy4BtffMrSt1hNqTfLo80If5oKmRzsGQnvtPINNEIETsNnoi/7wkwhVDttLDMs6TfL
+         KDfB8cjT8bjEq27Zq3TDhSoQVJMH59QEm7gQVSRtyoncPJE8U9E331p0pPwE/uj98emM
+         rOSb4ujV5SV1ACDBV2Dz5/zqdfNRvasbmKHoE19O3WYLig3XZfvrs+jVzc0J1wrCBOvp
+         YZNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=L90WBYS3C60aaBnYTHmtkcCSIx2kDWekzsfS4mQsNSY=;
-        b=h1XtWRSkxF60UG1F8HaM1cIyNkGmJB6N4zs7J6UKqBsf6wHhYkpqLkw8DQQof9fvWa
-         u9Q0R8XWAiaGu4i6/nT/bUy/l+9hfloVJUXa3HfcCQdvruJl+GlC3FRoQgWVFHWc2iGh
-         SYkNNOM0lDoqJzSJ4DYI7H0WE61N9nn222wM4Xs/GzuJsBTS3w0zuLcAFSOaHlSade+J
-         3215ziLlSwC4UOFJEUeEeAqgX8oqjjBXgR7ux47pngdGnAOBDoXme03FX8dsrIPeRuRJ
-         Te/JO91oxq+i26X5P/ESBJnnW7zu2FdT9MG1kB+mW8tKaNrfHLRqvifSd15bMDQ68TVl
-         0vQw==
-X-Gm-Message-State: ACgBeo2YArKdIsPzAWw7/S3ot10kVMZo3pSDyOZ6UQv/E64NsLD2d1KM
-        Mh+zWDKe+Ke8uMnPbVSPtpLyJA==
-X-Google-Smtp-Source: AA6agR4Nma0C2vf8UbANGAZdbtriinSGm8AskQyzE2xuoLZvT25JBwHYXunZTBt8HmvHOlu1Reya+w==
-X-Received: by 2002:a05:600c:3b92:b0:3a6:8d6:9a2f with SMTP id n18-20020a05600c3b9200b003a608d69a2fmr5784416wms.159.1660842020572;
-        Thu, 18 Aug 2022 10:00:20 -0700 (PDT)
+        bh=R5vc7GzcNWumOn9JquR429nbSMPLXQ9P0kN3Q20wPUs=;
+        b=Ngx0ViN9VwxGDYT8LMjHwS+1Tkctb6CKEjqTkkhcMGmdrvx84KcXrMbPTXjuJPd/u7
+         Q+eLP/K7mvSyJ4rRK7e1QbnIBBZmY28QEAY3Lfv71hXj9ciAdRWpTgVzkeCKPGroDho0
+         KsUzIcgqjc9n5s/B56i4HdM0w4HJWg8SwOU6LhcHdRKckxTzeHZJT5a0GS+sH9pTGhZY
+         nAUn64zCCt4+1VHvLNLr1UWBlxJUruc+Dt3WfDkWTEz+fLJj3orjQJi1yh89o4EBxxPP
+         4+CpfUXqeIIy/klrTmiNjaHEwIzsJSIv2csnp1dpNT+j9h0+fIp+el7hF/Zwww9VR1hK
+         Qk2Q==
+X-Gm-Message-State: ACgBeo3ZZazJ/3ug/f3BCtxzyQ8RlpnAmIo8TcKfxzG9vXe6atN27Ke6
+        98Ztyj5KQhDOaOPyN2sB//6P2w==
+X-Google-Smtp-Source: AA6agR62r1WlDfKmuAHByWBLF9d2NE41yBu/QbmDx85WTMW77UasaJu/SMTq1McVnurK321xrfY2OQ==
+X-Received: by 2002:a7b:c007:0:b0:3a5:f600:4ff5 with SMTP id c7-20020a7bc007000000b003a5f6004ff5mr2528338wmb.110.1660842022025;
+        Thu, 18 Aug 2022 10:00:22 -0700 (PDT)
 Received: from Mindolluin.ire.aristanetworks.com ([217.173.96.166])
-        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.19
+        by smtp.gmail.com with ESMTPSA id be13-20020a05600c1e8d00b003a511e92abcsm2662169wmb.34.2022.08.18.10.00.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 10:00:20 -0700 (PDT)
+        Thu, 18 Aug 2022 10:00:21 -0700 (PDT)
 From:   Dmitry Safonov <dima@arista.com>
 To:     Eric Dumazet <edumazet@google.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -68,9 +68,9 @@ Cc:     Dmitry Safonov <dima@arista.com>,
         Salam Noureddine <noureddine@arista.com>,
         Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
         linux-crypto@vger.kernel.org
-Subject: [PATCH 05/31] net/tcp: Use crypto_pool for TCP-MD5
-Date:   Thu, 18 Aug 2022 17:59:39 +0100
-Message-Id: <20220818170005.747015-6-dima@arista.com>
+Subject: [PATCH 06/31] net/ipv6: sr: Switch to using crypto_pool
+Date:   Thu, 18 Aug 2022 17:59:40 +0100
+Message-Id: <20220818170005.747015-7-dima@arista.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220818170005.747015-1-dima@arista.com>
 References: <20220818170005.747015-1-dima@arista.com>
@@ -86,605 +86,375 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use crypto_pool API that was designed with tcp_md5sig_pool in mind.
-The conversion to use crypto_pool will allow:
-- to reuse ahash_request(s) for different users
-- to allocate only one per-CPU scratch buffer rather than a new one for
+The conversion to use crypto_pool has the following upsides:
+- now SR uses asynchronous API which may potentially free CPU cycles and
+  improve performance for of CPU crypto algorithm providers;
+- hash descriptors now don't have to be allocated on boot, but only at
+  the moment SR starts using HMAC and until the last HMAC secret is
+  deleted;
+- potentially reuse ahash_request(s) for different users
+- allocate only one per-CPU scratch buffer rather than a new one for
   each user
-- to have a common API for net/ users that need ahash on RX/TX fast path
+- have a common API for net/ users that need ahash on RX/TX fast path
 
 Signed-off-by: Dmitry Safonov <dima@arista.com>
 ---
- include/net/tcp.h        | 22 +++------
- net/ipv4/Kconfig         |  2 +-
- net/ipv4/tcp.c           | 99 +++++++++++-----------------------------
- net/ipv4/tcp_ipv4.c      | 90 +++++++++++++++++++++---------------
- net/ipv4/tcp_minisocks.c | 22 +++++++--
- net/ipv6/tcp_ipv6.c      | 53 ++++++++++-----------
- 6 files changed, 128 insertions(+), 160 deletions(-)
+ include/net/seg6_hmac.h |   7 --
+ net/ipv6/Kconfig        |   2 +-
+ net/ipv6/seg6.c         |   3 -
+ net/ipv6/seg6_hmac.c    | 204 ++++++++++++++++------------------------
+ 4 files changed, 80 insertions(+), 136 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 831cd1e24687..75bb817928c1 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1654,12 +1654,6 @@ union tcp_md5sum_block {
- #endif
+diff --git a/include/net/seg6_hmac.h b/include/net/seg6_hmac.h
+index 2b5d2ee5613e..d6b7820ecda2 100644
+--- a/include/net/seg6_hmac.h
++++ b/include/net/seg6_hmac.h
+@@ -32,13 +32,6 @@ struct seg6_hmac_info {
+ 	u8 alg_id;
  };
  
--/* - pool: digest algorithm, hash description and scratch buffer */
--struct tcp_md5sig_pool {
--	struct ahash_request	*md5_req;
--	void			*scratch;
+-struct seg6_hmac_algo {
+-	u8 alg_id;
+-	char name[64];
+-	struct crypto_shash * __percpu *tfms;
+-	struct shash_desc * __percpu *shashs;
 -};
 -
- /* - functions */
- int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
- 			const struct sock *sk, const struct sk_buff *skb);
-@@ -1715,17 +1709,15 @@ tcp_inbound_md5_hash(const struct sock *sk, const struct sk_buff *skb,
- #define tcp_twsk_md5_key(twsk)	NULL
- #endif
- 
--bool tcp_alloc_md5sig_pool(void);
--
--struct tcp_md5sig_pool *tcp_get_md5sig_pool(void);
--static inline void tcp_put_md5sig_pool(void)
--{
--	local_bh_enable();
--}
-+struct crypto_pool_ahash;
-+int tcp_md5_alloc_crypto_pool(void);
-+void tcp_md5_release_crypto_pool(void);
-+void tcp_md5_add_crypto_pool(void);
-+extern int tcp_md5_crypto_pool_id;
- 
--int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *, const struct sk_buff *,
-+int tcp_md5_hash_skb_data(struct crypto_pool_ahash *, const struct sk_buff *,
- 			  unsigned int header_len);
--int tcp_md5_hash_key(struct tcp_md5sig_pool *hp,
-+int tcp_md5_hash_key(struct crypto_pool_ahash *hp,
- 		     const struct tcp_md5sig_key *key);
- 
- /* From tcp_fastopen.c */
-diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
-index e983bb0c5012..c341864e4398 100644
---- a/net/ipv4/Kconfig
-+++ b/net/ipv4/Kconfig
-@@ -733,7 +733,7 @@ config DEFAULT_TCP_CONG
- 
- config TCP_MD5SIG
- 	bool "TCP: MD5 Signature Option support (RFC2385)"
+ extern int seg6_hmac_compute(struct seg6_hmac_info *hinfo,
+ 			     struct ipv6_sr_hdr *hdr, struct in6_addr *saddr,
+ 			     u8 *output);
+diff --git a/net/ipv6/Kconfig b/net/ipv6/Kconfig
+index 658bfed1df8b..5be1dab0f178 100644
+--- a/net/ipv6/Kconfig
++++ b/net/ipv6/Kconfig
+@@ -304,7 +304,7 @@ config IPV6_SEG6_LWTUNNEL
+ config IPV6_SEG6_HMAC
+ 	bool "IPv6: Segment Routing HMAC support"
+ 	depends on IPV6
 -	select CRYPTO
 +	select CRYPTO_POOL
- 	select CRYPTO_MD5
- 	help
- 	  RFC2385 specifies a method of giving MD5 protection to TCP sessions.
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index a4a171656d7d..7c54b47e848f 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -244,6 +244,7 @@
- #define pr_fmt(fmt) "TCP: " fmt
+ 	select CRYPTO_HMAC
+ 	select CRYPTO_SHA1
+ 	select CRYPTO_SHA256
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 73aaabf0e966..96b80e1d04c1 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -552,9 +552,6 @@ int __init seg6_init(void)
+ 
+ void seg6_exit(void)
+ {
+-#ifdef CONFIG_IPV6_SEG6_HMAC
+-	seg6_hmac_exit();
+-#endif
+ #ifdef CONFIG_IPV6_SEG6_LWTUNNEL
+ 	seg6_iptunnel_exit();
+ #endif
+diff --git a/net/ipv6/seg6_hmac.c b/net/ipv6/seg6_hmac.c
+index d43c50a7310d..3732dd993925 100644
+--- a/net/ipv6/seg6_hmac.c
++++ b/net/ipv6/seg6_hmac.c
+@@ -35,6 +35,7 @@
+ #include <net/xfrm.h>
  
  #include <crypto/hash.h>
 +#include <crypto/pool.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/types.h>
-@@ -4395,92 +4396,45 @@ int tcp_getsockopt(struct sock *sk, int level, int optname, char __user *optval,
- EXPORT_SYMBOL(tcp_getsockopt);
+ #include <net/seg6.h>
+ #include <net/genetlink.h>
+ #include <net/seg6_hmac.h>
+@@ -70,6 +71,12 @@ static const struct rhashtable_params rht_params = {
+ 	.obj_cmpfn		= seg6_hmac_cmpfn,
+ };
  
- #ifdef CONFIG_TCP_MD5SIG
--static DEFINE_PER_CPU(struct tcp_md5sig_pool, tcp_md5sig_pool);
--static DEFINE_MUTEX(tcp_md5sig_mutex);
--static bool tcp_md5sig_pool_populated = false;
-+int tcp_md5_crypto_pool_id = -1;
-+EXPORT_SYMBOL(tcp_md5_crypto_pool_id);
- 
--static void __tcp_alloc_md5sig_pool(void)
-+int tcp_md5_alloc_crypto_pool(void)
- {
--	struct crypto_ahash *hash;
--	int cpu;
--
--	hash = crypto_alloc_ahash("md5", 0, CRYPTO_ALG_ASYNC);
--	if (IS_ERR(hash))
--		return;
--
--	for_each_possible_cpu(cpu) {
--		void *scratch = per_cpu(tcp_md5sig_pool, cpu).scratch;
--		struct ahash_request *req;
--
--		if (!scratch) {
--			scratch = kmalloc_node(sizeof(union tcp_md5sum_block) +
--					       sizeof(struct tcphdr),
--					       GFP_KERNEL,
--					       cpu_to_node(cpu));
--			if (!scratch)
--				return;
--			per_cpu(tcp_md5sig_pool, cpu).scratch = scratch;
--		}
--		if (per_cpu(tcp_md5sig_pool, cpu).md5_req)
--			continue;
--
--		req = ahash_request_alloc(hash, GFP_KERNEL);
--		if (!req)
--			return;
-+	int ret;
- 
--		ahash_request_set_callback(req, 0, NULL, NULL);
-+	ret = crypto_pool_reserve_scratch(sizeof(union tcp_md5sum_block) +
-+					  sizeof(struct tcphdr));
-+	if (ret)
-+		return ret;
- 
--		per_cpu(tcp_md5sig_pool, cpu).md5_req = req;
-+	ret = crypto_pool_alloc_ahash("md5");
-+	if (ret >= 0) {
-+		tcp_md5_crypto_pool_id = ret;
-+		return 0;
- 	}
--	/* before setting tcp_md5sig_pool_populated, we must commit all writes
--	 * to memory. See smp_rmb() in tcp_get_md5sig_pool()
--	 */
--	smp_wmb();
--	tcp_md5sig_pool_populated = true;
-+	return ret;
++struct seg6_hmac_algo {
++	u8 alg_id;
++	char name[64];
++	int crypto_pool_id;
++};
++
+ static struct seg6_hmac_algo hmac_algos[] = {
+ 	{
+ 		.alg_id = SEG6_HMAC_ALGO_SHA1,
+@@ -115,55 +122,17 @@ static struct seg6_hmac_algo *__hmac_get_algo(u8 alg_id)
+ 	return NULL;
  }
-+EXPORT_SYMBOL(tcp_md5_alloc_crypto_pool);
  
--bool tcp_alloc_md5sig_pool(void)
-+void tcp_md5_release_crypto_pool(void)
- {
--	if (unlikely(!tcp_md5sig_pool_populated)) {
--		mutex_lock(&tcp_md5sig_mutex);
+-static int __do_hmac(struct seg6_hmac_info *hinfo, const char *text, u8 psize,
+-		     u8 *output, int outlen)
+-{
+-	struct seg6_hmac_algo *algo;
+-	struct crypto_shash *tfm;
+-	struct shash_desc *shash;
+-	int ret, dgsize;
 -
--		if (!tcp_md5sig_pool_populated)
--			__tcp_alloc_md5sig_pool();
+-	algo = __hmac_get_algo(hinfo->alg_id);
+-	if (!algo)
+-		return -ENOENT;
 -
--		mutex_unlock(&tcp_md5sig_mutex);
--	}
--	return tcp_md5sig_pool_populated;
-+	crypto_pool_release(tcp_md5_crypto_pool_id);
- }
--EXPORT_SYMBOL(tcp_alloc_md5sig_pool);
-+EXPORT_SYMBOL(tcp_md5_release_crypto_pool);
- 
+-	tfm = *this_cpu_ptr(algo->tfms);
 -
--/**
-- *	tcp_get_md5sig_pool - get md5sig_pool for this user
-- *
-- *	We use percpu structure, so if we succeed, we exit with preemption
-- *	and BH disabled, to make sure another thread or softirq handling
-- *	wont try to get same context.
-- */
--struct tcp_md5sig_pool *tcp_get_md5sig_pool(void)
-+void tcp_md5_add_crypto_pool(void)
- {
--	local_bh_disable();
--
--	if (tcp_md5sig_pool_populated) {
--		/* coupled with smp_wmb() in __tcp_alloc_md5sig_pool() */
--		smp_rmb();
--		return this_cpu_ptr(&tcp_md5sig_pool);
--	}
--	local_bh_enable();
--	return NULL;
-+	crypto_pool_add(tcp_md5_crypto_pool_id);
- }
--EXPORT_SYMBOL(tcp_get_md5sig_pool);
-+EXPORT_SYMBOL(tcp_md5_add_crypto_pool);
- 
--int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *hp,
-+int tcp_md5_hash_skb_data(struct crypto_pool_ahash *hp,
- 			  const struct sk_buff *skb, unsigned int header_len)
- {
- 	struct scatterlist sg;
- 	const struct tcphdr *tp = tcp_hdr(skb);
--	struct ahash_request *req = hp->md5_req;
-+	struct ahash_request *req = hp->req;
- 	unsigned int i;
- 	const unsigned int head_data_len = skb_headlen(skb) > header_len ?
- 					   skb_headlen(skb) - header_len : 0;
-@@ -4514,16 +4468,17 @@ int tcp_md5_hash_skb_data(struct tcp_md5sig_pool *hp,
- }
- EXPORT_SYMBOL(tcp_md5_hash_skb_data);
- 
--int tcp_md5_hash_key(struct tcp_md5sig_pool *hp, const struct tcp_md5sig_key *key)
-+int tcp_md5_hash_key(struct crypto_pool_ahash *hp,
-+		     const struct tcp_md5sig_key *key)
- {
- 	u8 keylen = READ_ONCE(key->keylen); /* paired with WRITE_ONCE() in tcp_md5_do_add */
- 	struct scatterlist sg;
- 
- 	sg_init_one(&sg, key->key, keylen);
--	ahash_request_set_crypt(hp->md5_req, &sg, NULL, keylen);
-+	ahash_request_set_crypt(hp->req, &sg, NULL, keylen);
- 
- 	/* We use data_race() because tcp_md5_do_add() might change key->key under us */
--	return data_race(crypto_ahash_update(hp->md5_req));
-+	return data_race(crypto_ahash_update(hp->req));
- }
- EXPORT_SYMBOL(tcp_md5_hash_key);
- 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 72feb74706e6..6bafe7429902 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -79,6 +79,7 @@
- #include <linux/btf_ids.h>
- 
- #include <crypto/hash.h>
-+#include <crypto/pool.h>
- #include <linux/scatterlist.h>
- 
- #include <trace/events/tcp.h>
-@@ -1206,10 +1207,6 @@ static int __tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 	key = sock_kmalloc(sk, sizeof(*key), gfp | __GFP_ZERO);
- 	if (!key)
- 		return -ENOMEM;
--	if (!tcp_alloc_md5sig_pool()) {
--		sock_kfree_s(sk, key, sizeof(*key));
+-	dgsize = crypto_shash_digestsize(tfm);
+-	if (dgsize > outlen) {
+-		pr_debug("sr-ipv6: __do_hmac: digest size too big (%d / %d)\n",
+-			 dgsize, outlen);
 -		return -ENOMEM;
 -	}
- 
- 	memcpy(key->key, newkey, newkeylen);
- 	key->keylen = newkeylen;
-@@ -1228,8 +1225,13 @@ int tcp_md5_do_add(struct sock *sk, const union tcp_md5_addr *addr,
- 		   int family, u8 prefixlen, int l3index, u8 flags,
- 		   const u8 *newkey, u8 newkeylen)
+-
+-	ret = crypto_shash_setkey(tfm, hinfo->secret, hinfo->slen);
+-	if (ret < 0) {
+-		pr_debug("sr-ipv6: crypto_shash_setkey failed: err %d\n", ret);
+-		goto failed;
+-	}
+-
+-	shash = *this_cpu_ptr(algo->shashs);
+-	shash->tfm = tfm;
+-
+-	ret = crypto_shash_digest(shash, text, psize, output);
+-	if (ret < 0) {
+-		pr_debug("sr-ipv6: crypto_shash_digest failed: err %d\n", ret);
+-		goto failed;
+-	}
+-
+-	return dgsize;
+-
+-failed:
+-	return ret;
+-}
+-
+ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
+ 		      struct in6_addr *saddr, u8 *output)
  {
--	if (tcp_md5sig_info_add(sk, GFP_KERNEL))
-+	if (tcp_md5_alloc_crypto_pool())
-+		return -ENOMEM;
-+
-+	if (tcp_md5sig_info_add(sk, GFP_KERNEL)) {
-+		tcp_md5_release_crypto_pool();
- 		return -ENOMEM;
-+	}
- 
- 	static_branch_inc(&tcp_md5_needed.key);
- 
-@@ -1242,8 +1244,12 @@ int tcp_md5_key_copy(struct sock *sk, const union tcp_md5_addr *addr,
- 		     int family, u8 prefixlen, int l3index,
- 		     struct tcp_md5sig_key *key)
- {
--	if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC)))
-+	tcp_md5_add_crypto_pool();
-+
-+	if (tcp_md5sig_info_add(sk, sk_gfp_mask(sk, GFP_ATOMIC))) {
-+		tcp_md5_release_crypto_pool();
- 		return -ENOMEM;
-+	}
- 
- 	atomic_inc(&tcp_md5_needed.key.key.enabled);
- 
-@@ -1342,7 +1348,7 @@ static int tcp_v4_parse_md5_keys(struct sock *sk, int optname,
- 			      cmd.tcpm_key, cmd.tcpm_keylen);
- }
- 
--static int tcp_v4_md5_hash_headers(struct tcp_md5sig_pool *hp,
-+static int tcp_v4_md5_hash_headers(struct crypto_pool_ahash *hp,
- 				   __be32 daddr, __be32 saddr,
- 				   const struct tcphdr *th, int nbytes)
- {
-@@ -1350,7 +1356,7 @@ static int tcp_v4_md5_hash_headers(struct tcp_md5sig_pool *hp,
- 	struct scatterlist sg;
- 	struct tcphdr *_th;
- 
--	bp = hp->scratch;
-+	bp = hp->base.scratch;
- 	bp->saddr = saddr;
- 	bp->daddr = daddr;
- 	bp->pad = 0;
-@@ -1362,37 +1368,34 @@ static int tcp_v4_md5_hash_headers(struct tcp_md5sig_pool *hp,
- 	_th->check = 0;
- 
- 	sg_init_one(&sg, bp, sizeof(*bp) + sizeof(*th));
--	ahash_request_set_crypt(hp->md5_req, &sg, NULL,
-+	ahash_request_set_crypt(hp->req, &sg, NULL,
- 				sizeof(*bp) + sizeof(*th));
--	return crypto_ahash_update(hp->md5_req);
-+	return crypto_ahash_update(hp->req);
- }
- 
- static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
- 			       __be32 daddr, __be32 saddr, const struct tcphdr *th)
- {
--	struct tcp_md5sig_pool *hp;
--	struct ahash_request *req;
+ 	__be32 hmackeyid = cpu_to_be32(hinfo->hmackeyid);
+-	u8 tmp_out[SEG6_HMAC_MAX_DIGESTSIZE];
 +	struct crypto_pool_ahash hp;
++	struct seg6_hmac_algo *algo;
+ 	int plen, i, dgsize, wrsize;
++	struct crypto_ahash *tfm;
++	struct scatterlist sg;
+ 	char *ring, *off;
++	int err;
  
--	hp = tcp_get_md5sig_pool();
--	if (!hp)
-+	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
- 		goto clear_hash_noput;
--	req = hp->md5_req;
+ 	/* a 160-byte buffer for digest output allows to store highest known
+ 	 * hash function (RadioGatun) with up to 1216 bits
+@@ -176,6 +145,10 @@ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
+ 	if (plen >= SEG6_HMAC_RING_SIZE)
+ 		return -EMSGSIZE;
  
--	if (crypto_ahash_init(req))
-+	if (crypto_ahash_init(hp.req))
- 		goto clear_hash;
--	if (tcp_v4_md5_hash_headers(hp, daddr, saddr, th, th->doff << 2))
-+	if (tcp_v4_md5_hash_headers(&hp, daddr, saddr, th, th->doff << 2))
- 		goto clear_hash;
--	if (tcp_md5_hash_key(hp, key))
-+	if (tcp_md5_hash_key(&hp, key))
- 		goto clear_hash;
--	ahash_request_set_crypt(req, NULL, md5_hash, 0);
--	if (crypto_ahash_final(req))
-+	ahash_request_set_crypt(hp.req, NULL, md5_hash, 0);
-+	if (crypto_ahash_final(hp.req))
- 		goto clear_hash;
++	algo = __hmac_get_algo(hinfo->alg_id);
++	if (!algo)
++		return -ENOENT;
++
+ 	/* Let's build the HMAC text on the ring buffer. The text is composed
+ 	 * as follows, in order:
+ 	 *
+@@ -186,8 +159,36 @@ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
+ 	 * 5. All segments in the segments list (n * 128 bits)
+ 	 */
  
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- 	return 0;
+-	local_bh_disable();
++	err = crypto_pool_get(algo->crypto_pool_id, (struct crypto_pool *)&hp);
++	if (err)
++		return err;
++
+ 	ring = this_cpu_ptr(hmac_ring);
++
++	sg_init_one(&sg, ring, plen);
++
++	tfm = crypto_ahash_reqtfm(hp.req);
++	dgsize = crypto_ahash_digestsize(tfm);
++	if (dgsize > SEG6_HMAC_MAX_DIGESTSIZE) {
++		pr_debug("digest size too big (%d / %d)\n",
++			 dgsize, SEG6_HMAC_MAX_DIGESTSIZE);
++		err = -ENOMEM;
++		goto err_put_pool;
++	}
++
++	err = crypto_ahash_setkey(tfm, hinfo->secret, hinfo->slen);
++	if (err) {
++		pr_debug("crypto_ahash_setkey failed: err %d\n", err);
++		goto err_put_pool;
++	}
++
++	err = crypto_ahash_init(hp.req);
++	if (err)
++		goto err_put_pool;
++
++	ahash_request_set_crypt(hp.req, &sg,
++				hp.base.scratch, SEG6_HMAC_MAX_DIGESTSIZE);
++
+ 	off = ring;
  
- clear_hash:
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- clear_hash_noput:
- 	memset(md5_hash, 0, 16);
- 	return 1;
-@@ -1402,8 +1405,7 @@ int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
- 			const struct sock *sk,
- 			const struct sk_buff *skb)
- {
--	struct tcp_md5sig_pool *hp;
--	struct ahash_request *req;
-+	struct crypto_pool_ahash hp;
- 	const struct tcphdr *th = tcp_hdr(skb);
- 	__be32 saddr, daddr;
- 
-@@ -1416,29 +1418,27 @@ int tcp_v4_md5_hash_skb(char *md5_hash, const struct tcp_md5sig_key *key,
- 		daddr = iph->daddr;
+ 	/* source address */
+@@ -210,21 +211,25 @@ int seg6_hmac_compute(struct seg6_hmac_info *hinfo, struct ipv6_sr_hdr *hdr,
+ 		off += 16;
  	}
  
--	hp = tcp_get_md5sig_pool();
--	if (!hp)
-+	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
- 		goto clear_hash_noput;
--	req = hp->md5_req;
+-	dgsize = __do_hmac(hinfo, ring, plen, tmp_out,
+-			   SEG6_HMAC_MAX_DIGESTSIZE);
+-	local_bh_enable();
++	err = crypto_ahash_update(hp.req);
++	if (err)
++		goto err_put_pool;
  
--	if (crypto_ahash_init(req))
-+	if (crypto_ahash_init(hp.req))
- 		goto clear_hash;
+-	if (dgsize < 0)
+-		return dgsize;
++	err = crypto_ahash_final(hp.req);
++	if (err)
++		goto err_put_pool;
  
--	if (tcp_v4_md5_hash_headers(hp, daddr, saddr, th, skb->len))
-+	if (tcp_v4_md5_hash_headers(&hp, daddr, saddr, th, skb->len))
- 		goto clear_hash;
--	if (tcp_md5_hash_skb_data(hp, skb, th->doff << 2))
-+	if (tcp_md5_hash_skb_data(&hp, skb, th->doff << 2))
- 		goto clear_hash;
--	if (tcp_md5_hash_key(hp, key))
-+	if (tcp_md5_hash_key(&hp, key))
- 		goto clear_hash;
--	ahash_request_set_crypt(req, NULL, md5_hash, 0);
--	if (crypto_ahash_final(req))
-+	ahash_request_set_crypt(hp.req, NULL, md5_hash, 0);
-+	if (crypto_ahash_final(hp.req))
- 		goto clear_hash;
+ 	wrsize = SEG6_HMAC_FIELD_LEN;
+ 	if (wrsize > dgsize)
+ 		wrsize = dgsize;
  
--	tcp_put_md5sig_pool();
+ 	memset(output, 0, SEG6_HMAC_FIELD_LEN);
+-	memcpy(output, tmp_out, wrsize);
++	memcpy(output, hp.base.scratch, wrsize);
+ 
+-	return 0;
++err_put_pool:
 +	crypto_pool_put();
- 	return 0;
- 
- clear_hash:
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- clear_hash_noput:
- 	memset(md5_hash, 0, 16);
- 	return 1;
-@@ -2257,6 +2257,18 @@ static int tcp_v4_init_sock(struct sock *sk)
- 	return 0;
++
++	return err;
  }
+ EXPORT_SYMBOL(seg6_hmac_compute);
  
-+#ifdef CONFIG_TCP_MD5SIG
-+static void tcp_md5sig_info_free_rcu(struct rcu_head *head)
-+{
-+	struct tcp_md5sig_info *md5sig;
-+
-+	md5sig = container_of(head, struct tcp_md5sig_info, rcu);
-+	kfree(md5sig);
-+	static_branch_slow_dec_deferred(&tcp_md5_needed);
-+	tcp_md5_release_crypto_pool();
-+}
-+#endif
-+
- void tcp_v4_destroy_sock(struct sock *sk)
+@@ -291,12 +296,24 @@ EXPORT_SYMBOL(seg6_hmac_info_lookup);
+ int seg6_hmac_info_add(struct net *net, u32 key, struct seg6_hmac_info *hinfo)
  {
- 	struct tcp_sock *tp = tcp_sk(sk);
-@@ -2281,10 +2293,12 @@ void tcp_v4_destroy_sock(struct sock *sk)
- #ifdef CONFIG_TCP_MD5SIG
- 	/* Clean up the MD5 key list, if any */
- 	if (tp->md5sig_info) {
-+		struct tcp_md5sig_info *md5sig;
-+
-+		md5sig = rcu_dereference_protected(tp->md5sig_info, 1);
- 		tcp_clear_md5_list(sk);
--		kfree_rcu(rcu_dereference_protected(tp->md5sig_info, 1), rcu);
--		tp->md5sig_info = NULL;
--		static_branch_slow_dec_deferred(&tcp_md5_needed);
-+		call_rcu(&md5sig->rcu, tcp_md5sig_info_free_rcu);
-+		rcu_assign_pointer(tp->md5sig_info, NULL);
- 	}
- #endif
+ 	struct seg6_pernet_data *sdata = seg6_pernet(net);
+-	int err;
++	struct seg6_hmac_algo *algo;
++	int ret;
  
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 5d475a45a478..d1d30337ffec 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -297,8 +297,10 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 				key = tp->af_specific->md5_lookup(sk, sk);
- 				if (key) {
- 					tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
--					BUG_ON(tcptw->tw_md5_key && !tcp_alloc_md5sig_pool());
-+					if (WARN_ON(!tcptw->tw_md5_key))
-+						break;
- 					atomic_inc(&tcp_md5_needed.key.key.enabled);
-+					tcp_md5_add_crypto_pool();
- 				}
- 			}
- 		} while (0);
-@@ -335,16 +337,26 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
+-	err = rhashtable_lookup_insert_fast(&sdata->hmac_infos, &hinfo->node,
++	algo = __hmac_get_algo(hinfo->alg_id);
++	if (!algo)
++		return -ENOENT;
++
++	ret = crypto_pool_alloc_ahash(algo->name);
++	if (ret < 0)
++		return ret;
++	algo->crypto_pool_id = ret;
++
++	ret = rhashtable_lookup_insert_fast(&sdata->hmac_infos, &hinfo->node,
+ 					    rht_params);
++	if (ret)
++		crypto_pool_release(algo->crypto_pool_id);
+ 
+-	return err;
++	return ret;
  }
- EXPORT_SYMBOL(tcp_time_wait);
+ EXPORT_SYMBOL(seg6_hmac_info_add);
  
-+#ifdef CONFIG_TCP_MD5SIG
-+static void tcp_md5_twsk_free_rcu(struct rcu_head *head)
-+{
-+	struct tcp_md5sig_key *key;
-+
-+	key = container_of(head, struct tcp_md5sig_key, rcu);
-+	kfree(key);
-+	static_branch_slow_dec_deferred(&tcp_md5_needed);
-+	tcp_md5_release_crypto_pool();
-+}
-+#endif
-+
- void tcp_twsk_destructor(struct sock *sk)
+@@ -304,6 +321,7 @@ int seg6_hmac_info_del(struct net *net, u32 key)
  {
- #ifdef CONFIG_TCP_MD5SIG
- 	if (static_branch_unlikely(&tcp_md5_needed.key)) {
- 		struct tcp_timewait_sock *twsk = tcp_twsk(sk);
+ 	struct seg6_pernet_data *sdata = seg6_pernet(net);
+ 	struct seg6_hmac_info *hinfo;
++	struct seg6_hmac_algo *algo;
+ 	int err = -ENOENT;
  
--		if (twsk->tw_md5_key) {
--			kfree_rcu(twsk->tw_md5_key, rcu);
--			static_branch_slow_dec_deferred(&tcp_md5_needed);
+ 	hinfo = rhashtable_lookup_fast(&sdata->hmac_infos, &key, rht_params);
+@@ -315,6 +333,12 @@ int seg6_hmac_info_del(struct net *net, u32 key)
+ 	if (err)
+ 		goto out;
+ 
++	algo = __hmac_get_algo(hinfo->alg_id);
++	if (algo)
++		crypto_pool_release(algo->crypto_pool_id);
++	else
++		WARN_ON_ONCE(1);
++
+ 	seg6_hinfo_release(hinfo);
+ 
+ out:
+@@ -348,56 +372,9 @@ int seg6_push_hmac(struct net *net, struct in6_addr *saddr,
+ }
+ EXPORT_SYMBOL(seg6_push_hmac);
+ 
+-static int seg6_hmac_init_algo(void)
+-{
+-	struct seg6_hmac_algo *algo;
+-	struct crypto_shash *tfm;
+-	struct shash_desc *shash;
+-	int i, alg_count, cpu;
+-
+-	alg_count = ARRAY_SIZE(hmac_algos);
+-
+-	for (i = 0; i < alg_count; i++) {
+-		struct crypto_shash **p_tfm;
+-		int shsize;
+-
+-		algo = &hmac_algos[i];
+-		algo->tfms = alloc_percpu(struct crypto_shash *);
+-		if (!algo->tfms)
+-			return -ENOMEM;
+-
+-		for_each_possible_cpu(cpu) {
+-			tfm = crypto_alloc_shash(algo->name, 0, 0);
+-			if (IS_ERR(tfm))
+-				return PTR_ERR(tfm);
+-			p_tfm = per_cpu_ptr(algo->tfms, cpu);
+-			*p_tfm = tfm;
 -		}
-+		if (twsk->tw_md5_key)
-+			call_rcu(&twsk->tw_md5_key->rcu, tcp_md5_twsk_free_rcu);
- 	}
- #endif
- }
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index cb891a71db0d..f75569f889e7 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -64,6 +64,7 @@
- #include <linux/seq_file.h>
- 
- #include <crypto/hash.h>
-+#include <crypto/pool.h>
- #include <linux/scatterlist.h>
- 
- #include <trace/events/tcp.h>
-@@ -665,7 +666,7 @@ static int tcp_v6_parse_md5_keys(struct sock *sk, int optname,
- 			      cmd.tcpm_key, cmd.tcpm_keylen);
- }
- 
--static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
-+static int tcp_v6_md5_hash_headers(struct crypto_pool_ahash *hp,
- 				   const struct in6_addr *daddr,
- 				   const struct in6_addr *saddr,
- 				   const struct tcphdr *th, int nbytes)
-@@ -674,7 +675,7 @@ static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
- 	struct scatterlist sg;
- 	struct tcphdr *_th;
- 
--	bp = hp->scratch;
-+	bp = hp->base.scratch;
- 	/* 1. TCP pseudo-header (RFC2460) */
- 	bp->saddr = *saddr;
- 	bp->daddr = *daddr;
-@@ -686,38 +687,35 @@ static int tcp_v6_md5_hash_headers(struct tcp_md5sig_pool *hp,
- 	_th->check = 0;
- 
- 	sg_init_one(&sg, bp, sizeof(*bp) + sizeof(*th));
--	ahash_request_set_crypt(hp->md5_req, &sg, NULL,
-+	ahash_request_set_crypt(hp->req, &sg, NULL,
- 				sizeof(*bp) + sizeof(*th));
--	return crypto_ahash_update(hp->md5_req);
-+	return crypto_ahash_update(hp->req);
- }
- 
- static int tcp_v6_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
- 			       const struct in6_addr *daddr, struct in6_addr *saddr,
- 			       const struct tcphdr *th)
+-
+-		p_tfm = raw_cpu_ptr(algo->tfms);
+-		tfm = *p_tfm;
+-
+-		shsize = sizeof(*shash) + crypto_shash_descsize(tfm);
+-
+-		algo->shashs = alloc_percpu(struct shash_desc *);
+-		if (!algo->shashs)
+-			return -ENOMEM;
+-
+-		for_each_possible_cpu(cpu) {
+-			shash = kzalloc_node(shsize, GFP_KERNEL,
+-					     cpu_to_node(cpu));
+-			if (!shash)
+-				return -ENOMEM;
+-			*per_cpu_ptr(algo->shashs, cpu) = shash;
+-		}
+-	}
+-
+-	return 0;
+-}
+-
+ int __init seg6_hmac_init(void)
  {
--	struct tcp_md5sig_pool *hp;
--	struct ahash_request *req;
-+	struct crypto_pool_ahash hp;
+-	return seg6_hmac_init_algo();
++	return crypto_pool_reserve_scratch(SEG6_HMAC_MAX_DIGESTSIZE);
+ }
  
--	hp = tcp_get_md5sig_pool();
--	if (!hp)
-+	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
- 		goto clear_hash_noput;
--	req = hp->md5_req;
+ int __net_init seg6_hmac_net_init(struct net *net)
+@@ -407,29 +384,6 @@ int __net_init seg6_hmac_net_init(struct net *net)
+ 	return rhashtable_init(&sdata->hmac_infos, &rht_params);
+ }
  
--	if (crypto_ahash_init(req))
-+	if (crypto_ahash_init(hp.req))
- 		goto clear_hash;
--	if (tcp_v6_md5_hash_headers(hp, daddr, saddr, th, th->doff << 2))
-+	if (tcp_v6_md5_hash_headers(&hp, daddr, saddr, th, th->doff << 2))
- 		goto clear_hash;
--	if (tcp_md5_hash_key(hp, key))
-+	if (tcp_md5_hash_key(&hp, key))
- 		goto clear_hash;
--	ahash_request_set_crypt(req, NULL, md5_hash, 0);
--	if (crypto_ahash_final(req))
-+	ahash_request_set_crypt(hp.req, NULL, md5_hash, 0);
-+	if (crypto_ahash_final(hp.req))
- 		goto clear_hash;
- 
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- 	return 0;
- 
- clear_hash:
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- clear_hash_noput:
- 	memset(md5_hash, 0, 16);
- 	return 1;
-@@ -729,8 +727,7 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
- 			       const struct sk_buff *skb)
+-void seg6_hmac_exit(void)
+-{
+-	struct seg6_hmac_algo *algo = NULL;
+-	int i, alg_count, cpu;
+-
+-	alg_count = ARRAY_SIZE(hmac_algos);
+-	for (i = 0; i < alg_count; i++) {
+-		algo = &hmac_algos[i];
+-		for_each_possible_cpu(cpu) {
+-			struct crypto_shash *tfm;
+-			struct shash_desc *shash;
+-
+-			shash = *per_cpu_ptr(algo->shashs, cpu);
+-			kfree(shash);
+-			tfm = *per_cpu_ptr(algo->tfms, cpu);
+-			crypto_free_shash(tfm);
+-		}
+-		free_percpu(algo->tfms);
+-		free_percpu(algo->shashs);
+-	}
+-}
+-EXPORT_SYMBOL(seg6_hmac_exit);
+-
+ void __net_exit seg6_hmac_net_exit(struct net *net)
  {
- 	const struct in6_addr *saddr, *daddr;
--	struct tcp_md5sig_pool *hp;
--	struct ahash_request *req;
-+	struct crypto_pool_ahash hp;
- 	const struct tcphdr *th = tcp_hdr(skb);
- 
- 	if (sk) { /* valid for establish/request sockets */
-@@ -742,29 +739,27 @@ static int tcp_v6_md5_hash_skb(char *md5_hash,
- 		daddr = &ip6h->daddr;
- 	}
- 
--	hp = tcp_get_md5sig_pool();
--	if (!hp)
-+	if (crypto_pool_get(tcp_md5_crypto_pool_id, (struct crypto_pool *)&hp))
- 		goto clear_hash_noput;
--	req = hp->md5_req;
- 
--	if (crypto_ahash_init(req))
-+	if (crypto_ahash_init(hp.req))
- 		goto clear_hash;
- 
--	if (tcp_v6_md5_hash_headers(hp, daddr, saddr, th, skb->len))
-+	if (tcp_v6_md5_hash_headers(&hp, daddr, saddr, th, skb->len))
- 		goto clear_hash;
--	if (tcp_md5_hash_skb_data(hp, skb, th->doff << 2))
-+	if (tcp_md5_hash_skb_data(&hp, skb, th->doff << 2))
- 		goto clear_hash;
--	if (tcp_md5_hash_key(hp, key))
-+	if (tcp_md5_hash_key(&hp, key))
- 		goto clear_hash;
--	ahash_request_set_crypt(req, NULL, md5_hash, 0);
--	if (crypto_ahash_final(req))
-+	ahash_request_set_crypt(hp.req, NULL, md5_hash, 0);
-+	if (crypto_ahash_final(hp.req))
- 		goto clear_hash;
- 
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- 	return 0;
- 
- clear_hash:
--	tcp_put_md5sig_pool();
-+	crypto_pool_put();
- clear_hash_noput:
- 	memset(md5_hash, 0, 16);
- 	return 1;
+ 	struct seg6_pernet_data *sdata = seg6_pernet(net);
 -- 
 2.37.2
 
