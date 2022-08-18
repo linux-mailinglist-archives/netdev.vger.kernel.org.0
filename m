@@ -2,156 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0A7D59817A
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 12:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCF87598181
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 12:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244084AbiHRK34 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 06:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54154 "EHLO
+        id S244103AbiHRKas (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 06:30:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239816AbiHRK3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 06:29:50 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ED016FA05
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 03:29:48 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id q16so711778ljp.7
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 03:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=eAHy0GgVxTHg1eUciceHmM/Hyp1NsAkVTFVZaJvQ9zY=;
-        b=EePFQ4ppu84vqkjd7Tzzlqwgp7K+RPZHTJMHzKh6jWQHbJMdzUiTQrhB7PHRR8VT7v
-         kxxMZJVtXHa6IRaF5jsDn6b5jXbTQI4y/QOLiyRzOi0WhxFyh/UbxBhcFkRllVPKjExD
-         eOc5ikUIdZ4Iqa8Erao9Ck3L1bC1fVXf/KsnuqAJ43crez+yQJaXFVGs3Viy2m+w6C8C
-         9ebrxnSE8qnBDW18lK0vcnW+xf54Hl+Agb3c+RApvf0M8z4wjOPUHNhfvqKN+DJJFiXG
-         dlRpLJAkT4T1lceUUxvGw5mSRL6V2HLaZljjQ8Fabf0af4IukZWIJs9M4NFl24CXGlYO
-         fGtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=eAHy0GgVxTHg1eUciceHmM/Hyp1NsAkVTFVZaJvQ9zY=;
-        b=jp6VUVcLYMOBj2B2Ro7VdfYDCOaDqBpMR8fUsyORMXtNpNM9M5qBrkks8sg22obWr1
-         FyFUC+98Xpt2KjZfk1AUp4LbuoE8s/Tgyq6AYMW8uRNl4rkitk3jITjkc6hTRPI+3ag5
-         unwahv60hKbbREz1i1UCrNoDUbo1vucDb4xCQBDqK/SQfOsz1pwXgqGYAtMp6/6IGGJy
-         2MbGS8MWDJiwbaNeMzdJm1LIzDR8KsI2X6S0r4o3CxhOz/f3D/AkJVuOAvDLVPVFAYD0
-         sXRM2ZZGLd62qL8b+MVyimrZS03ReIWFbwSippz0ktd+lvy1tuoiRkBAhGC+XYMDeDAz
-         BfJw==
-X-Gm-Message-State: ACgBeo3KPXNo/w4wLrqRrSPRPVrF7DuimgguOevF77UXhrtUIEnRi6hD
-        XvAkUe3JMnK3DwLx0GYrYXTKI9AgadqFIw==
-X-Google-Smtp-Source: AA6agR4KOI0eQ5F1mJ6pidHUzTFHF/1ljDnwii/EleoMLuPiGTHBWCa3CPRKsRdAE9fC5yUqbTvEGQ==
-X-Received: by 2002:a05:651c:1248:b0:261:7fe4:9a99 with SMTP id h8-20020a05651c124800b002617fe49a99mr682651ljh.223.1660818586675;
-        Thu, 18 Aug 2022 03:29:46 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id z10-20020a056512370a00b0048afa5daaf3sm171035lfr.123.2022.08.18.03.29.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 03:29:46 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [RFC net-next PATCH 3/3] mv88e6xxx: rmon: Use RMU to collect rmon data.
-Date:   Thu, 18 Aug 2022 12:29:24 +0200
-Message-Id: <20220818102924.287719-4-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220818102924.287719-1-mattias.forsblad@gmail.com>
-References: <20220818102924.287719-1-mattias.forsblad@gmail.com>
+        with ESMTP id S244104AbiHRKaq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 06:30:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F40397E80C
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 03:30:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oOcnL-0005Pa-2u; Thu, 18 Aug 2022 12:30:35 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B924CD6BB;
+        Thu, 18 Aug 2022 10:30:33 +0000 (UTC)
+Date:   Thu, 18 Aug 2022 12:30:31 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        michael@amarulasolutions.com, Dario Binacchi <dariobin@libero.it>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 4/4] can: bxcan: add support for ST bxCAN controller
+Message-ID: <20220818103031.m7bl6gbzcc76etig@pengutronix.de>
+References: <20220817143529.257908-1-dario.binacchi@amarulasolutions.com>
+ <20220817143529.257908-5-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="pdvj4caxzadjx4i4"
+Content-Disposition: inline
+In-Reply-To: <20220817143529.257908-5-dario.binacchi@amarulasolutions.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If RMU is supported, use that interface to
-collect rmon data.
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 41 +++++++++++++++++++++++---------
- 1 file changed, 30 insertions(+), 11 deletions(-)
+--pdvj4caxzadjx4i4
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 888c6e47dd16..344d6633ad6d 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1226,16 +1226,29 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
- 				     u16 bank1_select, u16 histogram)
- {
- 	struct mv88e6xxx_hw_stat *stat;
-+	int offset = 0;
-+	u64 high;
- 	int i, j;
- 
- 	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
- 		stat = &mv88e6xxx_hw_stats[i];
- 		if (stat->type & types) {
--			mv88e6xxx_reg_lock(chip);
--			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
--							      bank1_select,
--							      histogram);
--			mv88e6xxx_reg_unlock(chip);
-+			if (chip->rmu.ops->get_rmon && !(stat->type & STATS_TYPE_PORT)) {
-+				if (stat->type & STATS_TYPE_BANK1)
-+					offset = 32;
-+
-+				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
-+				if (stat->size == 8) {
-+					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
-+							+ 1];
-+					data[j] += (high << 32);
-+				}
-+			} else {
-+				mv88e6xxx_reg_lock(chip);
-+				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
-+								      bank1_select, histogram);
-+				mv88e6xxx_reg_unlock(chip);
-+			}
- 
- 			j++;
- 		}
-@@ -1310,16 +1323,22 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int ret;
- 
--	mv88e6xxx_reg_lock(chip);
-+	if (chip->rmu.ops && chip->rmu.ops->get_rmon) {
-+		ret = chip->rmu.ops->get_rmon(chip, port, data);
-+		if (ret == -ETIMEDOUT)
-+			return;
-+	} else {
- 
--	ret = mv88e6xxx_stats_snapshot(chip, port);
--	mv88e6xxx_reg_unlock(chip);
-+		mv88e6xxx_reg_lock(chip);
- 
--	if (ret < 0)
--		return;
-+		ret = mv88e6xxx_stats_snapshot(chip, port);
-+		mv88e6xxx_reg_unlock(chip);
- 
--	mv88e6xxx_get_stats(chip, port, data);
-+		if (ret < 0)
-+			return;
- 
-+		mv88e6xxx_get_stats(chip, port, data);
-+	}
- }
- 
- static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
--- 
-2.25.1
+One step at a time, let's look at the TX path:
 
+On 17.08.2022 16:35:29, Dario Binacchi wrote:
+> +static netdev_tx_t bxcan_start_xmit(struct sk_buff *skb,
+> +				    struct net_device *ndev)
+> +{
+> +	struct bxcan_priv *priv = netdev_priv(ndev);
+> +	struct can_frame *cf = (struct can_frame *)skb->data;
+> +	struct bxcan_regs *regs = priv->regs;
+> +	struct bxcan_mb *mb_regs;
+
+__iomem?
+
+> +	unsigned int mb_id;
+> +	u32 id, tsr;
+> +	int i, j;
+> +
+> +	if (can_dropped_invalid_skb(ndev, skb))
+> +		return NETDEV_TX_OK;
+> +
+> +	tsr = readl(&regs->tsr);
+> +	mb_id = ffs((tsr & BXCAN_TSR_TME) >> BXCAN_TSR_TME_SHIFT);
+
+We want to send the CAN frames in the exact order they are pushed into
+the driver, so don't pick the first free mailbox you find. How a
+priorities for the TX mailboxes handled?
+
+Is the mailbox with the lowest number send first? Is there a priority
+field in the mailbox?
+
+If the mail with the lowest number is transmitted first, it's best to
+have a tx_head and tx_tail counter, e.g:
+
+struct bxcan_priv {
+        ...
+        unsigned int tx_head;
+        unsigned int tx_tail;
+        ...
+};
+
+They both start with 0. The xmit function pushes the CAN frame into the
+"priv->tx_head % 3" mailbox. Before triggering the xmit in hardware the
+tx_head is incremented.
+
+In your TX complete ISR look at priv->tx_tail % 3 for completion,
+increment tx_tail, loop.
+
+> +	if (mb_id == 0)
+> +		return NETDEV_TX_BUSY;
+> +
+> +	mb_id -= 1;
+> +	mb_regs = &regs->tx_mb[mb_id];
+> +
+> +	if (cf->can_id & CAN_EFF_FLAG)
+> +		id = BXCAN_TIxR_EXID(cf->can_id & CAN_EFF_MASK) |
+> +			BXCAN_TIxR_IDE;
+> +	else
+> +		id = BXCAN_TIxR_STID(cf->can_id & CAN_SFF_MASK);
+> +
+> +	if (cf->can_id & CAN_RTR_FLAG)
+> +		id |= BXCAN_TIxR_RTR;
+> +
+> +	bxcan_rmw(&mb_regs->dlc, BXCAN_TDTxR_DLC_MASK,
+> +		  BXCAN_TDTxR_DLC(cf->len));
+> +	priv->tx_dlc[mb_id] = cf->len;
+
+Please use can_put_echo_skb() for this.
+
+> +
+> +	for (i = 0, j = 0; i < cf->len; i += 4, j++)
+> +		writel(*(u32 *)(cf->data + i), &mb_regs->data[j]);
+> +
+> +	/* Start transmission */
+> +	writel(id | BXCAN_TIxR_TXRQ, &mb_regs->id);
+> +	/* Stop the queue if we've filled all mailbox entries */
+> +	if (!(readl(&regs->tsr) & BXCAN_TSR_TME))
+> +		netif_stop_queue(ndev);
+
+This is racy. You have to stop the queue before triggering the
+transmission.
+
+Have a look at the mcp251xfd driver:
+
+| https://elixir.bootlin.com/linux/latest/source/drivers/net/can/spi/mcp251xfd/mcp251xfd-tx.c#L187
+
+The check for NETDEV_TX_BUSY is a bit more complicated, too:
+
+| https://elixir.bootlin.com/linux/latest/source/drivers/net/can/spi/mcp251xfd/mcp251xfd-tx.c#L178
+
+The mcp251xfd has a proper hardware FIFO ring buffer for TX, the bxcan
+probably doesn't. The get_tx_free() check is a bit different. Look at
+c_can_get_tx_free() in:
+
+| https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=28e86e9ab522e65b08545e5008d0f1ac5b19dad1
+
+This patch is a good example for the relevant changes.
+
+> +
+> +	return NETDEV_TX_OK;
+> +}
+
+[...]
+
+> +static irqreturn_t bxcan_tx_isr(int irq, void *dev_id)
+> +{
+> +	struct net_device *ndev = dev_id;
+> +	struct bxcan_priv *priv = netdev_priv(ndev);
+> +	struct bxcan_regs __iomem *regs = priv->regs;
+> +	struct net_device_stats *stats = &ndev->stats;
+> +	u32 tsr, rqcp_bit = BXCAN_TSR_RQCP0;
+> +	int i;
+> +
+> +	tsr = readl(&regs->tsr);
+> +	for (i = 0; i < BXCAN_TX_MB_NUM; rqcp_bit <<= 8, i++) {
+
+This might break the order of TX completion CAN frames.
+
+> +		if (!(tsr & rqcp_bit))
+> +			continue;
+> +
+> +		stats->tx_packets++;
+> +		stats->tx_bytes += priv->tx_dlc[i];
+
+Use can_get_echo_skb() here.
+
+> +	}
+> +
+> +	writel(tsr, &regs->tsr);
+> +
+> +	if (netif_queue_stopped(ndev))
+> +		netif_wake_queue(ndev);
+
+With tx_head and tx_tail this should look like this:
+
+| https://elixir.bootlin.com/linux/v5.19/source/drivers/net/can/spi/mcp251xfd/mcp251xfd-tef.c#L251
+
+> +
+> +	return IRQ_HANDLED;
+> +}
+
+Marc
+
+--
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--pdvj4caxzadjx4i4
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmL+FMUACgkQrX5LkNig
+0106dQgAo2rMUTt1kopLbWrAtOMPOEZUJovNqrwB3AfWul/nZ02JCSbx1YUzFTSH
+EYvaqWdbEMXcMGeUg23m59IQKCHvROCtNI1WiznlqwARz8hlR1ElEa8kGm+V86W+
+DrBkf04DhIKU/ni+ykU4xBgxbR3/K0EmT9uuatq29rN8UtM9ZGOy6Khd4fEgqj0u
+BP9ncUjSb2qhMqZVJ2csWUSXIIjOuZ2NplECgddfhQCW51AkygdEEwDI+zDUyS+F
+5V1U8Ca0dTdjSBPO3hoGVLlFSrKlHw955HPk3wUfDP5WMx+W1igIwaROGpfmecuc
+WiLxU9NazC+j3Uz8THRt48ZtycmvEQ==
+=fPoa
+-----END PGP SIGNATURE-----
+
+--pdvj4caxzadjx4i4--
