@@ -2,256 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2EAA598C95
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 21:34:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07420598C92
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 21:31:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345559AbiHRTcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 15:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36850 "EHLO
+        id S245487AbiHRTbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 15:31:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343991AbiHRTcJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 15:32:09 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE403CD500;
-        Thu, 18 Aug 2022 12:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660851128; x=1692387128;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=j5aa8Bz4WTZLjYv/eCo4jooseNT5Z+r4Y3IYqy1YzIw=;
-  b=cRi6oNh37bIKtP3fZauO/qFjQ9hz95ggb0D02PDZaDtLo4ti1w6BbTH/
-   7qK9WBdpAGAy3G6Fy62sb/5XbWLClZZAPdk49jT0n78ZmVUjUuXzZCo81
-   xMwEy2o4Y+dA6B1imFY767yy1+bg4mYWz+yv/mHasFpOPg8IaGoBll3it
-   Dzb5tBf+GzBrUo9LCTgkGnL43PIuuT1/cnt9hpIujcOt9f1+cmVTodQsJ
-   aDunEZ3ifepaLpLtI7dRv7FgESg5m464RJZH+WyAi8s22oZN1vJUMv8+Y
-   vOJLxN5n1uy9XYjsu+gr0L/5SQBoVhnYJHIlk4OWZJVZsWTfk0YXnILjg
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292852561"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="292852561"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 12:32:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="783891296"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 18 Aug 2022 12:32:04 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oOlFM-0000T9-0S;
-        Thu, 18 Aug 2022 19:32:04 +0000
-Date:   Fri, 19 Aug 2022 03:31:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sean Anderson <sean.anderson@seco.com>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Sean Anderson <sean.anderson@seco.com>
-Subject: Re: [PATCH net-next v4 08/10] net: phylink: Adjust advertisement
- based on rate adaptation
-Message-ID: <202208190347.I3rrGqW3-lkp@intel.com>
-References: <20220818164616.2064242-9-sean.anderson@seco.com>
+        with ESMTP id S234283AbiHRTbg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 15:31:36 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA98CCE26;
+        Thu, 18 Aug 2022 12:31:34 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id C5C2E3200912;
+        Thu, 18 Aug 2022 15:31:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 18 Aug 2022 15:31:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1660851090; x=1660937490; bh=6ZLA0ZxxOs
+        vZ7EcJtLoaAaNIn+eskICnHUlHLXCBjGY=; b=V9SKVDb/20RhGaAKqsOP3qSg6L
+        r6wSoJ6CYVL9KG09dah3XDrMpeoq7d73iGJcUuNsAPpiGdROInKyJmKDKMKgKIv4
+        todFY5WzEno1B4FCPl+zcbhB6cVWyMZZfPRx0bDphGhu7lxX2gy6VlOtd9FRYfbT
+        JnyOHSuT3C2DCHD3qw2VJ92HV+8nzV+U4NMZQR4l49Tk68f7/Fqxn28w9jXJW0ZA
+        w9qnKy1QYrH2Hc6u5Ilw3OkxGIDWUqSS5Z7JnCI+ELPcFjToCVv4C+q/Qi2n5/om
+        Yx/W4zantiSo8kZnDmahQ/g7bOj53rGqynGWakC10NEeUSZvNiAEapvNGwFw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm1; t=1660851090; x=1660937490; bh=6ZLA0ZxxOsvZ7EcJtLoaAaNIn+es
+        kICnHUlHLXCBjGY=; b=U6jx24CsqYwpjLnFJ+4HgjhVVCtX8Eb7ZYz599E3dO6V
+        aru8yoQI/HJ85+eYJx8qBDyIU0SzbkHvXkREilEWvNQVF80Cbj7tlg3eG328qlrL
+        2Gwm/WmrMaliQw3uS3T803kUqm32oM/SI81bFAKTtk2QYtNg9ZOlw6pyxhs9qbEp
+        b9OrAhulz7lXOv2wgO5B1729tpOifIRUlHD+Wnpl0Q7ScIryS2B+CdrnF7f3C52+
+        HqWwoKqsv+oDfjv7Dg/wuvJ9OAFMgKjPXsVi3OxH9xvAN5Rr+ZEx56RZ30E0iac4
+        B1Rm0nsSWz91R3mDj4ldzbPWzgYoo6S9WIWm2mxpUQ==
+X-ME-Sender: <xms:kZP-YmzFwbPRKcB1Cm4Fs2kgDCDF4bWOVLdCW90hC0SWvpRlO69J_Q>
+    <xme:kZP-YiQzZpAuheheWqmRCJs50BxKGl7EbvRM3Tn0_E572q3K9cvPpOXpp8Iq5JKdl
+    2UNg23uEOaukxxIsA>
+X-ME-Received: <xmr:kZP-YoV2BqKmXr1vlzPi_l1mTqOYX5XkyKMvqKsQS44wsP113r4cRBveBvk2L8na0mWjooa7KnRhCp18dS9ZApBDETDFjr3qD4H6>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdehledgudduvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhepff
+    fhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepffgrnhhivghlucgiuhcu
+    oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpeevuddugeeihfdtff
+    ehgffgudeggeegheetgfevhfekkeeileeuieejleekiedvgfenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:kZP-Yshgu6iaUbk7Uc6aHVeHipbse-neN5k8_RsAbvFG9w-TEu1oUQ>
+    <xmx:kZP-YoCpXxVl8LmtBSlqoBeq-eAtF6aK-UAywQLqe0zdSRzwk_48ZQ>
+    <xmx:kZP-YtLH6s5LSpMmfHwylLYE8eQlOcrtejC2wWGrbLhw7fGiOZT23w>
+    <xmx:kpP-YotDCkaSiKtWrgHklaLTY7gf9SI091tU1ubD0Fr3hZWGdcl9NQ>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 18 Aug 2022 15:31:28 -0400 (EDT)
+Date:   Thu, 18 Aug 2022 13:31:27 -0600
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH bpf-next v2 3/4] bpf: Add support for writing to
+ nf_conn:mark
+Message-ID: <20220818193127.ykwoinzpoyxqwevg@kashmir.localdomain>
+References: <cover.1660761470.git.dxu@dxuuu.xyz>
+ <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
+ <CAP01T75P5uM9EyX38bcoF4L2cbQ8orNVNhZsdoMXRThX5fd6JQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818164616.2064242-9-sean.anderson@seco.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <CAP01T75P5uM9EyX38bcoF4L2cbQ8orNVNhZsdoMXRThX5fd6JQ@mail.gmail.com>
+X-Spam-Status: No, score=-0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FROM_SUSPICIOUS_NTLD,
+        PDS_OTHER_BAD_TLD,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sean,
+On Wed, Aug 17, 2022 at 09:48:31PM +0200, Kumar Kartikeya Dwivedi wrote:
+> On Wed, 17 Aug 2022 at 20:43, Daniel Xu <dxu@dxuuu.xyz> wrote:
+[...]
+> > diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+> > index a473b56842c5..0f584c2bd475 100644
+> > --- a/include/net/netfilter/nf_conntrack_bpf.h
+> > +++ b/include/net/netfilter/nf_conntrack_bpf.h
+> > @@ -3,6 +3,7 @@
+> >  #ifndef _NF_CONNTRACK_BPF_H
+> >  #define _NF_CONNTRACK_BPF_H
+> >
+> > +#include <linux/bpf.h>
+> >  #include <linux/btf.h>
+> >  #include <linux/kconfig.h>
+> >
+> > @@ -10,6 +11,12 @@
+> >      (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+> >
+> >  extern int register_nf_conntrack_bpf(void);
+> > +extern int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> > +                                         const struct btf *btf,
+> > +                                         const struct btf_type *t, int off,
+> > +                                         int size, enum bpf_access_type atype,
+> > +                                         u32 *next_btf_id,
+> > +                                         enum bpf_type_flag *flag);
+> >
+> >  #else
+> >
+> > @@ -18,6 +25,17 @@ static inline int register_nf_conntrack_bpf(void)
+> >         return 0;
+> >  }
+> >
+> > +static inline int
+> > +nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> > +                              const struct btf *btf,
+> > +                              const struct btf_type *t, int off,
+> > +                              int size, enum bpf_access_type atype,
+> > +                              u32 *next_btf_id,
+> > +                              enum bpf_type_flag *flag)
+> > +{
+> > +       return -EACCES;
+> > +}
+> > +
+> 
+> We should make it work when nf_conntrack is a kernel module as well,
+> not just when it is compiled in. The rest of the stuff already works
+> when it is a module. For that, you can have a global function pointer
+> for this callback, protected by a mutex. register/unregister sets
+> it/unsets it. Each time you call it requires mutex to be held during
+> the call.
+> 
+> Later when we have more modules that supply btf_struct_access callback
+> for their module types we can generalize it, for now it should be ok
+> to hardcode it for nf_conn.
 
-I love your patch! Yet something to improve:
+Ok, will look into that.
 
-[auto build test ERROR on net-next/master]
+> 
+> >  #endif
+> >
+> >  #endif /* _NF_CONNTRACK_BPF_H */
+[...]
+> >
+> > +/* Check writes into `struct nf_conn` */
+> > +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> > +                                  const struct btf *btf,
+> > +                                  const struct btf_type *t, int off,
+> > +                                  int size, enum bpf_access_type atype,
+> > +                                  u32 *next_btf_id,
+> > +                                  enum bpf_type_flag *flag)
+> > +{
+> > +       const struct btf_type *nct = READ_ONCE(nf_conn_type);
+> > +       s32 type_id;
+> > +       size_t end;
+> > +
+> > +       if (!nct) {
+> > +               type_id = btf_find_by_name_kind(btf, "nf_conn", BTF_KIND_STRUCT);
+> > +               if (type_id < 0)
+> > +                       return -EINVAL;
+> > +
+> > +               nct = btf_type_by_id(btf, type_id);
+> > +               WRITE_ONCE(nf_conn_type, nct);
+> 
+> Instead of this, why not just use BTF_ID_LIST_SINGLE to get the
+> type_id and then match 't' to the result of btf_type_by_id?
+> btf_type_by_id is not expensive.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220819-005121
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git e34cfee65ec891a319ce79797dda18083af33a76
-config: arm-randconfig-r026-20220818 (https://download.01.org/0day-ci/archive/20220819/202208190347.I3rrGqW3-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/intel-lab-lkp/linux/commit/f4857d8d4f852b1cc3ae278785c209a7a0da0f67
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sean-Anderson/net-phy-Add-support-for-rate-adaptation/20220819-005121
-        git checkout f4857d8d4f852b1cc3ae278785c209a7a0da0f67
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/phy/
+Ah yeah, good idea. Will fix.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+[...]
 
-All errors (new ones prefixed by >>):
-
->> drivers/net/phy/phylink.c:543:7: error: call to undeclared function 'phylink_cap_from_speed_duplex'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                       phylink_cap_from_speed_duplex(max_speed, DUPLEX_FULL)) {
-                       ^
-   drivers/net/phy/phylink.c:559:7: error: call to undeclared function 'phylink_cap_from_speed_duplex'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                       phylink_cap_from_speed_duplex(max_speed, DUPLEX_HALF)) {
-                       ^
-   2 errors generated.
-
-
-vim +/phylink_cap_from_speed_duplex +543 drivers/net/phy/phylink.c
-
-   431	
-   432	/**
-   433	 * phylink_get_capabilities() - get capabilities for a given MAC
-   434	 * @interface: phy interface mode defined by &typedef phy_interface_t
-   435	 * @mac_capabilities: bitmask of MAC capabilities
-   436	 * @rate_adaptation: type of rate adaptation being performed
-   437	 *
-   438	 * Get the MAC capabilities that are supported by the @interface mode and
-   439	 * @mac_capabilities.
-   440	 */
-   441	unsigned long phylink_get_capabilities(phy_interface_t interface,
-   442					       unsigned long mac_capabilities,
-   443					       int rate_adaptation)
-   444	{
-   445		int max_speed = phylink_interface_max_speed(interface);
-   446		unsigned long caps = MAC_SYM_PAUSE | MAC_ASYM_PAUSE;
-   447		unsigned long adapted_caps = 0;
-   448	
-   449		switch (interface) {
-   450		case PHY_INTERFACE_MODE_USXGMII:
-   451			caps |= MAC_10000FD | MAC_5000FD | MAC_2500FD;
-   452			fallthrough;
-   453	
-   454		case PHY_INTERFACE_MODE_RGMII_TXID:
-   455		case PHY_INTERFACE_MODE_RGMII_RXID:
-   456		case PHY_INTERFACE_MODE_RGMII_ID:
-   457		case PHY_INTERFACE_MODE_RGMII:
-   458		case PHY_INTERFACE_MODE_QSGMII:
-   459		case PHY_INTERFACE_MODE_SGMII:
-   460		case PHY_INTERFACE_MODE_GMII:
-   461			caps |= MAC_1000HD | MAC_1000FD;
-   462			fallthrough;
-   463	
-   464		case PHY_INTERFACE_MODE_REVRMII:
-   465		case PHY_INTERFACE_MODE_RMII:
-   466		case PHY_INTERFACE_MODE_SMII:
-   467		case PHY_INTERFACE_MODE_REVMII:
-   468		case PHY_INTERFACE_MODE_MII:
-   469			caps |= MAC_10HD | MAC_10FD;
-   470			fallthrough;
-   471	
-   472		case PHY_INTERFACE_MODE_100BASEX:
-   473			caps |= MAC_100HD | MAC_100FD;
-   474			break;
-   475	
-   476		case PHY_INTERFACE_MODE_TBI:
-   477		case PHY_INTERFACE_MODE_MOCA:
-   478		case PHY_INTERFACE_MODE_RTBI:
-   479		case PHY_INTERFACE_MODE_1000BASEX:
-   480			caps |= MAC_1000HD;
-   481			fallthrough;
-   482		case PHY_INTERFACE_MODE_1000BASEKX:
-   483		case PHY_INTERFACE_MODE_TRGMII:
-   484			caps |= MAC_1000FD;
-   485			break;
-   486	
-   487		case PHY_INTERFACE_MODE_2500BASEX:
-   488			caps |= MAC_2500FD;
-   489			break;
-   490	
-   491		case PHY_INTERFACE_MODE_5GBASER:
-   492			caps |= MAC_5000FD;
-   493			break;
-   494	
-   495		case PHY_INTERFACE_MODE_XGMII:
-   496		case PHY_INTERFACE_MODE_RXAUI:
-   497		case PHY_INTERFACE_MODE_XAUI:
-   498		case PHY_INTERFACE_MODE_10GBASER:
-   499		case PHY_INTERFACE_MODE_10GKR:
-   500			caps |= MAC_10000FD;
-   501			break;
-   502	
-   503		case PHY_INTERFACE_MODE_25GBASER:
-   504			caps |= MAC_25000FD;
-   505			break;
-   506	
-   507		case PHY_INTERFACE_MODE_XLGMII:
-   508			caps |= MAC_40000FD;
-   509			break;
-   510	
-   511		case PHY_INTERFACE_MODE_INTERNAL:
-   512			caps |= ~0;
-   513			break;
-   514	
-   515		case PHY_INTERFACE_MODE_NA:
-   516		case PHY_INTERFACE_MODE_MAX:
-   517			break;
-   518		}
-   519	
-   520		switch (rate_adaptation) {
-   521		case RATE_ADAPT_OPEN_LOOP:
-   522			/* TODO */
-   523			fallthrough;
-   524		case RATE_ADAPT_NONE:
-   525			adapted_caps = 0;
-   526			break;
-   527		case RATE_ADAPT_PAUSE: {
-   528			/* The MAC must support asymmetric pause towards the local
-   529			 * device for this. We could allow just symmetric pause, but
-   530			 * then we might have to renegotiate if the link partner
-   531			 * doesn't support pause. This is because there's no way to
-   532			 * accept pause frames without transmitting them if we only
-   533			 * support symmetric pause.
-   534			 */
-   535			if (!(mac_capabilities & MAC_SYM_PAUSE) ||
-   536			    !(mac_capabilities & MAC_ASYM_PAUSE))
-   537				break;
-   538	
-   539			/* We can't adapt if the MAC doesn't support the interface's
-   540			 * max speed at full duplex.
-   541			 */
-   542			if (mac_capabilities &
- > 543			    phylink_cap_from_speed_duplex(max_speed, DUPLEX_FULL)) {
-   544				/* Although a duplex-adapting phy might exist, we
-   545				 * conservatively remove these modes because the MAC
-   546				 * will not be aware of the half-duplex nature of the
-   547				 * link.
-   548				 */
-   549				adapted_caps = GENMASK(__fls(caps), __fls(MAC_10HD));
-   550				adapted_caps &= ~(MAC_1000HD | MAC_100HD | MAC_10HD);
-   551			}
-   552			break;
-   553		}
-   554		case RATE_ADAPT_CRS:
-   555			/* The MAC must support half duplex at the interface's max
-   556			 * speed.
-   557			 */
-   558			if (mac_capabilities &
-   559			    phylink_cap_from_speed_duplex(max_speed, DUPLEX_HALF)) {
-   560				adapted_caps = GENMASK(__fls(caps), __fls(MAC_10HD));
-   561				adapted_caps &= mac_capabilities;
-   562			}
-   563			break;
-   564		}
-   565	
-   566		return (caps & mac_capabilities) | adapted_caps;
-   567	}
-   568	EXPORT_SYMBOL_GPL(phylink_get_capabilities);
-   569	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Thanks,
+Daniel
