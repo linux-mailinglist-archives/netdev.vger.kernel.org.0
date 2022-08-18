@@ -2,88 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB04597A48
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 01:43:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62330597A76
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 02:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242271AbiHQXmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 19:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        id S242275AbiHRAC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 20:02:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239249AbiHQXmO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 19:42:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D13495AE1;
-        Wed, 17 Aug 2022 16:42:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77B866133B;
-        Wed, 17 Aug 2022 23:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3A8C433D6;
-        Wed, 17 Aug 2022 23:42:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660779730;
-        bh=90a0gHd140Crru58gwz91c0iI4UzcfwU6EDuHdNf2Mc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bKqzDfLdSmpjAPt1fgcvYgH9DmrNEP84Fa4J4OmzTzbSQ3xi+N30wqlhxxB8F/DsU
-         67waHblV+XrGuh4SPKBgvy+kHI3rK97tZ6AaFE0DBIzZgJAnIEbDELwggfu7+sx00N
-         7MyWl+NacEKVkMCvr1syY0zMGfcsmLNHc8ETKXrFz+ZBeyLTzXF1bkWLpuqlhJNzKV
-         lOSyh56WbqUEH0AG/Yq/gxjEz/erUXZGTr4zGs56oeWqcx1mZiw7Pp4U629N2aAYcX
-         ReOxkkYj9J6SN9NJFsatUEf73nWVVDQMDhdmQxzkBKkdPclgQJ/E4dUHKSvVtZLf0t
-         HDctf4J7QsLEA==
-Date:   Wed, 17 Aug 2022 16:42:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Hawkins Jiawei <yin31149@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S234311AbiHRAC6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 20:02:58 -0400
+Received: from violet.fr.zoreil.com (violet.fr.zoreil.com [IPv6:2001:4b98:dc0:41:216:3eff:fe56:8398])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0EE4985A9;
+        Wed, 17 Aug 2022 17:02:55 -0700 (PDT)
+Received: from violet.fr.zoreil.com ([127.0.0.1])
+        by violet.fr.zoreil.com (8.17.1/8.17.1) with ESMTP id 27I02OJS2737980;
+        Thu, 18 Aug 2022 02:02:24 +0200
+DKIM-Filter: OpenDKIM Filter v2.11.0 violet.fr.zoreil.com 27I02OJS2737980
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fr.zoreil.com;
+        s=v20220413; t=1660780944;
+        bh=FLx6q8AWTB/vvqR4DZpb3VA90jfURiRO0HztmhtSKjo=;
+        h=Date:From:To:Cc:Subject:From;
+        b=RVfkPrCKHa3ssc+7YpNzeJhkxK8kMTpCsLOPFQGmaTpn+BzdsRIyvCfUPyxr+/97J
+         z7B1fPErIlvASEGnP3MEUIE2sAVwcOSxY9M0n7zSgW6cQalmli7d8+7YqgslrjY4D7
+         x7rS+a0I/x3vAq/q8o/gLaaVb1EIba/C4ekuf/Nw=
+Received: (from romieu@localhost)
+        by violet.fr.zoreil.com (8.17.1/8.17.1/Submit) id 27I02DB42737979;
+        Thu, 18 Aug 2022 02:02:13 +0200
+Date:   Thu, 18 Aug 2022 02:02:13 +0200
+From:   Francois Romieu <romieu@fr.zoreil.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-hams@vger.kernel.org, Bernard <bernard.f6bvp@gmail.com>,
+        Bernard Pidoux <f6bvp@free.fr>,
+        Thomas Osterried <thomas@osterried.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        bpf@vger.kernel.org, Jakub Sitnicki <jakub@cloudflare.com>
-Subject: Re: [PATCH] net: Fix suspicious RCU usage in
- bpf_sk_reuseport_detach()
-Message-ID: <20220817164209.72c182fb@kernel.org>
-In-Reply-To: <3974013.1660769749@warthog.procyon.org.uk>
-References: <20220816164435.0558ef94@kernel.org>
-        <20220816103452.479281-1-yin31149@gmail.com>
-        <166064248071.3502205.10036394558814861778.stgit@warthog.procyon.org.uk>
-        <804153.1660684606@warthog.procyon.org.uk>
-        <3974013.1660769749@warthog.procyon.org.uk>
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCH v2 net 1/1] rose: check NULL rose_loopback_neigh->loopback
+Message-ID: <Yv2BhXInteHP7eJm@electric-eye.fr.zoreil.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Organisation: Land of Sunshine Inc.
+X-Spam-Status: No, score=1.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_SBL_CSS,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 17 Aug 2022 21:55:49 +0100 David Howells wrote:
-> Jakub Kicinski <kuba@kernel.org> wrote:
-> 
-> > I like your version because it documents what the lock protecting this
-> > field is. 
-> > 
-> > In fact should we also add && sock_owned_by_user(). Martin, WDYT? Would
-> > that work for reuseport? Jakub S is fixing l2tp to hold the socket lock
-> > while setting this field, yet most places take the callback lock...  
-> 
-> So how do you want to proceed?  My first version of the patch with
-> sock_owned_by_user()?
+From: Bernard Pidoux <f6bvp@free.fr>
 
-Sorry about the lack of clarity. I was sort of expecting the name 
-to still be shortened, but what you have is probably good enough.
+Commit 3b3fd068c56e3fbea30090859216a368398e39bf added NULL check for
+`rose_loopback_neigh->dev` in rose_loopback_timer() but omitted to
+check rose_loopback_neigh->loopback.
 
-Applying v1, then, thanks!
+It thus prevents *all* rose connect.
+
+The reason is that a special rose_neigh loopback has a NULL device.
+
+/proc/net/rose_neigh illustrates it via rose_neigh_show() function :
+[...]
+seq_printf(seq, "%05d %-9s %-4s   %3d %3d  %3s     %3s %3lu %3lu",
+	   rose_neigh->number,
+	   (rose_neigh->loopback) ? "RSLOOP-0" : ax2asc(buf, &rose_neigh->callsign),
+	   rose_neigh->dev ? rose_neigh->dev->name : "???",
+	   rose_neigh->count,
+
+/proc/net/rose_neigh displays special rose_loopback_neigh->loopback as
+callsign RSLOOP-0:
+
+addr  callsign  dev  count use mode restart  t0  tf digipeaters
+00001 RSLOOP-0  ???      1   2  DCE     yes   0   0
+
+By checking rose_loopback_neigh->loopback, rose_rx_call_request() is called
+even in case rose_loopback_neigh->dev is NULL. This repairs rose connections.
+
+Verification with rose client application FPAC:
+
+FPAC-Node v 4.1.3 (built Aug  5 2022) for LINUX (help = h)
+F6BVP-4 (Commands = ?) : u
+Users - AX.25 Level 2 sessions :
+Port   Callsign     Callsign  AX.25 state  ROSE state  NetRom status
+axudp  F6BVP-5   -> F6BVP-9   Connected    Connected   ---------
+
+Fixes: 3b3fd068c56e ("rose: Fix Null pointer dereference in rose_send_frame()")
+Signed-off-by: Bernard Pidoux <f6bvp@free.fr>
+Suggested-by: Francois Romieu <romieu@fr.zoreil.com>
+Cc: Thomas DL9SAU Osterried <thomas@osterried.de>
+---
+
+ Regression appeared in the v5.9..v5.10 cycle. The fix above also applies as-is
+ to stable v5.4, stable v4.19 and stable v4.14. 
+
+ net/rose/rose_loopback.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/rose/rose_loopback.c b/net/rose/rose_loopback.c
+index 11c45c8c6c16..036d92c0ad79 100644
+--- a/net/rose/rose_loopback.c
++++ b/net/rose/rose_loopback.c
+@@ -96,7 +96,8 @@ static void rose_loopback_timer(struct timer_list *unused)
+ 		}
+ 
+ 		if (frametype == ROSE_CALL_REQUEST) {
+-			if (!rose_loopback_neigh->dev) {
++			if (!rose_loopback_neigh->dev &&
++			    !rose_loopback_neigh->loopback) {
+ 				kfree_skb(skb);
+ 				continue;
+ 			}
+-- 
+2.37.1
