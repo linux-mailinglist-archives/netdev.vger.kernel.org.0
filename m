@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3E4959843D
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2A37598449
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:38:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243613AbiHRNcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 09:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35614 "EHLO
+        id S244484AbiHRNfB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 09:35:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243887AbiHRNcP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:32:15 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C33CA832D3
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:32:14 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id q16so1151467ljp.7
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:32:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=isovalent-com.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=mm+CIi+eTqS+IJJSFN2zOluKJ3THx8ghvQL/UiT4BIA=;
-        b=hycS8Bgar8HWXzk0HRu5TgUPzOSn584mePOMu7IxMkWasKtRbqVuh/LS+bjcY7iQF5
-         08BM90sVj27zPXCHC6dMe73ami+RZnm1892KFLWbao/LaCG0OQuWH3OH6Hk2qKPKJAga
-         sOSnxI1OGDxFUJpeQX8uKn/6g+BvFL2Redq0sLP0PdMGHfb/VDcD+pyNbDWHo6cedrFL
-         ax01skNXYlUVJa6WrriXTvUKkkWQxDtXkVIAPWerpmqpZ1HcPM/z4f0Hljkk/Uw55qIq
-         sOUR+88I4P6e0LrZuGtF0Qa/czejFs0USVk4FWXK7QEl+qzOMiGSFSX3C0PcNKIMYaia
-         pVRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=mm+CIi+eTqS+IJJSFN2zOluKJ3THx8ghvQL/UiT4BIA=;
-        b=VrZ3128CJEc19xag8hYuvk1kQeSRDz5TKPG2h8ipK7s4XI8Pwbu0iVs7nGFuPbAQ5A
-         sMylVtAY2FO/C1nr/Ooj9zVvcDEmqFD19UZbNamX6nr3sPr6ycS+qiLymPY6+urQgTdP
-         n5VNveQSFnJhxYmJ82/6lGzdINQlu7AcMxyVdxj/utjqScNEitv9ta8IykSThjgKw1au
-         0Cg51MQsaxAaprc5KoDuBAEqJcXko57UdAkgORrAVdFrzy4C/t4V5JqrSJHPxbX5uPAV
-         ySqHvP8xgycxwLcRlX0QSbQvGiM66ecPdmDgdfhb6t6JyEv/tAhXHSU3XW/MIQNhKlsE
-         dQQA==
-X-Gm-Message-State: ACgBeo3hkixHCdT4nKk7RFpRq7NBHrdbpnG2DCXNaeANLjeZvrMDSe0U
-        n5QzUiQCOwpgNIa9GaS2K/5x
-X-Google-Smtp-Source: AA6agR5UaQ2TuK+k7OQHLit1V5LGJEn1wYG32ouP39jCWRH0Zc62Y7v9UqOpETmF8sLSIQ3l+5dFDQ==
-X-Received: by 2002:a2e:a551:0:b0:25f:eb63:2588 with SMTP id e17-20020a2ea551000000b0025feb632588mr898325ljn.9.1660829533017;
-        Thu, 18 Aug 2022 06:32:13 -0700 (PDT)
-Received: from Mem (2a01cb0890e29600d12d396dd3345aed.ipv6.abo.wanadoo.fr. [2a01:cb08:90e2:9600:d12d:396d:d334:5aed])
-        by smtp.gmail.com with ESMTPSA id b12-20020a05651c032c00b0025e040510e7sm231087ljp.74.2022.08.18.06.32.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 06:32:12 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 15:32:09 +0200
-From:   Paul Chaignon <paul@isovalent.com>
-To:     Eyal Birger <eyal.birger@gmail.com>, idosch@nvidia.com,
-        petrm@nvidia.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, yoshfuji@linux-ipv6.org,
-        dsahern@kernel.org, razor@blackwall.org, daniel@iogearbox.net,
-        kafai@fb.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf] ip_tunnel: respect tunnel key's "flow_flags" in IP
- tunnels
-Message-ID: <20220818133209.GA80579@Mem>
-References: <20220818074118.726639-1-eyal.birger@gmail.com>
+        with ESMTP id S243887AbiHRNfA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:35:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955463CBE8
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:34:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31F8A61668
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 13:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BF30C433C1;
+        Thu, 18 Aug 2022 13:34:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660829698;
+        bh=nMsl7fkywPW/eTyZ9+lCTnYDd7OjEdzw65s4kXwivcw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=URQ8s9Zom2/HHMgkQSMdfoLrlcVewdJqa/18hM2c/ennpcM9r+2B7ARziAS3VOydS
+         pch9xFt0vp4Dq0+xf9B0z8I/udIuN4dhPFHxlQ+0cOrSXJ85W1pLdATwLOSVludWdw
+         Odzjxu8209/948An6Xw8799+vObEM4vbKMVF308ixHOYidvRzCz6vpSoKp0PxT9ghe
+         lcx/svsYTQwgyHvPJBJLYKTVLwif/G2yU0i8zYPeDh8hwf9c5Jt4+nfbVJrn/E0rnA
+         A8/HuXslGAtqKSruDO4y4OuHCGfrLwKj27tDo/J1zbWgxI7KHB7EAFsNG1qVjU1sMy
+         qmCIVuo8QTBrw==
+Date:   Thu, 18 Aug 2022 16:34:54 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: Re: [PATCH xfrm-next v2 4/6] xfrm: add TX datapath support for IPsec
+ full offload mode
+Message-ID: <Yv4//oQssmUDaRwn@unreal>
+References: <cover.1660639789.git.leonro@nvidia.com>
+ <aa0b418e5bccb0b32625f8615124c8d0e58d9980.1660639789.git.leonro@nvidia.com>
+ <20220818102451.GE566407@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818074118.726639-1-eyal.birger@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220818102451.GE566407@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 10:41:18AM +0300, Eyal Birger wrote:
-> Commit 451ef36bd229 ("ip_tunnels: Add new flow flags field to ip_tunnel_key")
-> added a "flow_flags" member to struct ip_tunnel_key which was later used by
-> the commit in the fixes tag to avoid dropping packets with sources that
-> aren't locally configured when set in bpf_set_tunnel_key().
+On Thu, Aug 18, 2022 at 12:24:51PM +0200, Steffen Klassert wrote:
+> On Tue, Aug 16, 2022 at 11:59:25AM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > In IPsec full mode, the device is going to encrypt and encapsulate
+> > packets that are associated with offloaded policy. After successful
+> > policy lookup to indicate if packets should be offloaded or not,
+> > the stack forwards packets to the device to do the magic.
+> > 
+> > Signed-off-by: Raed Salem <raeds@nvidia.com>
+> > Signed-off-by: Huy Nguyen <huyn@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  net/xfrm/xfrm_device.c | 13 +++++++++++++
+> >  net/xfrm/xfrm_output.c | 20 ++++++++++++++++++++
+> >  2 files changed, 33 insertions(+)
+> > 
+> > diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+> > index 1cc482e9c87d..db5ebd36f68c 100644
+> > --- a/net/xfrm/xfrm_device.c
+> > +++ b/net/xfrm/xfrm_device.c
 > 
-> VXLAN and GENEVE were made to respect this flag, ip tunnels like IPIP and GRE
-> were not.
+> > @@ -366,6 +376,9 @@ bool xfrm_dev_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
+> >  	struct xfrm_dst *xdst = (struct xfrm_dst *)dst;
+> >  	struct net_device *dev = x->xso.dev;
+> >  
+> > +	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL)
+> > +		goto ok;
 > 
-> This commit fixes this omission by making ip_tunnel_init_flow() receive
-> the flow flags from the tunnel key in the relevant collect_md paths.
+> You skip the PMTU checks here. I've seen that you check
+> the packet length against the device MTU in one of your
+> mlx5 patches, but that does not help if the PMTU is below.
+
+If device supports transformation of the packet, this packet
+won't be counted as XFRM anymore. I'm not sure that we need
+to perform XFRM specific checks.
+
 > 
-> Fixes: b8fff748521c ("bpf: Set flow flag to allow any source IP in bpf_tunnel_key")
-> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-> ---
->  drivers/net/ethernet/mellanox/mlxsw/spectrum_span.c | 3 ++-
->  include/net/ip_tunnels.h                            | 4 +++-
->  net/ipv4/ip_gre.c                                   | 2 +-
->  net/ipv4/ip_tunnel.c                                | 7 ++++---
->  4 files changed, 10 insertions(+), 6 deletions(-)
+> >  
+> > diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+> > index 555ab35cd119..27a8dac9ca7d 100644
+> > --- a/net/xfrm/xfrm_output.c
+> > +++ b/net/xfrm/xfrm_output.c
+> > @@ -719,6 +719,26 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
+> >  		break;
+> >  	}
+> >  
+> > +	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL) {
+> > +		struct dst_entry *dst = skb_dst_pop(skb);
+> > +
+> > +		if (!dst || !xfrm_dev_offload_ok(skb, x)) {
+> > +			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
+> > +			kfree_skb(skb);
+> > +			return -EHOSTUNREACH;
+> > +		}
+> > +
+> > +		skb_dst_set(skb, dst);
+> > +		err = skb_dst(skb)->ops->local_out(net, skb->sk, skb);
+> > +		if (unlikely(err != 1))
+> > +			return err;
+> > +
+> > +		if (!skb_dst(skb)->xfrm)
+> > +			return dst_output(net, skb->sk, skb);
+> > +
+> > +		return 0;
+> 
+> You leak skb here. Also, this skb needs another tfm because
+> skb_dst(skb)->xfrm is set.
 
-Thanks for the fix!
+I will fix, thanks.
 
-Reviewed-by: Paul Chaignon <paul@isovalent.com>
-
+> 
