@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71D06597E81
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 08:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A361D597E85
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 08:20:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243565AbiHRGSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 02:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35866 "EHLO
+        id S243609AbiHRGUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 02:20:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243333AbiHRGSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 02:18:42 -0400
+        with ESMTP id S243604AbiHRGUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 02:20:12 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960115F9A9
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:18:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC70B67477
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:20:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660803519;
+        s=mimecast20190719; t=1660803610;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
-        b=dyT7TP049tBceHakkiUgJVhigd9y7vFTfM/VZFdQq725cZBCw4B2OcHZbt3tqw7WeqNFyW
-        VO/5fTQ7CFpIq2oCoucpHU9nY0bBiF0IMPTQrYTR6GDddTrC8Dl9Jci5JSc9m4HikGfGlG
-        PboDdqyEX04PbWZ9bzO6ewXkIc4pep8=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=I44EBZKhY4t31AeWAM7IA5CQq5Sz2dNzjhIF4liI9pA=;
+        b=Dz/RuOSStg7TEHJ068bCN7CIqHdyk/LRU2cHAjG4Gdxgg9f3zxLMohn09mifz+Qy0v/hgI
+        lcA5XEvqMKfhv4nlHws+QV7QGT7IK6qbeVrP3SNpR/nzOFjiCFBK/ZxcN7r+HaU4+cMCLM
+        JN3sKpKfXCE1e6YDhOg+OD3VFeqcmr4=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-144-0N4UGYh9PaOL1sqwvCmmBg-1; Thu, 18 Aug 2022 02:18:38 -0400
-X-MC-Unique: 0N4UGYh9PaOL1sqwvCmmBg-1
-Received: by mail-qt1-f200.google.com with SMTP id s2-20020ac85cc2000000b00342f8ad1f40so513833qta.12
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:18:38 -0700 (PDT)
+ us-mta-318-IxjQ5fdTOduTQUk5NFa8Yg-1; Thu, 18 Aug 2022 02:20:07 -0400
+X-MC-Unique: IxjQ5fdTOduTQUk5NFa8Yg-1
+Received: by mail-qk1-f200.google.com with SMTP id bq19-20020a05620a469300b006bb70e293ccso628294qkb.1
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 23:20:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=0NAawQ9XBYnysJg3OwdeE4npc8jcs/ow05KJCd8jCZk=;
-        b=TSPYvaJhZFNLVZP/Scki8TOViWoG5d7I5J9Notlq9v+cJz8KDyVEWObeixTPZWfiYr
-         bJ9oGGCC1+2AZ4QWLsjyETr7EgSxxg50VqxXSkWj6EFEaOTZCEUn68Z8Q2F4DLZWZOCP
-         LxCqmOCJ6kIUTbK6Qdqllt8IrdY8dDRDR6nEOFS1Io63G9Wasy5+mQrauT6UHaXfCNFP
-         nNxEgBwNBKHfFkFoQejXnTO9wPIjlUl9BanUWlamdtNYCW+XSzJ33jP2IbjntmpXerpr
-         MmLK7Eh8cAZMZB+Z0YAJxsDHnzo9ndVaTI8HUKzdsYsFDy0fgfEEjBNqXOvoKeKbxLdW
-         67AQ==
-X-Gm-Message-State: ACgBeo1fs30y+Pa0iakI9+e0GDJC1MG0clh1WWf4t4LdIMwSF/TICrPz
-        nTkJgklpfwZwcpiABsdIi9WyzhTVjdpSH1OMubO/M+50wLOq8Kogz5NGkdO8C6dnpsbWyfS8QkF
-        sbhV+Di9cjjYVLe6TCj0eBUZ7YBrEio75
-X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id t7-20020ad45bc7000000b0048be9ed47a8mr1226314qvt.108.1660803517637;
-        Wed, 17 Aug 2022 23:18:37 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7i9tzI1gIYnxOQajZ5xPDocGxVzPwJg4mYMy5d4vyh7LD7T4c/zanv9nEMIkZnzlA6roXFACDL2aVIZunCvdQ=
-X-Received: by 2002:ad4:5bc7:0:b0:48b:e9ed:47a8 with SMTP id
- t7-20020ad45bc7000000b0048be9ed47a8mr1226308qvt.108.1660803517434; Wed, 17
- Aug 2022 23:18:37 -0700 (PDT)
+        bh=I44EBZKhY4t31AeWAM7IA5CQq5Sz2dNzjhIF4liI9pA=;
+        b=mZaq+yf75Zco0AOpVcPSXxhwQuMhDjpnJ5Qfg2WlZhzBbwAkbkNqwbbEC5LeccOJq2
+         xQBh2LpB+viSlE2Bzys2PyMOgqJAxQLV1d4t7cYttTxBuTIKybCknt0XFb/0t3XNJGvr
+         E6ugjDGic/5MFhAR8wk+wV5Y31lRM+cqwUaTYsCuzP7QXKPJEy0WHYLtFccY9ieUCZVL
+         8JOJpcp5CxuayZXyjNOZmX2muBoP5sPkAOWRkbyFysn/0+/A2w14cm66KVe79G8R3w7L
+         mXSGzKQdcipch8/J71Ze7NDCSD6thGV+4/sfx553g6qBo7WB2ERwxkG4clTiNBe55Yjg
+         ONbQ==
+X-Gm-Message-State: ACgBeo1Fq2KW2CM0PSIfD1m5J6ZbJVQ9CuKEfOBSl1HsLJMnjOFFzszy
+        KjhmLoFjWtj14K8jzb9BIaa5y5N0p7Y/DGfntqn0oJLDSotn52A7NXHth2PGF5ycwCogW/7CIZa
+        ylHfB99ZxG306MJACNFBQzHSYzDZoMPm2
+X-Received: by 2002:a05:6214:509e:b0:496:a98a:fd5 with SMTP id kk30-20020a056214509e00b00496a98a0fd5mr1240451qvb.2.1660803606482;
+        Wed, 17 Aug 2022 23:20:06 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7XrFPF+FXrhAulcnDsApNT/29F2unpZhGwbXxLef6/vHafmNtjvY5lhCtM+F8PnEGelPXnToL8/5b60fvb7HE=
+X-Received: by 2002:a05:6214:509e:b0:496:a98a:fd5 with SMTP id
+ kk30-20020a056214509e00b00496a98a0fd5mr1240439qvb.2.1660803606279; Wed, 17
+ Aug 2022 23:20:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220817135718.2553-3-qtxuning1999@sjtu.edu.cn>
+References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-4-qtxuning1999@sjtu.edu.cn>
+In-Reply-To: <20220817135718.2553-4-qtxuning1999@sjtu.edu.cn>
 From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 18 Aug 2022 08:18:01 +0200
-Message-ID: <CAJaqyWdTjREaPLHLfo8ZyHoA3u5PpdX_=5-iTZOfa9fGpLMnfw@mail.gmail.com>
-Subject: Re: [RFC v2 2/7] vhost_test: batch used buffer
+Date:   Thu, 18 Aug 2022 08:19:29 +0200
+Message-ID: <CAJaqyWeCYHvKShyQu0JEfLi=N+TLXdHQtt-VJR-4eVyU0MzT+w@mail.gmail.com>
+Subject: Re: [RFC v2 3/7] vsock: batch buffers in tx
 To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
 Cc:     Jason Wang <jasowang@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -68,7 +68,7 @@ Cc:     Jason Wang <jasowang@redhat.com>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,50 +78,52 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Aug 17, 2022 at 3:58 PM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
 >
-> Only add to used ring when a batch of buffer have all been used.  And if
-> in order feature negotiated, only add the last used descriptor for a
-> batch of buffer.
+> Vsock uses buffers in order, and for tx driver doesn't have to
+> know the length of the buffer. So we can do a batch for vsock if
+> in order negotiated, only write one used ring for a batch of buffers
 >
 > Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
 > ---
->  drivers/vhost/test.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
+>  drivers/vhost/vsock.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 >
-> diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
-> index bc8e7fb1e635..57cdb3a3edf6 100644
-> --- a/drivers/vhost/test.c
-> +++ b/drivers/vhost/test.c
-> @@ -43,6 +43,9 @@ struct vhost_test {
->  static void handle_vq(struct vhost_test *n)
->  {
->         struct vhost_virtqueue *vq = &n->vqs[VHOST_TEST_VQ];
-> +       struct vring_used_elem *heads = kmalloc(sizeof(*heads)
-> +                       * vq->num, GFP_KERNEL);
+> diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
+> index 368330417bde..b0108009c39a 100644
+> --- a/drivers/vhost/vsock.c
+> +++ b/drivers/vhost/vsock.c
+> @@ -500,6 +500,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>         int head, pkts = 0, total_len = 0;
+>         unsigned int out, in;
+>         bool added = false;
+> +       int last_head = -1;
+>
+>         mutex_lock(&vq->mutex);
+>
+> @@ -551,10 +552,16 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
+>                 else
+>                         virtio_transport_free_pkt(pkt);
+>
+> -               vhost_add_used(vq, head, 0);
+> +               if (!vhost_has_feature(vq, VIRTIO_F_IN_ORDER))
+> +                       vhost_add_used(vq, head, 0);
+> +               else
+> +                       last_head = head;
+>                 added = true;
+>         } while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
+>
+> +       /* If in order feature negotiaged, we can do a batch to increase performance */
+> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && last_head != -1)
+> +               vhost_add_used(vq, last_head, 0);
 
-It seems to me we can use kmalloc_array here.
+Expanding my previous mail on patch 1, you can also use this in vsock
+tx queue code. This way, no modifications to vhost.c functions are
+needed.
 
 Thanks!
 
-> +       int batch_idx = 0;
->         unsigned out, in;
->         int head;
->         size_t len, total_len = 0;
-> @@ -84,11 +87,14 @@ static void handle_vq(struct vhost_test *n)
->                         vq_err(vq, "Unexpected 0 len for TX\n");
->                         break;
->                 }
-> -               vhost_add_used_and_signal(&n->dev, vq, head, 0);
-> +               heads[batch_idx].id = cpu_to_vhost32(vq, head);
-> +               heads[batch_idx++].len = cpu_to_vhost32(vq, len);
->                 total_len += len;
->                 if (unlikely(vhost_exceeds_weight(vq, 0, total_len)))
->                         break;
->         }
-> +       if (batch_idx)
-> +               vhost_add_used_and_signal_n(&n->dev, vq, heads, batch_idx);
->
->         mutex_unlock(&vq->mutex);
->  }
+>  no_more_replies:
+>         if (added)
+>                 vhost_signal(&vsock->dev, vq);
 > --
 > 2.17.1
 >
