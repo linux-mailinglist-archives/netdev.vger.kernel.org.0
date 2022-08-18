@@ -2,93 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D4E59808D
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89A955980B4
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 11:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235189AbiHRJGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 05:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49750 "EHLO
+        id S237238AbiHRJRe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 05:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231393AbiHRJGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 05:06:48 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B432FB08A9;
-        Thu, 18 Aug 2022 02:06:46 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [10.190.66.64])
-        by mail-app3 (Coremail) with SMTP id cC_KCgBXqLQOAf5iHIBTAw--.61019S2;
-        Thu, 18 Aug 2022 17:06:33 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     netdev@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org, kuba@kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net] nfc: pn533: Fix use-after-free bugs caused by pn532_cmd_timeout
-Date:   Thu, 18 Aug 2022 17:06:21 +0800
-Message-Id: <20220818090621.106094-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgBXqLQOAf5iHIBTAw--.61019S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7tF17XFW8uw1kGr4UAr4fKrg_yoW8GFyxpF
-        ZagFn8Ar18Jr4UCa1xur1rXa4rJws7Jry0gFy7uw13Was7CF1rGrs3tFyjyFsxXrWkKFn3
-        ZFZ5Xw1UGF98KFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkI1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v
-        1sIEY20_GFWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r
-        18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vI
-        r41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr
-        1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgMGAVZdtbFGtwAMs0
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S231616AbiHRJRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 05:17:31 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D2367CA7;
+        Thu, 18 Aug 2022 02:17:30 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1660814199; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=USXBYp2MxaiuDHGWU5W4eTLantEidntEZ8iCdnHk6M3ctHr1EFg/JSPl9CjVy8LWnFXXxo1lZ919QZSqM8HScTrTroB4JCq6X0ic8GiHMXWu6DHE8Gfj6cQrCNkbpGFIE+Lq8QecvqyjOwTctPYGLpfKKjIYUkOvjEr4liDx4hc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1660814199; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=r2yFPxeJOW4FSx26rqzEDXZD6XX1GgOaFnrmsBkM89Y=; 
+        b=JuBycRjfQCsne9NV697b4UJuqzp7TqQ4dsrb41e56q6FX3l67Y9m2fCfWMXbyW8SuUM91bf9pFXsar7HedVOZK3Sv3S59BNga3Ui5Dk0o73mTS0qFH39TXo+qby885GywPHWeW6iqFgPXKxvp7nx0vuF2MsebBeUqnDZ2zI/wh0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660814199;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=r2yFPxeJOW4FSx26rqzEDXZD6XX1GgOaFnrmsBkM89Y=;
+        b=YfauaA1pzQgStKULF51J08iaNkprUoc07njXNwtD2NWTdF4UoECdHCRrotXKmfz5
+        MdeEz9Hm6C1ignB1OgYiFEZb1K2nR87ZvCf2KalgtFUIOedweqHOg9g/ETSl3Mucw3H
+        nQUgNRXfIIyRF3VKllU60iDwodXYmAVVHz+h5rBw=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1660814196048527.2976968417031; Thu, 18 Aug 2022 02:16:36 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v3 0/6] completely rework mediatek,mt7530 binding
+Date:   Thu, 18 Aug 2022 12:16:21 +0300
+Message-Id: <20220818091627.51878-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the pn532 uart device is detaching, the pn532_uart_remove()
-is called. But there are no functions in pn532_uart_remove() that
-could delete the cmd_timeout timer, which will cause use-after-free
-bugs. The process is shown below:
+Hello.
 
-    (thread 1)                  |        (thread 2)
-                                |  pn532_uart_send_frame
-pn532_uart_remove               |    mod_timer(&pn532->cmd_timeout,...)
-  ...                           |    (wait a time)
-  kfree(pn532) //FREE           |    pn532_cmd_timeout
-                                |      pn532_uart_send_frame
-                                |        pn532->... //USE
+This patch series brings complete rework of the mediatek,mt7530 binding.
 
-This patch adds del_timer_sync() in pn532_uart_remove() in order to
-prevent the use-after-free bugs. What's more, the pn53x_unregister_nfc()
-is well synchronized, it sets nfc_dev->shutting_down to true and there
-are no syscalls could restart the cmd_timeout timer.
+The binding is checked with "make dt_binding_check
+DT_SCHEMA_FILES=mediatek,mt7530.yaml".
 
-Fixes: c656aa4c27b1 ("nfc: pn533: add UART phy driver")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/nfc/pn533/uart.c | 1 +
- 1 file changed, 1 insertion(+)
+If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
+MT7623AI SoC, let me know. I'll add it to the examples.
 
-diff --git a/drivers/nfc/pn533/uart.c b/drivers/nfc/pn533/uart.c
-index 2caf997f9bc..07596bf5f7d 100644
---- a/drivers/nfc/pn533/uart.c
-+++ b/drivers/nfc/pn533/uart.c
-@@ -310,6 +310,7 @@ static void pn532_uart_remove(struct serdev_device *serdev)
- 	pn53x_unregister_nfc(pn532->priv);
- 	serdev_device_close(serdev);
- 	pn53x_common_clean(pn532->priv);
-+	del_timer_sync(&pn532->cmd_timeout);
- 	kfree_skb(pn532->recv_skb);
- 	kfree(pn532);
- }
--- 
-2.17.1
+If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
+
+v3:
+- Add Rob's Reviewed-by: to first patch.
+- Explain why to invalidating reset-gpios and mediatek,mcm.
+- Do not change ethernet-ports to ports on examples.
+- Remove platform and, when possible, ethernet nodes from examples.
+- Remove pinctrl binding from examples.
+- Combine removing unnecesary lines patch with relocating port binding.
+- Define $defs of mt7530 and mt7531 port binding and refer to them in each
+compatible device.
+- Remove allOf: for cases where there's only a single if:.
+- Use else: for cpu port 6 which simplifies the binding.
+- State clearly that the DSA driver does not support the MT7530 switch in
+MT7620 SoCs.
+
+v2:
+- Change the way of adding descriptions for each compatible string.
+- Split the patch for updating the json-schema.
+- Make slight changes on the patch for the binding description.
+
+Arınç ÜNAL (6):
+  dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+  dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+  dt-bindings: net: dsa: mediatek,mt7530: update examples
+  dt-bindings: net: dsa: mediatek,mt7530: define port binding per switch
+  dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for switch models
+  dt-bindings: net: dsa: mediatek,mt7530: update binding description
+
+ .../bindings/net/dsa/mediatek,mt7530.yaml       | 680 +++++++++++++++----
+ 1 file changed, 545 insertions(+), 135 deletions(-)
+
 
