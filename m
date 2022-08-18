@@ -2,126 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C3CF598964
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:54:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6CB759895F
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345079AbiHRQvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
+        id S1345104AbiHRQxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345081AbiHRQvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:51:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B99C6FDC
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 09:51:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660841490;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=4hys+dHsvGKwimvP9q8wpRWR1CV0ec7am4TJ1PyleZM=;
-        b=UZdcwIYSg9oxF0TD2DsgTciVuB4VtrDFJftdHV2I7K37/HQ6bQzS/f+fGxFfB1Sbpqn9oS
-        MVnJG7PbFds+OscvUmfQqVWXZ/dGGNXGTQ6WdOMtP64idHvRANtQ2LgTKzvjk3kz04QEgk
-        e7E+lqpSpM2mFV35JWHXyavB0jWBSZs=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-571-iuYNNpz9O1O1vDpAWd8NUQ-1; Thu, 18 Aug 2022 12:51:29 -0400
-X-MC-Unique: iuYNNpz9O1O1vDpAWd8NUQ-1
-Received: by mail-wm1-f72.google.com with SMTP id j22-20020a05600c485600b003a5e4420552so2947433wmo.8
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 09:51:29 -0700 (PDT)
+        with ESMTP id S239618AbiHRQxI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:53:08 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF406A4B1F;
+        Thu, 18 Aug 2022 09:53:07 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id q2so522419edb.6;
+        Thu, 18 Aug 2022 09:53:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=GOWW/qFhZlHI+4MNURyBEz3OtdlugS1ktx9LFuaupsg=;
+        b=o87xqvSeDmbXvW+okF/9yO7iUirFTOoRQ5QlpY4A6ULUi9VagfCCCxmB+6Dm0uafEP
+         i2wkBJK6y0jy30/iITXPF265OaEUkOKfSqzKg64unNiWq9RGKqbrueQQARu8cUGcoXuR
+         9Ld7Z8E78FyCONZmqyNAQ/L8rAUT6geh+yv5slNIw18X48LSqW1kY0V2DT+aLEbCfKBL
+         GbP+gaUSO3AEzitWXejkcLXfgkPIZL7SiiEM2V+YjVL2nk1yMSCfRUghGKNaF22U92/l
+         k6V1G9QQ/5BDNTEnR81MhYPzCia6D0NoSkcaemKFSm6GbGoyHYXaplAE1jUyntaxuz0K
+         KQFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=4hys+dHsvGKwimvP9q8wpRWR1CV0ec7am4TJ1PyleZM=;
-        b=GfJFLemoVGSbNywwZApSSAKIxkCh6JH/DEtP1Nf3XaPZlPRcvj3FG79xOdVJpSbVL5
-         73REuvb72XQUhkaw6EWKFKUkpbKhJ0nfFW+ZHDC3/2TEF1SrTf+v+m5xiMNA74snV+Vr
-         ANU2uJfTkw0ZQSFSZKJX20sD5BbcwfEWtS6PxGXbdMT2e/jhy2UlB19sU3NRhW4l42eT
-         3w1wQMTd7XKn2Hip7bo2JPOLLZKX+IvlelzngFVa+dOYLadtKnXZBMm6a4Gw2GukyHeG
-         zl+nTM7XqiWejo2BP0iQQqhcGN5ZX3GTecOu41kV8TaF7lQ7e80g0ttrbR0Kz4wTbFmc
-         sH9g==
-X-Gm-Message-State: ACgBeo2GTqqMi0JC0t21Knh7NiGnPYQOGWvfXOHxWtuVSdwKxEPE/Mmy
-        maQ+/7t/4ukxQht94X0quqeW/obEQizs9cciKYE9uYzvMPjfbeyzx4QvgcvMk5TXUJNAvSjRCe8
-        MqKtV6j51s92iNd06
-X-Received: by 2002:a7b:cbd0:0:b0:3a6:9f6:a3e8 with SMTP id n16-20020a7bcbd0000000b003a609f6a3e8mr2416314wmi.13.1660841488562;
-        Thu, 18 Aug 2022 09:51:28 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR42KLtH2wgObwY2XF2QCwFA4YZsXhbXH3Krxozkk5s4ActjOWw0Iol/UCx419LGdNcY8BX3xA==
-X-Received: by 2002:a7b:cbd0:0:b0:3a6:9f6:a3e8 with SMTP id n16-20020a7bcbd0000000b003a609f6a3e8mr2416291wmi.13.1660841488411;
-        Thu, 18 Aug 2022 09:51:28 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id m5-20020a05600c4f4500b003a5fa79007fsm3034679wmq.7.2022.08.18.09.51.27
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=GOWW/qFhZlHI+4MNURyBEz3OtdlugS1ktx9LFuaupsg=;
+        b=h8X7ELF1J6glxOuaBIgwJhuw5rBDlQkfSxLRk6AgjJMZBmfA9ovQpFBWkxd9eTFjR0
+         dJcdIOt6x2EiEFzZAPN7eIPgz4hYcKv2CLLq5dO1CPD5DF1s0UH+nn3pN33RtvRtiE5I
+         rhY3OxVh3WNN5930sLYb3XJwXv89BDigGxAFB82dhaTTGyAZwWVphuVlsrik16NWCBJ6
+         z/ygW2kUODXCbBHtwmFKuSYoegFWdJM7Tz0fmPTXMrdYnNNVVJQDb5USQTy5SvED+fhR
+         ip9TOmJZatmNOrB75kL09SwotX3t6Q7SrNQ+o2pXci0rp4Z7tcRFAbJC+Qa9CZtZdsTf
+         FOhA==
+X-Gm-Message-State: ACgBeo0xqhwq7UluxVJB0Ie3r1KAMwfybQ7LIzt45qWdoAKOyjNkeEad
+        CfRdCNy0TkGr3sIjCd+WHYc=
+X-Google-Smtp-Source: AA6agR77iZ5BBrGReAEA8LTqA21WJutAcKsnKcB6RpzR02r+YSigZMoVG5S0dxPGKYYDujx67X2MPQ==
+X-Received: by 2002:a05:6402:3907:b0:431:6776:64e7 with SMTP id fe7-20020a056402390700b00431677664e7mr2942577edb.0.1660841586273;
+        Thu, 18 Aug 2022 09:53:06 -0700 (PDT)
+Received: from skbuf ([188.25.231.137])
+        by smtp.gmail.com with ESMTPSA id v11-20020a1709062f0b00b0072b7d76211dsm1054375eji.107.2022.08.18.09.53.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 09:51:27 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Thu, 18 Aug 2022 09:53:05 -0700 (PDT)
+Date:   Thu, 18 Aug 2022 19:53:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
         Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 0/5] sched, net: NUMA-aware CPU spreading interface
-In-Reply-To: <xhsmhzgg1a4dy.mognet@vschneid.remote.csb>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <9b062b28-e6dd-3af1-da02-1bc511ed6939@intel.com>
- <xhsmhzgg1a4dy.mognet@vschneid.remote.csb>
-Date:   Thu, 18 Aug 2022 17:51:26 +0100
-Message-ID: <xhsmhwnb5a41d.mognet@vschneid.remote.csb>
+        Eric Dumazet <edumazet@google.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 02/11] net: phy: Add 1000BASE-KX interface mode
+Message-ID: <20220818165303.zzp57kd7wfjyytza@skbuf>
+References: <20220725153730.2604096-1-sean.anderson@seco.com>
+ <20220725153730.2604096-3-sean.anderson@seco.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220725153730.2604096-3-sean.anderson@seco.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/22 17:43, Valentin Schneider wrote:
-> On 18/08/22 09:28, Jesse Brandeburg wrote:
->> On 8/17/2022 10:58 AM, Valentin Schneider wrote:
->>> Hi folks,
->>>
->>> Tariq pointed out in [1] that drivers allocating IRQ vectors would benefit
->>> from having smarter NUMA-awareness (cpumask_local_spread() doesn't quite cut
->>> it).
->>>
->>> The proposed interface involved an array of CPUs and a temporary cpumask, and
->>> being my difficult self what I'm proposing here is an interface that doesn't
->>> require any temporary storage other than some stack variables (at the cost of
->>> one wild macro).
->>>
->>> Patch 5/5 is just there to showcase how the thing would be used. If this doesn't
->>> get hated on, I'll let Tariq pick this up and push it with his networking driver
->>> changes (with actual changelogs).
->>
->> I am interested in this work, but it seems that at least on lore and in
->> my inbox, patch 3,4,5 didn't show up.
->
-> I used exactly the same git send-email command for this than for v1 (which
-> shows up in its entirety on lore), but I can't see these either. I'm going
-> to assume they got lost and will resend them.
+On Mon, Jul 25, 2022 at 11:37:20AM -0400, Sean Anderson wrote:
+> Add 1000BASE-KX interface mode. This 1G backplane ethernet as described in
+> clause 70. Clause 73 autonegotiation is mandatory, and only full duplex
+> operation is supported.
+> 
+> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+> ---
 
-Welp, it's there now, but clearly should've used --no-thread when resending
-them :/
-
+What does 1000BASE-KX have to do with anything?
