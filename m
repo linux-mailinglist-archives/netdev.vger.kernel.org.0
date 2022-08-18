@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 305CB598882
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:18:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54BD0598885
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344473AbiHRQRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:17:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39338 "EHLO
+        id S1344565AbiHRQR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:17:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344457AbiHRQRN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:17:13 -0400
+        with ESMTP id S1344457AbiHRQRS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:17:18 -0400
 Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70070.outbound.protection.outlook.com [40.107.7.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CC6BD08F;
-        Thu, 18 Aug 2022 09:17:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4BABD099;
+        Thu, 18 Aug 2022 09:17:15 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fWhtKdCumVF0jZHfQZj3ALCltmT//StqPe4nwynqKE00VKubD6OVZBuRe9W2nw68AgCSdLY881hubHFwKRfqHwbDpHqa38XIfDYyVLTnCy8x845YA5Okq+TIj/u/B6Y++6LXX3O4TQicJw01kXGCqisAeLTkM9F2sT0ck1WCVQVcRRJ4v/1WX6Y5v35Nkigv6gCbG2KBwGqhzczRK8ucnZo2eokD/8/n6f4eKRw5kr/7rAj0+KMtA7czLA9o1sgSQ6ckHTWUAPTCXZcgo45/rmn/CaJZDrQhA3v9jX/5W2i6KLD8P9OVTjsUAjizoOKdrVTBuVyP8YphQkdOf/JI1w==
+ b=KdwAyxSclAcwJyr39CSvtZ0ifKg+NHVIBiH3fOoiORZnY6UMsF4MUi/z5DIMAY/7D9RQSyiTFxzzNuTM0mD2bEnbwAVLgAj1SaP8z7YbDxaSCrD5dj/nplXeeS3RweORyOzrp4F7UEhOEPPf3wY6KBXis4iYEZe8gZubLnO1HaCbR9fYso6sGJFN40tMtRdUWZ6Dw86qxiJnzM/z38/YPjmR9EfVQJLA1F3hYkh52ktv5mSqk9D9DRu2GOnJT8D714uwhtB73CYPL7oeYWbJGM4kVJWQ2gqllGUlM7xLsOsW51ET9n7ShsNMFJJAuSagHYLKfBVIiOrB9nwBxaqvqw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=SZuUDFAVgiNf2kcEotKjgbq3pqDMPDtsajTe/iQusEI=;
- b=ckuenD+RZTjewgDCSF2nmwH+vhXS5cHrVWOI+NZQNNRI/vTXmYvpKAxX+mNhYvoBArZdJVSHshzLoEftmx/B1zksMd2yJPAxNFrxo5Eb8EoLXLsesJCbwdPL5nP0tp/TYAw6VpnjgvnF76PjjBs+mdn0zqwiPH0rKNAN8bcyteykWmUC0SQseSfaDfdqyvsv3POT+fw02CX3xoWcT9naJ/d7XUP17TmdtqWDYBZxP3V27T4KzjG1Q6pMLO97ffSR4KMNUjMilGbTeX2a4a/c/P9e1RXuAR253sS8aWs0M1oAwCuAs8iiHTlxyiv63csy5BM45zcPD4Vb+Tw9WWfuVA==
+ bh=OYvIu+eD8xuwaZeeIpqrGKTF6KIS03fE1xK9b/GiHNM=;
+ b=QQApD4lsLZTg/BMNb/d9khk3mrQgJyB7fqmJ2Mar237c7nNy6LCRNB6yAJzeZ1p6pdJFfZWshtLMGiGeAV3hbUn8zXSS/GqJORQaBnbC0Lg9iTD1LP+1oTbJHeovtmb99G2/uf7caDAJDnhSQPcATVyaxJCGLM6iknCSeq7B6o1bxndpA6/5bLUSTGnEgUimkJQu+W5WkhsUY1nra6WlKY1g6elu/CGYn/ccU6ULi6AjkKj21E3Ff9coOBpXs7V43vrwWjI5xy0pL3IK8zCy+9HQ9hS7/3BN8KhzTt+RGXiJQKpNMindHTzRT7zvnHjQR5Gq42l+GxI1i8/AyIa6Bw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SZuUDFAVgiNf2kcEotKjgbq3pqDMPDtsajTe/iQusEI=;
- b=NIn/S+LbQlkbo5pPJfIyp+eljX7fYQ4dPz+dOZGrFGAyre2SpMKgkYHqYsExGvJFa0LxY71rhDW2Tq/CXOqMtlMuZb9rB4s6fIwnpTWAHgjZL4gYaj4/FiLy7SkviL8Px/MxoQmx3IQoDU7jGCAWFkDqs9e6uf68dZETxtTaPBRrEpCr8n038LJpMQAF7GRe1urnFaYcxEokqoL1F5+D3lc72t7r0p1u3SWApXFKxZzwkKGHHAiceo+XX5zMwz9PUTPJJXxhypUKrLkEKfKdDNSyfk5KMYkToyLalb0lTZeXpRrvtoMzTpqCbwIMa2XPb/5vj/KyI94cWEFcDG3SDg==
+ bh=OYvIu+eD8xuwaZeeIpqrGKTF6KIS03fE1xK9b/GiHNM=;
+ b=ZSLgaAivPBO91uOZWt/5tAtGHJAHY0ptrTWZgwryfKmZKK7qnlZuc3hlK+v8n7vVmjTACTFSKQF4DIPnXdoS89lO/AcZLMe3/NEaXW2wc6MBM3268lBoOxRSbP8FwyrIcrFNmXJlDR0A6Hi2uyro5gZM0ZKqFyz0FIg5X92t7B6Uib6/P1IeHJRNqZSPXY8YwV+cko1+9UB7HwQImBI2lmrwFaaMuy1PipCnS+faO85+H1Qh8jj6tob5SGZHfvH9ND2tfAqofXmx15h7mlx68lnWUEf96zeS/K2SBB8pdAwuik1TRJn6KAThBQ3Dd4op2o7EJhe/5BlVYrBXdkXlNw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by DB3PR0302MB3211.eurprd03.prod.outlook.com (2603:10a6:8:11::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 16:17:08 +0000
+ 2022 16:17:10 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Thu, 18 Aug 2022
- 16:17:08 +0000
+ 16:17:10 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -49,13 +49,10 @@ Cc:     Camelia Groza <camelia.groza@nxp.com>,
         Madalin Bucur <madalin.bucur@nxp.com>,
         linuxppc-dev@lists.ozlabs.org,
         linux-arm-kernel@lists.infradead.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [RESEND PATCH net-next v4 01/25] dt-bindings: net: Convert FMan MAC bindings to yaml
-Date:   Thu, 18 Aug 2022 12:16:25 -0400
-Message-Id: <20220818161649.2058728-2-sean.anderson@seco.com>
+        Sean Anderson <sean.anderson@seco.com>
+Subject: [RESEND PATCH net-next v4 02/25] net: fman: Convert to SPDX identifiers
+Date:   Thu, 18 Aug 2022 12:16:26 -0400
+Message-Id: <20220818161649.2058728-3-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220818161649.2058728-1-sean.anderson@seco.com>
 References: <20220818161649.2058728-1-sean.anderson@seco.com>
@@ -66,52 +63,52 @@ X-ClientProxiedBy: MN2PR20CA0009.namprd20.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0efe07a0-3059-422d-062f-08da8135195b
+X-MS-Office365-Filtering-Correlation-Id: 7fdf7e97-6a9d-4eec-1d85-08da81351a5a
 X-MS-TrafficTypeDiagnostic: DB3PR0302MB3211:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: B1WsPvcDaQYKDkTEiXC6KWVs7kWmhTsNtl4QeVaSf0puw39jk3p5+m2FmaWqUgJt4IMCQSyr9KKVmSqAcbxvi+pqN/SyHg+mfQKyvEs7xfzH/SqRidAOKRRswYi/WZTpGfUnz2aUlrvCcIPXKIgC1CgN7R0MVNJgiB4YXOI8jbuJzCvDfbU9FKEW1X2Zy9Fb7GYUntzlF+sUAB/KrnIf0Nx1jdR0ubUzF2JbSDPscqYMM3JRiYPOxXfN3SErgdq4yUAEfDqKfGQeuOEgn/LaN0ixJH7Tp2E2n5Be/J2D5FLAXzhigVNYHsCIvtjE362Y5vflAWDs95wREx1MSj/Y9sSQjQ7kLbxroEkwHF4veZKIwgjLtWefaPDIKiEdCf5Bff/t1aG2/MhaBfFhVwLnEvFYy2l6stQFu+gMN+kqJ8sIz+gt/R/W3cjdCKRTorMacfhnF8YJg6W65LIk8PBcPjFGYnN/+N2eX3Q7ZR3BkXd6I07+LFFMkTZCdCKlM68V4Vk8JO7no5zyd2aeEypD3TwZ1aNJ/Kp++LqXVChmghkUF/vyITH33DZnP+HiDAaWKboq1Sw/iGJRPep6s6unwGORp8tVphiE71tmPylOC5yeUoMP7kEZ8rO0XSl4uEr6PnyM5PI06NxMCm0reHV0F3iy30T40dmchOWEstmuDfUXX9A8buNd2QiSeKa+f/YvULfFmoXaS6PjIqyqCq3MgZ0nIoC9qiYf2QpjyPya4DQvQn0FRoG3PNixx/DjqebzsJTGLZvzoOURc+cakhB6W41lAG12dH+M6XUek12bgJ4=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(346002)(39840400004)(136003)(366004)(376002)(2616005)(38350700002)(8936002)(38100700002)(4326008)(6512007)(26005)(6506007)(52116002)(6666004)(2906002)(8676002)(36756003)(66556008)(1076003)(66946007)(66476007)(54906003)(110136005)(44832011)(478600001)(966005)(86362001)(41300700001)(6486002)(316002)(83380400001)(186003)(5660300002)(7416002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Jhsykia+PfVB/5vrxQyaTm4AjWidflJONEVmDR+Ge27Q71agIBQpBbf4i1qt1E3aqbCnsj1L9s28T4QFb8kKqz4Hhguk5iEHOX0nNplqcuGbcNtyknFZBqX6LNCa1nKJMvsbaOpTJtIe9/CQ3W8O5SfYrB+cruagsqZ7q7ev4CBNztPOs2Y1OzaBBq84iThCH3HNCTJJL7sYbPpO6Dl+lCozVv8Guasv88WC6zNKB+ZVbKreEkpcIzycjalQySGC+OuBkImm1ei+Dl1VgrFixrGT4WZTawNblaDjIu30RommY4oFYtLQJCmzIB8T/hH2jqD1m3gtBivH3s2cQzHcl2jnRvPPSPAx/v23pqKqERDxrryqHIksadFUkGLMJvJZ/5H3qPeJUqRGamt7p96NWZ9sDPMONKv5CWzX37akZU2bvfPYkB+ba7ZDOfynxS5EvFoAQtP2hlzeB4fGP69AJ2Q0avQ2D3zXrtB4FvjchtVp2o4/KoTciob4UaaZ/43ppK95RUngLnmmy29k6yLtTUhFA5MSZVUgQFNzWH2EZ6xZY/nKS5/DTzjh8YcbZz4le2D+tIwXbOajNG/aOlZP6fqEnHQuijTpxk3AyZXAwl36KZI/gAO63JXlC/1Nj6G5d3UxAO0mWcKYBBrPslh6rIQDIhN1kDp8H8xkCXOFURv7n1ysZX2o2qn4PlhDINlRtk1MvSmH/nDPKm1dk+jxuSwNOhrPaOjeF+973GMVQT5o7Re7gtaxtf2olaD6cU/l+XYrvo5kH9WATB5YbP5xpQgfqc0AQlZgX5fpRB/RtWY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(346002)(39840400004)(136003)(366004)(376002)(2616005)(38350700002)(8936002)(38100700002)(4326008)(6512007)(26005)(30864003)(6506007)(52116002)(6666004)(2906002)(8676002)(36756003)(66556008)(1076003)(66946007)(66476007)(54906003)(110136005)(44832011)(478600001)(86362001)(41300700001)(6486002)(316002)(107886003)(83380400001)(186003)(5660300002)(7416002)(2004002)(579004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Iq31MqBf4ml7M6ZFIxwrHzGypUVUbvto9urB7ebKojGRG/NOJ2pVlp3T4uBC?=
- =?us-ascii?Q?MJfwtbmXh2pdg7fHKGIZg66FpzuvDj7p918eYPH50HChEHAVA0lqa80c5tKM?=
- =?us-ascii?Q?AdEds9hLReFmYXfnREy2aI3RrGXerW4IR3GB7e/uy+R0OCb3cF6hTmhl8Yrm?=
- =?us-ascii?Q?WKXuR1YvImfuSg7JQYRQbWOpUsFkSKYS0vYXQqG7MmUg1pbz67RknTQGFIBk?=
- =?us-ascii?Q?ZkswceryGFVwjiPhDcZdueyESEGH2Plf3RGQlZ0MtDGOhOsHrrkK4s58Go1g?=
- =?us-ascii?Q?sacMcnQyGMRRm3Yl3uD1KRO/6Ji9kS5W9jdFXYRxlO9T7RPhQMk818xfBxlC?=
- =?us-ascii?Q?tkklcH+cGaImRDpzQBETeksSfayLt50SRImjYQa5juNgJ9wS+D8ZogO4ySZu?=
- =?us-ascii?Q?18ozKUNhcdoocmI2yKhFCRLZ8n+LzNvIWjZwDZxZlrR3bLZojXQFuMU3Wa5n?=
- =?us-ascii?Q?bE+NLWB+dJqMpt+ul73w3BnDav6ln6zSnk8k1Z8IHU0bozGgthWsRIwDMEfo?=
- =?us-ascii?Q?TOu3wZFXfZnjSZIk74+C7+WbENNvNOABUzx9EtCn00TWm4Jbzr/WPj00p3lm?=
- =?us-ascii?Q?idOC+DFThzyo4c1GLVsHQ+piybFVskmxqoZ6gJbWv4T/lqacGUQaYx0Jc++9?=
- =?us-ascii?Q?/lOS5X2aABfe00su3VHC94GuXmCDPYlojNtPZb2kNEiJQhyAz7HLl5KNDmJk?=
- =?us-ascii?Q?1DzSAp3Dd9DUZt7xhksMrU2kxutyC9KwP700X+uedQCgdFkLD6m1mszDY7D1?=
- =?us-ascii?Q?oZluLdQsCp+SGHKNswTq5Y9UEcv1j89xwvLjIlCHXK/1FcpaBHYLVNxjhiQe?=
- =?us-ascii?Q?Li5gTl8cqsN8RW5ju5GjgoK7wGG7DGR0tCotXeA8AzlB7gY99zKyXgO8PpWv?=
- =?us-ascii?Q?yNcd0qNjIGBPwUQq7itm7nKjm72FQl1VCvtBeqpBf8s7gnj21L9PA2NyWdo2?=
- =?us-ascii?Q?StqLXiQRa6diKDkjsP4AcNFm2QnqGPwkyeOA62Eu1mCCgO/vkV+0q62dwyxb?=
- =?us-ascii?Q?1sOVNcB1qD9cbgq7ELxqbjo36JfaA6yQGR+Hex1j4e7HTpfLm410aRFoIO4y?=
- =?us-ascii?Q?62XXlsW7Bh5lva7Efyls9oXMhBowXPt1t5oSycnoADOe11akv/6JnfLrF5VY?=
- =?us-ascii?Q?wJFwsP/eqh1rjTYZ70fbd53KtJJ9K/KTBPS9G01FHzeddVSzQv1Tz0MYZCB2?=
- =?us-ascii?Q?lVchbBoR7uKfVoITdrnryR2VJFwquR6hkzgd6vXFcgE+VURXpX4/Gq5AH986?=
- =?us-ascii?Q?qU7YtuyoYWG1w7g0INlN8bubtUqTly2PUEKTZR8tmhWDp+va8Lr0lHrgmWNZ?=
- =?us-ascii?Q?b6L+FxWzQIdMVdP55wYQ8LQ2SWiZBCMbkW6lsDWf1kX2uIOBiGRNu7VsirVP?=
- =?us-ascii?Q?m9u859qM2kT150YZAQY1nO/XE3RAXMdUzCliYh3LdVW5I4Rc1gXDY+Ijpgxd?=
- =?us-ascii?Q?8c5a+K6AUsXEHTfWkxTwksj3/lqh6FawfAdR69KSiuOunEjblAUd0w7WiV78?=
- =?us-ascii?Q?QpZ6aRrW1sT6S8qAnaleE3jWlo0OWEinD/593qsMFNbg4d154fV9oSlrUVIN?=
- =?us-ascii?Q?mMIfjpmXowybtKt0YNnKkwA17gzRv5RTIZjGQ5Am6vqmO+J+4HNzbxHszfL5?=
- =?us-ascii?Q?Ng=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?qEZPHqCK61PqRy82pjO8NFzIbtoFrcWOkAajj0tfFhO4fLr6sZAfafhGXm34?=
+ =?us-ascii?Q?aQxsyJExfLvE/KsWHDKrBp8JvN5b98qxA0PrmqEo4/1SQzZ0MeVqhBqJ6KC0?=
+ =?us-ascii?Q?NyPMuwcTuv/haiQsKkFxQc5kcWslXYDn51Pp3HpEh7F6aB+ME+2nH6Ny1sHi?=
+ =?us-ascii?Q?G+6Hwc543WAZb5QBQvXHF3nnbt6w6IJqkKZHKMDwO3ji6rMVAyPrV1Q00780?=
+ =?us-ascii?Q?Wo4RcGb/KECdFGL/QJh27KuAdK3IQO/9tPPFUkeNRFY+CTFfQTrR7OLnC0Ue?=
+ =?us-ascii?Q?IuuaQWP03YPOS6RCTBbzwpdHCt3qkGHV1K3T4fsUfdigy+q2S8xWAEf9jVVp?=
+ =?us-ascii?Q?Mm+/viTaZqbzLhczrThiF0GCUUpmPA6Ymck6baqSkQr43QXnn9HcO8AyzD66?=
+ =?us-ascii?Q?001Bh4srrIVpJpDGerfwcIBMWSUV3gomNh9V35kjSfVmd7+uOaI6jdP7yZBX?=
+ =?us-ascii?Q?DeQDIZOKOaL43yOcN765dvzdMfoQ4EsrexvgalT9DTwMuvTkyHLSrB3dvCQH?=
+ =?us-ascii?Q?/rBfs1bHyCsRLo1ZfMDESr576t/5PwCqjn07uEOX1VHuVkGVPQADMcnvAaqC?=
+ =?us-ascii?Q?eOf6PeA/twAtufG1nDjrUnpGklMjuiEROehdvlXlLhaJ7fGD1oBHbt+K3pRP?=
+ =?us-ascii?Q?13UvzOvN4Os80rUtU+y0+zXkTHjBfExs/JiNVzpO9HczYT9jkSWr7mhueAf6?=
+ =?us-ascii?Q?YSAirTx2Bxw0ZcCC92WQpWIgqHBFaC250fad+B2xSaz/BdHL4j39QkvefpM3?=
+ =?us-ascii?Q?finnZ8iFEMwXThwr3qs6ZKVrwnKK5YWnrYwVmw5pZZy++2hOvESxcl64qyHT?=
+ =?us-ascii?Q?tKxfHyELXM1XykRWOUMLsfUmVn4hbyB71M1NKsm9l0kUQsUEYYmwnEN4IupE?=
+ =?us-ascii?Q?SH/074vuCsGSOtWFZVBUjLDeucFlmNoUAqKwvr303UhDNJawLapCCapZ7GQd?=
+ =?us-ascii?Q?ULEwMQR+hCYQ8Yd/B1R+whGwI3Q4jQm5Aongw+Ls3EHzjtf8YYLkpie5J3S6?=
+ =?us-ascii?Q?EpBZ4IO01IFwHeNVHf+lpS4DZnsTV8zVMTxQMQckfro3Awt2UFHeS9x6yOSE?=
+ =?us-ascii?Q?42SAGAHnkC5Nl2Zvd1orD0SdlagtNaZWDLYQY5TUx+DTN+LFWLM0dbYLNCk0?=
+ =?us-ascii?Q?7SjirgmyW3fVnaeb+GIiPrOCSvKgTM3RGVUFERWgh8+JTXgeWj8skB35u1EN?=
+ =?us-ascii?Q?zwxcp+T4x8jlr/luiRd6bs78ajJzB6oZz0fKvRc+AfUqyVM5BUSVbDe6144J?=
+ =?us-ascii?Q?0n5eKQVDCJXNvQ316fvyzALUP7W0mKFeuJ6+rLUV+O0xCo80R5bsqR99CHvV?=
+ =?us-ascii?Q?W/3v5yZ2MDugDtSuAZowTU1KlfF542rgLwV/DI39GB2FmVeEva7P76+dFPsu?=
+ =?us-ascii?Q?D7x3sFVNqOyPicaYnCKvZYHVjmcwuPA8NqMzka8RfDe++d2fzqrmriYBUV6Y?=
+ =?us-ascii?Q?QM+ng/xw6jmRfLK/sNNUIUuktW8T1kuWXPE0cRE4rxLGfieRU8ywUR8zdIOP?=
+ =?us-ascii?Q?uBRNR/a2omF9+zhtSeCFoX6z0GcvV1zGp+5cSshBu2oT+8Bzh5i3cCS28OZO?=
+ =?us-ascii?Q?Lo0OErCYKmlEscVPawpZRduzh1V7RpiLFx4Wzgk4nK6TS2Aj9N6w/PSMgkFh?=
+ =?us-ascii?Q?7w=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0efe07a0-3059-422d-062f-08da8135195b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7fdf7e97-6a9d-4eec-1d85-08da81351a5a
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:17:08.7023
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:17:10.3897
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TfAw7VK7e4HAz59eDHlzQwIG9SBM2CyvKONcnxMOO9X30SB4gVWS9xzEXmp6mXwulsbNFBuEMnFE7nVEJ5UF0A==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6UDSQIRBvaZfg6Q2ifpuwXib2JbpQrQDpYGPSFM1H+NVsSw4hY/PUWVEKE7N1PQWvLV/ofn3cfUVsteCe9b+OA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0302MB3211
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -123,316 +120,753 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This converts the MAC portion of the FMan MAC bindings to yaml.
+This converts the license text of files in the fman directory to use
+SPDX license identifiers instead.
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 Acked-by: Camelia Groza <camelia.groza@nxp.com>
+Tested-by: Camelia Groza <camelia.groza@nxp.com>
 ---
 
-(no changes since v3)
+(no changes since v1)
 
-Changes in v3:
-- Incorperate some minor changes into the first FMan binding commit
+ drivers/net/ethernet/freescale/fman/fman.c    | 31 ++----------------
+ drivers/net/ethernet/freescale/fman/fman.h    | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_dtsec.c  | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_dtsec.h  | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_keygen.c | 29 +----------------
+ .../net/ethernet/freescale/fman/fman_keygen.h | 29 +----------------
+ .../net/ethernet/freescale/fman/fman_memac.c  | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_memac.h  | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_muram.c  | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_muram.h  | 32 ++-----------------
+ .../net/ethernet/freescale/fman/fman_port.c   | 29 +----------------
+ .../net/ethernet/freescale/fman/fman_port.h   | 29 +----------------
+ drivers/net/ethernet/freescale/fman/fman_sp.c | 29 +----------------
+ drivers/net/ethernet/freescale/fman/fman_sp.h | 28 +---------------
+ .../net/ethernet/freescale/fman/fman_tgec.c   | 31 ++----------------
+ .../net/ethernet/freescale/fman/fman_tgec.h   | 31 ++----------------
+ drivers/net/ethernet/freescale/fman/mac.c     | 32 ++-----------------
+ drivers/net/ethernet/freescale/fman/mac.h     | 32 ++-----------------
+ 18 files changed, 33 insertions(+), 515 deletions(-)
 
-Changes in v2:
-- New
-
- .../bindings/net/fsl,fman-dtsec.yaml          | 145 ++++++++++++++++++
- .../devicetree/bindings/net/fsl-fman.txt      | 128 +---------------
- 2 files changed, 146 insertions(+), 127 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-
-diff --git a/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-new file mode 100644
-index 000000000000..3a35ac1c260d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
-@@ -0,0 +1,145 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/fsl,fman-dtsec.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP FMan MAC
-+
-+maintainers:
-+  - Madalin Bucur <madalin.bucur@nxp.com>
-+
-+description: |
-+  Each FMan has several MACs, each implementing an Ethernet interface. Earlier
-+  versions of FMan used the Datapath Three Speed Ethernet Controller (dTSEC) for
-+  10/100/1000 MBit/s speeds, and the 10-Gigabit Ethernet Media Access Controller
-+  (10GEC) for 10 Gbit/s speeds. Later versions of FMan use the Multirate
-+  Ethernet Media Access Controller (mEMAC) to handle all speeds.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,fman-dtsec
-+      - fsl,fman-xgec
-+      - fsl,fman-memac
-+
-+  cell-index:
-+    maximum: 64
-+    description: |
-+      FManV2:
-+      register[bit]           MAC             cell-index
-+      ============================================================
-+      FM_EPI[16]              XGEC            8
-+      FM_EPI[16+n]            dTSECn          n-1
-+      FM_NPI[11+n]            dTSECn          n-1
-+              n = 1,..,5
-+
-+      FManV3:
-+      register[bit]           MAC             cell-index
-+      ============================================================
-+      FM_EPI[16+n]            mEMACn          n-1
-+      FM_EPI[25]              mEMAC10         9
-+
-+      FM_NPI[11+n]            mEMACn          n-1
-+      FM_NPI[10]              mEMAC10         9
-+      FM_NPI[11]              mEMAC9          8
-+              n = 1,..8
-+
-+      FM_EPI and FM_NPI are located in the FMan memory map.
-+
-+      2. SoC registers:
-+
-+      - P2041, P3041, P4080 P5020, P5040:
-+      register[bit]           FMan            MAC             cell
-+                              Unit                            index
-+      ============================================================
-+      DCFG_DEVDISR2[7]        1               XGEC            8
-+      DCFG_DEVDISR2[7+n]      1               dTSECn          n-1
-+      DCFG_DEVDISR2[15]       2               XGEC            8
-+      DCFG_DEVDISR2[15+n]     2               dTSECn          n-1
-+              n = 1,..5
-+
-+      - T1040, T2080, T4240, B4860:
-+      register[bit]                   FMan    MAC             cell
-+                                      Unit                    index
-+      ============================================================
-+      DCFG_CCSR_DEVDISR2[n-1]         1       mEMACn          n-1
-+      DCFG_CCSR_DEVDISR2[11+n]        2       mEMACn          n-1
-+              n = 1,..6,9,10
-+
-+      EVDISR, DCFG_DEVDISR2 and DCFG_CCSR_DEVDISR2 are located in
-+      the specific SoC "Device Configuration/Pin Control" Memory
-+      Map.
-+
-+  reg:
-+    maxItems: 1
-+
-+  fsl,fman-ports:
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    maxItems: 2
-+    description: |
-+      An array of two references: the first is the FMan RX port and the second
-+      is the TX port used by this MAC.
-+
-+  ptp-timer:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: A reference to the IEEE1588 timer
-+
-+  pcsphy-handle:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: A reference to the PCS (typically found on the SerDes)
-+
-+  tbi-handle:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: A reference to the (TBI-based) PCS
-+
-+required:
-+  - compatible
-+  - cell-index
-+  - reg
-+  - fsl,fman-ports
-+  - ptp-timer
-+
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: fsl,fman-dtsec
-+    then:
-+      required:
-+        - tbi-handle
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: fsl,fman-memac
-+    then:
-+      required:
-+        - pcsphy-handle
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    ethernet@e0000 {
-+            compatible = "fsl,fman-dtsec";
-+            cell-index = <0>;
-+            reg = <0xe0000 0x1000>;
-+            fsl,fman-ports = <&fman1_rx8 &fman1_tx28>;
-+            ptp-timer = <&ptp_timer>;
-+            tbi-handle = <&tbi0>;
-+    };
-+  - |
-+    ethernet@e8000 {
-+            cell-index = <4>;
-+            compatible = "fsl,fman-memac";
-+            reg = <0xe8000 0x1000>;
-+            fsl,fman-ports = <&fman0_rx_0x0c &fman0_tx_0x2c>;
-+            ptp-timer = <&ptp_timer0>;
-+            pcsphy-handle = <&pcsphy4>;
-+            phy-handle = <&sgmii_phy1>;
-+            phy-connection-type = "sgmii";
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/net/fsl-fman.txt b/Documentation/devicetree/bindings/net/fsl-fman.txt
-index 801efc7d6818..b9055335db3b 100644
---- a/Documentation/devicetree/bindings/net/fsl-fman.txt
-+++ b/Documentation/devicetree/bindings/net/fsl-fman.txt
-@@ -232,133 +232,7 @@ port@81000 {
- =============================================================================
- FMan dTSEC/XGEC/mEMAC Node
+diff --git a/drivers/net/ethernet/freescale/fman/fman.c b/drivers/net/ethernet/freescale/fman/fman.c
+index 8f0db61cb1f6..9d85fb136e34 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.c
++++ b/drivers/net/ethernet/freescale/fman/fman.c
+@@ -1,34 +1,7 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  * Copyright 2020 NXP
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
  
--DESCRIPTION
--
--mEMAC/dTSEC/XGEC are the Ethernet network interfaces
--
--PROPERTIES
--
--- compatible
--		Usage: required
--		Value type: <stringlist>
--		Definition: A standard property.
--		Must include one of the following:
--		- "fsl,fman-dtsec" for dTSEC MAC
--		- "fsl,fman-xgec" for XGEC MAC
--		- "fsl,fman-memac" for mEMAC MAC
--
--- cell-index
--		Usage: required
--		Value type: <u32>
--		Definition: Specifies the MAC id.
--
--		The cell-index value may be used by the FMan or the SoC, to
--		identify the MAC unit in the FMan (or SoC) memory map.
--		In the tables below there's a description of the cell-index
--		use, there are two tables, one describes the use of cell-index
--		by the FMan, the second describes the use by the SoC:
--
--		1. FMan Registers
--
--		FManV2:
--		register[bit]		MAC		cell-index
--		============================================================
--		FM_EPI[16]		XGEC		8
--		FM_EPI[16+n]		dTSECn		n-1
--		FM_NPI[11+n]		dTSECn		n-1
--			n = 1,..,5
--
--		FManV3:
--		register[bit]		MAC		cell-index
--		============================================================
--		FM_EPI[16+n]		mEMACn		n-1
--		FM_EPI[25]		mEMAC10		9
--
--		FM_NPI[11+n]		mEMACn		n-1
--		FM_NPI[10]		mEMAC10		9
--		FM_NPI[11]		mEMAC9		8
--			n = 1,..8
--
--		FM_EPI and FM_NPI are located in the FMan memory map.
--
--		2. SoC registers:
--
--		- P2041, P3041, P4080 P5020, P5040:
--		register[bit]		FMan		MAC		cell
--					Unit				index
--		============================================================
--		DCFG_DEVDISR2[7]	1		XGEC		8
--		DCFG_DEVDISR2[7+n]	1		dTSECn		n-1
--		DCFG_DEVDISR2[15]	2		XGEC		8
--		DCFG_DEVDISR2[15+n]	2		dTSECn		n-1
--			n = 1,..5
--
--		- T1040, T2080, T4240, B4860:
--		register[bit]			FMan	MAC		cell
--						Unit			index
--		============================================================
--		DCFG_CCSR_DEVDISR2[n-1]		1	mEMACn		n-1
--		DCFG_CCSR_DEVDISR2[11+n]	2	mEMACn		n-1
--			n = 1,..6,9,10
--
--		EVDISR, DCFG_DEVDISR2 and DCFG_CCSR_DEVDISR2 are located in
--		the specific SoC "Device Configuration/Pin Control" Memory
--		Map.
--
--- reg
--		Usage: required
--		Value type: <prop-encoded-array>
--		Definition: A standard property.
--
--- fsl,fman-ports
--		Usage: required
--		Value type: <prop-encoded-array>
--		Definition: An array of two phandles - the first references is
--		the FMan RX port and the second is the TX port used by this
--		MAC.
--
--- ptp-timer
--		Usage required
--		Value type: <phandle>
--		Definition: A phandle for 1EEE1588 timer.
--
--- pcsphy-handle
--		Usage required for "fsl,fman-memac" MACs
--		Value type: <phandle>
--		Definition: A phandle for pcsphy.
--
--- tbi-handle
--		Usage required for "fsl,fman-dtsec" MACs
--		Value type: <phandle>
--		Definition: A phandle for tbiphy.
--
--EXAMPLE
--
--fman1_tx28: port@a8000 {
--	cell-index = <0x28>;
--	compatible = "fsl,fman-v2-port-tx";
--	reg = <0xa8000 0x1000>;
--};
--
--fman1_rx8: port@88000 {
--	cell-index = <0x8>;
--	compatible = "fsl,fman-v2-port-rx";
--	reg = <0x88000 0x1000>;
--};
--
--ptp-timer: ptp_timer@fe000 {
--	compatible = "fsl,fman-ptp-timer";
--	reg = <0xfe000 0x1000>;
--};
--
--ethernet@e0000 {
--	compatible = "fsl,fman-dtsec";
--	cell-index = <0>;
--	reg = <0xe0000 0x1000>;
--	fsl,fman-ports = <&fman1_rx8 &fman1_tx28>;
--	ptp-timer = <&ptp-timer>;
--	tbi-handle = <&tbi0>;
--};
-+Refer to Documentation/devicetree/bindings/net/fsl,fman-dtsec.yaml
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman.h b/drivers/net/ethernet/freescale/fman/fman.h
+index f2ede1360f03..2ea575a46675 100644
+--- a/drivers/net/ethernet/freescale/fman/fman.h
++++ b/drivers/net/ethernet/freescale/fman/fman.h
+@@ -1,34 +1,7 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  * Copyright 2020 NXP
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
  
- ============================================================================
- FMan IEEE 1588 Node
+ #ifndef __FM_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.c b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
+index 1950a8936bc0..a39d57347d59 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_dtsec.c
++++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.h b/drivers/net/ethernet/freescale/fman/fman_dtsec.h
+index 68512c3bd6e5..3c26b97f8ced 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_dtsec.h
++++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.h
+@@ -1,33 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #ifndef __DTSEC_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_keygen.c b/drivers/net/ethernet/freescale/fman/fman_keygen.c
+index e1bdfed16134..e73f6ef3c6ee 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_keygen.c
++++ b/drivers/net/ethernet/freescale/fman/fman_keygen.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+  * Copyright 2017 NXP
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of NXP nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY NXP ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL NXP BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman_keygen.h b/drivers/net/ethernet/freescale/fman/fman_keygen.h
+index c4640de3f4cb..2cb0df453074 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_keygen.h
++++ b/drivers/net/ethernet/freescale/fman/fman_keygen.h
+@@ -1,33 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+  * Copyright 2017 NXP
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of NXP nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY NXP ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL NXP BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #ifndef __KEYGEN_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index 2216b7f51d26..d47e5d282143 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.h b/drivers/net/ethernet/freescale/fman/fman_memac.h
+index 3820f7a22983..702df2aa43f9 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.h
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.h
+@@ -1,33 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #ifndef __MEMAC_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_muram.c b/drivers/net/ethernet/freescale/fman/fman_muram.c
+index 7ad317e622bc..f557d68e5b76 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_muram.c
++++ b/drivers/net/ethernet/freescale/fman/fman_muram.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #include "fman_muram.h"
+diff --git a/drivers/net/ethernet/freescale/fman/fman_muram.h b/drivers/net/ethernet/freescale/fman/fman_muram.h
+index 453bf849eee1..3643af61bae2 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_muram.h
++++ b/drivers/net/ethernet/freescale/fman/fman_muram.h
+@@ -1,34 +1,8 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
++
+ #ifndef __FM_MURAM_EXT
+ #define __FM_MURAM_EXT
+ 
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.c b/drivers/net/ethernet/freescale/fman/fman_port.c
+index 4c9d05c45c03..ab90fe2bee5e 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.c
++++ b/drivers/net/ethernet/freescale/fman/fman_port.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+  * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman_port.h b/drivers/net/ethernet/freescale/fman/fman_port.h
+index 82f12661a46d..4917fe8f0617 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_port.h
++++ b/drivers/net/ethernet/freescale/fman/fman_port.h
+@@ -1,33 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+  * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #ifndef __FMAN_PORT_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_sp.c b/drivers/net/ethernet/freescale/fman/fman_sp.c
+index 248f5bcca468..0fac60aa5283 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_sp.c
++++ b/drivers/net/ethernet/freescale/fman/fman_sp.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+  * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #include "fman_sp.h"
+diff --git a/drivers/net/ethernet/freescale/fman/fman_sp.h b/drivers/net/ethernet/freescale/fman/fman_sp.h
+index 820b7f63088f..a62dd21c81f1 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_sp.h
++++ b/drivers/net/ethernet/freescale/fman/fman_sp.h
+@@ -1,32 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+  * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *	 notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *	 notice, this list of conditions and the following disclaimer in the
+- *	 documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *	 names of its contributors may be used to endorse or promote products
+- *	 derived from this software without specific prior written permission.
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  */
+ 
+ #ifndef __FM_SP_H
+diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.c b/drivers/net/ethernet/freescale/fman/fman_tgec.c
+index 311c1906e044..a3c6576dd99d 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_tgec.c
++++ b/drivers/net/ethernet/freescale/fman/fman_tgec.c
+@@ -1,33 +1,6 @@
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.h b/drivers/net/ethernet/freescale/fman/fman_tgec.h
+index b28b20b26148..8df90054495c 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_tgec.h
++++ b/drivers/net/ethernet/freescale/fman/fman_tgec.h
+@@ -1,33 +1,6 @@
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
+ /*
+- * Copyright 2008-2015 Freescale Semiconductor Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *       notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *       notice, this list of conditions and the following disclaimer in the
+- *       documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *       names of its contributors may be used to endorse or promote products
+- *       derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #ifndef __TGEC_H
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 39ae965cd4f6..2b3c6cbefef6 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -1,32 +1,6 @@
+-/* Copyright 2008-2015 Freescale Semiconductor, Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *	 notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *	 notice, this list of conditions and the following disclaimer in the
+- *	 documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *	 names of its contributors may be used to endorse or promote products
+- *	 derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
++/*
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+diff --git a/drivers/net/ethernet/freescale/fman/mac.h b/drivers/net/ethernet/freescale/fman/mac.h
+index daa285a9b8b2..909faf5fa2fe 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.h
++++ b/drivers/net/ethernet/freescale/fman/mac.h
+@@ -1,32 +1,6 @@
+-/* Copyright 2008-2015 Freescale Semiconductor, Inc.
+- *
+- * Redistribution and use in source and binary forms, with or without
+- * modification, are permitted provided that the following conditions are met:
+- *     * Redistributions of source code must retain the above copyright
+- *	 notice, this list of conditions and the following disclaimer.
+- *     * Redistributions in binary form must reproduce the above copyright
+- *	 notice, this list of conditions and the following disclaimer in the
+- *	 documentation and/or other materials provided with the distribution.
+- *     * Neither the name of Freescale Semiconductor nor the
+- *	 names of its contributors may be used to endorse or promote products
+- *	 derived from this software without specific prior written permission.
+- *
+- *
+- * ALTERNATIVELY, this software may be distributed under the terms of the
+- * GNU General Public License ("GPL") as published by the Free Software
+- * Foundation, either version 2 of that License or (at your option) any
+- * later version.
+- *
+- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
+- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
+- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
++/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later */
++/*
++ * Copyright 2008 - 2015 Freescale Semiconductor Inc.
+  */
+ 
+ #ifndef __MAC_H
 -- 
 2.35.1.1320.gc452695387.dirty
 
