@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD55598827
+	by mail.lfdr.de (Postfix) with ESMTP id 5D069598825
 	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiHRPzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:55:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50736 "EHLO
+        id S1344425AbiHRPzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:55:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344494AbiHRPyo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:54:44 -0400
+        with ESMTP id S1344520AbiHRPyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:54:45 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B815558B
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC0F55A9
         for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:53:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1660838001; x=1692374001;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=B/Gh8EdwBL/LkLd2lGw7ugYDy1MkR3+F6Fq4AclZ5J4=;
-  b=McCvNhBHi78l8l+SM4FXnY6bq76eQzxhhhTP1BUGJUKb3w4hJi3LJt/f
-   i9mZURyNHY89qnzXYkoMX/tksQCEVu3nbrGt+K3WSPQW9I2fpAF8lNb5V
-   VnY58G7PwR/Cc34wk9yhFnxlWjspHKumn4jTJcsZDIlpIt/RyIqG8vNEs
-   VLKEAh5PVVvOpRFFq+lQ9gxtzAI+ATtka26vBfMNKzpePzHbYW2ZK5dyR
-   XOIsO+4Z3RVDnnMx5eqXddC3Dc87hhBzw6NSpIxbqvTRjvH61cRchyMqT
-   blH9MGN8LN53ErevMmG8vz4r8Sc7sZaQHZrHx200S+5AlT9KR/YEGNgng
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318817400"
+  bh=Dj7HjKAP0X249nF0M+jfXlwl/RHHIN2BG1edFDF/ZwA=;
+  b=QWqlM/06iufmY1/xtNFlFCvgTsmZ65fTFGMnZoythzNhgeTjdsPSXnGN
+   kAMer0Pw8FydMYm3j4J2YdXyefIGh0dPf/mUM9mVfAYrpOWEjRIAoFygg
+   rz2XkjWJrEGSOLIHRroScrnnN+Mdr7RKuywBMrXI0plgyUFiZdk9YoHyk
+   8HvkR6DwpfUhVlxOpWPYXRyZjlhpuMlAImuhTGd8qxsSlhhqYkASEDaL0
+   FkxWVX/WnIgwWr99KZOZbbRUtdSCmM45ty2lBUjwStZQcS3dyQUh8SFeH
+   OYoCq9HUfzQvxGaPSiwBTRXHPr0r1dZes/TCeMUKc6lFvxTTxIg3ikBIS
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="318817406"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="318817400"
+   d="scan'208";a="318817406"
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 08:52:13 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 08:52:14 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="676104321"
+   d="scan'208";a="676104325"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga004.fm.intel.com with ESMTP; 18 Aug 2022 08:52:13 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
+Cc:     Mikael Barsehyan <mikael.barsehyan@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Jedrzej Jagielski <jedrzej.jagielski@intel.com>,
         Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 4/5] ice: Remove ucast_shared
-Date:   Thu, 18 Aug 2022 08:52:06 -0700
-Message-Id: <20220818155207.996297-5-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 5/5] ice: remove non-inclusive language
+Date:   Thu, 18 Aug 2022 08:52:07 -0700
+Message-Id: <20220818155207.996297-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220818155207.996297-1-anthony.l.nguyen@intel.com>
 References: <20220818155207.996297-1-anthony.l.nguyen@intel.com>
@@ -63,272 +62,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+From: Mikael Barsehyan <mikael.barsehyan@intel.com>
 
-Remove ucast_shared as it was always true. Remove the code depending on
-ucast_shared from ice_add_mac and ice_remove_mac.
-Remove ice_find_ucast_rule_entry function as it was only
-used when ucast_shared was set to false.
+Remove non-inclusive language from the driver where
+possible; replace "master" with "primary"; replace
+"slave" with "secondary".
 
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Signed-off-by: Jedrzej Jagielski <jedrzej.jagielski@intel.com>
+Signed-off-by: Mikael Barsehyan <mikael.barsehyan@intel.com>
 Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_main.c   |   2 -
- drivers/net/ethernet/intel/ice/ice_switch.c | 166 +-------------------
- drivers/net/ethernet/intel/ice/ice_type.h   |   2 -
- 3 files changed, 5 insertions(+), 165 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_lag.c | 16 ++++++++--------
+ drivers/net/ethernet/intel/ice/ice_lag.h |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 8dfecdc74a18..d38c848021ef 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -4662,8 +4662,6 @@ ice_probe(struct pci_dev *pdev, const struct pci_device_id __always_unused *ent)
- 		ice_set_safe_mode_caps(hw);
- 	}
- 
--	hw->ucast_shared = true;
--
- 	err = ice_init_pf(pf);
- 	if (err) {
- 		dev_err(dev, "ice_init_pf failed: %d\n", err);
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 262e553e3b58..131bdba70d0f 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -3449,31 +3449,15 @@ bool ice_vlan_fltr_exist(struct ice_hw *hw, u16 vlan_id, u16 vsi_handle)
-  * ice_add_mac - Add a MAC address based filter rule
-  * @hw: pointer to the hardware structure
-  * @m_list: list of MAC addresses and forwarding information
-- *
-- * IMPORTANT: When the ucast_shared flag is set to false and m_list has
-- * multiple unicast addresses, the function assumes that all the
-- * addresses are unique in a given add_mac call. It doesn't
-- * check for duplicates in this case, removing duplicates from a given
-- * list should be taken care of in the caller of this function.
+diff --git a/drivers/net/ethernet/intel/ice/ice_lag.c b/drivers/net/ethernet/intel/ice/ice_lag.c
+index c9f7393b783d..ee5b36941ba3 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lag.c
++++ b/drivers/net/ethernet/intel/ice/ice_lag.c
+@@ -61,13 +61,13 @@ static void ice_lag_set_backup(struct ice_lag *lag)
   */
- int ice_add_mac(struct ice_hw *hw, struct list_head *m_list)
+ static void ice_display_lag_info(struct ice_lag *lag)
  {
--	struct ice_sw_rule_lkup_rx_tx *s_rule, *r_iter;
- 	struct ice_fltr_list_entry *m_list_itr;
--	struct list_head *rule_head;
--	u16 total_elem_left, s_rule_size;
--	struct ice_switch_info *sw;
--	struct mutex *rule_lock; /* Lock to protect filter rule list */
--	u16 num_unicast = 0;
- 	int status = 0;
--	u8 elem_sent;
+-	const char *name, *peer, *upper, *role, *bonded, *master;
++	const char *name, *peer, *upper, *role, *bonded, *primary;
+ 	struct device *dev = &lag->pf->pdev->dev;
  
- 	if (!m_list || !hw)
- 		return -EINVAL;
+ 	name = lag->netdev ? netdev_name(lag->netdev) : "unset";
+ 	peer = lag->peer_netdev ? netdev_name(lag->peer_netdev) : "unset";
+ 	upper = lag->upper_netdev ? netdev_name(lag->upper_netdev) : "unset";
+-	master = lag->master ? "TRUE" : "FALSE";
++	primary = lag->primary ? "TRUE" : "FALSE";
+ 	bonded = lag->bonded ? "BONDED" : "UNBONDED";
  
--	s_rule = NULL;
--	sw = hw->switch_info;
--	rule_lock = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rule_lock;
- 	list_for_each_entry(m_list_itr, m_list, list_entry) {
- 		u8 *add = &m_list_itr->fltr_info.l_data.mac.mac_addr[0];
- 		u16 vsi_handle;
-@@ -3492,106 +3476,13 @@ int ice_add_mac(struct ice_hw *hw, struct list_head *m_list)
- 		if (m_list_itr->fltr_info.lkup_type != ICE_SW_LKUP_MAC ||
- 		    is_zero_ether_addr(add))
- 			return -EINVAL;
--		if (is_unicast_ether_addr(add) && !hw->ucast_shared) {
--			/* Don't overwrite the unicast address */
--			mutex_lock(rule_lock);
--			if (ice_find_rule_entry(hw, ICE_SW_LKUP_MAC,
--						&m_list_itr->fltr_info)) {
--				mutex_unlock(rule_lock);
--				return -EEXIST;
--			}
--			mutex_unlock(rule_lock);
--			num_unicast++;
--		} else if (is_multicast_ether_addr(add) ||
--			   (is_unicast_ether_addr(add) && hw->ucast_shared)) {
--			m_list_itr->status =
--				ice_add_rule_internal(hw, ICE_SW_LKUP_MAC,
--						      m_list_itr);
--			if (m_list_itr->status)
--				return m_list_itr->status;
--		}
--	}
--
--	mutex_lock(rule_lock);
--	/* Exit if no suitable entries were found for adding bulk switch rule */
--	if (!num_unicast) {
--		status = 0;
--		goto ice_add_mac_exit;
--	}
--
--	rule_head = &sw->recp_list[ICE_SW_LKUP_MAC].filt_rules;
--
--	/* Allocate switch rule buffer for the bulk update for unicast */
--	s_rule_size = ICE_SW_RULE_RX_TX_ETH_HDR_SIZE(s_rule);
--	s_rule = devm_kcalloc(ice_hw_to_dev(hw), num_unicast, s_rule_size,
--			      GFP_KERNEL);
--	if (!s_rule) {
--		status = -ENOMEM;
--		goto ice_add_mac_exit;
--	}
--
--	r_iter = s_rule;
--	list_for_each_entry(m_list_itr, m_list, list_entry) {
--		struct ice_fltr_info *f_info = &m_list_itr->fltr_info;
--		u8 *mac_addr = &f_info->l_data.mac.mac_addr[0];
--
--		if (is_unicast_ether_addr(mac_addr)) {
--			ice_fill_sw_rule(hw, &m_list_itr->fltr_info, r_iter,
--					 ice_aqc_opc_add_sw_rules);
--			r_iter = (typeof(s_rule))((u8 *)r_iter + s_rule_size);
--		}
--	}
--
--	/* Call AQ bulk switch rule update for all unicast addresses */
--	r_iter = s_rule;
--	/* Call AQ switch rule in AQ_MAX chunk */
--	for (total_elem_left = num_unicast; total_elem_left > 0;
--	     total_elem_left -= elem_sent) {
--		struct ice_sw_rule_lkup_rx_tx *entry = r_iter;
--
--		elem_sent = min_t(u8, total_elem_left,
--				  (ICE_AQ_MAX_BUF_LEN / s_rule_size));
--		status = ice_aq_sw_rules(hw, entry, elem_sent * s_rule_size,
--					 elem_sent, ice_aqc_opc_add_sw_rules,
--					 NULL);
--		if (status)
--			goto ice_add_mac_exit;
--		r_iter = (typeof(s_rule))
--			((u8 *)r_iter + (elem_sent * s_rule_size));
--	}
--
--	/* Fill up rule ID based on the value returned from FW */
--	r_iter = s_rule;
--	list_for_each_entry(m_list_itr, m_list, list_entry) {
--		struct ice_fltr_info *f_info = &m_list_itr->fltr_info;
--		u8 *mac_addr = &f_info->l_data.mac.mac_addr[0];
--		struct ice_fltr_mgmt_list_entry *fm_entry;
--
--		if (is_unicast_ether_addr(mac_addr)) {
--			f_info->fltr_rule_id = le16_to_cpu(r_iter->index);
--			f_info->fltr_act = ICE_FWD_TO_VSI;
--			/* Create an entry to track this MAC address */
--			fm_entry = devm_kzalloc(ice_hw_to_dev(hw),
--						sizeof(*fm_entry), GFP_KERNEL);
--			if (!fm_entry) {
--				status = -ENOMEM;
--				goto ice_add_mac_exit;
--			}
--			fm_entry->fltr_info = *f_info;
--			fm_entry->vsi_count = 1;
--			/* The book keeping entries will get removed when
--			 * base driver calls remove filter AQ command
--			 */
- 
--			list_add(&fm_entry->list_entry, rule_head);
--			r_iter = (typeof(s_rule))((u8 *)r_iter + s_rule_size);
--		}
-+		m_list_itr->status = ice_add_rule_internal(hw, ICE_SW_LKUP_MAC,
-+							   m_list_itr);
-+		if (m_list_itr->status)
-+			return m_list_itr->status;
+ 	switch (lag->role) {
+@@ -87,8 +87,8 @@ static void ice_display_lag_info(struct ice_lag *lag)
+ 		role = "ERROR";
  	}
  
--ice_add_mac_exit:
--	mutex_unlock(rule_lock);
--	if (s_rule)
--		devm_kfree(ice_hw_to_dev(hw), s_rule);
- 	return status;
+-	dev_dbg(dev, "%s %s, peer:%s, upper:%s, role:%s, master:%s\n", name,
+-		bonded, peer, upper, role, master);
++	dev_dbg(dev, "%s %s, peer:%s, upper:%s, role:%s, primary:%s\n", name,
++		bonded, peer, upper, role, primary);
  }
  
-@@ -3978,38 +3869,6 @@ ice_check_if_dflt_vsi(struct ice_port_info *pi, u16 vsi_handle,
- 	return ret;
- }
- 
--/**
-- * ice_find_ucast_rule_entry - Search for a unicast MAC filter rule entry
-- * @hw: pointer to the hardware structure
-- * @recp_id: lookup type for which the specified rule needs to be searched
-- * @f_info: rule information
-- *
-- * Helper function to search for a unicast rule entry - this is to be used
-- * to remove unicast MAC filter that is not shared with other VSIs on the
-- * PF switch.
-- *
-- * Returns pointer to entry storing the rule if found
-- */
--static struct ice_fltr_mgmt_list_entry *
--ice_find_ucast_rule_entry(struct ice_hw *hw, u8 recp_id,
--			  struct ice_fltr_info *f_info)
--{
--	struct ice_switch_info *sw = hw->switch_info;
--	struct ice_fltr_mgmt_list_entry *list_itr;
--	struct list_head *list_head;
--
--	list_head = &sw->recp_list[recp_id].filt_rules;
--	list_for_each_entry(list_itr, list_head, list_entry) {
--		if (!memcmp(&f_info->l_data, &list_itr->fltr_info.l_data,
--			    sizeof(f_info->l_data)) &&
--		    f_info->fwd_id.hw_vsi_id ==
--		    list_itr->fltr_info.fwd_id.hw_vsi_id &&
--		    f_info->flag == list_itr->fltr_info.flag)
--			return list_itr;
--	}
--	return NULL;
--}
--
  /**
-  * ice_remove_mac - remove a MAC address based filter rule
-  * @hw: pointer to the hardware structure
-@@ -4026,15 +3885,12 @@ ice_find_ucast_rule_entry(struct ice_hw *hw, u8 recp_id,
- int ice_remove_mac(struct ice_hw *hw, struct list_head *m_list)
- {
- 	struct ice_fltr_list_entry *list_itr, *tmp;
--	struct mutex *rule_lock; /* Lock to protect filter rule list */
+@@ -119,7 +119,7 @@ static void ice_lag_info_event(struct ice_lag *lag, void *ptr)
+ 	}
  
- 	if (!m_list)
- 		return -EINVAL;
+ 	if (strcmp(bonding_info->slave.slave_name, lag_netdev_name)) {
+-		netdev_dbg(lag->netdev, "Bonding event recv, but slave info not for us\n");
++		netdev_dbg(lag->netdev, "Bonding event recv, but secondary info not for us\n");
+ 		goto lag_out;
+ 	}
  
--	rule_lock = &hw->switch_info->recp_list[ICE_SW_LKUP_MAC].filt_rule_lock;
- 	list_for_each_entry_safe(list_itr, tmp, m_list, list_entry) {
- 		enum ice_sw_lkup_type l_type = list_itr->fltr_info.lkup_type;
--		u8 *add = &list_itr->fltr_info.l_data.mac.mac_addr[0];
- 		u16 vsi_handle;
+@@ -164,8 +164,8 @@ ice_lag_link(struct ice_lag *lag, struct netdev_notifier_changeupper_info *info)
+ 	lag->bonded = true;
+ 	lag->role = ICE_LAG_UNSET;
  
- 		if (l_type != ICE_SW_LKUP_MAC)
-@@ -4046,19 +3902,7 @@ int ice_remove_mac(struct ice_hw *hw, struct list_head *m_list)
+-	/* if this is the first element in an LAG mark as master */
+-	lag->master = !!(peers == 1);
++	/* if this is the first element in an LAG mark as primary */
++	lag->primary = !!(peers == 1);
+ }
  
- 		list_itr->fltr_info.fwd_id.hw_vsi_id =
- 					ice_get_hw_vsi_num(hw, vsi_handle);
--		if (is_unicast_ether_addr(add) && !hw->ucast_shared) {
--			/* Don't remove the unicast address that belongs to
--			 * another VSI on the switch, since it is not being
--			 * shared...
--			 */
--			mutex_lock(rule_lock);
--			if (!ice_find_ucast_rule_entry(hw, ICE_SW_LKUP_MAC,
--						       &list_itr->fltr_info)) {
--				mutex_unlock(rule_lock);
--				return -ENOENT;
--			}
--			mutex_unlock(rule_lock);
--		}
-+
- 		list_itr->status = ice_remove_rule_internal(hw,
- 							    ICE_SW_LKUP_MAC,
- 							    list_itr);
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index 861b64322959..8651f6c735ba 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -885,8 +885,6 @@ struct ice_hw {
- 	/* INTRL granularity in 1 us */
- 	u8 intrl_gran;
+ /**
+@@ -264,7 +264,7 @@ static void ice_lag_changeupper_event(struct ice_lag *lag, void *ptr)
+ 	netdev_dbg(netdev, "bonding %s\n", info->linking ? "LINK" : "UNLINK");
  
--	u8 ucast_shared;	/* true if VSIs can share unicast addr */
--
- #define ICE_PHY_PER_NAC		1
- #define ICE_MAX_QUAD		2
- #define ICE_NUM_QUAD_TYPE	2
+ 	if (!netif_is_lag_master(info->upper_dev)) {
+-		netdev_dbg(netdev, "changeupper rcvd, but not master. bail\n");
++		netdev_dbg(netdev, "changeupper rcvd, but not primary. bail\n");
+ 		return;
+ 	}
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_lag.h b/drivers/net/ethernet/intel/ice/ice_lag.h
+index c2e3688dd8fd..51b5cf467ce2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_lag.h
++++ b/drivers/net/ethernet/intel/ice/ice_lag.h
+@@ -24,7 +24,7 @@ struct ice_lag {
+ 	struct net_device *upper_netdev; /* upper bonding netdev */
+ 	struct notifier_block notif_block;
+ 	u8 bonded:1; /* currently bonded */
+-	u8 master:1; /* this is a master */
++	u8 primary:1; /* this is primary */
+ 	u8 handler:1; /* did we register a rx_netdev_handler */
+ 	/* each thing blocking bonding will increment this value by one.
+ 	 * If this value is zero, then bonding is allowed.
 -- 
 2.35.1
 
