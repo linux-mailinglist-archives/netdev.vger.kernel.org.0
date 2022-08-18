@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC66597C79
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:56:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32AF5597C6E
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243075AbiHRDxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 23:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45456 "EHLO
+        id S243151AbiHRDxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 23:53:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243175AbiHRDxR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:53:17 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF5173AB15
-        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 20:53:15 -0700 (PDT)
+        with ESMTP id S242726AbiHRDxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:53:37 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D9AF57239
+        for <netdev@vger.kernel.org>; Wed, 17 Aug 2022 20:53:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660794796; x=1692330796;
+  t=1660794816; x=1692330816;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=z9kbmg3VYGz3Rl5PDKHwpcbe1kFAtaJ4dsktIXkdQMA=;
-  b=SJXk6KM9QhGEGZNLg0Mrm7CLAkqKaj5Ra1uB1jySlI/OnZBn7BhKNsRF
-   AkLJn9Uu/O93EmwkLVmlQL6CVUUjZ1MDgstCRX/a3i5NKEwOzZ6BU/cla
-   oxu85SAKipbttvA4JmLwD+Jt8KhEXJko6jTzP7b5zdUS45nXOXGZkOppE
-   A=;
+  bh=ifQr4mjTwAwQ+8/6ReHn2iQrrv5H2aqkASDlxRvv4OM=;
+  b=v6MVdvgOCeEgdWx3Eam5W3EvH90AGqgG6uXj7HWypBUeaKb1TKGxUdfZ
+   bnxDZLrxwAVzRQw0yBtYO89eOAtZGNrc2WTaeDsD+6Dy6ab+7KKIOg0cF
+   x8DOa033boSC48nDM/GSu2TeJT8EVrv3btSFOqbcrHalr9RgxU9Fr5ZM3
+   g=;
 X-IronPort-AV: E=Sophos;i="5.93,245,1654560000"; 
-   d="scan'208";a="234358889"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-e823fbde.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 03:53:05 +0000
+   d="scan'208";a="120534882"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-e823fbde.us-east-1.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 03:53:21 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-e823fbde.us-east-1.amazon.com (Postfix) with ESMTPS id A0305C183F;
-        Thu, 18 Aug 2022 03:53:03 +0000 (UTC)
+        by email-inbound-relay-iad-1a-e823fbde.us-east-1.amazon.com (Postfix) with ESMTPS id 39A09C183F;
+        Thu, 18 Aug 2022 03:53:18 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 18 Aug 2022 03:53:02 +0000
+ id 15.0.1497.38; Thu, 18 Aug 2022 03:53:18 +0000
 Received: from 88665a182662.ant.amazon.com.com (10.43.160.55) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 18 Aug 2022 03:53:00 +0000
+ Thu, 18 Aug 2022 03:53:16 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -45,10 +45,11 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 net 01/17] net: Fix data-races around sysctl_[rw]mem_(max|default).
-Date:   Wed, 17 Aug 2022 20:52:11 -0700
-Message-ID: <20220818035227.81567-2-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>,
+        Matthias Tafelmeier <matthias.tafelmeier@gmx.net>
+Subject: [PATCH v2 net 02/17] net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
+Date:   Wed, 17 Aug 2022 20:52:12 -0700
+Message-ID: <20220818035227.81567-3-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220818035227.81567-1-kuniyu@amazon.com>
 References: <20220818035227.81567-1-kuniyu@amazon.com>
@@ -60,126 +61,71 @@ X-ClientProxiedBy: EX13D29UWA002.ant.amazon.com (10.43.160.63) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading sysctl_[rw]mem_(max|default), they can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading weight_p and dev_weight_[rt]x_bias, they can be changed
+concurrently.  Thus, we need to add READ_ONCE() to their readers.
 
+Fixes: 3d48b53fb2ae ("net: dev_weight: TX/RX orthogonality")
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- net/core/filter.c               | 4 ++--
- net/core/sock.c                 | 8 ++++----
- net/ipv4/ip_output.c            | 2 +-
- net/ipv4/tcp_output.c           | 2 +-
- net/netfilter/ipvs/ip_vs_sync.c | 4 ++--
- 5 files changed, 10 insertions(+), 10 deletions(-)
+CC: Matthias Tafelmeier <matthias.tafelmeier@gmx.net>
+---
+ net/core/dev.c             | 2 +-
+ net/core/sysctl_net_core.c | 6 ++++--
+ net/sched/sch_generic.c    | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index e8508aaafd27..c4f14ad82029 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5034,14 +5034,14 @@ static int __bpf_setsockopt(struct sock *sk, int level, int optname,
- 		/* Only some socketops are supported */
- 		switch (optname) {
- 		case SO_RCVBUF:
--			val = min_t(u32, val, sysctl_rmem_max);
-+			val = min_t(u32, val, READ_ONCE(sysctl_rmem_max));
- 			val = min_t(int, val, INT_MAX / 2);
- 			sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
- 			WRITE_ONCE(sk->sk_rcvbuf,
- 				   max_t(int, val * 2, SOCK_MIN_RCVBUF));
- 			break;
- 		case SO_SNDBUF:
--			val = min_t(u32, val, sysctl_wmem_max);
-+			val = min_t(u32, val, READ_ONCE(sysctl_wmem_max));
- 			val = min_t(int, val, INT_MAX / 2);
- 			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
- 			WRITE_ONCE(sk->sk_sndbuf,
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 4cb957d934a2..303af52f3b79 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1101,7 +1101,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
- 		 * are treated in BSD as hints
- 		 */
--		val = min_t(u32, val, sysctl_wmem_max);
-+		val = min_t(u32, val, READ_ONCE(sysctl_wmem_max));
- set_sndbuf:
- 		/* Ensure val * 2 fits into an int, to prevent max_t()
- 		 * from treating it as a negative value.
-@@ -1133,7 +1133,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		 * play 'guess the biggest size' games. RCVBUF/SNDBUF
- 		 * are treated in BSD as hints
- 		 */
--		__sock_set_rcvbuf(sk, min_t(u32, val, sysctl_rmem_max));
-+		__sock_set_rcvbuf(sk, min_t(u32, val, READ_ONCE(sysctl_rmem_max)));
- 		break;
- 
- 	case SO_RCVBUFFORCE:
-@@ -3309,8 +3309,8 @@ void sock_init_data(struct socket *sock, struct sock *sk)
- 	timer_setup(&sk->sk_timer, NULL, 0);
- 
- 	sk->sk_allocation	=	GFP_KERNEL;
--	sk->sk_rcvbuf		=	sysctl_rmem_default;
--	sk->sk_sndbuf		=	sysctl_wmem_default;
-+	sk->sk_rcvbuf		=	READ_ONCE(sysctl_rmem_default);
-+	sk->sk_sndbuf		=	READ_ONCE(sysctl_wmem_default);
- 	sk->sk_state		=	TCP_CLOSE;
- 	sk_set_socket(sk, sock);
- 
-diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
-index d7bd1daf022b..04e2034f2f8e 100644
---- a/net/ipv4/ip_output.c
-+++ b/net/ipv4/ip_output.c
-@@ -1730,7 +1730,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
- 
- 	sk->sk_protocol = ip_hdr(skb)->protocol;
- 	sk->sk_bound_dev_if = arg->bound_dev_if;
--	sk->sk_sndbuf = sysctl_wmem_default;
-+	sk->sk_sndbuf = READ_ONCE(sysctl_wmem_default);
- 	ipc.sockc.mark = fl4.flowi4_mark;
- 	err = ip_append_data(sk, &fl4, ip_reply_glue_bits, arg->iov->iov_base,
- 			     len, 0, &ipc, &rt, MSG_DONTWAIT);
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 78b654ff421b..290019de766d 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -239,7 +239,7 @@ void tcp_select_initial_window(const struct sock *sk, int __space, __u32 mss,
- 	if (wscale_ok) {
- 		/* Set window scaling on max possible window */
- 		space = max_t(u32, space, READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_rmem[2]));
--		space = max_t(u32, space, sysctl_rmem_max);
-+		space = max_t(u32, space, READ_ONCE(sysctl_rmem_max));
- 		space = min_t(u32, space, *window_clamp);
- 		*rcv_wscale = clamp_t(int, ilog2(space) - 15,
- 				      0, TCP_MAX_WSCALE);
-diff --git a/net/netfilter/ipvs/ip_vs_sync.c b/net/netfilter/ipvs/ip_vs_sync.c
-index 9d43277b8b4f..a56fd0b5a430 100644
---- a/net/netfilter/ipvs/ip_vs_sync.c
-+++ b/net/netfilter/ipvs/ip_vs_sync.c
-@@ -1280,12 +1280,12 @@ static void set_sock_size(struct sock *sk, int mode, int val)
- 	lock_sock(sk);
- 	if (mode) {
- 		val = clamp_t(int, val, (SOCK_MIN_SNDBUF + 1) / 2,
--			      sysctl_wmem_max);
-+			      READ_ONCE(sysctl_wmem_max));
- 		sk->sk_sndbuf = val * 2;
- 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
- 	} else {
- 		val = clamp_t(int, val, (SOCK_MIN_RCVBUF + 1) / 2,
--			      sysctl_rmem_max);
-+			      READ_ONCE(sysctl_rmem_max));
- 		sk->sk_rcvbuf = val * 2;
- 		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 716df64fcfa5..b5b92dcd5eea 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -5918,7 +5918,7 @@ static int process_backlog(struct napi_struct *napi, int quota)
+ 		net_rps_action_and_irq_enable(sd);
  	}
+ 
+-	napi->weight = dev_rx_weight;
++	napi->weight = READ_ONCE(dev_rx_weight);
+ 	while (again) {
+ 		struct sk_buff *skb;
+ 
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 71a13596ea2b..d82ba0c27175 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -240,8 +240,10 @@ static int proc_do_dev_weight(struct ctl_table *table, int write,
+ 	if (ret != 0)
+ 		return ret;
+ 
+-	dev_rx_weight = weight_p * dev_weight_rx_bias;
+-	dev_tx_weight = weight_p * dev_weight_tx_bias;
++	WRITE_ONCE(dev_rx_weight,
++		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_rx_bias));
++	WRITE_ONCE(dev_tx_weight,
++		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_tx_bias));
+ 
+ 	return ret;
+ }
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index d47b9689eba6..99b697ad2b98 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -409,7 +409,7 @@ static inline bool qdisc_restart(struct Qdisc *q, int *packets)
+ 
+ void __qdisc_run(struct Qdisc *q)
+ {
+-	int quota = dev_tx_weight;
++	int quota = READ_ONCE(dev_tx_weight);
+ 	int packets;
+ 
+ 	while (qdisc_restart(q, &packets)) {
 -- 
 2.30.2
 
