@@ -2,323 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66EE25985D4
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBAED598616
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:38:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245451AbiHROcv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53952 "EHLO
+        id S1343593AbiHROdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245512AbiHROcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:32:22 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8E62BA9E8;
-        Thu, 18 Aug 2022 07:32:16 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id jl18so1671166plb.1;
-        Thu, 18 Aug 2022 07:32:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=64R3bxHMvv5+V0T/PDUTVz1Uk0VIs+H8eHbhqMNvmEQ=;
-        b=EX8ou0RTkSODLqaqCgCGl9TJKOPxlpSZvuMeBQIXCinFHIrXw9t+gJjdaOl1mdSXVT
-         FIAy96Vr2dV3mTuOnnHpKPLUiP9iI2Of1ABEgqlQg49YBMVR4yPV9qLCh5X0Fcn9hc+9
-         cl543oOVxhHqJyYddxl+ATvDR2FjVNUBymnWUayB/yeDtZtpbqdoWXZWgoZnRR5/ceUg
-         l6ajY8CycQHl70bSisAS55nOgS1iLAsM/DWjfN8EiJj9GAYQvLcJsjEZooxZ0KR84cQc
-         iu8CpiidQdVIJI3fOVPgpk6h2wy/3yjI4rkfhJA0KVBw+Y93nYe/m5zCOQRx7Ahtz1Xs
-         jhVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=64R3bxHMvv5+V0T/PDUTVz1Uk0VIs+H8eHbhqMNvmEQ=;
-        b=boFheNCpA6tHASPH1f9vXi4sp2ooxfBoA+BD3KSdvtNpr4vEmVZCgBc8HLK/TYimUD
-         RcLsjDur+DZjViaw5FARH+PXfi/L0WegbJ0MQW5mjdFam7Cg25Y/tOKaurjWkHvdW/UP
-         iofYJjaxE7FKkTL6erv3MF+ySnm5th0RUsoiAKEP4WjvLF3Mg7H7XKRPUeL8IxShQzw5
-         8l8dEQ155ds6BT1IDgm4efXOLLNxxkBdoKhOPasKHvEsja8oullbAt6h9gAdxJa6jJ2f
-         OGe/U4ludgnpdg118sdY/TUYTv0TQYzEEFRWwJqh0V6UPi3QI+4jEzeh5XZVjDg4vExy
-         eiLg==
-X-Gm-Message-State: ACgBeo0uXhOa9rDDOTxyyMKXhoKQOfyJgq5gVhEczc3tPraTDBZ9+Mxq
-        3G11PcgZpHRCLymXq/ut13M=
-X-Google-Smtp-Source: AA6agR6BXiviu/fMhtQYEidUfIBaxKQz8CADJ9PvR9/TZPkp8KxyBxMr5H555oupXKEWVyIiR5O4fg==
-X-Received: by 2002:a17:90a:7f89:b0:1fa:ad33:7289 with SMTP id m9-20020a17090a7f8900b001faad337289mr8838077pjl.173.1660833136171;
-        Thu, 18 Aug 2022 07:32:16 -0700 (PDT)
-Received: from vultr.guest ([45.32.72.237])
-        by smtp.gmail.com with ESMTPSA id h5-20020a63f905000000b003fdc16f5de2sm1379124pgi.15.2022.08.18.07.32.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 07:32:15 -0700 (PDT)
-From:   Yafang Shao <laoar.shao@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
-        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
-        songmuchun@bytedance.com, akpm@linux-foundation.org, tj@kernel.org,
-        lizefan.x@bytedance.com
-Cc:     cgroups@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-mm@kvack.org,
-        Yafang Shao <laoar.shao@gmail.com>
-Subject: [PATCH bpf-next v2 12/12] bpf: Introduce selectable memcg for bpf map
-Date:   Thu, 18 Aug 2022 14:31:18 +0000
-Message-Id: <20220818143118.17733-13-laoar.shao@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220818143118.17733-1-laoar.shao@gmail.com>
-References: <20220818143118.17733-1-laoar.shao@gmail.com>
-MIME-Version: 1.0
+        with ESMTP id S1343552AbiHROdk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:33:40 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60047.outbound.protection.outlook.com [40.107.6.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82965B05
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:33:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UAxrDKWQAB5lthyS4O+o2csDNpCoGMlr+8hrV9QnegSuhQcyejLAfaLnkPwiqbN5JD2k7ARYp4XId6j2tz062bO35ZoeGvbTEbZqDnjfVqIVen4mWMJbr3D3WgkCNHgojCgpJC2L9zPT/B91UP8fAi5nnNZOnhcfPYAx5jD72TsLRxEz7Eixv9I/wKOkwkKfCyLBQVtUHLzHqT2g0vhkUTj/PdIVoUyxMKpHIIrGLZ3EymEl5RBNjTeXi7Fag4nEX8gU19wnzDRPMjx0Pr6dLi7cPr9W0l/R+nZDwRqqKtpPOQRzpfR83k3tMVcX5Log8FXRnCl+05K1YHRxMrM8lA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xdrdNKg/BE3OUa3tal8c1cXRB6dzE2dp6VWWFqvPe7s=;
+ b=Ze5BCx4NekfAKf8WdFz8reDEniFi3M0ML8gJ4fPCEhXNE53osxrym1htXFjvLL6+pqxjwMA01i4b6ya8yWPBnN30QRF+cOxvsWKxmk6HsIRim7SARAd98wmcBfo6hrvDBO7ytZm1P52WvKSM7sJrBk3pZyQm5iYaDskE3ymKwQUQZj7nfjKowtFxdHlePAUP+BOuWfufDjNwe0w75cs9Nh41O8bV67TibXNiy+lu7iOfCOCe/S1HtKo5R9ZN7qm10IYTQkuSc9NMYv7Yfae9Xy46gS8HETGEQns2HgCDfE7JO7Xs4YJOfzBFLx8bzq5neoFvACdu1GpbV8Y9cEcK1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xdrdNKg/BE3OUa3tal8c1cXRB6dzE2dp6VWWFqvPe7s=;
+ b=Hsk3QB/4agYBcfDNj4ZPkqQebaQRDdp8DOaWUv6NIhBOJOMebg750cO8C/jXjAqnLBxT1kEGwrBm8z8eU/igxb8wxBYSd0lNmaNXY/xe3HD/ghV87bNyQY6vmbP6H3YvcqQkqXUF36/dqgZ52qgsgJJq78QWjEIDzkbgY8v0ad8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB4805.eurprd04.prod.outlook.com (2603:10a6:20b:d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.10; Thu, 18 Aug
+ 2022 14:33:10 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
+ 14:33:10 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Craig McQueen <craig@mcqueen.id.au>
+Subject: [PATCH net] net: dsa: microchip: keep compatibility with device tree blobs with no phy-mode
+Date:   Thu, 18 Aug 2022 17:32:50 +0300
+Message-Id: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.34.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: AS4P190CA0007.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5de::6) To VI1PR04MB5136.eurprd04.prod.outlook.com
+ (2603:10a6:803:55::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8598c3a2-1994-4f90-fc98-08da81269304
+X-MS-TrafficTypeDiagnostic: AM6PR04MB4805:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Dq1UsjrfiTxvozWPnZIvmIUW11pFZNlGxHsvtFj+hKbG9OX65pZ752OkiXZhi6JhV0HT+shOzA15IfSJV6RfLt7jwSb67KFvGROwhvfYbAvE5eE0E2Ir4/OQga1v8yVHKwMC01yIgNX/GvLbdjR0OtOVBYzb2DWwAm//fUAowPqqpsUz6j15mNTKBunmHVLCwLLiqzvhhYhQUIqHeOEtIEs4vQmd9o3mUdaHtzmewd7ld655IKSxfq5jEni3weItpicIyTbFhsYkHR9nfrZArB9DP6nIjAWIKJgyLwXRUl4QL9DWGUtW0wGaIKM7u6VRT5FSmJTsxFgHrntiBI4idUKNyLBjM9mH/wiclZ21xexO1wjiQDXZn6GTWQTc9ySmx3oUUEludM+8OHpxO7smmSlmi03WFGj61Q1RCHYPE7HnDhCpT6XAVYVZVaTqSW+FFaJs68xL3Xxw8+xKAI7DltQ2+FBVIQS+7aDt4gxetbzy3hR8kUKAEq64wL7pc0CrRNBan9sWxejbUmCbguGkYxNf+c/+5XoIdbyRthEFXYnoGSEDJUtvjdHyeKyfplYf7t69l9xCZAAZYBsa7tacRalh0vfDx0gbAJt2L2522vdJZ219n5lyeNy2tGlkZih/abfAdHMNG1GiB0ONhMXMP4WmyNxPCUq+ywcZPFqqemBbx1aw8GmygO8EBrLgjiBgfXeAwt0MZarcYeHzK9Sz0YGQh6V5x5AY4AD7BliTFY1UsXOt8eH3hdi0kYgipU1l9K8QOHzi+LtOD2pHbkXOKuoI/WUmuNYXcQj/+Jttpxs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(396003)(376002)(39860400002)(346002)(54906003)(38100700002)(41300700001)(1076003)(2616005)(186003)(478600001)(6486002)(38350700002)(6916009)(316002)(26005)(966005)(86362001)(6666004)(83380400001)(66556008)(6506007)(8936002)(6512007)(4326008)(52116002)(2906002)(7416002)(44832011)(66946007)(8676002)(5660300002)(66476007)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?IwDTt0kNh0Ir4C5hLElkSWd8DzBkhyTwRs3Vvm+l/QTzh3QqWYpkYOMJuTBT?=
+ =?us-ascii?Q?E9CXovvWxDxyl3JSDaDIiVHslKcchROJ9MtwrObUfKlTUg7SSH0M1DZpz8Eb?=
+ =?us-ascii?Q?BAeHZ1HZIQdkCkvAHroRB+tPtG5y0cHDA8QIz8ORarVpulDwMW5nUOnYPWlo?=
+ =?us-ascii?Q?Cir6+eiUkSvvk1h11FmdtPXaH9chBWA1BcgXU3keeNAnIfVx5O3dWXiou0zN?=
+ =?us-ascii?Q?qREoSSJP/rYCu+adzV0KKMAaD9r9uyOQHzVxCeBvohTPfueg0O7XUTvpjbMl?=
+ =?us-ascii?Q?a8FBlHDJ4HOgv0flkYiaQPzVsG/T5MANt80aPH2wGg2XxSmaYPsEBI5DaZcW?=
+ =?us-ascii?Q?KvG+s/3npXaBd4EvU8RDig7/yKxpLYmKUyWcUr9gDDbB3FyWam4IxJGiEgig?=
+ =?us-ascii?Q?ah3m+D52W+kBcnYi36nIRZ3wyZcLOkw526EdgdcMXn6Ppr9CNIsAs1j+0Rwx?=
+ =?us-ascii?Q?7IYQRHgvH0gJzu8GmEGWkNrFg/OApJH3z2ygApvwh27vHJL0r14unldjKIFO?=
+ =?us-ascii?Q?uqZerW0etyKiuOjU0h0+tLznB0JB8MQWlmmBaGkN6Doc54XRhGEutQ9gwrYY?=
+ =?us-ascii?Q?ObjBaThW0T9JPQuWWSXTRbm3zPDdd0hLtcshIeZQe5+Pyo9oNbEg7I6bW3VS?=
+ =?us-ascii?Q?driX5TJj/+9OnUjWUFQNrsM2HMmdsus1nqYr266sgKBU4z+pCV+ul8Tvm0jb?=
+ =?us-ascii?Q?U4B7rsyXqiM5kBYfyrqdfrgWvHKoqGPs5eFsY9JCO8kSDyX8+zHkIWr3lkf/?=
+ =?us-ascii?Q?zCw8Unj/UbvBW0qV0LJPdx+saYDHdeN6+xInJpHkB2W/NfIPlQuJpDiWdrgf?=
+ =?us-ascii?Q?PbqjLjja6SUgkJr5uP2tKduu5vgLaPeUuoadnEOUiflBle+p3iu1DevDPJhJ?=
+ =?us-ascii?Q?GhcaepEgUj+AKCt/pvigXPKUtw20vSy3gXHGCP6mf5z/TvdMqqJDQwzWQ9Lv?=
+ =?us-ascii?Q?jR2OFBRCIJzU/Vk00aPZVdZZVt9tBN57ksc0Ym8aOAkk3HJERYD+h6+XQC5G?=
+ =?us-ascii?Q?5Kc6HYFY12nWIaybVdKNo1gkWUYCBQKTab28uQLTxFPIZZsjTtdMPVvD3r1/?=
+ =?us-ascii?Q?e2TRQBHhWhrdDUMFNH0hK6z1SIpUxrkt1INlftbg9DpMA6DS5p43TXs5qn9j?=
+ =?us-ascii?Q?pqHV1TazqOc6Ok5lLx3I4jpmYoxVuiEjX9bOv6o6t69K5LdJUcuDvRBzj++C?=
+ =?us-ascii?Q?rXNEzgBO4ZGHr3JzGOIOeKHzS+ictsTs/mGm9bOmW2/4pOU+vcciTj5R+3Pg?=
+ =?us-ascii?Q?aW2BHzzrJ1embRbimoKm8c6w2y+3OPwSSnPk9Bf4rOl1HNtVA9fQ3vPzHn45?=
+ =?us-ascii?Q?3oUbNFNJrS5jhkTpNnKRUUmhFdTC8CB774FaBQsQ+X2NOLMlTr3MHFqZbm+g?=
+ =?us-ascii?Q?xNJoZE+12Dr0kopOLPpsvyW2jwq2mmrxaHEzIfuUtD9fDEFfoDbeYdGah0i9?=
+ =?us-ascii?Q?NhfcUGvoThuoYWBEsFK7z0zI8TVnuQXAGfk5TmfdpsHf+0ThnealAk8y8f+Z?=
+ =?us-ascii?Q?/gdO+r8UJ0K9g2oVAv9nAkdPRkKOo05WZig2Z9BHxq0xalkGEMZMTAgGKct/?=
+ =?us-ascii?Q?+NX1qa5DhTbfE4RVwDDCM5KDd9861bEyf4gouXN5GZk7ImQxZcuxWNije1ze?=
+ =?us-ascii?Q?Og=3D=3D?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8598c3a2-1994-4f90-fc98-08da81269304
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 14:33:10.3383
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: gWmiec9QacqEq6nAv/wbZpKmtp3W1qhgPZjW1IeYNP7HktTf9a/9LAPlTPnT5TQ7oGLxQLO3E1xKJTR0rNUbog==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4805
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A new bpf attr memcg_fd is introduced for map creation. The map creation
-path in libbpf is changed consequently to set this attr.
+DSA has multiple ways of specifying a MAC connection to an internal PHY.
+One requires a DT description like this:
 
-A new member memcg_fd is introduced into bpf attr of BPF_MAP_CREATE
-command, which is the fd of an opened cgroup directory. In this cgroup,
-the memory subsystem must be enabled. The valid memcg_fd must be a postive
-number, that means it can't be zero(a valid return value of open(2)). Once
-the kernel get the memory cgroup from this fd, it will set this memcg into
-bpf map, then all the subsequent memory allocation of this map will be
-charged to the memcg. The map creation paths in libbpf are also changed
-consequently.
-
-The usage of this new member as follows,
-	struct bpf_map_create_opts map_opts = {
-		.sz = sizeof(map_opts),
+	port@0 {
+		reg = <0>;
+		phy-handle = <&internal_phy>;
+		phy-mode = "internal";
 	};
-	int memcg_fd, map_fd, old_fd;
-	int key, value;
 
-	memcg_fd = open("/sys/fs/cgroup/memory/bpf", O_DIRECTORY);
-	if (memcg_fd < 0) {
-		perror("memcg dir open");
-		return -1;
+(which is IMO the recommended approach, as it is the clearest
+description)
+
+but it is also possible to leave the specification as just:
+
+	port@0 {
+		reg = <0>;
 	}
 
-	/* 0 is a invalid fd */
-	if (memcg_fd == 0) {
-		old_fd = memcg_fd;
-		memcg_fd = fcntl(memcg_fd, F_DUPFD_CLOEXEC, 3);
-		close(old_fd);
-		if (memcg_fd < 0) {
-			perror("fcntl");
-			return -1;
-		}
-	}
+and if the driver implements ds->ops->phy_read and ds->ops->phy_write,
+the DSA framework "knows" it should create a ds->slave_mii_bus, and it
+should connect to a non-OF-based internal PHY on this MDIO bus, at an
+MDIO address equal to the port address.
 
-	map_opts.memcg_fd = memcg_fd;
-	map_fd = bpf_map_create(BPF_MAP_TYPE_HASH, "map_for_memcg",
-				sizeof(key), sizeof(value),
-				1024, &map_opts);
-	if (map_fd <= 0) {
-		close(memcg_fd);
-		perror("map create");
-		return -1;
-	}
+There is also an intermediary way of describing things:
 
-Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+	port@0 {
+		reg = <0>;
+		phy-handle = <&internal_phy>;
+	};
+
+In case 2, DSA calls phylink_connect_phy() and in case 3, it calls
+phylink_of_phy_connect(). In both cases, phylink_create() has been
+called with a phy_interface_t of PHY_INTERFACE_MODE_NA, and in both
+cases, PHY_INTERFACE_MODE_NA is translated into phy->interface.
+
+It is important to note that phy_device_create() initializes
+dev->interface = PHY_INTERFACE_MODE_GMII, and so, when we use
+phylink_create(PHY_INTERFACE_MODE_NA), no one will override this, and we
+will end up with a PHY_INTERFACE_MODE_GMII interface inherited from the
+PHY.
+
+All this means that in order to maintain compatibility with device tree
+blobs where the phy-mode property is missing, we need to allow the
+"gmii" phy-mode and treat it as "internal".
+
+Fixes: 2c709e0bdad4 ("net: dsa: microchip: ksz8795: add phylink support")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=216320
+Reported-by: Craig McQueen <craig@mcqueen.id.au>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- include/uapi/linux/bpf.h       |  1 +
- kernel/bpf/syscall.c           | 45 ++++++++++++++++++++++++++++++++----------
- tools/include/uapi/linux/bpf.h |  1 +
- tools/lib/bpf/bpf.c            |  3 ++-
- tools/lib/bpf/bpf.h            |  3 ++-
- tools/lib/bpf/gen_loader.c     |  2 +-
- tools/lib/bpf/libbpf.c         |  2 ++
- tools/lib/bpf/skel_internal.h  |  2 +-
- 8 files changed, 45 insertions(+), 14 deletions(-)
+ drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 7d1e279..048b692 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -1300,6 +1300,7 @@ struct bpf_stack_build_id {
- 		 * to using 5 hash functions).
- 		 */
- 		__u64	map_extra;
-+		__u32	memcg_fd;	/* selectable memcg */
- 	};
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index ed7d137cba99..7461272a6d41 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -803,9 +803,15 @@ static void ksz_phylink_get_caps(struct dsa_switch *ds, int port,
+ 	if (dev->info->supports_rgmii[port])
+ 		phy_interface_set_rgmii(config->supported_interfaces);
  
- 	struct { /* anonymous struct used by BPF_MAP_*_ELEM commands */
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 5f5cade4..fd1f67c 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -294,14 +294,33 @@ static int bpf_map_copy_value(struct bpf_map *map, void *key, void *value,
- }
- 
- #ifdef CONFIG_MEMCG_KMEM
--static void bpf_map_save_memcg(struct bpf_map *map)
-+static int bpf_map_save_memcg(struct bpf_map *map, u32 memcg_fd)
- {
--	/* Currently if a map is created by a process belonging to the root
--	 * memory cgroup, get_obj_cgroup_from_current() will return NULL.
--	 * So we have to check map->objcg for being NULL each time it's
--	 * being used.
--	 */
--	map->objcg = get_obj_cgroup_from_current();
-+	struct obj_cgroup *objcg;
-+	struct cgroup *cgrp;
-+
-+	if (memcg_fd) {
-+		cgrp = cgroup_get_from_fd(memcg_fd);
-+		if (IS_ERR(cgrp))
-+			return -EINVAL;
-+
-+		objcg = get_obj_cgroup_from_cgroup(cgrp);
-+		if (IS_ERR(objcg)) {
-+			cgroup_put(cgrp);
-+			return PTR_ERR(objcg);
-+		}
-+		cgroup_put(cgrp);
-+	} else {
-+		/* Currently if a map is created by a process belonging to the root
-+		 * memory cgroup, get_obj_cgroup_from_current() will return NULL.
-+		 * So we have to check map->objcg for being NULL each time it's
-+		 * being used.
+-	if (dev->info->internal_phy[port])
++	if (dev->info->internal_phy[port]) {
+ 		__set_bit(PHY_INTERFACE_MODE_INTERNAL,
+ 			  config->supported_interfaces);
++		/* Compatibility for phylib's default interface type when the
++		 * phy-mode property is absent
 +		 */
-+		objcg = get_obj_cgroup_from_current();
++		__set_bit(PHY_INTERFACE_MODE_GMII,
++			  config->supported_interfaces);
 +	}
-+
-+	map->objcg = objcg;
-+	return 0;
- }
  
- static void bpf_map_release_memcg(struct bpf_map *map)
-@@ -311,8 +330,9 @@ static void bpf_map_release_memcg(struct bpf_map *map)
- }
- 
- #else
--static void bpf_map_save_memcg(struct bpf_map *map)
-+static int bpf_map_save_memcg(struct bpf_map *map, u32 memcg_fd)
- {
-+	return 0;
- }
- 
- static void bpf_map_release_memcg(struct bpf_map *map)
-@@ -405,7 +425,12 @@ static u32 bpf_map_flags_retain_permanent(u32 flags)
- 
- int bpf_map_init_from_attr(struct bpf_map *map, union bpf_attr *attr)
- {
--	bpf_map_save_memcg(map);
-+	int err;
-+
-+	err = bpf_map_save_memcg(map, attr->memcg_fd);
-+	if (err)
-+		return err;
-+
- 	map->map_type = attr->map_type;
- 	map->key_size = attr->key_size;
- 	map->value_size = attr->value_size;
-@@ -1091,7 +1116,7 @@ static int map_check_btf(struct bpf_map *map, const struct btf *btf,
- 	return ret;
- }
- 
--#define BPF_MAP_CREATE_LAST_FIELD map_extra
-+#define BPF_MAP_CREATE_LAST_FIELD memcg_fd
- /* called via syscall */
- static int map_create(union bpf_attr *attr)
- {
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index e174ad2..1e9efe7 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1300,6 +1300,7 @@ struct bpf_stack_build_id {
- 		 * to using 5 hash functions).
- 		 */
- 		__u64	map_extra;
-+		__u32	memcg_fd;	/* selectable memcg */
- 	};
- 
- 	struct { /* anonymous struct used by BPF_MAP_*_ELEM commands */
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 6a96e66..6517553 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -171,7 +171,7 @@ int bpf_map_create(enum bpf_map_type map_type,
- 		   __u32 max_entries,
- 		   const struct bpf_map_create_opts *opts)
- {
--	const size_t attr_sz = offsetofend(union bpf_attr, map_extra);
-+	const size_t attr_sz = offsetofend(union bpf_attr, memcg_fd);
- 	union bpf_attr attr;
- 	int fd;
- 
-@@ -199,6 +199,7 @@ int bpf_map_create(enum bpf_map_type map_type,
- 	attr.map_extra = OPTS_GET(opts, map_extra, 0);
- 	attr.numa_node = OPTS_GET(opts, numa_node, 0);
- 	attr.map_ifindex = OPTS_GET(opts, map_ifindex, 0);
-+	attr.memcg_fd = OPTS_GET(opts, memcg_fd, 0);
- 
- 	fd = sys_bpf_fd(BPF_MAP_CREATE, &attr, attr_sz);
- 	return libbpf_err_errno(fd);
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 9c50bea..dd0d929 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -51,8 +51,9 @@ struct bpf_map_create_opts {
- 
- 	__u32 numa_node;
- 	__u32 map_ifindex;
-+	__u32 memcg_fd;
- };
--#define bpf_map_create_opts__last_field map_ifindex
-+#define bpf_map_create_opts__last_field memcg_fd
- 
- LIBBPF_API int bpf_map_create(enum bpf_map_type map_type,
- 			      const char *map_name,
-diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
-index 23f5c46..f35b014 100644
---- a/tools/lib/bpf/gen_loader.c
-+++ b/tools/lib/bpf/gen_loader.c
-@@ -451,7 +451,7 @@ void bpf_gen__map_create(struct bpf_gen *gen,
- 			 __u32 key_size, __u32 value_size, __u32 max_entries,
- 			 struct bpf_map_create_opts *map_attr, int map_idx)
- {
--	int attr_size = offsetofend(union bpf_attr, map_extra);
-+	int attr_size = offsetofend(union bpf_attr, memcg_fd);
- 	bool close_inner_map_fd = false;
- 	int map_create_attr, idx;
- 	union bpf_attr attr;
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 3f01f5c..ad7aa39 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -511,6 +511,7 @@ struct bpf_map {
- 	bool reused;
- 	bool autocreate;
- 	__u64 map_extra;
-+	__u32 memcg_fd;
- };
- 
- enum extern_type {
-@@ -4936,6 +4937,7 @@ static int bpf_object__create_map(struct bpf_object *obj, struct bpf_map *map, b
- 	create_attr.map_flags = def->map_flags;
- 	create_attr.numa_node = map->numa_node;
- 	create_attr.map_extra = map->map_extra;
-+	create_attr.memcg_fd = map->memcg_fd;
- 
- 	if (bpf_map__is_struct_ops(map))
- 		create_attr.btf_vmlinux_value_type_id = map->btf_vmlinux_value_type_id;
-diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.h
-index bd6f450..83403cc 100644
---- a/tools/lib/bpf/skel_internal.h
-+++ b/tools/lib/bpf/skel_internal.h
-@@ -222,7 +222,7 @@ static inline int skel_map_create(enum bpf_map_type map_type,
- 				  __u32 value_size,
- 				  __u32 max_entries)
- {
--	const size_t attr_sz = offsetofend(union bpf_attr, map_extra);
-+	const size_t attr_sz = offsetofend(union bpf_attr, memcg_fd);
- 	union bpf_attr attr;
- 
- 	memset(&attr, 0, attr_sz);
+ 	if (dev->dev_ops->get_caps)
+ 		dev->dev_ops->get_caps(dev, port, config);
 -- 
-1.8.3.1
+2.34.1
 
