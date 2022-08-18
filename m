@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4105986B3
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:03:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BABA5986D9
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343979AbiHRPC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:02:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
+        id S1344034AbiHRPGK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:06:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343977AbiHRPC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:02:28 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F41BBD139
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:02:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660834947; x=1692370947;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AVDKpW3E0SoesYRfNdNj6AunH1Huh55azMmsgmV/WlI=;
-  b=JPZHeNWO9yDf03l/CPAAp4iKnY9uQ3sQLdBCadTYjdtadKcBw7NRxCoW
-   0zxqCFNTMfqdm+kJ0pVRB64PKY5pN/YooRCGqv3TsSxsaNFJ4E4GBeRnT
-   9XUBLF+W7AIZZK3KPt3sjPPY41x6UOHxOAr5ha1AeSdUgkjEbAQSWO7ZK
-   o=;
-X-IronPort-AV: E=Sophos;i="5.93,246,1654560000"; 
-   d="scan'208";a="250286477"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 15:02:06 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id 81D9B451FE;
-        Thu, 18 Aug 2022 15:02:05 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Thu, 18 Aug 2022 15:02:04 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.158) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Thu, 18 Aug 2022 15:02:02 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <lkp@intel.com>
-CC:     <davem@davemloft.net>, <edumazet@google.com>,
-        <kbuild-all@lists.01.org>, <kuba@kernel.org>, <kuniyu@amazon.com>,
-        <llvm@lists.linux.dev>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>
-Subject: Re: [PATCH v2 net 13/17] net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
-Date:   Thu, 18 Aug 2022 08:01:54 -0700
-Message-ID: <20220818150154.29112-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <202208181615.Lu9xjiEv-lkp@intel.com>
-References: <202208181615.Lu9xjiEv-lkp@intel.com>
+        with ESMTP id S1344144AbiHRPF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:05:57 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC3D377554;
+        Thu, 18 Aug 2022 08:05:55 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id E47F922248;
+        Thu, 18 Aug 2022 17:05:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1660835153;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HiAnFI7kVMl6PXgrx9Z0nQjSTLDVTqf5Dg5Dp/xCy04=;
+        b=Naxxk5zfgMsndAFJBEUHrYsp1llu3XuJV4ZWqdOLoYBgbT9o7K3IXapYC8ZEMnV+K9caT7
+        NmAg9mtlrKQNfsLF3W+d3hyXKI4T5YumGvkQyhPGV5YfJwFCSxA1uz1el28u3OjdR/bgmV
+        6e9WGMYSE76czWPDCE2RsNXGgThvKnc=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.158]
-X-ClientProxiedBy: EX13D42UWB004.ant.amazon.com (10.43.161.99) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 18 Aug 2022 17:05:53 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH devicetree 0/3] NXP LS1028A DT changes for multiple switch
+ CPU ports
+In-Reply-To: <20220818145556.ieg37btfny3o2i4q@skbuf>
+References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
+ <8d3d96cdede2f1e40ed9ae5742a0468d@walle.cc>
+ <20220818145556.ieg37btfny3o2i4q@skbuf>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <04fb89b973011bf111795e1f17fac311@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   kernel test robot <lkp@intel.com>
-Date:   Thu, 18 Aug 2022 16:51:37 +0800
-> Hi Kuniyuki,
+Am 2022-08-18 16:55, schrieb Vladimir Oltean:
+> On Thu, Aug 18, 2022 at 04:49:49PM +0200, Michael Walle wrote:
+>> Is it used automatically or does the userspace has to configure 
+>> something?
 > 
-> Thank you for the patch! Yet something to improve:
+> DSA doesn't yet support multiple CPU ports, but even when it will, the
+> second DSA master still won't be used automatically. If you want more
+> details about the proposed UAPI to use the second CPU port, see here:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220523104256.3556016-1-olteanv@gmail.com/
 > 
-> [auto build test ERROR on net/master]
+>> > Care has been taken that this change does not produce regressions when
+>> > using updated device trees with old kernels that do not support multiple
+>> > DSA CPU ports. The only difference for old kernels will be the
+>> > appearance of a new net device (for &enetc_port3) which will not be very
+>> > useful for much of anything.
+>> 
+>> Mh, I don't understand. Does it now cause regressions or not? I mean
+>> besides that there is a new unused interface?
 > 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Kuniyuki-Iwashima/net-sysctl-Fix-data-races-around-net-core-XXX/20220818-115941
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git fc4aaf9fb3c99bcb326d52f9d320ed5680bd1cee
-> config: riscv-randconfig-r032-20220818 (https://download.01.org/0day-ci/archive/20220818/202208181615.Lu9xjiEv-lkp@intel.com/config)
-> compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project aed5e3bea138ce581d682158eb61c27b3cfdd6ec)
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # install riscv cross compiling tool for clang build
->         # apt-get install binutils-riscv64-linux-gnu
->         # https://github.com/intel-lab-lkp/linux/commit/6bc3dfb3dc4862f4e00ba93c45cd5c0251b85d5b
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Kuniyuki-Iwashima/net-sysctl-Fix-data-races-around-net-core-XXX/20220818-115941
->         git checkout 6bc3dfb3dc4862f4e00ba93c45cd5c0251b85d5b
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash
-> 
-> If you fix the issue, kindly add following tag where applicable
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> ld.lld: error: undefined symbol: sysctl_fb_tunnels_only_for_init_net
->    >>> referenced by ip_tunnel.c
->    >>>               ipv4/ip_tunnel.o:(ip_tunnel_init_net) in archive net/built-in.a
->    >>> referenced by ip_tunnel.c
->    >>>               ipv4/ip_tunnel.o:(ip_tunnel_init_net) in archive net/built-in.a
+> It didn't cause regressions until kernel 5.13 when commit adb3dccf090b
+> ("net: dsa: felix: convert to the new .change_tag_protocol DSA API")
+> happened, then commit 00fa91bc9cc2 ("net: dsa: felix: fix tagging
+> protocol changes with multiple CPU ports") fixed that regression and 
+> was
+> backported to the linux-5.15.y stable branch AFAIR. So at least kernels
+> 5.15 and newer should work properly with the new device trees.
 
-Hmm... I tested allmodconfig with x86_64 but it seems not enough...
+Thanks for the details!
 
-I don't think just using READ_ONCE() causes regression.
-Is this really regression or always-broken stuff in some arch,
-or ... clang 16?
+>> I was just thinking of that systemready stuff where the u-boot might
+>> supply its (newer) device tree to an older kernel, i.e. an older 
+>> debian
+>> or similar.
+>> 
+>> -michael
+> 
+> Yeah, I hear you, I'm doing my best to make the driver work with a
+> one-size-fits-all device tree, both ways around.
 
-Anyway, I'll take a look.
+TBH I don't really care much, I was merely curious what to expect.
+
+-michael
