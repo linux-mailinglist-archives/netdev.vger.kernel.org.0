@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41307598428
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:28:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7F44598433
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 15:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245107AbiHRN0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 09:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54364 "EHLO
+        id S245134AbiHRN3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 09:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245112AbiHRN0p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:26:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 088CCA0250
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:26:44 -0700 (PDT)
+        with ESMTP id S244585AbiHRN2W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 09:28:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C3995B7
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 06:28:18 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 84C12615FB
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 13:26:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 663EFC433D7;
-        Thu, 18 Aug 2022 13:26:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EAF4B81FC7
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 13:28:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C389FC433C1;
+        Thu, 18 Aug 2022 13:28:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660829203;
-        bh=sB64OgHY3IusrVjnISn0E2kr2OO3s65gCHLibWJTafw=;
+        s=k20201202; t=1660829296;
+        bh=L5fkpYofC6Khhao34O043Z6l2V4w4qVJSwajClbaQLg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RwdI9hSM62Y760qWIKzfXo+6HgHHZMMW5VImbOa9EMWHPYGdfacF6JtVSbJLutkSx
-         LIwYfjHxTmMnr72qe1bGWssZmk5vLWqTM5S00xTT7c7E/fMqaHvb1WrKfNoKwUkHhz
-         PPQjURsK5MSqIooODdUC6FDV1QxaHxdkaEbn9ZbAE2R66dUVMBk3Ck77WJugol6nrk
-         jcK0h9+9FVeJhDd4ERcuHpYnXIr6fKJu7sjrLM4EIvfH1Hd8ChNgl251My7PvQn+bJ
-         ESv4y8AIVtb2aswcvZTODtcXE8gzEk1cKfqErogNVsTHYIJ8JXP1ccoaGZ7WGNu6wA
-         bfPBjROeSk2mg==
-Date:   Thu, 18 Aug 2022 16:26:39 +0300
+        b=vFdyAEGi8vvQ4lkY4T70aFH7wU3j9vosnIr8Gu2wkVL7X8tC4oj5bfpzyJy/k1QtO
+         BZYAkKgEjX2tr7VA7pk9qSKFPEJuDA9TYYc2UuhWxcTvlilXULdNo8ANTk0eVuuVl0
+         AlG0C8rjvC9gvOYiqq8oWDrvmCw24h0CQ3HBzkIPQ5Ivrj8MDlrOLS2zPbEUJnrTBT
+         xbMGONpuPArMBLzUwStO75NJeD0BSBx7nr8JhGbArgBXOSpuXxPYgQ6eW7oTnh5oZl
+         sefCAeCb5GoI0eR5nYVym6Pnz8uWFUU/tsZPXopGWRCoclKq5QoBWpGt1Xarubu1Zm
+         kbywiap5oeClw==
+Date:   Thu, 18 Aug 2022 16:28:12 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     "David S . Miller" <davem@davemloft.net>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
         ipsec-devel <devel@linux-ipsec.org>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <Yv4+D+2d3HPQKymx@unreal>
+Subject: Re: [PATCH xfrm-next v2 2/6] xfrm: allow state full offload mode
+Message-ID: <Yv4+bFE3Ck96TFP3@unreal>
 References: <cover.1660639789.git.leonro@nvidia.com>
- <20220818100930.GA622211@gauss3.secunet.de>
+ <de9490892eefc33723c1ae803adf881ad8ea621a.1660639789.git.leonro@nvidia.com>
+ <20220818101220.GD566407@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220818100930.GA622211@gauss3.secunet.de>
+In-Reply-To: <20220818101220.GD566407@gauss3.secunet.de>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,48 +57,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 12:09:30PM +0200, Steffen Klassert wrote:
-> Hi Leon,
-> 
-> On Tue, Aug 16, 2022 at 11:59:21AM +0300, Leon Romanovsky wrote:
+On Thu, Aug 18, 2022 at 12:12:20PM +0200, Steffen Klassert wrote:
+> On Tue, Aug 16, 2022 at 11:59:23AM +0300, Leon Romanovsky wrote:
 > > From: Leon Romanovsky <leonro@nvidia.com>
 > > 
-> > Changelog:
-> > v2:
-> >  * Rebased to latest 6.0-rc1
-> >  * Add an extra check in TX datapath patch to validate packets before
-> >    forwarding to HW.
-> >  * Added policy cleanup logic in case of netdev down event 
-> > v1: https://lore.kernel.org/all/cover.1652851393.git.leonro@nvidia.com 
-> >  * Moved comment to be before if (...) in third patch.
-> > v0: https://lore.kernel.org/all/cover.1652176932.git.leonro@nvidia.com
-> > -----------------------------------------------------------------------
+> > Allow users to configure xfrm states with full offload mode.
+> > The full mode must be requested both for policy and state, and
+> > such requires us to do not implement fallback.
 > > 
-> > The following series extends XFRM core code to handle new type of IPsec
-> > offload - full offload.
+> > We explicitly return an error if requested full mode can't
+> > be configured.
 > > 
-> > In this mode, the HW is going to be responsible for whole data path, so
-> > both policy and state should be offloaded.
+> > Reviewed-by: Raed Salem <raeds@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 > 
-> some general comments about the pachset:
-> 
-> As implemented, the software does not hold any state.
-> I.e. there is no sync between hardware and software
-> regarding stats, liftetime, lifebyte, packet counts
-> and replay window. IKE rekeying and auditing is based
-> on these, how should this be done?
+> This one needs to be ACKed by the driver maintainers.
 
-This is only rough idea as we only started to implement needed
-support in libreswan, but our plan is to configure IKE with
-highest possible priority 
-
-> 
-> I have not seen anything that catches configurations
-> that stack multiple tunnels with the outer offloaded.
-> 
-> Where do we make sure that policy offloading device
-> is the same as the state offloading device?
-
-It is configuration error and we don't check it. Should we?
+Why? Only crypto is supported in upstream kernel.
 
 Thanks
