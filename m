@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15964598958
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:51:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32134598940
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:51:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345021AbiHRQqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:46:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38018 "EHLO
+        id S1345029AbiHRQqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345009AbiHRQqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:46:33 -0400
+        with ESMTP id S1345012AbiHRQqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:46:36 -0400
 Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2080.outbound.protection.outlook.com [40.107.22.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A99CDBE4DD;
-        Thu, 18 Aug 2022 09:46:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECF1CBFA9F;
+        Thu, 18 Aug 2022 09:46:34 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W+6vjJDkxQo0SHXd3FVpxxLYtCmEGEw+zna2Cu7WXEZTscJDH91xRjq4YtdX4lSXqJ4R4azDoZZ3HlUsRl3g8va2zJ78Pacb+i43PW4V6Nap4vlVCnx16HYHt20+QGk90d05pQhUxgRqslMQSz3zbsR9XMGcihlKd+67GiedeTQkgy7+tXWmmqQQy1ElsirrZ51qqQgiDNUOCPqxhsRWJux4s4q0ZIE/LY67MWi4tjdb1HFjX+nmltHuw0QIuzA3Dna/f3YJ/SfJyP9i0WO4+aKxXnTKwOt11ph4XSsD0o0rXLQZmY2I16suV4VB2LQZNeYIrAZi2cvjD/eUb2JEmg==
+ b=IntrSFmcWSuwsIQ2b9D3nUo7ku5wgzScj2C2XoQBk/SlUtsoTVkCf4MOOQGK87D2DV7MCesZ1SMx1orDYclhtbVE1BpbwBgeRUeNXyxm3FonOJyWpNaGrVCBZ+aE5ed1QCA5Pvu0iXooROuXdkHrD/YEHhhKr+6l5a6TOONnLMAunfzeeLE/foEkztKXPbEEgAKCJOZlBPqAPBvOtsIs8b/rkBJOnT9hc4Y2NnKTxkVagsFlYWxfUB2/J9tBdfpPAjfPjIGO4V+rw0cm6p0x0CxEaYsxxdCsEMequ3oAUJzj6kCJMagpmsl7JjCwlPwjF3zUAkSBYbzzcykrsZ3Zog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cjcsfjliJwSEh13O05pl4nrVds79IIkn4hXvFzLQxyc=;
- b=m6Yl/0NxHbRV+ppuMRp12YD3JzrjnsGe0MH4DWA6bNk/1OALGg7GTwkeo7VJCEWOq1AV1UGywBo+a5qBVIzOu1m2K1j9kRkMwpyYUKpcptIpon2+PA15wdjtPL5nDv/dLFZ+SlZLsMqOBIS6v46TteXDoilKLSxkn/xZ0hdsKKggcnWYxU8SlZ4dsrCB62RPNxVPH3x7tE6MqLqur0V5hw1fPTkaAgfJU6M0Axg9uhYqYuKGK85Z7NmzpzeInGYN+xeUiZhEB7XLDGLMUwtmjKZk+m/M5ylZfPCK/asAw3qJVUsiAh7GoyNXSQMdjDZ2XLEtcg57TpVNB34knd6uOw==
+ bh=0jJ1221tKVunCESv1du32WcB+bJC4tZ6d5/Onqpe3VQ=;
+ b=c0a44C1NEUq5mAem7IGwZ9+xvA2JYA72SOQJm/bxnU8eLafUzPtSYBGXD/A1aOVSEFeEIOkhZyVFgtDXyNNOIz2KM0DTRQ8VEI9luqK7ED5o7Jd0i/KED46REyNkxuJggvcy5c1c2jphYzctq0O2E8Z6hq570nWVHuAEn0Sj+TvkXvk6pxaL/sPeDN1YpKOrpDnTMJUvaqFpt4K2QcbW5lGoBM2hEJHcZb8f0w20wa0cexwDnfnwS+FzEDTLk+3M0U81bbMyhKJJi2ir2KPvwAXZ8gkB4z0RvigFntubW2yxPnZePyHkuacm0lmEtU7HfBnb8VQts8F2Or49LDZ4iA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
  dkim=pass header.d=seco.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cjcsfjliJwSEh13O05pl4nrVds79IIkn4hXvFzLQxyc=;
- b=LWfE/lemokzoccNYexXV/nVOMp5WPuJI+W0knZ3lYGsiIZiCzoA9fVpnIWzxCMBqE3mFGupvpJ+Y5Ag+n4Ei+e6q0A+pfHJW0nxJuDwk0Nx7bAjFMgSyFBldUP4E6mBc85juC3SU4C4TSSmrrl6QbTphZLEX5YPQ5VW/Lp4DybO8oFN2ApgTCgHIZIWTVpoWZU9Vs9dNu1ztTAWLO3+MLZgTVpxaTqw7cbSjYo8SSI/uohfDYmkGgtJtUxlHgMu/rmUTDBFVQka7AiJpRCvHRPBsg+hw7NG7u5UcGxPb1HctPrsc7DWSPRgT+FRp1Q6wkWfxdGLagaNegzc2exLhoA==
+ bh=0jJ1221tKVunCESv1du32WcB+bJC4tZ6d5/Onqpe3VQ=;
+ b=sMIMarbrgd9Cl/Ef1Jh2C8wyTcUiN2l3J3SlluKnSIyq8AbViNT8PYI2sKNoYwk51BCS0mUb12toIrukTtZFEhS4NLSnbzncw+KOkhsLu6Ny1RppvU6uIU5+IGQLQXD5j96aEO4HZPgy4WahwHDzDnAWQirQflUANQaToqmm43+qrFwaZmFMeqHI1z4gEMi5envXjUF/+ZpFh5AeePry23AD1PmdplnRcBBGgfvMR6ooEI+oiZrGvURB7px1unLadLzowgfFIEYsJnc1JJ0D5NrrsLkdbxbL6yGNS8cSMMs47ad2aQ3xtyeezUy/5fsWEYTj6Uz3lnvNjM7X9TqNqw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=seco.com;
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
  by PAXPR03MB7649.eurprd03.prod.outlook.com (2603:10a6:102:1dc::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 16:46:30 +0000
+ 2022 16:46:31 +0000
 Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
  ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Thu, 18 Aug 2022
- 16:46:29 +0000
+ 16:46:31 +0000
 From:   Sean Anderson <sean.anderson@seco.com>
 To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -50,9 +50,9 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Alexandru Marginean <alexandru.marginean@nxp.com>,
         Sean Anderson <sean.anderson@seco.com>
-Subject: [PATCH net-next v4 02/10] net: phylink: Document MAC_(A)SYM_PAUSE
-Date:   Thu, 18 Aug 2022 12:46:08 -0400
-Message-Id: <20220818164616.2064242-3-sean.anderson@seco.com>
+Subject: [PATCH net-next v4 03/10] net: phylink: Export phylink_caps_to_linkmodes
+Date:   Thu, 18 Aug 2022 12:46:09 -0400
+Message-Id: <20220818164616.2064242-4-sean.anderson@seco.com>
 X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
 In-Reply-To: <20220818164616.2064242-1-sean.anderson@seco.com>
 References: <20220818164616.2064242-1-sean.anderson@seco.com>
@@ -63,52 +63,52 @@ X-ClientProxiedBy: MN2PR07CA0019.namprd07.prod.outlook.com
  (2603:10a6:10:7d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9c03eb5d-2112-47b9-fe64-08da8139332a
+X-MS-Office365-Filtering-Correlation-Id: 71392dc4-a816-4cbc-eeda-08da81393422
 X-MS-TrafficTypeDiagnostic: PAXPR03MB7649:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: AAIPDBfVGC/2gxoMG82hMbEJgqiVXH8o/r3r+VBihrgwrsB2SS55i73Tcm6vpYHBefRxXOutRA3C3toTovC1vdQF56oj8pxvo8p3xAaEyB0b/EPMNu5hZTMJKnIOkhf0i4B7qoPRGIqvry5K1CRmVRNL0vA3ubHBkmlvH/s39ZLGtNUQr/I8Cn1y/JWJjv2IF1+YGc+V9T1UNTFA3B72ukgu6TbpEaMaZoj+0zCrhLOvMd7fxorI1BqiZFVwzDZIacqzsGik5RQfwoLMOlKshbiuDtA+5aeIwddVaUokt+yQHDQxQhuQZLLLZpbXfMGBcDl/k/yNsQEycEdiaJZq/61sC74bcu8g1XLs7sXv+Rml263SjieC1NCN5HPy/SH6ltZNvt68Hh/fa4meIh9Hv5J/7KIjwXZ+Klq6qADsLCbzNwHIJMSGbLl4hME35lYGx3ziPPEzWPsD+ilt/JGcu3AGA012kq4wQDWvVjPHQ6nRVhtS7s4+8rqkjVxQ8a9ZjdGHcn0ZVH4Q7/4b0UVOj4xme/FeNb1GRaqPME6AKbxXGCYoLWNPBL1seJ9N37AgBr7GBo6mWiKCN28k4kk73Dj2/0wX0xZNwH9N0+X9y3o3Ej+53EUg0uL5YLE4K9cKwTIa6mhSoxQm+dXu9C3GGfIu4KDJMz9iOF+KMdOjp1uoUwoyX8bhpCFStdmDZJ9e8dT9DB4U2ocJ3sTBA628i+MDi1rY8RRiWIM0tDPbM4A8OGD3qS4dp5BGUYl3CONT
+X-Microsoft-Antispam-Message-Info: DhNh/lWdUPuqqJ/AKNqmv01V+9PGLhGfLBSyjaSVQaG1NxlhGO2VTZq+1yNpWHtuMc73pt/ijwNx/TRqSjdn4GAjTzbmNuZN0N7Gh/qyqyBNH9o2R8LlfyWgZaPf2KxOufZcg9y9yE4Yf0E2dPc/w3+hJN2QJ5sq+10NEkhfTYTTD/eMdYmN9eju714SKpTDqph2sB5LnaXFIs4K/ciO3yZ/os3uLsrZyXsJ1SP6QhB6t1mC8ZzpZ2oHqpDdJJd8LfA1mhOMf/DTSEtM77dqqhWt7gvmdBurVXOpbstvxpATg2BJNGfxTT3mxIDJXf+P1/l0FnTPw/HjDoVRusXe4UFMabohl645nkg7r62vsbC4YzVqrQsQmd/l9oj+hQ/El3y8y59OzYvb9oSxUiDZclF1luBkOcSOsWIJ7bcXof1nGAFY8xBmQP+EcDwawh8HJlxFjPnZlUswlvtTciXsZH2PlIxYA/DSiLshCHbfvzB6h53rfxQ1nU8aIwTWWx0acuQXEd286XraQlTUAFiw5fO4LGn3NMR3yzWZlj0h9jOsicYSGiTCuPP0HTuVLJKXQDDqRGbHv5Nziww3JuXRjtN2K5zVHm24AsY9y10jTPRErGlLGfDBz8FktrzEcZkokiLva7EX+7LByNP+hGzO27Dilzv6G6Vb0SouCEhbh30si4Dqsys+gYd5Qm+ZTurvLfnurnnH7Q/k7lnPXaLdmQ1c2GEtn87SJzuIHJ7jEycj1G4fIogEo2TH19r0jf/EHqVntiHViZgiwZP2cOVqig==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39850400004)(396003)(346002)(376002)(366004)(136003)(66476007)(66946007)(478600001)(66556008)(6486002)(8676002)(2906002)(41300700001)(107886003)(6512007)(86362001)(52116002)(4326008)(6666004)(186003)(1076003)(2616005)(7416002)(44832011)(5660300002)(26005)(8936002)(36756003)(54906003)(110136005)(6506007)(38350700002)(38100700002)(316002)(83380400001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DhXoJUBlT3eXA2SZqPEHvZHMzz82Fqx45MHaf6Nz9o8xMdlJpFNJOQohRRCI?=
- =?us-ascii?Q?yzyVcXrbbpJt5LoS3+bLYb7FwyNWZay25wJOqkzVKZDUXHUQc10rYvz99j6T?=
- =?us-ascii?Q?Ox/qhx/sk/XpBJBVRwE/HAPYaVv5rs6XGIIUuSndBEZVDzGDMdBIwmFmrf9h?=
- =?us-ascii?Q?IhCWYVsEB91FGYd0yoZtxkmXVE1Trti51BmHZdqvbhVsgJD1MDh1MLcV/6Dv?=
- =?us-ascii?Q?ho3J8S0LLL9vZH43PYh02YUn76kvuEZmcWkKCbu+4OFWciLFQRJ3PLdB6u5+?=
- =?us-ascii?Q?AljFleCtqDMtUS21TupalEZvQuRzoEjyaC3ZnQXAzWNwTBEzUK4EdbPUz5UT?=
- =?us-ascii?Q?iQpxnUS5K8xIv/bdRoPmMFqURHxVHBJqFJuHEnxaILnDcrGEOAR7kWdJd4w/?=
- =?us-ascii?Q?sg2Za57csSzYomfiFAjlMQLPUfkZYKTzrHTYLUDXGs93AJaIeJob51L6yox4?=
- =?us-ascii?Q?EA+JKBFheHJm2JDnHQV6NDTvKrOBOJwwXE/IBp3ou2jX+mspG1PQOft/HV8J?=
- =?us-ascii?Q?VBOM3djN/GozOTakj+1epLKXyX/DlA4DZImjcdKecqzgHe6zkt6msiVgMtIh?=
- =?us-ascii?Q?J/Esq3KO1mD9Z7RBGetkuWRQKbE1VXno4id4DjqWgGmiZoVmgx59tCs0XDZ2?=
- =?us-ascii?Q?V/KkIWE0nkYCLEQcuLQZQLXytr0jPJ7BcTPfd68v/TBk77hIISAuQxRHcUfh?=
- =?us-ascii?Q?CalJxHBB1cnvOoFZLM1ReCCeGrtR5yOTFOQepgjembjdvtYDuQnRg1e66eS/?=
- =?us-ascii?Q?pSsbSchKH1MJDogePSWYJpbK9KDOa5u1rhhilCcHhZ1n2VcAJSvPD5FPe+qL?=
- =?us-ascii?Q?EupMfJ5BD9OJScgyBMcnfysBIekrpG5AoWWHIiOoi/xN9kDbmj5ig0Bcd0bO?=
- =?us-ascii?Q?xTfXcFbI9AZqZz0B9oJbxqjUeb4lmIu0Ooo4H3ywQs2BLh5h4fEtRbJWTnVt?=
- =?us-ascii?Q?7SjPzIjSgKPB9RQN9cEaE6VXPeL5wkMPFUzFIK5/aOAC0OxdhekoqWSQwbi6?=
- =?us-ascii?Q?TbmJuEqINCVcq/TUPTpGdwFBwXZ4RvnbmSijiDuPwOOwYDyEMqBhWZU6s40X?=
- =?us-ascii?Q?7bDTo2n+c5Ug3j5DiorSLAjLYIrjnk6qHu1v6pwg7QDrmKoFJiCqrdpFg4dT?=
- =?us-ascii?Q?20ef7twARGPow3y4Zh7R5VN3Sc7fG2zlfi04Cv+7hLHTvSnIRjY37UeQI0LD?=
- =?us-ascii?Q?GkksBWEzOnt/2dBMTz2vsMApWvyBMbM3gQB7FhbsjR/erhGjKQBr3cBBobAK?=
- =?us-ascii?Q?zl6ey2vq2FsnRy4XfkFHwlDVAMrG82SS/nP67vRO9plDt0+2XpPhDMELUlPO?=
- =?us-ascii?Q?KMTgRwUTk/gNnUlSLSFUk6SfTp7awO6HMsbmYbZirHe5NUzuDE9n7mIFlWf4?=
- =?us-ascii?Q?4Ii+kxpsFssOcKjV5lLpkBIDk+JLo7jv6do4NvDpohaxj+ZQ7Tby7UubYiXf?=
- =?us-ascii?Q?IKywzGvLY7pG4vH2yd3j+HbwPzorwUXyq6Ta+0f9gS4VZGK7eODGIc15sQuW?=
- =?us-ascii?Q?kSIfQAXJcq1YpdNr+BYEspmGsYgzU028myftCmYFdpOVaSzHtJKIbQNpsLYC?=
- =?us-ascii?Q?Cd8sxg52d3LwbfQSzDaHvQHuO+PDWGvLJ8eFlDBPtcDYkqQMduFpabxGNrhz?=
- =?us-ascii?Q?/g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?og3wc0X4fDq/BmX3waPefDBTgJwLJyStT2dKkuUz4YFj2JpSRtjEbxVop76r?=
+ =?us-ascii?Q?4dnqx8qpSS1un4KNia56Ny4MZK7DOCwkGIMQl6Tj6N+t/R6W6XBNEWm4WILK?=
+ =?us-ascii?Q?DcPDl+k3odKHfpYH1b9g18PBwFhmRGZciQbIhO138jC/k7FHmf8nQsI/d5cI?=
+ =?us-ascii?Q?439yZQkuA9ptU0vL+25+n/NcilaDYJtzqZlbldIsGvnzNYhxu841S4A0NDBD?=
+ =?us-ascii?Q?Kfm4i9yomWPZCyzPv4GwNhWZ7j42W/p3FRKSqecPwtzErg0ZC8k8UeQPfeKw?=
+ =?us-ascii?Q?6BlUq6BhUArhTodWS/eTCn7UY9+l7CLrrwBGrhyBJNZHjObyJcgUB2VvNcre?=
+ =?us-ascii?Q?p6Q/xl2Uzk4iPg2hkzxkdR6Cr/fnB+brjrtAD4Io7y/x8Cu427gH5eFJeb9S?=
+ =?us-ascii?Q?/kr3U12jJZMdOLLbzeXwWYoeX7xgJLqGkQAcOwQdze4P29L9coM9/fgaHfor?=
+ =?us-ascii?Q?FAeIxRpGUEs3TyS4s8anu03Axb+0WJlJvPoLSIWeb4Qk+AsgFfQo40gr5IXt?=
+ =?us-ascii?Q?pJ9PSGfM1FlDBA2ZAHwzDC5yhTifkdGag2s9nggemfysSOfC3cMJIH/i05X7?=
+ =?us-ascii?Q?dJJz8xzlA2wYlHeQ0SIabimE2/4bQeSrpAu9gIcVmOjPfda7Wm7sPAQ/EA3C?=
+ =?us-ascii?Q?vEc6aN4QXQ575uQUyuCst7lDIJkkY0slMVoe6slFNU8t5fDOFZy4PGsSH3zn?=
+ =?us-ascii?Q?rCVB244Xjkc13Gh+ytR/XzDAj/jFhrqhBY5iEhYWSFO/lqrtMOmZjCikqufO?=
+ =?us-ascii?Q?Qd+GaQYx2JcqNilpMPRPhukyzWC3JXL54JDfJHLCs4BGZWeHQcWivVfMHjeP?=
+ =?us-ascii?Q?tA4nqgXY4eWyEKGa29B0zHWdRtbcqlI92ETw+AOTTvq3hN2B0gJejIYgwwev?=
+ =?us-ascii?Q?C4irhWz5sC/GKhTjrm14/w+kdknrFVByajhxlEgSz9fstW0GARJm1SfJra8E?=
+ =?us-ascii?Q?LIcSxj3Lavv/eHQ3OEBQ7fDbG4xL/iwfnPs7JUqg85wirAZjGDojM88zV8el?=
+ =?us-ascii?Q?yejAYp9Mn+sPtnev3BarjW/vSlKDifNwICwqliFIRyxUzkPnLeYfE9RHsjKL?=
+ =?us-ascii?Q?JrWgHH5ghEDNtIUCpRnfHLqE0+SAPi8pmSrtL/REo/zJ1kpw7JtPMhLv8eeW?=
+ =?us-ascii?Q?CICtJQVP/F/2yqEf2DdQNFNcx6Nyf3xhGOd6oALXxR6PwHHze9vMV+nPNqQg?=
+ =?us-ascii?Q?slbT3hStUwYWBGA9OI+93RINjQCv2LOY8xzZ0v7TOs/NlA94hL26/G8CMTHy?=
+ =?us-ascii?Q?5E9SASZg7P9eJ2B+ncaJQXsV9ynqqOj48e02PPXPI3hVJSG78QpufJ5U2miS?=
+ =?us-ascii?Q?dghX/Q0EZXObrpXynq3/a/S9pY5Udlms5cilxgg+zAcgjwmn1SwJvXgiO1Kq?=
+ =?us-ascii?Q?MyWRMh6hVRd0/VAVsnKIEYl9QZD1Dl5O1PIhomGx1XnLJIA+RfVr1GMy1uuW?=
+ =?us-ascii?Q?8itKRqkm+N7YRl3SsQe5vuln/2bOeu/29prvNfxxUgpA8t8We4osb1HC1FFj?=
+ =?us-ascii?Q?qa4907oOato83IeRKe3e3pYywAVNn7M7Q2lcND3+72qFnYnMGEZk/Bua6IrY?=
+ =?us-ascii?Q?WBFw1Bnsj+B82fi2v1Nvjf3jzdZ5Gx8uvsEO22FNe8RMeYyj1/WqMQSmqcNS?=
+ =?us-ascii?Q?Hg=3D=3D?=
 X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9c03eb5d-2112-47b9-fe64-08da8139332a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71392dc4-a816-4cbc-eeda-08da81393422
 X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:46:29.9014
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 16:46:31.6513
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fVVvo/v7KyrNj8y85NB3s04fiNdXf39rYhCP9Ji1gEfJq0Rb3IuMEvAZWkNxTmCkjNqlOyGwXfJnVfmPyMm4yQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: l/w9MdXoFa+1k3d+DX6S+e77U+aZavQYkH5ITrISfpQyLWQR7zCH9pbK84qnbZGu2URKPq1d/9d/qCgWXz8rPw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7649
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -120,48 +120,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This documents the possible MLO_PAUSE_* settings which can result from
-different combinations of MLO_(A)SYM_PAUSE. These are more-or-less a
-direct consequence of Table 28B-2.
+This function is convenient for MAC drivers. They can use it to add or
+remove particular link modes based on capabilities (such as if half
+duplex is not supported for a particular interface mode).
 
 Signed-off-by: Sean Anderson <sean.anderson@seco.com>
 ---
 
-(no changes since v3)
+(no changes since v1)
 
-Changes in v3:
-- New
+ drivers/net/phy/phylink.c | 12 ++++++++++--
+ include/linux/phylink.h   |  1 +
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
- include/linux/phylink.h | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
-
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index b08716fe22c1..51e66320526f 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -155,8 +155,15 @@ static const char *phylink_an_mode_str(unsigned int mode)
+ 	return mode < ARRAY_SIZE(modestr) ? modestr[mode] : "unknown";
+ }
+ 
+-static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
+-				      unsigned long caps)
++/**
++ * phylink_caps_to_linkmodes() - Convert capabilities to ethtool link modes
++ * @linkmodes: ethtool linkmode mask (must be already initialised)
++ * @caps: bitmask of MAC capabilities
++ *
++ * Set all possible pause, speed and duplex linkmodes in @linkmodes that are
++ * supported by the @caps. @linkmodes must have been initialised previously.
++ */
++void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps)
+ {
+ 	if (caps & MAC_SYM_PAUSE)
+ 		__set_bit(ETHTOOL_LINK_MODE_Pause_BIT, linkmodes);
+@@ -295,6 +302,7 @@ static void phylink_caps_to_linkmodes(unsigned long *linkmodes,
+ 		__set_bit(ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT, linkmodes);
+ 	}
+ }
++EXPORT_SYMBOL_GPL(phylink_caps_to_linkmodes);
+ 
+ /**
+  * phylink_get_linkmodes() - get acceptable link modes
 diff --git a/include/linux/phylink.h b/include/linux/phylink.h
-index 6d06896fc20d..9629bcd594b1 100644
+index 9629bcd594b1..2a6d2f7a7ebb 100644
 --- a/include/linux/phylink.h
 +++ b/include/linux/phylink.h
-@@ -21,6 +21,22 @@ enum {
- 	MLO_AN_FIXED,	/* Fixed-link mode */
- 	MLO_AN_INBAND,	/* In-band protocol */
+@@ -534,6 +534,7 @@ void pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
+ 		 phy_interface_t interface, int speed, int duplex);
+ #endif
  
-+	/* MAC_SYM_PAUSE and MAC_ASYM_PAUSE correspond to the PAUSE and
-+	 * ASM_DIR bits used in autonegotiation, respectively. See IEEE802.3
-+	 * Annex 28B for more information.
-+	 *
-+	 * The following table lists the values of MLO_PAUSE_* (aside from
-+	 * MLO_PAUSE_AN) which might be requested depending on the results of
-+	 * autonegotiation or user configuration:
-+	 *
-+	 * MAC_SYM_PAUSE MAC_ASYM_PAUSE Valid pause modes
-+	 * ============= ============== ==============================
-+	 *             0              0 MLO_PAUSE_NONE
-+	 *             0              1 MLO_PAUSE_NONE, MLO_PAUSE_TX
-+	 *             1              0 MLO_PAUSE_NONE, MLO_PAUSE_TXRX
-+	 *             1              1 MLO_PAUSE_NONE, MLO_PAUSE_TXRX,
-+	 *                              MLO_PAUSE_RX
-+	 */
- 	MAC_SYM_PAUSE	= BIT(0),
- 	MAC_ASYM_PAUSE	= BIT(1),
- 	MAC_10HD	= BIT(2),
++void phylink_caps_to_linkmodes(unsigned long *linkmodes, unsigned long caps);
+ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 			   unsigned long mac_capabilities);
+ void phylink_generic_validate(struct phylink_config *config,
 -- 
 2.35.1.1320.gc452695387.dirty
 
