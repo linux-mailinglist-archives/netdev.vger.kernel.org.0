@@ -2,52 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B4135988ED
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5B4D5988FA
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 18:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344793AbiHRQca (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 12:32:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42978 "EHLO
+        id S1344300AbiHRQfs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 12:35:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344789AbiHRQc3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:32:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42F286BD51;
-        Thu, 18 Aug 2022 09:32:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA581B82218;
-        Thu, 18 Aug 2022 16:32:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 639BBC433C1;
-        Thu, 18 Aug 2022 16:32:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660840345;
-        bh=H1xICkkfCV3ifkVZeMTkF+qq1abs3AkrI/EuWefH1D4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Bqzl3Q4YhBNFKeL+pZZHn09zV7Do/YjH90UAqmW2IyfAeZkKwupujJcXOCU169BHU
-         bvNDpFzwRuseWaSDqHGBAkef9Ac8H2gVE+wt3VXlGwfcyh9YB2tvlUVNij9DFNWNmP
-         ZMpvnvkDSSBxFlkHkPpsYpT/aAieT5c8nY+ZPkzGJ8PUq6BgrUz7Z6I9OhVqPGMA2n
-         5A8QU36+mJzlJAbdwYhao3Q2tjU54TemxJY1z6iGEawsE0TIe715xLRDJS6qzb4zG6
-         PyAAupK6y4DqlgzuJnzqbF4x+gvB6BqS9f2nvecKKB7epxQLDfNeJG7g4xcK8SwaUL
-         lLYXwKCj98ZHQ==
-Date:   Thu, 18 Aug 2022 09:32:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     "Denis V. Lunev" <den@virtuozzo.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com
-Subject: Re: [PATCH -next] net: neigh: use dev_kfree_skb_irq instead of
- kfree_skb()
-Message-ID: <20220818093224.2539d0bc@kernel.org>
-In-Reply-To: <79784952-0d15-8a4a-aa8d-590bc243ab5e@virtuozzo.com>
-References: <20220818043729.412753-1-yangyingliang@huawei.com>
-        <79784952-0d15-8a4a-aa8d-590bc243ab5e@virtuozzo.com>
+        with ESMTP id S1344846AbiHRQfe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 12:35:34 -0400
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F64AE9CD;
+        Thu, 18 Aug 2022 09:35:33 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id l5so1069278iln.8;
+        Thu, 18 Aug 2022 09:35:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=dpUR0Pq5ULK9T1MvsmZE3raG/5ZaZH6+6FeR01xKzAM=;
+        b=bZqUOfrOkhYvOhZHmmQ9UQG6om8GpjMxvXGp31zJyGPYe3C5VRtuRdYIhoyXfO3Bud
+         1o03BwUiNin66KApFdoLHP3NnfTqd/BXEVKvBoJFzEyyDpNhPUpM+a+BBqBsCitxkllb
+         xHrYaEiKpPq5E+ipbuvhkaLmGv0vHeGdRYnH9b0tVjf0QSEu+JmAKcdXZ5WTgzr43KfG
+         08SB9FP9MJj1fVEO3l51ZCGG+nG6PyE9IooHw0V3FonoB5r5EaLAwXthc626N631L0ry
+         6tZD3NBDa5RLy7ZNCWjPV4BqkRhPmIZREmvTufRTIOzvkg8rUiJQy7Y4Onqq9r+iy5k1
+         mLOw==
+X-Gm-Message-State: ACgBeo0ga0SMCJ4umkPfNKMmN2r2SUGZbrnINrODfCvIoXfL2CIvUTS9
+        IMyDzKreWuPsIrp3GDdQiw==
+X-Google-Smtp-Source: AA6agR64PPkwOMRBjTSEwEflXHP+b9rldLZWOBATVSWSzmYkuMbI4aUtc4rux4HeIUMqx5L+8QLs6g==
+X-Received: by 2002:a92:ad0d:0:b0:2e6:4294:bc45 with SMTP id w13-20020a92ad0d000000b002e64294bc45mr1886899ilh.278.1660840533156;
+        Thu, 18 Aug 2022 09:35:33 -0700 (PDT)
+Received: from robh.at.kernel.org ([2607:fb90:647:4ff2:3529:f8cd:d6cd:ac54])
+        by smtp.gmail.com with ESMTPSA id y27-20020a02731b000000b003435c6391ffsm767016jab.62.2022.08.18.09.35.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Aug 2022 09:35:32 -0700 (PDT)
+Received: (nullmailer pid 1994770 invoked by uid 1000);
+        Thu, 18 Aug 2022 16:35:27 -0000
+Date:   Thu, 18 Aug 2022 10:35:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     wei.fang@nxp.com
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH V3 net 1/2] dt-bindings: net: ar803x: add
+ disable-hibernation-mode propetry
+Message-ID: <20220818163527.GB1978870-robh@kernel.org>
+References: <20220818030054.1010660-1-wei.fang@nxp.com>
+ <20220818030054.1010660-2-wei.fang@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818030054.1010660-2-wei.fang@nxp.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,57 +66,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please put [PATCH net] as the tag for v2, this is a fix, not -next
-material.
+On Thu, Aug 18, 2022 at 11:00:53AM +0800, wei.fang@nxp.com wrote:
+> From: Wei Fang <wei.fang@nxp.com>
+> 
+> The hibernation mode of Atheros AR803x PHYs defaults to be
+> enabled after hardware reset. When the cable is unplugged,
+> the PHY will enter hibernation mode after about 10 seconds
+> and the PHY clocks will be stopped to save power.
+> However, some MACs need the phy output clock for proper
+> functioning of their logic. For instance, stmmac needs the
+> RX_CLK of PHY for software reset to complete.
+> Therefore, add a DT property to configure the PHY to disable
+> this hardware hibernation mode.
+> 
+> Signed-off-by: Wei Fang <wei.fang@nxp.com>
+> ---
+> V2 change:
+> 1. Add subject prefix.
+> 2. Modify the property name and description to make them clear.
+> V3 change:
+> According to Andrew's suggestion, remodify the description to
+> make it clear.
+> ---
+>  Documentation/devicetree/bindings/net/qca,ar803x.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 
-On Thu, 18 Aug 2022 11:00:13 +0200 Denis V. Lunev wrote:
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned long flags;
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct sk_buff *skb;
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct sk_buff_head tmp;
-
-reverse xmas tree, so tmp should be declared before the shorter lines
-
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 skb_queue_head_init(&tmp);
->=20
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_lock_irqsave(&list->lock=
-, flags);
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 skb =3D skb_peek(list);
-> @@ -318,12 +321,16 @@ static void pneigh_queue_purge(struct sk_buff_head=
-=20
-> *list, struct net *net)
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 struct sk_buff *skb_next =3D skb_peek_next(skb, list);
-
-while at it let's add an empty line here
-
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 if (net =3D=3D NULL || net =3D=3D dev_net(skb->dev)) {
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 __skb_un=
-link(skb, list);
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_put(skb->d=
-ev);
-> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 kfree_skb(skb);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 __skb_queue_ta=
-il(&tmp, skb);
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 }
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0 skb =3D skb_next;
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } while (skb !=3D NULL);
->  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 spin_unlock_irqrestore(&list-=
->lock, flags);
-> +
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 while ((skb =3D __skb_dequeue(&tmp)=
-) !=3D NULL) {
-
-No need to compare pointers to NULL
-
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 dev_put(skb->dev);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 kfree_skb(skb);
-> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+Reviewed-by: Rob Herring <robh@kernel.org>
