@@ -2,117 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5AB2F5990A3
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 387E05990AE
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 00:44:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243981AbiHRWkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 18:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36152 "EHLO
+        id S1343941AbiHRWm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 18:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241929AbiHRWkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:40:13 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 404D3D805C;
-        Thu, 18 Aug 2022 15:40:13 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-11c9af8dd3eso3032155fac.10;
-        Thu, 18 Aug 2022 15:40:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=2an3KXPew/OqEauIR1CsNmpNXfaK7XRjdWqKYm2SujE=;
-        b=cubs4ebu7YGHsevfT6xBOvrOySw1nCcX3bGMQVHcT8rRE3WAebeVaRfdHlcN/H0gAy
-         TTwmtKw/OWzPjCJGAf8z/sB9fcq5rEOsXZS3k74ZwAshP+3kGgVlLnIlU6zSZi82Ia2P
-         E+ofyozblVMipsx1CJbVno16Q2SRAGdpdY+j6dqhdBQZhYEEENG5iAe9OHOAgVhT5hy4
-         Xr0Idw3bkwRk0ZAdhcaJ6gfO7JMzD97vNrrF9CJ8ms2cUhNwjMzJJwGzqVDCdjKc44Aj
-         zqG9s9+6Yws2oncUeKrTX0JSW4qm7Nu1HYYKIHwl/+oCSi+gDFECvVGuy0V4+MRAQGvM
-         iZMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=2an3KXPew/OqEauIR1CsNmpNXfaK7XRjdWqKYm2SujE=;
-        b=CE4tmU22MoZp9CWACySkGAX7O2FDXmY2YJbHofqdy4fG/Qi+ULLemtj+DHTeZ1Qefk
-         eLpIZwf1g04a/OuMd2t5lKkwuNeiIDQygfk+owYVjgL3B1RbWMss1eTcDfS9BaTwTomH
-         UGjPtkk5EPu5wZaPOx/NEDFjk6X1U8u6AU8026e5TyBMqAl8ylcS0/0r/iSkLnxGA2mx
-         NlItmTd9U51BQUjM90IpyKTbUJB7/N/sDqujQcmwF8fiozPwaj0tmSofaSo6xKc2gFn1
-         EfRUWBo5fH5ngZHTu/5W2Fd2pUG67frP8iSA5/0UBNpPsQeb57HVF9VySx82pydntxGw
-         7PYw==
-X-Gm-Message-State: ACgBeo3ryUaqlIWNErZvhcfLrV6poyqyEDrSbeMTMYOmBXsPnnK/alA5
-        hPmOWWB9WWCg3DwdFVED9Jw=
-X-Google-Smtp-Source: AA6agR5sYonHELfFjG9sbNNFEDmx3kLjtWDYD+KlWZBQ8o4jYM/b2rhHvPGdD5xkOibnzoLDC/BUPQ==
-X-Received: by 2002:a05:6871:85:b0:fe:29a0:4a2c with SMTP id u5-20020a056871008500b000fe29a04a2cmr5495036oaa.249.1660862412137;
-        Thu, 18 Aug 2022 15:40:12 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id t27-20020a0568301e3b00b00636ed80eab8sm724802otr.4.2022.08.18.15.40.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 15:40:11 -0700 (PDT)
-Date:   Thu, 18 Aug 2022 15:38:00 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 2/5] cpumask: Introduce for_each_cpu_andnot()
-Message-ID: <Yv6/SAj6kQ/UIKvu@yury-laptop>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <20220817175812.671843-3-vschneid@redhat.com>
+        with ESMTP id S245337AbiHRWm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 18:42:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00842DC5D9;
+        Thu, 18 Aug 2022 15:42:54 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1oOoE0-0003vt-Ns; Fri, 19 Aug 2022 00:42:52 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     <netfilter-devel@vger.kernel.org>
+Cc:     ncardwell@google.com, Eric Dumazet <edumazet@google.com>,
+        <netdev@vger.kernel.org>, Florian Westphal <fw@strlen.de>
+Subject: [PATCH nf] netfilter: conntrack: work around exceeded receive window
+Date:   Fri, 19 Aug 2022 00:42:31 +0200
+Message-Id: <20220818224231.11583-1-fw@strlen.de>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220817175812.671843-3-vschneid@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 17, 2022 at 06:58:09PM +0100, Valentin Schneider wrote:
-> for_each_cpu_and() is very convenient as it saves having to allocate a
-> temporary cpumask to store the result of cpumask_and(). The same issue
-> applies to cpumask_andnot() which doesn't actually need temporary storage
-> for iteration purposes.
-> 
-> Following what has been done for for_each_cpu_and(), introduce
-> for_each_cpu_andnot().
-> 
-> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+When a TCP sends more bytes than allowed by the receive window, all future
+packets can be marked as invalid.
+This can clog up the conntrack table because of 5-day default timeout.
 
-I'm concerned that this series doesn't give us real examples and tests
-for the new API. If we take it as-is, we'll end up with a dead code for
-a while, quite probably for long.
+Sequence of packets:
+ 01 initiator > responder: [S], seq 171, win 5840, options [mss 1330,sackOK,TS val 63 ecr 0,nop,wscale 1]
+ 02 responder > initiator: [S.], seq 33211, ack 172, win 65535, options [mss 1460,sackOK,TS val 010 ecr 63,nop,wscale 8]
+ 03 initiator > responder: [.], ack 33212, win 2920, options [nop,nop,TS val 068 ecr 010], length 0
+ 04 initiator > responder: [P.], seq 172:240, ack 33212, win 2920, options [nop,nop,TS val 279 ecr 010], length 68
 
-Can you please submit a new code with a real application for the new API?
-Alternatively, you can rework some existing code.
+Window is 5840 starting from 33212 -> 39052.
 
-Briefly grepping, I found good candidate in a core code: __sched_core_flip(),
-and one candidate in arch code: arch/powerpc/kernel/smp.c: update_coregroup_mask.
-I believe there are much more.
+ 05 responder > initiator: [.], ack 240, win 256, options [nop,nop,TS val 872 ecr 279], length 0
+ 06 responder > initiator: [.], seq 33212:34530, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
 
-Regarding the test, I don't think it's strictly necessary to have it as soon as
-we'll have real users, but it's always good to backup with tests.
+This is fine, conntrack will flag the connection as having outstanding
+data (UNACKED), which lowers the conntrack timeout to 300s.
 
-Thanks,
-Yury
+ 07 responder > initiator: [.], seq 34530:35848, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
+ 08 responder > initiator: [.], seq 35848:37166, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
+ 09 responder > initiator: [.], seq 37166:38484, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
+ 10 responder > initiator: [.], seq 38484:39802, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
+
+Packet 10 is already sending more than permitted, but conntrack doesn't
+validate this (only seq is tested vs. maxend, not 'seq+len').
+
+38484 is acceptable, but only up to 39052, so this packet should
+not have been sent (or only 568 bytes, not 1318).
+
+At this point, connection is still in '300s' mode.
+
+Next packet however will get flagged:
+ 11 responder > initiator: [P.], seq 39802:40128, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 326
+
+nf_ct_proto_6: SEQ is over the upper bound (over the window of the receiver) .. LEN=378 .. SEQ=39802 ACK=240 ACK PSH ..
+
+Now, a couple of replies/acks comes in:
+
+ 12 initiator > responder: [.], ack 34530, win 4368,
+[.. irrelevant acks removed ]
+ 16 initiator > responder: [.], ack 39802, win 8712, options [nop,nop,TS val 296201291 ecr 2982371892], length 0
+
+This ack is significant -- this acks the last packet send by the
+responder that conntrack considered valid.
+
+This means that ack == td_end.  This will withdraw the
+'unacked data' flag, the connection moves back to the 5-day timeout
+of established conntracks.
+
+ 17 initiator > responder: ack 40128, win 10030, ...
+
+This packet is also flagged as invalid.
+
+Because conntrack only updates state based on packets that are
+considered valid, packet 11 'did not exist' and that gets us:
+
+nf_ct_proto_6: ACK is over upper bound 39803 (ACKed data not seen yet) .. SEQ=240 ACK=40128 WINDOW=10030 RES=0x00 ACK URG
+
+Because this received and processed by the endpoints, the conntrack entry
+remains in a bad state, no packets will ever be considered valid again:
+
+ 30 responder > initiator: [F.], seq 40432, ack 2045, win 391, ..
+ 31 initiator > responder: [.], ack 40433, win 11348, ..
+ 32 initiator > responder: [F.], seq 2045, ack 40433, win 11348 ..
+
+... all trigger 'ACK is over bound' test and we end up with
+non-early-evictable 5-day default timeout.
+
+NB: This patch triggers a bunch of checkpatch warnings because of silly
+indent.  I will resend the cleanup series linked below to reduce the
+indent level once this change has propagated to net-next.
+
+I could route the cleanup via nf but that causes extra backport work for
+stable maintainers.
+
+Link: https://lore.kernel.org/netfilter-devel/20220720175228.17880-1-fw@strlen.de/T/#mb1d7147d36294573cc4f81d00f9f8dadfdd06cd8
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/netfilter/nf_conntrack_proto_tcp.c | 31 ++++++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index a63b51dceaf2..a634c72b1ffc 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -655,6 +655,37 @@ static bool tcp_in_window(struct nf_conn *ct,
+ 		    tn->tcp_be_liberal)
+ 			res = true;
+ 		if (!res) {
++			bool seq_ok = before(seq, sender->td_maxend + 1);
++
++			if (!seq_ok) {
++				u32 overshot = end - sender->td_maxend + 1;
++				bool ack_ok;
++
++				ack_ok = after(sack, receiver->td_end - MAXACKWINDOW(sender) - 1);
++
++				if (in_recv_win &&
++				    ack_ok &&
++				    overshot <= receiver->td_maxwin &&
++				    before(sack, receiver->td_end + 1)) {
++					/* Work around TCPs that send more bytes than allowed by
++					 * the receive window.
++					 *
++					 * If the (marked as invalid) packet is allowed to pass by
++					 * the ruleset and the peer acks this data, then its possible
++					 * all future packets will trigger 'ACK is over upper bound' check.
++					 *
++					 * Thus if only the sequence check fails then do update td_end so
++					 * possible ACK for this data can update internal state.
++					 */
++					sender->td_end = end;
++					sender->flags |= IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED;
++
++					nf_ct_l4proto_log_invalid(skb, ct, hook_state,
++								  "%u bytes more than expected", overshot);
++					return res;
++				}
++			}
++
+ 			nf_ct_l4proto_log_invalid(skb, ct, hook_state,
+ 			"%s",
+ 			before(seq, sender->td_maxend + 1) ?
+-- 
+2.35.1
+
