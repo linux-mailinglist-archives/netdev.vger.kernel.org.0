@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BBF3597BEA
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:05:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A3F9597BE0
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 05:05:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242946AbiHRDBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 17 Aug 2022 23:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
+        id S242951AbiHRDBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 17 Aug 2022 23:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242930AbiHRDA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:00:57 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2054.outbound.protection.outlook.com [40.107.21.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5363A74CB;
-        Wed, 17 Aug 2022 20:00:56 -0700 (PDT)
+        with ESMTP id S242938AbiHRDBL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 17 Aug 2022 23:01:11 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2047.outbound.protection.outlook.com [40.107.21.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07715A7A8A;
+        Wed, 17 Aug 2022 20:01:03 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=km+PJ95VkyenNivIETBtRLjx7xXNKlk5iY1YSPuUcoHz6P4kw+HwK6sO3hB4mcZCbxY0OKA0wBJ1oY2CKRFBlM0WJdUZM/OJEHGAyNcM0NSJEF+0dYbCv/QrPiinKRl6ZqlLLYdh1rFxGJHdgrbbr/suWmNrN9xu5AU59gz0W9EjC4ZR86YvF9xEeHz3mlSqVlS5OASl0CyMOqFjHipSXOQTbcGUFpFus6l5JFWvtMUK8GGTHRtGPNZOHo8L784psoxKWBfO7af1HIBPxIqqKC1I0gJK97EoNLB85/I6amW4OIOJxiLXQnO7l/08k1Xbo1L6bkqRUZfcEdDEIAjp/w==
+ b=Az1OP6I+U9e9yg1RJJzslRnf8FnXHvK4cNl5NI8tnn12/C5YeUu2WgpIiC8/gcqsA3g27p1AMhoPwLYC2vFkCoinrTbmIfXchrXdaYljPUnRvnMoQnxdIoF7R1gpVpnYomOk9pILOihTX2LFcoemiHhg2dWq1Y+HH5ckOPJHxQTWRnquq9pwL71fIANejQ2DCbDCb3AEDeZ24b5M4SoXT2yLjQd6/LK47M55XdqOs2Eg5nN7oI8ZcFqPLr9YXQ7VXeAq83Q3zKScATM7EkOcOxE/0/LzFrPljMJB38WBbROse4W4jfGfK+1Sn2TlS/4PhdAPdKBgQhro5kNyvZgNLA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wsiiVW89XoQLMq5HgXUMki4nZjRqP/+iSXzWB+zkUHc=;
- b=OhxU8L05t+mSL1fwp+8Ipdw2P+3gVpOIE733nptY8WDCEgUnrpe8LVIOv9UPH+1HmqaevI1LrCTOdXmAthir/Lb1kW1kpPiEIxpdz1byVgtt+MB10HR1BoebuNQLabcuFvRxZEZnX4YNC9qzGq7vUS2QHtX+GgLP0snPdcPsbPrYazqqMhknU6scgp6k+Ony+4D5Ysh7YeWF/0f6vqLYvEOWwP1c2B2l8BrPZA9o42PMFmXsjLzpo33XsdmIW0peaTV9kf839X36Yw+tLkA2tnBRUIXuTKkfnnL20cYNYuKe4Cq/SjxOTarbJDzDMDi/AH7qzoVzmpBha3DHOmycVw==
+ bh=zVpWDT/kQ6DaYd8fFWFppvRa9MNAhIH2N4AhUaFN1lE=;
+ b=R0qzhBfkMdmf624BJK5ffowgQfAyzY5tb//MURzTyJvff0HRAYr/CYQSR36axco1TF+Ubs/qixab35EkagdeXW7G0xyfreVfzynor7nX2MrjunSFplKzvRdlpmWd3l0rgHGn0PjtxgMbBs5GxmznuDfPUbqLyARHZvqf3Fp73D0tev2e4IIKs2ihSqGSOp6f1EvvhlOSSUo0+R6i16xaqzrBDcTNha9roskaaoZdVJtFCCyDyTfDTHixULod28iYzI379quabPlgL64VyBXt9lZbMW7xEsS5EoOYkgLRzeEyXiFFXu8F3M3OQ0+g05jPxWFFtoFRIJsF2sWMQrqKdw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wsiiVW89XoQLMq5HgXUMki4nZjRqP/+iSXzWB+zkUHc=;
- b=l0sPm6nIlsj/DnyvdtWbFoHK6gQlQ37eQ5oaI5+R/FCSMlHrwi9XxxeBvSL9tSfyQTJ5VE3pPkHOfHA96yfV0QBVBlpFnYBGb9u/rMgkukehKZ2Jwsm5e2jhCrvuOmDjyp5LxAkkLVvrWNaS5uARx5EA7laYPuhWPbuxc748AE4=
+ bh=zVpWDT/kQ6DaYd8fFWFppvRa9MNAhIH2N4AhUaFN1lE=;
+ b=oWcrgWbBotQyU3o8ZzILMYMOdYHDtiTtozaBziN0quWKKepvNOhPhzCStiRkTMuylZMDZxWHqad02CkY9qzrdlD42mVVdi3do9wkmZotYRQfDcBgtL1mb+ELNwR5MXxdq1LfWHIf0Da1fhLpiwjN6doBLYWWDi7vx7kDzIv+TGs=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
  by VI1PR04MB4637.eurprd04.prod.outlook.com (2603:10a6:803:70::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 03:00:54 +0000
+ 2022 03:01:00 +0000
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::5598:eebf:2288:f279]) by DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::5598:eebf:2288:f279%9]) with mapi id 15.20.5525.010; Thu, 18 Aug 2022
- 03:00:54 +0000
+ 03:01:00 +0000
 From:   wei.fang@nxp.com
 To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
@@ -46,9 +46,9 @@ To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
         krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V3 net 1/2] dt-bindings: net: ar803x: add disable-hibernation-mode propetry
-Date:   Thu, 18 Aug 2022 11:00:53 +0800
-Message-Id: <20220818030054.1010660-2-wei.fang@nxp.com>
+Subject: [PATCH V3 net 2/2] net: phy: at803x: add disable hibernation mode support
+Date:   Thu, 18 Aug 2022 11:00:54 +0800
+Message-Id: <20220818030054.1010660-3-wei.fang@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220818030054.1010660-1-wei.fang@nxp.com>
 References: <20220818030054.1010660-1-wei.fang@nxp.com>
@@ -59,51 +59,51 @@ X-ClientProxiedBy: SI2PR01CA0038.apcprd01.prod.exchangelabs.com
  (2603:10a6:10:24b::13)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 642a98ae-74e0-419a-114e-08da80c5dd9a
+X-MS-Office365-Filtering-Correlation-Id: 52607a28-3295-4507-5a2c-08da80c5e15d
 X-MS-TrafficTypeDiagnostic: VI1PR04MB4637:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pcpCXmZDz2g7e83dGGBZ3aY2aZcECwjSQdoWB5J2e2vBW4kF3+B5Z2jApNMLb7aZ/YdEDW3QD9449pF59sv24ZSCP7g92Ry8TEgTvDO96G0w2HeviIo2eYBj6MXoRkAGW5ISqqLKbDL8NJakFXxfD3uM9GI/ekD5AyLIWxNQvH6y4JgtIrhu3i7OcixpHrb9tmmp2GP9fUgqtl1VZ1y4iTV2UQbISTm0PblbFidJs3KLu0OE7CQgRQOu8tj+FIGgK+1J5gkrnR9+7yP7AOZa5S/1z6F+uTWolB5mEMy5L1Zty9ufsbKiwKDxsGKXKBiC49mzfamza/wDU2iG8350TSdRDKv0SHbCAwU3Y+2ftJJj1wZmcgHDQzgMCQ5o/4znSb+yp5inz0H6arvnDAlp3oiVHatLSwiaeFyfeyNU92SoN0l8c/7A982AtkJdNM/A9SoATdtWuujFn9dMTLs+AkVczlebxBoVXFj6DZbcbW02IPZhEcLgnnvTMbdJTDjtq95zuE47gR1BUvihpnAC0Gn5PLt9Slqoi6McPZXC7VanGm+Ske8ndSuHFIGrxEbT/mMawL0xA10UPYtbrWPYIeOn9OJsIQtywnxDpU0oWdPlOa1a6A+kpomyyPcWPS9gm+S9y3kHKaUoamwVv3hvmC5rGByZmeDTIyVS9FsS7ZvFldZRH36IEH5A3Ri4Ys8fYh98VBcKZzYgkwk5ZgvCVpAEBjX7F24vBe2yUbPyEswhKhe260O/P4gxwYjOWfs/d7eR1jBVcjthKKVhXp1VaA6eCgVps8jsS8qajxXTvQ0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(39860400002)(136003)(396003)(83380400001)(52116002)(6512007)(6506007)(26005)(2616005)(1076003)(9686003)(186003)(38350700002)(38100700002)(66556008)(7416002)(8936002)(5660300002)(8676002)(66946007)(66476007)(2906002)(478600001)(6486002)(41300700001)(316002)(921005)(86362001)(36756003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GofHPRwQn0qJdWlzFSZdw1/51x0/s0Taz0UhL4dHqu8GTmnYRrs1XCQK1iKDbY6SiIXmr5zvgnM8wmeXuFTRx7XVlTbkfV37ZXaJ4VAOP3ruKs+XwKl/sPL2vpgvpADT/gjwwJrqUZkXMox36omJEsbcHTLDudTWIaW0octT8gl+MzwjLi63JpEvFDSBHZOKZJPQeJGKP0xLl69VBbbxg5f3WMDrAF/xQx5yLZR16N305wUSMOQsmEb/vJVU1nAmq0edF7gACNkNmIkl7AgQ/FX0GMCHZqMoopfvnlnteDHIQDMGH6Z329XjUBOl4m1DzSSuGBh1Bwq+OFXpoQLWtE10lWkNFX4n73XRJkrwL44gke0t2n6TTrdI+JDhzorFVuWddbjtGZD7//iB5qJwL4BWfDnhn4GfDeF/60PXwWvsKEYBa96VYXGi1DTSdhurp+tgfCPxOvJoxyEMnNjvft2hbwpW52Wd2qmAqJTdkXNdlShBnNg78naloGOj1GPN5mRR3e+3R7ofJ5gyVIzGzYi5fs+QJKoQpivTXZj8pTZN08X9PwC+APgcLsx9CCUxuHou+ZDDld43PyeIACGFFpjc3vtdtFkRNLHDvykP2lcCMlUvMhvPOShfIh6lJNVR+YkKrb1o7o3u2qYJfK5At0L0x79fULuC3knf0DP6sslqZ/ZEUTEDwb+K/68WRoXESpWeWIczwlKwX7urEYJ7O8VYfQttOfNu+mnt6i3vdEzIn5Ct8pp1BKGvxApwN8OLu7k34cHQRCSZQ4rc6zUZ4AGp1IzCEdSI70Sb9BtWW+A=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(366004)(39860400002)(136003)(396003)(83380400001)(52116002)(6512007)(6506007)(26005)(2616005)(1076003)(9686003)(186003)(38350700002)(38100700002)(66556008)(7416002)(8936002)(5660300002)(8676002)(66946007)(66476007)(2906002)(6666004)(478600001)(6486002)(41300700001)(316002)(921005)(86362001)(36756003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ntjZP6mE+d4wLo45p/OryiI9dReXkCSa5vv0ZyB0ABWPVGSmbnFVa6eH9/V?=
- =?us-ascii?Q?r7ywB46bfI+8CsMB2XGBAENaFOFB/g8GaFcwgJgrDnamdY+2gWUzVVNdHrWu?=
- =?us-ascii?Q?t5aZVOViejbJLVM93qePYg4BH7xix6jLNPNGLUSQodz82q4ZFYvObByUSCo1?=
- =?us-ascii?Q?0NwkkNPi1xYlpdz25wVwDEdXmpa8FtBGNCLzVfsXDXQHbJeCsiXu7RqYEeNT?=
- =?us-ascii?Q?KQjVgwIQfEuMRw1Vn38fUZGfqZ21zlCRqy4zugTdxE/FTWybXeK++xDrnMCZ?=
- =?us-ascii?Q?pq3zLoLbR7UjUsohQGerlndeVT/I2CvMcAz/2rH0sQPYg43e5JoPmhAvD9uo?=
- =?us-ascii?Q?p0PeNXpGhs8vbvx+KaDy25C0fI/P57YjadXGThx0KPMSbTMnCPmGuO/Jar+W?=
- =?us-ascii?Q?kLaqYMTIFyAkfcDYIPtHR4j9Xxw9gj+cYzc4bjZuIT9Y0BEPSh96BeZnTqqL?=
- =?us-ascii?Q?0fiX3PrhZ6gIvGb9fI1UwdQSUFD2HoIlds42Br4bPnABhQ2NPnoU0NOs2Jc0?=
- =?us-ascii?Q?rxZpewWPuY4WLeaoOY1VyxjuX0nHm5ObxdClUH2VYvBfFJk4IdPB9/rnYccB?=
- =?us-ascii?Q?4T3oKMd8DNjhnuoAiYbZ8NqQbGSO6MFGbGqpApTNdUSSameXBjHbEEnnBr8C?=
- =?us-ascii?Q?Ga6QjWFwE6U4R8+ucp0rpGDXcBNBZnZHRunCPc8XrZTCnLcqnLOtQ84ldZS0?=
- =?us-ascii?Q?j1OY2c8jcn6MNaTGLih6OPPX+PzE13MFasuZ6mU/z1dbxc6hwOI2gcOQMVEz?=
- =?us-ascii?Q?KmjV0SA0utoslH2wz/OchTzGZzElPTp6ZkNu1ONnjEs2FpXZxXdsvqYa0vza?=
- =?us-ascii?Q?V2V1hIq6iStMl/hUF8TwbzUZPZ1IaPoYQg76cGskNtzO82HkChZgdulUQTit?=
- =?us-ascii?Q?2cDHHik8HuaWgyRBI9YLcO+jdOR6DfX6cpdvFHjTiIqQrQodKVWO+XFUgvXy?=
- =?us-ascii?Q?p+UsTX/lwfoMaZeNy233e8LqBc02AT4K/P/UjhWrRd7egwEdqjDjuP5weGVK?=
- =?us-ascii?Q?Ree9CB7tcJY9+Eb8CLVvoJiuuGrqvhW99G4xSDhHtToW0kGUyn/lgyLq+cIh?=
- =?us-ascii?Q?9rpXBLBRgdAhoxM8tMo1gOijJ9BGkYPu41cDqw4B+8stXDXIlby5o5UDmLiF?=
- =?us-ascii?Q?tA+hLht6oM8BLet3mrhfAWrIPduqZRNTvq/wPwG3U/ada/pH+M1VSUFbf5uD?=
- =?us-ascii?Q?wyywHFzeruPdawv3VtE16k/4Q2fs/uEzrJOjgED9nEm/CN/HZ79KIntE6HVw?=
- =?us-ascii?Q?CTradmUPVWoWafh9EXzlnPYitApEYxfwULuLRnTvCIF1kpWYMh42VdJiQXvc?=
- =?us-ascii?Q?4cositlAo5EUxukyDIFyunGmbIpLYEwnXBSNqt8bvfkLhL3nuRKqYZ4cjSHe?=
- =?us-ascii?Q?wWgTPQDRoRSfdS5awcu1qsZ1V+5r0Q7VqPtcyvaEDkZiRo7X/YEce2PHUM2/?=
- =?us-ascii?Q?epD8M+oAkL3GLBHiRyF5nbG5ccV8jxujMibN92S7gkDY05VAdxXEJn5cYTq6?=
- =?us-ascii?Q?e7NEmU+IyCAiYZqWsi7C4fyzbE7ghiPoop89KdzrR3w4Qjh7xF1AQg6Nt/zZ?=
- =?us-ascii?Q?oR6SGTdTtGoBqFX8rQtgHsDJ+5DI5PB3Y4xTXkd4?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?tLxcUfBZazrpjPttVOWGq1bAZpVNJO+dtRv8DA5Qq5e41WZDNqc/eO0vdaez?=
+ =?us-ascii?Q?6EhuFQqRkfnWwOcbvc31H6kGr3PSuoZiaXiPzoIUDimqhjY2L4YCiAOjj3gC?=
+ =?us-ascii?Q?hpKn0BxPKLHMU9UuzIGP2x9TqlZs+HieNDB8V/YfAo6cZUQ7WE2XsRHRgPj+?=
+ =?us-ascii?Q?R8pXwOs9ZssbTMghKPtg/A4LnT5q6RfeAStiWvXqk+ZPokyT/B4VZi+FittD?=
+ =?us-ascii?Q?PGYIYq48hVQcO0O/glpC0UbvTh1+26zVNF382ae2NhrF9RIgUvoXYeVRScGp?=
+ =?us-ascii?Q?6kf0JXpxGi/bKL6C5xkBJwgcfLKTXspytgyab5hi3rsz69IqJUKXmVvu/BYD?=
+ =?us-ascii?Q?uKW90Z4d0nhSDAh/dTDVBwAEDHR6n711T9VsSTEU3t6NnZIrd7EbamSVRyAc?=
+ =?us-ascii?Q?Dz+Y1PrZTdKjmtGx/Cp7e4RYLY9t1IBCbApi7BqwRKHMY4yLGBQR0LhWlYqT?=
+ =?us-ascii?Q?lEiN7pVPOYd2baJuDMZj9yDt3yCkDmnoCuEPlUnFwXXaVFlJPkpuLQIQT99Z?=
+ =?us-ascii?Q?Ws2gnBuEEW1hTTM/YAqJdBYCT/xGXQDVBwiZPhb4wVFXscRSnVYpnPxln2XE?=
+ =?us-ascii?Q?V247cltkPVmIpsQaQJ5MYLQ9gMp8+lVWxhjd/fu6oQRYWbAgd++IEq2+Rxi1?=
+ =?us-ascii?Q?usQeWLUYXv8CvnzFNusOjL//VujYg2NJZ6sbBSwhrlbmBwVkszkRSMcJFrTf?=
+ =?us-ascii?Q?sUGW4cCOLRR8BRIR4chZ6ye7n5lkiDN+XvjCfG9b0wwhNsvEq9UH/rbeY1Mp?=
+ =?us-ascii?Q?xDF05bHPB16xLwaNmoMPZlLybuTerQmngDZ8YWV40B4J06GJHaAivWpnU4a2?=
+ =?us-ascii?Q?mhIcPQJ8FS0t2UtRVJi3boQ44YO8E5BVEibbRyK/OuRc2fExN60PsbkbnIvb?=
+ =?us-ascii?Q?qyJ5UEjN1a+7ajr2aFfS1KMpL/EMHh+ZJkhd4el8dDDFLiS05705OPN+EY2A?=
+ =?us-ascii?Q?/tJHoEX1dg4SJzEAjrUq3Q/BN8H3zbZY/lxEbDd/rkdOBhYflOCFCwqGkt+h?=
+ =?us-ascii?Q?iMmTx5meyXtkNbjLUaMZwYFhBxcv871DqfP0OodDkSy3xWOej9JZL9yTuMPi?=
+ =?us-ascii?Q?llwfn8tQ+m2xKFSPsgaIppHQGv6RuXmFcPkHLbpgFyFUiORyJd8d1gn5QpAg?=
+ =?us-ascii?Q?6Km1GYExeUOTCBx3XLCiCflG2kkPi6JSCdyRcL6VpvrdS2A3x4CRC+palc/q?=
+ =?us-ascii?Q?eb5fP79G82IQEMoxnvRXTPpmPAS989EZ6yWebnbEwrsVbx6dTsgqJ/xKfJjW?=
+ =?us-ascii?Q?BiMpetrxpigkFC+VHwOE4LnvUjVGknApn7m8PCntnEn9o7i8iktJIc59LnUt?=
+ =?us-ascii?Q?ZKbMDZPqoOQt+7UlnIyPPcviMqYisQN6n8FCXwh3VlVJTpS6EBj2Zt9pcoDC?=
+ =?us-ascii?Q?5RZbK7U3JDlrxR5LBy/QRjFOf2s1/zoPtchO3rE76K/sskCQ7fRzkOewAxMK?=
+ =?us-ascii?Q?fY+FdSM3EDsawNEhLOCudY8EQe6oRpGSLl2d5Lun3cB6euOd2UNVYTyyRVFk?=
+ =?us-ascii?Q?OvQthveIJ7HTomxpYqj+WB6CkTLXhAGIUMTs7qixldBnXHhxbmZMaP4QEK9B?=
+ =?us-ascii?Q?exCepC7sMRqvMu6cccpM57KedYdy7MNpXI80R1kF?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 642a98ae-74e0-419a-114e-08da80c5dd9a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 52607a28-3295-4507-5a2c-08da80c5e15d
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 03:00:54.2526
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 03:01:00.5813
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: a3WCQ6OgfnfEz+3a6rhToc4xq+Ahe4zCpIoIvfUnMG+V0Ky6kqFYgpRnXPSKrDy/k3y4wNGK5/lIR5Q5jE74Og==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6DXD0Jvyoy5cLCRk7HKtjT0xdMPGRko1JvhfsDmRMVOqODzrhFNkNXep9rP6U1miihudu+KrYnSApiLLvWqHNw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4637
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -117,47 +117,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wei Fang <wei.fang@nxp.com>
 
-The hibernation mode of Atheros AR803x PHYs defaults to be
-enabled after hardware reset. When the cable is unplugged,
-the PHY will enter hibernation mode after about 10 seconds
-and the PHY clocks will be stopped to save power.
-However, some MACs need the phy output clock for proper
-functioning of their logic. For instance, stmmac needs the
-RX_CLK of PHY for software reset to complete.
-Therefore, add a DT property to configure the PHY to disable
-this hardware hibernation mode.
+When the cable is unplugged, the Atheros AR803x PHYs will enter
+hibernation mode after about 10 seconds if the hibernation mode
+is enabled and will not provide any clock to the MAC. But for
+some MACs, this feature might cause unexpected issues due to the
+logic of MACs.
+Taking SYNP MAC (stmmac) as an example, if the cable is unplugged
+and the "eth0" interface is down, the AR803x PHY will enter
+hibernation mode. Then perform the "ifconfig eth0 up" operation,
+the stmmac can't be able to complete the software reset operation
+and fail to init it's own DMA. Therefore, the "eth0" interface is
+failed to ifconfig up. Why does it cause this issue? The truth is
+that the software reset operation of the stmmac is designed to
+depend on the RX_CLK of PHY.
+So, this patch offers an option for the user to determine whether
+to disable the hibernation mode of AR803x PHYs.
 
 Signed-off-by: Wei Fang <wei.fang@nxp.com>
 ---
 V2 change:
-1. Add subject prefix.
-2. Modify the property name and description to make them clear.
+Modify the property name and the function name to make them
+more clear.
 V3 change:
-According to Andrew's suggestion, remodify the description to
-make it clear.
+No change.
 ---
- Documentation/devicetree/bindings/net/qca,ar803x.yaml | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/net/phy/at803x.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/qca,ar803x.yaml b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
-index b3d4013b7ca6..161d28919316 100644
---- a/Documentation/devicetree/bindings/net/qca,ar803x.yaml
-+++ b/Documentation/devicetree/bindings/net/qca,ar803x.yaml
-@@ -40,6 +40,14 @@ properties:
-       Only supported on the AR8031.
-     type: boolean
+diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+index 59fe356942b5..11ebd59bf2eb 100644
+--- a/drivers/net/phy/at803x.c
++++ b/drivers/net/phy/at803x.c
+@@ -115,6 +115,7 @@
+ #define AT803X_DEBUG_REG_HIB_CTRL		0x0b
+ #define   AT803X_DEBUG_HIB_CTRL_SEL_RST_80U	BIT(10)
+ #define   AT803X_DEBUG_HIB_CTRL_EN_ANY_CHANGE	BIT(13)
++#define   AT803X_DEBUG_HIB_CTRL_PS_HIB_EN	BIT(15)
  
-+  qca,disable-hibernation-mode:
-+    description: |
-+      Disable Atheros AR803X PHYs hibernation mode. If present, indicates
-+      that the hardware of PHY will not enter power saving mode when the
-+      cable is disconnected. And the RX_CLK always keeps outputting a
-+      valid clock.
-+    type: boolean
+ #define AT803X_DEBUG_REG_3C			0x3C
+ 
+@@ -192,6 +193,9 @@
+ #define AT803X_KEEP_PLL_ENABLED			BIT(0)
+ #define AT803X_DISABLE_SMARTEEE			BIT(1)
+ 
++/* disable hibernation mode */
++#define AT803X_DISABLE_HIBERNATION_MODE		BIT(2)
 +
-   qca,smarteee-tw-us-100m:
-     description: EEE Tw parameter for 100M links.
-     $ref: /schemas/types.yaml#/definitions/uint32
+ /* ADC threshold */
+ #define QCA808X_PHY_DEBUG_ADC_THRESHOLD		0x2c80
+ #define QCA808X_ADC_THRESHOLD_MASK		GENMASK(7, 0)
+@@ -730,6 +734,9 @@ static int at803x_parse_dt(struct phy_device *phydev)
+ 	if (of_property_read_bool(node, "qca,disable-smarteee"))
+ 		priv->flags |= AT803X_DISABLE_SMARTEEE;
+ 
++	if (of_property_read_bool(node, "qca,disable-hibernation-mode"))
++		priv->flags |= AT803X_DISABLE_HIBERNATION_MODE;
++
+ 	if (!of_property_read_u32(node, "qca,smarteee-tw-us-1g", &tw)) {
+ 		if (!tw || tw > 255) {
+ 			phydev_err(phydev, "invalid qca,smarteee-tw-us-1g\n");
+@@ -999,6 +1006,20 @@ static int at8031_pll_config(struct phy_device *phydev)
+ 					     AT803X_DEBUG_PLL_ON, 0);
+ }
+ 
++static int at803x_hibernation_mode_config(struct phy_device *phydev)
++{
++	struct at803x_priv *priv = phydev->priv;
++
++	/* The default after hardware reset is hibernation mode enabled. After
++	 * software reset, the value is retained.
++	 */
++	if (!(priv->flags & AT803X_DISABLE_HIBERNATION_MODE))
++		return 0;
++
++	return at803x_debug_reg_mask(phydev, AT803X_DEBUG_REG_HIB_CTRL,
++					 AT803X_DEBUG_HIB_CTRL_PS_HIB_EN, 0);
++}
++
+ static int at803x_config_init(struct phy_device *phydev)
+ {
+ 	struct at803x_priv *priv = phydev->priv;
+@@ -1051,6 +1072,10 @@ static int at803x_config_init(struct phy_device *phydev)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = at803x_hibernation_mode_config(phydev);
++	if (ret < 0)
++		return ret;
++
+ 	/* Ar803x extended next page bit is enabled by default. Cisco
+ 	 * multigig switches read this bit and attempt to negotiate 10Gbps
+ 	 * rates even if the next page bit is disabled. This is incorrect
 -- 
 2.25.1
 
