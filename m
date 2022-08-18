@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F4040598637
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:43:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5395059863F
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 16:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245603AbiHROna (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 10:43:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42550 "EHLO
+        id S245406AbiHROog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 10:44:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245095AbiHROn2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:43:28 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 657DA55A9
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 07:43:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660833806; x=1692369806;
-  h=date:from:to:cc:subject:in-reply-to:message-id:
-   references:mime-version;
-  bh=JzUFa9YldVMdLaPygK6tHVrioF1m7gNGQI7xZePx82M=;
-  b=SnbEwaDor/79KEUbGh/U4zc0BCW5VQeqeWs5CL7oIOWYz5ojQa4zIJN2
-   WCO5T2VRKi6ZF+jnV1RDuFxS5B1zxVow2VOWtjVyEJefpT9HIkm3RndY1
-   jYhTYduWXXKN8X7EKG2fv7ChJVuVPd5DZ4YDJjsehiwECW+aGsSTSWsmh
-   X3PB7TPjlmlBQ79mViZtm6uTwdpQkUamXZdMuc2NZXCRN2Dv0et3W5+TZ
-   Jw/nFFUmgHGJK9ybyUkRfE2LQSTX9ADe7Zif3ZjAJ4ox7UoSlPdG81/Ey
-   v3CidZMxgRV6yECKo60f0a/oNiQtcNZnbG2po0GPFgNdhR3St/D6f5nku
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="292771538"
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="292771538"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:43:25 -0700
-X-IronPort-AV: E=Sophos;i="5.93,246,1654585200"; 
-   d="scan'208";a="668131283"
-Received: from dursu-mobl1.ger.corp.intel.com ([10.249.42.244])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 07:43:22 -0700
-Date:   Thu, 18 Aug 2022 17:43:20 +0300 (EEST)
-From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
-To:     m.chetan.kumar@intel.com
-cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
-        loic.poulain@linaro.org, krishna.c.sudi@intel.com,
-        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-Subject: Re: [PATCH net-next 5/5] net: wwan: t7xx: Devlink documentation
-In-Reply-To: <20220816042417.2416988-1-m.chetan.kumar@intel.com>
-Message-ID: <fd6e3c45-e074-122b-53c7-d622a337fbd@linux.intel.com>
-References: <20220816042417.2416988-1-m.chetan.kumar@intel.com>
+        with ESMTP id S240240AbiHROof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 10:44:35 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAF130F53;
+        Thu, 18 Aug 2022 07:44:30 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 7702922239;
+        Thu, 18 Aug 2022 16:44:28 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1660833868;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o8TzLOIHkA9jPFBeoLG9hbRTDArAPujE1v/yZsjtRfM=;
+        b=Gw8z/bD59+WbiyvzE+lONb3CQRcZyAosv/fDEYz5rgDJ1H9LmKroyyEnjiJuTzTWwtUcY8
+        2LkwFUrg2vAnFVQ8qndULgAtR/MqFzKxB9U7V2V5smh8MtNbaoqSHantbVV0YdgyE0Ih9D
+        69DxV0pIo86vRtx//sIros1E5u/SBH8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Spam-Status: No, score=-7.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 18 Aug 2022 16:44:28 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH devicetree 2/3] arm64: dts: ls1028a: mark enetc port 3 as
+ a DSA master too
+In-Reply-To: <20220818140519.2767771-3-vladimir.oltean@nxp.com>
+References: <20220818140519.2767771-1-vladimir.oltean@nxp.com>
+ <20220818140519.2767771-3-vladimir.oltean@nxp.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <f646670f8ebc64cf1a3080330d54d733@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,35 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 16 Aug 2022, m.chetan.kumar@intel.com wrote:
-
-> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Am 2022-08-18 16:05, schrieb Vladimir Oltean:
+> The LS1028A switch has 2 internal links to the ENETC controller.
 > 
-> Document the t7xx devlink commands usage for fw flashing &
-> coredump collection.
+> With DSA's ability to support multiple CPU ports, we should mark both
+> ENETC ports as DSA masters.
 > 
-> Refer to t7xx.rst file for details.
-> 
-> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
+>  arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+> b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+> index 3da105119d82..455778936899 100644
+> --- a/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a.dtsi
+> @@ -1170,6 +1170,7 @@ mscc_felix_port5: port@5 {
+>  						reg = <5>;
+>  						phy-mode = "internal";
+>  						status = "disabled";
+> +						ethernet = <&enetc_port3>;
 
-> +``t7xx`` driver uses fastboot protocol for fw flashing. In the fw flashing
-> +procedure, fastboot command's & response's are exchanged between driver
+status should be the last property, no?
 
-Using 's here seems incorrect.
-
-> +and wwan device.
-
-> +Note: component "value" represents the partition type to be programmed.
-
-"value" is hard to understand here. I'd just say "component selects the 
-partition type to be programmed."
-
-> +      - The detailed modem components log are captured in this region
-
-"components log are" seems inconsistent.
-
-
--- 
- i.
+-michael
