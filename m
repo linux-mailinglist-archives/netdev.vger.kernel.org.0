@@ -2,162 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EEFE598374
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 14:51:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C838E59838E
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 14:59:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244492AbiHRMvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 08:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40114 "EHLO
+        id S244850AbiHRM7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 08:59:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240543AbiHRMvU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 08:51:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B88C792DC
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 05:51:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17114B82157
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 12:51:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E571C433D6;
-        Thu, 18 Aug 2022 12:51:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660827076;
-        bh=rGhU58fzA+kobbY71asfgdsh0ZHD1JDj5XjTr8LuCoc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m27ZqAeETrcRhSK2d2iz51JiQWmrH66RnqqKr2CVbebzdcgcQxakcuPss7x5tEV+8
-         me0q6GL1DDxqjFHRIU7lUScM75FT0jS9p4zo/Y7g5jBhv1OUsN0RELaoAo6Ycfvpjf
-         4TItleGm0SFoQlaeyXbGEhK4ElPwwnHhkgTbtuBXLRt48aHVFxqCHd9ztodhZIW3Cu
-         cJeGK7Hg0TB6LJkM/2c3XR7wdGpfmzGuSKe8w5Xn7r/w726B6FsHHvpk48GiFxPojs
-         64O5SI74vlxC3/jF6Es0Q9rYx/3w1scLPxcBLbtZYNZ09Mz5OoFDhPb1xCppLfuRz2
-         yj3DxOTZRTL0g==
-Date:   Thu, 18 Aug 2022 15:51:12 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <Yv41wPd11Sg8WU1F@unreal>
-References: <cover.1660639789.git.leonro@nvidia.com>
- <20220816195408.56eec0ed@kernel.org>
- <Yvx6+qLPWWfCmDVG@unreal>
- <20220817111052.0ddf40b0@kernel.org>
- <Yv3M/T5K/f35R5UM@unreal>
- <20220818101031.GC566407@gauss3.secunet.de>
+        with ESMTP id S244842AbiHRM7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 08:59:02 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 21D1B5A836;
+        Thu, 18 Aug 2022 05:58:57 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27ICwCR51029865, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27ICwCR51029865
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 18 Aug 2022 20:58:12 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 18 Aug 2022 20:58:25 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 18 Aug 2022 20:58:24 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Thu, 18 Aug 2022 20:58:24 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "arnd@kernel.org" <arnd@kernel.org>,
+        "sudipm.mukherjee@gmail.com" <sudipm.mukherjee@gmail.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Gary Chang <gary.chang@realtek.com>,
+        "nathan@kernel.org" <nathan@kernel.org>
+Subject: Re: build failure of next-20220818 due to 341dd1f7de4c ("wifi: rtw88: add the update channel flow to support setting by parameters")
+Thread-Topic: build failure of next-20220818 due to 341dd1f7de4c ("wifi:
+ rtw88: add the update channel flow to support setting by parameters")
+Thread-Index: AQHYsvdH+VODKjoKikSt5m62qYeAPq20BvSAgAARZQA=
+Date:   Thu, 18 Aug 2022 12:58:24 +0000
+Message-ID: <d707e413e8dc3a615b64ca2e8941072f41143184.camel@realtek.com>
+References: <Yv4lFKIoek8Fhv44@debian>
+         <CAK8P3a2_YDCS0Ate7b_nBibsbinjNqvMj9h5foA83NJjq8nE0g@mail.gmail.com>
+In-Reply-To: <CAK8P3a2_YDCS0Ate7b_nBibsbinjNqvMj9h5foA83NJjq8nE0g@mail.gmail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [125.224.85.133]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMTgg5LiK5Y2IIDExOjAzOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <59B3755ACDCB28419BB1E779583124BD@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818101031.GC566407@gauss3.secunet.de>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 12:10:31PM +0200, Steffen Klassert wrote:
-> On Thu, Aug 18, 2022 at 08:24:13AM +0300, Leon Romanovsky wrote:
-> > On Wed, Aug 17, 2022 at 11:10:52AM -0700, Jakub Kicinski wrote:
-> > > On Wed, 17 Aug 2022 08:22:02 +0300 Leon Romanovsky wrote:
-> > > > On Tue, Aug 16, 2022 at 07:54:08PM -0700, Jakub Kicinski wrote:
-> > > > > This is making a precedent for full tunnel offload in netdev, right?  
-> > > > 
-> > > > Not really. SW IPsec supports two modes: tunnel and transport.
-> > > > 
-> > > > However HW and SW stack supports only offload of transport mode.
-> > > > This is the case for already merged IPsec crypto offload mode and
-> > > > the case for this full offload.
-> > > 
-> > > My point is on what you called "full offload" vs "crypto offload".
-> > > The policy so far has always been that Linux networking stack should
-> > > populate all the headers and instruct the device to do crypto, no
-> > > header insertion. Obviously we do header insertion in switch/router
-> > > offloads but that's different and stateless.
-> > > 
-> > > I believe the reasoning was to provide as much flexibility and control
-> > > to the software as possible while retaining most of the performance
-> > > gains.
-> > 
-> > I honestly don't know the reasoning, but "performance gains" are very
-> > limited as long as IPsec stack involved with various policy/state
-> > lookups. These lookups are expensive in terms of CPU and they can't
-> > hold 400 Gb/s line rate.
-> 
-> Can you provide some performance results that show the difference
-> between crypto and full offload? In particular because on the TX
-> path, the full policy and state offload is done twice (in software
-> to find the offloading device and then in hardware to match policy
-> to state).
-
-I will prepare the numbers.
-
-> 
-> > 
-> > https://docs.nvidia.com/networking/display/connectx7en/Introduction#Introduction-ConnectX-7400GbEAdapterCards
-> > 
-> > > 
-> > > You must provide a clear analysis (as in examination in data) and
-> > > discussion (as in examination in writing) if you're intending to 
-> > > change the "let's keep packet formation in the SW" policy. What you 
-> > > got below is a good start but not sufficient.
-> 
-> I'm still a bit unease about this approach. I fear that doing parts
-> of statefull IPsec procesing in software and parts in hardware will
-> lead to all sort of problems. E.g. with this implementation
-> the software has no stats, liftetime, lifebyte and packet count
-> information but is responsible to do the IKE communication.
-> 
-> We might be able to sort out all problems during the upstraming
-> process, but I still have no clear picture how this should work
-> in the end with all corener cases this creates.
-
-Like we discussed in IPsec coffee hour, there is no reliable way
-to synchronize SW and HW. This is why we offload both policy and state
-and skip stack completely.
-
-> 
-> Also the name full offload is a bit missleading, because the
-> software still has to hold all offloaded states and policies.
-> In a full offload, the stack would IMO just act as a stub
-> layer between IKE and hardware.
-
-It is just a name, I'm open to change it to any other name.
-
-> 
-> > > > Some of them:
-> > > > 1. Request to have reqid for policy and state. I use reqid for HW
-> > > > matching between policy and state.
-> > > 
-> > > reqid?
-> > 
-> > Policy and state are matched based on their selectors (src/deet IP, direction ...),
-> > but they independent. The reqid is XFRM identification that this specific policy
-> > is connected to this specific state.
-> > https://www.man7.org/linux/man-pages/man8/ip-xfrm.8.html
-> > https://docs.kernel.org/networking/xfrm_device.html
-> > ip x s add ....
-> >    reqid 0x07 ...
-> >    offload dev eth4 dir in
-> 
-> Can you elaborate this a bit more? Does that matching happen in
-> hardware? The reqid is not a unique identifyer to match between
-> policy and state. You MUST match the selectors as defined in 
-> https://www.rfc-editor.org/rfc/rfc4301
-
-The reqid is needed for TX path and part of mlx5 flow steering logic.
-https://lore.kernel.org/netdev/51ee028577396c051604703c46bd31d706b4b387.1660641154.git.leonro@nvidia.com/
-I'm relying on it to make sure that both policy and state exist.
-
-For everything else, I rely on selectors.
-
-Thanks
-
-> 
+T24gVGh1LCAyMDIyLTA4LTE4IGF0IDEzOjU2ICswMjAwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
+PiBPbiBUaHUsIEF1ZyAxOCwgMjAyMiBhdCAxOjQwIFBNIFN1ZGlwIE11a2hlcmplZSAoQ29kZXRo
+aW5rKQ0KPiA8c3VkaXBtLm11a2hlcmplZUBnbWFpbC5jb20+IHdyb3RlOg0KPiA+IEhpIEFsbCwN
+Cj4gPiANCj4gPiBOb3Qgc3VyZSBpZiBpdCBoYXMgYmVlbiByZXBvcnRlZCwgY2xhbmcgYnVpbGRz
+IG9mIGFybTY0IGFsbG1vZGNvbmZpZyBoYXZlDQo+ID4gZmFpbGVkIHRvIGJ1aWxkIG5leHQtMjAy
+MjA4MTggd2l0aCB0aGUgZXJyb3I6DQo+ID4gDQo+ID4gZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVh
+bHRlay9ydHc4OC9tYWluLmM6NzMxOjI6IGVycm9yOiB2YXJpYWJsZSAncHJpbWFyeV9jaGFubmVs
+X2lkeCcgaXMgdXNlZA0KPiA+IHVuaW5pdGlhbGl6ZWQgd2hlbmV2ZXIgc3dpdGNoIGRlZmF1bHQg
+aXMgdGFrZW4gWy1XZXJyb3IsLVdzb21ldGltZXMtdW5pbml0aWFsaXplZF0NCj4gPiAgICAgICAg
+IGRlZmF1bHQ6DQo+ID4gICAgICAgICBefn5+fn5+DQo+ID4gZHJpdmVycy9uZXQvd2lyZWxlc3Mv
+cmVhbHRlay9ydHc4OC9tYWluLmM6NzU0OjM5OiBub3RlOiB1bmluaXRpYWxpemVkIHVzZSBvY2N1
+cnMgaGVyZQ0KPiA+ICAgICAgICAgaGFsLT5jdXJyZW50X3ByaW1hcnlfY2hhbm5lbF9pbmRleCA9
+IHByaW1hcnlfY2hhbm5lbF9pZHg7DQo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fg0KPiA+IA0KPiA+IGdpdCBiaXNlY3Qg
+cG9pbnRlZCB0byAzNDFkZDFmN2RlNGMgKCJ3aWZpOiBydHc4ODogYWRkIHRoZSB1cGRhdGUgY2hh
+bm5lbCBmbG93IHRvIHN1cHBvcnQgc2V0dGluZw0KPiA+IGJ5IHBhcmFtZXRlcnMiKS4NCj4gPiBB
+bmQsIHJldmVydGluZyB0aGF0IGNvbW1pdCBoYXMgZml4ZWQgdGhlIGJ1aWxkIGZhaWx1cmUuDQo+
+ID4gDQo+ID4gSSB3aWxsIGJlIGhhcHB5IHRvIHRlc3QgYW55IHBhdGNoIG9yIHByb3ZpZGUgYW55
+IGV4dHJhIGxvZyBpZiBuZWVkZWQuDQo+IA0KPiBIaSBTdWRlZXAsDQo+IA0KPiBpbiBteSBleHBl
+cmllbmNlLCB5b3UgZ2V0IHRoZSBiZXN0IHJlc3VsdHMgYnkgcG9zdGluZyBhIHBhdGNoIGluc3Rl
+YWQNCj4gb2YgYSBidWcgcmVwb3J0DQo+IHdoZW4geW91IHNwb3QgYSBuZXcgd2FybmluZy4gSWYg
+eW91IGFyZSB1bnN1cmUgaXQncyB0aGUgcmlnaHQgZml4LA0KPiBqdXN0IHN0YXRlIHRoYXQNCj4g
+aW4gdGhlIGRlc2NyaXB0aW9uLiBUaGUgbWFpbnRhaW5lcnMgd2lsbCB0aGVuIGVpdGhlciBiZSBh
+YmxlIHRvIGp1c3QNCj4gcGljayBpdCB1cCBpZg0KPiBpdCBsb29rcyBjb3JyZWN0LCBvciBiZSBt
+b3RpdmF0ZWQgdG8gZG8gYSBiZXR0ZXIgcGF0Y2ggaWYgdGhleSBkb24ndA0KPiBsaWtlIGl0LiA7
+LSkNCj4gDQo+IEluIHRoaXMgY2FzZSwgSSB0aGluayB0aGUgYmVzdCBmaXggd291bGQgYmUgdG8g
+bWVyZ2VkIHRoZSAnZGVmYXVsdCcNCj4gd2l0aCB0aGUgJ2Nhc2UNCj4gUlRXX0NIQU5ORUxfV0lE
+VEhfMjAnIGluIHRoZSBzd2l0Y2ggc3RhdGVtZW50LCBhbmQgdXNlDQo+IFJUV19TQ19ET05UX0NB
+UkUuIE9mIGNvdXJzZSwgSSBoYXZlIG5vIGlkZWEgaWYgdGhhdCBpcyB0aGUgcmlnaHQgZml4LA0K
+PiBidXQgaXQgd291bGQgbWFrZSBzZW5zZS4NCj4gDQo+IEp1c3QgdHJ5IHRvIGF2b2lkIGFkZGlu
+ZyBpbml0aWFsaXphdGlvbnMgdG8gdGhlIHZhcmlhYmxlIGRlY2xhcmF0aW9uLCBhcyB0aGF0DQo+
+IHdvdWxkIHByZXZlbnQgdGhlIGNvbXBpbGVyIGZyb20gd2FybmluZyBpZiB0aGVyZSBpcyBhIG5l
+dyB1bmluaXRpYWxpemVkIHVzZS4NCj4gDQoNCkkgaGF2ZSBzZW50IGEgcGF0Y2ggdG8gZml4IHRo
+aXM6IA0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtd2lyZWxlc3MvMjAyMjA4MTUwNjIw
+MDQuMjI5MjAtMS1wa3NoaWhAcmVhbHRlay5jb20vVC8jdQ0KDQpQaW5nLUtlDQoNCg0K
