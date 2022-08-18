@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0D8E598C04
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 20:53:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB24F598C01
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 20:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344872AbiHRSvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 14:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
+        id S245359AbiHRSvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 14:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244105AbiHRSvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 14:51:10 -0400
+        with ESMTP id S238516AbiHRSvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 14:51:09 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8B1A4B0E;
-        Thu, 18 Aug 2022 11:51:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B2F94EF1;
+        Thu, 18 Aug 2022 11:51:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660848669; x=1692384669;
+  t=1660848668; x=1692384668;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=mYadyzwA0ZoHMKNbg2eMtvWK2KsC51kLCrZfy90MEEM=;
-  b=hohA4YYgGKxObxiknZnx7Aa9am/heukS4YdbGsDakhoIlxMZhW+8DseF
-   ifeOILZrB7Ha37/qGsoASYhVa3GXV63b/UZzxmUHU9/2PCXPHDC3Ym72S
-   6K8Bek/GpMUMBjuiDgkyhm5Ny+rV+FX/ZFhCJMrI7bDro+chbF1A54VRo
-   VGl/D9oknFJTTwFvZyl6XogCRkDbLNDAmgYT1Nyj2/SscROOCFc6QCmUb
-   X/iT8OWYlpNfieGRHZlNZwtjdKbZCE7pG+uHG/DKixVLxisX4NmcwGQsl
-   qIzHYUrgPco/d6E10hDDQZZjuj9czOSn0jYEUDRtlpEY9lIj5uecmAkGc
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279806175"
+  bh=k+Of8rRHhGeuOpXla/vQITxQEolalHJqVUnUNN2CKN0=;
+  b=N4cyR6ZbczPommNVr0ZwVZZUDWC0Lr9MNs8h3umMeQYmZowsuFvEzvld
+   J5QwrUGRFISxJIfc9FUpAzoILAdyoz2fWOebN8TC9mP4pzVU8kAsZ1SzY
+   BEW2Bd1AH1ujtT1PoG2q7RfpQls7fYLqXDHVdXVqu8RBVWaLfRG1k5L01
+   aCbwp3/N5ml10IfjaddwpSSlFKbaYbIJmftJBYW4uGlUxX/iG0Akc66h2
+   gbbpnXsF2fUy/REHZjJcKSzxRQCJpy2pG/aDkSgZxsvW8O7glXoy7bIwN
+   x0+UeZzQPJDIIrCTXdWv7vqfHLNOouL6QQ9R5tIFLHuOc8QMca9utaPG/
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279806171"
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="279806175"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
+   d="scan'208";a="279806171"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 11:51:07 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="783880247"
+   d="scan'208";a="611103675"
 Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 18 Aug 2022 11:51:02 -0700
+  by fmsmga007.fm.intel.com with ESMTP; 18 Aug 2022 11:51:02 -0700
 Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oOkbe-0000Pg-0Q;
+        id 1oOkbe-0000Pj-0T;
         Thu, 18 Aug 2022 18:51:02 +0000
-Date:   Fri, 19 Aug 2022 02:50:11 +0800
+Date:   Fri, 19 Aug 2022 02:50:13 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Dmitry Safonov <dima@arista.com>,
         Eric Dumazet <edumazet@google.com>,
@@ -65,7 +65,7 @@ Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
         Shuah Khan <skhan@linuxfoundation.org>,
         linux-crypto@vger.kernel.org
 Subject: Re: [PATCH 08/31] net/tcp: Introduce TCP_AO setsockopt()s
-Message-ID: <202208190223.JG4u6Nhm-lkp@intel.com>
+Message-ID: <202208190249.8CCVAMql-lkp@intel.com>
 References: <20220818170005.747015-9-dima@arista.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -90,7 +90,7 @@ Thank you for the patch! Perhaps something to improve:
 
 url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628
 base:   e34cfee65ec891a319ce79797dda18083af33a76
-config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220819/202208190223.JG4u6Nhm-lkp@intel.com/config)
+config: x86_64-defconfig (https://download.01.org/0day-ci/archive/20220819/202208190249.8CCVAMql-lkp@intel.com/config)
 compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
 reproduce (this is a W=1 build):
         # https://github.com/intel-lab-lkp/linux/commit/469bd71e5ea011f6ae5a1554b75157471448341d
@@ -112,94 +112,15 @@ All warnings (new ones prefixed by >>):
    net/ipv4/tcp_ao.c:37:20: warning: no previous prototype for 'tcp_ao_do_lookup_sndid' [-Wmissing-prototypes]
       37 | struct tcp_ao_key *tcp_ao_do_lookup_sndid(const struct sock *sk, u8 keyid)
          |                    ^~~~~~~~~~~~~~~~~~~~~~
-   net/ipv4/tcp_ao.c: In function '__tcp_ao_key_cmp':
-   net/ipv4/tcp_ao.c:88:46: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      88 |                 if (ipv6_addr_any(&key->addr.a6) || ipv6_addr_any(&addr->a6))
-         |                                              ^~
-         |                                              a4
-   net/ipv4/tcp_ao.c:88:74: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      88 |                 if (ipv6_addr_any(&key->addr.a6) || ipv6_addr_any(&addr->a6))
-         |                                                                          ^~
-         |                                                                          a4
-   net/ipv4/tcp_ao.c:90:50: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      90 |                 if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
-         |                                                  ^~
-         |                                                  a4
-   net/ipv4/tcp_ao.c:90:61: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      90 |                 if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
-         |                                                             ^~
-         |                                                             a4
-   net/ipv4/tcp_ao.c:92:42: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      92 |                 return memcmp(&key->addr.a6, &addr->a6, prefixlen);
-         |                                          ^~
-         |                                          a4
-   net/ipv4/tcp_ao.c:92:53: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-      92 |                 return memcmp(&key->addr.a6, &addr->a6, prefixlen);
-         |                                                     ^~
-         |                                                     a4
-   net/ipv4/tcp_ao.c: At top level:
 >> net/ipv4/tcp_ao.c:96:5: warning: no previous prototype for 'tcp_ao_key_cmp' [-Wmissing-prototypes]
       96 | int tcp_ao_key_cmp(const struct tcp_ao_key *key,
          |     ^~~~~~~~~~~~~~
-   net/ipv4/tcp_ao.c: In function 'tcp_ao_key_cmp':
-   net/ipv4/tcp_ao.c:100:61: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-     100 |         if (family == AF_INET6 && ipv6_addr_v4mapped(&addr->a6)) {
-         |                                                             ^~
-         |                                                             a4
-   net/ipv4/tcp_ao.c:101:38: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-     101 |                 __be32 addr4 = addr->a6.s6_addr32[3];
-         |                                      ^~
-         |                                      a4
-   net/ipv4/tcp_ao.c: At top level:
    net/ipv4/tcp_ao.c:109:20: warning: no previous prototype for 'tcp_ao_do_lookup' [-Wmissing-prototypes]
      109 | struct tcp_ao_key *tcp_ao_do_lookup(const struct sock *sk,
          |                    ^~~~~~~~~~~~~~~~
 >> net/ipv4/tcp_ao.c:145:6: warning: no previous prototype for 'tcp_ao_link_mkt' [-Wmissing-prototypes]
      145 | void tcp_ao_link_mkt(struct tcp_ao_info *ao, struct tcp_ao_key *mkt)
          |      ^~~~~~~~~~~~~~~
-   In file included from include/linux/tcp.h:19,
-                    from net/ipv4/tcp_ao.c:13:
-   net/ipv4/tcp_ao.c: In function 'tcp_ao_verify_ipv6':
-   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
-         |                                             ^~~~~~~~~~~~
-   net/ipv4/tcp_ao.c:292:41: note: in expansion of macro 'sk_v6_daddr'
-     292 |                 if (!ipv6_addr_any(&sk->sk_v6_daddr)) {
-         |                                         ^~~~~~~~~~~
-   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
-         |                                             ^~~~~~~~~~~~
-   net/ipv4/tcp_ao.c:293:45: note: in expansion of macro 'sk_v6_daddr'
-     293 |                         __be32 daddr4 = sk->sk_v6_daddr.s6_addr32[3];
-         |                                             ^~~~~~~~~~~
-   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
-         |                                             ^~~~~~~~~~~~
-   net/ipv4/tcp_ao.c:295:54: note: in expansion of macro 'sk_v6_daddr'
-     295 |                         if (!ipv6_addr_v4mapped(&sk->sk_v6_daddr))
-         |                                                      ^~~~~~~~~~~
-   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
-         |                                             ^~~~~~~~~~~~
-   net/ipv4/tcp_ao.c:316:41: note: in expansion of macro 'sk_v6_daddr'
-     316 |                 if (!ipv6_addr_any(&sk->sk_v6_daddr) &&
-         |                                         ^~~~~~~~~~~
-   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
-     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
-         |                                             ^~~~~~~~~~~~
-   net/ipv4/tcp_ao.c:317:45: note: in expansion of macro 'sk_v6_daddr'
-     317 |                     !ipv6_prefix_equal(&sk->sk_v6_daddr, addr, prefix))
-         |                                             ^~~~~~~~~~~
-   net/ipv4/tcp_ao.c: In function 'tcp_ao_mkt_overlap_v6':
-   net/ipv4/tcp_ao.c:531:39: error: 'union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
-     531 |                 key_addr = &key->addr.a6;
-         |                                       ^~
-         |                                       a4
-   net/ipv4/tcp_ao.c: In function '__tcp_ao_key_cmp':
-   net/ipv4/tcp_ao.c:94:1: error: control reaches end of non-void function [-Werror=return-type]
-      94 | }
-         | ^
-   cc1: some warnings being treated as errors
 
 
 vim +/tcp_ao_do_lookup_rcvid +19 net/ipv4/tcp_ao.c
@@ -278,7 +199,7 @@ vim +/tcp_ao_do_lookup_rcvid +19 net/ipv4/tcp_ao.c
     89				return 0;
     90			if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
     91				return 0;
-  > 92			return memcmp(&key->addr.a6, &addr->a6, prefixlen);
+    92			return memcmp(&key->addr.a6, &addr->a6, prefixlen);
     93		}
     94	}
     95	
@@ -287,7 +208,7 @@ vim +/tcp_ao_do_lookup_rcvid +19 net/ipv4/tcp_ao.c
     98			   int family, int sndid, int rcvid, u16 port)
     99	{
    100		if (family == AF_INET6 && ipv6_addr_v4mapped(&addr->a6)) {
- > 101			__be32 addr4 = addr->a6.s6_addr32[3];
+   101			__be32 addr4 = addr->a6.s6_addr32[3];
    102	
    103			return __tcp_ao_key_cmp(key, (union tcp_ao_addr *)&addr4,
    104						prefixlen, AF_INET, sndid, rcvid, port);
