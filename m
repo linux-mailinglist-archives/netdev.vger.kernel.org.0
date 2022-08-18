@@ -2,657 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2A075987DF
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3710598808
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 17:54:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344371AbiHRPux (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 11:50:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S1344446AbiHRPwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 11:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344300AbiHRPuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:50:16 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50081.outbound.protection.outlook.com [40.107.5.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8146A73919
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 08:49:51 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dGC28fM08tUAHwP+UriratrqM9Nxg14j7iyxNFrqbnycFg2w2LD2+u/fRY9LznHiMb0YhPMyxOr0NDLMVWZNfEyvqZ7bwG/5CSDAI0QdtEj4UDuaNtprdGUE+SBzd9B2XUJZg4prUj/Ll1g0j2AFIj4rTXr9X3aVZf50ejNkjzI2lK4uXEdg8Yqdgcg49Cw3aDJOV8tNOhIi+YYYzLtt20qeyXPEMu1bZaes+YRRBSZCJaoC3/Les4Q7jefUC8QIvmCQ6sSdNaT0oYCi9OYaq615ZMJjyxNlqtLEwYtBQIsMqeT5e70GRJxq5Dt3IbSkl3x6JAfdYYgQQGtkhDUnGA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n+bneBZ7DYtOsUPmX/8nT9nyQZxD7bf3llLiFm9ASl0=;
- b=NFQGrDte3POXpQwKf/0DUHVBsIyahZ88hYnDuBsyx06kSVk/hFOoUowTrY4lgZPZ9ZDGCXqGne/coReSx946s92thNT9B2/JK9SSoo2oNOQ8Mcc2eYHv2i1nvBhqLr9DSyA4pxExw755YyFBYJYOQywF4zn0GhruccJTP7xrFV3dQxBL1XUADthOTEWTy3E+Mj85lg0IxvwmTmtEbNRuGj6rCJgkGXUH8FFLSRbJe6/liUijl60mdgBb8YJ0tiVGNhdMysK/yiUL+xdQtAx5Sppi5kgEyRPC3Ls3ECqlpnPJTB/W2S5JKEA0e0/cglE1HQRt9jSi+0KgS+/ux1LNBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n+bneBZ7DYtOsUPmX/8nT9nyQZxD7bf3llLiFm9ASl0=;
- b=FesOrJ+jgVN7ImZthFVF8rKzKqOA+B54Kk3gS9BLXhpR2XpK20pDuEIImxh6QZGTCRUQ8XGkPMhRoJoGKeP24QLjrMldzkiFmdjpL1g+W2ACEnkRSFjyl/wb461NAXwOKxDpaCgSwxBlgG8/K17UDFdB07LrbCs5fkUN++gZ+YQ=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6349.eurprd04.prod.outlook.com (2603:10a6:803:126::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.28; Thu, 18 Aug
- 2022 15:49:41 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5525.011; Thu, 18 Aug 2022
- 15:49:40 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [RFC PATCH net-next 10/10] net: dsa: make _del variants of functions return void
-Date:   Thu, 18 Aug 2022 18:49:11 +0300
-Message-Id: <20220818154911.2973417-11-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220818154911.2973417-1-vladimir.oltean@nxp.com>
-References: <20220818154911.2973417-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR05CA0074.eurprd05.prod.outlook.com
- (2603:10a6:208:136::14) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S1344447AbiHRPvP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 11:51:15 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BB5B9F8F;
+        Thu, 18 Aug 2022 08:51:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E0A80CE2110;
+        Thu, 18 Aug 2022 15:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB12CC433C1;
+        Thu, 18 Aug 2022 15:51:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1660837868;
+        bh=97UZBxpkUiLjcxNbnMNIyZT4R7FLNJoDlJAoB7by8I0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HA07tefw/OqOfL4XMVPPqTt+hv+NAFG31RJN83x/iNhkrKUxNtJuNvA3vC+Vd584O
+         U3G/x/wY86ocrLPlfRJH9Chgc1K/oetkyZfy0zyUMWjJKBFcdMooD32LhY17BvH+Q5
+         zRmmY9n2g5NF2pxxx7kblvRkiguJ098y4cKJH/9P6lUrDl9l290ZRazDQ9rzBIV0p8
+         mGxjDjLJuoTkDRJrzSRgQabi+kVsnOPr/a8pt0PZwlpq/K0HqK7CGTHWWc89q9+bex
+         RPCDvMt9oHVvu/Sq9y9Lv4fAb9pJZjcUFSlHWtQrHbzn5YDsZDBMAdFBqKXCGI2LGf
+         UEazuvDsMQ6Aw==
+Date:   Thu, 18 Aug 2022 08:51:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bruno Goncalves <bgoncalv@redhat.com>,
+        Ariel Elior <aelior@marvell.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        CKI Project <cki-project@redhat.com>,
+        Saurav Kashyap <skashyap@marvell.com>,
+        Javed Hasan <jhasan@marvell.com>,
+        Manish Chopra <manishc@marvell.com>
+Subject: Re: RIP: 0010:qede_load+0x128d/0x13b0 [qede] - 5.19.0
+Message-ID: <20220818085106.73aabac2@kernel.org>
+In-Reply-To: <CA+QYu4poBJgXZ=RLTpQVxMeTX3HUSenWA7WZCcw45dzdGeyecg@mail.gmail.com>
+References: <CA+QYu4qxW1BUcbC9MwG1BxXjPO96sa9BOUXOHCj1SLY7ObJnQw@mail.gmail.com>
+        <20220802122356.6f163a79@kernel.org>
+        <CA+QYu4ob4cbh3Vnh9DWgaPpyw8nTLFG__TbBpBsYg1tWJPxygg@mail.gmail.com>
+        <20220803083751.40b6ee93@kernel.org>
+        <CA+QYu4poBJgXZ=RLTpQVxMeTX3HUSenWA7WZCcw45dzdGeyecg@mail.gmail.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e15b72e2-2afe-4d91-4192-08da81314338
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6349:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 56Zw8wEycD6c0p04dvRm5IwtnftUx8eO+S+36yfLCmGTKJJc2BmYQDHtTDJ5xY/yUl1PNGTZdLU12hfSH3V8CaOgAwe8c7TQqfNaMz30OD+m+lRb7RyWMP4yq+fRl8w3aeaoVdqdD6xP9mqr5NtwmW1Y+UjVwjLIlqsk5GZ0jav/ADso9GvnAeyf1NyGwDaAaugxJymdEmabPeBrX9q+Y7+F3oaQNOjshDKg2gUf/XZkvH0+1CLN+jnJfhzcDDFdZJWj67U/aaNk57RHY9xpms7JxaBReNMuEWMaLyzjsgdL+JaYW2y4QXkQBJSDxrkQGGkZZ8l6FOcCVRX9fqPf95txlsQg/4fRPlwAoZhnTUqQfkO59JvqBEYEFWR/h/18KVA+0JLSkIpL1cyT1YlxqmSRzRNFqwr0GdARgWxTbeXSrxZ0IqgLNKXwvfTaRQ2qkMCkh0Ml5DhjXApGFnan4XMcx9vGp07p0HvrtlsvRgM4uAAjy5Z2YVqirpK7RsOmbH9KsNo/eQHKuj8Tpp/f6zq0yPxvJqR/b2mDvqPZZHqSfox5I5kXgZqrEkSLHLdnUZU6BpwPlEc2FxeG3caGIRrjSbVHjcJdwtWW3iIrfsl36iWWpaZfWGVWXrknrmpDOTXZrC51ELVn6oLO5sxuXyrbfXkI89XnBH4FL5b0bQZ9lkDYnfvbt0nr/ZzH8WPtgivdCIckeJVaZVt2qvb+ybrQr3aW6zoBOBRYIy+3QvdP/fFbhFCeqZqm/THySvVcQVEUo5eZESFvtR4k9gHguw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(39860400002)(346002)(136003)(376002)(396003)(52116002)(6486002)(478600001)(41300700001)(6666004)(26005)(6512007)(2906002)(66476007)(66556008)(6506007)(36756003)(86362001)(6916009)(316002)(54906003)(8676002)(66946007)(1076003)(2616005)(186003)(30864003)(5660300002)(44832011)(7416002)(8936002)(4326008)(38350700002)(38100700002)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?I0ey/ePSgYxy2RG/OwStAHtv/FrWiWUkCGa8FO6Uh+WkMbiZn3yHlzAfUlYs?=
- =?us-ascii?Q?q4myoXIi6fqeDXZBkpVdEXS0LaT9GbNV6mMUxAQM8PeKMbOD9LfKson2dTfq?=
- =?us-ascii?Q?rWHqWK2QPqbt548TjIzbMDODP196TsqTgg4hDqwUmrGzCwZIiYKDlCHD8O0l?=
- =?us-ascii?Q?I3CC9GYqYhcflz9c7VpjjOqScdGDNzXCtWrnSZjEFc1Ve6/Da1htmJIMcp63?=
- =?us-ascii?Q?d3do8URPo/EYmeMiAFWtkiixu0bbnrt4xalkCruBwieSiLrc/bb+Ozt8DVXZ?=
- =?us-ascii?Q?5xyvw4XBtD5L1IrJBVaB2FnevNhxxBVGYuVkt/yWiedv8le+X/2J0+S1Kyqw?=
- =?us-ascii?Q?q6F430uBOsNbykI+G5mfT/6WGfUZ3RGSlS+FRxtHe6mACOrgAdNPcwf1FsuD?=
- =?us-ascii?Q?Tw3xPXtaCNEEpDL9QU4wpDv4d/Bsp+xw3m9BgY3jBYvjFD2sdtHyBCh1OkUH?=
- =?us-ascii?Q?vun3t09i3Av0IhvKypbxZylELqZLdeInWJGfrFzVZP5jmrW9KNPZUrQoPiXY?=
- =?us-ascii?Q?Z9ZR21xBISS554V9JdEo++KIY1g7muDn9MGNNmQmBMQ2SMJDK5s0SsqlwiPW?=
- =?us-ascii?Q?lUa+FFY4G6NHPRtfceErUEwbifsixXrOpstil0O+QHPcRKyLLo9m449obr4T?=
- =?us-ascii?Q?mfDtJio276zluen8wmC+vsMnd3lKw8bJNGbnJ1ileSPBVAT9jL6LaoJ6N3m8?=
- =?us-ascii?Q?o8/ESYyT7XYQ1CgN1u6S+7wr6vLFvWiyc0+k+OwcJ46leVr1ToCDpqntKTxe?=
- =?us-ascii?Q?eWFW8cXJY5L4/EMAXlJ0/LijQv5AHtbeOcfKKLUCGrAHWV7xRsmbJWa6ESki?=
- =?us-ascii?Q?AX900IYWSnQxUnAVwK3WELKH3ZPiBt2mGxMVW+ghjKmZU3tT2of2OMZiTLT4?=
- =?us-ascii?Q?YPoTk73/jm4Sd93hHkBAiOK8JpitCr5uyKqS3wRzAJh4IX8O5RbRPa+cf2ED?=
- =?us-ascii?Q?XojcwPUTYYeJHnnmTK5Pttq7Uh33F0uPQW5nKkoiFEpMhiWC5/18mDQg+1dY?=
- =?us-ascii?Q?1E1d/9c3P4q6uA6SJj385nqceIED86wyo4OuwshZdC+BmLxHuijtDBFvPLKr?=
- =?us-ascii?Q?KydRfOdSRgyjIuLxZuEBUtkvT7QVmwj//k08k5WELBTrVViLyppXgcXt4JE0?=
- =?us-ascii?Q?dDXuOqn5u9lB8A3BOys1/XmvInwXFdb7i9rwGctomyiyaUP8tVcaDp+pCimZ?=
- =?us-ascii?Q?Owaqc9oNFkzFf50/g9l+Z+THlJ2cxh55vQ9+siZpjZRAWOGP132BUmEqHzE6?=
- =?us-ascii?Q?Ob+0MW+zhVGRUziutLlwc9/aFA2eiGosB1lyIdVVFFNDMQiDgcppuOqo/Xd+?=
- =?us-ascii?Q?K9NBgxQbVmnFumHIlMpQI9AqR0rUztMcOxloEWO3uOHFXKb6gwOuYY1UoFqt?=
- =?us-ascii?Q?9C86bSyIamypal0z3xF3Kkfc+cVqij5BSMhYaZ5uqxTZWorrGY6j6ghIFzWg?=
- =?us-ascii?Q?xlnNkdNTD3Cx0EQj017NU7jKzV4a2XPtMgs0nJhnCZ3gckD5ObLUBFa8QXt0?=
- =?us-ascii?Q?QRi/B7d7VtvmWBEXN0uLNfaPPHTfdAbsYMXmYFSRFI4ad3zlYyGJkFNA2NnF?=
- =?us-ascii?Q?EPzKiU8ob+Eo717A8PF1XfO2TTBtTT+NLhR/cwbuu9BJHcFs6CLLb0GQ2thP?=
- =?us-ascii?Q?YQ=3D=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e15b72e2-2afe-4d91-4192-08da81314338
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 15:49:40.9049
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qD4PY+TOcitCXW2gPbTLSuygKf+TeARLf+OABRbD7uaqalmpLWCztGCP9ywHOdLeaVF9q3Ahd5IqY9MXkQTizQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6349
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we suppress return codes from the cross-chip notifier layer
-where we don't have anything sane to do, we can propagate the prototype
-chain to void one layer higher, which is to the netdev notifiers and
-switchdev notifiers.
+On Thu, 18 Aug 2022 09:22:17 +0200 Bruno Goncalves wrote:
+> On Wed, 3 Aug 2022 at 17:37, Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Wed, 3 Aug 2022 14:13:00 +0200 Bruno Goncalves wrote:  
+> > > Got this from the most recent failure (kernel built using commit 0805c6fb39f6):
+> > >
+> > > the tarball is https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/603714145/build%20x86_64%20debug/2807738987/artifacts/kernel-mainline.kernel.org-redhat_603714145_x86_64_debug.tar.gz
+> > > and the call trace from
+> > > https://s3.us-east-1.amazonaws.com/arr-cki-prod-datawarehouse-public/datawarehouse-public/2022/08/02/redhat:603123526/build_x86_64_redhat:603123526_x86_64_debug/tests/1/results_0001/console.log/console.log
+> > >
+> > > [   69.876513] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI
+> > > [   69.888521] Hardware name: HPE ProLiant DL325 Gen10 Plus/ProLiant
+> > > DL325 Gen10 Plus, BIOS A43 08/09/2021
+> > > [   69.897971] RIP: 0010:qede_load.cold
+> > > (/builds/2807738987/workdir/./include/linux/spinlock.h:389
+> > > /builds/2807738987/workdir/./include/linux/netdevice.h:4294
+> > > /builds/2807738987/workdir/./include/linux/netdevice.h:4385
+> > > /builds/2807738987/workdir/drivers/net/ethernet/qlogic/qede/qede_main.c:2594
+> > > /builds/2807738987/workdir/drivers/net/ethernet/qlogic/qede/qede_main.c:2575)  
+> >
+> > Thanks a lot! That seems to point the finger at commit 3aa6bce9af0e
+> > ("net: watchdog: hold device global xmit lock during tx disable") but
+> > frankly IDK why... The driver must be fully initialized to get to
+> > ndo_open() so how is the tx_global_lock busted?!
+> >
+> > Would you be able to re-run with CONFIG_KASAN=y ?
+> > Perhaps KASAN can tell us what's messing up the lock.  
+> 
+> Sorry for taking a long time to provide the info.
+> Below is the call trace, note it is on a different machine. It might
+> take me a few days in case I need to try on the original machine.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/dsa_priv.h |  44 ++++++++++----------
- net/dsa/port.c     | 101 +++++++++++++++++----------------------------
- net/dsa/slave.c    |  74 ++++++++++++---------------------
- 3 files changed, 86 insertions(+), 133 deletions(-)
+Thanks, looks like KASAN didn't catch anything, it's the same crash :(
+Let's CC all the Qlogic people, Qlogic PTAL.
 
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 263a07152b07..75aa1bcc432b 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -235,33 +235,33 @@ void dsa_port_mtu_change(struct dsa_port *dp, int new_mtu);
- int dsa_port_mtu_change_robust(struct dsa_port *dp, int new_mtu, int old_mtu);
- int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 		     u16 vid);
--int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid);
-+void dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+		      u16 vid);
- int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
- 				     const unsigned char *addr, u16 vid);
--int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
--				     const unsigned char *addr, u16 vid);
-+void dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
-+				      const unsigned char *addr, u16 vid);
- int dsa_port_bridge_host_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 				 u16 vid);
--int dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--				 u16 vid);
-+void dsa_port_bridge_host_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+				  u16 vid);
- int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 			 u16 vid);
--int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--			 u16 vid);
-+void dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+			  u16 vid);
- int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data);
- int dsa_port_mdb_add(const struct dsa_port *dp,
- 		     const struct switchdev_obj_port_mdb *mdb);
--int dsa_port_mdb_del(const struct dsa_port *dp,
--		     const struct switchdev_obj_port_mdb *mdb);
-+void dsa_port_mdb_del(const struct dsa_port *dp,
-+		      const struct switchdev_obj_port_mdb *mdb);
- int dsa_port_standalone_host_mdb_add(const struct dsa_port *dp,
- 				     const struct switchdev_obj_port_mdb *mdb);
--int dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
--				     const struct switchdev_obj_port_mdb *mdb);
-+void dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
-+				      const struct switchdev_obj_port_mdb *mdb);
- int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
- 				 const struct switchdev_obj_port_mdb *mdb);
--int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
--				 const struct switchdev_obj_port_mdb *mdb);
-+void dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
-+				  const struct switchdev_obj_port_mdb *mdb);
- int dsa_port_pre_bridge_flags(const struct dsa_port *dp,
- 			      struct switchdev_brport_flags flags,
- 			      struct netlink_ext_ack *extack);
-@@ -271,21 +271,21 @@ int dsa_port_bridge_flags(struct dsa_port *dp,
- int dsa_port_vlan_add(struct dsa_port *dp,
- 		      const struct switchdev_obj_port_vlan *vlan,
- 		      struct netlink_ext_ack *extack);
--int dsa_port_vlan_del(struct dsa_port *dp,
--		      const struct switchdev_obj_port_vlan *vlan);
-+void dsa_port_vlan_del(struct dsa_port *dp,
-+		       const struct switchdev_obj_port_vlan *vlan);
- int dsa_port_host_vlan_add(struct dsa_port *dp,
- 			   const struct switchdev_obj_port_vlan *vlan,
- 			   struct netlink_ext_ack *extack);
--int dsa_port_host_vlan_del(struct dsa_port *dp,
--			   const struct switchdev_obj_port_vlan *vlan);
-+void dsa_port_host_vlan_del(struct dsa_port *dp,
-+			    const struct switchdev_obj_port_vlan *vlan);
- int dsa_port_mrp_add(const struct dsa_port *dp,
- 		     const struct switchdev_obj_mrp *mrp);
--int dsa_port_mrp_del(const struct dsa_port *dp,
--		     const struct switchdev_obj_mrp *mrp);
-+void dsa_port_mrp_del(const struct dsa_port *dp,
-+		      const struct switchdev_obj_mrp *mrp);
- int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
- 			       const struct switchdev_obj_ring_role_mrp *mrp);
--int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
--			       const struct switchdev_obj_ring_role_mrp *mrp);
-+void dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
-+				const struct switchdev_obj_ring_role_mrp *mrp);
- int dsa_port_phylink_create(struct dsa_port *dp);
- int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 1452f818263a..8ad9261a074e 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1003,8 +1003,8 @@ int dsa_port_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 				      DSA_NOTIFIER_FDB_DEL, &info);
- }
- 
--int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--		     u16 vid)
-+void dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+		      u16 vid)
- {
- 	struct dsa_notifier_fdb_info info = {
- 		.dp = dp,
-@@ -1020,8 +1020,6 @@ int dsa_port_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 		info.db.bridge.num = 0;
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_FDB_DEL, &info);
--
--	return 0;
- }
- 
- static int dsa_port_host_fdb_add(struct dsa_port *dp,
-@@ -1076,9 +1074,9 @@ int dsa_port_bridge_host_fdb_add(struct dsa_port *dp,
- 	return dsa_port_host_fdb_add(dp, addr, vid, db);
- }
- 
--static int dsa_port_host_fdb_del(struct dsa_port *dp,
--				 const unsigned char *addr, u16 vid,
--				 struct dsa_db db)
-+static void dsa_port_host_fdb_del(struct dsa_port *dp,
-+				  const unsigned char *addr, u16 vid,
-+				  struct dsa_db db)
- {
- 	struct dsa_notifier_fdb_info info = {
- 		.dp = dp,
-@@ -1091,38 +1089,32 @@ static int dsa_port_host_fdb_del(struct dsa_port *dp,
- 		info.db.bridge.num = 0;
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_HOST_FDB_DEL, &info);
--
--	return 0;
- }
- 
--int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
--				     const unsigned char *addr, u16 vid)
-+void dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
-+				      const unsigned char *addr, u16 vid)
- {
- 	struct dsa_db db = {
- 		.type = DSA_DB_PORT,
- 		.dp = dp,
- 	};
- 
--	return dsa_port_host_fdb_del(dp, addr, vid, db);
-+	dsa_port_host_fdb_del(dp, addr, vid, db);
- }
- 
--int dsa_port_bridge_host_fdb_del(struct dsa_port *dp,
--				 const unsigned char *addr, u16 vid)
-+void dsa_port_bridge_host_fdb_del(struct dsa_port *dp,
-+				  const unsigned char *addr, u16 vid)
- {
- 	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
- 	};
--	int err;
- 
--	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT) {
--		err = dev_uc_del(cpu_dp->master, addr);
--		if (err)
--			return err;
--	}
-+	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT)
-+		dev_uc_del(cpu_dp->master, addr);
- 
--	return dsa_port_host_fdb_del(dp, addr, vid, db);
-+	dsa_port_host_fdb_del(dp, addr, vid, db);
- }
- 
- int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
-@@ -1145,8 +1137,8 @@ int dsa_port_lag_fdb_add(struct dsa_port *dp, const unsigned char *addr,
- 				      DSA_NOTIFIER_LAG_FDB_DEL, &info);
- }
- 
--int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
--			 u16 vid)
-+void dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
-+			  u16 vid)
- {
- 	struct dsa_notifier_lag_fdb_info info = {
- 		.lag = dp->lag,
-@@ -1162,8 +1154,6 @@ int dsa_port_lag_fdb_del(struct dsa_port *dp, const unsigned char *addr,
- 		info.db.bridge.num = 0;
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_LAG_FDB_DEL, &info);
--
--	return 0;
- }
- 
- int dsa_port_fdb_dump(struct dsa_port *dp, dsa_fdb_dump_cb_t *cb, void *data)
-@@ -1196,8 +1186,8 @@ int dsa_port_mdb_add(const struct dsa_port *dp,
- 				      DSA_NOTIFIER_MDB_DEL, &info);
- }
- 
--int dsa_port_mdb_del(const struct dsa_port *dp,
--		     const struct switchdev_obj_port_mdb *mdb)
-+void dsa_port_mdb_del(const struct dsa_port *dp,
-+		      const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct dsa_notifier_mdb_info info = {
- 		.dp = dp,
-@@ -1212,8 +1202,6 @@ int dsa_port_mdb_del(const struct dsa_port *dp,
- 		info.db.bridge.num = 0;
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_MDB_DEL, &info);
--
--	return 0;
- }
- 
- static int dsa_port_host_mdb_add(const struct dsa_port *dp,
-@@ -1261,9 +1249,9 @@ int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
- 	return dsa_port_host_mdb_add(dp, mdb, db);
- }
- 
--static int dsa_port_host_mdb_del(const struct dsa_port *dp,
--				 const struct switchdev_obj_port_mdb *mdb,
--				 struct dsa_db db)
-+static void dsa_port_host_mdb_del(const struct dsa_port *dp,
-+				  const struct switchdev_obj_port_mdb *mdb,
-+				  struct dsa_db db)
- {
- 	struct dsa_notifier_mdb_info info = {
- 		.dp = dp,
-@@ -1275,36 +1263,31 @@ static int dsa_port_host_mdb_del(const struct dsa_port *dp,
- 		info.db.bridge.num = 0;
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_HOST_MDB_DEL, &info);
--
--	return 0;
- }
- 
--int dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
--				     const struct switchdev_obj_port_mdb *mdb)
-+void dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
-+				      const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct dsa_db db = {
- 		.type = DSA_DB_PORT,
- 		.dp = dp,
- 	};
- 
--	return dsa_port_host_mdb_del(dp, mdb, db);
-+	dsa_port_host_mdb_del(dp, mdb, db);
- }
- 
--int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
--				 const struct switchdev_obj_port_mdb *mdb)
-+void dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
-+				  const struct switchdev_obj_port_mdb *mdb)
- {
- 	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
- 	};
--	int err;
- 
--	err = dev_mc_del(cpu_dp->master, mdb->addr);
--	if (err)
--		return err;
-+	dev_mc_del(cpu_dp->master, mdb->addr);
- 
--	return dsa_port_host_mdb_del(dp, mdb, db);
-+	dsa_port_host_mdb_del(dp, mdb, db);
- }
- 
- int dsa_port_vlan_add(struct dsa_port *dp,
-@@ -1321,8 +1304,8 @@ int dsa_port_vlan_add(struct dsa_port *dp,
- 				      DSA_NOTIFIER_VLAN_DEL, &info);
- }
- 
--int dsa_port_vlan_del(struct dsa_port *dp,
--		      const struct switchdev_obj_port_vlan *vlan)
-+void dsa_port_vlan_del(struct dsa_port *dp,
-+		       const struct switchdev_obj_port_vlan *vlan)
- {
- 	struct dsa_notifier_vlan_info info = {
- 		.dp = dp,
-@@ -1330,8 +1313,6 @@ int dsa_port_vlan_del(struct dsa_port *dp,
- 	};
- 
- 	dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
--
--	return 0;
- }
- 
- int dsa_port_host_vlan_add(struct dsa_port *dp,
-@@ -1356,8 +1337,8 @@ int dsa_port_host_vlan_add(struct dsa_port *dp,
- 	return err;
- }
- 
--int dsa_port_host_vlan_del(struct dsa_port *dp,
--			   const struct switchdev_obj_port_vlan *vlan)
-+void dsa_port_host_vlan_del(struct dsa_port *dp,
-+			    const struct switchdev_obj_port_vlan *vlan)
- {
- 	struct dsa_notifier_vlan_info info = {
- 		.dp = dp,
-@@ -1368,8 +1349,6 @@ int dsa_port_host_vlan_del(struct dsa_port *dp,
- 	dsa_port_notify(dp, DSA_NOTIFIER_HOST_VLAN_DEL, &info);
- 
- 	vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), vlan->vid);
--
--	return 0;
- }
- 
- int dsa_port_mrp_add(const struct dsa_port *dp,
-@@ -1383,15 +1362,13 @@ int dsa_port_mrp_add(const struct dsa_port *dp,
- 	return ds->ops->port_mrp_add(ds, dp->index, mrp);
- }
- 
--int dsa_port_mrp_del(const struct dsa_port *dp,
--		     const struct switchdev_obj_mrp *mrp)
-+void dsa_port_mrp_del(const struct dsa_port *dp,
-+		      const struct switchdev_obj_mrp *mrp)
- {
- 	struct dsa_switch *ds = dp->ds;
- 
--	if (!ds->ops->port_mrp_del)
--		return -EOPNOTSUPP;
--
--	return ds->ops->port_mrp_del(ds, dp->index, mrp);
-+	if (ds->ops->port_mrp_del)
-+		ds->ops->port_mrp_del(ds, dp->index, mrp);
- }
- 
- int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
-@@ -1405,15 +1382,13 @@ int dsa_port_mrp_add_ring_role(const struct dsa_port *dp,
- 	return ds->ops->port_mrp_add_ring_role(ds, dp->index, mrp);
- }
- 
--int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
--			       const struct switchdev_obj_ring_role_mrp *mrp)
-+void dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
-+				const struct switchdev_obj_ring_role_mrp *mrp)
- {
- 	struct dsa_switch *ds = dp->ds;
- 
- 	if (!ds->ops->port_mrp_del_ring_role)
--		return -EOPNOTSUPP;
--
--	return ds->ops->port_mrp_del_ring_role(ds, dp->index, mrp);
-+		ds->ops->port_mrp_del_ring_role(ds, dp->index, mrp);
- }
- 
- void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 02cc1774888a..776c58a1795b 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -48,14 +48,9 @@ static void dsa_slave_standalone_event_work(struct work_struct *work)
- 		break;
- 
- 	case DSA_UC_DEL:
--		err = dsa_port_standalone_host_fdb_del(dp, addr, vid);
--		if (err) {
--			dev_err(ds->dev,
--				"port %d failed to delete %pM vid %d from fdb: %d\n",
--				dp->index, addr, vid, err);
--		}
--
-+		dsa_port_standalone_host_fdb_del(dp, addr, vid);
- 		break;
-+
- 	case DSA_MC_ADD:
- 		ether_addr_copy(mdb.addr, addr);
- 		mdb.vid = vid;
-@@ -72,13 +67,7 @@ static void dsa_slave_standalone_event_work(struct work_struct *work)
- 		ether_addr_copy(mdb.addr, addr);
- 		mdb.vid = vid;
- 
--		err = dsa_port_standalone_host_mdb_del(dp, &mdb);
--		if (err) {
--			dev_err(ds->dev,
--				"port %d failed to delete %pM vid %d from mdb: %d\n",
--				dp->index, addr, vid, err);
--		}
--
-+		dsa_port_standalone_host_mdb_del(dp, &mdb);
- 		break;
- 	}
- 
-@@ -636,43 +625,42 @@ static int dsa_slave_port_obj_add(struct net_device *dev, const void *ctx,
- 	return err;
- }
- 
--static int dsa_slave_vlan_del(struct net_device *dev,
--			      const struct switchdev_obj *obj)
-+static void dsa_slave_vlan_del(struct net_device *dev,
-+			       const struct switchdev_obj *obj)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct switchdev_obj_port_vlan *vlan;
- 
- 	if (dsa_port_skip_vlan_configuration(dp))
--		return 0;
-+		return;
- 
- 	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
- 
--	return dsa_port_vlan_del(dp, vlan);
-+	dsa_port_vlan_del(dp, vlan);
- }
- 
--static int dsa_slave_host_vlan_del(struct net_device *dev,
--				   const struct switchdev_obj *obj)
-+static void dsa_slave_host_vlan_del(struct net_device *dev,
-+				    const struct switchdev_obj *obj)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	struct switchdev_obj_port_vlan *vlan;
- 
- 	/* Do nothing if this is a software bridge */
- 	if (!dp->bridge)
--		return -EOPNOTSUPP;
-+		return;
- 
- 	if (dsa_port_skip_vlan_configuration(dp))
--		return 0;
-+		return;
- 
- 	vlan = SWITCHDEV_OBJ_PORT_VLAN(obj);
- 
--	return dsa_port_host_vlan_del(dp, vlan);
-+	dsa_port_host_vlan_del(dp, vlan);
- }
- 
- static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
- 				  const struct switchdev_obj *obj)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	int err;
- 
- 	if (ctx && ctx != dp)
- 		return 0;
-@@ -682,39 +670,37 @@ static int dsa_slave_port_obj_del(struct net_device *dev, const void *ctx,
- 		if (!dsa_port_offloads_bridge_port(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 
--		err = dsa_port_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
-+		dsa_port_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
- 		break;
- 	case SWITCHDEV_OBJ_ID_HOST_MDB:
- 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 
--		err = dsa_port_bridge_host_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
-+		dsa_port_bridge_host_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
- 		break;
- 	case SWITCHDEV_OBJ_ID_PORT_VLAN:
- 		if (dsa_port_offloads_bridge_port(dp, obj->orig_dev))
--			err = dsa_slave_vlan_del(dev, obj);
-+			dsa_slave_vlan_del(dev, obj);
- 		else
--			err = dsa_slave_host_vlan_del(dev, obj);
-+			dsa_slave_host_vlan_del(dev, obj);
- 		break;
- 	case SWITCHDEV_OBJ_ID_MRP:
- 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 
--		err = dsa_port_mrp_del(dp, SWITCHDEV_OBJ_MRP(obj));
-+		dsa_port_mrp_del(dp, SWITCHDEV_OBJ_MRP(obj));
- 		break;
- 	case SWITCHDEV_OBJ_ID_RING_ROLE_MRP:
- 		if (!dsa_port_offloads_bridge_dev(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 
--		err = dsa_port_mrp_del_ring_role(dp,
--						 SWITCHDEV_OBJ_RING_ROLE_MRP(obj));
-+		dsa_port_mrp_del_ring_role(dp, SWITCHDEV_OBJ_RING_ROLE_MRP(obj));
- 		break;
- 	default:
--		err = -EOPNOTSUPP;
--		break;
-+		return -EOPNOTSUPP;
- 	}
- 
--	return err;
-+	return 0;
- }
- 
- static inline netdev_tx_t dsa_slave_netpoll_send_skb(struct net_device *dev,
-@@ -1611,13 +1597,11 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 		/* This API only allows programming tagged, non-PVID VIDs */
- 		.flags = 0,
- 	};
--	int err;
- 
--	err = dsa_port_vlan_del(dp, &vlan);
--	if (err)
--		return err;
-+	dsa_port_vlan_del(dp, &vlan);
-+	dsa_port_host_vlan_del(dp, &vlan);
- 
--	return dsa_port_host_vlan_del(dp, &vlan);
-+	return 0;
- }
- 
- static int dsa_slave_restore_vlan(struct net_device *vdev, int vid, void *arg)
-@@ -2837,17 +2821,11 @@ static void dsa_slave_switchdev_event_work(struct work_struct *work)
- 
- 	case SWITCHDEV_FDB_DEL_TO_DEVICE:
- 		if (switchdev_work->host_addr)
--			err = dsa_port_bridge_host_fdb_del(dp, addr, vid);
-+			dsa_port_bridge_host_fdb_del(dp, addr, vid);
- 		else if (dp->lag)
--			err = dsa_port_lag_fdb_del(dp, addr, vid);
-+			dsa_port_lag_fdb_del(dp, addr, vid);
- 		else
--			err = dsa_port_fdb_del(dp, addr, vid);
--		if (err) {
--			dev_err(ds->dev,
--				"port %d failed to delete %pM vid %d from fdb: %d\n",
--				dp->index, addr, vid, err);
--		}
--
-+			dsa_port_fdb_del(dp, addr, vid);
- 		break;
- 	}
- 
--- 
-2.34.1
+> [  110.329039] [0000:c1:00.2]:[qedf_link_update:613]:9: LINK DOWN.
+> [  110.330183] invalid opcode: 0000 [#1] PREEMPT SMP KASAN NOPTI
+> [  110.340728] CPU: 56 PID: 1810 Comm: NetworkManager Not tainted 5.19.0 #1
+> [  110.347435] Hardware name: Dell Inc. PowerEdge R7425/02MJ3T, BIOS
+> 1.18.0 01/17/2022
+> [  110.355088] RIP: 0010:qede_load.cold+0x14c/0xa08 [qede]
+> [  110.360348] Code: c6 60 fb 40 c0 48 c7 c7 40 e1 40 c0 e8 b7 21 28
+> c8 48 8b 3c 24 e8 fa 06 2d c7 41 0f b7 9f b6 00 00 00 41 89 dc e9 c2
+> 3c fe ff <0f> 0b 48 c7 c1 60 d0 40 c0 eb c1 49 8d 7f 08 e8 36 09 2d c7
+> 49 8b
+> [  110.379101] RSP: 0018:ffff888162ab6e00 EFLAGS: 00010206
+> [  110.384338] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffffc03ed524
+> [  110.391479] RDX: 000000000000006b RSI: 0000000000000007 RDI: ffff88810401a758
+> [  110.398621] RBP: ffff8888a20f2cd0 R08: 0000000000000001 R09: ffffffff8bba9e0f
+> [  110.405761] R10: fffffbfff17753c1 R11: 0000000000000001 R12: ffff88810401a758
+> [  110.412895] R13: ffff8888a20f2c08 R14: ffff8888a20f2cb6 R15: ffff8888a20f2c00
+> [  110.420036] FS:  00007fac3a412500(0000) GS:ffff888810d00000(0000)
+> knlGS:0000000000000000
+> [  110.428129] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  110.433875] CR2: 00007fac38ffca88 CR3: 0000000123528000 CR4: 00000000003506e0
+> [  110.441009] Call Trace:
+> [  110.443464]  <TASK>
+> [  110.445585]  ? qed_eth_rxq_start_ramrod+0x320/0x320 [qed]
+> [  110.451110]  ? qede_alloc_mem_txq+0x240/0x240 [qede]
+> [  110.456106]  ? lock_release+0x233/0x470
+> [  110.459958]  ? rwsem_wake.isra.0+0xf1/0x100
+> [  110.464163]  ? lock_chain_count+0x20/0x20
+> [  110.468179]  ? find_held_lock+0x83/0xa0
+> [  110.472032]  ? lock_is_held_type+0xe3/0x140
+> [  110.476245]  ? lockdep_hardirqs_on_prepare+0x132/0x230
+> [  110.481397]  ? queue_delayed_work_on+0x57/0x90
+> [  110.485852]  ? lockdep_hardirqs_on+0x7d/0x100
+> [  110.490221]  ? qed_get_int_fp+0xe0/0xe0 [qed]
+> [  110.494703]  qede_open+0x6d/0x100 [qede]
+> [  110.498664]  __dev_open+0x1c3/0x2c0
+> [  110.502171]  ? dev_set_rx_mode+0x60/0x60
+> [  110.506105]  ? lockdep_hardirqs_on_prepare+0x132/0x230
+> [  110.511254]  ? __local_bh_enable_ip+0x8f/0x110
+> [  110.515711]  __dev_change_flags+0x31b/0x3b0
+> [  110.519906]  ? dev_set_allmulti+0x10/0x10
+> [  110.523935]  dev_change_flags+0x58/0xb0
+> [  110.527783]  do_setlink+0xb38/0x19e0
+> [  110.531370]  ? reacquire_held_locks+0x270/0x270
+> [  110.535910]  ? rtnetlink_put_metrics+0x2e0/0x2e0
+> [  110.540538]  ? entry_SYSCALL_64+0x1/0x29
+> [  110.544478]  ? is_bpf_text_address+0x83/0xf0
+> [  110.548762]  ? kernel_text_address+0x125/0x130
+> [  110.553218]  ? __kernel_text_address+0xe/0x40
+> [  110.557585]  ? unwind_get_return_address+0x33/0x50
+> [  110.562386]  ? create_prof_cpu_mask+0x20/0x20
+> [  110.566755]  ? arch_stack_walk+0xa3/0x100
+> [  110.570781]  ? memset+0x1f/0x40
+> [  110.573939]  ? __nla_validate_parse+0xb4/0x1040
+> [  110.578481]  ? stack_trace_save+0x96/0xd0
+> [  110.582504]  ? nla_get_range_signed+0x180/0x180
+> [  110.587042]  ? __stack_depot_save+0x35/0x4a0
+> [  110.591335]  __rtnl_newlink+0x715/0xc90
+> [  110.595182]  ? mark_lock+0xd51/0xd90
+> [  110.598773]  ? rtnl_link_unregister+0x1e0/0x1e0
+> [  110.603309]  ? _raw_spin_unlock_irqrestore+0x40/0x60
+> [  110.608285]  ? ___slab_alloc+0x919/0xf80
+> [  110.612222]  ? rtnl_newlink+0x36/0x70
+> [  110.615896]  ? reacquire_held_locks+0x270/0x270
+> [  110.620440]  ? lock_is_held_type+0xe3/0x140
+> [  110.624634]  ? rcu_read_lock_sched_held+0x3f/0x80
+> [  110.629353]  ? trace_kmalloc+0x33/0x100
+> [  110.633207]  rtnl_newlink+0x4f/0x70
+> [  110.636704]  rtnetlink_rcv_msg+0x242/0x6b0
+> [  110.640815]  ? rtnl_stats_set+0x260/0x260
+> [  110.644836]  ? lock_acquire+0x16f/0x410
+> [  110.648682]  ? lock_acquire+0x17f/0x410
+> [  110.652533]  netlink_rcv_skb+0xce/0x200
+> [  110.656385]  ? rtnl_stats_set+0x260/0x260
+> [  110.660408]  ? netlink_ack+0x520/0x520
+> [  110.664166]  ? netlink_deliver_tap+0x13c/0x5c0
+> [  110.668626]  ? netlink_deliver_tap+0x141/0x5c0
+> [  110.673083]  netlink_unicast+0x2cb/0x460
+> [  110.677015]  ? netlink_attachskb+0x440/0x440
+> [  110.681294]  ? __build_skb_around+0x12a/0x150
+> [  110.685667]  netlink_sendmsg+0x3d2/0x710
+> [  110.689609]  ? netlink_unicast+0x460/0x460
+> [  110.693710]  ? iovec_from_user.part.0+0x95/0x200
+> [  110.698348]  ? netlink_unicast+0x460/0x460
+> [  110.702456]  sock_sendmsg+0x99/0xa0
+> [  110.705963]  ____sys_sendmsg+0x3d4/0x410
+> [  110.709895]  ? kernel_sendmsg+0x30/0x30
+> [  110.713740]  ? __ia32_sys_recvmmsg+0x160/0x160
+> [  110.718200]  ? lockdep_hardirqs_on_prepare+0x230/0x230
+> [  110.723358]  ___sys_sendmsg+0xe2/0x150
+> [  110.727124]  ? sendmsg_copy_msghdr+0x110/0x110
+> [  110.731576]  ? find_held_lock+0x83/0xa0
+> [  110.735425]  ? lock_release+0x233/0x470
+> [  110.739271]  ? __fget_files+0x14a/0x200
+> [  110.743120]  ? reacquire_held_locks+0x270/0x270
+> [  110.747674]  ? __fget_files+0x162/0x200
+> [  110.751524]  ? __fget_light+0x66/0x100
+> [  110.755286]  __sys_sendmsg+0xc3/0x140
+> [  110.758964]  ? __sys_sendmsg_sock+0x20/0x20
+> [  110.763158]  ? mark_held_locks+0x24/0x90
+> [  110.767099]  ? ktime_get_coarse_real_ts64+0x19/0x80
+> [  110.771990]  ? ktime_get_coarse_real_ts64+0x65/0x80
+> [  110.776879]  ? syscall_trace_enter.constprop.0+0x16f/0x230
+> [  110.782375]  do_syscall_64+0x5b/0x80
+> [  110.785963]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> [  110.791021] RIP: 0033:0x7fac3b54f71d
+> [  110.794609] Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 ea
+> c4 f4 ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00
+> 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 48 89 44 24 08 e8 3e c5 f4
+> ff 48
+> [  110.813362] RSP: 002b:00007ffd3b5c7da0 EFLAGS: 00000293 ORIG_RAX:
+> 000000000000002e
+> [  110.820938] RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fac3b54f71d
+> [  110.828081] RDX: 0000000000000000 RSI: 00007ffd3b5c7de0 RDI: 000000000000000d
+> [  110.835221] RBP: 0000563d7ac60090 R08: 0000000000000000 R09: 0000000000000000
+> [  110.842361] R10: 0000000000000000 R11: 0000000000000293 R12: 00007ffd3b5c7f4c
+> [  110.849494] R13: 00007ffd3b5c7f50 R14: 0000000000000000 R15: 00007ffd3b5c7f58
+> [  110.856639]  </TASK>
+> [  110.858837] Modules linked in: pcc_cpufreq(-) rfkill intel_rapl_msr
+> dcdbas intel_rapl_common amd64_edac edac_mce_amd rapl pcspkr qedi
+> mgag200 i2c_algo_bit iscsi_boot_sysfs libiscsi drm_shmem_helper
+> cdc_ether scsi_transport_iscsi usbnet drm_kms_helper mii uio ipmi_ssif
+> k10temp i2c_piix4 acpi_ipmi ipmi_si ipmi_devintf ipmi_msghandler
+> acpi_power_meter acpi_cpufreq vfat fat drm fuse xfs qedf qede qed
+> crct10dif_pclmul crc32_pclmul crc32c_intel ghash_clmulni_intel libfcoe
+> libfc scsi_transport_fc crc8 ccp tg3 sp5100_tco
+> [  110.904398] ---[ end trace 0000000000000000 ]---
+> [  110.909039] RIP: 0010:qede_load.cold+0x14c/0xa08 [qede]
+> [  110.914306] Code: c6 60 fb 40 c0 48 c7 c7 40 e1 40 c0 e8 b7 21 28
+> c8 48 8b 3c 24 e8 fa 06 2d c7 41 0f b7 9f b6 00 00 00 41 89 dc e9 c2
+> 3c fe ff <0f> 0b 48 c7 c1 60 d0 40 c0 eb c1 49 8d 7f 08 e8 36 09 2d c7
+> 49 8b
+> [  110.933068] RSP: 0018:ffff888162ab6e00 EFLAGS: 00010206
+> [  110.938314] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffffffffc03ed524
+> [  110.945466] RDX: 000000000000006b RSI: 0000000000000007 RDI: ffff88810401a758
+> [  110.952616] RBP: ffff8888a20f2cd0 R08: 0000000000000001 R09: ffffffff8bba9e0f
+> [  110.959772] R10: fffffbfff17753c1 R11: 0000000000000001 R12: ffff88810401a758
+> [  110.966925] R13: ffff8888a20f2c08 R14: ffff8888a20f2cb6 R15: ffff8888a20f2c00
+> [  110.974092] FS:  00007fac3a412500(0000) GS:ffff888810d00000(0000)
+> knlGS:0000000000000000
+> [  110.982198] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  110.987971] CR2: 00007fac38ffca88 CR3: 0000000123528000 CR4: 00000000003506e0
+> [  110.995131] Kernel panic - not syncing: Fatal exception
+> [  111.001311] Kernel Offset: 0x6000000 from 0xffffffff81000000
+> (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+> [  111.012016] ---[ end Kernel panic - not syncing: Fatal exception ]---
+> 
+> kernel tarball:
+> https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/604654489/publish%20x86_64%20debug/2813007034/artifacts/kernel-mainline.kernel.org-redhat_604654489_x86_64_debug.tar.gz
+> kernel config: https://s3.amazonaws.com/arr-cki-prod-trusted-artifacts/trusted-artifacts/604654489/build%20x86_64%20debug/2813006987/artifacts/kernel-mainline.kernel.org-redhat_604654489_x86_64_debug.config
+> 
+> 
+> Bruno
+> 
+> 
+> >  
+> 
 
