@@ -2,168 +2,341 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17636598B50
-	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 20:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D8E598C04
+	for <lists+netdev@lfdr.de>; Thu, 18 Aug 2022 20:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242720AbiHRShd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 14:37:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56346 "EHLO
+        id S1344872AbiHRSvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 14:51:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230492AbiHRShc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 14:37:32 -0400
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com (mail-eopbgr00060.outbound.protection.outlook.com [40.107.0.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDA6CD51F;
-        Thu, 18 Aug 2022 11:37:30 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J4cxCdH5hV2l0toTXJeyFWoa8dp08BskIz5goW5rGGpb6+uitzNqHEMuJZSjsM6oprotxLktashaEsVhdo2Tiu8PAPjmN46ThqtiHKuHGdtMTcGXraL4dL8EE5CMVte7mdaFzuNmXhKFUdj1E7BNWZ8z223EyB6739KlJOdFA8iNQCNnzOYodOMkCavSe4o0gsONXeB8N+C4cB4tEQr7K/6gvd6kh+DHqSOhaF+D4Pi16LAHqsPiQrIzjEQMwAiKqHGP6LhROJ4yu1VhI5i/bNSE2Jp/yneitoDEnflfzQeFK5DPEUkEkUKOj8mFXVXlcANJ7fsKQs8sM9OmZAMN9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B1EFixfy1IOhIVo0/lqU0dWmEHlSnAI+9ryc3zWq+p4=;
- b=PRzLYqkMhNQKshtVBZyZIsPNfd3wHt/RnwLyAo5gpQhb0aSkPuVO4NUJSo4cILC7vQrxryt5COnYr5GAAbYblkWJ6sGKetav/55fBCL8q7TtkqkY5vC7uheq2YOxbs3bv+xJSCYOaAaFDfNuB8+ZhkaIm6a7GSKdOiUUnxJ/gnlAxKhT9/lmlUvrVuvIC4WQOlXXl/bfvrxaEZsOO0GvaSxSb12sJ/iNH9FVOlZ/3yBj1YtXfDwYSp1D2ytbDVSm4wjM3OkgjNfzc8kDOWVKl8jMKR2qwkCyfMWUEPdw50VNhvmrOW1MyE7PzQHmDbCW2cCNz9fd4RlwTQA6wy4Gfg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=B1EFixfy1IOhIVo0/lqU0dWmEHlSnAI+9ryc3zWq+p4=;
- b=S2/T+5OzRFwW0XbHocd8B1JpPB2UVm0eh+rNyqcopYMv05IGuLtGoWVuhM4/HcCMrM2YvCGu16qqQ91h/y7LjDLpq1gGCK5+265LKkfVfTPWmqydMCWfm0uvRjMJvCJeT/r2gg44f2OZpstwb1UuEWKidN+P0Fk+LqXXjhCQnngEoR2vuHJeMv2ZMiSF78Q9db0Ab5HhW8pJUiYMaxERUnnm2pnpweFSrfPS/qCl89mZxdHVEnwWY0q1lfALSSogo9CI3Babyc/pICPrb0SfzAjb3rUJofXGqH3ecOG2gIKJrxfNPSCCGsyTz02DS1+Qt/TZbz3Oim93Wp/ap82RRA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by VI1PR03MB3600.eurprd03.prod.outlook.com (2603:10a6:803:2c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Thu, 18 Aug
- 2022 18:37:26 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::ecaa:a5a9:f0d5:27a2%4]) with mapi id 15.20.5504.019; Thu, 18 Aug 2022
- 18:37:26 +0000
-Subject: Re: [RESEND PATCH net-next v4 00/25] net: dpaa: Cleanups in
- preparation for phylink conversion
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+        with ESMTP id S244105AbiHRSvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 14:51:10 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D8B1A4B0E;
+        Thu, 18 Aug 2022 11:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1660848669; x=1692384669;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=mYadyzwA0ZoHMKNbg2eMtvWK2KsC51kLCrZfy90MEEM=;
+  b=hohA4YYgGKxObxiknZnx7Aa9am/heukS4YdbGsDakhoIlxMZhW+8DseF
+   ifeOILZrB7Ha37/qGsoASYhVa3GXV63b/UZzxmUHU9/2PCXPHDC3Ym72S
+   6K8Bek/GpMUMBjuiDgkyhm5Ny+rV+FX/ZFhCJMrI7bDro+chbF1A54VRo
+   VGl/D9oknFJTTwFvZyl6XogCRkDbLNDAmgYT1Nyj2/SscROOCFc6QCmUb
+   X/iT8OWYlpNfieGRHZlNZwtjdKbZCE7pG+uHG/DKixVLxisX4NmcwGQsl
+   qIzHYUrgPco/d6E10hDDQZZjuj9czOSn0jYEUDRtlpEY9lIj5uecmAkGc
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="279806175"
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="279806175"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2022 11:51:07 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
+   d="scan'208";a="783880247"
+Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 18 Aug 2022 11:51:02 -0700
+Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oOkbe-0000Pg-0Q;
+        Thu, 18 Aug 2022 18:51:02 +0000
+Date:   Fri, 19 Aug 2022 02:50:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Dmitry Safonov <dima@arista.com>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Camelia Groza <camelia.groza@nxp.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Li Yang <leoyang.li@nxp.com>, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-References: <20220818161649.2058728-1-sean.anderson@seco.com>
- <20220818112054.29cd77fb@kernel.org>
-From:   Sean Anderson <sean.anderson@seco.com>
-Message-ID: <f085609c-24c9-a9fb-e714-18ba7f3ef48a@seco.com>
-Date:   Thu, 18 Aug 2022 14:37:23 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <20220818112054.29cd77fb@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR20CA0005.namprd20.prod.outlook.com
- (2603:10b6:208:e8::18) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Dmitry Safonov <dima@arista.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org
+Subject: Re: [PATCH 08/31] net/tcp: Introduce TCP_AO setsockopt()s
+Message-ID: <202208190223.JG4u6Nhm-lkp@intel.com>
+References: <20220818170005.747015-9-dima@arista.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 32d9379b-8058-4dd3-dba1-08da8148b2d6
-X-MS-TrafficTypeDiagnostic: VI1PR03MB3600:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2QcYFtLIcXzIjFYGv2htmFyHx5Im+1nZLEylGhF//iw8G/1J53XKfmtRkufGZEFoK4E6OMe9LqoA13dzwfEbyMG2xTq6oEeezoLs6Yj0+DhTp1xWedZJgKZ3hzmIxsDpzWWS7ImCJ4W6crf/JVnsDqjTv2i7FSfZUOGdvOVg+mP69HEsQjzNSrpDMGhAPnGSgqzeJd3v/Rw2I2QYefjwhUM6nQSXxuU6yDEwpToLXqVk3KNM9IyFErodzLrTDTaEZLs+dVjCcwyEJwuZbOh6gqtQlip0FwQTISY/gIiiZcNttidDvCLSLX8F2J7UO7xLCydEy6JPePsoZJHwyxcXHoNb/isUYuIPOkz3NoJn/stSp9nmfCxGRU5BhB9lSBT1+z3JETnfPyKbc2DltE7qGE5iKbhgTrDZTsRitkBNm1KJM45sYZQlxc/hVjUgrRvUI5j7684on74As+Mdu74fL2k949x9G1Mi1pKDEg696fJUeewiiBxCoyYnxKa9KH+QAKnbHamAYud9E0ByXOrTISEEPJ1o0eX3R7kodgkyCKEljw6B9TilIv+tpIFqhOkyT1KCT7mvlIPH2SWy+4y+1jYL/1IhJ3yiwekkq6k0C31yjreO51LidFoL2zyNs/YKj2MiMXWyGzBNRtwWyFNHlTyBkqRdi2R0TNmK0JSuCebTVZEtpiKhNcX9r3CMnhuBoed5+6Hea+DTbReD/a570bIPa+TnknR0VfQfADJtp9i6GE/HdSEt1lqT/Y83iH2LXOmRK2aLBP5d5cuOAGYyjbpwE8umku5tTY7fbBoF4ehyY/lxavsbWu8JA/T71Enu1ix0Fu7AwN13nPIYLI7pevUVeUmk+Bo7606QuzAYBrw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(136003)(376002)(39840400004)(396003)(346002)(316002)(8936002)(66476007)(6916009)(54906003)(31696002)(66556008)(4326008)(8676002)(66946007)(26005)(6512007)(6666004)(83380400001)(2616005)(53546011)(186003)(38100700002)(6486002)(478600001)(38350700002)(52116002)(6506007)(36756003)(41300700001)(966005)(2906002)(86362001)(5660300002)(7416002)(31686004)(44832011)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?S0NzNks4SEhibHZDaUZPZzZ1QXczU04zNmFJMzFDakk3akkzQU56cG5oYXpq?=
- =?utf-8?B?V2RXL2NGT3huZ0IxUDU5MmJic2tDQ1hvMmo5UFh6NGQvRHZDWXNpelVhS09p?=
- =?utf-8?B?YkxONjJsSDE0WXVLZmh2QVAwSy9IRmkycms2ZGF5NlVQQTdDTFZuTzFqT2xE?=
- =?utf-8?B?V3M4d1lybHVwNGxYaTcxbVpmNWl3MU0wTmEzbXhUZjZ2Z3pOd1k5MVBRRGZH?=
- =?utf-8?B?SWtoVHJTQ0N2UVJjWEdlNDByQ1BWblBJK0lkNFovQ1VLa2dHSGg3QkJwc3JR?=
- =?utf-8?B?NkdsdDluU1dzWUU1TllFVGk5enpUWTljMXBOOVZFalNUbTQzOEJaZEtXdElD?=
- =?utf-8?B?Q2ZSVzRzV1JtRDdDVWZodmc3MmZhVE5GVmFXRTRPK3EwemlkWmd1WlhLc2ow?=
- =?utf-8?B?VStoWHYrL0RSWCtTSG1yNCtHWllsbzV3aHJlOWRtanhVeTRpeTE0NVZvdVNY?=
- =?utf-8?B?VktZcWhHRHZocFlUd08vRzhKSTdkb2FJWk0rOGlxdWtqd2tvNWt1UjNPbjRI?=
- =?utf-8?B?RnlyYWhueGtEMzFCTi9lM292dHVBSGFyZEp6M3U2aTlubVp0NWU0MWVYVkRt?=
- =?utf-8?B?QlUzRnZCMEpyMTV0em9oc0d3YUtuZ2F1MTU1V21TYnV3b3hmZEtDZlVtWlFa?=
- =?utf-8?B?YjNTYUN0bzhFUndKNHVkcnhqY2lGd2J2NHN1UWYxTzhsazg4RzJYNEcwMnRr?=
- =?utf-8?B?dnJ5U2pEdWtYZGhaTHpGb1FrWVpIWGVXK3pkQXZRTE9oem5vOFhJY2ltRG5a?=
- =?utf-8?B?N3BtUnNaaS8wY0hZNFh0TDA4NnJTZm16d3pOMWExL3ozeUxjcE8rY2NtVHRI?=
- =?utf-8?B?cGpQNzZXeWlyakk4RjdTL1Q4QjZiK09ubHEyU0cyWENtU1hTTkdlNnEzYytR?=
- =?utf-8?B?UmIyU2VXNGVnSDl2VlExTHJLZUE3T2gyRExDdlk3VnZWMEZBTzY4K0RqQ0N5?=
- =?utf-8?B?d01jazA3NXNFUzJ4bWQ1ZHZseEtYSUtpMXZabEY3anBkUmQrVU5Mek9CcVZw?=
- =?utf-8?B?MVpOcnFjbS9NKzBoYmVUeXFHeDVPN2plT1g1WHQ4bzR4U0V3QVVYL0ZKeTRp?=
- =?utf-8?B?YVdsZFhMcytaZkR4cGxzeFBaRnR1NExWQlNZUEQrUStTTUhmNk1uWnVCL3hW?=
- =?utf-8?B?T3ZEVDJMbFgyelYrcFhOcmtXV0lqdENkVERERUowOFhvSGdydDZ5L3BackQv?=
- =?utf-8?B?QzFMZ2dNdnNpelZKUXZOSFEwVWliV0ZBL2s3ckZHMzhnUEFSNEFtVjRKSmho?=
- =?utf-8?B?Qm0zQ0hlY1VSSUxEbDBmWmx3eW94Wnd2YlRVWnBTKzI3MEJvUFNLdnRSK2pD?=
- =?utf-8?B?ZmQzTnZZM29zbG9uQS8xOC9oQlVrSHMrSXB1WUlFaFVzdHRpenowVDZKMk5i?=
- =?utf-8?B?LzdQTXJ3N1VtZ0oyYzcvNENQR1Z3UWEyakZFTm16NExUcmFwM0dSQ3NySHJl?=
- =?utf-8?B?SmJFYkgzU0lkWTJTZUJUaU9HYUdTNGUxZDZJU1ltaXVLWkh3WlhwTjRXaEhz?=
- =?utf-8?B?SjZQU2R5RWVHdGpPYTZJSHVkQytHSHFlUjdSb1dlR2doVTdoQUV1VzJ3VTRS?=
- =?utf-8?B?R1ozcGtsbEdJZXNDKzhuTDJyN2lsQjdlQTMvU2hBRDJjMlQvZStVRW9KM0hn?=
- =?utf-8?B?RnBBQ1JETHBDTitJeGZ4TDNMbWx5TWRvQzNadzdVaWh6em9BRlh3MjBkRlFM?=
- =?utf-8?B?bkM3d2JuSTZBQVFISGl4MjFIMkNucmRMUUtoZTJiT3BodTJodTRJZC9MZmR3?=
- =?utf-8?B?UjRPa051eWEzNnFEZWlTZVFwUjJJUkRXZlJuZFZiVVN5OXk1K2lIOVU4SmxQ?=
- =?utf-8?B?c2hiUTR5dVo0MGtYUTUrWCtuYURLTXd1bzBBRDRDbmpmWEZFelBFZGNDT3Y0?=
- =?utf-8?B?SnBnU3NiTEp2NElZSUY0cy9vUEVOcEN2UEhkaEc2YTJCSHkzMXQwNHdoVWFH?=
- =?utf-8?B?ajI3cndCd056RkpORWlJNS9hUDYxSEo0WFRWSDd3czF5SVdMdUxSMUZ5cUxW?=
- =?utf-8?B?WXZSbWVVUG4zTWlGNnB3Y3ZDUndFZUNBam1qKzVVeWJNL2RHNFkxR2E4ZGJD?=
- =?utf-8?B?SkJGUXRJLzlVMDVmM3JjSGZHUHl2STZWdTNtNHJtREVzNjEwVkV3UTRvbC9s?=
- =?utf-8?B?RTh2M0lvdC9adFNlRjRlZG9GSGhpK2JmVWhmK0MxRzRwMG9ZNFp1OTNPM0Zz?=
- =?utf-8?B?Y1E9PQ==?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32d9379b-8058-4dd3-dba1-08da8148b2d6
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2022 18:37:26.5494
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Kduk6WBz3Ssn6k22LgmsiUZpEOU2xZApFgwexHerdHu/Nz/EifhJhZHzwvig58mewbMpgK2PIrUOkKi55mIs2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB3600
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818170005.747015-9-dima@arista.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Hi Dmitry,
 
-On 8/18/22 2:20 PM, Jakub Kicinski wrote:
-> On Thu, 18 Aug 2022 12:16:24 -0400 Sean Anderson wrote:
->> This series contains several cleanup patches for dpaa/fman. While they
->> are intended to prepare for a phylink conversion, they stand on their
->> own. This series was originally submitted as part of [1].
-> 
-> Still over the limit of patches in a patch series, and looks pretty
-> easy to chunk up. We review and apply patches in netdev in 1-3 days,
-> it really is more efficient to post smaller series. 
+Thank you for the patch! Perhaps something to improve:
 
-Last time I offered to arbitrarily chunk things [1], but I did not receive
-a response for 3 weeks.
+[auto build test WARNING on e34cfee65ec891a319ce79797dda18083af33a76]
 
-> And with the other series you sent to the list we have nearly 50
-> patches from you queued for review. I don't think this is reasonable,
-> people reviewing this code are all volunteers trying to get their
-> work done as well :(
+url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628
+base:   e34cfee65ec891a319ce79797dda18083af33a76
+config: x86_64-randconfig-a015 (https://download.01.org/0day-ci/archive/20220819/202208190223.JG4u6Nhm-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/469bd71e5ea011f6ae5a1554b75157471448341d
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628
+        git checkout 469bd71e5ea011f6ae5a1554b75157471448341d
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash net/ipv4/ net/ipv6/
 
-These patches have been sent to the list in one form or another since
-I first sent out an RFC for DPAA conversion back in June [2]. I have not
-substantially modified any of them (although I did add a few more
-since v2). It's not like I came up with these just now; I have been
-seeking feedback on these series for 2-3 months so far. The only
-reviews I have gotten were from Camelia Groza, who has provided some
-helpful feedback.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
---Sean
+All warnings (new ones prefixed by >>):
 
-[1] https://lore.kernel.org/netdev/51c26e19-e4ea-7596-1147-7d95eec9e6a9@seco.com/
-[2] https://lore.kernel.org/netdev/20220617203312.3799646-1-sean.anderson@seco.com/
+>> net/ipv4/tcp_ao.c:19:20: warning: no previous prototype for 'tcp_ao_do_lookup_rcvid' [-Wmissing-prototypes]
+      19 | struct tcp_ao_key *tcp_ao_do_lookup_rcvid(struct sock *sk, u8 keyid)
+         |                    ^~~~~~~~~~~~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:37:20: warning: no previous prototype for 'tcp_ao_do_lookup_sndid' [-Wmissing-prototypes]
+      37 | struct tcp_ao_key *tcp_ao_do_lookup_sndid(const struct sock *sk, u8 keyid)
+         |                    ^~~~~~~~~~~~~~~~~~~~~~
+   net/ipv4/tcp_ao.c: In function '__tcp_ao_key_cmp':
+   net/ipv4/tcp_ao.c:88:46: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      88 |                 if (ipv6_addr_any(&key->addr.a6) || ipv6_addr_any(&addr->a6))
+         |                                              ^~
+         |                                              a4
+   net/ipv4/tcp_ao.c:88:74: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      88 |                 if (ipv6_addr_any(&key->addr.a6) || ipv6_addr_any(&addr->a6))
+         |                                                                          ^~
+         |                                                                          a4
+   net/ipv4/tcp_ao.c:90:50: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      90 |                 if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
+         |                                                  ^~
+         |                                                  a4
+   net/ipv4/tcp_ao.c:90:61: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      90 |                 if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
+         |                                                             ^~
+         |                                                             a4
+   net/ipv4/tcp_ao.c:92:42: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      92 |                 return memcmp(&key->addr.a6, &addr->a6, prefixlen);
+         |                                          ^~
+         |                                          a4
+   net/ipv4/tcp_ao.c:92:53: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+      92 |                 return memcmp(&key->addr.a6, &addr->a6, prefixlen);
+         |                                                     ^~
+         |                                                     a4
+   net/ipv4/tcp_ao.c: At top level:
+>> net/ipv4/tcp_ao.c:96:5: warning: no previous prototype for 'tcp_ao_key_cmp' [-Wmissing-prototypes]
+      96 | int tcp_ao_key_cmp(const struct tcp_ao_key *key,
+         |     ^~~~~~~~~~~~~~
+   net/ipv4/tcp_ao.c: In function 'tcp_ao_key_cmp':
+   net/ipv4/tcp_ao.c:100:61: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+     100 |         if (family == AF_INET6 && ipv6_addr_v4mapped(&addr->a6)) {
+         |                                                             ^~
+         |                                                             a4
+   net/ipv4/tcp_ao.c:101:38: error: 'const union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+     101 |                 __be32 addr4 = addr->a6.s6_addr32[3];
+         |                                      ^~
+         |                                      a4
+   net/ipv4/tcp_ao.c: At top level:
+   net/ipv4/tcp_ao.c:109:20: warning: no previous prototype for 'tcp_ao_do_lookup' [-Wmissing-prototypes]
+     109 | struct tcp_ao_key *tcp_ao_do_lookup(const struct sock *sk,
+         |                    ^~~~~~~~~~~~~~~~
+>> net/ipv4/tcp_ao.c:145:6: warning: no previous prototype for 'tcp_ao_link_mkt' [-Wmissing-prototypes]
+     145 | void tcp_ao_link_mkt(struct tcp_ao_info *ao, struct tcp_ao_key *mkt)
+         |      ^~~~~~~~~~~~~~~
+   In file included from include/linux/tcp.h:19,
+                    from net/ipv4/tcp_ao.c:13:
+   net/ipv4/tcp_ao.c: In function 'tcp_ao_verify_ipv6':
+   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
+         |                                             ^~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:292:41: note: in expansion of macro 'sk_v6_daddr'
+     292 |                 if (!ipv6_addr_any(&sk->sk_v6_daddr)) {
+         |                                         ^~~~~~~~~~~
+   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
+         |                                             ^~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:293:45: note: in expansion of macro 'sk_v6_daddr'
+     293 |                         __be32 daddr4 = sk->sk_v6_daddr.s6_addr32[3];
+         |                                             ^~~~~~~~~~~
+   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
+         |                                             ^~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:295:54: note: in expansion of macro 'sk_v6_daddr'
+     295 |                         if (!ipv6_addr_v4mapped(&sk->sk_v6_daddr))
+         |                                                      ^~~~~~~~~~~
+   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
+         |                                             ^~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:316:41: note: in expansion of macro 'sk_v6_daddr'
+     316 |                 if (!ipv6_addr_any(&sk->sk_v6_daddr) &&
+         |                                         ^~~~~~~~~~~
+   include/net/sock.h:385:45: error: 'struct sock_common' has no member named 'skc_v6_daddr'; did you mean 'skc_daddr'?
+     385 | #define sk_v6_daddr             __sk_common.skc_v6_daddr
+         |                                             ^~~~~~~~~~~~
+   net/ipv4/tcp_ao.c:317:45: note: in expansion of macro 'sk_v6_daddr'
+     317 |                     !ipv6_prefix_equal(&sk->sk_v6_daddr, addr, prefix))
+         |                                             ^~~~~~~~~~~
+   net/ipv4/tcp_ao.c: In function 'tcp_ao_mkt_overlap_v6':
+   net/ipv4/tcp_ao.c:531:39: error: 'union tcp_ao_addr' has no member named 'a6'; did you mean 'a4'?
+     531 |                 key_addr = &key->addr.a6;
+         |                                       ^~
+         |                                       a4
+   net/ipv4/tcp_ao.c: In function '__tcp_ao_key_cmp':
+   net/ipv4/tcp_ao.c:94:1: error: control reaches end of non-void function [-Werror=return-type]
+      94 | }
+         | ^
+   cc1: some warnings being treated as errors
+
+
+vim +/tcp_ao_do_lookup_rcvid +19 net/ipv4/tcp_ao.c
+
+    18	
+  > 19	struct tcp_ao_key *tcp_ao_do_lookup_rcvid(struct sock *sk, u8 keyid)
+    20	{
+    21		struct tcp_sock *tp = tcp_sk(sk);
+    22		struct tcp_ao_key *key;
+    23		struct tcp_ao_info *ao;
+    24	
+    25		ao = rcu_dereference_check(tp->ao_info, lockdep_sock_is_held(sk));
+    26	
+    27		if (!ao)
+    28			return NULL;
+    29	
+    30		hlist_for_each_entry_rcu(key, &ao->head, node) {
+    31			if (key->rcvid == keyid)
+    32				return key;
+    33		}
+    34		return NULL;
+    35	}
+    36	
+    37	struct tcp_ao_key *tcp_ao_do_lookup_sndid(const struct sock *sk, u8 keyid)
+    38	{
+    39		struct tcp_ao_key *key;
+    40		struct tcp_ao_info *ao;
+    41	
+    42		ao = rcu_dereference_check(tcp_sk(sk)->ao_info,
+    43					   lockdep_sock_is_held(sk));
+    44		if (!ao)
+    45			return NULL;
+    46	
+    47		hlist_for_each_entry_rcu(key, &ao->head, node) {
+    48			if (key->sndid == keyid)
+    49				return key;
+    50		}
+    51		return NULL;
+    52	}
+    53	
+    54	static inline int ipv4_prefix_cmp(const struct in_addr *addr1,
+    55					  const struct in_addr *addr2,
+    56					  unsigned int prefixlen)
+    57	{
+    58		__be32 mask = inet_make_mask(prefixlen);
+    59	
+    60		if ((addr1->s_addr & mask) == (addr2->s_addr & mask))
+    61			return 0;
+    62		return ((addr1->s_addr & mask) > (addr2->s_addr & mask)) ? 1 : -1;
+    63	}
+    64	
+    65	static int __tcp_ao_key_cmp(const struct tcp_ao_key *key,
+    66				    const union tcp_ao_addr *addr, u8 prefixlen,
+    67				    int family, int sndid, int rcvid, u16 port)
+    68	{
+    69		if (sndid >= 0 && key->sndid != sndid)
+    70			return (key->sndid > sndid) ? 1 : -1;
+    71		if (rcvid >= 0 && key->rcvid != rcvid)
+    72			return (key->rcvid > rcvid) ? 1 : -1;
+    73		if (port != 0 && key->port != 0 && port != key->port)
+    74			return (key->port > port) ? 1 : -1;
+    75	
+    76		if (family == AF_UNSPEC)
+    77			return 0;
+    78		if (key->family != family)
+    79			return (key->family > family) ? 1 : -1;
+    80	
+    81		if (family == AF_INET) {
+    82			if (key->addr.a4.s_addr == INADDR_ANY)
+    83				return 0;
+    84			if (addr->a4.s_addr == INADDR_ANY)
+    85				return 0;
+    86			return ipv4_prefix_cmp(&key->addr.a4, &addr->a4, prefixlen);
+    87		} else {
+    88			if (ipv6_addr_any(&key->addr.a6) || ipv6_addr_any(&addr->a6))
+    89				return 0;
+    90			if (ipv6_prefix_equal(&key->addr.a6, &addr->a6, prefixlen))
+    91				return 0;
+  > 92			return memcmp(&key->addr.a6, &addr->a6, prefixlen);
+    93		}
+    94	}
+    95	
+  > 96	int tcp_ao_key_cmp(const struct tcp_ao_key *key,
+    97			   const union tcp_ao_addr *addr, u8 prefixlen,
+    98			   int family, int sndid, int rcvid, u16 port)
+    99	{
+   100		if (family == AF_INET6 && ipv6_addr_v4mapped(&addr->a6)) {
+ > 101			__be32 addr4 = addr->a6.s6_addr32[3];
+   102	
+   103			return __tcp_ao_key_cmp(key, (union tcp_ao_addr *)&addr4,
+   104						prefixlen, AF_INET, sndid, rcvid, port);
+   105		}
+   106		return __tcp_ao_key_cmp(key, addr, prefixlen, family, sndid, rcvid, port);
+   107	}
+   108	
+   109	struct tcp_ao_key *tcp_ao_do_lookup(const struct sock *sk,
+   110					    const union tcp_ao_addr *addr,
+   111					    int family, int sndid, int rcvid, u16 port)
+   112	{
+   113		struct tcp_ao_key *key;
+   114		struct tcp_ao_info *ao;
+   115	
+   116		ao = rcu_dereference_check(tcp_sk(sk)->ao_info,
+   117					   lockdep_sock_is_held(sk));
+   118		if (!ao)
+   119			return NULL;
+   120	
+   121		hlist_for_each_entry_rcu(key, &ao->head, node) {
+   122			if (!tcp_ao_key_cmp(key, addr, key->prefixlen,
+   123					    family, sndid, rcvid, port))
+   124				return key;
+   125		}
+   126		return NULL;
+   127	}
+   128	EXPORT_SYMBOL(tcp_ao_do_lookup);
+   129	
+   130	static struct tcp_ao_info *tcp_ao_alloc_info(gfp_t flags,
+   131			struct tcp_ao_info *cloned_from)
+   132	{
+   133		struct tcp_ao_info *ao;
+   134	
+   135		ao = kzalloc(sizeof(*ao), flags);
+   136		if (!ao)
+   137			return NULL;
+   138		INIT_HLIST_HEAD(&ao->head);
+   139	
+   140		if (cloned_from)
+   141			ao->ao_flags = cloned_from->ao_flags;
+   142		return ao;
+   143	}
+   144	
+ > 145	void tcp_ao_link_mkt(struct tcp_ao_info *ao, struct tcp_ao_key *mkt)
+   146	{
+   147		hlist_add_head_rcu(&mkt->node, &ao->head);
+   148	}
+   149	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
