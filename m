@@ -2,115 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6F885991AE
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 02:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D600A5991B7
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 02:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236186AbiHSAUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 20:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43170 "EHLO
+        id S241673AbiHSA1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 20:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiHSAUW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 20:20:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E32CD50A;
-        Thu, 18 Aug 2022 17:20:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 383ECB824C5;
-        Fri, 19 Aug 2022 00:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C18F1C433B5;
-        Fri, 19 Aug 2022 00:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660868418;
-        bh=yx70KrwfnfCMvE+PDHRy6VHB/MeiZV40kvte15rPUAg=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fAALv8eB67EUqcNOjbvie7p126L+9FtJWOslpdbMmE0LG9hvisG2PTVWp8Z6RPxdy
-         r6/xfSkoqBqUv+UGswRMdVmRB5fFaPvcNsnsW/Ggjisz2yHzhqTqfBLgwBcn48m7bO
-         Ve2/tdQejWHt6J7CS8Nb7Hzt9X3fT5MjuwkgMK3i/PACzptbQmgqS/GzJKiD7YyziS
-         9+Kv5ekGyK206r1DIgWjYLfV9YXSuId7zijVip/0O58bR5S6wGahl72JOm3BRjjKxz
-         Zluv6hHcSXzW7/gXx4zyittAOyCZURV6h6VOHT6wZn/HONGTn/CwMAgnLxMKO8Q3r7
-         2UfX4yHLsgORQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A442CE2A05E;
-        Fri, 19 Aug 2022 00:20:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229899AbiHSA1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 20:27:04 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DFA63F16
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 17:27:03 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id bs25so3460560wrb.2
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 17:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
+        bh=zBgp779WqhreJixwzCa1lDAelVYJN0lnI11zJWZf/zQ=;
+        b=aghXJta+xN1lq58dOg8AiG9UgxKosMPoHjQWWVm+HaUsAdZRvfzAy4n1/NJrXAXx1H
+         Y8p7UuZeH62SRrzemNlq1Uu673u4g+n32KWLQt6VINgLqFO2N1WJ5kL6WjhdbbQALErb
+         7jxIws0b0EFYrHx5BbgU5FCnM1vUA7d160xkMeGnok9QND+v4G4WT4uAw/FUv/zF9mC9
+         n9kzVa5vMkKWDE3p84B6V3KOq/c59M7prQND7flmtu36q0GvKkYDxzlnIY20cUc9EE+z
+         xfcWnk/1lZvRRxyk6EEZX7rHdjxT6dmFt0AhVK3CHBjwU6qFSQYrMu9E6ZQhRchD7EF3
+         H3dA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=to:subject:message-id:date:from:reply-to:mime-version
+         :x-gm-message-state:from:to:cc;
+        bh=zBgp779WqhreJixwzCa1lDAelVYJN0lnI11zJWZf/zQ=;
+        b=N/C/rolTmuXiY/j9qjJAevlvz1GIUVN/C1qsns17ZIGgv2ImO76SvgSpqdvgjGhVl4
+         I10UIDDhR3RQNct9nBExJveS9d6dIpffghXlh6LL75jJQett2uB7ewCPPVvNJ/NTfk8U
+         4CSqwdtYi222+iSZUKYPwjkZ2TlS/nCUt1ftLVhR2Ons7EqEkj6iPe+2OVzAlFVrlvLL
+         JQFOGZnGCqVvN+eVg1o4U2JZCpVG6hDlP+39jb7WK1MSYgvdq4AJrJ8hvTwPtQMQf3i+
+         2AvGDZmLJLHRPUJKjdUtAFEme8OTMWNkP+QyV+MC6D2hDtirhg3Zon/iIeepc+/YyPZS
+         01wQ==
+X-Gm-Message-State: ACgBeo1enO40dXpoaMwcBJHYvzDFzovLBy7/Qd03tSFOU96YAqDQlWKN
+        b7LPhpLQhWB/+A7lbk4St1gJyPMqQVGcJiOtUiY=
+X-Google-Smtp-Source: AA6agR5d0jszbeDLm0f6/WZYaxiE7ZYZgYsgW8T9hIw67i5o50Nht7TYtmSCh1B1m0UmoJeS1S2Uh6mQJUXsepK+Cgk=
+X-Received: by 2002:a5d:6501:0:b0:21e:cc1c:ae5b with SMTP id
+ x1-20020a5d6501000000b0021ecc1cae5bmr2798725wru.341.1660868822062; Thu, 18
+ Aug 2022 17:27:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 bpf-next 00/15] bpf: net: Remove duplicated code from
- bpf_setsockopt()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166086841866.5147.15942725423319277338.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Aug 2022 00:20:18 +0000
-References: <20220817061704.4174272-1-kafai@fb.com>
-In-Reply-To: <20220817061704.4174272-1-kafai@fb.com>
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        andrii@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, kernel-team@fb.com,
-        pabeni@redhat.com, sdf@google.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a5d:4346:0:0:0:0:0 with HTTP; Thu, 18 Aug 2022 17:27:01
+ -0700 (PDT)
+Reply-To: mrs.sophealjonathan@yahoo.com
+From:   "Mrs.Sopheal Jonathan" <oumarouilboudo088@gmail.com>
+Date:   Thu, 18 Aug 2022 17:27:01 -0700
+Message-ID: <CAECznDaToL3YeWMUYe4Poxe_zV=Qrb9A1OTtAN0Ci52o+sq+PQ@mail.gmail.com>
+Subject: THIS IS MY WISH
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.7 required=5.0 tests=BAYES_80,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,SUBJ_ALL_CAPS,T_HK_NAME_FM_MR_MRS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:42c listed in]
+        [list.dnswl.org]
+        *  2.0 BAYES_80 BODY: Bayes spam probability is 80 to 95%
+        *      [score: 0.8790]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [oumarouilboudo088[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [oumarouilboudo088[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 T_HK_NAME_FM_MR_MRS No description available.
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Am a dying woman here in the hospital, i was diagnose as a Cancer
+patient over  2 Years ago. I am A business woman how
+dealing with Gold Exportation.I Am from Us California
+I have a charitable and unfufilment
 
-This series was applied to bpf/bpf-next.git (master)
-by Alexei Starovoitov <ast@kernel.org>:
-
-On Tue, 16 Aug 2022 23:17:04 -0700 you wrote:
-> The code in bpf_setsockopt() is mostly a copy-and-paste from
-> the sock_setsockopt(), do_tcp_setsockopt(), do_ipv6_setsockopt(),
-> and do_ip_setsockopt().  As the allowed optnames in bpf_setsockopt()
-> grows, so are the duplicated code.  The code between the copies
-> also slowly drifted.
-> 
-> This set is an effort to clean this up and reuse the existing
-> {sock,do_tcp,do_ipv6,do_ip}_setsockopt() as much as possible.
-> 
-> [...]
-
-Here is the summary with links:
-  - [v4,bpf-next,01/15] net: Add sk_setsockopt() to take the sk ptr instead of the sock ptr
-    https://git.kernel.org/bpf/bpf-next/c/4d748f991607
-  - [v4,bpf-next,02/15] bpf: net: Avoid sk_setsockopt() taking sk lock when called from bpf
-    https://git.kernel.org/bpf/bpf-next/c/24426654ed3a
-  - [v4,bpf-next,03/15] bpf: net: Consider has_current_bpf_ctx() when testing capable() in sk_setsockopt()
-    https://git.kernel.org/bpf/bpf-next/c/e42c7beee71d
-  - [v4,bpf-next,04/15] bpf: net: Change do_tcp_setsockopt() to use the sockopt's lock_sock() and capable()
-    https://git.kernel.org/bpf/bpf-next/c/cb388e7ee3a8
-  - [v4,bpf-next,05/15] bpf: net: Change do_ip_setsockopt() to use the sockopt's lock_sock() and capable()
-    https://git.kernel.org/bpf/bpf-next/c/1df055d3c7d9
-  - [v4,bpf-next,06/15] bpf: net: Change do_ipv6_setsockopt() to use the sockopt's lock_sock() and capable()
-    https://git.kernel.org/bpf/bpf-next/c/40cd308ea57c
-  - [v4,bpf-next,07/15] bpf: Initialize the bpf_run_ctx in bpf_iter_run_prog()
-    https://git.kernel.org/bpf/bpf-next/c/2b5a2ecbfdc5
-  - [v4,bpf-next,08/15] bpf: Embed kernel CONFIG check into the if statement in bpf_setsockopt
-    https://git.kernel.org/bpf/bpf-next/c/ebf9e8e65366
-  - [v4,bpf-next,09/15] bpf: Change bpf_setsockopt(SOL_SOCKET) to reuse sk_setsockopt()
-    https://git.kernel.org/bpf/bpf-next/c/29003875bd5b
-  - [v4,bpf-next,10/15] bpf: Refactor bpf specific tcp optnames to a new function
-    https://git.kernel.org/bpf/bpf-next/c/57db31a1a3ad
-  - [v4,bpf-next,11/15] bpf: Change bpf_setsockopt(SOL_TCP) to reuse do_tcp_setsockopt()
-    https://git.kernel.org/bpf/bpf-next/c/0c751f7071ef
-  - [v4,bpf-next,12/15] bpf: Change bpf_setsockopt(SOL_IP) to reuse do_ip_setsockopt()
-    https://git.kernel.org/bpf/bpf-next/c/ee7f1e1302f5
-  - [v4,bpf-next,13/15] bpf: Change bpf_setsockopt(SOL_IPV6) to reuse do_ipv6_setsockopt()
-    https://git.kernel.org/bpf/bpf-next/c/75b64b68ee3f
-  - [v4,bpf-next,14/15] bpf: Add a few optnames to bpf_setsockopt
-    https://git.kernel.org/bpf/bpf-next/c/7e41df5dbba2
-  - [v4,bpf-next,15/15] selftests/bpf: bpf_setsockopt tests
-    https://git.kernel.org/bpf/bpf-next/c/31123c0360e0
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+project that am about to handover to you, if you are interested please
+Reply
+hope to hear from you.
+Regard
+Mrs. Sopheia jonathan
