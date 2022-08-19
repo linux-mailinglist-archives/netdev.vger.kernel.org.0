@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D5D559A854
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3997859A851
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:29:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240276AbiHSWTR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 18:19:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40730 "EHLO
+        id S240913AbiHSWUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 18:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240485AbiHSWTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:19:08 -0400
+        with ESMTP id S240351AbiHSWTy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:19:54 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2E3D8B37;
-        Fri, 19 Aug 2022 15:19:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0A311231B;
+        Fri, 19 Aug 2022 15:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=efMK60nr83yuRCx5Ljwx52Fk9k5SHvdIGer1v3Qxdhs=; b=SjQSOrdIC0PRcYZolS77irogck
-        Mcx5v/0ZNaHxyEbxFL3onPgr5fMu09Pd2ybtyiuoazQiRcE4q1BCAdwvuZlYFgooxjD3BxoZoH4PK
-        E/IlV6B+dBp+jSqRHfRRW0pIXAMZz1tIYerq39GhYuucnq6cSpZZ0C96yp+R/lJeJCEuPn+qomTxx
-        BGxXGbnwkISEpDio7Vmfl6/6+0bvNYjEYtE6gc8UcjowEqH3UBtnvIUbDmL7qJyOrM5MVw4W2US5T
-        3K1YJX1V/eWgE3S5pK2h+HxIYqHNfmis/7gh2PMnSysILIOzmrBUaMLqgXhAwCFkg2rzBmE/TgWP6
-        uuEMeQ0Q==;
+        bh=6/bnVK8C59Zdi0xRlMVaj0E9n3r0rDyiTtpOzSklScI=; b=YDFmAyxwqCNKkk/EO7h/cdG+Vb
+        Bikhb+/65tLMaFYHZ5lUs066mD5fF2Jc5SsJXm9Jcw9L4T3OGqDryMv1WCbGTOtyOu5pHtabgOk3m
+        WDNVbwsKhzb9co3ZkSrqKNoE4GMHNELEJ72Y2Xdlp548ephFdzxA2eaG+EfEiBboPp1hwXjOfhnIm
+        Ahl/KUo4ULnE5OgnP6kDLFk3nbldsaQAj+5d4NvKCbr6MATTMnWNw1GJm3TS53LpgSUvtvhIESW6m
+        MzVfyEK5JdHfZV43mQ+egvPqzyvlWsdJJRO0OGCY3bnthoW6eLVHJl82GiTM8iJPd5eeSV3riIZR/
+        3PUd/dvA==;
 Received: from [179.232.144.59] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oPAKN-00Casf-VT; Sat, 20 Aug 2022 00:18:59 +0200
+        id 1oPAL4-00Cau4-La; Sat, 20 Aug 2022 00:19:40 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -48,12 +48,14 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, xuqiang36@huawei.com,
         "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Marc Zyngier <maz@kernel.org>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [PATCH V3 01/11] ARM: Disable FIQs (but not IRQs) on CPUs shutdown paths
-Date:   Fri, 19 Aug 2022 19:17:21 -0300
-Message-Id: <20220819221731.480795-2-gpiccoli@igalia.com>
+        Arjan van de Ven <arjan@linux.intel.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Xiaoming Ni <nixiaoming@huawei.com>
+Subject: [PATCH V3 02/11] notifier: Add panic notifiers info and purge trailing whitespaces
+Date:   Fri, 19 Aug 2022 19:17:22 -0300
+Message-Id: <20220819221731.480795-3-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
@@ -68,88 +70,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently the regular CPU shutdown path for ARM disables IRQs/FIQs
-in the secondary CPUs - smp_send_stop() calls ipi_cpu_stop(), which
-is responsible for that. IRQs are architecturally masked when we
-take an interrupt, but FIQs are high priority than IRQs, hence they
-aren't masked. With that said, it makes sense to disable FIQs here,
-but there's no need for (re-)disabling IRQs.
+Although many notifiers are mentioned in the comments, the panic
+notifiers infrastructure is not. Also, the file contains some
+trailing whitespaces. Fix both issues here.
 
-More than that: there is an alternative path for disabling CPUs,
-in the form of function crash_smp_send_stop(), which is used for
-kexec/panic path. This function relies on a SMP call that also
-triggers a busy-wait loop [at machine_crash_nonpanic_core()], but
-without disabling FIQs. This might lead to odd scenarios, like
-early interrupts in the boot of kexec'd kernel or even interrupts
-in secondary "disabled" CPUs while the main one still works in the
-panic path and assumes all secondary CPUs are (really!) off.
-
-So, let's disable FIQs in both paths and *not* disable IRQs a second
-time, since they are already masked in both paths by the architecture.
-This way, we keep both CPU quiesce paths consistent and safe.
-
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Michael Kelley <mikelley@microsoft.com>
-Cc: Russell King <linux@armlinux.org.uk>
+Cc: Arjan van de Ven <arjan@linux.intel.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Cc: Xiaoming Ni <nixiaoming@huawei.com>
+Reviewed-by: Baoquan He <bhe@redhat.com>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V3:
-- No changes.
+- Added Baoquan review tag - thanks!
 
 V2:
-- Small wording improvement (thanks Michael Kelley);
-- Only disable FIQs, since IRQs are masked by architecture
-definition when we take an interrupt. Thanks a lot Russell
-and Marc for the discussion [0].
-
-Should we add a Fixes tag here? If so, maybe the proper target is:
-b23065313297 ("ARM: 6522/1: kexec: Add call to non-crashing cores through IPI")
-
-[0] https://lore.kernel.org/lkml/Ymxcaqy6DwhoQrZT@shell.armlinux.org.uk/
+- No changes.
 
 
- arch/arm/kernel/machine_kexec.c | 2 ++
- arch/arm/kernel/smp.c           | 5 ++---
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ include/linux/notifier.h | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/kernel/machine_kexec.c b/arch/arm/kernel/machine_kexec.c
-index f567032a09c0..0b482bcb97f7 100644
---- a/arch/arm/kernel/machine_kexec.c
-+++ b/arch/arm/kernel/machine_kexec.c
-@@ -77,6 +77,8 @@ void machine_crash_nonpanic_core(void *unused)
- {
- 	struct pt_regs regs;
+diff --git a/include/linux/notifier.h b/include/linux/notifier.h
+index aef88c2d1173..d5b01f2e3fcc 100644
+--- a/include/linux/notifier.h
++++ b/include/linux/notifier.h
+@@ -208,12 +208,12 @@ static inline int notifier_to_errno(int ret)
  
-+	local_fiq_disable();
-+
- 	crash_setup_regs(&regs, get_irq_regs());
- 	printk(KERN_DEBUG "CPU %u will stop doing anything useful since another CPU has crashed\n",
- 	       smp_processor_id());
-diff --git a/arch/arm/kernel/smp.c b/arch/arm/kernel/smp.c
-index 978db2d96b44..36e6efad89f3 100644
---- a/arch/arm/kernel/smp.c
-+++ b/arch/arm/kernel/smp.c
-@@ -600,6 +600,8 @@ static DEFINE_RAW_SPINLOCK(stop_lock);
+ /*
+  *	Declared notifiers so far. I can imagine quite a few more chains
+- *	over time (eg laptop power reset chains, reboot chain (to clean 
++ *	over time (eg laptop power reset chains, reboot chain (to clean
+  *	device units up), device [un]mount chain, module load/unload chain,
+- *	low memory chain, screenblank chain (for plug in modular screenblankers) 
++ *	low memory chain, screenblank chain (for plug in modular screenblankers)
+  *	VC switch chains (for loadable kernel svgalib VC switch helpers) etc...
   */
- static void ipi_cpu_stop(unsigned int cpu)
- {
-+	local_fiq_disable();
+- 
 +
- 	if (system_state <= SYSTEM_RUNNING) {
- 		raw_spin_lock(&stop_lock);
- 		pr_crit("CPU%u: stopping\n", cpu);
-@@ -609,9 +611,6 @@ static void ipi_cpu_stop(unsigned int cpu)
+ /* CPU notfiers are defined in include/linux/cpu.h. */
  
- 	set_cpu_online(cpu, false);
+ /* netdevice notifiers are defined in include/linux/netdevice.h */
+@@ -224,6 +224,8 @@ static inline int notifier_to_errno(int ret)
  
--	local_fiq_disable();
--	local_irq_disable();
--
- 	while (1) {
- 		cpu_relax();
- 		wfe();
+ /* Virtual Terminal events are defined in include/linux/vt.h. */
+ 
++/* Panic notifiers are defined in include/linux/panic_notifier.h. */
++
+ #define NETLINK_URELEASE	0x0001	/* Unicast netlink socket released */
+ 
+ /* Console keyboard events.
 -- 
 2.37.2
 
