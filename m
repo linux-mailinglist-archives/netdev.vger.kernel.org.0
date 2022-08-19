@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E3059A872
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:30:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7658E59A878
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:30:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242033AbiHSWYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 18:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
+        id S242079AbiHSWYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 18:24:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241975AbiHSWXy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:23:54 -0400
+        with ESMTP id S241975AbiHSWYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:24:36 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D9B23BD1;
-        Fri, 19 Aug 2022 15:23:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38FD658DDA;
+        Fri, 19 Aug 2022 15:24:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=OonmUPZkO/emCOphZ8VnLPwYmag4wEjaMQk7IMB+RMQ=; b=frivb87m1aODDLexRXHjILEpy0
-        zypuxM1lUa2+Sde0ChP8r+SpXKZTYYQ06rsm4azbLcf835GhtiU/63eTRWcbzZyjLucvdKKHJYKiK
-        /euCL6+qpMh2bq+mDBCmd4zfYMRfG4Tqf1qA8tyF9Sf9mTKWE49sFBT6zlM+mWR7kHQzFnNnWU6MW
-        lkll9FniO4rDprJKDPgb+tUp2okPeMrFiVLU/alXFetoW59OAkLnidfuhStQMFD628z2AmR0v5dqg
-        u9NF7VPoqZwVRcG9G6dqJ9Zqmry2mF8HYNj1eMF0SH2Nd3PIvrPYCM3Wwvafygev10hLlqXwn+n1L
-        GJahVPlA==;
+        bh=MGMXDXJrezdc1pzNEVN7nSEhPhS4C9dgmc2AyYtjZfA=; b=FbAGBcwIbhblFEXoZjDRiavCoW
+        rOM6d1mKWp8XDb/6WUDmTwquPgkM6xyMHXBCSzttyCQrfX7vN6kajCpBdz/tchH4k0Aib0GMapjcs
+        /JdD3YBIhegAsRJv8KNgVEby2v+Qhqkj1nDtA5gZwKrgfTxe+9+r4AfIEFmXomwWIuDalNtq8ZCIx
+        uwARMZ5QX41wMBmaaqFQdzjUolT4Lv3Q9qQezK/HQxHaj2hQ49dMkdmUEF99RJg++F4Gow1LbiA9x
+        Imt73H5qWzsYCko7ffacQND8Lp2Ogj4Y5llzsrzqmurOrY0HW0FF9iiXUrOQVG3/nQlQdEmJTNDdu
+        qoKPe80Q==;
 Received: from [179.232.144.59] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oPAP0-00Cb74-3H; Sat, 20 Aug 2022 00:23:47 +0200
+        id 1oPAPh-00Cb8p-Gg; Sat, 20 Aug 2022 00:24:28 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -48,11 +48,16 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, xuqiang36@huawei.com,
         "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Subject: [PATCH V3 08/11] EDAC/altera: Skip the panic notifier if kdump is loaded
-Date:   Fri, 19 Aug 2022 19:17:28 -0300
-Message-Id: <20220819221731.480795-9-gpiccoli@igalia.com>
+        Andrea Parri <parri.andrea@gmail.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>
+Subject: [PATCH V3 09/11] video/hyperv_fb: Avoid taking busy spinlock on panic path
+Date:   Fri, 19 Aug 2022 19:17:29 -0300
+Message-Id: <20220819221731.480795-10-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
@@ -67,93 +72,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The altera_edac panic notifier performs some data collection with
-regards errors detected; such code relies in the regmap layer to
-perform reads/writes, so the code is abstracted and there is some
-risk level to execute that, since the panic path runs in atomic
-context, with interrupts/preemption and secondary CPUs disabled.
+The Hyper-V framebuffer code registers a panic notifier in order
+to try updating its fbdev if the kernel crashed. The notifier
+callback is straightforward, but it calls the vmbus_sendpacket()
+routine eventually, and such function takes a spinlock for the
+ring buffer operations.
 
-Users want the information collected in this panic notifier though,
-so in order to balance the risk/benefit, let's skip the altera panic
-notifier if kdump is loaded. While at it, remove a useless header
-and encompass a macro inside the sole ifdef block it is used.
+Panic path runs in atomic context, with local interrupts and
+preemption disabled, and all secondary CPUs shutdown. That said,
+taking a spinlock might cause a lockup if a secondary CPU was
+disabled with such lock taken. Fix it here by checking if the
+ring buffer spinlock is busy on Hyper-V framebuffer panic notifier;
+if so, bail-out avoiding the potential lockup scenario.
 
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: Tony Luck <tony.luck@intel.com>
-Acked-by: Dinh Nguyen <dinguyen@kernel.org>
+Cc: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Haiyang Zhang <haiyangz@microsoft.com>
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>
+Cc: Michael Kelley <mikelley@microsoft.com>
+Cc: Stephen Hemminger <sthemmin@microsoft.com>
+Cc: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>
+Tested-by: Fabio A M Martins <fabiomirmar@gmail.com>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V3:
-- added the ack tag from Dinh - thanks!
-- had a good discussion with Boris about that in V2 [0],
-hopefully we can continue and reach a consensus in this V3.
-[0] https://lore.kernel.org/lkml/46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com/
+- simplified the code based on Michael's suggestion - thanks!
 
 V2:
-- new patch, based on the discussion in [1].
-[1] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
+- new patch, based on the discussion in [0].
+[0] https://lore.kernel.org/lkml/2787b476-6366-1c83-db80-0393da417497@igalia.com/
 
 
- drivers/edac/altera_edac.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/hv/ring_buffer.c        | 13 +++++++++++++
+ drivers/video/fbdev/hyperv_fb.c |  8 +++++++-
+ include/linux/hyperv.h          |  2 ++
+ 3 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
-index e7e8e624a436..741fe5539154 100644
---- a/drivers/edac/altera_edac.c
-+++ b/drivers/edac/altera_edac.c
-@@ -16,7 +16,6 @@
- #include <linux/kernel.h>
- #include <linux/mfd/altera-sysmgr.h>
- #include <linux/mfd/syscon.h>
--#include <linux/notifier.h>
- #include <linux/of_address.h>
- #include <linux/of_irq.h>
- #include <linux/of_platform.h>
-@@ -24,6 +23,7 @@
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <linux/types.h>
-+#include <linux/kexec.h>
- #include <linux/uaccess.h>
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 59a4aa86d1f3..c6692fd5ab15 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -280,6 +280,19 @@ void hv_ringbuffer_cleanup(struct hv_ring_buffer_info *ring_info)
+ 	ring_info->pkt_buffer_size = 0;
+ }
  
- #include "altera_edac.h"
-@@ -2063,22 +2063,30 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
- };
- 
- /************** Stratix 10 EDAC Double Bit Error Handler ************/
--#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
--
- #ifdef CONFIG_64BIT
- /* panic routine issues reboot on non-zero panic_timeout */
- extern int panic_timeout;
- 
-+#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
++/*
++ * Check if the ring buffer spinlock is available to take or not; used on
++ * atomic contexts, like panic path (see the Hyper-V framebuffer driver).
++ */
 +
- /*
-  * The double bit error is handled through SError which is fatal. This is
-  * called as a panic notifier to printout ECC error info as part of the panic.
-+ *
-+ * Notice that if kdump is set, we take the risk avoidance approach and
-+ * skip the notifier, given that users are expected to have access to a
-+ * full vmcore.
-  */
- static int s10_edac_dberr_handler(struct notifier_block *this,
- 				  unsigned long event, void *ptr)
++bool hv_ringbuffer_spinlock_busy(struct vmbus_channel *channel)
++{
++	struct hv_ring_buffer_info *rinfo = &channel->outbound;
++
++	return spin_is_locked(&rinfo->ring_lock);
++}
++EXPORT_SYMBOL_GPL(hv_ringbuffer_spinlock_busy);
++
+ /* Write to the ring buffer. */
+ int hv_ringbuffer_write(struct vmbus_channel *channel,
+ 			const struct kvec *kv_list, u32 kv_count,
+diff --git a/drivers/video/fbdev/hyperv_fb.c b/drivers/video/fbdev/hyperv_fb.c
+index 886c564787f1..e1b65a01fb96 100644
+--- a/drivers/video/fbdev/hyperv_fb.c
++++ b/drivers/video/fbdev/hyperv_fb.c
+@@ -783,12 +783,18 @@ static void hvfb_ondemand_refresh_throttle(struct hvfb_par *par,
+ static int hvfb_on_panic(struct notifier_block *nb,
+ 			 unsigned long e, void *p)
  {
--	struct altr_arria10_edac *edac = to_a10edac(this, panic_notifier);
-+	struct altr_arria10_edac *edac;
- 	int err_addr, dberror;
++	struct hv_device *hdev;
+ 	struct hvfb_par *par;
+ 	struct fb_info *info;
  
-+	if (kexec_crash_loaded())
+ 	par = container_of(nb, struct hvfb_par, hvfb_panic_nb);
+-	par->synchronous_fb = true;
+ 	info = par->info;
++	hdev = device_to_hv_device(info->device);
++
++	if (hv_ringbuffer_spinlock_busy(hdev->channel))
 +		return NOTIFY_DONE;
 +
-+	edac = to_a10edac(this, panic_notifier);
- 	regmap_read(edac->ecc_mgr_map, S10_SYSMGR_ECC_INTSTAT_DERR_OFST,
- 		    &dberror);
- 	regmap_write(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST, dberror);
++	par->synchronous_fb = true;
+ 	if (par->need_docopy)
+ 		hvfb_docopy(par, 0, dio_fb_size);
+ 	synthvid_update(info, 0, 0, INT_MAX, INT_MAX);
+diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+index 3b42264333ef..646f1da9f27e 100644
+--- a/include/linux/hyperv.h
++++ b/include/linux/hyperv.h
+@@ -1341,6 +1341,8 @@ struct hv_ring_buffer_debug_info {
+ int hv_ringbuffer_get_debuginfo(struct hv_ring_buffer_info *ring_info,
+ 				struct hv_ring_buffer_debug_info *debug_info);
+ 
++bool hv_ringbuffer_spinlock_busy(struct vmbus_channel *channel);
++
+ /* Vmbus interface */
+ #define vmbus_driver_register(driver)	\
+ 	__vmbus_driver_register(driver, THIS_MODULE, KBUILD_MODNAME)
 -- 
 2.37.2
 
