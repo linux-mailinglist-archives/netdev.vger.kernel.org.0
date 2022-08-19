@@ -2,58 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65BA3599C38
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 14:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D4BF599C77
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 14:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349052AbiHSMpI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 08:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
+        id S1349100AbiHSMum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 08:50:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349051AbiHSMo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 08:44:58 -0400
+        with ESMTP id S1348843AbiHSMum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 08:50:42 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71199A942;
-        Fri, 19 Aug 2022 05:44:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2056CD7420;
+        Fri, 19 Aug 2022 05:50:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=dSwJx5rR8Lt0DjDqYcDYjxzsWNyMCSlR3JILmPEc0Gs=; b=lXTSFuth2KRMYL1geYu4QyYr6W
-        koUidmk/224fozLt9ISXEiugAU65hj/NlvdmdfdtPKyVwavJL9eeGJOnho8SefRAJ7E/uMCkthGuu
-        CwYiAF7+OB/9yC3rB2KD1/IGhV/A4qYyJX+9hq+sdmieOZQpEboVrak90RxWs8DVjdCw=;
+        bh=fr7QhwkLwW6Fg6KpvaCA3xcPZXCiv8cagCz8y0W6tfU=; b=vn/10w0ZffFTAgGrt9HcUXwWhm
+        CXp0/SpdRITOdrUWFA18C156SubgIE/UpY5jKpPEqW65QQGIavky6LtT9idbPom4fh3bqJZXKenjs
+        h6BQ12S9MEm/+1f3XVjYsEcZwCCXlLHBxXcUH4Q1K/9XhhVp774o/+d/Et3ITg3KbN+E=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1oP1Mg-00DufM-K7; Fri, 19 Aug 2022 14:44:42 +0200
-Date:   Fri, 19 Aug 2022 14:44:42 +0200
+        id 1oP1SJ-00Dui5-Df; Fri, 19 Aug 2022 14:50:31 +0200
+Date:   Fri, 19 Aug 2022 14:50:31 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Wei Fang <wei.fang@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add
- nxp,refclk_in property
-Message-ID: <Yv+FuiUoTjpoUZ32@lunn.ch>
+To:     wei.fang@nxp.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] net: phy: tja11xx: add interface mode and
+ RMII REF_CLK support
+Message-ID: <Yv+HFz/q1iGFfQ+m@lunn.ch>
 References: <20220819074729.1496088-1-wei.fang@nxp.com>
- <20220819074729.1496088-2-wei.fang@nxp.com>
- <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
- <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
- <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
+ <20220819074729.1496088-3-wei.fang@nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9ec575ba-784d-74f7-8861-da2f62fe0773@linaro.org>
+In-Reply-To: <20220819074729.1496088-3-wei.fang@nxp.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -63,49 +52,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 02:37:36PM +0300, Krzysztof Kozlowski wrote:
-> On 19/08/2022 12:37, Wei Fang wrote:
-> >>
-> >>> +          in RMII mode. This clock signal is provided by the PHY and is
-> >>> +          typically derived from an external 25MHz crystal. Alternatively,
-> >>> +          a 50MHz clock signal generated by an external oscillator can be
-> >>> +          connected to pin REF_CLK. A third option is to connect a 25MHz
-> >>> +          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
-> >>> +          as input or output according to the actual circuit connection.
-> >>> +          If present, indicates that the REF_CLK will be configured as
-> >>> +          interface reference clock input when RMII mode enabled.
-> >>> +          If not present, the REF_CLK will be configured as interface
-> >>> +          reference clock output when RMII mode enabled.
-> >>> +          Only supported on TJA1100 and TJA1101.
-> >>
-> >> Then disallow it on other variants.
-> >>
-> >> Shouldn't this be just "clocks" property?
-> >>
-> >>
-> > This property is to configure the pin REF_CLK of PHY as a input pin through phy register,
-> > indicates that the REF_CLK signal is provided by an external oscillator. so I don't think it's a
-> > "clock" property.
-> 
-> clocks, not clock.
-> 
-> You just repeated pieces of description as an counter-argument, so this
-> does not explain anything.
-> 
-> If it is external oscillator shouldn't it be represented in DTS and then
-> obtained by driver (clk_get + clk_prepare_enable)? Otherwise how are you
-> sure that clock is actually enabled? And the lack of presence of the
-> external clock means it is derived from PHY?
+> +/* Configure REF_CLK as input in RMII mode */
+> +#define TJA110X_RMII_MODE_REFCLK_IN       BIT(0)
+> +
+>  struct tja11xx_priv {
+>  	char		*hwmon_name;
+>  	struct device	*hwmon_dev;
+>  	struct phy_device *phydev;
+>  	struct work_struct phy_register_work;
+> +	u32 quirks;
 
-Using the common clock framework has been discussed in the past. But
-no PHY actually does this. When the SoC provides the clock, a few PHYs
-do make use of the common clock framework as clock consumers to ensure
-the clock is ticking.
+A quirk is generally a workaround for a bug. Configuring a clock is
+not a quirk. I would rename this flags.
 
-Plus, as the description says, this pin can be either a clock producer
-or a consumer. I don't think the common clock code allows this. It is
-also not something you negotiate between the MAC and PHY. The hardware
-designer typically decides based on the MAC and PHY actually used. So
-this is a fixed hardware property.
-
-     Andrew
+    Andrew
