@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E80859A3F0
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DAC259A3C3
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:04:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351257AbiHSRp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 13:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
+        id S1352031AbiHSRq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 13:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354889AbiHSRpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:45:44 -0400
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEB010475D;
-        Fri, 19 Aug 2022 10:09:50 -0700 (PDT)
+        with ESMTP id S1352024AbiHSRqY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:46:24 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DBB110DCDE;
+        Fri, 19 Aug 2022 10:11:18 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 7F94D20008;
-        Fri, 19 Aug 2022 17:09:45 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 349711C0008;
+        Fri, 19 Aug 2022 17:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1660928987;
+        t=1660929073;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=af8NiFFBbQBcqZbf5KXHymvUGECBo7Q6iFJT3UlUWkA=;
-        b=W3hYmBQ2w+obMJm182GEBHOhBb6bPpPaMpfeR511Mrf0Y5EaKoztOD2VkN21utSIB9qI/d
-        PqJYqH2Whq0J9M+Vq7PMiDoyCDQBVu+tEn7/rHGEQJOWUoPBaSZGGHwwz+5PtusqmimF6L
-        OkRW3SQK1epC/cZ1my94uHZkekOJZ5G6T+DU4n+B1A1SVaVzo6qoNcIYM8MO3t/SKiRi43
-        BQaWVd5BUSir2YJEw1ZVvzK9x04+JmAgYKyY0TYQjaJbP8vLNtXQiDlNnhFGkwlIHa9G6F
-        Erf0iYSJd7Vksuft6czCn2pL5PRyD94u/sxAavksWbwxxUPgZlrQpM5ZUbT5HQ==
-Date:   Fri, 19 Aug 2022 19:09:44 +0200
+        bh=HNkhd3kPX+ZKn7GTp9qxjZ60OKpKd8YDywyTcmUMzEk=;
+        b=kpZQkVYLx4gQlWzozESnKJ6fvxYObQUrbJ5Gue4hdgfuYZO3w4Xkv3/K2W3rcm8ORRgibZ
+        ZI6Vt7UimdgnWySVZP6jyqbDSV95zHN6uK86hs9X9jMXu5x4yS/4fBJJXXwppOt+tAQBgq
+        muyYPcSBN2JPKYhgsVt0XNbeaiid0UfNQ99aYljt/KfxjomOh3poo6iTy6nUaUdbDgb5r8
+        AdeAivoc3it1kRqdfYulC/ZHk27gsW8gVlDpStABZAkiHVPpbkE0NoDoPPRZZqcHQUecZ1
+        l+ztIBewB6YCZ0umD2So37MZOo+YOUg7LNqY/ieIx3I8KnDDzp9Dcevs4Hw3ZA==
+Date:   Fri, 19 Aug 2022 19:11:09 +0200
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <aahringo@redhat.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
@@ -45,13 +45,13 @@ Cc:     Alexander Aring <alex.aring@gmail.com>,
         Frederic Blain <frederic.blain@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next 19/20] ieee802154: hwsim: Do not check the
- rtnl
-Message-ID: <20220819190944.0718c7e1@xps-13>
-In-Reply-To: <CAK-6q+ihSui2ra188kt9W5CT0HPfJgHoOJfsMS_XDLfVvoQJTg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220819191109.0e639918@xps-13>
+In-Reply-To: <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
 References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
-        <20220701143052.1267509-20-miquel.raynal@bootlin.com>
-        <CAK-6q+ihSui2ra188kt9W5CT0HPfJgHoOJfsMS_XDLfVvoQJTg@mail.gmail.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -69,57 +69,126 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Alexander,
 
-aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:23:21 -0400:
+aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:51:02 -0400:
 
 > Hi,
 >=20
-> On Fri, Jul 1, 2022 at 10:37 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+> On Fri, Jul 1, 2022 at 10:36 AM Miquel Raynal <miquel.raynal@bootlin.com>=
  wrote:
 > >
-> > There is no need to ensure the rtnl is locked when changing a driver's
-> > channel. This cause issues when scanning and this is the only driver
-> > relying on it. Just drop this dependency because it does not seem
-> > legitimate.
-> > =20
+> > As a first strep in introducing proper PAN management and association,
+> > we need to be able to create coordinator interfaces which might act as
+> > coordinator or PAN coordinator.
+> >
+> > Hence, let's add the minimum support to allow the creation of these
+> > interfaces. This might be restrained and improved later.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  net/mac802154/iface.c | 14 ++++++++------
+> >  net/mac802154/rx.c    |  2 +-
+> >  2 files changed, 9 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+> > index 500ed1b81250..7ac0c5685d3f 100644
+> > --- a/net/mac802154/iface.c
+> > +++ b/net/mac802154/iface.c
+> > @@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(struct ieee8021=
+54_sub_if_data *sdata,
+> >                 if (nsdata !=3D sdata && ieee802154_sdata_running(nsdat=
+a)) {
+> >                         int ret;
+> >
+> > -                       /* TODO currently we don't support multiple nod=
+e types
+> > -                        * we need to run skb_clone at rx path. Check i=
+f there
+> > -                        * exist really an use case if we need to suppo=
+rt
+> > -                        * multiple node types at the same time.
+> > +                       /* TODO currently we don't support multiple nod=
+e/coord
+> > +                        * types we need to run skb_clone at rx path. C=
+heck if
+> > +                        * there exist really an use case if we need to=
+ support
+> > +                        * multiple node/coord types at the same time.
+> >                          */
+> > -                       if (wpan_dev->iftype =3D=3D NL802154_IFTYPE_NOD=
+E &&
+> > -                           nsdata->wpan_dev.iftype =3D=3D NL802154_IFT=
+YPE_NODE)
+> > +                       if (wpan_dev->iftype !=3D NL802154_IFTYPE_MONIT=
+OR &&
+> > +                           nsdata->wpan_dev.iftype !=3D NL802154_IFTYP=
+E_MONITOR)
+> >                                 return -EBUSY;
+> >
+> >                         /* check all phy mac sublayer settings are the =
+same.
+> > @@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_dat=
+a *sdata,
+> >         wpan_dev->short_addr =3D cpu_to_le16(IEEE802154_ADDR_BROADCAST);
+> >
+> >         switch (type) {
+> > +       case NL802154_IFTYPE_COORD:
+> >         case NL802154_IFTYPE_NODE:
+> >                 ieee802154_be64_to_le64(&wpan_dev->extended_addr,
+> >                                         sdata->dev->dev_addr);
+> > @@ -636,6 +637,7 @@ ieee802154_if_add(struct ieee802154_local *local, c=
+onst char *name,
+> >         ieee802154_le64_to_be64(ndev->perm_addr,
+> >                                 &local->hw.phy->perm_extended_addr);
+> >         switch (type) {
+> > +       case NL802154_IFTYPE_COORD:
+> >         case NL802154_IFTYPE_NODE:
+> >                 ndev->type =3D ARPHRD_IEEE802154;
+> >                 if (ieee802154_is_valid_extended_unicast_addr(extended_=
+addr)) {
+> > diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+> > index b8ce84618a55..39459d8d787a 100644
+> > --- a/net/mac802154/rx.c
+> > +++ b/net/mac802154/rx.c
+> > @@ -203,7 +203,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_loc=
+al *local,
+> >         }
+> >
+> >         list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > -               if (sdata->wpan_dev.iftype !=3D NL802154_IFTYPE_NODE)
+> > +               if (sdata->wpan_dev.iftype =3D=3D NL802154_IFTYPE_MONIT=
+OR)
+> >                         continue; =20
 >=20
-> switching channels relies on changing pib attributes, pib attributes
-> are protected by rtnl. If you experience issues here then it's
-> probably because you do something wrong. All drivers assuming here
-> that rtnl lock is held.
+> I probably get why you are doing that, but first the overall design is
+> working differently - means you should add an additional receive path
+> for the special interface type.
+>=20
+> Also we "discovered" before that the receive path of node vs
+> coordinator is different... Where is the different handling here? I
+> don't see it, I see that NODE and COORD are the same now (because that
+> is _currently_ everything else than monitor). This change is not
+> enough and does "something" to handle in some way coordinator receive
+> path but there are things missing.
+>=20
+> 1. Changing the address filters that it signals the transceiver it's
+> acting as coordinator
+> 2. We _should_ also have additional handling for whatever the
+> additional handling what address filters are doing in mac802154
+> _because_ there is hardware which doesn't have address filtering e.g.
+> hwsim which depend that this is working in software like other
+> transceiver hardware address filters.
+>=20
+> For the 2. one, I don't know if we do that even for NODE right or we
+> just have the bare minimal support there... I don't assume that
+> everything is working correctly here but what I want to see is a
+> separate receive path for coordinators that people can send patches to
+> fix it.
 
----8<---
-> especially this change could end in invalid free. Maybe we can solve
-> this problem in a different way, what exactly is the problem by
-> helding rtnl lock?
---->8---
-
-During a scan we need to change channels. So when the background job
-kicks-in, we first acquire scan_lock, then we check the internal
-parameters of the structure protected by this lock, like the next
-channel to use and the sdata pointer. A channel change must be
-performed, preceded by an rtnl_lock(). This will again trigger a
-possible circular lockdep dependency warning because the triggering path
-acquires the rtnl (as part of the netlink layer) before the scan lock.
-
-One possible solution would be to do the following:
-scan_work() {
-	acquire(scan_lock);
-	// do some config
-	release(scan_lock);
-	rtnl_lock();
-	perform_channel_change();
-	rtnl_unlock();
-	acquire(scan_lock);
-	// reinit the scan struct ptr and the sdata ptr
-	// do some more things
-	release(scan_lock);
-}
-
-It looks highly non-elegant IMHO. Otherwise I need to stop verifying in
-the drivers that the rtnl is taken. Any third option here?
-
-BTW I don't see where the invalid free situation you mentioned can
-happen here, can you explain?
+Yes, we do very little differently between the two modes, that's why I
+took the easy way: just changing the condition. I really don't see what
+I can currently add here, but I am fine changing the style to easily
+show people where to add filters for such or such interface, but right
+now both path will look very "identical", do we agree on that?
 
 Thanks,
 Miqu=C3=A8l
