@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 006CE599740
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:36:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ADF5599778
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:36:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345594AbiHSI1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 04:27:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42718 "EHLO
+        id S1346724AbiHSI1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 04:27:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiHSI1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:27:21 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39009E833D
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:27:20 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id E27DB3F5DF;
-        Fri, 19 Aug 2022 08:27:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1660897638; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ASwbbpD77n1Gm5/54eKDAOqUPMGDqFZmHfwJYWwj99Y=;
-        b=FRj2Fa/rMq70EbJ1ok5yl+yr/s42Zo/gBhNJf2nLpYghPE2l5Vm5jlCdiom39wfSz+kH30
-        8GsS2y5F+nz2aISRN3LGgOxgi0KoJAOCcL4xxRtR0HgZQaEjRQX+Wl3pmpeyLGgi+zXGNP
-        Cq1+v8IqE0c6/Nn2l5fP0v+9db9xwTc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1660897638;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ASwbbpD77n1Gm5/54eKDAOqUPMGDqFZmHfwJYWwj99Y=;
-        b=1mWB7bgtW7UtT8Ic+81xSYuqYrs44m1GmTsu1oMiMPY5Oc8GvkdzpPtBNg6jTKb84GAz2J
-        ctGm2ATH77NF2BCQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F2EAA2C145;
-        Fri, 19 Aug 2022 08:27:17 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id CB7616094A; Fri, 19 Aug 2022 10:27:17 +0200 (CEST)
-Date:   Fri, 19 Aug 2022 10:27:17 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Tomasz =?utf-8?Q?Mo=C5=84?= <tomasz.mon@camlingroup.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof =?utf-8?Q?Drobi=C5=84ski?= 
-        <k.drobinski@camlintechnologies.com>
-Subject: Re: [PATCH ethtool] ethtool: fix EEPROM byte write
-Message-ID: <20220819082717.5w36vkp4jnsbdisg@lion.mk-sys.cz>
-References: <20220819062933.1155112-1-tomasz.mon@camlingroup.com>
+        with ESMTP id S1346749AbiHSI1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:27:32 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F90E1A8B
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:27:30 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id c39so4810983edf.0
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:27:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=gneh9P8SPlkzkLwRB/RmsA9iXnVHaiFlM5W1LuTdJDE=;
+        b=tINS8JEZVVHDXXIvMjqE2MilyQMbxjaAYQGMx8b3gVxoqxb51t1ky5JbzSzMxqgFaG
+         nc88TkSsXKlFyNFyRJdqbVBSgxi6wkiQ1XfduZR7aJF9gsFA2ARdT2hSA/e5vBdmhb3j
+         +QxPOWd2mUG2+R2DfDqZqNtBHJLxOJzpsQRaIRkmYZrolO3Gqj3RHUmSStogTJpkUtPt
+         bEXSCG799KBITLNvLETV/SaJqEwLvNIG0ufMqGugZgcfMt5zT6S0V9i0Tu/MeHMPRgbj
+         zQdOoC9wmymXgTyZlOmZs2qDhVPhUtVwYbEadXtQoHrigqJCRfk3mh62in/CfmsXqz11
+         /Z5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=gneh9P8SPlkzkLwRB/RmsA9iXnVHaiFlM5W1LuTdJDE=;
+        b=678ME0865zCqfZe5Pj/mIERFQ+0CAYUE5udj9TL/btCvobQxQdXCFdYpjcVCjJgSH6
+         uDrPmfEmJ9tE4cXOWRyis7Wp507QrZN0whWSis+hzPTu88Y8K7JK+ZAr0VtE6gu3GP8e
+         fCBm14D0LyTFvL5DZ9TUprJfibXyX9Nj1aDfuPd2Lr05Ruw9v+TvdLHetrlwDDuEQyQh
+         Ar6f/V1sIeYjVSK9MIgWzqSHOZNivnIIqcVETAPgFdDNga9Sqb3/bQpysh7usQx2Jchj
+         fJFxhs8K+d9boOcISHN+3Y9nTqTLQoFozR2BNv20kHGgSBdvz1Ee1dqZAjwcY5T+lhMa
+         3Ccg==
+X-Gm-Message-State: ACgBeo032oelUemRoxzrZ1PSKXT4lT0szKPDCROcISGCaSQPMAuIWrE3
+        mo8SX9gZooshTxHLf+pPHh0Cfw==
+X-Google-Smtp-Source: AA6agR7c4ju9LoubTNZtjLgiPat2ZKA3ZYn4C+OK+xuOaYxEVweEwUtGeofgB68C+UlDLQUBJWhpJw==
+X-Received: by 2002:a05:6402:13c6:b0:446:1c68:915b with SMTP id a6-20020a05640213c600b004461c68915bmr4253097edx.208.1660897649316;
+        Fri, 19 Aug 2022 01:27:29 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id r10-20020a17090609ca00b007317ad372c0sm1976753eje.20.2022.08.19.01.27.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:27:28 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 10:27:28 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        David Ahern <dsahern@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [iproute2-next 0/2] devlink: remove dl_argv_parse_put
+Message-ID: <Yv9JcA/Fil0y1c6p@nanopsycho>
+References: <20220818211521.169569-1-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xsxzo2h34p5ju3ix"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220819062933.1155112-1-tomasz.mon@camlingroup.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220818211521.169569-1-jacob.e.keller@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Aug 18, 2022 at 11:15:19PM CEST, jacob.e.keller@intel.com wrote:
+>This series removes the dl_argv_parse_put function which both parses the
+>command line arguments and places them into the netlink header.
+>
+>This was originally sent as an RFC at
+>https://lore.kernel.org/netdev/20220805234155.2878160-1-jacob.e.keller@intel.com/
+>
+>Since there is some ongoing work around policy code being generated from
+>YAML, I thought it best to wait on the devlink policy portion of this series
+>for now.
+>
+>Jiri mentioned he wanted to base some work on top of this, so I am sending
+>just the cleanup patches.
+>
+>The primary motivation for this is due to the fact that dl_argv_parse_put
+>requires a netlink header, meaning a command must have already been
+>prepared. This prevents addition of a different netlink command to get the
+>policy data, and thus prevents us from using this variant while checking
+>netlink policy.
 
---xsxzo2h34p5ju3ix
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Aug 19, 2022 at 08:29:33AM +0200, Tomasz Mo=F1 wrote:
-> ethtool since version 1.8 supports EEPROM byte write:
->   # ethtool -E DEVNAME [ magic N ] [ offset N ] [ value N ]
->=20
-> ethtool 2.6.33 added EEPROM block write:
->   # ethtool -E ethX [ magic N ] [ offset N ] [ length N ] [ value N ]
->=20
-> EEPROM block write introduced in 2.6.33 is backwards compatible, i.e.
-> when value is specified the length is forced to 1 (commandline length
-> value is ignored).
->=20
-> The byte write behaviour changed in ethtool 5.9 where the value write
-> only works when value parameter is specified together with length 1.
-> While byte writes to any offset other than 0, without length 1, simply
-> fail with "offset & length out of bounds" error message, writing value
-> to offset 0 basically erased whole EEPROM. That is, the provided byte
-> value was written at offset 0, but the rest of the EEPROM was set to 0.
->=20
-> Fix the issue by forcing length to 1 when value is provided.
->=20
-> Fixes: 923c3f51c444 ("ioctl: check presence of eeprom length argument pro=
-perly")
-> Signed-off-by: Tomasz Mo=F1 <tomasz.mon@camlingroup.com>
-> ---
->  ethtool.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/ethtool.c b/ethtool.c
-> index 89613ca..b9602ce 100644
-> --- a/ethtool.c
-> +++ b/ethtool.c
-> @@ -3531,8 +3531,7 @@ static int do_seeprom(struct cmd_context *ctx)
-> =20
->  	if (seeprom_value_seen)
->  		seeprom_length =3D 1;
-> -
-> -	if (!seeprom_length_seen)
-> +	else if (!seeprom_length_seen)
->  		seeprom_length =3D drvinfo.eedump_len;
-> =20
->  	if (drvinfo.eedump_len < seeprom_offset + seeprom_length) {
-
-I don't like the idea of silently ignoring the length parameter if value
-is used. We should rather issue an error for invalid combination of
-parameters, i.e. value present and length different from 1.
-
-Michal
-
---xsxzo2h34p5ju3ix
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmL/SV8ACgkQ538sG/LR
-dpXReQgAjd5/xF2hBYQQbohvLYVOeVidOjqOhBtGrVPMfSzmmbvk/mrG4ayg9wyy
-uOFZHiGBfVn+8HEbAiqqQBBLHdhfMHqcZGXfpUs1gcFsR6/rcdtkQl1AkugTJ4hu
-lln2TchVZDdZLW8vnb11bYGqvqi2DUWXl48phjQI+tggtvJJal7PRuTJWTjeiAvL
-wwLPjT6SG0nqosurNdAaKBo74JSmgRdthX45l057v5rVpbaMEgS1RHdB4yahOQJB
-vmGC2+RToYXpI/VB9P+6tY0EbIHKR0/g1EBY/3JUrInfz34AEnSqckJOovGMmflG
-hLzDv3EgrV3ZO9syb3tS8gAdEgqk5Q==
-=4cTc
------END PGP SIGNATURE-----
-
---xsxzo2h34p5ju3ix--
+Thanks Jacob!
