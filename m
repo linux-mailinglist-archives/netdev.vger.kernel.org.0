@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0723259A863
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:30:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E3059A872
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:30:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241906AbiHSWXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 18:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        id S242033AbiHSWYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 18:24:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241767AbiHSWXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:23:33 -0400
+        with ESMTP id S241975AbiHSWXy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:23:54 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEED2CDC8;
-        Fri, 19 Aug 2022 15:23:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D9B23BD1;
+        Fri, 19 Aug 2022 15:23:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=d2an8K4S3oBRBmk7SIJDz4Oai1o8VvWFhnH8gpD08U0=; b=X2+kGd13kauJptBzv6orQ1U7yS
-        4aVfkn5eFTKuYn33XLrObdbdfBscRW7PnPpTi00KjX722oTJFFbDGBByOFk/diOtlqyJUfXp1qqtk
-        wdAyoKW3PdYKCTsCYnvnraOEqwCd466jDzHdiLOwLKF9ZjNoUljXl9a8OK3JS3DA64x+It+MtEgjo
-        9j46jITNnxNXwQM8p6iXaD+6u+VxqJqBPZbsVtVKQDuWHrqQ2/urSChnRWiPaMvc2L+ukkn4Fmyax
-        j1lFef3s95ENI6oiTnHSrbeqhX4dTAauX2TwiB5awED4vpx4s2jm8I3rnXNRpHJaRpI5R0QmdmdLU
-        O+2sMEDw==;
+        bh=OonmUPZkO/emCOphZ8VnLPwYmag4wEjaMQk7IMB+RMQ=; b=frivb87m1aODDLexRXHjILEpy0
+        zypuxM1lUa2+Sde0ChP8r+SpXKZTYYQ06rsm4azbLcf835GhtiU/63eTRWcbzZyjLucvdKKHJYKiK
+        /euCL6+qpMh2bq+mDBCmd4zfYMRfG4Tqf1qA8tyF9Sf9mTKWE49sFBT6zlM+mWR7kHQzFnNnWU6MW
+        lkll9FniO4rDprJKDPgb+tUp2okPeMrFiVLU/alXFetoW59OAkLnidfuhStQMFD628z2AmR0v5dqg
+        u9NF7VPoqZwVRcG9G6dqJ9Zqmry2mF8HYNj1eMF0SH2Nd3PIvrPYCM3Wwvafygev10hLlqXwn+n1L
+        GJahVPlA==;
 Received: from [179.232.144.59] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oPAOh-00Cb6O-5U; Sat, 20 Aug 2022 00:23:25 +0200
+        id 1oPAP0-00Cb74-3H; Sat, 20 Aug 2022 00:23:47 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -48,14 +48,11 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, xuqiang36@huawei.com,
         "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Xiaoming Ni <nixiaoming@huawei.com>
-Subject: [PATCH V3 07/11] notifiers: Add tracepoints to the notifiers infrastructure
-Date:   Fri, 19 Aug 2022 19:17:27 -0300
-Message-Id: <20220819221731.480795-8-gpiccoli@igalia.com>
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Dinh Nguyen <dinguyen@kernel.org>
+Subject: [PATCH V3 08/11] EDAC/altera: Skip the panic notifier if kdump is loaded
+Date:   Fri, 19 Aug 2022 19:17:28 -0300
+Message-Id: <20220819221731.480795-9-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
@@ -70,153 +67,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently there is no way to show the callback names for registered,
-unregistered or executed notifiers. This is very useful for debug
-purposes, hence add this functionality here in the form of notifiers'
-tracepoints, one per operation.
+The altera_edac panic notifier performs some data collection with
+regards errors detected; such code relies in the regmap layer to
+perform reads/writes, so the code is abstracted and there is some
+risk level to execute that, since the panic path runs in atomic
+context, with interrupts/preemption and secondary CPUs disabled.
 
-Cc: Arjan van de Ven <arjan@linux.intel.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Xiaoming Ni <nixiaoming@huawei.com>
+Users want the information collected in this panic notifier though,
+so in order to balance the risk/benefit, let's skip the altera panic
+notifier if kdump is loaded. While at it, remove a useless header
+and encompass a macro inside the sole ifdef block it is used.
+
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Petr Mladek <pmladek@suse.com>
+Cc: Tony Luck <tony.luck@intel.com>
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V3:
-- Yet another major change - thanks to Arjan's great suggestion,
-refactored the code to make use of tracepoints instead of guarding
-the output with a Kconfig debug setting.
+- added the ack tag from Dinh - thanks!
+- had a good discussion with Boris about that in V2 [0],
+hopefully we can continue and reach a consensus in this V3.
+[0] https://lore.kernel.org/lkml/46137c67-25b4-6657-33b7-cffdc7afc0d7@igalia.com/
 
 V2:
-- Major improvement thanks to the great idea from Xiaoming - changed
-all the ksym wheel reinvention to printk %ps modifier;
-
-- Instead of ifdefs, using IS_ENABLED() - thanks Steven.
-
-- Removed an unlikely() hint on debug path.
+- new patch, based on the discussion in [1].
+[1] https://lore.kernel.org/lkml/62a63fc2-346f-f375-043a-fa21385279df@igalia.com/
 
 
- include/trace/events/notifiers.h | 69 ++++++++++++++++++++++++++++++++
- kernel/notifier.c                |  6 +++
- 2 files changed, 75 insertions(+)
- create mode 100644 include/trace/events/notifiers.h
+ drivers/edac/altera_edac.c | 16 ++++++++++++----
+ 1 file changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/include/trace/events/notifiers.h b/include/trace/events/notifiers.h
-new file mode 100644
-index 000000000000..e8f30631aef5
---- /dev/null
-+++ b/include/trace/events/notifiers.h
-@@ -0,0 +1,69 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM notifiers
-+
-+#if !defined(_TRACE_NOTIFIERS_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_NOTIFIERS_H
-+
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(notifiers_info,
-+
-+	TP_PROTO(void *cb),
-+
-+	TP_ARGS(cb),
-+
-+	TP_STRUCT__entry(
-+		__field(void *, cb)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->cb = cb;
-+	),
-+
-+	TP_printk("%ps", __entry->cb)
-+);
-+
-+/*
-+ * notifiers_register - called upon notifier callback registration
-+ *
-+ * @cb:		callback pointer
-+ *
-+ */
-+DEFINE_EVENT(notifiers_info, notifiers_register,
-+
-+	TP_PROTO(void *cb),
-+
-+	TP_ARGS(cb)
-+);
-+
-+/*
-+ * notifiers_unregister - called upon notifier callback unregistration
-+ *
-+ * @cb:		callback pointer
-+ *
-+ */
-+DEFINE_EVENT(notifiers_info, notifiers_unregister,
-+
-+	TP_PROTO(void *cb),
-+
-+	TP_ARGS(cb)
-+);
-+
-+/*
-+ * notifiers_run - called upon notifier callback execution
-+ *
-+ * @cb:		callback pointer
-+ *
-+ */
-+DEFINE_EVENT(notifiers_info, notifiers_run,
-+
-+	TP_PROTO(void *cb),
-+
-+	TP_ARGS(cb)
-+);
-+
-+#endif /* _TRACE_NOTIFIERS_H */
-+
-+/* This part must be outside protection */
-+#include <trace/define_trace.h>
-diff --git a/kernel/notifier.c b/kernel/notifier.c
-index 0d5bd62c480e..2f2783f59a31 100644
---- a/kernel/notifier.c
-+++ b/kernel/notifier.c
-@@ -7,6 +7,9 @@
- #include <linux/vmalloc.h>
- #include <linux/reboot.h>
+diff --git a/drivers/edac/altera_edac.c b/drivers/edac/altera_edac.c
+index e7e8e624a436..741fe5539154 100644
+--- a/drivers/edac/altera_edac.c
++++ b/drivers/edac/altera_edac.c
+@@ -16,7 +16,6 @@
+ #include <linux/kernel.h>
+ #include <linux/mfd/altera-sysmgr.h>
+ #include <linux/mfd/syscon.h>
+-#include <linux/notifier.h>
+ #include <linux/of_address.h>
+ #include <linux/of_irq.h>
+ #include <linux/of_platform.h>
+@@ -24,6 +23,7 @@
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
+ #include <linux/types.h>
++#include <linux/kexec.h>
+ #include <linux/uaccess.h>
  
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/notifiers.h>
+ #include "altera_edac.h"
+@@ -2063,22 +2063,30 @@ static const struct irq_domain_ops a10_eccmgr_ic_ops = {
+ };
+ 
+ /************** Stratix 10 EDAC Double Bit Error Handler ************/
+-#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
+-
+ #ifdef CONFIG_64BIT
+ /* panic routine issues reboot on non-zero panic_timeout */
+ extern int panic_timeout;
+ 
++#define to_a10edac(p, m) container_of(p, struct altr_arria10_edac, m)
 +
  /*
-  *	Notifier list for kernel code which wants to be called
-  *	at shutdown. This is used to stop any idling DMA operations
-@@ -37,6 +40,7 @@ static int notifier_chain_register(struct notifier_block **nl,
- 	}
- 	n->next = *nl;
- 	rcu_assign_pointer(*nl, n);
-+	trace_notifiers_register((void*)n->notifier_call);
- 	return 0;
- }
+  * The double bit error is handled through SError which is fatal. This is
+  * called as a panic notifier to printout ECC error info as part of the panic.
++ *
++ * Notice that if kdump is set, we take the risk avoidance approach and
++ * skip the notifier, given that users are expected to have access to a
++ * full vmcore.
+  */
+ static int s10_edac_dberr_handler(struct notifier_block *this,
+ 				  unsigned long event, void *ptr)
+ {
+-	struct altr_arria10_edac *edac = to_a10edac(this, panic_notifier);
++	struct altr_arria10_edac *edac;
+ 	int err_addr, dberror;
  
-@@ -46,6 +50,7 @@ static int notifier_chain_unregister(struct notifier_block **nl,
- 	while ((*nl) != NULL) {
- 		if ((*nl) == n) {
- 			rcu_assign_pointer(*nl, n->next);
-+			trace_notifiers_unregister((void*)n->notifier_call);
- 			return 0;
- 		}
- 		nl = &((*nl)->next);
-@@ -84,6 +89,7 @@ static int notifier_call_chain(struct notifier_block **nl,
- 			continue;
- 		}
- #endif
-+		trace_notifiers_run((void*)nb->notifier_call);
- 		ret = nb->notifier_call(nb, val, v);
- 
- 		if (nr_calls)
++	if (kexec_crash_loaded())
++		return NOTIFY_DONE;
++
++	edac = to_a10edac(this, panic_notifier);
+ 	regmap_read(edac->ecc_mgr_map, S10_SYSMGR_ECC_INTSTAT_DERR_OFST,
+ 		    &dberror);
+ 	regmap_write(edac->ecc_mgr_map, S10_SYSMGR_UE_VAL_OFST, dberror);
 -- 
 2.37.2
 
