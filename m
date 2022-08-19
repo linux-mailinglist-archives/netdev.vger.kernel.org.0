@@ -2,64 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81206599AE0
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 13:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F17B599AE5
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 13:31:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348556AbiHSLWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 07:22:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
+        id S1348842AbiHSLZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 07:25:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348516AbiHSLWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 07:22:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C467201B9;
-        Fri, 19 Aug 2022 04:22:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31856B8273F;
-        Fri, 19 Aug 2022 11:22:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A64DC433D6;
-        Fri, 19 Aug 2022 11:22:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1660908122;
-        bh=wFDubVf/wgkcshdJ9OLiWZ6qElam43aK3cgHdvuWNAE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gGtyD77zpI+2gALvhz+BpLM2ONNMyz3IFowUy9ns7reG55xWAlb0wSno69czlwibo
-         27ri0n4+HepOSxRd0POUYGDAnEFN6gf98pqXa2AP6ynwgRrKZJzRk7xP2VcPGl1YFi
-         lY1VCOc2pXxLO5PVVmKv5wi9cXcyZfpHfYborrro=
-Date:   Fri, 19 Aug 2022 13:21:59 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Stanislav Goriainov <goriainov@ispras.ru>
-Cc:     stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1348857AbiHSLZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 07:25:25 -0400
+Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80895FC302;
+        Fri, 19 Aug 2022 04:25:21 -0700 (PDT)
+Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAwC4h025908;
+        Fri, 19 Aug 2022 11:22:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=PPS06212021;
+ bh=KO/dDSQO9FNu5k6cAb6uRHEGTA0po9DDpv8jG/vg1CI=;
+ b=YDyseJCviMRvK0bj14RV2vg619KcblVpNGXh2JrS9mD6CSpdbmiHM5ryY3pQo0IoE7To
+ uyqPnemtgD90GXSos5mM72kyfMtXAanBrIlpibJAc582MeZ7/mB0kRa6UaFcu6F7f07l
+ 5u/z9xvZpRnPLAgKmWpBUdaJ4RBQafVQAoDmdVdT+N0OwKYKUMfDXk2EPYTClHhOGSgL
+ BRD/eeQz7Tr/RxMFVidc0tSTy91tExbfbCU8PsYXh3kNv4nu1Js+MP1ul/Sdy78lDUwE
+ 6uYqu3YEhnBNHlLsJjRao98cSXf9aMYYfm+ILmLtzs3b2QfVOVn3RoPkA5OMrt47eSVN nw== 
+Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hx2x8n9cb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 19 Aug 2022 11:22:39 +0000
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Fri, 19 Aug 2022 04:22:35 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Xiaolong Huang <butterflyhuangxx@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
-Subject: Re: [PATCH 5.10 1/1] qrtr: Convert qrtr_ports from IDR to XArray
-Message-ID: <Yv9yV9SpKQwm7N3z@kroah.com>
-References: <20220818141401.4971-1-goriainov@ispras.ru>
- <20220818141401.4971-2-goriainov@ispras.ru>
+        Paolo Abeni <pabeni@redhat.com>,
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 4.14 0/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Fri, 19 Aug 2022 14:22:25 +0300
+Message-ID: <20220819112226.922595-1-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818141401.4971-2-goriainov@ispras.ru>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [128.224.125.191]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+X-Proofpoint-ORIG-GUID: y9KDF-828HdFJ_0TijFeaR2K9ze4mpNm
+X-Proofpoint-GUID: y9KDF-828HdFJ_0TijFeaR2K9ze4mpNm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 malwarescore=0 bulkscore=0 clxscore=1015 mlxscore=0
+ lowpriorityscore=0 spamscore=0 mlxlogscore=307 adultscore=0
+ impostorscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208190044
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 05:14:01PM +0300, Stanislav Goriainov wrote:
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
-> 
-> commit 3403fb9adea5f5d8f9337d77ba1b31e6536ac7f1 upstream.
+The following commit is needed to fix CVE-2022-1679:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ac4827f78c7ffe8eef074bc010e7e34bc22f533
 
-This is not a commit id in Linus's tree that I can find anywhere :(
+Pavel Skripkin (1):
+  ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+
+base-commit: b641242202ed8c52030f7b6d8cf15886d3c4fc82
+-- 
+2.37.1
 
