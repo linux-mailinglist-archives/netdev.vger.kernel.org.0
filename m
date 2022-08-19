@@ -2,142 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B343599AA8
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 13:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 314BD599AA1
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 13:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348595AbiHSLHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 07:07:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48482 "EHLO
+        id S1348730AbiHSLKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 07:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348690AbiHSLGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 07:06:38 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60074.outbound.protection.outlook.com [40.107.6.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28CC7FAC7D
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 04:06:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kufNHl5n3x3LtLGd1IvZ912ycAWkKGctkqy5rhiaxLKmM3JA7hjv1CCOR1DAor5g1Gkpshl/IFaXO8ArWZNOiQuDzOvX6q3B7FEOU3X6hc5tSTztHpbDv3QYojVznxQeqSWV3ZyrV3QZzQzAI8nzzzyKDPWO6Q6qs5UDN33v1SX+XWMHHa+WfuQmiRrpATwW7vBO4CQK3B/S1dtp8Z2iGOL3BIuDOnaNxSZ/YaqE5N+KLBW85JSaqzq7OxXFh9/3dIrhocvNJMEqhEAP7dS42WGGSRGptVXDOKnbF3HCLdb0dzTALYFjYM7ohqO5UZEen69VpNJ7yOvaGATyg/aFGw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=GuO9d0JyW6X384h6j7vvWuNhGtcyGWaKg0QXSSvlGng=;
- b=byouVDjUBwETBv9WFY7IG/fxhYH3vsgP3m+bU1C4o+rQBSZGPWRHUWLyMawdyW8fUp1eGvEp/J5XPerTo/oO4OC/lH1UjTk8FKhIhh6hXLxhHDAhW1+15ehkFsNG3Uir8Sm7o3IjFqp5CCcmNc+o0r20265MG+vwOkMQgm1wGIo4SH1zUxE6bdEr28HNcd6ho+y3WFBy9ALkVTZ2X3FNvfRocPDxAl6o/xfCyI7vw0yZQ+qBJq817IJPM1SX3Opdo2ULUz6xHRul0oR8GanDfY9P6kMBQCV4fBeQD77Qh6KfaybxV1NWvkm4+eq5fDr0n5um+r1ABx3F82awmsBP0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GuO9d0JyW6X384h6j7vvWuNhGtcyGWaKg0QXSSvlGng=;
- b=NY4/P2gxKdodH+3CW7bLxt/vgmMidarME9ip4AdCZ/G0jVAg8d+kkA9RdVZMMC+2o3SFqut3KScobP5QKQ8d2qv9MEb5I0YYKpkUUiSm5GuSk0H7ty+hvNAeBIjV588VwtwgvrABLX1+MkBo1FwQI0o8oIISI6m6r/ymyePCaeE=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VI1PR04MB4046.eurprd04.prod.outlook.com (2603:10a6:803:4d::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Fri, 19 Aug
- 2022 11:06:24 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5546.016; Fri, 19 Aug 2022
- 11:06:24 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1348704AbiHSLKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 07:10:18 -0400
+Received: from mx0a-0064b401.pphosted.com (mx0a-0064b401.pphosted.com [205.220.166.238])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0266F4936;
+        Fri, 19 Aug 2022 04:10:17 -0700 (PDT)
+Received: from pps.filterd (m0250809.ppops.net [127.0.0.1])
+        by mx0a-0064b401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAovmx007348;
+        Fri, 19 Aug 2022 04:07:32 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=PPS06212021;
+ bh=+xpItXt+HbP/PTzbqUy6/Ew9gXqfYLiFNtFjEYDxdK8=;
+ b=cdC+mml+3lMcwt2DJKKc4IQQByaxAPTcV7u4qRRh4Kxb/x9eTDUFZslcj/pdawMBCJOj
+ puQrwhbZnwX2lmCTrG5S0tMz5BWnwlWrOU4nDm+/1BlKIBM61gkiapCxkeKvm5I5G1md
+ ZUFqH371nCBdI2GeCXgIrezFivST/7nstUJDo0TVCq6kxFwi99gf1JYsaM+PI44TRZ/L
+ bXlrG/M7US9fvfdAs1d1oMqLWKuPvqwhKWcgzRc74y2ZZHEz74CKWm1o1gGrgd6GRzBt
+ xNIPwQe+3cnCydQ379IW8F/m0G/ifegLbWYAZD5SyeNVno9INIFYKEHULVK4DdafXgJb FA== 
+Received: from ala-exchng01.corp.ad.wrs.com (unknown-82-252.windriver.com [147.11.82.252])
+        by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3hxbfjn0j1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 19 Aug 2022 04:07:32 -0700
+Received: from otp-dpanait-l2.corp.ad.wrs.com (128.224.125.191) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Fri, 19 Aug 2022 04:07:28 -0700
+From:   Dragos-Marian Panait <dragos.panait@windriver.com>
+To:     <stable@vger.kernel.org>
+CC:     Pavel Skripkin <paskripkin@gmail.com>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: Re: [PATCH v2 net-next 8/9] net: mscc: ocelot: set up tag_8021q CPU
- ports independent of user port affinity
-Thread-Topic: [PATCH v2 net-next 8/9] net: mscc: ocelot: set up tag_8021q CPU
- ports independent of user port affinity
-Thread-Index: AQHYswnglvLyEnQT3EOaMpXlfQkMiK21me4AgAB3bYA=
-Date:   Fri, 19 Aug 2022 11:06:23 +0000
-Message-ID: <20220819110623.aivnyw7wunfdndav@skbuf>
-References: <20220818135256.2763602-1-vladimir.oltean@nxp.com>
- <20220818135256.2763602-9-vladimir.oltean@nxp.com>
- <20220818205856.1ab7f5d1@kernel.org>
-In-Reply-To: <20220818205856.1ab7f5d1@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9aa2a38e-8618-49f7-7b98-08da81d2dae4
-x-ms-traffictypediagnostic: VI1PR04MB4046:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zjZb1+98CKtiOHsqlnt7JaYhGO9pfJar7U+tjrvaPk7qG7kdUkvtXVIhQq2BFBZZub98XF6TlTJodK3bVZRgIxhniq2Z0webDftyzDRN5SKmE6byMD2k+Czxjxop4hbf7JBATRe2yNdc0UT6GFVRlOcMgvpAQw55H8CWURPTOGfN8jAQJd4saisUKHD8L0j4pZbIprZMw5vnxh1nX/3FmsQPX0zJ9HxEjlydADgmAgk7IEb1A88Vr8JH+LHwLNf/jXAkttfkSjHcZmC+hegMBiwPEOYmS+WFKypPXWkygCm9BF05Att4iIQt4wvFw8cL/rjmJvOW3NW4lJV8j6gxKYvYMmXgFW3Xl3rHcucdkUHwkvalY65VPVFj/oj78BNv0K8MBcsFyuegjeL2BmhGpSGnpJ0J+EEueQ6Th8MAoBXKkxhFk5hiVB8xYfMuVd50BbtZMP1QQLw6uN8xvpDikwReFcOgn1hJDtIcfHHc2skscryTilX6Z1Gkdi/Xjof4P96oZOQL/WHGOMBD9fhgO8e3kze0XuS43pLsUp8i276mrEDGsJNZ7lpG71K5J5UxeR9IiAl5jQ1rt8PHlE5NJCyEfWb3mkaHwXeKKN4kbokVthDBhQG2BB2GdVyesQpunAFSAXIDcvonLS72RoS7szBE3PfOP75qF97mKJGFQEXMBYRuQOoGW28OpAtH9Wk13An5k2kpoSZ1JaLrc6MkMPf2yNgoB9nE7bXQJE38FulSRcKGjSTzgb4evepaf2Ut
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(346002)(366004)(39860400002)(396003)(376002)(136003)(316002)(41300700001)(6916009)(54906003)(6486002)(478600001)(71200400001)(33716001)(8676002)(66446008)(76116006)(66476007)(2906002)(66556008)(66946007)(64756008)(44832011)(4326008)(4744005)(8936002)(5660300002)(7416002)(122000001)(38100700002)(86362001)(38070700005)(6506007)(1076003)(186003)(26005)(6512007)(83380400001)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?mSF3YRomtP6DcfHZ2f4oUPKEt9u1H4DU18NLnGjGq7ZjilUjFYIFF2QdhU+Y?=
- =?us-ascii?Q?RCQXg6OrJJjEg4h/L9MzjTY0EH9xN93uD4jhsRaXjLEkgYNXlrzu/hM8LZ5v?=
- =?us-ascii?Q?o7+F1vcud4BR5ghRB1CD8DiAhw9ehEG4myK8ivOMrLvtHgqwxoWr10nsNR5H?=
- =?us-ascii?Q?AfggmKzTqX6/EDHiEB+PqETIsXyobAT83eEdVjQusVulnYHoCOFrC31t44jx?=
- =?us-ascii?Q?7YpoLV4pRSm9mqZv5IhzzGcpOUnC0AMD41vSS4uJcilolPg2BN2VxJJu2poF?=
- =?us-ascii?Q?YJIUtk7F3o20iRIuLcXXSftMMOmKC3/sY2MJlbJxF40ovQbjoggzV616Yoy2?=
- =?us-ascii?Q?kU55YoAPc01c+RDecdIjTgLSGfx2fSNONMS7R7eUq3QMLxUZs3lEVLFFMfB/?=
- =?us-ascii?Q?fvyW/56KC16v4Hypi8DNg/HJ+IDWthfoAR0FPiDl3H/0tijpzKyJPofQXBlg?=
- =?us-ascii?Q?fqAZeDTYftMIUsd+RAFd/b+ji1vYMpat+tx65u+NpedLdlErgUr1wvPLKGqc?=
- =?us-ascii?Q?+DZUEX7RDMyRvMfqkJ4e3zKKrhlSjBQkf6pLBrI4YnUdzJ7lruxLjVZitn0Q?=
- =?us-ascii?Q?m4M7XsBpo7qujO/ZdwhZyHMkB6I40p00RQMHdapB+/tTJVuyohZUa/g36oY0?=
- =?us-ascii?Q?u9zcPgKBTcSZwtY+PVJKYBKon3KiWKnTkHaOeW5T6zI8kqmWHKBijeHxuf7/?=
- =?us-ascii?Q?6FmqX0GgmMfL17PFubwxuViY1xPDkRUISFT4uboN/Bmv1f+yStZt/ejZZYCp?=
- =?us-ascii?Q?k66T3BvR7B/m1ki4+4aWnqTiW2vy80cS7xPBsbnd0Kzemz18XAD4OFNbz+3m?=
- =?us-ascii?Q?Hp7DQy/c2g6Pjqgw+ajcnj6EJXUSmxZajdS9o4+bnqYNSfk99ckbYyH7iKiX?=
- =?us-ascii?Q?dNtVf7/uo6ITi6WVglwS1EFfXUj4nXpa/nz1z04IEXxe0RAXCC77m8Sjzjj4?=
- =?us-ascii?Q?e6pW3COpvWSjTWhRPtDhfimbhTT9OcfhJwhY5xjvcjxJ97R5UtVfVKiR4MwC?=
- =?us-ascii?Q?O6eVfQRvX/Est6wHnhu2reSBjjBuo66hYATkVm6dl4/OVdYJXEjG/XO46RKn?=
- =?us-ascii?Q?vAfSwERy0y8g1LyQ8XfQi/L88JhSr/h/n0GJwmLu33amfE8HCFLV7YPo5+QB?=
- =?us-ascii?Q?YBX9Wu1eIJMrApUv0JPoMk8aW4o6cseRBOfaxSipdoDItVa+v4GwASPn0dIP?=
- =?us-ascii?Q?A/1t5NFXe0B/d8c2frHRbscVXaZNtgf89wyZBiDBmvIcPjbSqsbbnBe6s4VG?=
- =?us-ascii?Q?0qcczNnMcEJ6h07sAMmi7BLqtorIpa2F2iAzQlQsAJfbA6boNMMYTt8ihJYB?=
- =?us-ascii?Q?epdXHk73QVFrCZIXpglt9fZgLuunwv5b188gwacgQ9+HADMjzGCgSFhMcKjY?=
- =?us-ascii?Q?3DYYGATiPlS8Z/2a+x7groAUTnYspMkj4fNngEfwrz9cN/dvGKcQcCpm3+2Z?=
- =?us-ascii?Q?f2+ltKqosKAxXpITt3ub1PHwT0PzInZKRife2O4ohtnabXbsKOh9Pi0sIu1s?=
- =?us-ascii?Q?b1RnOmaBSLDbnC+nwqHDSe8U+X3YgODH5YIrl66W2u8qSyQgJz31M2q6P125?=
- =?us-ascii?Q?mkx36vYBzbiKfW/bMsrE6rFzZH7weXGP3cE9ILO7eU8X6fj0pFkBFUvGNnqc?=
- =?us-ascii?Q?JA=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <69176CAA41105B4C9D399B9E8FFD54DC@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Vasanthakumar Thiagarajan <vasanth@atheros.com>,
+        Sujith <Sujith.Manoharan@atheros.com>,
+        Senthil Balasubramanian <senthilkumar@atheros.com>,
+        "John W . Linville" <linville@tuxdriver.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 5.4 0/1] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+Date:   Fri, 19 Aug 2022 14:07:18 +0300
+Message-ID: <20220819110719.915478-1-dragos.panait@windriver.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9aa2a38e-8618-49f7-7b98-08da81d2dae4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2022 11:06:24.1243
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iYLP/jBIj7iLUxNlXoaTQu8lTjk1nL4oWMgFyp7VR+Oyf48UD8RFU55dOISuRdex7VtKgtUyiP8SfEd9+C2i8w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4046
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [128.224.125.191]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+X-Proofpoint-GUID: FjGF5FM6SlIzvYmFTN3t0l51Ie4CMrey
+X-Proofpoint-ORIG-GUID: FjGF5FM6SlIzvYmFTN3t0l51Ie4CMrey
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
+ mlxlogscore=307 clxscore=1015 phishscore=0 bulkscore=0 priorityscore=1501
+ impostorscore=0 spamscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208190043
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 08:58:56PM -0700, Jakub Kicinski wrote:
-> ERROR: modpost: "ocelot_port_teardown_dsa_8021q_cpu" [drivers/net/dsa/oce=
-lot/mscc_felix.ko] undefined!
-> ERROR: modpost: "ocelot_port_teardown_dsa_8021q_cpu" [drivers/net/dsa/oce=
-lot/mscc_seville.ko] undefined!
+The following commit is needed to fix CVE-2022-1679:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=0ac4827f78c7ffe8eef074bc010e7e34bc22f533
 
-Damn, I forgot EXPORT_SYMBOL_GPL()....
-Since I see you've marked the patches as changes requested already, I'll
-go ahead and resubmit.=
+Pavel Skripkin (1):
+  ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
+
+ drivers/net/wireless/ath/ath9k/htc.h          | 10 +++++-----
+ drivers/net/wireless/ath/ath9k/htc_drv_init.c |  3 ++-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+
+base-commit: de0cd3ea700d1e8ed76705d02e33b524cbb84cf3
+-- 
+2.37.1
+
