@@ -2,123 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 632C4599C9E
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 15:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CB0599CBA
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 15:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349271AbiHSNF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 09:05:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33030 "EHLO
+        id S1349318AbiHSNMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 09:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348922AbiHSNF4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 09:05:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA0F5D0D4;
-        Fri, 19 Aug 2022 06:05:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E1A9761866;
-        Fri, 19 Aug 2022 13:05:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29269C433C1;
-        Fri, 19 Aug 2022 13:05:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660914354;
-        bh=miZ6oqPG1q3ZNV0ucgXlV6pfatEjWryNvNqVONznrCA=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=CCXDNBjVcl95t6o0lHxLOUfzo1yO6QdoJydJrp09z2yCzvBjISWJcQIpE2hdtiufJ
-         ZwMn5mcHZZgsKc4bfkDBhK3PjjqLMV/zbXb9ndNaLrhCjZ3yhHnuHbkgYYSI8Je9Ws
-         dq8Zl+IEeYb79+Q6OvEa6g/jLh1R7Ml4t+pYPWdePMuwbj21jd1bNTXW3ST90AUysc
-         rE4ZBeDOZoRMV5v7kR1N1+Sivr8qbOs0ut33tdsODWsEdGQgf8fRRkwPl1ORSVNJ/t
-         deGb/TJvNd1M3fCYbWY1bi29aaivz2bLudfse00eGpETuWYJhQVT7+LxO2ylWHB8Ol
-         g2FI/f21zSgwg==
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 118D955FC1B; Fri, 19 Aug 2022 15:05:51 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, memxor@gmail.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 3/4] bpf: Add support for writing to
- nf_conn:mark
-In-Reply-To: <20220818221032.7b4lcpa7i4gchdvl@kashmir.localdomain>
-References: <cover.1660761470.git.dxu@dxuuu.xyz>
- <edbca42217a73161903a50ba07ec63c5fa5fde00.1660761470.git.dxu@dxuuu.xyz>
- <87pmgxuy6v.fsf@toke.dk>
- <20220818221032.7b4lcpa7i4gchdvl@kashmir.localdomain>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 19 Aug 2022 15:05:51 +0200
-Message-ID: <87wnb4tmc0.fsf@toke.dk>
+        with ESMTP id S1349153AbiHSNMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 09:12:39 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 488ED74E1F;
+        Fri, 19 Aug 2022 06:12:38 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id w138so1670266pfc.10;
+        Fri, 19 Aug 2022 06:12:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=+HttuOcfh+F+H+y/J89AxcmFEcYFCA26kNV2tXQCUuw=;
+        b=qW70MXd5DgmcAj2wWFFVkV72o/nHNC6AwzJv9JFJIL8u+AUbDtl5cUrT4fmFpOC4MM
+         Gh2bl+79+4YBkFPoFJFWEzoH9bvGOkZGWS/0HPXWqzf/lQGb0xg2NQeedi5NVkp+7sgU
+         MnAW9bhdz9RPq+FWYPdJ6FZrzFAhsZDHJlXZBs16mxwbkUL5xTDVfrgBNOPpiry66IVF
+         vKyajl8PgQlqoEqzOhjEW4lEatM/rLGeR0ouszRmhyd0LN6xYjQA2GXb7QFhXSt9YHiZ
+         COHFgVc9ylRiK452vHLhos5ZwxDny4wx+2ZOkraVCVRIDSWEI5crFnoSoLPGoCBfBVQE
+         i1uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+HttuOcfh+F+H+y/J89AxcmFEcYFCA26kNV2tXQCUuw=;
+        b=WZ0p3n6IAjkme1rJE0DOjxUOustYBWvLsv+s6VfpHPjIql7iTT24ejJ3mIR8VSzeH0
+         QVl1XXyU0SVyUm7p+3mXJpY1fXCm5OxuPt91JPUZn9cyDxQWXjyfNtMAG0HgRobVO1TK
+         QnhviJ32M0BiMrbXLI77AYSUwfZhKkpsPSgXDVUwqD7+YuHja3HZkzNrlX0MgzT8MBB9
+         xcrdcg9p5yFyolmCAqvo9TVsQfnzUDxY7aES3uYIWEscoiwyP0BIljHlP6WYIBCGLjHT
+         wRjqMKq2bjNpOj/9Lb/QkLM/hMWHoPV/asCmwKze3rk7gWEnJ6tW7/Acbdb0OfMNodjd
+         7+RA==
+X-Gm-Message-State: ACgBeo1nCmGno+ml4oDSDaf+J6EUBeEoJd0nqDnG2ZoVkGsKjovtYDK3
+        JExjQ0jcM8stX9NP8uyB4hE=
+X-Google-Smtp-Source: AA6agR5fk8/zWfwk5/fLk4VWIsYM4zx1HwDid0OHsYkMdPMacu01upPGMPH5s3T+iuO/vjxq2/quXA==
+X-Received: by 2002:a05:6a00:23d1:b0:52f:39e9:9150 with SMTP id g17-20020a056a0023d100b0052f39e99150mr7981942pfc.16.1660914757655;
+        Fri, 19 Aug 2022 06:12:37 -0700 (PDT)
+Received: from [192.168.0.4] ([182.213.254.91])
+        by smtp.gmail.com with ESMTPSA id v2-20020a626102000000b005361708275fsm1073566pfb.217.2022.08.19.06.12.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 06:12:36 -0700 (PDT)
+Message-ID: <afbff5b7-1004-a445-9005-7391c91a275d@gmail.com>
+Date:   Fri, 19 Aug 2022 22:12:34 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next] amt: remove unneccessary skb pointer check
+Content-Language: en-US
+To:     Yang Yingliang <yangyingliang@huawei.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net
+References: <20220818093114.2449179-1-yangyingliang@huawei.com>
+From:   Taehee Yoo <ap420073@gmail.com>
+In-Reply-To: <20220818093114.2449179-1-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Xu <dxu@dxuuu.xyz> writes:
+Hi Yang,
+Thanks for this work!
 
-> Hi Toke,
->
-> On Thu, Aug 18, 2022 at 09:52:08PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
-n wrote:
->> Daniel Xu <dxu@dxuuu.xyz> writes:
->>=20
->> > Support direct writes to nf_conn:mark from TC and XDP prog types. This
->> > is useful when applications want to store per-connection metadata. This
->> > is also particularly useful for applications that run both bpf and
->> > iptables/nftables because the latter can trivially access this
->> > metadata.
->>=20
->> Looking closer at the nf_conn definition, the mark field (and possibly
->> secmark) seems to be the only field that is likely to be feasible to
->> support direct writes to, as everything else either requires special
->> handling (like status and timeout), or they are composite field that
->> will require helpers anyway to use correctly.
->>=20
->> Which means we're in the process of creating an API where users have to
->> call helpers to fill in all fields *except* this one field that happens
->> to be directly writable. That seems like a really confusing and
->> inconsistent API, so IMO it strengthens the case for just making a
->> helper for this field as well, even though it adds a bit of overhead
->> (and then solving the overhead issue in a more generic way such as by
->> supporting clever inlining).
->>=20
->> -Toke
->
-> I don't particularly have a strong opinion here. But to play devil's
-> advocate:
->
-> * It may be confusing now, but over time I expect to see more direct
->   write support via BTF, especially b/c there is support for unstable
->   helpers now. So perhaps in the future it will seem more sensible.
+On 8/18/22 18:31, Yang Yingliang wrote:
+> The skb pointer will be checked in kfree_skb(), so remove the outside check.
+> 
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
-Right, sure, for other structs. My point was that it doesn't look like
-this particular one (nf_conn) is likely to grow any other members we can
-access directly, so it'll be a weird one-off for that single field...
+Reviewed-by: Taehee Yoo <ap420073@gmail.com>
 
-> * The unstable helpers do not have external documentation. Nor should
->   they in my opinion as their unstableness + stale docs may lead to
->   undesirable outcomes. So users of the unstable API already have to
->   splunk through kernel code and/or selftests to figure out how to wield
->   the APIs. All this to say there may not be an argument for
->   discoverability.
-
-This I don't buy at all. Just because it's (supposedly) "unstable" is no
-excuse to design a bad API, or make it actively user-hostile by hiding
-things so users have to go browse kernel code to know how to use it. So
-in any case, we should definitely document everything.
-
-> * Direct writes are slightly more ergnomic than using a helper.
-
-This is true, and that's the main argument for doing it this way. The
-point of my previous email was that since it's only a single field,
-consistency weighs heavier than ergonomics :)
-
--Toke
+> ---
+>   drivers/net/amt.c | 6 ++----
+>   1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+> index 9a247eb7679c..2d20be6ffb7e 100644
+> --- a/drivers/net/amt.c
+> +++ b/drivers/net/amt.c
+> @@ -2894,8 +2894,7 @@ static void amt_event_work(struct work_struct *work)
+>   			amt_event_send_request(amt);
+>   			break;
+>   		default:
+> -			if (skb)
+> -				kfree_skb(skb);
+> +			kfree_skb(skb);
+>   			break;
+>   		}
+>   	}
+> @@ -3033,8 +3032,7 @@ static int amt_dev_stop(struct net_device *dev)
+>   	cancel_work_sync(&amt->event_wq);
+>   	for (i = 0; i < AMT_MAX_EVENTS; i++) {
+>   		skb = amt->events[i].skb;
+> -		if (skb)
+> -			kfree_skb(skb);
+> +		kfree_skb(skb);
+>   		amt->events[i].event = AMT_EVENT_NONE;
+>   		amt->events[i].skb = NULL;
+>   	}
