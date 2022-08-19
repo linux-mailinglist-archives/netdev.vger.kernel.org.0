@@ -2,133 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7740459921D
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 02:59:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B70E559922B
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 03:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345936AbiHSA6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 20:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59526 "EHLO
+        id S1344864AbiHSBAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 21:00:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345726AbiHSA5w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 20:57:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78063DF4D4
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 17:57:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660870669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uuQp/54kzUA0HT/STCK8ZUpvoW2Mnly/Q6xJfw5TSjY=;
-        b=AA4fjvuWDWnMRE0B56XLJvABLgbMXp+A3L46ESNhT4B5eVReak+YtyE+u5Dg0TC9Iy55vr
-        eerOjHa+vacWUsG/bweK+oUsacb9M+mUu3i/r0ceKyg5mKftkSbAgw2HNwMTJ4kDne9GDF
-        zPhNNJ/mf1g2CrtsZvYSfcTdU+HZ7CI=
-Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
- [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-669-gCpOaePzP-e8BpoVw3D3dw-1; Thu, 18 Aug 2022 20:57:40 -0400
-X-MC-Unique: gCpOaePzP-e8BpoVw3D3dw-1
-Received: by mail-lf1-f69.google.com with SMTP id z1-20020a0565120c0100b0048ab2910b13so978804lfu.23
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 17:57:40 -0700 (PDT)
+        with ESMTP id S243846AbiHSBAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 21:00:00 -0400
+Received: from mail-vk1-xa2d.google.com (mail-vk1-xa2d.google.com [IPv6:2607:f8b0:4864:20::a2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85C02B6D2A;
+        Thu, 18 Aug 2022 17:59:58 -0700 (PDT)
+Received: by mail-vk1-xa2d.google.com with SMTP id i2so1586110vkk.13;
+        Thu, 18 Aug 2022 17:59:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=XmfAUBn1gArqpjhXlxsozSzKVKhtwcuq/x+I+Cb3JzY=;
+        b=Qo3NPm1+YvEv8c/eNWWuQFae5XughAMFYdkSqiR35cDKbnL8eJWtPd0Qvb5yLNCtMC
+         0yZnB5M4GAGOEqeZ6Y3z5l6Xnr5D2ly83lWAX3lQmYV+Cd7UO/2krUBvtRMrdjf/GWZM
+         KIt5Zfdjv1m1Br4cZlsYbCTFbYv/lOmKgYjnqyqKQGqW8bjmYPopiDWCj0L9VoQXlo0E
+         8bzWAqhogkYmdRNYJDWi05oP9XPaZWRT8LUFfgst0CIC3mIRU6GJKnueDWqUioS5Efub
+         xXxg6xCAZ+pX8K/X2jQ7JHrX50aTo7L9D23bKrhlSF3HnWi8sZ92KFjfYELFZBqadizo
+         VkbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=uuQp/54kzUA0HT/STCK8ZUpvoW2Mnly/Q6xJfw5TSjY=;
-        b=QiAZxd0GyAH6KehZ5UThykWZuFjumhe8GZJDNp5xrTg46SfT9Fr7HE9vk9ARWCyb1S
-         P3EhW42a8J3i8avE5mPzUmnxohphVX9h5W6Po8tkq/GNj/MZivfKGBShpDm5RGYrVK4k
-         ehYe8oxq7DgINzNf0Rn3Kta+3aJGgVrh4GY2j2qh3AncPnVtUl3y3SieeP8FrDbbloSR
-         mmOzgYFPLTTjICE/M031CuiqYBKSdUwszn7xM5OIYyyYPuZVgmWgk7I0Q8Cxo3zXUCFx
-         E514IOfGvXm8yfujBXDYVolXjT6osXmI98UaaxI1kjOZjbYGGFXedlQkEunWVQtXHchb
-         Ue7w==
-X-Gm-Message-State: ACgBeo0jWDo9nrkDgqxcLV73hdoCHWYB+UR7fKfCWCEPRbq7PknNrh8N
-        K4jYNWLYpKR8H0RWVzSn7VdjB9TZoqh8H4aSrD9IzTq3ea4AZEjcGSBWeLctq4NNtsqO0NPaKgS
-        3Gr7qfHuHKDn0VxC7kl/phii0Lvt0Gkav
-X-Received: by 2002:a05:651c:2103:b0:25d:6478:2a57 with SMTP id a3-20020a05651c210300b0025d64782a57mr1520452ljq.496.1660870659361;
-        Thu, 18 Aug 2022 17:57:39 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5NBBg5Ds9XUeFrJ5XIbbNo4QBFxzNKUMH/CyMN4Jn/ghuXR8mPIUiifAo/bM5oS9vi+A6u9mAf/95LI1LMrdo=
-X-Received: by 2002:a05:651c:2103:b0:25d:6478:2a57 with SMTP id
- a3-20020a05651c210300b0025d64782a57mr1520433ljq.496.1660870659177; Thu, 18
- Aug 2022 17:57:39 -0700 (PDT)
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=XmfAUBn1gArqpjhXlxsozSzKVKhtwcuq/x+I+Cb3JzY=;
+        b=JbICi3D2HctZmGEVK0jkOqqmVgu3532iYKCDMDtkikTGaN/biwunxVtfNhTrgtq/FX
+         oRjxSxlAgN9/EU7JBtR8Jov9V/7Uyok7B9uVufssEjg4jmzObLwKGSqL6odr2d2W44T9
+         7ExMazXB1KLMKJANahZNjuZ+uIcEk67u9HINtBhw4KDCMdDgFx5mmKmouISYMiNGnL26
+         xY2G7gWK9vETgRWAwxnRCyj9bu2N36fjHe4TpvqSMDlrjXqMjiUAUPCH9uevUnauNN0n
+         Ootj8KW6wFcBlz+s5WuOxliVj6lNbH8+CUeIL1az8tpdG4szkXoI75iXhY0VuBXXH87S
+         GYHA==
+X-Gm-Message-State: ACgBeo1vgsPYq1V1+HnpvUBou+9EOHe7b2ftKFV2yPVXMbmOL9MHt8lh
+        1b5C6mDiRWA2ITHOh08MoNe6M6fFc7IiuN9WdV4=
+X-Google-Smtp-Source: AA6agR4z9O4ng7MR/K7VSMtafo49b8X4OSLL8KeOKzrQ51KNyScyZXPsVkxF0WgmkYDssPirwhyDHTyw0JGjzd78feE=
+X-Received: by 2002:a1f:251:0:b0:380:d262:4f4f with SMTP id
+ 78-20020a1f0251000000b00380d2624f4fmr2294285vkc.5.1660870797677; Thu, 18 Aug
+ 2022 17:59:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220811135353.2549658-1-eperezma@redhat.com> <20220811135353.2549658-4-eperezma@redhat.com>
-In-Reply-To: <20220811135353.2549658-4-eperezma@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Fri, 19 Aug 2022 08:57:28 +0800
-Message-ID: <CACGkMEvDTky2y_ngUJp69Wt=1hq3U=LeSdnzEj=oYJxh+jTrOQ@mail.gmail.com>
-Subject: Re: [PATCH v8 3/3] vhost: Remove invalid parameter of
- VHOST_VDPA_SUSPEND ioctl
-To:     =?UTF-8?Q?Eugenio_P=C3=A9rez?= <eperezma@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, ecree.xilinx@gmail.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Zhang Min <zhang.min9@zte.com.cn>,
-        Pablo Cascon Katchadourian <pabloc@xilinx.com>,
-        "Uminski, Piotr" <Piotr.Uminski@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        "Kamde, Tanuj" <tanuj.kamde@amd.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Laurent Vivier <lvivier@redhat.com>,
-        Martin Porter <martinpo@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>,
-        Eli Cohen <elic@nvidia.com>, Cindy Lu <lulu@redhat.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Dinan Gunawardena <dinang@xilinx.com>,
-        Xie Yongji <xieyongji@bytedance.com>
+References: <20220818143118.17733-1-laoar.shao@gmail.com> <Yv67MRQLPreR9GU5@slm.duckdns.org>
+In-Reply-To: <Yv67MRQLPreR9GU5@slm.duckdns.org>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Fri, 19 Aug 2022 08:59:20 +0800
+Message-ID: <CALOAHbDt9NUv9qK_J1_9CU0tmW9kiJ+nig_0NfzGJgJmrSk2fw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 00/12] bpf: Introduce selectable memcg for bpf map
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        lizefan.x@bytedance.com, Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 11, 2022 at 9:54 PM Eugenio P=C3=A9rez <eperezma@redhat.com> wr=
-ote:
+On Fri, Aug 19, 2022 at 6:20 AM Tejun Heo <tj@kernel.org> wrote:
 >
-> It was a leftover from previous versions.
+> Hello,
 >
-> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
-> ---
-> Note that I'm not sure this removal is valid. The ioctl is not in master
-> branch by the send date of this patch, but there are commits on vhost
-> branch that do have it.
-> ---
->  include/uapi/linux/vhost.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> On Thu, Aug 18, 2022 at 02:31:06PM +0000, Yafang Shao wrote:
+> > After switching to memcg-based bpf memory accounting to limit the bpf
+> > memory, some unexpected issues jumped out at us.
+> > 1. The memory usage is not consistent between the first generation and
+> > new generations.
+> > 2. After the first generation is destroyed, the bpf memory can't be
+> > limited if the bpf maps are not preallocated, because they will be
+> > reparented.
+> >
+> > This patchset tries to resolve these issues by introducing an
+> > independent memcg to limit the bpf memory.
 >
-> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> index 89fcb2afe472..768ec46a88bf 100644
-> --- a/include/uapi/linux/vhost.h
-> +++ b/include/uapi/linux/vhost.h
-> @@ -178,6 +178,6 @@
->   * the possible device specific states) that is required for restoring i=
-n the
->   * future. The device must not change its configuration after that point=
-.
->   */
-> -#define VHOST_VDPA_SUSPEND             _IOW(VHOST_VIRTIO, 0x7D, int)
-> +#define VHOST_VDPA_SUSPEND             _IO(VHOST_VIRTIO, 0x7D)
->
->  #endif
-> --
-> 2.31.1
+> memcg folks would have better informed opinions but from generic cgroup pov
+> I don't think this is a good direction to take. This isn't a problem limited
+> to bpf progs and it doesn't make whole lot of sense to solve this for bpf.
 >
 
+This change is bpf specific. It doesn't refactor a whole lot of things.
+
+> We have the exact same problem for any resources which span multiple
+> instances of a service including page cache, tmpfs instances and any other
+> thing which can persist longer than procss life time. My current opinion is
+> that this is best solved by introducing an extra cgroup layer to represent
+> the persistent entity and put the per-instance cgroup under it.
+>
+
+It is not practical on k8s.
+Because, before the persistent entity, the cgroup dir is stateless.
+After, it is stateful.
+Pls, don't continue keeping blind eyes on k8s.
+
+> It does require reorganizing how things are organized from userspace POV but
+> the end result is really desirable. We get entities accurately representing
+> what needs to be tracked and control over the granularity of accounting and
+> control (e.g. folks who don't care about telling apart the current
+> instance's usage can simply not enable controllers at the persistent entity
+> level).
+>
+
+Pls.s also think about why k8s refuse to use cgroup2.
+
+> We surely can discuss other approaches but my current intuition is that it'd
+> be really difficult to come up with a better solution than layering to
+> introduce persistent service entities.
+>
+> So, please consider the approach nacked for the time being.
+>
+
+It doesn't make sense to nack it.
+I will explain to you by replying to your other email.
+
+-- 
+Regards
+Yafang
