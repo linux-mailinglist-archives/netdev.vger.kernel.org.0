@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9FE5599E62
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 17:43:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D300E599EBD
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 17:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349765AbiHSPcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 11:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51674 "EHLO
+        id S1349767AbiHSPct (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 11:32:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349193AbiHSPcm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:32:42 -0400
+        with ESMTP id S1349760AbiHSPcn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:32:43 -0400
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7AFFFF6C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694A2101C54
         for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 08:32:41 -0700 (PDT)
 Received: from dev006.ch-qa.sw.ru ([172.29.1.11])
         by relay.virtuozzo.com with esmtp (Exim 4.95)
         (envelope-from <andrey.zhadchenko@virtuozzo.com>)
-        id 1oP3wc-00Gb30-8E;
+        id 1oP3wc-00Gb30-A2;
         Fri, 19 Aug 2022 17:31:21 +0200
 From:   Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
 To:     netdev@vger.kernel.org
@@ -26,9 +26,9 @@ Cc:     dev@openvswitch.org, pshelar@ovn.org, davem@davemloft.net,
         ptikhomirov@virtuozzo.com, alexander.mikhalitsyn@virtuozzo.com,
         avagin@google.com, brauner@kernel.org, mark.d.gray@redhat.com,
         i.maximets@ovn.org, aconole@redhat.com
-Subject: [PATCH net-next v2 2/3] openvswitch: fix memory leak at failed datapath creation
-Date:   Fri, 19 Aug 2022 18:30:43 +0300
-Message-Id: <20220819153044.423233-3-andrey.zhadchenko@virtuozzo.com>
+Subject: [PATCH net-next v2 3/3] openvswitch: add OVS_DP_ATTR_PER_CPU_PIDS to get requests
+Date:   Fri, 19 Aug 2022 18:30:44 +0300
+Message-Id: <20220819153044.423233-4-andrey.zhadchenko@virtuozzo.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220819153044.423233-1-andrey.zhadchenko@virtuozzo.com>
 References: <20220819153044.423233-1-andrey.zhadchenko@virtuozzo.com>
@@ -43,64 +43,239 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
-allocates array via kmalloc.
-If for some reason new_vport() fails during ovs_dp_cmd_new()
-dp->upcall_portids must be freed.
-Add missing kfree.
+CRIU needs OVS_DP_ATTR_PER_CPU_PIDS to checkpoint/restore newest
+openvswitch versions.
+Add pids to generic datapath reply. Adjust reply allocation to reserve
+memory for pids and move it under ovs_lock() to ensure than number of
+pids is unchanged while we adding them to nlmsg.
 
-Kmemleak example:
-unreferenced object 0xffff88800c382500 (size 64):
-  comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
-  hex dump (first 32 bytes):
-    5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
-    03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
-  backtrace:
-    [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
-    [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
-    [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
-    [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
-    [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
-    [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
-    [<000000004959cece>] genl_rcv+0x24/0x40
-    [<000000004699ac7f>] netlink_unicast+0x23e/0x360
-    [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
-    [<000000006f4aa380>] sock_sendmsg+0x62/0x70
-    [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
-    [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
-    [<0000000011776020>] __sys_sendmsg+0x59/0xa0
-    [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
-    [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
 Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
 ---
- net/openvswitch/datapath.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ net/openvswitch/datapath.c | 88 +++++++++++++++++++++++---------------
+ 1 file changed, 53 insertions(+), 35 deletions(-)
 
 diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 8033c97a8d65..20c9964b74cc 100644
+index 20c9964b74cc..865c848a041b 100644
 --- a/net/openvswitch/datapath.c
 +++ b/net/openvswitch/datapath.c
-@@ -1804,7 +1804,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 				ovs_dp_reset_user_features(skb, info);
- 		}
+@@ -1506,9 +1506,11 @@ static struct genl_family dp_flow_genl_family __ro_after_init = {
+ 	.module = THIS_MODULE,
+ };
  
--		goto err_unlock_and_destroy_meters;
-+		goto err_destroy_pids;
- 	}
+-static size_t ovs_dp_cmd_msg_size(void)
++static size_t ovs_dp_cmd_msg_size(struct datapath *dp)
+ {
+ 	size_t msgsize = NLMSG_ALIGN(sizeof(struct ovs_header));
++	struct dp_nlsk_pids *pids = ovsl_dereference(dp->upcall_portids);
++
  
- 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
-@@ -1819,6 +1819,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	ovs_notify(&dp_datapath_genl_family, reply, info);
+ 	msgsize += nla_total_size(IFNAMSIZ);
+ 	msgsize += nla_total_size_64bit(sizeof(struct ovs_dp_stats));
+@@ -1516,6 +1518,9 @@ static size_t ovs_dp_cmd_msg_size(void)
+ 	msgsize += nla_total_size(sizeof(u32)); /* OVS_DP_ATTR_USER_FEATURES */
+ 	msgsize += nla_total_size(sizeof(u32)); /* OVS_DP_ATTR_MASKS_CACHE_SIZE */
+ 
++	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU && pids)
++		msgsize += nla_total_size_64bit(sizeof(u32) * pids->n_pids);
++
+ 	return msgsize;
+ }
+ 
+@@ -1527,6 +1532,7 @@ static int ovs_dp_cmd_fill_info(struct datapath *dp, struct sk_buff *skb,
+ 	struct ovs_dp_stats dp_stats;
+ 	struct ovs_dp_megaflow_stats dp_megaflow_stats;
+ 	int err;
++	struct dp_nlsk_pids *pids = ovsl_dereference(dp->upcall_portids);
+ 
+ 	ovs_header = genlmsg_put(skb, portid, seq, &dp_datapath_genl_family,
+ 				 flags, cmd);
+@@ -1556,6 +1562,11 @@ static int ovs_dp_cmd_fill_info(struct datapath *dp, struct sk_buff *skb,
+ 			ovs_flow_tbl_masks_cache_size(&dp->table)))
+ 		goto nla_put_failure;
+ 
++	if (dp->user_features & OVS_DP_F_DISPATCH_UPCALL_PER_CPU && pids &&
++	    nla_put_64bit(skb, OVS_DP_ATTR_PER_CPU_PIDS, sizeof(u32) * pids->n_pids,
++			  &pids->pids, OVS_DP_ATTR_PAD))
++		goto nla_put_failure;
++
+ 	genlmsg_end(skb, ovs_header);
  	return 0;
  
-+err_destroy_pids:
-+	if (rcu_dereference_raw(dp->upcall_portids))
-+		kfree(rcu_dereference_raw(dp->upcall_portids));
+@@ -1565,9 +1576,9 @@ static int ovs_dp_cmd_fill_info(struct datapath *dp, struct sk_buff *skb,
+ 	return -EMSGSIZE;
+ }
+ 
+-static struct sk_buff *ovs_dp_cmd_alloc_info(void)
++static struct sk_buff *ovs_dp_cmd_alloc_info(struct datapath *dp)
+ {
+-	return genlmsg_new(ovs_dp_cmd_msg_size(), GFP_KERNEL);
++	return genlmsg_new(ovs_dp_cmd_msg_size(dp), GFP_KERNEL);
+ }
+ 
+ /* Called with rcu_read_lock or ovs_mutex. */
+@@ -1745,14 +1756,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	if (!a[OVS_DP_ATTR_NAME] || !a[OVS_DP_ATTR_UPCALL_PID])
+ 		goto err;
+ 
+-	reply = ovs_dp_cmd_alloc_info();
+-	if (!reply)
+-		return -ENOMEM;
+-
+-	err = -ENOMEM;
+ 	dp = kzalloc(sizeof(*dp), GFP_KERNEL);
+ 	if (dp == NULL)
+-		goto err_destroy_reply;
++		return -ENOMEM;
+ 
+ 	ovs_dp_set_net(dp, sock_net(skb->sk));
+ 
+@@ -1785,9 +1791,15 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	/* So far only local changes have been made, now need the lock. */
+ 	ovs_lock();
+ 
+-	err = ovs_dp_change(dp, a);
+-	if (err)
++	reply = ovs_dp_cmd_alloc_info(dp);
++	if (!reply) {
++		err = -ENOMEM;
+ 		goto err_unlock_and_destroy_meters;
++	}
++
++	err = ovs_dp_change(dp, a);
++	if (err)
++		goto err_destroy_reply;
+ 
+ 	vport = new_vport(&parms);
+ 	if (IS_ERR(vport)) {
+@@ -1822,6 +1834,8 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ err_destroy_pids:
+ 	if (rcu_dereference_raw(dp->upcall_portids))
+ 		kfree(rcu_dereference_raw(dp->upcall_portids));
++err_destroy_reply:
++	kfree_skb(reply);
  err_unlock_and_destroy_meters:
  	ovs_unlock();
  	ovs_meters_exit(dp);
+@@ -1833,8 +1847,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_flow_tbl_destroy(&dp->table);
+ err_destroy_dp:
+ 	kfree(dp);
+-err_destroy_reply:
+-	kfree_skb(reply);
+ err:
+ 	return err;
+ }
+@@ -1881,15 +1893,17 @@ static int ovs_dp_cmd_del(struct sk_buff *skb, struct genl_info *info)
+ 	struct datapath *dp;
+ 	int err;
+ 
+-	reply = ovs_dp_cmd_alloc_info();
+-	if (!reply)
+-		return -ENOMEM;
+-
+ 	ovs_lock();
+ 	dp = lookup_datapath(sock_net(skb->sk), info->userhdr, info->attrs);
+ 	err = PTR_ERR(dp);
+ 	if (IS_ERR(dp))
+-		goto err_unlock_free;
++		goto err_unlock;
++
++	reply = ovs_dp_cmd_alloc_info(dp);
++	if (!reply) {
++		err = -ENOMEM;
++		goto err_unlock;
++	}
+ 
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+ 				   info->snd_seq, 0, OVS_DP_CMD_DEL);
+@@ -1902,9 +1916,8 @@ static int ovs_dp_cmd_del(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	return 0;
+ 
+-err_unlock_free:
++err_unlock:
+ 	ovs_unlock();
+-	kfree_skb(reply);
+ 	return err;
+ }
+ 
+@@ -1914,19 +1927,21 @@ static int ovs_dp_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 	struct datapath *dp;
+ 	int err;
+ 
+-	reply = ovs_dp_cmd_alloc_info();
+-	if (!reply)
+-		return -ENOMEM;
+-
+ 	ovs_lock();
+ 	dp = lookup_datapath(sock_net(skb->sk), info->userhdr, info->attrs);
+ 	err = PTR_ERR(dp);
+ 	if (IS_ERR(dp))
+-		goto err_unlock_free;
++		goto err_unlock;
++
++	reply = ovs_dp_cmd_alloc_info(dp);
++	if (!reply) {
++		err = -ENOMEM;
++		goto err_unlock;
++	}
+ 
+ 	err = ovs_dp_change(dp, info->attrs);
+ 	if (err)
+-		goto err_unlock_free;
++		goto err_free;
+ 
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+ 				   info->snd_seq, 0, OVS_DP_CMD_SET);
+@@ -1937,9 +1952,10 @@ static int ovs_dp_cmd_set(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	return 0;
+ 
+-err_unlock_free:
+-	ovs_unlock();
++err_free:
+ 	kfree_skb(reply);
++err_unlock:
++	ovs_unlock();
+ 	return err;
+ }
+ 
+@@ -1949,16 +1965,19 @@ static int ovs_dp_cmd_get(struct sk_buff *skb, struct genl_info *info)
+ 	struct datapath *dp;
+ 	int err;
+ 
+-	reply = ovs_dp_cmd_alloc_info();
+-	if (!reply)
+-		return -ENOMEM;
+-
+ 	ovs_lock();
+ 	dp = lookup_datapath(sock_net(skb->sk), info->userhdr, info->attrs);
+ 	if (IS_ERR(dp)) {
+ 		err = PTR_ERR(dp);
+-		goto err_unlock_free;
++		goto err_unlock;
+ 	}
++
++	reply = ovs_dp_cmd_alloc_info(dp);
++	if (!reply) {
++		err = -ENOMEM;
++		goto err_unlock;
++	}
++
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+ 				   info->snd_seq, 0, OVS_DP_CMD_GET);
+ 	BUG_ON(err < 0);
+@@ -1966,9 +1985,8 @@ static int ovs_dp_cmd_get(struct sk_buff *skb, struct genl_info *info)
+ 
+ 	return genlmsg_reply(reply, info);
+ 
+-err_unlock_free:
++err_unlock:
+ 	ovs_unlock();
+-	kfree_skb(reply);
+ 	return err;
+ }
+ 
 -- 
 2.31.1
 
