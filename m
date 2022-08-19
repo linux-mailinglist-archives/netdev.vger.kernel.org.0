@@ -2,140 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA6A5999BF
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 12:33:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91AC45999C5
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 12:33:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348350AbiHSKYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 06:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39744 "EHLO
+        id S1348353AbiHSK3v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 06:29:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348034AbiHSKYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:24:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836347DF66
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:24:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660904674;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N/mHVSrbqdjC1aGVDhd/e9K2D4ML01uWyXVxjKqxQ38=;
-        b=G6b1Uu1BBzHV9DjgrsVeIV7pIUfBP8p9qUe3dJTS6iU0Aubq7ghgGuLgwfOmjOvvyhJSp8
-        c78JHJPGVq2Oj6+fRQtfrWRYnxOIibRRLv+fO9MfERW2nrg04Ovs3nnnVqSwFAmeLruwb1
-        /ezCjwQhEQtC7+tPxYIs7Oc/kfPVJBM=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-550-DUi-M3YXNgikEZ7gdlmWrg-1; Fri, 19 Aug 2022 06:24:33 -0400
-X-MC-Unique: DUi-M3YXNgikEZ7gdlmWrg-1
-Received: by mail-wr1-f70.google.com with SMTP id o13-20020adfba0d000000b0022524f3f4faso637093wrg.6
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:24:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=N/mHVSrbqdjC1aGVDhd/e9K2D4ML01uWyXVxjKqxQ38=;
-        b=n7j4Vbt2Brwtl7AxQmzwQ6JD2hAM3OBW9oWMMtJAtayUEGzgPdiRgaNkU/9VB/vMce
-         T4pgELFc98aQSbIGACl+rkSljqQTYH025iWCU6DAmrihmD3c57c2ra1aVpGTURXaILm2
-         4aGQK4SCjdm1u6pWzeCAW6UnJaiyX/vQuEAhv4GHUeyKVGwxkOv99kTOPZE5tmmwKmoR
-         nlUHDMSa+ozwjk1GmXdt+XZlzoyC/WnZmxdzcX7bhwF6LAMGVrwYxEfXVzZGUNxMVxTH
-         J2JlwjtsoJ99aPIpYIEcGWsKRkzCEnnA7dqk0HyR7Jp3fIrdubOW9+9uQr941r6+cQU4
-         e9pw==
-X-Gm-Message-State: ACgBeo1/HOVFj0nPsaS6+7c04WLE9WZ4m+R4bbXd/vsfxw6UGqWzLTHY
-        cVWZ0ItAGDorplMGTd+xNCqIvdleqy6EVCiwsSUIKl/beyf7AEjcsVptX9Za9GGI2pkdlnnlCYe
-        f0n29zlOl1nqxXKU0
-X-Received: by 2002:a5d:59a5:0:b0:222:c5a5:59c4 with SMTP id p5-20020a5d59a5000000b00222c5a559c4mr3791046wrr.656.1660904672393;
-        Fri, 19 Aug 2022 03:24:32 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4UobtwGkKhtvRtmvWs5RTtIa0uu+mihO6JQ7YoZdSMlNd0HYG8d+3BDeBwZzHjqohIks9ljg==
-X-Received: by 2002:a5d:59a5:0:b0:222:c5a5:59c4 with SMTP id p5-20020a5d59a5000000b00222c5a559c4mr3791015wrr.656.1660904672084;
-        Fri, 19 Aug 2022 03:24:32 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id m9-20020a7bce09000000b003a3442f1229sm7950701wmc.29.2022.08.19.03.24.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 03:24:31 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 2/5] cpumask: Introduce for_each_cpu_andnot()
-In-Reply-To: <Yv6/SAj6kQ/UIKvu@yury-laptop>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <20220817175812.671843-3-vschneid@redhat.com>
- <Yv6/SAj6kQ/UIKvu@yury-laptop>
-Date:   Fri, 19 Aug 2022 11:24:29 +0100
-Message-ID: <xhsmhlerka5uq.mognet@vschneid.remote.csb>
+        with ESMTP id S1347966AbiHSK3t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:29:49 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A561AF4A7;
+        Fri, 19 Aug 2022 03:29:45 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27JATJGS108014;
+        Fri, 19 Aug 2022 05:29:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1660904959;
+        bh=AVrDVBFLBkE3Zwz6MfjLTiwDw+hQlbCuU5vzEr5zREs=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=ArYbwJ/CIrN6RTw1AlFv2iBfRllbaAPjqusYtnDuWC7diQbxn8mzUM6/9BxnN6fpt
+         7cmNNDIlakmfON8R2ZTKUUID7v2vrjlv+BiPqnSMvruo+nSNCTx4FKWGCjJTDcoHb8
+         fsjT40ucR38Afb1eTAPq1ZiipgUNi3YI4JrdpoLc=
+Received: from DLEE104.ent.ti.com (dlee104.ent.ti.com [157.170.170.34])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27JATJ57126247
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 19 Aug 2022 05:29:19 -0500
+Received: from DLEE108.ent.ti.com (157.170.170.38) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 19
+ Aug 2022 05:29:19 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Fri, 19 Aug 2022 05:29:19 -0500
+Received: from [10.24.69.241] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27JATDs3029523;
+        Fri, 19 Aug 2022 05:29:14 -0500
+Message-ID: <da82e71f-e32c-7adb-250e-0c80cc6e30bd@ti.com>
+Date:   Fri, 19 Aug 2022 15:59:13 +0530
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
+        <vigneshr@ti.com>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kishon@ti.com>, <s-vadapalli@ti.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
+ bindings for J7200 CPSW5G
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+References: <20220816060139.111934-1-s-vadapalli@ti.com>
+ <20220816060139.111934-2-s-vadapalli@ti.com>
+ <79e58157-f8f2-6ca8-1aa6-b5cf6c83d9e6@linaro.org>
+ <31c3a5b0-17cc-ad7b-6561-5834cac62d3e@ti.com>
+ <9c331cdc-e34a-1146-fb83-84c2107b2e2a@linaro.org>
+ <176ab999-e274-e22a-97d8-31f655b16800@ti.com>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <176ab999-e274-e22a-97d8-31f655b16800@ti.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/22 15:38, Yury Norov wrote:
-> On Wed, Aug 17, 2022 at 06:58:09PM +0100, Valentin Schneider wrote:
->> for_each_cpu_and() is very convenient as it saves having to allocate a
->> temporary cpumask to store the result of cpumask_and(). The same issue
->> applies to cpumask_andnot() which doesn't actually need temporary storage
->> for iteration purposes.
+Hello Krzysztof,
+
+On 17/08/22 13:11, Siddharth Vadapalli wrote:
+> Hello Krzysztof,
+> 
+> On 17/08/22 11:20, Krzysztof Kozlowski wrote:
+>> On 17/08/2022 08:14, Siddharth Vadapalli wrote:
 >>
->> Following what has been done for for_each_cpu_and(), introduce
->> for_each_cpu_andnot().
+>>>>> -      port@[1-2]:
+>>>>> +      "^port@[1-4]$":
+>>>>>          type: object
+>>>>>          description: CPSWxG NUSS external ports
+>>>>>  
+>>>>> @@ -119,7 +120,7 @@ properties:
+>>>>>          properties:
+>>>>>            reg:
+>>>>>              minimum: 1
+>>>>> -            maximum: 2
+>>>>> +            maximum: 4
+>>>>>              description: CPSW port number
+>>>>>  
+>>>>>            phys:
+>>>>> @@ -151,6 +152,18 @@ properties:
+>>>>>  
+>>>>>      additionalProperties: false
+>>>>>  
+>>>>> +if:
+>>>>
+>>>> This goes under allOf just before unevaluated/additionalProperties:false
+>>>
+>>> allOf was added by me in v3 series patch and it is not present in the
+>>> file. I removed it in v4 after Rob Herring's suggestion. Please let me
+>>> know if simply moving the if-then statements to the line above
+>>> additionalProperties:false would be fine.
 >>
->> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
->
-> I'm concerned that this series doesn't give us real examples and tests
-> for the new API. If we take it as-is, we'll end up with a dead code for
-> a while, quite probably for long.
->
+>> I think Rob's comment was focusing not on using or not-using allOf, but
+>> on format of your entire if-then-else. Your v3 was huge and included
+>> allOf in wrong place).
+>>
+>> Now you add if-then in proper place, but it is still advisable to put it
+>> with allOf, so if ever you grow the if-then by new entry, you do not
+>> have to change the indentation.
+>>
+>> Anyway the location is not correct. Regardless if this is if-then or
+>> allOf-if-then, put it just like example schema is suggesting.
+> 
+> I will move the if-then statements to the lines above the
+> "additionalProperties: false" line. Also, I will add an allOf for this
 
-Tariq has at least two uses of for_each_numa_hop_cpu() (which uses
-for_each_cpu_andnot()) in net/mlx5e and net/enic). My plan here is to make
-sure the cpumask and sched/topology changes are OK, and then I'd let Tariq
-carry the whole set with actual users on top.
+I had a look at the example at [1] and it uses allOf after the
+"additionalProperties: false" line. Would it be fine then for me to add
+allOf and the single if-then statement below the "additionalProperties:
+false" line? Please let me know.
 
-I wouldn't want to see this merged without users, especially given the
-EXPORT_SYMBOL_GPL() in 3/5.
+[1] -> https://github.com/devicetree-org/dt-schema/blob/mai/test/schemas/conditionals-allof-example.yaml
 
-> Can you please submit a new code with a real application for the new API?
-> Alternatively, you can rework some existing code.
->
-> Briefly grepping, I found good candidate in a core code: __sched_core_flip(),
-> and one candidate in arch code: arch/powerpc/kernel/smp.c: update_coregroup_mask.
-> I believe there are much more.
->
-
-Some of these look fairly trivial, I'll have a look around.
-
-> Regarding the test, I don't think it's strictly necessary to have it as soon as
-> we'll have real users, but it's always good to backup with tests.
->
-
-That sounds sensible enough, I'll have a look at that.
-
-> Thanks,
-> Yury
-
+Regards,
+Siddharth.
