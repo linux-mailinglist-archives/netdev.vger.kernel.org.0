@@ -2,127 +2,487 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C94EA5996E9
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F841599700
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347450AbiHSIJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 04:09:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39132 "EHLO
+        id S1347469AbiHSIKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 04:10:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347437AbiHSIJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:09:24 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A51109AFBF;
-        Fri, 19 Aug 2022 01:09:22 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27J6vIV1019537;
-        Fri, 19 Aug 2022 08:09:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=Udv9bz/xQJBZrSCR6IODRmBEUGm4gg5qONcdmdNP+Lc=;
- b=WZybTPf3J1T/jjLIymqVirEde9WA41zu5MRphcAHYnlnW4qUM0XPXZk7pRmJx1yhbdWF
- qStAZzOtISdMXBCEebsIM2E7C2d+lccWBExHRwj5hZ9poq7bifQtjBXVOxIWFfE9i58C
- TDHh9fb6lOL+po1W98S/lkSCvspFboK6WjNe6KB81YerTjxYcdQcsfiYszI5W3fOzSy7
- 5uatsUjMsLVl3IrL+UIrkNfafGnv/zQR57o2Dh9pY1y/z8TpSwSBW5+3se0b/rFJ+uJm
- LRCW0xKUC1EKpy6NvyCkpCe77ZsJKgqpShpSNle8PrJx0H4o1oe0r9m+PeBCZlMrOmrW Aw== 
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j25q3a6u4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 08:09:18 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27J86Aaa001381;
-        Fri, 19 Aug 2022 08:09:16 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma03fra.de.ibm.com with ESMTP id 3hx3k8w5rj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Aug 2022 08:09:15 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27J89CcY24772874
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 19 Aug 2022 08:09:12 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7E984A4051;
-        Fri, 19 Aug 2022 08:09:12 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D6482A4040;
-        Fri, 19 Aug 2022 08:09:11 +0000 (GMT)
-Received: from [9.145.158.147] (unknown [9.145.158.147])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 19 Aug 2022 08:09:11 +0000 (GMT)
-Message-ID: <580bf781-81f6-5f8e-12bf-7195f7a62b36@linux.ibm.com>
-Date:   Fri, 19 Aug 2022 10:09:11 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.12.0
-Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
-Content-Language: en-US
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        Benjamin Block <bblock@linux.ibm.com>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org
-References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
-From:   Alexandra Winter <wintera@linux.ibm.com>
-In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 07MBEEmAI3oDzTfECX0PkbivG95bSTto
-X-Proofpoint-ORIG-GUID: 07MBEEmAI3oDzTfECX0PkbivG95bSTto
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S1347463AbiHSIKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:10:47 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B26E0947
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:10:44 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j8so7407987ejx.9
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=0ODm/8iAZic/zvKDC+cms0sOu+VXb3FmsG7P/vhcKzM=;
+        b=B1JP7VSVtxDYm+NkAPdtMOBO+vfG1fLfrYZhWG36k3b2b9gjxckgvIBC16dwFEkVyJ
+         5CnRF6N/Q1Sw2jUZVKLHACM81Yul+hYJ6lKP48sjSd24Z/BlPfDbsCHwpLTdmvDxMy+U
+         8f+a7aIhV9FO4ZjAEYmniVLf1YLngW3vK77RSTgzImOXZ9Sjb8tYius2M09ehiJUJoa2
+         xPCx7zKwqXGMGF6MMXGNckjN6v7CuNBA9k31iAxGfqQwovw0PF4gCyUSOXrp0clFaEUV
+         fbktJkXTlBVr4Jdk5kvZAYbZKd5yAmjgTB7i1/qDry3DA1slUtgZzOnIOdypHFBK5mN/
+         KJ2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=0ODm/8iAZic/zvKDC+cms0sOu+VXb3FmsG7P/vhcKzM=;
+        b=r06M/AjPeJZ5uGoT37GQdYbTpB9kWAfcF4juPqYDZENsOoHIprJAsV51N/qK04c0Nl
+         q30CcAi4FYJYR2MyJljt/u2LTiTHCcF94pocUIV+Pt4XXiFYtDTXY3w3o5NJsyIY13bP
+         PNnTeohdpzWtEM9Im1FWYHR1FPJzRIC1uOm3bLOy9DYn5dy5Jb+ZC5EuXakAUdsj0cUh
+         ZxJQX9HmdaB6OJE+GE8wRMOSO3c8egvM3BAXDhLiUxDfk12bp4dW1WVxgryOeOLhKKmZ
+         pCRShYrVjuYo7qPKDyxVZZFzd7BaT4OtO2UiLsVr8M/6jUDvlAnABGwZMUk3BfTBjbp/
+         rm+w==
+X-Gm-Message-State: ACgBeo3yfM/HEWFWFZGc/Im+FD/DbetZVjjxxqyOpTwFQmFXCsqVz29s
+        kKVtQaEDmawUHqXLeN2VJWTwdA==
+X-Google-Smtp-Source: AA6agR4HXdax2K1DRHVl0Shf3GrO6/Y4Tdz3z3ybOxdTqc57v91nGyD862e9paJmPL/qsuygXvP4pA==
+X-Received: by 2002:a17:906:cc56:b0:730:a2f0:7466 with SMTP id mm22-20020a170906cc5600b00730a2f07466mr4042530ejb.211.1660896643014;
+        Fri, 19 Aug 2022 01:10:43 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id ej19-20020a056402369300b00445f1fa531bsm2618740edb.25.2022.08.19.01.10.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:10:42 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 10:10:41 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "idosch@nvidia.com" <idosch@nvidia.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "gospo@broadcom.com" <gospo@broadcom.com>
+Subject: Re: [patch net-next 1/4] net: devlink: extend info_get() version put
+ to indicate a flash component
+Message-ID: <Yv9Fgcceo+tmJMO0@nanopsycho>
+References: <20220818130042.535762-1-jiri@resnulli.us>
+ <20220818130042.535762-2-jiri@resnulli.us>
+ <CO1PR11MB5089C2E79229F15A132EC3B5D66D9@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-19_04,2022-08-18_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 bulkscore=0 mlxscore=0 spamscore=0 adultscore=0
- clxscore=1011 phishscore=0 impostorscore=0 lowpriorityscore=0
- suspectscore=0 mlxlogscore=911 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208190032
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB5089C2E79229F15A132EC3B5D66D9@CO1PR11MB5089.namprd11.prod.outlook.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Aug 18, 2022 at 11:23:44PM CEST, jacob.e.keller@intel.com wrote:
+>
+>
+>> -----Original Message-----
+>> From: Jiri Pirko <jiri@resnulli.us>
+>> Sent: Thursday, August 18, 2022 6:01 AM
+>> To: netdev@vger.kernel.org
+>> Cc: davem@davemloft.net; kuba@kernel.org; idosch@nvidia.com;
+>> pabeni@redhat.com; edumazet@google.com; saeedm@nvidia.com; Keller, Jacob
+>> E <jacob.e.keller@intel.com>; vikas.gupta@broadcom.com;
+>> gospo@broadcom.com
+>> Subject: [patch net-next 1/4] net: devlink: extend info_get() version put to
+>> indicate a flash component
+>> 
+>> From: Jiri Pirko <jiri@nvidia.com>
+>> 
+>> Limit the acceptance of component name passed to cmd_flash_update() to
+>> match one of the versions returned by info_get(), marked by version type.
+>> This makes things clearer and enforces 1:1 mapping between exposed
+>> version and accepted flash component.
+>> 
+>
+>I feel like this commit does quite a bit and could be separated into one part that only adds the components flagging in info and another which uses this in the cmd_flash_update.
+
+I thought about that, but felt like having it in one
+patch makes more sense.
+Okay, will split.
 
 
-On 18.08.22 23:01, Wolfram Sang wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
-> 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/s390/block/dasd_devmap.c | 2 +-
->  drivers/s390/block/dasd_eer.c    | 4 ++--
->  drivers/s390/block/dcssblk.c     | 2 +-
->  drivers/s390/char/hmcdrv_cache.c | 2 +-
->  drivers/s390/char/tape_class.c   | 4 ++--
->  drivers/s390/cio/qdio_debug.c    | 2 +-
->  drivers/s390/net/ctcm_main.c     | 2 +-
->  drivers/s390/net/fsm.c           | 2 +-
->  drivers/s390/net/qeth_ethtool.c  | 4 ++--
->  drivers/s390/scsi/zfcp_aux.c     | 2 +-
->  drivers/s390/scsi/zfcp_fc.c      | 2 +-
->  11 files changed, 14 insertions(+), 14 deletions(-)
-> 
+>
+>> Whenever the driver is called by his info_get() op, it may put multiple
+>> version names and values to the netlink message. Extend by additional
+>> helper devlink_info_version_running_put_ext() that allows to specify a
+>> version type that indicates when particular version name represents
+>> a flash component.
+>> 
+>> Use this indication during cmd_flash_update() execution by calling
+>> info_get() with different "req" context. That causes info_get() to
+>> lookup the component name instead of filling-up the netlink message.
+>> 
+>> Fix the only component user which is netdevsim. It uses component named
+>> "fw.mgmt" in selftests.
+>> 
+>> Remove now outdated "UPDATE_COMPONENT" flag.
+>
+>Is this flag outdated? I believe we're supposed to use this to indicate when a driver supports per-component update, which we would do once another driver actually uses the interface? I guess now instead we just check to see if any of the flash fields have the component flag set instead? Ok
+
+You answered yourself :)
 
 
-Thank you. Ack'ed for drivers/s390/net and drivers/s390/cio
-Acked-by: Alexandra Winter <wintera@linux.ibm.com>
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+>
+>
+>Code looks ok to me, but it would be easier to review if this was separated into one commit for addng the info changes, one for enforcing them, and one for updating netdevsim.
+
+Okay.
+
+
+
+>
+>I'll try to find the patches I had for ice to implement this per-component update and specifying which components are default once this gets merged.
+
+Good.
+
+>
+>Thanks,
+>Jake
+>
+>> ---
+>>  drivers/net/netdevsim/dev.c |  12 +++-
+>>  include/net/devlink.h       |  15 ++++-
+>>  net/core/devlink.c          | 128 ++++++++++++++++++++++++++++++------
+>>  3 files changed, 129 insertions(+), 26 deletions(-)
+>> 
+>> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+>> index e88f783c297e..cea130490dea 100644
+>> --- a/drivers/net/netdevsim/dev.c
+>> +++ b/drivers/net/netdevsim/dev.c
+>> @@ -984,7 +984,14 @@ static int nsim_dev_info_get(struct devlink *devlink,
+>>  			     struct devlink_info_req *req,
+>>  			     struct netlink_ext_ack *extack)
+>>  {
+>> -	return devlink_info_driver_name_put(req, DRV_NAME);
+>> +	int err;
+>> +
+>> +	err = devlink_info_driver_name_put(req, DRV_NAME);
+>> +	if (err)
+>> +		return err;
+>> +
+>> +	return devlink_info_version_running_put_ext(req, "fw.mgmt",
+>> "10.20.30",
+>> +
+>> DEVLINK_INFO_VERSION_TYPE_COMPONENT);
+>>  }
+>> 
+>>  #define NSIM_DEV_FLASH_SIZE 500000
+>> @@ -1312,8 +1319,7 @@ nsim_dev_devlink_trap_drop_counter_get(struct
+>> devlink *devlink,
+>>  static const struct devlink_ops nsim_dev_devlink_ops = {
+>>  	.eswitch_mode_set = nsim_devlink_eswitch_mode_set,
+>>  	.eswitch_mode_get = nsim_devlink_eswitch_mode_get,
+>> -	.supported_flash_update_params =
+>> DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
+>> -
+>> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
+>> +	.supported_flash_update_params =
+>> DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
+>>  	.reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT),
+>>  	.reload_down = nsim_dev_reload_down,
+>>  	.reload_up = nsim_dev_reload_up,
+>> diff --git a/include/net/devlink.h b/include/net/devlink.h
+>> index 119ed1ffb988..9bf4f03feca6 100644
+>> --- a/include/net/devlink.h
+>> +++ b/include/net/devlink.h
+>> @@ -624,8 +624,7 @@ struct devlink_flash_update_params {
+>>  	u32 overwrite_mask;
+>>  };
+>> 
+>> -#define DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT		BIT(0)
+>> -#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(1)
+>> +#define DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK	BIT(0)
+>> 
+>
+>This stays in the kernel so there's no issue with changing the bits. Ok.
+>
+>>  struct devlink_region;
+>>  struct devlink_info_req;
+>> @@ -1714,6 +1713,14 @@ int devlink_info_driver_name_put(struct
+>> devlink_info_req *req,
+>>  				 const char *name);
+>>  int devlink_info_board_serial_number_put(struct devlink_info_req *req,
+>>  					 const char *bsn);
+>> +
+>> +enum devlink_info_version_type {
+>> +	DEVLINK_INFO_VERSION_TYPE_NONE,
+>> +	DEVLINK_INFO_VERSION_TYPE_COMPONENT, /* May be used as flash
+>> update
+>> +					      * component by name.
+>> +					      */
+>> +};
+>> +
+>>  int devlink_info_version_fixed_put(struct devlink_info_req *req,
+>>  				   const char *version_name,
+>>  				   const char *version_value);
+>> @@ -1723,6 +1730,10 @@ int devlink_info_version_stored_put(struct
+>> devlink_info_req *req,
+>>  int devlink_info_version_running_put(struct devlink_info_req *req,
+>>  				     const char *version_name,
+>>  				     const char *version_value);
+>> +int devlink_info_version_running_put_ext(struct devlink_info_req *req,
+>> +					 const char *version_name,
+>> +					 const char *version_value,
+>> +					 enum devlink_info_version_type
+>> version_type);
+>> 
+>>  int devlink_fmsg_obj_nest_start(struct devlink_fmsg *fmsg);
+>>  int devlink_fmsg_obj_nest_end(struct devlink_fmsg *fmsg);
+>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>> index b50bcc18b8d9..17b78123ad9d 100644
+>> --- a/net/core/devlink.c
+>> +++ b/net/core/devlink.c
+>> @@ -4742,10 +4742,76 @@ void devlink_flash_update_timeout_notify(struct
+>> devlink *devlink,
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_flash_update_timeout_notify);
+>> 
+>> +struct devlink_info_req {
+>> +	struct sk_buff *msg;
+>> +	void (*version_cb)(const char *version_name,
+>> +			   enum devlink_info_version_type version_type,
+>> +			   void *version_cb_priv);
+>> +	void *version_cb_priv;
+>> +};
+>> +
+>> +struct devlink_flash_component_lookup_ctx {
+>> +	const char *lookup_name;
+>> +	bool lookup_name_found;
+>> +};
+>> +
+>> +static void
+>> +devlink_flash_component_lookup_cb(const char *version_name,
+>> +				  enum devlink_info_version_type version_type,
+>> +				  void *version_cb_priv)
+>> +{
+>> +	struct devlink_flash_component_lookup_ctx *lookup_ctx =
+>> version_cb_priv;
+>> +
+>> +	if (version_type != DEVLINK_INFO_VERSION_TYPE_COMPONENT ||
+>> +	    lookup_ctx->lookup_name_found)
+>> +		return;
+>> +
+>> +	lookup_ctx->lookup_name_found =
+>> +		!strcmp(lookup_ctx->lookup_name, version_name);
+>> +}
+>> +
+>> +static int devlink_flash_component_get(struct devlink *devlink,
+>> +				       struct nlattr *nla_component,
+>> +				       const char **p_component,
+>> +				       struct netlink_ext_ack *extack)
+>> +{
+>> +	struct devlink_flash_component_lookup_ctx lookup_ctx = {};
+>> +	struct devlink_info_req req = {};
+>> +	const char *component;
+>> +	int ret;
+>> +
+>> +	if (!nla_component)
+>> +		return 0;
+>> +
+>> +	component = nla_data(nla_component);
+>> +
+>> +	if (!devlink->ops->info_get) {
+>> +		NL_SET_ERR_MSG_ATTR(extack, nla_component,
+>> +				    "component update is not supported by this
+>> device");
+>> +		return -EOPNOTSUPP;
+>> +	}
+>> +
+>> +	lookup_ctx.lookup_name = component;
+>> +	req.version_cb = devlink_flash_component_lookup_cb;
+>> +	req.version_cb_priv = &lookup_ctx;
+>> +
+>> +	ret = devlink->ops->info_get(devlink, &req, NULL);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	if (!lookup_ctx.lookup_name_found) {
+>> +		NL_SET_ERR_MSG_ATTR(extack, nla_component,
+>> +				    "selected component is not supported by this
+>> device");
+>> +		return -EINVAL;
+>> +	}
+>> +	*p_component = component;
+>> +	return 0;
+>> +}
+>> +
+>>  static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
+>>  				       struct genl_info *info)
+>>  {
+>> -	struct nlattr *nla_component, *nla_overwrite_mask, *nla_file_name;
+>> +	struct nlattr *nla_overwrite_mask, *nla_file_name;
+>>  	struct devlink_flash_update_params params = {};
+>>  	struct devlink *devlink = info->user_ptr[0];
+>>  	const char *file_name;
+>> @@ -4758,17 +4824,13 @@ static int devlink_nl_cmd_flash_update(struct
+>> sk_buff *skb,
+>>  	if (!info->attrs[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME])
+>>  		return -EINVAL;
+>> 
+>> -	supported_params = devlink->ops->supported_flash_update_params;
+>> +	ret = devlink_flash_component_get(devlink,
+>> +					  info-
+>> >attrs[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT],
+>> +					  &params.component, info->extack);
+>> +	if (ret)
+>> +		return ret;
+>> 
+>> -	nla_component = info-
+>> >attrs[DEVLINK_ATTR_FLASH_UPDATE_COMPONENT];
+>> -	if (nla_component) {
+>> -		if (!(supported_params &
+>> DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT)) {
+>> -			NL_SET_ERR_MSG_ATTR(info->extack, nla_component,
+>> -					    "component update is not supported
+>> by this device");
+>> -			return -EOPNOTSUPP;
+>> -		}
+>> -		params.component = nla_data(nla_component);
+>> -	}
+>> +	supported_params = devlink->ops->supported_flash_update_params;
+>> 
+>>  	nla_overwrite_mask = info-
+>> >attrs[DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK];
+>>  	if (nla_overwrite_mask) {
+>> @@ -6553,18 +6615,18 @@ static int
+>> devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+>>  	return err;
+>>  }
+>> 
+>> -struct devlink_info_req {
+>> -	struct sk_buff *msg;
+>> -};
+>> -
+>>  int devlink_info_driver_name_put(struct devlink_info_req *req, const char
+>> *name)
+>>  {
+>> +	if (!req->msg)
+>> +		return 0;
+>>  	return nla_put_string(req->msg, DEVLINK_ATTR_INFO_DRIVER_NAME,
+>> name);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_info_driver_name_put);
+>> 
+>>  int devlink_info_serial_number_put(struct devlink_info_req *req, const char
+>> *sn)
+>>  {
+>> +	if (!req->msg)
+>> +		return 0;
+>>  	return nla_put_string(req->msg, DEVLINK_ATTR_INFO_SERIAL_NUMBER,
+>> sn);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_info_serial_number_put);
+>> @@ -6572,6 +6634,8 @@
+>> EXPORT_SYMBOL_GPL(devlink_info_serial_number_put);
+>>  int devlink_info_board_serial_number_put(struct devlink_info_req *req,
+>>  					 const char *bsn)
+>>  {
+>> +	if (!req->msg)
+>> +		return 0;
+>>  	return nla_put_string(req->msg,
+>> DEVLINK_ATTR_INFO_BOARD_SERIAL_NUMBER,
+>>  			      bsn);
+>>  }
+>> @@ -6579,11 +6643,19 @@
+>> EXPORT_SYMBOL_GPL(devlink_info_board_serial_number_put);
+>> 
+>>  static int devlink_info_version_put(struct devlink_info_req *req, int attr,
+>>  				    const char *version_name,
+>> -				    const char *version_value)
+>> +				    const char *version_value,
+>> +				    enum devlink_info_version_type version_type)
+>>  {
+>>  	struct nlattr *nest;
+>>  	int err;
+>> 
+>> +	if (req->version_cb)
+>> +		req->version_cb(version_name, version_type,
+>> +				req->version_cb_priv);
+>> +
+>> +	if (!req->msg)
+>> +		return 0;
+>> +
+>>  	nest = nla_nest_start_noflag(req->msg, attr);
+>>  	if (!nest)
+>>  		return -EMSGSIZE;
+>> @@ -6612,7 +6684,8 @@ int devlink_info_version_fixed_put(struct
+>> devlink_info_req *req,
+>>  				   const char *version_value)
+>>  {
+>>  	return devlink_info_version_put(req,
+>> DEVLINK_ATTR_INFO_VERSION_FIXED,
+>> -					version_name, version_value);
+>> +					version_name, version_value,
+>> +					DEVLINK_INFO_VERSION_TYPE_NONE);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_info_version_fixed_put);
+>> 
+>> @@ -6621,7 +6694,8 @@ int devlink_info_version_stored_put(struct
+>> devlink_info_req *req,
+>>  				    const char *version_value)
+>>  {
+>>  	return devlink_info_version_put(req,
+>> DEVLINK_ATTR_INFO_VERSION_STORED,
+>> -					version_name, version_value);
+>> +					version_name, version_value,
+>> +					DEVLINK_INFO_VERSION_TYPE_NONE);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_info_version_stored_put);
+>> 
+>> @@ -6630,16 +6704,28 @@ int devlink_info_version_running_put(struct
+>> devlink_info_req *req,
+>>  				     const char *version_value)
+>>  {
+>>  	return devlink_info_version_put(req,
+>> DEVLINK_ATTR_INFO_VERSION_RUNNING,
+>> -					version_name, version_value);
+>> +					version_name, version_value,
+>> +					DEVLINK_INFO_VERSION_TYPE_NONE);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devlink_info_version_running_put);
+>> 
+>> +int devlink_info_version_running_put_ext(struct devlink_info_req *req,
+>> +					 const char *version_name,
+>> +					 const char *version_value,
+>> +					 enum devlink_info_version_type
+>> version_type)
+>> +{
+>> +	return devlink_info_version_put(req,
+>> DEVLINK_ATTR_INFO_VERSION_RUNNING,
+>> +					version_name, version_value,
+>> +					version_type);
+>> +}
+>> +EXPORT_SYMBOL_GPL(devlink_info_version_running_put_ext);
+>> +
+>>  static int
+>>  devlink_nl_info_fill(struct sk_buff *msg, struct devlink *devlink,
+>>  		     enum devlink_command cmd, u32 portid,
+>>  		     u32 seq, int flags, struct netlink_ext_ack *extack)
+>>  {
+>> -	struct devlink_info_req req;
+>> +	struct devlink_info_req req = {};
+>>  	void *hdr;
+>>  	int err;
+>> 
+>> @@ -12306,8 +12392,8 @@
+>> EXPORT_SYMBOL_GPL(devl_trap_policers_unregister);
+>>  static void __devlink_compat_running_version(struct devlink *devlink,
+>>  					     char *buf, size_t len)
+>>  {
+>> +	struct devlink_info_req req = {};
+>>  	const struct nlattr *nlattr;
+>> -	struct devlink_info_req req;
+>>  	struct sk_buff *msg;
+>>  	int rem, err;
+>> 
+>> --
+>> 2.37.1
+>
