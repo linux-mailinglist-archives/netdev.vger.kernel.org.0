@@ -2,53 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92982599311
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 04:37:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 646FC599315
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 04:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240128AbiHSCey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 22:34:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
+        id S242686AbiHSCjQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 22:39:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230441AbiHSCew (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 22:34:52 -0400
+        with ESMTP id S230441AbiHSCjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 22:39:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D0FCB5DD
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 19:34:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 223F44DB0D;
+        Thu, 18 Aug 2022 19:39:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3E6B861483
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 02:34:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59747C433C1;
-        Fri, 19 Aug 2022 02:34:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B296D61488;
+        Fri, 19 Aug 2022 02:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5A4FC433D6;
+        Fri, 19 Aug 2022 02:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660876490;
-        bh=A0C0ES7ye7hri4SynIFV6cVxk5lvJNgMsqRxu3qMB1E=;
+        s=k20201202; t=1660876751;
+        bh=m87u2q3r+0BovI98LmxRpA15dVnsXyZidaSe9e1Pcg8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Vi6MrO0xz2MQrptR/6qRXml+4yV2Fr4eM9IbuYysCslTVLkfqzs/2yBx0soEEdhZ9
-         jI4tI/y4tnYvDH5Ult96gJt/m37ClxIxTuHaiL3AR05qClTfsEa86yV76tr5Mmg2+6
-         M+6W6cP5S/SfgjFDZhQAc5XCcDoOVHiSK+6ioyH2EMMkW2QQ+nWZPpqF8oy2zkuFlZ
-         5yfVqLSZ35MtJUGYi9QkqRTMaB4sdArK5F+k/dX1ovViVCN5e0S00Jx3G6y3OzsVqj
-         L6kh4YA0rSRfhS2l19tnfEG7R3hxUgHK5y3PcNu16paAp0V/D9fso8+t9cT7kreYv1
-         4aw4oUg9e4Q1A==
-Date:   Thu, 18 Aug 2022 19:34:49 -0700
+        b=GJyViPVp5c5ju7QAk4T/fsrIn0LjI0+WFcjMxxbcMgK2KchKayD1AGa+d+mmEHYxP
+         MyVpcgP+RHwl5iB4rswKPV/dpvpcJNULiU0Ne30p/ijM3zM/jWt6mQDZzCl3NgrI2A
+         J7NeuTSBN1We7GKXjfVSK/GEpXEdCNcrDBEBBMP59MYMU50GJr3Lxe92X7PbkliBR1
+         losYe5unRDVgcmERAIT1lbeAIZtRYN8r5y7ZbPMIjvCQ8vBav8QBeB+JLyZV6NIOry
+         gKcAwB8tk/8zeSFGxtLRN3fCrUsmxwRwxAibhoPhcOGD2/IxT7wPRGS7khx6touxcL
+         vBmOmptvOYwTg==
+Date:   Thu, 18 Aug 2022 19:39:10 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <20220818193449.35c79b63@kernel.org>
-In-Reply-To: <Yv3M/T5K/f35R5UM@unreal>
-References: <cover.1660639789.git.leonro@nvidia.com>
-        <20220816195408.56eec0ed@kernel.org>
-        <Yvx6+qLPWWfCmDVG@unreal>
-        <20220817111052.0ddf40b0@kernel.org>
-        <Yv3M/T5K/f35R5UM@unreal>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     "Denis V. Lunev" <den@virtuozzo.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <davem@davemloft.net>, <edumazet@google.com>
+Subject: Re: [PATCH -next] net: neigh: use dev_kfree_skb_irq instead of
+ kfree_skb()
+Message-ID: <20220818193910.50100711@kernel.org>
+In-Reply-To: <6fab4f14-3afd-2576-e539-da37408f6b84@huawei.com>
+References: <20220818043729.412753-1-yangyingliang@huawei.com>
+        <79784952-0d15-8a4a-aa8d-590bc243ab5e@virtuozzo.com>
+        <20220818093224.2539d0bc@kernel.org>
+        <6fab4f14-3afd-2576-e539-da37408f6b84@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,71 +58,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 08:24:13 +0300 Leon Romanovsky wrote:
-> On Wed, Aug 17, 2022 at 11:10:52AM -0700, Jakub Kicinski wrote:
-> > My point is on what you called "full offload" vs "crypto offload".
-> > The policy so far has always been that Linux networking stack should
-> > populate all the headers and instruct the device to do crypto, no
-> > header insertion. Obviously we do header insertion in switch/router
-> > offloads but that's different and stateless.
-> > 
-> > I believe the reasoning was to provide as much flexibility and control
-> > to the software as possible while retaining most of the performance
-> > gains.  
-> 
-> I honestly don't know the reasoning, but "performance gains" are very
-> limited as long as IPsec stack involved with various policy/state
+On Fri, 19 Aug 2022 09:44:29 +0800 Yang Yingliang wrote:
+> On 2022/8/19 0:32, Jakub Kicinski wrote:
+> > Please put [PATCH net] as the tag for v2, this is a fix, not -next
+> > material.  
+> OK.
+> I don't find the commit 66ba215cb513 ("neigh: fix possible DoS due to 
+> net iface start/stop loop")
 
-Herm. So you didn't bother figuring out what the current problems are
-but unsurprisingly the solution is "buy our product and let us do it"?
+I see where the confusion is coming from. It's too fresh to have made
+it to Linus. It's part of this pull request:
 
-> lookups. These lookups are expensive in terms of CPU and they can't
-> hold 400 Gb/s line rate.
-> 
-> https://docs.nvidia.com/networking/display/connectx7en/Introduction#Introduction-ConnectX-7400GbEAdapterCards
->
-> > You must provide a clear analysis (as in examination in data) and
-> > discussion (as in examination in writing) if you're intending to 
-> > change the "let's keep packet formation in the SW" policy. What you 
-> > got below is a good start but not sufficient.  
-> 
-> Can you please point me to an example of such analysis, so I will know
-> what is needed/expected?
+https://lore.kernel.org/all/20220818195549.1805709-1-kuba@kernel.org/
 
-I can't, as I said twice now, we don't have any "full crypto" offloads
-AFAIK.
+but Linus has not pulled yet.
 
-> > > IPsec full offload is actually improved version of IPsec crypto mode,
-> > > In full mode, HW is responsible to trim/add headers in addition to
-> > > decrypt/encrypt. In this mode, the packet arrives to the stack as already
-> > > decrypted and vice versa for TX (exits to HW as not-encrypted).
-> > > 
-> > > My main motivation is to perform IPsec on RoCE traffic and in our
-> > > preliminary results, we are able to do IPsec full offload in line
-> > > rate. The same goes for ETH traffic.  
-> > 
-> > If the motivation is RoCE I personally see no reason to provide the
-> > configuration of this functionality via netdev interfaces, but I'll
-> > obviously leave the final decision to Steffen.  
-> 
-> This is not limited to RoCE, our customers use this offload for ethernet
-> traffic as well.
-> 
-> RoCE is a good example of traffic that performs all headers magic in HW,
-> without SW involved.
-> 
-> IPsec clearly belongs to netdev and we don't want to duplicate netdev
-> functionality in RDMA. Like I said above, this feature is needed for
-> regular ETH traffic as well.
-> 
-> Right now, RoCE and iWARP devices are based on netdev and long-standing
-> agreement ( >20 years ????) that all netdev configurations are done
-> there they belong - in netdev.
+I believe if something is in the "pending-fixes" branch of linux-next:
 
-Let me be very clear - as far as I'm concerned no part of the RDMA
-stack belongs in netdev. What's there is there, but do not try to use
-that argument to justify more stuff.
+https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/?h=pending-fixes
 
-If someone from the community thinks that I should have interest in
-working on / helping proprietary protocol stacks please let me know,
-because right now I have none.
+you can consider it to be an immediate fix, rather than -next material.
+
+Not sure if that makes sense but that's the best I can do explaining
+it...
