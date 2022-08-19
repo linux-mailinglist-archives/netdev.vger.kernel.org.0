@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EE198599E0E
+	by mail.lfdr.de (Postfix) with ESMTP id 5C110599E0C
 	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 17:21:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349330AbiHSPSa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 11:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
+        id S1349636AbiHSPVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 11:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349092AbiHSPS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:18:27 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CC63D5A8;
-        Fri, 19 Aug 2022 08:18:22 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id j8so9386062ejx.9;
-        Fri, 19 Aug 2022 08:18:22 -0700 (PDT)
+        with ESMTP id S1349114AbiHSPVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:21:00 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CD6FAC62;
+        Fri, 19 Aug 2022 08:20:59 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id y13so9373924ejp.13;
+        Fri, 19 Aug 2022 08:20:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:content-language:in-reply-to:mime-version
          :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=yn41Vs/apFs4uTrJa9DFPk8MRYPvsR2BQKcLDumZVTQ=;
-        b=TZOa/sUoF/RI0h5dFlGV2gVXHo1YBUojtMr6sluB+STWhHlQ7sznFRKPfelKvYRB2N
-         bu/6Vix0MZnR8FM74KUA686RvyobgnOdWfNT3o/pIrQJ76XQVBuRxaQyuAzpDXpBH5kK
-         FWeqWWf1rJUZdqRHx4vWbQQZE/PpEQut1Aey4XKzRNV7GSPXWMnpPu5H9d5CZpaY5q3i
-         tTN9KFq0YvL0QH8kTxgHvfgsJw0eTNYkVg0sEi93ouhaGnAPUIp/qrgQYxcU16mMtJ82
-         +iz7gAyXchSCApIRE8Jz+l/2uhOazPbov4NJ41qsPPDO6CqgZRCfjQJtkDuJL4ppslK8
-         h1pA==
+        bh=+HU2PDxidvc5+FaOZWTX0HoitIaVmLInXIp8kYbLioA=;
+        b=B1PNv3iosZDyUltNx04zouIxVSmCOGdwLmk5mQUCsPniElK0Dg9wnqTCCUfmLNpcvp
+         EWqLe+7tND89mop568bYusMgNt/Y9oOgaduKrlBNCkbzWNYawNAnfeIe+pqxusWLv18v
+         u/NX0xSZgT7Bl2dHTAa2Z39FJzXgC7+OzuRuAKvoh1JfiU637uWPy2OI/d9ETi7Fgk4e
+         kfGy3wY4Jjt4QEz5I/RTHdDmMMmpq8AL28L7tsJoS3knAZjzh0Z4s2DqEo05BLOPK90h
+         CCoJIZVP3om302tsZ1eSulGeSPYgN6fBGAXlI/x16dc0vdgN496CK1ErrFZhsBoH2Nq4
+         i3dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:content-language:in-reply-to:mime-version
          :user-agent:date:message-id:from:references:cc:to:subject
          :x-gm-message-state:from:to:cc;
-        bh=yn41Vs/apFs4uTrJa9DFPk8MRYPvsR2BQKcLDumZVTQ=;
-        b=IXvOCEi9fCdR10owE+avFl7Axj3tCVfK5v5epSNGU4L1FF7w8NZcFWyDOvFyC4P/PO
-         ItdPLr0eatblcbCsVsY7eKVaVftuyD22/0yEt4djbP9w26IbERcK9PoVuTxTuvA6bfZh
-         u1Mq9gKaFUbs8M5GV31nxc2HoRn6c+6W3WPc1XHuOPD2/147I8pg9HyM7H1nW3JvzFBF
-         IkIx6ud9SyUrnn+1Bdt/ebQlOqFx2k0E25LwUduoIaPC75r43up9LlOelP+55MlQgBrO
-         JpMM2YqoSp8CRRoqK3TU9mpEkC3plKZ3hNb1R71a40sOGonoKD1yg5QRyITT34cuBX4s
-         hw1A==
-X-Gm-Message-State: ACgBeo0Iv+8SDF5wI9rz+/k/jKx0Cvm/uDTGYocEFjJfDIVuwP8VPE/n
-        repxqPpajqTLG5Vq0CJCtPM=
-X-Google-Smtp-Source: AA6agR4xTqCasDQvLaJScGPCcg+7MXxE1zfpa/lhChBBLEPafhJM3pJa2K10mI/4A2Zu3ozQXYNmWw==
-X-Received: by 2002:a17:906:84f7:b0:738:3461:68c6 with SMTP id zp23-20020a17090684f700b00738346168c6mr5195790ejb.506.1660922300802;
-        Fri, 19 Aug 2022 08:18:20 -0700 (PDT)
+        bh=+HU2PDxidvc5+FaOZWTX0HoitIaVmLInXIp8kYbLioA=;
+        b=ZbqmVjmUiIXZxb03mnIrjCfpIm5BHeTGYMXj6yZaj/4eGh+61kpfGg8/qGKbOdSpGf
+         +9VHWnN4Mk2x0Yg7KjStR3/eGPANRUvvtHRAM682NSOuLoXAZw5BXYaUJx8Ym7QI7EHF
+         e9LyX33vo9sgSl+Y92vov0oxqxgesFBDPy3R5wx+wF4Vww6bx0/TyL6ypv7/Mp6D9Cp+
+         aZD5ZsTScrIsThfvwoJNKCRM01yZmNurOb+0Q0b8cJKZufhnWn4Ki1IgN2RaqicM/ZxV
+         wu1k2sa4Phv8hOe+uWnShTyKIKPFVCQ+UvHplPf14VU3AS7XS9VaHHJjgkA0mfwUng0V
+         vJBA==
+X-Gm-Message-State: ACgBeo1iaJSeuDAif0w9R4A70RPFhSx0NvoSRknUrTO8Io1ch6w/rWdB
+        X4A8/0FTrYgmFrAUQsKVrZw=
+X-Google-Smtp-Source: AA6agR6Bn4ZLfiJKQune26mbp6EwBo9wx/NYlSD2oKPpuEXHvy3PuRqEtlpKZlu6SLbRJZw9zHJJag==
+X-Received: by 2002:a17:907:75c2:b0:73d:5842:9d68 with SMTP id jl2-20020a17090775c200b0073d58429d68mr1191787ejc.11.1660922457981;
+        Fri, 19 Aug 2022 08:20:57 -0700 (PDT)
 Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id r10-20020a1709061baa00b0072a881b21d8sm2424932ejg.119.2022.08.19.08.18.19
+        by smtp.gmail.com with ESMTPSA id m27-20020a170906161b00b00730560156b0sm2449091ejd.50.2022.08.19.08.20.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 08:18:20 -0700 (PDT)
+        Fri, 19 Aug 2022 08:20:57 -0700 (PDT)
 Subject: Re: [RFC PATCH v2 net-next] docs: net: add an explanation of VF (and
  other) Representors
-To:     Roi Dayan <roid@nvidia.com>, ecree@xilinx.com,
+To:     Marcin Szycik <marcin.szycik@linux.intel.com>, ecree@xilinx.com,
         netdev@vger.kernel.org, linux-net-drivers@amd.com
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, corbet@lwn.net, linux-doc@vger.kernel.org,
@@ -59,17 +59,17 @@ Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         jiri@resnulli.us, snelson@pensando.io, simon.horman@corigine.com,
         alexander.duyck@gmail.com, rdunlap@infradead.org
 References: <20220815142251.8909-1-ecree@xilinx.com>
- <5edbd360-7afb-2605-21ba-7337be15e235@nvidia.com>
+ <2c659f31-f2ac-b6a9-c509-5402f61afc78@linux.intel.com>
 From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <bb31b68c-1303-0f18-eace-74bf7e05cbb1@gmail.com>
-Date:   Fri, 19 Aug 2022 16:18:19 +0100
+Message-ID: <2578c4c4-03c0-1618-e53c-e271ca9c50dd@gmail.com>
+Date:   Fri, 19 Aug 2022 16:20:56 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <5edbd360-7afb-2605-21ba-7337be15e235@nvidia.com>
+In-Reply-To: <2c659f31-f2ac-b6a9-c509-5402f61afc78@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -80,41 +80,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/2022 16:07, Roi Dayan wrote:
-> On 2022-08-15 5:22 PM, ecree@xilinx.com wrote:
->> +The representor netdevice should *not* directly refer to a PCIe device (e.g.
->> +through ``net_dev->dev.parent`` / ``SET_NETDEV_DEV()``), either of the
->> +representee or of the master PF.
+On 18/08/2022 10:56, Marcin Szycik wrote:
+> On 15-Aug-22 16:22, ecree@xilinx.com wrote:
 > 
-> Hi,
-> maybe I'm confused here, but why representor should not refer to pci
-> device ? it does exists today for systemd renaming.
-> and this is used beside of implementing the other ndos you mention
-> below.
+>> Just as each port of a Linux-controlled
+>> +switch has a separate netdev, so each virtual function has one.  When the system
+> 
+> Maybe I'm misunderstanding something, but this sentence seems a bit confusing. Maybe:
+> "Just as each port of a Linux-controlled switch has a separate netdev, each virtual
+> function has one."?
 
-The master PF is already identified via ``phys_switch_id``, another linkage
- is not needed and only means that userland looking up netdevices by PCIe
- address has to do another step to distinguish the PF's own netdev from all
- the representors.  Allegedly[1] nfp ran into issues where OpenStack would
- sometimes use the reprs for ops that logically should have been on the PF
- because they all had the same /sys/class/net/$INTF/device and it wasn't
- smart enough to tell the difference.
+Kuba wrote this paragraph and tbh it makes sense to me.
+But how about "Just as each port of a Linux-controlled switch has a
+ separate netdev, so does each virtual function."?
 
-Semantically, the representor is a virtual device, that's backed by the PF
- netdevice rather than the PF's hardware directly — even if it has e.g.
- dedicated queues, it's still not in administrative control of the PCIe
- function in the way that the PF driver instance is.  And compare to e.g.
- a vlan netdev stacked on top of the PF netdev — we don't put the PF in
- /sys/class/net/vlan0/device...
+>> +As a simple example, if ``eth0`` is the master PF's netdevice and ``eth1`` is a
+>> +VF representor, the following rules::
+>> +
+>> +    tc filter add dev eth1 parent ffff: protocol ipv4 flower \
+>> +        action mirred egress redirect dev eth0
+>> +    tc filter add dev eth0 parent ffff: protocol ipv4 flower \
+>> +        action mirred egress mirror dev eth1
+> 
+> Perhaps eth0/eth1 names could be replaced with more meaningful names, as it's easy
+> to confuse them now. How about examples from above (e.g. PF -> eth4, PR -> eth4pf1vf2rep)?
+> Or just $PF_NETDEV, $PR_NETDEV.
 
-> $  git grep SET_NETDEV_DEV|grep rep
-> drivers/net/ethernet/intel/ice/ice_repr.c: SET_NETDEV_DEV(repr->netdev, ice_pf_to_dev(vf->pf));
-> drivers/net/ethernet/mellanox/mlx5/core/en_rep.c: SET_NETDEV_DEV(netdev, mdev->device);
-> drivers/net/ethernet/netronome/nfp/flower/main.c: SET_NETDEV_DEV(repr, &priv->nn->pdev->dev);
-
-Yes, several existing drivers do this[2].  IMHO they're wrong.
+Yeah, I can replace them with $VARIABLES.
 
 -ed
-
-[1]: https://lore.kernel.org/all/20220728113231.26fdfab0@kernel.org/
-[2]: https://lore.kernel.org/netdev/71af8654-ca69-c492-7e12-ed7ff455a2f1@gmail.com/
