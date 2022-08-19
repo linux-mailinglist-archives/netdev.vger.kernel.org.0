@@ -2,145 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04A51599265
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 03:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D9C59927A
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 03:23:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241108AbiHSBPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 18 Aug 2022 21:15:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52852 "EHLO
+        id S242429AbiHSBVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 18 Aug 2022 21:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230359AbiHSBPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 21:15:38 -0400
-Received: from smtp-fw-80006.amazon.com (smtp-fw-80006.amazon.com [99.78.197.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BDAC7F8F;
-        Thu, 18 Aug 2022 18:15:37 -0700 (PDT)
+        with ESMTP id S229584AbiHSBVu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 18 Aug 2022 21:21:50 -0400
+Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F141FC88B4;
+        Thu, 18 Aug 2022 18:21:48 -0700 (PDT)
+Received: by mail-vk1-xa35.google.com with SMTP id j11so1606599vkk.11;
+        Thu, 18 Aug 2022 18:21:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1660871737; x=1692407737;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9D/WE7CLtJkAAxbi1VWImc/EI203ld7eYwJygfODlbE=;
-  b=Mh17gIyDdjhjmxqvor+R5qFFYI8vIPB+GI1OONf5jfMIlc1ekOTVmGxM
-   zVo+QBq57F6E7NDp2IyXtl6FfiX7cIR3/8myEsP+RJYHXaDw+nT6GtPyg
-   C38VsLqPAGGY/Jtc9M8oBWgYuAaAlqeUU4nDjFTfs6AtGioPpQYFynjhT
-   0=;
-X-IronPort-AV: E=Sophos;i="5.93,247,1654560000"; 
-   d="scan'208";a="120858632"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-80006.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 01:15:21 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1a-2d7489a4.us-east-1.amazon.com (Postfix) with ESMTPS id 4E5397E1290;
-        Fri, 19 Aug 2022 01:15:19 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 19 Aug 2022 01:15:14 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.85) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Fri, 19 Aug 2022 01:15:12 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <alexei.starovoitov@gmail.com>
-CC:     <andrii@kernel.org>, <ast@kernel.org>, <bpf@vger.kernel.org>,
-        <daniel@iogearbox.net>, <kuni1840@gmail.com>, <kuniyu@amazon.com>,
-        <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 bpf 1/4] bpf: Fix data-races around bpf_jit_enable.
-Date:   Thu, 18 Aug 2022 18:15:05 -0700
-Message-ID: <20220819011505.58948-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CAADnVQ+=F4tHsYi14+z+8WP+T3w9vBUpdUhgq4y9=c4X5NhN_g@mail.gmail.com>
-References: <CAADnVQ+=F4tHsYi14+z+8WP+T3w9vBUpdUhgq4y9=c4X5NhN_g@mail.gmail.com>
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=x+WlY4BSKVFKBcgHLYvbuY4NBBdZIkpvhjCiWa6AJbU=;
+        b=N90AWt3Kudge/Xp8O33r141kO5yVImla6A9uZyKqvZPOMvytwEj/oktBy1IoB9eFl3
+         VBIq/P1WeQRqWDOxOYfCJmiPO4GFp3SL2IFEhjQztwiURDCcWrdRgxPYF9xZFmBMYPmz
+         d55S+BnqKMFHdz8Q58f9IOFjUADp5CjiLVCGapRXEOjF3qoc8DwldBJ1lAtbD6kvIknB
+         ElUHGCzzeVNdp8dga4j4nit27hiVv6OA340TyNRAbm9+K1DCarcbA+0M85jBT2IRFn0x
+         V4Ad7YqriucrHuTaTGRzby26Rg8iyFBqqz7FlmJI8VQuw2LYVXpZMoh92iPqJFFZjzm0
+         VBNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=x+WlY4BSKVFKBcgHLYvbuY4NBBdZIkpvhjCiWa6AJbU=;
+        b=thMVHjux7uQqaz9eNlE9ls3T1OzHBvFzouGRwxHyTwJmGUQ+L07JRbU+Da35eMuujG
+         SLd34U8BH19f/0QrZxJ222Bzl2p2DqM9yT+qxtU2oda46w7Mm/Z1pQ2UWbxsJ/EvqDa9
+         GQ/CYrZ9eonsRFgsoiGmAExy7XkKyTFcWDVe+rs6oTbUjLfsBfeSvHJtUg+L92mDKvll
+         NPg1YsKsHMZCMgok4uaDU31dORst2GRxQG86KdwQ26kRfFTa3XMCTe3oQcV2EYNLaF8u
+         g2BPKkHN6xgUwcV0rbPskPKummGqV3r+65UaEiXWBANWSaPu3c/X/iWjqU4PcW5UCLaE
+         7Jkw==
+X-Gm-Message-State: ACgBeo3DMGRRl5UV+pUh6O9Rq/o2lMWH//ODgltGyRF7nEm/8aPz8erx
+        HxbTzKChR/rZWMc10exPCXeZjuAMvn0LVpG0owQ=
+X-Google-Smtp-Source: AA6agR6PAzXuqdzrwQGMaEaIMftD+9yhgUz9H2/0i37ltB8Htymm8nErBu3DcAgs9eYvMuk8SL+EAz+wMTXPxBqlv7k=
+X-Received: by 2002:a1f:251:0:b0:380:d262:4f4f with SMTP id
+ 78-20020a1f0251000000b00380d2624f4fmr2314419vkc.5.1660872108064; Thu, 18 Aug
+ 2022 18:21:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.85]
-X-ClientProxiedBy: EX13D20UWA003.ant.amazon.com (10.43.160.97) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-1.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+References: <20220818143118.17733-1-laoar.shao@gmail.com> <20220818143118.17733-11-laoar.shao@gmail.com>
+ <CALvZod5GMSiGv9OEhwJfSdXi9B=O-4Nq011pPjNEGf_vDTzhfg@mail.gmail.com>
+In-Reply-To: <CALvZod5GMSiGv9OEhwJfSdXi9B=O-4Nq011pPjNEGf_vDTzhfg@mail.gmail.com>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Fri, 19 Aug 2022 09:21:11 +0800
+Message-ID: <CALOAHbARXHavqaVoSh-nL9DKLiHPvCdmWOZRMMYyeVwTgLrYug@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 10/12] mm, memcg: Add new helper get_obj_cgroup_from_cgroup
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 18 Aug 2022 18:05:44 -0700
-> On Thu, Aug 18, 2022 at 5:56 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Fri, Aug 19, 2022 at 4:38 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Thu, Aug 18, 2022 at 7:32 AM Yafang Shao <laoar.shao@gmail.com> wrote:
 > >
-> > From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> > Date:   Thu, 18 Aug 2022 17:13:25 -0700
-> > > On Thu, Aug 18, 2022 at 5:07 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > >
-> > > > From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-> > > > Date:   Thu, 18 Aug 2022 15:49:46 -0700
-> > > > > On Wed, Aug 17, 2022 at 9:24 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > > > >
-> > > > > > A sysctl variable bpf_jit_enable is accessed concurrently, and there is
-> > > > > > always a chance of data-race.  So, all readers and a writer need some
-> > > > > > basic protection to avoid load/store-tearing.
-> > > > > >
-> > > > > > Fixes: 0a14842f5a3c ("net: filter: Just In Time compiler for x86-64")
-> > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > > > > ---
-> > > > > >  arch/arm/net/bpf_jit_32.c        | 2 +-
-> > > > > >  arch/arm64/net/bpf_jit_comp.c    | 2 +-
-> > > > > >  arch/mips/net/bpf_jit_comp.c     | 2 +-
-> > > > > >  arch/powerpc/net/bpf_jit_comp.c  | 5 +++--
-> > > > > >  arch/riscv/net/bpf_jit_core.c    | 2 +-
-> > > > > >  arch/s390/net/bpf_jit_comp.c     | 2 +-
-> > > > > >  arch/sparc/net/bpf_jit_comp_32.c | 5 +++--
-> > > > > >  arch/sparc/net/bpf_jit_comp_64.c | 5 +++--
-> > > > > >  arch/x86/net/bpf_jit_comp.c      | 2 +-
-> > > > > >  arch/x86/net/bpf_jit_comp32.c    | 2 +-
-> > > > > >  include/linux/filter.h           | 2 +-
-> > > > > >  net/core/sysctl_net_core.c       | 4 ++--
-> > > > > >  12 files changed, 19 insertions(+), 16 deletions(-)
-> > > > > >
-> > > > > > diff --git a/arch/arm/net/bpf_jit_32.c b/arch/arm/net/bpf_jit_32.c
-> > > > > > index 6a1c9fca5260..4b6b62a6fdd4 100644
-> > > > > > --- a/arch/arm/net/bpf_jit_32.c
-> > > > > > +++ b/arch/arm/net/bpf_jit_32.c
-> > > > > > @@ -1999,7 +1999,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
-> > > > > >         }
-> > > > > >         flush_icache_range((u32)header, (u32)(ctx.target + ctx.idx));
-> > > > > >
-> > > > > > -       if (bpf_jit_enable > 1)
-> > > > > > +       if (READ_ONCE(bpf_jit_enable) > 1)
-> > > > >
-> > > > > Nack.
-> > > > > Even if the compiler decides to use single byte loads for some
-> > > > > odd reason there is no issue here.
-> > > >
-> > > > I see, and same for 2nd/3rd patches, right?
-> > > >
-> > > > Then how about this part?
-> > > > It's not data-race nor problematic in practice, but should the value be
-> > > > consistent in the same function?
-> > > > The 2nd/3rd patches also have this kind of part.
-> > >
-> > > The bof_jit_enable > 1 is unsupported and buggy.
-> > > It will be removed eventually.
+> > We want to open a cgroup directory and pass the fd into kernel, and then
+> > in the kernel we can charge the allocated memory into the open cgroup if it
+> > has valid memory subsystem. In the bpf subsystem, the opened cgroup will
+> > be store as a struct obj_cgroup pointer, so a new helper
+> > get_obj_cgroup_from_cgroup() is introduced.
 > >
-> > Ok, then I'm fine with no change.
+> > It also add a comment on why the helper  __get_obj_cgroup_from_memcg()
+> > must be protected by rcu read lock.
 > >
-> > >
-> > > Why are you doing these changes if they're not fixing any bugs ?
-> > > Just to shut up some race sanitizer?
+> > Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+> > ---
+> >  include/linux/memcontrol.h |  1 +
+> >  mm/memcontrol.c            | 47 ++++++++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 48 insertions(+)
 > >
-> > For data-race, it's one of reason.  I should have made sure the change fixes
-> > an actual bug, my apologies.
+> > diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> > index 2f0a611..901a921 100644
+> > --- a/include/linux/memcontrol.h
+> > +++ b/include/linux/memcontrol.h
+> > @@ -1713,6 +1713,7 @@ static inline void set_shrinker_bit(struct mem_cgroup *memcg,
+> >  int __memcg_kmem_charge_page(struct page *page, gfp_t gfp, int order);
+> >  void __memcg_kmem_uncharge_page(struct page *page, int order);
 > >
-> > For two reads, I feel buggy that there's an inconsitent snapshot.
-> > e.g.) in the 2nd patch, bpf_jit_harden == 0 in bpf_jit_blinding_enabled()
-> > could return true.  Thinking the previous value was 1, it seems to be timing
-> > issue, but not intuitive.
-> 
-> it's also used in bpf_jit_kallsyms_enabled.
-> So the patch 2 doesn't make anything 'intuitive'.
+> > +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp);
+> >  struct obj_cgroup *get_obj_cgroup_from_current(void);
+> >  struct obj_cgroup *get_obj_cgroup_from_page(struct page *page);
+> >
+> > diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+> > index 618c366..0409cc4 100644
+> > --- a/mm/memcontrol.c
+> > +++ b/mm/memcontrol.c
+> > @@ -2895,6 +2895,14 @@ struct mem_cgroup *mem_cgroup_from_obj(void *p)
+> >         return page_memcg_check(folio_page(folio, 0));
+> >  }
+> >
+> > +/*
+> > + * Pls. note that the memg->objcg can be freed after it is deferenced,
+> > + * that can happen when the memcg is changed from online to offline.
+> > + * So this helper must be protected by read rcu lock.
+> > + *
+> > + * After obj_cgroup_tryget(), it is safe to use the objcg outside of the rcu
+> > + * read-side critical section.
+> > + */
+>
+> The comment is too verbose. My suggestion would be to add
+> WARN_ON_ONCE(!rcu_read_lock_held()) in the function and if you want to
+> add a comment, just say that the caller should have a reference on
+> memcg.
+>
 
-Exactly...
+Sure, I will change it.
 
-So finally, should I repost 4th patch or drop it?
+> >  static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+> >  {
+> >         struct obj_cgroup *objcg = NULL;
+> > @@ -2908,6 +2916,45 @@ static struct obj_cgroup *__get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+> >         return objcg;
+> >  }
+> >
+> > +static struct obj_cgroup *get_obj_cgroup_from_memcg(struct mem_cgroup *memcg)
+> > +{
+> > +       struct obj_cgroup *objcg;
+> > +
+> > +       if (memcg_kmem_bypass())
+> > +               return NULL;
+> > +
+> > +       rcu_read_lock();
+> > +       objcg = __get_obj_cgroup_from_memcg(memcg);
+> > +       rcu_read_unlock();
+> > +       return objcg;
+> > +}
+> > +
+> > +struct obj_cgroup *get_obj_cgroup_from_cgroup(struct cgroup *cgrp)
+>
+> Since this function is exposed to other files, it would be nice to
+> have a comment similar to get_mem_cgroup_from_mm() for this function.
+> I know other get_obj_cgroup variants do not have such a comment yet
+> but let's start with this.
+>
+
+Sure, I will add it.
+
+> > +{
+> > +       struct cgroup_subsys_state *css;
+> > +       struct mem_cgroup *memcg;
+> > +       struct obj_cgroup *objcg;
+> > +
+> > +       rcu_read_lock();
+> > +       css = rcu_dereference(cgrp->subsys[memory_cgrp_id]);
+> > +       if (!css || !css_tryget_online(css)) {
+>
+> Any reason to use css_tryget_online() instead of css_tryget()?
+
+Because in this case, the cgroup is from an opened cgroup dir, which
+should be online.
+But considering this is a generic helper, which may be used by others,
+it would be more reasonable to use css_tryget().
+I will change it.
+
+-- 
+Regards
+Yafang
