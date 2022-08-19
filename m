@@ -2,61 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 939F459A6DB
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 22:12:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5300159A6FA
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 22:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351719AbiHSUGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 16:06:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        id S1351779AbiHSUNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 16:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351558AbiHSUGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 16:06:06 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DE57EC4CD;
-        Fri, 19 Aug 2022 13:06:00 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1660939524; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=YmzNaWO54q/8fCTIN4jaIZ5Ndxwp9+YSr/ByeZ1N7fM3t9mAdvJ8y6JVwVmhL749gAw2Crf1yFMBP/hmDlyxgG/vh5Z+ClbSGKiIy3i2NJwXvskTK6FyVe5N4KEHj2guGG5g6uEOd1go6jtRcc5iu0jDV2Sp2RVUv6Q4zeceEyk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1660939524; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=; 
-        b=OTX/jA3DUnqGI4oQNVaV6ZBR9X9H6EIAEQjLXa/wZaMOl2Z3TZz6wxSZaDXy6qqFp6N63Js0NPNTVCPXH/86DU53MrALzPgxdKM/rLiqEHfJ+Mwd1ibKenRYgvk9gbnU3Bpi+dALQyCOps/2DnjxwkyK+0mLveRSoXh3t9vdtSg=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1660939524;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=ZbOmMhea6mo0GiKmo4Riv4/f27wDQaFeMZfT8F4TkaM=;
-        b=Neex3bMTcjTpaHR6LmwPqzEz9gmMywdSnuGnLC4/0PQxWQHeQgjvg/vIyndPhGIP
-        g5dCrqPdTnxpeuhMSYF1XsLA1i8oN+RIhwNXtxznyHNgESUSm8EUXMycuICmyI0cgU/
-        tX8mu62ADEKmBazZSC65bTiBd2o0Fmvhr3jTdaC0=
-Received: from localhost.localdomain (103.86.19.2 [103.86.19.2]) by mx.zoho.in
-        with SMTPS id 1660939523728629.6711836985853; Sat, 20 Aug 2022 01:35:23 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Message-ID: <20220819200340.34826-1-code@siddh.me>
-Subject: [PATCH v3] wifi: mac80211: Fix UAF in ieee80211_scan_rx()
-Date:   Sat, 20 Aug 2022 01:33:40 +0530
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1351270AbiHSUNh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 16:13:37 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6D32A264
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 13:13:35 -0700 (PDT)
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com [209.85.214.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 737E53F146
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 20:13:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1660940013;
+        bh=2uTDm3JqPjue3AIkEgu+x5HgitNBrWkb1DC+v6PopJs=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=Gkl7Vb58jig6h7DjUpEDwof8UuhSfVQ48CGbgXVgakQLWfDynWAkd+nMG1xvCsHd3
+         /pF7naSwg9/HAzbKAHppDvSy9JvJAdzG4MIGkz9sYI+bKDQwDcH+O2/xAW+0CWa0Rt
+         5CE7ml/NabbhGbbRTJfQe/KsCLK2swhWd6taU75k+rYtGuSHFQbPRI00f45YLo10Bw
+         jKQzrLigJrhZqotD8Os/a3I10+eiBpZmfV38ocpuji9kzyu12rkUsUwsgZXOl0j1eg
+         CcMxNsF4WDqqXfdV7/5/89lXSwHS3ePA08dJbDbFJOk41anmdmJYYlSfyAjNDUuoFI
+         gSbOPkhZPfLjg==
+Received: by mail-pl1-f199.google.com with SMTP id a15-20020a170902eccf00b0016f92ee2d54so3289573plh.15
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 13:13:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=2uTDm3JqPjue3AIkEgu+x5HgitNBrWkb1DC+v6PopJs=;
+        b=ibWTVUOSLa/8ncOwTY2E0GyZNcUcy2n74A/O22GloaK880U1E0j+8ZOmdYlOchZX3A
+         KTHQUu0I58hrcbtkTnMEqItZuP6Wcv9GeuBcAKlNxHRNVo5V4Azg7PIwV12ewtj2oZhE
+         NCnRX/wfZpSBg4hTdzTcTvRuYCpAsTlncbFBq554yWQHP6bEnKhwTox2+qIhh1LiYoh/
+         iWNXofzVlFbGykN02BC9/Hm81OGU8SLd7lQAeHs8kfrzXOS/Mus74jkW1o26BVnxVqOH
+         ++9/SFf4SV/P5fmAyNIlO+9hkIdqXy9+HkcgGkzpm/AvlEB4dE0BstH739OdYIaseHud
+         9yaA==
+X-Gm-Message-State: ACgBeo0v/1d1zk4xeFRQcqvXCdDc/eeNmI+gRjlurFOC9XYjScZZuf8F
+        HPNdA2ikrS0Sc0cAQ042k3nfbbQOY4Un7Rf84D/SL2qYIGeGNYlJTDv8dIdSmAi5d73Bsgi/nVq
+        3eIjZ55O1MQHnudfPijh3H5wjzmzm1AIdDQ==
+X-Received: by 2002:a05:6a00:13a8:b0:536:1c12:8513 with SMTP id t40-20020a056a0013a800b005361c128513mr3477939pfg.8.1660940011499;
+        Fri, 19 Aug 2022 13:13:31 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6EfhB2mDvpDD3JGA8DWtwvHM6HCG+hVzS+B56WtMp8iDejIOIdfWCZoIXR/1Tn9UCetZyNkQ==
+X-Received: by 2002:a05:6a00:13a8:b0:536:1c12:8513 with SMTP id t40-20020a056a0013a800b005361c128513mr3477921pfg.8.1660940011236;
+        Fri, 19 Aug 2022 13:13:31 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id bf10-20020a170902b90a00b001728ecd2277sm3529673plb.113.2022.08.19.13.13.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 19 Aug 2022 13:13:30 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 4D44761193; Fri, 19 Aug 2022 13:13:30 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 481689FA79;
+        Fri, 19 Aug 2022 13:13:30 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     netdev@vger.kernel.org, liuhangbin@gmail.com
+Subject: Re: [PATCH net v5 0/3] bonding: 802.3ad: fix no transmission of LACPDUs
+In-reply-to: <cover.1660919940.git.jtoppins@redhat.com>
+References: <cover.1660919940.git.jtoppins@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Fri, 19 Aug 2022 11:15:11 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <11675.1660940010.1@famine>
 Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_RED autolearn=ham
+Date:   Fri, 19 Aug 2022 13:13:30 -0700
+Message-ID: <11676.1660940010@famine>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,61 +87,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ieee80211_scan_rx() tries to access scan_req->flags after a
-null check, but a UAF is observed when the scan is completed
-and __ieee80211_scan_completed() executes, which then calls
-cfg80211_scan_done() leading to the freeing of scan_req.
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-Since scan_req is rcu_dereference()'d, prevent the racing in
-__ieee80211_scan_completed() by ensuring that from mac80211's
-POV it is no longer accessed from an RCU read critical section
-before we call cfg80211_scan_done().
+>Configuring a bond in a specific order can leave the bond in a state
+>where it never transmits LACPDUs.
+>
+>The first patch adds some kselftest infrastructure and the reproducer
+>that demonstrates the problem. The second patch fixes the issue. The
+>new third patch makes ad_ticks_per_sec a static const and removes the
+>passing of this variable via the stack.
 
-Bug report: https://syzkaller.appspot.com/bug?extid=3Df9acff9bf08a845f225d
-Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-Suggested-by: Johannes Berg <johannes@sipsolutions.net>
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
----
-Changes in v3:
-Use Johannes Berg's suggestion as-it-is:
-https://lore.kernel.org/netdev/18fd9b89d45aedc1504d0cbd299ffb289ae96438.cam=
-el@sipsolutions.net/
+	For the series:
 
-v2 is now obsolete since it was an incorrect way to go about things.
-
- net/mac80211/scan.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/net/mac80211/scan.c b/net/mac80211/scan.c
-index fa8ddf576bc1..c4f2aeb31da3 100644
---- a/net/mac80211/scan.c
-+++ b/net/mac80211/scan.c
-@@ -469,16 +469,19 @@ static void __ieee80211_scan_completed(struct ieee802=
-11_hw *hw, bool aborted)
- =09scan_req =3D rcu_dereference_protected(local->scan_req,
- =09=09=09=09=09     lockdep_is_held(&local->mtx));
-=20
--=09if (scan_req !=3D local->int_scan_req) {
--=09=09local->scan_info.aborted =3D aborted;
--=09=09cfg80211_scan_done(scan_req, &local->scan_info);
--=09}
- =09RCU_INIT_POINTER(local->scan_req, NULL);
- =09RCU_INIT_POINTER(local->scan_sdata, NULL);
-=20
- =09local->scanning =3D 0;
- =09local->scan_chandef.chan =3D NULL;
-=20
-+=09synchronize_rcu();
-+
-+=09if (scan_req !=3D local->int_scan_req) {
-+=09=09local->scan_info.aborted =3D aborted;
-+=09=09cfg80211_scan_done(scan_req, &local->scan_info);
-+=09}
-+
- =09/* Set power back to normal operating levels. */
- =09ieee80211_hw_config(local, 0);
-=20
---=20
-2.35.1
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
 
 
+>v5:
+> * fixup kdoc
+>v4:
+> * rebased to latest net/master
+> * removed if check around bond_3ad_initialize function contents
+> * created a new patch that makes ad_ticks_per_sec a static const
+>v3:
+> * rebased to latest net/master
+> * addressed comment from Hangbin
+>
+>Jonathan Toppins (3):
+>  selftests: include bonding tests into the kselftest infra
+>  bonding: 802.3ad: fix no transmission of LACPDUs
+>  bonding: 3ad: make ad_ticks_per_sec a const
+>
+> MAINTAINERS                                   |  1 +
+> drivers/net/bonding/bond_3ad.c                | 41 ++++------
+> drivers/net/bonding/bond_main.c               |  2 +-
+> include/net/bond_3ad.h                        |  2 +-
+> tools/testing/selftests/Makefile              |  1 +
+> .../selftests/drivers/net/bonding/Makefile    |  6 ++
+> .../net/bonding/bond-break-lacpdu-tx.sh       | 81 +++++++++++++++++++
+> .../selftests/drivers/net/bonding/config      |  1 +
+> .../selftests/drivers/net/bonding/settings    |  1 +
+> 9 files changed, 108 insertions(+), 28 deletions(-)
+> create mode 100644 tools/testing/selftests/drivers/net/bonding/Makefile
+> create mode 100755 tools/testing/selftests/drivers/net/bonding/bond-brea=
+k-lacpdu-tx.sh
+> create mode 100644 tools/testing/selftests/drivers/net/bonding/config
+> create mode 100644 tools/testing/selftests/drivers/net/bonding/settings
+>
+>-- =
+
+>2.31.1
+>
