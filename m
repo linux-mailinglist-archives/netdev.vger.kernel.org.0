@@ -2,377 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B01B5998C1
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 11:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DF585998E8
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 11:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347758AbiHSJ0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 05:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
+        id S1347715AbiHSJhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 05:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347832AbiHSJ0s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 05:26:48 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040BBF43B8
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 02:26:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1660901208; x=1692437208;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Rpkf8DWCHVCTyICV74pbQ4Gsds06pRg+DkS+29Posv8=;
-  b=USSsvzkvnNtWXtPiGF4k3jPHLU5Jgajb061ZJHn9WcRDi/fQ8NZLI5xM
-   wgw3G7v3yApOx3XV6MfQHPqM1XsfN0Hk8qVKgyYl/Nqrq8h0FXkOOBZ73
-   QxAkQMzMKKa0SvXnhHbyUMftVr1Bo3oYYRBfgN7Een0AxpFVrVsByJsWI
-   N6S+L70y8r9oq4jjgd1MzL4Ra0Te6pNWCglQBPVNjHA3E17CtFFzfqFIZ
-   pcNLpEmmGyEu0nT/UKCuqc2GD/75i/Ccdwhtq0RooJWm27oPouOttZy5J
-   +h28hSlNwpUaah/+nf5BiRfNJhzkhNjTkOXUzIoZ5/Su8ZESRUl74PYk/
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10443"; a="291732507"
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="291732507"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 02:26:47 -0700
-X-IronPort-AV: E=Sophos;i="5.93,247,1654585200"; 
-   d="scan'208";a="637208270"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.66.88.86]) ([10.66.88.86])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Aug 2022 02:26:43 -0700
-Message-ID: <4c5dbea0-52a9-1c3d-7547-00ea54c90550@linux.intel.com>
-Date:   Fri, 19 Aug 2022 14:56:25 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next 2/5] net: wwan: t7xx: Infrastructure for early
- port configuration
+        with ESMTP id S1347163AbiHSJho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 05:37:44 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2055.outbound.protection.outlook.com [40.107.104.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31F9BF0763;
+        Fri, 19 Aug 2022 02:37:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mg1aCyZX6o3XCajGVYPhxvwv8xUQU5nGz5SaCK/HjbLqKcn8xVkWZFWncNPv1rhcl4X06AuZbv1gxL2VqBNlScw2EVy5vKvKFPwma/uK5VDLgnID05V+Lg3uUhLLy6Io5UcCggMFViOFg+yBy0lnCegweiv+DJfT5gHNr4ENBYRgJyzBbQHXeVV4yfOCRUA9VdBNLitb61qT/QpSOvI8cKolJMQo8CFV/kZhVeB7nAS9FQWW711oig++TNJA1wNPFfytCIb7YERNxVqC2oDxwh7lunT9g4BTEYX+JTR8riE+H33DL43WmUZq3tw5VB37u+mbQWuCgrCLUCpwmwzd1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=msjk3lopFrHbEy5kcA81PedrvfcoF1WNrR2ipMraDEk=;
+ b=Q6FXXh5CFVa3xJ+GqV30Zpz0LnWRTfrO6nsWrx4Fty756E2cBX9NrUiMh2zpDkPuKckzLll9sIqTjASAsalJUI3ErTagx1VeOfhNI+/XqyOgNY83AGdfW981UjFwBjlknyDt9CltpLVYIJ14Fwb1seDeRx6IWv1a3wDDxSlIEaDO9CKoOLK8gTKtbrT3irHGmQoJczjzrwFrHljMr5SlKmpBiZWFcQ0YbFsXshs2cd90oTT9kukpHUo2qYb9EEkKMIWYfeNqQa3Y1BH8tlstl9IFvh//sfojzKT5CTFRly560oODa7g43/W/jmRFwEexqvuTlgZgBwlfYQPLq1dzgg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=msjk3lopFrHbEy5kcA81PedrvfcoF1WNrR2ipMraDEk=;
+ b=CdqJ6AI87UWFIpQYcyCzBnwcFQq6OK2TCDoMoy6ZLsvZXvejdekscaLkedr5Tna6rgaK0UmQH0l9Xh0KFQ/fFGcBwyvNqsICMFy98hnt+R/Oe6uzzl1l+hwuOuH/7JZjnNPM5B/w0Iag9Zt46ivQfZfgn7a0NcLrAlmQH28ktL4=
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by DU2PR04MB8997.eurprd04.prod.outlook.com (2603:10a6:10:2e0::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Fri, 19 Aug
+ 2022 09:37:40 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce%7]) with mapi id 15.20.5546.016; Fri, 19 Aug 2022
+ 09:37:40 +0000
+From:   Wei Fang <wei.fang@nxp.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add nxp,refclk_in
+ property
+Thread-Topic: [PATCH net-next 1/2] dt-bindings: net: tja11xx: add
+ nxp,refclk_in property
+Thread-Index: AQHYs5/32SQ3bZviJ0GFr1ZJ6a4HB6218MqAgAABedA=
+Date:   Fri, 19 Aug 2022 09:37:40 +0000
+Message-ID: <DB9PR04MB81064199835C0E44B997DE06886C9@DB9PR04MB8106.eurprd04.prod.outlook.com>
+References: <20220819074729.1496088-1-wei.fang@nxp.com>
+ <20220819074729.1496088-2-wei.fang@nxp.com>
+ <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
+In-Reply-To: <f0f6e8af-4006-e0e8-544b-f2f892d79a1f@linaro.org>
+Accept-Language: en-US
 Content-Language: en-US
-To:     =?UTF-8?Q?Ilpo_J=c3=a4rvinen?= <ilpo.jarvinen@linux.intel.com>
-Cc:     m.chetan.kumar@intel.com, Netdev <netdev@vger.kernel.org>,
-        kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
-        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
-        krishna.c.sudi@intel.com, linuxwwan@intel.com,
-        Haijun Liu <haijun.liu@mediatek.com>,
-        Madhusmita Sahu <madhusmita.sahu@intel.com>,
-        Ricardo Martinez <ricardo.martinez@linux.intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-References: <20220816042340.2416941-1-m.chetan.kumar@intel.com>
- <5a74770-94d3-f690-4aa1-59cdbbb29339@linux.intel.com>
- <1ff95a2c-c648-aea2-be23-0d4bf8a9b3d7@linux.intel.com>
- <63bdb859-eda-5488-60b8-fc305ea39f31@linux.intel.com>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <63bdb859-eda-5488-60b8-fc305ea39f31@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9f7d0bb6-1cdd-4c00-125a-08da81c675db
+x-ms-traffictypediagnostic: DU2PR04MB8997:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yA2lm/VRgP0Fx9zJIckvbMTUiln/lKNkeu/akMx5B5F8szAFjqyshy5/nIVBj6VW6BvS7ckAynOR7dHevUoWZEwuRr3LvGMxg6Soj9V44aOuk80c/Ah1k0IfPQHTt8WMlB1Zkc5qGO+nGjnP6ir0TDkuIfgXJQILCRhD0tnyfF0s3+fkgwEO51/42dvMBHMR44ipICs/7TLeqZTt3+wjt8GKjQ6+E8N7ktkBzj3r0yRXJO4OrnDnZ5uudHlHLYMpeTkAH0VuP46Ho9BvKlgwJYkOxEx2zbdo61vlpK4x5oVN2vUQR8K1aCkSnjYhU4ps7G8y9EQMNm5XzZWB7bjOZDp+egOaA91E3IBSPHm72mxWpXbL+JIIPNV0ZLFvDrl7QmSHMsh/WVqgpVgMOCTZPRm0NipHsxH2LM8sFlhBx8ZDw+kg3d0Hs34oPnFWnf/TEPxEcPMCsAsnpfSJjwfhqmxrCj29fLAQjwYFXAbi2aB6qerO4yD6Io/ZwVKMvBA3WgzYyf9wvxVsbAYNh3V3uoC9gjZK99ekuA1ym/gDq44GmK1cM8gYOX2iDtRguhamUv7KiUTFx7stGqyc6OmNzbnKESMxgqxskqyeJbuN+JFc3JfpR/gqo3gRpioZDkdEIS2ImMtNDlsM/by/5JJ5B8BF4W4ddtAu1L1Wqg7+QbdHx87ULFxdZQ2U/an8KbJrHH46rMyY32iBXisHDNIZVg7Nnpal148XXLoxdrYwwYDif0BMXsj28Pml/LmZX8rvFIOS9XKdzHgfDAadp/mJishXM6ZU4eVK+j3j2LRzsvE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(376002)(346002)(39860400002)(136003)(54906003)(76116006)(5660300002)(4326008)(66556008)(110136005)(55016003)(316002)(66446008)(2906002)(52536014)(64756008)(7416002)(8676002)(66946007)(122000001)(66476007)(38100700002)(44832011)(33656002)(86362001)(38070700005)(921005)(478600001)(26005)(41300700001)(7696005)(6506007)(9686003)(71200400001)(53546011)(8936002)(83380400001)(186003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?L29xUHhOM0xnV0dDcVZYdko5Y2l6OVhMNTAyK2ZzNFZva3NoeUVFWWdvZ0I2?=
+ =?utf-8?B?eXNGS1h0bi9Ec0ZUblZyQ2pLMEg3dWZabTZTU2tqQ3Y3Rnk0TDBDTk90UW5L?=
+ =?utf-8?B?UTFDL09tYXEyK2l1WEFIM04wb1BESytlS3I4RVp1RDdXMmR0YmZlWHd4RDYr?=
+ =?utf-8?B?dVZOb1FYK08xTzJuYWtpanIrOGpkZ0d2L1lIM1ZrSzlDUjZkV0dpNkZsOWxv?=
+ =?utf-8?B?TXZEV0hsR2ZKbE1NQU5INU42STltVGhzbldMZTNuRVZPK09DMVBYQXRlWFpR?=
+ =?utf-8?B?TVNDK3kyc2Q3K1pKZG9NYXJzbzBZc0FleXl3U3dIdXpLL0VhT3h3NmcrUjlT?=
+ =?utf-8?B?QVFIR1NORlZRTk12TGlFZWVlUGRPRXo0cURiZjZtcXJlcGlValpSdmdnNVVz?=
+ =?utf-8?B?eGJyQ1AxSVRJUE5NZHdzYjVVY3pHdkQrc2NKWjR1SWxyV21reUZRdTUyaEI1?=
+ =?utf-8?B?YUJLdnBiM1U2aldNT1BWTy9RckZxTlJqVHk3cDgrS1BIVlJlUEVabUpiR1Rq?=
+ =?utf-8?B?NW8zQXZhUWt3ODk5YXlQaVQ1UElIZWFMQUU3Nis2dDQ5bzdzUCs4bS9Ec0V5?=
+ =?utf-8?B?ZjRvRlRDUUpOYUp4SUNwc1dVSURFdSt2bUQzeWdWV21zOEhqbWJFM3U4RENR?=
+ =?utf-8?B?cEQ0QWQ0RXJGa2NFM05vZTJyUGlRTHpBL3JjeGdYVS9tNm1zdkpoQm9MNU1P?=
+ =?utf-8?B?Z1J3S2hvR3E1TFdzdE1qN2laUUduOE51YW0wMmFlV0dBdm5uZUNsWkdlZ05t?=
+ =?utf-8?B?OFJQRlpjRXBqdnVSYklwbnIzcGFlYkQvdUswZnp1bXV0UkU1ZEVoa0Z0bkZG?=
+ =?utf-8?B?cWZHRUZha1QwRC9jOWFrdDNOR1BEM2FlRURSV3c4VFk2RWRDZ0RtblBRb3o0?=
+ =?utf-8?B?czNJZ0xOY2JaWGRWK3NUcGlTUGdQNzVSTTRQMlBGMjBGeWo1TkJKMjhibDlq?=
+ =?utf-8?B?TDd6eHhtaC9TZktIYXRyUTdESll3bWk1SUpvWEVnNFVEbEdmRGtIZGpYcFdj?=
+ =?utf-8?B?YmdsdnJzNCtRdk5JRTlhV3hZOFZ1NUxWQ2trSHJ2SnpEVEVpcDFMWlNiZzNK?=
+ =?utf-8?B?Qm5PeFVxNmFtbU9oYTR3TlFrQmRiUjZVZmx3TXRwWklrendRaDRzMlBXREVu?=
+ =?utf-8?B?Wkpnd2tYdlBJL0JST0Nqbk9pemk3WXdSa2tEZHNnVVZPckhIU1kxZnVUWG44?=
+ =?utf-8?B?ejRCdEtxMWxoTEdTOTZJZ21POUx1Z2FkZHB6UEY5eHRIc3hJMitWc3d5bVFi?=
+ =?utf-8?B?UGw2Vy9Jd3VSdGF6cFAxRHpCbHN5THpXcHRUdmVsOWNub2htYlJVcjBGbzBz?=
+ =?utf-8?B?YkZoNTMxOHJob3lFL3FJOVpacUI0S1lId2JVTGcyS2tUalFtTmVkT240b3h1?=
+ =?utf-8?B?NGVWNnNKVE1JTllWQ2hvQ0RCWmhoa3JrZWRGS0k5RGU2MXp4dS9MeXJMbUVa?=
+ =?utf-8?B?em1LTjUrRUtVcy8xeGZHVXczMTAvUWZscmJWUHpwbDRZRVJGOEtnQW1TckZF?=
+ =?utf-8?B?Uk53VTQ1UFpMU0RHbjRZV285VDdQVTdLM0tTMjBPd1NwUEQ1MncvTDA3bGZr?=
+ =?utf-8?B?Mllrc2FxTDcxQlJ6ZnRpd05LNHh0VmR1ZG0xUGFZQjhvRFo2d0tJNFlwOFVE?=
+ =?utf-8?B?d0xEbVBWQU1zZExhb0dyVjZ1dXJrenlBamtuTnVkZW1UNU5sL2tPR1lSNlhT?=
+ =?utf-8?B?bkt0djJYUDh2RDRCblJEK2NUVFNKYUN0UnFPaXp3aHlScURhc0NpZzBGeDJ6?=
+ =?utf-8?B?dFlqd1pNL1huZkh2cDRvVU1iTmxQLzBINDd2WVptNHVXenYzWVIvZ1RxdG40?=
+ =?utf-8?B?ZlgvVmVJcm1BQlZaRGcyelU5Z0d4MUwwYnB3SXNtVDduZlBCdjE1aFZwSWpk?=
+ =?utf-8?B?eE5qSWVMdk1wSWVHTnc1ekRnc2ZIdlpjNFhPNkkzelBNdjZxVWlzT2VBUU9v?=
+ =?utf-8?B?TkNCYnZIZFpQNGthOFFhdmxxNEo5RGJIdHNnM0dmbkZlK0tZdkxmbXVrdkRF?=
+ =?utf-8?B?UkpMdVBqUkNQUnhCNHg1Rm5DV2JQM25NRVkyS0F3ZGUrZEdhbkxzNk1XRngz?=
+ =?utf-8?B?MGg2dnRBUW9MSHdOczJSMk1HWlpQU2t5Q3ZpN3BzSnlVUHhlaU9VRTVFcGRa?=
+ =?utf-8?Q?inOI=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f7d0bb6-1cdd-4c00-125a-08da81c675db
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2022 09:37:40.6833
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qolgzdXMq9UPadKR6A4VrwnkG5se8Rg8qnzeIRRr8FyF3SlIze8uV5UC4IT0WONGCNyJQE8nIEecUNuR+NnU8Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8997
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/18/2022 4:18 PM, Ilpo Järvinen wrote:
-> On Wed, 17 Aug 2022, Kumar, M Chetan wrote:
-> 
->>
->> On 8/17/2022 5:40 PM, Ilpo Järvinen wrote:
->>> On Tue, 16 Aug 2022, m.chetan.kumar@intel.com wrote:
->>>
->>>> From: Haijun Liu <haijun.liu@mediatek.com>
->>>>
->>>> To support cases such as FW update or Core dump, the t7xx device
->>>> is capable of signaling the host that a special port needs
->>>> to be created before the handshake phase.
->>>>
->>>> This patch adds the infrastructure required to create the
->>>> early ports which also requires a different configuration of
->>>> CLDMA queues.
->>>>
->>>> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
->>>> Co-developed-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->>>> Signed-off-by: Madhusmita Sahu <madhusmita.sahu@intel.com>
->>>> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
->>>> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
->>>> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
->>>> ---
->>>
->>>> diff --git a/drivers/net/wwan/t7xx/t7xx_port.h
->>>> b/drivers/net/wwan/t7xx/t7xx_port.h
->>>> index 4a29bd04cbe2..6a96ee6d9449 100644
->>>> --- a/drivers/net/wwan/t7xx/t7xx_port.h
->>>> +++ b/drivers/net/wwan/t7xx/t7xx_port.h
->>>> @@ -100,6 +100,7 @@ struct t7xx_port_conf {
->>>>    	struct port_ops		*ops;
->>>>    	char			*name;
->>>>    	enum wwan_port_type	port_type;
->>>> +	bool			is_early_port;
->>>>    };
->>>>      struct t7xx_port {
->>>> @@ -130,9 +131,11 @@ struct t7xx_port {
->>>>    	struct task_struct		*thread;
->>>>    };
->>>>    +int t7xx_get_port_mtu(struct t7xx_port *port);
->>>>    struct sk_buff *t7xx_port_alloc_skb(int payload);
->>>>    struct sk_buff *t7xx_ctrl_alloc_skb(int payload);
->>>>    int t7xx_port_enqueue_skb(struct t7xx_port *port, struct sk_buff *skb);
->>>> +int t7xx_port_send_raw_skb(struct t7xx_port *port, struct sk_buff *skb);
->>>>    int t7xx_port_send_skb(struct t7xx_port *port, struct sk_buff *skb,
->>>> unsigned int pkt_header,
->>>>    		       unsigned int ex_msg);
->>>>    int t7xx_port_send_ctl_skb(struct t7xx_port *port, struct sk_buff *skb,
->>>> unsigned int msg,
->>>> diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
->>>> b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
->>>> index 62305d59da90..7582777cf94d 100644
->>>> --- a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
->>>> +++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
->>>> @@ -88,6 +88,20 @@ static const struct t7xx_port_conf t7xx_md_port_conf[]
->>>> = {
->>>>    	},
->>>>    };
->>>>    +static struct t7xx_port_conf t7xx_early_port_conf[] = {
->>>> +	{
->>>> +		.tx_ch = 0xffff,
->>>> +		.rx_ch = 0xffff,
->>>> +		.txq_index = 1,
->>>> +		.rxq_index = 1,
->>>> +		.txq_exp_index = 1,
->>>> +		.rxq_exp_index = 1,
->>>> +		.path_id = CLDMA_ID_AP,
->>>> +		.is_early_port = true,
->>>> +		.name = "ttyDUMP",
->>>> +	},
->>>> +};
->>>> +
->>>>    static struct t7xx_port *t7xx_proxy_get_port_by_ch(struct port_proxy
->>>> *port_prox, enum port_ch ch)
->>>>    {
->>>>    	const struct t7xx_port_conf *port_conf;
->>>> @@ -202,7 +216,17 @@ int t7xx_port_enqueue_skb(struct t7xx_port *port,
->>>> struct sk_buff *skb)
->>>>    	return 0;
->>>>    }
->>>>    -static int t7xx_port_send_raw_skb(struct t7xx_port *port, struct
->>>> sk_buff *skb)
->>>> +int t7xx_get_port_mtu(struct t7xx_port *port)
->>>> +{
->>>> +	enum cldma_id path_id = port->port_conf->path_id;
->>>> +	int tx_qno = t7xx_port_get_queue_no(port);
->>>> +	struct cldma_ctrl *md_ctrl;
->>>> +
->>>> +	md_ctrl = port->t7xx_dev->md->md_ctrl[path_id];
->>>> +	return md_ctrl->tx_ring[tx_qno].pkt_size;
->>>> +}
->>>> +
->>>> +int t7xx_port_send_raw_skb(struct t7xx_port *port, struct sk_buff *skb)
->>>
->>> Why you removed static from this function here (+add the prototype into a
->>> header), I cannot see anything in this patch. Perhaps those changes belong
->>> to patch 4?
->>
->> Prototype is added in header file. Patch4 is using this func.
-> 
-> Thus, put those two changes (proto + static removal) into patch 4.
-
-Patch is merged.
-Please help to get it revert so that we could address review comments 
-and post v2 series.
-
-> 
->>>>    {
->>>>    	enum cldma_id path_id = port->port_conf->path_id;
->>>>    	struct cldma_ctrl *md_ctrl;
->>>> @@ -317,6 +341,26 @@ static void t7xx_proxy_setup_ch_mapping(struct
->>>> port_proxy *port_prox)
->>>>    	}
->>>>    }
->>>>    +static int t7xx_port_proxy_recv_skb_from_queue(struct t7xx_pci_dev
->>>> *t7xx_dev,
->>>> +					       struct cldma_queue *queue,
->>>> struct sk_buff *skb)
->>>> +{
->>>> +	struct port_proxy *port_prox = t7xx_dev->md->port_prox;
->>>> +	const struct t7xx_port_conf *port_conf;
->>>> +	struct t7xx_port *port;
->>>> +	int ret;
->>>> +
->>>> +	port = port_prox->ports;
->>>> +	port_conf = port->port_conf;
->>>> +
->>>> +	ret = port_conf->ops->recv_skb(port, skb);
->>>> +	if (ret < 0 && ret != -ENOBUFS) {
->>>> +		dev_err(port->dev, "drop on RX ch %d, %d\n", port_conf->rx_ch,
->>>> ret);
->>>> +		dev_kfree_skb_any(skb);
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>>    static struct t7xx_port *t7xx_port_proxy_find_port(struct t7xx_pci_dev
->>>> *t7xx_dev,
->>>>    						   struct cldma_queue *queue,
->>>> u16 channel)
->>>>    {
->>>> @@ -338,6 +382,22 @@ static struct t7xx_port
->>>> *t7xx_port_proxy_find_port(struct t7xx_pci_dev *t7xx_dev
->>>>    	return NULL;
->>>>    }
->>>>    +struct t7xx_port *t7xx_port_proxy_get_port_by_name(struct port_proxy
->>>> *port_prox, char *port_name)
->>>> +{
->>>> +	const struct t7xx_port_conf *port_conf;
->>>> +	struct t7xx_port *port;
->>>> +	int i;
->>>> +
->>>> +	for_each_proxy_port(i, port, port_prox) {
->>>> +		port_conf = port->port_conf;
->>>> +
->>>> +		if (!strncmp(port_conf->name, port_name,
->>>> strlen(port_conf->name)))
->>>> +			return port;
->>>> +	}
->>>> +
->>>> +	return NULL;
->>>> +}
->>>> +
->>>>    /**
->>>>     * t7xx_port_proxy_recv_skb() - Dispatch received skb.
->>>>     * @queue: CLDMA queue.
->>>> @@ -358,6 +418,9 @@ static int t7xx_port_proxy_recv_skb(struct cldma_queue
->>>> *queue, struct sk_buff *s
->>>>    	u16 seq_num, channel;
->>>>    	int ret;
->>>>    +	if (queue->q_type == CLDMA_DEDICATED_Q)
->>>> +		return t7xx_port_proxy_recv_skb_from_queue(t7xx_dev, queue,
->>>> skb);
->>>> +
->>>
->>> So ->recv_skb() is per cldma but now you'd actually want to have a
->>> different one per queue?
->>
->> dump and download port uses different configuration (packet size is
->> different, received data doesn't contain header portion) so using q_type
->> to distinguish rx flow.
-> 
-> If you want to distinguish something by q_type and already have that func
-> ptr for recv_skb() anyway, why not move the recv_skb() ptr to cldma_queue
-> so you don't need to add any this kind of additional conditions to just
-> call another kind of handler function?
-
-Ok. We could push the recv_skb() from cldma_ctrl to cldma_queue and 
-register queue specific handler function.
-
-For dump/download port assoicated queue recv_skb() would be set to 
-t7xx_port_proxy_recv_skb_from_queue() and t7xx_port_proxy_recv_skb() for 
-rest. So with this cldma would directly push rx data to queue specific 
-handler function.
-
-> 
->>>>    	ret = port_conf->ops->recv_skb(port, skb);
->>>>    	/* Error indicates to try again later */
->>>> @@ -439,26 +503,58 @@ static void t7xx_proxy_init_all_ports(struct
->>>> t7xx_modem *md)
->>>>    	t7xx_proxy_setup_ch_mapping(port_prox);
->>>>    }
->>>>    +void t7xx_port_proxy_set_cfg(struct t7xx_modem *md, enum port_cfg_id
->>>> cfg_id)
->>>> +{
->>>> +	struct port_proxy *port_prox = md->port_prox;
->>>> +	const struct t7xx_port_conf *port_conf;
->>>> +	struct device *dev = port_prox->dev;
->>>> +	unsigned int port_count;
->>>> +	struct t7xx_port *port;
->>>> +	int i;
->>>> +
->>>> +	if (port_prox->cfg_id == cfg_id)
->>>> +		return;
->>>> +
->>>> +	if (port_prox->cfg_id != PORT_CFG_ID_INVALID) {
->>>
->>> This seems to be always true.
->>
->> In initialization flow it would be false.
->> Depending on boot stage, right port config would be chosen and
->> cfg_id reflects the chosen config.
-> 
-> Oh, I think I misunderstood the code here quite badly, so it depends on
-> the initial value being 0?
-> 
-> But now I realize there's also the preceeding check that returns. ...So
-> doesn't that then mean port_prox->cfg_id can only be PORT_CFG_ID_INVALID
-> at this point or am I still missing something (making the whole block
-> unnecessary)?
-
-t7xx_port_proxy_set_cfg() is called from 2 different context.
-
-1> t7xx_pci_probe() -> t7xx_md_init() -> t7xx_port_proxy_init() -> 
-t7xx_proxy_alloc -> t7xx_port_proxy_set_cfg()
-2> t7xx_pci_probe() -> t7xx_md_init()-> fsm_routine_start() -> 
-t7xx_port_proxy_set_cfg()
-
-In the first flow port_prox is allocated inside t7xx_proxy_alloc() and 
-the port_prox->cfg_id is 0 (PORT_CFG_ID_INVALID) by default.
-
-  	if (port_prox->cfg_id != PORT_CFG_ID_INVALID) {
-		for_each_proxy_port(i, port, port_prox)
-			port->port_conf->ops->uninit(port);
-
-So at this point (above if statement) it will not enter if condition 
-since port is not yet configured i.e port unit() is not required.
-
-Since it is a early initalization phase, port is configured with early 
-port configuration & port_prox->cfg_id is set to PORT_CFG_ID_EARLY.
-
-Later fsm kicks in and device moves from boot phase to LINUX stage. At 
-this point 2> port_prox->cfg_id will be having earlier value 
-(PORT_CFG_ID_EARLY) so in this case it enters if condition and cleans up 
-the early port.
-
-Coming to below if block. This condition won't be met. On safer side 
-will run few test around it and removed it in next patch.
-
-if (port_prox->cfg_id == cfg_id)
-	return;
-
-> 
->>>> +		for_each_proxy_port(i, port, port_prox)
->>>> +			port->port_conf->ops->uninit(port);
-> 
-> This would be t7xx_port_proxy_uninit() I think.
-
-Ya. We could replace it with t7xx_port_proxy_uninit().
-
-> 
->>>> +		dev_err(dev, "invalid device status\n");
->>>> +		ret = -EINVAL;
->>>> +		goto finish_command;
->>>> +	}
->>>> +
->>>>    	ctl->curr_state = FSM_STATE_PRE_START;
->>>>    	t7xx_md_event_notify(md, FSM_PRE_START);
->>>>    -	ret = read_poll_timeout(ioread32, dev_status,
->>>> -				(dev_status & MISC_STAGE_MASK) == LINUX_STAGE,
->>>> 20000, 2000000,
->>>> -				false, IREG_BASE(md->t7xx_dev) +
->>>> T7XX_PCIE_MISC_DEV_STATUS);
->>>> -	if (ret) {
->>>> -		struct device *dev = &md->t7xx_dev->pdev->dev;
->>>> +	device_stage = FIELD_GET(MISC_STAGE_MASK, dev_status);
->>>> +	if (dev_status == ctl->prev_dev_status) {
->>>
->>> Maybe the local variables from need dev_ or device_ prefixes. They just
->>> makes them harder to read.
->>
->> Ok. will consider it.
-> 
-> I had quite bad English there, just to be sure we understood it anyway,
-> I meant I don't think those prefixes benefit anything and could be
-> removed.
-
-Thanks for the clarification.
-Will remove such prefixes in local variables.
-
-
--- 
-Chetan
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogS3J6eXN6dG9mIEtvemxv
+d3NraSA8a3J6eXN6dG9mLmtvemxvd3NraUBsaW5hcm8ub3JnPg0KPiBTZW50OiAyMDIy5bm0OOac
+iDE55pelIDE3OjE0DQo+IFRvOiBXZWkgRmFuZyA8d2VpLmZhbmdAbnhwLmNvbT47IGRhdmVtQGRh
+dmVtbG9mdC5uZXQ7DQo+IGVkdW1hemV0QGdvb2dsZS5jb207IGt1YmFAa2VybmVsLm9yZzsgcGFi
+ZW5pQHJlZGhhdC5jb207DQo+IHJvYmgrZHRAa2VybmVsLm9yZzsga3J6eXN6dG9mLmtvemxvd3Nr
+aStkdEBsaW5hcm8ub3JnOyBhbmRyZXdAbHVubi5jaDsNCj4gZi5mYWluZWxsaUBnbWFpbC5jb207
+IGhrYWxsd2VpdDFAZ21haWwuY29tOyBsaW51eEBhcm1saW51eC5vcmcudWsNCj4gQ2M6IG5ldGRl
+dkB2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOw0KPiBsaW51eC1r
+ZXJuZWxAdmdlci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggbmV0LW5leHQgMS8y
+XSBkdC1iaW5kaW5nczogbmV0OiB0amExMXh4OiBhZGQgbnhwLHJlZmNsa19pbg0KPiBwcm9wZXJ0
+eQ0KPiANCj4gT24gMTkvMDgvMjAyMiAxMDo0Nywgd2VpLmZhbmdAbnhwLmNvbSB3cm90ZToNCj4g
+PiBGcm9tOiBXZWkgRmFuZyA8d2VpLmZhbmdAbnhwLmNvbT4NCj4gPg0KPiA+IFRKQTExMHggUkVG
+X0NMSyBjYW4gYmUgY29uZmlndXJlZCBhcyBpbnRlcmZhY2UgcmVmZXJlbmNlIGNsb2NrIGludHB1
+dA0KPiA+IG9yIG91dHB1dCB3aGVuIHRoZSBSTUlJIG1vZGUgZW5hYmxlZC4gVGhpcyBwYXRjaCBh
+ZGQgdGhlIHByb3BlcnR5IHRvDQo+ID4gbWFrZSB0aGUgUkVGX0NMSyBjYW4gYmUgY29uZmlndXJh
+YmxlLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogV2VpIEZhbmcgPHdlaS5mYW5nQG54cC5jb20+
+DQo+ID4gLS0tDQo+ID4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9ueHAsdGphMTF4eC55
+YW1sICAgIHwgMTcgKysrKysrKysrKysrKysrKysNCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDE3IGlu
+c2VydGlvbnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRy
+ZWUvYmluZGluZ3MvbmV0L254cCx0amExMXh4LnlhbWwNCj4gPiBiL0RvY3VtZW50YXRpb24vZGV2
+aWNldHJlZS9iaW5kaW5ncy9uZXQvbnhwLHRqYTExeHgueWFtbA0KPiA+IGluZGV4IGQ1MWRhMjRm
+MzUwNS4uYzUxZWU1MjAzM2U4IDEwMDY0NA0KPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9uZXQvbnhwLHRqYTExeHgueWFtbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRp
+b24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvbnhwLHRqYTExeHgueWFtbA0KPiA+IEBAIC0zMSw2
+ICszMSwyMiBAQCBwYXR0ZXJuUHJvcGVydGllczoNCj4gPiAgICAgICAgICBkZXNjcmlwdGlvbjoN
+Cj4gPiAgICAgICAgICAgIFRoZSBJRCBudW1iZXIgZm9yIHRoZSBjaGlsZCBQSFkuIFNob3VsZCBi
+ZSArMSBvZiBwYXJlbnQgUEhZLg0KPiA+DQo+ID4gKyAgICAgIG54cCxybWlpX3JlZmNsa19pbjoN
+Cj4gDQo+IE5vIHVuZGVyc2NvcmVzIGluIHByb3BlcnRpZXMuDQo+IA0KU29ycnksIEl0J3MgZmly
+c3QgdGltZSBmb3IgbWUgdG8ga25vdyB0aGlzLg0KDQo+ID4gKyAgICAgICAgdHlwZTogYm9vbGVh
+bg0KPiA+ICsgICAgICAgIGRlc2NyaXB0aW9uOiB8DQo+ID4gKyAgICAgICAgICBUaGUgUkVGX0NM
+SyBpcyBwcm92aWRlZCBmb3IgYm90aCB0cmFuc21pdHRlZCBhbmQgcmVjZWl2Y2VkDQo+ID4gKyBk
+YXRhDQo+IA0KPiB0eXBvOiByZWNlaXZlZA0KPiANCj4gPiArICAgICAgICAgIGluIFJNSUkgbW9k
+ZS4gVGhpcyBjbG9jayBzaWduYWwgaXMgcHJvdmlkZWQgYnkgdGhlIFBIWSBhbmQgaXMNCj4gPiAr
+ICAgICAgICAgIHR5cGljYWxseSBkZXJpdmVkIGZyb20gYW4gZXh0ZXJuYWwgMjVNSHogY3J5c3Rh
+bC4gQWx0ZXJuYXRpdmVseSwNCj4gPiArICAgICAgICAgIGEgNTBNSHogY2xvY2sgc2lnbmFsIGdl
+bmVyYXRlZCBieSBhbiBleHRlcm5hbCBvc2NpbGxhdG9yIGNhbiBiZQ0KPiA+ICsgICAgICAgICAg
+Y29ubmVjdGVkIHRvIHBpbiBSRUZfQ0xLLiBBIHRoaXJkIG9wdGlvbiBpcyB0byBjb25uZWN0IGEg
+MjVNSHoNCj4gPiArICAgICAgICAgIGNsb2NrIHRvIHBpbiBDTEtfSU5fT1VULiBTbywgdGhlIFJF
+Rl9DTEsgc2hvdWxkIGJlIGNvbmZpZ3VyZWQNCj4gPiArICAgICAgICAgIGFzIGlucHV0IG9yIG91
+dHB1dCBhY2NvcmRpbmcgdG8gdGhlIGFjdHVhbCBjaXJjdWl0IGNvbm5lY3Rpb24uDQo+ID4gKyAg
+ICAgICAgICBJZiBwcmVzZW50LCBpbmRpY2F0ZXMgdGhhdCB0aGUgUkVGX0NMSyB3aWxsIGJlIGNv
+bmZpZ3VyZWQgYXMNCj4gPiArICAgICAgICAgIGludGVyZmFjZSByZWZlcmVuY2UgY2xvY2sgaW5w
+dXQgd2hlbiBSTUlJIG1vZGUgZW5hYmxlZC4NCj4gPiArICAgICAgICAgIElmIG5vdCBwcmVzZW50
+LCB0aGUgUkVGX0NMSyB3aWxsIGJlIGNvbmZpZ3VyZWQgYXMgaW50ZXJmYWNlDQo+ID4gKyAgICAg
+ICAgICByZWZlcmVuY2UgY2xvY2sgb3V0cHV0IHdoZW4gUk1JSSBtb2RlIGVuYWJsZWQuDQo+ID4g
+KyAgICAgICAgICBPbmx5IHN1cHBvcnRlZCBvbiBUSkExMTAwIGFuZCBUSkExMTAxLg0KPiANCj4g
+VGhlbiBkaXNhbGxvdyBpdCBvbiBvdGhlciB2YXJpYW50cy4NCj4gDQo+IFNob3VsZG4ndCB0aGlz
+IGJlIGp1c3QgImNsb2NrcyIgcHJvcGVydHk/DQo+IA0KPiANClRoaXMgcHJvcGVydHkgaXMgdG8g
+Y29uZmlndXJlIHRoZSBwaW4gUkVGX0NMSyBvZiBQSFkgYXMgYSBpbnB1dCBwaW4gdGhyb3VnaCBw
+aHkgcmVnaXN0ZXIsDQppbmRpY2F0ZXMgdGhhdCB0aGUgUkVGX0NMSyBzaWduYWwgaXMgcHJvdmlk
+ZWQgYnkgYW4gZXh0ZXJuYWwgb3NjaWxsYXRvci4gc28gSSBkb24ndCB0aGluayBpdCdzIGENCiJj
+bG9jayIgcHJvcGVydHkuDQo=
