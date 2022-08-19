@@ -2,110 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C110599E0C
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 17:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8F04599E68
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 17:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349636AbiHSPVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 11:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
+        id S1349773AbiHSPcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 11:32:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349114AbiHSPVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:21:00 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61CD6FAC62;
-        Fri, 19 Aug 2022 08:20:59 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id y13so9373924ejp.13;
-        Fri, 19 Aug 2022 08:20:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
-        bh=+HU2PDxidvc5+FaOZWTX0HoitIaVmLInXIp8kYbLioA=;
-        b=B1PNv3iosZDyUltNx04zouIxVSmCOGdwLmk5mQUCsPniElK0Dg9wnqTCCUfmLNpcvp
-         EWqLe+7tND89mop568bYusMgNt/Y9oOgaduKrlBNCkbzWNYawNAnfeIe+pqxusWLv18v
-         u/NX0xSZgT7Bl2dHTAa2Z39FJzXgC7+OzuRuAKvoh1JfiU637uWPy2OI/d9ETi7Fgk4e
-         kfGy3wY4Jjt4QEz5I/RTHdDmMMmpq8AL28L7tsJoS3knAZjzh0Z4s2DqEo05BLOPK90h
-         CCoJIZVP3om302tsZ1eSulGeSPYgN6fBGAXlI/x16dc0vdgN496CK1ErrFZhsBoH2Nq4
-         i3dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc;
-        bh=+HU2PDxidvc5+FaOZWTX0HoitIaVmLInXIp8kYbLioA=;
-        b=ZbqmVjmUiIXZxb03mnIrjCfpIm5BHeTGYMXj6yZaj/4eGh+61kpfGg8/qGKbOdSpGf
-         +9VHWnN4Mk2x0Yg7KjStR3/eGPANRUvvtHRAM682NSOuLoXAZw5BXYaUJx8Ym7QI7EHF
-         e9LyX33vo9sgSl+Y92vov0oxqxgesFBDPy3R5wx+wF4Vww6bx0/TyL6ypv7/Mp6D9Cp+
-         aZD5ZsTScrIsThfvwoJNKCRM01yZmNurOb+0Q0b8cJKZufhnWn4Ki1IgN2RaqicM/ZxV
-         wu1k2sa4Phv8hOe+uWnShTyKIKPFVCQ+UvHplPf14VU3AS7XS9VaHHJjgkA0mfwUng0V
-         vJBA==
-X-Gm-Message-State: ACgBeo1iaJSeuDAif0w9R4A70RPFhSx0NvoSRknUrTO8Io1ch6w/rWdB
-        X4A8/0FTrYgmFrAUQsKVrZw=
-X-Google-Smtp-Source: AA6agR6Bn4ZLfiJKQune26mbp6EwBo9wx/NYlSD2oKPpuEXHvy3PuRqEtlpKZlu6SLbRJZw9zHJJag==
-X-Received: by 2002:a17:907:75c2:b0:73d:5842:9d68 with SMTP id jl2-20020a17090775c200b0073d58429d68mr1191787ejc.11.1660922457981;
-        Fri, 19 Aug 2022 08:20:57 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id m27-20020a170906161b00b00730560156b0sm2449091ejd.50.2022.08.19.08.20.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 08:20:57 -0700 (PDT)
-Subject: Re: [RFC PATCH v2 net-next] docs: net: add an explanation of VF (and
- other) Representors
-To:     Marcin Szycik <marcin.szycik@linux.intel.com>, ecree@xilinx.com,
-        netdev@vger.kernel.org, linux-net-drivers@amd.com
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, corbet@lwn.net, linux-doc@vger.kernel.org,
-        jacob.e.keller@intel.com, jesse.brandeburg@intel.com,
-        michael.chan@broadcom.com, andy@greyhouse.net, saeed@kernel.org,
-        jiri@resnulli.us, snelson@pensando.io, simon.horman@corigine.com,
-        alexander.duyck@gmail.com, rdunlap@infradead.org
-References: <20220815142251.8909-1-ecree@xilinx.com>
- <2c659f31-f2ac-b6a9-c509-5402f61afc78@linux.intel.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <2578c4c4-03c0-1618-e53c-e271ca9c50dd@gmail.com>
-Date:   Fri, 19 Aug 2022 16:20:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <2c659f31-f2ac-b6a9-c509-5402f61afc78@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1349756AbiHSPcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 11:32:52 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA218101C72;
+        Fri, 19 Aug 2022 08:32:49 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 27JFLw53006284;
+        Fri, 19 Aug 2022 10:21:58 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 27JFLvQc006283;
+        Fri, 19 Aug 2022 10:21:57 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Fri, 19 Aug 2022 10:21:57 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>, kuba@kernel.org,
+        miguel.ojeda.sandonis@gmail.com, ojeda@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        asml.silence@gmail.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        linux-toolchains <linux-toolchains@vger.kernel.org>
+Subject: Re: [PATCH net-next v4] net: skb: prevent the split of kfree_skb_reason() by gcc
+Message-ID: <20220819152157.GO25951@gate.crashing.org>
+References: <20220816032846.2579217-1-imagedong@tencent.com> <CAKwvOd=accNK7t_SOmybo3e4UcBKoZ6TBPjCHT3eSSpSUouzEA@mail.gmail.com> <CADxym3Yxq0k_W43kVjrofjNoUUag3qwmpRGLLAQL1Emot3irPQ@mail.gmail.com> <20220818165838.GM25951@gate.crashing.org> <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CADxym3YEfSASDg9ppRKtZ16NLh_NhH253frd5LXZLGTObsVQ9g@mail.gmail.com>
+User-Agent: Mutt/1.4.2.3i
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/2022 10:56, Marcin Szycik wrote:
-> On 15-Aug-22 16:22, ecree@xilinx.com wrote:
-> 
->> Just as each port of a Linux-controlled
->> +switch has a separate netdev, so each virtual function has one.  When the system
-> 
-> Maybe I'm misunderstanding something, but this sentence seems a bit confusing. Maybe:
-> "Just as each port of a Linux-controlled switch has a separate netdev, each virtual
-> function has one."?
+Hi!
 
-Kuba wrote this paragraph and tbh it makes sense to me.
-But how about "Just as each port of a Linux-controlled switch has a
- separate netdev, so does each virtual function."?
+On Fri, Aug 19, 2022 at 10:55:42PM +0800, Menglong Dong wrote:
+> Thanks for your explanation about the usage of 'noinline' and 'no_icf'!
+> I think 'noclone' seems enough in this case? As the function
+> 'kfree_skb_reason' we talk about is a global function, I think that the
+> compiler has no reason to make it inline, or be merged with another
+> function.
 
->> +As a simple example, if ``eth0`` is the master PF's netdevice and ``eth1`` is a
->> +VF representor, the following rules::
->> +
->> +    tc filter add dev eth1 parent ffff: protocol ipv4 flower \
->> +        action mirred egress redirect dev eth0
->> +    tc filter add dev eth0 parent ffff: protocol ipv4 flower \
->> +        action mirred egress mirror dev eth1
-> 
-> Perhaps eth0/eth1 names could be replaced with more meaningful names, as it's easy
-> to confuse them now. How about examples from above (e.g. PF -> eth4, PR -> eth4pf1vf2rep)?
-> Or just $PF_NETDEV, $PR_NETDEV.
+Whether something is inlined is decided per instance (except for
+always_inline and noinline functions).  Of course the function body has
+to be available for anything to be inlined, so barring LTO this can only
+happen for function uses in the same source file.  Not very likely
+indeed, but not entirely impossible either.
 
-Yeah, I can replace them with $VARIABLES.
+A function can be merged if there is another function that does exactly
+the same thing.  This is unlikely with functions that do some serious
+work of course, but it is likely with stub-like functions.
 
--ed
+gl;hf,
+
+
+Segher
