@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3997859A851
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:29:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9F8659A869
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240913AbiHSWUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 18:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42954 "EHLO
+        id S241247AbiHSWVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 18:21:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240351AbiHSWTy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:19:54 -0400
+        with ESMTP id S241023AbiHSWVN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:21:13 -0400
 Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED0A311231B;
-        Fri, 19 Aug 2022 15:19:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDE99108975;
+        Fri, 19 Aug 2022 15:21:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
         s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=6/bnVK8C59Zdi0xRlMVaj0E9n3r0rDyiTtpOzSklScI=; b=YDFmAyxwqCNKkk/EO7h/cdG+Vb
-        Bikhb+/65tLMaFYHZ5lUs066mD5fF2Jc5SsJXm9Jcw9L4T3OGqDryMv1WCbGTOtyOu5pHtabgOk3m
-        WDNVbwsKhzb9co3ZkSrqKNoE4GMHNELEJ72Y2Xdlp548ephFdzxA2eaG+EfEiBboPp1hwXjOfhnIm
-        Ahl/KUo4ULnE5OgnP6kDLFk3nbldsaQAj+5d4NvKCbr6MATTMnWNw1GJm3TS53LpgSUvtvhIESW6m
-        MzVfyEK5JdHfZV43mQ+egvPqzyvlWsdJJRO0OGCY3bnthoW6eLVHJl82GiTM8iJPd5eeSV3riIZR/
-        3PUd/dvA==;
+        bh=w+V+d2Ou90II75S8tjeZPRXSUk1hOHxUHRxe/lCKYf8=; b=GcJDyWLUFBDhdhZRicD7s2hGOp
+        JNq9aL5jXzUOnIeWtwVFCPgVcltgOhopGclsa1YufcOPLbtTcP52b96sRcg4Rr5NnLWUnqDdbBLRf
+        NB6idHbm9fRY0m1Lf4ADFrv9tOw+wBEwSzawjHvCBKjAeiOSlrtuZFD2tfR6s3JAfm+lJDZx5WGTE
+        B2t21P0zsAbg8Snpm8jCtem3l7gcR/0NlgfLESKnD/RfPAXhKLHmOYrtiI7YWJkYYWt0U30EqV8yO
+        v9sbxOm+eq6ThJinbMItFxXhaYH3/0in9o9u5UM61ccxHNnKo/j827E6OHmdh6SjAp28YRHON5w1m
+        ZCXcatNg==;
 Received: from [179.232.144.59] (helo=localhost)
         by fanzine2.igalia.com with esmtpsa 
         (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oPAL4-00Cau4-La; Sat, 20 Aug 2022 00:19:40 +0200
+        id 1oPAMH-00Cazj-Pv; Sat, 20 Aug 2022 00:21:01 +0200
 From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
         kexec@lists.infradead.org
@@ -48,14 +48,13 @@ Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
         will@kernel.org, xuqiang36@huawei.com,
         "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Valentin Schneider <valentin.schneider@arm.com>,
-        Xiaoming Ni <nixiaoming@huawei.com>
-Subject: [PATCH V3 02/11] notifier: Add panic notifiers info and purge trailing whitespaces
-Date:   Fri, 19 Aug 2022 19:17:22 -0300
-Message-Id: <20220819221731.480795-3-gpiccoli@igalia.com>
+        linux-alpha@vger.kernel.org,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        Richard Henderson <rth@gcc.gnu.org>
+Subject: [PATCH V3 03/11] alpha: Clean-up the panic notifier code
+Date:   Fri, 19 Aug 2022 19:17:23 -0300
+Message-Id: <20220819221731.480795-4-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220819221731.480795-1-gpiccoli@igalia.com>
 References: <20220819221731.480795-1-gpiccoli@igalia.com>
@@ -70,59 +69,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Although many notifiers are mentioned in the comments, the panic
-notifiers infrastructure is not. Also, the file contains some
-trailing whitespaces. Fix both issues here.
+The alpha panic notifier has some code issues, not following
+the conventions of other notifiers. Also, it might halt the
+machine but still it is set to run as early as possible, which
+doesn't seem to be a good idea.
 
-Cc: Arjan van de Ven <arjan@linux.intel.com>
-Cc: Cong Wang <xiyou.wangcong@gmail.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Valentin Schneider <valentin.schneider@arm.com>
-Cc: Xiaoming Ni <nixiaoming@huawei.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
+So, let's clean the code and set the notifier to run as the
+latest, following the same approach other architectures are
+doing - also, remove the unnecessary include of a header already
+included indirectly.
+
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: Richard Henderson <rth@gcc.gnu.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
 Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
 ---
 
 V3:
-- Added Baoquan review tag - thanks!
-
-V2:
 - No changes.
 
+V2:
+- Fixed rth email address;
+- Added Petr's review tag - thanks!
 
- include/linux/notifier.h | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/notifier.h b/include/linux/notifier.h
-index aef88c2d1173..d5b01f2e3fcc 100644
---- a/include/linux/notifier.h
-+++ b/include/linux/notifier.h
-@@ -208,12 +208,12 @@ static inline int notifier_to_errno(int ret)
+ arch/alpha/kernel/setup.c | 36 +++++++++++++++---------------------
+ 1 file changed, 15 insertions(+), 21 deletions(-)
+
+diff --git a/arch/alpha/kernel/setup.c b/arch/alpha/kernel/setup.c
+index b4fbbba30aa2..d88bdf852753 100644
+--- a/arch/alpha/kernel/setup.c
++++ b/arch/alpha/kernel/setup.c
+@@ -41,19 +41,11 @@
+ #include <linux/sysrq.h>
+ #include <linux/reboot.h>
+ #endif
+-#include <linux/notifier.h>
+ #include <asm/setup.h>
+ #include <asm/io.h>
+ #include <linux/log2.h>
+ #include <linux/export.h>
  
- /*
-  *	Declared notifiers so far. I can imagine quite a few more chains
-- *	over time (eg laptop power reset chains, reboot chain (to clean 
-+ *	over time (eg laptop power reset chains, reboot chain (to clean
-  *	device units up), device [un]mount chain, module load/unload chain,
-- *	low memory chain, screenblank chain (for plug in modular screenblankers) 
-+ *	low memory chain, screenblank chain (for plug in modular screenblankers)
-  *	VC switch chains (for loadable kernel svgalib VC switch helpers) etc...
-  */
-- 
+-static int alpha_panic_event(struct notifier_block *, unsigned long, void *);
+-static struct notifier_block alpha_panic_block = {
+-	alpha_panic_event,
+-        NULL,
+-        INT_MAX /* try to do it first */
+-};
+-
+ #include <linux/uaccess.h>
+ #include <asm/hwrpb.h>
+ #include <asm/dma.h>
+@@ -435,6 +427,21 @@ static const struct sysrq_key_op srm_sysrq_reboot_op = {
+ };
+ #endif
+ 
++static int alpha_panic_event(struct notifier_block *this,
++			     unsigned long event, void *ptr)
++{
++	/* If we are using SRM and serial console, just hard halt here. */
++	if (alpha_using_srm && srmcons_output)
++		__halt();
 +
- /* CPU notfiers are defined in include/linux/cpu.h. */
- 
- /* netdevice notifiers are defined in include/linux/netdevice.h */
-@@ -224,6 +224,8 @@ static inline int notifier_to_errno(int ret)
- 
- /* Virtual Terminal events are defined in include/linux/vt.h. */
- 
-+/* Panic notifiers are defined in include/linux/panic_notifier.h. */
++	return NOTIFY_DONE;
++}
 +
- #define NETLINK_URELEASE	0x0001	/* Unicast netlink socket released */
++static struct notifier_block alpha_panic_block = {
++	.notifier_call = alpha_panic_event,
++	.priority = INT_MIN, /* may not return, do it last */
++};
++
+ void __init
+ setup_arch(char **cmdline_p)
+ {
+@@ -1427,19 +1434,6 @@ const struct seq_operations cpuinfo_op = {
+ 	.show	= show_cpuinfo,
+ };
  
- /* Console keyboard events.
+-
+-static int
+-alpha_panic_event(struct notifier_block *this, unsigned long event, void *ptr)
+-{
+-#if 1
+-	/* FIXME FIXME FIXME */
+-	/* If we are using SRM and serial console, just hard halt here. */
+-	if (alpha_using_srm && srmcons_output)
+-		__halt();
+-#endif
+-        return NOTIFY_DONE;
+-}
+-
+ static __init int add_pcspkr(void)
+ {
+ 	struct platform_device *pd;
 -- 
 2.37.2
 
