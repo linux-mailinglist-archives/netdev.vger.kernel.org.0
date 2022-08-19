@@ -2,155 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D98D7599487
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E32E599473
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345716AbiHSFWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 01:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S1346086AbiHSFYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 01:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241654AbiHSFWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:22:30 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B48A5E01C2;
-        Thu, 18 Aug 2022 22:22:27 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 0860D5FD07;
-        Fri, 19 Aug 2022 08:22:26 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660886546;
-        bh=GooZAVHnzepBYKSNfdd8aQsvtHUU6TX2S4d+v+I+b5A=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=gWXX37n6OWek1Tn13sSWrePrmJlZWkOMfAwk1K9RHcopEiyS5ph67ICXSOjz+whrB
-         d8ItdpjOFRvIphMxg1rlNxIifJEFH3BywI9FcuqpqKDR0dB8BVIPJk7T8H6i8TxOCO
-         gpwQ6DeFaSDoC3zR/UEozuHx2sZc7Uah8bdKd6QElN4oTO7YAy9j4XZFGVi2QyTr7z
-         rTVojXRzVW3U4zeMFs1L9HfGI/VeTWskm+/2zAhAdDZGrUxMzKNr0C6/dmDC6aZ5g0
-         DJkTu2ghabQx2IZiddvWHWQlG82MjWlIwa+jbjXt4Qk+FsGgPYEGW/h2HG7WejpI19
-         jirpVG+AZS2/g==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 19 Aug 2022 08:22:24 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-Subject: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Topic: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Index: AQHYs4uayjgwUp42sUeXUj6ZEfA4aQ==
-Date:   Fri, 19 Aug 2022 05:21:58 +0000
-Message-ID: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A9355D7A3C795643AE6D4E91DD6FD380@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1346032AbiHSFYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:24:43 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF61D598A;
+        Thu, 18 Aug 2022 22:24:42 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id q74so2594274iod.9;
+        Thu, 18 Aug 2022 22:24:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=fSjWEqS+nzaDnc5WYuCrEYkIrPzGz/UPSsWeAxzHMno=;
+        b=Vg7kzCyU4V2Zh2vbfVjatiWUhBCqKnLn+l1sd0bxdhUFjhdqBz/E40nfa48VPO8btm
+         r6JUhnsHWJgg6uNPvRFH7fxlUHohFLuNMJ5fHFdAJLWdd9GWfBHG0wRI9dVMEzUXRdty
+         w811GOf+JOaMpa9OOPumyH7L4Jay7HW3shBIgQWsXk046fNoqw/uKYlgRfkidLlHiCGW
+         1jed6vpp4ckJwj4sTB8qO94f64jOTXPDli1T/9/qMZhSInhYTeCj1meQ0gOTYPUatOPD
+         FqBkJ/9/YBZucKSlM7a6Swbgso+WC+aUah5ayiz8H/tIvrIfqj0yfxfs1e6loMZ9wZwj
+         XOWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=fSjWEqS+nzaDnc5WYuCrEYkIrPzGz/UPSsWeAxzHMno=;
+        b=nSMYQnCrrx6VVR2YGLIUjXizG5pnHb4u7r8+bq7MxLxwMvIBU+olAO2WyDnVOJoPZ4
+         s0ivqY42aR/eBmUk5CmA8HUq9DU6igq94UAv64kzrrZxKbSlrEX16+PE3qpWkZdReepI
+         MT0xT9cM3hkSCPTyTblR89KjhHRAmOFTxybre0Hkt6n3++HGbqQxnPLr00wrHjKCaX0s
+         OlpjwmWc3gHW5AVmQvXj0Gg5KRjJiKFgcRxwRPmLec98UV17sD0VTCzdbtQd7Zgp8yT+
+         ghFVsrQA0TpXYxM/foX6wzxlTDZXYSbrNlZmh89ewg2NLvVtxNzz+yalOB7Gb0WtAI/W
+         Zn7Q==
+X-Gm-Message-State: ACgBeo1ceMSZJ1KDzSlJT3lJn33wn+xALxK12Vsf9tfnzwdsPu+hRWXa
+        /W3HX3lBgTImL7pwuBO6NPg+nbJtOLWG5XmHM30=
+X-Google-Smtp-Source: AA6agR5GkEF2VS/TVRe7RgWcdbul3ujPU9FHutffAdiUQr4H+JrKdIH2s1A+PgaPtffJZVN4+hDW1Q2FbdAERppX73c=
+X-Received: by 2002:a05:6602:2d8b:b0:688:ece0:e1da with SMTP id
+ k11-20020a0566022d8b00b00688ece0e1damr2718327iow.18.1660886681832; Thu, 18
+ Aug 2022 22:24:41 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/19 00:26:00 #20118704
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <20220818165906.64450-1-toke@redhat.com> <Yv68pgkL++uD0a6e@google.com>
+In-Reply-To: <Yv68pgkL++uD0a6e@google.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Fri, 19 Aug 2022 07:24:06 +0200
+Message-ID: <CAP01T75Q8JhX-EQVp_3C9YAxybptUBmuwALsxAaDZObYuQ8KCw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] A couple of small refactorings of BPF
+ program call sites
+To:     sdf@google.com
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sDQoNClRoaXMgcGF0Y2hzZXQgaW5jbHVkZXMgc29tZSB1cGRhdGVzIGZvciBTT19SQ1ZM
-T1dBVDoNCg0KMSkgYWZfdnNvY2s6DQogICBEdXJpbmcgbXkgZXhwZXJpbWVudHMgd2l0aCB6ZXJv
-Y29weSByZWNlaXZlLCBpIGZvdW5kLCB0aGF0IGluIHNvbWUNCiAgIGNhc2VzLCBwb2xsKCkgaW1w
-bGVtZW50YXRpb24gdmlvbGF0ZXMgUE9TSVg6IHdoZW4gc29ja2V0IGhhcyBub24tDQogICBkZWZh
-dWx0IFNPX1JDVkxPV0FUKGUuZy4gbm90IDEpLCBwb2xsKCkgd2lsbCBhbHdheXMgc2V0IFBPTExJ
-TiBhbmQNCiAgIFBPTExSRE5PUk0gYml0cyBpbiAncmV2ZW50cycgZXZlbiBudW1iZXIgb2YgYnl0
-ZXMgYXZhaWxhYmxlIHRvIHJlYWQNCiAgIG9uIHNvY2tldCBpcyBzbWFsbGVyIHRoYW4gU09fUkNW
-TE9XQVQgdmFsdWUuIEluIHRoaXMgY2FzZSx1c2VyIHNlZXMNCiAgIFBPTExJTiBmbGFnIGFuZCB0
-aGVuIHRyaWVzIHRvIHJlYWQgZGF0YShmb3IgZXhhbXBsZSB1c2luZyAgJ3JlYWQoKScNCiAgIGNh
-bGwpLCBidXQgcmVhZCBjYWxsIHdpbGwgYmUgYmxvY2tlZCwgYmVjYXVzZSAgU09fUkNWTE9XQVQg
-bG9naWMgaXMNCiAgIHN1cHBvcnRlZCBpbiBkZXF1ZXVlIGxvb3AgaW4gYWZfdnNvY2suYy4gQnV0
-IHRoZSBzYW1lIHRpbWUsICBQT1NJWA0KICAgcmVxdWlyZXMgdGhhdDoNCg0KICAgIlBPTExJTiAg
-ICAgRGF0YSBvdGhlciB0aGFuIGhpZ2gtcHJpb3JpdHkgZGF0YSBtYXkgYmUgcmVhZCB3aXRob3V0
-DQogICAgICAgICAgICAgICBibG9ja2luZy4NCiAgICBQT0xMUkROT1JNIE5vcm1hbCBkYXRhIG1h
-eSBiZSByZWFkIHdpdGhvdXQgYmxvY2tpbmcuIg0KDQogICBTZWUgaHR0cHM6Ly93d3cub3Blbi1z
-dGQub3JnL2p0YzEvc2MyMi9vcGVuL240MjE3LnBkZiwgcGFnZSAyOTMuDQoNCiAgIFNvLCB3ZSBo
-YXZlLCB0aGF0IHBvbGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxsIHdp
-bGwNCiAgIGJlIGJsb2NrZWQuDQoNCiAgIEFsc28gaW4gbWFuIHBhZ2Ugc29ja2V0KDcpIGkgZm91
-bmQgdGhhdDoNCg0KICAgIlNpbmNlIExpbnV4IDIuNi4yOCwgc2VsZWN0KDIpLCBwb2xsKDIpLCBh
-bmQgZXBvbGwoNykgaW5kaWNhdGUgYQ0KICAgc29ja2V0IGFzIHJlYWRhYmxlIG9ubHkgaWYgYXQg
-bGVhc3QgU09fUkNWTE9XQVQgYnl0ZXMgYXJlIGF2YWlsYWJsZS4iDQoNCiAgIEkgY2hlY2tlZCBU
-Q1AgY2FsbGJhY2sgZm9yIHBvbGwoKShuZXQvaXB2NC90Y3AuYywgdGNwX3BvbGwoKSksIGl0DQog
-ICB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNldCBQT0xMSU4gYml0LCBhbHNvIGkndmUgdGVz
-dGVkIFRDUCB3aXRoDQogICB0aGlzIGNhc2UgZm9yIFRDUCBzb2NrZXQsIGl0IHdvcmtzIGFzIFBP
-U0lYIHJlcXVpcmVkLg0KDQogICBJJ3ZlIGFkZGVkIHNvbWUgZml4ZXMgdG8gYWZfdnNvY2suYyBh
-bmQgdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYywNCiAgIHRlc3QgaXMgYWxzbyBpbXBsZW1lbnRl
-ZC4NCg0KMikgdmlydGlvL3Zzb2NrOg0KICAgSXQgYWRkcyBzb21lIG9wdGltaXphdGlvbiB0byB3
-YWtlIHVwcywgd2hlbiBuZXcgZGF0YSBhcnJpdmVkLiBOb3csDQogICBTT19SQ1ZMT1dBVCBpcyBj
-b25zaWRlcmVkIGJlZm9yZSB3YWtlIHVwIHNsZWVwZXJzIHdobyB3YWl0IG5ldyBkYXRhLg0KICAg
-VGhlcmUgaXMgbm8gc2Vuc2UsIHRvIGtpY2sgd2FpdGVyLCB3aGVuIG51bWJlciBvZiBhdmFpbGFi
-bGUgYnl0ZXMNCiAgIGluIHNvY2tldCdzIHF1ZXVlIDwgU09fUkNWTE9XQVQsIGJlY2F1c2UgaWYg
-d2Ugd2FrZSB1cCByZWFkZXIgaW4NCiAgIHRoaXMgY2FzZSwgaXQgd2lsbCB3YWl0IGZvciBTT19S
-Q1ZMT1dBVCBkYXRhIGFueXdheSBkdXJpbmcgZGVxdWV1ZSwNCiAgIG9yIGluIHBvbGwoKSBjYXNl
-LCBQT0xMSU4vUE9MTFJETk9STSBiaXRzIHdvbid0IGJlIHNldCwgc28gc3VjaA0KICAgZXhpdCBm
-cm9tIHBvbGwoKSB3aWxsIGJlICJzcHVyaW91cyIuIFRoaXMgbG9naWMgaXMgYWxzbyB1c2VkIGlu
-IFRDUA0KICAgc29ja2V0cy4NCg0KMykgdm1jaS92c29jazoNCiAgIFNhbWUgYXMgMiksIGJ1dCBp
-J20gbm90IHN1cmUgYWJvdXQgdGhpcyBjaGFuZ2VzLiBXaWxsIGJlIHZlcnkgZ29vZCwNCiAgIHRv
-IGdldCBjb21tZW50cyBmcm9tIHNvbWVvbmUgd2hvIGtub3dzIHRoaXMgY29kZS4NCg0KNCkgSHlw
-ZXItVjoNCiAgIEFzIERleHVhbiBDdWkgbWVudGlvbmVkLCBmb3IgSHlwZXItViB0cmFuc3BvcnQg
-aXQgaXMgZGlmZmljdWx0IHRvDQogICBzdXBwb3J0IFNPX1JDVkxPV0FULCBzbyBoZSBzdWdnZXN0
-ZWQgdG8gZGlzYWJsZSB0aGlzIGZlYXR1cmUgZm9yDQogICBIeXBlci1WLg0KDQpUaGFuayBZb3UN
-Cg0KQXJzZW5peSBLcmFzbm92KDkpOg0KIHZzb2NrOiBTT19SQ1ZMT1dBVCB0cmFuc3BvcnQgc2V0
-IGNhbGxiYWNrDQogaHZfc29jazogZGlzYWJsZSBTT19SQ1ZMT1dBVCBzdXBwb3J0DQogdmlydGlv
-L3Zzb2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2bWNpL3Zz
-b2NrOiB1c2UgJ3RhcmdldCcgaW4gbm90aWZ5X3BvbGxfaW4gY2FsbGJhY2sNCiB2c29jazogcGFz
-cyBzb2NrX3Jjdmxvd2F0IHRvIG5vdGlmeV9wb2xsX2luIGFzIHRhcmdldA0KIHZzb2NrOiBhZGQg
-QVBJIGNhbGwgZm9yIGRhdGEgcmVhZHkNCiB2aXJ0aW8vdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FU
-IGJlZm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZtY2kvdnNvY2s6IGNoZWNrIFNPX1JDVkxPV0FUIGJl
-Zm9yZSB3YWtlIHVwIHJlYWRlcg0KIHZzb2NrX3Rlc3Q6IFBPTExJTiArIFNPX1JDVkxPV0FUIHRl
-c3QNCg0KIGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAgICAgICAgIHwgICAy
-ICsNCiBuZXQvdm13X3Zzb2NrL2FmX3Zzb2NrLmMgICAgICAgICAgICAgICAgICAgICB8ICAzMyAr
-KysrKysrLQ0KIG5ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jICAgICAgICAgICAgIHwg
-ICA3ICsrDQogbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jICAgICAgfCAg
-IDcgKy0NCiBuZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeS5jICAgICAgICB8ICAx
-MCArLS0NCiBuZXQvdm13X3Zzb2NrL3ZtY2lfdHJhbnNwb3J0X25vdGlmeV9xc3RhdGUuYyB8ICAx
-MiArLS0NCiB0b29scy90ZXN0aW5nL3Zzb2NrL3Zzb2NrX3Rlc3QuYyAgICAgICAgICAgICB8IDEw
-OCArKysrKysrKysrKysrKysrKysrKysrKysrKysNCiA3IGZpbGVzIGNoYW5nZWQsIDE2MiBpbnNl
-cnRpb25zKCspLCAxNyBkZWxldGlvbnMoLSkNCg0KIENoYW5nZWxvZzoNCg0KIHYxIC0+IHYyOg0K
-IDEpIFBhdGNoZXMgZm9yIFZNQ0kgdHJhbnNwb3J0KHNhbWUgYXMgZm9yIHZpcnRpby12c29jayku
-DQogMikgUGF0Y2hlcyBmb3IgSHlwZXItViB0cmFuc3BvcnQoZGlzYWJsaW5nIFNPX1JDVkxPV0FU
-IHNldHRpbmcpLg0KIDMpIFdhaXRpbmcgbG9naWMgaW4gdGVzdCB3YXMgdXBkYXRlZChzbGVlcCgp
-IC0+IHBvbGwoKSkuDQoNCiB2MiAtPiB2MzoNCiAxKSBQYXRjaGVzIHdlcmUgcmVvcmRlcmVkLg0K
-IDIpIENvbW1pdCBtZXNzYWdlIHVwZGF0ZWQgaW4gMDAwNS4NCiAzKSBDaGVjayAndHJhbnNwb3J0
-JyBwb2ludGVyIGluIDAwMDEgZm9yIE5VTEwuDQoNCiB2MyAtPiB2NDoNCiAxKSB2c29ja19zZXRf
-cmN2bG93YXQoKSBsb2dpYyBjaGFuZ2VkLiBQcmV2aW91cyB2ZXJzaW9uIHJlcXVpcmVkDQogICAg
-YXNzaWduZWQgdHJhbnNwb3J0IGFuZCBhbHdheXMgY2FsbGVkIGl0cyAnc2V0X3Jjdmxvd2F0JyBj
-YWxsYmFjaw0KICAgIChpZiBwcmVzZW50KS4gTm93LCBhc3NpZ25tZW50IGlzIG5vdCBuZWVkZWQu
-DQogMikgMDAwMywwMDA0LDAwMDUsMDAwNiwwMDA3LDAwMDggLSBjb21taXQgbWVzc2FnZXMgdXBk
-YXRlZC4NCiAzKSAwMDA5IC0gc21hbGwgcmVmYWN0b3JpbmcgYW5kIHN0eWxlIGZpeGVzLg0KIDQp
-IFJGQyB0YWcgd2FzIHJlbW92ZWQuDQoNCi0tIA0KMi4yNS4xDQo=
+On Fri, 19 Aug 2022 at 00:29, <sdf@google.com> wrote:
+>
+> On 08/18, Toke H=EF=BF=BDiland-J=EF=BF=BDrgensen wrote:
+> > Stanislav suggested[0] that these small refactorings could be split out
+> > from the
+> > XDP queueing RFC series and merged separately. The first change is a sm=
+all
+> > repacking of struct softnet_data, the others change the BPF call sites =
+to
+> > support full 64-bit values as arguments to bpf_redirect_map() and as th=
+e
+> > return
+> > value of a BPF program, relying on the fact that BPF registers are alwa=
+ys
+> > 64-bit
+> > wide to maintain backwards compatibility.
+>
+> > Please see the individual patches for details.
+>
+> > [0]
+> > https://lore.kernel.org/r/CAKH8qBtdnku7StcQ-SamadvAF=3D=3DDRuLLZO94yOR1=
+WJ9Bg=3DuX1w@mail.gmail.com
+>
+> Looks like a nice cleanup to me:
+> Reviewed-by: Stanislav Fomichev <sdf@google.com>
+>
+> Can you share more on this comment?
+>
+> /* For some architectures, we need to do modulus in 32-bit width */
+>
+> Some - which ones? And why do they need it to be 32-bit?
+
+It was a fix for i386, I saw a kernel test robot error when it was
+sitting in Toke's tree.
+See https://lore.kernel.org/all/202203140800.8pr81INh-lkp@intel.com.
+
+Once bpf_prog_run_clear_cb starts returning a 64-bit value, we now
+need to save it in 32-bit before doing the modulus.
+
+>
+> > Kumar Kartikeya Dwivedi (1):
+> >    bpf: Use 64-bit return value for bpf_prog_run
+>
+> > Toke H=EF=BF=BDiland-J=EF=BF=BDrgensen (2):
+> >    dev: Move received_rps counter next to RPS members in softnet data
+> >    bpf: Expand map key argument of bpf_redirect_map to u64
+>
+> >   include/linux/bpf-cgroup.h | 12 +++++-----
+> >   include/linux/bpf.h        | 16 ++++++-------
+> >   include/linux/filter.h     | 46 +++++++++++++++++++------------------=
+-
+> >   include/linux/netdevice.h  |  2 +-
+> >   include/uapi/linux/bpf.h   |  2 +-
+> >   kernel/bpf/cgroup.c        | 12 +++++-----
+> >   kernel/bpf/core.c          | 14 ++++++------
+> >   kernel/bpf/cpumap.c        |  4 ++--
+> >   kernel/bpf/devmap.c        |  4 ++--
+> >   kernel/bpf/offload.c       |  4 ++--
+> >   kernel/bpf/verifier.c      |  2 +-
+> >   net/bpf/test_run.c         | 21 +++++++++--------
+> >   net/core/filter.c          |  4 ++--
+> >   net/packet/af_packet.c     |  7 ++++--
+> >   net/xdp/xskmap.c           |  4 ++--
+> >   15 files changed, 80 insertions(+), 74 deletions(-)
+>
+> > --
+> > 2.37.2
+>
