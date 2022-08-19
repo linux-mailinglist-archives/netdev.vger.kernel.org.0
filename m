@@ -2,85 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 467FC5996E4
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D56B5996D4
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 10:18:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347514AbiHSIMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 04:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42070 "EHLO
+        id S1347497AbiHSIM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 04:12:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347505AbiHSIM0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:12:26 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12802E68DD
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:12:23 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-11c9af8dd3eso4086254fac.10
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:12:23 -0700 (PDT)
+        with ESMTP id S1347509AbiHSIMX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 04:12:23 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5147BE68C7
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:12:19 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id w3so4749472edc.2
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 01:12:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=cQSR+3OwW66bL/nS6PZ8fmuUzlxpwPzl5GLk12L++BE=;
-        b=dhjczcFZD9uMRMSTEAsOQlEi7ANt//Axc+kpli8A1OsayAGab/PMD8zD6L45LQl1EW
-         tC8/n18mUVGLER5KifOKhcHwNRiIUjCLVZWyb37iwUHI/Kk4T3dQZbGCtHXR/gRSk9EJ
-         A2f9UrKV2DueIzwdw8R3Gacgvp1+X1nu29dNzBTCQ0dmK6VNB9tYfd0/T0kVnNSAXN7q
-         cdjaWAtxebk3UMeDCZs9t1ZPKS0Ktee8hCMxhj5afTMoOJys6p5iS9lhqjhvsiiQHHGi
-         GYuimydAE6m8pyaL4TBuK/x4b/W5aJjq4s6KXsS9G5bnifNHPVb8qCMtlcX134HWCUcf
-         7baw==
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=+4EAKvesIPwq/W2hA8zX0Ovt5poM6noxw0nRwCgtE9E=;
+        b=5+2a2wPRbgQdmzw73xLJbGjAChOCZFM2iafaBJPPfOAwGP1g34G3S6gz5Ps6JxbSxc
+         tIEGPQ6S9YiJPeWb+7EtjJEsS42efjXPhDUR6nrO6D5Vy2t54FANgxGXHw5eruKBd+5f
+         2XOZzCE9RbCBVNF8Tu5Xi7RAbqhHfZn8zCjV1tqkvpZypdkDHfedBLf4seZ0OdPWE8gz
+         PVLb1x/uAgeeZrfVbC24uWYCIAoVpYzQhtS50AdvffJbxPFPfSVl/QFcVJSTYU7ZHD3M
+         fHAZh6gaRymvhzJGizkDWxq6Y11RJ7ro6SUO3hZSU5ZJLgQj+0OQGHRQSr18oyjcv2Yi
+         Ltog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=cQSR+3OwW66bL/nS6PZ8fmuUzlxpwPzl5GLk12L++BE=;
-        b=z+/znI6zgFSQiITXMJbXxamTvqZwU0JPIyVyRXZzIyvivY9favhIcoCIOY4zcLGgZn
-         Sk3d+kA4qlOIGe2geLoxyTnC/XSbT9aQSQgb/qJ78AqZy9Qgf0srf//s4opFGAZnsn7X
-         LzK69VWliis1KrRvas0G2BP+K5VLsuTiT2FyVZML51cIacGPkdxaNKXjOqFgaWP92diX
-         g+OkgPm69FhpJafHDCn+90+bevQXDiUZjYH6X8mWY7z634C/JxnyUBlzR07hBHPGPuls
-         bJPTS2elaUERJQyXXzHET2+PlI+3PLVl6HOUdbGBpgz8JLNXuS7eotEPVc7OdtVNaaSw
-         b9kA==
-X-Gm-Message-State: ACgBeo1uOF0aBIIuuETMRCxKySihFhpI0pjFswtZIZpvX5oDwZeUw0mn
-        ycWfL6uuQYfHuwIkugs6AtA8/RvFu8OQc+f0LuM=
-X-Google-Smtp-Source: AA6agR7gaRCBuwNkplFXdVpD4hOje2wKLoGgNN6HXIpBCPUJkTNl56uYIUxaw526atiL4ChdFrAQMylzbGmhQn08m7k=
-X-Received: by 2002:a05:6870:8984:b0:10d:d981:151f with SMTP id
- f4-20020a056870898400b0010dd981151fmr5917397oaq.212.1660896742443; Fri, 19
- Aug 2022 01:12:22 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=+4EAKvesIPwq/W2hA8zX0Ovt5poM6noxw0nRwCgtE9E=;
+        b=hkq5S82/S/6DYkLoeDaqwGeu1hrCBnndfx8GGWSMAlONgAWVNHk5MpEVP8Tpy0+qG9
+         YxrNGGTuTzIzsk6vVbnRlB6mHiOLQLuQzw5qZMrLEdALuxHdY3In9DEDsESWTaDd4vpI
+         DsVAEPRUmnLvlc7LkSNefbodH7EZZo8upfzwlKCNNzkqgmNPiuCNyT/4+jW33AcNiaTq
+         WH3EApf2+6laRS2ng8+xLkiSw5LCbVf645jgsxofGb5brCrVJuEec9+oj4swS+o6/IUq
+         A9jkmmuG/cDGT86JQKnuxf741opH54LhSAmyReWRZf3XAA87+gCJJEVwnNG73Lpzy8Wp
+         cyZQ==
+X-Gm-Message-State: ACgBeo0olHuvyf2aZIMsguKGxgdR+/ohO31Pt3pOLYClz9XtCdPmfhe4
+        0ZA4ctzSKHRCenXTSppdaljfcA==
+X-Google-Smtp-Source: AA6agR6m1YnCLaRatbISitRZaV+2YjFaNlbHJGVevr/zFntAIpkb0Yaoic/1JMWvYRQXN3wZWMIXKg==
+X-Received: by 2002:a05:6402:d05:b0:425:b5c8:faeb with SMTP id eb5-20020a0564020d0500b00425b5c8faebmr5037894edb.273.1660896737895;
+        Fri, 19 Aug 2022 01:12:17 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906210100b0072f4f4dc038sm1967647ejt.42.2022.08.19.01.12.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 01:12:17 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 10:12:16 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
+        pabeni@redhat.com, edumazet@google.com, saeedm@nvidia.com,
+        jacob.e.keller@intel.com, vikas.gupta@broadcom.com,
+        gospo@broadcom.com
+Subject: Re: [patch net-next 4/4] net: devlink: expose default flash update
+ target
+Message-ID: <Yv9F4EpjURQF0Dnd@nanopsycho>
+References: <20220818130042.535762-1-jiri@resnulli.us>
+ <20220818130042.535762-5-jiri@resnulli.us>
+ <20220818195301.27e76539@kernel.org>
 MIME-Version: 1.0
-References: <20220818182948.931712-1-saproj@gmail.com> <20220818182948.931712-2-saproj@gmail.com>
- <Yv6SiQgzKSRL1Zy6@lunn.ch>
-In-Reply-To: <Yv6SiQgzKSRL1Zy6@lunn.ch>
-From:   Sergei Antonov <saproj@gmail.com>
-Date:   Fri, 19 Aug 2022 11:12:11 +0300
-Message-ID: <CABikg9zym9rzcP+uabijRwuWa9NC5pQPp+bMbPFZFBSsVOX2Lg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: moxa: prevent double-mapping of DMA areas
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Vladimir Oltean <olteanv@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220818195301.27e76539@kernel.org>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 at 22:27, Andrew Lunn <andrew@lunn.ch> wrote:
-> > Unmap RX memory areas in moxart_mac_stop(), so that moxart_mac_open()
-> > will map them anew instead of double-mapping. To avoid code duplication,
-> > create a new function moxart_mac_unmap_rx(). Nullify unmapped pointers to
-> > prevent double-unmapping (ex: moxart_mac_stop(), then moxart_remove()).
+Fri, Aug 19, 2022 at 04:53:01AM CEST, kuba@kernel.org wrote:
+>On Thu, 18 Aug 2022 15:00:42 +0200 Jiri Pirko wrote:
+>> Allow driver to mark certain version obtained by info_get() op as
+>> "flash update default". Expose this information to user which allows him
+>> to understand what version is going to be affected if he does flash
+>> update without specifying the component. Implement this in netdevsim.
 >
-> This makes the code symmetric, which is good.
->
-> However, moxart_mac_free_memory() will also free the descriptors,
-> which is not required. moxart_remove() should undo what the probe did,
-> nothing more.
+>My intuition would be that if you specify no component you're flashing
+>the entire device. Is that insufficient? Can you explain the use case?
 
-Having considered your comments, I now think I should make another
-patch, which fixes two problems at once. To unmap DMA areas only in
-moxart_mac_stop() and not in moxart_remove(). It will fix error
-unwinding during probe and double-mapping on link down, link up. It
-will be correct if Linux always calls moxart_mac_stop() before calling
-moxart_remove().
+I guess that it up to the driver implementation. I can imagine arguments
+for both ways. Anyway, there is no way to restrict this in kernel, so
+let that up to the driver.
+
+
+>
+>Also Documentation/ needs to be updated.
+
+Okay.
+
