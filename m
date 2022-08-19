@@ -2,87 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1176759A4D4
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:06:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E80859A3F0
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:04:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352046AbiHSRpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 13:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        id S1351257AbiHSRp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 13:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351245AbiHSRoj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:44:39 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E364E42C1;
-        Fri, 19 Aug 2022 10:06:55 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id y4so4656418plb.2;
-        Fri, 19 Aug 2022 10:06:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=UZnrLccuewBeUTHa7he/1pdbfRtAri2WoHO63fUtNRc=;
-        b=XAW0y0n14GbbI93QKgU2Mko3gRIRMRbjNK8yh6f00kxV2u+FwfJBFOdIFc4ubGtXnZ
-         96Q7W+i5mtTv/AvpxsVclO3S1wahAB9QAbiT33xETdG3I+uCk/1gLZGnE5/tLTsGvFFo
-         0I1/8QoikeezFphqIzolui9+0fafgFMClIoRK29EKwdtKR/ArQz1f/PwmdqHMOlsUEsG
-         dqop2MHzljQjY7dyyBDVAy6aQF6pfzlwuE2uTIsOz0RjIQnTjgUncRBAtxpzCdihOVK4
-         J5eGefsDHsvQ+K+HppyuUs/yFRkhgEdyNd4tDdrkcRyyCjtSWG74pKB6qGa2PWRznqxB
-         5AvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=UZnrLccuewBeUTHa7he/1pdbfRtAri2WoHO63fUtNRc=;
-        b=D4e9lJfff+YGMKF8kwDx3gTP0JsrDLmf3N23eSr+k1OwtMLYHrDha2CB1Vo/PHmk03
-         drKMZd3cKKEOSV8DZCGSXgcJyaJAsyrQcthxLMgYgXHdW8KeKR+U8C1U7tXrMi5hMdrn
-         6n+0HR/IHZQrKh8N8+ivE/SS8HhpKsC/g+B7KTGUelqtebHvtEjTE5i3PXGiGletk3cI
-         Bz1wW/RqVJ74Ce5gVzsy9b/E0jix1al3YtrUlhrVzCjKR1RiaHuVDf94BZwf4cH7fkhw
-         DU4IZFhopIi1qUI+lKF5/iLHB3cqt6o2NzdzfFQx+tgCqFUxcMR2A8UHAwln9qOEZ99J
-         Yq8w==
-X-Gm-Message-State: ACgBeo0ZEVgu5O7pMhs3OYm93CF6Q/ZrkOhKLZk0EkVOw+SQyV4RxNcE
-        F91/2DUxBP8H8bQtrePA3tfP+MkzQcE=
-X-Google-Smtp-Source: AA6agR520zkVb1ab+1IFrWSRolYaFHIavEFl2N7Y7Y3JZORzp6bFg/A0aCnrdfpBhO9U8UXqp9Af9g==
-X-Received: by 2002:a17:902:d4c7:b0:16e:d1fd:f212 with SMTP id o7-20020a170902d4c700b0016ed1fdf212mr8198729plg.79.1660928814306;
-        Fri, 19 Aug 2022 10:06:54 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:db7d])
-        by smtp.gmail.com with ESMTPSA id 201-20020a6214d2000000b0052dbad1ea2esm3657782pfu.6.2022.08.19.10.06.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 10:06:53 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 19 Aug 2022 07:06:51 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        lizefan.x@bytedance.com, Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Subject: Re: [PATCH bpf-next v2 00/12] bpf: Introduce selectable memcg for
- bpf map
-Message-ID: <Yv/DK+AGlMeBGkF1@slm.duckdns.org>
-References: <20220818143118.17733-1-laoar.shao@gmail.com>
- <Yv67MRQLPreR9GU5@slm.duckdns.org>
- <Yv6+HlEzpNy8y5kT@slm.duckdns.org>
- <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
+        with ESMTP id S1354889AbiHSRpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:45:44 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEB010475D;
+        Fri, 19 Aug 2022 10:09:50 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 7F94D20008;
+        Fri, 19 Aug 2022 17:09:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1660928987;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=af8NiFFBbQBcqZbf5KXHymvUGECBo7Q6iFJT3UlUWkA=;
+        b=W3hYmBQ2w+obMJm182GEBHOhBb6bPpPaMpfeR511Mrf0Y5EaKoztOD2VkN21utSIB9qI/d
+        PqJYqH2Whq0J9M+Vq7PMiDoyCDQBVu+tEn7/rHGEQJOWUoPBaSZGGHwwz+5PtusqmimF6L
+        OkRW3SQK1epC/cZ1my94uHZkekOJZ5G6T+DU4n+B1A1SVaVzo6qoNcIYM8MO3t/SKiRi43
+        BQaWVd5BUSir2YJEw1ZVvzK9x04+JmAgYKyY0TYQjaJbP8vLNtXQiDlNnhFGkwlIHa9G6F
+        Erf0iYSJd7Vksuft6czCn2pL5PRyD94u/sxAavksWbwxxUPgZlrQpM5ZUbT5HQ==
+Date:   Fri, 19 Aug 2022 19:09:44 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 19/20] ieee802154: hwsim: Do not check the
+ rtnl
+Message-ID: <20220819190944.0718c7e1@xps-13>
+In-Reply-To: <CAK-6q+ihSui2ra188kt9W5CT0HPfJgHoOJfsMS_XDLfVvoQJTg@mail.gmail.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-20-miquel.raynal@bootlin.com>
+        <CAK-6q+ihSui2ra188kt9W5CT0HPfJgHoOJfsMS_XDLfVvoQJTg@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,88 +67,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Alexander,
 
-On Fri, Aug 19, 2022 at 09:09:25AM +0800, Yafang Shao wrote:
-> On Fri, Aug 19, 2022 at 6:33 AM Tejun Heo <tj@kernel.org> wrote:
+aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:23:21 -0400:
+
+> Hi,
+>=20
+> On Fri, Jul 1, 2022 at 10:37 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
 > >
-> > On Thu, Aug 18, 2022 at 12:20:33PM -1000, Tejun Heo wrote:
-> > > We have the exact same problem for any resources which span multiple
-> > > instances of a service including page cache, tmpfs instances and any other
-> > > thing which can persist longer than procss life time. My current opinion is
-> >
-> > To expand a bit more on this point, once we start including page cache and
-> > tmpfs, we now get entangled with memory reclaim which then brings in IO and
-> > not-yet-but-eventually CPU usage.
-> 
-> Introduce-a-new-layer vs introduce-a-new-cgroup, which one is more overhead?
+> > There is no need to ensure the rtnl is locked when changing a driver's
+> > channel. This cause issues when scanning and this is the only driver
+> > relying on it. Just drop this dependency because it does not seem
+> > legitimate.
+> > =20
+>=20
+> switching channels relies on changing pib attributes, pib attributes
+> are protected by rtnl. If you experience issues here then it's
+> probably because you do something wrong. All drivers assuming here
+> that rtnl lock is held.
 
-Introducing a new layer in cgroup2 doesn't mean that any specific resource
-controller is enabled, so there is no runtime overhead difference. In terms
-of logical complexity, introducing a localized layer seems a lot more
-straightforward than building a whole separate tree.
+---8<---
+> especially this change could end in invalid free. Maybe we can solve
+> this problem in a different way, what exactly is the problem by
+> helding rtnl lock?
+--->8---
 
-Note that the same applies to cgroup1 where collapsed controller tree is
-represented by simply not creating those layers in that particular
-controller tree.
+During a scan we need to change channels. So when the background job
+kicks-in, we first acquire scan_lock, then we check the internal
+parameters of the structure protected by this lock, like the next
+channel to use and the sdata pointer. A channel change must be
+performed, preceded by an rtnl_lock(). This will again trigger a
+possible circular lockdep dependency warning because the triggering path
+acquires the rtnl (as part of the netlink layer) before the scan lock.
 
-No matter how we cut the problem here, if we want to track these persistent
-resources, we have to create a cgroup to host them somewhere. The discussion
-we're having is mostly around where to put them. With your proposal, it can
-be anywhere and you draw out an example where the persistent cgroups form
-their own separate tree. What I'm saying is that the logical place to put it
-is where the current resource consumption is and we just need to put the
-persistent entity as the parent of the instances.
+One possible solution would be to do the following:
+scan_work() {
+	acquire(scan_lock);
+	// do some config
+	release(scan_lock);
+	rtnl_lock();
+	perform_channel_change();
+	rtnl_unlock();
+	acquire(scan_lock);
+	// reinit the scan struct ptr and the sdata ptr
+	// do some more things
+	release(scan_lock);
+}
 
-Flexibility, just like anything else, isn't free. Here, if we extrapolate
-this approach, the cost is evidently hefty in that it doesn't generically
-work with the basic resource control structure.
+It looks highly non-elegant IMHO. Otherwise I need to stop verifying in
+the drivers that the rtnl is taken. Any third option here?
 
-> > Once you start splitting the tree like
-> > you're suggesting here, all those will break down and now we have to worry
-> > about how to split resource accounting and control for the same entities
-> > across two split branches of the tree, which doesn't really make any sense.
-> 
-> The k8s has already been broken thanks to the memcg accounting on  bpf memory.
-> If you ignored it, I paste it below.
-> [0]"1. The memory usage is not consistent between the first generation and
-> new generations."
-> 
-> This issue will persist even if you introduce a new layer.
+BTW I don't see where the invalid free situation you mentioned can
+happen here, can you explain?
 
-Please watch your tone.
-
-Again, this isn't a problem specific to k8s. We have the same problem with
-e.g. persistent tmpfs. One idea which I'm not against is allowing specific
-resources to be charged to an ancestor. We gotta think carefully about how
-such charges should be granted / denied but an approach like that jives well
-with the existing hierarchical control structure and because introducing a
-persistent layer does too, the combination of the two works well.
-
-> > So, we *really* don't wanna paint ourselves into that kind of a corner. This
-> > is a dead-end. Please ditch it.
-> 
-> It makes non-sensen to ditch it.
-> Because, the hierarchy I described in the commit log is *one* use case
-> of the selectable memcg, but not *the only one* use case of it. If you
-> dislike that hierarchy, I will remove it to avoid misleading you.
-
-But if you drop that, what'd be the rationale for adding what you're
-proposing? Why would we want bpf memory charges to be attached any part of
-the hierarchy?
-
-> Even if you introduce a new layer, you still need the selectable memcg.
-> For example, to avoid the issue I described in [0],  you still need to
-> charge to the parent cgroup instead of the current cgroup.
-
-As I wrote above, we've been discussing the above. Again, I'd be a lot more
-amenable to such approach because it fits with how everything is structured.
-
-> That's why I described in the commit log that the selectable memcg is flexible.
-
-Hopefully, my point on this is clear by now.
-
-Thanks.
-
--- 
-tejun
+Thanks,
+Miqu=C3=A8l
