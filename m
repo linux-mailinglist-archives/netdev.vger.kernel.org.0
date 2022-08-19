@@ -2,68 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54AC759A0BE
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 18:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB727599F4D
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 18:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349962AbiHSQMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 12:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        id S1351426AbiHSQSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 12:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352126AbiHSQLc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 12:11:32 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E0D113DD0;
-        Fri, 19 Aug 2022 08:57:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=GrUZ6R8n7vev89O6T0Ky0Xq1mndn1wTWujgzj1y80B4=; b=r6vufpG6vTiXmsN1xb2U0nStuA
-        Asurqg9pfrJdFlGSErBpZ5pV+SKIt06vaC5VqPy56rmX4PLdzKbAQqC2JkgsjL06FETqpD6PS3Dcs
-        WnUuyQAJS8+ii02bIC20xViWK9GTaeXEiFhdQfPp6fy2EtRuwTYvxyq5VReIv4g02aAo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oP4Mt-00Dvit-Pr; Fri, 19 Aug 2022 17:57:07 +0200
-Date:   Fri, 19 Aug 2022 17:57:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     wei.fang@nxp.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: fec: change the default rx copybreak length to
- 1518
-Message-ID: <Yv+y0x6MzVmShWL9@lunn.ch>
-References: <20220819090041.1541422-1-wei.fang@nxp.com>
+        with ESMTP id S1352132AbiHSQPp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 12:15:45 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A198D39A8;
+        Fri, 19 Aug 2022 08:58:45 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4M8RD641SmzkWQg;
+        Fri, 19 Aug 2022 23:55:18 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 23:58:33 +0800
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 19 Aug 2022 23:58:32 +0800
+Message-ID: <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
+Date:   Fri, 19 Aug 2022 23:58:32 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220819090041.1541422-1-wei.fang@nxp.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net/sched: fix netdevice reference leaks in
+ attach_one_default_qdisc()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <brouer@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220817104646.22861-1-wanghai38@huawei.com>
+ <20220818105642.6d58e9d4@kernel.org>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+In-Reply-To: <20220818105642.6d58e9d4@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 05:00:41PM +0800, wei.fang@nxp.com wrote:
-> From: Wei Fang <wei.fang@nxp.com>
-> 
-> Set the default rx copybreak value to 1518 so that improve the
-> performance when SMMU is enabled. User can change the copybreak
-> length in dynamically by ethtool.
 
-Please provide some benchmark for this. And include a range of SoCs
-which include the FEC. Maybe this helps for the platform you are
-testing on, but is bad for imx25, Vybrid etc?
+在 2022/8/19 1:56, Jakub Kicinski 写道:
+> On Wed, 17 Aug 2022 18:46:46 +0800 Wang Hai wrote:
+>> In attach_default_qdiscs(), when attach default qdisc (fq_codel) fails
+>> and fallback to noqueue, if the original attached qdisc is not released
+>> and a new one is directly attached, this will cause netdevice reference
+>> leaks.
+> Could you provide more details on the failure path? My preference would
+> be to try to clean up properly there, if possible.
+Hi Jakub.
 
-> + * The driver support .set_tunable() interface for ethtool, user
-> + * can dynamicly change the copybreak value.
-> + */
+Here are the details of the failure. Do I need to do cleanup under the 
+failed path?
 
-Which also means you could change it for your platform. So a patch
-like this needs justifying.
+If a dev has multiple queues and queue 0 fails to attach qdisc
+because there is no memory in attach_one_default_qdisc(). Then
+dev->qdisc will be noop_qdisc by default. But the other queues
+may be able to successfully attach to default qdisc.
 
-     Andrew
+In this case, the fallback to noqueue process will be triggered
+
+static void attach_default_qdiscs(struct net_device *dev)
+{
+     ...
+     if (!netif_is_multiqueue(dev) ||
+         dev->priv_flags & IFF_NO_QUEUE) {
+             ...
+             netdev_for_each_tx_queue(dev, attach_one_default_qdisc, 
+NULL); // queue 0 attach failed because -ENOBUFS, but the other queues 
+attach successfully
+             qdisc = txq->qdisc_sleeping;
+             rcu_assign_pointer(dev->qdisc, qdisc); // dev->qdisc = 
+&noop_qdisc
+             ...
+     }
+     ...
+     if (qdisc == &noop_qdisc) {
+         ...
+         netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL); 
+// Re-attach, but not release the previously created qdisc
+         ...
+     }
+}
+
+>> The following is the bug log:
+>>
+>> veth0: default qdisc (fq_codel) fail, fallback to noqueue
+>> unregister_netdevice: waiting for veth0 to become free. Usage count = 32
+>> leaked reference.
+>>   qdisc_alloc+0x12e/0x210
+>>   qdisc_create_dflt+0x62/0x140
+>>   attach_one_default_qdisc.constprop.41+0x44/0x70
+>>   dev_activate+0x128/0x290
+>>   __dev_open+0x12a/0x190
+>>   __dev_change_flags+0x1a2/0x1f0
+>>   dev_change_flags+0x23/0x60
+>>   do_setlink+0x332/0x1150
+>>   __rtnl_newlink+0x52f/0x8e0
+>>   rtnl_newlink+0x43/0x70
+>>   rtnetlink_rcv_msg+0x140/0x3b0
+>>   netlink_rcv_skb+0x50/0x100
+>>   netlink_unicast+0x1bb/0x290
+>>   netlink_sendmsg+0x37c/0x4e0
+>>   sock_sendmsg+0x5f/0x70
+>>   ____sys_sendmsg+0x208/0x280
+>>
+>> In attach_one_default_qdisc(), release the old one before attaching
+>> a new qdisc to fix this bug.
+>>
+>> Fixes: bf6dba76d278 ("net: sched: fallback to qdisc noqueue if default qdisc setup fail")
+>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>> ---
+>>   net/sched/sch_generic.c | 5 +++++
+>>   1 file changed, 5 insertions(+)
+>>
+>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>> index d47b9689eba6..87b61ef14497 100644
+>> --- a/net/sched/sch_generic.c
+>> +++ b/net/sched/sch_generic.c
+>> @@ -1140,6 +1140,11 @@ static void attach_one_default_qdisc(struct net_device *dev,
+>>   
+>>   	if (!netif_is_multiqueue(dev))
+>>   		qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+>> +
+>> +	if (dev_queue->qdisc_sleeping &&
+>> +	    dev_queue->qdisc_sleeping != &noop_qdisc)
+>> +		qdisc_put(dev_queue->qdisc_sleeping);
+>> +
+>>   	dev_queue->qdisc_sleeping = qdisc;
+>>   }
+>>   
+> .
+
+-- 
+Wang Hai
+
