@@ -2,122 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADF9059A856
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:29:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C218B59A846
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 00:29:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240176AbiHSWRD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 18:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
+        id S240319AbiHSWTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 18:19:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240190AbiHSWQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:16:34 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6E1F4CAE
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 15:16:31 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-3359a55dcb6so98094677b3.21
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 15:16:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:from:to:cc;
-        bh=H3YEiHHCZDHfvJiU4fCYVtnbVB8iHyjPM7ELjaj28Ew=;
-        b=X1U73b0XniNLU7Z952Uoe4oLLlOQuH9fMoxIo3YE8wTvISBipZU3kbSsA/PpZc74b9
-         GKGrN3RRsS65zQ/iiGgHDkFgLoHu+HT15JxvGOx9hJ2PV56mfIi6fXTua6T4tCzBZCDs
-         pidzBZcxXFnAUE6H041z//D5yM40NWB78f6EufBqHmtQf2Fy2jYoy7SMHxtXqD8J18Jl
-         tglJU4xpK/iRl2mW5tY+0pgOj4nH9Bx5lesRwnijThCj0o6tZ7h84PrI8aDfHNjuuotw
-         33+iubcVMVmM0KnScNcfs0uK//EhpI5sVYu65TPan5KCq2k7mlKkYFPNxSojzIFEnPuE
-         wSnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:x-gm-message-state:from:to:cc;
-        bh=H3YEiHHCZDHfvJiU4fCYVtnbVB8iHyjPM7ELjaj28Ew=;
-        b=m+t1xG42iwa9rHRDbKYBE+I91oxWCPsZ3q92T13wC3o8YCu3opM/cEiOFM/DBzX0IA
-         J05REtMQCeljZy7kXxcnj02m/wuTHNru1sp8f3kdTZroawuxXy98JFxr/3Gqm8w+x2K2
-         U47UYJXG+NCtS+Ni/xzO9GlDzczTnzkYeFe40Nrovxd4LrbO32Cs4IrWLuZTfaPIjbsy
-         rVqLGyqVPFC78T96BmsF1d5aPtrgxEtSUKHc6VeT+/PLMocL0dPIbAM741rX0Fa0q4V/
-         M0AlVw/DO/egIU7fQleL+7io0qT6udlJEjEUfgxaojLudIKrKRL4m4pkvupYK/kM8zVT
-         FR6Q==
-X-Gm-Message-State: ACgBeo25otq+nJROkKASkEkhF5jveqAD2dGBRl6PriZFpXkI1M4OJGGI
-        QEIBrBLQxw5pmUs0KOFo9mwZ5NyEqCNE27s=
-X-Google-Smtp-Source: AA6agR6s7O9ks9P+6MMRLsKupYiohHddIyehPE2rdJmt/AJwJ41rH2q/2hZo31rpF1++hMgFEDboETrWBMyKu5U=
-X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f93e:7b61:ce3d:5b06])
- (user=saravanak job=sendgmr) by 2002:a81:5744:0:b0:333:7505:5bca with SMTP id
- l65-20020a815744000000b0033375055bcamr9459605ywb.315.1660947391375; Fri, 19
- Aug 2022 15:16:31 -0700 (PDT)
-Date:   Fri, 19 Aug 2022 15:16:14 -0700
-In-Reply-To: <20220819221616.2107893-1-saravanak@google.com>
-Message-Id: <20220819221616.2107893-5-saravanak@google.com>
-Mime-Version: 1.0
-References: <20220819221616.2107893-1-saravanak@google.com>
-X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH v2 4/4] Revert "iommu/of: Delete usage of driver_deferred_probe_check_state()"
-From:   Saravana Kannan <saravanak@google.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Kevin Hilman <khilman@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
-        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Saravana Kannan <saravanak@google.com>
-Cc:     Peng Fan <peng.fan@nxp.com>, Luca Weiss <luca.weiss@fairphone.com>,
-        Doug Anderson <dianders@chromium.org>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jean-Philippe Brucker <jpb@kernel.org>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, iommu@lists.linux.dev,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229802AbiHSWS7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 18:18:59 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9984EB2851;
+        Fri, 19 Aug 2022 15:18:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=pfV3W5tIDS7uvHHlXIEyDkDagWNi+Z86KWqZSqCzOrI=; b=sY1n8Aq6cKn+8C+zsSeV/uxggm
+        nsj/09ZQvFYE+q97bRBlzjnW1zw5RbFDAnFolBKYT6KrCpDrsXE1skijRnZWS19ElGNWcV5X4mpAU
+        dPTTKVW8Ybf0lsZ+/2nZtUSKRL8Tsrvh7PeUAO5+1gcci5JuGcxPHddWjR8qmRG7owXlYfJB4r7z2
+        gygAEeJyjzZWEZLKLqNxZ2NITsVeZECMoYr2HilmMgOn6hF92BWV6bQedzTrYdl8A4e5mubOIC1f3
+        GjHAfCmlUSyzNEzj/212l9Gi3pAbATQtzxezcnnn2wIWy1pePhpNmlSJIReIg6cL3Lz4Qmauejy6k
+        jX0jtSbQ==;
+Received: from [179.232.144.59] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oPAJo-00Carb-O5; Sat, 20 Aug 2022 00:18:22 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     akpm@linux-foundation.org, bhe@redhat.com, pmladek@suse.com,
+        kexec@lists.infradead.org
+Cc:     linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        netdev@vger.kernel.org, x86@kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, xuqiang36@huawei.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        bcm-kernel-feedback-list@broadcom.com, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-um@lists.infradead.org
+Subject: [PATCH V3 00/11] The panic notifiers refactor - fixes/clean-ups (V3)
+Date:   Fri, 19 Aug 2022 19:17:20 -0300
+Message-Id: <20220819221731.480795-1-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit b09796d528bbf06e3e10a4a8f78038719da7ebc6.
+Hey everybody, this the third iteration of the panic notifiers
+fixes/clean-ups;
 
-An issue was reported[1] on the original commit. I'll need to address that
-before I can delete the use of driver_deferred_probe_check_state().  So,
-bring it back for now.
+V2 available at:
+https://lore.kernel.org/lkml/20220719195325.402745-1-gpiccoli@igalia.com/
 
-[1] - https://lore.kernel.org/lkml/4799738.LvFx2qVVIh@steina-w/
+V1 (including the refactor) available at:
+https://lore.kernel.org/lkml/20220427224924.592546-1-gpiccoli@igalia.com/
 
-Fixes: b09796d528bb ("iommu/of: Delete usage of driver_deferred_probe_check_state()")
-Reported-by: Jean-Philippe Brucker <jpb@kernel.org>
-Signed-off-by: Saravana Kannan <saravanak@google.com>
----
- drivers/iommu/of_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 41f4eb005219..5696314ae69e 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -40,7 +40,7 @@ static int of_iommu_xlate(struct device *dev,
- 	 * a proper probe-ordering dependency mechanism in future.
- 	 */
- 	if (!ops)
--		return -ENODEV;
-+		return driver_deferred_probe_check_state(dev);
- 
- 	if (!try_module_get(ops->owner))
- 		return -ENODEV;
+There wasn't much change here compared to V2 (the specifics are in the
+patches), but a global change is that I've rebased against 6.0-rc1.
+One patch got merged in -next, another one was re-submit in a standalone
+format (requested by maintainer), so both of these are not here anymore.
+
+
+As usual, tested this series building for all affected architecture/drivers
+and also through some boot/runtime tests; below the test "matrix" used:
+
+Build tests (using cross-compilers): alpha, arm, arm64, parisc, um, x86_64.
+Boot/Runtime tests: x86_64 (QEMU guests and Steam Deck).
+
+Here is the link with the .config files used:
+https://people.igalia.com/gpiccoli/panic_notifiers_configs/6.0-rc1/
+
+
+About the merge strategy: I've noticed there is a difference in maintainers
+preferences (and my preference as well), so I see 3 strategies for merge:
+
+(a) Maintainers pick patches that are good from the series and merge in
+their trees;
+
+(b) Some maintainer would pick the whole series and merge, at once, given
+that everything is fine/ack/reviewed.
+
+(c) I must re-send patches individually once they are reviewed/acked, as
+standalone patches to the relevant maintainers, so they can merge it in
+their trees.
+
+I'm willing to do what's best for everybody - (a) is my choice when possible,
+(b) seems to stall things and potentially cause conflicts, (c) seems to be
+the compromise. I'll do that as per preference of the respective maintainers.
+
+
+As usual, reviews / comments are always welcome, thanks in advance for them!
+Cheers,
+
+Guilherme
+
+
+Guilherme G. Piccoli (11):
+  ARM: Disable FIQs (but not IRQs) on CPUs shutdown paths
+  notifier: Add panic notifiers info and purge trailing whitespaces
+  alpha: Clean-up the panic notifier code
+  um: Improve panic notifiers consistency and ordering
+  parisc: Replace regular spinlock with spin_trylock on panic path
+  tracing: Improve panic/die notifiers
+  notifiers: Add tracepoints to the notifiers infrastructure
+  EDAC/altera: Skip the panic notifier if kdump is loaded
+  video/hyperv_fb: Avoid taking busy spinlock on panic path
+  drivers/hv/vmbus, video/hyperv_fb: Untangle and refactor Hyper-V panic notifiers
+  panic: Fixes the panic_print NMI backtrace setting
+
+ arch/alpha/kernel/setup.c        |  36 +++++-----
+ arch/arm/kernel/machine_kexec.c  |   2 +
+ arch/arm/kernel/smp.c            |   5 +-
+ arch/parisc/include/asm/pdc.h    |   1 +
+ arch/parisc/kernel/firmware.c    |  27 ++++++--
+ arch/um/drivers/mconsole_kern.c  |   7 +-
+ arch/um/kernel/um_arch.c         |   8 +--
+ drivers/edac/altera_edac.c       |  16 +++--
+ drivers/hv/ring_buffer.c         |  13 ++++
+ drivers/hv/vmbus_drv.c           | 109 +++++++++++++++++++------------
+ drivers/parisc/power.c           |  17 +++--
+ drivers/video/fbdev/hyperv_fb.c  |  16 ++++-
+ include/linux/hyperv.h           |   2 +
+ include/linux/notifier.h         |   8 ++-
+ include/trace/events/notifiers.h |  69 +++++++++++++++++++
+ kernel/notifier.c                |   6 ++
+ kernel/panic.c                   |  47 +++++++------
+ kernel/trace/trace.c             |  55 ++++++++--------
+ 18 files changed, 302 insertions(+), 142 deletions(-)
+ create mode 100644 include/trace/events/notifiers.h
+
 -- 
-2.37.1.595.g718a3a8f04-goog
+2.37.2
 
