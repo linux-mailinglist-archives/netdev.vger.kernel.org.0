@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E73C59A9A5
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 01:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE1E859A9B7
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243547AbiHSXuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 19:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
+        id S243949AbiHSXxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 19:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240711AbiHSXuU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 19:50:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC3F10B52F;
-        Fri, 19 Aug 2022 16:50:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2BA26189F;
-        Fri, 19 Aug 2022 23:50:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 007F6C4347C;
-        Fri, 19 Aug 2022 23:50:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660953019;
-        bh=pwtfbOnPhKJEUFyeDRLEE4hlOZf8CHkDcZnbiWc3Ktw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=MsNfMP6wSzcIklNyvNxnu14ZN9r7NF7fW459aNPmNgmbfYWAYsPGUUCGDldNdjDc8
-         Cyx2KXxJuDGbwPBEAnHafye8vLmj/2lBnu8B8SrHC7Fng3lSdFhUgPS9O+HTd74pUP
-         LV6EY0tQvBCUvphb3IuR8j+qWuBgYpuX0fTaz6vfNlTpj7Za2ztemyNCUB7rAtIWSN
-         +VsKCe0kPYUa5Sb2aAyTA996BFIz//l+mReSd4YOGphmQihTQ1A8De2WfVFKONVaEn
-         43t7T6fMcBH2oQm6TjasZC0JhIgccSNovtQ8Dkb8ycPao1Ufw8kfTK5oIyzb/2524B
-         nANUPAO8aOJUg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D1F26E2A05F;
-        Fri, 19 Aug 2022 23:50:18 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S243799AbiHSXxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 19:53:23 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9541E63DB;
+        Fri, 19 Aug 2022 16:53:21 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id o2so4426963iof.8;
+        Fri, 19 Aug 2022 16:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=UX9DFt9pgifkj/QY4mu++ikMopOnydaJKN+iCFeyvjI=;
+        b=PusEjCLI++Ed6692tp9RT9MfbJaYlC2Tmx94F1gdSvkzEyjBp1TqpNY49wXhZR5hGX
+         51ISmjseJ2/wRKt0cCNT9FwBMzCXp7oU3I2zc8Gamy7yV0rIHzDq2eDzvTrAHCan7jdO
+         +1stTYv0OkVLa2zaISqIN//vUuNdPquArflukgNsATTk8ELTR8zBvGFLX1L8FaAvMP9o
+         6xRN4zGIMumKA/yUMPmU1d2866sHqgLpX8D17E+TGcndHkZPQdK1miIdSLOnfIGU2qe8
+         HpdfOOqVWwY8waLHdNGmR6WItyl/KrsMQMFo/yiGvgQwXSTJ/ldDDQLz9KO4LrOb1ZiZ
+         TbPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=UX9DFt9pgifkj/QY4mu++ikMopOnydaJKN+iCFeyvjI=;
+        b=VXJYoJS85qJDQZpwZ9Jrv8MGvcg9WWQGpcxrwRX2EYctkrncviCQdY93dHLFxyVWNh
+         +GQ8i+xs6/wKLeysq9wnhOAnqOvX5ZTPqoEuHcnKpdZ7wR2oeF82HKoNk1kdVygR2U0i
+         8cqi8WKSOKFdLKXfJSUEjxsSepw5yLXeTsTFPdIhy7lyqwBNnptNdI9MkCan4p69MHFd
+         tSIK2ZCvaFmdd+jhazhKXW9NfygSB3JqSfL7vsGAAmGm2m30UviQhk1kJO139+NkapoV
+         91TpboyS8Bh6E+ybPx34Yvb3zo7Ed6hd8pPDyrKsX0mBwDCqCE7ZaQP+8u4j+C2G+d9r
+         a/SA==
+X-Gm-Message-State: ACgBeo21iapGn1W9JHCXtZC1jc4PmBkxtq3LmARRA0ZJSguvETrA6C6m
+        1dhMZ/eZivHcLANMAsweks2k7YNJh9d93epamTU=
+X-Google-Smtp-Source: AA6agR7jmYMnylg6asONp2GAAfNY5ON6YCWcavS/uvHPv+dbmjW2WszcXZkTVw7T9qXk3bZbqddE9WA58W2wb0oqKUA=
+X-Received: by 2002:a05:6638:2381:b0:346:c583:9fa0 with SMTP id
+ q1-20020a056638238100b00346c5839fa0mr4410776jat.93.1660953200967; Fri, 19 Aug
+ 2022 16:53:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] selftests/net: test l2 tunnel TOS/TTL inheriting
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166095301885.11596.12881956498838147761.git-patchwork-notify@kernel.org>
-Date:   Fri, 19 Aug 2022 23:50:18 +0000
-References: <20220817073649.26117-1-matthias.may@westermo.com>
-In-Reply-To: <20220817073649.26117-1-matthias.may@westermo.com>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, shuah@kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1660951028.git.dxu@dxuuu.xyz> <f44b2eebe48f0653949f59c5bcf23af029490692.1660951028.git.dxu@dxuuu.xyz>
+ <CAP01T74fSh6Z=54O+ORKJD7i_izb7rUe3-mHKLgRdrckcisvkw@mail.gmail.com>
+In-Reply-To: <CAP01T74fSh6Z=54O+ORKJD7i_izb7rUe3-mHKLgRdrckcisvkw@mail.gmail.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Sat, 20 Aug 2022 01:52:44 +0200
+Message-ID: <CAP01T76zWax4YSQO5nP2Kt_85JvUPvxTwpOn5Dho6co32r+FBA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/5] bpf: Add support for writing to nf_conn:mark
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, martin.lau@linux.dev,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, 20 Aug 2022 at 01:46, Kumar Kartikeya Dwivedi <memxor@gmail.com> wrote:
+>
+> CPU 0                                              CPU 1
+> sa = READ_ONCE(nf_ct_bsa);
+>
+> delete_module("nf_conntrack", ..);
+>
+> WRITE_ONCE(nf_ct_bsa, NULL);
+>                                                          // finishes
+> successfully
+> if (sa)
+>     return sa(...); // oops
+>
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Ew, I completely screwed it up. Not trying again.
 
-On Wed, 17 Aug 2022 09:36:49 +0200 you wrote:
-> There are currently 3 ip tunnels that are capable of carrying
-> L2 traffic: gretap, vxlan and geneve.
-> They all are capable to inherit the TOS/TTL for the outer
-> IP-header from the inner frame.
-> 
-> Add a test that verifies that these fields are correctly inherited.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next] selftests/net: test l2 tunnel TOS/TTL inheriting
-    https://git.kernel.org/netdev/net-next/c/b690842d12fd
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+CPU 0 does:
+sa = READ_ONCE(nf_ct_bsa);
+then CPU 1 does:
+delete_module("nf_conntrack", ...);
+   WRITE_ONCE(nf_ct_bsa, NULL);
+then CPU 0 does:
+if (sa) sa(...); // bad
