@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F5259946F
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 226F5599476
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346216AbiHSFZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 01:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
+        id S1346175AbiHSF2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 01:28:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346175AbiHSFZs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:25:48 -0400
+        with ESMTP id S243197AbiHSF2F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:28:05 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71B1ED8B30;
-        Thu, 18 Aug 2022 22:25:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300AAE01FC;
+        Thu, 18 Aug 2022 22:28:04 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id BD1845FD07;
-        Fri, 19 Aug 2022 08:25:45 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 856AF5FD07;
+        Fri, 19 Aug 2022 08:28:02 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660886745;
-        bh=b45BV2ZXGjDFGbqD7Zc7LoRug2dgFwYM1iZaE+GqaIA=;
+        s=mail; t=1660886882;
+        bh=xZcFr0g066QLn34YVo/DnULMO+Ugg56rtAsgSG8AMHo=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=QPZYdBOUvRAqMbDWuqeHx/lrMrjg2z4INcZAeWFCIbIXE/qYu8mgVX31NEFrDBTvJ
-         bQNuD0/3YHikbUAsFLNpBthnsaahPsnHKOU2h2Ts61jKbTXZyrRUzgebQmCGbVi/jr
-         t6cic8pffPOmH025W5cKevRmPwWR6k1g2Z0VouXO6FdjAbjShWNo7VHan1fnttEH3a
-         qa6fhP6obfo6ZV76Z56Ch3B5G+0y8gezcDiPADH0f3cWWe+jGvIaa855UdD+u754Jp
-         XAjMMkrMIIDX3vNxY5bKpKwO/fG3e0ZlNy2l+abCgdHguT3n4Md+f+2SaMhlDQqm2M
-         Ht5FmvFs+qM6w==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        b=DB+pr+ENO0x1YGOBXcl32mEz9ySWuycsdn6ARa3p/0E/aMxJh8ffXDZpeNOy8Y2YB
+         ebMeLKGYxUcPKVDsz9P+34TY4E2cYpvKTZIDgoSPTH1LKq1Y/RSKVbYM5qdiTBhjWD
+         3bmJViJCa6JbzwQbdgj7sMil02xG3vb7m8V7xYGQoxBm4M8fWcdWsZ+6ayYFsNgTAK
+         ugVLrepfBhjzeGfOYzVo8lNzAJyAeq6fRUvmGtTaRtiZCVPSJ8fmlwAzASa+KijlJW
+         NADTgi8/c1+0QOpxM934CqLfebC7dZ7jhny1A4PLZzTaOct6t75PDHujWcYhDlOh/U
+         fV6/v7yNw/m3A==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 19 Aug 2022 08:25:44 +0300 (MSK)
+        Fri, 19 Aug 2022 08:28:00 +0300 (MSK)
 From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
 To:     Stefano Garzarella <sgarzare@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -44,8 +44,7 @@ To:     Stefano Garzarella <sgarzare@redhat.com>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Bryan Tan <bryantan@vmware.com>,
         Vishnu Dasa <vdasa@vmware.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>
+        Krasnov Arseniy <oxffffaa@gmail.com>
 CC:     "virtualization@lists.linux-foundation.org" 
         <virtualization@lists.linux-foundation.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -54,12 +53,11 @@ CC:     "virtualization@lists.linux-foundation.org"
         "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-Subject: [PATCH net-next v4 1/9] vsock: SO_RCVLOWAT transport set callback
-Thread-Topic: [PATCH net-next v4 1/9] vsock: SO_RCVLOWAT transport set
- callback
-Thread-Index: AQHYs4wSVKV9ssq90kaiB/V349f4rA==
-Date:   Fri, 19 Aug 2022 05:25:19 +0000
-Message-ID: <09389925-8a2f-24c8-6975-f84822b12fe8@sberdevices.ru>
+Subject: [PATCH net-next v4 2/9] hv_sock: disable SO_RCVLOWAT support
+Thread-Topic: [PATCH net-next v4 2/9] hv_sock: disable SO_RCVLOWAT support
+Thread-Index: AQHYs4xj57UzSxktpUO3tU97mRUOyg==
+Date:   Fri, 19 Aug 2022 05:27:34 +0000
+Message-ID: <1772ff39-a197-3f11-73b9-7deeb015e1ee@sberdevices.ru>
 In-Reply-To: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
 Accept-Language: en-US, ru-RU
 Content-Language: en-US
@@ -67,7 +65,7 @@ X-MS-Has-Attach:
 X-MS-TNEF-Correlator: 
 x-originating-ip: [172.16.1.12]
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <6E558B7D73F28949B271809B785A889A@sberdevices.ru>
+Content-ID: <0CA4519B157AC347835CA4E08DEE6B12@sberdevices.ru>
 Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-KSMG-Rule-ID: 4
@@ -86,39 +84,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBhZGRzIHRyYW5zcG9ydCBzcGVjaWZpYyBjYWxsYmFjayBmb3IgU09fUkNWTE9XQVQsIGJl
-Y2F1c2UgaW4gc29tZQ0KdHJhbnNwb3J0cyBpdCBtYXkgYmUgZGlmZmljdWx0IHRvIGtub3cgY3Vy
-cmVudCBhdmFpbGFibGUgbnVtYmVyIG9mIGJ5dGVzDQpyZWFkeSB0byByZWFkLiBUaHVzLCB3aGVu
-IFNPX1JDVkxPV0FUIGlzIHNldCwgdHJhbnNwb3J0IG1heSByZWplY3QgaXQuDQoNClNpZ25lZC1v
-ZmYtYnk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQog
-aW5jbHVkZS9uZXQvYWZfdnNvY2suaCAgIHwgIDEgKw0KIG5ldC92bXdfdnNvY2svYWZfdnNvY2su
-YyB8IDIwICsrKysrKysrKysrKysrKysrKysrDQogMiBmaWxlcyBjaGFuZ2VkLCAyMSBpbnNlcnRp
-b25zKCspDQoNCmRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9hZl92c29jay5oIGIvaW5jbHVkZS9u
-ZXQvYWZfdnNvY2suaA0KaW5kZXggMWM1M2M0YzRkODhmLi5kNjA5YTA4OGNiMjcgMTAwNjQ0DQot
-LS0gYS9pbmNsdWRlL25ldC9hZl92c29jay5oDQorKysgYi9pbmNsdWRlL25ldC9hZl92c29jay5o
-DQpAQCAtMTM1LDYgKzEzNSw3IEBAIHN0cnVjdCB2c29ja190cmFuc3BvcnQgew0KIAl1NjQgKCpz
-dHJlYW1fcmN2aGl3YXQpKHN0cnVjdCB2c29ja19zb2NrICopOw0KIAlib29sICgqc3RyZWFtX2lz
-X2FjdGl2ZSkoc3RydWN0IHZzb2NrX3NvY2sgKik7DQogCWJvb2wgKCpzdHJlYW1fYWxsb3cpKHUz
-MiBjaWQsIHUzMiBwb3J0KTsNCisJaW50ICgqc2V0X3Jjdmxvd2F0KShzdHJ1Y3QgdnNvY2tfc29j
-ayAqdnNrLCBpbnQgdmFsKTsNCiANCiAJLyogU0VRX1BBQ0tFVC4gKi8NCiAJc3NpemVfdCAoKnNl
-cXBhY2tldF9kZXF1ZXVlKShzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLCBzdHJ1Y3QgbXNnaGRyICpt
-c2csDQpkaWZmIC0tZ2l0IGEvbmV0L3Ztd192c29jay9hZl92c29jay5jIGIvbmV0L3Ztd192c29j
-ay9hZl92c29jay5jDQppbmRleCBmMDRhYmY2NjJlYzYuLjBhNjc3NzUyNmM3MyAxMDA2NDQNCi0t
-LSBhL25ldC92bXdfdnNvY2svYWZfdnNvY2suYw0KKysrIGIvbmV0L3Ztd192c29jay9hZl92c29j
-ay5jDQpAQCAtMjEyOSw2ICsyMTI5LDI1IEBAIHZzb2NrX2Nvbm5lY3RpYmxlX3JlY3Ztc2coc3Ry
-dWN0IHNvY2tldCAqc29jaywgc3RydWN0IG1zZ2hkciAqbXNnLCBzaXplX3QgbGVuLA0KIAlyZXR1
-cm4gZXJyOw0KIH0NCiANCitzdGF0aWMgaW50IHZzb2NrX3NldF9yY3Zsb3dhdChzdHJ1Y3Qgc29j
-ayAqc2ssIGludCB2YWwpDQorew0KKwljb25zdCBzdHJ1Y3QgdnNvY2tfdHJhbnNwb3J0ICp0cmFu
-c3BvcnQ7DQorCXN0cnVjdCB2c29ja19zb2NrICp2c2s7DQorDQorCXZzayA9IHZzb2NrX3NrKHNr
-KTsNCisNCisJaWYgKHZhbCA+IHZzay0+YnVmZmVyX3NpemUpDQorCQlyZXR1cm4gLUVJTlZBTDsN
-CisNCisJdHJhbnNwb3J0ID0gdnNrLT50cmFuc3BvcnQ7DQorDQorCWlmICh0cmFuc3BvcnQgJiYg
-dHJhbnNwb3J0LT5zZXRfcmN2bG93YXQpDQorCQlyZXR1cm4gdHJhbnNwb3J0LT5zZXRfcmN2bG93
-YXQodnNrLCB2YWwpOw0KKw0KKwlXUklURV9PTkNFKHNrLT5za19yY3Zsb3dhdCwgdmFsID8gOiAx
-KTsNCisJcmV0dXJuIDA7DQorfQ0KKw0KIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHJvdG9fb3BzIHZz
-b2NrX3N0cmVhbV9vcHMgPSB7DQogCS5mYW1pbHkgPSBQRl9WU09DSywNCiAJLm93bmVyID0gVEhJ
-U19NT0RVTEUsDQpAQCAtMjE0OCw2ICsyMTY3LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBwcm90
-b19vcHMgdnNvY2tfc3RyZWFtX29wcyA9IHsNCiAJLnJlY3Ztc2cgPSB2c29ja19jb25uZWN0aWJs
-ZV9yZWN2bXNnLA0KIAkubW1hcCA9IHNvY2tfbm9fbW1hcCwNCiAJLnNlbmRwYWdlID0gc29ja19u
-b19zZW5kcGFnZSwNCisJLnNldF9yY3Zsb3dhdCA9IHZzb2NrX3NldF9yY3Zsb3dhdCwNCiB9Ow0K
-IA0KIHN0YXRpYyBjb25zdCBzdHJ1Y3QgcHJvdG9fb3BzIHZzb2NrX3NlcXBhY2tldF9vcHMgPSB7
-DQotLSANCjIuMjUuMQ0K
+Rm9yIEh5cGVyLVYgaXQgaXMgcXVpZXQgZGlmZmljdWx0IHRvIHN1cHBvcnQgdGhpcyBzb2NrZXQg
+b3B0aW9uLGR1ZSB0bw0KdHJhbnNwb3J0IGludGVybmFscywgc28gZGlzYWJsZSBpdC4NCg0KU2ln
+bmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQpS
+ZXZpZXdlZC1ieTogRGV4dWFuIEN1aSA8ZGVjdWlAbWljcm9zb2Z0LmNvbT4NClJldmlld2VkLWJ5
+OiBTdGVmYW5vIEdhcnphcmVsbGEgPHNnYXJ6YXJlQHJlZGhhdC5jb20+DQotLS0NCiBuZXQvdm13
+X3Zzb2NrL2h5cGVydl90cmFuc3BvcnQuYyB8IDcgKysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA3
+IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5z
+cG9ydC5jIGIvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCmluZGV4IGZkOTgyMjll
+M2RiMy4uNTljM2UyNjk3MDY5IDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJh
+bnNwb3J0LmMNCisrKyBiL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQpAQCAtODE1
+LDYgKzgxNSwxMiBAQCBpbnQgaHZzX25vdGlmeV9zZW5kX3Bvc3RfZW5xdWV1ZShzdHJ1Y3QgdnNv
+Y2tfc29jayAqdnNrLCBzc2l6ZV90IHdyaXR0ZW4sDQogCXJldHVybiAwOw0KIH0NCiANCitzdGF0
+aWMNCitpbnQgaHZzX3NldF9yY3Zsb3dhdChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLCBpbnQgdmFs
+KQ0KK3sNCisJcmV0dXJuIC1FT1BOT1RTVVBQOw0KK30NCisNCiBzdGF0aWMgc3RydWN0IHZzb2Nr
+X3RyYW5zcG9ydCBodnNfdHJhbnNwb3J0ID0gew0KIAkubW9kdWxlICAgICAgICAgICAgICAgICAg
+ID0gVEhJU19NT0RVTEUsDQogDQpAQCAtODUwLDYgKzg1Niw3IEBAIHN0YXRpYyBzdHJ1Y3QgdnNv
+Y2tfdHJhbnNwb3J0IGh2c190cmFuc3BvcnQgPSB7DQogCS5ub3RpZnlfc2VuZF9wcmVfZW5xdWV1
+ZSAgPSBodnNfbm90aWZ5X3NlbmRfcHJlX2VucXVldWUsDQogCS5ub3RpZnlfc2VuZF9wb3N0X2Vu
+cXVldWUgPSBodnNfbm90aWZ5X3NlbmRfcG9zdF9lbnF1ZXVlLA0KIA0KKwkuc2V0X3Jjdmxvd2F0
+ICAgICAgICAgICAgID0gaHZzX3NldF9yY3Zsb3dhdA0KIH07DQogDQogc3RhdGljIGJvb2wgaHZz
+X2NoZWNrX3RyYW5zcG9ydChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0KLS0gDQoyLjI1LjENCg==
