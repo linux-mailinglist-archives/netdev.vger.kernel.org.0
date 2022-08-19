@@ -2,330 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EDE59A4CD
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1E9C59A316
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354537AbiHSRAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 13:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        id S1354393AbiHSRQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 13:16:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354530AbiHSRAB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:00:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBEF1322CB;
-        Fri, 19 Aug 2022 09:20:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 21AF7B8280D;
-        Fri, 19 Aug 2022 16:20:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505CCC433C1;
-        Fri, 19 Aug 2022 16:20:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660926030;
-        bh=LgjTg9NeVNqDDOerGSwbxrMHZC+77VDZrItGQpOGABk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UZpjLlOkTIBylPI7XZmlcAaDE5Sq5BjD0RsRcNFK9vEVsNdc3H81NHPeKCX+X0+QU
-         Q6mmx3FiYKt0FkkMDup/WfbY3f2s38ZWyUlhN/tl36HFBvL2Np6lEWrjbKEkBqdOqP
-         d48VUX/6zmVI4qN6mVoAP8CJgkYphLICoyjoYGwgjTQY4Bqy7taOaoGLlykmt5FfPn
-         R1chgx8fQyCwtErphhgljzm3V0BJD2d19IM5rvmW5dDdpGKQQgxXCTYwiI/TfQO4ZE
-         Nss24sK3EX+bb9KBNGyt4sD1GOkaYrAE2TJyxVzG7KJFzBbXKa3/tzavM7XosXJaIp
-         gm1UdldbDWmaA==
-Date:   Fri, 19 Aug 2022 09:20:29 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, corbet@lwn.net,
-        stephen@networkplumber.org, sdf@google.com, ecree.xilinx@gmail.com,
-        benjamin.poirier@gmail.com, idosch@idosch.org,
-        f.fainelli@gmail.com, jiri@resnulli.us, dsahern@kernel.org,
-        fw@strlen.de, linux-doc@vger.kernel.org, jhs@mojatatu.com,
-        tgraf@suug.ch, jacob.e.keller@intel.com, svinota.saveliev@gmail.com
-Subject: Re: [PATCH net-next 2/2] docs: netlink: basic introduction to
- Netlink
-Message-ID: <20220819092029.10316adb@kernel.org>
-In-Reply-To: <6350516756628945f9cc1ee0248e92473521ed0b.camel@sipsolutions.net>
-References: <20220818023504.105565-1-kuba@kernel.org>
-        <20220818023504.105565-2-kuba@kernel.org>
-        <6350516756628945f9cc1ee0248e92473521ed0b.camel@sipsolutions.net>
+        with ESMTP id S1354336AbiHSRQL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 13:16:11 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 290B8146CEA;
+        Fri, 19 Aug 2022 09:36:06 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gi31so3299337ejc.5;
+        Fri, 19 Aug 2022 09:36:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc;
+        bh=KvbU7AEM3P1kiK22wMymuDfWO9LXDaUuh1fQIZ26tNA=;
+        b=FdXlU0gzRt6erznD6gpPx/MehHWfEad++r8GXzxJDykNbmDNj1FOI6M8vkxuRM9g5b
+         xgtLPniKbgKQFGmgOB/AzRYGSnZvYYNJ2JBHDqspeIaEEPD2pBJtd/VegHooAIhlcBd7
+         ipR0QtH5RXEFo1JPgqFIWvZFEyEhKlLyM8KneRhfn/pc63GN2LeiGvoYE7KrNjVqcrZ9
+         XzkMt4hjG2/yLcj+TvhyKSLBwqjE4tFVMdmv/P/PZkLrWc1/qZ0bQ7MO9ZFJgYHhPDta
+         wwJLi5EtbiotA7jDlaO4qTX8yjY58cufj5sRp29pn31JDpUMzo5JBp2AqddC4nCWSD2/
+         CcrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:cc:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=KvbU7AEM3P1kiK22wMymuDfWO9LXDaUuh1fQIZ26tNA=;
+        b=S6DtiV+66CjA+ZtpeDjLPqFUmcezBis1MUaMZZ19tP0G5bHgRZX3lhStH2wMZ7fDQo
+         W+qoI05I35xAaxR6WCZymN7CKBObO6uY2DV8wHvNkokbr6PQT3TtF/v6UQ07fp3+kugY
+         pQuevYjQyq9jF7zGsDR88HgcmNSVkIg9p5+du27jBNFwefeTyVROrzuFaDRoN76zIq2m
+         x0myNhirD5E2L2aS2my249Uq66ZcypN7t7BPUTytLSYYPM4bMytd74xEfxZxCL97N4+U
+         gKdTQmb/QD8pEOH45hMwFZQ9M1McArbO0ibonchDewdwijoqovqXAl9fTFZR2vaeTGw0
+         12xw==
+X-Gm-Message-State: ACgBeo1gqzOQVpK0x0YbckklXN2EA9UA1J3oPh8yg96zP61ZIvEiHoqp
+        OxCfI+E9wQ0Ph/JeX3ag+sE=
+X-Google-Smtp-Source: AA6agR7WlZ4ATXEetm82mEiU+twgsx0JNGuOlwom8NSsv9TbnEHtWJPJpilMT39bBr5WvWSJd4UE1w==
+X-Received: by 2002:a17:906:d550:b0:733:8e1a:f7 with SMTP id cr16-20020a170906d55000b007338e1a00f7mr5408071ejc.580.1660926964549;
+        Fri, 19 Aug 2022 09:36:04 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id kv24-20020a17090778d800b00731335b7ceasm2586032ejc.14.2022.08.19.09.36.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 09:36:04 -0700 (PDT)
+Subject: Re: [RFC PATCH v2 net-next] docs: net: add an explanation of VF (and
+ other) Representors
+To:     Parav Pandit <parav@nvidia.com>,
+        "ecree@xilinx.com" <ecree@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-net-drivers@amd.com" <linux-net-drivers@amd.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+        "jacob.e.keller@intel.com" <jacob.e.keller@intel.com>,
+        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "andy@greyhouse.net" <andy@greyhouse.net>,
+        "saeed@kernel.org" <saeed@kernel.org>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "snelson@pensando.io" <snelson@pensando.io>,
+        "simon.horman@corigine.com" <simon.horman@corigine.com>,
+        "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>,
+        "rdunlap@infradead.org" <rdunlap@infradead.org>
+References: <20220815142251.8909-1-ecree@xilinx.com>
+ <PH0PR12MB5481AD558AD7A17928D78081DC6D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <e64b17e8-6aef-fcba-0626-07ff2ca9e0d8@gmail.com>
+Date:   Fri, 19 Aug 2022 17:36:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <PH0PR12MB5481AD558AD7A17928D78081DC6D9@PH0PR12MB5481.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 09:36:46 +0200 Johannes Berg wrote:
-> On Wed, 2022-08-17 at 19:35 -0700, Jakub Kicinski wrote:
-> > +To get information about the Generic Netlink family named for example
-> > +``"test1"`` we need to send a message on the previously opened Generic=
- Netlink
-> > +socket. The message should target the Generic Netlink Family (1), be a
-> > +``do`` (2) call to ``CTRL_CMD_GETFAMILY`` (3). A ``dump`` version of t=
-his
-> > +call would make the kernel respond with information about *all* the fa=
-milies
-> > +it knows about. Last but not least the name of the family in question =
-has
-> > +to be specified (4) as an attribute with the appropriate type::
-> > +
-> > +  struct nlmsghdr:
-> > +    __u32 nlmsg_len:	32
-> > +    __u16 nlmsg_type:	GENL_ID_CTRL               // (1)
-> > +    __u16 nlmsg_flags:	NLM_F_REQUEST | NLM_F_ACK  // (2)
-> > +    __u32 nlmsg_seq:	1
-> > +    __u32 nlmsg_pid:	0
-> > +
-> > +  struct genlmsghdr:
-> > +    __u8 cmd:		CTRL_CMD_GETFAMILY         // (3)
-> > +    __u8 version:	2 /* or 1, doesn't matter */
-> > +    __u16 reserved:	0
-> > +
-> > +  struct nlattr:                                   // (4)
-> > +    __u16 nla_len:	10
-> > +    __u16 nla_type:	CTRL_ATTR_FAMILY_NAME
-> > +    char data: 		test1\0
-> > +
-> > +  (padding:)
-> > +    char data:		\0\0
-> > +
-> > +The length fields in Netlink (:c:member:`nlmsghdr.nlmsg_len`
-> > +and :c:member:`nlattr.nla_len`) always *include* the header.
-> > +Headers in netlink must be aligned to 4 bytes from the start of the me=
-ssage, =20
->=20
-> s/Headers/Attribute headers/ perhaps?
+On 18/08/2022 17:44, Parav Pandit wrote:
+> A _whole_ network function is represented today using 
+> a. netdevice represents representee's network port
+> 
+> b. devlink port function for function management
 
-Theoretically I think we also align what I called "fixed metadata
-headers", practically all of those are multiple of 4 :S
+So, at the moment I'm just trying to document the current consensus,
+ but where I plan to go _after_ this doc is building the case that
+ devlink port as it exists today mixes in too much networking
+ configuration that really belongs in the representor.  The example
+ that motivated this for me is that setting the MAC address of the
+ representee is currently a devlink port function operation, but
+ this has nothing to do with the PCIe function and everything to do
+ with the network port, so logically it should be an operation on
+ the representor.  (I intend to develop a patch making it such, once
+ we're all on the same page.)
 
-> > +hence the extra ``\0\0`` at the end of the message.
->=20
-> And I think technically for the _last_ attribute it wouldn't be needed?
+I think a general rule is — would this operation make sense on a non-
+ networking SR-IOV device?  If not, then it shouldn't be in devlink
+ port.  E.g. why is port splitting a devlink port operation and not
+ an operation on the port representor netdev?
 
-True, it's not strictly necessary AFAIU. Should I mention it=20
-or would that be over-complicating things?
+> s/master PF/switchdev function
 
-I believe that kernel will accept both forms (without tripping=20
-the trailing data warning), and both the kernel and mnl will pad=20
-out the last attr.
+switchdev function might actually be the best name suggestion yet.
+I like it.
 
-> > +If the family is found kernel will reply with two messages, the respon=
-se
-> > +with all the information about the family::
-> > +
-> > +  /* Message #1 - reply */
-> > +  struct nlmsghdr:
-> > +    __u32 nlmsg_len:	136
-> > +    __u16 nlmsg_type:	GENL_ID_CTRL
-> > +    __u16 nlmsg_flags:	0
-> > +    __u32 nlmsg_seq:	1    /* echoed from our request */
-> > +    __u32 nlmsg_pid:	5831 /* The PID of our user space process */ =20
->=20
-> s/PID/netlink port ID/
->=20
-> It's actually whatever you choose, I think? Lots of libraries will
-> choose (something based on) the process ID, but that's not really
-> needed?
->=20
-> (autobind is different maybe?)
+> Please add text that,
+> Packets transmitted by the representee and when they are not offloaded, such packets are delivered to the port representor netdevice.
 
-I'll respond below.
+That's exactly what
+>> packets
+>> +   transmitted to the representee which fail to match any switching rule
+>> should
+>> +   be received on the representor netdevice.
+says.  (Although my choice of preposition — 'to', rather than 'by'
+ — was less than clear.)
 
-> > +  /* Message #2 - the ACK */
-> > +  struct nlmsghdr:
-> > +    __u32 nlmsg_len:	36
-> > +    __u16 nlmsg_type:	NLMSG_ERROR
-> > +    __u16 nlmsg_flags:	NLM_F_CAPPED /* There won't be a payload */
-> > +    __u32 nlmsg_seq:	1    /* echoed from our request */
-> > +    __u32 nlmsg_pid:	5831 /* The PID of our user space process */ =20
->=20
-> (same here of course)
->=20
-> > +``NLMSGERR_ATTR_MSG`` carries a message in English describing
-> > +the encountered problem. These messages are far more detailed
-> > +than what can be expressed thru standard UNIX error codes. =20
->=20
-> "through"?
+>> +What functions should have a representor?
+>> +-----------------------------------------
+>> +
+>> +Essentially, for each virtual port on the device's internal switch,
+>                                                                             ^^^^
+> You probably wanted to say master PF internal switch here.
+> 
+> Better to word it as, each virtual port of a switchdev, there should be...
 
-How much do you care? Maybe Jon has guidelines?
+Hmm idk, I feel like "switchdev" has the connotation of "the software
+ object inside the kernel representing the switch" rather than "the
+ switch itself".
 
-I heard somewhere that some of English spelling was complicated=20
-by the type-setters they imported from Belgium with the first
-printing presses. Those dudes supposedly just picked the spelling
-they felt was right.. based on how they'd spell it back home.
-Ever since I heard that I felt much less guilty using shorter,
-more logical spellings.
+>> + - Other PFs on the local PCIe controller, and any VFs belonging to them.
+> Local and/or external PCIe controllers.
+That's literally the next bullet point.
 
-> > +Querying family information is useful in rare cases when user space ne=
-eds =20
->=20
-> debatable if that's "rare", but yeah, today it's not done much :)
+>> + - PFs and VFs on other PCIe controllers on the device (e.g. for any
+>> embedded
+>> +   System-on-Chip within the SmartNIC).
+Do I need to use the word "external" to make it more obvious?
 
-Some of the text is written with the implicit goal of comforting=20
-the newcomer ;)
+>> + - PFs and VFs with other personalities, including network block devices
+>> (such
+>> +   as a vDPA virtio-blk PF backed by remote/distributed storage), if their
+>> +   network access is implemented through a virtual switch port.
+>> +   Note that such functions can require a representor despite the
+>> representee
+>> +   not having a netdev.
+> This looks a big undertaking to represent them via "netdevice".
+> Mostly they cannot be well represented by the netdevice.
 
-> > +.. _nlmsg_pid:
-> > +
-> > +nlmsg_pid
-> > +---------
-> > +
-> > +:c:member:`nlmsghdr.nlmsg_pid` is called PID because the protocol pred=
-ates
-> > +wide spread use of multi-threading and the initial recommendation was
-> > +to use process ID in this field. Process IDs start from 1 hence the use
-> > +of ``0`` to mean "allocate automatically".
-> > +
-> > +The field is still used today in rare cases when kernel needs to send
-> > +a unicast notification. User space application can use bind() to assoc=
-iate
-> > +its socket with a specific PID (similarly to binding to a UDP port),
-> > +it then communicates its PID to the kernel.
-> > +The kernel can now reach the user space process.
-> > +
-> > +This sort of communication is utilized in UMH (user mode helper)-like
-> > +scenarios when kernel needs to trigger user space logic or ask user
-> > +space for a policy decision.
-> > +
-> > +Kernel will automatically fill the field with process ID when respondi=
-ng
-> > +to a request sent with the :c:member:`nlmsghdr.nlmsg_pid` value of ``0=
-``. =20
->=20
-> I think this could be written a bit better - we call this thing a "port
-> ID" internally now, and yes, it might default to a process ID (more
-> specifically task group ID) ... but it feels like this could explain
-> bind vs. autobind etc. a bit more? And IMHO it should focus less on the
-> process ID/PID than saying "port ID" with a (historical) default of
-> using the PID/TGID.
+The netdevice isn't supposed to represent the vDPA block device.  Rather
+ it represents the switch port that the block device is using.
 
-I'll rewrite. The only use I'm aware of is OvS upcalls, are there more?
+> In some cases, such vDPA devices are affiliated to the switchdev, but they use one or multiple of its ports.
 
-Practically speaking for a person trying to make a ethtool, FOU,
-devlink etc. call to the kernel this is 100% irrelevant.
+If the block device uses multiple switch ports, then it should have
+ multiple representors, one for each port, so that each switch port can
+ be configured in the standard way.
 
-> > +Strict checking
-> > +---------------
-> > +
-> > +The ``NETLINK_GET_STRICT_CHK`` socket option enables strict input chec=
-king
-> > +in ``NETLINK_ROUTE``. It was needed because historically kernel did not
-> > +validate the fields of structures it didn't process. This made it impo=
-ssible
-> > +to start using those fields later without risking regressions in appli=
-cations
-> > +which initialized them incorrectly or not at all.
-> > +
-> > +``NETLINK_GET_STRICT_CHK`` declares that the application is initializi=
-ng
-> > +all fields correctly. It also opts into validating that message does n=
-ot
-> > +contain trailing data and requests that kernel rejects attributes with
-> > +type higher than largest attribute type known to the kernel.
-> > +
-> > +``NETLINK_GET_STRICT_CHK`` is not used outside of ``NETLINK_ROUTE``. =
-=20
->=20
-> However, there are also more generally strict checks in policy
-> validation ... maybe a discussion of all that would be worthwhile?
+Configuration of the block device itself is of course through separate
+ interfaces which are common to non-switchdev virtual block devices.
 
-Yeah :( It's too much to describe to a newcomer, I figured. I refer
-those who care to the enum field in the next section. We'd need a full
-table of families and attrs which start strict(er) validation.. bah. Too
-much technical debt.
+>> + - Subfunctions (SFs) belonging to any of the above PFs or VFs, if they have
+>> +   their own port on the switch (as opposed to using their parent PF's port).
+> Not sure why the text has _if_ for SF and not for the VF.
+> Do you see a SF device in the kernel that doesn't have their own port, due to which there is _if_ added?
 
-> > +Unknown attributes
-> > +------------------
-> > +
-> > +Historically Netlink ignored all unknown attributes. The thinking was =
-that
-> > +it would free the application from having to probe what kernel support=
-s.
-> > +The application could make a request to change the state and check whi=
-ch
-> > +parts of the request "stuck".
-> > +
-> > +This is no longer the case for new Generic Netlink families and those =
-opting
-> > +in to strict checking. See enum netlink_validation for validation types
-> > +performed. =20
->=20
-> OK some of that is this, but some of it is also the strict length checks
-> e.g. for Ethernet addresses.
->=20
-> > +Fixed metadata and structures
-> > +-----------------------------
-> > +
-> > +Classic Netlink made liberal use of fixed-format structures within
-> > +the messages. Messages would commonly have a structure with
-> > +a considerable number of fields after struct nlmsghdr. It was also
-> > +common to put structures with multiple members inside attributes,
-> > +without breaking each member into an attribute of its own. =20
->=20
-> That reads very descriptive and historic without making a recommendation
-> - I know it's in the section, but maybe do say something like "This is
-> discouraged now and attributes should be used instead"?
+This document is meant to cover situations that vendors are likely to
+ find themselves in, not just those that have already been encountered.
+It is plausible, at least to me, that a vendor might decide to implement
+ subfunctions at a filtering rather than a switching level (i.e. it's
+ just a bundle of queue pairs and you use something like ethtool NFC to
+ direct traffic to it).  And if that happens, I don't want them to read
+ my doc and (wrongly) think that they still need reprs for such SFs.
+(The corresponding situation is far less likely to arise for VFs,
+ because there's a clear understanding across the industry that VFs
+ should look to their consumer like self-contained network devices,
+ which implies transparent switching.)
 
-Will do!
+>> +How are representors created?
+>> +-----------------------------
+>> +
+>> +The driver instance attached to the master PF should enumerate the
+>> +virtual ports on the switch, and for each representee, create a
+>> +pure-software netdevice which has some form of in-kernel reference to
+>> +the PF's own netdevice or driver private data (``netdev_priv()``).
+> Today a user can create new virtual ports. Hence, these port represnetors and function representors are created dynamically without enumeration.
+> Please add text describing both ways.
 
-> Either way, thanks for doing this, it's a great overview!
->=20
-> We might add:
->  - availability of attribute policy introspection
->    (you mention family introspection only I think)
+Again, this is addressed in the next sentence after you quoted:
+>> +If switch ports can dynamically appear/disappear, the PF driver should
+>> +create and destroy representors appropriately.
 
-I did mention it, my preference would be that more detail should be in
-the genetlink documentation, rather than here.
+> For mlx5 case a representor netdevice has real queue from which tx/rx DMA happens from the device to/from network.
+> It is not entirely pure software per say.
+> Hence, "pure-software" is misleading. Please drop that word.
 
->  - do we want to bring in the whole "per operation" vs. "per genetlink
->    family" attribute policy?
+The rep dev doesn't own the BAR.  Everything it has it gets from
+ the PF.  That's why it shouldn't SET_NETDEV_DEV, which is what I
+ mean by "pure-software".
 
-Nope :)
+>> +The operations of the representor netdevice will generally involve
+>> +acting through the master PF.  For example, ``ndo_start_xmit()`` might
+>> +send the packet through a hardware TX queue attached to the master PF,
+>> +with either packet metadata or queue configuration marking it for delivery
+>> to the representee.
+> Sharing/not sharing TX and RX queue among representor netdevices is not yet well established.
 
->    (I'm firmly on the "single policy for the whole family" side ...)
+But in either case the hw TXQ will have been created out of the
+ PF's BAR(s) (there's no other PCIe function/aperture to poke at
+ the hardware from), that's what I mean by "attached to".  If you
+ have a clearer way to word that I'm all ears.
 
-Well, it is causing us grief in devlink at least ;)
-No strong preference.
+>> +
+>> +How are representors identified?
+>> +--------------------------------
+>> +
+>> +The representor netdevice should *not* directly refer to a PCIe device (e.g.
+>> +through ``net_dev->dev.parent`` / ``SET_NETDEV_DEV()``), either of the
+>> +representee or of the master PF.
+> This isn't true.
+> Representor netdevices are connected to the switchdev device PCI function.
 
->  - maybe not the appropriate place here, but maybe some best practices
->    for handling attributes, such as the multi-attribute array thing we
->    discussed in the other thread?
+In some but not all existing drivers.
+Note that I said "should not", not "does not".
 
-Right, this doc is meant for the user rather than kernel dev. I'm
-planning to write a separate doc for the kernel dev.
-=20
-I started writing this one as guide for a person who would like to write
-a YAML NL library for their fav user space language but has no prior
-knowledge of netlink and does not know where to start.
+> Without linking to PCI device, udev scriptology needs to grep among thousands of netdevices and its very inefficient.
 
->  - maybe more userspace recommendations such as using different sockets
->    for multicast listeners and requests, because otherwise it gets
->    tricky to wait for the ACK of a request since you have to handle
->    notifications that happen meanwhile?
+It's a control plane operation, is efficiency really a prime
+ concern?  If so, surely the right thing is to give
+ /sys/class/net/$REP_DEV/ a suitably-named symlink to
+ /sys/class/net/$SWITCH_DEV, performing the same role as the
+ phys_switch_id matching without the global search, rather than
+ a semantically-invalid PCIe device link.
 
-Hm, good point. I should add a section on multicast and make it part=20
-of that.
+>> +There are as yet no established conventions for naming representors
+>> +which do not correspond to PCIe functions (e.g. accelerators and plugins).
+> Netdevice represents the networking port of the function.
 
->  - maybe some mention of the fact that sometimes we now bind kernel
->    object or state lifetime to a socket, e.g. in wireless you can
->    connect and if your userspace crashes/closes the socket, the
->    connection is automatically torn down (because you can't handle the
->    things needed anymore)
+No, it represents any networking port on the switch.  Whether
+ that has a PCIe function or not.
+(The doc title, "Network Function Representors", is deliberately
+ phrased to be interpretable as about "network functions" in the
+ sense of NFV, rather than "networking PCIe functions".  An
+ entire network function (in the NFV sense) could be implemented
+ in hardware, in which case it would have a switch port and thus
+ representor, but no PCIe function — it terminates traffic inside
+ the device rather than sending it over the PCIe bus to a driver
+ in the host or a VM.)
 
-=F0=9F=98=8D Can you point me to the code? (probably too advanced for this =
-doc
-but the idea seems super useful!)
-
->  - maybe something about message sizes? we've had lots of trouble with
->    that in nl80211, but tbh I'm not really sure what we should say about
->    it other than making sure you use large enough buffers ...
-
-Yes :S What's the error reported when the buffer is too small?
-recv() =3D -1, errno =3D EMSGSIZE? Does the message get discarded=20
-or can it be re-read? I don't have practical experience with
-that one.
+-ed
