@@ -2,74 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A16AE599A32
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 12:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 664E6599A56
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 13:03:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347915AbiHSKoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 06:44:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41720 "EHLO
+        id S1348240AbiHSK5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 06:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348094AbiHSKoW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:44:22 -0400
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FA152FD0;
-        Fri, 19 Aug 2022 03:44:20 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27JAi3O6007860;
-        Fri, 19 Aug 2022 05:44:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1660905843;
-        bh=1gI0bQ8Z+7P6U8Und/i1Wi41gaLPS8Vn6rr9ZwE++wg=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=bca7V1Snc+5/PQcygoMqyULSdQbNbkMfPKbJkAF8En+E4Lzr+w3sddMwy3eODnGU+
-         8RmkCEP9VIFhvJklR06f7iInRb+arFlo15weElG52bFWFNrBfkP8R8FwHYz/LuncHh
-         UxbRuDL8AGuRJ00N92a7ba7GIJtpESV+fRJp7En4=
-Received: from DFLE106.ent.ti.com (dfle106.ent.ti.com [10.64.6.27])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27JAi2AG128600
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 19 Aug 2022 05:44:02 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE106.ent.ti.com
- (10.64.6.27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Fri, 19
- Aug 2022 05:44:02 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Fri, 19 Aug 2022 05:44:02 -0500
-Received: from [10.24.69.241] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27JAhvci093401;
-        Fri, 19 Aug 2022 05:43:58 -0500
-Message-ID: <0ca78aad-2145-c88b-a26e-9ababa38df6e@ti.com>
-Date:   Fri, 19 Aug 2022 16:13:57 +0530
+        with ESMTP id S1347912AbiHSK5H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:57:07 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E78F43A2
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:57:06 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id j8so8089201ejx.9
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:57:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=dX02Rc+pN7+4qfFHJSGNknLuB0PW1+jk5FRBT7oR698=;
+        b=pXEfaco/xXS451l4PZDCw3foOl+XsCgM9EbRVDjjQsDW7fbLbs2qs0EoGOUoBfntAP
+         5XO3YIVo8Aki28letHd26V8Atjx1MsvqQCBcPywHF/TTSclIOxl0ruA1R/7Sqsk+vpb6
+         y/v9G7PL/9yFiGoPAY/ElIELqIp20H7ReJw0GVBjfpUBAIoOl9DTcJ+UL2ttu9V5n2Gy
+         LsrAZbJDz1EUolOUbDWfiTsMENgkBnyAqyaggEi0NoMqh07LHXdeROJH948xHKfIsf+F
+         PI+2gR7m6G2gLD8cfdJh747tU0psOJKyJkHwMhNcJRff5yPXpzsVOThJY/2hCbTcIjAB
+         4VlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=dX02Rc+pN7+4qfFHJSGNknLuB0PW1+jk5FRBT7oR698=;
+        b=KeBo5fo3NxuANf46rNJNOJbOcYUNAhB4hTQ37WCs7EaZ2Whkx6GXaAj3zv4kfIfayg
+         1e18W/NaACMxsRff1QvHwUZCW+u22GCXxgMMkrQqj9wSHogkO3GqayLADrcb1lvnhr2e
+         AwUcHt+70qVwBnpO9yI8D20yAg38d+5nOX46H14iYzynIRcuZaItz3BH2M5q6ixZxcSC
+         xHeBwWySju8R15pYUX/R0jC+6wlf8GJQOWuszg09Ws++8tIk4Zm7hjG3D8p5ctt7AT17
+         WuTSttL6weFjVaRVzw6V5SeX6QJLyTk87zxzS9WoaYOXYD3j4LnTDLaiy7dpVF5ZZSzD
+         tsRQ==
+X-Gm-Message-State: ACgBeo2UtUyE2ed6pnAN4TOu7MnzFdeonATkmte3YEE7cA3vyfVmcajO
+        UQwp7UjM0q5wILtac3a9K2c=
+X-Google-Smtp-Source: AA6agR4PUjZSJhI8qev1IduJx+dWs6yxTswj1L56h/JE2U8vaWrMcK7VMklffF4p/SBd16H3KKXzyQ==
+X-Received: by 2002:a17:906:4796:b0:734:b5b5:96ed with SMTP id cw22-20020a170906479600b00734b5b596edmr4427487ejc.251.1660906624443;
+        Fri, 19 Aug 2022 03:57:04 -0700 (PDT)
+Received: from skbuf ([188.25.231.48])
+        by smtp.gmail.com with ESMTPSA id 24-20020a170906319800b007373afafa41sm2164283ejy.188.2022.08.19.03.57.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 03:57:03 -0700 (PDT)
+Date:   Fri, 19 Aug 2022 13:57:00 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Craig McQueen <craig@mcqueen.id.au>
+Subject: Re: [PATCH net] net: dsa: microchip: keep compatibility with device
+ tree blobs with no phy-mode
+Message-ID: <20220819105700.5a226titio5m2uop@skbuf>
+References: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
+ <095c6c01-d4dd-8275-19fc-f9fe1ea40ab8@rasmusvillemoes.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
-        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
-        <vigneshr@ti.com>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kishon@ti.com>, <s-vadapalli@ti.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
- bindings for J7200 CPSW5G
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-References: <20220816060139.111934-1-s-vadapalli@ti.com>
- <20220816060139.111934-2-s-vadapalli@ti.com>
- <79e58157-f8f2-6ca8-1aa6-b5cf6c83d9e6@linaro.org>
- <31c3a5b0-17cc-ad7b-6561-5834cac62d3e@ti.com>
- <9c331cdc-e34a-1146-fb83-84c2107b2e2a@linaro.org>
- <176ab999-e274-e22a-97d8-31f655b16800@ti.com>
- <da82e71f-e32c-7adb-250e-0c80cc6e30bd@ti.com>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <da82e71f-e32c-7adb-250e-0c80cc6e30bd@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <095c6c01-d4dd-8275-19fc-f9fe1ea40ab8@rasmusvillemoes.dk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,65 +84,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/08/22 15:59, Siddharth Vadapalli wrote:
-> Hello Krzysztof,
+On Fri, Aug 19, 2022 at 12:19:12PM +0200, Rasmus Villemoes wrote:
+> Well, there's also e.g. arch/arm/boot/dts/at91-sama5d3_ksz9477_evb.dts
+> which sets the phy-mode but not the phy-handle:
 > 
-> On 17/08/22 13:11, Siddharth Vadapalli wrote:
->> Hello Krzysztof,
->>
->> On 17/08/22 11:20, Krzysztof Kozlowski wrote:
->>> On 17/08/2022 08:14, Siddharth Vadapalli wrote:
->>>
->>>>>> -      port@[1-2]:
->>>>>> +      "^port@[1-4]$":
->>>>>>          type: object
->>>>>>          description: CPSWxG NUSS external ports
->>>>>>  
->>>>>> @@ -119,7 +120,7 @@ properties:
->>>>>>          properties:
->>>>>>            reg:
->>>>>>              minimum: 1
->>>>>> -            maximum: 2
->>>>>> +            maximum: 4
->>>>>>              description: CPSW port number
->>>>>>  
->>>>>>            phys:
->>>>>> @@ -151,6 +152,18 @@ properties:
->>>>>>  
->>>>>>      additionalProperties: false
->>>>>>  
->>>>>> +if:
->>>>>
->>>>> This goes under allOf just before unevaluated/additionalProperties:false
->>>>
->>>> allOf was added by me in v3 series patch and it is not present in the
->>>> file. I removed it in v4 after Rob Herring's suggestion. Please let me
->>>> know if simply moving the if-then statements to the line above
->>>> additionalProperties:false would be fine.
->>>
->>> I think Rob's comment was focusing not on using or not-using allOf, but
->>> on format of your entire if-then-else. Your v3 was huge and included
->>> allOf in wrong place).
->>>
->>> Now you add if-then in proper place, but it is still advisable to put it
->>> with allOf, so if ever you grow the if-then by new entry, you do not
->>> have to change the indentation.
->>>
->>> Anyway the location is not correct. Regardless if this is if-then or
->>> allOf-if-then, put it just like example schema is suggesting.
->>
->> I will move the if-then statements to the lines above the
->> "additionalProperties: false" line. Also, I will add an allOf for this
-> 
-> I had a look at the example at [1] and it uses allOf after the
-> "additionalProperties: false" line. Would it be fine then for me to add
-> allOf and the single if-then statement below the "additionalProperties:
-> false" line? Please let me know.
-> 
-> [1] -> https://github.com/devicetree-org/dt-schema/blob/mai/test/schemas/conditionals-allof-example.yaml
+>                         port@0 {
+>                                 reg = <0>;
+>                                 label = "lan1";
+>                                 phy-mode = "internal";
+>                         };
 
-Sorry, the correct link is:
-https://github.com/devicetree-org/dt-schema/blob/main/test/schemas/conditionals-allof-example.yaml
+Yeah, it looks like there's also that variation, curious.
 
-Regards,
-Siddharth.
+> And doing that in my case seems to fix things (I wouldn't know what
+> phy-handle to point at anyway), so since we're still in development, I
+> think I'll do that. But if I want to follow the new-world-order to the
+> letter, should I also figure out a way to point at a phy-handle?
+
+So if by "new world order" you mean
+https://patchwork.kernel.org/project/netdevbpf/cover/20220818115500.2592578-1-vladimir.oltean@nxp.com/
+then no, that patch set doesn't change the requirements for *user* ports
+(what you have here) but for CPU and DSA ports, where no phy-handle/
+fixed-link/phy-mode means something entirely different than it means for
+user ports.
+
+To give you an idea of how things work for user ports. If a user port
+has a phy-handle, DSA will connect to that, irrespective of what OF-based
+MDIO bus that is on. If not, DSA looks at whether ds->slave_mii_bus is
+populated with a struct mii_bus by the driver. If it is, it connects in
+a non-OF based way to a PHY address equal to the port number. If
+ds->slave_mii_bus doesn't exist but the driver provides
+ds->ops->phy_read and ds->ops->phy_write, DSA automatically creates
+ds->slave_mii_bus where its ops are the driver provided phy_read and
+phy_write, and it then does the same thing of connecting to the PHY in
+that non-OF based way.
+
+So to convert a driver that currently relies on DSA allocating the
+ds->slave_mii_bus, you need to allocate/register it yourself (using the
+of_mdiobus_* variants), and populate ds->slave_mii_bus with it. Look at
+lan937x_mdio_register() for instance.
+
+For existing device trees which connect in a non-OF based way, you still
+need to keep ds->ops->phy_read and ds->ops->phy_write, and let DSA
+create the ds->slave_mii_bus. The phy_read and phy_write can be the same
+between your MDIO bus ops and DSA's MDIO bus ops.
+
+> > Fixes: 2c709e0bdad4 ("net: dsa: microchip: ksz8795: add phylink support")
+> > Link: https://bugzilla.kernel.org/show_bug.cgi?id=216320
+> > Reported-by: Craig McQueen <craig@mcqueen.id.au>
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> I've also tested this patch on top of v5.19 without altering my .dts,
+> and that also seems to fix things, so I suppose you can add
+> 
+> Fixes: 65ac79e18120 ("net: dsa: microchip: add the phylink get_caps")
+> Tested-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+
+So I don't intend to make you modify your device tree in this case, but
+there is something to be said about U-Boot compatibility. In U-Boot,
+with DM_DSA, I don't intend to support any unnecessary complexity and
+alternative ways of describing the same thing, so there, phy-mode and
+one of phy-handle or fixed-link are mandatory for all ports. And since
+U-Boot can pass its own device tree to Linux, it means Linux DSA drivers
+might need to gradually gain support for OF-based phy-handle on user
+ports as well. So see what Tim Harvey has done in drivers/net/ksz9477.c
+in the U-Boot source code, and try to work with his device tree format,
+as a starting point.
