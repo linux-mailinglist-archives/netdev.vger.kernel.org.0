@@ -2,136 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D42695999E2
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 12:43:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59BF45999F2
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 12:43:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348323AbiHSKeQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 06:34:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51170 "EHLO
+        id S1348393AbiHSKjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 06:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347973AbiHSKeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:34:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DDB93DF1C
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:34:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1660905245;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=t9qConcsVrFeMSKZiZOZ7jvIr/WxjYXLhBQh/vLaFNc=;
-        b=Sa+EqwxqY5TNC8cxtn6xkrhHOGjcuP4AiVEIHDvZLba02ddxN8YcnSwGbaZWyPyNVwpt9q
-        b/SJ/CIgSMYUxkNR+CnGE20uTkm4Z+KmwstNdsdfRsyu4CnZO4T+Tp46FE4yyvGZ3Is0Tc
-        i6DnsqV8T8p5VKVXoIWRdQcTjE8rFpE=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-665-7d1VIyhhO_a3udN6pDZatw-1; Fri, 19 Aug 2022 06:34:04 -0400
-X-MC-Unique: 7d1VIyhhO_a3udN6pDZatw-1
-Received: by mail-wr1-f72.google.com with SMTP id i29-20020adfa51d000000b002251fd0ff14so636086wrb.16
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 03:34:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=t9qConcsVrFeMSKZiZOZ7jvIr/WxjYXLhBQh/vLaFNc=;
-        b=4GjKM4Oj32+TgfeFxZDYOgw29c4xcQ+axnlm8MoCZJha8oWx4t200JVN9r9kxP11xX
-         /jtLqbTql+21OMhA0SXIsK/D9INZXzfzyLSnPsawA8WuiZrllTD5P2HatwHQHq9mmpG3
-         hnwK3YBGf4GWZxW4lXjouOB0jAxzA3kDoJBVnxxBSHshgtjOPqKAv3UafcG1xLyrSR8F
-         yZOPB1FUBo5lcG2xoXmffPpPB/w1mXRH3T91W1i4tbshPYvTC8d0knXua3xpzWm0clR+
-         90VGul8jFDhFyMKsH+/CFmD6wAqaLomEtsDTjd4hutvzai9s9ocGsK02/CVpWbREuyfg
-         VsNQ==
-X-Gm-Message-State: ACgBeo0SXBrRwj4+rN654rwu+Oe89GA7ohe6Npnk27IgdX/q1Pdkroew
-        CmtzVaxjZ9KFEi7ijrtEMkmT8pB85L1lmaB5o5fW39tMqCJThJ8rH5OV9VsPzDQI8bWy8biL5Ua
-        5boPNb/0z1Dt0WC/D
-X-Received: by 2002:a5d:64e9:0:b0:220:7dd7:63eb with SMTP id g9-20020a5d64e9000000b002207dd763ebmr3831683wri.590.1660905243409;
-        Fri, 19 Aug 2022 03:34:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7AoX+VQs/b3XMThsgV+BYuePZtBIHhF6hh6s7w1xBiDvXh8zDLXmM78RPTeY/EF0PqfZ3SJQ==
-X-Received: by 2002:a5d:64e9:0:b0:220:7dd7:63eb with SMTP id g9-20020a5d64e9000000b002207dd763ebmr3831663wri.590.1660905243244;
-        Fri, 19 Aug 2022 03:34:03 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id b18-20020adff252000000b00224f605f39dsm3501436wrp.76.2022.08.19.03.34.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 03:34:02 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "open list:HFI1 DRIVER" <linux-rdma@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <song.bao.hua@hisilicon.com>,
+        with ESMTP id S1348275AbiHSKjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 06:39:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8C07F124;
+        Fri, 19 Aug 2022 03:38:57 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27JAN17X004661;
+        Fri, 19 Aug 2022 10:38:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to : sender :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=HRTeMWW3i3o/opZMcyPGHs+ShmWqQhyfthD2N/T6Img=;
+ b=Ed1Pj4jDIxxZ4lXVHeZT+yyL66LF3ce0+bNUTTYE1Gw6sFg0t73rWpxnuuDi8E0PSXoj
+ 0pRkHl2h16GqEJlYKpgCXO1Ce7h279pXlRumfbfxedbqhG0hUqpQ8vr/o12yjLEw6UsA
+ vTmST1smBItxlGSLJhFemkOA2aS5B0+rLwKofJielgSZmQLXL99mv/RND6Bj2hdLFp/N
+ 5Tz+DvIhS5mF3tIttVUgP2GxHi67LdtYvK74ZFv068djCrWeAQBnz7M08xz5Bo8HsfKB
+ 7tjQWQrautqM2o1vhXhL7boY+/Z9pZUfB5wqSy338wS+1LFGc3mGlblzBrlJ1a0TJN9q jA== 
+Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j28qg89pj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 10:38:53 +0000
+Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
+        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27JAa99w026546;
+        Fri, 19 Aug 2022 10:38:51 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma02fra.de.ibm.com with ESMTP id 3j0dc3as1f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 19 Aug 2022 10:38:51 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27JAclNj22610196
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 19 Aug 2022 10:38:47 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9256D52051;
+        Fri, 19 Aug 2022 10:38:47 +0000 (GMT)
+Received: from t480-pf1aa2c2 (unknown [9.145.93.213])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 743235204E;
+        Fri, 19 Aug 2022 10:38:47 +0000 (GMT)
+Received: from bblock by t480-pf1aa2c2 with local (Exim 4.95)
+        (envelope-from <bblock@linux.ibm.com>)
+        id 1oOzOo-004DLx-Lt;
+        Fri, 19 Aug 2022 12:38:46 +0200
+Date:   Fri, 19 Aug 2022 10:38:46 +0000
+From:   Benjamin Block <bblock@linux.ibm.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Steffen Maier <maier@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
         Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>, Tariq Toukan <tariqt@nvidia.com>
-Subject: Re: [PATCH v2 1/5] bitops: Introduce find_next_andnot_bit()
-In-Reply-To: <CAHp75VcaSwfy7kOm_d28-87QKQ5KPB69=X=Z9OYUzJJKwRCSmQ@mail.gmail.com>
-References: <20220817175812.671843-1-vschneid@redhat.com>
- <20220817175812.671843-2-vschneid@redhat.com>
- <20220818100820.3b45808b@gandalf.local.home>
- <xhsmh35dtbjr0.mognet@vschneid.remote.csb>
- <20220818130041.5b7c955f@gandalf.local.home>
- <CAHp75VcaSwfy7kOm_d28-87QKQ5KPB69=X=Z9OYUzJJKwRCSmQ@mail.gmail.com>
-Date:   Fri, 19 Aug 2022 11:34:01 +0100
-Message-ID: <xhsmhk074a5eu.mognet@vschneid.remote.csb>
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <Yv9oNvet5dMcCDbv@t480-pf1aa2c2.fritz.box>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+Sender: Benjamin Block <bblock@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: ZTlR8yj2u-R4cx63QBTd_WcdyhsQOX1J
+X-Proofpoint-ORIG-GUID: ZTlR8yj2u-R4cx63QBTd_WcdyhsQOX1J
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-19_06,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 bulkscore=0 priorityscore=1501 suspectscore=0 phishscore=0
+ impostorscore=0 mlxscore=0 lowpriorityscore=0 clxscore=1011 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208190041
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/08/22 22:04, Andy Shevchenko wrote:
-> On Thu, Aug 18, 2022 at 8:18 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->> On Thu, 18 Aug 2022 17:26:43 +0100
->> Valentin Schneider <vschneid@redhat.com> wrote:
->>
->> > How about:
->>
->> >
->> >   find the next set bit in (*addr1 & ~*addr2)
->>
->> I understand the above better. But to convert that into English, we could
->> say:
->>
->>
->>   Find the next bit in *addr1 excluding all the bits in *addr2.
->>
->> or
->>
->>   Find the next bit in *addr1 that is not set in *addr2.
->
-> With this explanation I'm wondering how different this is to
-> bitmap_bitremap(), with adjusting to using an inverted mask. If they
-> have something in common, perhaps make them in the same namespace with
-> similar naming convention?
->
+On Thu, Aug 18, 2022 at 11:01:01PM +0200, Wolfram Sang wrote:
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
+> 
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  drivers/s390/block/dasd_devmap.c | 2 +-
+>  drivers/s390/block/dasd_eer.c    | 4 ++--
+>  drivers/s390/block/dcssblk.c     | 2 +-
+>  drivers/s390/char/hmcdrv_cache.c | 2 +-
+>  drivers/s390/char/tape_class.c   | 4 ++--
+>  drivers/s390/cio/qdio_debug.c    | 2 +-
+>  drivers/s390/net/ctcm_main.c     | 2 +-
+>  drivers/s390/net/fsm.c           | 2 +-
+>  drivers/s390/net/qeth_ethtool.c  | 4 ++--
+>  drivers/s390/scsi/zfcp_aux.c     | 2 +-
+>  drivers/s390/scsi/zfcp_fc.c      | 2 +-
+>  11 files changed, 14 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/s390/cio/qdio_debug.c b/drivers/s390/cio/qdio_debug.c
+> index 4bb7965daa0f..1a9714af51e4 100644
+> --- a/drivers/s390/cio/qdio_debug.c
+> +++ b/drivers/s390/cio/qdio_debug.c
+> @@ -87,7 +87,7 @@ int qdio_allocate_dbf(struct qdio_irq *irq_ptr)
+>  			debug_unregister(irq_ptr->debug_area);
+>  			return -ENOMEM;
+>  		}
+> -		strlcpy(new_entry->dbf_name, text, QDIO_DBF_NAME_LEN);
+> +		strscpy(new_entry->dbf_name, text, QDIO_DBF_NAME_LEN);
+>  		new_entry->dbf_info = irq_ptr->debug_area;
+>  		mutex_lock(&qdio_dbf_list_mutex);
+>  		list_add(&new_entry->dbf_list, &qdio_dbf_list);
+> diff --git a/drivers/s390/scsi/zfcp_aux.c b/drivers/s390/scsi/zfcp_aux.c
+> index fd2f1c31bd21..df782646e856 100644
+> --- a/drivers/s390/scsi/zfcp_aux.c
+> +++ b/drivers/s390/scsi/zfcp_aux.c
+> @@ -103,7 +103,7 @@ static void __init zfcp_init_device_setup(char *devstr)
+>  	token = strsep(&str, ",");
+>  	if (!token || strlen(token) >= ZFCP_BUS_ID_SIZE)
+>  		goto err_out;
+> -	strlcpy(busid, token, ZFCP_BUS_ID_SIZE);
+> +	strscpy(busid, token, ZFCP_BUS_ID_SIZE);
+>  
+>  	token = strsep(&str, ",");
+>  	if (!token || kstrtoull(token, 0, (unsigned long long *) &wwpn))
+> diff --git a/drivers/s390/scsi/zfcp_fc.c b/drivers/s390/scsi/zfcp_fc.c
+> index b61acbb09be3..77917b339870 100644
+> --- a/drivers/s390/scsi/zfcp_fc.c
+> +++ b/drivers/s390/scsi/zfcp_fc.c
+> @@ -885,7 +885,7 @@ static int zfcp_fc_gspn(struct zfcp_adapter *adapter,
+>  			 dev_name(&adapter->ccw_device->dev),
+>  			 init_utsname()->nodename);
+>  	else
+> -		strlcpy(fc_host_symbolic_name(adapter->scsi_host),
+> +		strscpy(fc_host_symbolic_name(adapter->scsi_host),
+>  			gspn_rsp->gspn.fp_name, FC_SYMBOLIC_NAME_SIZE);
+>  
+>  	return 0;
+> -- 
+> 2.35.1
+> 
 
-I'm trying to wrap my head around the whole remap thing, IIUC we could have
-something like remap *addr1 to ~*addr2 and stop rather than continue with a
-wraparound, but that really feels like shoehorning.
+Those look good to me.
 
-> --
-> With Best Regards,
-> Andy Shevchenko
+As far as zFCP and QDIO go:
 
+Acked-by: Benjamin Block <bblock@linux.ibm.com>
+
+-- 
+Best Regards, Benjamin Block  / Linux on IBM Z Kernel Development / IBM Systems
+IBM Deutschland Research & Development GmbH    /    https://www.ibm.com/privacy
+Vorsitz. AufsR.: Gregor Pillen         /         Geschäftsführung: David Faller
+Sitz der Gesellschaft: Böblingen / Registergericht: AmtsG Stuttgart, HRB 243294
