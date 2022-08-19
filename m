@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6898159A464
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:05:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D9CA59A52C
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 20:07:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349893AbiHSSDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 14:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54902 "EHLO
+        id S1350168AbiHSSDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 14:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350136AbiHSSCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 14:02:20 -0400
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2079.outbound.protection.outlook.com [40.107.21.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96E66876B7
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 10:48:54 -0700 (PDT)
+        with ESMTP id S1350324AbiHSSC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 14:02:26 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80059.outbound.protection.outlook.com [40.107.8.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D707A346F
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 10:49:00 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tl10Xpabv/Wh+sJyW/NCv+qF2DOqpY3mYF7S2KaVX2ViA9cULYVpuNk8EYkKD7L5HYgksp3sOZZAanXckGueLqXt9mS/pGZCcz8Iu3lwPGbYU4dBL4S+ewl0Rbf2NgRo9GRB6IMiX+x5D00vf909CEGoywglJ/NagsrwcHscTldR0G+euZ/twPEMKUR+WffCFfBIxvde4Hc1IbOUnaInZ8OhOn/fTY8h2hxtwd6LAOWFVaX/as1V5qGLOqcAVvR/RkLdjIRhnufyzF7yF1VHXpORy0vARHLDVg0PBnUPiR0+btIVsp60CofaynmHNHusEljtsEcRuWQBbRbkW0OzYw==
+ b=OA+vwkP35wcJllP1BbPkMfMH1U8jiJXAlyfd2ayc4aTDspK4f+kK/h/iPQYLlOCo0lx0rBIOgo0JgfQtW2BsvuPD7YiF7Vt1LxPE/Pb4hzZnlzPzkLnEXbuVgaoWLtEy7bqJkUAViaDDJ5iHanmVZV7uz5Pb6afFafWh58sy7YFI+6Vol+9cLFEnMKKsmmld2qDmriXPXiNi1w4dqAiIuCvn2QiH1OuIW806yoPE5XISRWFyj5qKUOfBLhsXlbsC0o9/pIDiphoCxgBeYbbS2cbyx2hYa6+0fvdmCNEtHdQeKG0CaQcDLPTSeTDGXPAZjP3rdZlX6na6DE5ZO7WrYQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+w/zSZBEIt6ji8H/DzJt45Xq+vmJnhIMDFeU0gZwEOA=;
- b=bg0jwO0DMpJSOkra6ldWk1psHICTQUxpyRPWzi0ncqwude0p3BvwiM8Qp7KguGVS8NJC23mnG8QdvJoEadqQ+rSnP0MEdiVaaVHMgkCx+Qfxp7+onm4D4djL7Ej6kCtCiO8aMSzVyRgzjitvxd00aS3BwqEvtJ9VepIixIaDEZP/py3NYnupAkwQUY2RtYYn31pAJaK5vyoALDFd8FJYn8zPP0amQTqPMb21psfCrBSC7oadiHpcXYYdmPpv+dEtA1n0nOV2DOXvPzLmqL0zbsAkzy4ZXutWg/NySEt1HbA0JnvcJ8O1xABN8sh8gH18ZBfgp0+Xpo9Dus+XqigfGg==
+ bh=sJ9Iwy9XnaLcbayLGnYCeLzzozX1Ij2tnOHj5x7Xa8s=;
+ b=eUwE6bBeU83CBz91tY1djAH0w+7dnTOtJLY4bSK5IgUuZJHb472EvA2RNaRKk0Xgc45UTNIu694TkS+OgMWAbTD4wG8zDRlw7vYK4pqmPtQeSBvZz7+8AWWCvvsf/V3SyvUz7JlggdR8OpXjA4Td5q2QpCbKJNwCX9101KinSHc+kCcSObVUMGziRX0Lmb2uQzXH1KSozQVL1lW9y2clTjd2Y37GJliW1nFayps4rToOa39tvrUn2uipZApiyH421qPfLkbS4c5t+Rik0kf4hvrcKJgB9Eo6zITNdr/94VyOwtJ2XDkFaCFbbKaB3UcL0lboIo1m+T+WuAM2o4ABfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+w/zSZBEIt6ji8H/DzJt45Xq+vmJnhIMDFeU0gZwEOA=;
- b=AhrZZClo+QQ3ECUrgQcx59nJk1Ip18Qz54IsDQZWROJ62MpT1g9QmXGKSRBcfDEIAfmljsHb9xKKu7e03q1NCbZJs0HZUENJVZNxqYMKxje4b9bkVUwumR1l/aqXc4sVsM2AI0Z2eoNjGVgNj00JthPmDZwqSX/Wk4emYDPXjwU=
+ bh=sJ9Iwy9XnaLcbayLGnYCeLzzozX1Ij2tnOHj5x7Xa8s=;
+ b=VIBPbLZuelbyKjXZLN4NHdMuzx3Hg8qGpbxBTbKb7rnA8zU2ZAVfmyZe0bx3TEw0WqadAOCPEsR+JWaoJ712BSU8P0yzWoXVMfWaunTbZZsQD/PYLF9FhrC2z2e4dExj2BUOmSE9olXG/lL2IytiH09Q71ee+ezbFP/oAugSi6s=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by DU2PR04MB8551.eurprd04.prod.outlook.com (2603:10a6:10:2d6::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Fri, 19 Aug
- 2022 17:48:41 +0000
+ 2022 17:48:42 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::71b7:8ed1:e4e0:3857]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::71b7:8ed1:e4e0:3857%4]) with mapi id 15.20.5546.016; Fri, 19 Aug 2022
- 17:48:41 +0000
+ 17:48:42 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     "David S. Miller" <davem@davemloft.net>,
@@ -55,9 +55,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Colin Foster <colin.foster@in-advantage.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH v3 net-next 8/9] net: mscc: ocelot: set up tag_8021q CPU ports independent of user port affinity
-Date:   Fri, 19 Aug 2022 20:48:19 +0300
-Message-Id: <20220819174820.3585002-9-vladimir.oltean@nxp.com>
+Subject: [PATCH v3 net-next 9/9] net: mscc: ocelot: adjust forwarding domain for CPU ports in a LAG
+Date:   Fri, 19 Aug 2022 20:48:20 +0300
+Message-Id: <20220819174820.3585002-10-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220819174820.3585002-1-vladimir.oltean@nxp.com>
 References: <20220819174820.3585002-1-vladimir.oltean@nxp.com>
@@ -68,52 +68,52 @@ X-ClientProxiedBy: AM4PR0501CA0044.eurprd05.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a61a9ae1-20c9-495b-b6ff-08da820b0da7
+X-MS-Office365-Filtering-Correlation-Id: 060a7bea-7212-4078-968d-08da820b0e6d
 X-MS-TrafficTypeDiagnostic: DU2PR04MB8551:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: c3HcwaDdzKwKppFVKAYggp+iIrubpYO1FZy5LZzSUg72PV3cxCB14aEppQx3ttGVLIqjLABH9gF2rt9Y03Usp7ZqzidXmcbI+xBRpCt6SZu227v81ljsOvJ/cDVfVcWh6qefKxjjVGyp2XgRwuGZ/GmQoJDf5IKyELPuGONAu64Nq4TwbaIXEuUegcrSQDLXvGNYDaPrpSkeVzWtfadRJdAKueLL3nzBVO+FLCMqp73p0coCOYCx8Fr+sczI4oQJZuvATeb5EYIFVAX6uDNO1HPD1m0WSR25wtzrjWjmAaq2768LmJj77cAKzENKIXTW25HVPIDxSqkCx4hf8LsulDcqcRjKeaAbcp4SbkqKL+J5CXJQLNL7JAK6CbMrlYi8GaPeU2BfCEwKkfNGKpO5ZZDddEHhm0okVKLAw9VLzqQF0UryazsDjZM/PF0x6N8RFIPD18PVaWDOiyTpj30278N6wmCMKpxI22glCuh97ui2z1nEdLjAwDPfo+J3rowvv9CHCxtoH9ID/0vvy3L907D6EUDpzXRYqB6MWj0cND3bykgNVgNmHLuvZBZMTOnRhcY+S3Ezhf+EgDuwlAT7xylsu6kb+5PuKniqZrdcPc5OC56dT1ehsgs71jJ5WXnbTvHGQhn5W8FVRknoFmrVLbPVOqOzxJr+dmznauJ/vDwVmz7WXWn9JYoS0cZYHYCXtq9rgbjrTkNSh4lhdblGXtRsU0zBDfGbueLTpubc0AWVNH+6fXkxRkdWsJ8oO3uDV+rfUL5eHCGx1Rq4xQUpXA==
+X-Microsoft-Antispam-Message-Info: wtU8+gyk/J/AtjqHOYRB1dGCMyhA1/8ANvHa2rSpAkBOKQHwp2rxffzimTpOs6wuq9Y3qmVR7p+RKAdgf6bwj3vEnLM0lUk4CC4Jtb/6OOW1g7ojHtEQhG66GguaKKqN9ExHtItKSRFvDlFu3SRdGJ/DZz8npcy+R1sYOVI631zbtZ9eOGrCNbVnEMOJN6uPrTVnHHtnm80Snd+iau2oy/jSX/vpYUwQZ8+DtOpSrByPJhHWCdaDI+0+jTXeN4JCUvKKyCEE2w8x+ieNUAgxylUa1bTnebDP2V9yuzyEMXt+TsdMVJW48Hy65DHdDIXZTVWfVAGM79EGMQ3Yk9OGTHL2OOm6kd5iLV8kqGSqajlZUXlmQU6U7Ls2CFQqJjdSaSfzZghaDdRCR0ZddL2VnfGlvoBVgNmilNhC0BfxYt0ecXaDSB6HE9YOnjyqshlPwgNn2UGKFYss6XCPpVwDEuyImWpbUSGOxCKVkFTVLoXdcQHi+/+SLVDHCdijKGxENQvCJtqom+2d2Yiuxj1nvfMdvQad8C8i08CcKnKjmAR5YneYmqMFuiGtMUnVnB2mdkEz7TfkjS33P4KFlNXXBf7VxU0oBkxKvEklQmT2tW0cguLWlifBx3F640K3xYnr28z7QiTk8BgO8m2qu3Refdm4bTZdZ1/C/Y1yStamva4wdZ5cKTCaJyyc7XYkQpux3YlmiY1OEdo02hxSAnea5idblMFJVhPJO32NvRkKXjWRD2HVlKjdQauhpJifauhjby4jEaq+QZscVnvvrMprlA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(396003)(346002)(39860400002)(366004)(66556008)(8676002)(4326008)(7416002)(44832011)(66946007)(66476007)(316002)(6916009)(54906003)(5660300002)(36756003)(8936002)(2906002)(478600001)(6486002)(41300700001)(6506007)(6666004)(26005)(52116002)(6512007)(2616005)(86362001)(83380400001)(1076003)(38350700002)(38100700002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?QweDGFG6xylO87RJ2SINw0HE7ZJEICNxbw+R1ZALYENgEFI6OIuisb1WfiAf?=
- =?us-ascii?Q?NL7Oq0IzC5A793HxgKg32boHf3vPDqc9Qee7ljZqGvgQfQpk364hEPPDi6Za?=
- =?us-ascii?Q?r558Lb4IXhQZlvbNxrN/+7aJvUr3asqcHxEpjhPaTE3bVyrEXdDzGqHHqvZQ?=
- =?us-ascii?Q?MvAcieK6MBMrhuOIta7Py9o0JzSOfMasQ1AcfBzuRadGUnz2joAybrt/z37s?=
- =?us-ascii?Q?pAaL8EH17QeHjSaUV4Z00KVNgPZOPWX9X9q+UYrrcfbQwSO5iC9yr2JNH5UM?=
- =?us-ascii?Q?NA7vMLPq51vruj1lJasirB6K1C1G+XczvHa0z1k4KijfPfp/jxSO1zfYDOwT?=
- =?us-ascii?Q?UMgBYuWV4Xz9KHiVueOcnEcKXtms2PCHq1TLvdyXLN9JoQjRGNBoTZOD6UNm?=
- =?us-ascii?Q?aRKxZi0GflkeQo2dFrbp6AOLzfxyzghHQ9DwRlDO0Hj4bHy/gwpNjJu0CsaL?=
- =?us-ascii?Q?gqCcGHyT2zVIbo/djHyKPf+nO3pmuvz22+4c8jwbTJH4wO7jxr5SaZNRBzqW?=
- =?us-ascii?Q?ejtbUEKboIKfyUfmTP0pIyNyhXiMMMDtfHWXbCsQ5C8a0vhFQcwarfgAJOgd?=
- =?us-ascii?Q?99pUkEZafmHEOxSURuOZUO/6yHqlfo7tvNtcR+EPTpnAFpJ5j2b0ckpYOK94?=
- =?us-ascii?Q?Mp/jyQ9MoOvuvmb7sZvxzl2hoXoSgh4qFVLiryVdACUyrPGnogX8dgO1LXg3?=
- =?us-ascii?Q?PlBTjywveLSJiSBcfvaHkjIuw5cNEYYTPdSI0qjrnHfuhwQI7MevNin3GgG/?=
- =?us-ascii?Q?VgYVs6xVrI+XVTGOnA51NF0D/tFBRY+LttH/hcEbIoDfuLxUaLiLv0imz4e+?=
- =?us-ascii?Q?bb0mNIxEqixia0YR103hMBQs2sdDfcsXbubx8NPJbjGpDHildDGfUJlcM11O?=
- =?us-ascii?Q?rn480nBc+yU9Kgnbqt6I/eE3qWV3d/zFmQEq+Akfp0bvt1UICzCNlKWKen6i?=
- =?us-ascii?Q?TV4ZPk3IA7jsFtrknDb3X3R/EI2rO6HGvvtXq3D7qinseZLxGxtuAU19mBd8?=
- =?us-ascii?Q?FogrFvAYh4eLgBzIDRhRSjfsbvyQ+Gt7aoecmfyHvCbrkUozhZfKJGoNF9F8?=
- =?us-ascii?Q?7Uuvdco2xRd81Y5FQ8RsAnlDCeEhkHruX8NTmvWKoWQu/CdKz0FpuPzD/OhE?=
- =?us-ascii?Q?X6Z7JfpkmGcq9sfGZgsPoXFK85Y3L+XzuHHWogRoTFiWWZj8rF7FWFTaIAKB?=
- =?us-ascii?Q?2ZvIleYUSbzVThg00kN2khOWSSLMc7Oj4ezQukLBCllKEg+xN0bRCJ+hrqmS?=
- =?us-ascii?Q?of0Q5rddcJOcSzmGLG6zr4X9w/r2s0zivYB4JfcMPS0yvwl9naFLB174+dfc?=
- =?us-ascii?Q?iukHaZWWfXMpvI4llOn0I4Y5WrhqruCxgFkZH1tcQiizFwniIiYgRMU//YS2?=
- =?us-ascii?Q?IVab6hvBFyC0f1t46+acld/gMrKdZnA+jHse2b/Hz7+5OPpVCjy3i5wOBU9U?=
- =?us-ascii?Q?6oRU/vk5W2r1xENC/wMhUEh8Ncpz0PNeoItjNaK+lFM5tHhMillHWUcMlmM3?=
- =?us-ascii?Q?lJLKnPyQ35vgj/hfHBSjTGlDhtAoDz/9xG1SxZD8nkEWgKkfOQgeqYNSOPiw?=
- =?us-ascii?Q?7NeMjTZSpRPguQ37uQTUfNu20Zgu8VXbNTcNkdJ9D0POyUR4gm9aSd9N0DA9?=
- =?us-ascii?Q?8g=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?twqfI2BF8AvTMi4uBxtN2W9NrbAAhbB1rXsYiTnppyiQsQ8IZQuKAngEmTHX?=
+ =?us-ascii?Q?MJlg62dpIpR8cPniwMLGlx5sT9F9o6KMIvVPWWeEhKrGsUSPqAQHzRIr2a2T?=
+ =?us-ascii?Q?7cEDvPr7AoAY5KNNAEjJ+3oXg5nANH2djpnUBJkdUcnBtP3b+PmNt1EABkqI?=
+ =?us-ascii?Q?1PB3jIVugOsGOLvwrrILlR7TzLOPS05a85cw72H0wWQ/5JHUdMJx9zkyUF3e?=
+ =?us-ascii?Q?l/EJg8ly1sf3a6A2cLfJNQiVmXh1BpnyD89V4HEwoa6EqTSn7z2RpFVj21PS?=
+ =?us-ascii?Q?x8SE1vh5ccjf7BzQBy5O96g6m+1e4QxiNuCKBhF6LgT5BKPOmQ90w8+YsTrb?=
+ =?us-ascii?Q?P8mYaNknnXMYJse6oIjHc7QEE1IHTuA+UAKFM1Oo//o//75zD7YbjNGluq9s?=
+ =?us-ascii?Q?ncN+ChH/9vyGzRkx/XaexTfIImxf9Bncxmeq0VgtjJsjMYNfAM7Jt7TNrE68?=
+ =?us-ascii?Q?I/PucS1z5DkFIEXvIEy6vsiYg2nrAp8LU4dEaoPcL3PsqT/G6S7qn3wXPKs1?=
+ =?us-ascii?Q?HjsSCXRVKRabZRXvVUyu6FahJCfPAkLo3ZmH+xfOCf4O8p3FlbfaE+ve2cRn?=
+ =?us-ascii?Q?zPt2vieOVaJlHp9r5Goy8PYoYBGe7fBWTUoum+Ul2DcOHM3Qg2NYzsHHpPBC?=
+ =?us-ascii?Q?nPEfDfOnlk0kFOOhTZT9hPQJqQxiYEJw9zJ1E0YczF3bx89v5/n19VkXR8CU?=
+ =?us-ascii?Q?F58e2ckc8RJI7kr30ndZafeX3agNvM6UO0EN2mvosBuIVi1LuYRIQirUlsfh?=
+ =?us-ascii?Q?P0xXdGO8rpuLtDubN6ZKtKvriCtyOJ2qU12p8N4RNfssKM0NcHemsSmyDXQ/?=
+ =?us-ascii?Q?b/MhsCoCe/tjLQLOGs/555K6VBqbRdK3aYu2sP6GJOixhkcGOuU2G5qACiBx?=
+ =?us-ascii?Q?tupo4OYsSX3x0IsYvdeeJ62KpWjCVJixg5pb6+60z48ttSti+KDjYbue4iAW?=
+ =?us-ascii?Q?whiHIRPGeDUjnd5Sf7R0GCK/enLlVxnD3xiN02dp/FtWJ2nW0Bz9l3QYxaLN?=
+ =?us-ascii?Q?gmVts+pMpbiUiMw1Z1dYJ2dVsrM0VE4oJB58oGA4bbLNCZkajbRQAgRnhLxX?=
+ =?us-ascii?Q?xM4QzaRKWLSbNpZ4hnUrxiCgo6vAlnbPRbRIhtx8sFa+rdxb6VDmqc8hbyZ4?=
+ =?us-ascii?Q?aLwLy9VqJuXJ4erJW41w/UZ9K4Q+41HsJnwiCNOacLpdAgfErYAVKJHwyxuF?=
+ =?us-ascii?Q?w4e95aG6L992LUP8TJq62cbHS/Fa/E+bmsXJmaBWaJaHd2P2EZgGVHZ2nNvg?=
+ =?us-ascii?Q?tum+njMohjQDy5TsnQ2Y1i00hbDybC3qEx8U0dZv3nzmVZOQvGIhMJ7QUPFZ?=
+ =?us-ascii?Q?gowtZ2c9LktHozc2P60zJYwLHnXgJK0B7MeP9XoKVd6dFHksHQ7kK//ma6M8?=
+ =?us-ascii?Q?+uGbnIgep0zCBbZgOZt83PTM1PMuCWbIUi3wzwwNqBqDFktoS2OUC1Q8FQo4?=
+ =?us-ascii?Q?wgovTkBrxYz6neNTl079kIzulIdx/k7rWPy43ioHFrhyj6DJgm0XbjE+tKPC?=
+ =?us-ascii?Q?3tpPw2XDNMgU+3rGIFR5XNTuIgyO0VqiTAVlyWiImHztMv6z4FzrBXozBYol?=
+ =?us-ascii?Q?Ip/4WN2IN9wSaekKtIfpunuQf8bKJTvPga56MDJyl5E9cJClXNNEgCiaZUJh?=
+ =?us-ascii?Q?Jg=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a61a9ae1-20c9-495b-b6ff-08da820b0da7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 060a7bea-7212-4078-968d-08da820b0e6d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 17:48:41.3255
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2022 17:48:42.6066
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: STaJqneH9zWr40a/z2UvYT0NJgzMydUb2RbCp5ZGEzW7COmdQNlIhGcuy7Xb8MhOyIvDCiLy6129SNBUka9NOg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: q5WJ1wLJnW7cwZdMDbNnXHx281F+SpSeKgWa3MF856K3ZShPwwo9YoYJWvBLzfrcX1y89xb7OeUqktLoqAT/hg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR04MB8551
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -125,179 +125,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a partial revert of commit c295f9831f1d ("net: mscc: ocelot:
-switch from {,un}set to {,un}assign for tag_8021q CPU ports"), because
-as it turns out, this isn't how tag_8021q CPU ports under a LAG are
-supposed to work.
+Currently when we have 2 CPU ports configured for DSA tag_8021q mode and
+we put them in a LAG, a PGID dump looks like this:
 
-Under that scenario, all user ports are "assigned" to the single
-tag_8021q CPU port represented by the logical port corresponding to the
-bonding interface. So one CPU port in a LAG would have is_dsa_8021q_cpu
-set to true (the one whose physical port ID is equal to the logical port
-ID), and the other one to false.
+PGID_SRC[0] = ports 4,
+PGID_SRC[1] = ports 4,
+PGID_SRC[2] = ports 4,
+PGID_SRC[3] = ports 4,
+PGID_SRC[4] = ports 0, 1, 2, 3, 4, 5,
+PGID_SRC[5] = no ports
 
-In turn, this makes 2 undesirable things happen:
+(ports 0-3 are user ports, ports 4 and 5 are CPU ports)
 
-(1) PGID_CPU contains only the first physical CPU port, rather than both
-(2) only the first CPU port will be added to the private VLANs used by
-    ocelot for VLAN-unaware bridging
+There are 2 problems with the configuration above:
 
-To make the driver behave in the same way for both bonded CPU ports, we
-need to bring back the old concept of setting up a port as a tag_8021q
-CPU port, and this is what deals with VLAN membership and PGID_CPU
-updating. But we also need the CPU port "assignment" (the user to CPU
-port affinity), and this is what updates the PGID_SRC forwarding rules.
+- user ports should enable forwarding towards both CPU ports, not just 4,
+  and the aggregation PGIDs should prune one CPU port or the other from
+  the destination port mask, based on a hash computed from packet headers.
 
-All DSA CPU ports are statically configured for tag_8021q mode when the
-tagging protocol is changed to ocelot-8021q. User ports are "assigned"
-to one CPU port or the other dynamically (this will be handled by a
-future change).
+- CPU ports should not be allowed to forward towards themselves and also
+  not towards other ports in the same LAG as themselves
+
+The first problem requires fixing up the PGID_SRC of user ports, when
+ocelot_port_assigned_dsa_8021q_cpu_mask() is called. We need to say that
+when a user port is assigned to a tag_8021q CPU port and that port is in
+a LAG, it should forward towards all ports in that LAG.
+
+The second problem requires fixing up the PGID_SRC of port 4, to remove
+ports 4 and 5 (in a LAG) from the allowed destinations.
+
+After this change, the PGID source masks look as follows:
+
+PGID_SRC[0] = ports 4, 5,
+PGID_SRC[1] = ports 4, 5,
+PGID_SRC[2] = ports 4, 5,
+PGID_SRC[3] = ports 4, 5,
+PGID_SRC[4] = ports 0, 1, 2, 3,
+PGID_SRC[5] = no ports
+
+Note that PGID_SRC[5] still looks weird (it should say "0, 1, 2, 3" just
+like PGID_SRC[4] does), but I've tested forwarding through this CPU port
+and it doesn't seem like anything is affected (it appears that PGID_SRC[4]
+is being looked up on forwarding from the CPU, since both ports 4 and 5
+have logical port ID 4). The reason why it looks weird is because
+we've never called ocelot_port_assign_dsa_8021q_cpu() for any user port
+towards port 5 (all user ports are assigned to port 4 which is in a LAG
+with 5).
+
+Since things aren't broken, I'm willing to leave it like that for now
+and just document the oddity.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
-v1->v2: patch is new
-v2->v3: export the ocelot_port_teardown_dsa_8021q_cpu() symbol
+v1->v3: patch is new
 
- drivers/net/dsa/ocelot/felix.c     |  6 +++
- drivers/net/ethernet/mscc/ocelot.c | 64 +++++++++++++++---------------
- include/soc/mscc/ocelot.h          |  2 +
- 3 files changed, 40 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index aadb0bd7c24f..ee19ed96f284 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -445,6 +445,9 @@ static int felix_tag_8021q_setup(struct dsa_switch *ds)
- 	if (err)
- 		return err;
- 
-+	dsa_switch_for_each_cpu_port(dp, ds)
-+		ocelot_port_setup_dsa_8021q_cpu(ocelot, dp->index);
-+
- 	dsa_switch_for_each_user_port(dp, ds)
- 		ocelot_port_assign_dsa_8021q_cpu(ocelot, dp->index,
- 						 dp->cpu_dp->index);
-@@ -493,6 +496,9 @@ static void felix_tag_8021q_teardown(struct dsa_switch *ds)
- 	dsa_switch_for_each_user_port(dp, ds)
- 		ocelot_port_unassign_dsa_8021q_cpu(ocelot, dp->index);
- 
-+	dsa_switch_for_each_cpu_port(dp, ds)
-+		ocelot_port_teardown_dsa_8021q_cpu(ocelot, dp->index);
-+
- 	dsa_tag_8021q_unregister(ds);
- }
- 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index d4649e4ee0e7..8468f0d4aa88 100644
+index 8468f0d4aa88..efb6eca24c7b 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2196,61 +2196,61 @@ static void ocelot_update_pgid_cpu(struct ocelot *ocelot)
- 	ocelot_write_rix(ocelot, pgid_cpu, ANA_PGID_PGID, PGID_CPU);
+@@ -2046,6 +2046,16 @@ static int ocelot_bond_get_id(struct ocelot *ocelot, struct net_device *bond)
+ 	return __ffs(bond_mask);
  }
  
--void ocelot_port_assign_dsa_8021q_cpu(struct ocelot *ocelot, int port,
--				      int cpu)
-+void ocelot_port_setup_dsa_8021q_cpu(struct ocelot *ocelot, int cpu)
++/* Returns the mask of user ports assigned to this DSA tag_8021q CPU port.
++ * Note that when CPU ports are in a LAG, the user ports are assigned to the
++ * 'primary' CPU port, the one whose physical port number gives the logical
++ * port number of the LAG.
++ *
++ * We leave PGID_SRC poorly configured for the 'secondary' CPU port in the LAG
++ * (to which no user port is assigned), but it appears that forwarding from
++ * this secondary CPU port looks at the PGID_SRC associated with the logical
++ * port ID that it's assigned to, which *is* configured properly.
++ */
+ static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
+ 					       struct ocelot_port *cpu)
  {
- 	struct ocelot_port *cpu_port = ocelot->ports[cpu];
- 	u16 vid;
+@@ -2062,9 +2072,15 @@ static u32 ocelot_dsa_8021q_cpu_assigned_ports(struct ocelot *ocelot,
+ 			mask |= BIT(port);
+ 	}
  
- 	mutex_lock(&ocelot->fwd_domain_lock);
- 
--	ocelot->ports[port]->dsa_8021q_cpu = cpu_port;
-+	cpu_port->is_dsa_8021q_cpu = true;
- 
--	if (!cpu_port->is_dsa_8021q_cpu) {
--		cpu_port->is_dsa_8021q_cpu = true;
-+	for (vid = OCELOT_RSV_VLAN_RANGE_START; vid < VLAN_N_VID; vid++)
-+		ocelot_vlan_member_add(ocelot, cpu, vid, true);
- 
--		for (vid = OCELOT_RSV_VLAN_RANGE_START; vid < VLAN_N_VID; vid++)
--			ocelot_vlan_member_add(ocelot, cpu, vid, true);
--
--		ocelot_update_pgid_cpu(ocelot);
--	}
--
--	ocelot_apply_bridge_fwd_mask(ocelot, true);
-+	ocelot_update_pgid_cpu(ocelot);
- 
- 	mutex_unlock(&ocelot->fwd_domain_lock);
++	if (cpu->bond)
++		mask &= ~ocelot_get_bond_mask(ocelot, cpu->bond);
++
+ 	return mask;
  }
--EXPORT_SYMBOL_GPL(ocelot_port_assign_dsa_8021q_cpu);
-+EXPORT_SYMBOL_GPL(ocelot_port_setup_dsa_8021q_cpu);
  
--void ocelot_port_unassign_dsa_8021q_cpu(struct ocelot *ocelot, int port)
-+void ocelot_port_teardown_dsa_8021q_cpu(struct ocelot *ocelot, int cpu)
++/* Returns the DSA tag_8021q CPU port that the given port is assigned to,
++ * or the bit mask of CPU ports if said CPU port is in a LAG.
++ */
+ u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
  {
--	struct ocelot_port *cpu_port = ocelot->ports[port]->dsa_8021q_cpu;
--	bool keep = false;
-+	struct ocelot_port *cpu_port = ocelot->ports[cpu];
- 	u16 vid;
--	int p;
+ 	struct ocelot_port *ocelot_port = ocelot->ports[port];
+@@ -2073,6 +2089,9 @@ u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port)
+ 	if (!cpu_port)
+ 		return 0;
  
- 	mutex_lock(&ocelot->fwd_domain_lock);
- 
--	ocelot->ports[port]->dsa_8021q_cpu = NULL;
-+	cpu_port->is_dsa_8021q_cpu = false;
- 
--	for (p = 0; p < ocelot->num_phys_ports; p++) {
--		if (!ocelot->ports[p])
--			continue;
-+	for (vid = OCELOT_RSV_VLAN_RANGE_START; vid < VLAN_N_VID; vid++)
-+		ocelot_vlan_member_del(ocelot, cpu_port->index, vid);
- 
--		if (ocelot->ports[p]->dsa_8021q_cpu == cpu_port) {
--			keep = true;
--			break;
--		}
--	}
-+	ocelot_update_pgid_cpu(ocelot);
- 
--	if (!keep) {
--		cpu_port->is_dsa_8021q_cpu = false;
-+	mutex_unlock(&ocelot->fwd_domain_lock);
-+}
-+EXPORT_SYMBOL_GPL(ocelot_port_teardown_dsa_8021q_cpu);
- 
--		for (vid = OCELOT_RSV_VLAN_RANGE_START; vid < VLAN_N_VID; vid++)
--			ocelot_vlan_member_del(ocelot, cpu_port->index, vid);
-+void ocelot_port_assign_dsa_8021q_cpu(struct ocelot *ocelot, int port,
-+				      int cpu)
-+{
-+	struct ocelot_port *cpu_port = ocelot->ports[cpu];
- 
--		ocelot_update_pgid_cpu(ocelot);
--	}
-+	mutex_lock(&ocelot->fwd_domain_lock);
- 
-+	ocelot->ports[port]->dsa_8021q_cpu = cpu_port;
-+	ocelot_apply_bridge_fwd_mask(ocelot, true);
++	if (cpu_port->bond)
++		return ocelot_get_bond_mask(ocelot, cpu_port->bond);
 +
-+	mutex_unlock(&ocelot->fwd_domain_lock);
-+}
-+EXPORT_SYMBOL_GPL(ocelot_port_assign_dsa_8021q_cpu);
-+
-+void ocelot_port_unassign_dsa_8021q_cpu(struct ocelot *ocelot, int port)
-+{
-+	mutex_lock(&ocelot->fwd_domain_lock);
-+
-+	ocelot->ports[port]->dsa_8021q_cpu = NULL;
- 	ocelot_apply_bridge_fwd_mask(ocelot, true);
- 
- 	mutex_unlock(&ocelot->fwd_domain_lock);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ac151ecc7f19..4c8818576437 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -875,6 +875,8 @@ void ocelot_deinit(struct ocelot *ocelot);
- void ocelot_init_port(struct ocelot *ocelot, int port);
- void ocelot_deinit_port(struct ocelot *ocelot, int port);
- 
-+void ocelot_port_setup_dsa_8021q_cpu(struct ocelot *ocelot, int cpu);
-+void ocelot_port_teardown_dsa_8021q_cpu(struct ocelot *ocelot, int cpu);
- void ocelot_port_assign_dsa_8021q_cpu(struct ocelot *ocelot, int port, int cpu);
- void ocelot_port_unassign_dsa_8021q_cpu(struct ocelot *ocelot, int port);
- u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port);
+ 	return BIT(cpu_port->index);
+ }
+ EXPORT_SYMBOL_GPL(ocelot_port_assigned_dsa_8021q_cpu_mask);
 -- 
 2.34.1
 
