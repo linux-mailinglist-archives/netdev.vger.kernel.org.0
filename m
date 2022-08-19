@@ -2,106 +2,360 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 226F5599476
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35C6959947B
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:32:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346175AbiHSF2G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 01:28:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43814 "EHLO
+        id S1346321AbiHSF3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 01:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243197AbiHSF2F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:28:05 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300AAE01FC;
-        Thu, 18 Aug 2022 22:28:04 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 856AF5FD07;
-        Fri, 19 Aug 2022 08:28:02 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660886882;
-        bh=xZcFr0g066QLn34YVo/DnULMO+Ugg56rtAsgSG8AMHo=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=DB+pr+ENO0x1YGOBXcl32mEz9ySWuycsdn6ARa3p/0E/aMxJh8ffXDZpeNOy8Y2YB
-         ebMeLKGYxUcPKVDsz9P+34TY4E2cYpvKTZIDgoSPTH1LKq1Y/RSKVbYM5qdiTBhjWD
-         3bmJViJCa6JbzwQbdgj7sMil02xG3vb7m8V7xYGQoxBm4M8fWcdWsZ+6ayYFsNgTAK
-         ugVLrepfBhjzeGfOYzVo8lNzAJyAeq6fRUvmGtTaRtiZCVPSJ8fmlwAzASa+KijlJW
-         NADTgi8/c1+0QOpxM934CqLfebC7dZ7jhny1A4PLZzTaOct6t75PDHujWcYhDlOh/U
-         fV6/v7yNw/m3A==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 19 Aug 2022 08:28:00 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-Subject: [PATCH net-next v4 2/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Topic: [PATCH net-next v4 2/9] hv_sock: disable SO_RCVLOWAT support
-Thread-Index: AQHYs4xj57UzSxktpUO3tU97mRUOyg==
-Date:   Fri, 19 Aug 2022 05:27:34 +0000
-Message-ID: <1772ff39-a197-3f11-73b9-7deeb015e1ee@sberdevices.ru>
-In-Reply-To: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <0CA4519B157AC347835CA4E08DEE6B12@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S244451AbiHSF3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:29:03 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941FC7C745
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:29:01 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id b38so2160101lfv.4
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:29:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=fm8jdU/sifb3BsydpGCJuPsk7trxpYRjyRX2OUvuSqU=;
+        b=Yy24xCBN0njXVuhQnJXOyvmyb8caOFLY4/a3XT9FuFsRwir3mnWh4N+n7XwuZEl7Hs
+         H5gTLzBNK8jFB8HoCSbc3IQfmGmLIiYo5gaYk2zUSrOXNO2Cfoo3pO1H+X9WCnM5ZGa4
+         4EfjSQzEnxiYJpHGVDQw01NgVfcyWxJ1EZwXalG8HkvrAqDX+ediTcHJ1aDlb91zthil
+         Dz/3YmKf6eOfcyqrOFQTWKnNxyy5Qddzshe+EBLZWWOWjkxSMAILQ5xrF5ch5hJQeuZm
+         LUzGoMsZnnR0lG9/mU54vHVnXCzLwGR2/LGqOOksf8B1r3yMXB/Kz5uq5Ej3dFZaUWi7
+         PDxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=fm8jdU/sifb3BsydpGCJuPsk7trxpYRjyRX2OUvuSqU=;
+        b=PIrRmtZd3paaIOxDaxMN3wgqOSNOXFzvcOe8+QNPPsAOfTE4uLHXowDHozwKI54z2r
+         v63mxZ5EOGf+tWWio53+19BPjBOSyiKPeefvflad47zJtWQYDn3w7t9h60xSryVWwt4b
+         BIwsIABzfmAM31idIseUt4slCe+f1K86kr1Ug1wWV/D2iASsW/DCijL5qMCJb6XOGwBz
+         0ENViuUAGh+XXFyQSS8Yxk4RYVAi+CEkVEEKyZTmRavrWoLlOKB+JHavUF5MBlrJgjVs
+         oywIbaJJsaYJd0+EkBSC9qleFGHFfcqSnuOgq/A1gOAXmxNv1Nd23VpRwNuwhdrIdTRO
+         yaTQ==
+X-Gm-Message-State: ACgBeo3RAkzcxDnPli2UoxIioMUvJb+ksJ4i8bQNEbS7YQC2LNkiNNwP
+        O4iWuLQH8wSwulnZ1alK4tk=
+X-Google-Smtp-Source: AA6agR5jHqgBv5Cc1yTEdFnC7isES3RKhdwDZmUfrJhhh5DRyHxPSSVJbNgIq9Ke9ZyIu8+WqIz6aw==
+X-Received: by 2002:ac2:5a44:0:b0:48b:e17:3dd3 with SMTP id r4-20020ac25a44000000b0048b0e173dd3mr1774093lfn.337.1660886939879;
+        Thu, 18 Aug 2022 22:28:59 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id p31-20020a056512139f00b0048ad0ad627asm494037lfa.128.2022.08.18.22.28.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Aug 2022 22:28:59 -0700 (PDT)
+Message-ID: <15eb1ab3-18ae-cd65-5798-bf5af3b046c7@gmail.com>
+Date:   Fri, 19 Aug 2022 07:28:58 +0200
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/19 00:26:00 #20118704
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC net-next PATCH 2/3] mv88e6xxx: Implement remote management
+ support (RMU)
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220818102924.287719-1-mattias.forsblad@gmail.com>
+ <20220818102924.287719-3-mattias.forsblad@gmail.com>
+ <Yv485js8cFGZapIQ@lunn.ch>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <Yv485js8cFGZapIQ@lunn.ch>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rm9yIEh5cGVyLVYgaXQgaXMgcXVpZXQgZGlmZmljdWx0IHRvIHN1cHBvcnQgdGhpcyBzb2NrZXQg
-b3B0aW9uLGR1ZSB0bw0KdHJhbnNwb3J0IGludGVybmFscywgc28gZGlzYWJsZSBpdC4NCg0KU2ln
-bmVkLW9mZi1ieTogQXJzZW5peSBLcmFzbm92IDxBVktyYXNub3ZAc2JlcmRldmljZXMucnU+DQpS
-ZXZpZXdlZC1ieTogRGV4dWFuIEN1aSA8ZGVjdWlAbWljcm9zb2Z0LmNvbT4NClJldmlld2VkLWJ5
-OiBTdGVmYW5vIEdhcnphcmVsbGEgPHNnYXJ6YXJlQHJlZGhhdC5jb20+DQotLS0NCiBuZXQvdm13
-X3Zzb2NrL2h5cGVydl90cmFuc3BvcnQuYyB8IDcgKysrKysrKw0KIDEgZmlsZSBjaGFuZ2VkLCA3
-IGluc2VydGlvbnMoKykNCg0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5z
-cG9ydC5jIGIvbmV0L3Ztd192c29jay9oeXBlcnZfdHJhbnNwb3J0LmMNCmluZGV4IGZkOTgyMjll
-M2RiMy4uNTljM2UyNjk3MDY5IDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay9oeXBlcnZfdHJh
-bnNwb3J0LmMNCisrKyBiL25ldC92bXdfdnNvY2svaHlwZXJ2X3RyYW5zcG9ydC5jDQpAQCAtODE1
-LDYgKzgxNSwxMiBAQCBpbnQgaHZzX25vdGlmeV9zZW5kX3Bvc3RfZW5xdWV1ZShzdHJ1Y3QgdnNv
-Y2tfc29jayAqdnNrLCBzc2l6ZV90IHdyaXR0ZW4sDQogCXJldHVybiAwOw0KIH0NCiANCitzdGF0
-aWMNCitpbnQgaHZzX3NldF9yY3Zsb3dhdChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLCBpbnQgdmFs
-KQ0KK3sNCisJcmV0dXJuIC1FT1BOT1RTVVBQOw0KK30NCisNCiBzdGF0aWMgc3RydWN0IHZzb2Nr
-X3RyYW5zcG9ydCBodnNfdHJhbnNwb3J0ID0gew0KIAkubW9kdWxlICAgICAgICAgICAgICAgICAg
-ID0gVEhJU19NT0RVTEUsDQogDQpAQCAtODUwLDYgKzg1Niw3IEBAIHN0YXRpYyBzdHJ1Y3QgdnNv
-Y2tfdHJhbnNwb3J0IGh2c190cmFuc3BvcnQgPSB7DQogCS5ub3RpZnlfc2VuZF9wcmVfZW5xdWV1
-ZSAgPSBodnNfbm90aWZ5X3NlbmRfcHJlX2VucXVldWUsDQogCS5ub3RpZnlfc2VuZF9wb3N0X2Vu
-cXVldWUgPSBodnNfbm90aWZ5X3NlbmRfcG9zdF9lbnF1ZXVlLA0KIA0KKwkuc2V0X3Jjdmxvd2F0
-ICAgICAgICAgICAgID0gaHZzX3NldF9yY3Zsb3dhdA0KIH07DQogDQogc3RhdGljIGJvb2wgaHZz
-X2NoZWNrX3RyYW5zcG9ydChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKQ0KLS0gDQoyLjI1LjENCg==
+On 2022-08-18 15:21, Andrew Lunn wrote:
+>>  static int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip)
+>>  {
+>> +	int ret = 0;
+>> +
+>>  	if (chip->info->ops->rmu_disable)
+>> -		return chip->info->ops->rmu_disable(chip);
+>> +		ret = chip->info->ops->rmu_disable(chip);
+>>  
+>> -	return 0;
+>> +	if (chip->info->ops->rmu_enable) {
+>> +		ret += chip->info->ops->rmu_enable(chip);
+>> +		ret += mv88e6xxx_rmu_init(chip);
+> 
+> EINVAL + EOPNOTSUPP = hard to find error code/bug.
+> 
+> I've not looked at rmu_enable() yet, but there are restrictions about
+> what ports can be used with RMU. So you have to assume some boards use
+> the wrong port for the CPU or upstream DSA port, and so will need to
+> return an error code. But such an error code should not be fatal, MDIO
+> can still be used.
+> 
+
+Agree, I'll fix to handle that case.
+
+>> +	}
+>> +
+>> +	return ret;
+>>  }
+>>  
+>> +int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip)
+>> +{
+>> +	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
+>> +	int upstream_port = -1;
+>> +
+>> +	upstream_port = dsa_switch_upstream_port(chip->ds);
+>> +	dev_err(chip->dev, "RMU: Enabling on port %d", upstream_port);
+> 
+> dev_dbg()
+
+I'll tone it down.
+
+> 
+>> +	if (upstream_port < 0)
+>> +		return -1;
+> 
+> EOPNOTSUPP.
+> 
+
+Ofc. Thanks.
+
+>> +
+>> +	switch (upstream_port) {
+>> +	case 9:
+>> +		val = MV88E6085_G1_CTL2_RM_ENABLE;
+>> +		break;
+>> +	case 10:
+>> +		val = MV88E6085_G1_CTL2_RM_ENABLE | MV88E6085_G1_CTL2_P10RM;
+>> +		break;
+> 
+> Does 6085 really have 10 ports? It does!
+> 
+
+:)
+
+>> +	default:
+>> +		break;
+> 
+> return -EOPNOTSUPP.
+> 
+
+Will fix.
+
+>> +	}
+>> +
+>> +	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6085_G1_CTL2_P10RM |
+>> +				      MV88E6085_G1_CTL2_RM_ENABLE, val);
+>> +}
+>> +
+>>  int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
+>>  {
+>>  	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
+>>  				      MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
+>>  }
+>>  
+>> +int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip)
+>> +{
+>> +	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
+>> +	int upstream_port;
+>> +
+>> +	upstream_port = dsa_switch_upstream_port(chip->ds);
+>> +	dev_err(chip->dev, "RMU: Enabling on port %d", upstream_port);
+>> +	if (upstream_port < 0)
+>> +		return -1;
+>> +
+>> +	switch (upstream_port) {
+>> +	case 4:
+>> +		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_4;
+>> +		break;
+>> +	case 5:
+>> +		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_5;
+>> +		break;
+>> +	case 6:
+>> +		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_6;
+>> +		break;
+>> +	default:
+>> +		break;
+> 
+> Same comments as above.
+> 
+> 
+>> diff --git a/drivers/net/dsa/mv88e6xxx/rmu.c b/drivers/net/dsa/mv88e6xxx/rmu.c
+>> new file mode 100644
+>> index 000000000000..ac68eef12521
+>> --- /dev/null
+>> +++ b/drivers/net/dsa/mv88e6xxx/rmu.c
+>> @@ -0,0 +1,256 @@
+>> +// SPDX-License-Identifier: GPL-2.0-or-later
+>> +/*
+>> + * Marvell 88E6xxx Switch Remote Management Unit Support
+>> + *
+>> + * Copyright (c) 2022 Mattias Forsblad <mattias.forsblad@gmail.com>
+>> + *
+>> + */
+>> +
+>> +#include "rmu.h"
+>> +#include "global1.h"
+>> +
+>> +#define MAX_RMON 64
+>> +#define RMON_REPLY 2
+>> +
+>> +#define RMU_REQ_GET_ID                 1
+>> +#define RMU_REQ_DUMP_MIB               2
+>> +
+>> +#define RMU_RESP_FORMAT_1              0x0001
+>> +#define RMU_RESP_FORMAT_2              0x0002
+>> +
+>> +#define RMU_RESP_CODE_GOT_ID           0x0000
+>> +#define RMU_RESP_CODE_DUMP_MIB         0x1020
+> 
+> These should all go into rmu.h. Please also follow the naming
+> convention, add the MV88E6XXX_ prefix.
+> 
+> 
+
+Will add prefix.
+
+>> +
+>> +int mv88e6xxx_inband_rcv(struct dsa_switch *ds, struct sk_buff *skb, int seq_no)
+>> +{
+>> +	struct mv88e6xxx_chip *chip = ds->priv;
+>> +	struct mv88e6xxx_port *port;
+>> +	__be16 *prodnum;
+>> +	__be16 *format;
+>> +	__be16 *code;
+>> +	__be32 *mib_data;
+>> +	u8 pkt_dev;
+>> +	u8 pkt_prt;
+>> +	int i;
+> 
+> Reverse christmass tree.
+> 
+
+Will fix. Doesn't checkpatch find these?
+
+>> +
+>> +	if (!skb || !chip)
+>> +		return 0;
+> 
+> We generally don't do this sort of defensive programming. Can these be
+> NULL?
+> 
+
+Will investigate.
+
+>> +
+>> +	/* Extract response data */
+>> +	format = (__be16 *)&skb->data[0];
+> 
+> You have no idea of the alignment of data, so you should not cast it
+> to a pointer type and dereference it. Take a look at the unaligned
+> helpers.
+> 
+
+Can you point me to an example please?
+
+>> +	if (*format != htons(RMU_RESP_FORMAT_1) && (*format != htons(RMU_RESP_FORMAT_2))) {
+>> +		dev_err(chip->dev, "RMU: received unknown format 0x%04x", *format);
+> 
+> rate limit all error messages please.
+> 
+
+Yes, will fix.
+
+>> +		goto out;
+>> +	}
+>> +
+>> +	code = (__be16 *)&skb->data[4];
+>> +	if (*code == ntohs(0xffff)) {
+>> +		netdev_err(skb->dev, "RMU: error response code 0x%04x", *code);
+>> +		goto out;
+>> +	}
+>> +
+>> +	pkt_dev = skb->data[6] & 0x1f;
+> 
+> Please replace all these magic numbers with #define in rmu.h.
+> 
+
+Will fix.
+
+>> +	if (pkt_dev >= DSA_MAX_SWITCHES) {
+>> +		netdev_err(skb->dev, "RMU: response from unknown chip %d\n", *code);
+>> +		goto out;
+>> +	}
+> 
+> That is a good first step, but it is not sufficient to prove the
+> switch actually exists.
+> 
+
+Will do additional checks.
+
+>> +
+>> +	/* Check sequence number */
+>> +	if (seq_no != chip->rmu.seq_no) {
+>> +		netdev_err(skb->dev, "RMU: wrong seqno received %d, expected %d",
+>> +			   seq_no, chip->rmu.seq_no);
+>> +		goto out;
+>> +	}
+>> +
+>> +	/* Check response code */
+>> +	switch (chip->rmu.request_cmd) {
+> 
+> Maybe a non-issue, i've not looked hard enough: What is the
+> relationship between ds passed to this function and pkt_dev? Does ds
+> belong to pkt_dev, or is ds the chip connected to the host? There are
+> a few boards with multiple chip in a tree, so we need to get this
+> mapping correct. This is something i can test sometime later, i have
+> such boards.
+> 
+
+I've tested this implementation in a system with multiple switchcores
+and it works.
+
+>> +	case RMU_REQ_GET_ID: {
+>> +		if (*code == RMU_RESP_CODE_GOT_ID) {
+>> +			prodnum = (__be16 *)&skb->data[2];
+>> +			chip->rmu.got_id = *prodnum;
+>> +			dev_info(chip->dev, "RMU: received id OK with product number: 0x%04x\n",
+>> +				 chip->rmu.got_id);
+>> +		} else {
+>> +			dev_err(chip->dev,
+>> +				"RMU: unknown response for GET_ID format 0x%04x code 0x%04x",
+>> +				*format, *code);
+>> +		}
+>> +		break;
+>> +	}
+>> +	case RMU_REQ_DUMP_MIB:
+>> +		if (*code == RMU_RESP_CODE_DUMP_MIB) {
+>> +			pkt_prt = (skb->data[7] & 0x78) >> 3;
+>> +			mib_data = (__be32 *)&skb->data[12];
+>> +			port = &chip->ports[pkt_prt];
+>> +			if (!port) {
+>> +				dev_err(chip->dev, "RMU: illegal port number in response: %d\n",
+>> +					pkt_prt);
+>> +				goto out;
+>> +			}
+>> +
+>> +			/* Copy whole array for further
+>> +			 * processing according to chip type
+>> +			 */
+>> +			for (i = 0; i < MAX_RMON; i++)
+>> +				port->rmu_raw_stats[i] = mib_data[i];
+> 
+> This needs some more thought, which i don't have time for right now.
+> 
+>      Andrew
+
