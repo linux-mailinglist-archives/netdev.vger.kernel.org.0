@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE1A159945E
-	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:22:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976DF599464
+	for <lists+netdev@lfdr.de>; Fri, 19 Aug 2022 07:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244660AbiHSFOb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 01:14:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56766 "EHLO
+        id S1345637AbiHSFWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 01:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239341AbiHSFO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:14:29 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D756DCD527
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:14:28 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id x25so3540069ljm.5
-        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:14:28 -0700 (PDT)
+        with ESMTP id S1345618AbiHSFV6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 01:21:58 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DBEDA3D2
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:21:57 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id x19so4747909lfq.7
+        for <netdev@vger.kernel.org>; Thu, 18 Aug 2022 22:21:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc;
-        bh=u82R4d244Cj++Lww/hGplgY2Va/WdkLk02wXufqIzzU=;
-        b=ZiaGnJbmOtTF3B97Gq5sSPCjIcLD+ncugkWPjZbdNMn6K0Qp2jRSkC8HYvJ91TMPp7
-         0FjCmVe5zJGEo69u8rY0wLXLcrnjfFkKFGa9D/G+8Q7jOzeAC3OpWPyhTsUT2wHkFrKZ
-         nXujYs7Zn2H1sqbOv+1eDi+FQYTQUhxWzQ3ehKPWZO08JLfIx7mcEMMHIHpNQa3zFAvJ
-         Q7SMpQBPIcCHH0l0c+MjpHe6ZxtBcjg7Ikd1II12tJfhCBvN/yVY+/kkmb5eXiPtS1Ff
-         cDTquRbPrbQEZ7Mykmt6g+oDCPzoz/vMbn/3XXle05p0fjSl7JPKU4AAB1WUMPtj24P4
-         vjMA==
+        bh=ctMX1D3w2scxPFWMp1E0nCw34sRdrk40ueb8SwAoGec=;
+        b=dtQHh0/yZmMu3q7MeNDpJEiJ6iMNyE0Upv4FDKYD2mMtI6wyqBQdJ/2nUJBdnOXxxc
+         PNwuUm7T8u/n6i4QjUQ6Glb+l4BTjUqyDbhT2tQ7IJU8eazmoxLnX8zJpdfweE0A1ldn
+         xmVc6Zk49zAfjC/8oHwOvkzqUSCqiEpi85OoP9s1y4AeFDBI+qUK/3tQPjvWHWpMuDzp
+         K7jv9tKriEz5PxAhJkPPUym8wi4Z2PSAuk7Ue/ZUFbfNUo9U8kT/6dSqJrSGxNjuOmB4
+         O4YgCm2HU02k+hI81vJBM7snIeNwlRYBmlLxKCPy03zCJGjZEN4/azsKr7TRBchuWuj0
+         wvFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc;
-        bh=u82R4d244Cj++Lww/hGplgY2Va/WdkLk02wXufqIzzU=;
-        b=A0mopYkPso2zzsAYneV4mwfRO65nIsPnWCYyddbXODbyM4Lh0Qs08d/PtPMiJAp3AQ
-         JZnYT1WDw8T/lEz85i/csivnBkOIpE7AL8SshD8kTnUF/wJ8aj60Lq3zMBnH2u9KxKL1
-         QvuLZloFzMZRdPX2sotwu1Bc+2bICA5k2f1YhwuwbGzgEEFL7FPXmF9VN+NQFwLot1fh
-         SoErrMOWNYGfgJQe8BtfmoWTP67kX6MYC2X89pid3Gn4HwyG+09G8zCjGJZrrtRmcb7u
-         jt2ChJYeOqTWdWMDIJHKmfJLxyXrMRQZ0QkeMPTBRTMUTHENpjfIqheVs9iO0u/nQbz8
-         6aUQ==
-X-Gm-Message-State: ACgBeo1MUwXXhtOZqgyThr05HLi8psoT0N5EKSfpYw2lWF0HAyrfkUnZ
-        dPbWe7kI5lm8BQAidRRttD4=
-X-Google-Smtp-Source: AA6agR6plorKKlPoXWs2gQtXyM/V+2yiiBct4QXbl4bLgLhfQ1XD+vXg/om37py3K6K45MHrBrWTrA==
-X-Received: by 2002:a2e:2281:0:b0:25e:7a20:e257 with SMTP id i123-20020a2e2281000000b0025e7a20e257mr1634139lji.54.1660886066957;
-        Thu, 18 Aug 2022 22:14:26 -0700 (PDT)
+        bh=ctMX1D3w2scxPFWMp1E0nCw34sRdrk40ueb8SwAoGec=;
+        b=Zk/Pu7EWZcdQ6NgmVjDDDNIpA+ij1bBIQuFJY9T1y09V9xlY0QOUMNfxdk0ef4UyXb
+         f8bquCxBvNt3la5i/dxUNw+Kvy7viSNe69O/8IB/9vNzdJN6ireRMtCOnLblvvXWCCHj
+         t63IldJg7dpWIxnqyo64s2a7JEY3MVOK/eh4ig4jTtofljFiwfG71NJsz18xqhd2zp0E
+         ic3xeQofJNg+82L9mCsMA9kyJZQo7SOdsRMQijShkQrQxLccqyfjQnqMVy4oywEAmf/y
+         77aQvLUaN0mIcyDZcvLfpKwgSGJMzPNMdtZ0rhgI2Fa1zTflVV8YemYkqAVQqwNzxRv6
+         NSLw==
+X-Gm-Message-State: ACgBeo3nbNZivtCP3+/En/DloMMulGLXSbJncvSX/4d7Y9wKKJaRREI1
+        5RGdyulbIeZMS5IYyBQaDmE=
+X-Google-Smtp-Source: AA6agR7ESrSJ0AefoFuvyqkwq2I8In7uz1MsJhjD0WOrowoV1QpzV4nxBMpOUlhfVnKboIkt8x7qAQ==
+X-Received: by 2002:a05:6512:3ca6:b0:48b:2767:4ed5 with SMTP id h38-20020a0565123ca600b0048b27674ed5mr1827528lfv.308.1660886515703;
+        Thu, 18 Aug 2022 22:21:55 -0700 (PDT)
 Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id t2-20020a19dc02000000b0047f8d7c08e4sm491722lfg.166.2022.08.18.22.14.26
+        by smtp.gmail.com with ESMTPSA id g8-20020a19e048000000b0048b17852938sm494144lfj.162.2022.08.18.22.21.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 18 Aug 2022 22:14:26 -0700 (PDT)
-Message-ID: <b388479b-9aff-be1c-c9b3-20d5169c925f@gmail.com>
-Date:   Fri, 19 Aug 2022 07:14:25 +0200
+        Thu, 18 Aug 2022 22:21:55 -0700 (PDT)
+Message-ID: <1821d27d-5e3d-b8bd-1a28-8c302665a0e9@gmail.com>
+Date:   Fri, 19 Aug 2022 07:21:54 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [RFC net-next PATCH 0/3] net: dsa: mv88e6xxx: Add RMU support
+Subject: Re: [RFC net-next PATCH 1/3] dsa: Add ability to handle RMU frames.
 Content-Language: en-US
 To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
@@ -65,9 +65,10 @@ Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 References: <20220818102924.287719-1-mattias.forsblad@gmail.com>
- <Yv4xOK0pS8Xjh/Q8@lunn.ch>
+ <20220818102924.287719-2-mattias.forsblad@gmail.com>
+ <Yv40FjX9WTx8aBih@lunn.ch>
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <Yv4xOK0pS8Xjh/Q8@lunn.ch>
+In-Reply-To: <Yv40FjX9WTx8aBih@lunn.ch>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -80,33 +81,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-18 14:31, Andrew Lunn wrote:
-> On Thu, Aug 18, 2022 at 12:29:21PM +0200, Mattias Forsblad wrote:
->> The Marvell SOHO switches have the ability to receive and transmit                                                                                                    
->> Remote Management Frames (Frame2Reg) to the CPU through the                                                                                                           
->> switch attached network interface.                                                                                                                                    
->> These frames is handled by the Remote Management Unit (RMU) in                                                                                                        
->> the switch.
+On 2022-08-18 14:44, Andrew Lunn wrote:
+>> +static int dsa_inband_rcv_ll(struct sk_buff *skb, struct net_device *dev)
+>> +{
+>> +	int source_device, source_port;
+>> +	struct dsa_switch *ds;
+>> +	u8 *dsa_header;
+>> +	int rcv_seqno;
+>> +	int ret = 0;
+>> +
+>> +	if (!dev || !dev->dsa_ptr)
+>> +		return 0;
+>> +
+>> +	ds = dev->dsa_ptr->ds;
+>> +
+>> +	dsa_header = skb->data - 2;
+>> +
+>> +	source_device = dsa_header[0] & 0x1f;
+>> +	source_port = (dsa_header[1] >> 3) & 0x1f;
+>> +	ds = dsa_switch_find(ds->dst->index, source_device);
 > 
-> Please try to avoid all the additional whitespace your editor/mailer
-> has added.
+> You should never trust anything you receive from the network. Always
+> validate it. ds could be a NULL pointer here, if source_device is
+> bad. source_port could also be invalid. Hum, source port is not
+> actually used?
 > 
->> Next step could be to implement single read and writes but we've
->> found that the gain to transfer this to RMU is neglible.
-> 
-> I agree that RMON is a good first step. Dumping the ATU and VTU would
-> also make a lot of sense.
-> 
-> For general register access, did you try combining multiple writes and
-> one read into an RMU packet? At least during initial setup, i suspect
-> there are some code flows which follow that pattern with lots of
-> writes. And a collection of read/modify/write might benefit.
-> 
->     Andrew
+Agree, will fix. I think source_port is a remnant from an earlier
+version, I will fix it. 
 
-In another stack I've used aggregated writes with great improvements so
-it that is something that could be investigated. One large oversight when
-implementing RMU in HW there is no operation for masked writes which makes
-it a bit trickier. It would be great if there was a transaction-based
-API which would easier map for aggregated accesses.
-Oltean mentioned something about qck8k that I'll have a look into.
+> We send RMU frames with a specific destination MAC address. Can we
+> validate the destination address for frames we receive.
+>
+
+Yes, I'll add that.
+ 
+>> +
+>> +	/* Get rcv seqno */
+>> +	rcv_seqno = dsa_header[3];
+>> +
+>> +	skb_pull(skb, DSA_HLEN);
+>> +
+>> +	if (ds->ops && ds->ops->inband_receive(ds, skb, rcv_seqno))
+>> +		netdev_err(dev, "DSA inband: error decoding packet");
+> 
+> rate limit this print, so as to avoid the possibility of a DoS.
+> 
+>      Andrew
+
+Ofc, will fix. Thanks.
