@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13FCA59A9D3
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FE4359A9D8
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:11:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244292AbiHTADH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 20:03:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
+        id S244298AbiHTAEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 20:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244099AbiHTADF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:03:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29798115229
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 17:03:05 -0700 (PDT)
+        with ESMTP id S244099AbiHTAEt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:04:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95AD365565
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 17:04:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6106B81213
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 00:03:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFC9C433C1;
-        Sat, 20 Aug 2022 00:03:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F25661899
+        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 00:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4417FC433B5;
+        Sat, 20 Aug 2022 00:04:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660953782;
-        bh=MUHgkC0/xiP4vpd7CEWWDpUXAA47VTA2ZRvUsUuwjdY=;
+        s=k20201202; t=1660953887;
+        bh=P9wsHjcl/2sRHasQrnLb0oyvcPBaGWkQzo6IvbncTnk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ffrVuyokRufyDmefRB8wDk0WSLg9ajzUI7G1LYe2uL5tbE4xiSIOSpy3TLUbfybHF
-         wovKWZgthShxG1VC4bpQVN4uDQkrtTIurJmiFYLFTPtKC1vGFJAsLMAcx6mzGf0J93
-         Eh9qQLz/M1477/tG7gfu8v5NrpaF1hd9aWSYuy8nE/wgjjFoClhmk9XOw2KAQX8SDs
-         m914zv2kR1Dyg4t/6eHPmZ/oTdO1oUIPsV8s62EMJ6m+YIYdKrvyNO0T9SRjC3/s7I
-         ceqECcQGbzm34MmA7rydtmiTqIjJ1dZxubnCytnUGK03Os1GUh41facCD7myaXkgWZ
-         icoz1p5Zljlyg==
-Date:   Fri, 19 Aug 2022 17:03:01 -0700
+        b=NWW5VORNOBBdExr8ySvtRA3bJ4+yTO9jo4VOhEcgiuCpEM/ktrTcVrKv2U89DhIuT
+         wrRo3C7/K5+7Ycnpv4aGnzRZByhkb6F829Pyd3AbtPqAgJzWmEi1P6JqSQi1/dhBQb
+         4om2V/8N0x4x9e2+GxbImEoGqOyhZjlsASKC5sDTVK9tOza0nEfaeVDS6Jg0N11clU
+         ytUMC0897bj9OCkHGT0bSOeZg8oWCbVaFKzsPEiq8KIuoKe57eBG2e8oFtjf/7sQA9
+         zpFZiKOAjNLyZ3BBjpq/ZV6ZndFnChGCF4wfEbOXKk93VT1DHezjmFIgD8NxJvfgnB
+         kqk7f4GMJ9XOw==
+Date:   Fri, 19 Aug 2022 17:04:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Kuniyuki Iwashima <kuniyu@amazon.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>,
-        Matthias Tafelmeier <matthias.tafelmeier@gmx.net>
-Subject: Re: [PATCH v3 net 02/17] net: Fix data-races around weight_p and
- dev_weight_[rt]x_bias.
-Message-ID: <20220819170301.43675f1a@kernel.org>
-In-Reply-To: <20220818182653.38940-3-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 net 05/17] ratelimit: Fix data-races in
+ ___ratelimit().
+Message-ID: <20220819170446.77eeb642@kernel.org>
+In-Reply-To: <20220818182653.38940-6-kuniyu@amazon.com>
 References: <20220818182653.38940-1-kuniyu@amazon.com>
-        <20220818182653.38940-3-kuniyu@amazon.com>
+        <20220818182653.38940-6-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,15 +58,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 11:26:38 -0700 Kuniyuki Iwashima wrote:
-> -	dev_rx_weight = weight_p * dev_weight_rx_bias;
-> -	dev_tx_weight = weight_p * dev_weight_tx_bias;
-> +	WRITE_ONCE(dev_rx_weight,
-> +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_rx_bias));
-> +	WRITE_ONCE(dev_tx_weight,
-> +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_tx_bias));
+On Thu, 18 Aug 2022 11:26:41 -0700 Kuniyuki Iwashima wrote:
+> +	int interval = READ_ONCE(rs->interval);
+> +	int burst = READ_ONCE(rs->burst);
 
-Is there some locking on procfs writes? Otherwise one interrupted write
-may get overtaken by another and we'll end up with inconsistent values.
-OTOH if there is some locking we shouldn't have to protect weight_p
-here.
+Also feels a little bit like papering over an issue if we read 
+two values separately.
