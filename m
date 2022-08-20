@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC69659AAC9
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 04:59:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BABF59AAD5
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 05:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238584AbiHTC5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 22:57:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40778 "EHLO
+        id S239981AbiHTDIk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 23:08:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233969AbiHTC5r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 22:57:47 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667DEC2758;
-        Fri, 19 Aug 2022 19:57:47 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id y18so4604987qtv.5;
-        Fri, 19 Aug 2022 19:57:47 -0700 (PDT)
+        with ESMTP id S233564AbiHTDIi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 23:08:38 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0528813D61;
+        Fri, 19 Aug 2022 20:08:36 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id p9so4739796pfq.13;
+        Fri, 19 Aug 2022 20:08:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=8nQrH+5egSaKXmqGf2DeUinczEZu8mYWEg+gHBiviSU=;
-        b=Gtf0A/jKvkV2vWwClpTd0jS/+xh+stTbAaObdMDVXVCSMC1kH4oX+3EvemiQMv0Cu8
-         1LGawVSnPEOm4Hp5oAWCUxa5RKXH07Ppz1HTDMaVcMK6bSr/vB+BrMqXy4oEFImM4h0f
-         7JBp4QFRl3Jvvz/p8V74YfNl4xSZ8EY63pmSCG64BmRQe25jzsknraUjVdIQdz/OC3cy
-         UuLRw7VuZ0UdTkl+TndOCd+r2J3MAJ2DIuZgLuuav26yBEfl9LmnV0LiUhQ/1PIzImRh
-         m/zfH4d3VhCFI97veWqToobKVYWlHUTgkEqDXyfsBrKSsAEz/88G3vy4DDs6lJBRt7HV
-         7Kww==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=8UAglJHMJxkOTcf2BnuldAe6AgkhGWdLKkc7swqzIfQ=;
+        b=HC1Wt7vMa8hBBYpjbK4vCX9Wc+yfeTFv49qXCDRKqnwIMmJe+Sx+WPbo7tr4BCaSSy
+         fSAfYBj1ij+nFGX7+GJuDMKFe6ZIdxtJalD2S2eqtviNmQehmULztfHGakn7ut7ckZbx
+         RkXdby54LIg5l3sRBfhdAmWvbgVIXzzU5H8jHwu4M7Z4/zwwhrdn5bq3txl3IIuEpLO3
+         rLWz4Ausci/SIRnfilFmA3H5dcbyFfSOG38qy4RVEl83G4ynJ+l07TARqnKFxToh2kxM
+         l6pnfTtrFXudsUtTKYAAJShysajZZTIv2L59ip4rTq/1JOkP9uDPYzhU0uKwN+J5CM1p
+         cIIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=8nQrH+5egSaKXmqGf2DeUinczEZu8mYWEg+gHBiviSU=;
-        b=SKKCb201MlDlxuSZz0PQTisc7d8iUKIUi8zHGjgXi/PBBE/AByX4t3INvrw5BK8mox
-         YxZWnwPV5Gw9rftZgzG6SK0VxoL/NsNIzHvg9a1PAt0t4QuXj0GOGh47gdLPBcwkud/U
-         QJYj5e9SrH0M44kPCL+EQ9YWNP1rAOpHQ/nmNFqD6y7pkRfDXBj3pzBOsJIFdqv4C1qT
-         vPz3NvtH9D0SFC7/hzTtJ/vk2JAG5Wnz6xfbHMDzafyP5aUlqXzc4SAIaai/M/SS2jjJ
-         KhSmuFw+p6DtPEwyNghOk58i16be0me8dDvc+nxvJ/d6G6sotpd4fsc6H40kih7mz4Aq
-         LcRg==
-X-Gm-Message-State: ACgBeo1q7zZ0pqk4JzTe+jPm7XK9jNY6D6fWl8JhFe8/MVAic3xBW5K3
-        C4851TbosmK+y5xr8bPHmjI=
-X-Google-Smtp-Source: AA6agR78A0Laf5T37YKB/npSsvs01FaWGZdSADrqD2iOzKUlv3SufyA9pTXdFOx3Zfwi6Yrt/jeHGQ==
-X-Received: by 2002:ac8:7dc1:0:b0:344:6104:eab6 with SMTP id c1-20020ac87dc1000000b003446104eab6mr8674172qte.455.1660964266497;
-        Fri, 19 Aug 2022 19:57:46 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id h10-20020a05620a284a00b006b98315c6fbsm5176381qkp.1.2022.08.19.19.57.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Aug 2022 19:57:46 -0700 (PDT)
-Message-ID: <cc31738f-53d7-df04-03fb-f6a32a9493fb@gmail.com>
-Date:   Fri, 19 Aug 2022 19:57:43 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=8UAglJHMJxkOTcf2BnuldAe6AgkhGWdLKkc7swqzIfQ=;
+        b=DsJe6/FYXTXmSVtXH1NmLCGpL7Kv2KkHbwFDjziA/rFbsc8P4Cd5Sxl+Ef2mA2a2bI
+         Qo5AOmEZhEJ5nw3FXXHf6oj/f03geTcMng/hAUSlyP095ezal+g+7H3/eLQ1DheJ8w6y
+         ZTypVB761ysiXyQNu8D/b8bxbckVDvKylzGp52PzTVg3a00oa857D3sb844PbufBM/q3
+         LtV/iifkjFYZUplDY3u6UUIcHV0C9i5pYCxNIuSPPvxe1npZeTeeOqsqCXVm7vSA1l7X
+         tdp3dJI9aOWKiPlRncYY49qYVvbu0Qaf0Fx7TRHMrJ2Xf76hRLw/eCie9W3ubzPQa8uV
+         T1VQ==
+X-Gm-Message-State: ACgBeo3FkyGutqnDvruv4TcNWk7QatAmoNfO5A4QVTCA4XhWQUJoSbyV
+        LJalyVNsmFNXhPR9x/jtUxs=
+X-Google-Smtp-Source: AA6agR5biOH1hFN68+X2FV+eg4bhlK9NYrr6clVZ4KX9bi9VK6HKNWoI0Pc5l+6FWU91XcCwAxD2eA==
+X-Received: by 2002:a63:e906:0:b0:41b:eba0:8b6d with SMTP id i6-20020a63e906000000b0041beba08b6dmr8471072pgh.501.1660964915470;
+        Fri, 19 Aug 2022 20:08:35 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-69.three.co.id. [180.214.232.69])
+        by smtp.gmail.com with ESMTPSA id d2-20020a170902cec200b0016c5306917fsm3910435plg.53.2022.08.19.20.08.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Aug 2022 20:08:34 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 8BF9F102B2F; Sat, 20 Aug 2022 10:08:31 +0700 (WIB)
+Date:   Sat, 20 Aug 2022 10:08:31 +0700
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH net-next v1 7/7] ethtool: add interface to interact with
+ Ethernet Power Equipment
+Message-ID: <YwBQL7zxJjJSx8TC@debian.me>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+ <20220819120109.3857571-8-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [v2][PATCH] net: phy: Don't WARN for PHY_READY state in
- mdio_bus_phy_resume()
-Content-Language: en-US
-To:     Xiaolei Wang <xiaolei.wang@windriver.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com
-Cc:     linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220819082451.1992102-1-xiaolei.wang@windriver.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220819082451.1992102-1-xiaolei.wang@windriver.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="PVHpDvkI+W+zf0ua"
+Content-Disposition: inline
+In-Reply-To: <20220819120109.3857571-8-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -78,21 +86,125 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--PVHpDvkI+W+zf0ua
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 8/19/2022 1:24 AM, Xiaolei Wang wrote:
-> For some MAC drivers, they set the mac_managed_pm to true in its
-> ->ndo_open() callback. So before the mac_managed_pm is set to true,
-> we still want to leverage the mdio_bus_phy_suspend()/resume() for
-> the phy device suspend and resume. In this case, the phy device is
-> in PHY_READY, and we shouldn't warn about this. It also seems that
-> the check of mac_managed_pm in WARN_ON is redundant since we already
-> check this in the entry of mdio_bus_phy_resume(), so drop it.
-> 
-> Fixes: 744d23c71af3 ("net: phy: Warn about incorrect mdio_bus_phy_resume() state")
-> Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
+On Fri, Aug 19, 2022 at 02:01:09PM +0200, Oleksij Rempel wrote:
+> +Kernel response contents:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``ETHTOOL_A_PSE_HEADER``                nested  reply header
+> +  ``ETHTOOL_A_PODL_PSE_ADMIN_STATE``          u8  Operational state of t=
+he PoDL
+> +                                                  PSE functions
+> +  ``ETHTOOL_A_PODL_PSE_PW_D_STATUS``          u8  power detection status=
+ of the
+> +                                                  PoDL PSE.
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+I don't see malformed table warnings on my htmldocs build, although the
+table border for the third column is not long enough to cover the
+contents.
 
-I see the use case you have and it does make sense to me, thanks!
--- 
-Florian
+> +Request contents:
+> +
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +  ``ETHTOOL_A_PSE_HEADER``                nested  request header
+> +  ``ETHTOOL_A_PODL_PSE_ADMIN_CONTROL``        u8  Control PoDL PSE Admin=
+ state
+> +  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> +
+
+Same here too.
+
+In that case, I'd like to extend the border, like:
+
+---- >8 ----
+
+diff --git a/Documentation/networking/ethtool-netlink.rst b/Documentation/n=
+etworking/ethtool-netlink.rst
+index c8b09b57bd65ea..2560cf62d14f4e 100644
+--- a/Documentation/networking/ethtool-netlink.rst
++++ b/Documentation/networking/ethtool-netlink.rst
+@@ -1641,13 +1641,13 @@ Request contents:
+=20
+ Kernel response contents:
+=20
+-  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+   ``ETHTOOL_A_PSE_HEADER``                nested  reply header
+   ``ETHTOOL_A_PODL_PSE_ADMIN_STATE``          u8  Operational state of the=
+ PoDL
+                                                   PSE functions
+   ``ETHTOOL_A_PODL_PSE_PW_D_STATUS``          u8  power detection status o=
+f the
+                                                   PoDL PSE.
+-  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D
+=20
+ The ``ETHTOOL_A_PODL_PSE_ADMIN_STATE`` identifies the operational state of=
+ the
+ PoDL PSE functions.  The operational state of the PSE function can be chan=
+ged
+@@ -1673,10 +1673,10 @@ Sets PSE parameters.
+=20
+ Request contents:
+=20
+-  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+   ``ETHTOOL_A_PSE_HEADER``                nested  request header
+   ``ETHTOOL_A_PODL_PSE_ADMIN_CONTROL``        u8  Control PoDL PSE Admin s=
+tate
+-  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
++  =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D  =3D=3D=3D=3D=3D=3D  =3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+=20
+ When set, the optional ``ETHTOOL_A_PODL_PSE_ADMIN_CONTROL`` attribute is u=
+sed
+ to control PoDL PSE Admin functions. This option is implementing
+
+Thanks.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--PVHpDvkI+W+zf0ua
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCYwBQKgAKCRD2uYlJVVFO
+oy9/AQDwEH8Bz8WqHqwb641FcoN5aZY4DkOzXgMivWpQ5FhSIAD+J2xBRwk9/A/4
+B3CIxXOZo6mTgh0cQALvIAKmZVH8OgE=
+=iJp9
+-----END PGP SIGNATURE-----
+
+--PVHpDvkI+W+zf0ua--
