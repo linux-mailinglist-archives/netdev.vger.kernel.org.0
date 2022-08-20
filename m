@@ -2,89 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F28DF59A9D6
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EE8259A9FA
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240524AbiHTAHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 20:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60252 "EHLO
+        id S240630AbiHTAVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 20:21:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244652AbiHTAH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:07:29 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E8C2108F1B;
-        Fri, 19 Aug 2022 17:07:29 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id m10-20020a17090a730a00b001fa986fd8eeso8953185pjk.0;
-        Fri, 19 Aug 2022 17:07:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=0hmuTElgj7SfGWCQGn41b6TzMA7sA0gx+Z8F66YiYzY=;
-        b=A0ZtnnvDawbUdSk2r18tYNNarixMK2XD8L7q2AV8j2vx0Mq1UrslI8gt8PtMK3dSGe
-         wZbTts8tayz9q0+CLqdJf4wh40w5sKYrl3Vks7EMH6A4cnYBO1QF0OTUmr9pdhqkpNmx
-         pONk44DzrYb5ujw1g/UNAoXzR12IHKGoU50IjXIUP4hL3iZwodhZ/KtBRTk7k4QJSAKp
-         2pi3laSD+KKQNCFH9fAKyuQFMmEIaY7lal/1+fSFn4SLCSsoI6WdtHRyXunBeo0lmDxx
-         P2g/5NNOrP2zaz3h3wim0+6KHupePCrtnrNaxV2wt6GGmx7nL3wK4/Il2vtNsu4y8mrb
-         bkYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=0hmuTElgj7SfGWCQGn41b6TzMA7sA0gx+Z8F66YiYzY=;
-        b=NtKqyTvRmXpHGUX/cvvqhzxpXTXuegvNrPXIXJRHZGwAMC+W+inygSokt0blZwJng8
-         2mcCFi1hUE91UPrhz5Ho+pYg1BrSS65KSYXlGMHF5300cmGDz1kcZuKnE5b15oDukI7L
-         iZrmL8e8WfKyguSdrpfRe+GuZjWuB6uFICK40f390+x/KRQGfLOmAWB+y387pgq4skbq
-         axZAfoB96EGjWetsN5ZNMB+0OLJoQL6rLhOFeH2c+E3OhaLl7g80WFQevwP9EAUjAn2Z
-         93MwDeF3VEy+iMw/q26Pk3bvoslrUsKLJabITZMbavyl4pWnilHrqbTfq/yqS315zr2k
-         jxJg==
-X-Gm-Message-State: ACgBeo3HktX7D1/lW+emqOhTapS2SjrRRvUgq2PA52m3a8Ik1DSpoEpL
-        iAFUZt1gVCKSKAftlQ/7L3I=
-X-Google-Smtp-Source: AA6agR44+AZahQaWOEndohvIoUdMjDkyhpmDenr7SvGCnvrstDMedKcYM24510FzKzI4/dPGQBy3wg==
-X-Received: by 2002:a17:90a:db95:b0:1fa:c02b:5e34 with SMTP id h21-20020a17090adb9500b001fac02b5e34mr10961714pjv.159.1660954048438;
-        Fri, 19 Aug 2022 17:07:28 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:a2f5])
-        by smtp.gmail.com with ESMTPSA id d8-20020a170903230800b0016dc6279ab8sm3753902plh.159.2022.08.19.17.07.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 17:07:27 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 19 Aug 2022 14:07:26 -1000
-From:   Tejun Heo <tj@kernel.org>
+        with ESMTP id S231538AbiHTAVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:21:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D18B14F4;
+        Fri, 19 Aug 2022 17:20:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=p7OaUEQxnRUEyVn0aBNy9OZOTgyHnlL4VWLHvQaahXM=; b=RRWtKMe+05MqjkFW+FovBB3SMH
+        shWUY1f36odwXDlNIHlzNde128rW2IgkiOesPP3vpyKG9advF5qjnLNBPmiTNPVbi91j3//czsben
+        8lHsLssoVdF/0o0RXaTQqBUGBbuCOflkHW0K8YLvtX9jKLG06ZyZb+MPSDXvNFBTb2MNWiYXxOehA
+        FTLsyuiITxJz4m8wc7Pn86BvIn/gLiqDveAreH7Y42tykPNT5YyRYuJUghLRUZj8WxiTGPqw1p851
+        Mwot/5rUygWaKcv1/8vA2is/2KUh3Mj4EqMlZFrQHH7hEffKq4m4mSPih2bonaQLdASIAmp+c7j2j
+        R+8tZLCw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33858)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1oPCER-0008Hl-7k; Sat, 20 Aug 2022 01:20:55 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1oPCEN-0008EM-NC; Sat, 20 Aug 2022 01:20:51 +0100
+Date:   Sat, 20 Aug 2022 01:20:51 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Xin Gao <gaoxin@cdjrlc.com>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, sdf@google.com,
-        daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] core: Variable type completion
-Message-ID: <YwAlvv+xf//wlTSg@slm.duckdns.org>
-References: <20220817013529.10535-1-gaoxin@cdjrlc.com>
- <20220819164731.22c8a3d2@kernel.org>
+Cc:     Sean Anderson <sean.anderson@seco.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net] net: phy: Warn if phy is attached when removing
+Message-ID: <YwAo42QkTgD0kOqz@shell.armlinux.org.uk>
+References: <20220816163701.1578850-1-sean.anderson@seco.com>
+ <20220819164519.2c71823e@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220819164731.22c8a3d2@kernel.org>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220819164519.2c71823e@kernel.org>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 04:47:31PM -0700, Jakub Kicinski wrote:
-> On Wed, 17 Aug 2022 09:35:29 +0800 Xin Gao wrote:
-> > 'unsigned int' is better than 'unsigned'.
+On Fri, Aug 19, 2022 at 04:45:19PM -0700, Jakub Kicinski wrote:
+> On Tue, 16 Aug 2022 12:37:01 -0400 Sean Anderson wrote:
+> > netdevs using phylib can be oopsed from userspace in the following
+> > manner:
+> > 
+> > $ ip link set $iface up
+> > $ echo $(basename $(readlink /sys/class/net/$iface/phydev)) > \
+> >       /sys/class/net/$iface/phydev/driver/unbind
+> > $ ip link set $iface down
+> > 
+> > However, the traceback provided is a bit too late, since it does not
+> > capture the root of the problem (unbinding the driver). It's also
+> > possible that the memory has been reallocated if sufficient time passes
+> > between when the phy is detached and when the netdev touches the phy
+> > (which could result in silent memory corruption). Add a warning at the
+> > source of the problem. A future patch could make this more robust by
+> > calling dev_close.
 > 
-> Please resend with the following subject:
+> FWIW, I think DaveM marked this patch as changes requested.
 > 
-> [PATCH net-next] net: cgroup: complete unsigned type name
+> I don't really know enough to have an opinion.
+> 
+> PHY maintainers, anyone willing to cast a vote?
 
-Out of curiosity, why is 'unsigned int' better than 'unsigned'?
+I don't think Linus is a fan of using WARN_ON() as an assert()
+replacement, which this feels very much like that kind of thing.
+I don't see much point in using WARN_ON() here as we'll soon get
+a kernel oops anyway, and the backtrace WARN_ON() will produce isn't
+useful - it'll be just noise.
 
-Thanks.
+So, I'd tone it down to something like:
+
+	if (phydev->attached_dev)
+		phydev_err(phydev, "Removing in-use PHY, expect an oops");
+
+Maybe even introduce phydev_crit() just for this message.
+
+Since we have bazillions of network drivers that hold a reference to
+the phydev, I don't think we can do much better than this for phylib.
+It would be a massive effort to go through all the network drivers
+and try to work out how to fix them.
+
+
+Addressing the PCS part of the patch posting and unrelated to what we
+do for phylib...
+
+However, I don't see "we'll do this for phylib, so we can do it for
+PCS as well" as much of a sane argument - we don't have bazillions
+of network drivers to fix to make this work for PCS. We currently
+have no removable PCS (they don't appear with a driver so aren't
+even bound to anything.) So we should add the appropriate handling
+when we start to do this.
+
+Phylink has the capability to take the link down when something goes
+away, and if the PCS goes away, that's exactly what should happen,
+rather than oopsing the kernel.
+
+As MAC drivers hold a reference to the PCS instances, as they need to
+select the appropriate one, how do MAC drivers get to know that the
+PCS has gone away to drop their reference - and tell phylink that the
+PCS has gone. That's the problem that needs solving to allow PCS to
+be unbound if we're going to make them first class citizens of the
+driver model.
+
+I am no fan of "but XYZ doesn't care about it, so why should we care"
+arguments. If I remember correctly, phylib pre-dates the device model,
+and had the device model retrofitted, so it was a best-efforts
+attempt - and suffered back then with the same problem of needing
+lots of drivers to be changed in non-trivial ways.
+
+We have the chance here to come up with something better - and I think
+that chance should be used to full effect.
 
 -- 
-tejun
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
