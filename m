@@ -2,79 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 014AD59AAAD
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 04:28:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B9BB59AAC4
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 04:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242335AbiHTC0m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 22:26:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37074 "EHLO
+        id S238393AbiHTCx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 22:53:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235135AbiHTC0k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 22:26:40 -0400
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 795507A536;
-        Fri, 19 Aug 2022 19:26:39 -0700 (PDT)
-Received: by mail-vs1-xe34.google.com with SMTP id k10so1074714vsr.4;
-        Fri, 19 Aug 2022 19:26:39 -0700 (PDT)
+        with ESMTP id S242374AbiHTCxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 22:53:23 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE472A45B
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 19:53:21 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id d1so4636570qvs.0
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 19:53:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=oh6Q6X5fu9r3g+mvH4/jQjUaJWygBx3MJ5JQBin8ub0=;
-        b=jkvhqkc8tm4M+RR6BZs50gF7P3/UCtOxjjx1ig7yZY1X4PkwGTSnuAo7KN3DA+G38H
-         h0rP55Py5h3qCfvw8j6f+I0Q/WmKn9l2aykoaPbu1Dsqyee4DhW5DbTggZMfyvg0kxTe
-         Ovu8yHalWDXiCibV/VFmJxadK5g7LkbBFBz+mIFo+oQd9sqtEysjAxfz6X6OD3dDTM7B
-         EDi7cORUHb1k0m3eesFCAxJI2MJt7dh63Ou0KXEifgnc9q/6FsJ4iCLA9B/QBPPpExn/
-         pQxuxMUGOXKM3feKbSQrVbnLWoyn7rqWLfmtUwNuD367CtqkW/x6xQc/f5hoKXHd4ibf
-         DxIw==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=tBQiPeY4LvPDSk6Ln48Z9QaTaoC2YQdUQRTthzfDkGc=;
+        b=F6fCLfLc1knuk3J4tbHjYMCUiWcYVOCKfpqE2BabZOZJob4Ih5dcuZaE2jbJH9cnuL
+         wWCzaQzB3Q2qhIniCTUqYMT2TLBtiVxBZw/y7HP7wmea1T1y7YSLY3BK/DXB3NCd5drD
+         k4Wedp9jyCx7xAE6V8BFrm/ZfxzSNur4ax8xcyVMR6Q6TF7s+dm50nItSGFDN5r+Qoqk
+         qQn+10sYI4RFbRUywlyYcYvDC6VGXjXLWlx7/RF9Yz8NaKDO6pED8cCsVdiVGGe49YtR
+         SA0t+VPppyU7ZmEa78XamfiLt3pHSjEIJlaOQfShXDmQ6bd9XsaapUiQHRTP486GrfTJ
+         Ar8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=oh6Q6X5fu9r3g+mvH4/jQjUaJWygBx3MJ5JQBin8ub0=;
-        b=WHU3UOQyhMOdIqbcU8673lgTuDfYBtsTGERqMNxL/5GRq9axcaVPEeURXNtJeyL4IX
-         abqGQxKEqoNaZO/Q95u3mhtE75P+83wzOQzbwaX4nKVk38Hb+uRQ+nH3i8tS0gE/f1Zt
-         P1QZJe1cRPSWS0gd4s/uF1yg/Cx0SD1Qd741qJDdRB6Ki+xz5Ba4wj4EElv6Q6DEdONr
-         U+7hUbeOd8HAXQBtQ3ZL1gc0wHUaV0+R24gSNxGTLA1DZSnO1ZFbYkmhMiI1ekqtc1RU
-         P+xClJfxcZer09/ODnCUVIZdRfXC/wKIayG+IzEftnNhArYUjuhmRCZ6fODuw3QpvnFV
-         dkVA==
-X-Gm-Message-State: ACgBeo15pfSCEWtSg7gWBUsAZeYaRwa+AQKBd2b6rrhzH/bmakSNI085
-        I2ShEkCqIFglm+5Ku+VbV/jBw3FtdbvFDKvcPAU=
-X-Google-Smtp-Source: AA6agR77IBY+CPyDUhh5l/7XAT66exhQPCgU+XVLGCjmos38SCThQYSEex67Z26AjehATEySAdHIYv3wTX+fe1wwZHA=
-X-Received: by 2002:a05:6102:570a:b0:38f:6031:412c with SMTP id
- dg10-20020a056102570a00b0038f6031412cmr3517866vsb.35.1660962398582; Fri, 19
- Aug 2022 19:26:38 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=tBQiPeY4LvPDSk6Ln48Z9QaTaoC2YQdUQRTthzfDkGc=;
+        b=WTIadr2o31joKsm645oAGW5yaoRmT8Vd5H6DDsdh0NA48a++4tWlojPZHTXdQHBmLV
+         u5Mxi/8QLjY9Syu8SYMl7K5ShnGErzf4VuAcJjTMiXhJCRZwgSJMryGTucd2lzqXyD2y
+         czOPyyRaRGgqnNGi6ZR6a6XsEjY0NZNGITRE9Rgbjd3L7Fu2+fRPM3u3fj+W7mGTtAUm
+         dgd7g0okDnbeIalcNIrQl9PexQl6Br4t/rzobjh2ozA5fpg9ojoOYt8yCStXhe7xQcV8
+         nqFEd8W0lnXcqiQZQUZU9d3Vu6LXWuYVRSJdoPSCiggIXrd2VxRnuehNu9JHY4628/q9
+         xTQw==
+X-Gm-Message-State: ACgBeo1/Crozn2reVgutSOVA8iJdKdoc/2HsrHtYhhwldj4fy1WzX1dx
+        W+kaz4hxr89dF8oCFgDXbC4=
+X-Google-Smtp-Source: AA6agR768hXjpRyOBoN/5qeGB5NnpBuseNebDaP+VdTchLLFvmojXY6OjxMVtMeIwwryNO4S08dR7w==
+X-Received: by 2002:a05:6214:23c6:b0:491:99e3:80ce with SMTP id hr6-20020a05621423c600b0049199e380cemr8303097qvb.111.1660964000985;
+        Fri, 19 Aug 2022 19:53:20 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id bq42-20020a05620a46aa00b006b8e049cf08sm5332317qkb.2.2022.08.19.19.53.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 19 Aug 2022 19:53:20 -0700 (PDT)
+Message-ID: <bf811673-90d2-87f7-0e7b-20d8d9212b49@gmail.com>
+Date:   Fri, 19 Aug 2022 19:53:16 -0700
 MIME-Version: 1.0
-References: <20220818143118.17733-1-laoar.shao@gmail.com> <Yv67MRQLPreR9GU5@slm.duckdns.org>
- <Yv6+HlEzpNy8y5kT@slm.duckdns.org> <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
- <Yv/DK+AGlMeBGkF1@slm.duckdns.org>
-In-Reply-To: <Yv/DK+AGlMeBGkF1@slm.duckdns.org>
-From:   Yafang Shao <laoar.shao@gmail.com>
-Date:   Sat, 20 Aug 2022 10:25:59 +0800
-Message-ID: <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 00/12] bpf: Introduce selectable memcg for bpf map
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [PATCH net] net: dsa: don't dereference NULL extack in
+ dsa_slave_changeupper()
+Content-Language: en-US
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sergei Antonov <saproj@gmail.com>
+References: <20220819173925.3581871-1-vladimir.oltean@nxp.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220819173925.3581871-1-vladimir.oltean@nxp.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -83,115 +82,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 1:06 AM Tejun Heo <tj@kernel.org> wrote:
->
-> Hello,
->
-> On Fri, Aug 19, 2022 at 09:09:25AM +0800, Yafang Shao wrote:
-> > On Fri, Aug 19, 2022 at 6:33 AM Tejun Heo <tj@kernel.org> wrote:
-> > >
-> > > On Thu, Aug 18, 2022 at 12:20:33PM -1000, Tejun Heo wrote:
-> > > > We have the exact same problem for any resources which span multiple
-> > > > instances of a service including page cache, tmpfs instances and any other
-> > > > thing which can persist longer than procss life time. My current opinion is
-> > >
-> > > To expand a bit more on this point, once we start including page cache and
-> > > tmpfs, we now get entangled with memory reclaim which then brings in IO and
-> > > not-yet-but-eventually CPU usage.
-> >
-> > Introduce-a-new-layer vs introduce-a-new-cgroup, which one is more overhead?
->
-> Introducing a new layer in cgroup2 doesn't mean that any specific resource
-> controller is enabled, so there is no runtime overhead difference. In terms
-> of logical complexity, introducing a localized layer seems a lot more
-> straightforward than building a whole separate tree.
->
-> Note that the same applies to cgroup1 where collapsed controller tree is
-> represented by simply not creating those layers in that particular
-> controller tree.
->
-
-No, we have observed on our product env that multiple-layers cpuacct
-would cause obvious performance hit due to cache miss.
-
-> No matter how we cut the problem here, if we want to track these persistent
-> resources, we have to create a cgroup to host them somewhere. The discussion
-> we're having is mostly around where to put them. With your proposal, it can
-> be anywhere and you draw out an example where the persistent cgroups form
-> their own separate tree. What I'm saying is that the logical place to put it
-> is where the current resource consumption is and we just need to put the
-> persistent entity as the parent of the instances.
->
-> Flexibility, just like anything else, isn't free. Here, if we extrapolate
-> this approach, the cost is evidently hefty in that it doesn't generically
-> work with the basic resource control structure.
->
-> > > Once you start splitting the tree like
-> > > you're suggesting here, all those will break down and now we have to worry
-> > > about how to split resource accounting and control for the same entities
-> > > across two split branches of the tree, which doesn't really make any sense.
-> >
-> > The k8s has already been broken thanks to the memcg accounting on  bpf memory.
-> > If you ignored it, I paste it below.
-> > [0]"1. The memory usage is not consistent between the first generation and
-> > new generations."
-> >
-> > This issue will persist even if you introduce a new layer.
->
-> Please watch your tone.
->
-
-Hm? I apologize if my words offend you.
-But, could you pls take a serious look at the patchset  before giving a NACK?
-You didn't even want to know the background before you sent your NACK.
-
-> Again, this isn't a problem specific to k8s. We have the same problem with
-> e.g. persistent tmpfs. One idea which I'm not against is allowing specific
-> resources to be charged to an ancestor. We gotta think carefully about how
-> such charges should be granted / denied but an approach like that jives well
-> with the existing hierarchical control structure and because introducing a
-> persistent layer does too, the combination of the two works well.
->
-> > > So, we *really* don't wanna paint ourselves into that kind of a corner. This
-> > > is a dead-end. Please ditch it.
-> >
-> > It makes non-sensen to ditch it.
-> > Because, the hierarchy I described in the commit log is *one* use case
-> > of the selectable memcg, but not *the only one* use case of it. If you
-> > dislike that hierarchy, I will remove it to avoid misleading you.
->
-> But if you drop that, what'd be the rationale for adding what you're
-> proposing? Why would we want bpf memory charges to be attached any part of
-> the hierarchy?
->
-
-I have explained it to you.
-But unfortunately you ignored it again.
-But I don't mind explaining to you again.
-
-                 Parent-memcg
-                     \
-                   Child-memcg (k8s pod)
-
-The user can charge the memory to the parent directly without charging
-into the k8s pod.
-Then the memory.stat is consistent between different generations.
-
-> > Even if you introduce a new layer, you still need the selectable memcg.
-> > For example, to avoid the issue I described in [0],  you still need to
-> > charge to the parent cgroup instead of the current cgroup.
->
-> As I wrote above, we've been discussing the above. Again, I'd be a lot more
-> amenable to such approach because it fits with how everything is structured.
->
-> > That's why I described in the commit log that the selectable memcg is flexible.
->
-> Hopefully, my point on this is clear by now.
->
-
-Unfortunately, you didn't want to get my point.
 
 
+On 8/19/2022 10:39 AM, Vladimir Oltean wrote:
+> When a driver returns -EOPNOTSUPP in dsa_port_bridge_join() but failed
+> to provide a reason for it, DSA attempts to set the extack to say that
+> software fallback will kick in.
+> 
+> The problem is, when we use brctl and the legacy bridge ioctls, the
+> extack will be NULL, and DSA dereferences it in the process of setting
+> it.
+> 
+> Sergei Antonov proves this using the following stack trace:
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> PC is at dsa_slave_changeupper+0x5c/0x158
+> 
+>   dsa_slave_changeupper from raw_notifier_call_chain+0x38/0x6c
+>   raw_notifier_call_chain from __netdev_upper_dev_link+0x198/0x3b4
+>   __netdev_upper_dev_link from netdev_master_upper_dev_link+0x50/0x78
+>   netdev_master_upper_dev_link from br_add_if+0x430/0x7f4
+>   br_add_if from br_ioctl_stub+0x170/0x530
+>   br_ioctl_stub from br_ioctl_call+0x54/0x7c
+>   br_ioctl_call from dev_ifsioc+0x4e0/0x6bc
+>   dev_ifsioc from dev_ioctl+0x2f8/0x758
+>   dev_ioctl from sock_ioctl+0x5f0/0x674
+>   sock_ioctl from sys_ioctl+0x518/0xe40
+>   sys_ioctl from ret_fast_syscall+0x0/0x1c
+> 
+> Fix the problem by only overriding the extack if non-NULL.
+> 
+> Fixes: 1c6e8088d9a7 ("net: dsa: allow port_bridge_join() to override extack message")
+> Link: https://lore.kernel.org/netdev/CABikg9wx7vB5eRDAYtvAm7fprJ09Ta27a4ZazC=NX5K4wn6pWA@mail.gmail.com/
+> Reported-by: Sergei Antonov <saproj@gmail.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-Regards
-Yafang
+Florian
