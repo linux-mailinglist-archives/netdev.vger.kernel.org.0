@@ -2,70 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F30759AB82
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 07:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2C6C59AB84
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 07:48:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243232AbiHTFow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Aug 2022 01:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59582 "EHLO
+        id S243323AbiHTFrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Aug 2022 01:47:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiHTFor (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 01:44:47 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B4DC6EB8
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 22:44:44 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id q2so5711723edb.6
-        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 22:44:44 -0700 (PDT)
+        with ESMTP id S243288AbiHTFrA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 01:47:00 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD04CAC76
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 22:46:58 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id qn6so12242744ejc.11
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 22:46:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=AhUiMKx+/u+o8hGijiwZDgRsOX07rhVHhDVvSaC8M9Y=;
-        b=kgkB8hZyw6tTDPQ+K8HtezhtVkR5O4UJUo8wPg3jQUOIdRUG+GIKV6XCOk1WBQNKjm
-         lKIiC7epy/VuoQexTliyF9xqhdLsPEC5YFb2BJliAWTLXRsOZoMcHjkmuWgD+IVk20Y2
-         QDvUjOp7a0EfZ8JrM3jF8TytixvlA2ENdPLg/Wsq6iDmHw5H55AmjerxKyzXVsDLw7dJ
-         efv4hY/tbt6WZvDsJNUYeErpuuyoCbb3BSDA/4dHQmWPApY5s+E2BMyIvz8K97VO4kfw
-         5SpLERj4s8+99sgekj5NTtxsM8BbgZ+6663s+RQooenXAX35XZgaqmlv1HdXudz87bqf
-         TmwA==
+        bh=LDH4PX8EuUFutdwVTpT5mdBRug1m//ps5OiiWm9q4vQ=;
+        b=NUCyUEJ36sj6mf+TvOX9MsaZoI410gRy5GXfpKOU7CHqQUxn19zBS5Lbg/JrygFtqi
+         eoNaE0TZXKPSjRgRICcBmPZtk0APJmTgUtSXVDxmoDT9VL84mRNlrZWyJbJ9mIKikdW3
+         yhBRGGZku3RmmLKNwQNkUNecKMfMYOCa3pTlUZp+9sUr/Axa1wP8fQkJfZUYmlTnTXs8
+         ECUb/F1cmBIRXMGA3CUQoqg5/Nsf/9sRroAUpoyl3T0CvEPi+pBzhRXhn+bUAGZFObvo
+         nQTV6L0vxuhn1OyEdPHN1CwDn9ieAk6QtT6/Yi5ivfeDydn8JfnPeDRi+ShmBeJ1uC6f
+         vEew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=AhUiMKx+/u+o8hGijiwZDgRsOX07rhVHhDVvSaC8M9Y=;
-        b=bek9aLeaD9IxTXlVA38NAt7duxECgBOy5g0N7+MlXjTBfPAWwImjaqNUn6hJHHl0/f
-         2Dtj1a602HLg7I0X0Bh45a7F5bHzN/H5KEcWaRNcxktUQY3HhRRbSxIMsCIh+lcPX8Rc
-         jvikvmtHAyfdXDzjQ9Cdp+gtdxVwSzMc4Yosz+IJ83Oy8sbKjpFSveRRGWxZTBOk1IG2
-         2xcQugsgInqEOPOPpjJLM7MosRxuozonGOBXsEL1Fvg+jIdldxAhGgjH+8MPSRZaU++q
-         XvbtOYYTV/49ugjBLM0fNFOMoEeLVteYOYtLuKspwwY7jsgHwOSDsY6tM9EKlP6os1Pz
-         5tQg==
-X-Gm-Message-State: ACgBeo1KXb3XhgOooEz0IdlqIXdD/L2o4nnKh5T+IPovyZADHQd2o70b
-        D5ECKcZxWLU4YX+yxgo5p2KpUg==
-X-Google-Smtp-Source: AA6agR7yryDQwjH1zW2LqcAeiF2d9VHA7lBzwql5SfcIeL9TA/Jkzt4xCNpY2IJN+aES7iMilrj1oA==
-X-Received: by 2002:a05:6402:353:b0:446:2d2c:3854 with SMTP id r19-20020a056402035300b004462d2c3854mr5925632edw.193.1660974282913;
-        Fri, 19 Aug 2022 22:44:42 -0700 (PDT)
+        bh=LDH4PX8EuUFutdwVTpT5mdBRug1m//ps5OiiWm9q4vQ=;
+        b=tFsrnuzFKfEoGivJ27c+7x7JYy1mZDZvniGNxFKaYueErUG4OTVVm3kv/rfd9HZTHy
+         LK/cyyZk6obMl7gIIqDV2fH68hBS4mAGB918uafZN0CB5m2tFJAo9EvnsUdQ1JCQ3J/B
+         PHO4xEN65au17wdA2As6kgFKwJo4cKTUCu+wvILkFriyQRFhZxevNPHn0GsPCUqHBmV0
+         DdpG4wMHkczfhmwnUtlWiJKv2DvdtQ0bJWYNTnmPPWqdrdnD97AfIFgrTEbdrFv98Acr
+         xsQamLuKUfSrOuxMe+rs50SV3YUdB9V17LUeQR/qREYEAIplFUxb1bMV0vyhv2NuLNjW
+         1+8A==
+X-Gm-Message-State: ACgBeo0NE/NENX4Md3YszwMDwIVm4S6JKhw/CjFbvlMfkbuamC3V8ltL
+        +qhDH4PfKAlPrOEz0kMR3/50DA==
+X-Google-Smtp-Source: AA6agR4vtlgNSoY4W1p7OMs9ZJsxvBwgbplwQvyTR4YSomM0CaPvzPMrVFwgg5rSo9DLuauylhB7LQ==
+X-Received: by 2002:a17:907:7d8c:b0:731:65f6:1f28 with SMTP id oz12-20020a1709077d8c00b0073165f61f28mr6611331ejc.91.1660974416702;
+        Fri, 19 Aug 2022 22:46:56 -0700 (PDT)
 Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id bo9-20020a0564020b2900b0043df042bfc6sm1935475edb.47.2022.08.19.22.44.42
+        by smtp.gmail.com with ESMTPSA id b2-20020a05640202c200b00440ced0e117sm4080487edx.58.2022.08.19.22.46.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Aug 2022 22:44:42 -0700 (PDT)
-Date:   Sat, 20 Aug 2022 07:44:41 +0200
+        Fri, 19 Aug 2022 22:46:56 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 07:46:55 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
-        pabeni@redhat.com, edumazet@google.com, saeedm@nvidia.com,
-        jacob.e.keller@intel.com, vikas.gupta@broadcom.com,
-        gospo@broadcom.com
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "idosch@nvidia.com" <idosch@nvidia.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "gospo@broadcom.com" <gospo@broadcom.com>
 Subject: Re: [patch net-next 4/4] net: devlink: expose default flash update
  target
-Message-ID: <YwB0yeXEDxHm5Sxx@nanopsycho>
+Message-ID: <YwB1T8GJgi+dezIH@nanopsycho>
 References: <20220818130042.535762-1-jiri@resnulli.us>
  <20220818130042.535762-5-jiri@resnulli.us>
  <20220818195301.27e76539@kernel.org>
- <Yv9F4EpjURQF0Dnd@nanopsycho>
- <20220819145459.1a7c6a61@kernel.org>
+ <CO1PR11MB50890139A9EEBD1AEBA54249D66C9@CO1PR11MB5089.namprd11.prod.outlook.com>
+ <20220819144545.1efd6a04@kernel.org>
+ <CO1PR11MB5089655E5281C29FA1AC19BAD66C9@CO1PR11MB5089.namprd11.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220819145459.1a7c6a61@kernel.org>
+In-Reply-To: <CO1PR11MB5089655E5281C29FA1AC19BAD66C9@CO1PR11MB5089.namprd11.prod.outlook.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -75,54 +81,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 19, 2022 at 11:54:59PM CEST, kuba@kernel.org wrote:
->On Fri, 19 Aug 2022 10:12:16 +0200 Jiri Pirko wrote:
->> Fri, Aug 19, 2022 at 04:53:01AM CEST, kuba@kernel.org wrote:
->> >On Thu, 18 Aug 2022 15:00:42 +0200 Jiri Pirko wrote:  
->> >> Allow driver to mark certain version obtained by info_get() op as
->> >> "flash update default". Expose this information to user which allows him
->> >> to understand what version is going to be affected if he does flash
->> >> update without specifying the component. Implement this in netdevsim.  
->> >
->> >My intuition would be that if you specify no component you're flashing
->> >the entire device. Is that insufficient? Can you explain the use case?  
+Sat, Aug 20, 2022 at 12:07:41AM CEST, jacob.e.keller@intel.com wrote:
+>
+>
+>> -----Original Message-----
+>> From: Jakub Kicinski <kuba@kernel.org>
+>> Sent: Friday, August 19, 2022 2:46 PM
+>> To: Keller, Jacob E <jacob.e.keller@intel.com>
+>> Cc: Jiri Pirko <jiri@resnulli.us>; netdev@vger.kernel.org; davem@davemloft.net;
+>> idosch@nvidia.com; pabeni@redhat.com; edumazet@google.com;
+>> saeedm@nvidia.com; vikas.gupta@broadcom.com; gospo@broadcom.com
+>> Subject: Re: [patch net-next 4/4] net: devlink: expose default flash update target
 >> 
->> I guess that it up to the driver implementation. I can imagine arguments
->> for both ways. Anyway, there is no way to restrict this in kernel, so
->> let that up to the driver.
+>> On Fri, 19 Aug 2022 20:59:28 +0000 Keller, Jacob E wrote:
+>> > > My intuition would be that if you specify no component you're flashing
+>> > > the entire device. Is that insufficient? Can you explain the use case?
+>> > >
+>> > > Also Documentation/ needs to be updated.
+>> >
+>> > Some of the components in ice include the DDP which has an info
+>> > version, but which is not part of the flash but is loaded by the
+>> > driver during initialization.
+>> 
+>> Right "entire device" as in "everything in 'stored'". Runtime loaded
+>> stuff should not be listed in "stored" and therefore not be considered
+>> "flashable". Correct?
 >
->To be clear - your intent is to impose more structure on the relation
->between the dev info and dev flash, right? But just "to be safe",
-
-Correct. Basically I want to make things clear for the user in terms of
-what he can flash, what component names he can pass, what happens during
-flash without component. Also, I want to sanitize drivers so they cannot
-accept *any* component name.
-
->there's no immediate need to do this?
-
-Nope.
-
+>Yes I believe we don't list those as stored.
 >
->The entire dev info / dev flash interface was driven by practical needs
->of the fleet management team @Facebook / Meta.
+>We do have some extra version information that is reported through multiple info lines, i.e. we report:
 >
->What would make the changes you're making more useful here would be if
->instead of declaring the "default" component, we declared "overall"
->component. I.e. the component which is guaranteed to encompass all the
->other versions in "stored", and coincidentally is also the default
->flashed one.
+>fw.mgmt
+>fw.mgmt.api
+>fw.mgmt.build
+>
+>where the .api and .build are sub-version fields of the fw.mgmt and can potentially give further information but are just a part of the fw.mgmt component. They can't be flashed separately.
 
-It is just semantics. Default is what we have now and drivers are using
-it. How, that is up to the driver. I see no way how to enforce this, do
-you?
-
-But anyway, I can split the patchset in 2:
-1) sanitize components
-2) default/overall/whatever
-If that would help.
-
+Yep, in my patchset, this is accounted for. The driver can say if the
+"version" is flashable (passed as a compenent name) or not. In this case,
+it is not and it only tells the user version of some fw part.
 
 >
->That way the FW version reporting can be simplified to store only one
->version.
+>Thanks,
+>Jake
