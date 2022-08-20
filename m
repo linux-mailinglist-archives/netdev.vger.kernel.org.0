@@ -2,1519 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 755D459AC96
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 10:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2717F59ACC5
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 11:00:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344684AbiHTIae (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Aug 2022 04:30:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37038 "EHLO
+        id S1343768AbiHTI4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Aug 2022 04:56:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344514AbiHTIaP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 04:30:15 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88014BC809
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 01:30:12 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gt3so220220ejb.12
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 01:30:12 -0700 (PDT)
+        with ESMTP id S244085AbiHTI4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 04:56:04 -0400
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59672659EB;
+        Sat, 20 Aug 2022 01:56:02 -0700 (PDT)
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27K7iafJ014010;
+        Sat, 20 Aug 2022 08:55:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2022-7-12;
+ bh=yXSdLwQ8e93IJRZgUMR3j0/w1eZBFfA6OUC5pF9V/wo=;
+ b=HGFK7fr3QmoHPRuQrRs1OwAT7Y8/ffKsmnWlTH+Hr8xl1+7nCztNAGWTZ46qiA3Scw4p
+ dv4JPgtu9zQ8ryhU6SVINSR4jsubJzJaTRjAiREsVLUSHTS25EO02VYtUzGJ3WDPGH14
+ 68Cg3ZCgjHoyEaJshZ7Jq2WbBAuPlU7OTjNTs76/yvkWN0z/w7jdDlf0nP4KlQKmN2J0
+ vHia6CSWQgV7h9k0kcEMmK8JY6BpKTVzYoKCgXYgc3vXqsSgNSNiSwfPRr3Qnc4iq/j2
+ hEDKGB1dQ58qFASPYiDIYP96fQJv0TfvSi4PWslKuHmfP2K+YzSrHVBj7PZ6dVYfom4R Cg== 
+Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j2ug2g4g8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 20 Aug 2022 08:55:45 +0000
+Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27K8c2rh016810;
+        Sat, 20 Aug 2022 08:55:44 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
+        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3j2p26dgn7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 20 Aug 2022 08:55:44 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YasqVDbP1iTxUdcmY8O8CPaHru5BH3CxW3I0Ex+w4+5eY9w8fk8zkGKbsIAFhORiGo/J4f48VnWLptQyczUXWJCibcoZjzWWpqfVa82zGu83Ua7yDrnpy7XyLDloLx8fzGcly0Nw3aSrhAIwPEAPtaKBM5qCNmHppPhQ+IDcJW8UQpiphYXHb7KhaUv2MAvVrcXiNl0remaRwB58mU6n4BHkpL+BPs8zd84N9ou4kbC982IhoCmpqjTj0I6Opf7PzMcx7FKCarSyCaoN1HOyPiPR16U7nSubX5kuUiLvchWLgvSRdHlr9h+5KLkmlqBmWKcPfGT6KjuPuVxVOIjZXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yXSdLwQ8e93IJRZgUMR3j0/w1eZBFfA6OUC5pF9V/wo=;
+ b=EGBa3sdNM9efFrrcfir2OvYI7+EZRYQHKj1ICHLshAHS4tAgihrOUuekwyWxrLy1sltvUSY7uxREHm9p/T4V9+B3KS77bctmlV6QXbR94NWl5W/vgDuJu6EbCsWr3VBfKzY5Vt3vji4U/VAScGA1g1zjxOLNlxQl83Bkv6UVB/xJHGs2SnYd1beGkQhHOicZuxJkudzsVKC9Ci20Xu377Fdsh8WI7guMJWD9om2etVqK4/QG4KG5SsHrUI3/KevkCOqa+FXvV47Vxdz56g/ytyJJkLJT+nszSw7RoWcUwHIHcUAvVOBWkeXnx8c16Qed1pgp5GFuwl3T/eqziepblQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=tLR49+JfEvEzJxZSszz9rSWOWhFYQ9ierWQ77zBCdR4=;
-        b=okCVBeHsgrfOLBLIRFI0lk8VZs7OojqIjAJZPQveB3hIAGeO4zd/CZOKbBqCK9ATjU
-         dHx+5NYT8hpFRz/p6WT3KqM4/pEnHWtwIDvCi999LluQUmE9bxUJ4bRbig3urIG7EJB2
-         8vFo0Ds1wNFITtk5QpLH3sj0TJSez4d/at/UI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=tLR49+JfEvEzJxZSszz9rSWOWhFYQ9ierWQ77zBCdR4=;
-        b=g7gh6EQ25z/uJEvmJEdGxsoq/TpH/qlMivi8SgpW8xGLCh9a/hslEe8aE/dn0npHay
-         5ZncNpW87RkYMipeK8axP7VuptcLdDcBNALXM0X3GQoBUu3sAZjLsgkQklT6w2PwCD8Q
-         lYl6TDSi/o1CkK+gCXhm56XVJgRK8u7MOLW470U3tmtsBsfj5Gj78G6U5l0u28YUWTme
-         2GYcdFuBt2BWmVmwTJLdvaQwios1f2LTqeeVqqwSQPKOU+daeudxMGXgL4AtcYza0bSB
-         UKONMtrTNFM+LX8KQbI132YDHzVzHwDrSVBsvMiVAJloBasEXmtzr98yp7AvJCAPOYbu
-         Rb+w==
-X-Gm-Message-State: ACgBeo1nBV54eyoad2mVHV+0HTMxTtvQn1JwQ3j1kdsSpp24d+Zl/y+D
-        nCwLrE+QYnONwg6NqJ6r8YN6LQ==
-X-Google-Smtp-Source: AA6agR6FJnFFl1k4T7vWG2PXegLFLyWs5TGSXAIQU7cjl4x8O1qO7a9JI3KyMmBCTA0Q4EQLWtFiGA==
-X-Received: by 2002:a17:907:1b1c:b0:72f:9aac:ee41 with SMTP id mp28-20020a1709071b1c00b0072f9aacee41mr7145179ejc.56.1660984210737;
-        Sat, 20 Aug 2022 01:30:10 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-79-31-31-9.retail.telecomitalia.it. [79.31.31.9])
-        by smtp.gmail.com with ESMTPSA id gx14-20020a1709068a4e00b0072b33e91f96sm3336112ejc.190.2022.08.20.01.30.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 20 Aug 2022 01:30:10 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        michael@amarulasolutions.com,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Dario Binacchi <dariobin@libero.it>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: [RFC PATCH v2 4/4] can: bxcan: add support for ST bxCAN controller
-Date:   Sat, 20 Aug 2022 10:29:36 +0200
-Message-Id: <20220820082936.686924-5-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220820082936.686924-1-dario.binacchi@amarulasolutions.com>
-References: <20220820082936.686924-1-dario.binacchi@amarulasolutions.com>
-MIME-Version: 1.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yXSdLwQ8e93IJRZgUMR3j0/w1eZBFfA6OUC5pF9V/wo=;
+ b=hDmPn9W/M+Hidc+NdqRpBXGZJ/umjSd1BBArvqiNJ3x/cMBaT8yZCMvwpyLgG5gubcye3oTUB1CweWpISZbhFxPvcmJNekwdUYZAjW1UVlZwIjzOWmDljTdfbzAXqPRAvfUGumXS961c1pZGPpFYVm7aDHtWiZtlO6bfqCvykck=
+Received: from BN8PR10MB3283.namprd10.prod.outlook.com (2603:10b6:408:d1::28)
+ by DM5PR10MB1274.namprd10.prod.outlook.com (2603:10b6:4:b::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5525.11; Sat, 20 Aug 2022 08:55:40 +0000
+Received: from BN8PR10MB3283.namprd10.prod.outlook.com
+ ([fe80::88d3:9d3:f63b:f644]) by BN8PR10MB3283.namprd10.prod.outlook.com
+ ([fe80::88d3:9d3:f63b:f644%7]) with mapi id 15.20.5546.019; Sat, 20 Aug 2022
+ 08:55:40 +0000
+Message-ID: <4678fc51-a402-d3ea-e875-6eba175933ba@oracle.com>
+Date:   Sat, 20 Aug 2022 01:55:36 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+Content-Language: en-US
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "Zhu, Lingshan" <lingshan.zhu@intel.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        "Dawar, Gautam" <gautam.dawar@amd.com>
+References: <c5075d3d-9d2c-2716-1cbf-cede49e2d66f@oracle.com>
+ <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
+ <9b6292f3-9bd5-ecd8-5e42-cd5d12f036e7@oracle.com>
+ <22e0236f-b556-c6a8-0043-b39b02928fd6@intel.com>
+ <892b39d6-85f8-bff5-030d-e21288975572@oracle.com>
+ <52a47bc7-bf26-b8f9-257f-7dc5cea66d23@intel.com>
+ <20220817045406-mutt-send-email-mst@kernel.org>
+ <a91fa479-d1cc-a2d6-0821-93386069a2c1@intel.com>
+ <20220817053821-mutt-send-email-mst@kernel.org>
+ <449c2fb2-3920-7bf9-8c5c-a68456dfea76@intel.com>
+ <20220817063450-mutt-send-email-mst@kernel.org>
+ <54aa5a5c-69e2-d372-3e0c-b87f595d213c@redhat.com>
+ <f0b6ea5c-1783-96d2-2d9f-e5cf726b0fc0@oracle.com>
+ <CACGkMEumKfktMUJOTUYL_JYkFbw8qH331gGARPB2bTH=7wKWPg@mail.gmail.com>
+From:   Si-Wei Liu <si-wei.liu@oracle.com>
+Organization: Oracle Corporation
+In-Reply-To: <CACGkMEumKfktMUJOTUYL_JYkFbw8qH331gGARPB2bTH=7wKWPg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-ClientProxiedBy: SA0PR11CA0039.namprd11.prod.outlook.com
+ (2603:10b6:806:d0::14) To BN8PR10MB3283.namprd10.prod.outlook.com
+ (2603:10b6:408:d1::28)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e2ddf563-2a18-4b35-9d0c-08da8289c1f8
+X-MS-TrafficTypeDiagnostic: DM5PR10MB1274:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: F0sNGhwiJ5To7IWfrVvuKVaHaLlyhvLyeoNZq3zW/p/br6G//LoQL8wlPFAik/HHJDuAJzPVKXqHxtyuukYmh0EBJd4pVQtQZDIjsqp8NKaVzppdnIzng23w3i+/30unKJpfEBCvMU4qh8g80sTdd6dlZryRGCqv3HpqKqxFDu5ER31970C1r+Q9MQYVvrHAI2WCIDk88ktZUZAohy2hkRNkAgYL+k+mW9dEa/iViOhcB1r1bqxjydnsOIgVd3G+sBgGzpJt2I7kGcXttbPsnO/OYnM3dmJH9TbqoPDBqs/hfPmF3sQM/cBoKKNi01q9okbwaOcQpmbK3cewB3At0OrLfttCGA2HX1yqkk/C541qqqnmL5+nFrBT9uz08dCIoqaLMbfJ+fq1CXbv8lf7hOPeRV073kS74XcnWo2QAR3Ip5iFJ15cvIti2SltVO6gvNP2WG/DmqBhq2N77k4NS0EZDoHUrEDZ/ZQZbSJ2PW2+p9kNYr8GybtntoYTmhAQBPQAUWYeXQgU1BQuOFzO5P6AiFKrDwzTUpHl4ouRXI+Mi0Xx9ngRAF57BBQVVUcm0W5RElOxtr9U8I4/a1ZooBVjTov110EeRVB/3UPvF9xsaEcvPikuSWZ6H87brQUBb6Ms5aLt+iy52ut13+FJn/QWK7ZQFrcrtlSmoo9mP3n4QshembpAZBRNgodrqmCZphaldgiUmLqG39odz+mBr6lHweTreb/uFQaFBQ6AxhGBcs9CYftAxBwJwZz7JE8uXPl495C5PasEFc+BvGLrkniMeOTlrwVCjYZBegG121Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3283.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(39860400002)(346002)(396003)(136003)(36916002)(6506007)(6666004)(53546011)(86362001)(6486002)(41300700001)(54906003)(478600001)(6916009)(316002)(31696002)(2616005)(186003)(38100700002)(6512007)(26005)(83380400001)(36756003)(4326008)(66946007)(66476007)(8676002)(5660300002)(31686004)(8936002)(66556008)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MS9neG4yVnZPU3ZqYW53dTM3Sy9RS0k2MkpsU05TSDFRdzZJRmRzZWdtdkJO?=
+ =?utf-8?B?S0dyZ2Jyc0QvMU1JWW5QRStONk50QTJZZTl3cXhJZUtVZVN3MWJxcy9Zd2tp?=
+ =?utf-8?B?aFNsNk01VTBrWkVUVkdpdzczM291MUVUMHdDZVdySkx1WW4vQm4vUXJrVjVh?=
+ =?utf-8?B?WjJtOFFhK05ZRVZJajhnOXB0ZGRLdmptVUs5amwrcS9UOGVTTjFLSWVHcHdL?=
+ =?utf-8?B?K1hxQ0tsYjJVKzJVckpzODVWbGplWmZ0SHppWGM4WXM3bTVxWEorTEJNeFVr?=
+ =?utf-8?B?cDViOE1TTW5Ua1hZWGk1QTZRc1FQQ3BBcG5UUmd5Z2Nld0lIRHN5OVBnMzU3?=
+ =?utf-8?B?TnNtZW5Bb1RNZ1JSaFJEZ0lKTGJHYkFsZ1FiZWxBYzRTVjFsREVXTmxhbldU?=
+ =?utf-8?B?N1B5NUg3dTE3eXNDTFJrWFNleVk0WDIyYkRtOHpDMDV5VDhMamhRdEdlNzlw?=
+ =?utf-8?B?L1VzZUdVK0dYamIzZkZBZHErWUJNdGM4V1FiMEI5WVVsemxjeTR5cDFPYzVZ?=
+ =?utf-8?B?dURoLzhjRGtmejRRNE93VkVSSFZFY2YxcFd6TXZBN0FnbWNDSWhzRDNncGph?=
+ =?utf-8?B?aHZFT2JLMmVpRkJjVjVHTkNPV2hqZWN3aUtuKzZzMC90MkU4Z0xmcHA5Rm5W?=
+ =?utf-8?B?d2M1dVBBWC9EejNSRzkyaWc2QzhHaUl0RUNtL1Rib2hSUzlDb253MzlDL3dF?=
+ =?utf-8?B?V2hrRXNoVUJhdVVvdEwrUkJHZHV0WkZ4N1huOEptbXM4UWU0NWdyaUV6ZkVG?=
+ =?utf-8?B?d2lFWFRMSTk5RFNaUEJieU1JS1RaSlFnbE8yczd3SUY4cS9rRW9KUUllcUVp?=
+ =?utf-8?B?a3BreVFyaitLMVVOai83YkI2cTlKUTdvdWJqbnhMNGIwMStCcXJWS1YyS0dK?=
+ =?utf-8?B?YThwY3M1NUhVNXo2M09LNUFJbnA1OUtsVkw0THg3UVJuaGg1b1c0OTVhOGd2?=
+ =?utf-8?B?K1pxSUJqK1R3UTBqYUpvazQvbFF5a2JJZWlRMGF5blBnaWk0Z2lPenVFWlhl?=
+ =?utf-8?B?UWZGM3ZoalBrZkcyT1pQSzVMMmtKZTBoWHlNTU1CTFRtTTJqa3R6N1BGR3pr?=
+ =?utf-8?B?RTRWQyt2NXczU1lZL0k3OWd3VldIWjN1NzU3NUNsUnFwZEV2aFlxeTJBN1RV?=
+ =?utf-8?B?ZmJGLzFuRU8vSjF0Q2ExOGxzbkVQMUNKUDR0WUh0QmZIYk8wRzJ4VWlsMDdD?=
+ =?utf-8?B?eHZSbXg4bHJKYWFFbjhtMSs2TDZsb3JCcmhwRHAwZ0QvNVVRM3A3d0pLTlZG?=
+ =?utf-8?B?b2JtK3JiYzZtTEU1amsyMjhtQmlHS3k4c3lDZTBqSWlleWhDVVV4R05qNFJI?=
+ =?utf-8?B?SEdiVnhsVzZ2M2ZPbjNEVUF0Sk10bDJLYnUxNFd2YWlMN1Q3dlRPNDlCa2g0?=
+ =?utf-8?B?TktIelpzRGJidDM5bmtzVWFSOVB1RzUrcS9KT1RzWUJpcHlucXM2WU55LzNU?=
+ =?utf-8?B?SDgyb09KQWNkVVVOV2dCQ1NqamwrV2l2RGZNckM0NXg3amdWcUtlYXNobkFz?=
+ =?utf-8?B?ejZpOVNrQTgzVnZFQUlVY2ZndDVPMnBQL2drSDdzRzFYU1F4amd6SSt4SUhi?=
+ =?utf-8?B?VnhUN1NXdnJMNDBpS3JrQjZiNUc0T1VKSGtSdlFpYjZvL1pEVGxLSXN0dnYr?=
+ =?utf-8?B?aG5aTm9aZ1RDc2gzM2l5WDVqR1hqZ3IyZ0FXSFhmV2FxY2xtUkY0YUQ2WmZa?=
+ =?utf-8?B?WGJsVzBzK0l0K0lmNDVJaDkrVnUrZGpxTVkvWlRxcVdLNGhpZjNNa0JFY3pY?=
+ =?utf-8?B?djVISzFCMFBoYUlDUmQ4alhUaVUzK0gyWDFPM1oyZzNHQXNYeWpBYzJ4QW10?=
+ =?utf-8?B?WnFjSUdVM0UzTDE2WXZUTExNOEN4ZWgra1lLS2RCWGJJajhtUE80N2s2bVNZ?=
+ =?utf-8?B?TEVFQnBtV0E3VjlndW9DTFNLcnBqcFFPZ2oyWHoybXVMZS9veXNHaEtPWU1s?=
+ =?utf-8?B?Y3lQS3FYNkw3azhBQ2JZQ29QSUh2N292QkJrUlBjWjh3NDB4NjE3NUZZNEdw?=
+ =?utf-8?B?dVN2Ty9HVkhDdTJ6VCt3SFFXRkROcG5rUVJoUFNjb1c1NmZIQTRHQVNjTjJW?=
+ =?utf-8?B?NkYyUEk4Ni9pRXc2VGViOVZFL0QrTjlIbDg1YUxJVU00b0xpcVNuNWxwUlJu?=
+ =?utf-8?Q?kbLKwk5rHtFphuCbYUjpr1YTv?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2ddf563-2a18-4b35-9d0c-08da8289c1f8
+X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3283.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Aug 2022 08:55:40.5428
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SF/eL8QvC3mbV8o2oQLAYFcghVcRCkXB7xdC4wPwQ98AtK3+FLmoQvOCJwpW0BoZyA8kJvMRPBESw9KUhgmCug==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR10MB1274
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-20_05,2022-08-18_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 mlxscore=0 adultscore=0
+ spamscore=0 bulkscore=0 suspectscore=0 phishscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2208200035
+X-Proofpoint-GUID: _3aaAMzj04opqg7d_7e2QhaMYwri-tUV
+X-Proofpoint-ORIG-GUID: _3aaAMzj04opqg7d_7e2QhaMYwri-tUV
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the basic extended CAN controller (bxCAN) found in many
-low- to middle-end STM32 SoCs. It supports the Basic Extended CAN
-protocol versions 2.0A and B with a maximum bit rate of 1 Mbit/s.
 
-The controller supports two channels (CAN1 as master and CAN2 as slave)
-and the driver can enable either or both of the channels. They share
-some of the required logic (e. g. clocks and filters), and that means
-you cannot use the slave CAN without enabling some hardware resources
-managed by the master CAN.
 
-Each channel has 3 transmit mailboxes, 2 receive FIFOs with 3 stages and
-28 scalable filter banks.
-It also manages 4 dedicated interrupt vectors:
-- transmit interrupt
-- FIFO 0 receive interrupt
-- FIFO 1 receive interrupt
-- status change error interrupt
+On 8/18/2022 5:42 PM, Jason Wang wrote:
+> On Fri, Aug 19, 2022 at 7:20 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+>>
+>>
+>> On 8/17/2022 9:15 PM, Jason Wang wrote:
+>>> 在 2022/8/17 18:37, Michael S. Tsirkin 写道:
+>>>> On Wed, Aug 17, 2022 at 05:43:22PM +0800, Zhu, Lingshan wrote:
+>>>>> On 8/17/2022 5:39 PM, Michael S. Tsirkin wrote:
+>>>>>> On Wed, Aug 17, 2022 at 05:13:59PM +0800, Zhu, Lingshan wrote:
+>>>>>>> On 8/17/2022 4:55 PM, Michael S. Tsirkin wrote:
+>>>>>>>> On Wed, Aug 17, 2022 at 10:14:26AM +0800, Zhu, Lingshan wrote:
+>>>>>>>>> Yes it is a little messy, and we can not check _F_VERSION_1
+>>>>>>>>> because of
+>>>>>>>>> transitional devices, so maybe this is the best we can do for now
+>>>>>>>> I think vhost generally needs an API to declare config space
+>>>>>>>> endian-ness
+>>>>>>>> to kernel. vdpa can reuse that too then.
+>>>>>>> Yes, I remember you have mentioned some IOCTL to set the endian-ness,
+>>>>>>> for vDPA, I think only the vendor driver knows the endian,
+>>>>>>> so we may need a new function vdpa_ops->get_endian().
+>>>>>>> In the last thread, we say maybe it's better to add a comment for
+>>>>>>> now.
+>>>>>>> But if you think we should add a vdpa_ops->get_endian(), I can work
+>>>>>>> on it for sure!
+>>>>>>>
+>>>>>>> Thanks
+>>>>>>> Zhu Lingshan
+>>>>>> I think QEMU has to set endian-ness. No one else knows.
+>>>>> Yes, for SW based vhost it is true. But for HW vDPA, only
+>>>>> the device & driver knows the endian, I think we can not
+>>>>> "set" a hardware's endian.
+>>>> QEMU knows the guest endian-ness and it knows that
+>>>> device is accessed through the legacy interface.
+>>>> It can accordingly send endian-ness to the kernel and
+>>>> kernel can propagate it to the driver.
+>>>
+>>> I wonder if we can simply force LE and then Qemu can do the endian
+>>> conversion?
+>> convert from LE for config space fields only, or QEMU has to forcefully
+>> mediate and covert endianness for all device memory access including
+>> even the datapath (fields in descriptor and avail/used rings)?
+> Former. Actually, I want to force modern devices for vDPA when
+> developing the vDPA framework. But then we see requirements for
+> transitional or even legacy (e.g the Ali ENI parent). So it
+> complicates things a lot.
+>
+> I think several ideas has been proposed:
+>
+> 1) Your proposal of having a vDPA specific way for
+> modern/transitional/legacy awareness. This seems very clean since each
+> transport should have the ability to do that but it still requires
+> some kind of mediation for the case e.g running BE legacy guest on LE
+> host.
+In theory it seems like so, though practically I wonder if we can just 
+forbid BE legacy driver from running on modern LE host. For those who 
+care about legacy BE guest, they mostly like could and should talk to 
+vendor to get native BE support to achieve hardware acceleration, few of 
+them would count on QEMU in mediating or emulating the datapath 
+(otherwise I don't see the benefit of adopting vDPA?). I still feel that 
+not every hardware vendor has to offer backward compatibility 
+(transitional device) with legacy interface/behavior (BE being just 
+one), this is unlike the situation on software virtio device, which has 
+legacy support since day one. I think we ever discussed it before: for 
+those vDPA vendors who don't offer legacy guest support, maybe we should 
+mandate some feature for e.g. VERSION_1, as these devices really don't 
+offer functionality of the opposite side (!VERSION_1) during negotiation.
 
-Driver uses all 3 available mailboxes for transmission and FIFO 0 for
-reception. Rx filter rules are configured to the minimum. They accept
-all messages and assign filter 0 to CAN1 and filter 14 to CAN2 in
-identifier mask mode with 32 bits width. It enables and uses transmit,
-receive buffers for FIFO 0 and error and status change interrupts.
+Having it said, perhaps we should also allow vendor device to implement 
+only partial support for legacy. We can define "reversed" backend 
+feature to denote some part of the legacy interface/functionality not 
+getting implemented by device. For instance, 
+VHOST_BACKEND_F_NO_BE_VRING, VHOST_BACKEND_F_NO_BE_CONFIG, 
+VHOST_BACKEND_F_NO_ALIGNED_VRING, VHOST_BACKEND_NET_F_NO_WRITEABLE_MAC, 
+and et al. Not all of these missing features for legacy would be easy 
+for QEMU to make up for, so QEMU can selectively emulate those at its 
+best when necessary and applicable. In other word, this design shouldn't 
+prevent QEMU from making up for vendor device's partial legacy support.
 
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>
+> 2) Michael suggests using VHOST_SET_VRING_ENDIAN where it means we
+> need a new config ops for vDPA bus, but it doesn't solve the issue for
+> config space (at least from its name). We probably need a new ioctl
+> for both vring and config space.
+Yep adding a new ioctl makes things better, but I think the key is not 
+the new ioctl. It's whether or not we should enforce every vDPA vendor 
+driver to implement all transitional interfaces to be spec compliant. If 
+we allow them to reject the VHOST_SET_VRING_ENDIAN  or 
+VHOST_SET_CONFIG_ENDIAN call, what could we do? We would still end up 
+with same situation of either fail the guest, or trying to 
+mediate/emulate, right?
 
----
+Not to mention VHOST_SET_VRING_ENDIAN is rarely supported by vhost today 
+- few distro kernel has CONFIG_VHOST_CROSS_ENDIAN_LEGACY enabled and 
+QEMU just ignores the result. vhost doesn't necessarily depend on it to 
+determine endianness it looks.
+>
+> or
+>
+> 3) revisit the idea of forcing modern only device which may simplify
+> things a lot
+I am not actually against forcing modern only config space, given that 
+it's not hard for either QEMU or individual driver to mediate or 
+emulate, and for the most part it's not conflict with the goal of 
+offload or acceleration with vDPA. But forcing LE ring layout IMO would 
+just kill off the potential of a very good use case. Currently for our 
+use case the priority for supporting 0.9.5 guest with vDPA is slightly 
+lower compared to live migration, but it is still in our TODO list.
 
-Changes in v2:
-- Fix sparse errors.
-- Create a MAINTAINERS entry.
-- Remove the print of the registers address.
-- Remove the volatile keyword from bxcan_rmw().
-- Use tx ring algorithm to manage tx mailboxes.
-- Use can_{get|put}_echo_skb().
-- Update DT properties.
+Thanks,
+-Siwei
 
- MAINTAINERS                        |    7 +
- drivers/net/can/Kconfig            |    1 +
- drivers/net/can/Makefile           |    1 +
- drivers/net/can/bxcan/Kconfig      |   34 +
- drivers/net/can/bxcan/Makefile     |    4 +
- drivers/net/can/bxcan/bxcan-core.c |  200 ++++++
- drivers/net/can/bxcan/bxcan-core.h |   33 +
- drivers/net/can/bxcan/bxcan-drv.c  | 1043 ++++++++++++++++++++++++++++
- 8 files changed, 1323 insertions(+)
- create mode 100644 drivers/net/can/bxcan/Kconfig
- create mode 100644 drivers/net/can/bxcan/Makefile
- create mode 100644 drivers/net/can/bxcan/bxcan-core.c
- create mode 100644 drivers/net/can/bxcan/bxcan-core.h
- create mode 100644 drivers/net/can/bxcan/bxcan-drv.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f512b430c7cb..a4283ea7efed 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -4460,6 +4460,13 @@ S:	Maintained
- F:	drivers/scsi/BusLogic.*
- F:	drivers/scsi/FlashPoint.*
- 
-+BXCAN CAN NETWORK DRIVER
-+M:	Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+L:	linux-can@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/net/can/st,bxcan.yaml
-+F:	drivers/net/can/bxcan/
-+
- C-MEDIA CMI8788 DRIVER
- M:	Clemens Ladisch <clemens@ladisch.de>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
-diff --git a/drivers/net/can/Kconfig b/drivers/net/can/Kconfig
-index 3048ad77edb3..d55355a0e583 100644
---- a/drivers/net/can/Kconfig
-+++ b/drivers/net/can/Kconfig
-@@ -206,6 +206,7 @@ config PCH_CAN
- 	  is an IOH for x86 embedded processor (Intel Atom E6xx series).
- 	  This driver can access CAN bus.
- 
-+source "drivers/net/can/bxcan/Kconfig"
- source "drivers/net/can/c_can/Kconfig"
- source "drivers/net/can/cc770/Kconfig"
- source "drivers/net/can/ctucanfd/Kconfig"
-diff --git a/drivers/net/can/Makefile b/drivers/net/can/Makefile
-index 61c75ce9d500..373f2c99689a 100644
---- a/drivers/net/can/Makefile
-+++ b/drivers/net/can/Makefile
-@@ -14,6 +14,7 @@ obj-y				+= usb/
- obj-y				+= softing/
- 
- obj-$(CONFIG_CAN_AT91)		+= at91_can.o
-+obj-$(CONFIG_CAN_BXCAN)		+= bxcan/
- obj-$(CONFIG_CAN_CAN327)	+= can327.o
- obj-$(CONFIG_CAN_CC770)		+= cc770/
- obj-$(CONFIG_CAN_C_CAN)		+= c_can/
-diff --git a/drivers/net/can/bxcan/Kconfig b/drivers/net/can/bxcan/Kconfig
-new file mode 100644
-index 000000000000..df34c212bf51
---- /dev/null
-+++ b/drivers/net/can/bxcan/Kconfig
-@@ -0,0 +1,34 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# bxCAN driver configuration
-+#
-+menuconfig CAN_BXCAN
-+	tristate "STMicroelectronics STM32 Basic Extended CAN (bxCAN) devices"
-+	depends on ARCH_STM32 || COMPILE_TEST
-+	depends on OF
-+	depends on HAS_IOMEM
-+	help
-+	  Say Y here if you want support for ST bxCAN controller framework.
-+	  This is common support for devices that embed the ST bxCAN IP.
-+
-+if CAN_BXCAN
-+
-+config CAN_BXCAN_CORE
-+	tristate "STMicroelectronics STM32 bxCAN core"
-+	  help
-+	  Select this option to enable the core driver for STMicroelectronics
-+	  STM32 basic extended CAN controller (bxCAN).
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called bxcan-core.
-+
-+config CAN_BXCAN_DRV
-+	tristate "STMicroelectronics STM32 bxCAN driver"
-+	depends on CAN_BXCAN_CORE
-+	  help
-+	  Say yes here to build support for the STMicroelectronics STM32 basic
-+	  extended CAN Controller (bxCAN).
-+
-+	  This driver can also be built as a module. If so, the module
-+	  will be called bxcan-drv.
-+endif
-diff --git a/drivers/net/can/bxcan/Makefile b/drivers/net/can/bxcan/Makefile
-new file mode 100644
-index 000000000000..60350f055271
---- /dev/null
-+++ b/drivers/net/can/bxcan/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+obj-$(CONFIG_CAN_BXCAN_CORE) += bxcan-core.o
-+obj-$(CONFIG_CAN_BXCAN_DRV) += bxcan-drv.o
-diff --git a/drivers/net/can/bxcan/bxcan-core.c b/drivers/net/can/bxcan/bxcan-core.c
-new file mode 100644
-index 000000000000..3644449095e9
---- /dev/null
-+++ b/drivers/net/can/bxcan/bxcan-core.c
-@@ -0,0 +1,200 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* bxcan-core.c - STM32 Basic Extended CAN core controller driver
-+ *
-+ * This file is part of STM32 bxcan driver
-+ *
-+ * Copyright (c) 2022 Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ */
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/clk.h>
-+#include <linux/module.h>
-+#include <linux/of_device.h>
-+
-+#include "bxcan-core.h"
-+
-+#define BXCAN_FILTER_ID(master)       (master ? 0 : 14)
-+
-+/* Filter master register (FMR) bits */
-+#define BXCAN_FMR_CANSB_MASK	GENMASK(13, 8)
-+#define BXCAN_FMR_CANSB(x)	(((x) & 0x3f) << 8)
-+#define BXCAN_FMR_FINIT		BIT(0)
-+
-+/* Structure of the filter bank */
-+struct bxcan_fb {
-+	u32 fr1;		/* filter 1 */
-+	u32 fr2;		/* filter 2 */
-+};
-+
-+/* Structure of the hardware filter registers */
-+struct bxcan_fregs {
-+	u32 fmr;		/* 0x00 - filter master */
-+	u32 fm1r;		/* 0x04 - filter mode */
-+	u32 reserved2;		/* 0x08 */
-+	u32 fs1r;		/* 0x0c - filter scale */
-+	u32 reserved3;		/* 0x10 */
-+	u32 ffa1r;		/* 0x14 - filter FIFO assignment */
-+	u32 reserved4;		/* 0x18 */
-+	u32 fa1r;		/* 0x1c - filter activation */
-+	u32 reserved5[8];	/* 0x20 */
-+	struct bxcan_fb fb[28];	/* 0x40 - filter banks */
-+};
-+
-+struct bxcan_core_priv {
-+	void __iomem *base;
-+	struct bxcan_fregs __iomem *fregs;
-+	struct clk *clk_master;
-+	unsigned int clk_master_ref;
-+};
-+
-+void bxcan_disable_filters(struct device *dev, bool master)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+	unsigned int fid = BXCAN_FILTER_ID(master);
-+	u32 fmask = BIT(fid);
-+
-+	bxcan_rmw(&priv->fregs->fa1r, fmask, 0);
-+}
-+
-+void bxcan_enable_filters(struct device *dev, bool master)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+	unsigned int fid = BXCAN_FILTER_ID(master);
-+	u32 fmask = BIT(fid);
-+
-+	/* Filter settings:
-+	 *
-+	 * Accept all messages.
-+	 * Assign filter 0 to CAN1 and filter 14 to CAN2 in identifier
-+	 * mask mode with 32 bits width.
-+	 */
-+
-+	/* Enter filter initialization mode and assing filters to CAN
-+	 * controllers.
-+	 */
-+	bxcan_rmw(&priv->fregs->fmr, BXCAN_FMR_CANSB_MASK,
-+		  BXCAN_FMR_CANSB(14) | BXCAN_FMR_FINIT);
-+
-+	/* Deactivate filter */
-+	bxcan_rmw(&priv->fregs->fa1r, fmask, 0);
-+
-+	/* Two 32-bit registers in identifier mask mode */
-+	bxcan_rmw(&priv->fregs->fm1r, fmask, 0);
-+
-+	/* Single 32-bit scale configuration */
-+	bxcan_rmw(&priv->fregs->fs1r, 0, fmask);
-+
-+	/* Assign filter to FIFO 0 */
-+	bxcan_rmw(&priv->fregs->ffa1r, fmask, 0);
-+
-+	/* Accept all messages */
-+	writel(0, &priv->fregs->fb[fid].fr1);
-+	writel(0, &priv->fregs->fb[fid].fr2);
-+
-+	/* Activate filter */
-+	bxcan_rmw(&priv->fregs->fa1r, 0, fmask);
-+
-+	/* Exit filter initialization mode */
-+	bxcan_rmw(&priv->fregs->fmr, BXCAN_FMR_FINIT, 0);
-+}
-+
-+int bxcan_enable_master_clk(struct device *dev)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+	int err;
-+
-+	if (priv->clk_master_ref == 0) {
-+		err = clk_prepare_enable(priv->clk_master);
-+		if (err)
-+			return err;
-+	}
-+
-+	priv->clk_master_ref++;
-+	return 0;
-+}
-+
-+void bxcan_disable_master_clk(struct device *dev)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+
-+	if (priv->clk_master_ref == 0)
-+		return;
-+
-+	if (priv->clk_master_ref == 1)
-+		clk_disable_unprepare(priv->clk_master);
-+
-+	priv->clk_master_ref--;
-+}
-+
-+unsigned long bxcan_get_master_clk_rate(struct device *dev)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+
-+	return clk_get_rate(priv->clk_master);
-+}
-+
-+void __iomem *bxcan_get_base_addr(struct device *dev)
-+{
-+	struct bxcan_core_priv *priv = dev_get_drvdata(dev);
-+
-+	return priv->base;
-+}
-+
-+static const struct of_device_id bxcan_core_of_match[] = {
-+	{.compatible = "st,stm32f4-bxcan-core"},
-+	{ /* sentinel */ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, bxcan_core_of_match);
-+
-+static int bxcan_core_probe(struct platform_device *pdev)
-+{
-+	struct bxcan_core_priv *priv;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = pdev->dev.of_node;
-+	void __iomem *regs;
-+	struct clk *clk;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, priv);
-+	regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
-+
-+	clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(clk)) {
-+		dev_err(dev, "failed to get clock\n");
-+		return PTR_ERR(clk);
-+	}
-+
-+	priv->base = regs;
-+	priv->fregs = regs + 0x200;
-+	priv->clk_master = clk;
-+
-+	ret = of_platform_populate(np, NULL, NULL, dev);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to populate DT children\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver bxcan_core_driver = {
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = bxcan_core_of_match,
-+	},
-+	.probe = bxcan_core_probe,
-+};
-+
-+module_platform_driver(bxcan_core_driver);
-+
-+MODULE_AUTHOR("Dario Binacchi <dario.binacchi@amarulasolutions.com>");
-+MODULE_DESCRIPTION("STMicroelectronics Basic Extended CAN core driver");
-+MODULE_LICENSE("GPL");
-diff --git a/drivers/net/can/bxcan/bxcan-core.h b/drivers/net/can/bxcan/bxcan-core.h
-new file mode 100644
-index 000000000000..eeca99b37f11
---- /dev/null
-+++ b/drivers/net/can/bxcan/bxcan-core.h
-@@ -0,0 +1,33 @@
-+/* SPDX-License-Identifier: GPL-2.0
-+ *
-+ * bxcan-core - STM32 Basic Extended CAN core controller driver
-+ *
-+ * Copyright (c) 2022 Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+ */
-+
-+#ifndef __BXCAN_CORE_H
-+#define __BXCAN_CORE_H
-+
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+
-+int bxcan_enable_master_clk(struct device *dev);
-+void bxcan_disable_master_clk(struct device *dev);
-+unsigned long bxcan_get_master_clk_rate(struct device *dev);
-+void __iomem *bxcan_get_base_addr(struct device *dev);
-+void bxcan_enable_filters(struct device *dev, bool master);
-+void bxcan_disable_filters(struct device *dev, bool master);
-+
-+static inline void bxcan_rmw(void __iomem *addr, u32 clear, u32 set)
-+{
-+	u32 old, val;
-+
-+	old = readl(addr);
-+	val = (old & ~clear) | set;
-+	if (val != old)
-+		writel(val, addr);
-+
-+	pr_debug("rmw 0x%08x @ 0x%08x\n", val, (u32)addr);
-+}
-+
-+#endif
-diff --git a/drivers/net/can/bxcan/bxcan-drv.c b/drivers/net/can/bxcan/bxcan-drv.c
-new file mode 100644
-index 000000000000..318befe2ff68
---- /dev/null
-+++ b/drivers/net/can/bxcan/bxcan-drv.c
-@@ -0,0 +1,1043 @@
-+// SPDX-License-Identifier: GPL-2.0
-+//
-+// bxcan-drv.c - STM32 Basic Extended CAN controller driver
-+//
-+// Copyright (c) 2022 Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+//
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/bitfield.h>
-+#include <linux/can.h>
-+#include <linux/can/dev.h>
-+#include <linux/can/error.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+
-+#include "bxcan-core.h"
-+
-+#define BXCAN_NAPI_WEIGHT		3
-+#define BXCAN_TIMEOUT_US		10000
-+
-+#define BXCAN_TX_MB_NUM			3
-+
-+/* Master control register (MCR) bits */
-+#define BXCAN_MCR_DBF			BIT(16)
-+#define BXCAN_MCR_RESET			BIT(15)
-+#define BXCAN_MCR_TTCM			BIT(7)
-+#define BXCAN_MCR_ABOM			BIT(6)
-+#define BXCAN_MCR_AWUM			BIT(5)
-+#define BXCAN_MCR_NART			BIT(4)
-+#define BXCAN_MCR_RFLM			BIT(3)
-+#define BXCAN_MCR_TXFP			BIT(2)
-+#define BXCAN_MCR_SLEEP			BIT(1)
-+#define BXCAN_MCR_INRQ			BIT(0)
-+
-+/* Master status register (MSR) bits */
-+#define BXCAN_MSR_RX			BIT(11)
-+#define BXCAN_MSR_SAMP			BIT(10)
-+#define BXCAN_MSR_RXM			BIT(9)
-+#define BXCAN_MSR_TXM			BIT(8)
-+#define BXCAN_MSR_SLAKI			BIT(4)
-+#define BXCAN_MSR_WKUI			BIT(3)
-+#define BXCAN_MSR_ERRI			BIT(2)
-+#define BXCAN_MSR_SLAK			BIT(1)
-+#define BXCAN_MSR_INAK			BIT(0)
-+
-+/* Transmit status register (TSR) bits */
-+#define BXCAN_TSR_LOW2			BIT(31)
-+#define BXCAN_TSR_LOW1			BIT(30)
-+#define BXCAN_TSR_LOW0			BIT(29)
-+#define BXCAN_TSR_TME			GENMASK(28, 26)
-+#define BXCAN_TSR_TME_SHIFT		(26)
-+#define BXCAN_TSR_TME2			BIT(28)
-+#define BXCAN_TSR_TME1			BIT(27)
-+#define BXCAN_TSR_TME0			BIT(26)
-+#define BXCAN_TSR_CODE			GENMASK(25, 24)
-+#define BXCAN_TSR_ABRQ2			BIT(23)
-+#define BXCAN_TSR_TERR2			BIT(19)
-+#define BXCAN_TSR_ALST2			BIT(18)
-+#define BXCAN_TSR_TXOK2			BIT(17)
-+#define BXCAN_TSR_RQCP2			BIT(16)
-+#define BXCAN_TSR_ABRQ1			BIT(15)
-+#define BXCAN_TSR_TERR1			BIT(11)
-+#define BXCAN_TSR_ALST1			BIT(10)
-+#define BXCAN_TSR_TXOK1			BIT(9)
-+#define BXCAN_TSR_RQCP1			BIT(8)
-+#define BXCAN_TSR_ABRQ0			BIT(7)
-+#define BXCAN_TSR_TERR0			BIT(3)
-+#define BXCAN_TSR_ALST0			BIT(2)
-+#define BXCAN_TSR_TXOK0			BIT(1)
-+#define BXCAN_TSR_RQCP0			BIT(0)
-+
-+/* Receive FIFO 0 register (RF0R) bits */
-+#define BXCAN_RF0R_RFOM0		BIT(5)
-+#define BXCAN_RF0R_FOVR0		BIT(4)
-+#define BXCAN_RF0R_FULL0		BIT(3)
-+#define BXCAN_RF0R_FMP0			GENMASK(1, 0)
-+
-+/* Interrupt enable register (IER) bits */
-+#define BXCAN_IER_SLKIE			BIT(17)
-+#define BXCAN_IER_WKUIE			BIT(16)
-+#define BXCAN_IER_ERRIE			BIT(15)
-+#define BXCAN_IER_LECIE			BIT(11)
-+#define BXCAN_IER_BOFIE			BIT(10)
-+#define BXCAN_IER_EPVIE			BIT(9)
-+#define BXCAN_IER_EWGIE			BIT(8)
-+#define BXCAN_IER_FOVIE1		BIT(6)
-+#define BXCAN_IER_FFIE1			BIT(5)
-+#define BXCAN_IER_FMPIE1		BIT(4)
-+#define BXCAN_IER_FOVIE0		BIT(3)
-+#define BXCAN_IER_FFIE0			BIT(2)
-+#define BXCAN_IER_FMPIE0		BIT(1)
-+#define BXCAN_IER_TMEIE			BIT(0)
-+
-+/* Error status register (ESR) bits */
-+#define BXCAN_ESR_REC_SHIFT		(24)
-+#define BXCAN_ESR_REC			GENMASK(31, 24)
-+#define BXCAN_ESR_TEC_SHIFT		(16)
-+#define BXCAN_ESR_TEC			GENMASK(23, 16)
-+#define BXCAN_ESR_LEC_SHIFT		(4)
-+#define BXCAN_ESR_LEC			GENMASK(6, 4)
-+#define BXCAN_ESR_BOFF			BIT(1)
-+#define BXCAN_ESR_EPVF			BIT(1)
-+#define BXCAN_ESR_EWGF			BIT(0)
-+#define BXCAN_TEC(esr)			(((esr) & BXCAN_ESR_TEC) >> \
-+					 BXCAN_ESR_TEC_SHIFT)
-+#define BXCAN_REC(esr)			(((esr) & BXCAN_ESR_REC) >> \
-+					 BXCAN_ESR_REC_SHIFT)
-+
-+/* Bit timing register (BTR) bits */
-+#define BXCAN_BTR_SILM			BIT(31)
-+#define BXCAN_BTR_LBKM			BIT(30)
-+#define BXCAN_BTR_SJW_MASK		GENMASK(25, 24)
-+#define BXCAN_BTR_SJW(x)		(((x) & 0x03) << 24)
-+#define BXCAN_BTR_TS2_MASK		GENMASK(22, 20)
-+#define BXCAN_BTR_TS2(x)		(((x) & 0x07) << 20)
-+#define BXCAN_BTR_TS1_MASK		GENMASK(19, 16)
-+#define BXCAN_BTR_TS1(x)		(((x) & 0x0f) << 16)
-+#define BXCAN_BTR_BRP_MASK		GENMASK(9, 0)
-+#define BXCAN_BTR_BRP(x)		((x) & 0x3ff)
-+
-+/* TX mailbox identifier register (TIxR, x = 0..2) bits */
-+#define BXCAN_TIxR_STID(x)		(((x) & 0x7ff) << 21)
-+#define BXCAN_TIxR_EXID(x)		((x) << 3)
-+#define BXCAN_TIxR_IDE			BIT(2)
-+#define BXCAN_TIxR_RTR			BIT(1)
-+#define BXCAN_TIxR_TXRQ			BIT(0)
-+
-+/* TX mailbox data length and time stamp register (TDTxR, x = 0..2 bits */
-+#define BXCAN_TDTxR_TIME(x)		(((x) & 0x0f) << 16)
-+#define BXCAN_TDTxR_TGT			BIT(8)
-+#define BXCAN_TDTxR_DLC_MASK		GENMASK(3, 0)
-+#define BXCAN_TDTxR_DLC(x)		((x) & 0x0f)
-+
-+/* RX FIFO mailbox identifier register (RIxR, x = 0..1 */
-+#define BXCAN_RIxR_STID_SHIFT		(21)
-+#define BXCAN_RIxR_EXID_SHIFT		(3)
-+#define BXCAN_RIxR_IDE			BIT(2)
-+#define BXCAN_RIxR_RTR			BIT(1)
-+
-+/* RX FIFO mailbox data length and timestamp register (RDTxR, x = 0..1) bits */
-+#define BXCAN_RDTxR_TIME		GENMASK(31, 16)
-+#define BXCAN_RDTxR_FMI			GENMASK(15, 8)
-+#define BXCAN_RDTxR_DLC			GENMASK(3, 0)
-+
-+enum bxcan_lec_code {
-+	LEC_NO_ERROR = 0,
-+	LEC_STUFF_ERROR,
-+	LEC_FORM_ERROR,
-+	LEC_ACK_ERROR,
-+	LEC_BIT1_ERROR,
-+	LEC_BIT0_ERROR,
-+	LEC_CRC_ERROR,
-+	LEC_UNUSED
-+};
-+
-+/* Structure of the message buffer */
-+struct bxcan_mb {
-+	u32 id;			/* can identifier */
-+	u32 dlc;		/* data length control and timestamp */
-+	u32 data[2];		/* data */
-+};
-+
-+/* Structure of the hardware registers */
-+struct bxcan_regs {
-+	u32 mcr;			/* 0x00 - master control */
-+	u32 msr;			/* 0x04 - master status */
-+	u32 tsr;			/* 0x08 - transmit status */
-+	u32 rf0r;			/* 0x0c - FIFO 0 */
-+	u32 rf1r;			/* 0x10 - FIFO 1 */
-+	u32 ier;			/* 0x14 - interrupt enable */
-+	u32 esr;			/* 0x18 - error status */
-+	u32 btr;			/* 0x1c - bit timing*/
-+	u32 reserved0[88];		/* 0x20 */
-+	struct bxcan_mb tx_mb[BXCAN_TX_MB_NUM];	/* 0x180 - tx mailbox */
-+	struct bxcan_mb rx_mb[2];	/* 0x1b0 - rx mailbox */
-+};
-+
-+struct bxcan_priv {
-+	struct can_priv can;
-+	struct device *dev;
-+	struct net_device *ndev;
-+	struct napi_struct napi;
-+
-+	struct bxcan_regs __iomem *regs;
-+	int tx_irq;
-+	int sce_irq;
-+	u8 tx_dlc[BXCAN_TX_MB_NUM];
-+	bool master;
-+	struct clk *clk;
-+	unsigned int tx_head;
-+	unsigned int tx_tail;
-+};
-+
-+static const struct can_bittiming_const bxcan_bittiming_const = {
-+	.name = KBUILD_MODNAME,
-+	.tseg1_min = 1,
-+	.tseg1_max = 16,
-+	.tseg2_min = 1,
-+	.tseg2_max = 8,
-+	.sjw_max = 4,
-+	.brp_min = 1,
-+	.brp_max = 1024,
-+	.brp_inc = 1,
-+};
-+
-+static inline u8 bxcan_get_tx_head(const struct bxcan_priv *priv)
-+{
-+	return priv->tx_head % BXCAN_TX_MB_NUM;
-+}
-+
-+static inline u8 bxcan_get_tx_tail(const struct bxcan_priv *priv)
-+{
-+	return priv->tx_tail % BXCAN_TX_MB_NUM;
-+}
-+
-+static inline u8 bxcan_get_tx_free(const struct bxcan_priv *priv)
-+{
-+	return BXCAN_TX_MB_NUM - (priv->tx_head - priv->tx_tail);
-+}
-+
-+static bool bxcan_tx_busy(const struct bxcan_priv *priv)
-+{
-+	if (bxcan_get_tx_free(priv) > 0)
-+		return false;
-+
-+	netif_stop_queue(priv->ndev);
-+
-+	/* Memory barrier before checking tx_free (head and tail) */
-+	smp_mb();
-+
-+	if (bxcan_get_tx_free(priv) == 0) {
-+		netdev_dbg(priv->ndev,
-+			   "Stopping tx-queue (tx_head=0x%08x, tx_tail=0x%08x, len=%d).\n",
-+			   priv->tx_head, priv->tx_tail,
-+			   priv->tx_head - priv->tx_tail);
-+
-+		return true;
-+	}
-+
-+	netif_start_queue(priv->ndev);
-+
-+	return false;
-+}
-+
-+static int bxcan_chip_softreset(struct bxcan_priv *priv)
-+{
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	unsigned int timeout = BXCAN_TIMEOUT_US / 10;
-+
-+	bxcan_rmw(&regs->mcr, 0, BXCAN_MCR_RESET);
-+	while (timeout-- && !(readl(&regs->msr) & BXCAN_MSR_SLAK))
-+		udelay(10);
-+
-+	if (!(readl(&regs->msr) & BXCAN_MSR_SLAK))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int bxcan_enter_init_mode(struct bxcan_priv *priv)
-+{
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	unsigned int timeout = BXCAN_TIMEOUT_US / 10;
-+
-+	bxcan_rmw(&regs->mcr, 0, BXCAN_MCR_INRQ);
-+	while (timeout-- && !(readl(&regs->msr) & BXCAN_MSR_INAK))
-+		udelay(100);
-+
-+	if (!(readl(&regs->msr) & BXCAN_MSR_INAK))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int bxcan_leave_init_mode(struct bxcan_priv *priv)
-+{
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	unsigned int timeout = BXCAN_TIMEOUT_US / 10;
-+
-+	bxcan_rmw(&regs->mcr, BXCAN_MCR_INRQ, 0);
-+	while (timeout-- && (readl(&regs->msr) & BXCAN_MSR_INAK))
-+		udelay(100);
-+
-+	if (readl(&regs->msr) & BXCAN_MSR_INAK)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int bxcan_leave_sleep_mode(struct bxcan_priv *priv)
-+{
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	unsigned int timeout = BXCAN_TIMEOUT_US / 10;
-+
-+	bxcan_rmw(&regs->mcr, BXCAN_MCR_SLEEP, 0);
-+	while (timeout-- && (readl(&regs->msr) & BXCAN_MSR_SLAK))
-+		udelay(100);
-+
-+	if (readl(&regs->msr) & BXCAN_MSR_SLAK)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int bxcan_enter_sleep_mode(struct bxcan_priv *priv)
-+{
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	unsigned int timeout = BXCAN_TIMEOUT_US / 10;
-+
-+	bxcan_rmw(&regs->mcr, 0, BXCAN_MCR_SLEEP);
-+	while (timeout-- && !(readl(&regs->msr) & BXCAN_MSR_SLAK))
-+		udelay(100);
-+
-+	if (!(readl(&regs->msr) & BXCAN_MSR_SLAK))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static irqreturn_t bxcan_rx_isr(int irq, void *dev_id)
-+{
-+	struct net_device *ndev = dev_id;
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+
-+	if (napi_schedule_prep(&priv->napi)) {
-+		/* Disable Rx FIFO message pending interrupt */
-+		bxcan_rmw(&regs->ier, BXCAN_IER_FMPIE0, 0);
-+		__napi_schedule(&priv->napi);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t bxcan_tx_isr(int irq, void *dev_id)
-+{
-+	struct net_device *ndev = dev_id;
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	struct net_device_stats *stats = &ndev->stats;
-+	u32 tsr, rqcp_bit, bytes = 0, pkts = 0;
-+	int n, idx;
-+
-+	tsr = readl(&regs->tsr);
-+	for (n = 0, idx = bxcan_get_tx_tail(priv); n < BXCAN_TX_MB_NUM; n++) {
-+		rqcp_bit = BXCAN_TSR_RQCP0 << (idx << 3);
-+		if (tsr & rqcp_bit) {
-+			pkts++;
-+			bytes += can_get_echo_skb(ndev, idx, NULL);
-+		}
-+
-+		idx += 1;
-+		if (idx == BXCAN_TX_MB_NUM)
-+			idx = 0;
-+	}
-+
-+	if (!pkts)
-+		return IRQ_HANDLED;
-+
-+	writel(tsr, &regs->tsr);
-+
-+	priv->tx_tail += pkts;
-+	if (bxcan_get_tx_free(priv)) {
-+		/* Make sure that anybody stopping the queue after
-+		 * this sees the new tx_ring->tail.
-+		 */
-+		smp_mb();
-+		netif_wake_queue(ndev);
-+	}
-+
-+	stats->tx_bytes += bytes;
-+	stats->tx_packets += pkts;
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static void bxcan_handle_state_change(struct net_device *ndev, u32 esr)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct net_device_stats *stats = &ndev->stats;
-+	enum can_state new_state = priv->can.state;
-+	struct can_berr_counter bec;
-+	enum can_state rx_state, tx_state;
-+	struct sk_buff *skb;
-+	struct can_frame *cf;
-+
-+	/* Early exit if no error flag is set */
-+	if (!(esr & (BXCAN_ESR_EWGF | BXCAN_ESR_EPVF | BXCAN_ESR_BOFF)))
-+		return;
-+
-+	bec.txerr = BXCAN_TEC(esr);
-+	bec.rxerr = BXCAN_REC(esr);
-+
-+	if (esr & BXCAN_ESR_BOFF)
-+		new_state = CAN_STATE_BUS_OFF;
-+	else if (esr & BXCAN_ESR_EPVF)
-+		new_state = CAN_STATE_ERROR_PASSIVE;
-+	else if (esr & BXCAN_ESR_EWGF)
-+		new_state = CAN_STATE_ERROR_WARNING;
-+
-+	/* state hasn't changed */
-+	if (unlikely(new_state == priv->can.state))
-+		return;
-+
-+	skb = alloc_can_err_skb(ndev, &cf);
-+	if (unlikely(!skb))
-+		return;
-+
-+	tx_state = bec.txerr >= bec.rxerr ? new_state : 0;
-+	rx_state = bec.txerr <= bec.rxerr ? new_state : 0;
-+	can_change_state(ndev, cf, tx_state, rx_state);
-+
-+	if (new_state == CAN_STATE_BUS_OFF)
-+		can_bus_off(ndev);
-+
-+	stats->rx_bytes += cf->len;
-+	stats->rx_packets++;
-+	netif_rx(skb);
-+}
-+
-+static void bxcan_handle_bus_err(struct net_device *ndev, u32 esr)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	enum bxcan_lec_code lec_code;
-+	struct can_frame *cf;
-+	struct sk_buff *skb;
-+
-+	lec_code = (esr & BXCAN_ESR_LEC_SHIFT) >> BXCAN_ESR_LEC_SHIFT;
-+
-+	/* Early exit if no lec update or no error.
-+	 * No lec update means that no CAN bus event has been detected
-+	 * since CPU wrote LEC_UNUSED value to status reg.
-+	 */
-+	if (lec_code == LEC_UNUSED || lec_code == LEC_NO_ERROR)
-+		return;
-+
-+	if (!(priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING))
-+		return;
-+
-+	/* Common for all type of bus errors */
-+	priv->can.can_stats.bus_error++;
-+
-+	/* Propagate the error condition to the CAN stack */
-+	skb = alloc_can_err_skb(ndev, &cf);
-+	if (unlikely(!skb))
-+		return;
-+
-+	ndev->stats.rx_bytes += cf->len;
-+
-+	/* Check for 'last error code' which tells us the
-+	 * type of the last error to occur on the CAN bus
-+	 */
-+	cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
-+
-+	switch (lec_code) {
-+	case LEC_STUFF_ERROR:
-+		netdev_dbg(ndev, "Stuff error\n");
-+		ndev->stats.rx_errors++;
-+		cf->data[2] |= CAN_ERR_PROT_STUFF;
-+		break;
-+	case LEC_FORM_ERROR:
-+		netdev_dbg(ndev, "Form error\n");
-+		ndev->stats.rx_errors++;
-+		cf->data[2] |= CAN_ERR_PROT_FORM;
-+		break;
-+	case LEC_ACK_ERROR:
-+		netdev_dbg(ndev, "Ack error\n");
-+		ndev->stats.tx_errors++;
-+		cf->data[3] = CAN_ERR_PROT_LOC_ACK;
-+		break;
-+	case LEC_BIT1_ERROR:
-+		netdev_dbg(ndev, "Bit error (recessive)\n");
-+		ndev->stats.tx_errors++;
-+		cf->data[2] |= CAN_ERR_PROT_BIT1;
-+		break;
-+	case LEC_BIT0_ERROR:
-+		netdev_dbg(ndev, "Bit error (dominant)\n");
-+		ndev->stats.tx_errors++;
-+		cf->data[2] |= CAN_ERR_PROT_BIT0;
-+		break;
-+	case LEC_CRC_ERROR:
-+		netdev_dbg(ndev, "CRC error\n");
-+		ndev->stats.rx_errors++;
-+		cf->data[3] = CAN_ERR_PROT_LOC_CRC_SEQ;
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	netif_rx(skb);
-+}
-+
-+static irqreturn_t bxcan_state_change_isr(int irq, void *dev_id)
-+{
-+	struct net_device *ndev = dev_id;
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	u32 msr, esr;
-+
-+	msr = readl(&regs->msr);
-+	if (!(msr & BXCAN_MSR_ERRI))
-+		return IRQ_NONE;
-+
-+	esr = readl(&regs->esr);
-+	bxcan_handle_state_change(ndev, esr);
-+	bxcan_handle_bus_err(ndev, esr);
-+
-+	msr |= BXCAN_MSR_ERRI;
-+	writel(msr, &regs->msr);
-+	return IRQ_HANDLED;
-+}
-+
-+static int bxcan_start(struct net_device *ndev)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	struct can_bittiming *bt = &priv->can.bittiming;
-+	u32 set;
-+	int err;
-+
-+	err = bxcan_chip_softreset(priv);
-+	if (err) {
-+		netdev_err(ndev, "failed to reset chip, error %d\n", err);
-+		return err;
-+	}
-+
-+	err = bxcan_leave_sleep_mode(priv);
-+	if (err) {
-+		netdev_err(ndev, "failed to leave sleep mode, error %d\n", err);
-+		goto failed_leave_sleep;
-+	}
-+
-+	err = bxcan_enter_init_mode(priv);
-+	if (err) {
-+		netdev_err(ndev, "failed to enter init mode, error %d\n", err);
-+		goto failed_enter_init;
-+	}
-+
-+	/* MCR
-+	 *
-+	 * select request order priority
-+	 * disable time triggered mode
-+	 * bus-off state left on sw request
-+	 * sleep mode left on sw request
-+	 * retransmit automatically on error
-+	 * do not lock RX FIFO on overrun
-+	 */
-+	bxcan_rmw(&regs->mcr, BXCAN_MCR_TTCM | BXCAN_MCR_ABOM | BXCAN_MCR_AWUM |
-+		  BXCAN_MCR_NART | BXCAN_MCR_RFLM, BXCAN_MCR_TXFP);
-+
-+	/* Bit timing register settings */
-+	set = BXCAN_BTR_BRP(bt->brp - 1) |
-+		BXCAN_BTR_TS1(bt->phase_seg1 + bt->prop_seg - 1) |
-+		BXCAN_BTR_TS2(bt->phase_seg2 - 1) | BXCAN_BTR_SJW(bt->sjw - 1);
-+
-+	/* loopback + silent mode put the controller in test mode,
-+	 * useful for hot self-test
-+	 */
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
-+		set |= BXCAN_BTR_LBKM;
-+
-+	if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
-+		set |= BXCAN_BTR_SILM;
-+
-+	netdev_dbg(ndev,
-+		   "TQ[ns]: %d, PrS: %d, PhS1: %d, PhS2: %d, SJW: %d, BRP: %d, CAN_BTR: 0x%08x\n",
-+		   bt->tq, bt->prop_seg, bt->phase_seg1, bt->phase_seg2,
-+		   bt->sjw, bt->brp, set);
-+	bxcan_rmw(&regs->btr, BXCAN_BTR_SILM | BXCAN_BTR_LBKM |
-+		  BXCAN_BTR_BRP_MASK | BXCAN_BTR_TS1_MASK | BXCAN_BTR_TS2_MASK |
-+		  BXCAN_BTR_SJW_MASK, set);
-+
-+	bxcan_enable_filters(priv->dev->parent, priv->master);
-+
-+	/* Clear all internal status */
-+	priv->tx_head = 0;
-+	priv->tx_tail = 0;
-+
-+	err = bxcan_leave_init_mode(priv);
-+	if (err) {
-+		netdev_err(ndev, "failed to leave init mode, error %d\n", err);
-+		goto failed_leave_init;
-+	}
-+
-+	/* Set a `lec` value so that we can check for updates later */
-+	bxcan_rmw(&regs->esr, BXCAN_ESR_LEC, LEC_UNUSED << BXCAN_ESR_LEC_SHIFT);
-+
-+	/* IER
-+	 *
-+	 * Enable interrupt for:
-+	 * bus-off
-+	 * passive error
-+	 * warning error
-+	 * last error code
-+	 * RX FIFO pending message
-+	 * TX mailbox empty
-+	 */
-+	bxcan_rmw(&regs->ier, BXCAN_IER_WKUIE | BXCAN_IER_SLKIE |
-+		  BXCAN_IER_FOVIE1 | BXCAN_IER_FFIE1 | BXCAN_IER_FMPIE1 |
-+		  BXCAN_IER_FOVIE0 | BXCAN_IER_FFIE0,
-+		  BXCAN_IER_ERRIE | BXCAN_IER_LECIE | BXCAN_IER_BOFIE |
-+		  BXCAN_IER_EPVIE | BXCAN_IER_EWGIE | BXCAN_IER_FMPIE0 |
-+		  BXCAN_IER_TMEIE);
-+
-+	priv->can.state = CAN_STATE_ERROR_ACTIVE;
-+	return 0;
-+
-+failed_leave_init:
-+failed_enter_init:
-+failed_leave_sleep:
-+	bxcan_chip_softreset(priv);
-+	return err;
-+}
-+
-+static int bxcan_open(struct net_device *ndev)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	int err;
-+
-+	err = open_candev(ndev);
-+	if (err) {
-+		netdev_err(ndev, "open_candev() failed, error %d\n", err);
-+		goto failed_open;
-+	}
-+
-+	napi_enable(&priv->napi);
-+	err = request_irq(ndev->irq, bxcan_rx_isr, IRQF_SHARED, ndev->name,
-+			  ndev);
-+	if (err) {
-+		netdev_err(ndev, "failed to register rx irq(%d), error %d\n",
-+			   ndev->irq, err);
-+		goto failed_rx_irq_request;
-+	}
-+
-+	err = request_irq(priv->tx_irq, bxcan_tx_isr, IRQF_SHARED, ndev->name,
-+			  ndev);
-+	if (err) {
-+		netdev_err(ndev, "failed to register tx irq(%d), error %d\n",
-+			   priv->tx_irq, err);
-+		goto failed_tx_irq_request;
-+	}
-+
-+	err = request_irq(priv->sce_irq, bxcan_state_change_isr, IRQF_SHARED,
-+			  ndev->name, ndev);
-+	if (err) {
-+		netdev_err(ndev, "failed to register sce irq(%d), error %d\n",
-+			   priv->sce_irq, err);
-+		goto failed_sce_irq_request;
-+	}
-+
-+	err = bxcan_start(ndev);
-+	if (err)
-+		goto failed_start;
-+
-+	netif_start_queue(ndev);
-+	return 0;
-+
-+failed_start:
-+failed_sce_irq_request:
-+	free_irq(priv->tx_irq, ndev);
-+failed_tx_irq_request:
-+	free_irq(ndev->irq, ndev);
-+failed_rx_irq_request:
-+	napi_disable(&priv->napi);
-+	close_candev(ndev);
-+failed_open:
-+	return err;
-+}
-+
-+static void bxcan_stop(struct net_device *ndev)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+
-+	bxcan_disable_filters(priv->dev->parent, priv->master);
-+	bxcan_enter_sleep_mode(priv);
-+	priv->can.state = CAN_STATE_STOPPED;
-+}
-+
-+static int bxcan_close(struct net_device *ndev)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+
-+	netif_stop_queue(ndev);
-+	bxcan_stop(ndev);
-+	free_irq(ndev->irq, ndev);
-+	free_irq(priv->tx_irq, ndev);
-+	free_irq(priv->sce_irq, ndev);
-+	napi_disable(&priv->napi);
-+	close_candev(ndev);
-+	return 0;
-+}
-+
-+static netdev_tx_t bxcan_start_xmit(struct sk_buff *skb,
-+				    struct net_device *ndev)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct can_frame *cf = (struct can_frame *)skb->data;
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	struct bxcan_mb __iomem *mb_regs;
-+	unsigned int idx;
-+	u32 id;
-+	int i, j;
-+
-+	if (can_dropped_invalid_skb(ndev, skb))
-+		return NETDEV_TX_OK;
-+
-+	if (bxcan_tx_busy(priv))
-+		return NETDEV_TX_BUSY;
-+
-+	idx = bxcan_get_tx_head(priv);
-+	priv->tx_head++;
-+	if (bxcan_get_tx_free(priv) == 0)
-+		netif_stop_queue(ndev);
-+
-+	mb_regs = &regs->tx_mb[idx];
-+	if (cf->can_id & CAN_EFF_FLAG)
-+		id = BXCAN_TIxR_EXID(cf->can_id & CAN_EFF_MASK) |
-+			BXCAN_TIxR_IDE;
-+	else
-+		id = BXCAN_TIxR_STID(cf->can_id & CAN_SFF_MASK);
-+
-+	if (cf->can_id & CAN_RTR_FLAG)
-+		id |= BXCAN_TIxR_RTR;
-+
-+	bxcan_rmw(&mb_regs->dlc, BXCAN_TDTxR_DLC_MASK,
-+		  BXCAN_TDTxR_DLC(cf->len));
-+	can_put_echo_skb(skb, ndev, idx, 0);
-+
-+	for (i = 0, j = 0; i < cf->len; i += 4, j++)
-+		writel(*(u32 *)(cf->data + i), &mb_regs->data[j]);
-+
-+	/* Start transmission */
-+	writel(id | BXCAN_TIxR_TXRQ, &mb_regs->id);
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static const struct net_device_ops bxcan_netdev_ops = {
-+	.ndo_open = bxcan_open,
-+	.ndo_stop = bxcan_close,
-+	.ndo_start_xmit = bxcan_start_xmit,
-+	.ndo_change_mtu = can_change_mtu,
-+};
-+
-+static void bxcan_rx_pkt(struct net_device *ndev, struct bxcan_mb __iomem *mb_regs)
-+{
-+	struct net_device_stats *stats = &ndev->stats;
-+	struct can_frame *cf;
-+	struct sk_buff *skb;
-+	u32 id, dlc;
-+
-+	skb = alloc_can_skb(ndev, &cf);
-+	if (!skb) {
-+		stats->rx_dropped++;
-+		return;
-+	}
-+
-+	id = readl(&mb_regs->id);
-+	if (id & BXCAN_RIxR_IDE)
-+		cf->can_id = (id >> BXCAN_RIxR_EXID_SHIFT) | CAN_EFF_FLAG;
-+	else
-+		cf->can_id = (id >> BXCAN_RIxR_STID_SHIFT) & CAN_SFF_MASK;
-+
-+	dlc = readl(&mb_regs->dlc) & BXCAN_RDTxR_DLC;
-+	cf->len = can_cc_dlc2len(dlc);
-+
-+	if (id & BXCAN_RIxR_RTR) {
-+		cf->can_id |= CAN_RTR_FLAG;
-+	} else {
-+		int i, j;
-+
-+		for (i = 0, j = 0; i < cf->len; i += 4, j++)
-+			*(u32 *)(cf->data + i) = readl(&mb_regs->data[j]);
-+	}
-+
-+	stats->rx_bytes += cf->len;
-+	stats->rx_packets++;
-+	netif_receive_skb(skb);
-+}
-+
-+static int bxcan_rx_poll(struct napi_struct *napi, int quota)
-+{
-+	struct net_device *ndev = napi->dev;
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	int num_pkts;
-+	u32 rf0r;
-+
-+	for (num_pkts = 0; num_pkts < quota; num_pkts++) {
-+		rf0r = readl(&regs->rf0r);
-+		if (!(rf0r & BXCAN_RF0R_FMP0))
-+			break;
-+
-+		bxcan_rx_pkt(ndev, &regs->rx_mb[0]);
-+
-+		rf0r |= BXCAN_RF0R_RFOM0;
-+		writel(rf0r, &regs->rf0r);
-+	}
-+
-+	if (num_pkts < quota) {
-+		napi_complete_done(napi, num_pkts);
-+		bxcan_rmw(&regs->ier, 0, BXCAN_IER_FMPIE0);
-+	}
-+
-+	return num_pkts;
-+}
-+
-+static int bxcan_do_set_mode(struct net_device *ndev, enum can_mode mode)
-+{
-+	int err;
-+
-+	switch (mode) {
-+	case CAN_MODE_START:
-+		err = bxcan_start(ndev);
-+		if (err)
-+			return err;
-+
-+		netif_wake_queue(ndev);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int bxcan_disable_clks(struct bxcan_priv *priv)
-+{
-+	if (priv->clk)
-+		clk_disable_unprepare(priv->clk);
-+
-+	bxcan_disable_master_clk(priv->dev->parent);
-+	return 0;
-+}
-+
-+static int bxcan_enable_clks(struct bxcan_priv *priv)
-+{
-+	int err;
-+
-+	err = bxcan_enable_master_clk(priv->dev->parent);
-+	if (err)
-+		return err;
-+
-+	if (priv->clk) {
-+		err = clk_prepare_enable(priv->clk);
-+		if (err)
-+			bxcan_disable_master_clk(priv->dev->parent);
-+	}
-+
-+	return err;
-+}
-+
-+static int bxcan_get_berr_counter(const struct net_device *ndev,
-+				  struct can_berr_counter *bec)
-+{
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+	struct bxcan_regs __iomem *regs = priv->regs;
-+	u32 esr;
-+	int err;
-+
-+	err = bxcan_enable_clks(priv);
-+	if (err)
-+		return err;
-+
-+	esr = readl(&regs->esr);
-+	bec->txerr = BXCAN_TEC(esr);
-+	bec->rxerr = BXCAN_REC(esr);
-+	err = bxcan_disable_clks(priv);
-+	return 0;
-+}
-+
-+static int bxcan_probe(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
-+	struct net_device *ndev;
-+	struct bxcan_priv *priv;
-+	struct clk *clk = NULL;
-+	bool master;
-+	u32 offset;
-+	int err, rx_irq, tx_irq, sce_irq;
-+
-+	master = of_property_read_bool(np, "st,can-master");
-+	if (!master) {
-+		clk = devm_clk_get(dev, NULL);
-+		if (IS_ERR(clk)) {
-+			dev_err(dev, "failed to get clock\n");
-+			return PTR_ERR(clk);
-+		}
-+	}
-+
-+	rx_irq = platform_get_irq_byname(pdev, "rx0");
-+	if (rx_irq < 0) {
-+		dev_err(dev, "failed to get rx0 irq\n");
-+		return rx_irq;
-+	}
-+
-+	tx_irq = platform_get_irq_byname(pdev, "tx");
-+	if (tx_irq < 0) {
-+		dev_err(dev, "failed to get tx irq\n");
-+		return tx_irq;
-+	}
-+
-+	sce_irq = platform_get_irq_byname(pdev, "sce");
-+	if (sce_irq < 0) {
-+		dev_err(dev, "failed to get sce irq\n");
-+		return sce_irq;
-+	}
-+
-+	err = of_property_read_u32(np, "reg", &offset);
-+	if (err) {
-+		dev_err(dev, "failed to get reg property\n");
-+		return err;
-+	}
-+
-+	ndev = alloc_candev(sizeof(struct bxcan_priv), BXCAN_TX_MB_NUM);
-+	if (!ndev) {
-+		dev_err(dev, "alloc_candev() failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	priv = netdev_priv(ndev);
-+	platform_set_drvdata(pdev, ndev);
-+	SET_NETDEV_DEV(ndev, dev);
-+	ndev->netdev_ops = &bxcan_netdev_ops;
-+	ndev->irq = rx_irq;
-+	ndev->flags |= IFF_ECHO;
-+
-+	priv->dev = dev;
-+	priv->ndev = ndev;
-+	priv->regs = bxcan_get_base_addr(dev->parent) + offset;
-+	priv->clk = clk;
-+	priv->tx_irq = tx_irq;
-+	priv->sce_irq = sce_irq;
-+	priv->master = master;
-+	priv->can.clock.freq =
-+		master ? bxcan_get_master_clk_rate(dev->parent) :
-+		clk_get_rate(clk);
-+	priv->tx_head = 0;
-+	priv->tx_tail = 0;
-+	priv->can.bittiming_const = &bxcan_bittiming_const;
-+	priv->can.do_set_mode = bxcan_do_set_mode;
-+	priv->can.do_get_berr_counter = bxcan_get_berr_counter;
-+	priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
-+		CAN_CTRLMODE_LISTENONLY	| CAN_CTRLMODE_BERR_REPORTING;
-+	netif_napi_add(ndev, &priv->napi, bxcan_rx_poll, BXCAN_NAPI_WEIGHT);
-+
-+	err = bxcan_enable_clks(priv);
-+	if (err) {
-+		dev_err(dev, "failed to enable clocks\n");
-+		return err;
-+	}
-+
-+	err = register_candev(ndev);
-+	if (err) {
-+		dev_err(dev, "failed to register netdev\n");
-+		goto failed_register;
-+	}
-+
-+	dev_info(dev, "clk: %d Hz, IRQs: %d, %d, %d\n", priv->can.clock.freq,
-+		 tx_irq, rx_irq, sce_irq);
-+	return 0;
-+
-+failed_register:
-+	netif_napi_del(&priv->napi);
-+	free_candev(ndev);
-+	return err;
-+}
-+
-+static int bxcan_remove(struct platform_device *pdev)
-+{
-+	struct net_device *ndev = platform_get_drvdata(pdev);
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+
-+	unregister_candev(ndev);
-+	bxcan_disable_clks(priv);
-+	netif_napi_del(&priv->napi);
-+	free_candev(ndev);
-+	return 0;
-+}
-+
-+static int __maybe_unused bxcan_suspend(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	netif_stop_queue(ndev);
-+	netif_device_detach(ndev);
-+
-+	bxcan_enter_sleep_mode(priv);
-+	priv->can.state = CAN_STATE_SLEEPING;
-+	bxcan_disable_clks(priv);
-+	return 0;
-+}
-+
-+static int __maybe_unused bxcan_resume(struct device *dev)
-+{
-+	struct net_device *ndev = dev_get_drvdata(dev);
-+	struct bxcan_priv *priv = netdev_priv(ndev);
-+
-+	if (!netif_running(ndev))
-+		return 0;
-+
-+	bxcan_enable_clks(priv);
-+	bxcan_leave_sleep_mode(priv);
-+	priv->can.state = CAN_STATE_ERROR_ACTIVE;
-+
-+	netif_device_attach(ndev);
-+	netif_start_queue(ndev);
-+	return 0;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(bxcan_pm_ops, bxcan_suspend, bxcan_resume);
-+
-+static const struct of_device_id bxcan_of_match[] = {
-+	{.compatible = "st,stm32f4-bxcan"},
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(of, bxcan_of_match);
-+
-+static struct platform_driver bxcan_driver = {
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.pm = &bxcan_pm_ops,
-+		.of_match_table = bxcan_of_match,
-+	},
-+	.probe = bxcan_probe,
-+	.remove = bxcan_remove,
-+};
-+
-+module_platform_driver(bxcan_driver);
-+
-+MODULE_AUTHOR("Dario Binacchi <dario.binacchi@amarulasolutions.com>");
-+MODULE_DESCRIPTION("STMicroelectronics Basic Extended CAN controller driver");
-+MODULE_LICENSE("GPL");
--- 
-2.32.0
+>
+> which way should we go?
+>
+>> I hope
+>> it's not the latter, otherwise it loses the point to use vDPA for
+>> datapath acceleration.
+>>
+>> Even if its the former, it's a little weird for vendor device to
+>> implement a LE config space with BE ring layout, although still possible...
+> Right.
+>
+> Thanks
+>
+>> -Siwei
+>>> Thanks
+>>>
+>>>
+>>>>> So if you think we should add a vdpa_ops->get_endian(),
+>>>>> I will drop these comments in the next version of
+>>>>> series, and work on a new patch for get_endian().
+>>>>>
+>>>>> Thanks,
+>>>>> Zhu Lingshan
+>>>> Guests don't get endian-ness from devices so this seems pointless.
+>>>>
 
