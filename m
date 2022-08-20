@@ -2,103 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DA1259B04B
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 22:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5CB59B0AA
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 00:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiHTUL1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 20 Aug 2022 16:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34322 "EHLO
+        id S235205AbiHTWAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 20 Aug 2022 18:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229512AbiHTUL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 16:11:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF0C0645C
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 13:11:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31235B80B27
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 20:11:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92956C433C1;
-        Sat, 20 Aug 2022 20:11:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661026281;
-        bh=FPdu5uWgLlx/Cyozp7jUXNPkaf77tbdlm2mkXAV0bZQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C6Yh5a45gwKe/I/7qytwGrRTWCXbbcv71THBFuJEc8ywdOeNE/WmTg2JaOQKbgFA5
-         SwIvp2Zc+lsGDX3fOOKZykvF6W1UwtQNml+mfnzAbh4X6DzrEzU5c+RmDPd1Wj6OUL
-         SQE3A4BBdEEqMdkLNGol4nciOveM5sxP/mCjkGHmaFT4Oazb6AGsW5uuIE4Iz7qmMv
-         lm+HzakXZCGJl0VbIknGXNDjyzDqAyObF15GOcgVQZ7WRlkhUR/EA+lHmHxx79IwvN
-         sQwOmC46NErMVh8934UuWMJP1UeYo28dmpTcO3hulBBAJEjIk1sCTGlJoklHBWv/1V
-         Cziwg10HihxcA==
-Date:   Sat, 20 Aug 2022 13:11:15 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
-        pabeni@redhat.com, edumazet@google.com, saeedm@nvidia.com,
-        jacob.e.keller@intel.com, vikas.gupta@broadcom.com,
-        gospo@broadcom.com
-Subject: Re: [patch net-next 4/4] net: devlink: expose default flash update
- target
-Message-ID: <20220820131115.35dc83ee@kernel.org>
-In-Reply-To: <YwB0yeXEDxHm5Sxx@nanopsycho>
-References: <20220818130042.535762-1-jiri@resnulli.us>
-        <20220818130042.535762-5-jiri@resnulli.us>
-        <20220818195301.27e76539@kernel.org>
-        <Yv9F4EpjURQF0Dnd@nanopsycho>
-        <20220819145459.1a7c6a61@kernel.org>
-        <YwB0yeXEDxHm5Sxx@nanopsycho>
+        with ESMTP id S234011AbiHTWAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 20 Aug 2022 18:00:14 -0400
+X-Greylist: delayed 1341 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 20 Aug 2022 15:00:09 PDT
+Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0BA13E09;
+        Sat, 20 Aug 2022 15:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
+        s=20190804; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
+        Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=jbV1371i5Ukeh0rbH2uM6B5K8Dm+kdefS/HHp+Iyam4=; b=nWoYvl5DQgAKhWm4gpfKp7TPPX
+        rWZ16GPPdw/DL2LVABuYgIUb50pjhC1vcajpjVQhryNhy6/kPMUGuVLw7gZUpnaBasbuQhGub9ui0
+        kctA4MO7YWTbhJ7a8nyvNEk+osvL2RPfQMztWE9GKLgCK9Za+dKY8QZtmM17b578APSY2OOMvDw0K
+        BlO0ihNHu7ySvM88PZvmC8OId9L7z+89j+0g5kE2w4ZXZBNLgIFEDPJcKTC+aSbo4EKokgaSGQwWu
+        /soeKX8WkH2Urs6HL1MhVIfTHXKYFnVzu0gtU1DNWh70n9yHZAzkGFY4/jbZN9HCdliYiHoHs/yHp
+        RWD+Xytg==;
+Received: from [2a02:2454:9869:1a:9eb6:54ff:0:fa5] (helo=cerator.lan)
+        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <lynxis@fe80.eu>)
+        id 1oPW9p-00G1Te-HM; Sat, 20 Aug 2022 21:37:29 +0000
+From:   Alexander Couzens <lynxis@fe80.eu>
+To:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexander Couzens <lynxis@fe80.eu>
+Subject: [PATCH 1/2] net: mt7531: only do PLL once after the reset
+Date:   Sat, 20 Aug 2022 23:37:06 +0200
+Message-Id: <20220820213707.46138-1-lynxis@fe80.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 20 Aug 2022 07:44:41 +0200 Jiri Pirko wrote:
-> >The entire dev info / dev flash interface was driven by practical needs
-> >of the fleet management team @Facebook / Meta.
-> >
-> >What would make the changes you're making more useful here would be if
-> >instead of declaring the "default" component, we declared "overall"
-> >component. I.e. the component which is guaranteed to encompass all the
-> >other versions in "stored", and coincidentally is also the default
-> >flashed one.  
-> 
-> It is just semantics.
+Move the PLL init of the switch out of the pad configuration of the port
+6 (usally cpu port).
 
-You say that like it's a synonym for irrelevance. Semantics are
-*everything* for the uAPI :)
+Fix a unidirectional 100 mbit limitation on 1 gbit or 2.5 gbit links for
+outbound traffic on port 5 or port 6.
 
-> Default is what we have now and drivers are using
-> it. How, that is up to the driver. I see no way how to enforce this, do
-> you?
+Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+---
+ drivers/net/dsa/mt7530.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-Not sure I understand. We document the thing clearly as "this is the
-overall and must include all parts of stored FW", name it appropriately.
-If someone sneaks in code which abuses the value for something else,
-nothing we can do, like with every driver API we have.
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 835807911be0..95a57aeb466e 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -506,14 +506,19 @@ static bool mt7531_dual_sgmii_supported(struct mt7530_priv *priv)
+ static int
+ mt7531_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
+ {
+-	struct mt7530_priv *priv = ds->priv;
++	return 0;
++}
++
++static void
++mt7531_pll_setup(struct mt7530_priv *priv)
++{
+ 	u32 top_sig;
+ 	u32 hwstrap;
+ 	u32 xtal;
+ 	u32 val;
+ 
+ 	if (mt7531_dual_sgmii_supported(priv))
+-		return 0;
++		return;
+ 
+ 	val = mt7530_read(priv, MT7531_CREV);
+ 	top_sig = mt7530_read(priv, MT7531_TOP_SIG_SR);
+@@ -592,8 +597,6 @@ mt7531_pad_setup(struct dsa_switch *ds, phy_interface_t interface)
+ 	val |= EN_COREPLL;
+ 	mt7530_write(priv, MT7531_PLLGP_EN, val);
+ 	usleep_range(25, 35);
+-
+-	return 0;
+ }
+ 
+ static void
+@@ -2331,6 +2334,8 @@ mt7531_setup(struct dsa_switch *ds)
+ 		     SYS_CTRL_PHY_RST | SYS_CTRL_SW_RST |
+ 		     SYS_CTRL_REG_RST);
+ 
++	mt7531_pll_setup(priv);
++
+ 	if (mt7531_dual_sgmii_supported(priv)) {
+ 		priv->p5_intf_sel = P5_INTF_SEL_GMAC5_SGMII;
+ 
+@@ -2887,8 +2892,6 @@ mt7531_cpu_port_config(struct dsa_switch *ds, int port)
+ 	case 6:
+ 		interface = PHY_INTERFACE_MODE_2500BASEX;
+ 
+-		mt7531_pad_setup(ds, interface);
+-
+ 		priv->p6_interface = interface;
+ 		break;
+ 	default:
+-- 
+2.35.1
 
-The "default" gives user information but to interpret that information
-user is presupposed to know the semantics of the components. Of what
-use is knowing that default is component A if I don't know that it's
-the component I want to flash. And if so why don't I just say
-"component A"?
-
-> But anyway, I can split the patchset in 2:
-> 1) sanitize components
-> 2) default/overall/whatever
-> If that would help.
-
-Sure thing, seems like a practical approach.
-
-On second thought the overall may not be practical, there are sometimes
-critical components on the board you don't really want to flash unless
-you really have to. CPLDs and stuff. So perhaps we should scratch (2)
-altogether until we have a clear need...
