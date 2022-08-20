@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFDB159A9C3
-	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:01:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13FCA59A9D3
+	for <lists+netdev@lfdr.de>; Sat, 20 Aug 2022 02:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244272AbiHTAAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 19 Aug 2022 20:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51730 "EHLO
+        id S244292AbiHTADH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 19 Aug 2022 20:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234988AbiHTAAT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:00:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4F0106FA9;
-        Fri, 19 Aug 2022 17:00:18 -0700 (PDT)
+        with ESMTP id S244099AbiHTADF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 19 Aug 2022 20:03:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29798115229
+        for <netdev@vger.kernel.org>; Fri, 19 Aug 2022 17:03:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC005618CD;
-        Sat, 20 Aug 2022 00:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 440CCC43140;
-        Sat, 20 Aug 2022 00:00:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6106B81213
+        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 00:03:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFC9C433C1;
+        Sat, 20 Aug 2022 00:03:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660953617;
-        bh=U1ivDwlnKX82ycFfnYH3WKIeh1tmao/eqlSag+Agkwk=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GF2EP/bpkYKW+O8dfa18S5pL6f5vG5uLTogrFr3Bk87Ha3rZpetqbEOTgYGDCfeKD
-         vkbBZvMjk3tV/MEyKe2OJ0pW2BzPaNJY9VAXMAWnBcyABu0j/HhGiBUL6N2cq+BCEP
-         pMpCa0CKG440HztIQlgEnimBl4UCK1xVMdcaumkdNca8h5B4+fGDb2gK3c3JGmfJu9
-         yiYHpR2sSyBl8Gmy2+dSbF2gTVJ1YIGb+0WA1/llI6ttE9eoHkAZDZPU6Tuu2gA6Kg
-         RHFvnC23qaEKxUpywfcUsOEQUCQT8DhFi9HhZjkTlSqllnQ1n7SC2DKj9h0nqWnFot
-         hPz/o+Gl5bvhA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2E2E8E2A050;
-        Sat, 20 Aug 2022 00:00:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1660953782;
+        bh=MUHgkC0/xiP4vpd7CEWWDpUXAA47VTA2ZRvUsUuwjdY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ffrVuyokRufyDmefRB8wDk0WSLg9ajzUI7G1LYe2uL5tbE4xiSIOSpy3TLUbfybHF
+         wovKWZgthShxG1VC4bpQVN4uDQkrtTIurJmiFYLFTPtKC1vGFJAsLMAcx6mzGf0J93
+         Eh9qQLz/M1477/tG7gfu8v5NrpaF1hd9aWSYuy8nE/wgjjFoClhmk9XOw2KAQX8SDs
+         m914zv2kR1Dyg4t/6eHPmZ/oTdO1oUIPsV8s62EMJ6m+YIYdKrvyNO0T9SRjC3/s7I
+         ceqECcQGbzm34MmA7rydtmiTqIjJ1dZxubnCytnUGK03Os1GUh41facCD7myaXkgWZ
+         icoz1p5Zljlyg==
+Date:   Fri, 19 Aug 2022 17:03:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>,
+        Matthias Tafelmeier <matthias.tafelmeier@gmx.net>
+Subject: Re: [PATCH v3 net 02/17] net: Fix data-races around weight_p and
+ dev_weight_[rt]x_bias.
+Message-ID: <20220819170301.43675f1a@kernel.org>
+In-Reply-To: <20220818182653.38940-3-kuniyu@amazon.com>
+References: <20220818182653.38940-1-kuniyu@amazon.com>
+        <20220818182653.38940-3-kuniyu@amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: prestera: add missing ABI compatibility check
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166095361718.16371.7500340870200772956.git-patchwork-notify@kernel.org>
-Date:   Sat, 20 Aug 2022 00:00:17 +0000
-References: <20220818111419.414877-1-maksym.glubokiy@plvision.eu>
-In-Reply-To: <20220818111419.414877-1-maksym.glubokiy@plvision.eu>
-To:     Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-Cc:     tchornyi@marvell.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, yevhen.orlov@plvision.eu,
-        oleksandr.mazur@plvision.eu, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,26 +59,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, 18 Aug 2022 11:26:38 -0700 Kuniyuki Iwashima wrote:
+> -	dev_rx_weight = weight_p * dev_weight_rx_bias;
+> -	dev_tx_weight = weight_p * dev_weight_tx_bias;
+> +	WRITE_ONCE(dev_rx_weight,
+> +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_rx_bias));
+> +	WRITE_ONCE(dev_tx_weight,
+> +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_tx_bias));
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 18 Aug 2022 14:14:19 +0300 you wrote:
-> Fixes: fec7c9c73fd3 ("net: marvell: prestera: define MDB/flood domain entries and HW API to offload them to the HW")
-> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
-> ---
->  drivers/net/ethernet/marvell/prestera/prestera_hw.c | 1 +
->  1 file changed, 1 insertion(+)
-
-Here is the summary with links:
-  - [net-next] net: prestera: add missing ABI compatibility check
-    https://git.kernel.org/netdev/net-next/c/917edfb98c48
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Is there some locking on procfs writes? Otherwise one interrupted write
+may get overtaken by another and we'll end up with inconsistent values.
+OTOH if there is some locking we shouldn't have to protect weight_p
+here.
