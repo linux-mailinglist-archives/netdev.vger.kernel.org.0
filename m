@@ -2,137 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F70059B1BE
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 06:41:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2348F59B20E
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 07:20:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229511AbiHUEkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 00:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54090 "EHLO
+        id S229825AbiHUFTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 01:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiHUEj6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 00:39:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BC32220C9
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 21:39:57 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oPckJ-0007TV-Kd; Sun, 21 Aug 2022 06:39:35 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oPckG-0007zt-4g; Sun, 21 Aug 2022 06:39:32 +0200
-Date:   Sun, 21 Aug 2022 06:39:32 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH net-next v1 7/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <20220821043932.GJ10138@pengutronix.de>
-References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
- <20220819120109.3857571-8-o.rempel@pengutronix.de>
- <YwEk8h9C9XhT6Yyc@lunn.ch>
+        with ESMTP id S229379AbiHUFTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 01:19:07 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836732613B;
+        Sat, 20 Aug 2022 22:19:06 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id s31-20020a17090a2f2200b001faaf9d92easo10998224pjd.3;
+        Sat, 20 Aug 2022 22:19:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=VmvfnrPYEzpPF6Y856AkXDQVdZ3jpl0MX74dw35va6Y=;
+        b=SFmaQ7MhV0Ourt4nihEsp7fI+0YdZipTcumKkQPDvje+27hlHATxqeYgaQmaZBKLZ/
+         N6cLQRcVNPeeLfZPdrEKWFxUH0/4nnspgkQ/7EsmjIGH5VAZ1vjprZQftaj6tJ3vpW8U
+         Ela+0uTNvpxyTsulEkdV03eeyJjWS3Q4KV0CoUj0vo00YDCebPAkkpNbD+mvWtKbwwto
+         NOKC+SZQpdAsYTyfvCAhyO2OsGbWgIM6O/DegUEgmi1qEEcug3Q/FV9IOEVU/ZG+w8XK
+         VP3ESICQwE3FEUuqRWgQV+KOW/lRFd1Xm8WyTt7MiL79puAK4gZRAHpzgiRnXWGYvSW4
+         Dyjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=VmvfnrPYEzpPF6Y856AkXDQVdZ3jpl0MX74dw35va6Y=;
+        b=JFV+Nudzt047TnhQFsZydJ1ijN4tI18byqcDNP3Mh7XpAbFQQUDStH3cs3Vbbn8955
+         XDKOUGimPzeRTBOjh9anTzSJ923Ge8PVjOR9Gs4ZEpHwROanON2hUwF6Sk8NesXaDR9M
+         LSF96jr6TGWHWcmvMf18IDirf6wVkHA8h2VjSKDevv20T0/8Dx0iUD0fsQwX2niMW8YS
+         8v97fOeqJGnJ8fcJXm+c6WRrBR3cIPJ9PR9ic0YOLlDJLgOnlUw4YOclPtyZ/HZO9GWa
+         xBlcB/gL+Paojit2bZzz1TOOk9o3o80chnMVMd9+rSHpLQO3guikrFnXnvPDauCN7lI3
+         cduQ==
+X-Gm-Message-State: ACgBeo3yfjxp8Xw1MFcxSgyvVmhpK6kNf1H+aUBpuT4nSC0Wcp9M41aK
+        sFrCJOmHWFhhFB72NtvzUyg=
+X-Google-Smtp-Source: AA6agR4He35V2+kx8jmQy0IG67a9AQlM2FSh8o+vxIOERuJCva4fczrQ9cCiqNjoRhVBB5TJc4oWDQ==
+X-Received: by 2002:a17:90b:1c89:b0:1f8:42dd:5ebb with SMTP id oo9-20020a17090b1c8900b001f842dd5ebbmr16325760pjb.246.1661059145959;
+        Sat, 20 Aug 2022 22:19:05 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.24])
+        by smtp.gmail.com with ESMTPSA id h6-20020a170902680600b0016c57657977sm5809913plk.41.2022.08.20.22.19.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 20 Aug 2022 22:19:05 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org, miguel.ojeda.sandonis@gmail.com,
+        segher@kernel.crashing.org, ndesaulniers@google.com
+Cc:     ojeda@kernel.org, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, asml.silence@gmail.com, imagedong@tencent.com,
+        luiz.von.dentz@intel.com, vasily.averin@linux.dev,
+        jk@codeconstruct.com.au, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v5] net: skb: prevent the split of kfree_skb_reason() by gcc
+Date:   Sun, 21 Aug 2022 13:18:58 +0800
+Message-Id: <20220821051858.228284-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YwEk8h9C9XhT6Yyc@lunn.ch>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 20, 2022 at 08:16:18PM +0200, Andrew Lunn wrote:
-> On Fri, Aug 19, 2022 at 02:01:09PM +0200, Oleksij Rempel wrote:
-> > Add interface to support Power Sourcing Equipment. At current step it
-> > provides generic way to address all variants of PSE devices as defined
-> > in IEEE 802.3-2018 but support only objects specified for IEEE 802.3-2018 104.4
-> > PoDL Power Sourcing Equipment (PSE).
-> > 
-> > Currently supported and mandatory objects are:
-> > IEEE 802.3-2018 30.15.1.1.3 aPoDLPSEPowerDetectionStatus
-> > IEEE 802.3-2018 30.15.1.1.2 aPoDLPSEAdminState
-> > IEEE 802.3-2018 30.15.1.2.1 acPoDLPSEAdminControl
-> > 
-> > This is minimal interface needed to control PSE on each separate
-> > ethernet port but it provides not all mandatory objects specified in
-> > IEEE 802.3-2018.
-> 
-> > +static int pse_get_pse_attributs(struct net_device *dev,
-> > +				 struct pse_reply_data *data)
-> > +{
-> > +	struct phy_device *phydev = dev->phydev;
-> > +	int ret;
-> > +
-> > +	if (!phydev)
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	mutex_lock(&phydev->lock);
-> > +	if (!phydev->psec) {
-> > +		ret = -EOPNOTSUPP;
-> > +		goto error_unlock;
-> > +	}
-> > +
-> > +	ret = pse_podl_get_admin_sate(phydev->psec);
-> > +	if (ret < 0)
-> > +		goto error_unlock;
-> > +
-> > +	data->podl_pse_admin_state = ret;
-> > +
-> > +	ret = pse_podl_get_pw_d_status(phydev->psec);
-> > +	if (ret < 0)
-> > +		goto error_unlock;
-> > +
-> > +	data->podl_pse_pw_d_status = ret;
-> 
-> I'm wondering how this is going to scale. At some point, i expect
-> there will be an implementation that follows C45.2.9. I see 14 values
-> which could be returned. I don't think 14 ops in the driver structure
-> makes sense. Plus c30.15.1 defines other values.
-> 
-> The nice thing about netlink is you can have as many or are little
-> attributes in the message as you want. For cable testing, i made use
-> of this. There is no standardisation, different PHYs offer different
-> sorts of results. So i made the API flexible. The PHY puts whatever
-> results it has into the message, and ethtool(1) just walks the message
-> and prints what is in it.
-> 
-> I'm wondering if we want a similar sort of API here?
-> net/ethtool/pse-pd.c allocates the netlink messages, adds the header,
-> and then passes it to the driver. The driver then uses helpers from
-> ethtool to add whatever attributes it wants to the message. pse-pd
-> then completes the message, and returns it to user space? This seems
-> like it will scale better.
+From: Menglong Dong <imagedong@tencent.com>
 
-Yes. Sounds good. I'll make a new version.
+Sometimes, gcc will optimize the function by spliting it to two or
+more functions. In this case, kfree_skb_reason() is splited to
+kfree_skb_reason and kfree_skb_reason.part.0. However, the
+function/tracepoint trace_kfree_skb() in it needs the return address
+of kfree_skb_reason().
 
-Regards,
-Oleksij
+This split makes the call chains becomes:
+  kfree_skb_reason() -> kfree_skb_reason.part.0 -> trace_kfree_skb()
+
+which makes the return address that passed to trace_kfree_skb() be
+kfree_skb().
+
+Therefore, introduce '__fix_address', which is the combination of
+'__noclone' and 'noinline', and apply it to kfree_skb_reason() to
+prevent to from being splited or made inline.
+
+(Is it better to simply apply '__noclone oninline' to kfree_skb_reason?
+I'm thinking maybe other functions have the same problems)
+
+Meanwhile, wrap 'skb_unref()' with 'unlikely()', as the compiler thinks
+it is likely return true and splits kfree_skb_reason().
+
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+---
+v5:
+- replace optimize("O1") with '__noclone noinline', thanks for
+  Segher Boessenkool and Nick Desaulniers's advice.
+- wrap 'skb_unref()' with 'unlikely()', as Jakub Kicinski advise
+
+v4:
+- move the definition of __nofnsplit to compiler_attributes.h
+
+v3:
+- define __nofnsplit only for GCC
+- add some document
+
+v2:
+- replace 'optimize' with '__optimize__' in __nofnsplit, as Miguel Ojeda
+  advised.
+---
+ include/linux/compiler_attributes.h | 7 +++++++
+ include/linux/skbuff.h              | 3 ++-
+ net/core/skbuff.c                   | 5 +++--
+ 3 files changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/compiler_attributes.h b/include/linux/compiler_attributes.h
+index 445e80517cab..fc93c9488c76 100644
+--- a/include/linux/compiler_attributes.h
++++ b/include/linux/compiler_attributes.h
+@@ -371,4 +371,11 @@
+  */
+ #define __weak                          __attribute__((__weak__))
+ 
++/*
++ * Used by functions that use '__builtin_return_address'. These function
++ * don't want to be splited or made inline, which can make
++ * the '__builtin_return_address' get unexpected address.
++ */
++#define __fix_address noinline __noclone
++
+ #endif /* __LINUX_COMPILER_ATTRIBUTES_H */
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 5d7ff8850eb2..4d0d3b4f0867 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -1195,7 +1195,8 @@ static inline bool skb_unref(struct sk_buff *skb)
+ 	return true;
+ }
+ 
+-void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason);
++void __fix_address
++kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason);
+ 
+ /**
+  *	kfree_skb - free an sk_buff with 'NOT_SPECIFIED' reason
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 974bbbbe7138..35d9d5958dc6 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -777,9 +777,10 @@ EXPORT_SYMBOL(__kfree_skb);
+  *	hit zero. Meanwhile, pass the drop reason to 'kfree_skb'
+  *	tracepoint.
+  */
+-void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
++void __fix_address
++kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
+ {
+-	if (!skb_unref(skb))
++	if (unlikely(!skb_unref(skb)))
+ 		return;
+ 
+ 	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.37.2
+
