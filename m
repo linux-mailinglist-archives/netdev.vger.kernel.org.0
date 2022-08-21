@@ -2,153 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EF6259B3D2
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 14:58:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AB0059B3D5
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 15:08:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230103AbiHUM6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 08:58:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55820 "EHLO
+        id S229446AbiHUNIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 09:08:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229527AbiHUM57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 08:57:59 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACD416586;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id p18so7725936plr.8;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
+        with ESMTP id S229527AbiHUNId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 09:08:33 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C165BDF0A
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 06:08:28 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id f21so8573735pjt.2
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 06:08:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=ClDyou4gGsGQygKcng/+QxuCvSmLH/T0LzzWygeLDxo=;
-        b=DzldWQk3w9CMSvh7wXhDSN2aWrVFsSkaBRGf4hK4iF8emTltMf6t9vv/FAHY7jMDtu
-         el0UZKoheRtu+4Voxc4ucu9UeGmKyi36kc1ikmO3qZeg/IDmqUXbgu2+JIO5SYvgDsDV
-         whKmYSSy4uCsEljwlCehrxkdvcU6yFnAz1DKRRGqEpCIzE0GDAtbEPqOMID3va+luviN
-         jArWd8Y8HWPBo1CuVbX7o/n5GclujeIVWDaHTS/Hoe+Qom6y2Bu+4u7n0WnhO4/TU5fd
-         xZ4A7e7akZ3DQmvbwVLiAQm3bhRqzJOUUzacClaY+nc7bmurtMaSveF/FlownKYUmxk6
-         y9Xw==
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=n40RLmCcm4YO06nHYuTL/t8Zat/kRcECAIm9wpSC+aE=;
+        b=aPjx7MJt9nBG63sWVvC14p0FVF8bhBSMIYBrVz94WoG715/DTk4CBc2w6679qyIXQW
+         3v2ZPWITyWnhHAVEdrmahIZ7M4AOSdXB7pRh8vh/mKvR0VomvKhkTX/sajotUXmbI97W
+         9lCqe/Z6QHm/JYwtyrSB3InUjomT4V0gelQHAdxYL7w7ugdTLtwvhaotfzk2vExO9iuS
+         gmC0Lclz84+pHsdivYK6JF7zVixXcEIw3van4+xlNyUUIICnGMdhPKU4DD9NuvHVUrWn
+         pWY0qBytBsZveVZ5A5rcqY43QMpfUaOPA0nhwNKVYtZyeXKD7OsHlypWKS1W2KcOGjYQ
+         VRyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=ClDyou4gGsGQygKcng/+QxuCvSmLH/T0LzzWygeLDxo=;
-        b=ws3eKOWqZZji1OuaXIoDq4ZHV9Ydl9EOkJQzrOsAki21oG3+I0XWFfAqBVRGe3bCw/
-         DkO64WqCEn51L/eNifur6DOyn6KiXEe+ZE9PqIVS52VLi03Kz5aip7MjDBmvKvYbzA7Q
-         oWyUf09Luctwg8v8OwzZYthUMxyqduKzl13PnYJ2lorM7I8nDiIYKUSEUVb60yB0D8p1
-         2+5Y5nGGWVu56l816c+fEIPpxdbci7XK4KdDncBRp0jEnyhxJ9/l2ksjctwo10iuGtRQ
-         GpqjXVICONxiAcR1paYNHZwKLLFJbYTmaX4eK7HWGh1cBf9haaZhK/jysfk2vROmXASB
-         UHjg==
-X-Gm-Message-State: ACgBeo3EjlmLBrdMCEkAmiwBc3/5F/cJDNr7Eg70MlYA+1PsAqXnxSqL
-        bWthtHn+pLdzsCJECvQE7tU=
-X-Google-Smtp-Source: AA6agR5zia5vYqSnvV68J6GwqVaSGboCXGZgtlbolLgoa4BnlG/hWEgaBeCsm/Hs81I1xoN/q9BBAg==
-X-Received: by 2002:a17:903:1246:b0:171:5033:85c with SMTP id u6-20020a170903124600b001715033085cmr15798412plh.146.1661086677425;
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-Received: from localhost ([36.112.204.208])
-        by smtp.gmail.com with ESMTPSA id iw11-20020a170903044b00b0016d150c6c6dsm6374211plb.45.2022.08.21.05.57.55
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=n40RLmCcm4YO06nHYuTL/t8Zat/kRcECAIm9wpSC+aE=;
+        b=jT2dyDkblTLEQkR3K4D+NTTlULoPeEMXiVR6W6jRmBlvOZema4IA0CR/p72aQp7eat
+         bnnl4TZBLLYR4T5ki/WKQze73jE17K8fPEulTk4TN+lnsw2ap2z6ANkNH+Iat16bHFcq
+         SdU6NMMEQorv5p3sW2fyf+44/HNWci9Q7Ry+1a+c3Ng61F1BMl+CdxsXTsh3KtE4SXV2
+         a9BUk0pHYnjuzpwQKDkfIzlKA7BPzvgo25sG5oFzELJtTuKGIgxTtFyzJWvazDIwOo7w
+         ArZdyBAUmIE5HdxsjUd4CqidDWGcjDxh2HvqFXlw0JdujV2wpYG8IR9PIpevNtGE4/Ei
+         pt+g==
+X-Gm-Message-State: ACgBeo0e64osMEPy49odL4KKhPBhFmaq6TIrH/fxYWRt3/ovFnPJJSm4
+        n/UvPkC/Ph32RNo/6YPyCuY=
+X-Google-Smtp-Source: AA6agR7oaEqtWhYoZELu/6VXuJSEFNppM6G7ZFNaVVxl55TL7d39E45oCWiG/X14n9+l++pt5Atdqg==
+X-Received: by 2002:a17:903:2d0:b0:172:b63b:3a1e with SMTP id s16-20020a17090302d000b00172b63b3a1emr14903634plk.76.1661087308104;
+        Sun, 21 Aug 2022 06:08:28 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:200:6287:c054:b39c:dc2a])
+        by smtp.gmail.com with ESMTPSA id k6-20020a170902ce0600b00172951ddb12sm6436460plg.42.2022.08.21.06.08.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Aug 2022 05:57:57 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        David Howells <dhowells@redhat.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        paskripkin@gmail.com, skhan@linuxfoundation.org,
-        18801353760@163.com, Hawkins Jiawei <yin31149@gmail.com>
-Subject: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
-Date:   Sun, 21 Aug 2022 20:57:50 +0800
-Message-Id: <20220821125751.4185-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <000000000000ce327f05d537ebf7@google.com>
-References: <000000000000ce327f05d537ebf7@google.com>
+        Sun, 21 Aug 2022 06:08:26 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Mahesh Bandewar <maheshb@google.com>,
+        Sainath Grandhi <sainath.grandhi@intel.com>
+Subject: [PATCH] net: ipvtap - add __init/__exit annotations to module init/exit funcs
+Date:   Sun, 21 Aug 2022 06:08:08 -0700
+Message-Id: <20220821130808.12143-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzkaller reports bad unlock balance bug as follows:
-------------[ cut here ]------------
-WARNING: bad unlock balance detected!
-syz-executor.0/4094 is trying to release lock (&call->user_mutex) at:
-[<ffffffff87c1d8d1>] rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
-but there are no more locks to release!
+From: Maciej Żenczykowski <maze@google.com>
 
-other info that might help us debug this:
-no locks held by syz-executor.0/4094.
+Looks to have been left out in an oversight.
 
-stack backtrace:
-[...]
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0x57/0x7d lib/dump_stack.c:106
- print_unlock_imbalance_bug include/trace/events/lock.h:69 [inline]
- __lock_release kernel/locking/lockdep.c:5333 [inline]
- lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5686
- __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
- rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
- sock_sendmsg_nosec net/socket.c:714 [inline]
- sock_sendmsg+0xab/0xe0 net/socket.c:734
- ____sys_sendmsg+0x5c2/0x7a0 net/socket.c:2485
- ___sys_sendmsg+0xdb/0x160 net/socket.c:2539
- __sys_sendmsg+0xc3/0x160 net/socket.c:2568
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
- [...]
- </TASK>
-------------------------------------
-
-When kernel wants to send a message through an RxRPC socket in
-rxrpc_do_sendmsg(), kernel should hold the call->user_mutex lock,
-or it will triggers bug when releasing this lock before returning
-from rxrpc_do_sendmsg().
-
-Yet the problem is that during rxrpc_do_sendmsg(), kernel may call
-rxrpc_wait_for_tx_window_intr() to wait for space to appear in the
-tx queue or a signal to occur. When kernel fails the
-mutex_lock_interruptible(), kernel will returns from the
-rxrpc_wait_for_tx_window_intr() without acquiring the mutex lock, then
-triggers bug when releasing the mutex lock in rxrpc_do_sendmsg().
-
-This patch solves it by acquiring the call->user_mutex lock, when
-kernel fails the mutex_lock_interruptible() before returning from
-the rxrpc_wait_for_tx_window_intr().
-
-Reported-and-tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
-Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+Cc: Mahesh Bandewar <maheshb@google.com>
+Cc: Sainath Grandhi <sainath.grandhi@intel.com>
+Fixes: 235a9d89da97 ('ipvtap: IP-VLAN based tap driver')
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
 ---
- net/rxrpc/sendmsg.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ipvlan/ipvtap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2ef..e13043d357d5 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -53,8 +53,10 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
- 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
- 		mutex_unlock(&call->user_mutex);
- 		*timeo = schedule_timeout(*timeo);
--		if (mutex_lock_interruptible(&call->user_mutex) < 0)
-+		if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-+			mutex_lock(&call->user_mutex);
- 			return sock_intr_errno(*timeo);
-+		}
- 	}
- }
+diff --git a/drivers/net/ipvlan/ipvtap.c b/drivers/net/ipvlan/ipvtap.c
+index ef02f2cf5ce1..cbabca167a07 100644
+--- a/drivers/net/ipvlan/ipvtap.c
++++ b/drivers/net/ipvlan/ipvtap.c
+@@ -194,7 +194,7 @@ static struct notifier_block ipvtap_notifier_block __read_mostly = {
+ 	.notifier_call	= ipvtap_device_event,
+ };
  
+-static int ipvtap_init(void)
++static int __init ipvtap_init(void)
+ {
+ 	int err;
+ 
+@@ -228,7 +228,7 @@ static int ipvtap_init(void)
+ }
+ module_init(ipvtap_init);
+ 
+-static void ipvtap_exit(void)
++static void __exit ipvtap_exit(void)
+ {
+ 	rtnl_link_unregister(&ipvtap_link_ops);
+ 	unregister_netdevice_notifier(&ipvtap_notifier_block);
 -- 
-2.25.1
+2.37.1.595.g718a3a8f04-goog
 
