@@ -2,95 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA62559B2F2
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 11:38:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C571059B319
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 12:18:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229901AbiHUJih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 05:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
+        id S229878AbiHUKRd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 21 Aug 2022 06:17:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbiHUJif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 05:38:35 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFC4D95AD
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 02:38:34 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id bf22so8306783pjb.4
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 02:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=hitAXJeOLFv+6OBzWrU6/8VrM0Ahx+7YPY/MmnzEWd4=;
-        b=U5TnSKd1mGnlkfSoKlXM+X41suDcRHD7aheQd6OitqJDlDBhJV27wfc77Vn8EQzc7q
-         nJZKSb0RSsr1OOhATW+ELF+pU70E6B7UWuFbs72LBz60mMnQAVU7JbinFbqHpA6HP957
-         moIwrAR8gahheVAgcysVX8/hf3Sd6wAwoBs+xy2CsjWFlCb9EuHbAjGtTAUFC/LOu1nY
-         Zfa5CSO0SJfRmNUlkHHlN4A7Cb3dimp/0F/zsljp/bvxel/4z7J2526oPDR5cskyl2w2
-         5x5rHvJRNpfkzcT0Ja89zIjtGG3RHjs6J+53X7pCgmygijEQB6p19ywi4T9B7I19T+qm
-         2PHA==
+        with ESMTP id S229507AbiHUKRc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 06:17:32 -0400
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com [209.85.166.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8E79120B0
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 03:17:30 -0700 (PDT)
+Received: by mail-il1-f197.google.com with SMTP id d4-20020a056e02214400b002df95f624a4so6390829ilv.1
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 03:17:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=hitAXJeOLFv+6OBzWrU6/8VrM0Ahx+7YPY/MmnzEWd4=;
-        b=XhdwLD5iFZ5j++i3fO0q9Qdvtf7eID13Ug48HiKFOFDWvTjHy8iHTSQE05588L1TFT
-         yJs7rDoQq43zyRcnH+PRnKnNWtvP60YRA9Qy8i3HxBhlfItnoXsb7Nbpapt5LfELVvdw
-         CFVFS4MvXkHODnikxJ5Fa/HftxOCogG8h1c9Z27HmtV6HYQ8gnxuncetU7OqJ7mctT8I
-         +9vOjycZ6beORHq2Qp2XIKhpFlIhU2t+2XocDWzY0WE8NpxYB3pxyoZnlfzAp2+Ea4kb
-         D1kTOFRgV8jw4fPZIv+Y5LT8zRWsc/vRuKKMecpMHg7eLrueUrXz+TWKzD2HBiEsM/2R
-         sPHw==
-X-Gm-Message-State: ACgBeo1WkdlqT9Zd2Bd+hXB/RBnO/psMGv4Dyq64cNp7VDQm702rpjWV
-        m3tpNK+zrY7pZ53zCOOM+gJhTmC6q0gs1Yp5N+0=
-X-Google-Smtp-Source: AA6agR79jyOJL6tIdacnO1iWICEsbvM7omSEacErZnN35Icnt4Xdpu84C+eEyU6rIbW3b0nupVqxN97G5yxcs5UT0zI=
-X-Received: by 2002:a17:902:d509:b0:16f:1e1:2067 with SMTP id
- b9-20020a170902d50900b0016f01e12067mr15138160plg.140.1661074714326; Sun, 21
- Aug 2022 02:38:34 -0700 (PDT)
+        h=content-transfer-encoding:to:from:subject:message-id:date
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=LE1LCU4tNiknKVyA+WMm6zjkYRDeBGfWddeOl3Lef4w=;
+        b=oEMjp623rc6/EsXd1dZDIggnQofQPpG61xB41f+YOIv+0Su4FMPbmShaXCUkDhwC0c
+         340HZ4qcb5JctnMFcpf/K4JFJgF7SUGGo9lR/Ld/+egr3i7D7b7LlwdFTIy3bg4JQhch
+         vYInlSRfieecepIg+ydQEvrg/KTVbV/ZeMCZgeftxCVq36xb2UqZ6+63vjXlHVmr2Yqr
+         yXmnysaM8WMnzrJIPa4/nfSI1GdPxGBe4IQM/tyxfrDXdPhW60vibquNq/SvvLiAXr4w
+         LvygWEuaaW2p4GJVfRjTUglMfDXNTlB6Tlz4LyC2xGKZUdkOOLaobFbchjwOFNskDoip
+         mH5w==
+X-Gm-Message-State: ACgBeo3ZEfYeL6W3pVgeWsfvRPW7c52OFqJ8nBXh9+HdtWpz97D/qRZ2
+        P28p6kZqsE0TUdEkSJdnOr2sya2+khRxomxG+ZDf6mdqb+OR
+X-Google-Smtp-Source: AA6agR6cTFTJE4DTxNRzC1mvv5FLi6A5SVpBpl+52m93EucjUlON1aYB3xVYz2TAlHJtIIi6zDetKSO2AIi9YnIZGGKmPPp6hWrQ
 MIME-Version: 1.0
-Received: by 2002:a17:90b:38c9:0:0:0:0 with HTTP; Sun, 21 Aug 2022 02:38:33
- -0700 (PDT)
-Reply-To: peacemaurice482@gmail.com
-From:   "okenwa@me" <saboubakar878@gmail.com>
-Date:   Sun, 21 Aug 2022 09:38:33 +0000
-Message-ID: <CAEUHdv0uOF4+3uhQSzwKXS4KLNEdyjvOL7Dmd9QN5ZF9h5UriQ@mail.gmail.com>
-Subject: hello
-To:     undisclosed-recipients:;
+X-Received: by 2002:a5d:879a:0:b0:689:da06:93c6 with SMTP id
+ f26-20020a5d879a000000b00689da0693c6mr1036946ion.202.1661077050248; Sun, 21
+ Aug 2022 03:17:30 -0700 (PDT)
+Date:   Sun, 21 Aug 2022 03:17:30 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000086582105e6bda31b@google.com>
+Subject: [syzbot] possible deadlock in strp_work
+From:   syzbot <syzbot+9fc084a4348493ef65d2@syzkaller.appspotmail.com>
+To:     bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, jakub@cloudflare.com,
+        john.fastabend@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pabeni@redhat.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.2 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4956]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [saboubakar878[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [saboubakar878[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [peacemaurice482[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:1035 listed in]
-        [list.dnswl.org]
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I wrote a previous message to you two days ago, but no reply from you,
+Hello,
+
+syzbot found the following issue on:
+
+HEAD commit:    8755ae45a9e8 Add linux-next specific files for 20220819
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=10d3e2d3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ead6107a3bbe3c62
+dashboard link: https://syzkaller.appspot.com/bug?extid=9fc084a4348493ef65d2
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1136b1a5080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10bb167b080000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9fc084a4348493ef65d2@syzkaller.appspotmail.com
+
+======================================================
+WARNING: possible circular locking dependency detected
+6.0.0-rc1-next-20220819-syzkaller #0 Not tainted
+------------------------------------------------------
+kworker/u4:2/38 is trying to acquire lock:
+ffff888026598d30 (sk_lock-AF_INET){+.+.}-{0:0}, at: do_strp_work net/strparser/strparser.c:398 [inline]
+ffff888026598d30 (sk_lock-AF_INET){+.+.}-{0:0}, at: strp_work+0x40/0x130 net/strparser/strparser.c:415
+
+but task is already holding lock:
+ffffc90000af7da8 ((work_completion)(&strp->work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+
+which lock already depends on the new lock.
+
+
+the existing dependency chain (in reverse order) is:
+
+-> #1 ((work_completion)(&strp->work)){+.+.}-{0:0}:
+       __flush_work+0x105/0xae0 kernel/workqueue.c:3069
+       __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
+       strp_done+0x64/0xf0 net/strparser/strparser.c:513
+       kcm_attach net/kcm/kcmsock.c:1429 [inline]
+       kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
+       kcm_ioctl+0x913/0x1180 net/kcm/kcmsock.c:1696
+       sock_do_ioctl+0xcc/0x230 net/socket.c:1169
+       sock_ioctl+0x2f1/0x640 net/socket.c:1286
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+-> #0 (sk_lock-AF_INET){+.+.}-{0:0}:
+       check_prev_add kernel/locking/lockdep.c:3095 [inline]
+       check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+       validate_chain kernel/locking/lockdep.c:3829 [inline]
+       __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+       lock_acquire kernel/locking/lockdep.c:5666 [inline]
+       lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+       lock_sock_nested+0x36/0xf0 net/core/sock.c:3391
+       do_strp_work net/strparser/strparser.c:398 [inline]
+       strp_work+0x40/0x130 net/strparser/strparser.c:415
+       process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+       kthread+0x2e4/0x3a0 kernel/kthread.c:376
+       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+
+other info that might help us debug this:
+
+ Possible unsafe locking scenario:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock((work_completion)(&strp->work));
+                               lock(sk_lock-AF_INET);
+                               lock((work_completion)(&strp->work));
+  lock(sk_lock-AF_INET);
+
+ *** DEADLOCK ***
+
+2 locks held by kworker/u4:2/38:
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
+ #0: ffff88802642d138 ((wq_completion)kstrp){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
+ #1: ffffc90000af7da8 ((work_completion)(&strp->work)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
+
+stack backtrace:
+CPU: 1 PID: 38 Comm: kworker/u4:2 Not tainted 6.0.0-rc1-next-20220819-syzkaller #0
+kworker/u4:2[38] cmdline: ��a�����
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+Workqueue: kstrp strp_work
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:122 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:140
+ check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
+ check_prev_add kernel/locking/lockdep.c:3095 [inline]
+ check_prevs_add kernel/locking/lockdep.c:3214 [inline]
+ validate_chain kernel/locking/lockdep.c:3829 [inline]
+ __lock_acquire+0x2a43/0x56d0 kernel/locking/lockdep.c:5053
+ lock_acquire kernel/locking/lockdep.c:5666 [inline]
+ lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
+ lock_sock_nested+0x36/0xf0 net/core/sock.c:3391
+ do_strp_work net/strparser/strparser.c:398 [inline]
+ strp_work+0x40/0x130 net/strparser/strparser.c:415
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
