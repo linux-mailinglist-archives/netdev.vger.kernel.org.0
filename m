@@ -2,178 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D1E59B503
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 17:23:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8399F59B54C
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 17:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230158AbiHUPXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 11:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56088 "EHLO
+        id S230310AbiHUP6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 11:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229561AbiHUPXB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 11:23:01 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42952237D9
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 08:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661095380; x=1692631380;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8/iNi7dL+X0JQfBLWYDScHJZL12LFVVUc4/cZIXyHxU=;
-  b=XnNK4aKZtqGAGY9FD6FeLe5ZZxuNApje47NhJ/n7pxK9lVlC2M7z2gMM
-   hJnWgTFvdS3vbz18SINEZzDPby6ljVFCtu49u06vzBgxCHy5r4dQt1n3T
-   J+VrNhubDoN++dpV0hFxg4ILSNgZK7FfuywQkgSrlz/4GAD/LbB1IoNT7
-   /HCOopirxlGTxiKmAeXZoQWXkHB+Y55lYL1/uG1/I9SH3XECTZTTxJYd+
-   7kAy6txmqYbfz5OPsjECPhbaDIZDIgKfpszget5fhJi4I91sQSXCADnIS
-   RfUWdQFH6Wy0l7j2UwhUPLVgkavxgzE+L7nkdIhcVA3xkCx6k+xCZTANd
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="294540666"
-X-IronPort-AV: E=Sophos;i="5.93,253,1654585200"; 
-   d="scan'208";a="294540666"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 08:22:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,252,1654585200"; 
-   d="scan'208";a="698022770"
-Received: from lkp-server01.sh.intel.com (HELO 44b6dac04a33) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 21 Aug 2022 08:22:53 -0700
-Received: from kbuild by 44b6dac04a33 with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oPmmq-0004EZ-1s;
-        Sun, 21 Aug 2022 15:22:52 +0000
-Date:   Sun, 21 Aug 2022 23:22:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        with ESMTP id S229561AbiHUP6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 11:58:15 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868FDD7C;
+        Sun, 21 Aug 2022 08:58:14 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id 62so6601598iov.5;
+        Sun, 21 Aug 2022 08:58:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=jl057+Trbv3ToeVWTsybg5kXr0sDHbVCziecNl2AV6Y=;
+        b=gSYXLG0m3nEyXiI/Jq1RB2mepjUqkocLXXiGtLSoFgwxJXH6PuvYrv3JFLRtpkE4yZ
+         vN6bnu/cPzJoMtTuKFQHGchDqvdDZjqdZ58E9y1CaVo5LT3VPiKNDzhRagQgK0WedDMK
+         2XRBWjPM4VMrwuYmj3a18rCuajEHRbCQvLKPEsLdtoMW2knsGotQHF1ipXy4uxCEcmfx
+         zkEoy9u0MWc1br52yfE0eyLXElhZuvhG2yXaFrwcpgAV43unHMsYaRdsJakz3KIHxguc
+         p7vVa6wMNNUxzgUDi1Sfb8kSj1gScc0zmfn2LtBOR5mwFhy7DR8mgddZ3M79p7D9MhJt
+         AP2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=jl057+Trbv3ToeVWTsybg5kXr0sDHbVCziecNl2AV6Y=;
+        b=YQjTDKq9fdERF1rQKMDGduSW5sk5BJx8vsic3mrJtrmntCLA7R2yu5g45Ld+Fyf2+m
+         mzeeizM6li7/20PmG7wRdaBRRrU2jQyZOSK6MdfGvSEYmhIiWJKdsYx7uEzlGrqRFcrO
+         yW/nl8psKp5DXQ+MzB1uOGjqfV2mETqRlhI+csjJPxUSVU5LK8TWcYMoZIGk7Ik9UItx
+         j/hrie7BesyFHfuLLhZhgre7ZeJgJw4oCua9gTNT8TkUUENvsrL6EV9GS0bdd2t9FdKo
+         AgELNQLGiAeF78AukyzCQDMum+XDq8vNogb9tasTgnMTV3EqjH+A1hENTDWmB4OUg9Ja
+         ofjw==
+X-Gm-Message-State: ACgBeo1GYMkbWG8RD+YsCpZ1l1kyhikTnOypiYmnYcVoq+t2zBDoTDXj
+        MjxNdoqJN5SOe1M6zIXwKpZiez5pAp6vyA7fyJk/c7imPTs=
+X-Google-Smtp-Source: AA6agR6eQf/e2pEF818vApDCSFB8aXweqxuUn+lxjrAQ5KWz/mhdyriIpsoGD5KP2qmT9XOsR02iY8GYLa4BmuoYFfE=
+X-Received: by 2002:a05:6602:1343:b0:689:2942:9b57 with SMTP id
+ i3-20020a056602134300b0068929429b57mr6999688iov.75.1661097493907; Sun, 21 Aug
+ 2022 08:58:13 -0700 (PDT)
+MIME-Version: 1.0
+References: <000000000000ce327f05d537ebf7@google.com> <20220821125751.4185-1-yin31149@gmail.com>
+In-Reply-To: <20220821125751.4185-1-yin31149@gmail.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+Date:   Sun, 21 Aug 2022 21:58:02 +0600
+Message-ID: <CAABMjtF2GeNyTf6gQ1hk0BiXKY9HWQStBAk_R3w6MCFQ3bOYzA@mail.gmail.com>
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
+To:     Hawkins Jiawei <yin31149@gmail.com>
+Cc:     syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Siva Reddy Kallam <siva.kallam@broadcom.com>,
-        Prashant Sreedharan <prashant@broadcom.com>,
-        Michael Chan <mchan@broadcom.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivek Thampi <vithampi@vmware.com>
-Subject: Re: [net-next 10/14] ptp: lan743x: convert to .adjfine and
- diff_by_scaled_ppm
-Message-ID: <202208212326.87xlsbQB-lkp@intel.com>
-References: <20220818222742.1070935-11-jacob.e.keller@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220818222742.1070935-11-jacob.e.keller@intel.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-kernel-mentees 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        linux-afs@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jacob,
+On Sun, Aug 21, 2022 at 6:58 PM Hawkins Jiawei <yin31149@gmail.com> wrote:
+>
+> Syzkaller reports bad unlock balance bug as follows:
+> ------------[ cut here ]------------
+> WARNING: bad unlock balance detected!
+> syz-executor.0/4094 is trying to release lock (&call->user_mutex) at:
+> [<ffffffff87c1d8d1>] rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
+> but there are no more locks to release!
+>
+> other info that might help us debug this:
+> no locks held by syz-executor.0/4094.
+>
+> stack backtrace:
+> [...]
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0x57/0x7d lib/dump_stack.c:106
+>  print_unlock_imbalance_bug include/trace/events/lock.h:69 [inline]
+>  __lock_release kernel/locking/lockdep.c:5333 [inline]
+>  lock_release.cold+0x49/0x4e kernel/locking/lockdep.c:5686
+>  __mutex_unlock_slowpath+0x99/0x5e0 kernel/locking/mutex.c:907
+>  rxrpc_do_sendmsg+0x851/0x1110 net/rxrpc/sendmsg.c:754
+>  sock_sendmsg_nosec net/socket.c:714 [inline]
+>  sock_sendmsg+0xab/0xe0 net/socket.c:734
+>  ____sys_sendmsg+0x5c2/0x7a0 net/socket.c:2485
+>  ___sys_sendmsg+0xdb/0x160 net/socket.c:2539
+>  __sys_sendmsg+0xc3/0x160 net/socket.c:2568
+>  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+>  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>  [...]
+>  </TASK>
+> ------------------------------------
+>
+> When kernel wants to send a message through an RxRPC socket in
+> rxrpc_do_sendmsg(), kernel should hold the call->user_mutex lock,
+> or it will triggers bug when releasing this lock before returning
+> from rxrpc_do_sendmsg().
+>
+> Yet the problem is that during rxrpc_do_sendmsg(), kernel may call
+> rxrpc_wait_for_tx_window_intr() to wait for space to appear in the
+> tx queue or a signal to occur. When kernel fails the
+> mutex_lock_interruptible(), kernel will returns from the
+> rxrpc_wait_for_tx_window_intr() without acquiring the mutex lock, then
+> triggers bug when releasing the mutex lock in rxrpc_do_sendmsg().
+>
+> This patch solves it by acquiring the call->user_mutex lock, when
+> kernel fails the mutex_lock_interruptible() before returning from
+> the rxrpc_wait_for_tx_window_intr().
+>
+> Reported-and-tested-by: syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com
+> Signed-off-by: Hawkins Jiawei <yin31149@gmail.com>
+> ---
+>  net/rxrpc/sendmsg.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+> index 1d38e279e2ef..e13043d357d5 100644
+> --- a/net/rxrpc/sendmsg.c
+> +++ b/net/rxrpc/sendmsg.c
+> @@ -53,8 +53,10 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
+>                 trace_rxrpc_transmit(call, rxrpc_transmit_wait);
+>                 mutex_unlock(&call->user_mutex);
+>                 *timeo = schedule_timeout(*timeo);
+> -               if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> +               if (mutex_lock_interruptible(&call->user_mutex) < 0) {
+> +                       mutex_lock(&call->user_mutex);
 
-I love your patch! Yet something to improve:
+The interruptible version fails to acquire the lock. So why is it okay to
+force it to acquire the mutex_lock since we are in the interrupt context?
+>                         return sock_intr_errno(*timeo);
+> +               }
+>         }
+>  }
 
-[auto build test ERROR on 9017462f006c4b686cb1e1e1a3a52ea8363076e6]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Jacob-Keller/ptp-convert-drivers-to-adjfine/20220819-063154
-base:   9017462f006c4b686cb1e1e1a3a52ea8363076e6
-config: powerpc-allyesconfig (https://download.01.org/0day-ci/archive/20220821/202208212326.87xlsbQB-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 01ffe31cbb54bfd8e38e71b3cf804a1d67ebf9c1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc cross compiling tool for clang build
-        # apt-get install binutils-powerpc-linux-gnu
-        # https://github.com/intel-lab-lkp/linux/commit/d3c6eac5778f2ce74e7d6d7be90a60f616551718
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jacob-Keller/ptp-convert-drivers-to-adjfine/20220819-063154
-        git checkout d3c6eac5778f2ce74e7d6d7be90a60f616551718
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/net/ethernet/microchip/lan743x_ptp.c:368:12: error: redefinition of 'lan743x_ptpci_adjfine'
-   static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long delta)
-              ^
-   drivers/net/ethernet/microchip/lan743x_ptp.c:335:12: note: previous definition is here
-   static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long scaled_ppm)
-              ^
->> drivers/net/ethernet/microchip/lan743x_ptp.c:386:3: error: use of undeclared identifier 'lan743_rate_adj'; did you mean 'lan743x_rate_adj'?
-                   lan743_rate_adj = (u32)diff;
-                   ^~~~~~~~~~~~~~~
-                   lan743x_rate_adj
-   drivers/net/ethernet/microchip/lan743x_ptp.c:374:6: note: 'lan743x_rate_adj' declared here
-           u64 lan743x_rate_adj;
-               ^
->> drivers/net/ethernet/microchip/lan743x_ptp.c:388:3: error: use of undeclared identifier 'lan74e_rage_adj'; did you mean 'lan743x_rate_adj'?
-                   lan74e_rage_adj = (u32)diff | PTP_CLOCK_RATE_ADJ_DIR_;
-                   ^~~~~~~~~~~~~~~
-                   lan743x_rate_adj
-   drivers/net/ethernet/microchip/lan743x_ptp.c:374:6: note: 'lan743x_rate_adj' declared here
-           u64 lan743x_rate_adj;
-               ^
-   3 errors generated.
-
-
-vim +/lan743x_ptpci_adjfine +368 drivers/net/ethernet/microchip/lan743x_ptp.c
-
-   367	
- > 368	static int lan743x_ptpci_adjfine(struct ptp_clock_info *ptpci, long delta)
-   369	{
-   370		struct lan743x_ptp *ptp =
-   371			container_of(ptpci, struct lan743x_ptp, ptp_clock_info);
-   372		struct lan743x_adapter *adapter =
-   373			container_of(ptp, struct lan743x_adapter, ptp);
-   374		u64 lan743x_rate_adj;
-   375		s32 delta_ppb;
-   376		u64 diff;
-   377	
-   378		delta_ppb = scaled_ppm_to_ppb(delta);
-   379		if ((delta_ppb < (-LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB)) ||
-   380		    delta_ppb > LAN743X_PTP_MAX_FREQ_ADJ_IN_PPB) {
-   381			return -EINVAL;
-   382		}
-   383	
-   384		/* diff_by_scaled_ppm returns true if the difference is negative */
-   385		if (diff_by_scaled_ppm(1ULL << 35, delta, &diff))
- > 386			lan743_rate_adj = (u32)diff;
-   387		else
- > 388			lan74e_rage_adj = (u32)diff | PTP_CLOCK_RATE_ADJ_DIR_;
-   389	
-   390		lan743x_csr_write(adapter, PTP_CLOCK_RATE_ADJ,
-   391				  lan743x_rate_adj);
-   392	
-   393		return 0;
-   394	}
-   395	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+thanks,
+  -- Khalid Masum
