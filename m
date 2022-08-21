@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 06CE059B569
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 18:20:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C3159B568
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 18:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230521AbiHUQUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 12:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41556 "EHLO
+        id S231199AbiHUQUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 12:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229696AbiHUQUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 12:20:38 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2084.outbound.protection.outlook.com [40.107.100.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F0817AA0
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 09:20:37 -0700 (PDT)
+        with ESMTP id S231138AbiHUQUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 12:20:41 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2057.outbound.protection.outlook.com [40.107.94.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E7B1A073
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 09:20:40 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CxOS9VoTzZaftK1EgTU1IqTdA+oCID8HV6T/eoHq9Yc3Py6n0jOSh90gyldqZIYxxglzcwk1/WwYYCXTq9ptlSu/Og3OVUjzmTtTQJg8HZYq4burhfrjhLmUQPBoG6vFgfvI0EASQpH1aN1RwIrzgORm262g4+iGgGCsMZBP1LqTt31yBsC3AySn+nbzUUQ0dwsc6WopT6SG1Ids5t6fnne3ANtL2kGhAtntrqS6+RElyQkn7zHSOo5sRj6YFteLTREnAzhjYSwhyuVdA/KTRtMdDYunxeQMKi2/W4TfsYgZInkP89Igiw3EB5tFteoBwGg3MDRtLl2jfvIvaKMVFA==
+ b=n1pc+NfPoaOnYYpctuDFxf1yWLAG8PE09FaHjEfmwJ7CF3PFdop/kiDfGXq1ui6FPg+nRhzX3TpgnLFQxaC1I5JAo9I6T1Xv9KaIIh+F9LdVFHV44n2tjPdLDTeNSkokGHprMQc1vo9LKU3tG15TI+m+KiTgn0ZAcew2YevX8VuecXvo5TltoEIMS1iisNpHEimRuj8egt3YzX8RTnPxK++1llkJ50nVjwejBZCSmq+sRlGvoCf4pSbGMjeWeu/EXtwN+za9W7xCqL3hrTLCOiToWsnRMZJfEC9OvJXSXDBBZCVmroJcplIUxn0WCK8LAcUlPfMUbleLfSlupsBDTg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x61oyvBgIUaMoMIZouSZPbigBF7ehbq/3Nngvg8q0TI=;
- b=i4fQJh3Z4E59JM9d/dztpbdBt+Lj4gVZTJ/eBnoCqgX3NYcTdJzrsxZBu46ENKc2fH57hMNMeCAf/sAxfLlY7be/N+o7xXGxKn5GRuOzNTKBOD2CXB0u3oPFle6jHUgDAm8QzLQqUIQGJPu6ahUToO1/bJypNLS1NT2fG25NNpdEXQvrrrPjkHQFzT2sLAJf7tK0S86TRcJYFBKvezygYjJld72hCpmJeKzkCpCBFMuddvb5z6ePpmUQpHvGMgL6hP2ykWBSKoc24RVoXfj4seyc0BnUKf1hTnua7VtQhI42Eoe5j6hV1BpDxvGklArpR5sqEFi2H6211fUwv2guow==
+ bh=D63SL/zpIe7sRPGz3Bcqbw1s3gDDkTYCzrPhjKlDaC4=;
+ b=C/hXhiR+PX6BnDadOHftlFOM4YzHEyNuYe3LEoziRGN9YflpKqtvYg6lalyHIoau4fzfstGPkI3w3dt91DGtJhZVJVlpZq+1n+cNO/PhmO1fgC9M2lMSvoD7XspGaG3O8vi8XQnATFkt+/rUsygnEv/gBdOWLQMmFWySz5AeGewpa5mLpigHa9oWo/hBtSJRb0LBJRu5i9H/LWKdz65Md1W+uF6/D1yJ2sXiV/vZFwLQbnWY8vcXMyGc1ajo3oMHDDmlciYV9wXdENhlki7720OllglIf2cesPFF0ws2AK3xJ3PweBdh97EcdUSpXE+VHPzX7evDRwYP6tfIIu/3nw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x61oyvBgIUaMoMIZouSZPbigBF7ehbq/3Nngvg8q0TI=;
- b=JxB0RkbTGy0/vuRAvOKGJoKCZ8yuyGuqeBdKvMiEPLu/+/s01SO6pPXtQEhA78N69HkXOpkNJAvLPKJ3kt1VMaMHT6uKvdZVHs7tMtPIg8ZzHmHCe4B6v2TJGcX7WitvTvjg9bVS32miKnRzGURh7OGbF2H/NqeQGTP07m3IbOiSdPypfdj8H/aE2pLHe42Djdop4Or8UqH7nkyQw+PJTsCuCFg4eTERJWqx7uif6BUGPwNK1UYpJ2pEV95HzBddomYjxCJIGlbu1Glh/JRKf2O6kv8AEn183UtaWRSOA7zGYqKjX+9Ah/Dl28IximI3r7mUd5aQt1a7w6+/ubg7mg==
-Received: from DM5PR06CA0084.namprd06.prod.outlook.com (2603:10b6:3:4::22) by
- DM6PR12MB4546.namprd12.prod.outlook.com (2603:10b6:5:2ae::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.16; Sun, 21 Aug 2022 16:20:35 +0000
-Received: from DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:4:cafe::92) by DM5PR06CA0084.outlook.office365.com
- (2603:10b6:3:4::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19 via Frontend
- Transport; Sun, 21 Aug 2022 16:20:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ bh=D63SL/zpIe7sRPGz3Bcqbw1s3gDDkTYCzrPhjKlDaC4=;
+ b=eVNGn/t3p698S7upte3Y7AZuwfrQcIWLW2HFPd3fVON1pBpxai50AulM0QLJ6zTz5bAF6RZRP2AXJqYuB4EbKAKzpIoS/7ONLTq4bGaYWuZfs4Id75Z/eJbyIVRXFUkp6vDU39Jf+5xSqXdqOzW5wELHzuiKrFzpQCWpD+2rB5BTbdw8/HErONc07lY2+TCQQbMLS22Ch3KFXAr2llVj8utnp38Llcjm8CYQe+V3FRNh1VU2WTJjGxvFfbbaXw6a8HPuvHMnMUa4tpZX+2BNKCTTkLTlYnrYckb3QTRWNcrylHTl8MTEJX+yApYMCu/fDb8voz4CIaRhL2Kb58yWEA==
+Received: from MW4PR04CA0133.namprd04.prod.outlook.com (2603:10b6:303:84::18)
+ by CY5PR12MB6321.namprd12.prod.outlook.com (2603:10b6:930:22::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Sun, 21 Aug
+ 2022 16:20:38 +0000
+Received: from CO1NAM11FT106.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:84:cafe::4c) by MW4PR04CA0133.outlook.office365.com
+ (2603:10b6:303:84::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21 via Frontend
+ Transport; Sun, 21 Aug 2022 16:20:38 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT092.mail.protection.outlook.com (10.13.173.44) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT106.mail.protection.outlook.com (10.13.175.44) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5546.7 via Frontend Transport; Sun, 21 Aug 2022 16:20:34 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Sun, 21 Aug
- 2022 16:20:34 +0000
+ 15.20.5546.7 via Frontend Transport; Sun, 21 Aug 2022 16:20:37 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Sun, 21 Aug
+ 2022 16:20:36 +0000
 Received: from localhost.localdomain (10.126.230.35) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Sun, 21 Aug
- 2022 09:20:31 -0700
+ 2022 09:20:34 -0700
 From:   Petr Machata <petrm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -63,11 +64,13 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
 CC:     Vadim Pasternak <vadimp@nvidia.com>,
         Ido Schimmel <idosch@nvidia.com>, <mlxsw@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>
-Subject: [PATCH net-next 0/8] mlxsw: Introduce modular system support by minimal driver
-Date:   Sun, 21 Aug 2022 18:20:10 +0200
-Message-ID: <cover.1661093502.git.petrm@nvidia.com>
+        Petr Machata <petrm@nvidia.com>, Jiri Pirko <jiri@nvidia.com>
+Subject: [PATCH net-next 1/8] mlxsw: core_linecards: Separate line card init and fini flow
+Date:   Sun, 21 Aug 2022 18:20:11 +0200
+Message-ID: <836abcd1b4e617b048a2433971dcc691701d8352.1661093502.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <cover.1661093502.git.petrm@nvidia.com>
+References: <cover.1661093502.git.petrm@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -76,23 +79,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e99c07d5-5409-496d-c269-08da839113b9
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4546:EE_
+X-MS-Office365-Filtering-Correlation-Id: 711b2f8c-795c-4dcc-8ba4-08da83911555
+X-MS-TrafficTypeDiagnostic: CY5PR12MB6321:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vFlLmUXHOF1BIN2RvMZrqIQWu4ufuSfBYjL0vNAfsld44PmGjONbS5UnlXbN+aNEi8tLzFOID7byDzJQ3ZUHnnhi3LxOthiKT3Hqi+vOlMQmSgg8qIieTamDjE3zws8ajVt6ZK9RLYS5PxzhS38Biz0aWt0J6USLVoOpUX6OfKZBslBXrPM44BnV4NuUNZJWCjh5xXqkGwVi2Nht1xKucSZpizLEMNgtolw8uJEbZU6g3V0Xs4jrPvxenu5b0iNug619anPURUhGmghxAe/ydGV4Rtl+3PUmshiadDmKUv5/qEJSbAtFkm88D+eB7bAczDjdPSdp64NIwIiwXvrpH71fXMocPg/ZvQnqLZ/cl7WriEldR46MtcyoJBzDF6UoCrMrpOHPD5s55blHP9pPMDnuQ+pUqUPQcvNPUswfnsYI0qUbvC2CI+vnOel4H2Na70WgHIgpTE5AUa3+Qp49QvP7UdjvDxBxm09y0i7iHOYhjtrIrO8VQVTOBG27+Q0G/I8UgYVxhNgHG8iMitgueQt2TX2Do32YF2k5nrUXjB6NMN/hDjEzT6d713VeAHkoMq//cGtGwkwxeH6Z/l5c/5DoJRTyEycyuSYemmHt6VAleC7OcQh4quZT2eCHhZWEp5MJpiw8rxnvE+Sery8wwcPclV7loREb3y1kADtqUQOzeKOfFsES7z7forv/2Yg5KXojLpzkJbzA2kvHpAp4LwZhKZDQddOM8vnxjz8lg0KfoR0JYW36ECjEDtEyCcmIl8yU45V7mcOzGpCLD0jZw9QFjMAMmCK65+uQ8kU6AH/lSbkW1p+nPKkCniIpTAS2
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(39860400002)(376002)(46966006)(36840700001)(40470700004)(41300700001)(5660300002)(8936002)(316002)(40460700003)(4326008)(8676002)(478600001)(70206006)(70586007)(40480700001)(36860700001)(26005)(16526019)(47076005)(426003)(186003)(107886003)(2616005)(86362001)(336012)(83380400001)(81166007)(356005)(6666004)(82310400005)(82740400003)(2906002)(36756003)(110136005)(54906003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: GJ0JhKUZHYJL1C4O5M0jkjovt1XV20+FaM7MEnnl44ROw+B8Tb84m6BfTbQU6UgqAouSkUoopQYslwx2ti8LX0buE2BCSw/2xsrIDZKZASMOdLNlgTFwXJv5POpMkmcPZYJ7Ci5++5uaPpha7OuTjAaDRJPoPd9m+cAPSdNEGm5wuXAGA+Z/9Q8wRaCgAqrMK+iF76Hra3pPapn7Hb4dseFckWsIzkalmWgR0djZHslvETEeoF7Xt36fBmy8W26dpekGclIrZYteHrUQdrddu2rdYXak0ixwKRd+3/R0L8GpRruCJ2aEjcb5cy1pgFHTLMilwvlFT3mkr0xxbTlCrHHT780u2Um/2+vrPq0EFGTW+hSTuFW7bvZ1X7Ml1aILKkYbbSZMZ+QJY8gOkSpnSVxzlkj/f026xrvLua9gHD2DsZc8S3zAZaL1X+dhmV5OcH2Q873PvcsAAjE9k47tWMQ7lKvAwEHLoWSZi/9gil8Gc7CYbmkl4yNSJ3xtfQkMcas2IOp7Q8WhVpcH+KzAAYIsKcSZw0fgKUzXuucLz0Yrgw7ziADoC5bC0HgIkdvzIOrRsOU29s/Nl9zmx+bMJgTQFB5eI6ACac6hMNWSyXsQ64SPGPlXOsLfJ9aPb0H7gHXOx1OTqVD/70jX4dRjWSPS7l3Gg7J5PAw791PEqaq7N/LS6URfaNZ11fZ1UT6Gr/3uOt3NN7FtM/e8KdswuXT+QOfF6xyZQjCiiYbYkD7tFll6zt8pBnscmiO3Ft56p2fenzG03c/rKzCJIUC9vhSu9F24P+HTg4SvBlRBZWxdJvLWZi5igv9sYSOYaOfaZkG/jxAQu6ZZjNFPZfk4Rg==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(346002)(136003)(46966006)(36840700001)(40470700004)(83380400001)(316002)(426003)(336012)(47076005)(16526019)(186003)(356005)(107886003)(2616005)(36756003)(54906003)(110136005)(6666004)(26005)(478600001)(5660300002)(2906002)(86362001)(40460700003)(70586007)(8936002)(4326008)(8676002)(70206006)(41300700001)(82310400005)(40480700001)(82740400003)(81166007)(36860700001)(20673002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2022 16:20:34.9377
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2022 16:20:37.6521
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e99c07d5-5409-496d-c269-08da839113b9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 711b2f8c-795c-4dcc-8ba4-08da83911555
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT092.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT106.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4546
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6321
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -103,57 +106,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vadim Pasternak writes:
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-This patchset adds line cards support in mlxsw_minimal, which is used
-for monitoring purposes on BMC systems. The BMC is connected to the
-ASIC over I2C bus, unlike the host CPU that is connected to the ASIC
-via PCI bus.
+Currently, each line card is initialized using the following steps:
 
-The BMC system needs to be notified whenever line cards become active
-or inactive, so that, for example, netdevs will be registered /
-unregistered by mlxsw_minimal. However, traps cannot be generated
-towards the BMC over the I2C bus. To overcome that, the I2C bus driver
-(i.e., mlxsw_i2c) registers an handler for an IRQ that is fired upon
-specific system wide changes, like line card activation and
-deactivation.
+1. Initializing its various fields (e.g., slot index).
+2. Creating the corresponding devlink object.
+3. Enabling events (i.e., traps) for changes in line card status.
+4. Querying and processing line card status.
 
-The generated event is handled by mlxsw_core, which checks whether
-anything changed in the state of available line cards. If a line card
-becomes active or inactive, interested parties such as mlxsw_minimal
-are notified via their registered line card event callback.
+Unlike traps, the IRQ that notifies the CPU about line card status
+changes cannot be enabled / disabled on a per line card basis.
 
-Patch set overview:
+If a handler is registered before the line cards are initialized, the
+handler risks accessing uninitialized memory.
 
-Patches #1 is preparations.
+On the other hand, if the handler is registered after initialization,
+we risk missing events. For example, in step 4, the driver might see
+that a line card is in ready state and will tell the device to enable
+it. When enablement is done, the line card will be activated and the
+IRQ will be triggered. Since a handler was not registered, the event
+will be missed.
 
-Patches #2-#3 extend mlxsw_core with an infrastructure to handle the
-	previously mentioned system events.
+Solve this by splitting the initialization sequence into two steps
+(1-2 and 3-4). In a subsequent patch, the handler will be registered
+between both steps.
 
-Patch #4 extends the I2C bus driver to register an handler for the IRQ
-	fired upon specific system wide changes.
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: Petr Machata <petrm@nvidia.com>
+---
+ .../ethernet/mellanox/mlxsw/core_linecards.c  | 75 +++++++++++++------
+ 1 file changed, 52 insertions(+), 23 deletions(-)
 
-Patches #5-#8 gradually add line cards support in mlxsw_minimal by
-	dynamically registering / unregistering netdevs for ports found on
-	line cards, whenever a line card becomes active / inactive.
-
-Vadim Pasternak (8):
-  mlxsw: core_linecards: Separate line card init and fini flow
-  mlxsw: core: Add registration APIs for system event handler
-  mlxsw: core_linecards: Register a system event handler
-  mlxsw: i2c: Add support for system interrupt handling
-  mlxsw: minimal: Extend APIs with slot index for modular system support
-  mlxsw: minimal: Move ports allocation to separate routine
-  mlxsw: minimal: Extend module to port mapping with slot index
-  mlxsw: minimal: Extend to support line card dynamic operations
-
- drivers/net/ethernet/mellanox/mlxsw/core.c    |  68 ++++
- drivers/net/ethernet/mellanox/mlxsw/core.h    |   8 +
- .../ethernet/mellanox/mlxsw/core_linecards.c  | 100 +++--
- drivers/net/ethernet/mellanox/mlxsw/i2c.c     |  87 +++-
- drivers/net/ethernet/mellanox/mlxsw/minimal.c | 381 ++++++++++++++----
- 5 files changed, 552 insertions(+), 92 deletions(-)
-
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+index ca59f0b946da..8549ccbcfe8e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core_linecards.c
+@@ -1238,7 +1238,6 @@ static int mlxsw_linecard_init(struct mlxsw_core *mlxsw_core,
+ {
+ 	struct devlink_linecard *devlink_linecard;
+ 	struct mlxsw_linecard *linecard;
+-	int err;
+ 
+ 	linecard = mlxsw_linecard_get(linecards, slot_index);
+ 	linecard->slot_index = slot_index;
+@@ -1248,32 +1247,14 @@ static int mlxsw_linecard_init(struct mlxsw_core *mlxsw_core,
+ 	devlink_linecard = devlink_linecard_create(priv_to_devlink(mlxsw_core),
+ 						   slot_index, &mlxsw_linecard_ops,
+ 						   linecard);
+-	if (IS_ERR(devlink_linecard)) {
+-		err = PTR_ERR(devlink_linecard);
+-		goto err_devlink_linecard_create;
+-	}
++	if (IS_ERR(devlink_linecard))
++		return PTR_ERR(devlink_linecard);
++
+ 	linecard->devlink_linecard = devlink_linecard;
+ 	INIT_DELAYED_WORK(&linecard->status_event_to_dw,
+ 			  &mlxsw_linecard_status_event_to_work);
+ 
+-	err = mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, true);
+-	if (err)
+-		goto err_event_delivery_set;
+-
+-	err = mlxsw_linecard_status_get_and_process(mlxsw_core, linecards,
+-						    linecard);
+-	if (err)
+-		goto err_status_get_and_process;
+-
+ 	return 0;
+-
+-err_status_get_and_process:
+-	mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, false);
+-err_event_delivery_set:
+-	devlink_linecard_destroy(linecard->devlink_linecard);
+-err_devlink_linecard_create:
+-	mutex_destroy(&linecard->lock);
+-	return err;
+ }
+ 
+ static void mlxsw_linecard_fini(struct mlxsw_core *mlxsw_core,
+@@ -1283,7 +1264,6 @@ static void mlxsw_linecard_fini(struct mlxsw_core *mlxsw_core,
+ 	struct mlxsw_linecard *linecard;
+ 
+ 	linecard = mlxsw_linecard_get(linecards, slot_index);
+-	mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, false);
+ 	cancel_delayed_work_sync(&linecard->status_event_to_dw);
+ 	/* Make sure all scheduled events are processed */
+ 	mlxsw_core_flush_owq();
+@@ -1294,6 +1274,42 @@ static void mlxsw_linecard_fini(struct mlxsw_core *mlxsw_core,
+ 	mutex_destroy(&linecard->lock);
+ }
+ 
++static int
++mlxsw_linecard_event_delivery_init(struct mlxsw_core *mlxsw_core,
++				   struct mlxsw_linecards *linecards,
++				   u8 slot_index)
++{
++	struct mlxsw_linecard *linecard;
++	int err;
++
++	linecard = mlxsw_linecard_get(linecards, slot_index);
++	err = mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, true);
++	if (err)
++		return err;
++
++	err = mlxsw_linecard_status_get_and_process(mlxsw_core, linecards,
++						    linecard);
++	if (err)
++		goto err_status_get_and_process;
++
++	return 0;
++
++err_status_get_and_process:
++	mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, false);
++	return err;
++}
++
++static void
++mlxsw_linecard_event_delivery_fini(struct mlxsw_core *mlxsw_core,
++				   struct mlxsw_linecards *linecards,
++				   u8 slot_index)
++{
++	struct mlxsw_linecard *linecard;
++
++	linecard = mlxsw_linecard_get(linecards, slot_index);
++	mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, false);
++}
++
+ /*       LINECARDS INI BUNDLE FILE
+  *  +----------------------------------+
+  *  |        MAGIC ("NVLCINI+")        |
+@@ -1513,8 +1529,19 @@ int mlxsw_linecards_init(struct mlxsw_core *mlxsw_core,
+ 			goto err_linecard_init;
+ 	}
+ 
++	for (i = 0; i < linecards->count; i++) {
++		err = mlxsw_linecard_event_delivery_init(mlxsw_core, linecards,
++							 i + 1);
++		if (err)
++			goto err_linecard_event_delivery_init;
++	}
++
+ 	return 0;
+ 
++err_linecard_event_delivery_init:
++	for (i--; i >= 0; i--)
++		mlxsw_linecard_event_delivery_fini(mlxsw_core, linecards, i + 1);
++	i = linecards->count;
+ err_linecard_init:
+ 	for (i--; i >= 0; i--)
+ 		mlxsw_linecard_fini(mlxsw_core, linecards, i + 1);
+@@ -1535,6 +1562,8 @@ void mlxsw_linecards_fini(struct mlxsw_core *mlxsw_core)
+ 
+ 	if (!linecards)
+ 		return;
++	for (i = 0; i < linecards->count; i++)
++		mlxsw_linecard_event_delivery_fini(mlxsw_core, linecards, i + 1);
+ 	for (i = 0; i < linecards->count; i++)
+ 		mlxsw_linecard_fini(mlxsw_core, linecards, i + 1);
+ 	mlxsw_core_traps_unregister(mlxsw_core, mlxsw_linecard_listener,
 -- 
 2.35.3
 
