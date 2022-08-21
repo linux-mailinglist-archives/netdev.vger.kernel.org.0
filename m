@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3CC259B21D
-	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 07:34:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5E8659B249
+	for <lists+netdev@lfdr.de>; Sun, 21 Aug 2022 08:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229979AbiHUFeb convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 21 Aug 2022 01:34:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41068 "EHLO
+        id S229864AbiHUGYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 02:24:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiHUFea (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 01:34:30 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D021B13EA0
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 22:34:28 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id q10-20020a056e020c2a00b002dedb497c7fso6144362ilg.16
-        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 22:34:28 -0700 (PDT)
+        with ESMTP id S229822AbiHUGYa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 02:24:30 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A96F22BFF
+        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 23:24:29 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id c7-20020a056e020bc700b002e59be6ce85so6155410ilu.12
+        for <netdev@vger.kernel.org>; Sat, 20 Aug 2022 23:24:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=a+etxQMTB+vR5J4K1rcBznEYzEFIprZpeNGFNGTbBMY=;
-        b=FY+EkrFDtJLQ4KiTmzYzPi9Bx/CVy7h07BXSlp7ufZlLBqDsurtwWL988SL5cCF0hV
-         7SunqWmvD4vY2O9rfn3MeIhJIvetmwUJYDYaiVc9jt0TEK5+ngb4oVoiZORwDE8Gg9jt
-         6tkl0UJ7wuSzo7a+EIppxLX+5fnPYFVf7cYv6/KHc8QlbNSNNH0bCKXDj085E5N6KX9u
-         Ca6P85khQnlUPC8S6SEvkiizkpL1A80ChWPpzC9KY4TulNSWBaZXsynGVRr6As5YsEh8
-         bJCCq45acsOF0MsEjCAzVDSdCvz/54fUzi9NvUsBwT6hXplzPf2bBxXE40l+zE86q6lZ
-         eTmg==
-X-Gm-Message-State: ACgBeo1FjZMBl3JLu3zihTIcKSwQMTKKRC9/yuWRLLBuxwY63+B7CjPi
-        iMghCU+7Z+NoijJQOCX/pReCUWyY9D74Zym2bX8eUBkRsa1S
-X-Google-Smtp-Source: AA6agR48w2x3OID+s9oHXffsyfKk30YfJGdt/O6WfKg5cTLowRFzkpnMlq+fj+9tQuX2KZUfJ10i5KnabXqYPfIonjnMvJ/nCgJO
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=PqboCOCwyASLavKwg3VOY5lF9ER/zs7glAbEsMVMddk=;
+        b=2OvMKGjM9SbavShJrLHjTE8EH9Peo9fqS3iW/C3mzaqq2/uUOdhfDElHw61GNPU+6Q
+         tnTwneOF65URCyxysigX6iwwp1jlhKG6KgUOsw7Kt4915cXtm2nWH6/s/mNa0G4rVhZD
+         MxpvT4yCudcxhbHSi0Mah9LyeV9LJIiMzmYXqoCXUwsuvH4vC9bzaKpqg7K/f5iCs5U7
+         JOCOS0oTe5WL6OHbtvdA3dHk/JkhW76fbKQufJjUMxQwhqhP30dDWJzxo/vPow1pXjQE
+         9NRL3vNAd7zPnqsqasj/Z+IYPIpaLCTZeLuttYw4CcRPLUcRECwAmi5vwmG4HQy7y4b2
+         5nzA==
+X-Gm-Message-State: ACgBeo0+qHdPeO1f75xchn4zmnvoyNp8OXRV6pMqnFrLJnEE2KoZN/OE
+        JhP0FqgwsPJuMlcTFz8nRKXOhdPhXAj04E5DWhsKUmi6Kr1E
+X-Google-Smtp-Source: AA6agR6toP/uLZC9/Mjkijg+F5nQ6hr+rCdJi9lecAXpeeLcIoxAQ14XnfJqhkKTT/uWDLkIQiomgqsjiSqdpNqL7EjR+nPCfDSE
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6717:0:b0:688:d287:fa83 with SMTP id
- b23-20020a6b6717000000b00688d287fa83mr6227528ioc.71.1661060068138; Sat, 20
- Aug 2022 22:34:28 -0700 (PDT)
-Date:   Sat, 20 Aug 2022 22:34:28 -0700
+X-Received: by 2002:a6b:5d0f:0:b0:688:6559:7a00 with SMTP id
+ r15-20020a6b5d0f000000b0068865597a00mr6250707iob.42.1661063068701; Sat, 20
+ Aug 2022 23:24:28 -0700 (PDT)
+Date:   Sat, 20 Aug 2022 23:24:28 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004fe8f805e6b9af20@google.com>
-Subject: [syzbot] possible deadlock in rds_tcp_reset_callbacks
-From:   syzbot <syzbot+78c55c7bc6f66e53dce2@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        rds-devel@oss.oracle.com, santosh.shilimkar@oracle.com,
-        syzkaller-bugs@googlegroups.com
+Message-ID: <00000000000028d96a05e6ba6266@google.com>
+Subject: [syzbot] possible deadlock in kcm_ioctl
+From:   syzbot <syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com>
+To:     ast@kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, f.fainelli@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        netdev@vger.kernel.org, nikolay@nvidia.com, pabeni@redhat.com,
+        sgarzare@redhat.com, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
 X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
         SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
@@ -61,46 +60,46 @@ Hello,
 
 syzbot found the following issue on:
 
-HEAD commit:    8755ae45a9e8 Add linux-next specific files for 20220819
+HEAD commit:    95d10484d66e Add linux-next specific files for 20220817
 git tree:       linux-next
-console+strace: https://syzkaller.appspot.com/x/log.txt?x=107cf485080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ead6107a3bbe3c62
-dashboard link: https://syzkaller.appspot.com/bug?extid=78c55c7bc6f66e53dce2
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=11b3b2f3080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=2f5fa747986be53a
+dashboard link: https://syzkaller.appspot.com/bug?extid=e696806ef96cdd2d87cd
 compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12e678cb080000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13f68e5b080000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1778e50d080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1379e5e3080000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+78c55c7bc6f66e53dce2@syzkaller.appspotmail.com
+Reported-by: syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com
 
 ======================================================
 WARNING: possible circular locking dependency detected
-6.0.0-rc1-next-20220819-syzkaller #0 Not tainted
+6.0.0-rc1-next-20220817-syzkaller #0 Not tainted
 ------------------------------------------------------
-kworker/u4:3/46 is trying to acquire lock:
-ffff888027dc40e8 ((work_completion)(&(&cp->cp_send_w)->work)){+.+.}-{0:0}, at: __flush_work+0xdd/0xae0 kernel/workqueue.c:3066
+syz-executor769/3613 is trying to acquire lock:
+ffff88801cb5c0f8 ((work_completion)(&strp->work)){+.+.}-{0:0}, at: __flush_work+0xdd/0xae0 kernel/workqueue.c:3066
 
 but task is already holding lock:
-ffff88807e18da70 (k-sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1712 [inline]
-ffff88807e18da70 (k-sk_lock-AF_INET6){+.+.}-{0:0}, at: rds_tcp_reset_callbacks+0x1bf/0x4d0 net/rds/tcp.c:169
+ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1687 [inline]
+ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach net/kcm/kcmsock.c:1390 [inline]
+ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
+ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_ioctl+0x396/0x1180 net/kcm/kcmsock.c:1696
 
 which lock already depends on the new lock.
 
 
 the existing dependency chain (in reverse order) is:
 
--> #1 (k-sk_lock-AF_INET6){+.+.}-{0:0}:
+-> #1 (sk_lock-AF_INET6){+.+.}-{0:0}:
        lock_sock_nested+0x36/0xf0 net/core/sock.c:3391
-       lock_sock include/net/sock.h:1712 [inline]
-       tcp_sock_set_cork+0x16/0x90 net/ipv4/tcp.c:3328
-       rds_send_xmit+0x386/0x2540 net/rds/send.c:194
-       rds_send_worker+0x92/0x2e0 net/rds/threads.c:200
+       do_strp_work net/strparser/strparser.c:398 [inline]
+       strp_work+0x40/0x130 net/strparser/strparser.c:415
        process_one_work+0x991/0x1610 kernel/workqueue.c:2289
        worker_thread+0x665/0x1080 kernel/workqueue.c:2436
        kthread+0x2e4/0x3a0 kernel/kthread.c:376
        ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
 
--> #0 ((work_completion)(&(&cp->cp_send_w)->work)){+.+.}-{0:0}:
+-> #0 ((work_completion)(&strp->work)){+.+.}-{0:0}:
        check_prev_add kernel/locking/lockdep.c:3095 [inline]
        check_prevs_add kernel/locking/lockdep.c:3214 [inline]
        validate_chain kernel/locking/lockdep.c:3829 [inline]
@@ -109,13 +108,19 @@ the existing dependency chain (in reverse order) is:
        lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
        __flush_work+0x105/0xae0 kernel/workqueue.c:3069
        __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
-       rds_tcp_reset_callbacks+0x1cb/0x4d0 net/rds/tcp.c:171
-       rds_tcp_accept_one+0x9d5/0xd10 net/rds/tcp_listen.c:203
-       rds_tcp_accept_worker+0x55/0x80 net/rds/tcp.c:529
-       process_one_work+0x991/0x1610 kernel/workqueue.c:2289
-       worker_thread+0x665/0x1080 kernel/workqueue.c:2436
-       kthread+0x2e4/0x3a0 kernel/kthread.c:376
-       ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+       strp_done+0x64/0xf0 net/strparser/strparser.c:513
+       kcm_attach net/kcm/kcmsock.c:1429 [inline]
+       kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
+       kcm_ioctl+0x913/0x1180 net/kcm/kcmsock.c:1696
+       sock_do_ioctl+0xcc/0x230 net/socket.c:1169
+       sock_ioctl+0x2f1/0x640 net/socket.c:1286
+       vfs_ioctl fs/ioctl.c:51 [inline]
+       __do_sys_ioctl fs/ioctl.c:870 [inline]
+       __se_sys_ioctl fs/ioctl.c:856 [inline]
+       __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+       do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+       do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+       entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
 other info that might help us debug this:
 
@@ -123,34 +128,26 @@ other info that might help us debug this:
 
        CPU0                    CPU1
        ----                    ----
-  lock(k-sk_lock-AF_INET6);
-                               lock((work_completion)(&(&cp->cp_send_w)->work));
-                               lock(k-sk_lock-AF_INET6);
-  lock((work_completion)(&(&cp->cp_send_w)->work));
+  lock(sk_lock-AF_INET6);
+                               lock((work_completion)(&strp->work));
+                               lock(sk_lock-AF_INET6);
+  lock((work_completion)(&strp->work));
 
  *** DEADLOCK ***
 
-4 locks held by kworker/u4:3/46:
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: arch_atomic64_set arch/x86/include/asm/atomic64_64.h:34 [inline]
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: arch_atomic_long_set include/linux/atomic/atomic-long.h:41 [inline]
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: atomic_long_set include/linux/atomic/atomic-instrumented.h:1280 [inline]
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: set_work_data kernel/workqueue.c:636 [inline]
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: set_work_pool_and_clear_pending kernel/workqueue.c:663 [inline]
- #0: ffff8880275f7938 ((wq_completion)krdsd){+.+.}-{0:0}, at: process_one_work+0x87a/0x1610 kernel/workqueue.c:2260
- #1: ffffc90000b77da8 ((work_completion)(&rtn->rds_tcp_accept_w)){+.+.}-{0:0}, at: process_one_work+0x8ae/0x1610 kernel/workqueue.c:2264
- #2: ffff8880733c4088 (&tc->t_conn_path_lock){+.+.}-{3:3}, at: rds_tcp_accept_one+0x892/0xd10 net/rds/tcp_listen.c:195
- #3: ffff88807e18da70 (k-sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1712 [inline]
- #3: ffff88807e18da70 (k-sk_lock-AF_INET6){+.+.}-{0:0}, at: rds_tcp_reset_callbacks+0x1bf/0x4d0 net/rds/tcp.c:169
+1 lock held by syz-executor769/3613:
+ #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1687 [inline]
+ #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach net/kcm/kcmsock.c:1390 [inline]
+ #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
+ #0: ffff88801d5b0fb0 (sk_lock-AF_INET6){+.+.}-{0:0}, at: kcm_ioctl+0x396/0x1180 net/kcm/kcmsock.c:1696
 
 stack backtrace:
-CPU: 1 PID: 46 Comm: kworker/u4:3 Not tainted 6.0.0-rc1-next-20220819-syzkaller #0
-kworker/u4:3[46] cmdline: ��a�����
+CPU: 0 PID: 3613 Comm: syz-executor769 Not tainted 6.0.0-rc1-next-20220817-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
-Workqueue: krdsd rds_tcp_accept_worker
 Call Trace:
  <TASK>
- __dump_stack lib/dump_stack.c:122 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:140
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
  check_noncircular+0x25f/0x2e0 kernel/locking/lockdep.c:2175
  check_prev_add kernel/locking/lockdep.c:3095 [inline]
  check_prevs_add kernel/locking/lockdep.c:3214 [inline]
@@ -160,14 +157,24 @@ Call Trace:
  lock_acquire+0x1ab/0x570 kernel/locking/lockdep.c:5631
  __flush_work+0x105/0xae0 kernel/workqueue.c:3069
  __cancel_work_timer+0x3f9/0x570 kernel/workqueue.c:3160
- rds_tcp_reset_callbacks+0x1cb/0x4d0 net/rds/tcp.c:171
- rds_tcp_accept_one+0x9d5/0xd10 net/rds/tcp_listen.c:203
- rds_tcp_accept_worker+0x55/0x80 net/rds/tcp.c:529
- process_one_work+0x991/0x1610 kernel/workqueue.c:2289
- worker_thread+0x665/0x1080 kernel/workqueue.c:2436
- kthread+0x2e4/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
- </TASK>
+ strp_done+0x64/0xf0 net/strparser/strparser.c:513
+ kcm_attach net/kcm/kcmsock.c:1429 [inline]
+ kcm_attach_ioctl net/kcm/kcmsock.c:1490 [inline]
+ kcm_ioctl+0x913/0x1180 net/kcm/kcmsock.c:1696
+ sock_do_ioctl+0xcc/0x230 net/socket.c:1169
+ sock_ioctl+0x2f1/0x640 net/socket.c:1286
+ vfs_ioctl fs/ioctl.c:51 [inline]
+ __do_sys_ioctl fs/ioctl.c:870 [inline]
+ __se_sys_ioctl fs/ioctl.c:856 [inline]
+ __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:856
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+RIP: 0033:0x7fc907a73f09
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffc5f76b0d8 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007fc907a73f09
+RDX: 00000000200000c0 RSI: 00000000000089e0 RDI: 0000000000000003
 
 
 ---
