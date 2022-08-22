@@ -2,257 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD2159B8A2
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 07:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC2C59B8B1
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 07:19:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232394AbiHVFIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 01:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
+        id S231174AbiHVFT1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 01:19:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiHVFIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 01:08:10 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758F01262A;
-        Sun, 21 Aug 2022 22:08:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661144889; x=1692680889;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=aJuO00bHFTFMl8KnIYlHE0QVGOXlS9O7zR3snvIDSO8=;
-  b=Q3hBSgW5nyzQ2ZXzuwqoiCA2IVsRLCWRlPftWDV9LX3Z6YM+mSlzfz+z
-   YF7wTEG9H0AH/UDpOad4gLnZcgUaMKhR/7xX62Ld6AROsHoNNPZ8flQ3I
-   8j07PjUJSRNvxL9Fqsr1MzfLg9f8DRRrFfHYGOZB7p0ul3OwvW5n5Nq+y
-   wkl0j2yyeVkoGRDgfv9nCnvktW6IusiaYhlqOFk9oCNZHjT2QMvNl2Prk
-   YvcDqcfQYwA9o/sGYZmkfT8To8sctcPajW/uxvFya9WSsj/Yz1F4fRHu4
-   LAt9XxjNIlx2knSKZURQYnOpOa+jt65IeBzNslvK1rnDwF6HjAdJL4iQq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="292063544"
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="292063544"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 22:08:00 -0700
-X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="585360860"
-Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.255.28.92]) ([10.255.28.92])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 22:07:57 -0700
-Message-ID: <e06d1f6d-3199-1b75-d369-2e5d69040271@intel.com>
-Date:   Mon, 22 Aug 2022 13:07:55 +0800
+        with ESMTP id S229727AbiHVFT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 01:19:26 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD4C25587;
+        Sun, 21 Aug 2022 22:19:25 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id z187so9260721pfb.12;
+        Sun, 21 Aug 2022 22:19:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=giyJvb5MceZvmd+O7/+oUKyqv96Z2OFMCAAIUudAKGg=;
+        b=Xyg+c3MLt+j8GVAFZFpwninxt4lQlSHMK//4kJAKEPIHIHid6x6susbixn211WqNG/
+         NpFzsY9hHF3bgVg6K0n+dMoJfyv753nns2sP4NOyRixOG8ixWot0Ot8PnK+zHABUs3b7
+         IMfo1mrvQIzw2rBIhWpLbv8JBHN79TjG0bC0bw7LGgjA/gZhOX9E2qQvLvo+ef6giAIE
+         f/cL7m/dYpWm5H+HwCcvk/9skMNPp2e8WM3F9yGd8S2ipbQK2OVXWbo3rXiOgYd7ZbfW
+         4+tL1jwXHbeHr623zr4tStyNXcIfbN0fPggNqudDiBk0b8sQg9z5Wn28FrJFNwUR2AAN
+         7bQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=giyJvb5MceZvmd+O7/+oUKyqv96Z2OFMCAAIUudAKGg=;
+        b=6wLUn2VC3WybkXr/IugGMR5Cf3B716NpoIchqFxHeDiT3WEyHdgG2YICT6XuD285Ex
+         34cKEc9nbBZgYTCjumgIcfsiCBXbJl7mOmiosadZiMSs4lBuauSYy1CFZ5gYeLZ8ZDZJ
+         Ogx/GBaCrcwpfxZP8GYqqaUFGq00YVEntVCTIqKEMMJZO0QqsmU8hPF+P3uXtYZS471N
+         KI/JtAHpcsXkRMtYweUAJxiW92qQg2JB/39GrRyhp0QCliQbRE+psqAj+yLEk4acIlVf
+         fUpqXWQ4WYM/O3XdauIXHp1aBDB5QwAcxhErG48CzaSrtjz9UOG0cW+Pf0YDPhX1w+w0
+         cnNQ==
+X-Gm-Message-State: ACgBeo0BrjHN7dR/hJaEcG0GiHgVx5+tCBAZYbimIlRoMr2K8xQ1pQQY
+        7janTB+4dpJNQ3lyjm2vbIk=
+X-Google-Smtp-Source: AA6agR7YaKl/EFWBRm94AS2E4wLWUVRtwJh5qzuhEq/OkUV9lHc9qUF9gFkqO8X+fv/G2DiMxPO6dw==
+X-Received: by 2002:a05:6a00:1393:b0:536:5b8a:c35b with SMTP id t19-20020a056a00139300b005365b8ac35bmr8330817pfg.5.1661145564683;
+        Sun, 21 Aug 2022 22:19:24 -0700 (PDT)
+Received: from localhost ([36.112.86.8])
+        by smtp.gmail.com with ESMTPSA id y9-20020a634b09000000b004114cc062f0sm6387798pga.65.2022.08.21.22.19.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Aug 2022 22:19:24 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     khalid.masum.92@gmail.com
+Cc:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
+        kuba@kernel.org, linux-afs@lists.infradead.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, paskripkin@gmail.com,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
+Date:   Mon, 22 Aug 2022 13:19:07 +0800
+Message-Id: <20220822051907.104443-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <CAABMjtHJX6Rm1Ndg+bECbERWkFYdWbDDYd1-5bVFTu-qwKW=sA@mail.gmail.com>
+References: <CAABMjtHJX6Rm1Ndg+bECbERWkFYdWbDDYd1-5bVFTu-qwKW=sA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Firefox/102.0 Thunderbird/102.1.2
-Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
-Content-Language: en-US
-To:     Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
-        Parav Pandit <parav@nvidia.com>,
-        Yongji Xie <xieyongji@bytedance.com>,
-        "Dawar, Gautam" <gautam.dawar@amd.com>
-References: <c5075d3d-9d2c-2716-1cbf-cede49e2d66f@oracle.com>
- <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
- <9b6292f3-9bd5-ecd8-5e42-cd5d12f036e7@oracle.com>
- <22e0236f-b556-c6a8-0043-b39b02928fd6@intel.com>
- <892b39d6-85f8-bff5-030d-e21288975572@oracle.com>
- <52a47bc7-bf26-b8f9-257f-7dc5cea66d23@intel.com>
- <20220817045406-mutt-send-email-mst@kernel.org>
- <a91fa479-d1cc-a2d6-0821-93386069a2c1@intel.com>
- <20220817053821-mutt-send-email-mst@kernel.org>
- <449c2fb2-3920-7bf9-8c5c-a68456dfea76@intel.com>
- <20220817063450-mutt-send-email-mst@kernel.org>
- <54aa5a5c-69e2-d372-3e0c-b87f595d213c@redhat.com>
- <f0b6ea5c-1783-96d2-2d9f-e5cf726b0fc0@oracle.com>
- <CACGkMEumKfktMUJOTUYL_JYkFbw8qH331gGARPB2bTH=7wKWPg@mail.gmail.com>
- <4678fc51-a402-d3ea-e875-6eba175933ba@oracle.com>
-From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
-In-Reply-To: <4678fc51-a402-d3ea-e875-6eba175933ba@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 22 Aug 2022 at 00:42, Khalid Masum <khalid.masum.92@gmail.com> wrote:
+>
+> On Sun, Aug 21, 2022 at 9:58 PM Khalid Masum <khalid.masum.92@gmail.com> wrote:
+> >
+> > On Sun, Aug 21, 2022 at 6:58 PM Hawkins Jiawei <yin31149@gmail.com> wrote:
+> > >
+> > The interruptible version fails to acquire the lock. So why is it okay to
+> > force it to acquire the mutex_lock since we are in the interrupt context?
+>
+> Sorry, I mean, won't the function lose its ability of being interruptible?
+> Since we are forcing it to acquire the lock.
+> > >                         return sock_intr_errno(*timeo);
+> > > +               }
+> > >         }
+> > >  }
+> >
+> > thanks,
+> >   -- Khalid Masum
+Hi, Khalid
+
+In my opinion, _intr in rxrpc_wait_for_tx_window_intr() seems referring
+that, the loop in function should be interrupted when a signal
+arrives(Please correct me if I am wrong):
+> /*
+>  * Wait for space to appear in the Tx queue or a signal to occur.
+>  */
+> static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
+> 					 struct rxrpc_call *call,
+> 					 long *timeo)
+> {
+> 	for (;;) {
+> 		set_current_state(TASK_INTERRUPTIBLE);
+> 		if (rxrpc_check_tx_space(call, NULL))
+> 			return 0;
+> 
+> 		if (call->state >= RXRPC_CALL_COMPLETE)
+> 			return call->error;
+> 
+> 		if (signal_pending(current))
+> 			return sock_intr_errno(*timeo);
+> 
+> 		trace_rxrpc_transmit(call, rxrpc_transmit_wait);
+> 		mutex_unlock(&call->user_mutex);
+> 		*timeo = schedule_timeout(*timeo);
+> 		if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> 			return sock_intr_errno(*timeo);
+> 	}
+> }
+
+To be more specific, when a signal arrives,
+rxrpc_wait_for_tx_window_intr() should know when executing
+mutex_lock_interruptible() and get a non-zero value. Then
+rxrpc_wait_for_tx_window_intr() should be interrupted, which means
+function should be returned.
+
+So I think, acquiring mutex_lock() seems won't effect its ability
+of being interruptible.(Please correct me if I am wrong).
+
+What's more, when the kernel return from
+rxrpc_wait_for_tx_window_intr(), it will only handles the error case
+before unlocking the call->user_mutex, which won't cost a long time.
+So I think it seems Ok to acquire the call->user_mutex when
+rxrpc_wait_for_tx_window_intr() is interrupted by a signal.
 
 
-On 8/20/2022 4:55 PM, Si-Wei Liu wrote:
+On Mon, 22 Aug 2022 at 03:18, Khalid Masum <khalid.masum.92@gmail.com> wrote:
 >
+> Maybe we do not need to lock since no other timer_schedule needs
+> it.
 >
-> On 8/18/2022 5:42 PM, Jason Wang wrote:
->> On Fri, Aug 19, 2022 at 7:20 AM Si-Wei Liu <si-wei.liu@oracle.com> 
->> wrote:
->>>
->>>
->>> On 8/17/2022 9:15 PM, Jason Wang wrote:
->>>> 在 2022/8/17 18:37, Michael S. Tsirkin 写道:
->>>>> On Wed, Aug 17, 2022 at 05:43:22PM +0800, Zhu, Lingshan wrote:
->>>>>> On 8/17/2022 5:39 PM, Michael S. Tsirkin wrote:
->>>>>>> On Wed, Aug 17, 2022 at 05:13:59PM +0800, Zhu, Lingshan wrote:
->>>>>>>> On 8/17/2022 4:55 PM, Michael S. Tsirkin wrote:
->>>>>>>>> On Wed, Aug 17, 2022 at 10:14:26AM +0800, Zhu, Lingshan wrote:
->>>>>>>>>> Yes it is a little messy, and we can not check _F_VERSION_1
->>>>>>>>>> because of
->>>>>>>>>> transitional devices, so maybe this is the best we can do for 
->>>>>>>>>> now
->>>>>>>>> I think vhost generally needs an API to declare config space
->>>>>>>>> endian-ness
->>>>>>>>> to kernel. vdpa can reuse that too then.
->>>>>>>> Yes, I remember you have mentioned some IOCTL to set the 
->>>>>>>> endian-ness,
->>>>>>>> for vDPA, I think only the vendor driver knows the endian,
->>>>>>>> so we may need a new function vdpa_ops->get_endian().
->>>>>>>> In the last thread, we say maybe it's better to add a comment for
->>>>>>>> now.
->>>>>>>> But if you think we should add a vdpa_ops->get_endian(), I can 
->>>>>>>> work
->>>>>>>> on it for sure!
->>>>>>>>
->>>>>>>> Thanks
->>>>>>>> Zhu Lingshan
->>>>>>> I think QEMU has to set endian-ness. No one else knows.
->>>>>> Yes, for SW based vhost it is true. But for HW vDPA, only
->>>>>> the device & driver knows the endian, I think we can not
->>>>>> "set" a hardware's endian.
->>>>> QEMU knows the guest endian-ness and it knows that
->>>>> device is accessed through the legacy interface.
->>>>> It can accordingly send endian-ness to the kernel and
->>>>> kernel can propagate it to the driver.
->>>>
->>>> I wonder if we can simply force LE and then Qemu can do the endian
->>>> conversion?
->>> convert from LE for config space fields only, or QEMU has to forcefully
->>> mediate and covert endianness for all device memory access including
->>> even the datapath (fields in descriptor and avail/used rings)?
->> Former. Actually, I want to force modern devices for vDPA when
->> developing the vDPA framework. But then we see requirements for
->> transitional or even legacy (e.g the Ali ENI parent). So it
->> complicates things a lot.
->>
->> I think several ideas has been proposed:
->>
->> 1) Your proposal of having a vDPA specific way for
->> modern/transitional/legacy awareness. This seems very clean since each
->> transport should have the ability to do that but it still requires
->> some kind of mediation for the case e.g running BE legacy guest on LE
->> host.
-> In theory it seems like so, though practically I wonder if we can just 
-> forbid BE legacy driver from running on modern LE host. For those who 
-> care about legacy BE guest, they mostly like could and should talk to 
-> vendor to get native BE support to achieve hardware acceleration, few 
-> of them would count on QEMU in mediating or emulating the datapath 
-> (otherwise I don't see the benefit of adopting vDPA?). I still feel 
-> that not every hardware vendor has to offer backward compatibility 
-> (transitional device) with legacy interface/behavior (BE being just 
-> one), this is unlike the situation on software virtio device, which 
-> has legacy support since day one. I think we ever discussed it before: 
-> for those vDPA vendors who don't offer legacy guest support, maybe we 
-> should mandate some feature for e.g. VERSION_1, as these devices 
-> really don't offer functionality of the opposite side (!VERSION_1) 
-> during negotiation.
+> Test if this fixes the issue.
+> ---
+> diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+> index 1d38e279e2ef..640e2ab2cc35 100644
+> --- a/net/rxrpc/sendmsg.c
+> +++ b/net/rxrpc/sendmsg.c
+> @@ -51,10 +51,8 @@ static int rxrpc_wait_for_tx_window_intr(struct rxrpc_sock *rx,
+>                         return sock_intr_errno(*timeo);
 >
-> Having it said, perhaps we should also allow vendor device to 
-> implement only partial support for legacy. We can define "reversed" 
-> backend feature to denote some part of the legacy 
-> interface/functionality not getting implemented by device. For 
-> instance, VHOST_BACKEND_F_NO_BE_VRING, VHOST_BACKEND_F_NO_BE_CONFIG, 
-> VHOST_BACKEND_F_NO_ALIGNED_VRING, 
-> VHOST_BACKEND_NET_F_NO_WRITEABLE_MAC, and et al. Not all of these 
-> missing features for legacy would be easy for QEMU to make up for, so 
-> QEMU can selectively emulate those at its best when necessary and 
-> applicable. In other word, this design shouldn't prevent QEMU from 
-> making up for vendor device's partial legacy support.
+>                 trace_rxrpc_transmit(call, rxrpc_transmit_wait);
+> -               mutex_unlock(&call->user_mutex);
+>                 *timeo = schedule_timeout(*timeo);
+> -               if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> -                       return sock_intr_errno(*timeo);
+> +               return sock_intr_errno(*timeo);
+>         }
+>  }
 >
->>
->> 2) Michael suggests using VHOST_SET_VRING_ENDIAN where it means we
->> need a new config ops for vDPA bus, but it doesn't solve the issue for
->> config space (at least from its name). We probably need a new ioctl
->> for both vring and config space.
-> Yep adding a new ioctl makes things better, but I think the key is not 
-> the new ioctl. It's whether or not we should enforce every vDPA vendor 
-> driver to implement all transitional interfaces to be spec compliant. 
-> If we allow them to reject the VHOST_SET_VRING_ENDIAN  or 
-> VHOST_SET_CONFIG_ENDIAN call, what could we do? We would still end up 
-> with same situation of either fail the guest, or trying to 
-> mediate/emulate, right?
->
-> Not to mention VHOST_SET_VRING_ENDIAN is rarely supported by vhost 
-> today - few distro kernel has CONFIG_VHOST_CROSS_ENDIAN_LEGACY enabled 
-> and QEMU just ignores the result. vhost doesn't necessarily depend on 
-> it to determine endianness it looks.
-I would like to suggest to add two new config ops get/set_vq_endian() 
-and get/set_config_endian() for vDPA. This is used to:
-a) support VHOST_GET/SET_VRING_ENDIAN as MST suggested, and add 
-VHOST_SET/GET_CONFIG_ENDIAN for vhost_vdpa.
-If the device has not implemented interface to set its endianess, then 
-no matter success or failure of SET_ENDIAN, QEMU knows the endian-ness 
-anyway. In this case, if the device endianess does not match the guest, 
-there needs a mediation layer or fail.
-b) ops->get_config_endian() can always tell the endian-ness of the 
-device config space after the vendor driver probing the device. So we 
-can use this ops->get_config_endian() for
-MTU, MAC and other fields handling in vdpa_dev_net_config_fill() and we 
-don't need to set_features in vdpa_get_config_unlocked(), so no race 
-conditions.
-Every time ops->get_config() returned, we can tell the endian by 
-ops-config_>get_endian(), we don't need set_features(xxx, 0) if features 
-negotiation not done.
-
-The question is: Do we need two pairs of ioctls for both vq and config 
-space? Can config space endian-ness differ from the vqs?
-c) do we need a new netlink attr telling the endian-ness to user space?
-
-Thanks,
-Zhu Lingshan
->
->>
->> or
->>
->> 3) revisit the idea of forcing modern only device which may simplify
->> things a lot
-> I am not actually against forcing modern only config space, given that 
-> it's not hard for either QEMU or individual driver to mediate or 
-> emulate, and for the most part it's not conflict with the goal of 
-> offload or acceleration with vDPA. But forcing LE ring layout IMO 
-> would just kill off the potential of a very good use case. Currently 
-> for our use case the priority for supporting 0.9.5 guest with vDPA is 
-> slightly lower compared to live migration, but it is still in our TODO 
-> list.
->
-> Thanks,
-> -Siwei
->
->>
->> which way should we go?
->>
->>> I hope
->>> it's not the latter, otherwise it loses the point to use vDPA for
->>> datapath acceleration.
->>>
->>> Even if its the former, it's a little weird for vendor device to
->>> implement a LE config space with BE ring layout, although still 
->>> possible...
->> Right.
->>
->> Thanks
->>
->>> -Siwei
->>>> Thanks
->>>>
->>>>
->>>>>> So if you think we should add a vdpa_ops->get_endian(),
->>>>>> I will drop these comments in the next version of
->>>>>> series, and work on a new patch for get_endian().
->>>>>>
->>>>>> Thanks,
->>>>>> Zhu Lingshan
->>>>> Guests don't get endian-ness from devices so this seems pointless.
->>>>>
+> --
+> 2.37.1
 >
 
+If it is still improper to patch this bug by acquiring the
+call->user_mutex, I wonder if it is better to check before unlocking the lock
+in rxrpc_do_sendmsg(), because kernel will always unlocking the call->user_mutex
+in the end of the rxrpc_do_sendmsg():
+> int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+> 	__releases(&rx->sk.sk_lock.slock)
+> 	__releases(&call->user_mutex)
+> {
+> 	...
+> out_put_unlock:
+> 	mutex_unlock(&call->user_mutex);
+> error_put:
+> 	rxrpc_put_call(call, rxrpc_call_put);
+> 	_leave(" = %d", ret);
+> 	return ret;
+> 
+> error_release_sock:
+> 	release_sock(&rx->sk);
+> 	return ret;
+> }
