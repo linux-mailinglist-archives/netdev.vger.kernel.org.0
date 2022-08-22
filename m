@@ -2,136 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 30EEB59C3F2
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17AAC59C409
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236272AbiHVQUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 12:20:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
+        id S236696AbiHVQWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 12:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234679AbiHVQUJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:20:09 -0400
-Received: from mx0a-00364e01.pphosted.com (mx0a-00364e01.pphosted.com [148.163.135.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DA7C3F1EB
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:20:05 -0700 (PDT)
-Received: from pps.filterd (m0167072.ppops.net [127.0.0.1])
-        by mx0a-00364e01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MGJ5wn006257
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:20:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=columbia.edu; h=mime-version :
- references : in-reply-to : from : date : message-id : subject : to : cc :
- content-type; s=pps01; bh=lL+jIgSBvIyxjoVVxdSt+mBrExHYO8gEXwp3Ap6tqQo=;
- b=UqBpfOENWlJJ0MexN1mHDsEnXyGak24lZVN6ZwkcAJbbObwDSklL8O7xsxeaMCkejEjn
- NxRrBzB+Ck9YOmH0dwXk1eevCO5Y8Q7zTe8qHFzA3Ab04IWpq1k/RlKvPpEhcrlFZOSB
- rKiYMVODiJ0HmN3thjL+QDRsjwViB2FSNN34LClpkJRE2ml8qfX6cqH3iyypRUWvC8p2
- WmBaOU0GiwDr81py9Kzph+Xi3UOoU0HlrXoaTZ+S2Kpqcp4J1lAMuoL0sivm3OhY/SUP
- 46lmEF5Z4SZYlw0sXej0CMlKzRTFXBlv93BVhR2sS8pmHM96pVh9tsvbb0ofB8jSrXqO bw== 
-Received: from sendprdmail21.cc.columbia.edu (sendprdmail21.cc.columbia.edu [128.59.72.23])
-        by mx0a-00364e01.pphosted.com (PPS) with ESMTPS id 3j2wj7kjns-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:20:04 -0400
-Received: from mail-vk1-f197.google.com (mail-vk1-f197.google.com [209.85.221.197])
-        by sendprdmail21.cc.columbia.edu (8.14.7/8.14.4) with ESMTP id 27MGJp7j095700
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:20:02 -0400
-Received: by mail-vk1-f197.google.com with SMTP id 70-20020a1f1749000000b00376c61f4c87so1801714vkx.10
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:20:02 -0700 (PDT)
+        with ESMTP id S236647AbiHVQWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:22:52 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBBC3F331
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:22:51 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-3376851fe13so275016997b3.6
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:22:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=zBnLNnOuEm5lJhwtbUOYYe47b/c/6C+EcZMDaQGtBP4=;
+        b=pyq/6kJ6DsGWQlpt2s0VXNeG1rxbZvr1f8onglt28Gp3w96/d34SrxrZQKd8GAMLm+
+         msURTCw8d+HAGTCxXo+r1oPnP78lH3o/XZjrXAJql3eo/TWCz7OLc+KEwApPb0UJ7Hpl
+         FNm3OiQC2PTNuqZz8hzOyFowdGYaSR6FkBfiC3dfAhvA5oImQffN/izIYDhbbUtANHEn
+         3QyD1kGFtLsm3q0e56fiqMtObmqSmqyVA3koNFPZ1gFzMjjkRg1073VPTHRa79YYJ50A
+         L0VFjNfjcflJ6KITQLbLCagavJ31oWZyTuDrDWqMfEggK36BvBoMpUHUXSYo98tozrvY
+         IK2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=lL+jIgSBvIyxjoVVxdSt+mBrExHYO8gEXwp3Ap6tqQo=;
-        b=ZAni2MqhfSuYg7wjLySqoqt/gwOLDbvF7xHEWXINP39lSifE/djwPRWoQ0w62sLtw5
-         ccd9VkzeasAGIWKRWGoiZc/dkAjAXeKLJCSklAnLDn2gYSWf9ColZdfyAJXk71WAnn4Z
-         k5z4ChwUZQ8NwmF9ErJ/8P8r5P6CamF51VsYlX2UUwXxIZfxKeZlBJRNnapY+RVFEJcE
-         XQC/OJe04nF0dTq/pTBJC7WndQys+ZCrry0qAWQmCqQKgahJwbRgTyOLLPGv1ovvB/1Y
-         8TXoqJBjOvNpHkcI2MeBphfc8HjbtzBlEHhQLjHMI5fLT74xaXuqKQr4TEZZuPEU73kq
-         Vamw==
-X-Gm-Message-State: ACgBeo2aD/6hXp2tDlPNwwl/vi2BsZ1ZIlBzQ7eHKlhN+K8LUDOZAX6x
-        7B9eWJSr2UzpsdFY0r8UXtseDkvhFkSz2DJ79YuTM5Bj9QXDwXoSbHyEQt84LrwbOoLPw429zLz
-        PI2TJyqXqq3RqBJKya8TFlw34AHz2PF7ka+S14aLM
-X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id bh12-20020a056130064c00b00390f6395ac4mr7692145uab.98.1661185201989;
-        Mon, 22 Aug 2022 09:20:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4aDBstx+gZ0tfQtYI/tazQw44//p/soUNDTq7MSnhgREgUkhWqjWhJO8bkdWbFSdUzkD9ocmCnPa8xyVA9HvA=
-X-Received: by 2002:a05:6130:64c:b0:390:f639:5ac4 with SMTP id
- bh12-20020a056130064c00b00390f6395ac4mr7692137uab.98.1661185201773; Mon, 22
- Aug 2022 09:20:01 -0700 (PDT)
+        bh=zBnLNnOuEm5lJhwtbUOYYe47b/c/6C+EcZMDaQGtBP4=;
+        b=bSKYDXmRV6G1/OZ2Tlub/oIMBJIABottUSHJfIBGc0Voqxl1B77vcLhVcTn0Jd8AVm
+         EOkr6pVQbnObMNSHq9gIC17qhZaApEwiP93II3Bb3MuyvgpIj/fbKVtuc9qBoK/O7bNG
+         QaeMzLKQWTr/ayYy5wO/iL9wvDcQ8tQeRXzb5jGNrIwRXEMJmo7NujLABlT/6rs2BWuV
+         mlvPQ85zY/jpLNaJuNcmwWRZ1VsRhFMC7hqNGeKke2XL1La197m2rPda6WHvuTdGt3Zk
+         O2dv8ujPRwjyBkEgZ4ETh2oCK9JvJkqVEnaN0UOsni0zlAd43J1MXTy+0CnEoY97GQGG
+         00yg==
+X-Gm-Message-State: ACgBeo2mmw0D642aOf03LnOrS6iQy9QjThbZLfLSVjzdIGFGQHvfFfmS
+        1jbSLmdlvXqhqDB5zsaCNgsvtd2r8d6s0k4+5ppxPQ==
+X-Google-Smtp-Source: AA6agR4U9cjCs7IQEA6wPhRWTBAzKHRxHy5hIjO+FjyWQehv0ldLHYX7kwD9c7qskJP7JL5/agrY+5wWjvdBiM0x1p0=
+X-Received: by 2002:a25:5091:0:b0:690:1f61:a7c9 with SMTP id
+ e139-20020a255091000000b006901f61a7c9mr20337108ybb.55.1661185370392; Mon, 22
+ Aug 2022 09:22:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAEHB24-9hXY+TgQKxJB4bE9a9dFD9C+Lan+ShBwpvwaHVAGMFg@mail.gmail.com>
- <YtoWqEkKzvimzWS5@gondor.apana.org.au> <CAEHB249ygptvp9wpynMF7zZ2Kcet0+bwLVuVg5UReZHOU1+8HA@mail.gmail.com>
- <YuNGR/5U5pSo6YM3@gondor.apana.org.au> <YuuZgsdmJK8roKLD@gondor.apana.org.au>
-In-Reply-To: <YuuZgsdmJK8roKLD@gondor.apana.org.au>
-From:   Gabriel Ryan <gabe@cs.columbia.edu>
-Date:   Mon, 22 Aug 2022 12:19:54 -0400
-Message-ID: <CALbthtcfPn5qc0HecmK9iN-o+ZWDVid4bwzZJmO2sthw3fKFBQ@mail.gmail.com>
-Subject: Re: [PATCH] af_key: Do not call xfrm_probe_algs in parallel
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     Abhishek Shah <abhishek.shah@columbia.edu>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        linux-kernel@vger.kernel.org, Fan Du <fan.du@windriver.com>,
-        Steffen Klassert <klassert@kernel.org>
+References: <cover.1651800598.git.peilin.ye@bytedance.com> <cover.1661158173.git.peilin.ye@bytedance.com>
+In-Reply-To: <cover.1661158173.git.peilin.ye@bytedance.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 22 Aug 2022 09:22:39 -0700
+Message-ID: <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure infrastructure
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Dave Taht <dave.taht@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Proofpoint-GUID: CZeHjZn_LkgJw0k_L6XhdwIproNHLzi8
-X-Proofpoint-ORIG-GUID: CZeHjZn_LkgJw0k_L6XhdwIproNHLzi8
-X-CU-OB: Yes
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-22_10,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 phishscore=0
- mlxscore=0 bulkscore=10 mlxlogscore=999 adultscore=0 spamscore=0
- impostorscore=10 priorityscore=1501 suspectscore=0 malwarescore=0
- lowpriorityscore=10 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208220070
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can confirm we tested this patch and it prevents the race we
-detected in xfrm_ealg_get_byname / xfrm_probe_algs.
-
-Best,
-
-Gabe
-
-
-On Thu, Aug 4, 2022 at 6:03 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
+On Mon, Aug 22, 2022 at 2:10 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
 >
-> When namespace support was added to xfrm/afkey, it caused the
-> previously single-threaded call to xfrm_probe_algs to become
-> multi-threaded.  This is buggy and needs to be fixed with a mutex.
+> From: Peilin Ye <peilin.ye@bytedance.com>
 >
-> Reported-by: Abhishek Shah <abhishek.shah@columbia.edu>
-> Fixes: 283bc9f35bbb ("xfrm: Namespacify xfrm state/policy locks")
-> Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+> Hi all,
 >
-> diff --git a/net/key/af_key.c b/net/key/af_key.c
-> index fb16d7c4e1b8..20e73643b9c8 100644
-> --- a/net/key/af_key.c
-> +++ b/net/key/af_key.c
-> @@ -1697,9 +1697,12 @@ static int pfkey_register(struct sock *sk, struct sk_buff *skb, const struct sad
->                 pfk->registered |= (1<<hdr->sadb_msg_satype);
->         }
+> Currently sockets (especially UDP ones) can drop a lot of packets at TC
+> egress when rate limited by shaper Qdiscs like HTB.  This patchset series
+> tries to solve this by introducing a Qdisc backpressure mechanism.
 >
-> +       mutex_lock(&pfkey_mutex);
->         xfrm_probe_algs();
+> RFC v1 [1] used a throttle & unthrottle approach, which introduced several
+> issues, including a thundering herd problem and a socket reference count
+> issue [2].  This RFC v2 uses a different approach to avoid those issues:
 >
->         supp_skb = compose_sadb_supported(hdr, GFP_KERNEL | __GFP_ZERO);
-> +       mutex_unlock(&pfkey_mutex);
-> +
->         if (!supp_skb) {
->                 if (hdr->sadb_msg_satype != SADB_SATYPE_UNSPEC)
->                         pfk->registered &= ~(1<<hdr->sadb_msg_satype);
-> --
-> Email: Herbert Xu <herbert@gondor.apana.org.au>
-> Home Page: http://gondor.apana.org.au/~herbert/
-> PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
+>   1. When a shaper Qdisc drops a packet that belongs to a local socket due
+>      to TC egress congestion, we make part of the socket's sndbuf
+>      temporarily unavailable, so it sends slower.
+>
+>   2. Later, when TC egress becomes idle again, we gradually recover the
+>      socket's sndbuf back to normal.  Patch 2 implements this step using a
+>      timer for UDP sockets.
+>
+> The thundering herd problem is avoided, since we no longer wake up all
+> throttled sockets at the same time in qdisc_watchdog().  The socket
+> reference count issue is also avoided, since we no longer maintain socket
+> list on Qdisc.
+>
+> Performance is better than RFC v1.  There is one concern about fairness
+> between flows for TBF Qdisc, which could be solved by using a SFQ inner
+> Qdisc.
+>
+> Please see the individual patches for details and numbers.  Any comments,
+> suggestions would be much appreciated.  Thanks!
+>
+> [1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
+> [2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
+>
+> Peilin Ye (5):
+>   net: Introduce Qdisc backpressure infrastructure
+>   net/udp: Implement Qdisc backpressure algorithm
+>   net/sched: sch_tbf: Use Qdisc backpressure infrastructure
+>   net/sched: sch_htb: Use Qdisc backpressure infrastructure
+>   net/sched: sch_cbq: Use Qdisc backpressure infrastructure
+>
 
--- 
-Gabriel Ryan
-PhD Candidate at Columbia University
-cs.columbia.edu/~gabe
+I think the whole idea is wrong.
+
+Packet schedulers can be remote (offloaded, or on another box)
+
+The idea of going back to socket level from a packet scheduler should
+really be a last resort.
+
+Issue of having UDP sockets being able to flood a network is tough, I
+am not sure the core networking stack
+should pretend it can solve the issue.
+
+Note that FQ based packet schedulers can also help already.
