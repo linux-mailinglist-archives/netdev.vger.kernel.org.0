@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 54CB859BC72
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 11:14:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73DD359BC79
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 11:14:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234046AbiHVJNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 05:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
+        id S234223AbiHVJNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 05:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234247AbiHVJMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 05:12:45 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 079D62FFE8;
-        Mon, 22 Aug 2022 02:12:13 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id j6so7369037qkl.10;
-        Mon, 22 Aug 2022 02:12:13 -0700 (PDT)
+        with ESMTP id S231699AbiHVJM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 05:12:58 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4D722F3B2;
+        Mon, 22 Aug 2022 02:12:28 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id f14so7403260qkm.0;
+        Mon, 22 Aug 2022 02:12:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=2ea0wBQW9PkB6wUzKzt6kw1w9f7ZFMFItxwkN5Ui76I=;
-        b=m1rksws9JQWcPB9p0mF6gjYGfRzBOHLQR3wkiwQMRchKOxskgKChiS+fWSRaRIIST0
-         l+OJg3Ag3nY1FklQmbzzonq56gL8OoMu4foV4SYhJs57rowKEIpWwaGMYJoD2xETeNFK
-         +o3N8YMF+PnVCcFlsn6yMAHQzswXOu0JgKHTkzz5kqcEQEMIMaDRefI/tRibZUZ1jSVT
-         uaaho9ZolWCVIvztzk/igJLm3d0SucnKTSNa1Eeip0qK/292pOh9zdLAHBKKqHNHpqHc
-         0JEc11rUtTe17oUkkCi/soQWFgii0lkE1Ek9ltBDlE5tTfj3T1rumiRY3JTs4xNAXb5r
-         2cgw==
+        bh=2fvahmCP6fgUtz12efKvT8cnv75am6qomqsw7veYScQ=;
+        b=mMs2NjduS9kOkRBmMgKAFlTQ5qatTuHz5LQx1NkaCUQGz/XgemW0hYV5lA3SFMwgES
+         HPpqxrMn5cNaLzRCQM2nqLDdfSsbsCSxYz0QCveGhNDJ2DpBz04iW804/FVYsN2Zbht9
+         oYLvi5fRSlaH4qCYP8sWBsazvaD/UKKSphL4z2Q6zvx0aOiFzetTjblzpq6MOGCqWsaP
+         yEHIdo7ouJVUsdTzZQAIvQEwe4FqHW4bsAg4wTJocXzvBJUyGdPXkPUt1masggoQvtd9
+         KTHqlGhfhnKkUpiRWDqruZgWds60wfY7bZtvJmVA3Bh4h5fSn5rVzu/l7aCfV0Za7Bnq
+         z1Kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=2ea0wBQW9PkB6wUzKzt6kw1w9f7ZFMFItxwkN5Ui76I=;
-        b=S7sO+8deN6fHLx2wn1aEgWImMT+XoaOCE8VEiT8PwOLmBhzS+XQG1CZhRWMiGfZJfW
-         KjtEqwB3iT9qKuo7BuQH5nTz8G7nkjEtJGs0wsg9E4vA5OFgd57N5J6C3wDzMWEcK3jG
-         jYI15AvoOrKK/Q5Z/ocZ5ZaTf/SCWhEu4gfRJNbq3kgBj6Aw1F07s79jEzi0Rsz9zTaB
-         VDPztSURb+87rwlbbcBH/oLF08E755OrRInX4D59YfnXOlZsRuLSe35fIoI/K3qftS+u
-         UMMnLS6fPTqb8EUss6aXMtHF6JHhzNiDyfOjGMmOJXgRc8exCTzdC1iLF1pcakFb8qlR
-         /7Ig==
-X-Gm-Message-State: ACgBeo0b42m4IM9g9D3Gpfj3Yk9EjsocvxvwSua/iGdZAaIbAenv87ck
-        zotUiQp128kM8kRME2EWdPUsPPAprg==
-X-Google-Smtp-Source: AA6agR4FiUN86wqTYFjOD1AoH2apImNQYxd/cveD5lRCMGech/b0wr3QXo5orTFFQphusFu7xjln5w==
-X-Received: by 2002:a37:444f:0:b0:6bb:186e:345e with SMTP id r76-20020a37444f000000b006bb186e345emr11943251qka.105.1661159532536;
-        Mon, 22 Aug 2022 02:12:12 -0700 (PDT)
+        bh=2fvahmCP6fgUtz12efKvT8cnv75am6qomqsw7veYScQ=;
+        b=YPeMz6VNIxmFzHNKg6E1TVvYW+oeCP6hjmr4ImSCml7SpUrvHHhbL+1t267X5x/mes
+         gQ8ru4IZAHpqhgOV3ou5Dk3CbmolLUcUTWk9+/bvyrHJq10Kn4Cv727NBeP7nfeY7CiV
+         IqCWC3M4Irf+KKFdHQ3W8bLg8oKfVkyXY5V1g5XCxhvAQ7dWpAQ3Ea3Wp6rh6h/7uF1f
+         7lJwhk9qREVKWfVqS5nESpklHTx0rEEp52cL2/yZuF1WIptosAnoYYKGUdJ/x8iyT38T
+         ZqvOX9jSuyLnm/Fth1FT620lqZHlEmg4cw9qTCYtKXaLAC4HtuoZX6M8GxSaZ57DOQ6T
+         MS2Q==
+X-Gm-Message-State: ACgBeo1q6fOsZRifnGKYWM1h66/Mg6OPISHcuGY3Cj3ZwNXQWSTunL2+
+        wIU2P7NT3PvjZnqTv+ifMQ==
+X-Google-Smtp-Source: AA6agR681qZn+OY8hYP0CYPx47lPT7P4ZTU+4P04yniRccFURb5nJ5zEwMPCLCaIuqXtSxRmYAkPEA==
+X-Received: by 2002:a05:620a:4104:b0:6bb:61ce:73a3 with SMTP id j4-20020a05620a410400b006bb61ce73a3mr11715102qko.250.1661159547437;
+        Mon, 22 Aug 2022 02:12:27 -0700 (PDT)
 Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
-        by smtp.gmail.com with ESMTPSA id n16-20020ac85a10000000b00344883d3ef8sm9103416qta.84.2022.08.22.02.12.09
+        by smtp.gmail.com with ESMTPSA id c23-20020a05620a269700b006b893d135basm10388282qkp.86.2022.08.22.02.12.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 02:12:12 -0700 (PDT)
+        Mon, 22 Aug 2022 02:12:27 -0700 (PDT)
 From:   Peilin Ye <yepeilin.cs@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -64,9 +64,9 @@ Cc:     Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
         Stephen Hemminger <stephen@networkplumber.org>,
         Dave Taht <dave.taht@gmail.com>,
         Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH RFC v2 net-next 1/5] net: Introduce Qdisc backpressure infrastructure
-Date:   Mon, 22 Aug 2022 02:11:44 -0700
-Message-Id: <7e5bd29f232d42d6aa94ff818a778de707203406.1661158173.git.peilin.ye@bytedance.com>
+Subject: [PATCH RFC v2 net-next 2/5] net/udp: Implement Qdisc backpressure algorithm
+Date:   Mon, 22 Aug 2022 02:12:20 -0700
+Message-Id: <881f3d5bf87bdf4c19a0bd0ae0bf51fbeca7978d.1661158173.git.peilin.ye@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1661158173.git.peilin.ye@bytedance.com>
 References: <cover.1661158173.git.peilin.ye@bytedance.com>
@@ -84,138 +84,281 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Peilin Ye <peilin.ye@bytedance.com>
 
-Currently sockets (especially UDP ones) can drop a lot of traffic at TC
-egress when rate limited by shaper Qdiscs like HTB.  Improve this by
-introducing a Qdisc backpressure infrastructure:
+Support Qdisc backpressure for UDP (IPv4 and IPv6) sockets by
+implementing the (*backpressure) callback:
 
-  a. A new 'sock struct' field, @sk_overlimits, which keeps track of the
-     number of bytes in socket send buffer that are currently
-     unavailable due to TC egress congestion.  The size of an overlimit
-     socket's "effective" send buffer is represented by @sk_sndbuf minus
-     @sk_overlimits, with a lower limit of SOCK_MIN_SNDBUF:
+  1. When a shaper Qdisc drops a packet due to TC egress congestion,
+     halve the effective send buffer [1], then (re)scedule the
+     backpressure timer.
 
-     max(@sk_sndbuf - @sk_overlimits, SOCK_MIN_SNDBUF)
+  [1] sndbuf - overlimits_new == 1/2 * (sndbuf - overlimits_old)
 
-  b. A new (*backpressure) 'struct proto' callback, which is the
-     protocol's private algorithm for Qdisc backpressure.
+  2. When the timer expires, double the effective send buffer [2].  If
+     the socket is still overlimit, reschedule the timer itself.
 
-Working together:
+  [2] sndbuf - overlimits_new == 2 * (sndbuf - overlimits_old)
 
-  1. When a shaper Qdisc (TBF, HTB, CBQ, etc.) drops a packet that
-     belongs to a local socket, it calls qdisc_backpressure().
+In sock_wait_for_wmem() and sock_alloc_send_pskb(), check the size of
+effective send buffer instead, so that overlimit sockets send slower.
+See sk_sndbuf_avail().
 
-  2. qdisc_backpressure() eventually invokes the socket protocol's
-     (*backpressure) callback, which should increase @sk_overlimits.
+The timer interval is specified by a new per-net sysctl,
+sysctl_udp_backpressure_interval.  Default is 100 milliseconds, meaning
+that an overlimit UDP socket will try to double its effective send
+buffer every 100 milliseconds.  Use 0 to disable Qdisc backpressure for
+UDP sockets.
 
-  3. The transport layer then sees a smaller "effective" send buffer and
-     will send slower.
+Generally, longer interval means lower packet drop rate, but also makes
+overlimit sockets slower to recover when TC egress becomes idle (or the
+shaper Qdisc gets removed, etc.)
 
-  4. It is the per-protocol (*backpressure) implementation's
-     responsibility to decrease @sk_overlimits when TC egress becomes
-     idle again, potentially by using a timer.
+Test results with TBF + SFQ Qdiscs, 500 Mbits/sec rate limit with 16
+iperf UDP '-b 1G' clients:
 
-Suggested-by: Cong Wang <cong.wang@bytedance.com>
+  Interval       Throughput  Drop Rate  CPU Usage [3]
+   0 (disabled)  480.0 Mb/s     96.50%     68.38%
+   10   ms       486.4 Mb/s      9.28%      1.30%
+   100  ms       486.4 Mb/s      1.10%      1.11%
+   1000 ms       486.4 Mb/s      0.13%      0.81%
+
+  [3] perf-top, __pv_queued_spin_lock_slowpath()
+
 Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
 ---
- include/net/sch_generic.h | 11 +++++++++++
- include/net/sock.h        | 21 +++++++++++++++++++++
- net/core/sock.c           |  1 +
- 3 files changed, 33 insertions(+)
+ Documentation/networking/ip-sysctl.rst | 11 ++++
+ include/linux/udp.h                    |  3 ++
+ include/net/netns/ipv4.h               |  1 +
+ include/net/udp.h                      |  1 +
+ net/core/sock.c                        |  4 +-
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++
+ net/ipv4/udp.c                         | 69 +++++++++++++++++++++++++-
+ net/ipv6/udp.c                         |  2 +-
+ 8 files changed, 94 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index ec693fe7c553..afdf4bf64936 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -19,6 +19,7 @@
- #include <net/gen_stats.h>
- #include <net/rtnetlink.h>
- #include <net/flow_offload.h>
-+#include <net/sock.h>
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 56cd4ea059b2..a0d8e9518fda 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1070,6 +1070,17 @@ udp_rmem_min - INTEGER
+ udp_wmem_min - INTEGER
+ 	UDP does not have tx memory accounting and this tunable has no effect.
  
- struct Qdisc_ops;
- struct qdisc_walker;
-@@ -1188,6 +1189,16 @@ static inline int qdisc_drop_all(struct sk_buff *skb, struct Qdisc *sch,
- 	return NET_XMIT_DROP;
- }
++udp_backpressure_interval - INTEGER
++	The time interval (in milliseconds) in which an overlimit UDP socket
++	tries to increase its effective send buffer size, used by Qdisc
++	backpressure.  A longer interval typically results in a lower packet
++	drop rate, but also makes it slower for overlimit UDP sockets to
++	recover from backpressure when TC egress becomes idle.
++
++	0 to disable Qdisc backpressure for UDP sockets.
++
++	Default: 100
++
+ RAW variables
+ =============
  
-+static inline void qdisc_backpressure(struct sk_buff *skb)
-+{
-+	struct sock *sk = skb->sk;
-+
-+	if (!sk || !sk_fullsock(sk))
-+		return;
-+
-+	sk_backpressure(sk);
-+}
-+
- /* Length to Time (L2T) lookup in a qdisc_rate_table, to determine how
-    long it will take to send a packet given its size.
-  */
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 05a1bbdf5805..ef10ca66cf26 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -277,6 +277,7 @@ struct sk_filter;
-   *	@sk_pacing_status: Pacing status (requested, handled by sch_fq)
-   *	@sk_max_pacing_rate: Maximum pacing rate (%SO_MAX_PACING_RATE)
-   *	@sk_sndbuf: size of send buffer in bytes
-+  *	@sk_overlimits: size of temporarily unavailable send buffer in bytes
-   *	@__sk_flags_offset: empty field used to determine location of bitfield
-   *	@sk_padding: unused element for alignment
-   *	@sk_no_check_tx: %SO_NO_CHECK setting, set checksum in TX packets
-@@ -439,6 +440,7 @@ struct sock {
- 	struct dst_entry __rcu	*sk_dst_cache;
- 	atomic_t		sk_omem_alloc;
- 	int			sk_sndbuf;
-+	int			sk_overlimits;
+diff --git a/include/linux/udp.h b/include/linux/udp.h
+index 254a2654400f..dd017994738b 100644
+--- a/include/linux/udp.h
++++ b/include/linux/udp.h
+@@ -86,6 +86,9 @@ struct udp_sock {
  
- 	/* ===== cache line for TX ===== */
- 	int			sk_wmem_queued;
-@@ -1264,6 +1266,7 @@ struct proto {
+ 	/* This field is dirtied by udp_recvmsg() */
+ 	int		forward_deficit;
++
++	/* Qdisc backpressure timer */
++	struct timer_list	backpressure_timer;
+ };
  
- 	bool			(*stream_memory_free)(const struct sock *sk, int wake);
- 	bool			(*sock_is_readable)(struct sock *sk);
-+	void			(*backpressure)(struct sock *sk);
- 	/* Memory pressure */
- 	void			(*enter_memory_pressure)(struct sock *sk);
- 	void			(*leave_memory_pressure)(struct sock *sk);
-@@ -2499,6 +2502,24 @@ static inline void sk_stream_moderate_sndbuf(struct sock *sk)
- 	WRITE_ONCE(sk->sk_sndbuf, max_t(u32, val, SOCK_MIN_SNDBUF));
- }
+ #define UDP_MAX_SEGMENTS	(1 << 6UL)
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index c7320ef356d9..01f72ddf23e0 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -182,6 +182,7 @@ struct netns_ipv4 {
  
-+static inline int sk_sndbuf_avail(struct sock *sk)
-+{
-+	int overlimits, sndbuf = READ_ONCE(sk->sk_sndbuf);
-+
-+	if (!sk->sk_prot->backpressure)
-+		return sndbuf;
-+
-+	overlimits = READ_ONCE(sk->sk_overlimits);
-+
-+	return max_t(int, sndbuf - overlimits, SOCK_MIN_SNDBUF);
-+}
-+
-+static inline void sk_backpressure(struct sock *sk)
-+{
-+	if (sk->sk_prot->backpressure)
-+		sk->sk_prot->backpressure(sk);
-+}
-+
- /**
-  * sk_page_frag - return an appropriate page_frag
-  * @sk: socket
+ 	int sysctl_udp_wmem_min;
+ 	int sysctl_udp_rmem_min;
++	int sysctl_udp_backpressure_interval;
+ 
+ 	u8 sysctl_fib_notify_on_flag_change;
+ 
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 5ee88ddf79c3..82018e58659b 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -279,6 +279,7 @@ int udp_init_sock(struct sock *sk);
+ int udp_pre_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len);
+ int __udp_disconnect(struct sock *sk, int flags);
+ int udp_disconnect(struct sock *sk, int flags);
++void udp_backpressure(struct sock *sk);
+ __poll_t udp_poll(struct file *file, struct socket *sock, poll_table *wait);
+ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
+ 				       netdev_features_t features,
 diff --git a/net/core/sock.c b/net/core/sock.c
-index 4cb957d934a2..167d471b176f 100644
+index 167d471b176f..cb6ba66f80c8 100644
 --- a/net/core/sock.c
 +++ b/net/core/sock.c
-@@ -2194,6 +2194,7 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+@@ -2614,7 +2614,7 @@ static long sock_wait_for_wmem(struct sock *sk, long timeo)
+ 			break;
+ 		set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
+ 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+-		if (refcount_read(&sk->sk_wmem_alloc) < READ_ONCE(sk->sk_sndbuf))
++		if (refcount_read(&sk->sk_wmem_alloc) < sk_sndbuf_avail(sk))
+ 			break;
+ 		if (sk->sk_shutdown & SEND_SHUTDOWN)
+ 			break;
+@@ -2649,7 +2649,7 @@ struct sk_buff *sock_alloc_send_pskb(struct sock *sk, unsigned long header_len,
+ 		if (sk->sk_shutdown & SEND_SHUTDOWN)
+ 			goto failure;
  
- 	/* sk_wmem_alloc set to one (see sk_free() and sock_wfree()) */
- 	refcount_set(&newsk->sk_wmem_alloc, 1);
-+	newsk->sk_overlimits	= 0;
+-		if (sk_wmem_alloc_get(sk) < READ_ONCE(sk->sk_sndbuf))
++		if (sk_wmem_alloc_get(sk) < sk_sndbuf_avail(sk))
+ 			break;
  
- 	atomic_set(&newsk->sk_omem_alloc, 0);
- 	sk_init_common(newsk);
+ 		sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 5490c285668b..1e509a417b92 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -1337,6 +1337,13 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= SYSCTL_ONE
+ 	},
++	{
++		.procname	= "udp_backpressure_interval",
++		.data		= &init_net.ipv4.sysctl_udp_backpressure_interval,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_ms_jiffies,
++	},
+ 	{
+ 		.procname	= "fib_notify_on_flag_change",
+ 		.data		= &init_net.ipv4.sysctl_fib_notify_on_flag_change,
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 34eda973bbf1..ff58f638c834 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -110,6 +110,7 @@
+ #include <trace/events/skb.h>
+ #include <net/busy_poll.h>
+ #include "udp_impl.h"
++#include <net/sock.h>
+ #include <net/sock_reuseport.h>
+ #include <net/addrconf.h>
+ #include <net/udp_tunnel.h>
+@@ -1614,10 +1615,73 @@ void udp_destruct_sock(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(udp_destruct_sock);
+ 
++static inline int udp_backpressure_interval_get(struct sock *sk)
++{
++	return READ_ONCE(sock_net(sk)->ipv4.sysctl_udp_backpressure_interval);
++}
++
++static inline void udp_reset_backpressure_timer(struct sock *sk,
++						unsigned long expires)
++{
++	sk_reset_timer(sk, &udp_sk(sk)->backpressure_timer, expires);
++}
++
++static void udp_backpressure_timer(struct timer_list *t)
++{
++	struct udp_sock *up = from_timer(up, t, backpressure_timer);
++	int interval, sndbuf, overlimits;
++	struct sock *sk = &up->inet.sk;
++
++	interval = udp_backpressure_interval_get(sk);
++	if (!interval) {
++		/* Qdisc backpressure has been turned off */
++		WRITE_ONCE(sk->sk_overlimits, 0);
++		goto out;
++	}
++
++	sndbuf = READ_ONCE(sk->sk_sndbuf);
++	overlimits = READ_ONCE(sk->sk_overlimits);
++
++	/* sndbuf - overlimits_new == 2 * (sndbuf - overlimits_old) */
++	overlimits = min_t(int, overlimits, sndbuf - SOCK_MIN_SNDBUF);
++	overlimits = max_t(int, (2 * overlimits) - sndbuf, 0);
++	WRITE_ONCE(sk->sk_overlimits, overlimits);
++
++	if (overlimits > 0)
++		udp_reset_backpressure_timer(sk, jiffies + interval);
++
++out:
++	sock_put(sk);
++}
++
++void udp_backpressure(struct sock *sk)
++{
++	int interval, sndbuf, overlimits;
++
++	interval = udp_backpressure_interval_get(sk);
++	if (!interval)	/* Qdisc backpressure is off */
++		return;
++
++	sndbuf = READ_ONCE(sk->sk_sndbuf);
++	overlimits = READ_ONCE(sk->sk_overlimits);
++
++	/* sndbuf - overlimits_new == 1/2 * (sndbuf - overlimits_old) */
++	overlimits = min_t(int, overlimits, sndbuf - SOCK_MIN_SNDBUF);
++	overlimits += (sndbuf - overlimits) >> 1;
++	WRITE_ONCE(sk->sk_overlimits, overlimits);
++
++	if (overlimits > 0)
++		udp_reset_backpressure_timer(sk, jiffies + interval);
++}
++EXPORT_SYMBOL_GPL(udp_backpressure);
++
+ int udp_init_sock(struct sock *sk)
+ {
+-	skb_queue_head_init(&udp_sk(sk)->reader_queue);
++	struct udp_sock *up = udp_sk(sk);
++
++	skb_queue_head_init(&up->reader_queue);
+ 	sk->sk_destruct = udp_destruct_sock;
++	timer_setup(&up->backpressure_timer, udp_backpressure_timer, 0);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(udp_init_sock);
+@@ -2653,6 +2717,7 @@ void udp_destroy_sock(struct sock *sk)
+ 	/* protects from races with udp_abort() */
+ 	sock_set_flag(sk, SOCK_DEAD);
+ 	udp_flush_pending_frames(sk);
++	sk_stop_timer(sk, &up->backpressure_timer);
+ 	unlock_sock_fast(sk, slow);
+ 	if (static_branch_unlikely(&udp_encap_needed_key)) {
+ 		if (up->encap_type) {
+@@ -2946,6 +3011,7 @@ struct proto udp_prot = {
+ #ifdef CONFIG_BPF_SYSCALL
+ 	.psock_update_sk_prot	= udp_bpf_update_proto,
+ #endif
++	.backpressure		= udp_backpressure,
+ 	.memory_allocated	= &udp_memory_allocated,
+ 	.per_cpu_fw_alloc	= &udp_memory_per_cpu_fw_alloc,
+ 
+@@ -3268,6 +3334,7 @@ static int __net_init udp_sysctl_init(struct net *net)
+ {
+ 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
+ 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
++	net->ipv4.sysctl_udp_backpressure_interval = msecs_to_jiffies(100);
+ 
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	net->ipv4.sysctl_udp_l3mdev_accept = 0;
+diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+index 16c176e7c69a..106032af6756 100644
+--- a/net/ipv6/udp.c
++++ b/net/ipv6/udp.c
+@@ -1735,7 +1735,7 @@ struct proto udpv6_prot = {
+ #ifdef CONFIG_BPF_SYSCALL
+ 	.psock_update_sk_prot	= udp_bpf_update_proto,
+ #endif
+-
++	.backpressure		= udp_backpressure,
+ 	.memory_allocated	= &udp_memory_allocated,
+ 	.per_cpu_fw_alloc	= &udp_memory_per_cpu_fw_alloc,
+ 
 -- 
 2.20.1
 
