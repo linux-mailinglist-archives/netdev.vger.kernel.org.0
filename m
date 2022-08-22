@@ -2,67 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A39E159B834
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 06:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5817659B841
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 06:14:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiHVEGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 00:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38530 "EHLO
+        id S232519AbiHVENn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 00:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229499AbiHVEGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 00:06:44 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89DCD2018F
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 21:06:43 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id y4so7321733qvp.3
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 21:06:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=9kDbG8QwThdHvzMEekKGOffv+9+/7RJCAWGRiaKxE1A=;
-        b=dva4zr1sGhgRcsyLc5RRGhyaNLQRoQusHX1O1f6lCCBUqOyMaQYePjLYzsHYGXVmTV
-         ulsVseE6K+0MaqX+vcgSimNorbTJVJnocUwJcYWVjsHnezo3+OCQSsTTtcunGdWA216F
-         5JG1rIoZpnAZ7l9b8zu/VdTTZ3562dVoaW+8hUl9ZJExDt5y8230gpqFM389n9x0cGtu
-         u1bh5/9sqhylCEhzasScqcXVbpCiAYucPCPQfQcg4f0YH8/QUEdJhtbmeSItNT3Chimq
-         9H/9zEYexl3HA7djRjGxaLuuYSHMggxXz5WdK6vMI1jhdjorkUmpaYeWP17Y/tm5HYZP
-         nO+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=9kDbG8QwThdHvzMEekKGOffv+9+/7RJCAWGRiaKxE1A=;
-        b=lHEQvnpE3omu48R+uNSy1s7/w7m6h1NFWlCdrRqg9vYrklEpcfqbBgCNLeuEmanMBp
-         JY06A3tX2f44D9B67fRz6fhez/afqT2H+QR7xgjmy4GxIYIaQ3gb6NBr3Qk1dvq6O07p
-         VLiNrL8Yc9wOp0vQixPQq3fVxuGOukcKWrEZ1Zvg8jdiKqOFxGY84I7BRuuStYUC6gy5
-         scIArmEluLjxbbWslr7k37AhgdtOnliFKwg/asMu1d/jQxDHmmyDlOIqw4sUhNvNQa2+
-         cGkSSYgbc+YbHeKtQE0arGP3u+KFigzNHLFIr64QG1sPJGzAGUxtV/eW9lDlgz9J8t92
-         XjhA==
-X-Gm-Message-State: ACgBeo0YblGmmDxW9lShRC5gJgAO2uHJoVAjcaRtt+q3sPweKFD+gH5y
-        bHU14vi2hJrQP+nzqi1SWtg6j2Zhpw8=
-X-Google-Smtp-Source: AA6agR6bynx6ODBJBk984e6uYhYfhppXppuNHMjzSZ5wNWIvsRfg/rAjcu2pt+oBV1k3EhiR2Q67rA==
-X-Received: by 2002:ad4:5bef:0:b0:477:3178:6d4d with SMTP id k15-20020ad45bef000000b0047731786d4dmr13986225qvc.94.1661141202479;
-        Sun, 21 Aug 2022 21:06:42 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:79d7:bdad:c641:a462])
-        by smtp.gmail.com with ESMTPSA id do14-20020a05620a2b0e00b006bb0e5ca4bbsm8464549qkb.85.2022.08.21.21.06.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 21 Aug 2022 21:06:41 -0700 (PDT)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+9fc084a4348493ef65d2@syzkaller.appspotmail.com,
-        syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tom Herbert <tom@herbertland.com>
-Subject: [Patch net] kcm: get rid of unnecessary cleanup
-Date:   Sun, 21 Aug 2022 21:06:28 -0700
-Message-Id: <20220822040628.177649-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S230425AbiHVENm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 00:13:42 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3463AB7D1;
+        Sun, 21 Aug 2022 21:13:40 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27M4DGVa046672;
+        Sun, 21 Aug 2022 23:13:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661141596;
+        bh=WU5HjxtWjXnyPJ1rD+Irph5DqOHoAcuxx5L+dEWF/QA=;
+        h=Date:CC:Subject:To:References:From:In-Reply-To;
+        b=aB5cMCvUHKS26UpWNSJGSvo19vLFRkzPi03rx/GQBHa+r7BfMz1GMLiaPSVrGvtFc
+         ABn+2XMDlk6Lj5Wu9DMbElv5Y2cjO1y92A/X6qD8btyZdPfee0rAiL7ARmgqHEZHOL
+         3J+V/DD5Rxpf2LKoOTJi0gO+n2i9lWtL6krDDjcU=
+Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27M4DFbj080319
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 21 Aug 2022 23:13:15 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Sun, 21
+ Aug 2022 23:13:15 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Sun, 21 Aug 2022 23:13:15 -0500
+Received: from [10.24.69.241] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27M4DAaL047419;
+        Sun, 21 Aug 2022 23:13:11 -0500
+Message-ID: <130bc5c3-176d-f6ee-276f-5a04add15cd2@ti.com>
+Date:   Mon, 22 Aug 2022 09:43:09 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
+        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
+        <vigneshr@ti.com>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kishon@ti.com>, <s-vadapalli@ti.com>
+Subject: Re: [PATCH v4 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
+ bindings for J7200 CPSW5G
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        <krzysztof.kozlowski+dt@linaro.org>
+References: <20220816060139.111934-1-s-vadapalli@ti.com>
+ <20220816060139.111934-2-s-vadapalli@ti.com>
+ <79e58157-f8f2-6ca8-1aa6-b5cf6c83d9e6@linaro.org>
+ <31c3a5b0-17cc-ad7b-6561-5834cac62d3e@ti.com>
+ <9c331cdc-e34a-1146-fb83-84c2107b2e2a@linaro.org>
+ <176ab999-e274-e22a-97d8-31f655b16800@ti.com>
+ <da82e71f-e32c-7adb-250e-0c80cc6e30bd@ti.com>
+ <0ca78aad-2145-c88b-a26e-9ababa38df6e@ti.com>
+ <9d9c2f78-db3e-71aa-2cdd-e2d9aa2b30cf@linaro.org>
+From:   Siddharth Vadapalli <s-vadapalli@ti.com>
+In-Reply-To: <9d9c2f78-db3e-71aa-2cdd-e2d9aa2b30cf@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,39 +79,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+Hello Krzysztof,
 
-strp_init() is called just a few lines above this csk->sk_user_data
-check, it also initializes strp->work etc., therefore, it is
-unnecessary to call strp_done() to cancel the freshly initialized
-work.
+On 19/08/22 17:34, Krzysztof Kozlowski wrote:
+> On 19/08/2022 13:43, Siddharth Vadapalli wrote:
+> 
+>>>>> Anyway the location is not correct. Regardless if this is if-then or
+>>>>> allOf-if-then, put it just like example schema is suggesting.
+>>>>
+>>>> I will move the if-then statements to the lines above the
+>>>> "additionalProperties: false" line. Also, I will add an allOf for this
+>>>
+>>> I had a look at the example at [1] and it uses allOf after the
+>>> "additionalProperties: false" line. Would it be fine then for me to add
+>>> allOf and the single if-then statement below the "additionalProperties:
+>>> false" line? Please let me know.
+>>>
+>>> [1] -> https://github.com/devicetree-org/dt-schema/blob/mai/test/schemas/conditionals-allof-example.yaml
+>>
+>> Sorry, the correct link is:
+>> https://github.com/devicetree-org/dt-schema/blob/main/test/schemas/conditionals-allof-example.yaml
+> 
+> You are referring to tests? I did not suggest that. Please put it in
+> place like example schema is suggesting:
+> 
+> https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/example-schema.yaml
 
-This also makes a lockdep warning reported by syzbot go away.
+Thank you for the clarification. I will follow this schema and add the
+allOf and the single if-then statement just above the
+"additionalProperties: false" line.
 
-Reported-and-tested-by: syzbot+9fc084a4348493ef65d2@syzkaller.appspotmail.com
-Reported-by: syzbot+e696806ef96cdd2d87cd@syzkaller.appspotmail.com
-Fixes: e5571240236c ("kcm: Check if sk_user_data already set in kcm_attach")
-Fixes: dff8baa26117 ("kcm: Call strp_stop before strp_done in kcm_attach")
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Tom Herbert <tom@herbertland.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/kcm/kcmsock.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/kcm/kcmsock.c b/net/kcm/kcmsock.c
-index 71899e5a5a11..661c40cdab3e 100644
---- a/net/kcm/kcmsock.c
-+++ b/net/kcm/kcmsock.c
-@@ -1425,8 +1425,6 @@ static int kcm_attach(struct socket *sock, struct socket *csock,
- 	 */
- 	if (csk->sk_user_data) {
- 		write_unlock_bh(&csk->sk_callback_lock);
--		strp_stop(&psock->strp);
--		strp_done(&psock->strp);
- 		kmem_cache_free(kcm_psockp, psock);
- 		err = -EALREADY;
- 		goto out;
--- 
-2.34.1
-
+Regards,
+Siddharth.
