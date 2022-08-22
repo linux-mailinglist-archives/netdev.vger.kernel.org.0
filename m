@@ -2,73 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA4B959BA9E
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 09:51:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EF2559BABA
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 10:01:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiHVHuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 03:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S233046AbiHVIBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 04:01:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233436AbiHVHuD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 03:50:03 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21ED2AC63
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 00:49:58 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c39so12761832edf.0
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 00:49:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=Xt7sUJQ+aMJj9heYVbH58SruiAfLtzcBF4RZu/5f3ug=;
-        b=rsY19QIao4S4MIiPcndmxJ/lUJkZ3wgbfJ6gAIwmeUjwbKR8ITGonQux7yCtKKClD+
-         /OwFji4+MLFoLb9jC0j99XndeYi/bccJ+jpgNFTc0lXYBYLaAleiwPdpFUm1/rQD9Hm5
-         lJ2FD4Ij183DVlHaU+nbQTYL4TBqq7iJlmS0NfCRDsk/mCJs0LDnQsvdHmAXn1YqXrTn
-         7tGsT8SXdSKh9CThquNhCv28umaIkvq5evvrYsNitj9UHlU1AFG0U8yCurPDAESw4LG3
-         b7joR24coTZYEcXXLGNzzpBPOLg6ZXvh6/rVGQOnA87+IWLBGtQhxgDxJHo19HF9MPg6
-         JKwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=Xt7sUJQ+aMJj9heYVbH58SruiAfLtzcBF4RZu/5f3ug=;
-        b=0bIHDRThkJZKZ4hUCm9KzzdKTHMoptyMA62f6h9mMyolG9ANSW0DKDRsiu0kxdR1zQ
-         0kqnKAqavvEQ27qEDsIKvHTpLsXObMr4/5J0vicT4mE+TiTKdyDYmAwHCpt4fqQcUk1f
-         oHgUQUgWPdGfQSWLHCDqPBao4AWjp+9ZR10jeMS1eubCp2ycDcFRm9Uyr+Is5LodUY2m
-         9GGikod8nH/LP32hfNPhv25gHySuOUCMZNn1XocsDe4ZAVUT7uokfwB+ct//Ij/7w85M
-         8/hf/SSNjecCXDuRMJ6XOeqVrdhfcazHguaIgbcEZ7XpwwqEn540Eurh+USXvdKYx3c0
-         BgPA==
-X-Gm-Message-State: ACgBeo3AXdFE0m2wHcgIydrKojeSYJxxzGvw3qwRbUXbRO6gtO/jEBQw
-        V5N+eKEpt/kdXN5QOSqBZhXSgg==
-X-Google-Smtp-Source: AA6agR6OWI+3Yqy+/iaFOuEehpy2yEnM1di8bY439xitvmKJgJvBKjGbEJcnYOMoxDew0jloPWCZRQ==
-X-Received: by 2002:aa7:cd79:0:b0:446:1fee:290e with SMTP id ca25-20020aa7cd79000000b004461fee290emr13736652edb.163.1661154597141;
-        Mon, 22 Aug 2022 00:49:57 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id bi4-20020a170906a24400b0072af4af2f46sm5764857ejb.74.2022.08.22.00.49.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 00:49:56 -0700 (PDT)
-Message-ID: <b41b5065-c012-3b3a-2980-3eba25e0a071@blackwall.org>
-Date:   Mon, 22 Aug 2022 10:49:55 +0300
+        with ESMTP id S232273AbiHVIBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 04:01:15 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 367532A41E
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 01:01:14 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 8E36B20504;
+        Mon, 22 Aug 2022 10:01:10 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id RGcnhViUoZ_Q; Mon, 22 Aug 2022 10:01:09 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 4658C2063B;
+        Mon, 22 Aug 2022 10:01:09 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 3184C80004A;
+        Mon, 22 Aug 2022 10:01:09 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 10:01:09 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 10:01:08 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 8334B3182A10; Mon, 22 Aug 2022 10:01:08 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 10:01:08 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: Re: [PATCH xfrm-next v2 2/6] xfrm: allow state full offload mode
+Message-ID: <20220822080108.GE2602992@gauss3.secunet.de>
+References: <cover.1660639789.git.leonro@nvidia.com>
+ <de9490892eefc33723c1ae803adf881ad8ea621a.1660639789.git.leonro@nvidia.com>
+ <20220818101220.GD566407@gauss3.secunet.de>
+ <Yv4+bFE3Ck96TFP3@unreal>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH net v2 RESEND] net: neigh: don't call kfree_skb() under
- spin_lock_irqsave()
-Content-Language: en-US
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     den@openvz.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org
-References: <20220822025346.3758558-1-yangyingliang@huawei.com>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <20220822025346.3758558-1-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Yv4+bFE3Ck96TFP3@unreal>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,22 +68,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22/08/2022 05:53, Yang Yingliang wrote:
-> It is not allowed to call kfree_skb() from hardware interrupt
-> context or with interrupts being disabled. So add all skb to
-> a tmp list, then free them after spin_unlock_irqrestore() at
-> once.
+On Thu, Aug 18, 2022 at 04:28:12PM +0300, Leon Romanovsky wrote:
+> On Thu, Aug 18, 2022 at 12:12:20PM +0200, Steffen Klassert wrote:
+> > On Tue, Aug 16, 2022 at 11:59:23AM +0300, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > Allow users to configure xfrm states with full offload mode.
+> > > The full mode must be requested both for policy and state, and
+> > > such requires us to do not implement fallback.
+> > > 
+> > > We explicitly return an error if requested full mode can't
+> > > be configured.
+> > > 
+> > > Reviewed-by: Raed Salem <raeds@nvidia.com>
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > This one needs to be ACKed by the driver maintainers.
 > 
-> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
-> Suggested-by: Denis V. Lunev <den@openvz.org>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2:
->   move all skb to a tmp list, then free them after spin_unlock_irqrestore().
-> ---
->  net/core/neighbour.c | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
-> 
+> Why? Only crypto is supported in upstream kernel.
 
-LGTM,
-Reviewed-by: Nikolay Aleksandrov <razor@blackwall.org>
+Because it touches code hat is under their maintainance.
+They should at least be CCed on this patch.
+
