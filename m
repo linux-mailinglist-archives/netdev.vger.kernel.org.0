@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6858D59C23E
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:10:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E358859C23A
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:10:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235980AbiHVPJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 11:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        id S235916AbiHVPJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 11:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236082AbiHVPJD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:09:03 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EFB3C159
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:08 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id b2so8315561qvp.1
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:08 -0700 (PDT)
+        with ESMTP id S235998AbiHVPJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:09:05 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01EED3DF3E
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:09 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id e4so8313122qvr.2
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=message-id:date:subject:cc:to:from:from:to:cc;
-        bh=Y7jDliXrM1gLEuvnT6ODufIFUhOE42WZ0KzkgZRc2kI=;
-        b=KQlMnbyXvCgXEBgTLXyFje20zWTiPeURe4IFEP35YQTWfeIr4drvsQfEm0iAl5Qvrg
-         dXt7PP/jZTbZBpu9pX++zATdcyj2k3uVZsWhaDnyEi+EiKfZifXQPM0eEWFQJXuBVx79
-         NyC82dhRo3VxE3QjT1P4PUQgJiYjVcrkcYH8Y=
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc;
+        bh=KVNuV0nawU5p5zFBSk1Rmd1N53t5M5FBZ+StSlZLmB0=;
+        b=XC81aM+C7mDXhBljNn0P736uUZZKfbRNFo5HNGdfLnjtQ35dfwMt58RKBzm9COhJGn
+         2dSeHYXXMeXi3S3kZ471pNDrNFZeeVel65ALZQeEsvUyJkT4QzYu3n+0IhGGLlaRYmyc
+         wFyuxY/wQ2FkNM23YMAGSnYoFzpi1kTqV35mE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Y7jDliXrM1gLEuvnT6ODufIFUhOE42WZ0KzkgZRc2kI=;
-        b=0dKLZx66I7zLUcCQAm+TPYWdWGrsv68W0sY/wzAPBts1M1z7WnPga8HjZrTSEt6TRr
-         tC62sv26+F7iSIssMvXpzGZIqJwa8qvb8vFWe96zbgSjxQqRFMnbEBMRjgcGa68CZvyF
-         sA2DWoYEbx3HQ5TSf01PX2HXV7+9pkUZ48Z7T0Z+7xfeYiBg/i4SoofqF2jzVyGUh1KL
-         NFncG5GlPLTZiTjQZ8PlpPZDdsGXb8X+/wGXzqZ1Sdd7oeJUVPnfWSdF+3iinjjJwaZy
-         nNpNar0BZyjuQL5s15L876dyAHoqbHrD0i1PN8FpS0eGMVyXTTnSdWGdUP6kF4NXZsjG
-         BU8w==
-X-Gm-Message-State: ACgBeo14rp9CTAji9KUhGZV5Wkpvh5z7Ee4mqwVCCckZBPh4nCks5hBb
-        DTPy+9B8EpjfwYPK//SLGGEJ5A==
-X-Google-Smtp-Source: AA6agR56YppDGQ1ReJ83CFN4UNl3PrzKUoFrQeEoWCKMqPCI9Khvj0vUcmvblT0QWImqMDPTRVyZhw==
-X-Received: by 2002:ad4:5ced:0:b0:496:ea19:65ed with SMTP id iv13-20020ad45ced000000b00496ea1965edmr2920260qvb.35.1661180824419;
-        Mon, 22 Aug 2022 08:07:04 -0700 (PDT)
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=KVNuV0nawU5p5zFBSk1Rmd1N53t5M5FBZ+StSlZLmB0=;
+        b=LlUQD1DAtZJ+yMV3jseHXOYnXA8OFX30pdl818+fAoFWdDh81tbavhU5U4Vk3Zief4
+         QEK+mfJ2UEW7B6MyxuH9bUbp/kBTBlzvY/WZ3vVD9Dj0OuCla9gEZz8taXAOh7c0dXN7
+         Li/I8MamiZ0m4Z+lzJHHOm7v/kW1UlDeuJyfMzC8LnAb+j1/ULrsS55/RIzsMREnuBCH
+         +xAGHir0sEGj5kj6IFsyH6lTLxFJLm0aP2AmmqIteF7hBQUy5eLhfIH7UrdhVeEV4IGC
+         rOHIQ9/qLQjg+nqhlUcDGY5ts3bSf+sZOIm7/BKgL6+0xtKziwUw1dmb4svNb/waVBTk
+         JKyg==
+X-Gm-Message-State: ACgBeo1dG6V6IBXX3TSnlV6pCtqUU3+mBU56PHnGn2l4rns/cAgAmTq2
+        5VruZ/edq4lUwvr10v4X7OfSDw==
+X-Google-Smtp-Source: AA6agR41cPOQFxAY/KdscTR0eCQdAWgtSQrZay4PBKCqX+mVaMgaJrC/JWnDMwY+cLn4s1v0V0GMJA==
+X-Received: by 2002:a05:6214:76a:b0:496:c298:d165 with SMTP id f10-20020a056214076a00b00496c298d165mr13556874qvz.100.1661180825917;
+        Mon, 22 Aug 2022 08:07:05 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b00342f05defd1sm9380836qtb.66.2022.08.22.08.07.02
+        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b00342f05defd1sm9380836qtb.66.2022.08.22.08.07.04
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Aug 2022 08:07:03 -0700 (PDT)
+        Mon, 22 Aug 2022 08:07:05 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, gospo@broadcom.com
-Subject: [PATCH net 0/4] bnxt_en: Bug fixes
-Date:   Mon, 22 Aug 2022 11:06:50 -0400
-Message-Id: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
+        pabeni@redhat.com, gospo@broadcom.com,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Subject: [PATCH net 1/4] bnxt_en: Use PAGE_SIZE to init buffer when multi buffer XDP is not in use
+Date:   Mon, 22 Aug 2022 11:06:51 -0400
+Message-Id: <1661180814-19350-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
+References: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f7ef1a05e6d5ccf6"
-X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        boundary="0000000000001045f805e6d5cda3"
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,33 +68,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f7ef1a05e6d5ccf6
+--0000000000001045f805e6d5cda3
 
-This series includes 2 fixes for regressions introduced by the XDP
-multi-buffer feature, 1 devlink reload bug fix, and 1 SRIOV resource
-accounting bug fix.
+From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-Pavan Chebbi (1):
-  bnxt_en: Use PAGE_SIZE to init buffer when multi buffer XDP is not in
-    use
+Using BNXT_PAGE_MODE_BUF_SIZE + offset as buffer length value is not
+sufficient when running single buffer XDP programs doing redirect
+operations. The stack will complain on missing skb tail room. Fix it
+by using PAGE_SIZE when calling xdp_init_buff() for single buffer
+programs.
 
-Vikas Gupta (3):
-  bnxt_en: set missing reload flag in devlink features
-  bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
-  bnxt_en: fix LRO/GRO_HW features in ndo_fix_features callback
+Fixes: b231c3f3414c ("bnxt: refactor bnxt_rx_xdp to separate xdp_init_buff/xdp_prepare_buff")
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c | 10 ++++++++--
+ 2 files changed, 9 insertions(+), 2 deletions(-)
 
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  5 +----
- drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c     | 10 ++++++++--
- 5 files changed, 12 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index 075c6206325c..b1b17f911300 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -2130,6 +2130,7 @@ struct bnxt {
+ #define BNXT_DUMP_CRASH		1
+ 
+ 	struct bpf_prog		*xdp_prog;
++	u8			xdp_has_frags;
+ 
+ 	struct bnxt_ptp_cfg	*ptp_cfg;
+ 	u8			ptp_all_rx_tstamp;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+index f53387ed0167..c3065ec0a479 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c
+@@ -181,6 +181,7 @@ void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 			struct xdp_buff *xdp)
+ {
+ 	struct bnxt_sw_rx_bd *rx_buf;
++	u32 buflen = PAGE_SIZE;
+ 	struct pci_dev *pdev;
+ 	dma_addr_t mapping;
+ 	u32 offset;
+@@ -192,7 +193,10 @@ void bnxt_xdp_buff_init(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
+ 	mapping = rx_buf->mapping - bp->rx_dma_offset;
+ 	dma_sync_single_for_cpu(&pdev->dev, mapping + offset, *len, bp->rx_dir);
+ 
+-	xdp_init_buff(xdp, BNXT_PAGE_MODE_BUF_SIZE + offset, &rxr->xdp_rxq);
++	if (bp->xdp_has_frags)
++		buflen = BNXT_PAGE_MODE_BUF_SIZE + offset;
++
++	xdp_init_buff(xdp, buflen, &rxr->xdp_rxq);
+ 	xdp_prepare_buff(xdp, *data_ptr - offset, offset, *len, false);
+ }
+ 
+@@ -397,8 +401,10 @@ static int bnxt_xdp_set(struct bnxt *bp, struct bpf_prog *prog)
+ 		netdev_warn(dev, "ethtool rx/tx channels must be combined to support XDP.\n");
+ 		return -EOPNOTSUPP;
+ 	}
+-	if (prog)
++	if (prog) {
+ 		tx_xdp = bp->rx_nr_rings;
++		bp->xdp_has_frags = prog->aux->xdp_has_frags;
++	}
+ 
+ 	tc = netdev_get_num_tc(dev);
+ 	if (!tc)
 -- 
 2.18.1
 
 
---000000000000f7ef1a05e6d5ccf6
+--0000000000001045f805e6d5cda3
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -160,13 +210,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINqwibL4aykYaWEVCkiDyPrnnOKkLJ8E
-2xI+PhHIhQXoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgy
-MjE1MDcwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIFGFm4Kt0oRFDyX5MgIUuydKClRE/dj3
+tKpvA5pwETMSMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgy
+MjE1MDcwNlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQCNTF72ztB+yNLtylR4c8l1dnPJRXrVB8+YWbyWboyP9XaUyatc
-XsfF1umG9fHOGXICMKVvfFH5MgB+Sq/j6VkpPgx0A3cx4mhZCH1LYMo5qHs39J4d3MZwlkUooXzm
-RjP8tyVVIwrMxexhgjl8aneUFX5QFvW4bzFxMZuKXCJLKe9rnEzNItt7+H7x35xFQiwCohVWJOao
-WC/VVTgM6+tDuORhKlOV+sKhO3Y2oMovwRVGjcrSLxF4ho+SSnxCwNaeJsOFyKFg7P3FcoaEZI7S
-FcZ3qAm9on5BA04XAqBC2HJptLbp2AuU3D4/3rEvK9MjEwJ261FwZy3mQsXx0JLi
---000000000000f7ef1a05e6d5ccf6--
+ATANBgkqhkiG9w0BAQEFAASCAQCatgbC3NngnKTfmUzC2tRffoioxqtHKc3oJeEYoApV3g0VIrBT
++p6IqxQDcfZBjlf1Go0VfYJFI9vHB2kgak5C6/EOGqOQgfp8GP/C1eYiI23+prNpP7Orah3c3DH8
+yFKxOB2tjTe1oUgmHODzW6pmdAX7pgEu0ywJXINkK60Dv+ah+I6HhePCr0F7TBwJSGZUggOjCOUy
+U2blHTPv35xpj+gwBg5ei/5M3o9raR6+WC8p1G0xqiZXJSkydhrtwsGaZoGMzW+hbXN3ZHnAc49B
+v7R4qPabU9Ab4448bn23XamlojeHRSw959IlcjPh6GysKbsOl549W4y7ajFzZDb0
+--0000000000001045f805e6d5cda3--
