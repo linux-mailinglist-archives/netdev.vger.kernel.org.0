@@ -2,283 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 361E259B764
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A72F259B775
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:13:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232276AbiHVCAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 22:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
+        id S232129AbiHVCMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 22:12:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232272AbiHVCAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 22:00:00 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1656F21824;
-        Sun, 21 Aug 2022 18:59:58 -0700 (PDT)
+        with ESMTP id S231694AbiHVCL7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 22:11:59 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD74721830;
+        Sun, 21 Aug 2022 19:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661134315; x=1692670315;
+  h=date:from:to:cc:subject:message-id:references:
+   in-reply-to:mime-version;
+  bh=78YdFVWcZoZhkv1NVUGW31kEaECXwO+E+G/qPSQW6CE=;
+  b=W/ogPRAHKvkWGHaeJwu1BdfXzzN6zIwdZhVnUKZIcnbt/bGoxbkoQmMK
+   njXbpjpNyLm5kft8G+fzU7QYgiOD06CrU39FXr83dPHaOg3TnwZnP3AzG
+   XTqXCmNcxLSFv8cbO36Z8hXreQP+rnwowWLu1wZsORHc0VBUNIwpFeeLd
+   VysuSoR1jePUJwzBIFtQHxGKOmlerbJad+kquCRkInfJJC8HtEuW1Qzih
+   rgqhCYgPzpvl4iirFbX7WCKqunPYADA+Xruj+Gt5GL2zGhKoUXRVdqCX4
+   O7XhunBnPb1gOnXnuoiNzgggJfDi1NqHlU3iJJ/3Dl/vyN6j7ZtBjdiE+
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="292044198"
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="292044198"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 19:11:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
+   d="scan'208";a="585320276"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga006.jf.intel.com with ESMTP; 21 Aug 2022 19:11:54 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sun, 21 Aug 2022 19:11:54 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Sun, 21 Aug 2022 19:11:53 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Sun, 21 Aug 2022 19:11:53 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.108)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Sun, 21 Aug 2022 19:11:53 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=APhkRYxaBZOwTxgFMNbolr4n3DVX6EraxkjMQ7X7gAOjfBhBStpiUIdDsAdnKl2trMG4pwmQrOIZR3Nd10i+1CaqGPy1vAmNjuP7EDQk4nbvJduj8oGCw5TOly+0KIRluCG3yPT99uNsPLqggRaqJ+M5vLZovlPfdzm/8KiDTXqxNUj/Shjsa6fZxtRAOAlJLGYcGTgFqPo1uPy7ET45/7oSZhmiqgAKGFMB0MzypRsut7JHetOVbkCt4GgL0KSI8vSuY4gsFHJ5uk8TuQ3WakfGCNRs/wwOMcwfxOoaEz9sX89xBC1706+5Ww4jtO1SXhDY4mo3fJGmQX3a7qsyig==
+ b=hSPfGxouI/uVT8DD2X3g5vpiDx7hi3ey9gDOyIlUAlRH/N7e7WqxTZ6VvBnqlqDMMSq7BoJYREDPqrH8fYr7dL6y3jqoYoNv8/UJrHRzJmjjiMUcJGxBlqPfZ+ttkmQ+wu86gYtbcbFvhuw/Cegm4tdUkC5otzgdHetOs9PkEf1jTNAjlfxs1nLai7Hou2YIepSR/86T/Zn2b5wu2k50zejgQGZP+6hE50G3r7qbUKOAY1aLvfPSufQPlQQNSTtgZbe5qoFZlZH4q3NY/fZULVk9/EdUScsmApD17P2PWzSdSYrm/05XE2evviYU1uFC7ENI1A+mVDq+1d/0OKfnlw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ESz4/42WVzu7Q5x0Wg2X89Wf44zaf8ndVEbb8/saNxM=;
- b=A0XpPMrkEpnvsDJ9bsaEAsw7DPIgkcvPTqk+0DRBY1cqbRqF7xYyYvQHiD1nAnYYdyX7PZk/USgJGXgi4G0TPlWZAEFhY9PbdweAKeBDyhPIEzk0qJCVoaJ/FScrF7SupKRCgnPhAfWcXnEvLV4d8FoKKNjw7GMCTCGvGi657WPomrRfLJQBPTWzAQR1Rx9otS20MFgU5UH0VYuoTjsHmtK8TImEpAP8oICpkDnK42ciCMbTkrQrHK6XZVHZEJcgZH9rKh08vNPL0kTHveQVogKmJiUfp4T/2Yy2x5g9ja80Tjdk9TCzuQa8Jejhl37ZSJbrZ8Fw3rRTxo2aOYqRvw==
+ bh=4QS46K2SjSk7QYsRrN9eqQROkEiFpdvrl4ySRGovL7E=;
+ b=GxT1cvx44ULZkyYW4VDEFFodvpamZ17fa7PDNdwnh/OnBtxbaMqhXlvTHy7cnyGntRRolySEAvbKj8EjeBiQ4AjkoiJFA3gggSGp6yAz6eLJwScnqyKpfMq4SFfgnkEkIR/TRM1IYS/iJ1aMFLBjnVcsWZpWzyXO4SYMZQ4vnsPNQLOLDPnWcvf44nAI1jPpB6Co/SWhFkGscpkY6/V0Y5E8acezd060Qv0fqjv0AQufxHaqLVQJkEsJEcNAsU2aWlvU6XOmq5ItUW2cBn1EMVmx1dkzl++j1CAUJCFn98Gq33/gOOy9tIyAnT0fh7+8Ujr6yHRMH5wVg0fG2yn9EQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ESz4/42WVzu7Q5x0Wg2X89Wf44zaf8ndVEbb8/saNxM=;
- b=WgOWX8hVHCETL4AQ3JGFNNZlU83npPcpfijHzQsHEo97P7uhYG/GKI1+GWX7Ra1RWcRxK73VtVOT6QrtG8Bcy8t7FSuetR3LaPzPI9D/9hVRVri7vQrDGEE25xzECyPP2azutj/nLWwMIg0Jb04SeGt3gpmzWmd4J5NMiJLisNA=
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
- by AM6PR0402MB3335.eurprd04.prod.outlook.com (2603:10a6:209:a::19) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
+ by MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Mon, 22 Aug
- 2022 01:59:55 +0000
-Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::a569:c84a:d972:38ce]) by DB9PR04MB8106.eurprd04.prod.outlook.com
- ([fe80::a569:c84a:d972:38ce%9]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 01:59:55 +0000
-From:   wei.fang@nxp.com
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH V2 net-next 2/2] net: phy: tja11xx: add interface mode and RMII REF_CLK support
-Date:   Mon, 22 Aug 2022 09:59:49 +0800
-Message-Id: <20220822015949.1569969-3-wei.fang@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220822015949.1569969-1-wei.fang@nxp.com>
-References: <20220822015949.1569969-1-wei.fang@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2P153CA0029.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::16)
- To DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Mon, 22 Aug
+ 2022 02:11:46 +0000
+Received: from MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::d446:1cb8:3071:f4e8]) by MN0PR11MB6304.namprd11.prod.outlook.com
+ ([fe80::d446:1cb8:3071:f4e8%6]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 02:11:46 +0000
+Date:   Mon, 22 Aug 2022 10:10:58 +0800
+From:   Feng Tang <feng.tang@intel.com>
+To:     Shakeel Butt <shakeelb@google.com>
+CC:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal Koutn?? <mkoutny@suse.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        "Sang, Oliver" <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "lkp@lists.01.org" <lkp@lists.01.org>,
+        "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter
+ fields
+Message-ID: <YwLlsr0jNq5m6v8z@feng-clx>
+References: <20220822001737.4120417-1-shakeelb@google.com>
+ <20220822001737.4120417-3-shakeelb@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220822001737.4120417-3-shakeelb@google.com>
+X-ClientProxiedBy: SG2PR02CA0034.apcprd02.prod.outlook.com
+ (2603:1096:3:18::22) To MN0PR11MB6304.namprd11.prod.outlook.com
+ (2603:10b6:208:3c0::7)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ad1e471c-5bad-4923-542d-08da83e2029d
-X-MS-TrafficTypeDiagnostic: AM6PR0402MB3335:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6355a0f8-9e87-4525-6e94-08da83e3a9dc
+X-MS-TrafficTypeDiagnostic: MWHPR11MB1886:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NAFGjsaac72NI51FCHiSLITXu2/hj8thJtoMp4W9WzXE7oPpqDqigDuFKU4UwrH5iWx0gQurtakzNgt7oFuIReJuwDpqB++Z0LwwfJpRhk6AFunYBwwG8Xw2VBp1a5bjVQHtXt4SN/3Sw3kRGLlieaHZTRN51eqWZoaHtVkstzvEKUeYtuIFJ9secRZLq90FDifnCsFTaWbEXpbU6MIHVyfH5f4AnId/t1aouRuOpTb2IAU5a8c9hrGtnjBA/NzoRxmTeCI4mnrN5TnqM8qVoCSXitkyLo0suY4YLHfCM+QHTwHsMxJ1/fcJ7/GwRls61SuNf2Rd7vUaaydjTd5yeLS9mhZrOq6Lb/lSy5vHtkbUdIMUifumbquv1tLyTlc2C6T8jwJvw0EZUyL4zYJ/XJYZZNc1sE9OHig+1xX8HHT5xRzR+2sSgJPNRZfj28fSf5cyx/teL7zJdHYyx2XsmO4ZD5HLLeFEKy0tt42fhc3jaA1K0HBhNsY2RO8e4UDhzpeIC9VGQ3xtnecYxMStPtiBEQjMCYu1bUKCvBufBLMoMnFFMP8pCUFn9XbNhmz9/CRgRAnCsoFi8SF0DpBCoc9V1Nq7e7Bvh/AZaTWZWoMIT8XazR2Efy7Jq8By4ngzOBh5YyzNlu224jIWOjrqyP74Ul/twsF3HMADQio7jawzxQtJS1W7NQN2A81hBJTTQH50mlesIFja6xqYg36y0YaNstnNIlb7kX/y8LiS/bC5lPjSBemI8qyou53WvHh+hUWo2XNApi4pvm05d42tu6eaOxhdTMPBuiOaUnGHlyE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(66476007)(66946007)(38350700002)(4326008)(86362001)(8676002)(66556008)(921005)(8936002)(36756003)(38100700002)(6512007)(6506007)(6486002)(1076003)(52116002)(316002)(478600001)(2616005)(2906002)(83380400001)(41300700001)(5660300002)(9686003)(6666004)(26005)(7416002)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kDTuGsoA2UrOQU2vNAJUHmZep+OSBorVFbsozBxAOUF39TOID5ISxQm0A270GcXePKZw1KimfYyGaEK/uiAKlT1hazQN0MPdYM1xWc3sI5vyNWm9PUGOFslSnKWyFAgeRHoglTLbIuLsC5C3/DHgg7tCm2QL7EJfpj/3EfjGAZhF0ii/mlwIVWmnxAynLUUr9D15+aOFrH/LPHnVZNgYhxTs1Shx49/+FJlkgCGUiQw5eSyAISkkCtTK5hBGVhV3NQa6nWbBFv6FKocDnOlIcB+w+WMlpjY/SzPe9vO5+WHCck3Tjc9Pq/w+z2PxHE+QtD2WOnh1/JvZxz6v4um2KNfcLUwLrVO4j9wL6sXZoODZ22ncBhRp64Eji8oIvxyzIwiLsVqwspgkDi5AQg6l1B2p+BewMtVfHPFbgBeUdzT3TeQwdMUEyMUOev7d16mzdSA4Ckbag/om4QjiG5l3HvRUzC7G6iAFNLGT90rTdnZXrHtBzgQ2DLESIEDTlZpnoxbbSInkgiEoy70JgQEcepkYNqjVGhLBKV0lvuk7TmXBd5Z0DRZPvZKvhOjjMEZTCh5/IfGpLC2+EKlO2ABx3FAanOFqmVlTa4bAvK90yyXYmRMxchsiWtS0mpQW3N22k7ib7IpP4QVZUjSPYPZuaGC5LWIa6Zh2EolJonLhtzP2JH5Wp3b0pS6TBrcjU6oI0oVQf5cPPfdIz75gHpicbA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(39860400002)(396003)(346002)(136003)(366004)(186003)(8936002)(66946007)(66556008)(66476007)(8676002)(7416002)(316002)(38100700002)(5660300002)(6916009)(54906003)(4326008)(26005)(2906002)(478600001)(6486002)(9686003)(6512007)(82960400001)(86362001)(83380400001)(33716001)(41300700001)(6506007)(44832011)(6666004);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vq6juoeDQaAdsNnBQLwV+e+ilbuZORlXbXunEOvvfxCL8Gou8se3zTksYmPp?=
- =?us-ascii?Q?77ITMZ1ri7AemZ/waNgZDRLNMdaylPytzjB5l5Q2TM4msU630/1xzVOgig9o?=
- =?us-ascii?Q?EwGKhgiolyOcwclag6QA31SHQ5bQZe/pykM7feb3Gi8gMzhPUMF284ECyqEp?=
- =?us-ascii?Q?u9RSgvDm4pKss72BwnIcBuVQ27wo7VWBk6nTSL5jn866uL/ZE3TwWz+gMEAx?=
- =?us-ascii?Q?XxFl6oce///cOngUFW5TwVm6on1ta3J7rzlWpnarv1AZdss2c4SQOOsnV/iF?=
- =?us-ascii?Q?KftJqaYAtq9oBv8UUWhktwtw7LkAGvSnB33+Z+Q2Aber3N0B7JVsPdxO3VGl?=
- =?us-ascii?Q?/IBBxTz55iAdCoXnDI7b4+zK2NJkGt/kYbMhze8fxwgxplehAfXV6dm/GZ7S?=
- =?us-ascii?Q?jvyTy6jc2x/2k4XWEqaHZxJQMpeD0KVDCJDhOSpc6JVi0x6/r7hr71B2slKt?=
- =?us-ascii?Q?JEwkNZpm8cr5rRbRIMoNkWlu03mzfFRkKxWVNd4tOswXz55UVLwSdzCTH6QO?=
- =?us-ascii?Q?XoIyV77Od0beyYuNiOwp/M/w9J6uQyBSlu1yytj83qjH7JFRrAhR4/25ix9K?=
- =?us-ascii?Q?i/Vn5rc+JtRE2yqKl2Rz+oSn3Yid737QB7Kkuom85r0/A+SHtCDMqHpjVsPd?=
- =?us-ascii?Q?Ka+nJhxHGTJmy1yQ3vZY5AqWTINRNf2EbHHqFoOCpR84Yzige9Fvuj/P3toB?=
- =?us-ascii?Q?vo3KvqS8ObM36PArdNnvp1907pYNeRMQP22EeRMCtefbE520iI5nsLGEgMIf?=
- =?us-ascii?Q?UUf/mbbbBm+DqtDkVjg/BU/LqYYlI7st1Oh7Jinx/UlBWLN+q3NKDjWDi/HM?=
- =?us-ascii?Q?Z5+CNWf8ASEdjyMiWsAEIt/UevBD8puG5EZuQ0pP5RaMwgkBCIQog8tED/CY?=
- =?us-ascii?Q?Bf0vCr20AXAbTbcquLVq6OODz2edw/ptVWGmUWobcae5LeMbpYHAG/2+UZCi?=
- =?us-ascii?Q?o0DnySKfb14p1BQDAm6pkSo9kRmdZsQAdGZQmxVLoC1jJK1oULLKIhGQU2ow?=
- =?us-ascii?Q?c+QnORt3IBLePuuJxxdgGqwiBcFhwXmhqjSCttMl7zhhmSR+0ZPt5QAvWN8F?=
- =?us-ascii?Q?ORTtycOywYQ88arJqo+1ZfsyQgh1p5US/eDPXENE70qHMbRwQ7bUxAxkh9VJ?=
- =?us-ascii?Q?+1U9WxkTl57F3bSBt6L1wNu7EWZnCPnE4Ko6uvFlllIZce+4K7BgWdApG3r5?=
- =?us-ascii?Q?4+lkffOjmatmCjg4j1GQugHx+Xn1hs7uFAUzdjUfP+cYHRLuO64gaOmWUo8v?=
- =?us-ascii?Q?V4eBqnM82bgTzSYCM/vE1q6BIY9Fv/uRlIjMyOnROnM84p8HWcxjioTPj2B6?=
- =?us-ascii?Q?AwM50BqeTGt148FSTfYOOsFpbc/JBN0BcR6jQPXWdXzw1CdEv72DbI+n/+dU?=
- =?us-ascii?Q?dminhSD/hE6viXF0a02Wrr0QrLdb1tU6W4wjoyslDhIvP5Htlk9EBpoSdWnn?=
- =?us-ascii?Q?2muJro24vWNNvPMMiH5KnaPGY0OpZQ5D/bMjKpUuxCc9Z7vExas7++3ugIzM?=
- =?us-ascii?Q?rBizMX3AcpgF41hZMkOOhfgirkybPzmAYpjhEp6rjOnwPVeZtaQaRv9t4Z32?=
- =?us-ascii?Q?0oj9a1Sz57ypRHCgwH0z/mkQ/t+mRCV6c3q8rMea?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ad1e471c-5bad-4923-542d-08da83e2029d
-X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2Zh8NzrPLTbsQX5cKrejTA+nIDFMBgb6ddZ/wFV8IFrc7sGDV+AeSYM8k7T7?=
+ =?us-ascii?Q?jmpCIPP+qf7gVzUycm1uTlbOoDV8cxQaZ9hBa/0TkS3ifY3bGzIciqrfjp4O?=
+ =?us-ascii?Q?n4T7NgxZ0B1fRPdGPynthXym30nv2ECDhAyyvT80zHl2A5Z2MiDoPksOHno9?=
+ =?us-ascii?Q?7j0iBbC5voOgG3ntu5FYXYBwE/msOCEInOij5ukyJsrwiqlQG6o6h7632GzO?=
+ =?us-ascii?Q?1kJCH2hzbqtX6gx6yJc1PR+VGQXjl7BqM1zncx6deU/F0ktRDr1CifPHi0dy?=
+ =?us-ascii?Q?wkCbHHwdt7+mkVichVwB3CsqWQeFsE4pf0s6Djbqn2r8c8FlR80R3fz5dxe7?=
+ =?us-ascii?Q?LeaYogZRpWJ5956YWjPdg+V3pyJvyadioghJ0bC5YageDcaSMQkr12SwpK6f?=
+ =?us-ascii?Q?2wpVoj4s9NGsQd3BUkOdVkAfXAvGqTbDuxUgdY1plgaO5vrT2bfp5ab40SGy?=
+ =?us-ascii?Q?k3aE1+foxTZE8xgv/cnD+RX8nwVPf1YvMyMv7UlKteffxZbMIhLZhifV9HgP?=
+ =?us-ascii?Q?kQSzy0q5GX5OVF6U9Y/l1gFWPhwjwba/yZt3Rl/DDzGfSxTjYRErAxBTjRjl?=
+ =?us-ascii?Q?0PUxOPePDvgz3wBBASMH5HIEkZt1zWQskNxN2/E9OyTiZn1VHAHqok6R3Znh?=
+ =?us-ascii?Q?laKm9eYHCjF867ojxQO2GvkE+A39L2W7i2SxLM004H9jkewr6+9E/SY/x9A2?=
+ =?us-ascii?Q?Vn3RGRCej6GumzWWCRTrn6OKT41JyWnluuYW0se2Afi3NnS1OUAnV0z/qKlt?=
+ =?us-ascii?Q?NpLEhG4UQT6g6j4I0jPqQxVvD+5VCRxHzsc1roMUGYhlT5MAWnmY7geI0aVd?=
+ =?us-ascii?Q?8fwIZn9bIE4rFjl7a9oI79bPvLdFxmMEijrAz4FueYBK2p2iqb/ak6t010YF?=
+ =?us-ascii?Q?VZZR9OnR75ZbZkw/wRW61QtHeS1/rH73kZe5wuWDjh1KjG4Xgc0xGaSD1QtR?=
+ =?us-ascii?Q?nhnhXnXkkEQbSrZAm4gnrg+SpSYrimoIV5zFPrX16gCSgLhv2S6T5l3sHi6i?=
+ =?us-ascii?Q?H8nSe3d3dxkJ6fAajYHVdetCwRT3gQ7ajJ2OgjYEcUGWEcdhmM08Wkcj6bD7?=
+ =?us-ascii?Q?/BoRAMmUcSV4RA1dvlt1ujgyJVX81NNpEVu0q1eQ8LcictlIX/E/W6KMNvDN?=
+ =?us-ascii?Q?t4/SeemwgEyZRq6mpKrPejCKkDOAMhlG+kV3KZcmQe1qpw6z135QvOr/V+yV?=
+ =?us-ascii?Q?jndBkmDEPsv3T9FpZ14MmIp0DJHdCdMgFDiA/KDKrEXJ8xRHI9qA9l2CPczd?=
+ =?us-ascii?Q?6VHqe7/Xk99FLgn12AC//l6LUxcIZCYOuxzSAFkXkNzD7whloB3UiIuPJQbP?=
+ =?us-ascii?Q?V32UNoixv5QaB1POqmE7S5gsLl4j5W6NuOxTKIc87G89hqxA/EmvBiTCe+ZG?=
+ =?us-ascii?Q?FsAbVZNqlxmKZsAFpEhosJEYVQ4T/y3+F3foXMlTZ2WGkxZNRgvDqXsUgBaA?=
+ =?us-ascii?Q?Kn5VZP/d9fdz6gm6WCpKiOMymgwSWZztaDP1+lNRDDsBPQKB8YCjManctVQm?=
+ =?us-ascii?Q?HseUrOgyjzUhFaEzd+CMv5dGyan/DeDDqGGgCjeSRCFZ3E5Nrn1/GYjaJWEW?=
+ =?us-ascii?Q?IYOMsgC1NPEGjk4XrAel89cnHtIbHp+rvBa4g0r3?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6355a0f8-9e87-4525-6e94-08da83e3a9dc
+X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 01:59:55.8402
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 02:11:45.8519
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: g/4ctXldwafMtTQG0/splk9TVhecOpbMUnHWNrwERAdXGpw/m9sl2nV/6zvuO10Iiy6h53qTRlIOY/krZ98gdw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3335
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: pIlH2IyQRt6EOclIXk5563xG60kLW7uO2GGsEVzuIfeBr8xXflf0brXIMoz/V0KIpt1L+/mKDEstwP5/LtaUxQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1886
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wei Fang <wei.fang@nxp.com>
+On Mon, Aug 22, 2022 at 08:17:36AM +0800, Shakeel Butt wrote:
+> With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> the workloads doing memcg charging on multiple CPUs concurrently.
+> Particularly the network intensive workloads. In addition, there is a
+> false cache sharing between memory.usage and memory.high on the charge
+> path. This patch moves the usage into a separate cacheline and move all
+> the read most fields into separate cacheline.
+> 
+> To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> ran the following workload in a three level of cgroup hierarchy with top
+> level having min and low setup appropriately. More specifically
+> memory.min equal to size of netperf binary and memory.low double of
+> that.
+> 
+>  $ netserver -6
+>  # 36 instances of netperf with following params
+>  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> 
+> Results (average throughput of netperf):
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		12413.7 Mbps (18.4% improvement)
+> 
+> With the patch, the throughput improved by 18.4%.
+> 
+> One side-effect of this patch is the increase in the size of struct
+> mem_cgroup. However for the performance improvement, this additional
+> size is worth it. In addition there are opportunities to reduce the size
+> of struct mem_cgroup like deprecation of kmem and tcpmem page counters
+> and better packing.
+> 
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
 
-Add below features support for both TJA1100 and TJA1101 cards:
-- Add MII and RMII mode support.
-- Add REF_CLK input/output support for RMII mode.
+Looks good to me, with one nit below. 
 
-Signed-off-by: Wei Fang <wei.fang@nxp.com>
----
-V2 change:
-1. Correct the property name to "nxp,rmii-refclk-in".
-2. Modify the "quirks" of struct tja11xx_priv to "flags".
----
- drivers/net/phy/nxp-tja11xx.c | 83 ++++++++++++++++++++++++++++++++---
- 1 file changed, 78 insertions(+), 5 deletions(-)
+Reviewed-by: Feng Tang <feng.tang@intel.com>
 
-diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
-index 2a8195c50d14..ec91e671f8aa 100644
---- a/drivers/net/phy/nxp-tja11xx.c
-+++ b/drivers/net/phy/nxp-tja11xx.c
-@@ -10,6 +10,7 @@
- #include <linux/mdio.h>
- #include <linux/mii.h>
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/phy.h>
- #include <linux/hwmon.h>
- #include <linux/bitfield.h>
-@@ -34,6 +35,11 @@
- #define MII_CFG1			18
- #define MII_CFG1_MASTER_SLAVE		BIT(15)
- #define MII_CFG1_AUTO_OP		BIT(14)
-+#define MII_CFG1_INTERFACE_MODE_MASK	GENMASK(9, 8)
-+#define MII_CFG1_MII_MODE				(0x0 << 8)
-+#define MII_CFG1_RMII_MODE_REFCLK_IN	BIT(8)
-+#define MII_CFG1_RMII_MODE_REFCLK_OUT	BIT(9)
-+#define MII_CFG1_REVMII_MODE			GENMASK(9, 8)
- #define MII_CFG1_SLEEP_CONFIRM		BIT(6)
- #define MII_CFG1_LED_MODE_MASK		GENMASK(5, 4)
- #define MII_CFG1_LED_MODE_LINKUP	0
-@@ -72,11 +78,15 @@
- #define MII_COMMCFG			27
- #define MII_COMMCFG_AUTO_OP		BIT(15)
- 
-+/* Configure REF_CLK as input in RMII mode */
-+#define TJA110X_RMII_MODE_REFCLK_IN       BIT(0)
-+
- struct tja11xx_priv {
- 	char		*hwmon_name;
- 	struct device	*hwmon_dev;
- 	struct phy_device *phydev;
- 	struct work_struct phy_register_work;
-+	u32 flags;
- };
- 
- struct tja11xx_phy_stats {
-@@ -251,8 +261,34 @@ static int tja11xx_config_aneg(struct phy_device *phydev)
- 	return __genphy_config_aneg(phydev, changed);
- }
- 
-+static int tja11xx_get_interface_mode(struct phy_device *phydev)
-+{
-+	struct tja11xx_priv *priv = phydev->priv;
-+	int mii_mode;
-+
-+	switch (phydev->interface) {
-+	case PHY_INTERFACE_MODE_MII:
-+		mii_mode = MII_CFG1_MII_MODE;
-+		break;
-+	case PHY_INTERFACE_MODE_REVMII:
-+		mii_mode = MII_CFG1_REVMII_MODE;
-+		break;
-+	case PHY_INTERFACE_MODE_RMII:
-+		if (priv->flags & TJA110X_RMII_MODE_REFCLK_IN)
-+			mii_mode = MII_CFG1_RMII_MODE_REFCLK_IN;
-+		else
-+			mii_mode = MII_CFG1_RMII_MODE_REFCLK_OUT;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return mii_mode;
-+}
-+
- static int tja11xx_config_init(struct phy_device *phydev)
- {
-+	u16 reg_mask, reg_val;
- 	int ret;
- 
- 	ret = tja11xx_enable_reg_write(phydev);
-@@ -265,15 +301,32 @@ static int tja11xx_config_init(struct phy_device *phydev)
- 
- 	switch (phydev->phy_id & PHY_ID_MASK) {
- 	case PHY_ID_TJA1100:
--		ret = phy_modify(phydev, MII_CFG1,
--				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_MASK |
--				 MII_CFG1_LED_ENABLE,
--				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_LINKUP |
--				 MII_CFG1_LED_ENABLE);
-+		reg_mask = MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_MASK |
-+			   MII_CFG1_LED_ENABLE;
-+		reg_val = MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_LINKUP |
-+			  MII_CFG1_LED_ENABLE;
-+
-+		reg_mask |= MII_CFG1_INTERFACE_MODE_MASK;
-+		ret = tja11xx_get_interface_mode(phydev);
-+		if (ret < 0)
-+			return ret;
-+
-+		reg_val |= (ret & 0xffff);
-+		ret = phy_modify(phydev, MII_CFG1, reg_mask, reg_val);
- 		if (ret)
- 			return ret;
- 		break;
- 	case PHY_ID_TJA1101:
-+		reg_mask = MII_CFG1_INTERFACE_MODE_MASK;
-+		ret = tja11xx_get_interface_mode(phydev);
-+		if (ret < 0)
-+			return ret;
-+
-+		reg_val = ret & 0xffff;
-+		ret = phy_modify(phydev, MII_CFG1, reg_mask, reg_val);
-+		if (ret)
-+			return ret;
-+		fallthrough;
- 	case PHY_ID_TJA1102:
- 		ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
- 		if (ret)
-@@ -458,16 +511,36 @@ static int tja11xx_hwmon_register(struct phy_device *phydev,
- 	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
- }
- 
-+static int tja11xx_parse_dt(struct phy_device *phydev)
-+{
-+	struct device_node *node = phydev->mdio.dev.of_node;
-+	struct tja11xx_priv *priv = phydev->priv;
-+
-+	if (!IS_ENABLED(CONFIG_OF_MDIO))
-+		return 0;
-+
-+	if (of_property_read_bool(node, "nxp,rmii-refclk-in"))
-+		priv->flags |= TJA110X_RMII_MODE_REFCLK_IN;
-+
-+	return 0;
-+}
-+
- static int tja11xx_probe(struct phy_device *phydev)
- {
- 	struct device *dev = &phydev->mdio.dev;
- 	struct tja11xx_priv *priv;
-+	int ret;
- 
- 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
- 		return -ENOMEM;
- 
- 	priv->phydev = phydev;
-+	phydev->priv = priv;
-+
-+	ret = tja11xx_parse_dt(phydev);
-+	if (ret)
-+		return ret;
- 
- 	return tja11xx_hwmon_register(phydev, priv);
- }
--- 
-2.25.1
+> ---
+>  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
+>  1 file changed, 23 insertions(+), 11 deletions(-)
+> 
+> diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+> index 679591301994..8ce99bde645f 100644
+> --- a/include/linux/page_counter.h
+> +++ b/include/linux/page_counter.h
+> @@ -3,15 +3,27 @@
+>  #define _LINUX_PAGE_COUNTER_H
+>  
+>  #include <linux/atomic.h>
+> +#include <linux/cache.h>
+>  #include <linux/kernel.h>
+>  #include <asm/page.h>
+>  
+> +#if defined(CONFIG_SMP)
+> +struct pc_padding {
+> +	char x[0];
+> +} ____cacheline_internodealigned_in_smp;
+> +#define PC_PADDING(name)	struct pc_padding name
+> +#else
+> +#define PC_PADDING(name)
+> +#endif
+
+There are 2 similar padding definitions in mmzone.h and memcontrol.h:
+
+	struct memcg_padding {
+		char x[0];
+	} ____cacheline_internodealigned_in_smp;
+	#define MEMCG_PADDING(name)      struct memcg_padding name
+
+	struct zone_padding {
+		char x[0];
+	} ____cacheline_internodealigned_in_smp;
+	#define ZONE_PADDING(name)	struct zone_padding name;
+
+Maybe we can generalize them, and lift it into include/cache.h? so
+that more places can reuse it in future.
+
+Thanks,
+Feng
 
