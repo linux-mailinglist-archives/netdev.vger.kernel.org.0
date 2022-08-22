@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E96A59C23B
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:10:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70A0159C236
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:09:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236025AbiHVPJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 11:09:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56022 "EHLO
+        id S236019AbiHVPJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 11:09:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235921AbiHVPJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:09:06 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90563DF3C
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:09 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id j17so8067978qtp.12
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:09 -0700 (PDT)
+        with ESMTP id S236149AbiHVPJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:09:03 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CF133E748
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:10 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id g16so8031570qkl.11
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc;
-        bh=lW+aRBABY6LQAf9GnaDCuQD8XbOsKF80aq7s3IVyhJE=;
-        b=Xsw2DJaZmIouHVr86BUCkB7jKOOMzV/QdZB2pKAkJRbBotuii5Ftv5QAQZnwtfCn+I
-         o+9CfGyqocMpM0/wBkf6vohroaGfCPd9B6UftcQlppMbytdGSBu4LwddGB5svjGjmSsl
-         Q+QR1RGI6uAYtB6pTXLYMFS681+T5eCG3fmuQ=
+        bh=vhpY4khbia4ahavuPkAyUGmPuBQwq+sJnXfnnGjoPF4=;
+        b=Dd5w1yoZWATmRq7hi09+qmWN/5czWyBxXLz+i9wRjCr3IFbGnwK8wLJ7VSNmmQHP6g
+         zV8y31d727WMIjesZZVb8Cr+PRXf2gMHVb6nOiB+2G781qL4k0Wh5S6yfNNN0Jx8Ak+S
+         0AlmxUwHWZWEDnm5I7XlWElECiKdhiVh2zGNw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc;
-        bh=lW+aRBABY6LQAf9GnaDCuQD8XbOsKF80aq7s3IVyhJE=;
-        b=Mz+9z++0W1KCFbY555SZCO4CMMYwNBSOgI84ZCZcA/tpukK2Dymx+rqugKDMsDRvaF
-         HFJu89P5wQbVpIs1qzKsscFhaMrLGtA4svYwVKJRJgVI5PfvX56eqIFTwk3qKIJqVFzK
-         BSpucclcb7nXm2fmtNbVeXkbOLF2JkuXBHqxkYrGqa+IQvoD33z1crrUrRORqeiZ2LAR
-         38CE0WFd4m9KTouzta3kv83fRgikAMvQvhiGDlhfAKhqQ3LXMkhsl2IAFjfdhmsSAyHY
-         qS89au8sB4/UeuY+zy1mapAoOfvpNAZqDfbaBbwUgPEgFK0igqVj7LlFYRStfqRftOqt
-         jxsw==
-X-Gm-Message-State: ACgBeo3fHey2Of1E4+Olpeik7CSODFYVnaE7c+zOKHxIFmDX0zJD6WN6
-        YD7CCSMertiho5WLzflyY101sA==
-X-Google-Smtp-Source: AA6agR6j5nJuMCgjel02eO+r5XO/4nXR8gbGj0SAeVVnBF4Kcvdb+Jho2GpJUCK/vubhZGEJtFuiuw==
-X-Received: by 2002:a05:622a:b:b0:342:f3de:e055 with SMTP id x11-20020a05622a000b00b00342f3dee055mr15294330qtw.43.1661180827570;
-        Mon, 22 Aug 2022 08:07:07 -0700 (PDT)
+        bh=vhpY4khbia4ahavuPkAyUGmPuBQwq+sJnXfnnGjoPF4=;
+        b=rw8TGNICokhbT8qxN0up7RyEdtOVfahyCDe2Ki3x9CqhSKssDnJiqWpNqIae3gf4M/
+         3PsfS/BCgUuW+ESOH3E/78xFoApkso/86lXqaNEAu5U7+h7n7WMfnQ1s1554ZBPU5rkk
+         yasA+FnoRJa3GYOz8WdUFeNoGZIuKaFiOD0bGKG32xZmea/T/TB7IUWF/vF6+u9tekni
+         dcPDn/PKh53y9drFxWmnb1beVzK91ozUsE40DjgTr7qEM8QT1KKdTUQvNdCCJD/63mW9
+         FoUPD2OXk4RqQ+QA2kWIX8kupvs3hPfN/hZfh369W0VyUkDRxrcfZiVxbkk5nwDMRAfZ
+         ioSQ==
+X-Gm-Message-State: ACgBeo1ftlWCtBVi/ciE82JFS5nEsnD6wwwt4j7MDlwvFtq/4RlLdNgP
+        s+UIjdROkP7m2KLrr+C8GAiZsA==
+X-Google-Smtp-Source: AA6agR58g19yRJ/OecfUFdTSjtvuk33ThLP9hmXufqqvM8VqbUPfYoI0hBeVBw+FBTcgn9RMFr/k9Q==
+X-Received: by 2002:a05:620a:e15:b0:6bc:980:dbaf with SMTP id y21-20020a05620a0e1500b006bc0980dbafmr4290443qkm.315.1661180829221;
+        Mon, 22 Aug 2022 08:07:09 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b00342f05defd1sm9380836qtb.66.2022.08.22.08.07.06
+        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b00342f05defd1sm9380836qtb.66.2022.08.22.08.07.07
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 22 Aug 2022 08:07:07 -0700 (PDT)
+        Mon, 22 Aug 2022 08:07:08 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
         pabeni@redhat.com, gospo@broadcom.com,
         Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net 2/4] bnxt_en: set missing reload flag in devlink features
-Date:   Mon, 22 Aug 2022 11:06:52 -0400
-Message-Id: <1661180814-19350-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 3/4] bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
+Date:   Mon, 22 Aug 2022 11:06:53 -0400
+Message-Id: <1661180814-19350-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
 References: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000028953f05e6d5cdef"
+        boundary="000000000000417a4c05e6d5cddc"
 X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -68,38 +68,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000028953f05e6d5cdef
+--000000000000417a4c05e6d5cddc
 
 From: Vikas Gupta <vikas.gupta@broadcom.com>
 
-Add missing devlink_set_features() API for callbacks reload_down
-and reload_up to function.
+There are 2 issues:
 
-Fixes: 228ea8c187d8 ("bnxt_en: implement devlink dev reload driver_reinit")
-Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+1. We should decrement hw_resc->max_nqs instead of hw_resc->max_irqs
+   with the number of NQs assigned to the VFs.  The IRQs are fixed
+   on each function and cannot be re-assigned.  Only the NQs are being
+   assigned to the VFs.
+
+2. vf_msix is the total number of NQs to be assigned to the VFs.  So
+   we should decrement vf_msix from hw_resc->max_nqs.
+
+Fixes: b16b68918674 ("bnxt_en: Add SR-IOV support for 57500 chips.")
 Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 059f96f7a96f..a36803e79e92 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -1306,6 +1306,7 @@ int bnxt_dl_register(struct bnxt *bp)
- 	if (rc)
- 		goto err_dl_port_unreg;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 730febd19330..a4cba7cb2783 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -623,7 +623,7 @@ static int bnxt_hwrm_func_vf_resc_cfg(struct bnxt *bp, int num_vfs, bool reset)
+ 		hw_resc->max_stat_ctxs -= le16_to_cpu(req->min_stat_ctx) * n;
+ 		hw_resc->max_vnics -= le16_to_cpu(req->min_vnics) * n;
+ 		if (bp->flags & BNXT_FLAG_CHIP_P5)
+-			hw_resc->max_irqs -= vf_msix * n;
++			hw_resc->max_nqs -= vf_msix;
  
-+	devlink_set_features(dl, DEVLINK_F_RELOAD);
- out:
- 	devlink_register(dl);
- 	return 0;
+ 		rc = pf->active_vfs;
+ 	}
 -- 
 2.18.1
 
 
---00000000000028953f05e6d5cdef
+--000000000000417a4c05e6d5cddc
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -170,13 +177,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOXLUkhIkaoVf/qvFTWwy5Z0tE3YVXti
-DEHNFlkZ+ZqCMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgy
-MjE1MDcwN1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIAMp6W+OtWG5Qs9cHi+7+9aYhlzx4hWv
+dBDMVleZx+4IMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgy
+MjE1MDcwOVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQB3wOWL1J9DERt+t+aQNPfhXN9JcgCc32+h1beOkILaUIbfIovI
-Jf4/x3dMJe1TJT+c4glQfBRNYn7Y7CPFznZpoxBpWmlaT1ocPz6mSq/bFjpT7JEaakqOIE7436CB
-uMQ0u7IQ+A16CupBiTE9y9PaCLawQbH4T9l+3KV4tpfOVyjI6/SPm0BxJZ/pic7KIFzCzLb2KutC
-Ev9SmpzpmOm8eLqwdHiUHiMwlOoMm781EYMSxCiRW38NghJgRGoeZBpS3mKSSjP7d/kskB5UKLj2
-QTrxVPtTpcbeQjGiyfSlVRbFm+tZKC5BPYFy3zR34LBBKml8IjesmFmbS8NbHQdV
---00000000000028953f05e6d5cdef--
+ATANBgkqhkiG9w0BAQEFAASCAQB6LtJ8EK3TmqYp1roPTd5zHjfsDLvRrHod9sjq1umHOK0VH7QL
+cSQ9nTcXwgvVzNB8HrifCuDtpBLdlKldZqD52EpQU3zNHT6uLbEdIH7c1m4hSMDLUdvnNT7XnBDL
+Nu1cCn4WFEOzq/+LvdXTZ/GYfP95yF+1XdU/KzVm89uy7zoBZsjnFc27ZEVldnuBlA+cJ0X9q976
+DdRzrhRBc1Q0piCiLJJAQ9qkIAtVPDKMOpedoXcUOEuFKZFZVmJqAdBzLUpmP9WCN3CJp7v2TWgt
+6Liv8pkqefy3/MlM5NuHlrGhoZm/+iFqC3D0W1iTUAUJGeRqksaiWBPeYUfYhHKs
+--000000000000417a4c05e6d5cddc--
