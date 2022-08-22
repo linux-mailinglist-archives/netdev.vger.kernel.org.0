@@ -2,107 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3BB59C048
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 15:13:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7165459C093
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 15:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234852AbiHVNMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 09:12:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
+        id S234981AbiHVNaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 09:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234521AbiHVNMm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 09:12:42 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE4533E3A;
-        Mon, 22 Aug 2022 06:12:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Pmaf/7Gcj7yUXj9lfFijn0lHnAtMyFGBEGv7jKC4glY=; b=VnJFQ/GqGILH+2rdH6itFRAGSC
-        t+CAGFHwsZHEpc2+rLLnHKJO8AcBu7Bkz/zVbbedoZW3xnc0JQgkfY7cdeXGJhmvPKZpcXj9v4iaE
-        iaKe79K8QNuEtyf8+C2amwgJJ87YGAQK6OJ5ftv0P4RacuXG2iz9ecXxyz6v1a7zIaqc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQ7EM-00EDzw-L8; Mon, 22 Aug 2022 15:12:38 +0200
-Date:   Mon, 22 Aug 2022 15:12:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
- interrupt for internal phy link detection
-Message-ID: <YwOAxh7Bc12OornD@lunn.ch>
-References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
+        with ESMTP id S234201AbiHVNaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 09:30:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809E211172;
+        Mon, 22 Aug 2022 06:30:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 184E261197;
+        Mon, 22 Aug 2022 13:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 714CFC433D7;
+        Mon, 22 Aug 2022 13:30:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661175014;
+        bh=Br3dFwFRKh/ahgdNc3tJhfg8BpRtaS6hl84zqsj1IYg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=uwG4falmfE+b83C+0Kk7MSK4UDH0aIctQdfs/EFkJ4PfZq4B1mry3qI3ypJopg7vk
+         rpES1nCLFjbW0Q1scF8OqP6uUGAvBvIWxUMgjZ63JmAxHiywNTmfBsHV3nzEjFAYKd
+         L6adaW/YBCWBJpYUDK4cvFG5q8i5lcIuvFgYbSMEsru5pRoCK80pkE1HJJWBS/W2Nw
+         lsY85GJh5w007sG4JKcHzvkINWIlcf6dHVNQSs8v9VULQqr7m9/yqdP5jYAeCaN1xb
+         jIMUpyC9wqYVB4EVSG3pajzzGeMUTRZxpK280JQqTNS04vmuJupDEKairtTTFyGlGb
+         bYKx62hp3RZog==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5488FE2A03D;
+        Mon, 22 Aug 2022 13:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822092017.5671-1-arun.ramadoss@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net 1/1] rose: check NULL rose_loopback_neigh->loopback
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166117501433.5977.6208963641259789772.git-patchwork-notify@kernel.org>
+Date:   Mon, 22 Aug 2022 13:30:14 +0000
+References: <Yv2BhXInteHP7eJm@electric-eye.fr.zoreil.com>
+In-Reply-To: <Yv2BhXInteHP7eJm@electric-eye.fr.zoreil.com>
+To:     Francois Romieu <romieu@fr.zoreil.com>
+Cc:     netdev@vger.kernel.org, linux-hams@vger.kernel.org,
+        bernard.f6bvp@gmail.com, f6bvp@free.fr, thomas@osterried.de,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 02:50:17PM +0530, Arun Ramadoss wrote:
-> This patch enables the interrupts for internal phy link detection for
-> LAN937x. The interrupt enable bits are active low. It first enables port
-> interrupt and then port phy interrupt. Also patch register the irq
-> thread and in the ISR routine it clears the POR_READY_STS bit.
-> POR_READY_STS bit is write one clear bit and all other bit in the
-> register are read only. Since phy interrupts are handled by the lan937x
-> phy layer, switch interrupt routine does not read the phy layer
-> interrupts.
+Hello:
 
-> +static irqreturn_t lan937x_switch_irq_thread(int irq, void *dev_id)
-> +{
-> +	struct ksz_device *dev = dev_id;
-> +	irqreturn_t result = IRQ_NONE;
-> +	u32 data;
-> +	int ret;
-> +
-> +	/* Read global interrupt status register */
-> +	ret = ksz_read32(dev, REG_SW_INT_STATUS__4, &data);
-> +	if (ret)
-> +		return result;
-> +
-> +	if (data & POR_READY_INT) {
-> +		ret = ksz_write32(dev, REG_SW_INT_STATUS__4, POR_READY_INT);
-> +		if (ret)
-> +			return result;
-> +	}
-> +
-> +	return result;
-> +}
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-I don't understand how this all fits together. How do you get from
-this interrupt handler into the PHY interrupt handler?
+On Thu, 18 Aug 2022 02:02:13 +0200 you wrote:
+> From: Bernard Pidoux <f6bvp@free.fr>
+> 
+> Commit 3b3fd068c56e3fbea30090859216a368398e39bf added NULL check for
+> `rose_loopback_neigh->dev` in rose_loopback_timer() but omitted to
+> check rose_loopback_neigh->loopback.
+> 
+> It thus prevents *all* rose connect.
+> 
+> [...]
 
-The hardware looks similar to the mv88e6xxx driver. You have a top
-level interrupt controller which indicates a port has some sort of
-interrupt handler. This is the mv88e6xxx_g1_irq_thread_work(). It
-finds which port triggered the interrupt and then hands the interrupt
-off to the nested interrupt handler.
+Here is the summary with links:
+  - [v2,net,1/1] rose: check NULL rose_loopback_neigh->loopback
+    https://git.kernel.org/netdev/net/c/3c53cd65dece
 
-mv88e6xxx_g2_irq_thread_fn() is the nested per port interrupt
-handler. It reads the per port interrupt status register, find the
-interrupt handler and calls the nested interrupt handler.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-This all glues together because phylib does a request_threaded_irq()
-for the PHY interrupt, so this last nested interrupt handler is in
-phylib.
 
-	Andrew
