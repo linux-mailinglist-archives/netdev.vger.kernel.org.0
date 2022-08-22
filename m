@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2801759C661
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:31:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 205A859C675
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:35:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237493AbiHVSbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 14:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59452 "EHLO
+        id S237545AbiHVSdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 14:33:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237686AbiHVSbG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:31:06 -0400
+        with ESMTP id S237505AbiHVScz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:32:55 -0400
 Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DC9B167E8
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:31:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094C44AD45
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:32:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661193065; x=1692729065;
+  t=1661193149; x=1692729149;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=xKjoHPHfT3SNjM3GEPH8NfjEMrG8ZlBmiIDh4EolsrY=;
-  b=vX7VFRTayCNR/i1ReW6L9kXgYDCMGoRNxl138xaYh5Kyzv5c4LkAISUL
-   N3Fr3zVpbNROEa24uAMy+U9YKKXukB9jKsZ5R3UvXahzV+j9uI9HtSFmJ
-   1uaBLajHU5jzS58wRGFrExq+S9Z5DGS8gnduqsrbIm3jgWylTqmH5xm3u
-   I=;
+  bh=aK4MPOmSwHEbMjrlRR8e4yzRmp0rvHn1j9I0VnyhUWI=;
+  b=lL/ttysTxR9Yr9dMHOFL9ABcwqs5cFxcjufn7PSDczj+NgFnkS3m34vB
+   Xhr0/nBCbmZCEkFSvbGD8fKVua/xaDQUmBfFMcyVAw875rXjcu/gmPY3I
+   eqCDxIQ6I6A6aJZIneg0HkyqOe5+6dbEmtGFBDjVWvS3O4rmH75Rq5467
+   k=;
 X-IronPort-AV: E=Sophos;i="5.93,255,1654560000"; 
-   d="scan'208";a="236167246"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1box-d-0e176545.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 18:30:53 +0000
+   d="scan'208";a="236167820"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 18:32:17 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-iad-1box-d-0e176545.us-east-1.amazon.com (Postfix) with ESMTPS id 0E3509341B;
-        Mon, 22 Aug 2022 18:30:51 +0000 (UTC)
+        by email-inbound-relay-iad-1a-4ba5c7da.us-east-1.amazon.com (Postfix) with ESMTPS id EE3AC8115E;
+        Mon, 22 Aug 2022 18:32:15 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Mon, 22 Aug 2022 18:30:50 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
+ id 15.0.1497.38; Mon, 22 Aug 2022 18:32:14 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.172) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Mon, 22 Aug 2022 18:30:48 +0000
+ Mon, 22 Aug 2022 18:32:12 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     <kuba@kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <matthias.tafelmeier@gmx.net>,
-        <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH v3 net 02/17] net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
-Date:   Mon, 22 Aug 2022 11:30:41 -0700
-Message-ID: <20220822183041.19637-1-kuniyu@amazon.com>
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v3 net 05/17] ratelimit: Fix data-races in ___ratelimit().
+Date:   Mon, 22 Aug 2022 11:32:05 -0700
+Message-ID: <20220822183205.19735-1-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220819170301.43675f1a@kernel.org>
-References: <20220819170301.43675f1a@kernel.org>
+In-Reply-To: <20220819170446.77eeb642@kernel.org>
+References: <20220819170446.77eeb642@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.43.162.140]
-X-ClientProxiedBy: EX13D17UWB003.ant.amazon.com (10.43.161.42) To
+X-Originating-IP: [10.43.161.172]
+X-ClientProxiedBy: EX13D08UWB004.ant.amazon.com (10.43.161.232) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
@@ -66,22 +65,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From:   Jakub Kicinski <kuba@kernel.org>
-Date:   Fri, 19 Aug 2022 17:03:01 -0700
-> On Thu, 18 Aug 2022 11:26:38 -0700 Kuniyuki Iwashima wrote:
-> > -	dev_rx_weight = weight_p * dev_weight_rx_bias;
-> > -	dev_tx_weight = weight_p * dev_weight_tx_bias;
-> > +	WRITE_ONCE(dev_rx_weight,
-> > +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_rx_bias));
-> > +	WRITE_ONCE(dev_tx_weight,
-> > +		   READ_ONCE(weight_p) * READ_ONCE(dev_weight_tx_bias));
+Date:   Fri, 19 Aug 2022 17:04:46 -0700
+> On Thu, 18 Aug 2022 11:26:41 -0700 Kuniyuki Iwashima wrote:
+> > +	int interval = READ_ONCE(rs->interval);
+> > +	int burst = READ_ONCE(rs->burst);
 > 
-> Is there some locking on procfs writes? Otherwise one interrupted write
-> may get overtaken by another and we'll end up with inconsistent values.
+> Also feels a little bit like papering over an issue if we read 
+> two values separately.
 
-Thanks for catching!
-procfs doesn't provide locking for writes, so we need a mutex like other
-knobs.
+Exactly, we have to protect it with a single lock.
+Considering ___ratelimit() can be called in many paths, it seems better
+to add a spin lock in struct ratelimit_state.
 
-
-> OTOH if there is some locking we shouldn't have to protect weight_p
-> here.
+Thank you.
