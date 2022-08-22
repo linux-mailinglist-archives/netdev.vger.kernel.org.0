@@ -2,79 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8732859C9F8
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07CD059C9FD
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233360AbiHVU3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 16:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
+        id S237182AbiHVU3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 16:29:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231300AbiHVU3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 16:29:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7C394F6B8
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:29:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D37FB818FA
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 20:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F15C433C1;
-        Mon, 22 Aug 2022 20:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661200144;
-        bh=BVP5E+8pFeMltr4pCC+xp9+E06p56tfop2VR8MMcPL8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=E6/UUTZm4QkbQ/J4o6rJ+usqJVaSCxN+Ens92RfJBIp5rSvzjWivd2YoEwrW3EvV9
-         8Z+xfN5lDcJMh0qewJFGkJS3/SfHcPmKocWddmpBiVBA9fBvq2oA6C/zgd2vAMw8FK
-         Ch10dE7i7bBZKn6mccTWeOo8wFVzsmkIgPJJtOD9mX93etHHNq+12dh1mUlyruuh3g
-         nMvvDkmVWR/Ob5uTIc3czmHI/PXPYRgedOr7AAlx5WDxcWvWBDuVGyfRSmUWat7umm
-         ZdRTQ0A4puFBkTuw347eCUncpzr4EFfpsnjuaAjvWFY2DpqS21Hqd9mtE3JX/z0WN7
-         /OpB/Z0R1ru7Q==
-Date:   Mon, 22 Aug 2022 13:29:03 -0700
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Raed Salem <raeds@nvidia.com>, Lior Nahmanson <liorna@nvidia.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH 1/3] net/macsec: Add MACsec skb_metadata_dst Tx Data path
- support
-Message-ID: <20220822202903.ltpo6lg2illcqnfn@sx1>
-References: <20220818132411.578-1-liorna@nvidia.com>
- <20220818132411.578-2-liorna@nvidia.com>
- <20220818210856.30353616@kernel.org>
- <DM4PR12MB5357C54831EB8F1C9C982D90C96E9@DM4PR12MB5357.namprd12.prod.outlook.com>
- <20220822111056.188db823@kernel.org>
+        with ESMTP id S237110AbiHVU3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 16:29:36 -0400
+Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDBA351A15
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:29:35 -0700 (PDT)
+Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-333b049f231so326824427b3.1
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=3ghqxlUVpYAPvNZ/Fd381BfRXG/4offmxhbYt9HADrc=;
+        b=s47Dap0xMD0o0a7vVi9aMnbkj5ze1IHKpyOsoauBFgvtF0z8zE1Gq6jXk0ySkQ8li6
+         tQXecAxQMOGmHlrmGoA8gNudrsQE9/klv6tpAeDw+uN9buGwppEP7D1BOAJL8sOU1WWs
+         ChlWSnE00t7Pe2mRhadRJ7oaLER0hFNVmWZd+dVB9mUNzaHHOG9t6aMrWevepzsdim+q
+         vdpEwlujfgeQImmGBidsNDOHp9CHmgAaKrBsqq/CrCjJXo4YkrR9RGaKZvvlmFq+nyCg
+         BZORUkg1qYa8r4dbhqAZg/jv0iZz/B8dKdULef7T9H/mmpYaildEgimt3zXTw7rfCKoN
+         MhZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=3ghqxlUVpYAPvNZ/Fd381BfRXG/4offmxhbYt9HADrc=;
+        b=vrjat81VKygjQNeH0JcwnO3dFsQ8QyNVrLi5NbjahmVg0kwhMgCKUICSabu5evCeat
+         oH9lafdZ/8aofF0Cs4dejmevab7oET7L9lm6w2SwBfVfF4dr+DJ9zMuyLlrr/IDTvvpJ
+         42/1ol5EqUd8xdU3FX1cI8qYzDX1Cjb4ySEz7bqmtyfr0VaeDqoYxWJWumoxGCkLAwas
+         ZravgmkNbqGf9wXCLksQdo9JIXvqGxUZMVi2pxJtB+Kl1n3dUYWqQ8I9K1VkY/mXk/Dn
+         H7nJa/byZvKvHAnmaBcqJoNKsq7GUeMwzHQOV+BjlvZbrYzwOMdk31kVMTDvfEz93gui
+         2HUA==
+X-Gm-Message-State: ACgBeo0kyJKeVgIPrTzk/Ge6SJRKN6uY7/uwl4KtCD68aNt3Gw2OHLkM
+        u0BWytI2QkIF0VJwU4hXz1kqnB/2PguruuU3hsJZ1A==
+X-Google-Smtp-Source: AA6agR5M/3KtnGznrm02DeFRvjK+3D9/NBjPkCtgRvg6VLE0oHYqb9h6gxSAs4N48Rq27P88TkmF8eeFYBdb9b3f6PM=
+X-Received: by 2002:a25:b083:0:b0:695:9a91:317d with SMTP id
+ f3-20020a25b083000000b006959a91317dmr7417640ybj.387.1661200174730; Mon, 22
+ Aug 2022 13:29:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20220822111056.188db823@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220822103130.3466-1-sunshouxin@chinatelecom.cn>
+In-Reply-To: <20220822103130.3466-1-sunshouxin@chinatelecom.cn>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 22 Aug 2022 13:29:23 -0700
+Message-ID: <CANn89i+MPc6bJe_nfyrksgYipY0Mqeey=05Ctj8B4S_j5bYOvA@mail.gmail.com>
+Subject: Re: [PATCH] bonding: Remove unnecessary check
+To:     Sun Shouxin <sunshouxin@chinatelecom.cn>
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        huyd12@chinatelecom.cn
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 22 Aug 11:10, Jakub Kicinski wrote:
->On Sun, 21 Aug 2022 11:12:00 +0000 Raed Salem wrote:
->> >On a quick (sorry we're behind on patches this week) look I don't see the
->> >driver integration - is it coming later? Or there's already somehow a driver in
->> >the tree using this infra? Normally the infra should be in the same patchset as
->> >the in-tree user.
->> Driver integration series will be submitted later on
+On Mon, Aug 22, 2022 at 3:33 AM Sun Shouxin <sunshouxin@chinatelecom.cn> wrote:
 >
->This is a requirement, perhaps it'd be good for you to connect with
->netdev folks @nvidia to talk thru your plan? Saeed, Gal, Tariq etc.
+> This check is not necessary since the commit d5410ac7b0ba
+> ("net:bonding:support balance-alb interface with vlan to bridge").
 
-driver part is still WIP in terms of maintainer review, but we are very
-close, we will submit everything at once in next version.
+Please provide more details. I fail to see the relation between d5410ac7b0ba
+and this patch, thanks.
 
-Thanks.
-
+>
+> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+> ---
+>  drivers/net/bonding/bond_main.c | 13 -------------
+>  1 file changed, 13 deletions(-)
+>
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 50e60843020c..6b0f0ce9b9a1 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -1578,19 +1578,6 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
+>
+>         skb->dev = bond->dev;
+>
+> -       if (BOND_MODE(bond) == BOND_MODE_ALB &&
+> -           netif_is_bridge_port(bond->dev) &&
+> -           skb->pkt_type == PACKET_HOST) {
+> -
+> -               if (unlikely(skb_cow_head(skb,
+> -                                         skb->data - skb_mac_header(skb)))) {
+> -                       kfree_skb(skb);
+> -                       return RX_HANDLER_CONSUMED;
+> -               }
+> -               bond_hw_addr_copy(eth_hdr(skb)->h_dest, bond->dev->dev_addr,
+> -                                 bond->dev->addr_len);
+> -       }
+> -
+>         return ret;
+>  }
+>
+> --
+> 2.27.0
+>
