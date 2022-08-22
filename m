@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B3059C974
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5812559C979
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:01:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232605AbiHVUAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 16:00:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
+        id S231678AbiHVUAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 16:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232577AbiHVT7l (ORCPT
+        with ESMTP id S238555AbiHVT7l (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 15:59:41 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4521E4F1B7
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:59:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A40119C3A
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:59:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C781D61274
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 19:59:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF14C433D6;
-        Mon, 22 Aug 2022 19:59:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCB136128D
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 19:59:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30033C433D6;
+        Mon, 22 Aug 2022 19:59:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661198377;
-        bh=QxWggh2glKOf3N8D4zIt02VQ7APjnoXvrI0k+rmmpMQ=;
+        s=k20201202; t=1661198378;
+        bh=uRrZUgDUEsRzob2O7CFGPJyUTWBhrERkQH5lXjLTSIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sMosyn8cARC0nk5M0bWeFkIYgENP9R6M53KQgB9Pm/XEhPz50QVDF/X8FYdpTb4oY
-         qvgVVQdFZz1BRVpv+t8onWZpQzvzHnRVYydlzqhgdeylcAufDlaigzuhSLLZ0ONrlf
-         n9x76oa9mNkAJOERtlkrpU0uyTfOQ3xzgLirw7pV2m80pLodSmu0jI6goITyPXAj1a
-         cA/KReZ/lknZnn3l/CQRdx6BpNoTp/ePt/uKJm8AVNr2zxfsdAWlUlk/XAq8sHnqpl
-         g1b1zboz/0pWIsvc1GX32VwYdHfPeUJ8ejdOnMzzVCPXQoHa0ObRS2feEDKOY5NIrN
-         GLhiM/izxvQ+Q==
+        b=Np+FMOe/OXfvUTs40obkMNEtfg9NEQMAOHUiX+Be6czi31/c5FNRoFJPVZDd5SWOv
+         yktH7VCXumnS0J2zu+Wvx4vHOQ8Ahmzdwrhq4obRHXhK5jG8PyDrmTGPSGaF99LbqE
+         hSJAaaJLPIET//T/Go3925K8+2vDKFH7PtMq9M1N60VLOez/dyiLTVuPXcPd+2/d73
+         wYqDPoTVUm6o4XDl2I6UDCIlnr1rYEqRdkHy+gh3K+ICIC0QiW+jyu1lYMGDATtxmr
+         4TIbz/HShBxwhQNC+C6tnu4n66mvdFAKEXzJcMXYgmdy0SVrfadAa/OffvIDyGWGoy
+         y1xmK6ub30BVQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Maor Dickman <maord@nvidia.com>
-Subject: [net 09/13] net/mlx5e: Fix wrong tc flag used when set hw-tc-offload off
-Date:   Mon, 22 Aug 2022 12:59:13 -0700
-Message-Id: <20220822195917.216025-10-saeed@kernel.org>
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: [net 10/13] net/mlx5: unlock on error path in esw_vfs_changed_event_handler()
+Date:   Mon, 22 Aug 2022 12:59:14 -0700
+Message-Id: <20220822195917.216025-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220822195917.216025-1-saeed@kernel.org>
 References: <20220822195917.216025-1-saeed@kernel.org>
@@ -56,38 +56,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-The cited commit reintroduced the ability to set hw-tc-offload
-in switchdev mode by reusing NIC mode calls without modifying it
-to support both modes, this can cause an illegal memory access
-when trying to turn hw-tc-offload off.
+Unlock before returning on this error path.
 
-Fix this by using the right TC_FLAG when checking if tc rules
-are installed while disabling hw-tc-offload.
-
-Fixes: d3cbd4254df8 ("net/mlx5e: Add ndo_set_feature for uplink representor")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
+Fixes: f1bc646c9a06 ("net/mlx5: Use devl_ API in mlx5_esw_offloads_devlink_port_register")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 4 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index c65b6a2883d3..02eb2f0fa2ae 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -3682,7 +3682,9 @@ static int set_feature_hw_tc(struct net_device *netdev, bool enable)
- 	int err = 0;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 10b0b260f02b..a9f4c652f859 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -3116,8 +3116,10 @@ esw_vfs_changed_event_handler(struct mlx5_eswitch *esw, const u32 *out)
  
- #if IS_ENABLED(CONFIG_MLX5_CLS_ACT)
--	if (!enable && mlx5e_tc_num_filters(priv, MLX5_TC_FLAG(NIC_OFFLOAD))) {
-+	int tc_flag = mlx5e_is_uplink_rep(priv) ? MLX5_TC_FLAG(ESW_OFFLOAD) :
-+						  MLX5_TC_FLAG(NIC_OFFLOAD);
-+	if (!enable && mlx5e_tc_num_filters(priv, tc_flag)) {
- 		netdev_err(netdev,
- 			   "Active offloaded tc filters, can't turn hw_tc_offload off\n");
- 		return -EINVAL;
+ 		err = mlx5_eswitch_load_vf_vports(esw, new_num_vfs,
+ 						  MLX5_VPORT_UC_ADDR_CHANGE);
+-		if (err)
++		if (err) {
++			devl_unlock(devlink);
+ 			return;
++		}
+ 	}
+ 	esw->esw_funcs.num_vfs = new_num_vfs;
+ 	devl_unlock(devlink);
 -- 
 2.37.1
 
