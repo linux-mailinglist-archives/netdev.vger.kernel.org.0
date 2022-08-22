@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50D1A59B7B4
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:34:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F09659B7BE
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:40:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232574AbiHVCcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 22:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36110 "EHLO
+        id S232478AbiHVCj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 22:39:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbiHVCcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 22:32:05 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E25B2316B;
-        Sun, 21 Aug 2022 19:31:50 -0700 (PDT)
+        with ESMTP id S231970AbiHVCj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 22:39:57 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B66E23170;
+        Sun, 21 Aug 2022 19:39:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661135510; x=1692671510;
+  t=1661135994; x=1692671994;
   h=date:from:to:cc:subject:message-id:references:
    in-reply-to:mime-version;
-  bh=7mqlmf4nE6XZxy6FrrXnNdanXlIfzXZjbW+EADVO9o8=;
-  b=gaB6+8bt9bWmE1eJCy6b0DfWIHG3DwIdFEBQGhiNp8sTo+9aD+P8coo4
-   SJVwhGb/B4bHz/cSwIfiNcJskmOXTAuUQoKmrDbem6kT0KZptaaYSBtYz
-   A646qdcuEjfwYjLGI8xtCfSIajeFhzrmN3O6qG6uCC9tW8TK8hLQmuWmr
-   fQXVe4dbxgruKuNjw/7PkGhxUQLHKFz6X/T7Ui2HLLN0BSQcIM5fgkTE1
-   r74iuchytCcYEvi1gxkWpJs/98SxmJz3eR+norFDnSnGvp7qBOOXIAcz1
-   gQpk0FFpiezzGeZuYIfkHXl2cBqOxSUpvg3+/PgblZja1Vrd64CDYoUaA
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="319337329"
+  bh=D66hnLPTCud8DP//h2IKQR1witsuK/Lobxm71Fo1/Ls=;
+  b=n1ib9oO1WcC5G2KpbkGBp9u61ZXaF27PpsiY7QURZd6dPwyGSZOpgd/Z
+   3PaB0+uh23uJhcKdhUA6f14BTQ1N+D4kluFY4UgQ74TUMX+jWGyYRS1MC
+   IGvmd0Z+UUNHV7KfjwJSWx6CHpMXZgeoOv5FMdCDpdUa66HCPXhZBDTDu
+   6v6yfmx1f4HW9LK9f/QrlFRBnJnt7peP7C8nOrNFqd0nz14R1W8+d2iHc
+   fpRvkA0MxSd4+9Hbacc+Rah3Fp+ffxp2uoXhxpZvZNHR/PPUt3njGrQHe
+   +dzj1eGx0we8XriLkOUMqfEcIfb5nG0dhRFfF0UyjlxlRrxflT97xtEre
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10446"; a="294587954"
 X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="319337329"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 19:31:49 -0700
+   d="scan'208";a="294587954"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Aug 2022 19:39:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,254,1654585200"; 
-   d="scan'208";a="637986873"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by orsmga008.jf.intel.com with ESMTP; 21 Aug 2022 19:31:49 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+   d="scan'208";a="608785565"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orsmga002.jf.intel.com with ESMTP; 21 Aug 2022 19:39:53 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Sun, 21 Aug 2022 19:31:48 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ 15.1.2375.31; Sun, 21 Aug 2022 19:39:53 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Sun, 21 Aug 2022 19:31:48 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.48) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ 15.1.2375.31 via Frontend Transport; Sun, 21 Aug 2022 19:39:53 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Sun, 21 Aug 2022 19:31:48 -0700
+ 15.1.2375.28; Sun, 21 Aug 2022 19:39:50 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nQkcf0clTEGStPQW04XfCVJapnUhWT8PZaR5hIH19bPHf1xahZTnj7/2o9A3kPlSDre55gpyMnNc74jbMgXL939HABgvOdeE+csFbT5O+hqbo9/00pQEVVlpG3Hmgt+bjt2KX4N9I8KEvMPKM17ywVg3BAfCesrJxlZOlDY2cJ3Ml/Qw+yPErBOXTtpC02oWm5SFXZyE/4rYl7kgxDBKOyAiGOfObpFte2mGxpC5iG5Vv3OFnC8dmSyeTBk0MXwvHRkYMoxvnwwwAob58pru6ZeZ1kL8IAFLNIxwpR6ShxTWgls2GbQZyScRERXn5iyuKUN66VvNEDD1YYaCrH7znQ==
+ b=SMmxUDfAF5RjfbQMWHG6KFcZO+HOSn/vDNiqRCxUN8RpszfdTw4aLpM4KrTtFe2NEGUMHCj7G1bwRIOpeZph4lTA7DcU75TNdf3pC98HSOmIb3lltznpoOQeMW7lJ5NFF8wZLXN94hjEmkJLXP0GyzWPpUAzmvY5wWAsSMgi4o4xW9aQQv1OBcJXkSsSuupgDuy1hyYDGV44uBTbreXYxQ7beyIsuJwgSmuEycEGlqebT3AJD7tEto5Xau8ETaMKCWFm5JifdZNzoZffE9o10fSPC3knCTdBPTezDH7wIHHFJd4XeNEFqdVn9e/NF+X6BCOyTDjMzFBP/xtIzfQK6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zuKvvgm2JD29AOvQGvFJ6uabMzcKjapjTY9zOBiOg7o=;
- b=HLJgarvkGrRcCeKoTsyRNJjlm3bw9BcJ6+RK0aOJBDGMAEC8uzka2V1xw6WEJRvc7WHd/05G9NsiihCGXLMha8JKgJ1/x3mgpzNM9KfsPy7/cMZO/5r+hNPSjFUNdOqRVMl8rqgUlDRirap7yuszLgG4mbemlHE9nnwioJWyRE1TRA03SvMBmHlBvjb3SxbRae2nyR2PYyi1/GdedumFoIrBDzb3/jw7LT3Si7wSoR84L7YIDwpOrtz5hL2hRWRsH83V8Hvl8OFsWLcZSYsJZNlxDDxQEp1Ar67o1thzP8maDHgubgGKfde+stbJDHIc6zuwMecrFbvGtrGaKN7iyg==
+ bh=2/L2pj0oVIZeUCUZg+p09BvICWmsvmKpZ2XB8VfNgdw=;
+ b=RFY2Pl8cSdRuWPzwZ6IZthfwD7Adn2KUv7het/hW8Ko90EWrWegSD5L1PlzRBFY9AIveVpggRHnYma5/9ljbixYdmXB3xc4O1FFmAPlcb+c8j9v6kadKEput1i23j47i+sfIWLd3zfPaAchKfQGu83rcWof/IdOq/v31CHV5928a6Yd8XAEUSXnOrdq7VICxYOZINY+foXTNPsCDUY88y+WGMzYpbBjP7uNglp+JsjRbmwPmBXTWfuXweAKmd7d+EPePxdQq7/tSXQ4IzsZhBQa7/UOe0hzf/ZJlZTCdIhLXousenSTlaQd1NxQI1cIcJeQ7c4ZP1k++rqR2+nzgTg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from MN0PR11MB6304.namprd11.prod.outlook.com (2603:10b6:208:3c0::7)
- by MW3PR11MB4729.namprd11.prod.outlook.com (2603:10b6:303:5d::24) with
+ by CY4PR11MB1398.namprd11.prod.outlook.com (2603:10b6:903:2a::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.19; Mon, 22 Aug
- 2022 02:31:44 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Mon, 22 Aug
+ 2022 02:39:44 +0000
 Received: from MN0PR11MB6304.namprd11.prod.outlook.com
  ([fe80::d446:1cb8:3071:f4e8]) by MN0PR11MB6304.namprd11.prod.outlook.com
  ([fe80::d446:1cb8:3071:f4e8%6]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 02:31:44 +0000
-Date:   Mon, 22 Aug 2022 10:30:51 +0800
+ 02:39:44 +0000
+Date:   Mon, 22 Aug 2022 10:39:02 +0800
 From:   Feng Tang <feng.tang@intel.com>
 To:     Shakeel Butt <shakeelb@google.com>
 CC:     Johannes Weiner <hannes@cmpxchg.org>,
@@ -87,83 +87,80 @@ CC:     Johannes Weiner <hannes@cmpxchg.org>,
         "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
-Message-ID: <YwLqW8Bc2CWCJsAE@feng-clx>
+Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
+ low/min
+Message-ID: <YwLsRqJDRtshKQ1P@feng-clx>
 References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-4-shakeelb@google.com>
+ <20220822001737.4120417-2-shakeelb@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220822001737.4120417-4-shakeelb@google.com>
-X-ClientProxiedBy: SG2PR02CA0014.apcprd02.prod.outlook.com
- (2603:1096:3:17::26) To MN0PR11MB6304.namprd11.prod.outlook.com
+In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
+X-ClientProxiedBy: SG2PR03CA0115.apcprd03.prod.outlook.com
+ (2603:1096:4:91::19) To MN0PR11MB6304.namprd11.prod.outlook.com
  (2603:10b6:208:3c0::7)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 55bc82f2-98ea-4d81-5a2d-08da83e67418
-X-MS-TrafficTypeDiagnostic: MW3PR11MB4729:EE_
+X-MS-Office365-Filtering-Correlation-Id: cd7334d1-0c52-4f7e-9cc3-08da83e7921e
+X-MS-TrafficTypeDiagnostic: CY4PR11MB1398:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C/RV8gM3i27Oo2VbeRSRkN08XiCGAf7e7GBn7fvkXbKWFjObGWk7jC+ex+ElwdR932xeG+RG38rGu0wVKXMxM2jv9G/AZ72+QbFYd+HqqGCTt6cBYT0cmZA1o+8+pirGg/sO0nw3vM0HOhZgu2PRxGk1MgLXl18FbclvxX/ZUitqOIRKMugO5g/nk373E5pFW21PNILLrIh+Fb9xau6J0jFeIgCm51TICnj1phGnr/g5Z83sRiCfLeBh9NYIBl6aGns/rM881aeNT5mZiNoydLLIDKDRKUIlZbsYh+hcuyXalhcLO3i3pjgrRuzQPXqiQwtRh/+65eikz3tci7PceCdVAPe+YAvvAZrvgknHdOqHcg7V/MWcDRBvwerO3sDDsfzWJ5VdTB+vOdCcL8z6bwatRU3YJyObjpx9kLbPMmnF6In1N2cyT3TGPKxW7NEeKxtJp9PpnXWo+dFVXZFid1heMTYyZdz3J2dogEDugo2vFp44WqTNlfeRsn8Qkl7bxfNKzSYy51UJc6AevYpsBJ2FKNKeQMFm5X9Lp6VpIUzazUzODWmDCEw2DhRsLalo4pdq4JNMLRHJixplfoM+S1mgpJjpHqBdyqXctx0/HruOPKiWPFFR8hf1bluph13ey9Hl3Lz8zbC7qMoghxcMEwDZkbXpAZ2rSmc0xpChlaQjak9IEwoD6oRIuj5Js4GLtuENSv27A4y/8g+qbuSFEQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(136003)(396003)(39860400002)(366004)(346002)(376002)(5660300002)(6486002)(478600001)(186003)(83380400001)(2906002)(44832011)(7416002)(38100700002)(41300700001)(8936002)(86362001)(66556008)(8676002)(66476007)(4326008)(54906003)(33716001)(6916009)(66946007)(6666004)(9686003)(6506007)(316002)(82960400001)(6512007)(26005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: J/r093FSHUA7k2p44Zx+dfKy6nWz8kY94JVbPeCod/E82bhyIvTUtB1I0RzO0W6n7KN0/y0Be3Lezhm4bZLsK8Qe1OsnF2iOpiEn69wrwERm0ybRTqL+wR03mcTwzRNDstnPr2DSAl+CNTczCw3TO3CiXoiZzr3LrHq4c9VAwFEJt7zvonL7sSmkZ8yr34MuGR15jXnrsWGr6iUQnm4QHbVecwELjyl3/OzaIe4Hyf3dd3wkRZqrYbwt22Ypw6s1hsG88cyzQs/ivermWazbCFaocWDULc0Wn7z8giNWQ9l+SV1FY39Iot8kQXmjk/zV+PMos6gFdsswZRp4YR4AHC11lCdinqOSD3H16KxJp/hwsOrqTs+jkzsEL+mRnv7wxQ0AGdow6mBMrQWH2kDXhJRGwAnpM9nPpZJRx9XYc/Rb9x7DtXfrSh0itin1lSOLZnLJxsHq4rk6o8P+/VwmoNXvycZztuUjCFZ4wYt6wHSZz+xdnLggBbdpkFY7bmaVd8UozgqYtcwB47o9jS+yqK2kepwHJjxe6/0WOA1lIRKDyOXtqLgr9vvTXS1ERnxm4no3pu1XhVEKERxxOLktzjw4678DYo8p0wAvoksVnFHEaezIUWiNMKPlamjVxQC/qBUQihkTXMar2v77he1F0ft1vjAhjTVkR9O2aBF1Z+/4GViErp3tGS/qEtQ3u8yOgOnp2FVBeWNNdEkYHF2g6g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN0PR11MB6304.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(346002)(376002)(136003)(366004)(396003)(39860400002)(41300700001)(6666004)(6506007)(186003)(6486002)(478600001)(9686003)(6512007)(26005)(83380400001)(2906002)(5660300002)(44832011)(7416002)(33716001)(8936002)(316002)(6916009)(54906003)(8676002)(66476007)(66556008)(4326008)(66946007)(82960400001)(38100700002)(86362001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?JvVuy5H6mJLxyXneY9GFTYVev51MHF1TrSIshdH9XUFQo1BsnlLxzJKQFOCZ?=
- =?us-ascii?Q?ONnbLyyyfkaLA2V3LZOlf00jdGpQPaB+UeXrW3ZnJu4LwN4FwjkdfI9veUGB?=
- =?us-ascii?Q?Ge9H7kSuUcxEYFz1Nel0MT4va08YAqod52gp1vbwjqrT0Td3hL6gPq5yAytl?=
- =?us-ascii?Q?TVq4I5l4BS/S6lSGr6AcfpH/YrKhPd7rSLiMz+qbkkdhqk9ME5WocX6+cK2M?=
- =?us-ascii?Q?D9cfrfHblP8kgjhyA6M37b517tPDN7vWkaHg/aCMvYX+DhtW0mCS0VmTz1/A?=
- =?us-ascii?Q?0SVmBX5rHOialVw9TMo1svq+OCuSeU6cMxnZS6vI0ivFVEj7ZIcQThXrt3ls?=
- =?us-ascii?Q?GhrnJYvU9o4hUllNUeVltf4ITtGEYn23QJo12s4X+eFxGRxPmAo8yDNNp2m6?=
- =?us-ascii?Q?2kmoIhj+al2T9dAkKG944H1RcFWOr/LpNvSYbtXFwKLQDqcpKCuTUrpA21pa?=
- =?us-ascii?Q?YpEW2RGUvtXrASFJ9oEnlFzGWsgGkFQQSn9oO3o+3xF2STqi9Wh94wUwPyiP?=
- =?us-ascii?Q?THbaNzrD9peLPVxXtgRf5394UtX/cc/t0LdHPy18KZcy3x/d70ug3cfyoKU/?=
- =?us-ascii?Q?ZELSX2xDrxkIhrB6nNxFS+DOCGbKpcIy2VVVd+wQ9UKHSMkQBC/Uh4v5J0g7?=
- =?us-ascii?Q?uUdsWmNftepH5LThZkU6eVR+ex/m9aYx5gBHqkKf38mEgseLbUUBFyMzIFxF?=
- =?us-ascii?Q?MOSGGdcyQNblO/BAsbph4tSwJa80Z+txtZwI5qeXCfBWh20eJqVOck3rsA+G?=
- =?us-ascii?Q?MzaZmYnQ6mULzZ0gt0THIQH26Ou/YoLuqxDIlgwTcHVxqkSu9Q+hjc1jKuZs?=
- =?us-ascii?Q?AO3cd/OycgWopneis30fk7tqQHy2fcRuOR1G7hFxInLv+P6QsQUIkI1weW5G?=
- =?us-ascii?Q?zHp0PQLfN3M83EXfnjtIpOE9/rhq8oSAanMvw/lbrPOoWA59NV+n6glhXLU4?=
- =?us-ascii?Q?S9cNgmpeVX9pnyDSlxudr6KQo0DcGhizibhwAdTBEWgBIkYMgYdFyN3LFUwD?=
- =?us-ascii?Q?UT+Lm0dFJ/PSkjWkvFmoD5fDAC3h2byrJr2Nx9A4SegfDIjj84vxrsMadHlC?=
- =?us-ascii?Q?g1Qk8hKa+Id6xX92f4hIylGGcN4lPwxmI5ahO6GGsbq8eF2SXWg65i8/I32I?=
- =?us-ascii?Q?A+W4R7TrRrVoW9RojxXxBqZhI8XsAMUkn0VyEvZCCJ4dSffs6aSOx4ouFbCf?=
- =?us-ascii?Q?6ZJVEkGkb5YeBh/w1+Anq5KU0O8F51lU/1Mh0noP7mCzkCkdg7Ba5xiNFhZG?=
- =?us-ascii?Q?iLB+5gxMbd4N2RpAbuucj8Vj+bUQ8m3KWpFqDF0/mYwbRj02jrCdueefFaKO?=
- =?us-ascii?Q?3RARtUwbSwENs18vmDDScKvUTkwHjekh8t1ngYlgcoH66ODF9p929s/fInG5?=
- =?us-ascii?Q?2PGC2cHkluu8X4n4jJn7CfHiQtIDEkpBdsc6USI9oXd/XMhGG/CxB8murH64?=
- =?us-ascii?Q?M6550W/W0Lqk7iRZ/PNsq2gD80BFlgv9mRTFtjQwufLhel8m0jb1RXlNXD/2?=
- =?us-ascii?Q?BUJHwGuuz3inN+MKPi0OLUDys08hjmv/lGD/KFeyP0n6fHgSPclzyQ2gqpkG?=
- =?us-ascii?Q?CRVl6zvpaVGT14fKnyiujKbgzaq+5soKHlQopPIm?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55bc82f2-98ea-4d81-5a2d-08da83e67418
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gxwu32/9n9ZS2q4ZcFQg0+FrfQkjoFTn92fGHYuZU/VKVYocVHpa2cVo+VNx?=
+ =?us-ascii?Q?jRG27YXMXo1dvd4Avce34ZOz32Jhm9+Cshvdm46MpiOFQGQOVsTGKnk7ZzgK?=
+ =?us-ascii?Q?KUoht7Hu+EtFnbt29tEWPzawjUkH6PovEJjvMBZYdubz/s+XfPKH/Bp9LRw5?=
+ =?us-ascii?Q?YYs/aFpGTvzwavu3JABUq6RLL0IzBaxL6DItC5n+wQqqbAl+P7f88ysctJrx?=
+ =?us-ascii?Q?SLtuZ8Jzw+A/KwC7Z7RpyjwfjDgYIZxp9jQqguc/vSEFpLOnMjaOFFgigpkV?=
+ =?us-ascii?Q?LUHlgT6iMQDwvVBhvuQbNAQbnvOpX9KkQSckxdtHI27GVhJOQRzS+3rZCYyj?=
+ =?us-ascii?Q?XupvW+nGs+PIJ0F6if5JvaEMDEovS9yPWJIi0CNFUpUubGC5fUp1AOWxfT54?=
+ =?us-ascii?Q?AklWGdSnFTvJrSurZow0rwvKoiSZCobi7HVQFOR97/trduD9UboOAE1jAxtE?=
+ =?us-ascii?Q?D80I/wMyPwDIlNPzeB4ZmOfOEqow4hapqcB1pRS8VVRxAiswI4pXc6E0A2Wa?=
+ =?us-ascii?Q?JEvLC39NvtoFMqxr7STrt1vuWGRkyHVroZCn2gyYNouTQBkP9PdYSNN4HH7u?=
+ =?us-ascii?Q?42h6yq+6lMu0cjXhP/7fII/lt2w6lhK3eq6DxbTAM5F0oxpmLrhmDZeQCyYR?=
+ =?us-ascii?Q?zGfldF0oJFP50GzaDkfTybwMwNA1lLrH7jIVQscnYN2te4T1p2LM+JWkHc+m?=
+ =?us-ascii?Q?pZ2N+baX6dc6RlbVqSfXgAeDloMgLm2/Wf5CKms3YhSg4nPoK+DmzQeCwPYe?=
+ =?us-ascii?Q?yBgJRVoY2frNNR2SHfdWXgSCD4fchOY8Vbd7Py2bLnU0MhzJiEOfOtIRUgWm?=
+ =?us-ascii?Q?EAzS0XEce8Dg9DeUQviR7xpylnaZdzb+E89J9uhjf2QULemnK9XsbaPLacEX?=
+ =?us-ascii?Q?VM9deE985OJxTVBI1zY77Q23vQMyEXHDB7j3MObTXvoDlcv4Fji24aAWeMyH?=
+ =?us-ascii?Q?rNEUiqYRywS+KHzmof3g1+mOa0IhOk0FPNQj/IexWri+5OoS/NcORZpKTGow?=
+ =?us-ascii?Q?170U+Z3j4lU+mRKyjH7Hf4kXiMe3ONzI8LY5iRACAQZy+Rq38Ejg0RglTW7u?=
+ =?us-ascii?Q?e0/mVT+Jah8VzRUTAiDuN5Pt33LhR4Y3b2odBQegrBqu8S/I0s5VpbGMuyJT?=
+ =?us-ascii?Q?iUDWviAX7RzR+EMRbBjmKHRgsuNxh6MgAStc6rHC+RM1wy+vyuYjjaT/AIYF?=
+ =?us-ascii?Q?rA1WvapV3avgaCR5AcCDrQVGvo6vplvQij4f0IhawqWlPK2N9J6zvwGBBCqd?=
+ =?us-ascii?Q?axIJ7z0Ti2Y4QdGh5SIq9hhHkTyTIpJBUR/NJZUWHoHZHzJYz18/e6k9XCOJ?=
+ =?us-ascii?Q?zoLvd67JH90kphwVz6TNfcUyMK86EW+oFmvLRMm6hGkLCDVModxGXrfzLOuI?=
+ =?us-ascii?Q?rx4MWp15d8yXgCmOmuKZH6wpEa022/e1/KZ/46zlLny5opBO89vm3/K3wRtc?=
+ =?us-ascii?Q?62SGw00fZb/Yp0VPOdk7D3akwJM+g15eEqplCJ1OsxN5vPDo8pNIqAfeADzP?=
+ =?us-ascii?Q?MV5c2OEPn9RmLFaG8kJKgckEqD6ytdOSSmpNQpDJ8SIYYOCSA0hBDyihejyv?=
+ =?us-ascii?Q?ZC95BnUmu0NN2Tatg6OjLQc2EwrpCE6bSReXG/yd?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd7334d1-0c52-4f7e-9cc3-08da83e7921e
 X-MS-Exchange-CrossTenant-AuthSource: MN0PR11MB6304.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 02:31:44.1534
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 02:39:44.0072
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0ECR4CeuVZiYlOpwO1S+Qr3Jx20gRBrt9iQzIiEghMiT89g/ov2aLB4QZKNJ2EadwxxX9IP4PhAPWSqyqeUt2g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4729
+X-MS-Exchange-CrossTenant-UserPrincipalName: 49G4tI0KVqxdzHvQc1EYtlS31zudfecna8rMybI9b8G/SC/OqyYx3VoEsVn0V/l9Xlj63VDmYfmWpZYjFDyTbw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1398
 X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 08:17:37AM +0800, Shakeel Butt wrote:
-> For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
-> machines and the network intensive workloads requiring througput in
-> Gbps, 32 is too small and makes the memcg charging path a bottleneck.
-> For now, increase it to 64 for easy acceptance to 6.0. We will need to
-> revisit this in future for ever increasing demand of higher performance.
-> 
-> Please note that the memcg charge path drain the per-cpu memcg charge
-> stock, so there should not be any oom behavior change.
+On Mon, Aug 22, 2022 at 08:17:35AM +0800, Shakeel Butt wrote:
+> For cgroups using low or min protections, the function
+> propagate_protected_usage() was doing an atomic xchg() operation
+> irrespectively. It only needs to do that operation if the new value of
+> protection is different from older one. This patch does that.
 > 
 > To evaluate the impact of this optimization, on a 72 CPUs machine, we
 > ran the following workload in a three level of cgroup hierarchy with top
@@ -176,43 +173,59 @@ On Mon, Aug 22, 2022 at 08:17:37AM +0800, Shakeel Butt wrote:
 >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
 > 
 > Results (average throughput of netperf):
-> Without (6.0-rc1)       10482.7 Mbps
-> With patch              17064.7 Mbps (62.7% improvement)
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		14542.5 Mbps (38.7% improvement)
 > 
-> With the patch, the throughput improved by 62.7%.
+> With the patch, the throughput improved by 38.7%
 > 
 > Signed-off-by: Shakeel Butt <shakeelb@google.com>
 > Reported-by: kernel test robot <oliver.sang@intel.com>
 
-This batch number has long been a pain point :) thanks for the work!
-
 Reviewed-by: Feng Tang <feng.tang@intel.com>
+
+Thanks!
 
 - Feng
 
 > ---
->  include/linux/memcontrol.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
+>  mm/page_counter.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
 > 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index 4d31ce55b1c0..70ae91188e16 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -354,10 +354,11 @@ struct mem_cgroup {
->  };
+> diff --git a/mm/page_counter.c b/mm/page_counter.c
+> index eb156ff5d603..47711aa28161 100644
+> --- a/mm/page_counter.c
+> +++ b/mm/page_counter.c
+> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
+>  				      unsigned long usage)
+>  {
+>  	unsigned long protected, old_protected;
+> -	unsigned long low, min;
+>  	long delta;
 >  
->  /*
-> - * size of first charge trial. "32" comes from vmscan.c's magic value.
-> - * TODO: maybe necessary to use big numbers in big irons.
-> + * size of first charge trial.
-> + * TODO: maybe necessary to use big numbers in big irons or dynamic based of the
-> + * workload.
->   */
-> -#define MEMCG_CHARGE_BATCH 32U
-> +#define MEMCG_CHARGE_BATCH 64U
+>  	if (!c->parent)
+>  		return;
 >  
->  extern struct mem_cgroup *root_mem_cgroup;
+> -	min = READ_ONCE(c->min);
+> -	if (min || atomic_long_read(&c->min_usage)) {
+> -		protected = min(usage, min);
+> +	protected = min(usage, READ_ONCE(c->min));
+> +	old_protected = atomic_long_read(&c->min_usage);
+> +	if (protected != old_protected) {
+>  		old_protected = atomic_long_xchg(&c->min_usage, protected);
+>  		delta = protected - old_protected;
+>  		if (delta)
+>  			atomic_long_add(delta, &c->parent->children_min_usage);
+>  	}
 >  
+> -	low = READ_ONCE(c->low);
+> -	if (low || atomic_long_read(&c->low_usage)) {
+> -		protected = min(usage, low);
+> +	protected = min(usage, READ_ONCE(c->low));
+> +	old_protected = atomic_long_read(&c->low_usage);
+> +	if (protected != old_protected) {
+>  		old_protected = atomic_long_xchg(&c->low_usage, protected);
+>  		delta = protected - old_protected;
+>  		if (delta)
 > -- 
 > 2.37.1.595.g718a3a8f04-goog
 > 
