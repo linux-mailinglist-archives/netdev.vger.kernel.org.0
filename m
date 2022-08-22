@@ -2,80 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63ABB59C9AA
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:11:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A4A559C9EC
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230457AbiHVULi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 16:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
+        id S236487AbiHVUTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 16:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232547AbiHVUL2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 16:11:28 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AD353D32
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:11:24 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id pm13so3144435pjb.5
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:11:24 -0700 (PDT)
+        with ESMTP id S231889AbiHVUTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 16:19:45 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8CEC12D3B
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:19:43 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id u14so14565354wrq.9
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 13:19:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gateworks-com.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=O5VnZ+lOi0bcNPXBayzq4uKMnrWOVSM8YLSt5Qe1iN0=;
-        b=YUwTVg6PfPw7p4kdFUo+ZY/WHRWXrdh4qR0CTGBC7otsyrKyQC0XTvNACl4Xdn3ulw
-         9ezu0u9muyo4EYSCvzK8ks/Q8t6KD4bw2ldyHxcA2fwSBjPCtfHdp+DolgBMnTUxrWhN
-         kuRz7799juXfjMFCNqp0Ymo/RdW2pHWeWWif6fy5y2z2hfMwhrj/76mVeCKy5mcu1i/v
-         0951jnx5OIUTSBYtG4xwr4c5BfFDJhqH04Ywlbre3F11GJE2nrT8I7pgBvT7zCAYkhlD
-         VZfnShKsJWZ5hacZzyn4iqPEWyBCH/UbAwiAw18t4E0I2g36TZN7XDxIT6AZbmqXFwb4
-         M+MA==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=ZvhYWEGtQKiCLgC/TdKtw1qwcTksPKFSJlKdptwhjp8=;
+        b=nOcSHAAqWz3rpdN+eUkSo5Vd6YZ77FMRyKj+dhJU8xY0wxyA7t8Ld0SGFMfCxJ6VEk
+         4UdR4KWRVsZLuR4OFCTjVdODxuZ9Z+3KQYWNrW1LvEmq0+RViRIxcZbOD/kMhuv7xRSd
+         eN2EIujuuPw5vh0sIzOUALMh3Axe9Oh+Jgot1QkdWWVOQnfC3jpMm9nByZJohFDf4ywt
+         k+95FaDbq3ZkEvIJihWAaQlPyF5u5e5MhtcUBRI4FR3nezLtIEsSjusjqAOPwqtQubRs
+         sJokTMy0qNAL3uMWYYwqFI90iXqeYmGOnUAyJm665oT049F2xG80Q2HgYY3tBgAlLy98
+         +w5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=O5VnZ+lOi0bcNPXBayzq4uKMnrWOVSM8YLSt5Qe1iN0=;
-        b=GJwleKByb9hqgffQ+O7qjELQ4HEHqQixbNqvmkSQAkR+f/dV1tqVGNQ0kv8AMGufKV
-         VvomZQlNIrGRBNxyzcArRYkOEbcEAoyO6VSrz5nuWRz94kG6ZCo+wTST5PHuznzB0kta
-         VO5qhPRE7BWsbRMISqPSBKks+lZqjpY9SnRQVjAMNAc6oLdQkOU96WQkVD/gy6cDdTUm
-         ikM+RqXycsHuDLXuGEEkK81grgsnDr2F3kkz78XdJg39GmxTYHMPDPNWf+Xnodtk3m3d
-         ljp/8DcQnqEbEVlXvAQFkuYdtxqwLStHZJhpLi/1nOjLmC5zTRaayJQtCi9Ug9LR5zDX
-         uxeQ==
-X-Gm-Message-State: ACgBeo2iLXSsctaa8CQVIO+IpTPT2J4VWnrvqY67wA7c4XkPqhvISpvR
-        PmF+/eezmep0ZNWmgxqv/D7glxGTp0McwSLqt+VMeg==
-X-Google-Smtp-Source: AA6agR4Pk+c5udP3H9GHpM2FKqlDT+qU8fjCEnkiEfMdOV8wcpI97AYfmxwcgC0bj26u+MObf67AyDezMEcAh0R7ERg=
-X-Received: by 2002:a17:90b:4f8e:b0:1f4:ed30:d286 with SMTP id
- qe14-20020a17090b4f8e00b001f4ed30d286mr60251pjb.66.1661199084030; Mon, 22 Aug
- 2022 13:11:24 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ZvhYWEGtQKiCLgC/TdKtw1qwcTksPKFSJlKdptwhjp8=;
+        b=im1l2A4AFSERsWpm5sCdu/N6GRdzM7TKTpQHAVKtn6TOw+VlOPCYkTv/9tkbEfxXuT
+         tJDYgFr0rsjkXZtxNEe38IsCSpyQq+zHLP+iabAh5G4GxQIsBvM9Sqi9wLU/epgaAnhC
+         9wbwliuySIrjyWUcjlZJlTmQm8kkEqJtkQXvyUHGSGmRgFcKIpKtDPce9SLuvDtscyjF
+         9F4xc/2GHZ7YD1L2k0mTU2BvSElzp69ER9quqzDOLmCgkMvTwhvwk9DYrb5EHN6KzBnu
+         YZ4LE4jq4Xngbe2ZP6kTeDVEYUe+hZa9pTASmfvXS4iygdgopWaikz24Z3kG4kW4IW20
+         Ez/g==
+X-Gm-Message-State: ACgBeo3jCF9b86i0br4h4Tz1DbLkSKBqMe2X96Y/tLeX3fQaI6bjl9p2
+        N+grSpr/lXQCUdPK7nIFZcNc/MZdpMQ=
+X-Google-Smtp-Source: AA6agR4+aIIyudrsajEOWAn6CqX4SsEyCfZrmOBNnJazHuhRAk09JDSfYCS7RiFCf6z1LHiQs+SunA==
+X-Received: by 2002:a5d:6712:0:b0:225:337c:3889 with SMTP id o18-20020a5d6712000000b00225337c3889mr10385108wru.59.1661199582374;
+        Mon, 22 Aug 2022 13:19:42 -0700 (PDT)
+Received: from ?IPV6:2a02:3100:954a:8e00:9543:2437:11af:ddd2? (dynamic-2a02-3100-954a-8e00-9543-2437-11af-ddd2.310.pool.telefonica.de. [2a02:3100:954a:8e00:9543:2437:11af:ddd2])
+        by smtp.googlemail.com with ESMTPSA id j10-20020a5d564a000000b00225307f43fbsm12176680wrw.44.2022.08.22.13.19.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 22 Aug 2022 13:19:41 -0700 (PDT)
+Message-ID: <6018e2ca-a02f-f70f-cf9a-f635680a02ba@gmail.com>
+Date:   Mon, 22 Aug 2022 22:19:32 +0200
 MIME-Version: 1.0
-References: <20220818143250.2797111-1-vladimir.oltean@nxp.com>
- <095c6c01-d4dd-8275-19fc-f9fe1ea40ab8@rasmusvillemoes.dk> <20220819105700.5a226titio5m2uop@skbuf>
- <5c9aa2f3-689f-6dd7-ed26-de11e14f5ba0@rasmusvillemoes.dk> <20220819164157.hubjxqczaxnoltjy@skbuf>
-In-Reply-To: <20220819164157.hubjxqczaxnoltjy@skbuf>
-From:   Tim Harvey <tharvey@gateworks.com>
-Date:   Mon, 22 Aug 2022 13:11:11 -0700
-Message-ID: <CAJ+vNU0Up2tcpRuU2Erq+Y7HfiPigpzvCTKcEvyJohcRCKVEyg@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: microchip: keep compatibility with device
- tree blobs with no phy-mode
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Thorsten Leemhuis <regressions@leemhuis.info>,
-        =?UTF-8?B?QWx2aW4g4pS8w6FpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
-        Craig McQueen <craig@mcqueen.id.au>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Chunhao Lin <hau@realtek.com>
+Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com, kuba@kernel.org,
+        davem@davemloft.net
+References: <20220822160714.2904-1-hau@realtek.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a) +
+ rtl8211fs fiber application
+In-Reply-To: <20220822160714.2904-1-hau@realtek.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,168 +74,400 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 9:42 AM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
->
-> On Fri, Aug 19, 2022 at 01:47:51PM +0200, Rasmus Villemoes wrote:
-> > > To give you an idea of how things work for user ports. If a user port
-> > > has a phy-handle, DSA will connect to that, irrespective of what OF-based
-> > > MDIO bus that is on. If not, DSA looks at whether ds->slave_mii_bus is
-> > > populated with a struct mii_bus by the driver. If it is, it connects in
-> > > a non-OF based way to a PHY address equal to the port number. If
-> > > ds->slave_mii_bus doesn't exist but the driver provides
-> > > ds->ops->phy_read and ds->ops->phy_write, DSA automatically creates
-> > > ds->slave_mii_bus where its ops are the driver provided phy_read and
-> > > phy_write, and it then does the same thing of connecting to the PHY in
-> > > that non-OF based way.
-> >
-> > Thanks, that's quite useful. From quick grepping, it seems that ksz9567
-> > currently falls into the latter category?
->
-> So it would appear.
->
-> > No, but it's actually easier for me to just do that rather than carry an
-> > extra patch until the mainline fix hits 5.19.y.
->
-> Whatever suits you best.
->
-> > > there is something to be said about U-Boot compatibility. In U-Boot,
-> > > with DM_DSA, I don't intend to support any unnecessary complexity and
-> > > alternative ways of describing the same thing, so there, phy-mode and
-> > > one of phy-handle or fixed-link are mandatory for all ports.
-> >
-> > OK. I suppose that means the linux driver for the ksz9477 family  should
-> > learn to check if there's an "mdio" subnode and if so populate
-> > ds->slave_mii_bus, but unlike lan937x, absence of that node should not
-> > be fatal?
->
-> Yes.
->
-> > > U-Boot can pass its own device tree to Linux, it means Linux DSA drivers
-> > > might need to gradually gain support for OF-based phy-handle on user
-> > > ports as well. So see what Tim Harvey has done in drivers/net/ksz9477.c
-> > > in the U-Boot source code, and try to work with his device tree format,
-> > > as a starting point.
-> >
-> > Hm. It does seem like that driver has the mdio bus optional (as in,
-> > probe doesn't fail just because the subnode isn't present). But I'm
-> > curious why ksz_probe_mdio() looks for a subnode called "mdios" rather
-> > than "mdio". Tim, just a typo?
->
-> No, definitely not a typo. I have to explain this for what seems like
-> the millionth time already, but the idea with an "mdios" container was
-> copied from the sja1105 driver, where there are actually multiple MDIO
-> buses. Documentation/devicetree/bindings/net/mdio.yaml wants the $nodename
-> to have the "^mdio(@.*)?" pattern, and:
-> - if you use "mdio" you can have a single node
-> - if you don't put the MDIO nodes under a container with an
->   #address-cells != 0, you can't use the "mdio@something" syntax
->
-> https://lore.kernel.org/all/20210621234930.espjau5l2t5dr75y@skbuf/T/#me43cf6b1976a3c3aec8357f19ab967f98eea1f73
->
-> What I'm actually less clear about is whether ksz9477 actually needs this.
-> Luckily U-Boot should have less compatibility issues to worry about,
-> since the DT is appended to the bootloader image, so some corrections
-> can be made if necessary.
+On 22.08.2022 18:07, Chunhao Lin wrote:
+> rtl8168h(revid 0x2a) + rtl8211fs is for fiber related application.
+> rtl8168h is connected to rtl8211fs mdio bus via its eeprom or gpio pins.
+> In this patch, use bitbanged MDIO framework to access rtl8211fs via
+> rtl8168h's eeprom or gpio pins.
+> 
+> Signed-off-by: Chunhao Lin <hau@realtek.com>
+> ---
+>  drivers/net/ethernet/realtek/Kconfig      |   1 +
+>  drivers/net/ethernet/realtek/r8169_main.c | 289 +++++++++++++++++++++-
+>  2 files changed, 288 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
+> index 93d9df55b361..20367114ac72 100644
+> --- a/drivers/net/ethernet/realtek/Kconfig
+> +++ b/drivers/net/ethernet/realtek/Kconfig
+> @@ -100,6 +100,7 @@ config R8169
+>  	depends on PCI
+>  	select FW_LOADER
+>  	select CRC32
+> +	select MDIO_BITBANG
+>  	select PHYLIB
+>  	select REALTEK_PHY
+>  	help
+> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+> index 1b7fdb4f056b..8051cdf46f85 100644
+> --- a/drivers/net/ethernet/realtek/r8169_main.c
+> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+> @@ -28,6 +28,7 @@
+>  #include <linux/bitfield.h>
+>  #include <linux/prefetch.h>
+>  #include <linux/ipv6.h>
+> +#include <linux/mdio-bitbang.h>
+>  #include <asm/unaligned.h>
+>  #include <net/ip6_checksum.h>
+>  
+> @@ -344,6 +345,15 @@ enum rtl8125_registers {
+>  	EEE_TXIDLE_TIMER_8125	= 0x6048,
+>  };
+>  
+> +enum rtl8168_sfp_registers {
+> +	MDIO_IN			= 0xdc04,
+> +	PINOE			= 0xdc06,
+> +	PIN_I_SEL_1		= 0xdc08,
+> +	PIN_I_SEL_2		= 0xdc0A,
+> +	PINPU			= 0xdc18,
+> +	GPOUTPIN_SEL	= 0xdc20,
+> +};
+> +
+>  #define RX_VLAN_INNER_8125	BIT(22)
+>  #define RX_VLAN_OUTER_8125	BIT(23)
+>  #define RX_VLAN_8125		(RX_VLAN_INNER_8125 | RX_VLAN_OUTER_8125)
+> @@ -584,6 +594,24 @@ struct rtl8169_tc_offsets {
+>  	__le16	rx_missed;
+>  };
+>  
+> +struct rtl_sfp_if_info {
+> +	u16 mdio_oe_i;
+> +	u16 mdio_oe_o;
+> +	u16 mdio_pu;
+> +	u16 mdio_pd;
+> +	u16 mdc_pu;
+> +	u16 mdc_pd;
+> +};
+> +
+> +struct rtl_sfp_if_mask {
+> +	const u16 pin_mask;
+> +	const u16 mdio_oe_mask;
+> +	const u16 mdio_mask;
+> +	const u16 mdc_mask;
+> +	const u16 phy_addr;
+> +	const u16 rb_pos;
+> +};
+> +
+>  enum rtl_flag {
+>  	RTL_FLAG_TASK_ENABLED = 0,
+>  	RTL_FLAG_TASK_RESET_PENDING,
+> @@ -596,6 +624,12 @@ enum rtl_dash_type {
+>  	RTL_DASH_EP,
+>  };
+>  
+> +enum rtl_sfp_if_type {
+> +	RTL_SFP_IF_NONE,
+> +	RTL_SFP_IF_EEPROM,
+> +	RTL_SFP_IF_GPIO,
+> +};
+> +
+>  struct rtl8169_private {
+>  	void __iomem *mmio_addr;	/* memory map physical address */
+>  	struct pci_dev *pci_dev;
+> @@ -635,6 +669,10 @@ struct rtl8169_private {
+>  	struct rtl_fw *rtl_fw;
+>  
+>  	u32 ocp_base;
+> +
+> +	enum rtl_sfp_if_type sfp_if_type;
+> +
+> +	struct mii_bus *mii_bus;	/* MDIO bus control */
+>  };
+>  
+>  typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
+> @@ -914,8 +952,12 @@ static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
+>  	if (tp->ocp_base != OCP_STD_PHY_BASE)
+>  		reg -= 0x10;
+>  
+> -	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR)
+> +	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR) {
+> +		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value & BMCR_PDOWN)
+> +			return;
+> +
+>  		rtl8168g_phy_suspend_quirk(tp, value);
+> +	}
+>  
+>  	r8168_phy_ocp_write(tp, tp->ocp_base + reg * 2, value);
+>  }
+> @@ -1214,6 +1256,243 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
+>  	}
+>  }
+>  
+> +struct bb_info {
+> +	struct rtl8169_private *tp;
+> +	struct mdiobb_ctrl ctrl;
+> +	struct rtl_sfp_if_mask sfp_mask;
+> +	u16 pinoe_value;
+> +	u16 pin_i_sel_1_value;
+> +	u16 pin_i_sel_2_value;
+> +};
+> +
+> +/* Data I/O pin control */
+> +static void rtl_mdio_dir(struct mdiobb_ctrl *ctrl, int output)
+> +{
+> +	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
+> +	struct rtl8169_private *tp = bitbang->tp;
+> +	const u16 reg = PINOE;
+> +	const u16 mask = bitbang->sfp_mask.mdio_oe_mask;
+> +	u16 value;
+> +
+> +	value = bitbang->pinoe_value;
+> +	if (output)
+> +		value |= mask;
+> +	else
+> +		value &= ~mask;
+> +	r8168_mac_ocp_write(tp, reg, value);
+> +}
+> +
+> +/* Set bit data*/
+> +static void rtl_set_mdio(struct mdiobb_ctrl *ctrl, int set)
+> +{
+> +	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
+> +	struct rtl8169_private *tp = bitbang->tp;
+> +	const u16 reg = PIN_I_SEL_2;
+> +	const u16 mask = bitbang->sfp_mask.mdio_mask;
+> +	u16 value;
+> +
+> +	value = bitbang->pin_i_sel_2_value;
+> +	if (set)
+> +		value |= mask;
+> +	else
+> +		value &= ~mask;
+> +	r8168_mac_ocp_write(tp, reg, value);
+> +}
+> +
+> +/* Get bit data*/
+> +static int rtl_get_mdio(struct mdiobb_ctrl *ctrl)
+> +{
+> +	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
+> +	struct rtl8169_private *tp = bitbang->tp;
+> +	const u16 reg = MDIO_IN;
+> +
+> +	return (r8168_mac_ocp_read(tp, reg) & BIT(bitbang->sfp_mask.rb_pos)) != 0;
+> +}
+> +
+> +/* MDC pin control */
+> +static void rtl_mdc_ctrl(struct mdiobb_ctrl *ctrl, int set)
+> +{
+> +	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
+> +	struct rtl8169_private *tp = bitbang->tp;
+> +	const u16 mdc_reg = PIN_I_SEL_1;
+> +	const u16 mask = bitbang->sfp_mask.mdc_mask;
+> +	u16 value;
+> +
+> +	value = bitbang->pin_i_sel_1_value;
+> +	if (set)
+> +		value |= mask;
+> +	else
+> +		value &= ~mask;
+> +	r8168_mac_ocp_write(tp, mdc_reg, value);
+> +}
+> +
+> +/* mdio bus control struct */
+> +static const struct mdiobb_ops bb_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_mdc = rtl_mdc_ctrl,
+> +	.set_mdio_dir = rtl_mdio_dir,
+> +	.set_mdio_data = rtl_set_mdio,
+> +	.get_mdio_data = rtl_get_mdio,
+> +};
+> +
+> +#define MDIO_READ 2
+> +#define MDIO_WRITE 1
+> +/* MDIO bus init function */
+> +static int rtl_mdio_bitbang_init(struct rtl8169_private *tp)
+> +{
+> +	struct bb_info *bitbang;
+> +	struct device *d = tp_to_dev(tp);
+> +	struct mii_bus *new_bus;
+> +
+> +	/* create bit control struct for PHY */
+> +	bitbang = devm_kzalloc(d, sizeof(struct bb_info), GFP_KERNEL);
+> +	if (!bitbang)
+> +		return -ENOMEM;
+> +
+> +	/* bitbang init */
+> +	bitbang->tp = tp;
+> +	bitbang->ctrl.ops = &bb_ops;
+> +	bitbang->ctrl.op_c22_read = MDIO_READ;
+> +	bitbang->ctrl.op_c22_write = MDIO_WRITE;
+> +
+> +	/* MII controller setting */
+> +	new_bus = devm_mdiobus_alloc(d);
+> +	if (!new_bus)
+> +		return -ENOMEM;
+> +
+> +	new_bus->read = mdiobb_read;
+> +	new_bus->write = mdiobb_write;
+> +	new_bus->priv = &bitbang->ctrl;
+> +
 
-Vladimir,
+This looks like an open-coded version of alloc_mdio_bitbang().
 
-The linux ksz9477 driver does not need the 'mdios' subnode or
-phy-handle's to function properly. I added these nodes to the U-Boot
-dts for imx8mm-venice-gw7901.dts and imx8mp-venice-gw74xx.dts in order
-for the U-Boot ksz9477 driver to work properly. So now I have
-out-of-sync dts files for those that will cause an issue the next time
-someone sync's dts from Linux back to U-Boot:
+> +	tp->mii_bus = new_bus;
+> +
+> +	return 0;
+> +}
+> +
+> +static void rtl_sfp_bitbang_init(struct rtl8169_private *tp,
+> +				  struct rtl_sfp_if_mask *sfp_mask)
+> +{
+> +	struct mii_bus *bus = tp->mii_bus;
+> +	struct bb_info *bitbang = container_of(bus->priv, struct bb_info, ctrl);
+> +
+> +	r8168_mac_ocp_modify(tp, PINPU, sfp_mask->pin_mask, 0);
+> +	r8168_mac_ocp_modify(tp, PINOE, 0, sfp_mask->pin_mask);
+> +	bitbang->pinoe_value = r8168_mac_ocp_read(tp, PINOE);
+> +	bitbang->pin_i_sel_1_value = r8168_mac_ocp_read(tp, PIN_I_SEL_1);
+> +	bitbang->pin_i_sel_2_value = r8168_mac_ocp_read(tp, PIN_I_SEL_2);
+> +	memcpy(&bitbang->sfp_mask, sfp_mask, sizeof(struct rtl_sfp_if_mask));
+> +}
+> +
+> +static void rtl_sfp_mdio_write(struct rtl8169_private *tp,
+> +				  u8 reg,
+> +				  u16 val)
+> +{
+> +	struct mii_bus *bus = tp->mii_bus;
+> +	struct bb_info *bitbang;
+> +
+> +	if (!bus)
+> +		return;
+> +
+> +	bitbang = container_of(bus->priv, struct bb_info, ctrl);
+> +	bus->write(bus, bitbang->sfp_mask.phy_addr, reg, val);
+> +}
+> +
+> +static u16 rtl_sfp_mdio_read(struct rtl8169_private *tp,
+> +				  u8 reg)
+> +{
+> +	struct mii_bus *bus = tp->mii_bus;
+> +	struct bb_info *bitbang;
+> +
+> +	if (!bus)
+> +		return ~0;
+> +
+> +	bitbang = container_of(bus->priv, struct bb_info, ctrl);
+> +
+> +	return bus->read(bus, bitbang->sfp_mask.phy_addr, reg);
+> +}
+> +
+> +static void rtl_sfp_mdio_modify(struct rtl8169_private *tp, u32 reg, u16 mask,
+> +				 u16 set)
+> +{
+> +	u16 data = rtl_sfp_mdio_read(tp, reg);
+> +
+> +	rtl_sfp_mdio_write(tp, reg, (data & ~mask) | set);
+> +}
+> +
+> +#define RTL8211FS_PHY_ID_1 0x001c
+> +#define RTL8211FS_PHY_ID_2 0xc916
+> +
 
-diff --git a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts b/arch/arm64
-/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-index 8469d5ddf960..f0bd67f12bad 100644
---- a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-+++ b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
-@@ -500,6 +500,7 @@ ports {
-                        lan1: port@0 {
-                                reg = <0>;
-                                label = "lan1";
-+                               phy-handle = <&sw_phy0>;
-                                phy-mode = "internal";
-                                local-mac-address = [00 00 00 00 00 00];
-                        };
-@@ -507,6 +508,7 @@ lan1: port@0 {
-                        lan2: port@1 {
-                                reg = <1>;
-                                label = "lan2";
-+                               phy-handle = <&sw_phy1>;
-                                phy-mode = "internal";
-                                local-mac-address = [00 00 00 00 00 00];
-                        };
-@@ -514,6 +516,7 @@ lan2: port@1 {
-                        lan3: port@2 {
-                                reg = <2>;
-                                label = "lan3";
-+                               phy-handle = <&sw_phy2>;
-                                phy-mode = "internal";
-                                local-mac-address = [00 00 00 00 00 00];
-                        };
-@@ -521,6 +524,7 @@ lan3: port@2 {
-                        lan4: port@3 {
-                                reg = <3>;
-                                label = "lan4";
-+                               phy-handle = <&sw_phy3>;
-                                phy-mode = "internal";
-                                local-mac-address = [00 00 00 00 00 00];
-                        };
-@@ -528,6 +532,7 @@ lan4: port@3 {
-                        lan5: port@4 {
-                                reg = <4>;
-                                label = "lan5";
-+                               phy-handle = <&sw_phy4>;
-                                phy-mode = "internal";
-                                local-mac-address = [00 00 00 00 00 00];
-                        };
-@@ -544,6 +549,38 @@ fixed-link {
-                                };
-                        };
-                };
-+
-+               mdios {
-+                       #address-cells = <1>;
-+                       #size-cells = <0>;
-+
-+                       mdio@0 {
-+                               reg = <0>;
-+                               compatible = "microchip,ksz-mdio";
-+                               #address-cells = <1>;
-+                               #size-cells = <0>;
-+
-+                               sw_phy0: ethernet-phy@0 {
-+                                       reg = <0x0>;
-+                               };
-+
-+                               sw_phy1: ethernet-phy@1 {
-+                                       reg = <0x1>;
-+                               };
-+
-+                               sw_phy2: ethernet-phy@2 {
-+                                       reg = <0x2>;
-+                               };
-+
-+                               sw_phy3: ethernet-phy@3 {
-+                                       reg = <0x3>;
-+                               };
-+
-+                               sw_phy4: ethernet-phy@4 {
-+                                       reg = <0x4>;
-+                               };
-+                       };
-+               };
-        };
- };
+There shouldn't be a dependency on a specific PHY type. It may not reflect your
+use cases, but it should be perfectly possible to combine this MAC with other
+PHY types, also from other vendors, supporting fiber.
 
-I believe you are still of the opinion that support for parsing the
-mdios node above be added to the Linux DSA drivers and dt-bindings or
-were you suggesting just the bindings be added? I don't think bindings
-would get ack'd unless there was code actually using them for
-something and its not clear to me exactly what you were asking for.
+> +static enum rtl_sfp_if_type rtl8168h_check_sfp(struct rtl8169_private *tp)
+> +{
+> +	int i;
+> +	int const checkcnt = 4;
+> +	static struct rtl_sfp_if_mask rtl_sfp_if_eeprom_mask = {
+> +		0x0050, 0x0040, 0x000f, 0x0f00, 0, 6};
+> +	static struct rtl_sfp_if_mask rtl_sfp_if_gpo_mask = {
+> +		0x0210, 0x0200, 0xf000, 0x0f00, 1, 9};
+> +
+> +	if (rtl_mdio_bitbang_init(tp))
+> +		return RTL_SFP_IF_NONE;
+> +
+> +	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_eeprom_mask);
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
+> +	for (i = 0; i < checkcnt; i++) {
+> +		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
+> +			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
+> +			break;
+> +	}
+> +
+> +	if (i == checkcnt)
+> +		return RTL_SFP_IF_EEPROM;
+> +
+> +	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_gpo_mask);
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
+> +	for (i = 0; i < checkcnt; i++) {
+> +		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
+> +			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
+> +			break;
+> +	}
+> +
+> +	if (i == checkcnt)
+> +		return RTL_SFP_IF_GPIO;
+> +
+> +	return RTL_SFP_IF_NONE;
+> +}
+> +
+> +static enum rtl_sfp_if_type rtl_check_sfp(struct rtl8169_private *tp)
+> +{
+> +	switch (tp->mac_version) {
+> +	case RTL_GIGA_MAC_VER_45:
+> +	case RTL_GIGA_MAC_VER_46:
+> +		if (tp->pci_dev->revision == 0x2a)
+> +			return rtl8168h_check_sfp(tp);
+> +		else
+> +			return RTL_SFP_IF_NONE;
+> +	default:
+> +		return RTL_SFP_IF_NONE;
+> +	}
+> +}
+> +
+> +static void rtl_hw_sfp_phy_config(struct rtl8169_private *tp)
+> +{
+> +	/* disable ctap */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0a43);
+> +	rtl_sfp_mdio_modify(tp, 0x19, BIT(6), 0);
+> +
+> +	/* change Rx threshold */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0dcc);
+> +	rtl_sfp_mdio_modify(tp, 0x14, 0, BIT(2) | BIT(3) | BIT(4));
+> +
+> +	/* switch pin34 to PMEB pin */
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0d40);
+> +	rtl_sfp_mdio_modify(tp, 0x16, 0, BIT(5));
+> +
+> +	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
+> +
+> +	/* disable ctap */
+> +	phy_modify_paged(tp->phydev, 0x0a43, 0x11, BIT(6), 0);
+> +}
+> +
+>  static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
+>  {
+>  	switch (tp->mac_version) {
+> @@ -2195,6 +2474,9 @@ static void rtl8169_init_phy(struct rtl8169_private *tp)
+>  	    tp->pci_dev->subsystem_device == 0xe000)
+>  		phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
+>  
+> +	if (tp->sfp_if_type != RTL_SFP_IF_NONE)
+> +		rtl_hw_sfp_phy_config(tp);
+> +
+>  	/* We may have called phy_speed_down before */
+>  	phy_speed_up(tp->phydev);
+>  
+> @@ -2251,7 +2533,8 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
+>  		rtl_ephy_write(tp, 0x19, 0xff64);
+>  
+>  	if (device_may_wakeup(tp_to_dev(tp))) {
+> -		phy_speed_down(tp->phydev, false);
+> +		if (tp->sfp_if_type == RTL_SFP_IF_NONE)
+> +			phy_speed_down(tp->phydev, false);
+>  		rtl_wol_enable_rx(tp);
+>  	}
+>  }
+> @@ -5386,6 +5669,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>  
+>  	tp->dash_type = rtl_check_dash(tp);
+>  
+> +	tp->sfp_if_type = rtl_check_sfp(tp);
+> +
+>  	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
+>  
+>  	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
 
-Best Regards,
-
-Tim
