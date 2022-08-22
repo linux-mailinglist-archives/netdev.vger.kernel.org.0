@@ -2,124 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E01F759B749
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 03:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F5E759B74F
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 03:50:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232291AbiHVBj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 21:39:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57148 "EHLO
+        id S232023AbiHVBs5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 21:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230094AbiHVBjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 21:39:25 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933662127A;
-        Sun, 21 Aug 2022 18:39:24 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4M9w175Wqnz1N7R0;
-        Mon, 22 Aug 2022 09:35:55 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 09:39:22 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 09:39:22 +0800
-Subject: Re: [PATCH net v2] net: neigh: don't call kfree_skb() under
- spin_lock_irqsave()
-To:     Nikolay Aleksandrov <razor@blackwall.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <den@openvz.org>, <davem@davemloft.net>, <edumazet@google.com>,
-        <kuba@kernel.org>
-References: <20220819044724.961356-1-yangyingliang@huawei.com>
- <c9bc0382-fd0d-c596-5f61-365a8e0cbb21@blackwall.org>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <eb7a4bac-965e-c68d-da34-22921fd94141@huawei.com>
-Date:   Mon, 22 Aug 2022 09:39:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S230094AbiHVBsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 21:48:55 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077E918346
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 18:48:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Riz8+HPQT2/Nsv2jYj22zqOPNmiP/0OOByHpfThIGRI=; b=4dLMEffpKqJlNxXIXyLKSEsLFm
+        iuN+Y0VphfobV4qG193tlZwqIRQ3wiuCrysGyL7/odWSOW0QbdGTrhTU4/gTGzDMj+rv+9oMmx20y
+        Be/07EhzNrEmMTiDKm2Gei00fXIOUKjJztI92wXoatNAyOHXOkJbrXpmJ9ywcH1gcHq4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oPwYR-00EAvC-Gg; Mon, 22 Aug 2022 03:48:39 +0200
+Date:   Mon, 22 Aug 2022 03:48:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Vadim Pasternak <vadimp@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>, mlxsw@nvidia.com,
+        Jiri Pirko <jiri@nvidia.com>
+Subject: Re: [PATCH net-next 4/8] mlxsw: i2c: Add support for system
+ interrupt handling
+Message-ID: <YwLgdxKwsBONjgZf@lunn.ch>
+References: <cover.1661093502.git.petrm@nvidia.com>
+ <96b0d90c1ed9fa5ca2b3ba5e3ba572155ad01b87.1661093502.git.petrm@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <c9bc0382-fd0d-c596-5f61-365a8e0cbb21@blackwall.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <96b0d90c1ed9fa5ca2b3ba5e3ba572155ad01b87.1661093502.git.petrm@nvidia.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> +static void mlxsw_i2c_work_handler(struct work_struct *work)
+> +{
+> +	struct mlxsw_i2c *mlxsw_i2c;
+> +
+> +	mlxsw_i2c = container_of(work, struct mlxsw_i2c, irq_work);
+> +	mlxsw_core_irq_event_handlers_call(mlxsw_i2c->core);
+> +}
+> +
+> +static irqreturn_t mlxsw_i2c_irq_handler(int irq, void *dev)
+> +{
+> +	struct mlxsw_i2c *mlxsw_i2c = dev;
+> +
+> +	mlxsw_core_schedule_work(&mlxsw_i2c->irq_work);
+> +
+> +	/* Interrupt handler shares IRQ line with 'main' interrupt handler.
+> +	 * Return here IRQ_NONE, while main handler will return IRQ_HANDLED.
+> +	 */
+> +	return IRQ_NONE;
+> +}
+> +
+> +static int mlxsw_i2c_irq_init(struct mlxsw_i2c *mlxsw_i2c, u8 addr)
+> +{
+> +	int err;
+> +
+> +	/* Initialize interrupt handler if system hotplug driver is reachable,
+> +	 * otherwise interrupt line is not enabled and interrupts will not be
+> +	 * raised to CPU. Also request_irq() call will be not valid.
+> +	 */
+> +	if (!IS_REACHABLE(CONFIG_MLXREG_HOTPLUG))
+> +		return 0;
+> +
+> +	/* Set default interrupt line. */
+> +	if (mlxsw_i2c->pdata && mlxsw_i2c->pdata->irq)
+> +		mlxsw_i2c->irq = mlxsw_i2c->pdata->irq;
+> +	else if (addr == MLXSW_FAST_I2C_SLAVE)
+> +		mlxsw_i2c->irq = MLXSW_I2C_DEFAULT_IRQ;
+> +
+> +	if (!mlxsw_i2c->irq)
+> +		return 0;
+> +
+> +	INIT_WORK(&mlxsw_i2c->irq_work, mlxsw_i2c_work_handler);
+> +	err = request_irq(mlxsw_i2c->irq, mlxsw_i2c_irq_handler,
+> +			  IRQF_TRIGGER_FALLING | IRQF_SHARED, "mlxsw-i2c",
+> +			  mlxsw_i2c);
 
-On 2022/8/19 20:15, Nikolay Aleksandrov wrote:
-> On 19/08/2022 07:47, Yang Yingliang wrote:
->> It is not allowed to call kfree_skb() from hardware interrupt
->> context or with interrupts being disabled. So add all skb to
->> a tmp list, then free them after spin_unlock_irqrestore() at
->> once.
->>
->> Fixes: 66ba215cb513 ("neigh: fix possible DoS due to net iface start/stop loop")
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   net/core/neighbour.c | 10 +++++++++-
->>   1 file changed, 9 insertions(+), 1 deletion(-)
->>
->> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->> index 5b669eb80270..d21c7de1ff1a 100644
->> --- a/net/core/neighbour.c
->> +++ b/net/core/neighbour.c
->> @@ -309,14 +309,17 @@ static int neigh_del_timer(struct neighbour *n)
->>   
->>   static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
->>   {
->> +	struct sk_buff_head tmp;
->>   	unsigned long flags;
->>   	struct sk_buff *skb;
->>   
->> +	skb_queue_head_init(&tmp);
->>   	spin_lock_irqsave(&list->lock, flags);
->>   	skb = skb_peek(list);
->>   	while (skb != NULL) {
->>   		struct sk_buff *skb_next = skb_peek_next(skb, list);
->>   		struct net_device *dev = skb->dev;
->> +
->>   		if (net == NULL || net_eq(dev_net(dev), net)) {
->>   			struct in_device *in_dev;
->>   
->> @@ -328,11 +331,16 @@ static void :q
-> (struct sk_buff_head *list, struct net *net)
->>   			__skb_unlink(skb, list);
->>   
->>   			dev_put(dev);
->> -			kfree_skb(skb);
->> +			dev_kfree_skb_irq(skb);
-> this is still doing dev_kfree_skb_irq() instead of attaching the skb to tmp, in fact
-> tmp seems unused so the loop below does nothing
->
->>   		}
->>   		skb = skb_next;
->>   	}
->>   	spin_unlock_irqrestore(&list->lock, flags);
->> +
->> +	while ((skb = __skb_dequeue(&tmp))) {
->> +		dev_put(skb->dev);
-> Also note that there's already a dev_put() above
-I made a mistake and send a wrong patch, please ignore this patch.
+I think you can make this simpler by using a request_threaded_irq()
 
-Thanks,
-Yang
->
->> +		kfree_skb(skb);
->> +	}
->>   }
->>   
->>   static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
->
-> .
+  Andrew
