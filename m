@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0190E59B759
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:02:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 361E259B764
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 04:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232261AbiHVB74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 21:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
+        id S232276AbiHVCAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 22:00:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232238AbiHVB7x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 21:59:53 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2048.outbound.protection.outlook.com [40.107.22.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EC02181B;
-        Sun, 21 Aug 2022 18:59:52 -0700 (PDT)
+        with ESMTP id S232272AbiHVCAA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 22:00:00 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1656F21824;
+        Sun, 21 Aug 2022 18:59:58 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XGiqet77yTOguMs8ZxjePbzfCw4loUuOKzY3sa6nP3ThYONrTMSIzR/FKaChEDfLcGnWvEK+gI/MzLs44przIse7fAWFbvzPwpgLlUvZcg27mWMxGle1iPIXrs45L/u/FXfbiKltW7m6sz3MxaguVixwJMPybxyVfL16KiTytUV/U8HUpNI5iKCLeceaNun4UFne7Gv7NzFAMK3s1bwESRoTb+x26/Pk+Elfyh1qXOg+0tVVIBzuZGLW6PILNkFD1abhBV5zVPg5jHhzS62M8KriSeHHXnp3ceVpn/GpTfLlX0G00Twa3yeTHhJbsL0HS2ozl1OnOI4HnbMpy0YYPQ==
+ b=APhkRYxaBZOwTxgFMNbolr4n3DVX6EraxkjMQ7X7gAOjfBhBStpiUIdDsAdnKl2trMG4pwmQrOIZR3Nd10i+1CaqGPy1vAmNjuP7EDQk4nbvJduj8oGCw5TOly+0KIRluCG3yPT99uNsPLqggRaqJ+M5vLZovlPfdzm/8KiDTXqxNUj/Shjsa6fZxtRAOAlJLGYcGTgFqPo1uPy7ET45/7oSZhmiqgAKGFMB0MzypRsut7JHetOVbkCt4GgL0KSI8vSuY4gsFHJ5uk8TuQ3WakfGCNRs/wwOMcwfxOoaEz9sX89xBC1706+5Ww4jtO1SXhDY4mo3fJGmQX3a7qsyig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IVSi8P+xSDiHEg8G1iW09xz59slsdaPet9lFQLeN5UU=;
- b=mhGyp/PeTgjilO6AqqgZf03H4ozykquyh0BO0bmpNCcUb6wvB2B1jL08uWx67gLFlWwuy8TSjys/0gFPbfToPQbXQVHISdpXCJKvN1KqKFkS7wtCNkqEeqePToJ0gHki71aMQyeAyZehaEW/ueXFAbOZ+di4/7PP2o0H1ybUisYy6WEyVw64cR9bhg3KRa5cNJMjXrK3DTE5oXY8T32D3mfjugZJsPTHj2xT5owJKJ7gFokFf6tPaNNnjtqqbYiWESvM8WMj8ENxj3GF/8BPh4btqsU729zl0Kokk9iFWnFyWRX3vgj730KaW+YTKv6O4bHylvIv4G21ZVQbYEbRjA==
+ bh=ESz4/42WVzu7Q5x0Wg2X89Wf44zaf8ndVEbb8/saNxM=;
+ b=A0XpPMrkEpnvsDJ9bsaEAsw7DPIgkcvPTqk+0DRBY1cqbRqF7xYyYvQHiD1nAnYYdyX7PZk/USgJGXgi4G0TPlWZAEFhY9PbdweAKeBDyhPIEzk0qJCVoaJ/FScrF7SupKRCgnPhAfWcXnEvLV4d8FoKKNjw7GMCTCGvGi657WPomrRfLJQBPTWzAQR1Rx9otS20MFgU5UH0VYuoTjsHmtK8TImEpAP8oICpkDnK42ciCMbTkrQrHK6XZVHZEJcgZH9rKh08vNPL0kTHveQVogKmJiUfp4T/2Yy2x5g9ja80Tjdk9TCzuQa8Jejhl37ZSJbrZ8Fw3rRTxo2aOYqRvw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IVSi8P+xSDiHEg8G1iW09xz59slsdaPet9lFQLeN5UU=;
- b=OlZvF6/PjOZ4xX5L2vnkW6zIj2W4AKcz3qCXoh9OfoS+viCdQ/bJJoHMasN8e8dv384h0oYC7vf3RiuYuKdI3MhDhVZbgSxG4EM/u2TvuERMhv0ovZt97BNLq304eq3gEvW5pn2a+CxxLPNOe085qk6s/mXKKO/d8UJw8EXU75I=
+ bh=ESz4/42WVzu7Q5x0Wg2X89Wf44zaf8ndVEbb8/saNxM=;
+ b=WgOWX8hVHCETL4AQ3JGFNNZlU83npPcpfijHzQsHEo97P7uhYG/GKI1+GWX7Ra1RWcRxK73VtVOT6QrtG8Bcy8t7FSuetR3LaPzPI9D/9hVRVri7vQrDGEE25xzECyPP2azutj/nLWwMIg0Jb04SeGt3gpmzWmd4J5NMiJLisNA=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
  by AM6PR0402MB3335.eurprd04.prod.outlook.com (2603:10a6:209:a::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5525.11; Mon, 22 Aug
- 2022 01:59:50 +0000
+ 2022 01:59:55 +0000
 Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::a569:c84a:d972:38ce]) by DB9PR04MB8106.eurprd04.prod.outlook.com
  ([fe80::a569:c84a:d972:38ce%9]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
- 01:59:50 +0000
+ 01:59:55 +0000
 From:   wei.fang@nxp.com
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com, robh+dt@kernel.org,
@@ -46,9 +46,9 @@ To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         f.fainelli@gmail.com, hkallweit1@gmail.com, linux@armlinux.org.uk
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V2 net-next 1/2] dt-bindings: net: tja11xx: add nxp,refclk_in property
-Date:   Mon, 22 Aug 2022 09:59:48 +0800
-Message-Id: <20220822015949.1569969-2-wei.fang@nxp.com>
+Subject: [PATCH V2 net-next 2/2] net: phy: tja11xx: add interface mode and RMII REF_CLK support
+Date:   Mon, 22 Aug 2022 09:59:49 +0800
+Message-Id: <20220822015949.1569969-3-wei.fang@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220822015949.1569969-1-wei.fang@nxp.com>
 References: <20220822015949.1569969-1-wei.fang@nxp.com>
@@ -58,51 +58,51 @@ X-ClientProxiedBy: SG2P153CA0029.APCP153.PROD.OUTLOOK.COM (2603:1096:4:c7::16)
  To DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b6e81d29-9eaa-43d7-eba4-08da83e1ff31
+X-MS-Office365-Filtering-Correlation-Id: ad1e471c-5bad-4923-542d-08da83e2029d
 X-MS-TrafficTypeDiagnostic: AM6PR0402MB3335:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /wcVIH1OZapzjdARul5UImRnNL4q5TqgCXQtoA7lpZbg4TAmVOx94/E/vxKdFwGJjzQw0O0uo7+BamLyjTvRHjejzgjW/+RsD9Bb/DrfETaPjNKIN9NIaI1iA7Dv8vtvI+92HdP2QbaPca9C1hJvBZm/EEIDXx9TuXrgh8d58ZWRO8t1EK8NQ++pIKdQseTU/98PPN03cpzTXnnmEz8Paal0DAl3gDUjfe1zwgCEn/h91wMp//y3rW3cPyhOlYX5L3J9q9LS3VkNcNsAvydKC4cXI502E7NUZSwS9S2hIlGRDtwNZ9SENhf3mjSRtOGr2xhLX7n8jHuXQ6zxcpuq+CiCkvHtrWQ/gXgX0Owwqbrgx37raph/kQAEtWuQNR2ybm4xUFARbq1cWWdB7JDiI943OqCTkZEapnGQyfz5KgbTwGmh9LtpdFXcR4FQQF1ytZJMUbOGzdpM7wLyKdnLhhwALovKDLM5QPnBVzXX21SsFx2FolA5X5K1O3SNJSZRs6s55ibOKnwsUWz5BYqU57ifcJcuxUh5ulN9KOhBFVpQ42fvBuTNBClVQdNqRughJUWJHCARVZPT2WJjNadOyUrjrWwh0UGE2Q2juu588Ltpq1OIrS8oorPcK9/t5Gy0G1AGfpKJaViYR1u7iCGxSgOmIjHBI+GrDcdXJOtikQkh1PEHHyj+ymR3v55J6M4Da7eggGfQyI+j7uItck0u9onxrn6JuuvNwe4rLHkpy0tyPY8jqk4crY4cfBH8lC23Xi7s7pOD1FzVDpsGqbPxzYLA2brhZSAK7k8PX9Dq0rg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(66476007)(66946007)(38350700002)(4326008)(86362001)(8676002)(66556008)(921005)(8936002)(36756003)(38100700002)(6512007)(6506007)(6486002)(1076003)(52116002)(316002)(478600001)(2616005)(2906002)(83380400001)(41300700001)(5660300002)(9686003)(26005)(7416002)(186003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: NAFGjsaac72NI51FCHiSLITXu2/hj8thJtoMp4W9WzXE7oPpqDqigDuFKU4UwrH5iWx0gQurtakzNgt7oFuIReJuwDpqB++Z0LwwfJpRhk6AFunYBwwG8Xw2VBp1a5bjVQHtXt4SN/3Sw3kRGLlieaHZTRN51eqWZoaHtVkstzvEKUeYtuIFJ9secRZLq90FDifnCsFTaWbEXpbU6MIHVyfH5f4AnId/t1aouRuOpTb2IAU5a8c9hrGtnjBA/NzoRxmTeCI4mnrN5TnqM8qVoCSXitkyLo0suY4YLHfCM+QHTwHsMxJ1/fcJ7/GwRls61SuNf2Rd7vUaaydjTd5yeLS9mhZrOq6Lb/lSy5vHtkbUdIMUifumbquv1tLyTlc2C6T8jwJvw0EZUyL4zYJ/XJYZZNc1sE9OHig+1xX8HHT5xRzR+2sSgJPNRZfj28fSf5cyx/teL7zJdHYyx2XsmO4ZD5HLLeFEKy0tt42fhc3jaA1K0HBhNsY2RO8e4UDhzpeIC9VGQ3xtnecYxMStPtiBEQjMCYu1bUKCvBufBLMoMnFFMP8pCUFn9XbNhmz9/CRgRAnCsoFi8SF0DpBCoc9V1Nq7e7Bvh/AZaTWZWoMIT8XazR2Efy7Jq8By4ngzOBh5YyzNlu224jIWOjrqyP74Ul/twsF3HMADQio7jawzxQtJS1W7NQN2A81hBJTTQH50mlesIFja6xqYg36y0YaNstnNIlb7kX/y8LiS/bC5lPjSBemI8qyou53WvHh+hUWo2XNApi4pvm05d42tu6eaOxhdTMPBuiOaUnGHlyE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(66476007)(66946007)(38350700002)(4326008)(86362001)(8676002)(66556008)(921005)(8936002)(36756003)(38100700002)(6512007)(6506007)(6486002)(1076003)(52116002)(316002)(478600001)(2616005)(2906002)(83380400001)(41300700001)(5660300002)(9686003)(6666004)(26005)(7416002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?raKaK+/2R0V6dUXnCRmlpLJbaONHSQB1+cyAgpDEzO8YDxDzziDmLsJIlbGI?=
- =?us-ascii?Q?DfsMgVGCKeGTx/MshlErYS1yO8+zBAlubsbaMs2AAX7nWlQ8kVaDdncnyO+0?=
- =?us-ascii?Q?UG3YIcGsqNzpjcufB6OvS0Y4iUp9MYYlh+FTj9lFU8ZqNStBKnHKNOFaCcqO?=
- =?us-ascii?Q?VQlUl3WxZ+n+V1imDVBZRwr6yeIB54FUYXAHkmgU2fDO4NPQwmwThg71MmPQ?=
- =?us-ascii?Q?6uPOWhhDODlowG4M0byXQZeg9unieyJ2ubAt3tkVzNvqRUw7bK/RRNHt7rbT?=
- =?us-ascii?Q?7Q52v1rLfIXwNuiDbK/v9Cr2Mgdmw/PqpneBIyzuVkw5wm1MIfJCxCsnUyfw?=
- =?us-ascii?Q?g6zkqkSMDQMXfOPowC2yi8rN7eP60PmmNqmdb6tpjQN75qdPQ4em1JfShORH?=
- =?us-ascii?Q?prMEb40BL9k+L8y0wgZtQaYRYe/aGnQeqHUl4oJyzdWOR7eNfAUed2KsGSEQ?=
- =?us-ascii?Q?7jPLACdLUVBXjy2CrncZ22qO97v05Xi1irN2ogKrIEz+at+W34dratv0nRQU?=
- =?us-ascii?Q?g/BLViEYhGl7RQM/+g3qPsa4z1ZljjwwMgTa73AryC4M11LP6kWfN90oEmUE?=
- =?us-ascii?Q?iqUJprHghQpJxD+eb8ksJgQmtxsFK/QUrAiu1t5ruUCsH6PZMFbWxgxI8Cg5?=
- =?us-ascii?Q?SQCJC98pD2vIwkZQYPFwl23mLRtyBF3bYvsb5x2koI4YYvggK2SrQ3KIMBIk?=
- =?us-ascii?Q?7ovajF3aNJUHOn+Yco3CmN4jb5iYxPM3Qrq9usjMoqztImENs49Y/d44Cl7O?=
- =?us-ascii?Q?lOBqKWHfJvRUxRF8bxYfCFeq/aJMVv3ocY4m4vndIfqjBvd+qFYBhrVKI5yf?=
- =?us-ascii?Q?zNVgSs4pp5Nfq8/evZ8Gk7ZULpm2KkiIpXl3gAxeBqurVrDtbDaJK0RJMU8h?=
- =?us-ascii?Q?w3EHinOEMVOIhKo2EPeAc+31mwAe9XaJF8GhijYCtSYIV2vxvinMCzIIHnv9?=
- =?us-ascii?Q?bi4bjPd5t57dd0VzxLjuLo1T2ugF+pMgjvWDLPcIsFDuf4Dc4oiWrX3904a4?=
- =?us-ascii?Q?4tQzL8wN+hPtldy1yQ6tdvvCwJLsnUjbM//0tJToQ6X8CkhoL+oBIuYKVnXk?=
- =?us-ascii?Q?lelh5K7jLiYJLJvYApZr2bLNBCoQm61Qvdjvhba3vMaNu1E2iXNgULhgJEwO?=
- =?us-ascii?Q?8+vN7M+kP5UGYYjDXDNA6zuXrsGI35P1bfet9m1cADTBsIVzIVbdubrnc2oW?=
- =?us-ascii?Q?Z9kPXD7Ys7TEZjz7e8OZzEQOtEQGjD9RNAckiE0HGHlvibhb85oO2pdet4D9?=
- =?us-ascii?Q?8I8zSwX9L/PZz1y+WrII34DD8Arvy+Yj/jZwCIvptBXIKMZpRnzqAQxGXLOJ?=
- =?us-ascii?Q?NlIXfJ7TNrc3OUBKtrE96uLGTuIKggcoLo5Y621XE3duIapsCDOOzum3OOdb?=
- =?us-ascii?Q?GgoCMhWgzRYmVV5Ht0fOYCrfIqv0ndebwLYgYfZgEnJs8ze6kaJqxoVhiyu7?=
- =?us-ascii?Q?4ThJVDVBJGah91xr4xWYcWB59Vku2Njx5wK9ThOoykUx27dlfotG0W3ZBIQC?=
- =?us-ascii?Q?vK/cpsgxAIMpoL9kjsQjmGGBC5/DGHC8h+/8Ta2IOwevA51eW6FQqRD7bp3c?=
- =?us-ascii?Q?OHGrQ/5o1SDhKadH8c/jjazaUcId1mY7eUkWcF3e?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?vq6juoeDQaAdsNnBQLwV+e+ilbuZORlXbXunEOvvfxCL8Gou8se3zTksYmPp?=
+ =?us-ascii?Q?77ITMZ1ri7AemZ/waNgZDRLNMdaylPytzjB5l5Q2TM4msU630/1xzVOgig9o?=
+ =?us-ascii?Q?EwGKhgiolyOcwclag6QA31SHQ5bQZe/pykM7feb3Gi8gMzhPUMF284ECyqEp?=
+ =?us-ascii?Q?u9RSgvDm4pKss72BwnIcBuVQ27wo7VWBk6nTSL5jn866uL/ZE3TwWz+gMEAx?=
+ =?us-ascii?Q?XxFl6oce///cOngUFW5TwVm6on1ta3J7rzlWpnarv1AZdss2c4SQOOsnV/iF?=
+ =?us-ascii?Q?KftJqaYAtq9oBv8UUWhktwtw7LkAGvSnB33+Z+Q2Aber3N0B7JVsPdxO3VGl?=
+ =?us-ascii?Q?/IBBxTz55iAdCoXnDI7b4+zK2NJkGt/kYbMhze8fxwgxplehAfXV6dm/GZ7S?=
+ =?us-ascii?Q?jvyTy6jc2x/2k4XWEqaHZxJQMpeD0KVDCJDhOSpc6JVi0x6/r7hr71B2slKt?=
+ =?us-ascii?Q?JEwkNZpm8cr5rRbRIMoNkWlu03mzfFRkKxWVNd4tOswXz55UVLwSdzCTH6QO?=
+ =?us-ascii?Q?XoIyV77Od0beyYuNiOwp/M/w9J6uQyBSlu1yytj83qjH7JFRrAhR4/25ix9K?=
+ =?us-ascii?Q?i/Vn5rc+JtRE2yqKl2Rz+oSn3Yid737QB7Kkuom85r0/A+SHtCDMqHpjVsPd?=
+ =?us-ascii?Q?Ka+nJhxHGTJmy1yQ3vZY5AqWTINRNf2EbHHqFoOCpR84Yzige9Fvuj/P3toB?=
+ =?us-ascii?Q?vo3KvqS8ObM36PArdNnvp1907pYNeRMQP22EeRMCtefbE520iI5nsLGEgMIf?=
+ =?us-ascii?Q?UUf/mbbbBm+DqtDkVjg/BU/LqYYlI7st1Oh7Jinx/UlBWLN+q3NKDjWDi/HM?=
+ =?us-ascii?Q?Z5+CNWf8ASEdjyMiWsAEIt/UevBD8puG5EZuQ0pP5RaMwgkBCIQog8tED/CY?=
+ =?us-ascii?Q?Bf0vCr20AXAbTbcquLVq6OODz2edw/ptVWGmUWobcae5LeMbpYHAG/2+UZCi?=
+ =?us-ascii?Q?o0DnySKfb14p1BQDAm6pkSo9kRmdZsQAdGZQmxVLoC1jJK1oULLKIhGQU2ow?=
+ =?us-ascii?Q?c+QnORt3IBLePuuJxxdgGqwiBcFhwXmhqjSCttMl7zhhmSR+0ZPt5QAvWN8F?=
+ =?us-ascii?Q?ORTtycOywYQ88arJqo+1ZfsyQgh1p5US/eDPXENE70qHMbRwQ7bUxAxkh9VJ?=
+ =?us-ascii?Q?+1U9WxkTl57F3bSBt6L1wNu7EWZnCPnE4Ko6uvFlllIZce+4K7BgWdApG3r5?=
+ =?us-ascii?Q?4+lkffOjmatmCjg4j1GQugHx+Xn1hs7uFAUzdjUfP+cYHRLuO64gaOmWUo8v?=
+ =?us-ascii?Q?V4eBqnM82bgTzSYCM/vE1q6BIY9Fv/uRlIjMyOnROnM84p8HWcxjioTPj2B6?=
+ =?us-ascii?Q?AwM50BqeTGt148FSTfYOOsFpbc/JBN0BcR6jQPXWdXzw1CdEv72DbI+n/+dU?=
+ =?us-ascii?Q?dminhSD/hE6viXF0a02Wrr0QrLdb1tU6W4wjoyslDhIvP5Htlk9EBpoSdWnn?=
+ =?us-ascii?Q?2muJro24vWNNvPMMiH5KnaPGY0OpZQ5D/bMjKpUuxCc9Z7vExas7++3ugIzM?=
+ =?us-ascii?Q?rBizMX3AcpgF41hZMkOOhfgirkybPzmAYpjhEp6rjOnwPVeZtaQaRv9t4Z32?=
+ =?us-ascii?Q?0oj9a1Sz57ypRHCgwH0z/mkQ/t+mRCV6c3q8rMea?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6e81d29-9eaa-43d7-eba4-08da83e1ff31
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad1e471c-5bad-4923-542d-08da83e2029d
 X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 01:59:50.0718
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 01:59:55.8402
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zFZJ3tPcmSY3/YpK3AsRoGjBCRKk4HDAbMthr3lU9YPe6Xn/PoFexcMA6sr2cC/0euMS9zTYw7xKzWTEy3SiZA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: g/4ctXldwafMtTQG0/splk9TVhecOpbMUnHWNrwERAdXGpw/m9sl2nV/6zvuO10Iiy6h53qTRlIOY/krZ98gdw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3335
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -116,53 +116,169 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Wei Fang <wei.fang@nxp.com>
 
-TJA110x REF_CLK can be configured as interface reference clock
-intput or output when the RMII mode enabled. This patch add the
-property to make the REF_CLK can be configurable.
+Add below features support for both TJA1100 and TJA1101 cards:
+- Add MII and RMII mode support.
+- Add REF_CLK input/output support for RMII mode.
 
 Signed-off-by: Wei Fang <wei.fang@nxp.com>
 ---
 V2 change:
-Correct the property name and a typo.
+1. Correct the property name to "nxp,rmii-refclk-in".
+2. Modify the "quirks" of struct tja11xx_priv to "flags".
 ---
- .../devicetree/bindings/net/nxp,tja11xx.yaml    | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/phy/nxp-tja11xx.c | 83 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 78 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-index d51da24f3505..ab8867e6939b 100644
---- a/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-+++ b/Documentation/devicetree/bindings/net/nxp,tja11xx.yaml
-@@ -31,6 +31,22 @@ patternProperties:
-         description:
-           The ID number for the child PHY. Should be +1 of parent PHY.
+diff --git a/drivers/net/phy/nxp-tja11xx.c b/drivers/net/phy/nxp-tja11xx.c
+index 2a8195c50d14..ec91e671f8aa 100644
+--- a/drivers/net/phy/nxp-tja11xx.c
++++ b/drivers/net/phy/nxp-tja11xx.c
+@@ -10,6 +10,7 @@
+ #include <linux/mdio.h>
+ #include <linux/mii.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/phy.h>
+ #include <linux/hwmon.h>
+ #include <linux/bitfield.h>
+@@ -34,6 +35,11 @@
+ #define MII_CFG1			18
+ #define MII_CFG1_MASTER_SLAVE		BIT(15)
+ #define MII_CFG1_AUTO_OP		BIT(14)
++#define MII_CFG1_INTERFACE_MODE_MASK	GENMASK(9, 8)
++#define MII_CFG1_MII_MODE				(0x0 << 8)
++#define MII_CFG1_RMII_MODE_REFCLK_IN	BIT(8)
++#define MII_CFG1_RMII_MODE_REFCLK_OUT	BIT(9)
++#define MII_CFG1_REVMII_MODE			GENMASK(9, 8)
+ #define MII_CFG1_SLEEP_CONFIRM		BIT(6)
+ #define MII_CFG1_LED_MODE_MASK		GENMASK(5, 4)
+ #define MII_CFG1_LED_MODE_LINKUP	0
+@@ -72,11 +78,15 @@
+ #define MII_COMMCFG			27
+ #define MII_COMMCFG_AUTO_OP		BIT(15)
  
-+      nxp,rmii-refclk-in:
-+        type: boolean
-+        description: |
-+          The REF_CLK is provided for both transmitted and received data
-+          in RMII mode. This clock signal is provided by the PHY and is
-+          typically derived from an external 25MHz crystal. Alternatively,
-+          a 50MHz clock signal generated by an external oscillator can be
-+          connected to pin REF_CLK. A third option is to connect a 25MHz
-+          clock to pin CLK_IN_OUT. So, the REF_CLK should be configured
-+          as input or output according to the actual circuit connection.
-+          If present, indicates that the REF_CLK will be configured as
-+          interface reference clock input when RMII mode enabled.
-+          If not present, the REF_CLK will be configured as interface
-+          reference clock output when RMII mode enabled.
-+          Only supported on TJA1100 and TJA1101.
++/* Configure REF_CLK as input in RMII mode */
++#define TJA110X_RMII_MODE_REFCLK_IN       BIT(0)
 +
-     required:
-       - reg
+ struct tja11xx_priv {
+ 	char		*hwmon_name;
+ 	struct device	*hwmon_dev;
+ 	struct phy_device *phydev;
+ 	struct work_struct phy_register_work;
++	u32 flags;
+ };
  
-@@ -44,6 +60,7 @@ examples:
+ struct tja11xx_phy_stats {
+@@ -251,8 +261,34 @@ static int tja11xx_config_aneg(struct phy_device *phydev)
+ 	return __genphy_config_aneg(phydev, changed);
+ }
  
-         tja1101_phy0: ethernet-phy@4 {
-             reg = <0x4>;
-+            nxp,rmii-refclk-in;
-         };
-     };
-   - |
++static int tja11xx_get_interface_mode(struct phy_device *phydev)
++{
++	struct tja11xx_priv *priv = phydev->priv;
++	int mii_mode;
++
++	switch (phydev->interface) {
++	case PHY_INTERFACE_MODE_MII:
++		mii_mode = MII_CFG1_MII_MODE;
++		break;
++	case PHY_INTERFACE_MODE_REVMII:
++		mii_mode = MII_CFG1_REVMII_MODE;
++		break;
++	case PHY_INTERFACE_MODE_RMII:
++		if (priv->flags & TJA110X_RMII_MODE_REFCLK_IN)
++			mii_mode = MII_CFG1_RMII_MODE_REFCLK_IN;
++		else
++			mii_mode = MII_CFG1_RMII_MODE_REFCLK_OUT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return mii_mode;
++}
++
+ static int tja11xx_config_init(struct phy_device *phydev)
+ {
++	u16 reg_mask, reg_val;
+ 	int ret;
+ 
+ 	ret = tja11xx_enable_reg_write(phydev);
+@@ -265,15 +301,32 @@ static int tja11xx_config_init(struct phy_device *phydev)
+ 
+ 	switch (phydev->phy_id & PHY_ID_MASK) {
+ 	case PHY_ID_TJA1100:
+-		ret = phy_modify(phydev, MII_CFG1,
+-				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_MASK |
+-				 MII_CFG1_LED_ENABLE,
+-				 MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_LINKUP |
+-				 MII_CFG1_LED_ENABLE);
++		reg_mask = MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_MASK |
++			   MII_CFG1_LED_ENABLE;
++		reg_val = MII_CFG1_AUTO_OP | MII_CFG1_LED_MODE_LINKUP |
++			  MII_CFG1_LED_ENABLE;
++
++		reg_mask |= MII_CFG1_INTERFACE_MODE_MASK;
++		ret = tja11xx_get_interface_mode(phydev);
++		if (ret < 0)
++			return ret;
++
++		reg_val |= (ret & 0xffff);
++		ret = phy_modify(phydev, MII_CFG1, reg_mask, reg_val);
+ 		if (ret)
+ 			return ret;
+ 		break;
+ 	case PHY_ID_TJA1101:
++		reg_mask = MII_CFG1_INTERFACE_MODE_MASK;
++		ret = tja11xx_get_interface_mode(phydev);
++		if (ret < 0)
++			return ret;
++
++		reg_val = ret & 0xffff;
++		ret = phy_modify(phydev, MII_CFG1, reg_mask, reg_val);
++		if (ret)
++			return ret;
++		fallthrough;
+ 	case PHY_ID_TJA1102:
+ 		ret = phy_set_bits(phydev, MII_COMMCFG, MII_COMMCFG_AUTO_OP);
+ 		if (ret)
+@@ -458,16 +511,36 @@ static int tja11xx_hwmon_register(struct phy_device *phydev,
+ 	return PTR_ERR_OR_ZERO(priv->hwmon_dev);
+ }
+ 
++static int tja11xx_parse_dt(struct phy_device *phydev)
++{
++	struct device_node *node = phydev->mdio.dev.of_node;
++	struct tja11xx_priv *priv = phydev->priv;
++
++	if (!IS_ENABLED(CONFIG_OF_MDIO))
++		return 0;
++
++	if (of_property_read_bool(node, "nxp,rmii-refclk-in"))
++		priv->flags |= TJA110X_RMII_MODE_REFCLK_IN;
++
++	return 0;
++}
++
+ static int tja11xx_probe(struct phy_device *phydev)
+ {
+ 	struct device *dev = &phydev->mdio.dev;
+ 	struct tja11xx_priv *priv;
++	int ret;
+ 
+ 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+ 	priv->phydev = phydev;
++	phydev->priv = priv;
++
++	ret = tja11xx_parse_dt(phydev);
++	if (ret)
++		return ret;
+ 
+ 	return tja11xx_hwmon_register(phydev, priv);
+ }
 -- 
 2.25.1
 
