@@ -2,103 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF83459BC39
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 11:04:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2FF759BC56
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 11:11:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233967AbiHVJES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 05:04:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49772 "EHLO
+        id S234163AbiHVJKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 05:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233221AbiHVJEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 05:04:16 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4E518B1F
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 02:04:16 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id 20so9331276plo.10
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 02:04:16 -0700 (PDT)
+        with ESMTP id S234207AbiHVJKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 05:10:32 -0400
+Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44CE219C06;
+        Mon, 22 Aug 2022 02:10:31 -0700 (PDT)
+Received: by mail-qv1-xf2a.google.com with SMTP id b2so7657032qvp.1;
+        Mon, 22 Aug 2022 02:10:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=p9eXFPYaWoUQYd93GZHfKWGzwlV1gqge90LRrpP+sWM=;
-        b=OL+MODffpKAcV3zXGVEgGF5U6UzKDQuZEVr8RwjSlzNyarWhrgZqcYxGiuMbUN0eOL
-         +35YiCkSP9Z4e88SGQsygFEHQTup96Yw6bHA1/aFAOLV5OI7m0248T32538K5hdNBDf1
-         XBQ1c+5uHnGczH0ntzJ3swsMZ6VucXDS3TTqrLsfIMJumUmjBbRLbyV78n1WjJvVGNWD
-         7V/d/7+whN7XNIgfXZjUxYOe69ZAghEdEN+KUk4BsuKTZVJnLz2ZGzeHY0Y66uYDkfzL
-         6aCRTqnr/83ZH5C9mD63/UNYnPiFtB4fOuZOnfIdslv1mXh9oKK6HsKnZSvSJpHzTk6I
-         q/Cg==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=wjrH7CkWFBaGclBblrE7HFL002i1VDYL9JXtkvBlksY=;
+        b=m9Eo8OodVq1Ets/OEiRoWJrWFhfn0xRM++GAXhZxITlqyA6MRrqB7PExQKR81BqoMd
+         3OOLgss+leeXQWJHXQTYBgXPN43Kk3H4s0SIfBeP7UDdI6AFj1JMbFxzr5rsNz1tBPdE
+         Iv1VKq0X0XEs8Ff5FzfIuStRtbAlMk+CfHruqHibJIINFwKVRjgmYjmrSfhrY0o2AAGX
+         3RnZFMzTzPbjj6It6Z7AtISosQrg2T+H5v/CINVs7+rHRhdVXOLdF64GuJ+Sv8IWUjku
+         ocK/gD5hezM0DCBxWrhwDB6vj7fPo8bdqadR+oH6EAXbsbaOLqG16LkJ0vbK8np0Vgtg
+         Zejg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=p9eXFPYaWoUQYd93GZHfKWGzwlV1gqge90LRrpP+sWM=;
-        b=A1pXi9KtbGlu55d+6dthZRZR1OfEp+ns3wST5Q/gi45X1aYgBC+d+NtqytzqtkDErc
-         5Q15ChYeLOt3s27fCoY+lym8q4eU7jFP8dZl26t/Qwp0LdDMEJN7c5pHsoKWpxZI4I8Z
-         y71LodR2lUGL4AdOTDFTCArrDxTNM3BaqlEhO5LDcNLSsdkwP0DVsW3kCeOb5r0fJTtM
-         IW8F16i71Ph7Mkg1U/j2js1DYkUzQmZA6U6eFhfpIQCSIxlCbgXzwVPqZbe7VRuhHPpY
-         d/OxnGD5/CKWOa+QftrfVyLcFBJdilZB+pxYj7SI2Q/DNNKpZRnrj1UTcg91GSfF3fKm
-         LDFA==
-X-Gm-Message-State: ACgBeo2JBlJRCOHqjIxdACkEfVGMVBDMFpyz3N0raQwhEHoECg97+YvY
-        Jw3TtMKPkerueEM/YPvtLADZ8o3VNIofdRb48P4=
-X-Google-Smtp-Source: AA6agR5516h4x7YW5dZwC2Y7+TqZkgs/oM/3W7qbdLtTeVQvFAQULqtQo/5XA/ebhYn/ylDiMA4QraKv/pd4o9YGdmA=
-X-Received: by 2002:a17:90b:1c90:b0:1f8:42dd:9eba with SMTP id
- oo16-20020a17090b1c9000b001f842dd9ebamr28439725pjb.160.1661159055705; Mon, 22
- Aug 2022 02:04:15 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=wjrH7CkWFBaGclBblrE7HFL002i1VDYL9JXtkvBlksY=;
+        b=1u/MkqwwBD1wTIedTEDb64YZVUpumM2wELjlyGYQ8+cTlSfx+fax/IVn/GTpJ8crSc
+         S6uGCz9C0xSQ3DmbMjuqB76DWXa/KQlWw/C3/fkorIQ/2/moA/j99thnj8cvurpJj7KE
+         HQ5pLW8YDoYWM9nonvEiAEJ94ytZuvNCe4PuqbPPW99pOqsaorx0WulGqmDj5bBbETf9
+         XkGHVgyTgBI6EoquXE5o4WPQmU4RMt77GKGYZNJQwkJi59KKdaL4rWGXA+dFsQFUuWuv
+         67aOMJgx21rQsNwP60zwaPQ9d5hBJvu8IVgX5wGBozoVWsAPJrU3a77Lbg2e0b80fCb8
+         kWHA==
+X-Gm-Message-State: ACgBeo1c1yQaL1jcJ/giqL8QQPyvKMDK1sFC/ns4TZPprBnVmfvIktPT
+        sC73Es2Ca0JAQzuLpgGOXfZMgOLrCQ==
+X-Google-Smtp-Source: AA6agR7wPzemjT6q2f5TdY9MG6eTw4P2dNhfct8chm1wIQ0lDkA2XQMVyUa58/ZjoALrmj5p72eA/w==
+X-Received: by 2002:a05:6214:27cb:b0:496:ac94:723d with SMTP id ge11-20020a05621427cb00b00496ac94723dmr14805024qvb.6.1661159430322;
+        Mon, 22 Aug 2022 02:10:30 -0700 (PDT)
+Received: from bytedance.attlocal.net (ec2-52-52-7-82.us-west-1.compute.amazonaws.com. [52.52.7.82])
+        by smtp.gmail.com with ESMTPSA id t201-20020a37aad2000000b006b9264191b5sm11046904qke.32.2022.08.22.02.10.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 02:10:29 -0700 (PDT)
+From:   Peilin Ye <yepeilin.cs@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Cc:     Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Cong Wang <cong.wang@bytedance.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Dave Taht <dave.taht@gmail.com>,
+        Peilin Ye <yepeilin.cs@gmail.com>
+Subject: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure infrastructure
+Date:   Mon, 22 Aug 2022 02:10:17 -0700
+Message-Id: <cover.1661158173.git.peilin.ye@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1651800598.git.peilin.ye@bytedance.com>
+References: <cover.1651800598.git.peilin.ye@bytedance.com>
 MIME-Version: 1.0
-Received: by 2002:a05:7022:4185:b0:43:a6bb:bfcd with HTTP; Mon, 22 Aug 2022
- 02:04:14 -0700 (PDT)
-Reply-To: lindacliford05@yahoo.com
-From:   linsa cliford <linda27cliford@gmail.com>
-Date:   Mon, 22 Aug 2022 06:04:14 -0300
-Message-ID: <CAKYqKb5BCjF_fbO3tgzRgMwfSmDsRQTNSH3UHA_S0qmW+LoKFg@mail.gmail.com>
-Subject: WITH DUE RESPECT
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:62e listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [linda27cliford[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [lindacliford05[at]yahoo.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-  Drear Love One,
+From: Peilin Ye <peilin.ye@bytedance.com>
 
-  Good day dear love one my name is miss Lnda Cliford  from cote
-d'ivoire please i need your help for fund transfer of 2,500 000 us
-dollars  if you  are
-willing please get back to me  for  more information thanks and have a
-good day,
-Waiting to hear from you thanks,
+Hi all,
 
-your s Linda Clifford
-Regards
+Currently sockets (especially UDP ones) can drop a lot of packets at TC
+egress when rate limited by shaper Qdiscs like HTB.  This patchset series
+tries to solve this by introducing a Qdisc backpressure mechanism.
+
+RFC v1 [1] used a throttle & unthrottle approach, which introduced several
+issues, including a thundering herd problem and a socket reference count
+issue [2].  This RFC v2 uses a different approach to avoid those issues:
+
+  1. When a shaper Qdisc drops a packet that belongs to a local socket due
+     to TC egress congestion, we make part of the socket's sndbuf
+     temporarily unavailable, so it sends slower.
+  
+  2. Later, when TC egress becomes idle again, we gradually recover the
+     socket's sndbuf back to normal.  Patch 2 implements this step using a
+     timer for UDP sockets.
+
+The thundering herd problem is avoided, since we no longer wake up all
+throttled sockets at the same time in qdisc_watchdog().  The socket
+reference count issue is also avoided, since we no longer maintain socket
+list on Qdisc.
+
+Performance is better than RFC v1.  There is one concern about fairness
+between flows for TBF Qdisc, which could be solved by using a SFQ inner
+Qdisc.
+
+Please see the individual patches for details and numbers.  Any comments,
+suggestions would be much appreciated.  Thanks!
+
+[1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
+[2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
+
+Peilin Ye (5):
+  net: Introduce Qdisc backpressure infrastructure
+  net/udp: Implement Qdisc backpressure algorithm
+  net/sched: sch_tbf: Use Qdisc backpressure infrastructure
+  net/sched: sch_htb: Use Qdisc backpressure infrastructure
+  net/sched: sch_cbq: Use Qdisc backpressure infrastructure
+
+ Documentation/networking/ip-sysctl.rst | 11 ++++
+ include/linux/udp.h                    |  3 ++
+ include/net/netns/ipv4.h               |  1 +
+ include/net/sch_generic.h              | 11 ++++
+ include/net/sock.h                     | 21 ++++++++
+ include/net/udp.h                      |  1 +
+ net/core/sock.c                        |  5 +-
+ net/ipv4/sysctl_net_ipv4.c             |  7 +++
+ net/ipv4/udp.c                         | 69 +++++++++++++++++++++++++-
+ net/ipv6/udp.c                         |  2 +-
+ net/sched/sch_cbq.c                    |  1 +
+ net/sched/sch_htb.c                    |  2 +
+ net/sched/sch_tbf.c                    |  2 +
+ 13 files changed, 132 insertions(+), 4 deletions(-)
+
+-- 
+2.20.1
+
