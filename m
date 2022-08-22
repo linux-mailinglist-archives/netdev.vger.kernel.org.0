@@ -2,121 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23A4559BBBB
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 10:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F3359BBC6
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 10:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233557AbiHVIeu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 04:34:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45290 "EHLO
+        id S231910AbiHVIh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 04:37:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232953AbiHVIes (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 04:34:48 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648FA2BB30
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 01:34:47 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id AF8622052E;
-        Mon, 22 Aug 2022 10:34:45 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WOq-wzV2f-df; Mon, 22 Aug 2022 10:34:44 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D799920504;
-        Mon, 22 Aug 2022 10:34:44 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id C48FC80004A;
-        Mon, 22 Aug 2022 10:34:44 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 22 Aug 2022 10:34:44 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
- 2022 10:34:44 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id F173A3182A10; Mon, 22 Aug 2022 10:34:43 +0200 (CEST)
-Date:   Mon, 22 Aug 2022 10:34:43 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <20220822083443.GH2602992@gauss3.secunet.de>
-References: <cover.1660639789.git.leonro@nvidia.com>
- <20220818100930.GA622211@gauss3.secunet.de>
- <Yv4+D+2d3HPQKymx@unreal>
+        with ESMTP id S229722AbiHVIh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 04:37:56 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE4E2CDDC
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 01:37:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=hsUU+M8inv09Ir/zuanJetA2licV
+        zhMzd31+/Qc062w=; b=NVkwDgOPZ1Hr4Lbbc5MAOnCaS0237NRp8x6WfbIHtqB6
+        tl44Pm5GFRZr3iwYxwD6MBg46TVQZADvJvH9nadaBmGhcAbsZbvFABrrQApeM7q9
+        Ilo+UPZEiN0fsmswdxOcBBzTYUz3EXlL03V1LD1WWsL5CdmMChnOQUgfdWbFTUw=
+Received: (qmail 1214028 invoked from network); 22 Aug 2022 10:37:47 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 22 Aug 2022 10:37:47 +0200
+X-UD-Smtp-Session: l3s3148p1@MiDDXNDmnOkgAwDPXxw3AFlguiwjsjwa
+Date:   Mon, 22 Aug 2022 10:37:47 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Alexander Gordeev <agordeev@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <YwNAW2Zp6o7Z//Y2@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+ <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ABC3aCasbFWYlJHr"
 Content-Disposition: inline
-In-Reply-To: <Yv4+D+2d3HPQKymx@unreal>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 18, 2022 at 04:26:39PM +0300, Leon Romanovsky wrote:
-> On Thu, Aug 18, 2022 at 12:09:30PM +0200, Steffen Klassert wrote:
-> > Hi Leon,
-> > 
-> > On Tue, Aug 16, 2022 at 11:59:21AM +0300, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > 
-> > > Changelog:
-> > > v2:
-> > >  * Rebased to latest 6.0-rc1
-> > >  * Add an extra check in TX datapath patch to validate packets before
-> > >    forwarding to HW.
-> > >  * Added policy cleanup logic in case of netdev down event 
-> > > v1: https://lore.kernel.org/all/cover.1652851393.git.leonro@nvidia.com 
-> > >  * Moved comment to be before if (...) in third patch.
-> > > v0: https://lore.kernel.org/all/cover.1652176932.git.leonro@nvidia.com
-> > > -----------------------------------------------------------------------
-> > > 
-> > > The following series extends XFRM core code to handle new type of IPsec
-> > > offload - full offload.
-> > > 
-> > > In this mode, the HW is going to be responsible for whole data path, so
-> > > both policy and state should be offloaded.
-> > 
-> > some general comments about the pachset:
-> > 
-> > As implemented, the software does not hold any state.
-> > I.e. there is no sync between hardware and software
-> > regarding stats, liftetime, lifebyte, packet counts
-> > and replay window. IKE rekeying and auditing is based
-> > on these, how should this be done?
-> 
-> This is only rough idea as we only started to implement needed
-> support in libreswan, but our plan is to configure IKE with
-> highest possible priority 
 
-If it is only a rough idea, then mark it as RFC. I want to see
-the whole picture before we merge it. And btw. tunnel mode
-belongs to the whoule picture too.
+--ABC3aCasbFWYlJHr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> > 
-> > I have not seen anything that catches configurations
-> > that stack multiple tunnels with the outer offloaded.
-> > 
-> > Where do we make sure that policy offloading device
-> > is the same as the state offloading device?
-> 
-> It is configuration error and we don't check it. Should we?
+Hi Alexander,
 
-We should at least make sure to not send out packets untransformed
-in this case.
+> Could you please explain why you skipped strlcpy() usage in
+> drivers/s390/char/diag_ftp.c and drivers/s390/char/sclp_ftp.c?
+
+Sure. It is a bit hidden in $subject, but the key is to convert strlcpy
+instances for now which do not check the return value. This is the
+low-hanging fruit.
+
+Converting the other uses checking the return value needs to be done
+manually and much more carfully. I wanted to this as a second step, but
+if you prefer to have everything converted in one go, I can give your
+subsystem a priority boost. Would you prefer that?
+
+Thanks and happy hacking,
+
+   Wolfram
+
+
+--ABC3aCasbFWYlJHr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmMDQFsACgkQFA3kzBSg
+Kbbcew/9EjjU46h1Hw7hn47Z8s7LOJ86qovV0HqE8I6JiZmPknoKxmBppnvrlG/5
+sGdJVtiWUpHmedA5M+DQYLFO2ZxeGeluaQOg22nsMbGmb7V7W0LosiZUm/Er7pOd
+qbXdLrgVnDzWIRfDVEh0HvJT3RNrc8WhmrW5MeBW4Dnhvwccn6kxCnVVAb66lnQ5
+m5qwdFjHgrCsf4QhNCZ1o8g/dwGjirIJjT7svqFirSMB81q3tNA/yNr2XLarOuDb
+kCtKyKHOHr4Vzy4uxi6HnpvYz8nYE+tF04rB+nqNYLeCoEM8R42zz3kuaA95vQYg
+3mcCYr3tZIGDZV6kdCYrFq2e9iQf2w3XmdrlSe31CBUGugL/jx89DOfNaOCUba1k
+lWNdmUJDUmicmcBeR6Yv/arWqMnkmBLABURl9WmXmrbl6ya9Dh/bM3vjSV+WoJVv
+GhiUgQKgEdi3pWhrRBYoRk//OtgEu5fxFIGs90DYlrXGLdsCQk3L0Ng/IR/MZ/jG
+jZjkD/4arMVqz+EPOI9nhxflWh70q/oKgdvejgmsGIEz8EIxEyukvi61Ea/VDuJf
+C96kGPeR6A0F2RiG0wtesUZM9PAE3TKr3LNDM4UNZ5/BgBVzD4XFCq3BKYHsHv/0
+SMHb42lEJze4FeBTAJ+R+AjL1Ckgz4MzNG816dblvKDHfU5B24E=
+=183G
+-----END PGP SIGNATURE-----
+
+--ABC3aCasbFWYlJHr--
