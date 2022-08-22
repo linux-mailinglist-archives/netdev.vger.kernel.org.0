@@ -2,205 +2,330 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7B459BF58
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 14:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBF1559BF35
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 14:04:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234964AbiHVMOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 08:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
+        id S234884AbiHVMEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 08:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234809AbiHVMN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 08:13:56 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D843F2F395
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 05:13:54 -0700 (PDT)
+        with ESMTP id S234862AbiHVMEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 08:04:46 -0400
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11EA81EEFB;
+        Mon, 22 Aug 2022 05:04:44 -0700 (PDT)
+Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MC3nd4023501;
+        Mon, 22 Aug 2022 12:04:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : content-type : content-transfer-encoding :
+ in-reply-to : mime-version; s=corp-2022-7-12;
+ bh=GMvzHbgmTDychvH7/nZzrsICv+ODHaLTNkpdkiXkpzc=;
+ b=Vs4aJFpv8IGyIXc3Ttfp9dnb0VIWxOI/XMOwK72NIC6m1jymDpSltEzwcZC4HQtC3Cu9
+ DnyW6eAaiSUgSd8ANopiOjZNZimNrWA0ZgfWqSh8Bod4V/RN8QWMQJ3ZU5SnZhWzWVHh
+ Ym6k7nb47B6aRaV4d75PPxo3IT6SUX6CZWHX1hBdU6I2YiquDWtZja4jBGzqD7d6qLVz
+ Nfe7dpypbRMKOm5Gf8ylIPzhaH9Fd8D1gKCEF2OJBXX0y+T93fUCCqWskPqLXCaMHCD7
+ UNLrSWQ/PXxtJW0TDGSXy6wtWMl/1T6GfAE6aqEzNk9XU1IWejClW1aH25fF3h/YwNPg 5Q== 
+Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
+        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j486gr6ep-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 12:04:19 +0000
+Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 27MAO4Wj017743;
+        Mon, 22 Aug 2022 12:04:18 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
+        by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3j3mn3nw3n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 12:04:17 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bw1KGYmd1An4BGhg25CS+iL1zw1TS9/CyeJ24c5/VyTf9bwK4ptlo0Az8Hn7KdNDAAQrsaNwodDKV/18x+uMRJnmdXI6iTdUv5RozaWQTYTx6NGywl3q/IhWEsygJfXMK0+qZP4qO/chS0sXFEQVWynclcsQh96zmQq60uRvRLaRZkF5WQLDgX3JLvjA1b9OmqIGRf6yf6GqWJLWEvouPNEpwaIQqxzcpUpC/HIdsQFjPAA9hY2kx9hTaCyWs5DOq9/eKIdDJnR8+6uyJzIkiRVu3FWxGJIQL+gxDtdpRC+2ik3LXS3ZfbvfEQ+aZdCcYMp1R8z27ZThUJEqGLw9og==
+ b=aZBpvHBURPsl+S36Mnz/hm3/l0rh02mBIBR4oOFEnQr+LMIvRntjjyba8KmGV62wQnoxKegMjx/gXUbhXEjOfMXrCc3AUcK4cjCQdY6GAwVjsE5D8TeYBUVuUNPAeyi/5mXDtph41J9cKRPUygnZsYGc0gENbbXNXzEbe2ZFY23ksUOKjtQ5iOvACWspHmghETU3O1Qc5S2uruFKbgsbbcNU5ZATLMlLYMaVEXAAP6FKFajNiAT21OBmP+erj2e5lPU9qtSjuodVqIM/vWzQyVCgDR3uNq7MJySnM9a7HHMawBILTUWuZqiGKo/nlmK1ZBdYRytCXdJgLVdt+Lsx+w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rD03sLubL10YN4tSsHjhX9KVyHHvSUsY0j4OSEA8cvg=;
- b=BkhuremL21zDs1DlFsjXRZbuBMoEQ25YwGWVsIVtQ9GJd/XZpRP2FlYWbrpg39/cF5F0/x7X8xlfJL8lLzOlivgMULhTdExUeLBWeQ/Tg3///QHmocg5JDtyIj1Qfa+aROjCg6fHWZd2nKsOlxMds+5xb4cA1vDf1PpX5e0CKRhZX6srtjGlWg+1CYP9zdniGhWWhiIneHXQkCm7C2cAGSpMeaZgo/g83C+43ZOcU9u2Rd2SQWbDR1L4O+w8AVMTV+/Z9NIvlC0v6ggeYar28QFAPXgFRcIaOyLN80aeOKt4qs3rDv6kY0WTu9iG4FAdG51K/uwXz/V8q4r3QObpHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=Gj62K5Sn60FIHAcT1ulDvvNC7YzBs447CFDLCJP8e5I=;
+ b=IRca8oljRsG44DhX9dFDJcKNMDjL53d9Su/F9rhNlDSEo8v+Zy/UMLL3p3kXqk6wwVPiQbdyTgMqlCZNX5Jv4xRvjNg6FBs3bD/WjBQGGIqYmgiE81rE9g9jHCHDSvFA5+mrJr/X6C6IxFJGR5TmzJCoNW/Mcu1xvh8OxEfONsZ5oYp5Hdx74qrj8rXDyr3beqk37EQ6KMgjnZHMK33TnqcVx6lmIqFp1zypLYDJnKSAN4I+RkxZC4D6A2SFwfpuA6Cnh2uXaAu1vuSy3OU1bOz5OaMkkAE7KhfsdfANHgdz2S2RSqeqg9PgtwdWEH/hbDM24ULaFY24T1/xbPK69g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rD03sLubL10YN4tSsHjhX9KVyHHvSUsY0j4OSEA8cvg=;
- b=tt9SZqauZrh4QLnqZ39qSFU2QFqm20GBnKRQ9ggVFMkbWBssFjNibGlWF40aC/fQ/nyAbIQSRt4lT5u+1Btggl4cpKQsEdSpMHXwegLYfCJX8qIFbWeEkkALa0lMBz/Jy1QdBSbEefWbgjfQl3oiIHjyM9XOOep5cXzVrpWAHQ5X7gsEW5r8h8S8EIGolJKpXuKlHdUO5mFhmcuZJF5ENF9OJaUs7kt46qmp/2o7CPHKRzgWNmPxTki2KNMEs+hySPXw4rWbKU/QqU6PGetmdb1qrfgzpNauonV8fr38j6EIkwDDcpRH+pAZw/vrnRIoOseFIhoM+UmMDe3/lKPZSA==
-Received: from BN9PR03CA0346.namprd03.prod.outlook.com (2603:10b6:408:f6::21)
- by CH2PR12MB4971.namprd12.prod.outlook.com (2603:10b6:610:6b::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Mon, 22 Aug
- 2022 12:13:53 +0000
-Received: from BN8NAM11FT025.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:f6:cafe::b4) by BN9PR03CA0346.outlook.office365.com
- (2603:10b6:408:f6::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21 via Frontend
- Transport; Mon, 22 Aug 2022 12:13:52 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT025.mail.protection.outlook.com (10.13.177.136) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5546.15 via Frontend Transport; Mon, 22 Aug 2022 12:13:52 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 22 Aug
- 2022 12:13:51 +0000
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 22 Aug
- 2022 05:13:47 -0700
-References: <Yv9VO1DYAxNduw6A@DEN-LT-70577> <874jy8mo0n.fsf@nvidia.com>
- <YwKeVQWtVM9WC9Za@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     <Daniel.Machon@microchip.com>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
-        <vinicius.gomes@intel.com>, <vladimir.oltean@nxp.com>,
-        <thomas.petazzoni@bootlin.com>, <Allan.Nielsen@microchip.com>,
-        <maxime.chevallier@bootlin.com>, <nikolay@nvidia.com>,
-        <roopa@nvidia.com>
-Subject: Re: Basic PCP/DEI-based queue classification
-Date:   Mon, 22 Aug 2022 12:34:25 +0200
-In-Reply-To: <YwKeVQWtVM9WC9Za@DEN-LT-70577>
-Message-ID: <87v8qklbly.fsf@nvidia.com>
+ bh=Gj62K5Sn60FIHAcT1ulDvvNC7YzBs447CFDLCJP8e5I=;
+ b=wv4sBi0CjXtHwI9aGc+KqRhPIRW0fGreY7E1BtMCQTsx8GqcPJSc5fbDtpifjniw/BOHO6ZLhRGUVQQBx3Qj4W1yDWrt6QdMhKrAq8r34nueSCNyW2gfoPRHxvCAUj26+Hpl+xLKQ8JaX1u0m4BLMojriEkKxZmdA4oWdzTPBLU=
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by SA1PR10MB6341.namprd10.prod.outlook.com
+ (2603:10b6:806:254::12) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Mon, 22 Aug
+ 2022 12:04:15 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::209e:de4d:68ea:c026%3]) with mapi id 15.20.5546.022; Mon, 22 Aug 2022
+ 12:04:14 +0000
+Date:   Mon, 22 Aug 2022 15:03:40 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     kbuild@lists.01.org, Dmitry Safonov <dima@arista.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Cc:     lkp@intel.com, kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Dmitry Safonov <dima@arista.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Bob Gilligan <gilligan@arista.com>,
+        David Ahern <dsahern@kernel.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Ivan Delalande <colona@arista.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        linux-crypto@vger.kernel.org
+Subject: [kbuild] Re: [PATCH 11/31] net/tcp: Add TCP-AO sign to outgoing
+ packets
+Message-ID: <202208221901.Fs6wW5Jd-lkp@intel.com>
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220818170005.747015-12-dima@arista.com>
+Message-ID-Hash: YQ3E53LPCOTHYE7BJ3JPUUF2WIMNASKR
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: JNXP275CA0042.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::30)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1c2c2266-f83e-4213-cdd1-08da8437c750
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4971:EE_
+X-MS-Office365-Filtering-Correlation-Id: 726fbf0d-cd74-4e5e-b0d7-08da84366e7c
+X-MS-TrafficTypeDiagnostic: SA1PR10MB6341:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PWccO9CJImqYZIjZcEw5DIWsfoUqVJfWF5BCxCCRtvkw9HiY/2CvOSLnPupaLbSu8Pn8Z29Y+3DqqqHcvT3w7aZlA6ZIalHU20fxe186uECaUkj7N2WZO+K+wnZZlTBy/3dHUoxtck0I1NzVK03nUTB9TnzVc6N4M8zYgnaDSfVp53Bzu/Ba9Ecdh0mh1fY6pYO3dTzzGxUJB3Kbc2j4W/p5+cJVEa8BhFy845XuBqAACBkAp2Galv5NzXqn/39cyX8K30omVECpw6COEEGHRcWMab8HP183IFHTS9c7WxsMQl/ZMZh4rPs/so1afcBFCmKGp9ZHMWXjJ9ZrefanMDn9TaRoJ2oXerQMrHAZWau5vLof+HxILOppWkQaP+1DJ3WlY5PpCVk5J/LQpbQab8sj5eX9YiQx7EheGqRnnOtlQIy9vUR803U48vQRkMPulm4JdI7a+TCgCABJ601wR6OWB37OIY9KKrBn4vp5yTa2qrTIJEl5YRzKyGLpvelm5DpPhtAI+dY8n31KjBhBuAtUbeTvQhmdvPtSGkJAjRpglCeEcYiDOuzF8h0LYiZqGkIbskXKnHViQAD/9RhPF9sTvjFdjzAlmdgTlugpPaqM5wjZAn9CnoDySJ7VkHr8iSZCyc5G+sXTxqyb4qOVCry4hRX0QzthmqOEiA7EZmVP0Xb4YM6cn3jyVz3MFVFccIprZ/0ky+Kq8FJJxxICxDi8ubc4RDHQJKquhYmoUI+Y9wjK/K92K/q3CSLxdnGRo9si+pclP8lwXL7P68jwPZc7aCgxuhX0jZDe/yflMQAKA4UrjrJ5wYVaFguy5aHt
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(346002)(396003)(40470700004)(36840700001)(46966006)(70586007)(4326008)(8676002)(70206006)(82740400003)(40460700003)(86362001)(356005)(81166007)(5660300002)(8936002)(2906002)(6666004)(107886003)(41300700001)(82310400005)(26005)(478600001)(40480700001)(316002)(83380400001)(36860700001)(186003)(2616005)(6916009)(54906003)(16526019)(336012)(47076005)(426003)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 12:13:52.6344
+X-Microsoft-Antispam-Message-Info: AHXvcKlIvb9ZsdRu8is6+DBbUqWg9U+dj7Y8Kd3MqKUSfaxXHnNKqpXLOridPSScgqO1HB5QP4SlAlWYB8rq/nw/8P1j4DUArIEFQ974KkSPsDyDtxVziR4FBad4ZWf9MxN8sJrpWbvetlOg9frX5RTB9zONhCFzALRUGh8dnULSayaT9X7d3Qi5cws4qvp9d0H7ECIozPsmuwonA+eoR8R0r2q09kY4RFR+HCHUXaWaX9PEUHS7oQrAbXZVDSBxr/TflXr6SoiDlGWjHG7K0UK9K+1EyEU8FGOavVfQbpKRqSAylsaNl2eJDf2rpwJc/R/e/9q2/O2CfNASYxMF23PaX6raB58EZWdYQJgurlj0+qUHz3C5hD18nulzJtE1vT49achF+lSrDfnftfmWv6ll181FurU2UWcjZnqS/8Vf8kNvfyjPQ6q1m/8cZPQgtelxp3KB7005jOwBfq1nVbfq2q4oFsam3mqbayjBLI4S+6J/xKMcrP29zP7rTzs3cI8yGnHmp/jrAuhCTE1EGwoQWAmqKy3z3a7EQCh1NneGvIzIK+VgmJf8XfSkYzBB6byeptG36FVx1xP1s+GkrwiCloIZuTeqvZo3yxg/3CUNKvr0oAePYX0ifDp2b82d7RwW/8BjlLuPUMARXeQWaJQfD9FGG+OkAeSf0bePicfajNE9HOsHu2d2nKKFox2dEWqAv+mCL84OFwhzMFSD6fjtonMFxXCg/ESb+gLkhOKCTmZ1kbnCPCbh4G484ieraqEYC/p7XA0JjUNJ16Zs5KjKE81MNQ9joL86PnphsJyzWDuNljC1Q64bS28g8b6TzgGjvcXpgYe9bjEg2H6Qkg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(39860400002)(366004)(376002)(346002)(396003)(1076003)(186003)(83380400001)(54906003)(316002)(26005)(86362001)(52116002)(36756003)(6506007)(41300700001)(7416002)(9686003)(44832011)(5660300002)(6512007)(6666004)(38350700002)(38100700002)(966005)(6486002)(478600001)(66476007)(66946007)(8676002)(4326008)(66556008)(110136005)(2906002)(4001150100001)(8936002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?M/w8dA8uk7DBKwi2ij6cjYmckSXlL+b2seu7W1/GndLEtgUNaVQOejubqv?=
+ =?iso-8859-1?Q?6nnKkk/0cvhXU9jb46Z7VlFtWDQQ2o/Do6iSUPrmGJe95KhQ4Zce4PuBy5?=
+ =?iso-8859-1?Q?PclJTkyqhwNDk5Pk9wGg1pf5uUT0g9hwgjez1Zjn+wVcvGa8sEllHgGWib?=
+ =?iso-8859-1?Q?ARfEdi4EmNB1Hkk40vF3GcLE7mSJ4Q7v1qo0jsrCYwCAf9sZ/cVnC5YfQr?=
+ =?iso-8859-1?Q?l0mZI2qEOdyqEMg00s5wSTL4Pkgp97n/X4RdeGTdvsGE59dUcv+32DPCEj?=
+ =?iso-8859-1?Q?PVxA2nRMaVQ0pLYRwiKVY+2T41Q/Plt7o2LsDFgKNBcWlcX8KGa20m1AZk?=
+ =?iso-8859-1?Q?EZuGdEJn9l7UvlyxGw0syvL+O3Zt3x3K5HJSZcySVDjlsipTm6ehrjm7Dn?=
+ =?iso-8859-1?Q?Py6M999a5weo1lCGvHFwbVqdGQceuQccYzGXhcMQD38vZBNZ0G5CSDNerX?=
+ =?iso-8859-1?Q?yTrvjRsonQuA/F26lqZx6mI4MF+kmLQW/nyoKPFIoFoasBxOAg/m+26Q50?=
+ =?iso-8859-1?Q?oRMGQUZDA+gjLkwUhRitS/cszw1+KKljtuoEkkoiAwB/biQjvvcpLcWozO?=
+ =?iso-8859-1?Q?VTKdCRb2KjKNceIE+pkueWi30Kxtdtmm5ctOdeg+NDZJxYzy5Cxckg9Vxb?=
+ =?iso-8859-1?Q?7kwkDV+Sy6JO0Ju54Zqs6O9IkTo9EL5KzqXTIhsnfNJy3Dtq298muU9i/v?=
+ =?iso-8859-1?Q?PwBYL3iovR/RTcPOBOYB63DxiQv+IZpHuaZTRyafXAbjHNgUUOo86Td80Z?=
+ =?iso-8859-1?Q?RSwi8nZHbqW5KpNK/qpLJMlTvFgCnFx8mR2MYtOXXcqnop7Vs9Fq3Z4tWs?=
+ =?iso-8859-1?Q?JPHgkOMzRCrkdh+C7A7WKphoo2PPMRFWb40z85zHyNi2oR5SLcBdMcIk4O?=
+ =?iso-8859-1?Q?tU9anMaZ+RWh3n8Of55O2aHE5Rohdkb4OT0eoovPALp6LVQbaFMMGLK8uq?=
+ =?iso-8859-1?Q?F0epuwVkCfluzTPl6T+8ZW45MPc6AjcyOTbxEACnwD+daZU4jUv6DvSuIp?=
+ =?iso-8859-1?Q?rsPewlX5RHZYYo3JD1y+lOEXgfObE+swEKz4jHDQwZxhkH2srDOWTK2GRV?=
+ =?iso-8859-1?Q?3v9A4keZSfAeDIvgoQx2wLgZ71B9j1FgYNoQ23UA6VMS9djIyCiCgHSVCV?=
+ =?iso-8859-1?Q?lLhjXnE5ufB8LXfUqNqxa0AUv+mkhoyM20fvhq/ybAxidzYrapLFMtbXeA?=
+ =?iso-8859-1?Q?wBdtq5zl7h0gpseQkfHBqCcEk34ffwHbNHKBl1/M2V0cQaDwt+Dce5T03+?=
+ =?iso-8859-1?Q?RLIzQ0d1BvXNYpP3vvYET02TeaipJPD32K9EwfUZaCqpheEMUrsKMsvEjb?=
+ =?iso-8859-1?Q?nXeNM48oB+I3qQc2go9B/cWjC/z46v9ksey+cwmpW9aLXKAZkRqbt2FSKv?=
+ =?iso-8859-1?Q?RyAuhikBylpiRqGKMUovifvrR5ou8F4PC1mZOYyaOj4fiaEZ/wreHzl7vb?=
+ =?iso-8859-1?Q?djLt6/bjsDtLMmGDaXJ5zSWirLAFRi2Z7VVhoLQwUoUCWgkmuRW/hMcGPA?=
+ =?iso-8859-1?Q?5oGE6SatISrM63CZ5sUod/rTN9CrMcbMDA+9Yp+OOeeo2DwUZH/UvwC5vI?=
+ =?iso-8859-1?Q?dUpA4oGxJL8VnUHbUAigh5VM0/3nRl3Pq0jjFrMlCoPOWFjJ8WEsP4U/0O?=
+ =?iso-8859-1?Q?Rc5SYq/aUO4X7HKd5gTa2KmAjM9zS2Vz7FayaNPOunLlC8F0Ef97WYYg?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 726fbf0d-cd74-4e5e-b0d7-08da84366e7c
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Aug 2022 12:04:14.5612
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c2c2266-f83e-4213-cdd1-08da8437c750
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT025.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4971
-X-Spam-Status: No, score=0.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_ABUSE_SURBL autolearn=no autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fuXPgzF8IHIhNhnkXQmoidPc1jx6mclqOenBORZFWd0/TctfThwOEc18c5HWRSwq3CpXIqc09Dnj+/B1oAc92Wor6UJb2cavHgsbP7Jn/6k=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6341
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_06,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
+ phishscore=0 mlxscore=0 adultscore=0 spamscore=0 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220051
+X-Proofpoint-ORIG-GUID: KqDEf11i0zffQoKITnKC5vQyfUaEc-pi
+X-Proofpoint-GUID: KqDEf11i0zffQoKITnKC5vQyfUaEc-pi
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Dmitry,
 
-<Daniel.Machon@microchip.com> writes:
+url:    https://github.com/intel-lab-lkp/linux/commits/Dmitry-Safonov/net-tcp-Add-TCP-AO-support/20220819-010628  
+base:   e34cfee65ec891a319ce79797dda18083af33a76
+config: x86_64-randconfig-m001 (https://download.01.org/0day-ci/archive/20220822/202208221901.Fs6wW5Jd-lkp@intel.com/config  )
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
 
->> > In the old thread, Maxime has compiled a list of ways we can possibly offload
->> > the queue classification. However none of them is a good match for our purpose,
->> > for the following reasons:
->> >
->> >  - tc-flower / tc-skbedit: The filter and action scheme maps poorly to hardware
->> >    and would require one hardware-table entry per rule. Even less of a match
->> >    when DEI is also considered. These tools are well suited for advanced
->> >    classification, and not so much for basic per-port classification.
->> 
->> Yeah.
->> 
->> Offloading this is a pain. You need to parse out the particular shape of
->> rules (which is not a big deal honestly), and make sure the ordering of
->> the rules is correct and matches what the HW is doing. And tolerate any
->> ACL-/TCAM- like rules as well. And there's mismatch between how a
->> missing rule behaves in SW (fall-through) and HW (likely priority 0 gets
->> assigned).
->> 
->> And configuration is pain as well, because a) it's a whole bunch of
->> rules to configure, and b) you need to be aware of all the limitations
->> from the previous paragraph and manage the coexistence with ACL/TCAM
->> rules.
->> 
->> It's just not a great story for this functionality.
->> 
->> I wonder if a specialized filter or action would make things easier to
->> work with. Something like "matchall action dcb dscp foo bar priority 7".
->> 
->
-> I really think that pcp mapping should not go into tc. It is just not 
-> user-friendly at all, and I believe better alternatives exists.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-"better" along the "more specialized, hence easier to configure" axis.
-But DCB in particular doesn't address the SW datapath at all, and if you
-want this sort of prioritization in SW, you have to fall back on flower
-et.al. anyway.
+smatch warnings:
+net/ipv4/tcp_output.c:640 tcp_options_write() error: uninitialized symbol 'maclen'.
+net/ipv4/tcp_output.c:686 tcp_options_write() error: we previously assumed 'tp' could be null (see line 626)
 
-> So a pcp mapping functionality could very well go into dcb as an extension,
-> for the following reasons:
->
->  - dcb already contains non-standard extension (dcb-maxrate)
+vim +/maclen +640 net/ipv4/tcp_output.c
 
-Yeah, and if the standard DCB ever gets maxrate knobs that are not 1:1
-compatible with what we now have, we're in trouble.
+ea66758c1795cef Paolo Abeni           2022-05-04  608  static void tcp_options_write(struct tcphdr *th, struct tcp_sock *tp,
+85df6b860d509a9 Dmitry Safonov        2022-08-18  609  			      struct tcp_out_options *opts,
+85df6b860d509a9 Dmitry Safonov        2022-08-18  610  			      struct tcp_ao_key *ao_key)
+bd0388ae7707502 William Allen Simpson 2009-12-02  611  {
+ea66758c1795cef Paolo Abeni           2022-05-04  612  	__be32 *ptr = (__be32 *)(th + 1);
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  613  	u16 options = opts->options;	/* mungable copy */
+bd0388ae7707502 William Allen Simpson 2009-12-02  614  
+bd0388ae7707502 William Allen Simpson 2009-12-02  615  	if (unlikely(OPTION_MD5 & options)) {
+1a2c6181c4a1922 Christoph Paasch      2013-03-17  616  		*ptr++ = htonl((TCPOPT_NOP << 24) | (TCPOPT_NOP << 16) |
+1a2c6181c4a1922 Christoph Paasch      2013-03-17  617  			       (TCPOPT_MD5SIG << 8) | TCPOLEN_MD5SIG);
+bd0388ae7707502 William Allen Simpson 2009-12-02  618  		/* overload cookie hash location */
+bd0388ae7707502 William Allen Simpson 2009-12-02  619  		opts->hash_location = (__u8 *)ptr;
+33ad798c924b4a1 Adam Langley          2008-07-19  620  		ptr += 4;
+33ad798c924b4a1 Adam Langley          2008-07-19  621  	}
+85df6b860d509a9 Dmitry Safonov        2022-08-18  622  #ifdef CONFIG_TCP_AO
+85df6b860d509a9 Dmitry Safonov        2022-08-18  623  	if (unlikely(OPTION_AO & options)) {
+85df6b860d509a9 Dmitry Safonov        2022-08-18  624  		u8 maclen;
+33ad798c924b4a1 Adam Langley          2008-07-19  625  
+85df6b860d509a9 Dmitry Safonov        2022-08-18 @626  		if (tp) {
 
-Whatever new things is getting added, needs to be added in a way that
-makes standard collisions very unlikely.
+Can "tp" really be NULL?  Everything else assumes it can't.
 
->  - Adding an extension (dcb-pcp?) for configuring the pcp tables of ieee-802.1q
->    seems to be in line with what dcb-app is doing with the app table. Now, the
->    app table and the pcp tables are different, but they are both inteded to map
->    priority to queue (dscp or pcp/dei).
+85df6b860d509a9 Dmitry Safonov        2022-08-18  627  			struct tcp_ao_info *ao_info;
+85df6b860d509a9 Dmitry Safonov        2022-08-18  628  
+85df6b860d509a9 Dmitry Safonov        2022-08-18  629  			ao_info = rcu_dereference_check(tp->ao_info,
+85df6b860d509a9 Dmitry Safonov        2022-08-18  630  				lockdep_sock_is_held(&tp->inet_conn.icsk_inet.sk));
+85df6b860d509a9 Dmitry Safonov        2022-08-18  631  			if (WARN_ON_ONCE(!ao_key || !ao_info || !ao_info->rnext_key))
+85df6b860d509a9 Dmitry Safonov        2022-08-18  632  				goto out_ao;
+85df6b860d509a9 Dmitry Safonov        2022-08-18  633  			maclen = tcp_ao_maclen(ao_key);
+85df6b860d509a9 Dmitry Safonov        2022-08-18  634  			*ptr++ = htonl((TCPOPT_AO << 24) |
+85df6b860d509a9 Dmitry Safonov        2022-08-18  635  				       (tcp_ao_len(ao_key) << 16) |
+85df6b860d509a9 Dmitry Safonov        2022-08-18  636  				       (ao_key->sndid << 8) |
+85df6b860d509a9 Dmitry Safonov        2022-08-18  637  				       (ao_info->rnext_key->rcvid));
+85df6b860d509a9 Dmitry Safonov        2022-08-18  638  		}
 
-(Not priority to queue, but header field values to priority. Queue
-assignment is "dcb buffer prio-buffer" on ingress and "dcb ets prio-tc"
-on egress.)
+"maclen" not initialized on else path.
 
->  - default prio for non-tagged frames is already possible in dcb-app
->
->  - dscp priority mapping is also possible in dcb-app
->
->  - dcb already has the necessary data structures for mapping priority to queue 
->    (array parameter)
->
->  - Seems conventient to place the priority mapping in one place (dscp and pcp/dei).
->
-> Any thoughts?
+85df6b860d509a9 Dmitry Safonov        2022-08-18  639  		opts->hash_location = (__u8 *)ptr;
+85df6b860d509a9 Dmitry Safonov        2022-08-18 @640  		ptr += maclen / sizeof(*ptr);
 
-How do the pcp-prio rules work with the APP rules? There's the dscp-prio
-sparse table, then there will be the pcp-prio (sparse?) table, what
-happens if a packet arrives that has both headers? In Spectrum switches,
-DSCP takes precedence, but that may not be universal.
+Uninitialized.
 
-It looks like adding "PCP" to APP would make the integration easiest.
-Maybe we could use an out-of-band sel value for the selector, say 256,
-to likely avoid incompatible standardization?
+85df6b860d509a9 Dmitry Safonov        2022-08-18  641  		if (unlikely(maclen % sizeof(*ptr))) {
+85df6b860d509a9 Dmitry Safonov        2022-08-18  642  			memset(ptr, TCPOPT_NOP, sizeof(*ptr));
+85df6b860d509a9 Dmitry Safonov        2022-08-18  643  			ptr++;
+85df6b860d509a9 Dmitry Safonov        2022-08-18  644  		}
+85df6b860d509a9 Dmitry Safonov        2022-08-18  645  	}
+85df6b860d509a9 Dmitry Safonov        2022-08-18  646  out_ao:
+85df6b860d509a9 Dmitry Safonov        2022-08-18  647  #endif
+fd6149d332973ba Ilpo Järvinen         2008-10-23  648  	if (unlikely(opts->mss)) {
+fd6149d332973ba Ilpo Järvinen         2008-10-23  649  		*ptr++ = htonl((TCPOPT_MSS << 24) |
+fd6149d332973ba Ilpo Järvinen         2008-10-23  650  			       (TCPOLEN_MSS << 16) |
+fd6149d332973ba Ilpo Järvinen         2008-10-23  651  			       opts->mss);
+fd6149d332973ba Ilpo Järvinen         2008-10-23  652  	}
+fd6149d332973ba Ilpo Järvinen         2008-10-23  653  
+bd0388ae7707502 William Allen Simpson 2009-12-02  654  	if (likely(OPTION_TS & options)) {
+bd0388ae7707502 William Allen Simpson 2009-12-02  655  		if (unlikely(OPTION_SACK_ADVERTISE & options)) {
+33ad798c924b4a1 Adam Langley          2008-07-19  656  			*ptr++ = htonl((TCPOPT_SACK_PERM << 24) |
+33ad798c924b4a1 Adam Langley          2008-07-19  657  				       (TCPOLEN_SACK_PERM << 16) |
+33ad798c924b4a1 Adam Langley          2008-07-19  658  				       (TCPOPT_TIMESTAMP << 8) |
+33ad798c924b4a1 Adam Langley          2008-07-19  659  				       TCPOLEN_TIMESTAMP);
+bd0388ae7707502 William Allen Simpson 2009-12-02  660  			options &= ~OPTION_SACK_ADVERTISE;
+33ad798c924b4a1 Adam Langley          2008-07-19  661  		} else {
+496c98dff8e3538 YOSHIFUJI Hideaki     2006-10-10  662  			*ptr++ = htonl((TCPOPT_NOP << 24) |
+40efc6fa179f440 Stephen Hemminger     2006-01-03  663  				       (TCPOPT_NOP << 16) |
+40efc6fa179f440 Stephen Hemminger     2006-01-03  664  				       (TCPOPT_TIMESTAMP << 8) |
+40efc6fa179f440 Stephen Hemminger     2006-01-03  665  				       TCPOLEN_TIMESTAMP);
+40efc6fa179f440 Stephen Hemminger     2006-01-03  666  		}
+33ad798c924b4a1 Adam Langley          2008-07-19  667  		*ptr++ = htonl(opts->tsval);
+33ad798c924b4a1 Adam Langley          2008-07-19  668  		*ptr++ = htonl(opts->tsecr);
+33ad798c924b4a1 Adam Langley          2008-07-19  669  	}
+33ad798c924b4a1 Adam Langley          2008-07-19  670  
+bd0388ae7707502 William Allen Simpson 2009-12-02  671  	if (unlikely(OPTION_SACK_ADVERTISE & options)) {
+33ad798c924b4a1 Adam Langley          2008-07-19  672  		*ptr++ = htonl((TCPOPT_NOP << 24) |
+33ad798c924b4a1 Adam Langley          2008-07-19  673  			       (TCPOPT_NOP << 16) |
+33ad798c924b4a1 Adam Langley          2008-07-19  674  			       (TCPOPT_SACK_PERM << 8) |
+33ad798c924b4a1 Adam Langley          2008-07-19  675  			       TCPOLEN_SACK_PERM);
+33ad798c924b4a1 Adam Langley          2008-07-19  676  	}
+33ad798c924b4a1 Adam Langley          2008-07-19  677  
+bd0388ae7707502 William Allen Simpson 2009-12-02  678  	if (unlikely(OPTION_WSCALE & options)) {
+33ad798c924b4a1 Adam Langley          2008-07-19  679  		*ptr++ = htonl((TCPOPT_NOP << 24) |
+33ad798c924b4a1 Adam Langley          2008-07-19  680  			       (TCPOPT_WINDOW << 16) |
+33ad798c924b4a1 Adam Langley          2008-07-19  681  			       (TCPOLEN_WINDOW << 8) |
+33ad798c924b4a1 Adam Langley          2008-07-19  682  			       opts->ws);
+33ad798c924b4a1 Adam Langley          2008-07-19  683  	}
+33ad798c924b4a1 Adam Langley          2008-07-19  684  
+33ad798c924b4a1 Adam Langley          2008-07-19  685  	if (unlikely(opts->num_sack_blocks)) {
+33ad798c924b4a1 Adam Langley          2008-07-19 @686  		struct tcp_sack_block *sp = tp->rx_opt.dsack ?
 
-Then the trust level can be an array of selectors that shows how the
-rules should be applied. E.g. [TCPUDP, DSCP, PCP]. Some of these
-configurations are not supported by the HW and will be bounced by the
-driver.
+Unchecked dereference.
 
-(Am I missing something in the standard? It doesn't seem to deal with
-how the APP rules are actually applied at all.)
+33ad798c924b4a1 Adam Langley          2008-07-19  687  			tp->duplicate_sack : tp->selective_acks;
+40efc6fa179f440 Stephen Hemminger     2006-01-03  688  		int this_sack;
+40efc6fa179f440 Stephen Hemminger     2006-01-03  689  
+40efc6fa179f440 Stephen Hemminger     2006-01-03  690  		*ptr++ = htonl((TCPOPT_NOP  << 24) |
+40efc6fa179f440 Stephen Hemminger     2006-01-03  691  			       (TCPOPT_NOP  << 16) |
+40efc6fa179f440 Stephen Hemminger     2006-01-03  692  			       (TCPOPT_SACK <<  8) |
+33ad798c924b4a1 Adam Langley          2008-07-19  693  			       (TCPOLEN_SACK_BASE + (opts->num_sack_blocks *
+40efc6fa179f440 Stephen Hemminger     2006-01-03  694  						     TCPOLEN_SACK_PERBLOCK)));
+2de979bd7da9c8b Stephen Hemminger     2007-03-08  695  
+33ad798c924b4a1 Adam Langley          2008-07-19  696  		for (this_sack = 0; this_sack < opts->num_sack_blocks;
+33ad798c924b4a1 Adam Langley          2008-07-19  697  		     ++this_sack) {
+40efc6fa179f440 Stephen Hemminger     2006-01-03  698  			*ptr++ = htonl(sp[this_sack].start_seq);
+40efc6fa179f440 Stephen Hemminger     2006-01-03  699  			*ptr++ = htonl(sp[this_sack].end_seq);
+40efc6fa179f440 Stephen Hemminger     2006-01-03  700  		}
+2de979bd7da9c8b Stephen Hemminger     2007-03-08  701  
+40efc6fa179f440 Stephen Hemminger     2006-01-03  702  		tp->rx_opt.dsack = 0;
+40efc6fa179f440 Stephen Hemminger     2006-01-03  703  	}
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  704  
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  705  	if (unlikely(OPTION_FAST_OPEN_COOKIE & options)) {
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  706  		struct tcp_fastopen_cookie *foc = opts->fastopen_cookie;
+7f9b838b71eb78a Daniel Lee            2015-04-06  707  		u8 *p = (u8 *)ptr;
+7f9b838b71eb78a Daniel Lee            2015-04-06  708  		u32 len; /* Fast Open option length */
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  709  
+7f9b838b71eb78a Daniel Lee            2015-04-06  710  		if (foc->exp) {
+7f9b838b71eb78a Daniel Lee            2015-04-06  711  			len = TCPOLEN_EXP_FASTOPEN_BASE + foc->len;
+7f9b838b71eb78a Daniel Lee            2015-04-06  712  			*ptr = htonl((TCPOPT_EXP << 24) | (len << 16) |
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  713  				     TCPOPT_FASTOPEN_MAGIC);
+7f9b838b71eb78a Daniel Lee            2015-04-06  714  			p += TCPOLEN_EXP_FASTOPEN_BASE;
+7f9b838b71eb78a Daniel Lee            2015-04-06  715  		} else {
+7f9b838b71eb78a Daniel Lee            2015-04-06  716  			len = TCPOLEN_FASTOPEN_BASE + foc->len;
+7f9b838b71eb78a Daniel Lee            2015-04-06  717  			*p++ = TCPOPT_FASTOPEN;
+7f9b838b71eb78a Daniel Lee            2015-04-06  718  			*p++ = len;
+7f9b838b71eb78a Daniel Lee            2015-04-06  719  		}
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  720  
+7f9b838b71eb78a Daniel Lee            2015-04-06  721  		memcpy(p, foc->val, foc->len);
+7f9b838b71eb78a Daniel Lee            2015-04-06  722  		if ((len & 3) == 2) {
+7f9b838b71eb78a Daniel Lee            2015-04-06  723  			p[foc->len] = TCPOPT_NOP;
+7f9b838b71eb78a Daniel Lee            2015-04-06  724  			p[foc->len + 1] = TCPOPT_NOP;
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  725  		}
+7f9b838b71eb78a Daniel Lee            2015-04-06  726  		ptr += (len + 3) >> 2;
+2100c8d2d9db23c Yuchung Cheng         2012-07-19  727  	}
+60e2a7780793bae Ursula Braun          2017-10-25  728  
+60e2a7780793bae Ursula Braun          2017-10-25  729  	smc_options_write(ptr, &options);
+eda7acddf8080bb Peter Krystad         2020-01-21  730  
+ea66758c1795cef Paolo Abeni           2022-05-04  731  	mptcp_options_write(th, ptr, tp, opts);
+                                                                                     ^^
+Not checked here either.
 
+60e2a7780793bae Ursula Braun          2017-10-25  732  }
 
-Another issue: DCB APP is a sparse table. There's a question of what
-should happen for the e.g. DSCP values that don't have an APP entry.
-Logically I think they should "fall through" to other APP rules as per
-the selector array.
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp  
+_______________________________________________
+kbuild mailing list -- kbuild@lists.01.org
+To unsubscribe send an email to kbuild-leave@lists.01.org
 
-Thing is, ASICs probably don't support this "fall-through" feature. So I
-don't know what to do with this. Kinda brings back some of that TC
-complexity, where you need to add all the rules, otherwise the HW can't
-be compatibly configured.
