@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F02AD59B702
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 02:23:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E5E59B706
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 02:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232036AbiHVAUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 20:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
+        id S232052AbiHVAYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 20:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232027AbiHVAUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 20:20:53 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D912018F
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:20:52 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id e21so7035269edc.7
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:20:52 -0700 (PDT)
+        with ESMTP id S231844AbiHVAYn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 20:24:43 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78CA51F627
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:24:42 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id fy5so18311800ejc.3
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:24:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=itKnzEEgxdRanMi9GUPBS95li3Z7do6JuAGWEAWhYEg=;
-        b=guVICWeqFQ8c3vdR8GBUuEyOVA0+5EO5OmTjHqWEu6VFAbXZCzD8du432ghmvYgJhQ
-         RvhjnmWNjHAres1/WFOa7u85aN+wL7vVAGauR2TkbUDtfiEBAXM8d8woD4OK3YR4i9By
-         ROoju+R4k73Q8z6CL8yQaelkmRtkkt2ChGCPVsaia6rbwlV4wz6sduV7nkHR4czQ01aV
-         nTYqLzKSWXx8g3YTHTp1n3tr3K0/HL5bsdRB9fZYGzYXdMycMvI6WQgC+dNqstFVupCb
-         Dr7SNfpCd7U3oIUkjp6zD1NCoV474OmknfhA3jNoJFdCbarhzlTJZXkn6gHjiS5kG4O4
-         fcTQ==
+        bh=Eqv/19N5yEMgS5A7uMKIDvv+xbcnmfhfYxaJZgO8F20=;
+        b=UicQpWpEmeF4kKoeqp/WmxAnf9tSyJSlCCvCKpoqea2kLCQ69aIPlMRNh8C+3XkGXM
+         CKOhqFgao3DWFDsjsLNq8xeVqbewCc8NY9lCkqgwSywO8chlQH1+JVfwzfmlOpCeeddL
+         ir8WDMIFe6sx2wEA55JyybCPBhEpqg/vfyoiWOWv7MhagbOKbO8lPdDqTDWvJscIAu6T
+         g85dXRDbtNY6hSb/sZbRSHwGldG8kMBGLoi9Lcxh9F9wHALlSTO1M6IEA7bhddGDltAY
+         uaPJXmxeBr/+rY0peyXTPwikF6BcvdKBZy1ivGuvz7hXUurZcqE3n6U9eAeqRYOQ8HXj
+         ahsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=itKnzEEgxdRanMi9GUPBS95li3Z7do6JuAGWEAWhYEg=;
-        b=tbFl9xM0HzZa5BvvSqza8fhyNGmgO4/x7NjiBsd1DIwXe/+mrLgBlwsrD/3fAFDVWl
-         +V7GOzMiWWWS6IfMoJVtSKw4TVnkGnjrvV+RjTYuTeUJQ3eu53gZai3jkmpguzhKOVvp
-         zA7DpX4/qKEJ9qByi8fZJN4LpyTqk2xjSb9Cif30gpaicSWD+TTvCSNO9BaixPCFU/Wi
-         SvJ0Ho+uRB4LRDnJeKriNaLd3PYcjBEaMLmONxwGeYg0bl+upJYyEyuAPVRb86Ypq2mC
-         5CC0TSfrKu0bHv+eX7oh6kGPDymwav+QHjNURjqIhusLhuX7vsyPH3Yane7u55lyotLM
-         RCdg==
-X-Gm-Message-State: ACgBeo1LTI6w1cFZnwirGGCMMqs5bOQR/ln+my7c+l6XdNTIrPV8EX1X
-        Z+xIZFl3AUL1qXmq64T36ehgrbcEHulEJoYhDfUDag==
-X-Google-Smtp-Source: AA6agR6lSgQcCZCvUYP8FRcUweR76r3Cilqo11shbVm7XXhBywGbxJf+ReHNDI1Bu4CF5Iaxy+qp6DBFFwaZW8Mqmh4=
-X-Received: by 2002:a05:6402:5ca:b0:43b:6e01:482c with SMTP id
- n10-20020a05640205ca00b0043b6e01482cmr14637867edx.189.1661127650293; Sun, 21
- Aug 2022 17:20:50 -0700 (PDT)
+        bh=Eqv/19N5yEMgS5A7uMKIDvv+xbcnmfhfYxaJZgO8F20=;
+        b=SVNLEJdFBQkY/ibH95QHFqqPU8ZxX6cQC1hF/TAryj61AmdjkGOjH+KkECarfvfilI
+         rRyvVFKxmRwUempfo2Y05iqFOgjk8M4pnjjuqRw1f7MHgXLRUf8Ous4lZnX7nzH7kSXt
+         kybXqCDdXsuv87pBnhckPQ11w5Z0NSrVZxOUhvA0TMcaMYgD5isxbjjgfWDUU1pdvByy
+         MYHNyzYlSwSFFVpRHKlu7+9Aeodpqrd6D5AP1pIuk+CPWKvCDFzg5AhbxRrRQnpEmaR6
+         gHb65lrVl8pWRAMzWk5gPmZ3a3qbcYzShJC37C+t37zKWtzRvn32jOrvYf1Snzrdwunv
+         Tnyg==
+X-Gm-Message-State: ACgBeo26pdjRsjB8sZtUODxYgL3KxZEF19TnlPYpGbWDXHelfgT+X51p
+        mECz+210X5I7edj02t+Uj1i8tgHvJXY6XyRshkaK4A==
+X-Google-Smtp-Source: AA6agR74JWGl5DtIW8j+H1KQUaVqCL/3GicPtrTzXAVqrBl/z2Ksrr0mXRq26zG4EyxF4PdTnY+kAzRg6WDkfsMNnW4=
+X-Received: by 2002:a17:907:2e0b:b0:730:8aee:d674 with SMTP id
+ ig11-20020a1709072e0b00b007308aeed674mr11635721ejc.104.1661127880648; Sun, 21
+ Aug 2022 17:24:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-2-shakeelb@google.com>
-In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
+References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-3-shakeelb@google.com>
+In-Reply-To: <20220822001737.4120417-3-shakeelb@google.com>
 From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Sun, 21 Aug 2022 20:20:14 -0400
-Message-ID: <CACSApvbSnCN8Fy1E3KyhkBDF=_h4vg==eoJGzM1Njf0ArX+zcg@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
+Date:   Sun, 21 Aug 2022 20:24:04 -0400
+Message-ID: <CACSApvYU5gfbDv9dyaypu1oOPB58eT1inX9EX6gV5b2q3+qr6Q@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
 To:     Shakeel Butt <shakeelb@google.com>
 Cc:     Johannes Weiner <hannes@cmpxchg.org>,
         Michal Hocko <mhocko@kernel.org>,
@@ -69,19 +69,21 @@ X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 21, 2022 at 8:17 PM Shakeel Butt <shakeelb@google.com> wrote:
+On Sun, Aug 21, 2022 at 8:18 PM Shakeel Butt <shakeelb@google.com> wrote:
 >
-> For cgroups using low or min protections, the function
-> propagate_protected_usage() was doing an atomic xchg() operation
-> irrespectively. It only needs to do that operation if the new value of
-> protection is different from older one. This patch does that.
+> With memcg v2 enabled, memcg->memory.usage is a very hot member for
+> the workloads doing memcg charging on multiple CPUs concurrently.
+> Particularly the network intensive workloads. In addition, there is a
+> false cache sharing between memory.usage and memory.high on the charge
+> path. This patch moves the usage into a separate cacheline and move all
+> the read most fields into separate cacheline.
 >
 > To evaluate the impact of this optimization, on a 72 CPUs machine, we
 > ran the following workload in a three level of cgroup hierarchy with top
@@ -95,56 +97,85 @@ On Sun, Aug 21, 2022 at 8:17 PM Shakeel Butt <shakeelb@google.com> wrote:
 >
 > Results (average throughput of netperf):
 > Without (6.0-rc1)       10482.7 Mbps
-> With patch              14542.5 Mbps (38.7% improvement)
+> With patch              12413.7 Mbps (18.4% improvement)
 >
-> With the patch, the throughput improved by 38.7%
+> With the patch, the throughput improved by 18.4%.
+
+Shakeel, for my understanding: is this on top of the gains from the
+previous patch?
+
+> One side-effect of this patch is the increase in the size of struct
+> mem_cgroup. However for the performance improvement, this additional
+> size is worth it. In addition there are opportunities to reduce the size
+> of struct mem_cgroup like deprecation of kmem and tcpmem page counters
+> and better packing.
 >
 > Signed-off-by: Shakeel Butt <shakeelb@google.com>
 > Reported-by: kernel test robot <oliver.sang@intel.com>
-
-Nice speed up!
-
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-
 > ---
->  mm/page_counter.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
+>  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
+>  1 file changed, 23 insertions(+), 11 deletions(-)
 >
-> diff --git a/mm/page_counter.c b/mm/page_counter.c
-> index eb156ff5d603..47711aa28161 100644
-> --- a/mm/page_counter.c
-> +++ b/mm/page_counter.c
-> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
->                                       unsigned long usage)
->  {
->         unsigned long protected, old_protected;
-> -       unsigned long low, min;
->         long delta;
+> diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
+> index 679591301994..8ce99bde645f 100644
+> --- a/include/linux/page_counter.h
+> +++ b/include/linux/page_counter.h
+> @@ -3,15 +3,27 @@
+>  #define _LINUX_PAGE_COUNTER_H
 >
->         if (!c->parent)
->                 return;
+>  #include <linux/atomic.h>
+> +#include <linux/cache.h>
+>  #include <linux/kernel.h>
+>  #include <asm/page.h>
 >
-> -       min = READ_ONCE(c->min);
-> -       if (min || atomic_long_read(&c->min_usage)) {
-> -               protected = min(usage, min);
-> +       protected = min(usage, READ_ONCE(c->min));
-> +       old_protected = atomic_long_read(&c->min_usage);
-> +       if (protected != old_protected) {
->                 old_protected = atomic_long_xchg(&c->min_usage, protected);
->                 delta = protected - old_protected;
->                 if (delta)
->                         atomic_long_add(delta, &c->parent->children_min_usage);
->         }
+> +#if defined(CONFIG_SMP)
+> +struct pc_padding {
+> +       char x[0];
+> +} ____cacheline_internodealigned_in_smp;
+> +#define PC_PADDING(name)       struct pc_padding name
+> +#else
+> +#define PC_PADDING(name)
+> +#endif
+> +
+>  struct page_counter {
+> +       /*
+> +        * Make sure 'usage' does not share cacheline with any other field. The
+> +        * memcg->memory.usage is a hot member of struct mem_cgroup.
+> +        */
+> +       PC_PADDING(_pad1_);
+>         atomic_long_t usage;
+> -       unsigned long min;
+> -       unsigned long low;
+> -       unsigned long high;
+> -       unsigned long max;
+> +       PC_PADDING(_pad2_);
 >
-> -       low = READ_ONCE(c->low);
-> -       if (low || atomic_long_read(&c->low_usage)) {
-> -               protected = min(usage, low);
-> +       protected = min(usage, READ_ONCE(c->low));
-> +       old_protected = atomic_long_read(&c->low_usage);
-> +       if (protected != old_protected) {
->                 old_protected = atomic_long_xchg(&c->low_usage, protected);
->                 delta = protected - old_protected;
->                 if (delta)
+>         /* effective memory.min and memory.min usage tracking */
+>         unsigned long emin;
+> @@ -23,16 +35,16 @@ struct page_counter {
+>         atomic_long_t low_usage;
+>         atomic_long_t children_low_usage;
+>
+> -       /* legacy */
+>         unsigned long watermark;
+>         unsigned long failcnt;
+>
+> -       /*
+> -        * 'parent' is placed here to be far from 'usage' to reduce
+> -        * cache false sharing, as 'usage' is written mostly while
+> -        * parent is frequently read for cgroup's hierarchical
+> -        * counting nature.
+> -        */
+> +       /* Keep all the read most fields in a separete cacheline. */
+> +       PC_PADDING(_pad3_);
+> +
+> +       unsigned long min;
+> +       unsigned long low;
+> +       unsigned long high;
+> +       unsigned long max;
+>         struct page_counter *parent;
+>  };
+>
 > --
 > 2.37.1.595.g718a3a8f04-goog
 >
