@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B4A859BE14
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:06:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E26BF59BE2C
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234510AbiHVLEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 07:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54416 "EHLO
+        id S234469AbiHVLE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 07:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233045AbiHVLEY (ORCPT
+        with ESMTP id S234070AbiHVLEY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:04:24 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE5827B1D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE2FE27B13
         for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 04:04:22 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Dw-0005PK-1C; Mon, 22 Aug 2022 13:04:04 +0200
+        id 1oQ5Dx-0005Qj-4p; Mon, 22 Aug 2022 13:04:05 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Du-001Hll-5m; Mon, 22 Aug 2022 13:04:02 +0200
+        id 1oQ5Dw-001HmQ-5b; Mon, 22 Aug 2022 13:04:04 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQ5Ds-009gz8-Dl; Mon, 22 Aug 2022 13:04:00 +0200
+        id 1oQ5Ds-009gzH-EK; Mon, 22 Aug 2022 13:04:00 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -38,9 +38,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v2 07/17] net: dsa: microchip: ksz8795: add error handling to ksz8_r/w_phy
-Date:   Mon, 22 Aug 2022 13:03:48 +0200
-Message-Id: <20220822110358.2310055-8-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 08/17] net: dsa: microchip: KSZ9893: do not write to not supported Output Clock Control Register
+Date:   Mon, 22 Aug 2022 13:03:49 +0200
+Message-Id: <20220822110358.2310055-9-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220822110358.2310055-1-o.rempel@pengutronix.de>
 References: <20220822110358.2310055-1-o.rempel@pengutronix.de>
@@ -59,209 +59,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now ksz_pread/ksz_pwrite can return error value. So, make use of it.
+This issue was detected after adding regmap register access validation.
+KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
+So, avoid writing to it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c | 102 ++++++++++++++++++++++------
- 1 file changed, 81 insertions(+), 21 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index f2dd75ee0e075..f020d9f402845 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -560,14 +560,24 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 	u8 val1, val2;
- 	u16 data = 0;
- 	u8 p = phy;
-+	int ret;
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 13c4ded84b1db..62a03b3b918df 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -193,6 +193,11 @@ int ksz9477_reset_switch(struct ksz_device *dev)
+ 	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
+ 	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
  
- 	regs = dev->info->regs;
- 
- 	switch (reg) {
- 	case MII_BMCR:
--		ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
--		ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
--		ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
-+		ret = ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
-+		if (ret)
-+			return ret;
++	/* KSZ9893 compatible chips do not support refclk configuration */
++	if (dev->chip_id == KSZ9893_CHIP_ID ||
++	    dev->chip_id == KSZ8563_CHIP_ID)
++		return 0;
 +
-+		ret = ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
-+		if (ret)
-+			return ret;
-+
-+		ret = ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
-+		if (ret)
-+			return ret;
-+
- 		if (restart & PORT_PHY_LOOPBACK)
- 			data |= BMCR_LOOPBACK;
- 		if (ctrl & PORT_FORCE_100_MBIT)
-@@ -597,7 +607,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 			data |= KSZ886X_BMCR_DISABLE_LED;
- 		break;
- 	case MII_BMSR:
--		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
-+		ret = ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
-+		if (ret)
-+			return ret;
-+
- 		data = BMSR_100FULL |
- 		       BMSR_100HALF |
- 		       BMSR_10FULL |
-@@ -618,7 +631,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 			data = KSZ8795_ID_LO;
- 		break;
- 	case MII_ADVERTISE:
--		ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
-+		ret = ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
-+		if (ret)
-+			return ret;
-+
- 		data = ADVERTISE_CSMA;
- 		if (ctrl & PORT_AUTO_NEG_SYM_PAUSE)
- 			data |= ADVERTISE_PAUSE_CAP;
-@@ -632,7 +648,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 			data |= ADVERTISE_10HALF;
- 		break;
- 	case MII_LPA:
--		ksz_pread8(dev, p, regs[P_REMOTE_STATUS], &link);
-+		ret = ksz_pread8(dev, p, regs[P_REMOTE_STATUS], &link);
-+		if (ret)
-+			return ret;
-+
- 		data = LPA_SLCT;
- 		if (link & PORT_REMOTE_SYM_PAUSE)
- 			data |= LPA_PAUSE_CAP;
-@@ -648,8 +667,14 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 			data |= LPA_LPACK;
- 		break;
- 	case PHY_REG_LINK_MD:
--		ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
--		ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
-+		ret = ksz_pread8(dev, p, REG_PORT_LINK_MD_CTRL, &val1);
-+		if (ret)
-+			return ret;
-+
-+		ret = ksz_pread8(dev, p, REG_PORT_LINK_MD_RESULT, &val2);
-+		if (ret)
-+			return ret;
-+
- 		if (val1 & PORT_START_CABLE_DIAG)
- 			data |= PHY_START_CABLE_DIAG;
- 
-@@ -664,7 +689,10 @@ int ksz8_r_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 *val)
- 				FIELD_GET(PORT_CABLE_FAULT_COUNTER_L, val2));
- 		break;
- 	case PHY_REG_PHY_CTRL:
--		ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
-+		ret = ksz_pread8(dev, p, regs[P_LINK_STATUS], &link);
-+		if (ret)
-+			return ret;
-+
- 		if (link & PORT_MDIX_STATUS)
- 			data |= KSZ886X_CTRL_MDIX_STAT;
- 		break;
-@@ -683,6 +711,7 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 	u8 restart, speed, ctrl, data;
- 	const u16 *regs;
- 	u8 p = phy;
-+	int ret;
- 
- 	regs = dev->info->regs;
- 
-@@ -692,15 +721,26 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 		/* Do not support PHY reset function. */
- 		if (val & BMCR_RESET)
- 			break;
--		ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
-+		ret = ksz_pread8(dev, p, regs[P_SPEED_STATUS], &speed);
-+		if (ret)
-+			return ret;
-+
- 		data = speed;
- 		if (val & KSZ886X_BMCR_HP_MDIX)
- 			data |= PORT_HP_MDIX;
- 		else
- 			data &= ~PORT_HP_MDIX;
--		if (data != speed)
--			ksz_pwrite8(dev, p, regs[P_SPEED_STATUS], data);
--		ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
-+
-+		if (data != speed) {
-+			ret = ksz_pwrite8(dev, p, regs[P_SPEED_STATUS], data);
-+			if (ret)
-+				return ret;
-+		}
-+
-+		ret = ksz_pread8(dev, p, regs[P_FORCE_CTRL], &ctrl);
-+		if (ret)
-+			return ret;
-+
- 		data = ctrl;
- 		if (ksz_is_ksz88x3(dev)) {
- 			if ((val & BMCR_ANENABLE))
-@@ -726,9 +766,17 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 			data |= PORT_FORCE_FULL_DUPLEX;
- 		else
- 			data &= ~PORT_FORCE_FULL_DUPLEX;
--		if (data != ctrl)
--			ksz_pwrite8(dev, p, regs[P_FORCE_CTRL], data);
--		ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
-+
-+		if (data != ctrl) {
-+			ret = ksz_pwrite8(dev, p, regs[P_FORCE_CTRL], data);
-+			if (ret)
-+				return ret;
-+		}
-+
-+		ret = ksz_pread8(dev, p, regs[P_NEG_RESTART_CTRL], &restart);
-+		if (ret)
-+			return ret;
-+
- 		data = restart;
- 		if (val & KSZ886X_BMCR_DISABLE_LED)
- 			data |= PORT_LED_OFF;
-@@ -758,11 +806,19 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 			data |= PORT_PHY_LOOPBACK;
- 		else
- 			data &= ~PORT_PHY_LOOPBACK;
--		if (data != restart)
--			ksz_pwrite8(dev, p, regs[P_NEG_RESTART_CTRL], data);
-+
-+		if (data != restart) {
-+			ret = ksz_pwrite8(dev, p, regs[P_NEG_RESTART_CTRL],
-+					  data);
-+			if (ret)
-+				return ret;
-+		}
- 		break;
- 	case MII_ADVERTISE:
--		ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
-+		ret = ksz_pread8(dev, p, regs[P_LOCAL_CTRL], &ctrl);
-+		if (ret)
-+			return ret;
-+
- 		data = ctrl;
- 		data &= ~(PORT_AUTO_NEG_SYM_PAUSE |
- 			  PORT_AUTO_NEG_100BTX_FD |
-@@ -779,8 +835,12 @@ int ksz8_w_phy(struct ksz_device *dev, u16 phy, u16 reg, u16 val)
- 			data |= PORT_AUTO_NEG_10BT_FD;
- 		if (val & ADVERTISE_10HALF)
- 			data |= PORT_AUTO_NEG_10BT;
--		if (data != ctrl)
--			ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
-+
-+		if (data != ctrl) {
-+			ret = ksz_pwrite8(dev, p, regs[P_LOCAL_CTRL], data);
-+			if (ret)
-+				return ret;
-+		}
- 		break;
- 	case PHY_REG_LINK_MD:
- 		if (val & PHY_START_CABLE_DIAG)
+ 	data8 = SW_ENABLE_REFCLKO;
+ 	if (dev->synclko_disable)
+ 		data8 = 0;
 -- 
 2.30.2
 
