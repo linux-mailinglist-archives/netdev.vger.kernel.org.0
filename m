@@ -2,123 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF93659C5F7
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A79E859C610
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237389AbiHVSV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 14:21:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
+        id S237320AbiHVSYN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 14:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237126AbiHVSVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:21:55 -0400
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC80E474F7
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:21:54 -0700 (PDT)
-Received: by mail-oi1-x22f.google.com with SMTP id n124so2243859oih.7
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:21:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=KxeXKUeRuVUgo6T1WQOko+Q6K9NOCAx+pcM9TQPoDKY=;
-        b=emDZmyCuj4uPG4Bgx/jCNx3nI+rZTnqfKonJwV+kryOTW3PkTafUzA44hv7DwATmP9
-         OVVB9s3lcyJLsx9o8Qvumz4rXuUpC/OQn6ReZ2/4zq5vJciV/wtkLZQPyZV4zLwmGPWM
-         4KcwuzMZ8QzvcN6krVs1/S0uO/WgHkx0mv2I8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=KxeXKUeRuVUgo6T1WQOko+Q6K9NOCAx+pcM9TQPoDKY=;
-        b=1RsTxECNWaksop9gAJjHkApsGAEPa/Lu2kitzgGbz+LSsMncE3JUX9XKyfylZ3pHG2
-         WP2lVxqkofuGblzcDCh91811N4bLFE++D4xHNoYLQ9qIw8Ut0xxBrgd7suAzknHhtyls
-         eg/l3V5/XfiIkhAyMhLB+9ttT69IIrFR43enVhPXgdbfYWJTlORdKMH/9K7nmcIJ8/K1
-         nyKjM2cJVnaeG0Yvl0tJeNtzP+3cZbgXjso/XX40HJ8+OFZxSJhhkb+wjdW3o/+WRaNJ
-         A/YQzcxw51tH0fbFOSIcjsb5/K8BlPIrPvZZM3nm7BCgC1MpGam5IJ7YsEni/tghyxsC
-         Q46w==
-X-Gm-Message-State: ACgBeo0OHJtYiIspiebj/bOibB3XddUJEBIcTeEcGo5UEwpziEG35KEb
-        Xo4oHreBVPuLd1K5z7BoLC1UYvlrBAH8pg==
-X-Google-Smtp-Source: AA6agR647PMEk1CmZ2k/oWCkRs9jCMeKUdqgutw5o8Nm32M4/k48Tljj8qkq6+wu1PQC8U67+lJazw==
-X-Received: by 2002:a05:6808:152:b0:344:ce7c:a819 with SMTP id h18-20020a056808015200b00344ce7ca819mr11728890oie.258.1661192513550;
-        Mon, 22 Aug 2022 11:21:53 -0700 (PDT)
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com. [209.85.160.49])
-        by smtp.gmail.com with ESMTPSA id x6-20020a4a2a46000000b0044528e04cdasm2589865oox.23.2022.08.22.11.21.51
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 22 Aug 2022 11:21:51 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-11d08d7ece2so7186056fac.0
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:21:51 -0700 (PDT)
-X-Received: by 2002:a05:6870:d0d4:b0:10d:4a2:2c0e with SMTP id
- k20-20020a056870d0d400b0010d04a22c0emr13587797oaa.232.1661192510574; Mon, 22
- Aug 2022 11:21:50 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1660739276.git.duoming@zju.edu.cn> <b861ce56ba555109a67f85a146a785a69f0a3c95.1660739276.git.duoming@zju.edu.cn>
- <YvzicURy8t2JdQke@kroah.com> <176e7de7.8a223.182ac1fbc47.Coremail.duoming@zju.edu.cn>
- <Yv5TefZcrUPY1Qjc@kroah.com> <5108e03b.8c156.182b1a2973f.Coremail.duoming@zju.edu.cn>
-In-Reply-To: <5108e03b.8c156.182b1a2973f.Coremail.duoming@zju.edu.cn>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Mon, 22 Aug 2022 11:21:36 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXNN81VczMTUt8=AyeytbMjy2vAGi_aVW_MNha9D99Z5VA@mail.gmail.com>
-Message-ID: <CA+ASDXNN81VczMTUt8=AyeytbMjy2vAGi_aVW_MNha9D99Z5VA@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] devcoredump: remove the useless gfp_t parameter in
- dev_coredumpv and dev_coredumpm
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        amit karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi017@gmail.com>,
-        Sharvari Harisangam <sharvari.harisangam@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>, kvalo@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237425AbiHVSYI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:24:08 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EA141A81F;
+        Mon, 22 Aug 2022 11:24:03 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 11:23:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1661192642;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bQzUYJbzeSJVtDIpGsHXApQTdq+ArDiyBUiXh9dJl9c=;
+        b=ko5CwHMhDHobyMV2JTCqgpMz2+52hcGSQVRXn7bUUUSzOzmxP9AFk+/mRkwC+S5zY6MqdX
+        F2q4LAhYZbvIHrC86yIgvLfaWvRCGsb0n0M91E3H2sYMBQDtjW1gtraZ1MHGzTdRTZPXQf
+        PJRtOi3CP/lPjq5dDiL0j6nSDxN5b2s=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Roman Gushchin <roman.gushchin@linux.dev>
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Oliver Sang <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
+ low/min
+Message-ID: <YwPJvGL6ZhgrYTeK@P9FQF9L96D>
+References: <20220822001737.4120417-1-shakeelb@google.com>
+ <20220822001737.4120417-2-shakeelb@google.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822001737.4120417-2-shakeelb@google.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Aug 22, 2022 at 12:17:35AM +0000, Shakeel Butt wrote:
+> For cgroups using low or min protections, the function
+> propagate_protected_usage() was doing an atomic xchg() operation
+> irrespectively. It only needs to do that operation if the new value of
+> protection is different from older one. This patch does that.
+> 
+> To evaluate the impact of this optimization, on a 72 CPUs machine, we
+> ran the following workload in a three level of cgroup hierarchy with top
+> level having min and low setup appropriately. More specifically
+> memory.min equal to size of netperf binary and memory.low double of
+> that.
+> 
+>  $ netserver -6
+>  # 36 instances of netperf with following params
+>  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
+> 
+> Results (average throughput of netperf):
+> Without (6.0-rc1)	10482.7 Mbps
+> With patch		14542.5 Mbps (38.7% improvement)
+> 
+> With the patch, the throughput improved by 38.7%
 
-On Thu, Aug 18, 2022 at 8:47 AM <duoming@zju.edu.cn> wrote:
-> On Thu, 18 Aug 2022 16:58:01 +0200 Greg KH wrote:
-> > No, that is not necessary.  Do the work now so that there is no flag day
-> > and you don't have to worry about new users, it will all "just work".
->
-> Do you mean we should replace dev_set_name() in dev_coredumpm() to some other
-> functions that could work both in interrupt context and process context?
+Nice savings!
 
-No.
+> 
+> Signed-off-by: Shakeel Butt <shakeelb@google.com>
+> Reported-by: kernel test robot <oliver.sang@intel.com>
+> ---
+>  mm/page_counter.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
+> diff --git a/mm/page_counter.c b/mm/page_counter.c
+> index eb156ff5d603..47711aa28161 100644
+> --- a/mm/page_counter.c
+> +++ b/mm/page_counter.c
+> @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
+>  				      unsigned long usage)
+>  {
+>  	unsigned long protected, old_protected;
+> -	unsigned long low, min;
+>  	long delta;
+>  
+>  	if (!c->parent)
+>  		return;
+>  
+> -	min = READ_ONCE(c->min);
+> -	if (min || atomic_long_read(&c->min_usage)) {
+> -		protected = min(usage, min);
+> +	protected = min(usage, READ_ONCE(c->min));
+> +	old_protected = atomic_long_read(&c->min_usage);
+> +	if (protected != old_protected) {
+>  		old_protected = atomic_long_xchg(&c->min_usage, protected);
+>  		delta = protected - old_protected;
+>  		if (delta)
+>  			atomic_long_add(delta, &c->parent->children_min_usage);
 
-I believe the suggestion is that rather than change the signature for
-dev_coredumpv() (which means everyone has to agree on the new
-signature on day 1), you should introduce a new API, like
-dev_coredumpv_noatomic() (I'm not good at naming [1]) with the
-signature you want, and then migrate users over. Once we have a
-release with no users of the old API, we drop it.
+What if there is a concurrent update of c->min_usage? Then the patched version
+can miss an update. I can't imagine a case when it will lead to bad consequences,
+so probably it's ok. But not super obvious.
+I think the way to think of it is that a missed update will be fixed by the next
+one, so it's ok to run some time with old numbers.
 
-There are plenty of examples of the kernel community doing similar
-transitions. You can search around for examples, but a quick search of
-my own shows something like this:
-https://lwn.net/Articles/735887/
-(In particular, timer_setup() was introduced, and all setup_timer()
-users were migrated to it within a release or two.)
+Acked-by: Roman Gushchin <roman.gushchin@linux.dev>
 
-Brian
-
-[1] Seriously, dev_coredumpv_noatomic() is not a name I want to see
-last very long. Maybe some other trivial modification? Examples:
-
-dev_core_dumpv()
-dev_coredump_v()
-device_coredumpv()
-...
+Thanks!
