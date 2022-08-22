@@ -2,262 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D57B259BE76
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:29:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FB8659BE83
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:30:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234247AbiHVL3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 07:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
+        id S234253AbiHVL3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 07:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234170AbiHVL33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:29:29 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A99432EFD;
-        Mon, 22 Aug 2022 04:29:28 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so10916057pjf.2;
-        Mon, 22 Aug 2022 04:29:28 -0700 (PDT)
+        with ESMTP id S234170AbiHVL3i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:29:38 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD7E32EFA;
+        Mon, 22 Aug 2022 04:29:37 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id x19so9641099plc.5;
+        Mon, 22 Aug 2022 04:29:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=OvbrjWH0ZIokBhPMUv+n85WJlYuSvCgvMb6EiRBkQkk=;
-        b=aE+aeUMWK6ZS53keSjCPtcn0SIjQcjrmfsuB2oEtCB9l2eh4sOcUyLeAJlRCKpjxvb
-         3PZIJvtvfmxXK9HLeZKC6LlbMduzhJ1VVYDgooECOmPln0+fKQLcWhFPipYfCF4GAJN5
-         ArQvepWkn89m8vqmL9UJd/ds0TthMSLn/b8twxg35rrqtOWXx4aUaRM+4IrK2ToTG3Q7
-         bjOVp4d4VPynQc+G0ox1s3b86CjnNXgCBQyNSZrIPXmOYXk2oApd87lBhW1MlXflZKlI
-         bJ/7Eoq6qMYEnfjdKTf0JkSHhOOOvURqO1NhY/VOxqR/W9z8K4zR/HE1iu0eSulZhgM5
-         OMGw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
+        b=NlWoQCchWeNTZs+AYQyBWxFuTYWc/I3igYYx8cB+Bj8NxSXt+UNeRjQ1sO33INU2p7
+         6e72lGCiI+NO/L2ODjyVLUAD46LJFZNo9SHHrJC6OyrVUNySGMWnUw3S9SXe62LoKXMd
+         ivVDE5wiE87n5WzONjwMT4eficfysknxi3aid0/lpeT86LXYLjXs6N24K1iQP65IHwYP
+         E0zugKUahcdCoakaptdI+8jbECtTm++JxXfXH+UuOW0a3ijuueqPN49a5GA3xgVN97jo
+         dQ2I94Xg+ieBH7aLtzkih5TjQb3pUFkKY1DOW1L7znBq2lO2xucLCTOw2Z81jXcvaeo5
+         v8KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=OvbrjWH0ZIokBhPMUv+n85WJlYuSvCgvMb6EiRBkQkk=;
-        b=XTGE6aTgCqCm8Q9vjhjc/9dayqXnIkvdD+nbdHg3SbDXYBP/Har4PKF+6vyvRfE/x9
-         5tCpRhHCzSepyELBnb7MqXaj6TJqL0VB/J2dTk2Uh3gUWHlUPD7ZRwNz32IpWRr4cjF3
-         p31aYydXlq6zqYwnE6+wC7ctpwIq1ea0l4y4DZKJhdcGb65ZR/M4tsWEXKYQTyDjKJzI
-         MJ094NWU50rFW2hd+Nw2hVe/F6TZQKzmnv2aK5fkdV4MpeprBWQnfZvuBoyQwFx9lIpB
-         laQ1NE1iFsy9Z6iqVuqzaJ/Z8OpZf39GWccMkYo+UQ2B5eR7zQ1jP23zeaXpzggoBEPg
-         rJgg==
-X-Gm-Message-State: ACgBeo2RagDXL9fSkdeOzgkmuXZj0LItPMFN/xw6bxPERb8spX2C0hfW
-        g1+yKTOKF0W8DD0nYBtazLU=
-X-Google-Smtp-Source: AA6agR5cOJEwIZjpViZ1mkB4Qq0gpVryKYuBn8GXa1aHP7S1MkfAa4ez3plmHcSQrh1pIoiou9H2Iw==
-X-Received: by 2002:a17:903:11c7:b0:170:cde7:d24a with SMTP id q7-20020a17090311c700b00170cde7d24amr19883486plh.91.1661167767455;
-        Mon, 22 Aug 2022 04:29:27 -0700 (PDT)
-Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id ay24-20020a17090b031800b001ef8ab65052sm4727620pjb.11.2022.08.22.04.29.26
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
+        b=HRf9Rv39I0kEx5S64c1t2OsmRmee69SUj0B8EoV3cZ9hZQuGGcG/VUNjAnlIo2YNs8
+         o753OuFbXbZlxsOIb1BC2/z1JyL/7F+7P0agfYSzCd07xZV+LIXTCffBDAIR032L4IhM
+         uTSkVuMzxhjqyc4uUb1D/dtgIdQ5MftMz1LVpjgHOens1QrZq9YsM+GgNx/3HukafF/s
+         0EJanotDvi7tUuYw3yenUch9hF1AprA7llNPdAuSmAbKLmRSZz1iDILHw7vlkjHbVVtn
+         t5nOjhqJUXTkY9Pk1kHvjfd5XhFNj0v6DChIEJiQtQ1+4gI5/K+BkXqV7Ew3Q3s0PAER
+         CVBw==
+X-Gm-Message-State: ACgBeo2U4+/JMtn78gV4I+zdmG/FDoGLK3LSzhGxD8Aa27Y2Irlmypnl
+        F5eUPXKx8tR/6XFSQ2/V69U=
+X-Google-Smtp-Source: AA6agR4Vk04va7kXaoAFh76/Ap9kNlNwCowffm0tDN0KvnijUryXAa9rfxzul4sOy7+EtojSrH7cYQ==
+X-Received: by 2002:a17:90b:4a8f:b0:1f5:ee3:a6a1 with SMTP id lp15-20020a17090b4a8f00b001f50ee3a6a1mr28013360pjb.149.1661167776544;
+        Mon, 22 Aug 2022 04:29:36 -0700 (PDT)
+Received: from localhost ([36.112.86.8])
+        by smtp.gmail.com with ESMTPSA id c3-20020a170902d48300b0016a058b7547sm1329861plg.294.2022.08.22.04.29.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 04:29:27 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 22 Aug 2022 01:29:25 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yafang Shao <laoar.shao@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Shakeel Butt <shakeelb@google.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Yosry Ahmed <yosryahmed@google.com>,
-        Dan Schatzberg <schatzberg.dan@gmail.com>,
-        Lennart Poettering <lennart@poettering.net>
-Subject: [RFD RESEND] cgroup: Persistent memory usage tracking
-Message-ID: <YwNold0GMOappUxc@slm.duckdns.org>
-References: <20220818143118.17733-1-laoar.shao@gmail.com>
- <Yv67MRQLPreR9GU5@slm.duckdns.org>
- <Yv6+HlEzpNy8y5kT@slm.duckdns.org>
- <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
- <Yv/DK+AGlMeBGkF1@slm.duckdns.org>
- <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
+        Mon, 22 Aug 2022 04:29:35 -0700 (PDT)
+From:   Hawkins Jiawei <yin31149@gmail.com>
+To:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-afs@lists.infradead.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        paskripkin@gmail.com,
+        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
+        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
+Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
+Date:   Mon, 22 Aug 2022 19:29:30 +0800
+Message-Id: <20220822112931.2884-1-yin31149@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <992103.1661160093@warthog.procyon.org.uk>
+References: <992103.1661160093@warthog.procyon.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(Sorry, this is a resend. I messed up the header in the first posting.)
+On Mon, 22 Aug 2022 at 16:48, David Howells <dhowells@redhat.com> wrote:
+>
+> Hawkins Jiawei <yin31149@gmail.com> wrote:
+>
+> > -             if (mutex_lock_interruptible(&call->user_mutex) < 0)
+> > +             if (mutex_lock_interruptible(&call->user_mutex) < 0) {
+> > +                     mutex_lock(&call->user_mutex);
+>
+> Yeah, as Khalid points out that kind of makes the interruptible lock
+> pointless.  Either rxrpc_send_data() needs to return a separate indication
+> that we returned without the lock held or it needs to always drop the lock on
+> error (at least for ERESTARTSYS/EINTR) which can be checked for higher up.
+Hi David,
 
-Hello,
+For second option, I think it may meet some difficulty, because we
+cannot figure out whether rxrpc_send_data() meets lock error.
+To be more specific, rxrpc_send_data() may still returns the number
+it has copied even rxrpc_send_data() meets lock error, if
+rxrpc_send_data() has successfully dealed some data.(Please correct me
+if I am wrong)
 
-This thread started on a bpf-specific memory tracking change proposal and
-went south, but a lot of people who would be interested are already cc'd, so
-I'm hijacking it to discuss what to do w/ persistent memory usage tracking.
+So I think the first option seems better. I wonder if we can add an
+argument in rxrpc_send_data() as an indication you pointed out? Maybe:
 
-Cc'ing Mina and Yosry who were involved in the discussions on the similar
-problem re. tmpfs, Dan Schatzberg who has a lot more prod knowledge and
-experience than me, and Lennart for his thoughts from systemd side.
-
-The root problem is that there are resources (almost solely memory
-currently) that outlive a given instance of a, to use systemd-lingo,
-service. Page cache is the most common case.
-
-Let's say there's system.slice/hello.service. When it runs for the first
-time, page cache backing its binary will be charged to hello.service.
-However, when it restarts after e.g. a config change, when the initial
-hello.service cgroup gets destroyed, we reparent the page cache charges to
-the parent system.slice and when the second instance starts, its binary will
-stay charged to system.slice. Over time, some may get reclaimed and
-refaulted into the new hello.service but that's not guaranteed and most hot
-pages likely won't.
-
-The same problem exists for any memory which is not freed synchronously when
-the current instance exits. While this isn't a problem for many cases, it's
-not difficult to imagine situations where the amount of memory which ends up
-getting pushed to the parent is significant, even clear majority, with big
-page cache footprint, persistent tmpfs instances and so on, creating issues
-with accounting accuracy and thus control.
-
-I think there are two broad issues to discuss here:
-
-[1] Can this be solved by layering the instance cgroups under persistent
-    entity cgroup?
-
-So, instead of systemd.slice/hello.service, the application runs inside
-something like systemd.slice/hello.service/hello.service.instance and the
-service-level cgroup hello.service is not destroyed as long as it is
-something worth tracking on the system.
-
-The benefits are
-
-a. While requiring changing how userland organizes cgroup hiearchy, it is a
-   straight-forward extension of the current architecture and doesn't
-   require any conceptual or structural changes. All the accounting and
-   control schemes work exactly the same as before. The only difference is
-   that we now have a persistent entity representing each service as we want
-   to track their persistent resource usages.
-
-b. Per-instance tracking and control is optional. To me, it seems that the
-   persistent resource usages would be more meaningful than per-instance and
-   tracking down to the persistent usages shouldn't add noticeable runtime
-   overheads while keeping per-instance process management niceties and
-   allowing use cases to opt-in for per-instance resource tracking and
-   control as needed.
-
-The complications are:
-
-a. It requires changing cgroup hierarchy in a very visible way.
-
-b. What should be the lifetime rules for persistent cgroups? Do we keep them
-   around forever or maybe they can be created on the first use and kept
-   around until the service is removed from the system? When the persistent
-   cgroup is removed, do we need to make sure that the remaining resource
-   usages are low enough? Note that this problem exists for any approach
-   that tries to track persistent usages no matter how it's done.
-
-c. Do we need to worry about nesting overhead? Given that there's no reason
-   to enable controllers w/o persisten states for the instance level and the
-   nesting overhead is pretty low for memcg, this doesn't seem like a
-   problem to me. If this becomes a problem, we just need to fix it.
-
-A couple alternatives discussed are:
-
-a. Userspace keeps reusing the same cgroup for different instances of the
-   same service. This simplifies some aspects while making others more
-   complicated. e.g. Determining the current instance's CPU or IO usages now
-   require the monitoring software remembering what they were when this
-   instance started and calculating the deltas. Also, if some use cases want
-   to distinguish persistent vs. instance usages (more on this later), this
-   isn't gonna work. That said, this definitely is attractive in that it
-   miminizes overt user visible changes.
-
-b. Memory is disassociated rather than just reparented on cgroup destruction
-   and get re-charged to the next first user. This is attractive in that it
-   doesn't require any userspace changes; however, I'm not sure how this
-   would work for non-pageable memory usages such as bpf maps. How would we
-   detect the next first usage?
+diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
+index 1d38e279e2ef..0801325a7c7f 100644
+--- a/net/rxrpc/sendmsg.c
++++ b/net/rxrpc/sendmsg.c
+@@ -284,13 +284,18 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
+ 
+ /*
+  * send data through a socket
++ * @holding_mutex: rxrpc_send_data() will assign this pointer with True
++ * if functions still holds the call user access mutex when returned to caller.
++ * This argument can be NULL, which will effect nothing.
++ *
+  * - must be called in process context
+  * - The caller holds the call user access mutex, but not the socket lock.
+  */
+ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 			   struct rxrpc_call *call,
+ 			   struct msghdr *msg, size_t len,
+-			   rxrpc_notify_end_tx_t notify_end_tx)
++			   rxrpc_notify_end_tx_t notify_end_tx,
++			   bool *holding_mutex)
+ {
+ 	struct rxrpc_skb_priv *sp;
+ 	struct sk_buff *skb;
+@@ -299,6 +304,9 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 	bool more;
+ 	int ret, copied;
+ 
++	if (holding_mutex)
++		*holding_mutex = true;
++
+ 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
+ 
+ 	/* this should be in poll */
+@@ -338,8 +346,11 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
+ 				ret = rxrpc_wait_for_tx_window(rx, call,
+ 							       &timeo,
+ 							       msg->msg_flags & MSG_WAITALL);
+-				if (ret < 0)
++				if (ret < 0) {
++					if (holding_mutex)
++						*holding_mutex = false;
+ 					goto maybe_error;
++				}
+ 			}
+ 
+ 			/* Work out the maximum size of a packet.  Assume that
+@@ -630,6 +641,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 	struct rxrpc_call *call;
+ 	unsigned long now, j;
+ 	int ret;
++	bool holding_user_mutex;
+ 
+ 	struct rxrpc_send_params p = {
+ 		.call.tx_total_len	= -1,
+@@ -747,7 +759,9 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
+ 		/* Reply phase not begun or not complete for service call. */
+ 		ret = -EPROTO;
+ 	} else {
+-		ret = rxrpc_send_data(rx, call, msg, len, NULL);
++		ret = rxrpc_send_data(rx, call, msg, len, NULL, &holding_user_mutex);
++		if (!holding_user_mutex)
++			goto error_put;
+ 	}
+ 
+ out_put_unlock:
+@@ -796,7 +810,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
+ 	case RXRPC_CALL_SERVER_ACK_REQUEST:
+ 	case RXRPC_CALL_SERVER_SEND_REPLY:
+ 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
+-				      notify_end_tx);
++				      notify_end_tx, NULL);
+ 		break;
+ 	case RXRPC_CALL_COMPLETE:
+ 		read_lock_bh(&call->state_lock);
 
 
-[2] Whether and how to solve first and second+ instance charge differences.
+On Mon, 22 Aug 2022 at 17:21, David Howells <dhowells@redhat.com> wrote:
+>
+> Actually, there's another bug here too: if rxrpc_wait_for_tx_window() drops
+> the call mutex then it needs to reload the pending packet state in
+> rxrpc_send_data() as it may have raced with another sendmsg().
+>
+> David
+>
+After applying the above patch, kernel still panic, but seems not the
+bad unlock balance bug before. yet I am not sure if this is the same bug you
+mentioned. Kernel output as below:
+[   39.115966][ T6508] ====================================
+[   39.116940][ T6508] WARNING: syz/6508 still has locks held!
+[   39.117978][ T6508] 6.0.0-rc1-00066-g3b06a2755758-dirty #186 Not tainted
+[   39.119353][ T6508] ------------------------------------
+[   39.120321][ T6508] 1 lock held by syz/6508:
+[   39.121122][ T6508]  #0: ffff88801f472b20 (&call->user_mutex){....}-{3:3}0
+[   39.123014][ T6508] 
+[   39.123014][ T6508] stack backtrace:
+[   39.123925][ T6508] CPU: 0 PID: 6508 Comm: syz Not tainted 6.0.0-rc1-00066
+[   39.125304][ T6508] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)4
+[   39.125304][ T6508] Call Trace:
+[   39.125304][ T6508]  <TASK>
+[   39.125304][ T6508]  dump_stack_lvl+0x8e/0xdd
+[   39.125304][ T6508]  get_signal+0x1866/0x24d0
+[   39.125304][ T6508]  ? lock_acquire+0x172/0x310
+[   39.125304][ T6508]  ? exit_signals+0x7b0/0x7b0
+[   39.125304][ T6508]  arch_do_signal_or_restart+0x82/0x23f0
+[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
+[   39.125304][ T6508]  ? __fget_light+0x20d/0x270
+[   39.125304][ T6508]  ? get_sigframe_size+0x10/0x10
+[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
+[   39.125304][ T6508]  ? __sys_sendmsg+0x11a/0x1c0
+[   39.125304][ T6508]  ? __sys_sendmsg_sock+0x30/0x30
+[   39.125304][ T6508]  exit_to_user_mode_prepare+0x146/0x1b0
+[   39.125304][ T6508]  syscall_exit_to_user_mode+0x12/0x30
+[   39.125304][ T6508]  do_syscall_64+0x42/0xb0
+[   39.125304][ T6508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+[   39.125304][ T6508] RIP: 0033:0x44fbad
+[   39.125304][ T6508] Code: c3 e8 97 29 00 00 0f 1f 80 00 00 00 00 f3 0f 1e8
+[   39.125304][ T6508] RSP: 002b:00007f4b8ae22d48 EFLAGS: 00000246 ORIG_RAX:e
+[   39.125304][ T6508] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 0000d
+[   39.125304][ T6508] RDX: 0000000000000186 RSI: 0000000020000000 RDI: 00003
+[   39.125304][ T6508] RBP: 00007f4b8ae22d80 R08: 00007f4b8ae23700 R09: 00000
+[   39.125304][ T6508] R10: 00007f4b8ae23700 R11: 0000000000000246 R12: 0000e
+[   39.125304][ T6508] R13: 00007ffe483304af R14: 00007ffe48330550 R15: 00000
+[   39.125304][ T6508]  </TASK>
+====================================
 
-If we take the layering approach, the first instance will get charged for
-all memory that it uses while the second+ instances likely won't get charged
-for a lot of persistent usages. I don't think there is a consensus on
-whether this needs to be solved and I don't have enough context to form a
-strong opinion. memcg folks are a lot better equipped to make this decision.
-
-Assuming this needs to be solved, here's a braindump to be taken with a big
-pinch of salt:
-
-I have a bit of difficult time imagining a perfect solution given that
-whether a given page cache page is persistent or not would be really
-difficult to know (or maybe all page cache is persistent by default while
-anon is not). However, the problem still seems worthwhile to consider for
-big ticket items such as persistent tmpfs mounts and huge bpf maps as they
-can easily make the differences really big.
-
-If we want to solve this problem, here are options that I can think of:
-
-a. Let userspace put the charges where they belong using the current
-   mechanisms. ie. Create persistent entities in the persistent parent
-   cgroup while there's no current instance.
-
-   Pro: It won't require any major kernel or interface changes. There still
-   need to be some tweaking such as allowing tmpfs pages to be always
-   charged to the cgroup which created the instance (maybe as long as it's
-   an ancestor of the faulting cgroup?) but nothing too invasive.
-
-   Con: It may not be flexible enough.
-
-b. Let userspace specify which cgroup to charge for some of constructs like
-   tmpfs and bpf maps. The key problems with this approach are
-
-   1. How to grant/deny what can be charged where. We must ensure that a
-      descendant can't move charges up or across the tree without the
-      ancestors allowing it.
-
-   2. How to specify the cgroup to charge. While specifying the target
-      cgroup directly might seem like an obvious solution, it has a couple
-      rather serious problems. First, if the descendant is inside a cgroup
-      namespace, it might be able to see the target cgroup at all. Second,
-      it's an interface which is likely to cause misunderstandings on how it
-      can be used. It's too broad an interface.
-
-   One solution that I can think of is leveraging the resource domain
-   concept which is currently only used for threaded cgroups. All memory
-   usages of threaded cgroups are charged to their resource domain cgroup
-   which hosts the processes for those threads. The persistent usages have a
-   similar pattern, so maybe the service level cgroup can declare that it's
-   the encompassing resource domain and the instance cgroup can say whether
-   it's gonna charge e.g. the tmpfs instance to its own or the encompassing
-   resource domain.
-
-   This has the benefit that the user only needs to indicate its intention
-   without worrying about how cgroups are composed and what their IDs are.
-   It just indicates whether the given resource is persistent and if the
-   cgroup hierarchy is set up for that, it gets charged that way and if not
-   it can be just charged to itself.
-
-   This is a shower thought but, if we allow nesting such domains (and maybe
-   name them), we can use it for shared resources too so that co-services
-   are put inside a shared slice and shared resources are pushed to the
-   slice level.
-
-This became pretty long. I obviously have a pretty strong bias towards
-solving this within the current basic architecture but other than that most
-of these decisions are best made by memcg folks. We can hopefully build some
-consensus on the issue.
-
-Thanks.
-
--- 
-tejun
+I will make a deeper look and try to patch it.
