@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B40ED59C633
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:28:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4C9C59C61E
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237137AbiHVS13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 14:27:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51236 "EHLO
+        id S237270AbiHVS1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 14:27:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236290AbiHVS0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:26:15 -0400
+        with ESMTP id S237395AbiHVS0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:26:17 -0400
 Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFB3481D9;
-        Mon, 22 Aug 2022 11:26:13 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id EE5D332009DF;
-        Mon, 22 Aug 2022 14:26:11 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BAAD481D0;
+        Mon, 22 Aug 2022 11:26:16 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 0D06132009FD;
+        Mon, 22 Aug 2022 14:26:14 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Mon, 22 Aug 2022 14:26:13 -0400
+  by compute2.internal (MEProxy); Mon, 22 Aug 2022 14:26:16 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
         :cc:content-transfer-encoding:date:date:from:from:in-reply-to
         :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm3; t=1661192771; x=1661279171; bh=LS
-        KB15JNkOM6IStOUGGM5d6X8gu4EdQM8BDl4wVbxpY=; b=nqjfk//FtMa2MoirZv
-        jk5oQjexN2OO9FATNA9UsX8hVUMSUMMaWgfGdQjX6FyEWiS2Tswm9sm37V3B3YBg
-        1k9b3vTM8gIHN7cxb7TqCAL5MwtSweL6PT8IHsoQKln0gW6lKOUwbvf0a+m4LbfZ
-        99AP8UORLD9g2cspJ4qe0j9YTiB4jk0jFeFBt8Wd7uO5bVKDvW5qGr6hBRNPCCQQ
-        uG8nG32fr8LW989VuzIgAyop2zTfi3ULgnj4zUAU7SUVwuX8bpe6mfh4lj1iXnNf
-        E+HSi6/zCchFxthMOEiAosB84w/+j4WgLPSF4jENnSPrLB7WvdunHB9N9atZo8xV
-        ONHQ==
+        :subject:subject:to:to; s=fm3; t=1661192774; x=1661279174; bh=FD
+        LEgZ53CJkDbzaxSWQi0+Z8DuQ2sCXFgzw84z6QC2g=; b=UJYfUVVs/mBxT49m9b
+        n1uePz4uoXsZqBsr0bzGQrMFxhSA5RghnxKRxLpS1rKhio40+2RE9q+IbNufIXPH
+        KcohpLadBTEiv1SIQ7GnQAE11OaKKuIWxZbMAgfz+qwAalVkyOBUulWsPi4Wd/Dj
+        FmqcUir8kNBZ9BCuBU4y3NWbWEkUVht0BspPjA1GlJttQSAE/LW5LtxAVpuX/hIO
+        QWIHL7IiBKCox3K1vtNiWUqP5/UP23ZmLmOL9Rpr+GFjHDrNvQBlfsFF5U+ErP1J
+        lPYFc4ygLE0A75Joesy+wd0hcinLdM8N/q0F/i0U96n5C5aZk0R3c1Hi5OaVY9rX
+        Le0g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
         :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
         :message-id:mime-version:references:reply-to:sender:subject
         :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; t=1661192771; x=1661279171; bh=LSKB15JNkOM6I
-        StOUGGM5d6X8gu4EdQM8BDl4wVbxpY=; b=fxh6f/XgGL11QfGuHmuS/ham4YqUV
-        RwgIv0dG7c6XB7zB4RzvHLQnogbqbv7jSc592N6Z1DCY0M2Et8YSF4OgzSQG4goR
-        4LIQxJd77YM+9t/KG07lXUpYSuKExi0OUR4rU3K1gmuLZlusmNeFeTRlCkcc5gov
-        mPoIcjlWB/xcsU2HJzUIdE3YZV0ThZKSp8AkLXryBiJxbvLa1mvm3zaSwDuRrn+g
-        RHKtHL/iIH9F2yb3mTInlOKMwS3uNYdG/K1Vv/t3at5nwLtvugN0XbSxChh4Icbj
-        HjD2lbssXur6jcNz0FAAL3PYbu1EgsSzi0trqLkt1J/rn0FdfK3xi/3cQ==
-X-ME-Sender: <xms:Q8oDYyyjQafl9Go1EGdeNiMDQDnLXvSbW3U22YYOPLoBd-5MmtIz0w>
-    <xme:Q8oDY-QdEgz_AztRch6z0yezbfPBlFWlZ1kSbWlHPSMg3l_4B8e9QMZG9C4q1LgHD
-    egjq8BXhwJPFK9HZA>
-X-ME-Received: <xmr:Q8oDY0XqIajjseZeC1RSk3nOtbcYILijL3A0Ao7gZsOoVDhwe25hBzpsF_8fQUsu_v22zDSQwYsGDkn--mz3U74mZbLrGnYKbyxU>
+        :x-sasl-enc; s=fm1; t=1661192774; x=1661279174; bh=FDLEgZ53CJkDb
+        zaxSWQi0+Z8DuQ2sCXFgzw84z6QC2g=; b=12dmfYfDGodw4x0gBDzQayW+tZ7X4
+        uwpaJ+jSuniBdfZP1DcareaWWlynO7aEX2TZrQztt40etAP7Rq9SWzsn9exeMM9D
+        SFMsgnKwGiBlWiaNREKqNFc1snFR1f116xoejG6sEuH1sj8P+pIr00Z+6NZpk/f9
+        5TTA3RnoVu7wo5eFj9thTyo9TU0lyH2CVjlEbmAyoXph3bxje2gdmETa4al25P1r
+        nCQlr6cFCG1Y3LEMOn1EVHatxic1gkvfHujoU7KqkVZSoX32IwIqdTsz9besX+li
+        AsSg6UfrWaapQjCxrnuRfFptqqksJSIHyuNmxWEb2beslqVIF7k5FjYIQ==
+X-ME-Sender: <xms:RsoDY3Tch9cMAG3wcJpPQ5_E0BCbzf7A4ARMw7bN7casAWg5qOsZhQ>
+    <xme:RsoDY4wxz--0W4qT-_YGpDirMKsipesTzndJo5aWVuOP7EKd8G-JfMPQoKSRCG5Rj
+    R1b5-JsswB2PrRm1Q>
+X-ME-Received: <xmr:RsoDY804LE6E3lTcLM-QuEs1bVBFctlYe4-Y30JFs5hfp2rkx0H1cJkzaESsO_VBtCD2Zj5Mc3qOBSbJxdRgy0pXe0fKvacUJLdi>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdeijedguddviecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdefhedmnecujfgurhephf
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
     fvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcu
     oegugihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpefgfefggeejhfduie
     ekvdeuteffleeifeeuvdfhheejleejjeekgfffgefhtddtteenucevlhhushhtvghrufhi
     iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:Q8oDY4gpaiEHkigwRgkt7nsaynFl9gsEMxecXLFMB3L3ysntClfrAg>
-    <xmx:Q8oDY0CjJxFXt5pUgRxwXrE5QCq1AKgi6Vj9N2jQO4Jw1AF21fmqew>
-    <xmx:Q8oDY5KecmqCVJFrWvXtyJcvnbuqJpNb-P5s1yRn4_vG-t4wjN3sDQ>
-    <xmx:Q8oDY9J5FcWDPjjZVIpgHNgb_nh3oqibAweL_TBMwu8ZqLCurVKwgA>
+X-ME-Proxy: <xmx:RsoDY3DJu2vL0TeXnr2alvnV5ATvVVYCfKy1vth-XW22z66xpk6Elg>
+    <xmx:RsoDYwgpc6VSQk-anyd46rFdAZ1xh8WVR7pQBFJTrx7FWQvGy7hYgw>
+    <xmx:RsoDY7pELC03hMqbmuLuoMdS8PAsemTkjIT1Ns7f2gkChSF3sKdHlg>
+    <xmx:RsoDY_r5pPNWaQYPl--XQanR2KKk4Nw12gnJ8-W6yiGEdzxxBZaJTw>
 Feedback-ID: i6a694271:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 22 Aug 2022 14:26:10 -0400 (EDT)
+ 22 Aug 2022 14:26:13 -0400 (EDT)
 From:   Daniel Xu <dxu@dxuuu.xyz>
 To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, memxor@gmail.com
@@ -67,9 +67,9 @@ Cc:     Daniel Xu <dxu@dxuuu.xyz>, pablo@netfilter.org, fw@strlen.de,
         toke@kernel.org, martin.lau@linux.dev,
         netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next v4 2/5] bpf: Add stub for btf_struct_access()
-Date:   Mon, 22 Aug 2022 12:25:52 -0600
-Message-Id: <d99c0ed59940c82eb2d249f8559fb6cb83db3fc3.1661192455.git.dxu@dxuuu.xyz>
+Subject: [PATCH bpf-next v4 3/5] bpf: Use 0 instead of NOT_INIT for btf_struct_access() writes
+Date:   Mon, 22 Aug 2022 12:25:53 -0600
+Message-Id: <919843fbb5b3488f2b5f66edbb49d54ef29e3bf6.1661192455.git.dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <cover.1661192455.git.dxu@dxuuu.xyz>
 References: <cover.1661192455.git.dxu@dxuuu.xyz>
@@ -85,34 +85,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add corresponding unimplemented stub for when CONFIG_BPF_SYSCALL=n
+Returning a bpf_reg_type only makes sense in the context of a BPF_READ.
+For writes, prefer to explicitly return 0 for clarity.
+
+Note that is non-functional change as it just so happened that NOT_INIT
+== 0.
 
 Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 ---
- include/linux/bpf.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/ipv4/bpf_tcp_ca.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 39bd36359c1e..fcde14ae6e60 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2157,6 +2157,15 @@ static inline struct bpf_prog *bpf_prog_by_id(u32 id)
- 	return ERR_PTR(-ENOTSUPP);
+diff --git a/net/ipv4/bpf_tcp_ca.c b/net/ipv4/bpf_tcp_ca.c
+index 85a9e500c42d..6da16ae6a962 100644
+--- a/net/ipv4/bpf_tcp_ca.c
++++ b/net/ipv4/bpf_tcp_ca.c
+@@ -124,7 +124,7 @@ static int bpf_tcp_ca_btf_struct_access(struct bpf_verifier_log *log,
+ 		return -EACCES;
+ 	}
+ 
+-	return NOT_INIT;
++	return 0;
  }
  
-+static inline int btf_struct_access(struct bpf_verifier_log *log,
-+				    const struct btf *btf,
-+				    const struct btf_type *t, int off, int size,
-+				    enum bpf_access_type atype,
-+				    u32 *next_btf_id, enum bpf_type_flag *flag)
-+{
-+	return -EACCES;
-+}
-+
- static inline const struct bpf_func_proto *
- bpf_base_func_proto(enum bpf_func_id func_id)
- {
+ BPF_CALL_2(bpf_tcp_send_ack, struct tcp_sock *, tp, u32, rcv_nxt)
 -- 
 2.37.1
 
