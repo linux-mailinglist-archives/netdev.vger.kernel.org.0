@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BFA59B6F5
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 02:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3C8459B6FD
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 02:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbiHVASI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 21 Aug 2022 20:18:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S232035AbiHVASX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 21 Aug 2022 20:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231996AbiHVASF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 20:18:05 -0400
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B1AA201AD
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:18:01 -0700 (PDT)
-Received: by mail-pf1-x449.google.com with SMTP id n26-20020a056a000d5a00b0053644e1c026so1209807pfv.20
-        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:18:01 -0700 (PDT)
+        with ESMTP id S232000AbiHVAST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 21 Aug 2022 20:18:19 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 991CD20199
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:18:10 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-336c3b72da5so156804097b3.6
+        for <netdev@vger.kernel.org>; Sun, 21 Aug 2022 17:18:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:from:to:cc;
-        bh=V/ZZIFSPKFcCAZIO5J88CNRgR4nImf4CDqSEwHgZtc8=;
-        b=VRt8PiD5az0Dl+WRznAYAHoEFU2MambiOUqw9hJIF1ucU60TS0sVFR1bUuaJD8nPng
-         xGG21VhjqfptsMV9A8m6NtDIcNUxnu3moTzE7NDuS0132TTFDbZUQdoq7PUgYhDiEc88
-         VWXGevOtBTC071FhOwLWbdC2RbpbtXjJBP30qVmnMrkSyaRORF9MkIgIOE44YT8fPxhx
-         MXMroQq5cbkgX/PlRdMgvF1WbQYDo+Czb0BC6hLgVyoEUZLM+nIZRg1Iz+BkUSiS19+u
-         NDrsfq1Tm8UcqdVd/B6tTxgxOaUMNvPwSrhSYvXv0b64wiY5pKs+NN5viMa0qiHMezJn
-         gzSQ==
+        bh=DTW77A/Vjl+d5bcQDIprq1tGD6UgniZYOTpaR8iNZIc=;
+        b=Dg9yytO9IkPtQr0hKr1opAsmaHFl6Ti0qmk9dgNkQKa6EeZnhuamJ8wFuDDpvnSucO
+         3jnI66hn0RZluaprAxAC9vZCxkQXXdYA0KwOtMgEey7a9lQkqmoQ767sSys3ES+TUduk
+         8r9futG6QW922rVpAUoBuyvHCBDkXpj6Z6uIr5bt4pi4JjwABrXPfF7E2R9JF1EvrU3W
+         3HTuZx9jrCVbRGBo1EjBv/Hu+VbfEktqbj+TpV4cjusZQtsDY5OAzcQ1W3tgUYcjFPCH
+         ebqBDDU8/54Qiztpi0pJPbzqNXn5hxGVXBNshftViCKjFt6eCv7LnIrPsIrM9eVLCdKl
+         WwwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
          :date:x-gm-message-state:from:to:cc;
-        bh=V/ZZIFSPKFcCAZIO5J88CNRgR4nImf4CDqSEwHgZtc8=;
-        b=L+DuoUCms6vpllYSMD+WFjFNwi910jnzB22eym1IXyD79zgut2uKe7k5LBMfWJ8S4I
-         ttPOPJkOzDdrgYyPiVrOUM7E/q5Rrp1fhCyafCWEiapu3qXwMD4LGRQDpsihRdz7D7qI
-         vZFAgw+ChpmohY4kIwjYkKOiPePrHQJHPqTV2bT6f4Erm99UigeqGzc6uCPPDHdq9H7X
-         5+lcvb6EehvkPrZfqaHM9vnANMH9QTDS4VpQAPTGMdoA9flzqIcziu07FPstWZfvjDYZ
-         k7KXDftaFcAmBkMiaUoqsKeuUvfehXUwRum0JtuqVra4+sJjWjkCVq/P5NTGxOG+oGi3
-         MEfw==
-X-Gm-Message-State: ACgBeo1ud8MvvNO3GSCuU8XFQNoS/FjrKO2OqcZLaciQTwDi9d1fpYxy
-        lsk+BwGhl1WhiIo4HEufLleesCRfY7zezA==
-X-Google-Smtp-Source: AA6agR4ZgdLQRLm8RNOfyL+FjO9Haoqcxi6ZB51K8Zqax6/eLDbW7KkNV8E35m3mv6YMj7ylkoz8NrwpsF9kng==
+        bh=DTW77A/Vjl+d5bcQDIprq1tGD6UgniZYOTpaR8iNZIc=;
+        b=OVRK5SiHAv6ddFucIRhi6mWD5Btrpkqwda5fjtzl0himYIe+a4xieQPS46ERWgGi7B
+         Ht3YpeH6aqK5NCXbLa3CWZbj0cUTtsFEhGuTgIzu9NzqYQT3avfXZJAbnNuH7WCYVa6g
+         3grF5LGYx6TnZsE2HrKcnlqbAD7ON7FkzslQLYEAhoZYNiAUXVcrmhCb5zfBNZ6SQNhm
+         kIj8q4GGu1fScIiMYbiMr9nE6SzbGApIKpUvgCVnCqkq1Tk/Ihhlb8RNwzekSFY07e+Q
+         4m0QSJ7Rfpa/cdrR8FJVdayoBvSJ75Ve3zY/TKybGQv4Jz83nr5ZcImFLIjLdFzIkpxh
+         cT2g==
+X-Gm-Message-State: ACgBeo1AYjWjKcpu84925eHX9oWHAinV2X2NklulGdr+Gy1t1GjGGCKS
+        qp0vOXikjGiQog5UPNhtlfj1FbmHecbm1Q==
+X-Google-Smtp-Source: AA6agR6tW1MO8bdpOOCAdPjlI2KgLdp2empQdKN2rFu+N7JEzRBKSYp9P+zG59MACSGNvPbZ7uCstsPP+839Yw==
 X-Received: from shakeelb.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:28b])
- (user=shakeelb job=sendgmr) by 2002:a17:902:da8e:b0:172:9f0b:3778 with SMTP
- id j14-20020a170902da8e00b001729f0b3778mr17761139plx.166.1661127480895; Sun,
- 21 Aug 2022 17:18:00 -0700 (PDT)
-Date:   Mon, 22 Aug 2022 00:17:36 +0000
+ (user=shakeelb job=sendgmr) by 2002:a25:9f8d:0:b0:686:9a3d:6f85 with SMTP id
+ u13-20020a259f8d000000b006869a3d6f85mr16587811ybq.400.1661127489865; Sun, 21
+ Aug 2022 17:18:09 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 00:17:37 +0000
 In-Reply-To: <20220822001737.4120417-1-shakeelb@google.com>
-Message-Id: <20220822001737.4120417-3-shakeelb@google.com>
+Message-Id: <20220822001737.4120417-4-shakeelb@google.com>
 Mime-Version: 1.0
 References: <20220822001737.4120417-1-shakeelb@google.com>
 X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
-Subject: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
+Subject: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
 From:   Shakeel Butt <shakeelb@google.com>
 To:     Johannes Weiner <hannes@cmpxchg.org>,
         Michal Hocko <mhocko@kernel.org>,
@@ -77,12 +77,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With memcg v2 enabled, memcg->memory.usage is a very hot member for
-the workloads doing memcg charging on multiple CPUs concurrently.
-Particularly the network intensive workloads. In addition, there is a
-false cache sharing between memory.usage and memory.high on the charge
-path. This patch moves the usage into a separate cacheline and move all
-the read most fields into separate cacheline.
+For several years, MEMCG_CHARGE_BATCH was kept at 32 but with bigger
+machines and the network intensive workloads requiring througput in
+Gbps, 32 is too small and makes the memcg charging path a bottleneck.
+For now, increase it to 64 for easy acceptance to 6.0. We will need to
+revisit this in future for ever increasing demand of higher performance.
+
+Please note that the memcg charge path drain the per-cpu memcg charge
+stock, so there should not be any oom behavior change.
 
 To evaluate the impact of this optimization, on a 72 CPUs machine, we
 ran the following workload in a three level of cgroup hierarchy with top
@@ -95,82 +97,35 @@ that.
  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
 
 Results (average throughput of netperf):
-Without (6.0-rc1)	10482.7 Mbps
-With patch		12413.7 Mbps (18.4% improvement)
+Without (6.0-rc1)       10482.7 Mbps
+With patch              17064.7 Mbps (62.7% improvement)
 
-With the patch, the throughput improved by 18.4%.
-
-One side-effect of this patch is the increase in the size of struct
-mem_cgroup. However for the performance improvement, this additional
-size is worth it. In addition there are opportunities to reduce the size
-of struct mem_cgroup like deprecation of kmem and tcpmem page counters
-and better packing.
+With the patch, the throughput improved by 62.7%.
 
 Signed-off-by: Shakeel Butt <shakeelb@google.com>
 Reported-by: kernel test robot <oliver.sang@intel.com>
 ---
- include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+ include/linux/memcontrol.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-index 679591301994..8ce99bde645f 100644
---- a/include/linux/page_counter.h
-+++ b/include/linux/page_counter.h
-@@ -3,15 +3,27 @@
- #define _LINUX_PAGE_COUNTER_H
- 
- #include <linux/atomic.h>
-+#include <linux/cache.h>
- #include <linux/kernel.h>
- #include <asm/page.h>
- 
-+#if defined(CONFIG_SMP)
-+struct pc_padding {
-+	char x[0];
-+} ____cacheline_internodealigned_in_smp;
-+#define PC_PADDING(name)	struct pc_padding name
-+#else
-+#define PC_PADDING(name)
-+#endif
-+
- struct page_counter {
-+	/*
-+	 * Make sure 'usage' does not share cacheline with any other field. The
-+	 * memcg->memory.usage is a hot member of struct mem_cgroup.
-+	 */
-+	PC_PADDING(_pad1_);
- 	atomic_long_t usage;
--	unsigned long min;
--	unsigned long low;
--	unsigned long high;
--	unsigned long max;
-+	PC_PADDING(_pad2_);
- 
- 	/* effective memory.min and memory.min usage tracking */
- 	unsigned long emin;
-@@ -23,16 +35,16 @@ struct page_counter {
- 	atomic_long_t low_usage;
- 	atomic_long_t children_low_usage;
- 
--	/* legacy */
- 	unsigned long watermark;
- 	unsigned long failcnt;
- 
--	/*
--	 * 'parent' is placed here to be far from 'usage' to reduce
--	 * cache false sharing, as 'usage' is written mostly while
--	 * parent is frequently read for cgroup's hierarchical
--	 * counting nature.
--	 */
-+	/* Keep all the read most fields in a separete cacheline. */
-+	PC_PADDING(_pad3_);
-+
-+	unsigned long min;
-+	unsigned long low;
-+	unsigned long high;
-+	unsigned long max;
- 	struct page_counter *parent;
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index 4d31ce55b1c0..70ae91188e16 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -354,10 +354,11 @@ struct mem_cgroup {
  };
+ 
+ /*
+- * size of first charge trial. "32" comes from vmscan.c's magic value.
+- * TODO: maybe necessary to use big numbers in big irons.
++ * size of first charge trial.
++ * TODO: maybe necessary to use big numbers in big irons or dynamic based of the
++ * workload.
+  */
+-#define MEMCG_CHARGE_BATCH 32U
++#define MEMCG_CHARGE_BATCH 64U
+ 
+ extern struct mem_cgroup *root_mem_cgroup;
  
 -- 
 2.37.1.595.g718a3a8f04-goog
