@@ -2,250 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D308859C5CD
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B727E59C5D0
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 20:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236783AbiHVSLG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 14:11:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32878 "EHLO
+        id S236726AbiHVSLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 14:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236710AbiHVSLD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:11:03 -0400
-Received: from 69-171-232-181.mail-mxout.facebook.com (69-171-232-181.mail-mxout.facebook.com [69.171.232.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D23CC46DA3
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:11:01 -0700 (PDT)
-Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
-        id EBF0410CCCA4C; Mon, 22 Aug 2022 11:10:48 -0700 (PDT)
-From:   Joanne Koong <joannelkoong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
-        davem@davemloft.net, pabeni@redhat.com, dccp@vger.kernel.org,
-        Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH RESEND net-next v4 3/3] selftests/net: Add sk_bind_sendto_listen and sk_connect_zero_addr
-Date:   Mon, 22 Aug 2022 11:10:23 -0700
-Message-Id: <20220822181023.3979645-4-joannelkoong@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220822181023.3979645-1-joannelkoong@gmail.com>
-References: <20220822181023.3979645-1-joannelkoong@gmail.com>
+        with ESMTP id S236681AbiHVSLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 14:11:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B511C46D99
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 11:10:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64284B8172B
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 18:10:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D508CC433B5;
+        Mon, 22 Aug 2022 18:10:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661191857;
+        bh=9EglNjCD+My0ZUcQUIkp8KSc5l/diY5K26Dz/wDeR90=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NGbAWMTQwtjQlT8Z8QeDZ7YtQmYEqMSgpqlU9M6xsuCS08sj9ODxrk6HwCHz+34DQ
+         gnRFAs3iPBWnjw0kbT4bexB+ItYvuNJ55gORlyzJDmCdeahndvfOuMIAHylduek/YK
+         7P6GKxtUY46NXrSgE643g+CtvzkxtRTc3byZ0HuOYyahHZS6BDkNNsxqM3L3f2hEiH
+         qeIy5J1+n9+4XGqztJRFDDYtp1j6P0g4pn+TNIsWJumvDBvMOdA4CPXcqwiHLQKNEe
+         VbTE0TtoRLl7puBcIXasK5ZKNSubBi4qPj218GBM0prlm7OY8Pf838yTzmjhHvLHjY
+         2ImOBKNaFlvKQ==
+Date:   Mon, 22 Aug 2022 11:10:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Raed Salem <raeds@nvidia.com>
+Cc:     Lior Nahmanson <liorna@nvidia.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH 1/3] net/macsec: Add MACsec skb_metadata_dst Tx Data
+ path support
+Message-ID: <20220822111056.188db823@kernel.org>
+In-Reply-To: <DM4PR12MB5357C54831EB8F1C9C982D90C96E9@DM4PR12MB5357.namprd12.prod.outlook.com>
+References: <20220818132411.578-1-liorna@nvidia.com>
+        <20220818132411.578-2-liorna@nvidia.com>
+        <20220818210856.30353616@kernel.org>
+        <DM4PR12MB5357C54831EB8F1C9C982D90C96E9@DM4PR12MB5357.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_SOFTFAIL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds 2 new tests: sk_bind_sendto_listen and
-sk_connect_zero_addr.
+On Sun, 21 Aug 2022 11:12:00 +0000 Raed Salem wrote:
+> >On a quick (sorry we're behind on patches this week) look I don't see the
+> >driver integration - is it coming later? Or there's already somehow a driver in
+> >the tree using this infra? Normally the infra should be in the same patchset as
+> >the in-tree user.  
+> Driver integration series will be submitted later on
 
-The sk_bind_sendto_listen test exercises the path where a socket's
-rcv saddr changes after it has been added to the binding tables,
-and then a listen() on the socket is invoked. The listen() should
-succeed.
-
-The sk_bind_sendto_listen test is copied over from one of syzbot's
-tests: https://syzkaller.appspot.com/x/repro.c?x=3D1673a38df00000
-
-The sk_connect_zero_addr test exercises the path where the socket was
-never previously added to the binding tables and it gets assigned a
-saddr upon a connect() to address 0.
-
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
----
- tools/testing/selftests/net/.gitignore        |  2 +
- tools/testing/selftests/net/Makefile          |  2 +
- .../selftests/net/sk_bind_sendto_listen.c     | 80 +++++++++++++++++++
- .../selftests/net/sk_connect_zero_addr.c      | 62 ++++++++++++++
- 4 files changed, 146 insertions(+)
- create mode 100644 tools/testing/selftests/net/sk_bind_sendto_listen.c
- create mode 100644 tools/testing/selftests/net/sk_connect_zero_addr.c
-
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selft=
-ests/net/.gitignore
-index 89e2d4aa812a..bec5cf96984c 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -41,3 +41,5 @@ cmsg_sender
- unix_connect
- tap
- bind_bhash
-+sk_bind_sendto_listen
-+sk_connect_zero_addr
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
-ts/net/Makefile
-index b17ec78f3951..e6a951ba5ba0 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -66,6 +66,8 @@ TEST_GEN_FILES +=3D stress_reuseport_listen
- TEST_PROGS +=3D test_vxlan_vnifiltering.sh
- TEST_GEN_FILES +=3D io_uring_zerocopy_tx
- TEST_GEN_FILES +=3D bind_bhash
-+TEST_GEN_PROGS +=3D sk_bind_sendto_listen
-+TEST_GEN_PROGS +=3D sk_connect_zero_addr
-=20
- TEST_FILES :=3D settings
-=20
-diff --git a/tools/testing/selftests/net/sk_bind_sendto_listen.c b/tools/=
-testing/selftests/net/sk_bind_sendto_listen.c
-new file mode 100644
-index 000000000000..b420d830f72c
---- /dev/null
-+++ b/tools/testing/selftests/net/sk_bind_sendto_listen.c
-@@ -0,0 +1,80 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <arpa/inet.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <unistd.h>
-+
-+int main(void)
-+{
-+	int fd1, fd2, one =3D 1;
-+	struct sockaddr_in6 bind_addr =3D {
-+		.sin6_family =3D AF_INET6,
-+		.sin6_port =3D htons(20000),
-+		.sin6_flowinfo =3D htonl(0),
-+		.sin6_addr =3D {},
-+		.sin6_scope_id =3D 0,
-+	};
-+
-+	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
-+
-+	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd1 < 0) {
-+		error(1, errno, "socket fd1");
-+		return -1;
-+	}
-+
-+	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
-+		goto out_err1;
-+	}
-+
-+	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd1");
-+		goto out_err1;
-+	}
-+
-+	if (sendto(fd1, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr))) {
-+		error(1, errno, "sendto fd1");
-+		goto out_err1;
-+	}
-+
-+	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd2 < 0) {
-+		error(1, errno, "socket fd2");
-+		goto out_err1;
-+	}
-+
-+	if (setsockopt(fd2, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd2");
-+		goto out_err2;
-+	}
-+
-+	if (bind(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd2");
-+		goto out_err2;
-+	}
-+
-+	if (sendto(fd2, NULL, 0, MSG_FASTOPEN, (struct sockaddr *)&bind_addr,
-+		   sizeof(bind_addr)) !=3D -1) {
-+		error(1, errno, "sendto fd2");
-+		goto out_err2;
-+	}
-+
-+	if (listen(fd2, 0)) {
-+		error(1, errno, "listen");
-+		goto out_err2;
-+	}
-+
-+	close(fd2);
-+	close(fd1);
-+	return 0;
-+
-+out_err2:
-+	close(fd2);
-+
-+out_err1:
-+	close(fd1);
-+	return -1;
-+}
-diff --git a/tools/testing/selftests/net/sk_connect_zero_addr.c b/tools/t=
-esting/selftests/net/sk_connect_zero_addr.c
-new file mode 100644
-index 000000000000..4be418aefd9f
---- /dev/null
-+++ b/tools/testing/selftests/net/sk_connect_zero_addr.c
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <arpa/inet.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <unistd.h>
-+
-+int main(void)
-+{
-+	int fd1, fd2, one =3D 1;
-+	struct sockaddr_in6 bind_addr =3D {
-+		.sin6_family =3D AF_INET6,
-+		.sin6_port =3D htons(20000),
-+		.sin6_flowinfo =3D htonl(0),
-+		.sin6_addr =3D {},
-+		.sin6_scope_id =3D 0,
-+	};
-+
-+	inet_pton(AF_INET6, "::", &bind_addr.sin6_addr);
-+
-+	fd1 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd1 < 0) {
-+		error(1, errno, "socket fd1");
-+		return -1;
-+	}
-+
-+	if (setsockopt(fd1, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one))) {
-+		error(1, errno, "setsockopt(SO_REUSEADDR) fd1");
-+		goto out_err1;
-+	}
-+
-+	if (bind(fd1, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd1");
-+		goto out_err1;
-+	}
-+
-+	if (listen(fd1, 0)) {
-+		error(1, errno, "listen");
-+		goto out_err1;
-+	}
-+
-+	fd2 =3D socket(AF_INET6, SOCK_STREAM, IPPROTO_IP);
-+	if (fd2 < 0) {
-+		error(1, errno, "socket fd2");
-+		goto out_err1;
-+	}
-+
-+	if (connect(fd2, (struct sockaddr *)&bind_addr, sizeof(bind_addr))) {
-+		error(1, errno, "bind fd2");
-+		goto out_err2;
-+	}
-+
-+	close(fd2);
-+	close(fd1);
-+	return 0;
-+
-+out_err2:
-+	close(fd2);
-+out_err1:
-+	close(fd1);
-+	return -1;
-+}
---=20
-2.30.2
-
+This is a requirement, perhaps it'd be good for you to connect with
+netdev folks @nvidia to talk thru your plan? Saeed, Gal, Tariq etc.
