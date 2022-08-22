@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDF159BE69
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D57B259BE76
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:29:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230225AbiHVL0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 07:26:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52380 "EHLO
+        id S234247AbiHVL3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 07:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229637AbiHVL0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:26:32 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A9227CE7;
-        Mon, 22 Aug 2022 04:26:31 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id f17so3864199pfk.11;
-        Mon, 22 Aug 2022 04:26:30 -0700 (PDT)
+        with ESMTP id S234170AbiHVL33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:29:29 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A99432EFD;
+        Mon, 22 Aug 2022 04:29:28 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so10916057pjf.2;
+        Mon, 22 Aug 2022 04:29:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-disposition:mime-version:message-id:cc:to:from:date:sender
-         :from:to:cc;
-        bh=xYnThmFHoGKU/sNt4SS1hXDq6GYqnmSSTt1CpRvIL48=;
-        b=nWxBmLtDylTawPLEuM/2MzvIWaoVY8d8VN5rzm3+Q0FGFiVgZNLmM+p3vaejpbL1KA
-         NPgmYtrMfKM48JaFMB6Ke3Qg2L0TexbZGmCgTtVVq8dM6QKRNqxkc7mzADsEoMxJeaJw
-         5oxebUX63OgqwuFYXqFBMZHpbhxh+Zxu9bT4gZNwd5p1Qjdh3viL6jy7OdXxRsx3DLe0
-         5h71ej+cLYiPoleAvF8TEH5G0XmZuyaHCnDHRgeDuUHTOPQXwjwMjEmF969VGN+Kk9NA
-         EZDrfl+54wVczIiVkkLCf/pCm22OFwD0kvLJWOWHJHwUtuA02L3cUMAuODmLr2rlicp3
-         PVkA==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=OvbrjWH0ZIokBhPMUv+n85WJlYuSvCgvMb6EiRBkQkk=;
+        b=aE+aeUMWK6ZS53keSjCPtcn0SIjQcjrmfsuB2oEtCB9l2eh4sOcUyLeAJlRCKpjxvb
+         3PZIJvtvfmxXK9HLeZKC6LlbMduzhJ1VVYDgooECOmPln0+fKQLcWhFPipYfCF4GAJN5
+         ArQvepWkn89m8vqmL9UJd/ds0TthMSLn/b8twxg35rrqtOWXx4aUaRM+4IrK2ToTG3Q7
+         bjOVp4d4VPynQc+G0ox1s3b86CjnNXgCBQyNSZrIPXmOYXk2oApd87lBhW1MlXflZKlI
+         bJ/7Eoq6qMYEnfjdKTf0JkSHhOOOvURqO1NhY/VOxqR/W9z8K4zR/HE1iu0eSulZhgM5
+         OMGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-disposition:mime-version:message-id:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=xYnThmFHoGKU/sNt4SS1hXDq6GYqnmSSTt1CpRvIL48=;
-        b=oQdIhnYDhp7UQqvSpj8IWYVsoqeL/M/fBPC1aUvWsqUMqVXbcDyGv9V1iDn2CweQnD
-         c0gjvSNaPOTc9kovY0yO5EKkqOeju+JO6HENmN49p1hR9nTJdcBBCLehrtRXEuOHW4rg
-         r5DvlQ+DqDALniC9yzZdjHUFpb3ox13vwoEwtQjEX/IL67bYftVEHKIgVIJjWArgpW8P
-         Gi3MMKw6H0YOYWhj3Bx+6KsQyZu8/MvNISkDrkpyGgxf+4KBbVuLwwE/mgrm4RfB4PU+
-         A9Aj+DlU/V/FlRvQiuJQtqd8Yqauw8Ts4Vu2ybvRdpVHLxxCdAOjpOGQTWxFjsGScyYb
-         Eb1g==
-X-Gm-Message-State: ACgBeo1/1oNrRCmyX56YY49QxCa7O9+udQQrqwy/AyQca5EjUc/wsHOU
-        odZBEi+Wv9+uQ3PPzB9pb7lt9C8diaE=
-X-Google-Smtp-Source: AA6agR5ntUFOMw3NycEWdfz8YmaV4pQ2lfDuTFMz2/TqP/1ze9EYk+TwWhkZGVOpWL7qE/syg/tloA==
-X-Received: by 2002:a63:eb49:0:b0:421:8c9b:4ab1 with SMTP id b9-20020a63eb49000000b004218c9b4ab1mr16740198pgk.339.1661167590122;
-        Mon, 22 Aug 2022 04:26:30 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=OvbrjWH0ZIokBhPMUv+n85WJlYuSvCgvMb6EiRBkQkk=;
+        b=XTGE6aTgCqCm8Q9vjhjc/9dayqXnIkvdD+nbdHg3SbDXYBP/Har4PKF+6vyvRfE/x9
+         5tCpRhHCzSepyELBnb7MqXaj6TJqL0VB/J2dTk2Uh3gUWHlUPD7ZRwNz32IpWRr4cjF3
+         p31aYydXlq6zqYwnE6+wC7ctpwIq1ea0l4y4DZKJhdcGb65ZR/M4tsWEXKYQTyDjKJzI
+         MJ094NWU50rFW2hd+Nw2hVe/F6TZQKzmnv2aK5fkdV4MpeprBWQnfZvuBoyQwFx9lIpB
+         laQ1NE1iFsy9Z6iqVuqzaJ/Z8OpZf39GWccMkYo+UQ2B5eR7zQ1jP23zeaXpzggoBEPg
+         rJgg==
+X-Gm-Message-State: ACgBeo2RagDXL9fSkdeOzgkmuXZj0LItPMFN/xw6bxPERb8spX2C0hfW
+        g1+yKTOKF0W8DD0nYBtazLU=
+X-Google-Smtp-Source: AA6agR5cOJEwIZjpViZ1mkB4Qq0gpVryKYuBn8GXa1aHP7S1MkfAa4ez3plmHcSQrh1pIoiou9H2Iw==
+X-Received: by 2002:a17:903:11c7:b0:170:cde7:d24a with SMTP id q7-20020a17090311c700b00170cde7d24amr19883486plh.91.1661167767455;
+        Mon, 22 Aug 2022 04:29:27 -0700 (PDT)
 Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
-        by smtp.gmail.com with ESMTPSA id f8-20020a170902ce8800b00172c298ba42sm226896plg.28.2022.08.22.04.26.29
+        by smtp.gmail.com with ESMTPSA id ay24-20020a17090b031800b001ef8ab65052sm4727620pjb.11.2022.08.22.04.29.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 04:26:29 -0700 (PDT)
+        Mon, 22 Aug 2022 04:29:27 -0700 (PDT)
 Sender: Tejun Heo <htejun@gmail.com>
-Date:   Mon, 22 Aug 2022 01:26:28 -1000
+Date:   Mon, 22 Aug 2022 01:29:25 -1000
 From:   Tejun Heo <tj@kernel.org>
 To:     Yafang Shao <laoar.shao@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -69,27 +69,33 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Cgroups <cgroups@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Linux MM <linux-mm@kvack.org>,
-        Mina Almasry <almasrymina@google.com>
-Message-ID: <YwNn5FvAYMHKY9jH@slm.duckdns.org>
+        Yosry Ahmed <yosryahmed@google.com>,
+        Dan Schatzberg <schatzberg.dan@gmail.com>,
+        Lennart Poettering <lennart@poettering.net>
+Subject: [RFD RESEND] cgroup: Persistent memory usage tracking
+Message-ID: <YwNold0GMOappUxc@slm.duckdns.org>
+References: <20220818143118.17733-1-laoar.shao@gmail.com>
+ <Yv67MRQLPreR9GU5@slm.duckdns.org>
+ <Yv6+HlEzpNy8y5kT@slm.duckdns.org>
+ <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
+ <Yv/DK+AGlMeBGkF1@slm.duckdns.org>
+ <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Spam-Status: No, score=0.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+In-Reply-To: <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,MISSING_SUBJECT,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-, Yosry Ahmed <yosryahmed@google.com>, Dan Schatzberg <schatzberg.dan@gmail.com>, Lennart Poettering <lennart@poettering.net>
-Bcc: htejun@gmail.com
-Subject: [RFD] cgroup: Persistent memory usage tracking
-Reply-To: 
-In-Reply-To: <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
+(Sorry, this is a resend. I messed up the header in the first posting.)
 
 Hello,
 
