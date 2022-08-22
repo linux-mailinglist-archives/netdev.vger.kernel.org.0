@@ -2,67 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3E0F59BD89
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 12:23:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A28F59BDA2
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 12:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234585AbiHVKXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 06:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
+        id S233757AbiHVKdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 06:33:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233772AbiHVKXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 06:23:16 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E84762EE;
-        Mon, 22 Aug 2022 03:23:13 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id A263533B1E;
-        Mon, 22 Aug 2022 10:23:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661163792; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j6DA5JV/xBctQH5nuRHZUWkpbX6v+MFm5keA2ZXaxSA=;
-        b=QQrP649zCsQCKo3EnL+Xa2ZecsXEXDqz5yumYBnvABc0sm6JVGU7u8tCxVfmiea46WMGP5
-        epxhcBw4e9+LlRIAB6Slbt6tTUIjW4n5bngJCEm7XEhgT/zJKNOdVhF8yH3MDTsL0NO4GQ
-        5S6PhHH5h+ElUvGVbbSSmMY9xxvfMZs=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 802681332D;
-        Mon, 22 Aug 2022 10:23:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id VrwXHBBZA2O5DAAAMHmgww
-        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 10:23:12 +0000
-Date:   Mon, 22 Aug 2022 12:23:11 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        cgroups@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter
- fields
-Message-ID: <YwNZD4YlRkvQCWFi@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-3-shakeelb@google.com>
+        with ESMTP id S233486AbiHVKdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 06:33:51 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 58147B4A7;
+        Mon, 22 Aug 2022 03:33:42 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.48:40060.967873379
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.8.199 (unknown [172.18.0.48])
+        by chinatelecom.cn (HERMES) with SMTP id C78612800A3;
+        Mon, 22 Aug 2022 18:33:31 +0800 (CST)
+X-189-SAVE-TO-SEND: +sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.48])
+        by app0024 with ESMTP id d3193f7cfc9d430590909a27ad267485 for j.vosburgh@gmail.com;
+        Mon, 22 Aug 2022 18:33:37 CST
+X-Transaction-ID: d3193f7cfc9d430590909a27ad267485
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.48
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
+To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, ast@kernel.org, daniel@iogearbox.net,
+        hawk@kernel.org, john.fastabend@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, huyd12@chinatelecom.cn,
+        sunshouxin@chinatelecom.cn
+Subject: [PATCH] bonding: Remove unnecessary check
+Date:   Mon, 22 Aug 2022 03:31:29 -0700
+Message-Id: <20220822103130.3466-1-sunshouxin@chinatelecom.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220822001737.4120417-3-shakeelb@google.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,79 +52,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 22-08-22 00:17:36, Shakeel Butt wrote:
-> With memcg v2 enabled, memcg->memory.usage is a very hot member for
-> the workloads doing memcg charging on multiple CPUs concurrently.
-> Particularly the network intensive workloads. In addition, there is a
-> false cache sharing between memory.usage and memory.high on the charge
-> path. This patch moves the usage into a separate cacheline and move all
-> the read most fields into separate cacheline.
-> 
-> To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> ran the following workload in a three level of cgroup hierarchy with top
-> level having min and low setup appropriately. More specifically
-> memory.min equal to size of netperf binary and memory.low double of
-> that.
+This check is not necessary since the commit d5410ac7b0ba
+("net:bonding:support balance-alb interface with vlan to bridge").
 
-Again the workload description is not particularly useful. I guess the
-only important aspect is the netserver part below and the number of CPUs
-because min and low setup doesn't have much to do with this, right? At
-least that is my reading of the memory.high mentioned above.
+Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+---
+ drivers/net/bonding/bond_main.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
->  $ netserver -6
->  # 36 instances of netperf with following params
->  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> 
-> Results (average throughput of netperf):
-> Without (6.0-rc1)	10482.7 Mbps
-> With patch		12413.7 Mbps (18.4% improvement)
-> 
-> With the patch, the throughput improved by 18.4%.
-> 
-> One side-effect of this patch is the increase in the size of struct
-> mem_cgroup. However for the performance improvement, this additional
-> size is worth it. In addition there are opportunities to reduce the size
-> of struct mem_cgroup like deprecation of kmem and tcpmem page counters
-> and better packing.
-> 
-> Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> Reported-by: kernel test robot <oliver.sang@intel.com>
-> ---
->  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
->  1 file changed, 23 insertions(+), 11 deletions(-)
-> 
-> diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-> index 679591301994..8ce99bde645f 100644
-> --- a/include/linux/page_counter.h
-> +++ b/include/linux/page_counter.h
-> @@ -3,15 +3,27 @@
->  #define _LINUX_PAGE_COUNTER_H
->  
->  #include <linux/atomic.h>
-> +#include <linux/cache.h>
->  #include <linux/kernel.h>
->  #include <asm/page.h>
->  
-> +#if defined(CONFIG_SMP)
-> +struct pc_padding {
-> +	char x[0];
-> +} ____cacheline_internodealigned_in_smp;
-> +#define PC_PADDING(name)	struct pc_padding name
-> +#else
-> +#define PC_PADDING(name)
-> +#endif
-> +
->  struct page_counter {
-> +	/*
-> +	 * Make sure 'usage' does not share cacheline with any other field. The
-> +	 * memcg->memory.usage is a hot member of struct mem_cgroup.
-> +	 */
-> +	PC_PADDING(_pad1_);
-
-Why don't you simply require alignment for the structure?
-
-Other than that, looks good to me and it makes sense.
-
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 50e60843020c..6b0f0ce9b9a1 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1578,19 +1578,6 @@ static rx_handler_result_t bond_handle_frame(struct sk_buff **pskb)
+ 
+ 	skb->dev = bond->dev;
+ 
+-	if (BOND_MODE(bond) == BOND_MODE_ALB &&
+-	    netif_is_bridge_port(bond->dev) &&
+-	    skb->pkt_type == PACKET_HOST) {
+-
+-		if (unlikely(skb_cow_head(skb,
+-					  skb->data - skb_mac_header(skb)))) {
+-			kfree_skb(skb);
+-			return RX_HANDLER_CONSUMED;
+-		}
+-		bond_hw_addr_copy(eth_hdr(skb)->h_dest, bond->dev->dev_addr,
+-				  bond->dev->addr_len);
+-	}
+-
+ 	return ret;
+ }
+ 
 -- 
-Michal Hocko
-SUSE Labs
+2.27.0
+
