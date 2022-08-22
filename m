@@ -2,45 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1122D59C977
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CDF859C96F
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 22:00:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237780AbiHVT7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 15:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S231587AbiHVT7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 15:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238081AbiHVT7g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 15:59:36 -0400
+        with ESMTP id S238252AbiHVT7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 15:59:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2961F4F670
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:59:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A7264D4E0
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 12:59:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2C83B81257
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 19:59:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86CF9C433C1;
-        Mon, 22 Aug 2022 19:59:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B690FB818BD
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 19:59:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68EFBC43470;
+        Mon, 22 Aug 2022 19:59:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661198368;
-        bh=z3ntUsGV0/xamzSypUsn8NrMNzvYh05cGwM4cNeMkSI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=isBsbcIcLi+nyuQhAHQAQfIr+zFgFM+88xdUEro3HKshsWf+0NJa4fdAklbxuAx6b
-         bbkhIBRPzW4UuhRLAssS2AKzUejdGFMnabyRbIJZn79QYc9ECComCrC5UjX4uhlhWc
-         96WWG3Q9Iv/xA3R4Tp/n999ejOCXVUFvyV9Ga8gBjdH3KUYxIuV92q7xBSmGvYFsUh
-         R3abK53qFKkcL09+4MDuYj+KMDj/sLmNN7/e+d8OGalM1JWVOsjxvw4igCWn016JwN
-         n+y+SYyTK5uLGZALKwO2+eJeIGY36l/mIlQv3kkLYHYYD7kqCtnYtPRZfRS9qT4Zxk
-         PODG8mODmUpJQ==
+        s=k20201202; t=1661198369;
+        bh=KvQFETxeTC4D1AnRiYRykumiyZT5k7XVAd6QqjXSoUw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ncOS3VKPJG4CmeMJ0jsIMeoJoX0E+3I8Zoc/SQn8L3YdpRPUovosHyIOPLGELxmM/
+         KxpPkGr8DUGYiey7F5E6/f3a+QURkFyxqk3iftR4Y6DdLrJ31Y9sbpEjPvY7VnmONh
+         C8Zzh5AtQ2s/BAlaV/zkvJ6RzhDfeTA8l8rwjz1/XkScOgk2AscDf93bSLpLklgdbT
+         +DDfajMKeni0AQH1Y+FCD4ZuNl4SSY4LmBwd83t9WYNCuWnP6rlr8wwRa7ZeHDWB8P
+         Ng4/j9Jprlnigp5ZnTpruB8J2rljFDvKq+/M3YC+ojTr1sy3YkUKUZuf0E88C39LkR
+         shux98wa7nSqQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-Subject: [pull request][net 00/13] mlx5 fixes 2022-08-22
-Date:   Mon, 22 Aug 2022 12:59:04 -0700
-Message-Id: <20220822195917.216025-1-saeed@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
+        Vlad Buslov <vladbu@nvidia.com>, Roi Dayan <roid@nvidia.com>
+Subject: [net 01/13] net/mlx5e: Properly disable vlan strip on non-UL reps
+Date:   Mon, 22 Aug 2022 12:59:05 -0700
+Message-Id: <20220822195917.216025-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220822195917.216025-1-saeed@kernel.org>
+References: <20220822195917.216025-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -53,69 +56,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-This series provides bug fixes to mlx5 driver.
-Please pull and let me know if there is any problem.
+When querying mlx5 non-uplink representors capabilities with ethtool
+rx-vlan-offload is marked as "off [fixed]". However, it is actually always
+enabled because mlx5e_params->vlan_strip_disable is 0 by default when
+initializing struct mlx5e_params instance. Fix the issue by explicitly
+setting the vlan_strip_disable to 'true' for non-uplink representors.
 
-Thanks,
-Saeed.
+Fixes: cb67b832921c ("net/mlx5e: Introduce SRIOV VF representors")
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index 0c66774a1720..759f7d3c2cfd 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -662,6 +662,8 @@ static void mlx5e_build_rep_params(struct net_device *netdev)
+ 
+ 	params->mqprio.num_tc       = 1;
+ 	params->tunneled_offload_en = false;
++	if (rep->vport != MLX5_VPORT_UPLINK)
++		params->vlan_strip_disable = true;
+ 
+ 	mlx5_query_min_inline(mdev, &params->tx_min_inline_mode);
+ }
+-- 
+2.37.1
 
-The following changes since commit f1e941dbf80a9b8bab0bffbc4cbe41cc7f4c6fb6:
-
-  nfc: pn533: Fix use-after-free bugs caused by pn532_cmd_timeout (2022-08-22 14:51:30 +0100)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-08-22
-
-for you to fetch changes up to 35419025cb1ee40f8b4c10ab7dbe567ef70b8da4:
-
-  net/mlx5: Unlock on error in mlx5_sriov_enable() (2022-08-22 12:57:10 -0700)
-
-----------------------------------------------------------------
-mlx5-fixes-2022-08-22
-
-----------------------------------------------------------------
-Aya Levin (1):
-      net/mlx5e: Fix wrong application of the LRO state
-
-Dan Carpenter (4):
-      net/mlx5: unlock on error path in esw_vfs_changed_event_handler()
-      net/mlx5e: kTLS, Use _safe() iterator in mlx5e_tls_priv_tx_list_cleanup()
-      net/mlx5e: Fix use after free in mlx5e_fs_init()
-      net/mlx5: Unlock on error in mlx5_sriov_enable()
-
-Eli Cohen (2):
-      net/mlx5: LAG, fix logic over MLX5_LAG_FLAG_NDEVS_READY
-      net/mlx5: Eswitch, Fix forwarding decision to uplink
-
-Maor Dickman (1):
-      net/mlx5e: Fix wrong tc flag used when set hw-tc-offload off
-
-Moshe Shemesh (1):
-      net/mlx5: Avoid false positive lockdep warning by adding lock_class_key
-
-Roi Dayan (1):
-      net/mlx5e: TC, Add missing policer validation
-
-Roy Novich (1):
-      net/mlx5: Fix cmd error logging for manage pages cmd
-
-Vlad Buslov (2):
-      net/mlx5e: Properly disable vlan strip on non-UL reps
-      net/mlx5: Disable irq when locking lag_lock
-
- .../ethernet/mellanox/mlx5/core/en/tc/act/police.c |  4 ++
- .../ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c |  4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |  5 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  | 12 ++---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  2 +
- .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  7 ++-
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  | 57 +++++++++++++---------
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  4 ++
- .../net/ethernet/mellanox/mlx5/core/pagealloc.c    |  9 ++--
- drivers/net/ethernet/mellanox/mlx5/core/sriov.c    |  2 +-
- include/linux/mlx5/driver.h                        |  1 +
- 11 files changed, 65 insertions(+), 42 deletions(-)
