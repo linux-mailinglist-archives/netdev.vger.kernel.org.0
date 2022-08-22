@@ -2,73 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F128059BB01
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 10:08:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE35059BB0B
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 10:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233853AbiHVIHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 04:07:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33168 "EHLO
+        id S233787AbiHVIHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 04:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233774AbiHVIHZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 04:07:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B094E13EA1
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 01:06:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        with ESMTP id S233629AbiHVIHQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 04:07:16 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A572B1B4
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 01:06:46 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 6E6C020504;
+        Mon, 22 Aug 2022 10:06:44 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id CP7EN5Cd7ott; Mon, 22 Aug 2022 10:06:43 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CADA60C71
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:06:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388B3C433C1;
-        Mon, 22 Aug 2022 08:06:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661155614;
-        bh=co9c2wzgKFI7Q56Msro0lNuwwrRocJQeAH6GvRnkKhs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GVtC2juMkWOZWhmVNLuGmo6WVKleejg2BLpBA8lHKX3ahiWosHYC7gzLmmNMrCCnl
-         mnDLEp5/lOHix9XR9WryFjdRGsM0hWFFfjZx4/n00e0nI1UeVOY+RhMANWKr6x/GZO
-         rI0VFolljgaSQCQ+7b9B2wvaBDyyd65AdSyw763rG+0SE5m+8jgHshlioSXlrNMF2K
-         7z0HNtqT00crRRVehLe6/UAf7qidryXj5qVp4SfoGwz6NaEYHCWg6MJFVCGM8b8Y1b
-         4NfwcFjjRZiv/Xd3tusf8acY3YM8gdz6r1cj3pooMh7maXCbW0RtpS+pxsgm40zlCF
-         W9IPMhrThOjNg==
-Date:   Mon, 22 Aug 2022 10:06:41 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ptikhomirov@virtuozzo.com,
-        alexander.mikhalitsyn@virtuozzo.com, avagin@google.com,
-        mark.d.gray@redhat.com, i.maximets@ovn.org, aconole@redhat.com
-Subject: Re: [PATCH net-next v2 1/3] openvswitch: allow specifying ifindex of
- new interfaces
-Message-ID: <20220822080641.k4c2sxxhd57rbkd4@wittgenstein>
-References: <20220819153044.423233-1-andrey.zhadchenko@virtuozzo.com>
- <20220819153044.423233-2-andrey.zhadchenko@virtuozzo.com>
+        by a.mx.secunet.com (Postfix) with ESMTPS id DE072204D9;
+        Mon, 22 Aug 2022 10:06:43 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id CC67B80004A;
+        Mon, 22 Aug 2022 10:06:43 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 22 Aug 2022 10:06:43 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 22 Aug
+ 2022 10:06:43 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 0B0DC3182A10; Mon, 22 Aug 2022 10:06:43 +0200 (CEST)
+Date:   Mon, 22 Aug 2022 10:06:42 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: Re: [PATCH xfrm-next v2 5/6] xfrm: add RX datapath protection for
+ IPsec full offload mode
+Message-ID: <20220822080642.GG2602992@gauss3.secunet.de>
+References: <cover.1660639789.git.leonro@nvidia.com>
+ <8264ad13665f510b081764131b1f23ade32c7578.1660639789.git.leonro@nvidia.com>
+ <20220818102708.GF566407@gauss3.secunet.de>
+ <Yv5AbrT+xHc/xtNY@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20220819153044.423233-2-andrey.zhadchenko@virtuozzo.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <Yv5AbrT+xHc/xtNY@unreal>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 19, 2022 at 06:30:42PM +0300, Andrey Zhadchenko wrote:
-> CRIU is preserving ifindexes of net devices after restoration. However,
-> current Open vSwitch API does not allow to target ifindex, so we cannot
-> correctly restore OVS configuration.
+On Thu, Aug 18, 2022 at 04:36:46PM +0300, Leon Romanovsky wrote:
+> On Thu, Aug 18, 2022 at 12:27:08PM +0200, Steffen Klassert wrote:
+> > On Tue, Aug 16, 2022 at 11:59:26AM +0300, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > > 
+> > > Traffic received by device with enabled IPsec full offload should be
+> > > forwarded to the stack only after decryption, packet headers and
+> > > trailers removed.
+> > > 
+> > > Such packets are expected to be seen as normal (non-XFRM) ones, while
+> > > not-supported packets should be dropped by the HW.
+> > > 
+> > > Reviewed-by: Raed Salem <raeds@nvidia.com>
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > > @@ -1125,6 +1148,15 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+> > >  {
+> > >  	struct net *net = dev_net(skb->dev);
+> > >  	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
+> > > +	struct xfrm_offload *xo = xfrm_offload(skb);
+> > > +	struct xfrm_state *x;
+> > > +
+> > > +	if (xo) {
+> > > +		x = xfrm_input_state(skb);
+> > > +		if (x->xso.type == XFRM_DEV_OFFLOAD_FULL)
+> > > +			return (xo->flags & CRYPTO_DONE) &&
+> > > +			       (xo->status & CRYPTO_SUCCESS);
+> > > +	}
+> > >  
+> > >  	if (sk && sk->sk_policy[XFRM_POLICY_IN])
+> > >  		return __xfrm_policy_check(sk, ndir, skb, family);
+> > 
+> > What happens here if there is a socket policy configured?
 > 
-> Use ovs_header->dp_ifindex during OVS_DP_CMD_NEW as desired ifindex.
-> Use OVS_VPORT_ATTR_IFINDEX during OVS_VPORT_CMD_NEW to specify new netdev
-> ifindex.
-> 
-> Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-> ---
+> No change, we don't support offload of socket policies.
 
-Looks good to me,
-Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+But the user can confugure it, so it should be enforced
+regardless if we had an offload before.
