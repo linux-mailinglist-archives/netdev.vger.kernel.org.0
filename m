@@ -2,108 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 097F459BFCD
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 14:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 493EC59BFDD
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 14:56:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234697AbiHVMyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 08:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59804 "EHLO
+        id S234477AbiHVM4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 08:56:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234770AbiHVMxy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 08:53:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FED26D2
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 05:53:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661172830;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=gcf1IpYpYYzfy/anHM3Sv882PaXLPIFpTjVixxvf9n8=;
-        b=GZWJYvyOvOfrEBbfUmmMiA5ClAxooFe+YphPvbolIUoZBjA2idKwB1oVMzlcWAAnIEWe85
-        6rP8e6Mqm8xOwhQaVcuepl976Z8+R3QbkU8b/GBb6rYKmOMwMGNjVGVE5m28dB6jJlBgoe
-        YCcNEoDXsVuiTouCxG9pKk6GB7mfqew=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-b1qo-fDcO4ikHIyaqMRd0Q-1; Mon, 22 Aug 2022 08:53:46 -0400
-X-MC-Unique: b1qo-fDcO4ikHIyaqMRd0Q-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1B167811E75;
-        Mon, 22 Aug 2022 12:53:46 +0000 (UTC)
-Received: from RHTPC1VM0NT (unknown [10.22.33.87])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 49A76492C3B;
-        Mon, 22 Aug 2022 12:53:45 +0000 (UTC)
-From:   Aaron Conole <aconole@redhat.com>
-To:     Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ptikhomirov@virtuozzo.com,
-        alexander.mikhalitsyn@virtuozzo.com, avagin@google.com,
-        brauner@kernel.org, mark.d.gray@redhat.com, i.maximets@ovn.org
-Subject: Re: [PATCH net-next v2 2/3] openvswitch: fix memory leak at failed
- datapath creation
-References: <20220819153044.423233-1-andrey.zhadchenko@virtuozzo.com>
-        <20220819153044.423233-3-andrey.zhadchenko@virtuozzo.com>
-Date:   Mon, 22 Aug 2022 08:53:44 -0400
-In-Reply-To: <20220819153044.423233-3-andrey.zhadchenko@virtuozzo.com> (Andrey
-        Zhadchenko's message of "Fri, 19 Aug 2022 18:30:43 +0300")
-Message-ID: <f7tzgfwmobr.fsf@redhat.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        with ESMTP id S229565AbiHVM4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 08:56:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6B9FDF04;
+        Mon, 22 Aug 2022 05:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=4HwX4Xt+0LlaFddOVA3H37jo/iFLtDmHfMsKNXH4QQE=; b=eAu42MNVE0/RHvTO426OcnNwWR
+        Ws7oJRD7bsbY6B2+ltxRHGG2LBrF2FJg7NYKyJEDzGTK7ZAjmW0UEN8WuttHIYFstYB80+S5H/ubL
+        NOnqDb4D9BfGNYZ57mkKykGDnnedm6YZOfQ5eTH96z1hNdkJjOgPu/YGzv6YxpT9V3LU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQ6yu-00EDun-VT; Mon, 22 Aug 2022 14:56:40 +0200
+Date:   Mon, 22 Aug 2022 14:56:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
+ interrupt for internal phy link detection
+Message-ID: <YwN9CMMhHDxB8mdj@lunn.ch>
+References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220822092017.5671-1-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com> writes:
+> +static irqreturn_t lan937x_switch_irq_thread(int irq, void *dev_id)
+> +{
+> +	struct ksz_device *dev = dev_id;
+> +	irqreturn_t result = IRQ_NONE;
+> +	u32 data;
+> +	int ret;
+> +
+> +	/* Read global interrupt status register */
+> +	ret = ksz_read32(dev, REG_SW_INT_STATUS__4, &data);
+> +	if (ret)
+> +		return result;
 
-> ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
-> allocates array via kmalloc.
-> If for some reason new_vport() fails during ovs_dp_cmd_new()
-> dp->upcall_portids must be freed.
-> Add missing kfree.
->
-> Kmemleak example:
-> unreferenced object 0xffff88800c382500 (size 64):
->   comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
->   hex dump (first 32 bytes):
->     5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
->     03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
->   backtrace:
->     [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
->     [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
->     [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
->     [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
->     [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
->     [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
->     [<000000004959cece>] genl_rcv+0x24/0x40
->     [<000000004699ac7f>] netlink_unicast+0x23e/0x360
->     [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
->     [<000000006f4aa380>] sock_sendmsg+0x62/0x70
->     [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
->     [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
->     [<0000000011776020>] __sys_sendmsg+0x59/0xa0
->     [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
->     [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
->
-> Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
-> Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-> ---
+I don't think you can return negative error numbers here.
 
-Thanks for this patch.  I guess independent of this series, this patch
-should be applied to the net tree as well - it fixes an existing issue.
+> +
+> +	if (data & POR_READY_INT) {
+> +		ret = ksz_write32(dev, REG_SW_INT_STATUS__4, POR_READY_INT);
+> +		if (ret)
+> +			return result;
 
-Acked-by: Aaron Conole <aconole@redhat.com>
+Returning IRQ_NONE here seems wrong. You handle the interrupt, so
+should probably return IRQ_HANDLED.
 
-I will try as well the other patches in the series.
-
+      Andrew
