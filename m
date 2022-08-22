@@ -2,104 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4FC259C3DF
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DA9859C3EC
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:19:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236107AbiHVQRn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 12:17:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33192 "EHLO
+        id S236387AbiHVQSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 12:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234679AbiHVQRm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:17:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D8633E2C;
-        Mon, 22 Aug 2022 09:17:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD58B80923;
-        Mon, 22 Aug 2022 16:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 493EBC433C1;
-        Mon, 22 Aug 2022 16:17:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661185058;
-        bh=mKS9e/kUYTrQTIQVgSXGZbMEtY2mtpS4FDMVJ2G5hmw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZuPN6YaDp+AifescPV/BBlN9l96wSPcRJdLmXU63iV5LnFAkTCd+nXj7PjXTcsQtm
-         j3sgomT7DIp0q9A6++5Y1dSF4BbCd2eSFuKaS4tU8HqRePQhb3jNj1EfUpobyymgV4
-         /f0EWQrNtfyT8dJvQ8zNPgcqPqtztx5uvS73KAFgSyRqCAxeRCA7NnxRkSCWIgzdYW
-         n/PrTj9+NVVAKruizvGHiKE0iJlCwN3zolHSZ4VLvBdp+0WDXn4asPaQTc6p1+xLfg
-         it/EwvWeFUEVCYdRuwMBTe4OJKrJdAc0LO6zlPtq2xfevP7kcM0jZaNnEijMPkP/Hc
-         ogNv6/PHyenKA==
-Date:   Mon, 22 Aug 2022 09:17:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Dave Taht <dave.taht@gmail.com>
-Subject: Re: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure
- infrastructure
-Message-ID: <20220822091737.4b870dbb@kernel.org>
-In-Reply-To: <cover.1661158173.git.peilin.ye@bytedance.com>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
-        <cover.1661158173.git.peilin.ye@bytedance.com>
+        with ESMTP id S236341AbiHVQSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:18:37 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9751BEA8
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:18:32 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id p187so1243406iod.8
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:18:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=28liATqWCnenPmSSbmsfL1Qb8/cCcnlC13eU8jycOoY=;
+        b=brSaED4ax4SJscfe+HTsieLi7/Mk77XKfVCSrTh3ORLHqjwNzyWIJQvtoTLzJNTl77
+         jDSSXgytEhg2nWzkcQrVLS2nbFjSleoOA+GWELyUGlFT1YYG+/2tE/70Nz3GLIgjm7d0
+         O5yUggh8qVq5I+6TV3xYGNCbUqTwZa9q/0S76cgldppLfIe0fN9cMz/RYiWzwRhyMNK6
+         kc80PHvKA5GXOp8b1rHk/eYBNz1Spo6l7bgXtgSnUOskcaRMgKX7PXqigjAm9VJ8T6n7
+         VZASR85i0P6Qj/ldZMZuWZsWa4Mf/pqAynvFl4vpaA22LLvWplwhSKXERP4qeidz4mrO
+         pFSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=28liATqWCnenPmSSbmsfL1Qb8/cCcnlC13eU8jycOoY=;
+        b=PsnJmONw+x7WVl7rXK+f9arckHlSZu8cB7e3T/jE2dkh8K4sdttkfouwwa0prn3rRC
+         6+4BLqEYF/X8uK3uWOcyVNr1f4YTMXpegjYs41K2ZA3LvfLCEg/mgx2LQDhDAkw20IdS
+         YADycPkycaE4rCoaH3hOyO+KsEfU77HqsyweG3jwqp+dRyBawQxEoSh/l7AjDqdAU2Uu
+         FAJY/mNFILTLzedV7AIJXUPPT3pQyqTIqbNLhXH0A/L612nioY0VG1O2XNZ7vBnwDNvX
+         7JmS84RfjYscOs7dHybOHRIATknlFDtxhHXwzTpkpQNb/CNUdWcvoRg1BaWV3LGQRV5/
+         LKTA==
+X-Gm-Message-State: ACgBeo0K86/qxDe3slyp012H6kKHd1g69HqqcqInZqztKMDaE8PXqQhp
+        PjSmAtpmYzfl4/CRW/VIgEmO5Tp3AzXraAqg6VykGg==
+X-Google-Smtp-Source: AA6agR7DaLdD5v8vkDX3umoS6oSedE+nyg/hFLRDB6jS5QtPV07mT06RicLD1fu7DxWjr63YxdENVP8+A/z/LYikUnw=
+X-Received: by 2002:a02:5d42:0:b0:349:e1a7:f08d with SMTP id
+ w63-20020a025d42000000b00349e1a7f08dmr1725304jaa.61.1661185111863; Mon, 22
+ Aug 2022 09:18:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220819190558.477166-1-axelrasmussen@google.com> <20220819160752.777ef64b@kernel.org>
+In-Reply-To: <20220819160752.777ef64b@kernel.org>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Mon, 22 Aug 2022 09:17:57 -0700
+Message-ID: <CAJHvVcgfdkrQSsoenyanjtuav9OK4w9YKVqinUiMrkvdgtB4sg@mail.gmail.com>
+Subject: Re: [PATCH] selftests: fix a couple missing .gitignore entries
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrei Vagin <avagin@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Kees Cook <keescook@chromium.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linuxkselftest <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Aug 2022 02:10:17 -0700 Peilin Ye wrote:
-> Currently sockets (especially UDP ones) can drop a lot of packets at TC
-> egress when rate limited by shaper Qdiscs like HTB.  This patchset series
-> tries to solve this by introducing a Qdisc backpressure mechanism.
-> 
-> RFC v1 [1] used a throttle & unthrottle approach, which introduced several
-> issues, including a thundering herd problem and a socket reference count
-> issue [2].  This RFC v2 uses a different approach to avoid those issues:
-> 
->   1. When a shaper Qdisc drops a packet that belongs to a local socket due
->      to TC egress congestion, we make part of the socket's sndbuf
->      temporarily unavailable, so it sends slower.
->   
->   2. Later, when TC egress becomes idle again, we gradually recover the
->      socket's sndbuf back to normal.  Patch 2 implements this step using a
->      timer for UDP sockets.
-> 
-> The thundering herd problem is avoided, since we no longer wake up all
-> throttled sockets at the same time in qdisc_watchdog().  The socket
-> reference count issue is also avoided, since we no longer maintain socket
-> list on Qdisc.
-> 
-> Performance is better than RFC v1.  There is one concern about fairness
-> between flows for TBF Qdisc, which could be solved by using a SFQ inner
-> Qdisc.
-> 
-> Please see the individual patches for details and numbers.  Any comments,
-> suggestions would be much appreciated.  Thanks!
-> 
-> [1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
-> [2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
+On Fri, Aug 19, 2022 at 4:07 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 19 Aug 2022 12:05:58 -0700 Axel Rasmussen wrote:
+> > Some recent commits added new test binaries, but forgot to add those to
+> > .gitignore. Now, after one does "make -C tools/testing/selftests", one
+> > ends up with some untracked files in the kernel tree.
+> >
+> > Add the test binaries to .gitignore, to avoid this minor annoyance.
+> >
+> > Fixes: d8b6171bd58a ("selftests/io_uring: test zerocopy send")
+> > Fixes: 6342140db660 ("selftests/timens: add a test for vfork+exit")
+> > Signed-off-by: Axel Rasmussen <axelrasmussen@google.com>
+> > ---
+> >  tools/testing/selftests/net/.gitignore    | 3 ++-
+> >  tools/testing/selftests/timens/.gitignore | 1 +
+> >  2 files changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selftests/net/.gitignore
+> > index 0e5751af6247..02abf8fdfd3a 100644
+> > --- a/tools/testing/selftests/net/.gitignore
+> > +++ b/tools/testing/selftests/net/.gitignore
+> > @@ -39,4 +39,5 @@ toeplitz
+> >  tun
+> >  cmsg_sender
+> >  unix_connect
+> > -tap
+> > \ No newline at end of file
+> > +tap
+> > +io_uring_zerocopy_tx
+>
+> Could you make the io_uring test the first in the file?
+> That'd gets us closest to the alphabetical ordering (I know the file is
+> not ordered now, but we should start moving that way).
 
-Similarly to Eric's comments on v1 I'm not seeing the clear motivation
-here. Modern high speed UDP users will have a CC in user space, back
-off and set transmission time on the packets. Could you describe your
-_actual_ use case / application in more detail?
+It isn't that it's mostly ordered with a few exceptions, to me it
+looks entirely random. I don't mind moving the one I'm adding but, I'm
+not sure it gives much value given that.
+
+Would folks object to just adding a second commit to this which sorts
+the file? Since this file isn't changed frequently, I would say the
+risk of annoying conflicts is pretty low.
