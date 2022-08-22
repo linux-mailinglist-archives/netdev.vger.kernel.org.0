@@ -2,145 +2,458 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0BCA59C3B3
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:06:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9D9A59C3BF
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 18:08:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235997AbiHVQGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 12:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50062 "EHLO
+        id S236103AbiHVQHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 12:07:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235943AbiHVQGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:06:30 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4E927CE5
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:06:29 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id o14-20020a17090a0a0e00b001fabfd3369cso11774059pjo.5
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:06:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Hzk+uAP2EkRL9Sia/SFiFvZ5KFrXcliMp2X+SwbXgJE=;
-        b=FE+FMGBU8Io/f8ZTnMHGJbZ5+wKLBIfpgdiJ6n9Ye3xjsJwJiWRthFQZesalJXxr6v
-         asH26nv62+9fFdn9DJY/PQ1wPTtD6mMrkdyqnfgjWtwbLUQNbfsJW7Z+/hWmDC3TbCia
-         2FYtPJmqybTobZ3vBqr+CuVzk+yEwkmsH9R0W5mALHZIucQJPqWPJCmrJrzIS1ROB3sd
-         6xEvpo7fvLpHxrjZZw/rZL5CitN6yBN20KzM1+O9ofyu/Fq8+Fm97MZib4/BNUa3yJIN
-         hdYuobZLS7CYbd0581wdytZboHm0+/k0dtsJtGtlEMvmaubqnB7a7hY+Xz9Gr4zduXKf
-         Y4pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Hzk+uAP2EkRL9Sia/SFiFvZ5KFrXcliMp2X+SwbXgJE=;
-        b=qKP8aMnwPQknQhE+8UqIq/6gCXDAIGv2xSdu3GGX3avWZHDbZJ0GafD9qTfAiPHsj3
-         1QitTdSIJWRtymgZcsICcMoK0eph3BmF93V2ctR8Fbxd4pwEZ8CSAZqNqkJ5h6C2RpYL
-         /zUzZGum6QNr/M9k8+AaDW1E0G+C9OeGY919i5OliTm17yX33D76uHcCWmwZ2TWDHmFS
-         gVcSZ4F4D2NvMraEKtTq0f9GP/DgW49M/O8xHG15duPmtlUQV7+Rv7mS9fGS5cUHYvnk
-         hizaKDQjVJS+JPce4sw8mUApdhxZx6bFOW1+BqKzhKvtbcV5Rt6Zk/BQSct/xs4UIWYH
-         xn4g==
-X-Gm-Message-State: ACgBeo32lxLEsCdneUJlrh5JX4FRe6DYetotaf5SrvufW9wvl7qXuyu6
-        TnFbWstdfD2UyX/UCCHuKjQjJuECCX6jy4U6a38mmQ==
-X-Google-Smtp-Source: AA6agR6jVzDkGiBKD1GwoCYyQtpCU1z9BROhd8tOPEO6X5bKXjyo66sucaWs+VXhEve1C/WahqOzVbUuMF7phoy6aII=
-X-Received: by 2002:a17:902:e80e:b0:16f:14ea:897b with SMTP id
- u14-20020a170902e80e00b0016f14ea897bmr20878023plg.6.1661184388337; Mon, 22
- Aug 2022 09:06:28 -0700 (PDT)
+        with ESMTP id S235888AbiHVQHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 12:07:53 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8A68A32B8D
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 09:07:49 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27MG76fcC005321, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27MG76fcC005321
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 23 Aug 2022 00:07:06 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 23 Aug 2022 00:07:20 +0800
+Received: from localhost.localdomain (172.21.182.184) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 23 Aug 2022 00:07:19 +0800
+From:   Chunhao Lin <hau@realtek.com>
+To:     <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
+        <kuba@kernel.org>, <davem@davemloft.net>,
+        Chunhao Lin <hau@realtek.com>
+Subject: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Date:   Tue, 23 Aug 2022 00:07:14 +0800
+Message-ID: <20220822160714.2904-1-hau@realtek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-2-shakeelb@google.com>
- <YwNSlZFPMgclrSCz@dhcp22.suse.cz> <YwNX+vq9svMynVgW@dhcp22.suse.cz>
- <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com> <YwOeocdkF/lacpKn@dhcp22.suse.cz>
-In-Reply-To: <YwOeocdkF/lacpKn@dhcp22.suse.cz>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 22 Aug 2022 09:06:17 -0700
-Message-ID: <CALvZod7iuuwfSq18kyNSo4DXGjfVm3FWS77DtoSeP2jrz5gpDA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for low/min
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.182.184]
+X-ClientProxiedBy: RTEXH36504.realtek.com.tw (172.21.6.27) To
+ RTEXMBS04.realtek.com.tw (172.21.6.97)
+X-KSE-ServerInfo: RTEXMBS04.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: trusted connection
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 08/22/2022 15:49:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: =?big5?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzgvMjIgpFWkyCAwMjo0NjowMA==?=
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 8:20 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Mon 22-08-22 07:55:58, Shakeel Butt wrote:
-> > On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
-> > >
-> > > On Mon 22-08-22 11:55:33, Michal Hocko wrote:
-> > > > On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
-> > > [...]
-> > > > > diff --git a/mm/page_counter.c b/mm/page_counter.c
-> > > > > index eb156ff5d603..47711aa28161 100644
-> > > > > --- a/mm/page_counter.c
-> > > > > +++ b/mm/page_counter.c
-> > > > > @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
-> > > > >                                   unsigned long usage)
-> > > > >  {
-> > > > >     unsigned long protected, old_protected;
-> > > > > -   unsigned long low, min;
-> > > > >     long delta;
-> > > > >
-> > > > >     if (!c->parent)
-> > > > >             return;
-> > > > >
-> > > > > -   min = READ_ONCE(c->min);
-> > > > > -   if (min || atomic_long_read(&c->min_usage)) {
-> > > > > -           protected = min(usage, min);
-> > > > > +   protected = min(usage, READ_ONCE(c->min));
-> > > > > +   old_protected = atomic_long_read(&c->min_usage);
-> > > > > +   if (protected != old_protected) {
-> > > >
-> > > > I have to cache that code back into brain. It is really subtle thing and
-> > > > it is not really obvious why this is still correct. I will think about
-> > > > that some more but the changelog could help with that a lot.
-> > >
-> > > OK, so the this patch will be most useful when the min > 0 && min <
-> > > usage because then the protection doesn't really change since the last
-> > > call. In other words when the usage grows above the protection and your
-> > > workload benefits from this change because that happens a lot as only a
-> > > part of the workload is protected. Correct?
-> >
-> > Yes, that is correct. I hope the experiment setup is clear now.
->
-> Maybe it is just me that it took a bit to grasp but maybe we want to
-> save our future selfs from going through that mental process again. So
-> please just be explicit about that in the changelog. It is really the
-> part that workloads excessing the protection will benefit the most that
-> would help to understand this patch.
->
+rtl8168h(revid 0x2a) + rtl8211fs is for fiber related application.
+rtl8168h is connected to rtl8211fs mdio bus via its eeprom or gpio pins.
+In this patch, use bitbanged MDIO framework to access rtl8211fs via
+rtl8168h's eeprom or gpio pins.
 
-I will add more detail in the commit message in the next version.
+Signed-off-by: Chunhao Lin <hau@realtek.com>
+---
+ drivers/net/ethernet/realtek/Kconfig      |   1 +
+ drivers/net/ethernet/realtek/r8169_main.c | 289 +++++++++++++++++++++-
+ 2 files changed, 288 insertions(+), 2 deletions(-)
 
-> > > Unless I have missed anything this shouldn't break the correctness but I
-> > > still have to think about the proportional distribution of the
-> > > protection because that adds to the complexity here.
-> >
-> > The patch is not changing any semantics. It is just removing an
-> > unnecessary atomic xchg() for a specific scenario (min > 0 && min <
-> > usage). I don't think there will be any change related to proportional
-> > distribution of the protection.
->
-> Yes, I suspect you are right. I just remembered previous fixes
-> like 503970e42325 ("mm: memcontrol: fix memory.low proportional
-> distribution") which just made me nervous that this is a tricky area.
->
-> I will have another look tomorrow with a fresh brain and send an ack.
+diff --git a/drivers/net/ethernet/realtek/Kconfig b/drivers/net/ethernet/realtek/Kconfig
+index 93d9df55b361..20367114ac72 100644
+--- a/drivers/net/ethernet/realtek/Kconfig
++++ b/drivers/net/ethernet/realtek/Kconfig
+@@ -100,6 +100,7 @@ config R8169
+ 	depends on PCI
+ 	select FW_LOADER
+ 	select CRC32
++	select MDIO_BITBANG
+ 	select PHYLIB
+ 	select REALTEK_PHY
+ 	help
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 1b7fdb4f056b..8051cdf46f85 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -28,6 +28,7 @@
+ #include <linux/bitfield.h>
+ #include <linux/prefetch.h>
+ #include <linux/ipv6.h>
++#include <linux/mdio-bitbang.h>
+ #include <asm/unaligned.h>
+ #include <net/ip6_checksum.h>
+ 
+@@ -344,6 +345,15 @@ enum rtl8125_registers {
+ 	EEE_TXIDLE_TIMER_8125	= 0x6048,
+ };
+ 
++enum rtl8168_sfp_registers {
++	MDIO_IN			= 0xdc04,
++	PINOE			= 0xdc06,
++	PIN_I_SEL_1		= 0xdc08,
++	PIN_I_SEL_2		= 0xdc0A,
++	PINPU			= 0xdc18,
++	GPOUTPIN_SEL	= 0xdc20,
++};
++
+ #define RX_VLAN_INNER_8125	BIT(22)
+ #define RX_VLAN_OUTER_8125	BIT(23)
+ #define RX_VLAN_8125		(RX_VLAN_INNER_8125 | RX_VLAN_OUTER_8125)
+@@ -584,6 +594,24 @@ struct rtl8169_tc_offsets {
+ 	__le16	rx_missed;
+ };
+ 
++struct rtl_sfp_if_info {
++	u16 mdio_oe_i;
++	u16 mdio_oe_o;
++	u16 mdio_pu;
++	u16 mdio_pd;
++	u16 mdc_pu;
++	u16 mdc_pd;
++};
++
++struct rtl_sfp_if_mask {
++	const u16 pin_mask;
++	const u16 mdio_oe_mask;
++	const u16 mdio_mask;
++	const u16 mdc_mask;
++	const u16 phy_addr;
++	const u16 rb_pos;
++};
++
+ enum rtl_flag {
+ 	RTL_FLAG_TASK_ENABLED = 0,
+ 	RTL_FLAG_TASK_RESET_PENDING,
+@@ -596,6 +624,12 @@ enum rtl_dash_type {
+ 	RTL_DASH_EP,
+ };
+ 
++enum rtl_sfp_if_type {
++	RTL_SFP_IF_NONE,
++	RTL_SFP_IF_EEPROM,
++	RTL_SFP_IF_GPIO,
++};
++
+ struct rtl8169_private {
+ 	void __iomem *mmio_addr;	/* memory map physical address */
+ 	struct pci_dev *pci_dev;
+@@ -635,6 +669,10 @@ struct rtl8169_private {
+ 	struct rtl_fw *rtl_fw;
+ 
+ 	u32 ocp_base;
++
++	enum rtl_sfp_if_type sfp_if_type;
++
++	struct mii_bus *mii_bus;	/* MDIO bus control */
+ };
+ 
+ typedef void (*rtl_generic_fct)(struct rtl8169_private *tp);
+@@ -914,8 +952,12 @@ static void r8168g_mdio_write(struct rtl8169_private *tp, int reg, int value)
+ 	if (tp->ocp_base != OCP_STD_PHY_BASE)
+ 		reg -= 0x10;
+ 
+-	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR)
++	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR) {
++		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value & BMCR_PDOWN)
++			return;
++
+ 		rtl8168g_phy_suspend_quirk(tp, value);
++	}
+ 
+ 	r8168_phy_ocp_write(tp, tp->ocp_base + reg * 2, value);
+ }
+@@ -1214,6 +1256,243 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
+ 	}
+ }
+ 
++struct bb_info {
++	struct rtl8169_private *tp;
++	struct mdiobb_ctrl ctrl;
++	struct rtl_sfp_if_mask sfp_mask;
++	u16 pinoe_value;
++	u16 pin_i_sel_1_value;
++	u16 pin_i_sel_2_value;
++};
++
++/* Data I/O pin control */
++static void rtl_mdio_dir(struct mdiobb_ctrl *ctrl, int output)
++{
++	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
++	struct rtl8169_private *tp = bitbang->tp;
++	const u16 reg = PINOE;
++	const u16 mask = bitbang->sfp_mask.mdio_oe_mask;
++	u16 value;
++
++	value = bitbang->pinoe_value;
++	if (output)
++		value |= mask;
++	else
++		value &= ~mask;
++	r8168_mac_ocp_write(tp, reg, value);
++}
++
++/* Set bit data*/
++static void rtl_set_mdio(struct mdiobb_ctrl *ctrl, int set)
++{
++	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
++	struct rtl8169_private *tp = bitbang->tp;
++	const u16 reg = PIN_I_SEL_2;
++	const u16 mask = bitbang->sfp_mask.mdio_mask;
++	u16 value;
++
++	value = bitbang->pin_i_sel_2_value;
++	if (set)
++		value |= mask;
++	else
++		value &= ~mask;
++	r8168_mac_ocp_write(tp, reg, value);
++}
++
++/* Get bit data*/
++static int rtl_get_mdio(struct mdiobb_ctrl *ctrl)
++{
++	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
++	struct rtl8169_private *tp = bitbang->tp;
++	const u16 reg = MDIO_IN;
++
++	return (r8168_mac_ocp_read(tp, reg) & BIT(bitbang->sfp_mask.rb_pos)) != 0;
++}
++
++/* MDC pin control */
++static void rtl_mdc_ctrl(struct mdiobb_ctrl *ctrl, int set)
++{
++	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
++	struct rtl8169_private *tp = bitbang->tp;
++	const u16 mdc_reg = PIN_I_SEL_1;
++	const u16 mask = bitbang->sfp_mask.mdc_mask;
++	u16 value;
++
++	value = bitbang->pin_i_sel_1_value;
++	if (set)
++		value |= mask;
++	else
++		value &= ~mask;
++	r8168_mac_ocp_write(tp, mdc_reg, value);
++}
++
++/* mdio bus control struct */
++static const struct mdiobb_ops bb_ops = {
++	.owner = THIS_MODULE,
++	.set_mdc = rtl_mdc_ctrl,
++	.set_mdio_dir = rtl_mdio_dir,
++	.set_mdio_data = rtl_set_mdio,
++	.get_mdio_data = rtl_get_mdio,
++};
++
++#define MDIO_READ 2
++#define MDIO_WRITE 1
++/* MDIO bus init function */
++static int rtl_mdio_bitbang_init(struct rtl8169_private *tp)
++{
++	struct bb_info *bitbang;
++	struct device *d = tp_to_dev(tp);
++	struct mii_bus *new_bus;
++
++	/* create bit control struct for PHY */
++	bitbang = devm_kzalloc(d, sizeof(struct bb_info), GFP_KERNEL);
++	if (!bitbang)
++		return -ENOMEM;
++
++	/* bitbang init */
++	bitbang->tp = tp;
++	bitbang->ctrl.ops = &bb_ops;
++	bitbang->ctrl.op_c22_read = MDIO_READ;
++	bitbang->ctrl.op_c22_write = MDIO_WRITE;
++
++	/* MII controller setting */
++	new_bus = devm_mdiobus_alloc(d);
++	if (!new_bus)
++		return -ENOMEM;
++
++	new_bus->read = mdiobb_read;
++	new_bus->write = mdiobb_write;
++	new_bus->priv = &bitbang->ctrl;
++
++	tp->mii_bus = new_bus;
++
++	return 0;
++}
++
++static void rtl_sfp_bitbang_init(struct rtl8169_private *tp,
++				  struct rtl_sfp_if_mask *sfp_mask)
++{
++	struct mii_bus *bus = tp->mii_bus;
++	struct bb_info *bitbang = container_of(bus->priv, struct bb_info, ctrl);
++
++	r8168_mac_ocp_modify(tp, PINPU, sfp_mask->pin_mask, 0);
++	r8168_mac_ocp_modify(tp, PINOE, 0, sfp_mask->pin_mask);
++	bitbang->pinoe_value = r8168_mac_ocp_read(tp, PINOE);
++	bitbang->pin_i_sel_1_value = r8168_mac_ocp_read(tp, PIN_I_SEL_1);
++	bitbang->pin_i_sel_2_value = r8168_mac_ocp_read(tp, PIN_I_SEL_2);
++	memcpy(&bitbang->sfp_mask, sfp_mask, sizeof(struct rtl_sfp_if_mask));
++}
++
++static void rtl_sfp_mdio_write(struct rtl8169_private *tp,
++				  u8 reg,
++				  u16 val)
++{
++	struct mii_bus *bus = tp->mii_bus;
++	struct bb_info *bitbang;
++
++	if (!bus)
++		return;
++
++	bitbang = container_of(bus->priv, struct bb_info, ctrl);
++	bus->write(bus, bitbang->sfp_mask.phy_addr, reg, val);
++}
++
++static u16 rtl_sfp_mdio_read(struct rtl8169_private *tp,
++				  u8 reg)
++{
++	struct mii_bus *bus = tp->mii_bus;
++	struct bb_info *bitbang;
++
++	if (!bus)
++		return ~0;
++
++	bitbang = container_of(bus->priv, struct bb_info, ctrl);
++
++	return bus->read(bus, bitbang->sfp_mask.phy_addr, reg);
++}
++
++static void rtl_sfp_mdio_modify(struct rtl8169_private *tp, u32 reg, u16 mask,
++				 u16 set)
++{
++	u16 data = rtl_sfp_mdio_read(tp, reg);
++
++	rtl_sfp_mdio_write(tp, reg, (data & ~mask) | set);
++}
++
++#define RTL8211FS_PHY_ID_1 0x001c
++#define RTL8211FS_PHY_ID_2 0xc916
++
++static enum rtl_sfp_if_type rtl8168h_check_sfp(struct rtl8169_private *tp)
++{
++	int i;
++	int const checkcnt = 4;
++	static struct rtl_sfp_if_mask rtl_sfp_if_eeprom_mask = {
++		0x0050, 0x0040, 0x000f, 0x0f00, 0, 6};
++	static struct rtl_sfp_if_mask rtl_sfp_if_gpo_mask = {
++		0x0210, 0x0200, 0xf000, 0x0f00, 1, 9};
++
++	if (rtl_mdio_bitbang_init(tp))
++		return RTL_SFP_IF_NONE;
++
++	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_eeprom_mask);
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
++	for (i = 0; i < checkcnt; i++) {
++		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
++			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
++			break;
++	}
++
++	if (i == checkcnt)
++		return RTL_SFP_IF_EEPROM;
++
++	rtl_sfp_bitbang_init(tp, &rtl_sfp_if_gpo_mask);
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
++	for (i = 0; i < checkcnt; i++) {
++		if (rtl_sfp_mdio_read(tp, MII_PHYSID1) != RTL8211FS_PHY_ID_1 ||
++			rtl_sfp_mdio_read(tp, MII_PHYSID2) != RTL8211FS_PHY_ID_2)
++			break;
++	}
++
++	if (i == checkcnt)
++		return RTL_SFP_IF_GPIO;
++
++	return RTL_SFP_IF_NONE;
++}
++
++static enum rtl_sfp_if_type rtl_check_sfp(struct rtl8169_private *tp)
++{
++	switch (tp->mac_version) {
++	case RTL_GIGA_MAC_VER_45:
++	case RTL_GIGA_MAC_VER_46:
++		if (tp->pci_dev->revision == 0x2a)
++			return rtl8168h_check_sfp(tp);
++		else
++			return RTL_SFP_IF_NONE;
++	default:
++		return RTL_SFP_IF_NONE;
++	}
++}
++
++static void rtl_hw_sfp_phy_config(struct rtl8169_private *tp)
++{
++	/* disable ctap */
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0a43);
++	rtl_sfp_mdio_modify(tp, 0x19, BIT(6), 0);
++
++	/* change Rx threshold */
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0dcc);
++	rtl_sfp_mdio_modify(tp, 0x14, 0, BIT(2) | BIT(3) | BIT(4));
++
++	/* switch pin34 to PMEB pin */
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0d40);
++	rtl_sfp_mdio_modify(tp, 0x16, 0, BIT(5));
++
++	rtl_sfp_mdio_write(tp, 0x1f, 0x0000);
++
++	/* disable ctap */
++	phy_modify_paged(tp->phydev, 0x0a43, 0x11, BIT(6), 0);
++}
++
+ static void rtl_set_d3_pll_down(struct rtl8169_private *tp, bool enable)
+ {
+ 	switch (tp->mac_version) {
+@@ -2195,6 +2474,9 @@ static void rtl8169_init_phy(struct rtl8169_private *tp)
+ 	    tp->pci_dev->subsystem_device == 0xe000)
+ 		phy_write_paged(tp->phydev, 0x0001, 0x10, 0xf01b);
+ 
++	if (tp->sfp_if_type != RTL_SFP_IF_NONE)
++		rtl_hw_sfp_phy_config(tp);
++
+ 	/* We may have called phy_speed_down before */
+ 	phy_speed_up(tp->phydev);
+ 
+@@ -2251,7 +2533,8 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
+ 		rtl_ephy_write(tp, 0x19, 0xff64);
+ 
+ 	if (device_may_wakeup(tp_to_dev(tp))) {
+-		phy_speed_down(tp->phydev, false);
++		if (tp->sfp_if_type == RTL_SFP_IF_NONE)
++			phy_speed_down(tp->phydev, false);
+ 		rtl_wol_enable_rx(tp);
+ 	}
+ }
+@@ -5386,6 +5669,8 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	tp->dash_type = rtl_check_dash(tp);
+ 
++	tp->sfp_if_type = rtl_check_sfp(tp);
++
+ 	tp->cp_cmd = RTL_R16(tp, CPlusCmd) & CPCMD_MASK;
+ 
+ 	if (sizeof(dma_addr_t) > 4 && tp->mac_version >= RTL_GIGA_MAC_VER_18 &&
+-- 
+2.25.1
 
-I will wait for your ack before sending the next version.
