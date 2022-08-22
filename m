@@ -2,74 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C5059BE90
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E22859BED6
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 13:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234443AbiHVLav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 07:30:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57242 "EHLO
+        id S234822AbiHVLuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 07:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234700AbiHVLai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:30:38 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34A932ED3;
-        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id m15so2592190pjj.3;
-        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
-        b=CIT9km6nhEi6sZnsN3AtxvN+UbmYD2586Yn+riuF/ZXbFpfmMuYtPVeJQBGTA9nI2V
-         CmqQRQgofc3dwk9amoNfPXptPiZ8PumOvnE2/uGa7tpaRU+WrBZbs8Jv9MEAab2JWPTN
-         QYsg9AjJ3xzeWuiCf8g/0jZsOqsYHng5ThNeuv0neQEGj3sdvl4XUga6hzjUf88FFzaq
-         j/Qh1RWmKfF4krOOTBlLluuMi1GEyaR+Et6DwrsUqohDU5lGodSmpP7C6Xa6ItgpngnU
-         2m/inLkSctLjZaN0jPNXsHFQOGdsV1zmtdd4yLOYthab9dPnJMcdcd2m5IVhSJmsmnr5
-         1JAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=G4j/rqNYwfiq++D/E4+aj1Vom+udZl1vY41D0UqrHWo=;
-        b=MEbDKWoZzbpvCh/jwTPUiALr366gm2m2JeoiXLVcy/eFlC/yL/z5Q1+2tS+1YJek5o
-         XUNkDQk6YSHhAPAE1GWwJKXYxRdYR1eKst/sTd17/JQtrC65xfQyLS1jaaxe5we19FID
-         psQB+x6/wcukxhXCP34ZZl1X1TudmCQBOvrm3GHMv5M1iwt0VskoeJ2qhXZIscRus7HC
-         fkBFqhB8D24/VXBGRIdIc8x2xpRYuvjkESim+cMQKtMolGGjayFFXJi3JH5Kws/jC/ey
-         zdBmaKkRi+LKeR4eIFViOcVf2kA8WdIezWqe/96C5lOidUXRx3xDpbRu37nrEWucSbFg
-         6jFA==
-X-Gm-Message-State: ACgBeo2HdKD0NZhNtIAYcRn76zyXveS5ZQHmuCebLKy5JPeEgRI7U03+
-        fZs39rvqQdyyHwemjZxSUjgYlFK3CWOXku1V
-X-Google-Smtp-Source: AA6agR7y+Cf8+shJU1lBosyHfXcyCc16aZq3kbBZqTPdtK//EWTrJrX/hfVvvATCV3np2/Hfg7VvTg==
-X-Received: by 2002:a17:903:2585:b0:172:9ac6:30f3 with SMTP id jb5-20020a170903258500b001729ac630f3mr20042388plb.0.1661167837386;
-        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
-Received: from localhost ([36.112.86.8])
-        by smtp.gmail.com with ESMTPSA id v4-20020a626104000000b005327281cb8dsm8714072pfb.97.2022.08.22.04.30.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 04:30:37 -0700 (PDT)
-From:   Hawkins Jiawei <yin31149@gmail.com>
-To:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-afs@lists.infradead.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        paskripkin@gmail.com,
-        syzbot+7f0483225d0c94cb3441@syzkaller.appspotmail.com,
-        syzkaller-bugs@googlegroups.com, yin31149@gmail.com
-Subject: Re: [PATCH] rxrpc: fix bad unlock balance in rxrpc_do_sendmsg
-Date:   Mon, 22 Aug 2022 19:29:51 +0800
-Message-Id: <20220822112952.2961-1-yin31149@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <992103.1661160093@warthog.procyon.org.uk>
-References: <992103.1661160093@warthog.procyon.org.uk>
+        with ESMTP id S234855AbiHVLto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 07:49:44 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B005140A5;
+        Mon, 22 Aug 2022 04:49:10 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MBBvMB012567;
+        Mon, 22 Aug 2022 11:49:01 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=8jnSZ4izdUnoErqgj5Jfal17Z/S5X9/JGdMPR3d3QVc=;
+ b=kZ8GH0+T1vRJx8xzwWMNHAJ4mqNDEHrjphek+GpGTvMuGFF1UFhAkKq/SwjW3iKvnhOO
+ aLE7/78EHkXVJtyeGfk4fP0julho2Xb4SRiIaU5haRpaBC7EoL8xmMWUWQYJB/0X0u2e
+ +QRlNemAYqK+PQdPpHwswN6oNFXApIbmb/2Mi5IYyYaQ3bCX5ltTdSKcXPVw66jKTMJL
+ 6JTW0umQlt9XsJH+TazEUR+OcUOiulseL4H57UnRKsOiOCEJZ2Fp8+TfewonfEqBLKo6
+ hefHkR+hAe6vxQtV4f7rVhsteREhgaCz1k282mXeextGFs9FzMX4ShIShsJUjZg/eaYC hw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3j48qa135b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 11:49:00 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27MBRkFg006306;
+        Mon, 22 Aug 2022 11:48:58 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma05fra.de.ibm.com with ESMTP id 3j2q899q5y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 11:48:58 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27MBjwG029229346
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 22 Aug 2022 11:45:58 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E8D0342041;
+        Mon, 22 Aug 2022 11:48:54 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 37A2B4203F;
+        Mon, 22 Aug 2022 11:48:54 +0000 (GMT)
+Received: from li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com (unknown [9.145.17.18])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Mon, 22 Aug 2022 11:48:54 +0000 (GMT)
+Date:   Mon, 22 Aug 2022 13:48:52 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
+        Jan Hoeppner <hoeppner@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vineeth Vijayan <vneethv@linux.ibm.com>,
+        Peter Oberparleiter <oberpar@linux.ibm.com>,
+        Alexandra Winter <wintera@linux.ibm.com>,
+        Wenjia Zhang <wenjia@linux.ibm.com>,
+        Steffen Maier <maier@linux.ibm.com>,
+        Benjamin Block <bblock@linux.ibm.com>,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
+Message-ID: <YwNtJAQlJVycijou@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+ <YwM4y78boN4s1VNo@li-4a3a4a4c-28e5-11b2-a85c-a8d192c6f089.ibm.com>
+ <YwNAW2Zp6o7Z//Y2@shikoro>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YwNAW2Zp6o7Z//Y2@shikoro>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 3s7IsW1Hrudt8DozdirZjgJJ5kRG7GLO
+X-Proofpoint-GUID: 3s7IsW1Hrudt8DozdirZjgJJ5kRG7GLO
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_06,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 phishscore=0 suspectscore=0 priorityscore=1501 mlxscore=0
+ mlxlogscore=999 bulkscore=0 adultscore=0 lowpriorityscore=0 spamscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220048
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,154 +94,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 22 Aug 2022 at 16:48, David Howells <dhowells@redhat.com> wrote:
->
-> Hawkins Jiawei <yin31149@gmail.com> wrote:
->
-> > -             if (mutex_lock_interruptible(&call->user_mutex) < 0)
-> > +             if (mutex_lock_interruptible(&call->user_mutex) < 0) {
-> > +                     mutex_lock(&call->user_mutex);
->
-> Yeah, as Khalid points out that kind of makes the interruptible lock
-> pointless.  Either rxrpc_send_data() needs to return a separate indication
-> that we returned without the lock held or it needs to always drop the lock on
-> error (at least for ERESTARTSYS/EINTR) which can be checked for higher up.
-Hi David,
+On Mon, Aug 22, 2022 at 10:37:47AM +0200, Wolfram Sang wrote:
+> Hi Alexander,
+> 
+> > Could you please explain why you skipped strlcpy() usage in
+> > drivers/s390/char/diag_ftp.c and drivers/s390/char/sclp_ftp.c?
+> 
+> Sure. It is a bit hidden in $subject, but the key is to convert strlcpy
+> instances for now which do not check the return value. This is the
+> low-hanging fruit.
+> 
+> Converting the other uses checking the return value needs to be done
+> manually and much more carfully. I wanted to this as a second step, but
+> if you prefer to have everything converted in one go, I can give your
+> subsystem a priority boost. Would you prefer that?
 
-For second option, I think it may meet some difficulty, because we
-cannot figure out whether rxrpc_send_data() meets lock error.
-To be more specific, rxrpc_send_data() may still returns the number
-it has copied even rxrpc_send_data() meets lock error, if
-rxrpc_send_data() has successfully dealed some data.(Please correct me
-if I am wrong)
+A follow-up patch is also fine.
 
-So I think the first option seems better. I wonder if we can add an
-argument in rxrpc_send_data() as an indication you pointed out? Maybe:
+I guess, you also wanted a fix for arch/s390/kvm/tests/instr_icpt/main.c
+in this series.
 
-diff --git a/net/rxrpc/sendmsg.c b/net/rxrpc/sendmsg.c
-index 1d38e279e2ef..0801325a7c7f 100644
---- a/net/rxrpc/sendmsg.c
-+++ b/net/rxrpc/sendmsg.c
-@@ -284,13 +284,18 @@ static int rxrpc_queue_packet(struct rxrpc_sock *rx, struct rxrpc_call *call,
- 
- /*
-  * send data through a socket
-+ * @holding_mutex: rxrpc_send_data() will assign this pointer with True
-+ * if functions still holds the call user access mutex when returned to caller.
-+ * This argument can be NULL, which will effect nothing.
-+ *
-  * - must be called in process context
-  * - The caller holds the call user access mutex, but not the socket lock.
-  */
- static int rxrpc_send_data(struct rxrpc_sock *rx,
- 			   struct rxrpc_call *call,
- 			   struct msghdr *msg, size_t len,
--			   rxrpc_notify_end_tx_t notify_end_tx)
-+			   rxrpc_notify_end_tx_t notify_end_tx,
-+			   bool *holding_mutex)
- {
- 	struct rxrpc_skb_priv *sp;
- 	struct sk_buff *skb;
-@@ -299,6 +304,9 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 	bool more;
- 	int ret, copied;
- 
-+	if (holding_mutex)
-+		*holding_mutex = true;
-+
- 	timeo = sock_sndtimeo(sk, msg->msg_flags & MSG_DONTWAIT);
- 
- 	/* this should be in poll */
-@@ -338,8 +346,11 @@ static int rxrpc_send_data(struct rxrpc_sock *rx,
- 				ret = rxrpc_wait_for_tx_window(rx, call,
- 							       &timeo,
- 							       msg->msg_flags & MSG_WAITALL);
--				if (ret < 0)
-+				if (ret < 0) {
-+					if (holding_mutex)
-+						*holding_mutex = false;
- 					goto maybe_error;
-+				}
- 			}
- 
- 			/* Work out the maximum size of a packet.  Assume that
-@@ -630,6 +641,7 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 	struct rxrpc_call *call;
- 	unsigned long now, j;
- 	int ret;
-+	bool holding_user_mutex;
- 
- 	struct rxrpc_send_params p = {
- 		.call.tx_total_len	= -1,
-@@ -747,7 +759,9 @@ int rxrpc_do_sendmsg(struct rxrpc_sock *rx, struct msghdr *msg, size_t len)
- 		/* Reply phase not begun or not complete for service call. */
- 		ret = -EPROTO;
- 	} else {
--		ret = rxrpc_send_data(rx, call, msg, len, NULL);
-+		ret = rxrpc_send_data(rx, call, msg, len, NULL, &holding_user_mutex);
-+		if (!holding_user_mutex)
-+			goto error_put;
- 	}
- 
- out_put_unlock:
-@@ -796,7 +810,7 @@ int rxrpc_kernel_send_data(struct socket *sock, struct rxrpc_call *call,
- 	case RXRPC_CALL_SERVER_ACK_REQUEST:
- 	case RXRPC_CALL_SERVER_SEND_REPLY:
- 		ret = rxrpc_send_data(rxrpc_sk(sock->sk), call, msg, len,
--				      notify_end_tx);
-+				      notify_end_tx, NULL);
- 		break;
- 	case RXRPC_CALL_COMPLETE:
- 		read_lock_bh(&call->state_lock);
+> Thanks and happy hacking,
+> 
+>    Wolfram
 
-
-On Mon, 22 Aug 2022 at 17:21, David Howells <dhowells@redhat.com> wrote:
->
-> Actually, there's another bug here too: if rxrpc_wait_for_tx_window() drops
-> the call mutex then it needs to reload the pending packet state in
-> rxrpc_send_data() as it may have raced with another sendmsg().
->
-> David
->
-After applying the above patch, kernel still panic, but seems not the
-bad unlock balance bug before. yet I am not sure if this is the same bug you
-mentioned. Kernel output as below:
-[   39.115966][ T6508] ====================================
-[   39.116940][ T6508] WARNING: syz/6508 still has locks held!
-[   39.117978][ T6508] 6.0.0-rc1-00066-g3b06a2755758-dirty #186 Not tainted
-[   39.119353][ T6508] ------------------------------------
-[   39.120321][ T6508] 1 lock held by syz/6508:
-[   39.121122][ T6508]  #0: ffff88801f472b20 (&call->user_mutex){....}-{3:3}0
-[   39.123014][ T6508] 
-[   39.123014][ T6508] stack backtrace:
-[   39.123925][ T6508] CPU: 0 PID: 6508 Comm: syz Not tainted 6.0.0-rc1-00066
-[   39.125304][ T6508] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996)4
-[   39.125304][ T6508] Call Trace:
-[   39.125304][ T6508]  <TASK>
-[   39.125304][ T6508]  dump_stack_lvl+0x8e/0xdd
-[   39.125304][ T6508]  get_signal+0x1866/0x24d0
-[   39.125304][ T6508]  ? lock_acquire+0x172/0x310
-[   39.125304][ T6508]  ? exit_signals+0x7b0/0x7b0
-[   39.125304][ T6508]  arch_do_signal_or_restart+0x82/0x23f0
-[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[   39.125304][ T6508]  ? __fget_light+0x20d/0x270
-[   39.125304][ T6508]  ? get_sigframe_size+0x10/0x10
-[   39.125304][ T6508]  ? __sanitizer_cov_trace_pc+0x1a/0x40
-[   39.125304][ T6508]  ? __sys_sendmsg+0x11a/0x1c0
-[   39.125304][ T6508]  ? __sys_sendmsg_sock+0x30/0x30
-[   39.125304][ T6508]  exit_to_user_mode_prepare+0x146/0x1b0
-[   39.125304][ T6508]  syscall_exit_to_user_mode+0x12/0x30
-[   39.125304][ T6508]  do_syscall_64+0x42/0xb0
-[   39.125304][ T6508]  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-[   39.125304][ T6508] RIP: 0033:0x44fbad
-[   39.125304][ T6508] Code: c3 e8 97 29 00 00 0f 1f 80 00 00 00 00 f3 0f 1e8
-[   39.125304][ T6508] RSP: 002b:00007f4b8ae22d48 EFLAGS: 00000246 ORIG_RAX:e
-[   39.125304][ T6508] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 0000d
-[   39.125304][ T6508] RDX: 0000000000000186 RSI: 0000000020000000 RDI: 00003
-[   39.125304][ T6508] RBP: 00007f4b8ae22d80 R08: 00007f4b8ae23700 R09: 00000
-[   39.125304][ T6508] R10: 00007f4b8ae23700 R11: 0000000000000246 R12: 0000e
-[   39.125304][ T6508] R13: 00007ffe483304af R14: 00007ffe48330550 R15: 00000
-[   39.125304][ T6508]  </TASK>
-====================================
-
-I will make a deeper look and try to patch it.
+Thanks!
