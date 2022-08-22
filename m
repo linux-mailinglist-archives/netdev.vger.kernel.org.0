@@ -2,71 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D4059C2A0
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:26:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F330859C2AB
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:27:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbiHVPYw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 11:24:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55590 "EHLO
+        id S236646AbiHVPZM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 11:25:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236333AbiHVPYV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:24:21 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA2B31115;
-        Mon, 22 Aug 2022 08:20:03 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 5067C2030D;
-        Mon, 22 Aug 2022 15:20:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1661181602; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=u+unRvwl5RKeXktuSK+JeocNb4ORKTqv8ZYCMY8yQM8=;
-        b=Z5JRAObP6PGpMdquxeMFMidbeOHtWJLVEE9H5TfjY4M/WMd9ZT0jW0WV9Yp7wIT2uHYujK
-        vrtWNCDHB5cxvadCzxPjVH948tgFEUdcfX8l61/jqmxdXQSDRyrYuCK77OhGk7sq3xkBGI
-        VPjgQZhJpqdOtppnpDO8v0bcGYh8wQQ=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 23E3D1332D;
-        Mon, 22 Aug 2022 15:20:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id T4jUBaKeA2O6FQAAMHmgww
-        (envelope-from <mhocko@suse.com>); Mon, 22 Aug 2022 15:20:02 +0000
-Date:   Mon, 22 Aug 2022 17:20:01 +0200
-From:   Michal Hocko <mhocko@suse.com>
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        with ESMTP id S236662AbiHVPYj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:24:39 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 209C065FF
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:21:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=eyUSN3lXWS/kRTj6v/uan0HzkMc+IpsfdEzt2udu6gE=; b=Eo8bbC/X9Anp2kzQhZagSg89EW
+        578KIR/Rm+Z3ZbDNkt1PP9GBH05+h68hVu8ehKPyBrWhxsD/nmept2V8g1ZNQntxsTv5/qnqxoo5A
+        3jTALCC5pe6rcT8XJwKFbslURP5EVerWtps/dOv8pRqVrd+H8f6cOzpua6ocFjzq2P6k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQ9Ek-00EEch-OF; Mon, 22 Aug 2022 17:21:10 +0200
+Date:   Mon, 22 Aug 2022 17:21:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Casper Andersson <casper.casan@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/3] mm: page_counter: remove unneeded atomic ops for
- low/min
-Message-ID: <YwOeocdkF/lacpKn@dhcp22.suse.cz>
-References: <20220822001737.4120417-1-shakeelb@google.com>
- <20220822001737.4120417-2-shakeelb@google.com>
- <YwNSlZFPMgclrSCz@dhcp22.suse.cz>
- <YwNX+vq9svMynVgW@dhcp22.suse.cz>
- <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 2/3] net: sparx5: add list for mdb entries in
+ driver
+Message-ID: <YwOe5hNa1PJFr077@lunn.ch>
+References: <20220822140800.2651029-1-casper.casan@gmail.com>
+ <20220822140800.2651029-3-casper.casan@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CALvZod720nwfP68OM2QtyyWJpOV5aO8xF6iuN0U2hpX9Pzj8PA@mail.gmail.com>
+In-Reply-To: <20220822140800.2651029-3-casper.casan@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,65 +54,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon 22-08-22 07:55:58, Shakeel Butt wrote:
-> On Mon, Aug 22, 2022 at 3:18 AM Michal Hocko <mhocko@suse.com> wrote:
-> >
-> > On Mon 22-08-22 11:55:33, Michal Hocko wrote:
-> > > On Mon 22-08-22 00:17:35, Shakeel Butt wrote:
-> > [...]
-> > > > diff --git a/mm/page_counter.c b/mm/page_counter.c
-> > > > index eb156ff5d603..47711aa28161 100644
-> > > > --- a/mm/page_counter.c
-> > > > +++ b/mm/page_counter.c
-> > > > @@ -17,24 +17,23 @@ static void propagate_protected_usage(struct page_counter *c,
-> > > >                                   unsigned long usage)
-> > > >  {
-> > > >     unsigned long protected, old_protected;
-> > > > -   unsigned long low, min;
-> > > >     long delta;
-> > > >
-> > > >     if (!c->parent)
-> > > >             return;
-> > > >
-> > > > -   min = READ_ONCE(c->min);
-> > > > -   if (min || atomic_long_read(&c->min_usage)) {
-> > > > -           protected = min(usage, min);
-> > > > +   protected = min(usage, READ_ONCE(c->min));
-> > > > +   old_protected = atomic_long_read(&c->min_usage);
-> > > > +   if (protected != old_protected) {
-> > >
-> > > I have to cache that code back into brain. It is really subtle thing and
-> > > it is not really obvious why this is still correct. I will think about
-> > > that some more but the changelog could help with that a lot.
-> >
-> > OK, so the this patch will be most useful when the min > 0 && min <
-> > usage because then the protection doesn't really change since the last
-> > call. In other words when the usage grows above the protection and your
-> > workload benefits from this change because that happens a lot as only a
-> > part of the workload is protected. Correct?
-> 
-> Yes, that is correct. I hope the experiment setup is clear now.
+> +struct sparx5_mdb_entry {
+> +	struct list_head list;
+> +	unsigned char addr[ETH_ALEN];
+> +	u16 vid;
+> +	DECLARE_BITMAP(port_mask, SPX5_PORTS);
+> +	bool cpu_copy;
+> +	u16 pgid_idx;
+> +};
 
-Maybe it is just me that it took a bit to grasp but maybe we want to
-save our future selfs from going through that mental process again. So
-please just be explicit about that in the changelog. It is really the
-part that workloads excessing the protection will benefit the most that
-would help to understand this patch.
+You have a number of holes in that structure. Maybe this is better:
 
-> > Unless I have missed anything this shouldn't break the correctness but I
-> > still have to think about the proportional distribution of the
-> > protection because that adds to the complexity here.
-> 
-> The patch is not changing any semantics. It is just removing an
-> unnecessary atomic xchg() for a specific scenario (min > 0 && min <
-> usage). I don't think there will be any change related to proportional
-> distribution of the protection.
+> +struct sparx5_mdb_entry {
+> +	struct list_head list;
+> +	DECLARE_BITMAP(port_mask, SPX5_PORTS);
+> +	unsigned char addr[ETH_ALEN];
+> +	bool cpu_copy;
+> +	u16 vid;
+> +	u16 pgid_idx;
+> +};
 
-Yes, I suspect you are right. I just remembered previous fixes
-like 503970e42325 ("mm: memcontrol: fix memory.low proportional
-distribution") which just made me nervous that this is a tricky area.
+Hopefully the compiler can pack the bool straight after the 6 byte MAC
+address. And the two u16 should make one u32.
 
-I will have another look tomorrow with a fresh brain and send an ack.
--- 
-Michal Hocko
-SUSE Labs
+> +static int sparx5_alloc_mdb_entry(struct sparx5 *sparx5,
+> +				  const unsigned char *addr,
+> +				  u16 vid,
+> +				  struct sparx5_mdb_entry **entry_out)
+> +{
+> +	struct sparx5_mdb_entry *entry;
+> +	u16 pgid_idx;
+> +	int err;
+> +
+> +	entry = devm_kzalloc(sparx5->dev, sizeof(struct sparx5_mdb_entry), GFP_ATOMIC);
+
+Does devm_kzalloc make sense here? A MDB entry has a much shorter life
+time than the driver. devm has overheads, so it is good for large
+allocations which last as long as the device, but less so for lots of
+small short lives structures.
+
+      Andrew
