@@ -2,76 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5817659B841
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 06:14:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C167D59B88E
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 06:53:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232519AbiHVENn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 00:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43754 "EHLO
+        id S230407AbiHVExU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 00:53:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230425AbiHVENm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 00:13:42 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3463AB7D1;
-        Sun, 21 Aug 2022 21:13:40 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27M4DGVa046672;
-        Sun, 21 Aug 2022 23:13:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661141596;
-        bh=WU5HjxtWjXnyPJ1rD+Irph5DqOHoAcuxx5L+dEWF/QA=;
-        h=Date:CC:Subject:To:References:From:In-Reply-To;
-        b=aB5cMCvUHKS26UpWNSJGSvo19vLFRkzPi03rx/GQBHa+r7BfMz1GMLiaPSVrGvtFc
-         ABn+2XMDlk6Lj5Wu9DMbElv5Y2cjO1y92A/X6qD8btyZdPfee0rAiL7ARmgqHEZHOL
-         3J+V/DD5Rxpf2LKoOTJi0gO+n2i9lWtL6krDDjcU=
-Received: from DFLE110.ent.ti.com (dfle110.ent.ti.com [10.64.6.31])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27M4DFbj080319
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sun, 21 Aug 2022 23:13:15 -0500
-Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Sun, 21
- Aug 2022 23:13:15 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DFLE110.ent.ti.com
- (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Sun, 21 Aug 2022 23:13:15 -0500
-Received: from [10.24.69.241] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27M4DAaL047419;
-        Sun, 21 Aug 2022 23:13:11 -0500
-Message-ID: <130bc5c3-176d-f6ee-276f-5a04add15cd2@ti.com>
-Date:   Mon, 22 Aug 2022 09:43:09 +0530
+        with ESMTP id S229562AbiHVExT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 00:53:19 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB2ABDF8;
+        Sun, 21 Aug 2022 21:53:16 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id v23so3604840plo.9;
+        Sun, 21 Aug 2022 21:53:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=C3Cjrjk6xyl2vW7AF8zcOGqP/d2kVrvPGE4x2bwbhnI=;
+        b=IfgQgo/wCyRF8eF4A4vvbHsHB+RZxtccVX/zUuxM6Z1W66CRaQ9EMCR/r6TGHcIO0w
+         uQUCuJ29ZiqxjRmWaUxP4ANLwuLwGzuOJIDgK3BQLoFCNlsrhUssgKL5hmrMhrdBcjuR
+         YTeW/2VxieCLJPC8ugLaCrUJzDHH5Bl0DJ/WrZUQ/sy/995Qy+RPmu00/O39ULRxkIGH
+         zhNfRvzURYzCtWu4JfsA9CavtlD+dfVWwDc39nNykImWgZulJT5KSCJRAhqhBivPu7n6
+         5WkxYCSUWZZGYBSpD08K81bgAX+qPUDTg8FnNfJry/crk8DGpHrYVtZsELgnVc4e9M6b
+         3Ihw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=C3Cjrjk6xyl2vW7AF8zcOGqP/d2kVrvPGE4x2bwbhnI=;
+        b=6WwYPCr0ox5o5xtm57acYmAfebyb1qAaL496UHDcCilVHxW4M8tpUxheMnfC9ErX1p
+         bSgGwp//Gaxq+Opz6Tr7MoYpJMCjlhiUnbf+UXdH1zG0ssD1VBao6LBRlCT6rXrjiGlf
+         8Fbl51eELX3zJnw4BHR2vdSS0iZ17wRrgt3bn/GpwMN5epm+zVavCNznAFjMx6CkrJuv
+         dcz47zrPWNVJN9Kqw1q24ilyTgCFHnanomatBDkdPHFdZvT3WAmBYRMZnZJzC38rQWug
+         wwB4jrkyBhSqCvR4Iv2yCgPwM0Rabp/KbYIfVOrm7GO85xQDMR+BATRMh5KBhyfa/4a0
+         gAyw==
+X-Gm-Message-State: ACgBeo3sMqoOwvZHkkiA5ZLjC0ZvUy2CBReeb2lpqgbsMjZyD1D+/NaG
+        lLqiy2Hwi2f2d5pUgq6MtzgPpOA9B94=
+X-Google-Smtp-Source: AA6agR6GYcbxs49o/zfPfQ7IRZDf8jFD+guSZNnWBsnL4/EgCAJIVlzIJIxRv5tu6Sgjljy3Q4FHpA==
+X-Received: by 2002:a17:90a:8911:b0:1fa:c8f7:1450 with SMTP id u17-20020a17090a891100b001fac8f71450mr20765973pjn.123.1661143996409;
+        Sun, 21 Aug 2022 21:53:16 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id w6-20020a170902e88600b0016bf803341asm3846233plg.146.2022.08.21.21.53.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Aug 2022 21:53:15 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: xu.xin16@zte.com.cn
+To:     davem@davemloft.net, kuba@kernel.org, yoshfuji@linux-ipv6.org,
+        dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linl@vger.kernel.org, xu.xin16@zte.com.cn
+Subject: [PATCH 0/3] Namespaceify two sysctls related with route
+Date:   Mon, 22 Aug 2022 04:53:10 +0000
+Message-Id: <20220822045310.203649-1-xu.xin16@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <robh+dt@kernel.org>, <linux@armlinux.org.uk>,
-        <vladimir.oltean@nxp.com>, <grygorii.strashko@ti.com>,
-        <vigneshr@ti.com>, <nsekhar@ti.com>, <netdev@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <kishon@ti.com>, <s-vadapalli@ti.com>
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: ti: k3-am654-cpsw-nuss: Update
- bindings for J7200 CPSW5G
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        <krzysztof.kozlowski+dt@linaro.org>
-References: <20220816060139.111934-1-s-vadapalli@ti.com>
- <20220816060139.111934-2-s-vadapalli@ti.com>
- <79e58157-f8f2-6ca8-1aa6-b5cf6c83d9e6@linaro.org>
- <31c3a5b0-17cc-ad7b-6561-5834cac62d3e@ti.com>
- <9c331cdc-e34a-1146-fb83-84c2107b2e2a@linaro.org>
- <176ab999-e274-e22a-97d8-31f655b16800@ti.com>
- <da82e71f-e32c-7adb-250e-0c80cc6e30bd@ti.com>
- <0ca78aad-2145-c88b-a26e-9ababa38df6e@ti.com>
- <9d9c2f78-db3e-71aa-2cdd-e2d9aa2b30cf@linaro.org>
-From:   Siddharth Vadapalli <s-vadapalli@ti.com>
-In-Reply-To: <9d9c2f78-db3e-71aa-2cdd-e2d9aa2b30cf@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,35 +68,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Krzysztof,
+From: xu xin <xu.xin16@zte.com.cn>
 
-On 19/08/22 17:34, Krzysztof Kozlowski wrote:
-> On 19/08/2022 13:43, Siddharth Vadapalli wrote:
-> 
->>>>> Anyway the location is not correct. Regardless if this is if-then or
->>>>> allOf-if-then, put it just like example schema is suggesting.
->>>>
->>>> I will move the if-then statements to the lines above the
->>>> "additionalProperties: false" line. Also, I will add an allOf for this
->>>
->>> I had a look at the example at [1] and it uses allOf after the
->>> "additionalProperties: false" line. Would it be fine then for me to add
->>> allOf and the single if-then statement below the "additionalProperties:
->>> false" line? Please let me know.
->>>
->>> [1] -> https://github.com/devicetree-org/dt-schema/blob/mai/test/schemas/conditionals-allof-example.yaml
->>
->> Sorry, the correct link is:
->> https://github.com/devicetree-org/dt-schema/blob/main/test/schemas/conditionals-allof-example.yaml
-> 
-> You are referring to tests? I did not suggest that. Please put it in
-> place like example schema is suggesting:
-> 
-> https://elixir.bootlin.com/linux/v5.19/source/Documentation/devicetree/bindings/example-schema.yaml
+With the rise of cloud native, more and more container applications are
+deployed. The network namespace is one of the foundations of the container.
+The sysctls of error_cost and error_burst are important knobs to control
+the sending frequency of ICMP_DEST_UNREACH packet for ipv4. When different
+containers has requirements on the tuning of error_cost and error_burst,
+for host's security, the sysctls should exist per network namespace.
 
-Thank you for the clarification. I will follow this schema and add the
-allOf and the single if-then statement just above the
-"additionalProperties: false" line.
+Different netns has different requirements on the setting of error_cost
+and error_burst, which are related with limiting the frequency of sending
+ICMP_DEST_UNREACH packets. Enable them to be configured per netns.
 
-Regards,
-Siddharth.
+*** BLURB HERE ***
+
+xu xin (3):
+  ipv4: Namespaceify route/error_cost knob
+  ipv4: Namespaceify route/error_burst knob
+  ipv4: add documentation of two sysctls about icmp
+
+ Documentation/networking/ip-sysctl.rst | 17 ++++++++++
+ include/net/netns/ipv4.h               |  2 ++
+ net/ipv4/route.c                       | 45 ++++++++++++++------------
+ 3 files changed, 44 insertions(+), 20 deletions(-)
+
+-- 
+2.25.1
+
