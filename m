@@ -2,168 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8F8B59C227
-	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:09:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6858D59C23E
+	for <lists+netdev@lfdr.de>; Mon, 22 Aug 2022 17:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236061AbiHVPI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 11:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
+        id S235980AbiHVPJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 11:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235853AbiHVPII (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:08:08 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F6839B8B
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:06:31 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id v4so9607350pgi.10
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:06:31 -0700 (PDT)
+        with ESMTP id S236082AbiHVPJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 11:09:03 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0EFB3C159
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:08 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id b2so8315561qvp.1
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 08:07:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=rfnLOnYHfibKVs6Fb4CyKhxW8tJzjkgGwDzJoC+bA0Y=;
-        b=WrEDmTe0u3FiZugr1PESRLE48S+q7XVC3UauDjAcW6HIAjvR0HdyDSvY4Yh8Xv56pD
-         zPk2pcgIpSUnoaMXQGMFXbv7itfEgQxASZu3plwAPK03XvXa6lCQJD9NZXVJ5o1FBtB8
-         X3x7rF1QRsVh4MXlsOXYfj66zh30hHfyZ2JsCANksMqp18M7jGVX8W3hXJJrdalpRqiG
-         suK5gjJfRKexqrQW/aKqFE+rYX7mOOZjjtfZCMzUoTVD8zZSvk9fiLVnIeZIGLgGzJaA
-         dDSVJr3UUABWryrmO8Xl1VpIQ5ZWGOWL9XjGltxQGHICMF2l1LmnoW0euDwnBGjZS2e+
-         1bmA==
+        d=broadcom.com; s=google;
+        h=message-id:date:subject:cc:to:from:from:to:cc;
+        bh=Y7jDliXrM1gLEuvnT6ODufIFUhOE42WZ0KzkgZRc2kI=;
+        b=KQlMnbyXvCgXEBgTLXyFje20zWTiPeURe4IFEP35YQTWfeIr4drvsQfEm0iAl5Qvrg
+         dXt7PP/jZTbZBpu9pX++zATdcyj2k3uVZsWhaDnyEi+EiKfZifXQPM0eEWFQJXuBVx79
+         NyC82dhRo3VxE3QjT1P4PUQgJiYjVcrkcYH8Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=rfnLOnYHfibKVs6Fb4CyKhxW8tJzjkgGwDzJoC+bA0Y=;
-        b=N+Krtq+EbDYBtt9JFcKRAiNKhoUj3hixqTnmFHw8NK0Ias7ik4j8BG8n3JNl1e/3eD
-         mDcOhTMi+e57KIJI3YoDcp1AESGaOejzynwq8kBQyw1AM6jt3cpGcs99M7QzkP4RnInR
-         IVU5lonbIu04DQ23gT3DthRCliIloFaAtI8NTyemQpUJEUelMxGIRpBsQk09ij2ZcfIb
-         i2C1lwhDKBusec78oVFBTEzDe2OuT9GO2NvfNHAXCZHsMuo5VSp7Xy+OWK4wRMuzOmh6
-         le5Wke/lvAcideDcYHxr9wvKzMtgXkLcHqsgOPLbrhyVr5hKzRLRsmkcqrN56sg2woQ8
-         pCBA==
-X-Gm-Message-State: ACgBeo25fBRfkl+POBM8uiMv66zyGE9rPPr4Dx9/6adhwTuvy9zqUQm6
-        mtBUq8wI/EwxaY22CK1RR7aiTH5ObVjT8mAE0rGm0w==
-X-Google-Smtp-Source: AA6agR5ItK2qWDc7jjr7fBTr2W7+SERWzFKsbKa/joz2WD3UuK5X9GUCKjlxWu+Hd97AdsMRT/n9+/7Fvy1T5C4iolI=
-X-Received: by 2002:a05:6a00:2392:b0:52e:b4fb:848 with SMTP id
- f18-20020a056a00239200b0052eb4fb0848mr21499685pfc.8.1661180785557; Mon, 22
- Aug 2022 08:06:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220822001737.4120417-1-shakeelb@google.com> <20220822001737.4120417-3-shakeelb@google.com>
- <YwNZD4YlRkvQCWFi@dhcp22.suse.cz>
-In-Reply-To: <YwNZD4YlRkvQCWFi@dhcp22.suse.cz>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 22 Aug 2022 08:06:14 -0700
-Message-ID: <CALvZod5pw_7hnH44hdC3rDGQxQB2XATrViNNGosG3FnUoWo-4A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm: page_counter: rearrange struct page_counter fields
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Johannes Weiner <hannes@cmpxchg.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Muchun Song <songmuchun@bytedance.com>,
-        =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Oliver Sang <oliver.sang@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
-        Cgroups <cgroups@vger.kernel.org>, Linux MM <linux-mm@kvack.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=Y7jDliXrM1gLEuvnT6ODufIFUhOE42WZ0KzkgZRc2kI=;
+        b=0dKLZx66I7zLUcCQAm+TPYWdWGrsv68W0sY/wzAPBts1M1z7WnPga8HjZrTSEt6TRr
+         tC62sv26+F7iSIssMvXpzGZIqJwa8qvb8vFWe96zbgSjxQqRFMnbEBMRjgcGa68CZvyF
+         sA2DWoYEbx3HQ5TSf01PX2HXV7+9pkUZ48Z7T0Z+7xfeYiBg/i4SoofqF2jzVyGUh1KL
+         NFncG5GlPLTZiTjQZ8PlpPZDdsGXb8X+/wGXzqZ1Sdd7oeJUVPnfWSdF+3iinjjJwaZy
+         nNpNar0BZyjuQL5s15L876dyAHoqbHrD0i1PN8FpS0eGMVyXTTnSdWGdUP6kF4NXZsjG
+         BU8w==
+X-Gm-Message-State: ACgBeo14rp9CTAji9KUhGZV5Wkpvh5z7Ee4mqwVCCckZBPh4nCks5hBb
+        DTPy+9B8EpjfwYPK//SLGGEJ5A==
+X-Google-Smtp-Source: AA6agR56YppDGQ1ReJ83CFN4UNl3PrzKUoFrQeEoWCKMqPCI9Khvj0vUcmvblT0QWImqMDPTRVyZhw==
+X-Received: by 2002:ad4:5ced:0:b0:496:ea19:65ed with SMTP id iv13-20020ad45ced000000b00496ea1965edmr2920260qvb.35.1661180824419;
+        Mon, 22 Aug 2022 08:07:04 -0700 (PDT)
+Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id f39-20020a05622a1a2700b00342f05defd1sm9380836qtb.66.2022.08.22.08.07.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 22 Aug 2022 08:07:03 -0700 (PDT)
+From:   Michael Chan <michael.chan@broadcom.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, gospo@broadcom.com
+Subject: [PATCH net 0/4] bnxt_en: Bug fixes
+Date:   Mon, 22 Aug 2022 11:06:50 -0400
+Message-Id: <1661180814-19350-1-git-send-email-michael.chan@broadcom.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000f7ef1a05e6d5ccf6"
+X-Spam-Status: No, score=-1.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        MIME_HEADER_CTYPE_ONLY,MIME_NO_TEXT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,T_TVD_MIME_NO_HEADERS autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 3:23 AM Michal Hocko <mhocko@suse.com> wrote:
->
-> On Mon 22-08-22 00:17:36, Shakeel Butt wrote:
-> > With memcg v2 enabled, memcg->memory.usage is a very hot member for
-> > the workloads doing memcg charging on multiple CPUs concurrently.
-> > Particularly the network intensive workloads. In addition, there is a
-> > false cache sharing between memory.usage and memory.high on the charge
-> > path. This patch moves the usage into a separate cacheline and move all
-> > the read most fields into separate cacheline.
-> >
-> > To evaluate the impact of this optimization, on a 72 CPUs machine, we
-> > ran the following workload in a three level of cgroup hierarchy with top
-> > level having min and low setup appropriately. More specifically
-> > memory.min equal to size of netperf binary and memory.low double of
-> > that.
->
-> Again the workload description is not particularly useful. I guess the
-> only important aspect is the netserver part below and the number of CPUs
-> because min and low setup doesn't have much to do with this, right? At
-> least that is my reading of the memory.high mentioned above.
->
+--000000000000f7ef1a05e6d5ccf6
 
-The experiment numbers below are for only this patch independently
-i.e. the unnecessary min/low atomic xchg() is still happening for both
-setups. I could run the experiment without setting min and low but I
-wanted to keep the setup exactly the same for all three optimizations.
+This series includes 2 fixes for regressions introduced by the XDP
+multi-buffer feature, 1 devlink reload bug fix, and 1 SRIOV resource
+accounting bug fix.
 
-This patch and the following perf numbers shows only the impact of
-removing false sharing in struct page_counter for memcg->memory on the
-charging code path.
+Pavan Chebbi (1):
+  bnxt_en: Use PAGE_SIZE to init buffer when multi buffer XDP is not in
+    use
 
-> >  $ netserver -6
-> >  # 36 instances of netperf with following params
-> >  $ netperf -6 -H ::1 -l 60 -t TCP_SENDFILE -- -m 10K
-> >
-> > Results (average throughput of netperf):
-> > Without (6.0-rc1)     10482.7 Mbps
-> > With patch            12413.7 Mbps (18.4% improvement)
-> >
-> > With the patch, the throughput improved by 18.4%.
-> >
-> > One side-effect of this patch is the increase in the size of struct
-> > mem_cgroup. However for the performance improvement, this additional
-> > size is worth it. In addition there are opportunities to reduce the size
-> > of struct mem_cgroup like deprecation of kmem and tcpmem page counters
-> > and better packing.
-> >
-> > Signed-off-by: Shakeel Butt <shakeelb@google.com>
-> > Reported-by: kernel test robot <oliver.sang@intel.com>
-> > ---
-> >  include/linux/page_counter.h | 34 +++++++++++++++++++++++-----------
-> >  1 file changed, 23 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/include/linux/page_counter.h b/include/linux/page_counter.h
-> > index 679591301994..8ce99bde645f 100644
-> > --- a/include/linux/page_counter.h
-> > +++ b/include/linux/page_counter.h
-> > @@ -3,15 +3,27 @@
-> >  #define _LINUX_PAGE_COUNTER_H
-> >
-> >  #include <linux/atomic.h>
-> > +#include <linux/cache.h>
-> >  #include <linux/kernel.h>
-> >  #include <asm/page.h>
-> >
-> > +#if defined(CONFIG_SMP)
-> > +struct pc_padding {
-> > +     char x[0];
-> > +} ____cacheline_internodealigned_in_smp;
-> > +#define PC_PADDING(name)     struct pc_padding name
-> > +#else
-> > +#define PC_PADDING(name)
-> > +#endif
-> > +
-> >  struct page_counter {
-> > +     /*
-> > +      * Make sure 'usage' does not share cacheline with any other field. The
-> > +      * memcg->memory.usage is a hot member of struct mem_cgroup.
-> > +      */
-> > +     PC_PADDING(_pad1_);
->
-> Why don't you simply require alignment for the structure?
+Vikas Gupta (3):
+  bnxt_en: set missing reload flag in devlink features
+  bnxt_en: fix NQ resource accounting during vf creation on 57500 chips
+  bnxt_en: fix LRO/GRO_HW features in ndo_fix_features callback
 
-I don't just want the alignment of the structure. I want different
-fields of this structure to not share the cache line. More
-specifically the 'high' and 'usage' fields. With this change the usage
-will be its own cache line, the read-most fields will be on separate
-cache line and the fields which sometimes get updated on charge path
-based on some condition will be a different cache line from the
-previous two.
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c         |  5 +----
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |  1 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c   |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_xdp.c     | 10 ++++++++--
+ 5 files changed, 12 insertions(+), 7 deletions(-)
+
+-- 
+2.18.1
+
+
+--000000000000f7ef1a05e6d5ccf6
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+MIIQbQYJKoZIhvcNAQcCoIIQXjCCEFoCAQExDzANBglghkgBZQMEAgEFADALBgkqhkiG9w0BBwGg
+gg3EMIIFDTCCA/WgAwIBAgIQeEqpED+lv77edQixNJMdADANBgkqhkiG9w0BAQsFADBMMSAwHgYD
+VQQLExdHbG9iYWxTaWduIFJvb3QgQ0EgLSBSMzETMBEGA1UEChMKR2xvYmFsU2lnbjETMBEGA1UE
+AxMKR2xvYmFsU2lnbjAeFw0yMDA5MTYwMDAwMDBaFw0yODA5MTYwMDAwMDBaMFsxCzAJBgNVBAYT
+AkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBS
+MyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+vbCmXCcsbZ/a0fRIQMBxp4gJnnyeneFYpEtNydrZZ+GeKSMdHiDgXD1UnRSIudKo+moQ6YlCOu4t
+rVWO/EiXfYnK7zeop26ry1RpKtogB7/O115zultAz64ydQYLe+a1e/czkALg3sgTcOOcFZTXk38e
+aqsXsipoX1vsNurqPtnC27TWsA7pk4uKXscFjkeUE8JZu9BDKaswZygxBOPBQBwrA5+20Wxlk6k1
+e6EKaaNaNZUy30q3ArEf30ZDpXyfCtiXnupjSK8WU2cK4qsEtj09JS4+mhi0CTCrCnXAzum3tgcH
+cHRg0prcSzzEUDQWoFxyuqwiwhHu3sPQNmFOMwIDAQABo4IB2jCCAdYwDgYDVR0PAQH/BAQDAgGG
+MGAGA1UdJQRZMFcGCCsGAQUFBwMCBggrBgEFBQcDBAYKKwYBBAGCNxQCAgYKKwYBBAGCNwoDBAYJ
+KwYBBAGCNxUGBgorBgEEAYI3CgMMBggrBgEFBQcDBwYIKwYBBQUHAxEwEgYDVR0TAQH/BAgwBgEB
+/wIBADAdBgNVHQ4EFgQUljPR5lgXWzR1ioFWZNW+SN6hj88wHwYDVR0jBBgwFoAUj/BLf6guRSSu
+TVD6Y5qL3uLdG7wwegYIKwYBBQUHAQEEbjBsMC0GCCsGAQUFBzABhiFodHRwOi8vb2NzcC5nbG9i
+YWxzaWduLmNvbS9yb290cjMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5j
+b20vY2FjZXJ0L3Jvb3QtcjMuY3J0MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwuZ2xvYmFs
+c2lnbi5jb20vcm9vdC1yMy5jcmwwWgYDVR0gBFMwUTALBgkrBgEEAaAyASgwQgYKKwYBBAGgMgEo
+CjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAN
+BgkqhkiG9w0BAQsFAAOCAQEAdAXk/XCnDeAOd9nNEUvWPxblOQ/5o/q6OIeTYvoEvUUi2qHUOtbf
+jBGdTptFsXXe4RgjVF9b6DuizgYfy+cILmvi5hfk3Iq8MAZsgtW+A/otQsJvK2wRatLE61RbzkX8
+9/OXEZ1zT7t/q2RiJqzpvV8NChxIj+P7WTtepPm9AIj0Keue+gS2qvzAZAY34ZZeRHgA7g5O4TPJ
+/oTd+4rgiU++wLDlcZYd/slFkaT3xg4qWDepEMjT4T1qFOQIL+ijUArYS4owpPg9NISTKa1qqKWJ
+jFoyms0d0GwOniIIbBvhI2MJ7BSY9MYtWVT5jJO3tsVHwj4cp92CSFuGwunFMzCCA18wggJHoAMC
+AQICCwQAAAAAASFYUwiiMA0GCSqGSIb3DQEBCwUAMEwxIDAeBgNVBAsTF0dsb2JhbFNpZ24gUm9v
+dCBDQSAtIFIzMRMwEQYDVQQKEwpHbG9iYWxTaWduMRMwEQYDVQQDEwpHbG9iYWxTaWduMB4XDTA5
+MDMxODEwMDAwMFoXDTI5MDMxODEwMDAwMFowTDEgMB4GA1UECxMXR2xvYmFsU2lnbiBSb290IENB
+IC0gUjMxEzARBgNVBAoTCkdsb2JhbFNpZ24xEzARBgNVBAMTCkdsb2JhbFNpZ24wggEiMA0GCSqG
+SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDMJXaQeQZ4Ihb1wIO2hMoonv0FdhHFrYhy/EYCQ8eyip0E
+XyTLLkvhYIJG4VKrDIFHcGzdZNHr9SyjD4I9DCuul9e2FIYQebs7E4B3jAjhSdJqYi8fXvqWaN+J
+J5U4nwbXPsnLJlkNc96wyOkmDoMVxu9bi9IEYMpJpij2aTv2y8gokeWdimFXN6x0FNx04Druci8u
+nPvQu7/1PQDhBjPogiuuU6Y6FnOM3UEOIDrAtKeh6bJPkC4yYOlXy7kEkmho5TgmYHWyn3f/kRTv
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBUwwggQ0oAMCAQICDBB5T5jqFt6c/NEwmzANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDE0MTRaFw0yMjA5MjIxNDQzNDhaMIGO
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xFTATBgNVBAMTDE1pY2hhZWwgQ2hhbjEoMCYGCSqGSIb3DQEJ
+ARYZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBANtwBQrLJBrTcbQ1kmjdo+NJT2hFaBFsw1IOi34uVzWz21AZUqQkNVktkT740rYuB1m1No7W
+EBvfLuKxbgQO2pHk9mTUiTHsrX2CHIw835Du8Co2jEuIqAsocz53NwYmk4Sj0/HqAfxgtHEleK2l
+CR56TX8FjvCKYDsIsXIjMzm3M7apx8CQWT6DxwfrDBu607V6LkfuHp2/BZM2GvIiWqy2soKnUqjx
+xV4Em+0wQoEIR2kPG6yiZNtUK0tNCaZejYU/Mf/bzdKSwud3pLgHV8ls83y2OU/ha9xgJMLpRswv
+xucFCxMsPmk0yoVmpbr92kIpLm+TomNZsL++LcDRa2ECAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUz2bMvqtXpXM0u3vAvRkalz60
+CjswDQYJKoZIhvcNAQELBQADggEBAGUgeqqI/q2pkETeLr6oS7nnm1bkeNmtnJ2bnybNO/RdrbPj
+DHVSiDCCrWr6xrc+q6OiZDKm0Ieq6BN+Wfr8h5mCkZMUdJikI85WcQTRk6EEF2lzIiaULmFD7U15
+FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
+1CHkODrS2JGwDQxXKmyF64MhJiOutWHmqoGmLJVz1jnDvClsYtgT4zcNtoqKtjpWDYAefncWDPIQ
+DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEINqwibL4aykYaWEVCkiDyPrnnOKkLJ8E
+2xI+PhHIhQXoMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDgy
+MjE1MDcwNFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQCNTF72ztB+yNLtylR4c8l1dnPJRXrVB8+YWbyWboyP9XaUyatc
+XsfF1umG9fHOGXICMKVvfFH5MgB+Sq/j6VkpPgx0A3cx4mhZCH1LYMo5qHs39J4d3MZwlkUooXzm
+RjP8tyVVIwrMxexhgjl8aneUFX5QFvW4bzFxMZuKXCJLKe9rnEzNItt7+H7x35xFQiwCohVWJOao
+WC/VVTgM6+tDuORhKlOV+sKhO3Y2oMovwRVGjcrSLxF4ho+SSnxCwNaeJsOFyKFg7P3FcoaEZI7S
+FcZ3qAm9on5BA04XAqBC2HJptLbp2AuU3D4/3rEvK9MjEwJ261FwZy3mQsXx0JLi
+--000000000000f7ef1a05e6d5ccf6--
