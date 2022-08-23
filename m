@@ -2,59 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8909F59CD85
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 03:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E29D959CD96
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 03:11:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiHWBC6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 21:02:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60994 "EHLO
+        id S238125AbiHWBKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 21:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234268AbiHWBC4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 21:02:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C17475723F;
-        Mon, 22 Aug 2022 18:02:53 -0700 (PDT)
+        with ESMTP id S232335AbiHWBKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 21:10:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB2E257E16;
+        Mon, 22 Aug 2022 18:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE59B81999;
-        Tue, 23 Aug 2022 01:02:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D024C433C1;
-        Tue, 23 Aug 2022 01:02:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C848611AA;
+        Tue, 23 Aug 2022 01:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E396FC43470;
+        Tue, 23 Aug 2022 01:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661216571;
-        bh=0RbBpp7t9NVz/mrK11JCXqRquwpwYw5mb8dwqhMYJVg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iDw0OdYLsySfAAHcxDH2mY4Wbrqlg9lb+gJOuRy8Q3NuBU4smOAjuHgPigI/QpZCK
-         9fzwfjNUOFlJ+PHBIars8BiFleroMtH7DE4Xr1Mld5OcwSitt2sNhZNHl5iFY2f4FW
-         Pgb4qdhoPuNBv7Jq0SnzBZldAVtffu5CHRR5Uo16gxLqy64JUpANp2N4PwwBe/DxOI
-         85eX/qD2Z4JmWROdxEuQRRlJpa6kUAlQJ7KHzS9Nf5BWO5tkr4IJqA1sT1R4x0Ik5Z
-         RZ6gC1CPDb30bTavoA/SBUsK9/oL/Odh7ouuO/tZg+GggxQ/C+IZGIQKst3jXRav8d
-         EOTD/KZIWi1Ig==
-Date:   Mon, 22 Aug 2022 18:02:49 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, Stefan Haberland <sth@linux.ibm.com>,
-        Jan Hoeppner <hoeppner@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vineeth Vijayan <vneethv@linux.ibm.com>,
-        Peter Oberparleiter <oberpar@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>,
-        Wenjia Zhang <wenjia@linux.ibm.com>,
-        Steffen Maier <maier@linux.ibm.com>,
-        Benjamin Block <bblock@linux.ibm.com>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] s390: move from strlcpy with unused retval to strscpy
-Message-ID: <20220822180249.2c79c7e8@kernel.org>
-In-Reply-To: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
-References: <20220818210102.7301-1-wsa+renesas@sang-engineering.com>
+        s=k20201202; t=1661217016;
+        bh=B4gEu7tI6of1iTdlcH4SJ/wMzHBSy9PEXCMQ40b1e68=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=WwVPmqVaMhd8Y9ZskOrRwFDt1SaNF3BlzdHVF3voBkUNKKPpptUtMjM1VFX46my3S
+         WbNtuFjZYF/yop9NIlChJCQE5WwdtivsEeEsWO9XLfLoP+m7VIcitkFNRrpcdZ8srJ
+         YO/0Cz/7O2xmTePhN2sYK8FV6Wj/5HooLybXiyNVVu6kvBl6L7Msb68cbCBzKT9nMC
+         lcIVe2S7HDzpHuVn6eEHjjRlThD8NZa/yRHMWJ4dyRGcEwp1f/LfjGa5+kpyJTPLvP
+         O0GhZmBJxMQW1xysFADOO9TlH6TwhT2hkj7gxZiveDZNfFRvyOUQ1XrFaXrZEMw3WS
+         YgUvho8/+sOsw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B91EEE2A041;
+        Tue, 23 Aug 2022 01:10:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] ipv4: move from strlcpy with unused retval to strscpy
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166121701575.19090.7668984941845503725.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Aug 2022 01:10:15 +0000
+References: <20220818210219.8467-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220818210219.8467-1-wsa+renesas@sang-engineering.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -65,28 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 18 Aug 2022 23:01:01 +0200 Wolfram Sang wrote:
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 18 Aug 2022 23:02:19 +0200 you wrote:
 > Follow the advice of the below link and prefer 'strscpy' in this
 > subsystem. Conversion is 1:1 because the return value is not used.
 > Generated by a coccinelle script.
 > 
 > Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
 > Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> ---
->  drivers/s390/block/dasd_devmap.c | 2 +-
->  drivers/s390/block/dasd_eer.c    | 4 ++--
->  drivers/s390/block/dcssblk.c     | 2 +-
->  drivers/s390/char/hmcdrv_cache.c | 2 +-
->  drivers/s390/char/tape_class.c   | 4 ++--
->  drivers/s390/cio/qdio_debug.c    | 2 +-
->  drivers/s390/net/ctcm_main.c     | 2 +-
->  drivers/s390/net/fsm.c           | 2 +-
->  drivers/s390/net/qeth_ethtool.c  | 4 ++--
->  drivers/s390/scsi/zfcp_aux.c     | 2 +-
->  drivers/s390/scsi/zfcp_fc.c      | 2 +-
+> 
+> [...]
 
-I'm assuming this will go via the s390 tree? 
+Here is the summary with links:
+  - ipv4: move from strlcpy with unused retval to strscpy
+    https://git.kernel.org/netdev/net-next/c/01e454f243f0
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-If nobody picks it up please feel free to resend the networking parts to us.
+
