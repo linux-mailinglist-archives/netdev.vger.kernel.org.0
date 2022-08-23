@@ -2,101 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 42F8459EE88
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 23:58:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 264A759EE91
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229963AbiHWV6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 17:58:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60890 "EHLO
+        id S231789AbiHWWBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 18:01:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbiHWV6n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 17:58:43 -0400
-Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CEF959C;
-        Tue, 23 Aug 2022 14:58:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661291922; x=1692827922;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=P2sg/Y2ei1LJ5TOzsXWJG6dJ7t5e5k6b+DFks6T66ZI=;
-  b=egqtrGlOdeCOyz1VycYEPRl9aBRn0ArUIfhu5qZNX3ygmWz9IvBboDAI
-   omYCOegSU6AAci/yyfs4BQKeh7mD9AuVSTACJ3I7meJfROViIp2sZSX41
-   FnLraZlMJJ+gEQFnyDdr7EQaIqlQuaaBokBFBFXy+Q49bLVVOKRs3NE5j
-   Y=;
-X-IronPort-AV: E=Sophos;i="5.93,258,1654560000"; 
-   d="scan'208";a="220438679"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 21:58:26 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com (Postfix) with ESMTPS id 78FD581A39;
-        Tue, 23 Aug 2022 21:58:25 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 23 Aug 2022 21:58:24 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 23 Aug 2022 21:58:22 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v3 bpf] bpf: Fix a data-race around bpf_jit_limit.
-Date:   Tue, 23 Aug 2022 14:58:04 -0700
-Message-ID: <20220823215804.2177-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S231786AbiHWWBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:01:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E965D0F7
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:01:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 236BB61610
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:01:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 152ABC433D6;
+        Tue, 23 Aug 2022 22:01:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661292074;
+        bh=13KkCImYPGO1gwY0tC1HOuvodh81OFdQBrAgXq/D+pI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rU+rvOvH78/4IzB5H5WlufNlZI5hipMeLQNMganD7Wk8CS36qRsKtVb0Qm8RPdp2s
+         1KMLDkPHH2T/7MmkIGtiChb/sx3EL8liJoVXcHs8JY9diVsoe1XCy9lloy0OWY5FOt
+         3Aim1PDu4WYCjL7ZUK/vis7bBgykrEL1rIMpIlH5mdKM99ypDwHRmZB22ZQX0M0MhJ
+         ewa1OHUEMD8k6n7XZgEDW2lT88U7SmO0PN8ZjbguzWj5Wah6v18MT7BjYY0mUB6JJz
+         tM7O9g9e9DaYeEejWRyFYr/fyUO6h5789uIHq7arK7Dx8p6GvhKXUq/xP2wL3eW4Lg
+         UogYweEIBj+uQ==
+Date:   Tue, 23 Aug 2022 15:01:13 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Brian Hutchinson <b.hutchman@gmail.com>
+Subject: Re: [PATCH v2 net] net: dsa: microchip: make learning configurable
+ and keep it off while standalone
+Message-ID: <20220823150113.22616755@kernel.org>
+In-Reply-To: <20220823214253.wbzjdxgforuryxqp@skbuf>
+References: <20220818164809.3198039-1-vladimir.oltean@nxp.com>
+        <20220823143831.2b98886b@kernel.org>
+        <20220823214253.wbzjdxgforuryxqp@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.140]
-X-ClientProxiedBy: EX13D47UWC003.ant.amazon.com (10.43.162.70) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading bpf_jit_limit, it can be changed concurrently via sysctl,
-WRITE_ONCE() in __do_proc_doulongvec_minmax().  The size of bpf_jit_limit
-is long, so we need to add a paired READ_ONCE() to avoid load-tearing.
+On Wed, 24 Aug 2022 00:42:53 +0300 Vladimir Oltean wrote:
+> On Tue, Aug 23, 2022 at 02:38:31PM -0700, Jakub Kicinski wrote:
+> > > @maintainers: when should I submit the backports to "stable", for older
+> > > trees?  
+> > 
+> > "when" as is how long after Thu PR or "when" as in under what
+> > conditions?  
+> 
+> how long after the "net" pull request, yes.
+> I'm a bit confused as to how patches from "net" reach the stable queue.
+> If they do get there, I'm pretty confident that Greg or Sasha will send
+> out an email about patches failing to apply to this and that stable
+> branch, and I can reply to those with backports.
 
-Fixes: ede95a63b5e8 ("bpf: add bpf_jit_limit knob to restrict unpriv allocations")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
-v3:
-  * Update changelog to clarify paired WRITE_ONCE() and motivation
-    as load-tearing.
+Adding Greg, cause I should probably know but I don't. 
 
-v2: https://lore.kernel.org/netdev/20220823181247.90349-1-kuniyu@amazon.com/
-  * Drop other 3 patches (No change for this patch)
+My understanding is that Greg and Sasha scan Linus's tree periodically
+and everything with a Fixes tag is pretty much guaranteed to be
+selected. Whether that's a hard guarantee IDK. Would be neat if it was
+so we don't have to add the CC: stable lines.
 
-v1: https://lore.kernel.org/bpf/20220818042339.82992-1-kuniyu@amazon.com/
----
- kernel/bpf/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index c1e10d088dbb..3d9eb3ae334c 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -971,7 +971,7 @@ pure_initcall(bpf_jit_charge_init);
- 
- int bpf_jit_charge_modmem(u32 size)
- {
--	if (atomic_long_add_return(size, &bpf_jit_current) > bpf_jit_limit) {
-+	if (atomic_long_add_return(size, &bpf_jit_current) > READ_ONCE(bpf_jit_limit)) {
- 		if (!bpf_capable()) {
- 			atomic_long_sub(size, &bpf_jit_current);
- 			return -EPERM;
--- 
-2.30.2
-
+Also not sure if it's preferred to wait for the failure notification 
+or you should pre-queue the backport as soon as it reaches Linus.
+I vague recall someone saying to wait for the notification...
