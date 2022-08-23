@@ -2,152 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39F9559E4A0
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:47:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D3D59E4BB
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236657AbiHWNrZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 09:47:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34490 "EHLO
+        id S235804AbiHWNzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 09:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238650AbiHWNrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:47:07 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B90C20766C
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:51:52 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1661251835;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nJMvSnzOfKnLLHT11Q1DGzX+DAQF0C2lBP38jFwkGOM=;
-        b=zTieD6dAuzWVh7mB/huTZyucUx45RY40At00fZFLTCX4r9XFTAu74g6dQuO1T7zgmX/8Wh
-        4tEvUfdAml5AjOaY9fl65dowbEoZduLVk8KGAeiCIEypoW2zeU7IvEA7FKy49+Z6kCGHlO
-        I8zlEjXPFAwH+6dp0VtMt2JKgvwxW3STmRZv4gxz10gwcjzIFzttTRbd4fSIXrn23nwK1S
-        WWvoC57ZWkmorVgIzqvUFp31DPYQmI/urzRcBzVi3AQXd4KnH08o69UKL/GoWmGvFGAYKB
-        R5RNvI9cUZzgZ7sIAC+xvtuldF2XnL3her14SGxSnMIyhZiHbDF452X/o3JaHA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1661251835;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nJMvSnzOfKnLLHT11Q1DGzX+DAQF0C2lBP38jFwkGOM=;
-        b=pOAcT47kE4nlNu7i5qGP7PKQUH7lPpZ46iSmM5pCY2YClfYuaX9ODSCe8rZZiGb9fjsoCa
-        v2bVgI7vT2T8dOAw==
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Rui Sousa <rui.sousa@nxp.com>,
-        Ferenc Fejes <ferenc.fejes@ericsson.com>
-Subject: Re: [RFC PATCH net-next 0/7] 802.1Q Frame Preemption and 802.3 MAC
- Merge support via ethtool
-In-Reply-To: <20220819165940.ett7n4vwbw6hvqvi@skbuf>
-References: <20220816222920.1952936-1-vladimir.oltean@nxp.com>
- <87czcwk5rf.fsf@kurt> <20220819165940.ett7n4vwbw6hvqvi@skbuf>
-Date:   Tue, 23 Aug 2022 12:50:33 +0200
-Message-ID: <87tu631beu.fsf@kurt>
+        with ESMTP id S232558AbiHWNyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:54:52 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6251222E03
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 04:00:09 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id ce26so10924110ejb.11
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 04:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=Kt7xBAZm6XZJpBfFUivLuISnl2CrReNh2+8nMEP3l4M=;
+        b=jEwA1BZ9sxhmxVWMPRqL2OMy29SJWIQnX7UtGBmjxe7Ime6EaPp9EPbOJ/LEX6+XtR
+         TfT3OieB+pPHKqYf0uJrpdLcMzzl7dwv0BIB6BHFD08wkdSCmB8UyHmB9If/yRx4eg+F
+         4yKirvx7l4Ge5btmgi5BJI6Cnu4AuifkNPFJKucVUdeouvJhAvm8r6efEU4KuWBYTFZ2
+         oA0pBuOynoliHko+p7vg5C3F0FvnBEiQwpmESys3XMLb0Va91XzteBn6N93duyM7pyYH
+         B4g/IkzkzZPc0SI+eXOWBZECc/evy8Foy4/Y9F0nKyoLaUnqH2BhsC2BrL1vBJ2khFkm
+         Aj0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=Kt7xBAZm6XZJpBfFUivLuISnl2CrReNh2+8nMEP3l4M=;
+        b=45hXOrEgMWC9zu/xSLLFm3KsD64uRESpipyVdHMe70rcPrPewHA9a7BJ3/YPgkWUY3
+         TG/+6ozQTaIuBIjb4t8vi9cAnSsqpNboolM+W5xGa9rWaAuVtxiZBm3OOtIXZDHdiAvC
+         NqZuNd13DrpP4GksgNXLzngbKsaM7okRiZ6PKKvabLvsprGgvwTZUq208ckvUP+1RdPV
+         bzz8rG85NbW209c6dLngbvielXvhva8RixEccFsUgFxhsaFyvIXni7bFy0ht5uiZxoNp
+         XZeTuB3mc9PnfB6ItL+VyTCL1wONUzqBaz21KfcsnDRstp5QukaWweA/u0SI8GK98W2o
+         hmLg==
+X-Gm-Message-State: ACgBeo0SqzgZtvKB9Tc5oMlYgRWmRz4/liASwTOPIo+y5cz+i/5C/NLE
+        mIctnRuL28xKEbegY/9A4AE=
+X-Google-Smtp-Source: AA6agR48Em01N8nNjPsLr/rd8kPjzculhcW6K4OgzJlYpPR/SPvirasQAe91y68udFdr1Dsolp/bxw==
+X-Received: by 2002:a17:907:60c7:b0:731:14e2:af10 with SMTP id hv7-20020a17090760c700b0073114e2af10mr15813328ejc.92.1661252347817;
+        Tue, 23 Aug 2022 03:59:07 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:7758:1500:d4cf:79a3:3d29:c3f8? (dynamic-2a01-0c22-7758-1500-d4cf-79a3-3d29-c3f8.c22.pool.telefonica.de. [2a01:c22:7758:1500:d4cf:79a3:3d29:c3f8])
+        by smtp.googlemail.com with ESMTPSA id s12-20020a056402036c00b0043bbcd94ee4sm1260535edw.51.2022.08.23.03.59.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:59:07 -0700 (PDT)
+Message-ID: <51de30fe-4066-1d11-75d9-d7cfda860442@gmail.com>
+Date:   Tue, 23 Aug 2022 12:58:59 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 3/5] r8169: remove support for chip version 49
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <e3d2fc9d-3ce7-b545-9cd1-6ad9fbe0adb7@gmail.com>
+ <470b2f1c-54bd-f6e9-1398-64d0cc204684@gmail.com>
+ <1f647343d0755f9ba0deabb98cd83bf32f0c9d36.camel@redhat.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+In-Reply-To: <1f647343d0755f9ba0deabb98cd83bf32f0c9d36.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+On 23.08.2022 12:16, Paolo Abeni wrote:
+> On Sat, 2022-08-20 at 15:53 +0200, Heiner Kallweit wrote:
+>> Detection of this chip version has been disabled for few kernel versions now.
+>> Nobody complained, so remove support for this chip version.
+>>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> ---
+>>  drivers/net/ethernet/realtek/r8169.h          |  2 +-
+>>  drivers/net/ethernet/realtek/r8169_main.c     | 26 ++-----------------
+>>  .../net/ethernet/realtek/r8169_phy_config.c   | 22 ----------------
+>>  3 files changed, 3 insertions(+), 47 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
+>> index a66b10850..7c85c4696 100644
+>> --- a/drivers/net/ethernet/realtek/r8169.h
+>> +++ b/drivers/net/ethernet/realtek/r8169.h
+>> @@ -59,7 +59,7 @@ enum mac_version {
+>>  	RTL_GIGA_MAC_VER_46,
+>>  	/* support for RTL_GIGA_MAC_VER_47 has been removed */
+>>  	RTL_GIGA_MAC_VER_48,
+>> -	RTL_GIGA_MAC_VER_49,
+>> +	/* support for RTL_GIGA_MAC_VER_49 has been removed */
+>>  	RTL_GIGA_MAC_VER_50,
+>>  	RTL_GIGA_MAC_VER_51,
+>>  	RTL_GIGA_MAC_VER_52,
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index 0e7d10cd6..b22b80aab 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -134,7 +134,6 @@ static const struct {
+>>  	[RTL_GIGA_MAC_VER_44] = {"RTL8411b",		FIRMWARE_8411_2 },
+>>  	[RTL_GIGA_MAC_VER_46] = {"RTL8168h/8111h",	FIRMWARE_8168H_2},
+>>  	[RTL_GIGA_MAC_VER_48] = {"RTL8107e",		FIRMWARE_8107E_2},
+>> -	[RTL_GIGA_MAC_VER_49] = {"RTL8168ep/8111ep"			},
+>>  	[RTL_GIGA_MAC_VER_50] = {"RTL8168ep/8111ep"			},
+>>  	[RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"			},
+>>  	[RTL_GIGA_MAC_VER_52] = {"RTL8168fp/RTL8117",  FIRMWARE_8168FP_3},
+>> @@ -885,7 +884,6 @@ static void rtl8168g_phy_suspend_quirk(struct rtl8169_private *tp, int value)
+>>  {
+>>  	switch (tp->mac_version) {
+>>  	case RTL_GIGA_MAC_VER_40:
+>> -	case RTL_GIGA_MAC_VER_49:
+>>  		if (value & BMCR_RESET || !(value & BMCR_PDOWN))
+>>  			rtl_eri_set_bits(tp, 0x1a8, 0xfc000000);
+>>  		else
+>> @@ -1199,7 +1197,7 @@ static enum rtl_dash_type rtl_check_dash(struct rtl8169_private *tp)
+>>  	case RTL_GIGA_MAC_VER_28:
+>>  	case RTL_GIGA_MAC_VER_31:
+>>  		return r8168dp_check_dash(tp) ? RTL_DASH_DP : RTL_DASH_NONE;
+>> -	case RTL_GIGA_MAC_VER_49 ... RTL_GIGA_MAC_VER_53:
+>> +	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
+> 
+> The above chunk looks incorrect. I think should be:
+> 	case RTL_GIGA_MAC_VER_50 ... RTL_GIGA_MAC_VER_53:
+> 
+Indeed, thanks for spotting this typo!
 
-On Fri Aug 19 2022, Vladimir Oltean wrote:
-> Hi Kurt,
->
-> On Fri, Aug 19, 2022 at 10:16:20AM +0200, Kurt Kanzenbach wrote:
->> On Wed Aug 17 2022, Vladimir Oltean wrote:
->> > Vinicius' progress on upstreaming frame preemption support for Intel I=
-226
->> > seemed to stall, so I decided to give it a go using my own view as wel=
-l.
->> > https://patchwork.kernel.org/project/netdevbpf/cover/20220520011538.10=
-98888-1-vinicius.gomes@intel.com/
->>=20
->> Great to see progress on FPE :-).
->
-> Let's hope it lasts ;)
->
->> > - Finally, the hardware I'm working with (here, the test vehicle is the
->> >   NXP ENETC from LS1028A, although I have patches for the Felix switch
->> >   as well, but those need a bit of a revolution in the driver to go in
->> >   first). This hardware is not without its flaws, but at least allows =
-me
->> >   to concentrate on the UAPI portions for this series.
->> >
->> > I also have a kselftest written, but it's for the Felix switch (covers
->> > forwarding latency) and so it's not included here.
->>=20
->> What kind of selftest did you implement? So far I've been doing this:
->> Using a cyclic real time application to create high priority frames and
->> running iperf3 in parallel to simulate low priority traffic
->> constantly. Afterwards, checking the NIC statistics for fragments and so
->> on. Also checking the latency of the RT frames with FPE on/off.
->>=20
->> BTW, if you guys need help with testing of patches, i do have access to
->> i225 and stmmacs which both support FPE. Also the Hirschmann switches
->> should support it.
->
-> Blah, I didn't want to spoil the surprise just yet. I am orchestrating 2
-> isochron senders at specific times, one of PT traffic and one of ET.
->
-> There are actually 2 variants of this: one is for endpoint FP and the
-> other is for bridge FP. I only had time to convert the bridge FP to
-> kselftest format; not the endpoint one (for enetc).
->
-> In the endpoint case, interference is created on the sender interface.
-> I compare HW TX timestamps to the expected TX times to calculate how
-> long it took until PT was preempted. I repeat the test millions of times
-> until I can plot the latencies having the PT <-> ET base time offset on
-> the X axis. It looks very cool.
->
-> The bridge case is similar, except for the fact that interference is
-> created on a bridge port going to a common receiver of 2 isochron
-> senders. What I plot is the path delay, and again, this shows actual
-> preemption times with a nanosecond resolution.
+> instead.
+> 
+> Thanks!
+> 
+> Paolo
+> 
 
-That makes a lot of sense and this kind of test scenario should work for
-other endpoints implementations such as igc and stmmac too.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmMEsPkTHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzggUAD/4rNrVgWfcuuo36BXB3Hcuafsbz/HqP
-ehpEDr90yl6wBKjdEhitsJA2hVo8eUIvcmOyzd2Z5UQec6qfGl6ITWD0FbPOgeFT
-QTAJGT6Q82F8/w4rB2u8zPbSBfbeDBX4F379XwieRWHTNih5HjMCSYioLFaQiP9m
-A+XpVRjwZc+5I/CinPXC7yC7enqq75kItxUK3W+7YBDtfYs5n7ADMAoedK7/e75M
-Y5VCTwzGLlP6M9DZG+SQGkMdhFmX2YhwTWafb55Ii1Fjm+lztm+j7MPVyxlE+GqQ
-aw8HeAqJ12MDrxuqD1ZuQSfkMhCw6DpufFonYZ51bOu0a2lh1fqv7X/k64kxkGPV
-noKqlxLAlXUlxgJSQI3V4gwLsxIUpduvf+Q3+sqHfrPwfmEexNlnupRdAmuzJXCk
-ZL8Tg2CoUYl0zEesH+MqKsJP4k6MjzoQhvYJ0K1uM9Vg00hDY6jP8eSu3mEuatKR
-j9sTnZ3zIwd4FGjgN5WTg9w297KSs7vJCjvMSOKF0yzQDhm5BjiHpuyPqs1LsuWb
-uHziqCrKjtVMbQn97mxTGSBIwpoDtqAhGJPzpcUvU7YqRxvKK+tYZnsAKYHdTn+H
-pVbipaooAymwo09LPqqZpAXTcsbJXzoPFGY1mtjLKUDMoA8UXyoSVPh1pQBuJ7j2
-M4qDM3agho2rjQ==
-=KUho
------END PGP SIGNATURE-----
---=-=-=--
