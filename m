@@ -2,55 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5654959D2FB
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 10:06:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2FB959D3EE
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 10:23:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241669AbiHWIDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 04:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48920 "EHLO
+        id S242849AbiHWITU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 04:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241611AbiHWIDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 04:03:13 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF56566103;
-        Tue, 23 Aug 2022 01:03:04 -0700 (PDT)
-Received: from [192.168.2.51] (p4fe710fb.dip0.t-ipconnect.de [79.231.16.251])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S242560AbiHWIRz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 04:17:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC1B655C;
+        Tue, 23 Aug 2022 01:11:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 1A8D5C0147;
-        Tue, 23 Aug 2022 10:03:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1661241781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=+8Fm13M6bb9Zs5x+jl2TGTj24WEqkmrVC9YUrmCGNjg=;
-        b=j4lytk4G4lljIXQiFLB2W2kRJ1+rWaibru3c/aD1CEKFJrHYS3kQSr54vs0jw0JVLUTGFU
-        23YQbY2J5WX+BLTdA9fP9vL9J1q4qLnCwLntOf/nzwvwpd4gsJjkb1zFpJi1AWrN53Bb8X
-        ybsKvw4vUxAODfpHjjqZ7AwC+0U9tHMKNrceLkkUdFNQ3x78mpX6xMkMi7HZJ8bFwJpxRv
-        RDE7GOzTWyeQC3+R/KNpwbAiRasD+YpwT1CWhV0zI+YlCMAcvDmENq83Sxmiw0s4t3zBeg
-        fFfBgw54NPtbWn+KTd0Uqq+h3tS8UMKRP2omuNs0j+yWTmxEB+Ypbl5zQiMaLA==
-Message-ID: <4325be90-eeb3-2bdb-5ee5-7e567d633aa6@datenfreihafen.org>
-Date:   Tue, 23 Aug 2022 10:03:00 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FBF36129B;
+        Tue, 23 Aug 2022 08:11:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1C7C433C1;
+        Tue, 23 Aug 2022 08:11:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661242301;
+        bh=ZMn1wFd6P28w1tT+WxK1KNO2SOwhs16BL7x3iFsoQk0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nDj/GuXIV02S+bEtqiVRh31cKYd2KRgbJqbI2xHK6Fro22GKICkJQdRCI8GZU5Yfx
+         +rmwVh+EtTHjIwfJusfxk7xNyZuPuL6MsqLrGEJdEp1S8/w8vCwIa9qOTvH+2Rtrxu
+         1D43pHTzhqyy5+yIGJ90kDGPDg7xi5rdCMfKF+ofRaOdkVnWY1+nRM9SXUa60GWU92
+         btNflJCasnz8Qle5FBlqRVobbWdlpcxaisk/zTZJ/FkllgpaKdiMBNFf9Gudrbp8Gx
+         2KO5FbQwF9aPGpJx1j+EUBRmne2pJ1HPPFOmdRa2MPZLFZSv78iKk5vkdHlT3AbzvH
+         b50Q+R7MKCj/A==
+Date:   Tue, 23 Aug 2022 09:11:32 +0100
+From:   Jean-Philippe Brucker <jpb@kernel.org>
+To:     Saravana Kannan <saravanak@google.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Peng Fan <peng.fan@nxp.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        Doug Anderson <dianders@chromium.org>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        kernel-team@android.com, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, iommu@lists.linux.dev,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] Revert "iommu/of: Delete usage of
+ driver_deferred_probe_check_state()"
+Message-ID: <YwSLtPBeOotDSUa8@myrica>
+References: <20220819221616.2107893-1-saravanak@google.com>
+ <20220819221616.2107893-5-saravanak@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v0] ieee802154/adf7242: defer destroy_workqueue call
-Content-Language: en-US
-To:     Lin Ma <linma@zju.edu.cn>, michael.hennerich@analog.com,
-        alex.aring@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wpan@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220808034224.12642-1-linma@zju.edu.cn>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220808034224.12642-1-linma@zju.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819221616.2107893-5-saravanak@google.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -59,36 +77,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-
-On 08.08.22 05:42, Lin Ma wrote:
-> There is a possible race condition (use-after-free) like below
+On Fri, Aug 19, 2022 at 03:16:14PM -0700, Saravana Kannan wrote:
+> This reverts commit b09796d528bbf06e3e10a4a8f78038719da7ebc6.
 > 
->    (FREE)                     |  (USE)
->    adf7242_remove             |  adf7242_channel
->     cancel_delayed_work_sync  |
->      destroy_workqueue (1)    |   adf7242_cmd_rx
->                               |    mod_delayed_work (2)
->                               |
+> An issue was reported[1] on the original commit. I'll need to address that
+> before I can delete the use of driver_deferred_probe_check_state().  So,
+> bring it back for now.
 > 
-> The root cause for this race is that the upper layer (ieee802154) is
-> unaware of this detaching event and the function adf7242_channel can
-> be called without any checks.
+> [1] - https://lore.kernel.org/lkml/4799738.LvFx2qVVIh@steina-w/
+
+https://lore.kernel.org/lkml/Yv+dpeIPvde7oDHi@myrica/
+
 > 
-> To fix this, we can add a flag write at the beginning of adf7242_remove
-> and add flag check in adf7242_channel. Or we can just defer the
-> destructive operation like other commit 3e0588c291d6 ("hamradio: defer
-> ax25 kfree after unregister_netdev") which let the
-> ieee802154_unregister_hw() to handle the synchronization. This patch
-> takes the second option.
+> Fixes: b09796d528bb ("iommu/of: Delete usage of driver_deferred_probe_check_state()")
+> Reported-by: Jean-Philippe Brucker <jpb@kernel.org>
+> Signed-off-by: Saravana Kannan <saravanak@google.com>
+
+Tested-by: Jean-Philippe Brucker <jpb@kernel.org>
+
+> ---
+>  drivers/iommu/of_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Fixes: 58e9683d1475 ("net: ieee802154: adf7242: Fix OCL calibration
-> runs")
-> Signed-off-by: Lin Ma <linma@zju.edu.cn>
-
-
-This patch has been applied to the wpan tree and will be
-part of the next pull request to net. Thanks!
-
-regards
-Stefan Schmidt
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index 41f4eb005219..5696314ae69e 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -40,7 +40,7 @@ static int of_iommu_xlate(struct device *dev,
+>  	 * a proper probe-ordering dependency mechanism in future.
+>  	 */
+>  	if (!ops)
+> -		return -ENODEV;
+> +		return driver_deferred_probe_check_state(dev);
+>  
+>  	if (!try_module_get(ops->owner))
+>  		return -ENODEV;
+> -- 
+> 2.37.1.595.g718a3a8f04-goog
+> 
