@@ -2,80 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19F2759E69C
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FD7F59E6AB
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:12:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243734AbiHWQI1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:08:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S244058AbiHWQMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 12:12:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243842AbiHWQIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:08:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E030AD9B9
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:21:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661257206;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Nch+IXHIDBrWVkXtWbywK+c3Bny+KWw7qcMu+C2LRF0=;
-        b=i4QyZU1FveKWYW85hYdQaTjyEKgU3wfOJ6TLAwq1d9jHarzxhR49Bi9g/RoC81sprfTcol
-        IqJZi6Y/z4ohpFQEjaavYygl7nKuq9AEkYYuLrEMVITYus0WOYfEVkEh88+ExsxMkxBEa1
-        Gz1fTsc2br3Q6zY1zmvrkQ1AVtKaKwY=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-588-3ArPwFbKN7Gn-PLuHeu7Lw-1; Tue, 23 Aug 2022 06:58:05 -0400
-X-MC-Unique: 3ArPwFbKN7Gn-PLuHeu7Lw-1
-Received: by mail-wm1-f71.google.com with SMTP id a17-20020a05600c349100b003a545125f6eso10076192wmq.4
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:58:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc;
-        bh=Nch+IXHIDBrWVkXtWbywK+c3Bny+KWw7qcMu+C2LRF0=;
-        b=ejCaghumQD0aaV3gEWTQczS4XB44lw/4B15PiBPLzUvYC+WzynSawEDhUsavq6KxVi
-         tuYXbtLX7wLJzpW/cQedyqxtV3ex3bNqt3TsLe4MtgAXomW2OQhdKk29mtKRTPJ/i2Yb
-         o2JAob7v/AIJnkbIex5VxRzdtmiJeXNyXYjoGdweiI6xkTm5xz7wtTv0ykAs/LsCH9EO
-         Nx4g/LLw6cNY1WtjBdGWOc0mt8eNsCFSyRbMKpKVX0Y3L4QJa1CMIaCzC1SLgno0l+Em
-         OCSAnE5wEnqNnA11EogIEZilyRfIVDLbNKj4drT7MlaI5D41le31ZIzdm1Rd8q06lBGU
-         cYvw==
-X-Gm-Message-State: ACgBeo0jFGSIcqIiiIuIpFRdmwYP3FfuXACvfdQdHjYmvc5O4OQI4XHR
-        l1PSF+VREGk0JTeoG+IYOgT2BmNfYtmGd9B0GlReiVZ4O1WJKSunH3o2K9yQNcrsK868yWtdUME
-        IfBc1SoIxkBaOqhpV
-X-Received: by 2002:a05:600c:3d91:b0:3a5:4132:b6a0 with SMTP id bi17-20020a05600c3d9100b003a54132b6a0mr1691420wmb.126.1661252284494;
-        Tue, 23 Aug 2022 03:58:04 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6bDQBAoacU9DIFFDvh3Vtxv7kMelU00DA0jkotOluxkAmKaIuNvBHrTwg5CLgfPziqdhVLQA==
-X-Received: by 2002:a05:600c:3d91:b0:3a5:4132:b6a0 with SMTP id bi17-20020a05600c3d9100b003a54132b6a0mr1691414wmb.126.1661252284292;
-        Tue, 23 Aug 2022 03:58:04 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-97-176.dyn.eolo.it. [146.241.97.176])
-        by smtp.gmail.com with ESMTPSA id j18-20020a05600c191200b003a5c1e916c8sm2680414wmq.1.2022.08.23.03.58.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 03:58:03 -0700 (PDT)
-Message-ID: <110a99aba78eb62daa5653104e5ef4e53dc92c74.camel@redhat.com>
-Subject: Re: [PATCH 1/2] net: mt7531: only do PLL once after the reset
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Alexander Couzens <lynxis@fe80.eu>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Daniel Golle <daniel@makrotopia.org>, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Tue, 23 Aug 2022 12:58:02 +0200
-In-Reply-To: <20220820213707.46138-1-lynxis@fe80.eu>
-References: <20220820213707.46138-1-lynxis@fe80.eu>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S244037AbiHWQLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:11:35 -0400
+X-Greylist: delayed 3702 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 23 Aug 2022 05:34:08 PDT
+Received: from smtpbgeu2.qq.com (smtpbgeu2.qq.com [18.194.254.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75F3326B20
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:34:08 -0700 (PDT)
+X-QQ-mid: bizesmtp65t1661254299tqlko4s5
+Received: from roy-ThinkPad-T14-Gen-2a.trustne ( [183.129.236.74])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Tue, 23 Aug 2022 19:31:34 +0800 (CST)
+X-QQ-SSF: 01400000002000L0L000B00A0000000
+X-QQ-FEAT: dDyohfujUnnftfx+0/pKGouk3GDRaBQ078tSQjhiJqk3G2nrVX71W6SPiAhwD
+        Q8DUTyJFqTq96czG5wDxX4Z/d6mXJuTl5A7/nObz/dMMS1GYIEf5oMrmo8ujZQsI8diWmdg
+        xXlHr6Tfhw+51VSyxay8w9j5o7ARX778FP9g7unlyrFhJt08IZX8M+TjFvq8RiZYkI3JtK4
+        5sYF/bhcyWJN8GS1v1DyeqOLghhJHzYUwOQZPIC+IAa3sCGAhjnrC/I4CexTT9tBsXn5bd0
+        MmJnD60tHPUzzOyubUxCJy4Js+IRrw5SQ5tpmi7qJoGSxpiDhgjny+nUXWK+MC9lJtGAK1X
+        SRQI62XybjwAmBMH/n/jDPrgz9Mi2oJ6qFwxtM+hpPkoSf5bfFIQd57csPwaujBYhNFaiVO
+        Ld0d9E36WPmnErsZkJ0+LA==
+X-QQ-GoodBg: 2
+From:   Mengyuan Lou <mengyuanlou@net-swift.com>
+To:     netdev@vger.kernel.org
+Cc:     jiawenwu@trustnetic.com, Mengyuan Lou <mengyuanlou@net-swift.com>
+Subject: [PATCH net-next v2] net: ngbe: Add build support for ngbe
+Date:   Tue, 23 Aug 2022 19:31:33 +0800
+Message-Id: <20220823113133.72306-1-mengyuanlou@net-swift.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:net-swift.com:qybglogicsvr:qybglogicsvr1
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,20 +48,392 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-08-20 at 23:37 +0200, Alexander Couzens wrote:
-> Move the PLL init of the switch out of the pad configuration of the port
-> 6 (usally cpu port).
-> 
-> Fix a unidirectional 100 mbit limitation on 1 gbit or 2.5 gbit links for
-> outbound traffic on port 5 or port 6.
-> 
-> Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+Add build options and guidance doc.
+Initialize pci device access for Wangxun Gigabit Ethernet devices.
 
-This (and the next patch) looks like a fix suitable for -net. Could you
-please re-post, targeting the appropriate tree and more importantly
-including a 'Fixes' tag in the commit message of each patch?
+Signed-off-by: Mengyuan Lou <mengyuanlou@net-swift.com>
+Change log:
+v2: address comments:
+	Jakub Kicinski: The length of the '=====' lines needs to be the same as the length of the text.
+---
+ .../device_drivers/ethernet/index.rst         |   1 +
+ .../device_drivers/ethernet/wangxun/ngbe.rst  |  14 ++
+ MAINTAINERS                                   |   4 +-
+ drivers/net/ethernet/wangxun/Kconfig          |  13 ++
+ drivers/net/ethernet/wangxun/Makefile         |   1 +
+ drivers/net/ethernet/wangxun/ngbe/Makefile    |   9 +
+ drivers/net/ethernet/wangxun/ngbe/ngbe.h      |  24 +++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_main.c | 173 ++++++++++++++++++
+ drivers/net/ethernet/wangxun/ngbe/ngbe_type.h |  50 +++++
+ 9 files changed, 288 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/networking/device_drivers/ethernet/wangxun/ngbe.rst
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/Makefile
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe.h
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+ create mode 100644 drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
 
-Thanks!
-
-Paolo
+diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
+index 7f1777173abb..5196905582c5 100644
+--- a/Documentation/networking/device_drivers/ethernet/index.rst
++++ b/Documentation/networking/device_drivers/ethernet/index.rst
+@@ -52,6 +52,7 @@ Contents:
+    ti/tlan
+    toshiba/spider_net
+    wangxun/txgbe
++   wangxun/ngbe
+ 
+ .. only::  subproject and html
+ 
+diff --git a/Documentation/networking/device_drivers/ethernet/wangxun/ngbe.rst b/Documentation/networking/device_drivers/ethernet/wangxun/ngbe.rst
+new file mode 100644
+index 000000000000..43a02f9943e1
+--- /dev/null
++++ b/Documentation/networking/device_drivers/ethernet/wangxun/ngbe.rst
+@@ -0,0 +1,14 @@
++.. SPDX-License-Identifier: GPL-2.0
++
++=============================================================
++Linux Base Driver for WangXun(R) Gigabit PCI Express Adapters
++=============================================================
++
++WangXun Gigabit Linux driver.
++Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd.
++
++Support
++=======
++ If you have problems with the software or hardware, please contact our
++ customer support team via email at nic-support@net-swift.com or check our website
++ at https://www.net-swift.com
+diff --git a/MAINTAINERS b/MAINTAINERS
+index f2d64020399b..4e7ced47a255 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -21834,9 +21834,11 @@ F:	drivers/input/tablet/wacom_serial4.c
+ 
+ WANGXUN ETHERNET DRIVER
+ M:	Jiawen Wu <jiawenwu@trustnetic.com>
++M:	Mengyuan Lou <mengyuanlou@net-swift.com>
++W:	https://www.net-swift.com
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/networking/device_drivers/ethernet/wangxun/txgbe.rst
++F:	Documentation/networking/device_drivers/ethernet/wangxun/*
+ F:	drivers/net/ethernet/wangxun/
+ 
+ WATCHDOG DEVICE DRIVERS
+diff --git a/drivers/net/ethernet/wangxun/Kconfig b/drivers/net/ethernet/wangxun/Kconfig
+index b4a4fa0a58f8..f5d43d8c9629 100644
+--- a/drivers/net/ethernet/wangxun/Kconfig
++++ b/drivers/net/ethernet/wangxun/Kconfig
+@@ -16,6 +16,19 @@ config NET_VENDOR_WANGXUN
+ 
+ if NET_VENDOR_WANGXUN
+ 
++config NGBE
++	tristate "Wangxun(R) GbE PCI Express adapters support"
++	depends on PCI
++	help
++	  This driver supports Wangxun(R) GbE PCI Express family of
++	  adapters.
++
++	  More specific information on configuring the driver is in
++	  <file:Documentation/networking/device_drivers/ethernet/wangxun/ngbe.rst>.
++
++	  To compile this driver as a module, choose M here. The module
++	  will be called ngbe.
++
+ config TXGBE
+ 	tristate "Wangxun(R) 10GbE PCI Express adapters support"
+ 	depends on PCI
+diff --git a/drivers/net/ethernet/wangxun/Makefile b/drivers/net/ethernet/wangxun/Makefile
+index c34db1bead25..1193b4f738b8 100644
+--- a/drivers/net/ethernet/wangxun/Makefile
++++ b/drivers/net/ethernet/wangxun/Makefile
+@@ -4,3 +4,4 @@
+ #
+ 
+ obj-$(CONFIG_TXGBE) += txgbe/
++obj-$(CONFIG_TXGBE) += ngbe/
+diff --git a/drivers/net/ethernet/wangxun/ngbe/Makefile b/drivers/net/ethernet/wangxun/ngbe/Makefile
+new file mode 100644
+index 000000000000..0baf75907496
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0
++# Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd.
++#
++# Makefile for the Wangxun(R) GbE PCI Express ethernet driver
++#
++
++obj-$(CONFIG_NGBE) += ngbe.o
++
++ngbe-objs := ngbe_main.o
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe.h b/drivers/net/ethernet/wangxun/ngbe/ngbe.h
+new file mode 100644
+index 000000000000..f5fa6e5238cc
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe.h
+@@ -0,0 +1,24 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _NGBE_H_
++#define _NGBE_H_
++
++#include "ngbe_type.h"
++
++#define NGBE_MAX_FDIR_INDICES		7
++
++#define NGBE_MAX_RX_QUEUES		(NGBE_MAX_FDIR_INDICES + 1)
++#define NGBE_MAX_TX_QUEUES		(NGBE_MAX_FDIR_INDICES + 1)
++
++/* board specific private data structure */
++struct ngbe_adapter {
++	u8 __iomem *io_addr;    /* Mainly for iounmap use */
++	/* OS defined structs */
++	struct net_device *netdev;
++	struct pci_dev *pdev;
++};
++
++extern char ngbe_driver_name[];
++
++#endif /* _NGBE_H_ */
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+new file mode 100644
+index 000000000000..ba3a80e5c303
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_main.c
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#include <linux/types.h>
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/netdevice.h>
++#include <linux/string.h>
++#include <linux/aer.h>
++#include <linux/etherdevice.h>
++
++#include "ngbe.h"
++char ngbe_driver_name[] = "ngbe";
++
++/* ngbe_pci_tbl - PCI Device ID Table
++ *
++ * Wildcard entries (PCI_ANY_ID) should come last
++ * Last entry must be all 0s
++ *
++ * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
++ *   Class, Class Mask, private data (not used) }
++ */
++static const struct pci_device_id ngbe_pci_tbl[] = {
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL_W), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A2), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A2S), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A4), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A4S), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL2), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL2S), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL4), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL4S), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860LC), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A1), 0},
++	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A1L), 0},
++	/* required last entry */
++	{ .device = 0 }
++};
++
++static void ngbe_dev_shutdown(struct pci_dev *pdev, bool *enable_wake)
++{
++	struct ngbe_adapter *adapter = pci_get_drvdata(pdev);
++	struct net_device *netdev = adapter->netdev;
++
++	netif_device_detach(netdev);
++
++	pci_disable_device(pdev);
++}
++
++static void ngbe_shutdown(struct pci_dev *pdev)
++{
++	bool wake;
++
++	ngbe_dev_shutdown(pdev, &wake);
++
++	if (system_state == SYSTEM_POWER_OFF) {
++		pci_wake_from_d3(pdev, wake);
++		pci_set_power_state(pdev, PCI_D3hot);
++	}
++}
++
++/**
++ * ngbe_probe - Device Initialization Routine
++ * @pdev: PCI device information struct
++ * @ent: entry in ngbe_pci_tbl
++ *
++ * Returns 0 on success, negative on failure
++ *
++ * ngbe_probe initializes an adapter identified by a pci_dev structure.
++ * The OS initialization, configuring of the adapter private structure,
++ * and a hardware reset occur.
++ **/
++static int ngbe_probe(struct pci_dev *pdev,
++		      const struct pci_device_id __always_unused *ent)
++{
++	struct ngbe_adapter *adapter = NULL;
++	struct net_device *netdev;
++	int err;
++
++	err = pci_enable_device_mem(pdev);
++	if (err)
++		return err;
++
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	if (err) {
++		dev_err(&pdev->dev,
++			"No usable DMA configuration, aborting\n");
++		goto err_pci_disable_dev;
++	}
++
++	err = pci_request_selected_regions(pdev,
++					   pci_select_bars(pdev, IORESOURCE_MEM),
++					   ngbe_driver_name);
++	if (err) {
++		dev_err(&pdev->dev,
++			"pci_request_selected_regions failed %d\n", err);
++		goto err_pci_disable_dev;
++	}
++
++	pci_enable_pcie_error_reporting(pdev);
++	pci_set_master(pdev);
++
++	netdev = devm_alloc_etherdev_mqs(&pdev->dev,
++					 sizeof(struct ngbe_adapter),
++					 NGBE_MAX_TX_QUEUES,
++					 NGBE_MAX_RX_QUEUES);
++	if (!netdev) {
++		err = -ENOMEM;
++		goto err_pci_release_regions;
++	}
++
++	SET_NETDEV_DEV(netdev, &pdev->dev);
++
++	adapter = netdev_priv(netdev);
++	adapter->netdev = netdev;
++	adapter->pdev = pdev;
++
++	adapter->io_addr = devm_ioremap(&pdev->dev,
++					pci_resource_start(pdev, 0),
++					pci_resource_len(pdev, 0));
++	if (!adapter->io_addr) {
++		err = -EIO;
++		goto err_pci_release_regions;
++	}
++
++	netdev->features |= NETIF_F_HIGHDMA;
++
++	pci_set_drvdata(pdev, adapter);
++
++	return 0;
++
++err_pci_release_regions:
++	pci_disable_pcie_error_reporting(pdev);
++	pci_release_selected_regions(pdev,
++				     pci_select_bars(pdev, IORESOURCE_MEM));
++err_pci_disable_dev:
++	pci_disable_device(pdev);
++	return err;
++}
++
++/**
++ * ngbe_remove - Device Removal Routine
++ * @pdev: PCI device information struct
++ *
++ * ngbe_remove is called by the PCI subsystem to alert the driver
++ * that it should release a PCI device.  The could be caused by a
++ * Hot-Plug event, or because the driver is going to be removed from
++ * memory.
++ **/
++static void ngbe_remove(struct pci_dev *pdev)
++{
++	pci_release_selected_regions(pdev,
++				     pci_select_bars(pdev, IORESOURCE_MEM));
++
++	pci_disable_pcie_error_reporting(pdev);
++
++	pci_disable_device(pdev);
++}
++
++static struct pci_driver ngbe_driver = {
++	.name     = ngbe_driver_name,
++	.id_table = ngbe_pci_tbl,
++	.probe    = ngbe_probe,
++	.remove   = ngbe_remove,
++	.shutdown = ngbe_shutdown,
++};
++
++module_pci_driver(ngbe_driver);
++
++MODULE_DEVICE_TABLE(pci, ngbe_pci_tbl);
++MODULE_AUTHOR("Beijing WangXun Technology Co., Ltd, <software@net-swift.com>");
++MODULE_DESCRIPTION("WangXun(R) Gigabit PCI Express Network Driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+new file mode 100644
+index 000000000000..26e776c3539a
+--- /dev/null
++++ b/drivers/net/ethernet/wangxun/ngbe/ngbe_type.h
+@@ -0,0 +1,50 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
++
++#ifndef _NGBE_TYPE_H_
++#define _NGBE_TYPE_H_
++
++#include <linux/types.h>
++#include <linux/netdevice.h>
++
++/************ NGBE_register.h ************/
++/* Vendor ID */
++#ifndef PCI_VENDOR_ID_WANGXUN
++#define PCI_VENDOR_ID_WANGXUN			0x8088
++#endif
++
++/* Device IDs */
++#define NGBE_DEV_ID_EM_WX1860AL_W		0x0100
++#define NGBE_DEV_ID_EM_WX1860A2			0x0101
++#define NGBE_DEV_ID_EM_WX1860A2S		0x0102
++#define NGBE_DEV_ID_EM_WX1860A4			0x0103
++#define NGBE_DEV_ID_EM_WX1860A4S		0x0104
++#define NGBE_DEV_ID_EM_WX1860AL2		0x0105
++#define NGBE_DEV_ID_EM_WX1860AL2S		0x0106
++#define NGBE_DEV_ID_EM_WX1860AL4		0x0107
++#define NGBE_DEV_ID_EM_WX1860AL4S		0x0108
++#define NGBE_DEV_ID_EM_WX1860LC			0x0109
++#define NGBE_DEV_ID_EM_WX1860A1			0x010a
++#define NGBE_DEV_ID_EM_WX1860A1L		0x010b
++
++/* Subsystem ID */
++#define NGBE_SUBID_M88E1512_SFP			0x0003
++#define NGBE_SUBID_OCP_CARD			0x0040
++#define NGBE_SUBID_LY_M88E1512_SFP		0x0050
++#define NGBE_SUBID_M88E1512_RJ45		0x0051
++#define NGBE_SUBID_M88E1512_MIX			0x0052
++#define NGBE_SUBID_YT8521S_SFP			0x0060
++#define NGBE_SUBID_INTERNAL_YT8521S_SFP		0x0061
++#define NGBE_SUBID_YT8521S_SFP_GPIO		0x0062
++#define NGBE_SUBID_INTERNAL_YT8521S_SFP_GPIO	0x0064
++#define NGBE_SUBID_LY_YT8521S_SFP		0x0070
++#define NGBE_SUBID_RGMII_FPGA			0x0080
++
++#define NGBE_OEM_MASK				0x00FF
++
++#define NGBE_NCSI_SUP				0x8000
++#define NGBE_NCSI_MASK				0x8000
++#define NGBE_WOL_SUP				0x4000
++#define NGBE_WOL_MASK				0x4000
++
++#endif /* _NGBE_TYPE_H_ */
+-- 
+2.25.1
 
