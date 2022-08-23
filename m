@@ -2,388 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 345EF59EAB7
+	by mail.lfdr.de (Postfix) with ESMTP id F0B4A59EAB9
 	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 20:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230423AbiHWSPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 14:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44016 "EHLO
+        id S233574AbiHWSQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 14:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232254AbiHWSOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 14:14:53 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3426103C4E
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:29:18 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id a9so7396366ilr.12
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:29:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=7tHFsAf+FO8lNa29v65Dj+9ntK8kT+IHmrzE3nFuT8A=;
-        b=Bdv8IeN+BIrvx0Ef47EKHaeybMXffhKSQqdC8Cj7RYORImm1h5sTIrqCm+CJFcZtfQ
-         9lcPB8QmRzP2GebM0sMlsYqqtCZRIINZw6Ds1O6t4yUDN+Mv9jTLMgEEV5KfxFzNsUe1
-         OVeMz3UCStzssydIpkBgEOEiCxzMgEAHi7mqwuKvdODzJdFQ0r++fokN0TsxkUtllX4H
-         eyiJ1STXgTfwMXnnro6tYSG5FYXG/Mj38czWrXAufhKBysNEkg3A7SLtK9rrj/0stPUy
-         5spfTQ0Ly37cSkzZJPuwgqnCEttnd7wOejhojuOZye04DugCE+ohCabfkybQ/neCvqdf
-         HJVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=7tHFsAf+FO8lNa29v65Dj+9ntK8kT+IHmrzE3nFuT8A=;
-        b=fcohJmSrGt4YIlbgdmdv5ZwAYXE4JYReP/FaWtxuQvi6goMuA2t/lkEodyAoaZ/A8D
-         tfTrQslXuJbbInZkRlm3kKMu5hptDfGeXQEfKXHJvL3Zxyo6GDL28iRRFfsZSbrMnO+z
-         4qNn42XR7+vhCKg6w9aCV6wPHRxm32aSVIxkXmGDDKW58UBJ4poVq1rv02dql8q2jz2H
-         HtUqpwYU0n1IzwVxcdRyP35LxsE3qJz3jh87fbIIqJMMVMjATTmjUairvy4IEHglrrmR
-         a9zDN29FvazJ/B9PmR8c3j6q19ARfwZft6hn6MbH+ljLVWWrAkaLckaLCyuRPHd8yRBa
-         BPXA==
-X-Gm-Message-State: ACgBeo3WSaWN6Qs6nsZMMM0o8GFol3jNB5/foB+vw8YcAzGO+TtpL9Mr
-        P4bm1Poy7i/fKLPH4+co3ieqXTW7gPW8OUv91I/I/w==
-X-Google-Smtp-Source: AA6agR6DbteusixrIzp+00W7w7H5mHJcBuMRkiEkKjD+4r4q/v5SsgCr5bCfz8Y0GXeRppd3eO/JVv2liBkXWQ3UfIM=
-X-Received: by 2002:a05:6e02:1a63:b0:2e9:ec03:9618 with SMTP id
- w3-20020a056e021a6300b002e9ec039618mr192029ilv.187.1661272157518; Tue, 23 Aug
- 2022 09:29:17 -0700 (PDT)
+        with ESMTP id S234156AbiHWSPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 14:15:39 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6561403D
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:30:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661272212; x=1692808212;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=EK2Oaz69LUz1QO47DkBl+rAu+2pRBCD7WrThBIW/by4=;
+  b=FFQXQTwx64up+UVsLgOt04l5IexVoMU4j+jjwrH2qJ3pzF9qlDxBMIUS
+   LKDXUn8N92OULw1RbAvHQo5lt2sO0scZJhgDrjGl4S8jhIe8LuujzDg0g
+   ILhKQ79nRTbakUAAYchjNziWr48vUgBdkI9UWajWAkf58zUFWyv3PkY+L
+   12ELi56In1u1Eyo75mjlrdcjIHUcyoQRFA9Vj0T78nOvCYJOairDmC5sW
+   zZS8QYUXY+KU0ed2XKEoEJgL9BE8ctwShN0LO4KtU5cVfqOIPUW0lG/25
+   1/kwcAwTrGrACQdCbAOXWSQ6JSo/Oums23tna+IPbDwphyjIU9QmrtNY5
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="357713687"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="357713687"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 09:29:54 -0700
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="638724515"
+Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.215.196.186]) ([10.215.196.186])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 09:29:50 -0700
+Message-ID: <eaef51b2-07e1-5931-380c-6a8513f9c7b3@linux.intel.com>
+Date:   Tue, 23 Aug 2022 21:59:48 +0530
 MIME-Version: 1.0
-References: <20220823075717.28072-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220823075717.28072-1-shaozhengchao@huawei.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 23 Aug 2022 09:29:06 -0700
-Message-ID: <CANn89iKta=-C43_jQpVVra_v3HxfCjvx+pJFj6NfLoa_GTXfAQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: sched: delete duplicate cleanup of backlog
- and qlen
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Vinicius Gomes <vinicius.gomes@intel.com>,
-        weiyongjun1@huawei.com, YueHaibing <yuehaibing@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [patch net-next 0/4] net: devlink: sync flash and dev info
+ command
+Content-Language: en-US
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, idosch@nvidia.com, pabeni@redhat.com,
+        edumazet@google.com, saeedm@nvidia.com, jacob.e.keller@intel.com,
+        vikas.gupta@broadcom.com, gospo@broadcom.com,
+        chandrashekar.devegowda@intel.com, soumya.prakash.mishra@intel.com,
+        linuxwwan@intel.com
+References: <20220818130042.535762-1-jiri@resnulli.us>
+ <20220818194940.30fd725e@kernel.org> <Yv9I4ACEBRoEFM+I@nanopsycho>
+ <d2d6f1a3-a9ea-3124-2652-92914172d997@linux.intel.com>
+ <YwTGKTUY3Ty9OF02@nanopsycho>
+From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
+In-Reply-To: <YwTGKTUY3Ty9OF02@nanopsycho>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 12:54 AM Zhengchao Shao
-<shaozhengchao@huawei.com> wrote:
->
-> The qdisc_reset function has cleared the backlog and qlen of the qdisc.
-> There is no need to clear them again in the specific reset function.
+On 8/23/2022 5:50 PM, Jiri Pirko wrote:
+> Tue, Aug 23, 2022 at 12:09:06PM CEST, m.chetan.kumar@linux.intel.com wrote:
+>> On 8/19/2022 1:55 PM, Jiri Pirko wrote:
+>>> Fri, Aug 19, 2022 at 04:49:40AM CEST, kuba@kernel.org wrote:
+>>>> On Thu, 18 Aug 2022 15:00:38 +0200 Jiri Pirko wrote:
+>>>>> Currently it is up to the driver what versions to expose and what flash
+>>>>> update component names to accept. This is inconsistent. Thankfully, only
+>>>>> netdevsim is currently using components, so it is a good time
+>>>>> to sanitize this.
+>>>>
+>>>> Please take a look at recently merged code - 5417197dd516 ("Merge branch
+>>>> 'wwan-t7xx-fw-flashing-and-coredump-support'"), I don't see any versions
+>>>> there so I think you're gonna break them?
+>>>
+>>> Ah, crap. Too late :/ They are passing the string to FW (cmd is
+>>> the component name here):
+>>> static int t7xx_devlink_fb_flash(const char *cmd, struct t7xx_port *port)
+>>> {
+>>>           char flash_command[T7XX_FB_COMMAND_SIZE];
+>>>
+>>>           snprintf(flash_command, sizeof(flash_command), "%s:%s", T7XX_FB_CMD_FLASH, cmd);
+>>>           return t7xx_devlink_fb_raw_command(flash_command, port, NULL);
+>>> }
+>>>
+>>> This breaks the pairing with info.versions assumption. Any possibility
+>>> to revert this and let them redo?
+>>>
+>>> Ccing m.chetan.kumar@linux.intel.com, chandrashekar.devegowda@intel.com,
+>>> soumya.prakash.mishra@intel.com
+>>>
+>>> Guys, could you expose one version for component you are flashing? We
+>>> need 1:1 mapping here.
+>>
+>> Thanks for the heads-up.
+>> I had a look at the patch & my understanding is driver is supposed
+>> to expose flash update component name & version details via
+>> devlink_info_version_running_put_ext().
+> 
+> Yes.
+> 
+>>
+>> Is version value a must ? Internally version value is not used for making any
+>> decision so in case driver/device doesn't support it should be ok to pass
+>> empty string ?
+> 
+> No.
+> 
+>>
+>> Ex:
+>> devlink_info_version_running_put_ext(req, "fw", "",
+>> DEVLINK_INFO_VERSION_TYPE_COMPONENT);
+>>
+>> One observation:-
+>> While testing I noticed "flash_components:" is not getting displayed as
+>> mentioned in cover note.
+> 
+> You need iproute2 patch for that which is still in my queue:
+> https://github.com/jpirko/iproute2_mlxsw/commit/e1d36409362257cc42a435f6695d2058ab7ab683
 
-changelog is slightly inaccurate.
+Thanks. After applying this patch "flash_components" details are getting 
+displayed.
 
-qdisc_reset() is clearing qdisc->q.qlen and qdisc->qstats.backlog
-_after_ calling qdisc->ops->reset,
-not before.
+Another observation is if NULL is passed for version_value there is a 
+crash. Below is the backtrace.
 
->
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> ---
->  include/net/sch_generic.h | 1 -
->  net/sched/sch_atm.c       | 1 -
->  net/sched/sch_cbq.c       | 1 -
->  net/sched/sch_choke.c     | 2 --
->  net/sched/sch_drr.c       | 2 --
->  net/sched/sch_dsmark.c    | 2 --
->  net/sched/sch_etf.c       | 3 ---
->  net/sched/sch_ets.c       | 2 --
->  net/sched/sch_fq_codel.c  | 2 --
->  net/sched/sch_fq_pie.c    | 3 ---
->  net/sched/sch_hfsc.c      | 2 --
->  net/sched/sch_htb.c       | 2 --
->  net/sched/sch_multiq.c    | 1 -
->  net/sched/sch_prio.c      | 2 --
->  net/sched/sch_qfq.c       | 2 --
->  net/sched/sch_red.c       | 2 --
->  net/sched/sch_sfb.c       | 2 --
->  net/sched/sch_skbprio.c   | 3 ---
->  net/sched/sch_taprio.c    | 2 --
->  net/sched/sch_tbf.c       | 2 --
->  net/sched/sch_teql.c      | 1 -
->  21 files changed, 40 deletions(-)
->
-> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> index ec693fe7c553..f2958fb5ae08 100644
-> --- a/include/net/sch_generic.h
-> +++ b/include/net/sch_generic.h
-> @@ -1137,7 +1137,6 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
->  static inline void qdisc_reset_queue(struct Qdisc *sch)
->  {
->         __qdisc_reset_queue(&sch->q);
-> -       sch->qstats.backlog = 0;
->  }
->
->  static inline struct Qdisc *qdisc_replace(struct Qdisc *sch, struct Qdisc *new,
-> diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
-> index 4c8e994cf0a5..816fd0d7ba38 100644
-> --- a/net/sched/sch_atm.c
-> +++ b/net/sched/sch_atm.c
-> @@ -577,7 +577,6 @@ static void atm_tc_reset(struct Qdisc *sch)
->         pr_debug("atm_tc_reset(sch %p,[qdisc %p])\n", sch, p);
->         list_for_each_entry(flow, &p->flows, list)
->                 qdisc_reset(flow->q);
-> -       sch->q.qlen = 0;
->  }
->
->  static void atm_tc_destroy(struct Qdisc *sch)
-> diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-> index af126eb3e431..b026daca160e 100644
-> --- a/net/sched/sch_cbq.c
-> +++ b/net/sched/sch_cbq.c
-> @@ -975,7 +975,6 @@ cbq_reset(struct Qdisc *sch)
->                         cl->cpriority = cl->priority;
->                 }
->         }
-> -       sch->q.qlen = 0;
->  }
->
->
-> diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
-> index 2adbd945bf15..25d2daaa8122 100644
-> --- a/net/sched/sch_choke.c
-> +++ b/net/sched/sch_choke.c
-> @@ -315,8 +315,6 @@ static void choke_reset(struct Qdisc *sch)
->                 rtnl_qdisc_drop(skb, sch);
->         }
->
-> -       sch->q.qlen = 0;
-> -       sch->qstats.backlog = 0;
->         if (q->tab)
->                 memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
->         q->head = q->tail = 0;
-> diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
-> index 18e4f7a0b291..4e5b1cf11b85 100644
-> --- a/net/sched/sch_drr.c
-> +++ b/net/sched/sch_drr.c
-> @@ -441,8 +441,6 @@ static void drr_reset_qdisc(struct Qdisc *sch)
->                         qdisc_reset(cl->qdisc);
->                 }
->         }
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void drr_destroy_qdisc(struct Qdisc *sch)
-> diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
-> index 4c100d105269..7da6dc38a382 100644
-> --- a/net/sched/sch_dsmark.c
-> +++ b/net/sched/sch_dsmark.c
-> @@ -409,8 +409,6 @@ static void dsmark_reset(struct Qdisc *sch)
->         pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
->         if (p->q)
->                 qdisc_reset(p->q);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void dsmark_destroy(struct Qdisc *sch)
-> diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
-> index c48f91075b5c..d96103b0e2bf 100644
-> --- a/net/sched/sch_etf.c
-> +++ b/net/sched/sch_etf.c
-> @@ -445,9 +445,6 @@ static void etf_reset(struct Qdisc *sch)
->         timesortedlist_clear(sch);
->         __qdisc_reset_queue(&sch->q);
->
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
-> -
->         q->last = 0;
->  }
->
-> diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-> index d73393493553..8de4365886e8 100644
-> --- a/net/sched/sch_ets.c
-> +++ b/net/sched/sch_ets.c
-> @@ -727,8 +727,6 @@ static void ets_qdisc_reset(struct Qdisc *sch)
->         }
->         for (band = 0; band < q->nbands; band++)
->                 qdisc_reset(q->classes[band].qdisc);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void ets_qdisc_destroy(struct Qdisc *sch)
-> diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-> index 839e1235db05..23a042adb74d 100644
-> --- a/net/sched/sch_fq_codel.c
-> +++ b/net/sched/sch_fq_codel.c
-> @@ -347,8 +347,6 @@ static void fq_codel_reset(struct Qdisc *sch)
->                 codel_vars_init(&flow->cvars);
->         }
->         memset(q->backlogs, 0, q->flows_cnt * sizeof(u32));
-> -       sch->q.qlen = 0;
-> -       sch->qstats.backlog = 0;
->         q->memory_usage = 0;
->  }
->
-> diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
-> index d6aba6edd16e..35c35465226b 100644
-> --- a/net/sched/sch_fq_pie.c
-> +++ b/net/sched/sch_fq_pie.c
-> @@ -521,9 +521,6 @@ static void fq_pie_reset(struct Qdisc *sch)
->                 INIT_LIST_HEAD(&flow->flowchain);
->                 pie_vars_init(&flow->vars);
->         }
-> -
-> -       sch->q.qlen = 0;
-> -       sch->qstats.backlog = 0;
->  }
->
->  static void fq_pie_destroy(struct Qdisc *sch)
-> diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
-> index d3979a6000e7..03efc40e42fc 100644
-> --- a/net/sched/sch_hfsc.c
-> +++ b/net/sched/sch_hfsc.c
-> @@ -1484,8 +1484,6 @@ hfsc_reset_qdisc(struct Qdisc *sch)
->         }
->         q->eligible = RB_ROOT;
->         qdisc_watchdog_cancel(&q->watchdog);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void
-> diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-> index 23a9d6242429..cb5872d22ecf 100644
-> --- a/net/sched/sch_htb.c
-> +++ b/net/sched/sch_htb.c
-> @@ -1008,8 +1008,6 @@ static void htb_reset(struct Qdisc *sch)
->         }
->         qdisc_watchdog_cancel(&q->watchdog);
->         __qdisc_reset_queue(&q->direct_queue);
-> -       sch->q.qlen = 0;
-> -       sch->qstats.backlog = 0;
->         memset(q->hlevel, 0, sizeof(q->hlevel));
->         memset(q->row_mask, 0, sizeof(q->row_mask));
->  }
-> diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-> index cd8ab90c4765..f28050c7f12d 100644
-> --- a/net/sched/sch_multiq.c
-> +++ b/net/sched/sch_multiq.c
-> @@ -152,7 +152,6 @@ multiq_reset(struct Qdisc *sch)
->
->         for (band = 0; band < q->bands; band++)
->                 qdisc_reset(q->queues[band]);
-> -       sch->q.qlen = 0;
->         q->curband = 0;
->  }
->
-> diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-> index 3b8d7197c06b..c03a11dd990f 100644
-> --- a/net/sched/sch_prio.c
-> +++ b/net/sched/sch_prio.c
-> @@ -135,8 +135,6 @@ prio_reset(struct Qdisc *sch)
->
->         for (prio = 0; prio < q->bands; prio++)
->                 qdisc_reset(q->queues[prio]);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
-> diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-> index d4ce58c90f9f..13246a9dc5c1 100644
-> --- a/net/sched/sch_qfq.c
-> +++ b/net/sched/sch_qfq.c
-> @@ -1458,8 +1458,6 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
->                         qdisc_reset(cl->qdisc);
->                 }
->         }
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void qfq_destroy_qdisc(struct Qdisc *sch)
-> diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-> index 40adf1f07a82..f1e013e3f04a 100644
-> --- a/net/sched/sch_red.c
-> +++ b/net/sched/sch_red.c
-> @@ -176,8 +176,6 @@ static void red_reset(struct Qdisc *sch)
->         struct red_sched_data *q = qdisc_priv(sch);
->
->         qdisc_reset(q->qdisc);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->         red_restart(&q->vars);
->  }
->
-> diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-> index 3d061a13d7ed..31717fa45a4f 100644
-> --- a/net/sched/sch_sfb.c
-> +++ b/net/sched/sch_sfb.c
-> @@ -453,8 +453,6 @@ static void sfb_reset(struct Qdisc *sch)
->         struct sfb_sched_data *q = qdisc_priv(sch);
->
->         qdisc_reset(q->qdisc);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->         q->slot = 0;
->         q->double_buffering = false;
->         sfb_zero_all_buckets(q);
-> diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-> index 7a5e4c454715..df72fb83d9c7 100644
-> --- a/net/sched/sch_skbprio.c
-> +++ b/net/sched/sch_skbprio.c
-> @@ -213,9 +213,6 @@ static void skbprio_reset(struct Qdisc *sch)
->         struct skbprio_sched_data *q = qdisc_priv(sch);
->         int prio;
->
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
-> -
->         for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
->                 __skb_queue_purge(&q->qdiscs[prio]);
->
-> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-> index 0b941dd63d26..db88a692ef81 100644
-> --- a/net/sched/sch_taprio.c
-> +++ b/net/sched/sch_taprio.c
-> @@ -1636,8 +1636,6 @@ static void taprio_reset(struct Qdisc *sch)
->                         if (q->qdiscs[i])
->                                 qdisc_reset(q->qdiscs[i]);
->         }
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->  }
->
->  static void taprio_destroy(struct Qdisc *sch)
-> diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-> index 72102277449e..d0288e223542 100644
-> --- a/net/sched/sch_tbf.c
-> +++ b/net/sched/sch_tbf.c
-> @@ -330,8 +330,6 @@ static void tbf_reset(struct Qdisc *sch)
->         struct tbf_sched_data *q = qdisc_priv(sch);
->
->         qdisc_reset(q->qdisc);
-> -       sch->qstats.backlog = 0;
-> -       sch->q.qlen = 0;
->         q->t_c = ktime_get_ns();
->         q->tokens = q->buffer;
->         q->ptokens = q->mtu;
-> diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
-> index 6af6b95bdb67..79aaab51cbf5 100644
-> --- a/net/sched/sch_teql.c
-> +++ b/net/sched/sch_teql.c
-> @@ -124,7 +124,6 @@ teql_reset(struct Qdisc *sch)
->         struct teql_sched_data *dat = qdisc_priv(sch);
->
->         skb_queue_purge(&dat->q);
-> -       sch->q.qlen = 0;
->  }
->
->  static void
-> --
-> 2.17.1
->
+3187.556637] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[ 3187.556659] #PF: supervisor read access in kernel mode
+[ 3187.556666] #PF: error_code(0x0000) - not-present page
+3187.556791] Call Trace:
+[ 3187.556796]  <TASK>
+[ 3187.556801]  ? devlink_info_version_put+0x112/0x1d0
+[ 3187.556823]  ? __nla_put+0x20/0x30
+[ 3187.556833]  devlink_info_version_running_put_ext+0x1c/0x30
+[ 3187.556851]  t7xx_devlink_info_get+0x37/0x40 [mtk_t7xx]
+[ 3187.556880]  devlink_nl_info_fill.constprop.0+0xa1/0x120
+[ 3187.556892]  devlink_nl_cmd_info_get_dumpit+0xa8/0x140
+[ 3187.556901]  netlink_dump+0x1a3/0x340
+[ 3187.556913]  __netlink_dump_start+0x1d0/0x290
+
+Is driver expected to set version number along with component name ?
+
+mtk_t7xx WWAN driver is using the devlink interface for flashing the fw 
+to WWAN device. If WWAN device is not capable of supporting the 
+versioning for each component how should we handle ? Please suggest.
+
+-- 
+Chetan
