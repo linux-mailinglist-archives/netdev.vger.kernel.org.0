@@ -2,233 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 900E759EA55
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:54:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06B4259EA4B
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231714AbiHWRlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 13:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
+        id S232443AbiHWRmp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 13:42:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233761AbiHWRku (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:40:50 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463AC74BB4;
-        Tue, 23 Aug 2022 08:30:37 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id y3so1798484ejc.1;
-        Tue, 23 Aug 2022 08:30:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=tgs5ovq6tUDagnrW7AMTAEpEJoB/IqHPngahwtFsDhU=;
-        b=eOXQFqcS/0cqPsdYRKkBNKpFlI/KLRMf5DchIMSSJJZAme3NCxrj4c55APwnR7iaSm
-         aacBvV2L92DGGHtTmBn/IgFmRoOdeLAqR1miHcUZJsOqlv2aNILuq5Cmg0K4RRIAD/r5
-         S2qOi0r46j33lhjS0wP7oknlOnAZIwpjyTsw2xaF5aa1pYJQbcylvb10/9dXtVzKSDYe
-         3Q6Sv31/ewSSekycR8cTVTFpUeSEJodjkasRuRyF57ENgwJV6o4CXhMnpyU0+0jEWf3b
-         11Vbcc0b1UN2IarG57nZugX2iNK0+G8coPJW0jRzjh/8CfNsNg434F/7G1FoKVgknayt
-         BAew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=tgs5ovq6tUDagnrW7AMTAEpEJoB/IqHPngahwtFsDhU=;
-        b=EfZdhhaHEGcNtC1UA5Ly3Do4rlPb7/8ypo01BVoiZSYiQavYbBNoMSP70vGhDAMWoR
-         js6UKnqRVb3U2VRi2Pn0/Fg2UovxaAdxR8hVCtzZT2oXujmKrf2VQKGmSZBNU3BsIEx6
-         V4dGldve6U2jylCFHAEAJsI6YTpcZfIOOaNC9VmUrSMLQ3zfdUL+LFKVm3zrZI2jEt1g
-         aHZC1iiQSzelg63C8semccQoC68qXLLJDkw5R2B7mYbbR/87LuMMbKWPG9PZ01OHh4Pd
-         5iTZzKPd07Akywde1Q0+jm5o7FIfGpK+NReTeC48PXBCjkbSeKpMsOZGwNSQsAf+7IVJ
-         ptOQ==
-X-Gm-Message-State: ACgBeo2CORz3vHeP89bWithXcfCn5DjuVMKCOO43ZNpErm5ymI1MvHsO
-        fLos+efToGE3wGQOSLGRYpM=
-X-Google-Smtp-Source: AA6agR7TlRMbZ80qduKj/Uiu6DfU9OU9L/znh0nRSBRJD5hTSxlBDk7L4VyGs3zI8Y2g5EuOxYNOhw==
-X-Received: by 2002:a17:907:f82:b0:73d:afe4:c89 with SMTP id kb2-20020a1709070f8200b0073dafe40c89mr96879ejc.534.1661268635724;
-        Tue, 23 Aug 2022 08:30:35 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa? ([2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa])
-        by smtp.gmail.com with ESMTPSA id q13-20020a17090676cd00b0073da4b623e8sm704063ejn.152.2022.08.23.08.30.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 08:30:35 -0700 (PDT)
-Message-ID: <7ad5a9be-4ee9-bab2-4a70-b0f661f91beb@gmail.com>
-Date:   Tue, 23 Aug 2022 18:30:33 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 00/31] net/tcp: Add TCP-AO support
+        with ESMTP id S229807AbiHWRmO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:42:14 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2048.outbound.protection.outlook.com [40.107.237.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40DCF83F02
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:30:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kkQrpXhaFSymTgYOsfz7xvmwaTAmgtPNJQvmJXKmJP8cmI9ygBZvnB8B3wEIiExltcoNhhZ/swAYC5DgYkVAcDU52jCxMvCczYUpWN9JJYVIvyB/LxhCOAv8LA/lUNcPi7i85AjS8hWRqvltqrVLwkgja1SQ9aOX9WCgmgSnJ9GYgNJGhYzZGwAuZHMyQRLqPLRpzbEXzblCd67tAYFABFWJH35W61SEuNYDjOTDgBwy9yU08XuhZixF+AjhA82SEkA1TZZk6yb+5snxRc+6VyFUlaVk0z+WgVWKkeq6SJ7FcKpq1b7VMDZWCla5ddpxkiuxpB2FxbA+UGmIwh7uHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8YRpvHfBDi6/LTsKA0bYTwt+7We36dPbkvMf4MDBBrY=;
+ b=Qm7XrILAuySJrUvwvfL/rKLw6OtadOVrfopukr6ZOrgTsdvxggfYpcpsjpUPVVtYxvL7GAboQKJ/GZToSni3NtEGKiGlDzRTESpHQgbMA0PUzpje9TWCZg+HK2VdDDqqocgAFE/o+2zMIBflV4Hm3SHRAsfMjUq9HNMOogwDTq4e9KYA76N19jHSx83UJJdSCS6PpEOWM98e4vlFFfm4/2upvWyqoVo/Z3gtk1v1cYwpRIPgoEaD3LnaCOsfjhbwOfX7zxc7TULUACqMX8LOfiemBD8ilAuirECi0GeXTIx9zrR9i0Yd86sv0oNddniY/BHFXeHEdcYJIlVWb+I4+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8YRpvHfBDi6/LTsKA0bYTwt+7We36dPbkvMf4MDBBrY=;
+ b=YrXsM/VC09J3GvD4YMYnoeEUYkfXiNZJl5C5ECKxlXqO5GRHlHm9zVVX4g9r9XYs5Qk5zWOtucmH8LTfgFXq2eBWWs5ini7iq0rsEwlWuEAdYkXa42C7tdyj5nzw83MUGcaUC5IKQs2syP/H8PlF2RQkRaTf8FFVeDIarqtPua6GPoIYK7330oOZstuorLV4FFidKyAIGadSG3rUSPtRBOyrRmP+3XPg3rhLSSAhai3wf0NsAsHQkDWdKUrHsjJU1whVIGwAvr6ZyKRKwDI4mhyV2OYVYDZxnclv/HjEL9xlJ5ek0aWzhYlmhgLGqFRtd9QPf1dxFD+6gv7NEQdDuw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ SN6PR12MB4768.namprd12.prod.outlook.com (2603:10b6:805:e8::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.21; Tue, 23 Aug 2022 15:30:54 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::2caa:b525:f495:8a58]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::2caa:b525:f495:8a58%8]) with mapi id 15.20.5546.022; Tue, 23 Aug 2022
+ 15:30:54 +0000
+Message-ID: <ae6132bc-7b7c-8f31-7854-8e451f57cdc7@nvidia.com>
+Date:   Tue, 23 Aug 2022 18:30:39 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [net-next 09/14] ptp: mlx5: convert to .adjfine and
+ adjust_by_scaled_ppm
 Content-Language: en-US
-To:     Dmitry Safonov <dima@arista.com>, David Ahern <dsahern@kernel.org>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-References: <20220818170005.747015-1-dima@arista.com>
- <fc05893d-7733-1426-3b12-7ba60ef2698f@gmail.com>
- <a83e24c9-ab25-6ca0-8b81-268f92791ae5@kernel.org>
- <8097c38e-e88e-66ad-74d3-2f4a9e3734f4@arista.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <8097c38e-e88e-66ad-74d3-2f4a9e3734f4@arista.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivek Thampi <vithampi@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Aya Levin <ayal@nvidia.com>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Arnd Bergmann <arnd@arndb.de>
+References: <20220818222742.1070935-1-jacob.e.keller@intel.com>
+ <20220818222742.1070935-10-jacob.e.keller@intel.com>
+From:   Gal Pressman <gal@nvidia.com>
+In-Reply-To: <20220818222742.1070935-10-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-ClientProxiedBy: LO4P123CA0004.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:150::9) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 00d5021f-bc72-4dd6-3413-08da851c77cd
+X-MS-TrafficTypeDiagnostic: SN6PR12MB4768:EE_
+X-LD-Processed: 43083d15-7273-40c1-b7db-39efd9ccc17a,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BsJQI9fhrDeLD4qGdS9PB0eGALkHn6+cW3rhpdwH1ACNT7DcF/KEkj+xmhHdRkUMMvpC4sJeFzWOBVvOP4oOZhfjw1ZD2gksRih/BQNEdVKGv2fGD01A2QHj9QD1QcHhMzdwI6dSRnxtFey/YTwrqBdMbrGFGHhdsvqAgtB7VP5Kx8F0VEYGB6O087EnFzSIU7d456qiIOJ/xp+8JEt4K6Mlxl9Jay1Y2CXXXYYjelsLDB1g0+XV9beodZrRcnHPYpBrOxNZ7WflyP2j4G7risYjgOSzgS0DTH+JdWZTP3gU6bikGfAUhwyrIlGDHsJy4ekrXUGHeiJf0j/UyMSBOooY9gNufIlL3xpksXggI6WVdbwz9zBb2K6tKDKRSuZvg/CUOBlUntq0w4S3Wi2D+9H+PYwCfTZh3A5D0mYKftPEttAPsymDguHTrcSYFmgLccfP6Mbgo5aRhcBT9w8/9fiedOS4x+r4fTo7O6QYGZVzgmCJ6FgYVTktgG0zqHp59NaWrQ92oQRJWNMXb0nTiekK9DY1SR7L3o29Kjp5bXWO2s51RItLwDg6CVG0iAb9NjfPa31Kjrdivru+z9ZWC/D0W/zrVYe78Xwuzj93NgfJXYNlGmqFe1Ie5gUyBBgIkAtp0LnYTdxeCjoxkiyBKT9MhIWrYbu4ZVzC2PY4b1MjNpxgpKnGU0wxxnOgHorFmv+HnByDYiFZhwl8BwmL0BSvFyFNd1BwRpP0EkEeYljUDm36cdqkWm92XuxVklBlpw6xrEzOh8aski+x3g9V+1mVne2l9XtTl6qzOBZH6kq3uzyCCYVassZVlbxj0a7AALFebjNCl0giR245avrP5g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(376002)(136003)(366004)(41300700001)(5660300002)(478600001)(7416002)(6486002)(8936002)(31696002)(53546011)(2906002)(26005)(6512007)(6506007)(6666004)(86362001)(7406005)(38100700002)(186003)(2616005)(83380400001)(31686004)(316002)(4326008)(66946007)(8676002)(66556008)(66476007)(54906003)(36756003)(142923001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?R3hjbHlhZGk3WCswS04wQnlCeDVvaFFZOHpPeDZvRXhJWUZzQ24wY2hxcmJa?=
+ =?utf-8?B?TGNtbmIvUTFPRTdkVnNWallUalRJUlZUMCsvZkJhdnRBMEhaWUFuUGZYVFA1?=
+ =?utf-8?B?dWF0S0lRMFp0STNxSlI1WEV0K1BJSnRDb3RNVmJ0U3ZzTkE4by9KWmh1ZE9u?=
+ =?utf-8?B?ZGxHRW53c2FIVHdUdWlxSGtFaC8zcUNXTHRERmowT3krZFgwR3RFeVAxbWJw?=
+ =?utf-8?B?UDhIQTU4SVVtZGlvanZtZ1lyMGhnK2FISXVqbWt2Tmp5S2h2cFE1Y0FENm1a?=
+ =?utf-8?B?M0loNnpjQjcvbWVoQzdlREVBT3RGdlRHZzFvbnppSGk0TlRady9wZXQzNlZ3?=
+ =?utf-8?B?VU1pT1BDa3NUNlg5RE9hcmlkMDhQSDZMOEZKU2hCZ0pNMzI0a3RKSTc2SklT?=
+ =?utf-8?B?RytQMVlaeUkrT1lTeXZBd1RzQXo2T2lBSjdCYUU2STYvUlhNamlqNjN5SWda?=
+ =?utf-8?B?aXN2a3VKdFpNOE9ZSHNFek5jRmFnR1JWMklJY1NRaDdJS1hWTkNhWFBkVElK?=
+ =?utf-8?B?ZHhpdVluZnRMV1ErVFNFQlVvc3pHNkRtM3JZTWxwa1lYa3BidTh6cHpTc3h1?=
+ =?utf-8?B?Y0tlWnJYeHc2RXVMQm9QS01Xd2hkSHJJb00vbnVQMFlPNGhlR09wdjJFTUp4?=
+ =?utf-8?B?ZmkzOFV1aDdrTDZiQmovdUtRN2hIUkYyUUtnVmMyTUd3VkxkNVFaREZ3cHgr?=
+ =?utf-8?B?VnZlNXIzZmY5dllpSW1US212M2tOankwZW14c2RwOHVBQTNLb3gyMkg2anJa?=
+ =?utf-8?B?ZVhBeXdTYWFPVFIxdUdZSnAwaitsVEFmcHVBZzNBK2s5OHR4WEZlVzVSenZy?=
+ =?utf-8?B?MUplZUVOSHVsR1NZUlQybVMvOTJseEFwd3VZUmloNmp3NWVUQUliTHBXMU94?=
+ =?utf-8?B?ZkNvY0pvbFBvd0szdldJOEUzaWNBM2JGb2RtRzNGY1lNZVF0aUhhT0lKaW5u?=
+ =?utf-8?B?KytNb2lDTHRMa2k0dE9vc1lUMCtQSXFkQjBVT0hRMkdYUzNSbldWR2VvWm1R?=
+ =?utf-8?B?bU5uNWpBeWw2cUJvaVBBYXFNblNvdElpSTJwdlNoRmJXck9Ra0pMQkd3TlZ3?=
+ =?utf-8?B?ZGhnalhxb3JzNURrNzEySS9sdURZZE9BNTNrSkUwdXBzQnpmc3FPRSs2VjRY?=
+ =?utf-8?B?SXc2YkdrWGs1S1BCZ1RPU01nMmxPZFFGTjRaeTlDQWt3S1ByaFBzZGlFTDk5?=
+ =?utf-8?B?N3Y5QmNpaEZHOEp2WVduNFh1a1I3MTdscERoVE9sd3ZaRElOOHFlN0tvU0JW?=
+ =?utf-8?B?eitVK1NsQi8xRTdVb0Q2aEwzdWtxR1hiQ3FZbThxS0RBcWExZ2VTM1B2Vi9O?=
+ =?utf-8?B?RGFSak5mS1pUVUplbS9GbGZnUkJndGFYSjRLaXBZUkhpaXpiTXFJeWUraW1z?=
+ =?utf-8?B?Szh3REk3MXRYdWo3TGJjaGZ3VmtlWi93RXhidDd6U3lvSk9WSno4QlN3THlV?=
+ =?utf-8?B?OEFjOEg1aEJhaWl4Y01JQUpPYitkbGRFSEJEcnkzMllLTCsvMlo4Y3hTaUoz?=
+ =?utf-8?B?dTR6bDR4UGhycDB5cUhyc1RwUVBMN2ZETUlkZ3FoNDJyUnMxS3BBSmt1dXlK?=
+ =?utf-8?B?UHJhL0gwQlc2dzRBRW5waXMxeG9oMHo1eWs2V3dsUFNLNXdTOUFmSFUvV1NZ?=
+ =?utf-8?B?YW9hbjdrMlVlTFczMzAxWk5QRzIwdDVQZURrVEhZV2N6ak1JajVheitnaGN3?=
+ =?utf-8?B?bzk5Z1V3ZWZWajh2ZFZzQ0VydWhUM1A3RC90TUhUOWJBWXBjajYzMkxLdmsv?=
+ =?utf-8?B?eHh6OGhpbVJVK3RpTUk1bFJObkluancwYVpUZHZVa3hUanF3US9Zb0JNSnR4?=
+ =?utf-8?B?SXdLejZRNjJsZjN6eGNBQVlFWW14dWlDeDRYUmZtMkZSQ0s1UXBqUjBUTUJp?=
+ =?utf-8?B?b3B2bThOdit4TDdrK21UeHUrSkx3aXcyTERBOEFheGVYZ3BTZVhZUSttZWJO?=
+ =?utf-8?B?aUNpMUNGMVJXWVRES0NCcFZWVmNCZ2t1RTRnVkFGTVN1MkV4ZU10cWhybE5z?=
+ =?utf-8?B?eUJzRlBNdE1wWGUyZGdJVGVvanNaK0x4cnU1S0s2Umk0Q3IrWUl0eC9RaUgw?=
+ =?utf-8?B?MU9reHg3YzB5bWd1eWMzQXQ2djVvdkwxeDUrbGlWbjlGckZRY3lXS2RNbE4r?=
+ =?utf-8?Q?eLTWRhMRUKMRH74VEL3icON2i?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00d5021f-bc72-4dd6-3413-08da851c77cd
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 15:30:54.5830
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qY3f6YlSpLEqON6xOvWVvEYW4X8wrlzyf2zmxYTvXBR8pNhfqgrTW68O4cQcMhqM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB4768
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/22/22 23:35, Dmitry Safonov wrote:
-> Hi Leonard, David,
-> 
-> On 8/22/22 00:51, David Ahern wrote:
->> On 8/21/22 2:34 PM, Leonard Crestez wrote:
->>> On 8/18/22 19:59, Dmitry Safonov wrote:
->>>> This patchset implements the TCP-AO option as described in RFC5925. There
->>>> is a request from industry to move away from TCP-MD5SIG and it seems
->>>> the time
->>>> is right to have a TCP-AO upstreamed. This TCP option is meant to replace
->>>> the TCP MD5 option and address its shortcomings. Specifically, it
->>>> provides
->>>> more secure hashing, key rotation and support for long-lived connections
->>>> (see the summary of TCP-AO advantages over TCP-MD5 in (1.3) of RFC5925).
->>>> The patch series starts with six patches that are not specific to TCP-AO
->>>> but implement a general crypto facility that we thought is useful
->>>> to eliminate code duplication between TCP-MD5SIG and TCP-AO as well as
->>>> other
->>>> crypto users. These six patches are being submitted separately in
->>>> a different patchset [1]. Including them here will show better the gain
->>>> in code sharing. Next are 18 patches that implement the actual TCP-AO
->>>> option,
->>>> followed by patches implementing selftests.
->>>>
->>>> The patch set was written as a collaboration of three authors (in
->>>> alphabetical
->>>> order): Dmitry Safonov, Francesco Ruggeri and Salam Noureddine.
->>>> Additional
->>>> credits should be given to Prasad Koya, who was involved in early
->>>> prototyping
->>>> a few years back. There is also a separate submission done by Leonard
->>>> Crestez
->>>> whom we thank for his efforts getting an implementation of RFC5925
->>>> submitted
->>>> for review upstream [2]. This is an independent implementation that makes
->>>> different design decisions.
->>>
->>> Is this based on something that Arista has had running for a while now
->>> or is a recent new development?
->>>
->>
->> ...
->>
->>> Seeing an entirely distinct unrelated implementation is very unexpected.
->>> What made you do this?
->>>
->>
->> I am curious as well. You are well aware of Leonard's efforts which go
->> back a long time, why go off and do a separate implementation?
-> 
-> When I started working on this, there was a prototype that was neither
-> good for upstream, nor for customers. At the moment Leonard submitted
-> his RFC, I was already giving feedback/reviews to local code and
-> patches. So, as I was aware of the details of TCP-AO, I started giving
-> Leonard feedback and reviews, based on what I've learned from RFC/code.
-> I thought whatever code will make it upstream, it can benefit from my
-> reviews. Some of my comments were based on a better code I saw locally,
-> or a way of improving it that I've suggested to both sides.
-> 
-> I'm quite happy that Leonard addressed some of my comments (i.e.
-> extendable syscalls), I see that it improved his patches.
-> On the other hand, some of the comments I've left moved to "known
-> limitations" with no foreseeable plan to fix them, while they were
-> addressed in local/Arista code.
-> 
-> And now a little bit more than a year later, it seems that the quality
-> of local patches has reached a point where they can be submitted for
-> an upstream review. So, please don't misunderstand me, it's not that
-> "drop your implementation, take ours" and it's not that we've
-> intentionally hidden that we're working on TCP-AO. It's that it is the
-> first moment we can make upstream aware of an alternative implementation.
-> 
-> Personally, I think it's best for opensource community:
-> - Arista's implementation is now public
-> - there are now at least 4 people that understand RFC5925 and the
->    code/details
-> - in a discussion, it will be possible to find what will be the best
->    from both implementations for Linux and come up with better code
-> 
-> At this particular moment, it seems neither of patch sets is ready to be
-> merged "as-is". But it seems that there's enough interest from both
-> sides and likely it guarantees that there will be enough effort to make
-> something merge-able, that will work for all interested parties.
-> 
-> As for my part, I'm interested in the best code upstream, regardless who
-> is the author. This includes:
-> - reusing the existing TCP-MD5 code, rather than copying'n'pasting for
->    TCP-AO with intent to refactor it some day later
+On 19/08/2022 01:27, Jacob Keller wrote:
+> The mlx5 implementation of .adjfreq is implemented in terms of a
+> straight forward "base * ppb / 1 billion" calculation.
+>
+> Convert this to the .adjfine interface and use adjust_by_scaled_ppm for the
+> calculation  of the new mult value.
+>
+> Note that the mlx5_ptp_adjfreq_real_time function expects input in terms of
+> ppb, so use the scaled_ppm_to_ppb to convert before passing to this
+> function.
+>
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> Cc: Saeed Mahameed <saeedm@nvidia.com>
+> Cc: Leon Romanovsky <leon@kernel.org>
+> Cc: Aya Levin <ayal@nvidia.com>
+> ---
+>
+> I do not have this hardware, and have only compile tested the change.
+>
+>  .../ethernet/mellanox/mlx5/core/lib/clock.c   | 22 +++++--------------
+>  1 file changed, 6 insertions(+), 16 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> index 91e806c1aa21..34871ab659d9 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/clock.c
+> @@ -330,35 +330,25 @@ static int mlx5_ptp_adjfreq_real_time(struct mlx5_core_dev *mdev, s32 freq)
+>  	return mlx5_set_mtutc(mdev, in, sizeof(in));
+>  }
+>  
+> -static int mlx5_ptp_adjfreq(struct ptp_clock_info *ptp, s32 delta)
+> +static int mlx5_ptp_adjfine(struct ptp_clock_info *ptp, long delta)
 
-I had a requirement to deploy on linux 5.4 so I very deliberately 
-avoided touching MD5. I'm not sure there very much duplication anyway.
-
-> - making setsockopt()s and other syscalls extendable
-> - cover functionality with selftests
-
-My implementation is tested with a standalone python package, this is a 
-design choice which doesn't particularly matter.
-
-> - following RFC5925 in implementation, especially "required" and "must"
->    parts
-
-I'm not convinced that "don't delete current key" needs to be literally 
-interpreted as a hard requirement for the linux ABI. Most TCP RFCs don't 
-specify any sort of API at all and it would be entirely valid to 
-implement BGP-TCP-AO as a single executable with no internally 
-documented boundaries.
-
-> I hope that clarifies how and why now there are two patch sets that
-> implement the same RFC/functionality.
-
-As far as I can tell the biggest problem is that is quite difficult to 
-implement the userspace side of TCP-AO complete with key rollover. Our 
-two implementation both claim to support this but through different ABI 
-and both require active management from userspace.
-
-I think it would make sense to push key validity times and the key 
-selection policy entirely in the kernel so that it can handle key 
-rotation/expiration by itself. This way userspace only has to configure 
-the keys and doesn't have to touch established connections at all.
-
-My series has a "flags" field on the key struct where it can filter by 
-IP, prefix, ifindex and so on. It would be possible to add additional 
-flags for making the key only valid between certain times (by wall time).
-
-The kernel could then make key selections itself:
-  - send rnextkeyid based on the key with the longest recv lifetime
-  - send keyid based on remote rnextkeyid.
-    - If not applicable (rnextkeyid not found locally, or for SYN) pick 
-based on longest send lifetime.
-  - If all keys expire then return an error on write()
-  - Solve other ambiguities in a predictable way: if valid times are 
-equal then pick the lowest numeric send_id or recv_id.
-
-Explicit key selection from userspace could still be supported but it 
-would be optional and most apps wouldn't bother implementing their own 
-policy. The biggest advantage is that it would be much easier for 
-applications to adopt TCP-AO.
-
---
-Regards,
-Leonard
+Small nit, please rename delta to scaled_ppm.
+I'll try to get this tested in our regression soon.
