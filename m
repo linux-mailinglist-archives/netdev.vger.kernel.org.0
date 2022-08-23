@@ -2,84 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E97059EEE2
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C2B59EEFB
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232339AbiHWWR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 18:17:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
+        id S232820AbiHWWX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 18:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232392AbiHWWR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:17:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A3B303
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:17:48 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S230033AbiHWWXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:23:55 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC9211A18;
+        Tue, 23 Aug 2022 15:23:54 -0700 (PDT)
+Received: from [192.168.0.2] (ip5f5aec8f.dynamic.kabel-deutschland.de [95.90.236.143])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76E22B82190
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC3AC433D6;
-        Tue, 23 Aug 2022 22:17:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661293066;
-        bh=UtcQgpw08WQTBwbUBvkZDpCzaab5er0XXV9k5g8yEVQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=M5ydJ3irKtzbcbzI6pkeS8oxl8SNmHYxQB+8XSsX/5FWg9q4bKnSS8qvLXwJxsaHp
-         iytoxBOPtPQRwC+oXbNSMamG0cgrBs6BnEfDyfUI1i756ZX1pICZAHIcc4INOQGEXp
-         oJ+9UxZ67gVZC9ff/xoFc97f6I2NyGCgPoR17e300jOJybTiHEv5qBogSzzFXvDFRr
-         1NmnKdX4wgS3AWENRewFSrAw5Za7qKkny08bE/3j8xH48h6PkxG4cP+tuC2KKk2NVO
-         mcUKrvUg2YhOqIYTSm6QjL4B/sLVSyUECgpVwxQoic9V8udUV6BP+VZPyKlkhyzJJw
-         hXiRtaoiXQiDg==
-Date:   Tue, 23 Aug 2022 15:17:45 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Paul Greenwalt <paul.greenwalt@intel.com>
-Subject: Re: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC
- disabled via ETHTOOL_SFECPARAM
-Message-ID: <20220823151745.3b6b67cb@kernel.org>
-In-Reply-To: <20220823150438.3613327-3-jacob.e.keller@intel.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <20220823150438.3613327-3-jacob.e.keller@intel.com>
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0472961EA192D;
+        Wed, 24 Aug 2022 00:23:51 +0200 (CEST)
+Message-ID: <b0f17259-680c-7bc0-b941-26dc54214b86@molgen.mpg.de>
+Date:   Wed, 24 Aug 2022 00:23:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [Intel-wired-lan] [PATCH v1] drivers/net/ethernet: check return
+ value of e1e_rphy()
+Content-Language: en-US
+To:     Li Zhong <floridsleeves@gmail.com>
+Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220823060200.1452663-1-floridsleeves@gmail.com>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220823060200.1452663-1-floridsleeves@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 08:04:38 -0700 Jacob Keller wrote:
-> The default Link Establishment State Machine (LESM) behavior does not
+Dear Li,
 
-LESM is the algo as specified by the IEEE standard? If so could you add
-the citation (section of the spec where it's defined)?
 
-Is disabling the only customization we may want?
+Thank you for your patch.
 
-> allow the use of FEC disabled if the media does not support FEC
-> disabled. However users may want to override this behavior.
-> 
-> To support this, accept the ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF as a request
-> to automatically select an appropriate FEC mode including potentially
-> disabling FEC.
-> 
-> This is distinct from ETHTOOL_FEC_AUTO because that will not allow the LESM
-> to select FEC disabled. It is distinct from ETHTOOL_FEC_OFF because
-> FEC_OFF will always disable FEC without any LESM automatic selection.
-> 
-> This *does* mean that ice is now accepting one "bitwise OR" set for FEC
-> configuration, which is somewhat against the recommendations made in
-> 6dbf94b264e6 ("ethtool: clarify the ethtool FEC interface"), but I am not
-> sure if the addition of an entirely new ETHTOOL_FEC_AUTO_DIS would make any
-> sense here.
-> 
-> With this change, users can opt to allow automatic FEC disable via
-> 
->   ethtool --set-fec ethX encoding auto off
+Am 23.08.22 um 08:02 schrieb lily:
+> e1e_rphy() could return error value, which need to be checked.
 
+need*s*
+
+> 
+> Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+
+The From header field does not match the Signed-off-by line. Could you 
+configure git with your user name?
+
+     $ git config --global user.name "Li Zhong"
+     $ git commit --amend --author="Li Zhong <floridsleeves@gmail.com>"
+
+> ---
+>   drivers/net/ethernet/intel/e1000e/phy.c | 14 +++++++++++---
+>   1 file changed, 11 insertions(+), 3 deletions(-)
+
+[…]
+
+
+Kind regards,
+
+Paul
