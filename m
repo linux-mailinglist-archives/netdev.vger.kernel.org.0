@@ -2,130 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFB5959E760
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:34:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BCB959E933
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:23:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244960AbiHWQeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:34:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53306 "EHLO
+        id S231761AbiHWRWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 13:22:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244638AbiHWQde (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:33:34 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD00EE58B5;
-        Tue, 23 Aug 2022 07:50:47 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id w10so6229926edc.3;
-        Tue, 23 Aug 2022 07:50:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=9FkbKWfrE7syTvjgVRfTfp1QVZS5uNWK2l9/kYxbDIo=;
-        b=VqXQUoqNkfeNZyklgLrRt9wOSiknNhjeL9iSJXyh8uVPqmoM5JVXSZG7SfNasI+hwu
-         49/sW/PGdPuNWBLvLI/o5KGRWsw+vcWBIXbx0P7VHyKNERqOBBmUtWfGJUYUPwFImMX0
-         g9a7uAnzZVlSJc+n20RQ79RB56freCTS9pTrgQFwomdMcdjx/QDf4WAlPQBBemRqFXSZ
-         JbMX3xpc4C9HY9eu/RS6u0obRvUC0NjoeZjJ1nGt51Ytm9CV9UX8ZD8kXM8URhhWmEpL
-         2XAZm0uu0wRAjRr/DaNu+GzyK60zS2BUtxNodeoW2dHBsvASAI6QEkHmN3E7Qxq1ifF0
-         yApg==
+        with ESMTP id S240032AbiHWRVL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:21:11 -0400
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C787C529;
+        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
+Received: by mail-ot1-f51.google.com with SMTP id l5-20020a05683004a500b0063707ff8244so9929370otd.12;
+        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=9FkbKWfrE7syTvjgVRfTfp1QVZS5uNWK2l9/kYxbDIo=;
-        b=7FGz/EpxzdKPq2/NOtpPvCF2lRBSmsiT/z4SKOpes5Vviu1HZt4chcvf6IyWEjCCjs
-         TD3w2jnfvYU+YjzT8FBbHZS4SnHNu3MGIQvZKJ+Mryd6mnSGERCOpBkyBucqchOYdui/
-         qGtpIxtpDXLsNtFJKtbXZmq67rtQmOCGxZOIa/U0vQYngyvQnpgqTvJJaYQyLPPOTiNt
-         bKddA57IOcVOGq6qeE9T0wOCtzLn8RZ3JxbNzNKumldmKeKV5KEB5LCQcYjOi3gwymR9
-         PnfjdZuOSssmr9LeSdRUGFhF01OW2MNI3uO7dsqDDNcJT9OxxV2t1GFvdo+7ZhlZt9Z8
-         CLoA==
-X-Gm-Message-State: ACgBeo0Jj9TXqnv/gZDN+TNZ1lL7sjB3S6Y3PlDwrZdckeu16CCYuSUc
-        3ckKFZYxjPGg8qYj7xsJBMM=
-X-Google-Smtp-Source: AA6agR4fZaRj2PGPD9O/XDdU/NGZNcNJidhVlJtmFWx0E3P96etNLFWDppzqcmKdWMvosJjO67UJWg==
-X-Received: by 2002:aa7:ce0f:0:b0:445:f488:51ca with SMTP id d15-20020aa7ce0f000000b00445f48851camr408017edv.6.1661266246401;
-        Tue, 23 Aug 2022 07:50:46 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa? ([2a04:241e:502:a09c:f5c4:cca0:9b39:e8aa])
-        by smtp.gmail.com with ESMTPSA id w21-20020a1709061f1500b0072eddcc807fsm7589047ejj.155.2022.08.23.07.50.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 07:50:45 -0700 (PDT)
-Message-ID: <01f8616c-2904-42f1-1e59-ca4c71f7a9bd@gmail.com>
-Date:   Tue, 23 Aug 2022 17:50:43 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 19/31] net/tcp: Add TCP-AO SNE support
-Content-Language: en-US
-To:     Dmitry Safonov <dima@arista.com>
-Cc:     Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        David Ahern <dsahern@kernel.org>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=32fb+kP/GNTtD4yV9TOnD2b7RZ03KBwBx6+ibrPD+y8=;
+        b=YoKL8784sOKdLGvnkA2TH2RNCwV3bfT8AD1iJP3C9tqeIA/iSuJSEJhdymVWtgAEmn
+         x+yKWkkb/xnGSwa46aYI1x6YjUYo3vauOpH0S0geFzSWm3KqrYpkrC4kAxD3kDEmwTqd
+         3gJJ+YL6YSl8g0vONsduCPwFeG0xYRuYMLoiMaiCrslfB2jb+7A4xJEoSbClHiJv52Ia
+         glNiJ3vy+9wuCDtGtpvHP1kjgSxDJ5c3pxM6+GBJSKAV9+7zphdD/BaoZspk/Z9/XoUS
+         iCkC30zz4WuicUvSWOYqM6Kq5xTx8Hk/L8y4pFTx22B07eyZv+lNP5QDQ6I9HEtSUtWj
+         57JA==
+X-Gm-Message-State: ACgBeo2hfJgWlyBWGGG40rBKOHIEM00NR/Tb2pV7teIOT/LEU7ub2QSy
+        3javVQQcVamBGSYAu794hA==
+X-Google-Smtp-Source: AA6agR5gTDVPXYx4XrmwbScdPsvRYbDyHtuAdNcSHU1Fwpadq2Y01zAfG/CkPYSQeOvRnZjzCO7kHw==
+X-Received: by 2002:a05:6830:2498:b0:638:9325:3370 with SMTP id u24-20020a056830249800b0063893253370mr9666966ots.228.1661266636988;
+        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
+Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
+From:   Rob Herring <robh@kernel.org>
+To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-References: <20220818170005.747015-1-dima@arista.com>
- <20220818170005.747015-20-dima@arista.com>
-From:   Leonard Crestez <cdleonard@gmail.com>
-In-Reply-To: <20220818170005.747015-20-dima@arista.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: Add missing (unevaluated|additional)Properties on child nodes
+Date:   Tue, 23 Aug 2022 09:56:36 -0500
+Message-Id: <20220823145649.3118479-5-robh@kernel.org>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/18/22 19:59, Dmitry Safonov wrote:
-> Add Sequence Number Extension (SNE) extension for TCP-AO.
-> This is needed to protect long-living TCP-AO connections from replaying
-> attacks after sequence number roll-over, see RFC5925 (6.2).
+In order to ensure only documented properties are present, node schemas
+must have unevaluatedProperties or additionalProperties set to false
+(typically).
 
-> +#ifdef CONFIG_TCP_AO
-> +	ao = rcu_dereference_protected(tp->ao_info,
-> +				       lockdep_sock_is_held((struct sock *)tp));
-> +	if (ao) {
-> +		if (ack < ao->snd_sne_seq)
-> +			ao->snd_sne++;
-> +		ao->snd_sne_seq = ack;
-> +	}
-> +#endif
->   	tp->snd_una = ack;
->   }
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/net/cortina,gemini-ethernet.yaml      | 1 +
+ Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml     | 4 ++++
+ .../devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml        | 1 +
+ Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 1 +
+ 4 files changed, 7 insertions(+)
 
-... snip ...
+diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+index cc01b9b5752a..253b5d1407ee 100644
+--- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
++++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
+@@ -37,6 +37,7 @@ properties:
+ patternProperties:
+   "^ethernet-port@[0-9]+$":
+     type: object
++    unevaluatedProperties: false
+     description: contains the resources for ethernet port
+     allOf:
+       - $ref: ethernet-controller.yaml#
+diff --git a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
+index 31bf825c6598..46e330f45768 100644
+--- a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
++++ b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
+@@ -77,6 +77,8 @@ properties:
+ 
+   ethernet-ports:
+     type: object
++    additionalProperties: false
++
+     properties:
+       '#address-cells':
+         const: 1
+@@ -89,6 +91,7 @@ properties:
+         description: CPSW external ports
+ 
+         $ref: ethernet-controller.yaml#
++        unevaluatedProperties: false
+ 
+         properties:
+           reg:
+@@ -117,6 +120,7 @@ properties:
+ 
+   cpts:
+     type: object
++    unevaluatedProperties: false
+     description:
+       The Common Platform Time Sync (CPTS) module
+ 
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+index b8281d8be940..fb61a2ce0ea8 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
+@@ -115,6 +115,7 @@ properties:
+         description: CPSWxG NUSS external ports
+ 
+         $ref: ethernet-controller.yaml#
++        unevaluatedProperties: false
+ 
+         properties:
+           reg:
+diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+index b783ad0d1f53..e9f78cef6b7f 100644
+--- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
++++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
+@@ -95,6 +95,7 @@ properties:
+ 
+   refclk-mux:
+     type: object
++    additionalProperties: false
+     description: CPTS reference clock multiplexer clock
+     properties:
+       '#clock-cells':
+-- 
+2.34.1
 
-> +#ifdef CONFIG_TCP_AO
-> +	ao = rcu_dereference_protected(tp->ao_info,
-> +				       lockdep_sock_is_held((struct sock *)tp));
-> +	if (ao) {
-> +		if (seq < ao->rcv_sne_seq)
-> +			ao->rcv_sne++;
-> +		ao->rcv_sne_seq = seq;
-> +	}
-> +#endif
->   	WRITE_ONCE(tp->rcv_nxt, seq);
-
-It should always be the case that (rcv_nxt == rcv_sne_seq) and (snd_una 
-== snd_sne_seq) so the _sne_seq fields are redundant. It's possible to 
-avoid those extra fields.
-
-However 8 bytes per TCP-AO socket is inconsequential.
-
---
-Regards,
-Leonard
