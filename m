@@ -2,117 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9632159D03B
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 06:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E336159D03D
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 06:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239789AbiHWEsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 00:48:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59058 "EHLO
+        id S239786AbiHWEtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 00:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239780AbiHWEsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 00:48:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02E21EC58
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 21:48:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S238337AbiHWEtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 00:49:42 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B31D542AF1;
+        Mon, 22 Aug 2022 21:49:41 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12B92B81ADA
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 04:48:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E10D9C433C1;
-        Tue, 23 Aug 2022 04:48:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661230121;
-        bh=mcput06ZgQsa/x6Xx9d0KOQZPta4Q0pTfqmRH6F0PY8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=U9EHMk09nbXY8Gc5JwbtMlmlfZooPxZkOav368m8MYPMOhVRCXboljFIOO1luMZ0P
-         MijTwOhyuAvdV382OhaGoz2File05WTtWixaMh4qngYPaCZ0B2XIhnkjxfDCikLOZF
-         4QTF0cWf2kuMstewnykhw8MsQmhtVauCl31HsQKt4G2Kn4rI/T9Ah3vrF2GJajJf4y
-         zYI+cFAcu4KOh2Olc7+TBXyE018av2UTiOMtX8/oSi4A1XsLnIcmX81o0n2XtQmrL0
-         qbXlWgTlFDcemgM60lVmFT/j4FxiGMWum473QBKYAwSB0B7t8MVWfKQ710FFn/W8Fm
-         yn/X8e4d5UrEw==
-Date:   Tue, 23 Aug 2022 07:48:37 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>
-Subject: Re: [PATCH xfrm-next v2 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <YwRcJaythk/kM5Kf@unreal>
-References: <Yv3M/T5K/f35R5UM@unreal>
- <20220818193449.35c79b63@kernel.org>
- <Yv8lGtYIz4z043aI@unreal>
- <20220819084707.7ed64b72@kernel.org>
- <Yv+z0nBW60SBFAmZ@nvidia.com>
- <20220819105356.100003d5@kernel.org>
- <20220822084105.GI2602992@gauss3.secunet.de>
- <YwNEUguW7aTXC2Vs@unreal>
- <20220822093304.7ddc5d35@kernel.org>
- <20220822212716.yji3ugbppse7snfy@sx1>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 4ED8320C08;
+        Tue, 23 Aug 2022 04:49:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1661230180; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=6PhQCQsVbk7n5tc8kIa2TGPQzQV7xBjFKyKTp3F/kUQ=;
+        b=GHdIKuo9daTXmA1UtzVKXzG3TkVRWU/Hmqj+RbiMv3OJ4dTblT04XZHLZp0aD5LS5cC30D
+        3LyVtaJ66+nfDToneuanA/XfjkqmCEmv+bcfxqmGjVPUhTTIduFHwku/BIQVPxPYqAn9vZ
+        a1w9xWSCxG8vZkzqtnDB7CJ18m5DIb8=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2F49E13AB7;
+        Tue, 23 Aug 2022 04:49:40 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id PzY0CWRcBGPBCgAAMHmgww
+        (envelope-from <mhocko@suse.com>); Tue, 23 Aug 2022 04:49:40 +0000
+Date:   Tue, 23 Aug 2022 06:49:39 +0200
+From:   Michal Hocko <mhocko@suse.com>
+To:     Roman Gushchin <roman.gushchin@linux.dev>
+Cc:     Shakeel Butt <shakeelb@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Oliver Sang <oliver.sang@intel.com>,
+        Andrew Morton <akpm@linux-foundation.org>, lkp@lists.01.org,
+        cgroups@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/3] memcg: increase MEMCG_CHARGE_BATCH to 64
+Message-ID: <YwRcY6oSnlYOD9n5@dhcp22.suse.cz>
+References: <20220822001737.4120417-1-shakeelb@google.com>
+ <20220822001737.4120417-4-shakeelb@google.com>
+ <YwPM6o1+pZ2kRyy3@P9FQF9L96D>
+ <YwPZ1lpJ98pZSLmw@dhcp22.suse.cz>
+ <YwQ54pvNwy0/5u3C@P9FQF9L96D>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822212716.yji3ugbppse7snfy@sx1>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <YwQ54pvNwy0/5u3C@P9FQF9L96D>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 02:27:16PM -0700, Saeed Mahameed wrote:
-> On 22 Aug 09:33, Jakub Kicinski wrote:
-> > On Mon, 22 Aug 2022 11:54:42 +0300 Leon Romanovsky wrote:
-> > > On Mon, Aug 22, 2022 at 10:41:05AM +0200, Steffen Klassert wrote:
-> > > > On Fri, Aug 19, 2022 at 10:53:56AM -0700, Jakub Kicinski wrote:
-> > > > > Yup, that's what I thought you'd say. Can't argue with that use case
-> > > > > if Steffen is satisfied with the technical aspects.
-> > > >
-> > > > Yes, everything that can help to overcome the performance problems
-> > > > can help and I'm interested in this type of offload. But we need to
-> > > > make sure the API is usable by the whole community, so I don't
-> > > > want an API for some special case one of the NIC vendors is
-> > > > interested in.
-> > > 
-> > > BTW, we have a performance data, I planned to send it as part of cover
-> > > letter for v3, but it is worth to share it now.
-> > > 
-> > >  ================================================================================
-> > >  Performance results:
-> > > 
-> > >  TCP multi-stream, using iperf3 instance per-CPU.
-> > >  +----------------------+--------+--------+--------+--------+---------+---------+
-> > >  |                      | 1 CPU  | 2 CPUs | 4 CPUs | 8 CPUs | 16 CPUs | 32 CPUs |
-> > >  |                      +--------+--------+--------+--------+---------+---------+
-> > >  |                      |                   BW (Gbps)                           |
-> > >  +----------------------+--------+--------+-------+---------+---------+---------+
-> > >  | Baseline             | 27.9   | 59     | 93.1  | 92.8    | 93.7    | 94.4    |
-> > >  +----------------------+--------+--------+-------+---------+---------+---------+
-> > >  | Software IPsec       | 6      | 11.9   | 23.3  | 45.9    | 83.8    | 91.8    |
-> > >  +----------------------+--------+--------+-------+---------+---------+---------+
-> > >  | IPsec crypto offload | 15     | 29.7   | 58.5  | 89.6    | 90.4    | 90.8    |
-> > >  +----------------------+--------+--------+-------+---------+---------+---------+
-> > >  | IPsec full offload   | 28     | 57     | 90.7  | 91      | 91.3    | 91.9    |
-> > >  +----------------------+--------+--------+-------+---------+---------+---------+
-> > > 
-> > >  IPsec full offload mode behaves as baseline and reaches linerate with same amount
-> > >  of CPUs.
-> > > 
+On Mon 22-08-22 19:22:26, Roman Gushchin wrote:
+> On Mon, Aug 22, 2022 at 09:34:59PM +0200, Michal Hocko wrote:
+> > On Mon 22-08-22 11:37:30, Roman Gushchin wrote:
+> > [...]
+> > > I wonder only if we want to make it configurable (Idk a sysctl or maybe
+> > > a config option) and close the topic.
+> > 
+> > I do not think this is a good idea. We have other examples where we have
+> > outsourced internal tunning to the userspace and it has mostly proven
+> > impractical and long term more problematic than useful (e.g.
+> > lowmem_reserve_ratio, percpu_pagelist_high_fraction, swappiness just to
+> > name some that come to my mind). I have seen more often these to be used
+> > incorrectly than useful.
 > 
-> Just making sure: Baseline == "Clear text TCP" ?
+> A agree, not a strong opinion here. But I wonder if somebody will
+> complain on Shakeel's change because of the reduced accuracy.
+> I know some users are using memory cgroups to track the size of various
+> workloads (including relatively small) and 32->64 pages per cpu change
+> can be noticeable for them. But we can wait for an actual bug report :)
 
-Yes, baseline is plain TCP without any encryption.
+Yes, that would be my approach. I have seen reports like that already
+but that was mostly because of heavy caching on the SLUB side on older
+kernels. So there surely are workloads with small limits configured
+(e.g. 20MB). On the other hand those users were receptive to adapt their
+limits as they were kinda arbitrary anyway.
+ 
+> > In this case, I guess we should consider either moving to per memcg
+> > charge batching and see whether the pcp overhead x memcg_count is worth
+> > that or some automagic tuning of the batch size depending on how
+> > effectively the batch is used. Certainly a lot of room for
+> > experimenting.
+> 
+> I'm not a big believer into the automagic tuning here because it's a fundamental
+> trade-off of accuracy vs performance and various users might make a different
+> choice depending on their needs, not on the cpu count or something else.
 
-We can get higher numbers with Tariq's improvements, but it was not
-important to achieve maximum as we are interested to see differences
-between various modes.
+Yes, this not an easy thing to get right. I was mostly thinking some
+auto scaling based on the limit size or growing the stock if cache hits
+are common and decrease when stocks get flushed often because multiple
+memcgs compete over the same pcp stock. But to me it seems like a per
+memcg approach might lead better results without too many heuristics
+(albeit more memory hungry).
 
-Thanks
+> Per-memcg batching sounds interesting though. For example, we can likely
+> batch updates on leaf cgroups and have a single atomic update instead of
+> multiple most of the times. Or do you mean something different?
+
+No, that was exactly my thinking as well.
+
+-- 
+Michal Hocko
+SUSE Labs
