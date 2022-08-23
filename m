@@ -2,88 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86BFF59EE14
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 23:20:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F0959EE4E
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 23:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231165AbiHWVUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 17:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        id S231158AbiHWVig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 17:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231293AbiHWVUi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 17:20:38 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A47796AF;
-        Tue, 23 Aug 2022 14:20:34 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oQbK1-000EWz-VJ; Tue, 23 Aug 2022 23:20:30 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1oQbK1-000VIH-Oo; Tue, 23 Aug 2022 23:20:29 +0200
-Subject: Re: [PATCH v2 bpf] bpf: Fix a data-race around bpf_jit_limit.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     Kuniyuki Iwashima <kuni1840@gmail.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220823181247.90349-1-kuniyu@amazon.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <311e4686-a514-b210-080b-849d8d0ad5d3@iogearbox.net>
-Date:   Tue, 23 Aug 2022 23:20:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S231142AbiHWVig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 17:38:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629B413F09
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 14:38:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27A54B8218F
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 21:38:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E125C433D6;
+        Tue, 23 Aug 2022 21:38:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661290712;
+        bh=cdX/t5FrNewup+vOqRq3Jd4movq26vPXoqSGqjwQTF8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RwS6cGvRzKjSxoYvXmzKE2lokVGOb8BKqeVHgqopB2J+UbOk8Z5c0nWaj5lbZu5oF
+         RYm6HRg6sJXEom/uGLzBPmZw1apaHAnPda/6oOoIQRxEa18lx1bK2f5foWJTSRJktU
+         icDv1SCQ/Me3HfrTSnT952weAk/Kmhz4jpVv3xURQ72W3PCJ+pJLAMgHy4dbbFBPEd
+         gGAjvALMRG0UVOV4HuOTdKXLP/jXMaRbW2VX8ZXC75MDKR7btavrcumNRsEJnPDObC
+         5kdBkTUmNdPGhYc3SpI7yBY2aimMD2FBaFW2w4kU0JDva5ZjNOhv9A2WXOii8w5778
+         fTnguuYGb8Wsg==
+Date:   Tue, 23 Aug 2022 14:38:31 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Brian Hutchinson <b.hutchman@gmail.com>
+Subject: Re: [PATCH v2 net] net: dsa: microchip: make learning configurable
+ and keep it off while standalone
+Message-ID: <20220823143831.2b98886b@kernel.org>
+In-Reply-To: <20220818164809.3198039-1-vladimir.oltean@nxp.com>
+References: <20220818164809.3198039-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20220823181247.90349-1-kuniyu@amazon.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26636/Tue Aug 23 09:52:45 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/22 8:12 PM, Kuniyuki Iwashima wrote:
-> While reading bpf_jit_limit, it can be changed concurrently.
-> Thus, we need to add READ_ONCE() to its reader.
-
-For sake of a better/clearer commit message, please also provide data about the
-WRITE_ONCE() pairing that this READ_ONCE() targets. This seems to be the case in
-__do_proc_doulongvec_minmax() as far as I can see. For your 2nd sentence above
-please also include load-tearing as main motivation for your fix.
-
-> Fixes: ede95a63b5e8 ("bpf: add bpf_jit_limit knob to restrict unpriv allocations")
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Thu, 18 Aug 2022 19:48:09 +0300 Vladimir Oltean wrote:
+> Address learning should initially be turned off by the driver for port
+> operation in standalone mode, then the DSA core handles changes to it
+> via ds->ops->port_bridge_flags().
+> 
+> Leaving address learning enabled while ports are standalone breaks any
+> kind of communication which involves port B receiving what port A has
+> sent. Notably it breaks the ksz9477 driver used with a (non offloaded,
+> ports act as if standalone) bonding interface in active-backup mode,
+> when the ports are connected together through external switches, for
+> redundancy purposes.
+> 
+> This fixes a major design flaw in the ksz9477 and ksz8795 drivers, which
+> unconditionally leave address learning enabled even while ports operate
+> as standalone.
+> 
+> Fixes: b987e98e50ab ("dsa: add DSA switch driver for Microchip KSZ9477")
+> Link: https://lore.kernel.org/netdev/CAFZh4h-JVWt80CrQWkFji7tZJahMfOToUJQgKS5s0_=9zzpvYQ@mail.gmail.com/
+> Reported-by: Brian Hutchinson <b.hutchman@gmail.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
-> v2:
->    * Drop other 3 patches (No change for this patch)
+> v1->v2: targeting the 6.0 release candidates as opposed to the 5.19 rc's
+>         from v1.
 > 
-> v1: https://lore.kernel.org/bpf/20220818042339.82992-1-kuniyu@amazon.com/
-> ---
->   kernel/bpf/core.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+> Again, this is compile-tested only, but the equivalent change was
+> confirmed by Brian as working on a 5.10 kernel.
 > 
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index c1e10d088dbb..3d9eb3ae334c 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -971,7 +971,7 @@ pure_initcall(bpf_jit_charge_init);
->   
->   int bpf_jit_charge_modmem(u32 size)
->   {
-> -	if (atomic_long_add_return(size, &bpf_jit_current) > bpf_jit_limit) {
-> +	if (atomic_long_add_return(size, &bpf_jit_current) > READ_ONCE(bpf_jit_limit)) {
->   		if (!bpf_capable()) {
->   			atomic_long_sub(size, &bpf_jit_current);
->   			return -EPERM;
-> 
+> @maintainers: when should I submit the backports to "stable", for older
+> trees?
 
+"when" as is how long after Thu PR or "when" as in under what
+conditions?
