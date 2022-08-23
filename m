@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAEBA59E6B0
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC75E59E6B3
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:14:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244115AbiHWQND (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
+        id S243952AbiHWQNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 12:13:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244107AbiHWQMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:12:34 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F954101D18;
-        Tue, 23 Aug 2022 05:32:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661257896; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=P6EIK7KjGJkQkFCZc60aNu46Ap8gaxZqPsoF83NG1V5IiP2sn8nEONPow8BNWdW6VfTtTjjSHRRT0gP2Li/W6QgTBN6T0oqW0/sin0BJIKEPiowLPea8n7WxT/zwpcQRxq1wv3FIVXbF/LC7P4/qCWTIfydaCL607U3McivNbsc=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661257896; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=Kg0sfx0WR/crCntEVY1ryFztDVm96fjR6hhnhNvqiVo=; 
-        b=CSxlUi4YjDQSlin5fgI/oOYtx9n4qC2ewhNemKRGsgETRPYAcYieMVd3EFxJr8L7AOKHi5cu179YYKx0BHY1G64Jbftb6ZbDvjSHI4hZjcaov8HtTCvRafoRvSn4xXi7zWDS0xZv3YxHqSlXd7Z89GuFFK77LWcravDR2pSSy3I=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661257896;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=Kg0sfx0WR/crCntEVY1ryFztDVm96fjR6hhnhNvqiVo=;
-        b=RsvgFiy43OJmJBpw8P+Usl7X4egqr59jbpgzCeMjq7Jzxff8EmDwXphItkWrb6sf
-        ydwDITP8zcO0rMhfefchEWHWsKL/0lHioOfWr9wHtLxJIAdLYAaMz/9W+C46nKI1GRB
-        kv8EMVS/c+iOgw51O3kVZ2hMQPCgFhTjRqmY/toY=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661257894955331.02530845137676; Tue, 23 Aug 2022 05:31:34 -0700 (PDT)
-Message-ID: <715237fb-05e6-553b-ace3-7b21eee0a5c9@arinc9.com>
-Date:   Tue, 23 Aug 2022 15:31:27 +0300
+        with ESMTP id S243909AbiHWQMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:12:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C936825F687
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:33:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661258023;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=B7RL6Rg0320PkYWybc3HsS+NBLoW2T6OrM/yKT96X3M=;
+        b=GUdHkgPpQhfgSaTa1SBFljJz2F7hs8NjqWSXHMmtyulfo8oZLCKtaDBZAAncWWNn7uL2qt
+        7XaRMqp2xd+DIt/WhKnDT2VAqGReRKMFbKp95UnIsiVZqG/2S9VDkuaU1g4RGNaOSBOJ5N
+        XL9UdLD1E5vsnk6KsEOzTuGUoRn21dg=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-201-xvoK8KMdOji13EKibTjE9g-1; Tue, 23 Aug 2022 08:33:41 -0400
+X-MC-Unique: xvoK8KMdOji13EKibTjE9g-1
+Received: by mail-qv1-f70.google.com with SMTP id n17-20020ad444b1000000b00496d5b41d37so3700570qvt.6
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:33:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=B7RL6Rg0320PkYWybc3HsS+NBLoW2T6OrM/yKT96X3M=;
+        b=LcyuANhsHTNl7+wRryNFmQR6njGgld/gcA1CPyiAp9jAhPVRK1EBhRtQqqQe44W8AQ
+         aeSVAKgOYZgN/ueMNuFBuYnBlGudDfaAVQGv0y47ZnrNgQvpAIyGjgN2+cZdklzR6kUZ
+         EvfncaK6CBMPvEHSCFIPBcXSsWrB7u+2/yeVW9qd7pmX/5W+HCCq6qugcVJvtBHg76ph
+         lyDAidmvBTkxEwa6QhtQj9/D9y9he9PdDFVlSLXTgQ7MfZxF7c4CP9lGshyjqfoocLH4
+         3aRmF3FcfXDCX5E/vaauHV4pHSp7HlhfRWHepM/I8FwxdvXuLMoyFcPsecSRD10HKaZl
+         l4Wg==
+X-Gm-Message-State: ACgBeo0cc5K6vn2zFP2QEfrCvMkw/QrLJJEh3YzXzYQdgSmLFaX9JDpa
+        QYjtVYvDoG7wF+HHk/n88ka+xN0ihSdGSZ9OS5Da0vl8OmxLoZUJJ7WszNPuF1nt0egh0B6Hr8U
+        wBTIywUPu3Lr2RPHY8ViRYdxiuhcOKMZh
+X-Received: by 2002:a05:622a:4:b0:344:94b7:a396 with SMTP id x4-20020a05622a000400b0034494b7a396mr17581284qtw.123.1661258021295;
+        Tue, 23 Aug 2022 05:33:41 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4DEr3LfrwPuNYexjcOCXXipt4XIghkH+zsbEOeIMCpBNb36NC7B8V5o+6weiNXQjfZqp1n3QnxlpxCQyPZdao=
+X-Received: by 2002:a05:622a:4:b0:344:94b7:a396 with SMTP id
+ x4-20020a05622a000400b0034494b7a396mr17581261qtw.123.1661258021051; Tue, 23
+ Aug 2022 05:33:41 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v4 2/6] dt-bindings: net: dsa: mediatek,mt7530: fix reset
- lines
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+ <20220701143052.1267509-2-miquel.raynal@bootlin.com> <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+ <20220819191109.0e639918@xps-13>
+In-Reply-To: <20220819191109.0e639918@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 23 Aug 2022 08:33:30 -0400
+Message-ID: <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220820080758.9829-1-arinc.unal@arinc9.com>
- <20220820080758.9829-3-arinc.unal@arinc9.com>
- <cf10e888-7fe2-7cf8-091a-40207eeb78b5@linaro.org>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <cf10e888-7fe2-7cf8-091a-40207eeb78b5@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,84 +85,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23.08.2022 13:44, Krzysztof Kozlowski wrote:
-> On 20/08/2022 11:07, Arınç ÜNAL wrote:
->> - Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
-> 
-> Separate commit. You are still doing here few things at a time.
+Hi,
 
-Will split.
+On Fri, Aug 19, 2022 at 1:11 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:51:02 -0400:
+>
+> > Hi,
+> >
+> > On Fri, Jul 1, 2022 at 10:36 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > As a first strep in introducing proper PAN management and association,
+> > > we need to be able to create coordinator interfaces which might act as
+> > > coordinator or PAN coordinator.
+> > >
+> > > Hence, let's add the minimum support to allow the creation of these
+> > > interfaces. This might be restrained and improved later.
+> > >
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  net/mac802154/iface.c | 14 ++++++++------
+> > >  net/mac802154/rx.c    |  2 +-
+> > >  2 files changed, 9 insertions(+), 7 deletions(-)
+> > >
+> > > diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+> > > index 500ed1b81250..7ac0c5685d3f 100644
+> > > --- a/net/mac802154/iface.c
+> > > +++ b/net/mac802154/iface.c
+> > > @@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
+> > >                 if (nsdata != sdata && ieee802154_sdata_running(nsdata)) {
+> > >                         int ret;
+> > >
+> > > -                       /* TODO currently we don't support multiple node types
+> > > -                        * we need to run skb_clone at rx path. Check if there
+> > > -                        * exist really an use case if we need to support
+> > > -                        * multiple node types at the same time.
+> > > +                       /* TODO currently we don't support multiple node/coord
+> > > +                        * types we need to run skb_clone at rx path. Check if
+> > > +                        * there exist really an use case if we need to support
+> > > +                        * multiple node/coord types at the same time.
+> > >                          */
+> > > -                       if (wpan_dev->iftype == NL802154_IFTYPE_NODE &&
+> > > -                           nsdata->wpan_dev.iftype == NL802154_IFTYPE_NODE)
+> > > +                       if (wpan_dev->iftype != NL802154_IFTYPE_MONITOR &&
+> > > +                           nsdata->wpan_dev.iftype != NL802154_IFTYPE_MONITOR)
+> > >                                 return -EBUSY;
+> > >
+> > >                         /* check all phy mac sublayer settings are the same.
+> > > @@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
+> > >         wpan_dev->short_addr = cpu_to_le16(IEEE802154_ADDR_BROADCAST);
+> > >
+> > >         switch (type) {
+> > > +       case NL802154_IFTYPE_COORD:
+> > >         case NL802154_IFTYPE_NODE:
+> > >                 ieee802154_be64_to_le64(&wpan_dev->extended_addr,
+> > >                                         sdata->dev->dev_addr);
+> > > @@ -636,6 +637,7 @@ ieee802154_if_add(struct ieee802154_local *local, const char *name,
+> > >         ieee802154_le64_to_be64(ndev->perm_addr,
+> > >                                 &local->hw.phy->perm_extended_addr);
+> > >         switch (type) {
+> > > +       case NL802154_IFTYPE_COORD:
+> > >         case NL802154_IFTYPE_NODE:
+> > >                 ndev->type = ARPHRD_IEEE802154;
+> > >                 if (ieee802154_is_valid_extended_unicast_addr(extended_addr)) {
+> > > diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+> > > index b8ce84618a55..39459d8d787a 100644
+> > > --- a/net/mac802154/rx.c
+> > > +++ b/net/mac802154/rx.c
+> > > @@ -203,7 +203,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
+> > >         }
+> > >
+> > >         list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > > -               if (sdata->wpan_dev.iftype != NL802154_IFTYPE_NODE)
+> > > +               if (sdata->wpan_dev.iftype == NL802154_IFTYPE_MONITOR)
+> > >                         continue;
+> >
+> > I probably get why you are doing that, but first the overall design is
+> > working differently - means you should add an additional receive path
+> > for the special interface type.
+> >
+> > Also we "discovered" before that the receive path of node vs
+> > coordinator is different... Where is the different handling here? I
+> > don't see it, I see that NODE and COORD are the same now (because that
+> > is _currently_ everything else than monitor). This change is not
+> > enough and does "something" to handle in some way coordinator receive
+> > path but there are things missing.
+> >
+> > 1. Changing the address filters that it signals the transceiver it's
+> > acting as coordinator
+> > 2. We _should_ also have additional handling for whatever the
+> > additional handling what address filters are doing in mac802154
+> > _because_ there is hardware which doesn't have address filtering e.g.
+> > hwsim which depend that this is working in software like other
+> > transceiver hardware address filters.
+> >
+> > For the 2. one, I don't know if we do that even for NODE right or we
+> > just have the bare minimal support there... I don't assume that
+> > everything is working correctly here but what I want to see is a
+> > separate receive path for coordinators that people can send patches to
+> > fix it.
+>
+> Yes, we do very little differently between the two modes, that's why I
+> took the easy way: just changing the condition. I really don't see what
+> I can currently add here, but I am fine changing the style to easily
+> show people where to add filters for such or such interface, but right
+> now both path will look very "identical", do we agree on that?
 
-> 
->> - Add description for reset-gpios.
->> - Invalidate reset-gpios if mediatek,mcm is used. We cannot use multiple
->> reset lines at the same time.
->> - Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
->> There is no multi-chip module version of mediatek,mt7531.
->> - Require mediatek,mcm for mediatek,mt7621 as the compatible string is only
->> used for the multi-chip module version of MT7530.
->>
->> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
->> ---
->>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
->>   1 file changed, 28 insertions(+), 3 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> index edf48e917173..4c99266ce82a 100644
->> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
->> @@ -110,11 +110,15 @@ properties:
->>     mediatek,mcm:
->>       type: boolean
->>       description:
->> -      if defined, indicates that either MT7530 is the part on multi-chip
->> -      module belong to MT7623A has or the remotely standalone chip as the
->> -      function MT7623N reference board provided for.
->> +      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
->> +      switch is a part of the multi-chip module.
->>   
->>     reset-gpios:
->> +    description:
->> +      GPIO to reset the switch. Use this if mediatek,mcm is not used.
->> +      This property is optional because some boards share the reset line with
->> +      other components which makes it impossible to probe the switch if the
->> +      reset line is used.
->>       maxItems: 1
->>   
->>     reset-names:
->> @@ -165,6 +169,9 @@ allOf:
->>         required:
->>           - mediatek,mcm
->>       then:
->> +      properties:
->> +        reset-gpios: false
->> +
->>         required:
->>           - resets
->>           - reset-names
->> @@ -182,6 +189,24 @@ allOf:
->>           - core-supply
->>           - io-supply
->>   
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          items:
-> 
-> Again, not items. This can be just const or enum.
+mostly yes, but there exists a difference and we should at least check
+if the node receive path violates the coordinator receive path and
+vice versa.
+Put it in a receive_path() function and then coord_receive_path(),
+node_receive_path() that calls the receive_path() and do the
+additional filtering for coordinators, etc.
 
-Will do.
+There should be a part in the standard about "third level filter rule
+if it's a coordinator".
+btw: this is because the address filter on the transceiver needs to
+have the "i am a coordinator" boolean set which is missing in this
+series. However it depends on the transceiver filtering level and the
+mac802154 receive path if we actually need to run such filtering or
+not.
 
-> 
->> +            - const: mediatek,mt7531
->> +    then:
->> +      properties:
->> +        mediatek,mcm: false
->> +
->> +  - if:
->> +      properties:
->> +        compatible:
->> +          items:
-> 
-> Ditto.
-Arınç
+- Alex
+
