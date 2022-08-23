@@ -2,142 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E970A59E7FF
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82B8D59E787
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244908AbiHWQr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:47:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41282 "EHLO
+        id S245104AbiHWQiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 12:38:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245632AbiHWQpm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:45:42 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6C9D074F;
-        Tue, 23 Aug 2022 07:33:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=oSSJjh3lqiw7ATgiat2qlcw21F100TaF8UUg9/PhsKM=; b=PLCMBUpUhdUUFIYhkO2W9sm7+e
-        M+IV4bx/t0DfCBog+Z5tVzN4UfGPBhSt5ftrDZk0UJIaf7unNoeLc7cRSX8DQTIeL59Xyfy4jAmau
-        SoJrmYAANwp6SKzxqpaYvTOawwtanYpM/Cth/5bwsDMSohHaXGrHNnWAqDEDPWOXg2Ms=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQUxu-00EMFN-Mx; Tue, 23 Aug 2022 16:33:14 +0200
-Date:   Tue, 23 Aug 2022 16:33:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Arun.Ramadoss@microchip.com
-Cc:     olteanv@gmail.com, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, vivien.didelot@gmail.com,
-        linux@armlinux.org.uk, Tristram.Ha@microchip.com,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [RFC Patch net-next v2] net: dsa: microchip: lan937x: enable
- interrupt for internal phy link detection
-Message-ID: <YwTlKnpgMRp2Nugm@lunn.ch>
-References: <20220822092017.5671-1-arun.ramadoss@microchip.com>
- <YwOAxh7Bc12OornD@lunn.ch>
- <b1e66b49e8006bd7dcb3fd74d5185db807e5a9f6.camel@microchip.com>
+        with ESMTP id S244966AbiHWQhZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:37:25 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D97BA99F3
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 07:44:56 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQV8x-0004ge-UB; Tue, 23 Aug 2022 16:44:39 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oQV8v-0007MC-At; Tue, 23 Aug 2022 16:44:37 +0200
+Date:   Tue, 23 Aug 2022 16:44:37 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Rob Herring <robh@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH net-next v1 2/7] dt-bindings: net: phy: add PoDL PSE
+ property
+Message-ID: <20220823144437.GN10138@pengutronix.de>
+References: <20220819120109.3857571-1-o.rempel@pengutronix.de>
+ <20220819120109.3857571-3-o.rempel@pengutronix.de>
+ <20220822184534.GB113650-robh@kernel.org>
+ <YwPaV2Frj+b++8hZ@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <b1e66b49e8006bd7dcb3fd74d5185db807e5a9f6.camel@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YwPaV2Frj+b++8hZ@lunn.ch>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I used the same gpio line number of switch as the interrupt for
-> internal phy. And when phy link up/down happens, it triggers both the
-> switch and phy interrupt routine.
-
-Ah, shared interrupt. O.K.
-
-> I have not used irq_domain before. Can you please brief on how phy
-> interrupt handler is called from chip.c & global2.
-
-There are two different ways this can all be glued together.
-
-Using irq_domain, each interrupt source becomes a full interrupt in
-Linux. You can see these individual interrupt sources in
-/proc/interrupts. You can use request_threaded_irq() on it. The
-mv88e6xxx driver is also an interrupt controller as well as an
-Ethernet switch.
-
-> The dts file I used for testing,
-> spi1: spi@f8008000 {
-> 	cs-gpios = <0>, <0>, <0>, <&pioC 28 0>;
-> 	id = <1>;
-> 	status = "okay";
-> 	
-> 	lan9370: lan9370@3 {
-> 		compatible = "microchip,lan9370";
-> 		reg = <3>;
-> 		spi-max-frequency = <44000000>;
-> 		interrupt-parent = <&pioB>;
-> 		interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
-> 		interrupt-controller;
-> 		status = "okay";
-> 		ports {
-> 			#address-cells = <1>;
-> 			#size-cells = <0>;
-> 			port@0 {
-> 				reg = <0x0>;
-> 				phy-handle = <&t1phy0>;
-> 				phy-mode = "internal";
-> 				label = "lan1";
-> 			};
-> 			port@1 {
-> 				reg = <0x1>;
-> 				phy-handle = <&t1phy1>;
-> 				phy-mode = "internal";
-> 				label = "lan2";
-> 			};
-> 		}
-> 	}
+On Mon, Aug 22, 2022 at 09:34:47PM +0200, Andrew Lunn wrote:
+> On Mon, Aug 22, 2022 at 01:45:34PM -0500, Rob Herring wrote:
+> > On Fri, Aug 19, 2022 at 02:01:04PM +0200, Oleksij Rempel wrote:
+> > > Add property to reference node representing a PoDL Power Sourcing Equipment.
+> > > 
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > ---
+> > >  Documentation/devicetree/bindings/net/ethernet-phy.yaml | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > index ed1415a4381f2..49c74e177c788 100644
+> > > --- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > +++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+> > > @@ -144,6 +144,12 @@ properties:
+> > >        Mark the corresponding energy efficient ethernet mode as
+> > >        broken and request the ethernet to stop advertising it.
+> > >  
+> > > +  ieee802.3-podl-pse:
+> > > +    $ref: /schemas/types.yaml#/definitions/phandle
+> > > +    description:
+> > > +      Specifies a reference to a node representing a Power over Data Lines
+> > > +      Power Sourcing Equipment.
+> > 
+> > Ah, here is the consumer.
+> > 
+> > Why do you anything more than just a -supply property here for the 
+> > PoE/PoDL supply? The only reason I see is you happen to want a separate 
+> > driver for this and a separate node happens to be a convenient way to 
+> > instantiate drivers in Linux. Convince me otherwise.
 > 
-> 	mdio {
-> 		#address-cells = <1>;
-> 		#size-cells = <0>;
-> 		compatible = "microchip,lan937x-mdio";
-> 		
-> 		t1phy0: ethernet-phy@0{
-> 			interrupt-parent = <&lan9370>;
-> 			interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
+> The regulator binding provides a lot of very useful properties, which
+> look to do a good job describing the regulator part of a PoE/PeDL
+> supplier side. What however is missing is the communication part, the
+> power provider and the power consumer communicate with each other, via
+> a serial protocol. They negotiate the supply of power, a sleep mode
+> where power is reduced, but not removed, etc.
+> 
+> So a Power Sourcing Equipment driver is very likely to have a
+> regulator embedded in it, but its more than a regulator.
 
-So here you would use the interrupt number within the domain. Ideally
-you want port 0 to use interrupt 0.
+@Rob, is it enough to convince?
 
-
-> 			reg = <0x0>;
-> 		};
-> 		t1phy1: ethernet-phy@1{
-> 			interrupt-parent = <&lan9370>;
-> 			interrupts = <28 IRQ_TYPE_LEVEL_LOW>;
-
-and here port 1 uses interrupt 1.
-
-> 			reg = <0x1>;
-> 		};
-> 	}
-> }
- 
-You can see this for an Marvell switch here:
-
-https://elixir.bootlin.com/linux/latest/source/arch/arm/boot/dts/vf610-zii-dev-rev-b.dts#L93
-
-Doing it this way is however very verbose. I later discovered a short
-cut:
-
-https://elixir.bootlin.com/linux/latest/source/drivers/net/dsa/mv88e6xxx/global2.c#L1164
-
-by setting mdiobus->irq[] to the interrupt number, phylib will
-automatically use the correct interrupt without needing an DT.
-
-	Andrew
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
