@@ -2,121 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A98F59CCF6
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 02:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB93359CD18
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 02:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238573AbiHWAMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 20:12:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43230 "EHLO
+        id S239065AbiHWARW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 20:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239003AbiHWAMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 20:12:07 -0400
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80134.outbound.protection.outlook.com [40.107.8.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 500CF5723D;
-        Mon, 22 Aug 2022 17:11:44 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bvlQA+hovkS8GjLzvOTK4pcx/FVnCGirTxZywxcDdjLDvLo1JWPRQoj1nZwAg3tN/TJSD9qwwxONZsMjJFIe0qF9frHbaBYWws83W+5jRxH4koF4jRoUskRlNug2G8bzcYoKnGMD+N4/N/OJAtU30CzxIEXwnBy5+9DelsjQoBKonnTwfbGw6/GK8029jjogEroTJIbDS9+pPpIGSXuC8whNIiZ2Wo8N55TajfEAD/oxiDAKiDja+QhVJEdPfloW1ejyW/DiQTIJE4XxxVo/s779vXcfY+l5PEaVQGpfuxWIPajX6NTeInGafIfx0SDaSTHQH0wASrip74W/DTQm3Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w0OUvl/mjrfCy9Nigb3+qFAtg/CCUkZhV8T2NRUl+G4=;
- b=C1jO3d3IfSIuq6OT50fsdMNjoEnyCos01piV55Ace5GfbuF+F8tqWO3O47GmLPg8/1GSuSohMbnBpn/TbBbTcqsXL1wvthWEUTdIT+d+kdxlaOlRiPgqf/H/07MQavh9JcioyWUKaPWrLJDK3jYG8fKtBCgwXgoiBzrM4G4lIMrC3At6Jf4XfmlVGILE3t9Vgz0dAIZIHYhVqiADnYP/pWxN+uLBpUjakPkiuQ362IbNiCbPKw+G/oBKBbxPbnc8FpBV5DgMIYtUlSlu+MQ0kVKNRjGSvDMBZ8isyOyxl7DsngCQvrojO7VlMIf+9NEGr9zLY2mZ/+DYSR07PhGOoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w0OUvl/mjrfCy9Nigb3+qFAtg/CCUkZhV8T2NRUl+G4=;
- b=XhoSo73te4oLpcwzBfpoUby2+oCVGEd/clIL4cG8LZQ+bc4N+mdiMREDQl7wq+yEiD7QkCZaMBuPsieK6R52mWFvV7IcLyFtoOmXoJq+TpnDyVlBttYgQyR9l81GniJYzg0Df/vmGp73Pp7aevHmnjIAblphNQytDB82ZxF9ik8=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=plvision.eu;
-Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
- by PA4P190MB1072.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:109::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Tue, 23 Aug
- 2022 00:11:36 +0000
-Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
- ([fe80::6557:8bc5:e347:55d5]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
- ([fe80::6557:8bc5:e347:55d5%4]) with mapi id 15.20.5546.021; Tue, 23 Aug 2022
- 00:11:36 +0000
-From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
-        Taras Chornyi <taras.chornyi@plvision.eu>,
-        Mickey Rachamim <mickeyr@marvell.com>,
-        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        linux-kernel@vger.kernel.org,
-        Yevhen Orlov <yevhen.orlov@plvision.eu>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Subject: [PATCH net-next v3 9/9] net: marvell: prestera: Propogate nh state from hw to kernel
-Date:   Tue, 23 Aug 2022 03:10:47 +0300
-Message-Id: <20220823001047.24784-10-yevhen.orlov@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220823001047.24784-1-yevhen.orlov@plvision.eu>
-References: <20220823001047.24784-1-yevhen.orlov@plvision.eu>
-Content-Type: text/plain
-X-ClientProxiedBy: FR3P281CA0022.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:1c::10) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:102:283::6)
+        with ESMTP id S238815AbiHWARW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 20:17:22 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19ED1AE;
+        Mon, 22 Aug 2022 17:17:20 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id t17so2284878ilp.13;
+        Mon, 22 Aug 2022 17:17:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=Q1e6J5MEZ22W6voao2fUVGiYKAXZ68HBiqOCl6kZ8+g=;
+        b=Oc8FV9uFE/koUzEiq5yuXW/Ueo5n/dqHvEKy2vXdhmdL+YuUSm0gwnSPV/sqiBnwe3
+         +udyuuSbsh3OrQPA6WKG7nnVfqCWdZnAhImjYwtOnvxXdF1RsuHXxqWNqaNLm7XHAhIG
+         jqD2z3TfOG6k/F4hYx1Lrnzw/jVQwsldylgY15araiWPZWLvO/kijKm2dayEXDnBGNyp
+         dwN2pjjleNK6T/aFSSonMoTXs33OUWBldvpE3gtiReSIu14M+n8BYtN9ShtdnjJ+ZdQB
+         kwMWKWeFGI5j6V8ti3+wNztpU+BfT4bKP6ZQUH+uaQWb0xLAWqC2p7ldEPpjqtfCV1GW
+         iT8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=Q1e6J5MEZ22W6voao2fUVGiYKAXZ68HBiqOCl6kZ8+g=;
+        b=e3dId6LlVxGum1vS4n8HJHhwH+rXFS1TE9khWhsS74dXhbsL24dmyKFp9rJ15B2oBO
+         hEepS2LUyCPDPeozGb0QFfYhM6fExY+IqvPqBYaqrwWrhXH2PQlgG8xaLumrHK8t/DjI
+         1/Z6Hj+mcRo+zv+002/bDhODj6gB/22iixNCueI9/gHJWlZyhy8Fnuc2G4gemol1ZSRx
+         9W6Gvp3hAhBcJq3ZILOI7eGFqgtWlkvI/7KhyXdYsiSJKYV0xWW0bDshZ2dHtQwVghus
+         mr9h0nW2wPcoBWo/geImKek59M7p1EjPcPEJ3UuXcgb0LvuHAeDbXVrcE9Sdr80gnw5x
+         7oKw==
+X-Gm-Message-State: ACgBeo1HNb2Qc4gWirLGtd89x9GSDrxRoMmgqfYzxzu5OJcxEJ4UctFd
+        4fl/iokZSD/tONM/mtetWNS40+OPnZhaoQz0gQtAXBt0xKg=
+X-Google-Smtp-Source: AA6agR4RWu51SsS2QRW3pRf/omz5hfFeHMf5WRKN1yIdhHnMISRXu+dIdkbZr70jvwyFHWw+tvMUYNDrB/ToV17uSWI=
+X-Received: by 2002:a05:6e02:661:b0:2e2:be22:67f0 with SMTP id
+ l1-20020a056e02066100b002e2be2267f0mr11250109ilt.91.1661213840141; Mon, 22
+ Aug 2022 17:17:20 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5e6c6882-5421-4bd0-1184-08da849c0b15
-X-MS-TrafficTypeDiagnostic: PA4P190MB1072:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: tnYlGty2kxTD38iCKOIheol3ZsEy9fyynFuSTi1+NH1N/YC9wZs2Guyow0lRkuC0MHnlKnHd+lLLo/aWnVXV0UOnobYJU3q1GeSeyItXNQGO75LtDvVCvvKtbd1Wg70yrgaM5lp9WjdavWRRd0x2G4CMQ+hdL26Q7h7AzS9FCkTQDxlZ2loPxVtSTL///kTIZytIqJt0S+955hXn2QpViBM+n6XUcPWH26+Nb+MEQ2oZUffUQsFy5VBG7njUae+5Te1YGoNigfh25Vqy03EjCJYqaA8cYMh2xtBtVMC8kSLfigtg0Qy5f92Ils/+QMJo86kMrrFyzeWoSeoNtXs/YBq/CkcbQfLnsbcXdIwV4dqHIvjlJkF5pmORZSInhjmrs8viflWvwcG/YK/6dyYDlqdeyyVqtGMCZacpvcFlCQHpTVV/8PbV8c22uSme8EB++DoDo8F7krMfq6YR+0sc2VaJHCBOTLU9nzRa6CCor44TgUihrJdr5e1MHuh8Y4Bey2V2BuQ+JLwgt50BdN3MW0fHPVTs272eTnDP4x+zEA1PtYjTbS/8xCk0/MyZv2w+j1D0df/wTosRpt7D1FvDxpoljweBxbzvd+4dh9S7trUacZKHmnt80N3f3hfH+Dw0lh1SgRNsctpW4CU8YNLTYB5EYdQ2RiKRlJw0XFHJfcMawWrQnhv4fCDcHy54nKldyrO6ZIHf/OhKALaNmkCz1KgtufGvZnmJTUytIQT4oc508YIk/W8d8pM21EBt7uLU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(136003)(34036004)(39830400003)(346002)(376002)(83380400001)(38350700002)(38100700002)(66946007)(66556008)(66476007)(8676002)(4326008)(54906003)(6916009)(316002)(2906002)(8936002)(7416002)(44832011)(5660300002)(107886003)(6506007)(26005)(6512007)(52116002)(66574015)(1076003)(186003)(2616005)(6666004)(41300700001)(41320700001)(6486002)(508600001)(86362001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sgiHQhZYyeDfPGTR2mDl6Y+ipOPHf9v9vzxwJ9RY7o7XS2Nd7XMRzf54zq35?=
- =?us-ascii?Q?vOqh/WTva534gm6pgfJYwXdj3UxLYBa03Q1uLTJ1DFud6LRtvj4I6Z7n5SwG?=
- =?us-ascii?Q?qBRe5KvVtXE8GIhDAoV1t4Avsg7nEbxyHBllIqKpslXcVO4Cmti5kF3br0aO?=
- =?us-ascii?Q?9KetZtid46/NXaNTbm/4PHdvSuUNDvlXlxJAt7rbGDFb3K5k24wN0E2xorQB?=
- =?us-ascii?Q?947BcSgc2ZQZqjAIKl4fEtjpLL4qnu20bomogqzTfeCROdkdACCfuTklmrrz?=
- =?us-ascii?Q?PvbUe4dK7GwySwjz+iLOVREapeaF5Hc34f7kUcDXR5Xbf6c5VHlYO8lm2HWN?=
- =?us-ascii?Q?CSep/yhAX3SQYA8/+66HR86XVrHy/b4Vtf8afmthTTWBSg94bUbRKaXujBxE?=
- =?us-ascii?Q?ECgezdNlETbiWf3hF/pBfoEEQmBn3kjIUbI+jJhOUP08swryCEv0vDWXBWaK?=
- =?us-ascii?Q?85esTQjwUtbeNkIa36eHU47mcZNnCt+ecVGdBPbUkvSlfRXXSooKpstlLB8t?=
- =?us-ascii?Q?t5BmyRwAkjv0M7u18tkP1ZxRHpB3DAygTtGuDnrtfe8+76d++aAVrS5erm2u?=
- =?us-ascii?Q?Xb1lC+6WfEoApzKpDiZHQOiy+7luVd+pG4tKXLUYte4RO3NgQRqoeOGV7WKB?=
- =?us-ascii?Q?iqhryUwEkkXFrCpSAWjuVR2QtZIqrcyRzYdYRvFPiAJLwrLbMuGmUgHK8f4R?=
- =?us-ascii?Q?F5f0wNcb5xj41SVHsLwNcThg6lbaUcIXSINJRZlPrfbetfuo+3MMffS+vpsi?=
- =?us-ascii?Q?3RmR7h0DrkUgbhlPpiq3ZyTA6iwqPIPlnGAKoeBX29tfa4O3sgHKJXSMIyZU?=
- =?us-ascii?Q?PZRycTpKW5Apk7n2dJDfX0Wgc7XutlnEUQzVOJe8hQf8EA8WcKPizfbNp0ux?=
- =?us-ascii?Q?GE0EVYzryYOQd5EBAnPecCqFNnV4pK/bbXRwm5psRyzdc0o6XNA78LBl9oHW?=
- =?us-ascii?Q?x7v+4Cnw8z6E2/Vl8cEuto8/RV9BgxWHPA5gAv/JcuYn8XzymWenFk36pbU8?=
- =?us-ascii?Q?aPn5YoRqLqGIlD/NRXM6W+T3RP70FuQVfHXZphXy+Fk4zf3IJ+CnSof2dwLm?=
- =?us-ascii?Q?BL3EOtmisE9gozBVZxFkn0A6j1ay2nOlm4I6/ACQQIEJqRnKUrQz5GBHxFhm?=
- =?us-ascii?Q?FnK+nx38E6fMMny7m7dduSmNDeAtE+iYxZBKGWkkd9XlzZ9QLCvyu3cNLzYu?=
- =?us-ascii?Q?SncbhruUhI3rBl5d3x/8Iofp2ctBdmAMK6dbIPG235EAn6f1QaWhL/xDQ2bc?=
- =?us-ascii?Q?ZSSiANoUBCEttEUqK3EgHXuvD8g9uRPTnMSkO2MDEr2bVC2taAgkK1iDscDS?=
- =?us-ascii?Q?BqN9OFcoV1MrdNh59IQlqcZh/2BDKYUMrUMXEKrWG5ID8z64Xi2A1DKHF/Lx?=
- =?us-ascii?Q?UpyqyP36MVJZnHvo2x+8rASSAdN5v4JrdKw60Ot7Fm42+HPA0c54claeIoZk?=
- =?us-ascii?Q?tKTBTNHJYO64T287NFiX4WzKeQw3/WHdO0sxI09Ymg8MR7echBGn5U+R21nL?=
- =?us-ascii?Q?ZygZj3VulrBlqocglXh7jjwyIxZmCZvtwm3ITouIn/RdvdBZCU8p6EqkJ8rJ?=
- =?us-ascii?Q?/a/OpLFRJMj4ab12OPGvdgf3X7//iAJRpA7SUmcfLd15CI3Lpfs4I2VxU4Vj?=
- =?us-ascii?Q?XA=3D=3D?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e6c6882-5421-4bd0-1184-08da849c0b15
-X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 00:11:36.3447
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ggVBnfcbk+7OxHZL6dTIFg//NsAZqJXcid2I1l7srclggZZ2qbFhPDBfiSq5YDq8BxZIe9POsboK1MT8lHAUkWEIanBRwvw8i3inLXjFknk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4P190MB1072
+References: <cover.1661192455.git.dxu@dxuuu.xyz> <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+In-Reply-To: <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Tue, 23 Aug 2022 02:16:42 +0200
+Message-ID: <CAP01T74XK_6wMi+tzReTkBqmZkKbUqCmV6pVwcbCMrHrv0X0SA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to nf_conn:mark
+To:     Daniel Xu <dxu@dxuuu.xyz>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
+        toke@kernel.org, martin.lau@linux.dev,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,206 +68,262 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We poll nexthops in HW and call for each active nexthop appropriate
-neighbour.
+On Mon, 22 Aug 2022 at 20:26, Daniel Xu <dxu@dxuuu.xyz> wrote:
+>
+> Support direct writes to nf_conn:mark from TC and XDP prog types. This
+> is useful when applications want to store per-connection metadata. This
+> is also particularly useful for applications that run both bpf and
+> iptables/nftables because the latter can trivially access this metadata.
+>
+> One example use case would be if a bpf prog is responsible for advanced
+> packet classification and iptables/nftables is later used for routing
+> due to pre-existing/legacy code.
+>
+> Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+> ---
+>  include/net/netfilter/nf_conntrack_bpf.h | 22 ++++++
+>  net/core/filter.c                        | 34 +++++++++
+>  net/netfilter/nf_conntrack_bpf.c         | 91 +++++++++++++++++++++++-
+>  net/netfilter/nf_conntrack_core.c        |  1 +
+>  4 files changed, 147 insertions(+), 1 deletion(-)
+>
+> diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
+> index a473b56842c5..6fc03066846b 100644
+> --- a/include/net/netfilter/nf_conntrack_bpf.h
+> +++ b/include/net/netfilter/nf_conntrack_bpf.h
+> @@ -3,6 +3,7 @@
+>  #ifndef _NF_CONNTRACK_BPF_H
+>  #define _NF_CONNTRACK_BPF_H
+>
+> +#include <linux/bpf.h>
+>  #include <linux/btf.h>
+>  #include <linux/kconfig.h>
+>
+> @@ -10,6 +11,13 @@
+>      (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
+>
+>  extern int register_nf_conntrack_bpf(void);
+> +extern void cleanup_nf_conntrack_bpf(void);
+> +extern int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> +                                         const struct btf *btf,
+> +                                         const struct btf_type *t, int off,
+> +                                         int size, enum bpf_access_type atype,
+> +                                         u32 *next_btf_id,
+> +                                         enum bpf_type_flag *flag);
+>
+>  #else
+>
+> @@ -18,6 +26,20 @@ static inline int register_nf_conntrack_bpf(void)
+>         return 0;
+>  }
+>
+> +static inline void cleanup_nf_conntrack_bpf(void)
+> +{
+> +}
+> +
+> +static inline int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> +                                                const struct btf *btf,
+> +                                                const struct btf_type *t, int off,
+> +                                                int size, enum bpf_access_type atype,
+> +                                                u32 *next_btf_id,
+> +                                                enum bpf_type_flag *flag)
+> +{
+> +       return -EACCES;
+> +}
+> +
+>  #endif
+>
+>  #endif /* _NF_CONNTRACK_BPF_H */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 1acfaffeaf32..25bdbf6dc76b 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -18,6 +18,7 @@
+>   */
+>
+>  #include <linux/atomic.h>
+> +#include <linux/bpf_verifier.h>
+>  #include <linux/module.h>
+>  #include <linux/types.h>
+>  #include <linux/mm.h>
+> @@ -55,6 +56,7 @@
+>  #include <net/sock_reuseport.h>
+>  #include <net/busy_poll.h>
+>  #include <net/tcp.h>
+> +#include <net/netfilter/nf_conntrack_bpf.h>
+>  #include <net/xfrm.h>
+>  #include <net/udp.h>
+>  #include <linux/bpf_trace.h>
+> @@ -8628,6 +8630,21 @@ static bool tc_cls_act_is_valid_access(int off, int size,
+>         return bpf_skb_is_valid_access(off, size, type, prog, info);
+>  }
+>
+> +static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
+> +                                       const struct btf *btf,
+> +                                       const struct btf_type *t, int off,
+> +                                       int size, enum bpf_access_type atype,
+> +                                       u32 *next_btf_id,
+> +                                       enum bpf_type_flag *flag)
+> +{
+> +       if (atype == BPF_READ)
+> +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+> +                                        flag);
+> +
+> +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
+> +                                             next_btf_id, flag);
+> +}
+> +
+>  static bool __is_valid_xdp_access(int off, int size)
+>  {
+>         if (off < 0 || off >= sizeof(struct xdp_md))
+> @@ -8687,6 +8704,21 @@ void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog,
+>  }
+>  EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+>
+> +static int xdp_btf_struct_access(struct bpf_verifier_log *log,
+> +                                const struct btf *btf,
+> +                                const struct btf_type *t, int off,
+> +                                int size, enum bpf_access_type atype,
+> +                                u32 *next_btf_id,
+> +                                enum bpf_type_flag *flag)
+> +{
+> +       if (atype == BPF_READ)
+> +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
+> +                                        flag);
+> +
+> +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
+> +                                             next_btf_id, flag);
+> +}
+> +
+>  static bool sock_addr_is_valid_access(int off, int size,
+>                                       enum bpf_access_type type,
+>                                       const struct bpf_prog *prog,
+> @@ -10581,6 +10613,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
+>         .convert_ctx_access     = tc_cls_act_convert_ctx_access,
+>         .gen_prologue           = tc_cls_act_prologue,
+>         .gen_ld_abs             = bpf_gen_ld_abs,
+> +       .btf_struct_access      = tc_cls_act_btf_struct_access,
+>  };
+>
+>  const struct bpf_prog_ops tc_cls_act_prog_ops = {
+> @@ -10592,6 +10625,7 @@ const struct bpf_verifier_ops xdp_verifier_ops = {
+>         .is_valid_access        = xdp_is_valid_access,
+>         .convert_ctx_access     = xdp_convert_ctx_access,
+>         .gen_prologue           = bpf_noop_prologue,
+> +       .btf_struct_access      = xdp_btf_struct_access,
+>  };
+>
+>  const struct bpf_prog_ops xdp_prog_ops = {
+> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+> index 1cd87b28c9b0..da54355927d4 100644
+> --- a/net/netfilter/nf_conntrack_bpf.c
+> +++ b/net/netfilter/nf_conntrack_bpf.c
+> @@ -6,8 +6,10 @@
+>   * are exposed through to BPF programs is explicitly unstable.
+>   */
+>
+> +#include <linux/bpf_verifier.h>
+>  #include <linux/bpf.h>
+>  #include <linux/btf.h>
+> +#include <linux/mutex.h>
+>  #include <linux/types.h>
+>  #include <linux/btf_ids.h>
+>  #include <linux/net_namespace.h>
+> @@ -184,6 +186,79 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+>         return ct;
+>  }
+>
+> +BTF_ID_LIST(btf_nf_conn_ids)
+> +BTF_ID(struct, nf_conn)
+> +BTF_ID(struct, nf_conn___init)
+> +
+> +static DEFINE_MUTEX(btf_access_lock);
+> +static int (*nfct_bsa)(struct bpf_verifier_log *log,
+> +                      const struct btf *btf,
+> +                      const struct btf_type *t, int off,
+> +                      int size, enum bpf_access_type atype,
+> +                      u32 *next_btf_id,
+> +                      enum bpf_type_flag *flag);
+> +
+> +/* Check writes into `struct nf_conn` */
+> +static int _nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> +                                          const struct btf *btf,
+> +                                          const struct btf_type *t, int off,
+> +                                          int size, enum bpf_access_type atype,
+> +                                          u32 *next_btf_id,
+> +                                          enum bpf_type_flag *flag)
+> +{
+> +       const struct btf_type *ncit;
+> +       const struct btf_type *nct;
+> +       size_t end;
+> +
+> +       ncit = btf_type_by_id(btf, btf_nf_conn_ids[1]);
+> +       nct = btf_type_by_id(btf, btf_nf_conn_ids[0]);
+> +
+> +       if (t != nct && t != ncit) {
+> +               bpf_log(log, "only read is supported\n");
+> +               return -EACCES;
+> +       }
+> +
+> +       /* `struct nf_conn` and `struct nf_conn___init` have the same layout
+> +        * so we are safe to simply merge offset checks here
+> +        */
+> +       switch (off) {
+> +#if defined(CONFIG_NF_CONNTRACK_MARK)
+> +       case offsetof(struct nf_conn, mark):
+> +               end = offsetofend(struct nf_conn, mark);
+> +               break;
+> +#endif
+> +       default:
+> +               bpf_log(log, "no write support to nf_conn at off %d\n", off);
+> +               return -EACCES;
+> +       }
+> +
+> +       if (off + size > end) {
+> +               bpf_log(log,
+> +                       "write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
+> +                       off, size, end);
+> +               return -EACCES;
+> +       }
+> +
+> +       return 0;
+> +}
+> +
+> +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
+> +                                  const struct btf *btf,
+> +                                  const struct btf_type *t, int off,
+> +                                  int size, enum bpf_access_type atype,
+> +                                  u32 *next_btf_id,
+> +                                  enum bpf_type_flag *flag)
+> +{
+> +       int ret = -EACCES;
+> +
+> +       mutex_lock(&btf_access_lock);
+> +       if (nfct_bsa)
+> +               ret = nfct_bsa(log, btf, t, off, size, atype, next_btf_id, flag);
+> +       mutex_unlock(&btf_access_lock);
+> +
+> +       return ret;
+> +}
 
-Also we provide implicity neighbour resolving.
-For example, user have added nexthop route:
-  # ip route add 5.5.5.5 via 1.1.1.2
-But neighbour 1.1.1.2 doesn't exist. In this case we will try to call
-neigh_event_send, even if there is no traffic.
-This is usefull, when you have add route, which will be used after some
-time but with a lot of traffic (burst). So, we has prepared, offloaded
-route in advance.
+Did you test this for CONFIG_NF_CONNTRACK=m? For me it isn't building :P.
 
-Co-developed-by: Taras Chornyi <tchornyi@marvell.com>
-Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
-Co-developed-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Signed-off-by: Yevhen Orlov <yevhen.orlov@plvision.eu>
----
- .../net/ethernet/marvell/prestera/prestera.h  |   3 +
- .../marvell/prestera/prestera_router.c        | 111 ++++++++++++++++++
- 2 files changed, 114 insertions(+)
+It won't work like this. When nf_conntrack is a module, the vmlinux.o
+of the kernel isn't linked to the object file nf_conntrack_bpf.o.
+Hence it would be an undefined reference error. You don't see it in
+BPF CI as we set CONFIG_NF_CONNTRACK=y (to simplify testing).
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera.h b/drivers/net/ethernet/marvell/prestera/prestera.h
-index 8cd934f7c458..1b37ba20801e 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera.h
-+++ b/drivers/net/ethernet/marvell/prestera/prestera.h
-@@ -314,6 +314,9 @@ struct prestera_router {
- 	struct notifier_block netevent_nb;
- 	u8 *nhgrp_hw_state_cache; /* Bitmap cached hw state of nhs */
- 	unsigned long nhgrp_hw_cache_kick; /* jiffies */
-+	struct {
-+		struct delayed_work dw;
-+	} neighs_update;
- };
- 
- struct prestera_rxtx_params {
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_router.c b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-index 444032057c93..0972ba459bb3 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_router.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_router.c
-@@ -16,6 +16,9 @@
- #include "prestera.h"
- #include "prestera_router_hw.h"
- 
-+#define PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH
-+#define PRESTERA_NH_PROBE_INTERVAL 5000 /* ms */
-+
- struct prestera_kern_neigh_cache_key {
- 	struct prestera_ip_addr addr;
- 	struct net_device *dev;
-@@ -32,6 +35,7 @@ struct prestera_kern_neigh_cache {
- 	/* Indicate if neighbour is reachable by direct route */
- 	bool reachable;
- };
-+
- struct prestera_kern_fib_cache_key {
- 	struct prestera_ip_addr addr;
- 	u32 prefix_len;
-@@ -1016,6 +1020,78 @@ __prestera_k_arb_util_fib_overlapped(struct prestera_switch *sw,
- 	return rfc;
- }
- 
-+static void __prestera_k_arb_hw_state_upd(struct prestera_switch *sw,
-+					  struct prestera_kern_neigh_cache *nc)
-+{
-+	struct prestera_nh_neigh_key nh_key;
-+	struct prestera_nh_neigh *nh_neigh;
-+	struct neighbour *n;
-+	bool hw_active;
-+
-+	prestera_util_nc_key2nh_key(&nc->key, &nh_key);
-+	nh_neigh = prestera_nh_neigh_find(sw, &nh_key);
-+	if (!nh_neigh) {
-+		pr_err("Cannot find nh_neigh for cached %pI4n",
-+		       &nc->key.addr.u.ipv4);
-+		return;
-+	}
-+
-+	hw_active = prestera_nh_neigh_util_hw_state(sw, nh_neigh);
-+
-+#ifdef PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH
-+	if (!hw_active && nc->in_kernel)
-+		goto out;
-+#else /* PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH */
-+	if (!hw_active)
-+		goto out;
-+#endif /* PRESTERA_IMPLICITY_RESOLVE_DEAD_NEIGH */
-+
-+	if (nc->key.addr.v == PRESTERA_IPV4) {
-+		n = neigh_lookup(&arp_tbl, &nc->key.addr.u.ipv4,
-+				 nc->key.dev);
-+		if (!n)
-+			n = neigh_create(&arp_tbl, &nc->key.addr.u.ipv4,
-+					 nc->key.dev);
-+	} else {
-+		n = NULL;
-+	}
-+
-+	if (!IS_ERR(n) && n) {
-+		neigh_event_send(n, NULL);
-+		neigh_release(n);
-+	} else {
-+		pr_err("Cannot create neighbour %pI4n", &nc->key.addr.u.ipv4);
-+	}
-+
-+out:
-+	return;
-+}
-+
-+/* Propagate hw state to kernel */
-+static void prestera_k_arb_hw_evt(struct prestera_switch *sw)
-+{
-+	struct prestera_kern_neigh_cache *n_cache;
-+	struct rhashtable_iter iter;
-+
-+	rhashtable_walk_enter(&sw->router->kern_neigh_cache_ht, &iter);
-+	rhashtable_walk_start(&iter);
-+	while (1) {
-+		n_cache = rhashtable_walk_next(&iter);
-+
-+		if (!n_cache)
-+			break;
-+
-+		if (IS_ERR(n_cache))
-+			continue;
-+
-+		rhashtable_walk_stop(&iter);
-+		__prestera_k_arb_hw_state_upd(sw, n_cache);
-+		rhashtable_walk_start(&iter);
-+	}
-+	rhashtable_walk_stop(&iter);
-+	rhashtable_walk_exit(&iter);
-+}
-+
- /* Propagate kernel event to hw */
- static void prestera_k_arb_n_evt(struct prestera_switch *sw,
- 				 struct neighbour *n)
-@@ -1462,6 +1538,34 @@ static int prestera_router_netevent_event(struct notifier_block *nb,
- 	return NOTIFY_DONE;
- }
- 
-+static void prestera_router_update_neighs_work(struct work_struct *work)
-+{
-+	struct prestera_router *router;
-+
-+	router = container_of(work, struct prestera_router,
-+			      neighs_update.dw.work);
-+	rtnl_lock();
-+
-+	prestera_k_arb_hw_evt(router->sw);
-+
-+	rtnl_unlock();
-+	prestera_queue_delayed_work(&router->neighs_update.dw,
-+				    msecs_to_jiffies(PRESTERA_NH_PROBE_INTERVAL));
-+}
-+
-+static int prestera_neigh_work_init(struct prestera_switch *sw)
-+{
-+	INIT_DELAYED_WORK(&sw->router->neighs_update.dw,
-+			  prestera_router_update_neighs_work);
-+	prestera_queue_delayed_work(&sw->router->neighs_update.dw, 0);
-+	return 0;
-+}
-+
-+static void prestera_neigh_work_fini(struct prestera_switch *sw)
-+{
-+	cancel_delayed_work_sync(&sw->router->neighs_update.dw);
-+}
-+
- int prestera_router_init(struct prestera_switch *sw)
- {
- 	struct prestera_router *router;
-@@ -1495,6 +1599,10 @@ int prestera_router_init(struct prestera_switch *sw)
- 		goto err_nh_state_cache_alloc;
- 	}
- 
-+	err = prestera_neigh_work_init(sw);
-+	if (err)
-+		goto err_neigh_work_init;
-+
- 	router->inetaddr_valid_nb.notifier_call = __prestera_inetaddr_valid_cb;
- 	err = register_inetaddr_validator_notifier(&router->inetaddr_valid_nb);
- 	if (err)
-@@ -1525,6 +1633,8 @@ int prestera_router_init(struct prestera_switch *sw)
- err_register_inetaddr_notifier:
- 	unregister_inetaddr_validator_notifier(&router->inetaddr_valid_nb);
- err_register_inetaddr_validator_notifier:
-+	prestera_neigh_work_fini(sw);
-+err_neigh_work_init:
- 	kfree(router->nhgrp_hw_state_cache);
- err_nh_state_cache_alloc:
- 	rhashtable_destroy(&router->kern_neigh_cache_ht);
-@@ -1543,6 +1653,7 @@ void prestera_router_fini(struct prestera_switch *sw)
- 	unregister_netevent_notifier(&sw->router->netevent_nb);
- 	unregister_inetaddr_notifier(&sw->router->inetaddr_nb);
- 	unregister_inetaddr_validator_notifier(&sw->router->inetaddr_valid_nb);
-+	prestera_neigh_work_fini(sw);
- 	prestera_queue_drain();
- 
- 	prestera_k_arb_abort(sw);
--- 
-2.17.1
+So you need to have code that locks and checks the cb pointer when
+calling it outside the module, which means the global lock variable
+and global cb pointer also need to be in the kernel. The module then
+takes the same lock and sets cb pointer when loading. During unload,
+it takes the same lock and sets it back to NULL.
 
+You can have global variables in vmlinux that you reference from
+modules. The compiler will emit a relocation for the module object
+file which will be handled by the kernel during module load.
+
+So please test it once with nf_conntrack built as a module before
+sending the next revision. The only thing you need to do before
+running ./test_progs -t bpf_nf is loading the module nf_conntrack.ko
+(and its dependencies, nf_defrag_ipv{4,6}.ko).
