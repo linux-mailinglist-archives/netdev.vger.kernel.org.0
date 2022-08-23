@@ -2,77 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12ACA59E5B0
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 17:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 505D859E5B4
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 17:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243856AbiHWPFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 11:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60630 "EHLO
+        id S235049AbiHWPHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 11:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237712AbiHWPE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 11:04:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071A231E6EB
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:29:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661257704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tML+QnnHXQz/iYyoD3FaZkxBdgewrRT6f7NKH6MO5KM=;
-        b=PzYREJFC0DPjPFD6Fheg3OW7Q3D8bVtbeIPx+0J6/zWbyZfagsHwwViRltB5Oj09YpQ1qN
-        JXwR80BvlSeuu8TbSZL6zl7PXFYigJakAPoAyRa2JCe8/sH9hXb+ho8mKB7nBffx0M/su+
-        WnyX3d7uMvNlLT/oCOsjr5P9LG00TNg=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-126-2BzG_zhBPlyym-YCzL5JCg-1; Tue, 23 Aug 2022 08:28:21 -0400
-X-MC-Unique: 2BzG_zhBPlyym-YCzL5JCg-1
-Received: by mail-ej1-f70.google.com with SMTP id he38-20020a1709073da600b0073d98728570so1030532ejc.11
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:28:20 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=tML+QnnHXQz/iYyoD3FaZkxBdgewrRT6f7NKH6MO5KM=;
-        b=wuroNxHlSjHvVz6QIwtp9fjS6tmNNZRMBxEh5O3XDbI3j81wGdeD7KYOdDly3pGS4Z
-         7rmV4LWfToABsF7xcItoFG7+MBEs/FPjxfb3EyHHYRVqrVwjB+SbT+XnNG3ZKWg0Ysqz
-         wsqhoUZoEZTuHxfMj+yBcepnRYgdqBxL31O1oUiKBdPPhSljhkGP8hBio+s1a4JEITkz
-         60XdaR4MgvDufml+5D9FOHr2Jh05G5R4IRctw8zQww/ADOuj0hSs/zpc/BzJC7DkoOm4
-         I2YiAJZUdQ4tfxQlzTIdQC33y5eRvUeIIgMtzXJvr0rC3/jIsuGbjfO3Vx4XcWUHfbEc
-         355g==
-X-Gm-Message-State: ACgBeo3QjblLje1wpsfcnBdBxqqsIxvcAV4e3mFmD8RrgfDk/J1BxZ/9
-        qWgT4DkZILevrB1hrVZQ/TGlrF/qsBw1nO2AXOzA4XjXOrXz7YP7qS7tO8k1Uu0qr1sLyCCvuvN
-        XnjzNdDD8w4aZnCCT
-X-Received: by 2002:a17:907:a057:b0:730:a2d8:d5ac with SMTP id gz23-20020a170907a05700b00730a2d8d5acmr16319281ejc.764.1661257699995;
-        Tue, 23 Aug 2022 05:28:19 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4ubL1ewD3cThVJ/9ahwHJLtl3B6LgL02Z2rP69QdUogtpxwjhFQyCiHgNQYaocEstWUevLRA==
-X-Received: by 2002:a17:907:a057:b0:730:a2d8:d5ac with SMTP id gz23-20020a170907a05700b00730a2d8d5acmr16319264ejc.764.1661257699727;
-        Tue, 23 Aug 2022 05:28:19 -0700 (PDT)
-Received: from localhost (net-93-71-3-16.cust.vodafonedsl.it. [93.71.3.16])
-        by smtp.gmail.com with ESMTPSA id 18-20020a170906201200b0073a20469f31sm7386247ejo.41.2022.08.23.05.28.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 05:28:19 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 14:28:17 +0200
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     Jesper Dangaard Brouer <jbrouer@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        brouer@redhat.com, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        hawk@kernel.org, john.fastabend@gmail.com
-Subject: Re: [PATCH v2 bpf-next] xdp: report rx queue index in xdp_frame
-Message-ID: <YwTH4c/Mk82LIWNM@lore-desk>
-References: <3923222d836b104232ee70eef34ce2aa454ef9db.1660721856.git.lorenzo@kernel.org>
- <1a22e7e9-e6ef-028f-dffa-e954207dc24d@redhat.com>
+        with ESMTP id S243824AbiHWPFe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 11:05:34 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E281CB0B2C;
+        Tue, 23 Aug 2022 05:30:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661257780; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=BHewm+fuQ2Jf8TbBMMRrHkgSf/h9nL8rxUYMqJDedMX48rIwap7RN+nwf8/cNAC0oaECy2kWWsFo/0pmGOeJQlcHCTkJZyw/IY07hfcXGwejLajOsvh8YOr5x3OQR9s9hBl63K83rEpzkqGxGnmZmMtKyNzr1IAhpr88Jea/OZ0=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661257780; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=bI65T5U8WH6MLxwESf8Rca3+EFGUoI0wB+6IEaK+vu4=; 
+        b=ELe8V/Ak74tD+q3G3PkU15CL4JUbrOcB9vzt8z2zpmeHYOijt1UAkbxVHSX0JfHXNII1rskrVaHV8mJFZP6U9DZ8EBz12V3j1lETe9BgS832qLKULacUwamJirI17W7+VSJbKAZ19Tp6VdPgIrlPEu4FG+In4QeM0sme/BAjFT0=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661257780;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=bI65T5U8WH6MLxwESf8Rca3+EFGUoI0wB+6IEaK+vu4=;
+        b=d7qh/3Wo7S+Hw9J27o+zWgrWr/yDw1rjCO9ug3viaq2SJBRSFt3PPDNw/xlKMjls
+        yOIBHuTdAGH0SsrygsW669k93CzeIAN/Smh6336qBBuTkBoa61AtwSR4WdIv7FZoXz9
+        f6kidcMsKHx1C0SzlKRmYaFjgK2xkhNqBLJgSAxA=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661257778178567.9273906517832; Tue, 23 Aug 2022 05:29:38 -0700 (PDT)
+Message-ID: <ea3ceeab-d92b-6ce5-8ea9-aebb3eaa0a91@arinc9.com>
+Date:   Tue, 23 Aug 2022 15:29:27 +0300
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="oXTbf8T5vS6lKkZ/"
-Content-Disposition: inline
-In-Reply-To: <1a22e7e9-e6ef-028f-dffa-e954207dc24d@redhat.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 4/6] dt-bindings: net: dsa: mediatek,mt7530: define
+ port binding per switch
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+ <20220820080758.9829-5-arinc.unal@arinc9.com>
+ <c24da513-e015-8bc6-8874-ba63c22be5d6@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <c24da513-e015-8bc6-8874-ba63c22be5d6@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,91 +85,50 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---oXTbf8T5vS6lKkZ/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
->=20
-> On 17/08/2022 09.40, Lorenzo Bianconi wrote:
-> > Report rx queue index in xdp_frame according to the xdp_buff xdp_rxq_in=
-fo
-> > pointer. xdp_frame queue_index is currently used in cpumap code to conv=
-ert
-> > the xdp_frame into a xdp_buff and allow the ebpf program attached to the
-> > map entry to differentiate traffic according to the receiving hw queue.
-> > xdp_frame size is not increased adding queue_index since an alignment
-> > padding in the structure is used to insert queue_index field.
-> >=20
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->=20
-> (Sorry, I replied to v1 and not this v2.)
->=20
-> I'm still unsure about this change, because the XDP-hints will also
-> contain the rx_queue number.  And placing it in XDP-hints automatically
-> makes it avail for AF_XDP consumers.
->=20
-> I do think it is relevant for the BPF-prog to get access to the rx_queue
-> index, because it can be used for scaling the workload.
+On 23.08.2022 13:47, Krzysztof Kozlowski wrote:
+> On 20/08/2022 11:07, Arınç ÜNAL wrote:
+>> Define DSA port binding per switch model as each switch model requires
+>> different values for certain properties.
+>>
+>> Define reg property on $defs as it's the same for all switch models.
+>>
+>> Remove unnecessary lines as they are already included from the referred
+>> dsa.yaml.
+>>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 56 +++++++++++--------
+>>   1 file changed, 34 insertions(+), 22 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> index 657e162a1c01..7c4374e16f96 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> @@ -130,38 +130,47 @@ properties:
+>>         ethsys.
+>>       maxItems: 1
+>>   
+>> -patternProperties:
+>> -  "^(ethernet-)?ports$":
+>> -    type: object
+>> -
+>> -    patternProperties:
+>> -      "^(ethernet-)?port@[0-9]+$":
+>> -        type: object
+>> -        description: Ethernet switch ports
+> 
+> Again, I don't understand why do you remove definitions of these nodes
+> from top-level properties. I explained what I expect in previous
+> discussion and I am confused to hear "this cannot be done".
 
-ack, I agree. Then we can implement it with xdp hw-hints.
+I agree it can be done, but the binding is done with less lines the 
+current way.
 
-Regards,
-Lorenzo
+I would need to add more lines than just for creating the node structure 
+since dsa.yaml is not referred.
 
->=20
->=20
-> > ---
-> > Changes since v1:
-> > - rebase on top of bpf-next
-> > ---
-> >   include/net/xdp.h   | 2 ++
-> >   kernel/bpf/cpumap.c | 2 +-
-> >   2 files changed, 3 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/include/net/xdp.h b/include/net/xdp.h
-> > index 04c852c7a77f..3567866b0af5 100644
-> > --- a/include/net/xdp.h
-> > +++ b/include/net/xdp.h
-> > @@ -172,6 +172,7 @@ struct xdp_frame {
-> >   	struct xdp_mem_info mem;
-> >   	struct net_device *dev_rx; /* used by cpumap */
-> >   	u32 flags; /* supported values defined in xdp_buff_flags */
-> > +	u32 queue_index;
-> >   };
-> >   static __always_inline bool xdp_frame_has_frags(struct xdp_frame *fra=
-me)
-> > @@ -301,6 +302,7 @@ struct xdp_frame *xdp_convert_buff_to_frame(struct =
-xdp_buff *xdp)
-> >   	/* rxq only valid until napi_schedule ends, convert to xdp_mem_info =
-*/
-> >   	xdp_frame->mem =3D xdp->rxq->mem;
-> > +	xdp_frame->queue_index =3D xdp->rxq->queue_index;
-> >   	return xdp_frame;
-> >   }
-> > diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-> > index b5ba34ddd4b6..48003450c98c 100644
-> > --- a/kernel/bpf/cpumap.c
-> > +++ b/kernel/bpf/cpumap.c
-> > @@ -228,7 +228,7 @@ static int cpu_map_bpf_prog_run_xdp(struct bpf_cpu_=
-map_entry *rcpu,
-> >   		rxq.dev =3D xdpf->dev_rx;
-> >   		rxq.mem =3D xdpf->mem;
-> > -		/* TODO: report queue_index to xdp_rxq_info */
-> > +		rxq.queue_index =3D xdpf->queue_index;
-> >   		xdp_convert_frame_to_buff(xdpf, &xdp);
->=20
+Then, I would have to create the node structure again for the dsa-port 
+checks.
 
---oXTbf8T5vS6lKkZ/
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYwTH4QAKCRA6cBh0uS2t
-rOEXAP9q4720t4CmWUFUafKol802Af7ZiSpyq+OX6ArG4vIS1AEAtlq+Y9hu+1+l
-wwcusrNPSDuANA97lWGcFR9O8ZSPrwI=
-=VdRN
------END PGP SIGNATURE-----
-
---oXTbf8T5vS6lKkZ/--
-
+Arınç
