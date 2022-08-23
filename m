@@ -2,276 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2FA559E98A
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D9F759E998
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234002AbiHWR2c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 13:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
+        id S230287AbiHWRcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 13:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234376AbiHWR01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:26:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979F9F2D52
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661267090; x=1692803090;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zj5GRdQaa85EBVt9ESDyvR5NoyghiRnMhimXFv/8/fI=;
-  b=jSpmrpgjfrLz2bdVUS/vskeSgxyhofsX8rA+aapunKh7nFiXchOIDGGN
-   vkpya9E2TuIFgrfsX8IsZdKtJgXksD1j3Y5x0Grb4lpdsFbuKwzqRiNNP
-   wC8dt6/cmQ9lbMLRy6QA7HENzU6eQsAg2qcsbdBV2RNKSmL2XrK3bTdvS
-   iY74N+Mv+fpKnQ1EiagNZUWDEtN7bYxGmUZNu1n8H8PUFaK7fIA+3spc1
-   6FhV3XoEo07/lc9V3yTODW/en8Dsir7gNTj4denKvjvHLSu7lm7dWJT/C
-   kTsEkjU+dsQeP21UhhWq2RWQMEY1CGV+sv24akRsSaN0JhNvowbZeMLjT
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="273464967"
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="273464967"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:04:50 -0700
-X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
-   d="scan'208";a="854894272"
-Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:04:49 -0700
-From:   Jacob Keller <jacob.e.keller@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Paul Greenwalt <paul.greenwalt@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC disabled via ETHTOOL_SFECPARAM
-Date:   Tue, 23 Aug 2022 08:04:38 -0700
-Message-Id: <20220823150438.3613327-3-jacob.e.keller@intel.com>
-X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
-In-Reply-To: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+        with ESMTP id S233142AbiHWRaG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:30:06 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2117.outbound.protection.outlook.com [40.107.244.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C256D25E8
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:07:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gJ3IAddwVMnok6mrPcA4KJ/El4NfxI3rt8Tmd7YOOYyph5d2vcw9C2h/Ubul7A40cMBcH55GquD/Jy1wHVUGC6sYFaxLIBMnvP3F4+YgBh9Ep300/0N6TD2pz+NCgJn76/Gl1tbEOdICWh++5cFOZitYXqcTEfRbvRiq5BUdPFzxeXpBZNk46699l1hGt8Ud6vv5MhZXL7FZWYeSczTtlXqTUNzuh98ntpHjel+tutZUmsDPfiKhFAhB4vFQ5uGLnX1zscNcYLimfOKci8CV7hzYUAVTYiuC+6yhN5dcxg8nQrD4RUNa2nB2zVCEJhdvS5BBhQDAJWG7FVyOXBFktg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M6Sy7Bi/Fwm+EDJRVSdYsVxP37v5Z7sJkLpWSFCboPk=;
+ b=UeLpQFv2qjtnnQdUBto8yk8jfGLNiy3bPM/rjq4ymP1qFN4ctoTQun81frJDzFe69K/zpDTE+1JzzjB/zpYixZEywnrwsc+4OBBrDmlMefILmpt9fMwDbJz+PiJcjz2hjGWY/RyUcDWZQzuBoWSYqGvCEELCcTpeMegj6QwtMNEc3vWvJIr8x4ozBIWnwa2mxM6M+bsCbArn0MgzN4v7OnSoV6q73U7L3WdprnTj1HDWAzkQ1yb+oeMy60h8kIkvt9s2DweZjR2M2A36iHFFgOVAAizfXHLzUTFqz4sXhciMXTyNlcyXbUoe/a+Nb0cIKXh8FZrgjnfX0rW+DRc5wQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M6Sy7Bi/Fwm+EDJRVSdYsVxP37v5Z7sJkLpWSFCboPk=;
+ b=wGkXR9yORR5RHqr5BebT4pX+cqihqf+xAHPoeESTzY/aIWUGEi90oMSFhKkf4Rac7KC1TDcxoPy0Yran+wErq4GdIBOck48RJrr4U9SsiPlt0RuwEBAtHFxojNOh/z+6BYpHZ+OGUHk548LUDPjcf/JMUPSuw99GYS8pOyulE2w=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MW4PR13MB5861.namprd13.prod.outlook.com (2603:10b6:303:1b4::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.14; Tue, 23 Aug
+ 2022 15:07:02 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::a1e6:3e37:b3f3:7576]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::a1e6:3e37:b3f3:7576%8]) with mapi id 15.20.5566.014; Tue, 23 Aug 2022
+ 15:07:02 +0000
+Date:   Tue, 23 Aug 2022 17:06:50 +0200
+From:   Simon Horman <simon.horman@corigine.com>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Michael Chan <michael.chan@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>,
+        Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Fei Qin <fei.qin@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Yufeng Mo <moyufeng@huawei.com>,
+        Sixiang Chen <sixiang.chen@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Erik Ekman <erik@kryo.se>, Ido Schimmel <idosch@nvidia.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Moshe Tal <moshet@nvidia.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Marco Bonelli <marco@mebeim.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH net-next 1/2] ethtool: pass netlink extended ACK to
+ .set_fecparam
+Message-ID: <YwTtCgBGclpY1Euz@corigine.com>
 References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+ <20220823150438.3613327-2-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823150438.3613327-2-jacob.e.keller@intel.com>
+X-ClientProxiedBy: AM0PR03CA0062.eurprd03.prod.outlook.com (2603:10a6:208::39)
+ To PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3ee585a7-e2a1-450c-2c7c-08da85192269
+X-MS-TrafficTypeDiagnostic: MW4PR13MB5861:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ue6U7Tils5mzQcB3ymHzYBZ0kDaBWMAnUlIFbtn408aH8DUW1W+3UHGiPw226hXMQSkuxNKNTGrCSxWfiqkoArNtNvcFrnWTvqc/46UkquXFHDn/48fvOtFa/2CH+NsAVdY6EMy7ZNDd4C+VNpmUcjYrAsCxV4pcukUudst82q0Q/3nxMXdQRHFe3hOWp5lh/RVr+xnohPRWNMzsfU/JMyjMcWGToZzOCpSpwBwkoM+AgjLl/NeSzfa+5U/tNwiSDajEIkRF4Wq/qIYndJdAf6jF5Veri7rHIzL43ezudH5u1DD+Wb8IpUqenORvU+iOXex6R/rVMSeYnSlpLD6j5t6BDXhiOgQfNx4cV2CBEgr3nEy/8H9iH1vHcUc6fBiMIcm8LvNv3hAynXWc37MRHWq6IHVvAFCoU6EH8/uKxQO/Ul74qWcvL0UXNQmtYz7+uRVnyk2zoCymUSD8Zls5jfxDh+D0uQuk1OJ75fyocrvsbYZ6oGQjANetp9YiEZXuHhIoJr7MubF+f1CY68f9CSBQfWJV1Lh9RSBjSnTmXSySbsli7W0aEw0KKh56/lPVCJTBcSLHZaZtntUcFZ84+E630zcvCfprbqQlKcdlDnJSQpekl+YpOceO5NqpxkmsVLIcMby89sESC2gVR67t+mEUF+JjkqqOpdkVJFZ3Vwww3/k5kJ5gOFYkZiaNNtYAKyMmMCEjfXvkm597RTdiGsMpef+d5DUey41lfZeQdpbKrxWp4I9lTfSG6Dz3mpav9Cxa2/7eMugpyx5wVCQLr6SfIGJm7ayD5eSb//7RlPARdJEzBTQ8FEqKT7cPvqBB
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39840400004)(366004)(396003)(376002)(136003)(346002)(6916009)(8936002)(44832011)(66476007)(66946007)(6666004)(36756003)(4326008)(52116002)(41300700001)(8676002)(66556008)(4744005)(478600001)(6486002)(54906003)(2906002)(6506007)(86362001)(316002)(6512007)(186003)(2616005)(7406005)(38100700002)(7416002)(5660300002)(142923001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?h9hTMcDyehNr/Kum+ockJaQ8b41xJ1h6zlYdfJ9LW6ISvj5h/GW0fAxpqqSv?=
+ =?us-ascii?Q?ag3jgsLExM/vmU43PPpIMV3uwNx8N1sVXGZgcZfAg/VeSwOSo7oNi0gLQR9S?=
+ =?us-ascii?Q?P2g5khT5fBDKjr38i7E+KXf70DjT79WuVmqdeIU678WWup8na25UWk8kzti2?=
+ =?us-ascii?Q?XW4TTg/+0Eh9mmd5OEkjdJDr1PKL52ZVSchp9XFA0zrPm18WT1tIAYDlFUk1?=
+ =?us-ascii?Q?J0qRchLKhm+JXQNVZd118a/YicK9RlH3BV7da7NRoMSRHu0sbBm8EzHrMlhX?=
+ =?us-ascii?Q?XNi1Cnj6yOE3ANefmhRDcC0VkJ77kizxIrxCpsmPdzoMLpg1VRKYL7XeqjxR?=
+ =?us-ascii?Q?QLk74on03MbfCJi9KeFiI+/u31zGvJBmVkL3LfLGBV1fEhJRPFPyaXP8+bYg?=
+ =?us-ascii?Q?oy508uaxEKyrIGmwbAXH3vIUAEyMxX1KHXZtjHzzZbB4xJpCq8w/vTVLrkRP?=
+ =?us-ascii?Q?MJsMJAFXTmu/CEe5PlB+DgX6sPFrD6e4RCI8+whBU3rKrx+vsRYKKfMYAXP/?=
+ =?us-ascii?Q?J7DNMA3ZdVRL4liSPQxEv3IHodfhJigxRpwe0+HRwpOZ1tVSkiMVte4fQ4dT?=
+ =?us-ascii?Q?bCl9reL65JwwRQfr5e0nwW77iCLwo0zpCsvdxeSGK9BHmS2SVLNBqYugQBBZ?=
+ =?us-ascii?Q?C13wW1HNTX9/ZdWyEztx+sQ4x15y73EdBXVC3sB6BSbCxmxGo8niClFwa2lT?=
+ =?us-ascii?Q?w1ecmGzUZalvVJl10p7FmHN8YaoKSxj7HkHHWVq4CtVkbZEkdWhO3h6poCkD?=
+ =?us-ascii?Q?LLUPuPfUeHM/D14zBHk9BVd9wKLntzgoYh+MjgMZ/WZ7EdvNxWg948/FRh2j?=
+ =?us-ascii?Q?VJC0AF0mODJezLYH6ekVh42NSZnpgOeDCR8QJUe8FQsZCtVz0cmg3Rso6HNz?=
+ =?us-ascii?Q?dmmPF6fUPWKFEWe2dNKzA0b0QATa4o4/7jUjAux/4NjwbvB9CgT4KcVsbrhI?=
+ =?us-ascii?Q?CpUUTZvzrnqTpqI5lAxF4rNnJz11zZC4xqfF+QNGKtrurhokp1cqV20ackZr?=
+ =?us-ascii?Q?/wDisANbhrpbkWFFXhcfs1zi4Yhq/3PaD7ZE+7zGEAwM7q2qsSPrxtCwfWEL?=
+ =?us-ascii?Q?NVsJAaPRL7v0HXH0PR/dD+sUzNLx/UNF8hVTHAkppNn4YFpn4zcSQhpAemAn?=
+ =?us-ascii?Q?Y2D/2ECkdi6rTDvZUrL5HfpC/EuGqbaQgBotlRXpF0H3dnBiKUbhBs+CIxxD?=
+ =?us-ascii?Q?sgNuKLh8C4CN9wHsmmFmTc+czGr7YT4CeTCE9dOq+4q55DiEAcIoGbqErro9?=
+ =?us-ascii?Q?H66HW/PE99RcQZ/5R3s34wRsjWsP3OSzB3xWKXd1I8WQW7c9WvY5ljw7tVN+?=
+ =?us-ascii?Q?BW2dXzWMfvq/xbmhjZ2p0k7pe3PGGJSzAMTX7YGs7RSd25nc6hB9xezUz712?=
+ =?us-ascii?Q?dn5Y6hqXgIHgFtjdiP9bNTApYcRgm9EV1njPtvaIJikFlIxpeR46Qk7MZt+5?=
+ =?us-ascii?Q?msHgqFisFlvfbyLo5rrJz7BSMWiMPCXfOsCLU1OPPEVL6plv0/Lq+icuKk4w?=
+ =?us-ascii?Q?l4lLDlG9j/IXGWC4y8TnKaKqwpcqoDamu9mszMLjO8BEU4beMBSL2DxrxKWh?=
+ =?us-ascii?Q?b3zqIz0+ZdS+UGWn39geKo8Z9TkdZHl1duj8Zx7HbiBgcyN5Ar/aGdRoz7Ea?=
+ =?us-ascii?Q?2as+LRgtV7OMW+BPD/5btH+1hSBv1SCChf1QbsfqOMWz2z98g9hr7220eKP0?=
+ =?us-ascii?Q?2aMF5Q=3D=3D?=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ee585a7-e2a1-450c-2c7c-08da85192269
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 15:07:02.6840
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LS559umBYF+dr2rpb1paZUwQqeuTnD7Y1rh0uOtmq2jZqHpY2GmqWdrJaKszighgexLXV/VoAV3Gzxg30NzNhyA7DXO7glQTbeGVHW1OG9Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR13MB5861
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The default Link Establishment State Machine (LESM) behavior does not
-allow the use of FEC disabled if the media does not support FEC
-disabled. However users may want to override this behavior.
+On Tue, Aug 23, 2022 at 08:04:37AM -0700, Jacob Keller wrote:
+> Add the netlink extended ACK structure pointer to the interface for
+> .set_fecparam. This allows reporting errors to the user appropriately when
+> using the netlink ethtool interface.
 
-To support this, accept the ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF as a request
-to automatically select an appropriate FEC mode including potentially
-disabling FEC.
+FWIIW, for the, trivial, nfp portion of this change:
 
-This is distinct from ETHTOOL_FEC_AUTO because that will not allow the LESM
-to select FEC disabled. It is distinct from ETHTOOL_FEC_OFF because
-FEC_OFF will always disable FEC without any LESM automatic selection.
-
-This *does* mean that ice is now accepting one "bitwise OR" set for FEC
-configuration, which is somewhat against the recommendations made in
-6dbf94b264e6 ("ethtool: clarify the ethtool FEC interface"), but I am not
-sure if the addition of an entirely new ETHTOOL_FEC_AUTO_DIS would make any
-sense here.
-
-With this change, users can opt to allow automatic FEC disable via
-
-  ethtool --set-fec ethX encoding auto off
-
-Signed-off-by: Paul Greenwalt <paul.greenwalt@intel.com>
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
----
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_common.c   | 54 ++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_common.h   |  1 +
- drivers/net/ethernet/intel/ice/ice_ethtool.c  | 11 +++-
- drivers/net/ethernet/intel/ice/ice_main.c     |  3 +-
- drivers/net/ethernet/intel/ice/ice_type.h     |  9 +++-
- 6 files changed, 74 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 9d2fa67d873e..5c5ebd70483c 100644
---- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1123,6 +1123,7 @@ struct ice_aqc_get_phy_caps_data {
- #define ICE_AQC_PHY_FEC_25G_RS_528_REQ			BIT(2)
- #define ICE_AQC_PHY_FEC_25G_KR_REQ			BIT(3)
- #define ICE_AQC_PHY_FEC_25G_RS_544_REQ			BIT(4)
-+#define ICE_AQC_PHY_FEC_DIS				BIT(5)
- #define ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN		BIT(6)
- #define ICE_AQC_PHY_FEC_25G_KR_CLAUSE74_EN		BIT(7)
- #define ICE_AQC_PHY_FEC_MASK				ICE_M(0xdf, 0)
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index 2c8c3fcc3dcd..96f51b7c9898 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -3253,8 +3253,11 @@ enum ice_fc_mode ice_caps_to_fc_mode(u8 caps)
-  */
- enum ice_fec_mode ice_caps_to_fec_mode(u8 caps, u8 fec_options)
- {
--	if (caps & ICE_AQC_PHY_EN_AUTO_FEC)
-+	if (caps & ICE_AQC_PHY_EN_AUTO_FEC) {
-+		if (fec_options & ICE_AQC_PHY_FEC_DIS)
-+			return ICE_FEC_DIS_AUTO;
- 		return ICE_FEC_AUTO;
-+	}
- 
- 	if (fec_options & (ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN |
- 			   ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ |
-@@ -3513,6 +3516,12 @@ ice_cfg_phy_fec(struct ice_port_info *pi, struct ice_aqc_set_phy_cfg_data *cfg,
- 		/* Clear all FEC option bits. */
- 		cfg->link_fec_opt &= ~ICE_AQC_PHY_FEC_MASK;
- 		break;
-+	case ICE_FEC_DIS_AUTO:
-+		/* Set No FEC and auto FEC */
-+		if (!ice_fw_supports_fec_dis_auto(hw))
-+			return -EOPNOTSUPP;
-+		cfg->link_fec_opt |= ICE_AQC_PHY_FEC_DIS;
-+		fallthrough;
- 	case ICE_FEC_AUTO:
- 		/* AND auto FEC bit, and all caps bits. */
- 		cfg->caps &= ICE_AQC_PHY_CAPS_MASK;
-@@ -5289,6 +5298,35 @@ ice_aq_get_gpio(struct ice_hw *hw, u16 gpio_ctrl_handle, u8 pin_idx,
- 	return 0;
- }
- 
-+/**
-+ * ice_is_fw_min_ver
-+ * @hw: pointer to the hardware structure
-+ * @branch: branch version
-+ * @maj: major version
-+ * @min: minor version
-+ * @patch: patch version
-+ *
-+ * Checks if the firmware is minimum version
-+ */
-+static bool ice_is_fw_min_ver(struct ice_hw *hw, u8 branch, u8 maj, u8 min,
-+			      u8 patch)
-+{
-+	if (hw->fw_branch == branch) {
-+		if (hw->fw_maj_ver > maj)
-+			return true;
-+		if (hw->fw_maj_ver == maj) {
-+			if (hw->fw_min_ver > min)
-+				return true;
-+			if (hw->fw_min_ver == min && hw->fw_patch >= patch)
-+				return true;
-+		}
-+	} else if (hw->fw_branch > branch) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
- /**
-  * ice_fw_supports_link_override
-  * @hw: pointer to the hardware structure
-@@ -5510,3 +5548,17 @@ bool ice_fw_supports_report_dflt_cfg(struct ice_hw *hw)
- 	}
- 	return false;
- }
-+
-+/**
-+ * ice_fw_supports_fec_dis_auto
-+ * @hw: pointer to the hardware structure
-+ *
-+ * Checks if the firmware supports FEC disable in Auto FEC mode
-+ */
-+bool ice_fw_supports_fec_dis_auto(struct ice_hw *hw)
-+{
-+	return ice_is_fw_min_ver(hw, ICE_FW_FEC_DIS_AUTO_BRANCH,
-+				     ICE_FW_FEC_DIS_AUTO_MAJ,
-+				     ICE_FW_FEC_DIS_AUTO_MIN,
-+				     ICE_FW_FEC_DIS_AUTO_PATCH);
-+}
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index f339bdc48062..a0baf80df356 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -110,6 +110,7 @@ int
- ice_aq_set_phy_cfg(struct ice_hw *hw, struct ice_port_info *pi,
- 		   struct ice_aqc_set_phy_cfg_data *cfg, struct ice_sq_cd *cd);
- bool ice_fw_supports_link_override(struct ice_hw *hw);
-+bool ice_fw_supports_fec_dis_auto(struct ice_hw *hw);
- int
- ice_get_link_default_override(struct ice_link_default_override_tlv *ldo,
- 			      struct ice_port_info *pi);
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 770101577a94..a83b127a00b0 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -1020,9 +1020,17 @@ ice_set_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam,
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_vsi *vsi = np->vsi;
-+	struct ice_pf *pf = vsi->back;
- 	enum ice_fec_mode fec;
- 
- 	switch (fecparam->fec) {
-+	case ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF:
-+		if (!ice_fw_supports_fec_dis_auto(&pf->hw)) {
-+			NL_SET_ERR_MSG_MOD(extack, "FEC automatic disable is not supported by current firmware\n");
-+			return -EOPNOTSUPP;
-+		}
-+		fec = ICE_FEC_DIS_AUTO;
-+		break;
- 	case ETHTOOL_FEC_AUTO:
- 		fec = ICE_FEC_AUTO;
- 		break;
-@@ -1037,8 +1045,7 @@ ice_set_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam,
- 		fec = ICE_FEC_NONE;
- 		break;
- 	default:
--		dev_warn(ice_pf_to_dev(vsi->back), "Unsupported FEC mode: %d\n",
--			 fecparam->fec);
-+		NL_SET_ERR_MSG_MOD(extack, "Requested FEC mode is not supported\n");
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 3dbd91d8d83e..98fc40f20abd 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -2190,7 +2190,8 @@ static int ice_configure_phy(struct ice_vsi *vsi)
- 	ice_cfg_phy_fec(pi, cfg, phy->curr_user_fec_req);
- 
- 	/* Can't provide what was requested; use PHY capabilities */
--	if (cfg->link_fec_opt !=
-+	if (phy->curr_user_fec_req != ICE_FEC_DIS_AUTO &&
-+	    cfg->link_fec_opt !=
- 	    (cfg->link_fec_opt & pcaps->link_fec_options)) {
- 		cfg->caps |= pcaps->caps & ICE_AQC_PHY_EN_AUTO_FEC;
- 		cfg->link_fec_opt = pcaps->link_fec_options;
-diff --git a/drivers/net/ethernet/intel/ice/ice_type.h b/drivers/net/ethernet/intel/ice/ice_type.h
-index e1abfcee96dc..0b71c40e881b 100644
---- a/drivers/net/ethernet/intel/ice/ice_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_type.h
-@@ -107,7 +107,8 @@ enum ice_fec_mode {
- 	ICE_FEC_NONE = 0,
- 	ICE_FEC_RS,
- 	ICE_FEC_BASER,
--	ICE_FEC_AUTO
-+	ICE_FEC_AUTO,
-+	ICE_FEC_DIS_AUTO
- };
- 
- struct ice_phy_cache_mode_data {
-@@ -1145,4 +1146,10 @@ struct ice_aq_get_set_rss_lut_params {
- #define ICE_FW_API_REPORT_DFLT_CFG_MIN		7
- #define ICE_FW_API_REPORT_DFLT_CFG_PATCH	3
- 
-+/* FW version for FEC disable in Auto FEC mode */
-+#define ICE_FW_FEC_DIS_AUTO_BRANCH	1
-+#define ICE_FW_FEC_DIS_AUTO_MAJ		7
-+#define ICE_FW_FEC_DIS_AUTO_MIN		0
-+#define ICE_FW_FEC_DIS_AUTO_PATCH	5
-+
- #endif /* _ICE_TYPE_H_ */
--- 
-2.37.1.394.gc50926e1f488
-
+Acked-by: Simon Horman <simon.horman@corigine.com>
