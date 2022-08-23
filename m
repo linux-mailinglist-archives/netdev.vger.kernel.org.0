@@ -2,117 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A8B59D0D3
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 07:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1FD859D0F6
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 08:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240317AbiHWF4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 01:56:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56660 "EHLO
+        id S240548AbiHWGCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 02:02:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240429AbiHWF4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 01:56:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB635F22C
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 22:56:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BFA4661380
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D71DC433B5;
-        Tue, 23 Aug 2022 05:55:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661234159;
-        bh=XonA59xbsFCmHaUXdH1r3RZkxlW8Zp/3zucbCbkXb8w=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZrJgFtYAsgGmx9eV/hD4BjuHEgguC9RdQN50o0kTL0nDhb0n9dDV518Cb8LabWXmU
-         jcCrzA6mjSddQHLmfx7VCB1hzXyAiICeba7HkNRggSjJvUJ2F1yWJBXpDU9TGOzV4h
-         G16PapEawPYJX4QwU1DnRglwCXEQ6RysuGDjZpsKcTsfKiwkwbBFBdsIw071pYLFFV
-         4rU2N1mOqFa6+Itm08qXADPmV2EHKNXzVt9o70Bhp5iB9xb8jcHU1znDlvV1YQibI8
-         X8AFyPJWbCNyW5dTE/cG0tGLJFHWAVJqZKIN51R9XcbJvaQWiRTsPtMqvo5yZECbas
-         Giaqi18By6ZUw==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Maor Dickman <maord@nvidia.com>
-Subject: [net-next 15/15] net/mlx5: TC, Add support for SF tunnel offload
-Date:   Mon, 22 Aug 2022 22:55:33 -0700
-Message-Id: <20220823055533.334471-16-saeed@kernel.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220823055533.334471-1-saeed@kernel.org>
-References: <20220823055533.334471-1-saeed@kernel.org>
+        with ESMTP id S240549AbiHWGCK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 02:02:10 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C05405FF49;
+        Mon, 22 Aug 2022 23:02:09 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id x19so11911998plc.5;
+        Mon, 22 Aug 2022 23:02:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=NvGvQzFB0ozvqye6TlBt72hA2XeFJRaYoqL5R2NvJN4=;
+        b=aa/FNbu286jkKwQUjQcjg9brlMPdJPy3a0j7sSMc5yBNcqKaULuazPcfi1utZeBd7y
+         8W3LVRBQkO2Fwk+HU3FuwZv4qb0jPDbtNWo5EGAK+Z2x8cKmtM2fpc9X8DJ+/3f9ySi6
+         f99kaKrXeG0WyfwP+v6LVEgx6VT9bUEmSMTzajrwTolXODCLgBqntbcKr0EvmFUJ0B7q
+         CnEc5erBc6sMpOWBLG4B10s2bhc7PPUkEM/lqzVejQjEx4PWPv23WGbeMsi9D3qgr90Q
+         uBk80UHIz+M8pzlUO/q5FlbH8eoNEw+Od3XWENwexrBdUa1Fp4aXNS5YIqPErWqOjN6a
+         fThg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=NvGvQzFB0ozvqye6TlBt72hA2XeFJRaYoqL5R2NvJN4=;
+        b=sbbkw0zSLQvWJtP9qFnQBRf72lkRFew/obrKkRat/0nitSZLi17KxwGpxAyq7K1Fps
+         GZERcJM7PHaC0LOu3U1cYJs+Sl6ZPnNvP+UAMffyVppSuUoeOM0H599FYxnHFI5jvwT6
+         mVV3VbE4/TEVEQbYi/hg9dO7Ryzq8UY7Z4HsE1PNX9Pc7JRzoTzaU9JHwRwAu+0fkHwV
+         6XNbUzprkM7KS4/yccSIHTeo2lQ9P2mIaM4hK4bfYml/tTXU6dJM9NpEQyqNq6QZ+DyA
+         PspdGRMRtn4Edeet3OPKnI2X+dHANMLWx53MfIFzn+ua/XuzZX+ocfIy6/fA8/msLoYw
+         J7Sw==
+X-Gm-Message-State: ACgBeo2ozBE2BmLHe//RNAbDfC6z6wkwNo1qgXErUy4GBkusruztb7/m
+        4AmbH5NKmClV/CWa16DHyBM=
+X-Google-Smtp-Source: AA6agR4rPYAjCopNScCV/Bn5ZXnNtyPRlX60jgns2XshzEnrty3ZT9jOXB1FU02tMb0QA815eeaUiA==
+X-Received: by 2002:a17:902:9341:b0:172:775e:9573 with SMTP id g1-20020a170902934100b00172775e9573mr23469570plp.128.1661234528811;
+        Mon, 22 Aug 2022 23:02:08 -0700 (PDT)
+Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
+        by smtp.googlemail.com with ESMTPSA id oc9-20020a17090b1c0900b001f56a5e5d2fsm736059pjb.2.2022.08.22.23.02.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 23:02:08 -0700 (PDT)
+From:   lily <floridsleeves@gmail.com>
+To:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, lily <floridsleeves@gmail.com>
+Subject: [PATCH v1] drivers/net/ethernet: check return value of e1e_rphy()
+Date:   Mon, 22 Aug 2022 23:02:00 -0700
+Message-Id: <20220823060200.1452663-1-floridsleeves@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roi Dayan <roid@nvidia.com>
+e1e_rphy() could return error value, which need to be checked.
 
-VF tunnel flow already exists and SF tunnel is the
-same flow.  Support offloading of tunneling over SF device
-by allow to attach an encap route over SF and set to use
-indirect flow table on SF.
-
-Signed-off-by: Roi Dayan <roid@nvidia.com>
-Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Dickman <maord@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Li Zhong <floridsleeves@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c           | 7 +++++--
- drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c | 6 +++++-
- 2 files changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/e1000e/phy.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 0b98e117cc0a..0872a214d2a3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -1505,8 +1505,11 @@ bool mlx5e_tc_is_vf_tunnel(struct net_device *out_dev, struct net_device *route_
- 	route_priv = netdev_priv(route_dev);
- 	route_mdev = route_priv->mdev;
- 
--	if (out_mdev->coredev_type != MLX5_COREDEV_PF ||
--	    route_mdev->coredev_type != MLX5_COREDEV_VF)
-+	if (out_mdev->coredev_type != MLX5_COREDEV_PF)
-+		return false;
-+
-+	if (route_mdev->coredev_type != MLX5_COREDEV_VF &&
-+	    route_mdev->coredev_type != MLX5_COREDEV_SF)
- 		return false;
- 
- 	return mlx5e_same_hw_devs(out_priv, route_priv);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-index 0abef71cb839..c9a91158e99c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/indir_table.c
-@@ -78,12 +78,16 @@ mlx5_esw_indir_table_needed(struct mlx5_eswitch *esw,
- 			    struct mlx5_core_dev *dest_mdev)
+diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
+index fd07c3679bb1..15ac302fdee0 100644
+--- a/drivers/net/ethernet/intel/e1000e/phy.c
++++ b/drivers/net/ethernet/intel/e1000e/phy.c
+@@ -2697,9 +2697,12 @@ static s32 e1000_access_phy_wakeup_reg_bm(struct e1000_hw *hw, u32 offset,
+ void e1000_power_up_phy_copper(struct e1000_hw *hw)
  {
- 	struct mlx5_esw_flow_attr *esw_attr = attr->esw_attr;
-+	bool vf_sf_vport;
-+
-+	vf_sf_vport = mlx5_eswitch_is_vf_vport(esw, vport_num) ||
-+		      mlx5_esw_is_sf_vport(esw, vport_num);
+ 	u16 mii_reg = 0;
++	int ret;
  
- 	/* Use indirect table for all IP traffic from UL to VF with vport
- 	 * destination when source rewrite flag is set.
- 	 */
- 	return esw_attr->in_rep->vport == MLX5_VPORT_UPLINK &&
--		mlx5_eswitch_is_vf_vport(esw, vport_num) &&
-+		vf_sf_vport &&
- 		esw->dev == dest_mdev &&
- 		attr->ip_version &&
- 		attr->flags & MLX5_ATTR_FLAG_SRC_REWRITE;
+ 	/* The PHY will retain its settings across a power down/up cycle */
+-	e1e_rphy(hw, MII_BMCR, &mii_reg);
++	ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
++	if (ret)
++		return ret;
+ 	mii_reg &= ~BMCR_PDOWN;
+ 	e1e_wphy(hw, MII_BMCR, mii_reg);
+ }
+@@ -2715,9 +2718,12 @@ void e1000_power_up_phy_copper(struct e1000_hw *hw)
+ void e1000_power_down_phy_copper(struct e1000_hw *hw)
+ {
+ 	u16 mii_reg = 0;
++	int ret;
+ 
+ 	/* The PHY will retain its settings across a power down/up cycle */
+-	e1e_rphy(hw, MII_BMCR, &mii_reg);
++	ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
++	if (ret)
++		return ret;
+ 	mii_reg |= BMCR_PDOWN;
+ 	e1e_wphy(hw, MII_BMCR, mii_reg);
+ 	usleep_range(1000, 2000);
+@@ -3037,7 +3043,9 @@ s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw)
+ 		return 0;
+ 
+ 	/* Do not apply workaround if in PHY loopback bit 14 set */
+-	e1e_rphy(hw, MII_BMCR, &data);
++	ret_val = e1e_rphy(hw, MII_BMCR, &data);
++	if (ret_val)
++		return ret_val;
+ 	if (data & BMCR_LOOPBACK)
+ 		return 0;
+ 
 -- 
-2.37.1
+2.25.1
 
