@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 013DD59E968
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B34D59E978
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:33:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229628AbiHWR0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 13:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
+        id S232054AbiHWR22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 13:28:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233730AbiHWRZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:25:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41728A6E9
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:00:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAEFD615D7
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD33CC433D6;
-        Tue, 23 Aug 2022 15:00:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661266825;
-        bh=UUHiE9LZC2RTIOCVRVF7XZp1DDcH0s01VQ1Gm7vcmt0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XqdLuYhh/AyHj69sjgRij6J/7XbGubOeNi1G95iCmEtq9nPu7T5F8Ol6zCFKgokun
-         2F1i5i6XyIIY78AfWbdRrjetfzCWGwVtuFkvGM2l9W/loQDVXGabimP0rOOg34wsg5
-         2IwKCYOf5gQEllcwXJCwMe1QUPrLkBBqinX6YPpga84e2Uy1k9O2X7q3Wmwz8jU3sv
-         kFpcqV3sxvBTOqFGPifZsQHN74WyGLaC5NeSN3FU8f1huhxvJLLojMbZEc5QyuKnnr
-         e5lag0Wy6eW1vljjcPVr5TRlzEktDUf0yRikoWsuRIGWLmKvp45+js0NjDVI4Z6EUh
-         ocOe1RKkeUkrg==
-Date:   Tue, 23 Aug 2022 08:00:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sergei Antonov <saproj@gmail.com>
-Subject: Re: [PATCH net] net: dsa: don't dereference NULL extack in
- dsa_slave_changeupper()
-Message-ID: <20220823080023.43e9da81@kernel.org>
-In-Reply-To: <20220823100834.qikdvkekg6swn7rb@skbuf>
-References: <20220819173925.3581871-1-vladimir.oltean@nxp.com>
-        <20220822182523.6821e176@kernel.org>
-        <20220823100834.qikdvkekg6swn7rb@skbuf>
+        with ESMTP id S234213AbiHWR0Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:26:25 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FFD0F2D4F
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:04:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661267089; x=1692803089;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ZcvBUjHxVyzpqbjS5hgbqcdBRFu5Ik5pSDZcXEphY1k=;
+  b=ZrBpO71zQ/XtFlePsYnrTzOd8wKMHVxifMpNVt4chDI1qRNToloM3JFj
+   Q2Trq2rQ6biaC8dzcDJIaW8ZxcPLeeGmwvIDGszyfB3xW6XUxWSTFk1G0
+   2irLd/TSNLJqJ9oFW/+sCtF/ahHRHbXWqyLtD71toKp0+y2oEsqAHIn0H
+   whr/YVekCwM8gENTQXt2JTFwNb/IXPk0u9QhIBV/5Q3Yo4LUik1BSwMT4
+   7Y5rCf38vYlGuWnWcWi9fh5ycSQ4VDzvvbUg6FaCpg31z2m+UabIA+n5F
+   wWrLE7C27LxZbugEl80BZSLT5m51lDGAmO6QcPr6mTy0/dTMRP9cWfsaL
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10448"; a="273464956"
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="273464956"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:04:48 -0700
+X-IronPort-AV: E=Sophos;i="5.93,258,1654585200"; 
+   d="scan'208";a="854894249"
+Received: from jekeller-desk.amr.corp.intel.com (HELO jekeller-desk.jekeller.internal) ([10.166.241.7])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 08:04:48 -0700
+From:   Jacob Keller <jacob.e.keller@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Jacob Keller <jacob.e.keller@intel.com>
+Subject: [PATCH net-next 0/2] ice: support FEC automatic disable
+Date:   Tue, 23 Aug 2022 08:04:36 -0700
+Message-Id: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+X-Mailer: git-send-email 2.37.1.394.gc50926e1f488
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -64,56 +55,107 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 10:08:34 +0000 Vladimir Oltean wrote:
-> On Mon, Aug 22, 2022 at 06:25:23PM -0700, Jakub Kicinski wrote:
-> > On Fri, 19 Aug 2022 20:39:25 +0300 Vladimir Oltean wrote:  
-> > > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> > > index c548b969b083..804a00324c8b 100644
-> > > --- a/net/dsa/slave.c
-> > > +++ b/net/dsa/slave.c
-> > > @@ -2487,7 +2487,7 @@ static int dsa_slave_changeupper(struct net_device *dev,
-> > >  			if (!err)
-> > >  				dsa_bridge_mtu_normalization(dp);
-> > >  			if (err == -EOPNOTSUPP) {
-> > > -				if (!extack->_msg)
-> > > +				if (extack && !extack->_msg)
-> > >  					NL_SET_ERR_MSG_MOD(extack,
-> > >  							   "Offloading not supported");  
-> > 
-> > Other offload paths set the extack prior to the driver call,  
-> 
-> Example?
-> 
-> > which has the same effect.  
-> 
-> No, definitely not the same effect. The difference between (a) setting it
-> to "Offloading not supported" before the call to dsa_port_bridge_join()
-> and (b) setting it to "Offloading not supported" only if dsa_port_bridge_join()
-> returned -EOPNOTSUPP is that drivers don't have to set an extack message
-> if they return success, or if they don't implement ds->ops->port_bridge_join.
-> The behavior changes for a driver that doesn't set the extack but
-> returns 0 if I do that.
+This series implements support for users to configure automatic FEC
+selection including the option of disabling FEC. It implements similar
+behavior as a previous submission we made at
 
-Hm, I was pretty sure that's what we did in tc, but maybe it was just
-discussed and never done. Let me apply, then.
+https://lore.kernel.org/netdev/20220714180311.933648-1-anthony.l.nguyen@intel.com/
 
-> > Can't we do the same thing here?
-> > Do we care about preserving the extack from another notifier 
-> > handler or something? Does not seem like that's the case judging 
-> > but the commit under Fixes.  
-> 
-> Preserving yes, from another notifier handler no.
-> 
-> DSA suppresses the -EOPNOTSUPP error code from this operation and
-> returns 0 to user space, along with a warning note via extack.
-> 
-> The driver's ds->ops->port_bridge_join() method is given an extack.
-> Therefore, if the driver has set the extack to anything, presumably it
-> is more specific than what DSA has to say.
-> 
-> > If it is the case (and hopefully not) we should add a new macro wrapper.
-> > Manually twiddling with a field starting with an underscore makes
-> > me feel dirty. Perhaps I have been writing too much python lately.  
-> 
-> Ok, can do later (not "net" patch). Also, if you search for _msg in
-> net/dsa/ you'll find more occurrences of accessing it directly.
+This implementation varies, in that we now honor ETHTOOL_FEC_AUTO |
+ETHTOOL_FEC_OFF as the new automatic plus disable mode.
+
+This is in line with the request Jakub made to avoid using a new private
+flag. I opted to use a bit-wise or of the two already supported flags rather
+than trying to introduce a new flag.
+
+I think this makes sense as essentially this is a request to automatically
+select but also include "off" as a possible option. I'm not sure if this is
+the best approach, but it seemed better than trying to add a new
+ETHTOOL_FEC_AUTO_DISABLE or similarly confusing option. The need for this is
+due to the quirk of how the ice firmware Link Establishment State Machine
+works to decide what FEC mode to use.
+
+Current userspace and the API already support multiple bit selection, though
+it does have the downside of not guaranteeing consistency across drivers...
+I'm open to alternative suggestions and implementations if someone has a
+better suggestion.
+
+Some alternatives we've considered already:
+
+1) use a private flag
+
+  Rejected for good reason, as private flags are difficult to discover and
+  vary wildly across drivers. It also makes the driver behave differently to
+  the same userspace request which may not be obvious to applications.
+
+2) always treat ETHTOOL_FEC_AUTO as "automatic + allow disable"
+
+  This could work, but it means that behavior will differ depending on the
+  firmware version. Users have no way to know that and might be surprised to
+  find the behavior differ across devices which have different firmware
+  which do or don't support this variation of automatic selection.
+
+2) introduce a new FEC mode to the ETHTOOL interface
+
+  I considered just adding a brand new flag, but choosing a name here is
+  relatively difficult. Most names read as some sort of "disable automatic
+  selection" which isn't the best meaning.
+
+3) use combined ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF (this series)
+
+  This version simply accepts a combined bitwise OR of ETHTOOL_FEC_AUTO and
+  ETHTOOL_FEC_OFF. This was previously rejected by ice so it should not
+  cause compatibility issues. The API already supports it, though it was
+  noted the semantics of this combination are not well defined and could
+  behave differently across drivers.
+
+  This version has the downside of not being explicit in the API now since
+  drivers may not all interpret this combination the same way. Thats
+  understandably a concern, but I'm not sure what the best approach to avoid
+  that here.
+
+  This version does allow users to explicitly request the new behavior, and
+  allows reporting an error when firmware can't support it.
+
+To aid in reporting errors to userspace, I also extended the .set_fecparam
+to take the netlink extended ACK struct. This allows directly reporting why
+the option didn't take when using the netlink backed interface for ethtool.
+
+
+Jacob Keller (2):
+  ethtool: pass netlink extended ACK to .set_fecparam
+  ice: add support for Auto FEC with FEC disabled via ETHTOOL_SFECPARAM
+
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  3 +-
+ .../ethernet/cavium/liquidio/lio_ethtool.c    |  3 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_ethtool.c    |  3 +-
+ .../ethernet/fungible/funeth/funeth_ethtool.c |  3 +-
+ .../ethernet/hisilicon/hns3/hns3_ethtool.c    |  3 +-
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |  3 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  1 +
+ drivers/net/ethernet/intel/ice/ice_common.c   | 54 ++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |  1 +
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  | 15 ++++--
+ drivers/net/ethernet/intel/ice/ice_main.c     |  3 +-
+ drivers/net/ethernet/intel/ice/ice_type.h     |  9 +++-
+ .../marvell/octeontx2/nic/otx2_ethtool.c      |  3 +-
+ .../marvell/prestera/prestera_ethtool.c       |  3 +-
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  3 +-
+ .../ethernet/netronome/nfp/nfp_net_ethtool.c  |  3 +-
+ .../ethernet/pensando/ionic/ionic_ethtool.c   |  3 +-
+ .../net/ethernet/qlogic/qede/qede_ethtool.c   |  3 +-
+ drivers/net/ethernet/sfc/ethtool_common.c     |  3 +-
+ drivers/net/ethernet/sfc/ethtool_common.h     |  3 +-
+ .../net/ethernet/sfc/siena/ethtool_common.c   |  3 +-
+ .../net/ethernet/sfc/siena/ethtool_common.h   |  3 +-
+ drivers/net/netdevsim/ethtool.c               |  3 +-
+ include/linux/ethtool.h                       |  3 +-
+ net/ethtool/fec.c                             |  2 +-
+ net/ethtool/ioctl.c                           |  2 +-
+ 26 files changed, 115 insertions(+), 26 deletions(-)
+
+
+base-commit: 90b3bee3a23249977852079b908270afc6ee03bb
+-- 
+2.37.1.394.gc50926e1f488
+
