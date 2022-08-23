@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA3559CD73
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 03:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB05059CD79
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 03:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238890AbiHWBA1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 21:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S238508AbiHWBAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 21:00:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232069AbiHWBAW (ORCPT
+        with ESMTP id S237609AbiHWBAW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 21:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826F64AD5B;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF1B4C607;
         Mon, 22 Aug 2022 18:00:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14DBD60C37;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31C0060C40;
         Tue, 23 Aug 2022 01:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6A707C433D7;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8CC91C433D6;
         Tue, 23 Aug 2022 01:00:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661216420;
-        bh=6aubPCmqM/p+RRjQmbUHXRrJbPcyzjfpGPpmo69YHoc=;
+        bh=jm+dZXmu6t8Q0rjXeBFVoGu2gk4CzIYafk0yi51L/Ps=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Q2xBBU61rPYNEs+XXdBzqDEmrAt5FzbTQRXolaB7/k37XWV2rxL5B6I+4PLvibPNl
-         x8+tn8xnLbqngZo0stKAo5m08utM6oI2yWz1Sdea9t8Nqk2MuQuDT2fOsjHRMk1n8B
-         HSkHxRJ/VrSled7ygT5wenusERsPVR3yS35HjZxRV3GH0d6yQTq2hcK2Ce85KTIqrx
-         Jesgrf+C/W6S38zZhu6WjjAsW/8ma4PWG2/KNcVP+kylQp5F9D8TkoniLqtDM1yAJu
-         GNCD983KKZkDuGfyet8DH4TS3lxmON5FojbeJnlq1toECkrC6vIVOpT3vIAyRiQT7m
-         PiBH8qNemTbkw==
+        b=GNdz6DurDOynUDSjpfuGfGJxj9rgDSUjALTytwWLBBl1MjGL6zHmbzGfRYALO6Rv9
+         Fuaa44ZWsia42NsWbGUO3/N/FDEiS31QOm+DOjtAyN2BnT3mnt+Q3V65qK0ltBLhr7
+         kdsIw10E9hN0nlNutlIt0XhsUKD77s7A0nuNuTzXX45EfoenN26H9M65HZZqo2OX08
+         +oTcQHkwbS+1hbvAnxhU2OniXbCNDOiYjLnElsrryz4E0Ic44pQu8bRpnfj7vToyhy
+         6XzCWx7j3f8IjP2YxLsKhYZ4ZAUYj9VzbxtvqnhbNWm0kDMCjo2rx5KA8g4EexGlG2
+         Czh/pFl0Y/ttg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 52C9AE2A03D;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79DD6E2A040;
         Tue, 23 Aug 2022 01:00:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] vlan: move from strlcpy with unused retval to strscpy
+Subject: Re: [PATCH] isdn: move from strlcpy with unused retval to strscpy
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166121642033.14563.6416026555542226069.git-patchwork-notify@kernel.org>
+Message-Id: <166121642048.14563.3557589575389310052.git-patchwork-notify@kernel.org>
 Date:   Tue, 23 Aug 2022 01:00:20 +0000
-References: <20220818210204.8275-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220818210204.8275-1-wsa+renesas@sang-engineering.com>
+References: <20220818210023.6889-1-wsa+renesas@sang-engineering.com>
+In-Reply-To: <20220818210023.6889-1-wsa+renesas@sang-engineering.com>
 To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+Cc:     linux-kernel@vger.kernel.org, isdn@linux-pingi.de,
         netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -62,7 +61,7 @@ Hello:
 This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 18 Aug 2022 23:02:04 +0200 you wrote:
+On Thu, 18 Aug 2022 23:00:23 +0200 you wrote:
 > Follow the advice of the below link and prefer 'strscpy' in this
 > subsystem. Conversion is 1:1 because the return value is not used.
 > Generated by a coccinelle script.
@@ -73,8 +72,8 @@ On Thu, 18 Aug 2022 23:02:04 +0200 you wrote:
 > [...]
 
 Here is the summary with links:
-  - vlan: move from strlcpy with unused retval to strscpy
-    https://git.kernel.org/netdev/net-next/c/bb4d15df9abe
+  - isdn: move from strlcpy with unused retval to strscpy
+    https://git.kernel.org/netdev/net-next/c/cdb27b7b2d8f
 
 You are awesome, thank you!
 -- 
