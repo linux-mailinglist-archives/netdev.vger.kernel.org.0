@@ -2,56 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE24059EEB2
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:10:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C5A59EEDD
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:16:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiHWWKw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 18:10:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
+        id S232282AbiHWWQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 18:16:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232311AbiHWWKN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:10:13 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD822760C7
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:10:04 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
+        with ESMTP id S234372AbiHWWQC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:16:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DFEB868
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:13:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 6445583F69;
-        Wed, 24 Aug 2022 00:10:01 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1661292602;
-        bh=xioLIdO9TaR0ig82ucbbjXVKq4KnRk7EQ5caTcvQ06M=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=vsgqgUl07KZnwURSvli7ifo8MjccLdqzTAajCfBkNt6XZQcr1jktkDagEmtOgsbKr
-         sI0xpj8BaI+csSGeQ4QZW8oWshAC6tiPJYWgHLQiIAA0JwCDgnUZw4KjKRCc4c+O/p
-         534foeIPMq2iNe8pzVd99nP+SBsLHCBetZORyYmAbjYQK2CPToyEG5PkpMlXxyK6AL
-         qnYwdc48zRB/N9DjuhJnJ7HzzspwAD0B5uxUWo6QtSV/NE3Utd5preVsz4lymIb67M
-         7aUC7HdKp3zcHPcGyWiL+2qCGZ0/23gYZbVSYdkL5IUlkIibnXhm/eCeqevngPxOiS
-         g4fxlXRFcRYTQ==
-Message-ID: <aa962460-4c83-72f2-48e2-f5ac610176fa@denx.de>
-Date:   Wed, 24 Aug 2022 00:10:00 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57C5D616A9
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DD1C433D7;
+        Tue, 23 Aug 2022 22:13:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661292836;
+        bh=Prhox3lhzPWb536NCkfodNU7o6Jkqz6iVRb8D/4bAKw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hXqUHX6V4Db4DDJKmkdLlzwQ9W3SGu4V6E5vzVEGZooUSF3qTUTwehxOWzWg+3QWV
+         7suuOVQsoeSaVMFaibKwkAxAwlIoEQCuvDNVszuoTj2wbNQdsHdatmr4PoqeFsdrgE
+         FonjaboEmLQoxDnHOa7T3D5mnQq/tOKdetpesVmV/VWTKI5VWeZj6BWgIqbbWYJZcl
+         3p3YP8RKjdKb1x/sPP5oxK50NSfHlbhLbMHdOf4DdVFYU4ixs+ehkQi4OcOwnPDmT2
+         hzD9YUdiqqt0whiJVU08vX/Paqvlk0c6ZiSKSrTJup6lJSKqM2YflMPszYgbaxVJOr
+         IMcJATvbwNI9w==
+Date:   Tue, 23 Aug 2022 15:13:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Michael Chan <michael.chan@broadcom.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Dimitris Michailidis <dmichail@fungible.com>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>,
+        Shannon Nelson <snelson@pensando.io>,
+        Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        Fei Qin <fei.qin@corigine.com>,
+        Louis Peens <louis.peens@corigine.com>,
+        Yu Xiao <yu.xiao@corigine.com>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>, Yufeng Mo <moyufeng@huawei.com>,
+        Sixiang Chen <sixiang.chen@corigine.com>,
+        Yinjun Zhang <yinjun.zhang@corigine.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        Sean Anderson <sean.anderson@seco.com>,
+        Erik Ekman <erik@kryo.se>, Ido Schimmel <idosch@nvidia.com>,
+        Jie Wang <wangjie125@huawei.com>,
+        Moshe Tal <moshet@nvidia.com>,
+        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Marco Bonelli <marco@mebeim.net>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: Re: [PATCH net-next 1/2] ethtool: pass netlink extended ACK to
+ .set_fecparam
+Message-ID: <20220823151354.4becbfe7@kernel.org>
+In-Reply-To: <20220823150438.3613327-2-jacob.e.keller@intel.com>
+References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+        <20220823150438.3613327-2-jacob.e.keller@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: Re: [PATCH] net: dsa: microchip: Support GMII on user ports
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <20220823104343.6141-1-marex@denx.de>
- <20220823181338.zyzv3qkd2g5oecjq@skbuf>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <20220823181338.zyzv3qkd2g5oecjq@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.6 at phobos.denx.de
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -60,25 +94,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/22 20:13, Vladimir Oltean wrote:
-> On Tue, Aug 23, 2022 at 12:43:43PM +0200, Marek Vasut wrote:
->> The user ports on KSZ879x indicate they are of GMII interface type instead
->> of INTERNAL interface type. Add GMII into the list of supported user port
->> interfaces to avoid the following failure on probe:
->>
->> "
->> ksz8795-switch spi0.0 lan1 (uninitialized): validation of gmii with support 0000000,00000000,000062cf and advertisement 0000000,00000000,000062cf failed: -EINVAL
->> ksz8795-switch spi0.0 lan1 (uninitialized): failed to connect to PHY: -EINVAL
->> ksz8795-switch spi0.0 lan1 (uninitialized): error -22 setting up PHY for tree 0, switch 0, port 0
->> "
->>
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> ---
->> Cc: Arun Ramadoss <arun.ramadoss@microchip.com>
->> Cc: David S. Miller <davem@davemloft.net>
->> Cc: Florian Fainelli <f.fainelli@gmail.com>
->> Cc: Vladimir Oltean <olteanv@gmail.com>
-> 
-> https://lore.kernel.org/netdev/20220818143250.2797111-1-vladimir.oltean@nxp.com/
+On Tue, 23 Aug 2022 08:04:37 -0700 Jacob Keller wrote:
+> Add the netlink extended ACK structure pointer to the interface for
+> .set_fecparam. This allows reporting errors to the user appropriately when
+> using the netlink ethtool interface.
 
-Nice, thanks !
+Could you wrap it into a structure perhaps?
+
+Would be good if we didn't have to modify the signature of the callback
+next time we need to extend it (especially since struct ethtool_fecparam
+is ioctl uABI so we can't really add fields there).
