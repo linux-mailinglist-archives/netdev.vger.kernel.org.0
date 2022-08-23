@@ -2,72 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9913F59DBA8
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 14:20:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27EF59DFB7
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 14:36:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357223AbiHWLRy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 07:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43438 "EHLO
+        id S243911AbiHWLT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 07:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357872AbiHWLQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 07:16:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518C9BD74A
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 02:20:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661246405;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RK7XtREpFLhbfzxnimWw3D/7SMk9co/GteGqXfWisLY=;
-        b=HTaQIHQkbtv4MdLYbkrzG8WXezxFEpZPKvd8+wZZ+rl6PZEPQbqo3mi+xzVnoCSyTv6tJ+
-        7+65s3at5Hbjfp5aqnffq8zPLRdlO/6czvqIbI7ErIngV09FbKJU92wxAPWrVwwvldy129
-        I3VaS90APFUrC2pNd2A/qctZpVZ87zs=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-131-GTcABn3fOsaBsSoJOWIC-g-1; Tue, 23 Aug 2022 05:20:04 -0400
-X-MC-Unique: GTcABn3fOsaBsSoJOWIC-g-1
-Received: by mail-qt1-f198.google.com with SMTP id o21-20020ac87c55000000b00344646ea2ccso10094249qtv.11
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 02:20:04 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:user-agent:date:cc:to:from
-         :subject:message-id:x-gm-message-state:from:to:cc;
-        bh=RK7XtREpFLhbfzxnimWw3D/7SMk9co/GteGqXfWisLY=;
-        b=WNukpm/0mWLBRlLhe/m87lPT4N0v954Bhp6w0rfmFtFwtcTceCWVywEat5a2dhXoYF
-         1hDenzzcfgAGcjlMFi5OqJtJZ+Vvs6POTCv0WRzuG7wMYiaJ4p5OfFnjYvZi5SIGqylj
-         Nl+5jeLWfbgyUwmkwwRooL1+mXJrMF9POZzqfwMlMiRQDnSCzihGH7nSpsgiVIngZZJs
-         WteyCMCySjt29hyOaUbFF4ZJmHR6ITL3YZepAhMJT5hm7Uhlo+NKxvQ+abV423/ocM3h
-         1h3n5ouihdf9JLn76I3NnHm2aX7O5jygYimTFJU0Qk/tLRbe3aqy+WDxNlJG+y5XBm3s
-         KrVA==
-X-Gm-Message-State: ACgBeo0p/fqJxmDtUZdjkfL2nUpSf44xBsloVbvpkA3Aquoi5kkMvBoA
-        TybmFOMni/ciu0taOHOkJrPUlnJmAs3AlxoiUjp7Xco9hVaN3j0UIYIIaBhMnlT1VQymKUfAVgS
-        KQtxKxt2M2Yn7wM/dPiVvdt7+TBFmpd0+/+G7TOrnBqj6a6sLepD7cbYeMbPpBkzEpoee
-X-Received: by 2002:a05:620a:1990:b0:6bb:61c3:8970 with SMTP id bm16-20020a05620a199000b006bb61c38970mr15401566qkb.394.1661246403688;
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4scwdvU3X5bSXYFjzLfBWQF4j11vAlCrZyx7tLKMNMOtVgqKg9TOrjDWVBkK33M3QbDk49fg==
-X-Received: by 2002:a05:620a:1990:b0:6bb:61c3:8970 with SMTP id bm16-20020a05620a199000b006bb61c38970mr15401551qkb.394.1661246403407;
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-Received: from [10.35.4.238] (bzq-82-81-161-50.red.bezeqint.net. [82.81.161.50])
-        by smtp.gmail.com with ESMTPSA id j10-20020ac8664a000000b0033fc75c3469sm9976682qtp.27.2022.08.23.02.20.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 02:20:03 -0700 (PDT)
-Message-ID: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
-Subject: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
- Thunderbolt 3 dock go crazy
-From:   Maxim Levitsky <mlevitsk@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>
-Date:   Tue, 23 Aug 2022 12:20:00 +0300
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        with ESMTP id S244332AbiHWLRM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 07:17:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9965BD760;
+        Tue, 23 Aug 2022 02:20:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29CFA6122D;
+        Tue, 23 Aug 2022 09:20:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 88A0BC433D7;
+        Tue, 23 Aug 2022 09:20:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661246417;
+        bh=E5E6YqheunirZWVRILdnP1fmydkijA605aVw9h45w54=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lNIMtUlYb2oThTM3KA8GuBXUuMf8SCxgSlhXoMHAHnuc/TXp679M6qx2q1wb8FDHJ
+         pjEmJK14tnqDdFKTRXzMI+h420ap1y/uLepZ9bbFYtBSBCRsKtn3+cl2jXtu8HiHvt
+         kLfdd4nYE4QxAoZca01QrifXWxL+W+hAmOvWsXC7qqdRa3mXvMEKVmG2Y57+xRYSXN
+         E40ySzqpbHlSohsmANHbJic/uEbt31aftBq96h/2McHYZCt72nuKw/qvbT9cCcmZbe
+         cjTtd/u4yrhCmshGLpJUO4uOakEw7ncW7Z4flpGvb9JyeLakMk+esGFcx6krlfcN89
+         fnu0wcI7jDrgQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 67C11E2A041;
+        Tue, 23 Aug 2022 09:20:17 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v4 0/9] vsock: updates for SO_RCVLOWAT handling
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166124641741.3613.14462529402245081458.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Aug 2022 09:20:17 +0000
+References: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
+In-Reply-To: <de41de4c-0345-34d7-7c36-4345258b7ba8@sberdevices.ru>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+Cc:     sgarzare@redhat.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, kys@microsoft.com,
+        haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, stefanha@redhat.com, bryantan@vmware.com,
+        vdasa@vmware.com, oxffffaa@gmail.com, mst@redhat.com,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        kvm@vger.kernel.org, kernel@sberdevices.ru, pv-drivers@vmware.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,54 +62,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-I recently bisected an issue on my Lenovo P1 gen3, which is connected to the Lenovo Thunderbolt 3 dock.
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-After I suspend the laptop to ram, the ethernet port led on the dock starts to blink like crazy,
-its peer port on my ethernet switch blinks as well, and eventually the switch stops forwarding packets,
-bringing all my network down.
+On Fri, 19 Aug 2022 05:21:58 +0000 you wrote:
+> Hello,
+> 
+> This patchset includes some updates for SO_RCVLOWAT:
+> 
+> 1) af_vsock:
+>    During my experiments with zerocopy receive, i found, that in some
+>    cases, poll() implementation violates POSIX: when socket has non-
+>    default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
+>    POLLRDNORM bits in 'revents' even number of bytes available to read
+>    on socket is smaller than SO_RCVLOWAT value. In this case,user sees
+>    POLLIN flag and then tries to read data(for example using  'read()'
+>    call), but read call will be blocked, because  SO_RCVLOWAT logic is
+>    supported in dequeue loop in af_vsock.c. But the same time,  POSIX
+>    requires that:
+> 
+> [...]
 
-Likely the ethernet card in the dock sends some kind of a garbage over the wire.
+Here is the summary with links:
+  - [net-next,v4,1/9] vsock: SO_RCVLOWAT transport set callback
+    https://git.kernel.org/netdev/net-next/c/e38f22c860ed
+  - [net-next,v4,2/9] hv_sock: disable SO_RCVLOWAT support
+    https://git.kernel.org/netdev/net-next/c/24764f8d3c31
+  - [net-next,v4,3/9] virtio/vsock: use 'target' in notify_poll_in callback
+    https://git.kernel.org/netdev/net-next/c/e7a3266c9167
+  - [net-next,v4,4/9] vmci/vsock: use 'target' in notify_poll_in callback
+    https://git.kernel.org/netdev/net-next/c/a274f6ff3c5c
+  - [net-next,v4,5/9] vsock: pass sock_rcvlowat to notify_poll_in as target
+    https://git.kernel.org/netdev/net-next/c/ee0b3843a269
+  - [net-next,v4,6/9] vsock: add API call for data ready
+    https://git.kernel.org/netdev/net-next/c/f2fdcf67aceb
+  - [net-next,v4,7/9] virtio/vsock: check SO_RCVLOWAT before wake up reader
+    https://git.kernel.org/netdev/net-next/c/39f1ed33a448
+  - [net-next,v4,8/9] vmci/vsock: check SO_RCVLOWAT before wake up reader
+    https://git.kernel.org/netdev/net-next/c/e061aed99855
+  - [net-next,v4,9/9] vsock_test: POLLIN + SO_RCVLOWAT test
+    https://git.kernel.org/netdev/net-next/c/b1346338fbae
 
-Resuming the laptop, "fixes" the issue (leds stops blinking, and the network starts working again
-after a minute or so).
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-I also tried to connect the dock directly to my main desktop over a dedicated usb network card
-and try to capture the packets that are sent, but no packets were captured. I will soon retry
-this test with another network card. I did use promicious mode.
-
-
-This is the offending commit, and reverting it helps:
-
-commit cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
-Author: Hayes Wang <hayeswang@realtek.com>
-Date:   Mon Jul 18 16:21:20 2022 +0800
-
-    r8152: fix a WOL issue
-    
-    This fixes that the platform is waked by an unexpected packet. The
-    size and range of FIFO is different when the device enters S3 state,
-    so it is necessary to correct some settings when suspending.
-    
-    Regardless of jumbo frame, set RMS to 1522 and MTPS to MTPS_DEFAULT.
-    Besides, enable MCU_BORW_EN to update the method of calculating the
-    pointer of data. Then, the hardware could get the correct data.
-    
-    Fixes: 195aae321c82 ("r8152: support new chips")
-    Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-    Link: https://lore.kernel.org/r/20220718082120.10957-391-nic_swsd@realtek.com
-    Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-
-WOL from dock was enabled in BIOS, but I tested with it disabled as well, and
-no change in behavier.
-
-Any help is welcome. I can test patches if needed, the laptop currently runs 6.0-rc2
-with this commit reverted.
-
-When I find some time I can also narrow the change down by reverting only parts
-of the patch.
-
-Best regards,
-	Maxim Levitsky
 
