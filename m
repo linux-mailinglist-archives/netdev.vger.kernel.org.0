@@ -2,126 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB28F59E445
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DF6C59E461
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:32:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239852AbiHWNI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 09:08:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47372 "EHLO
+        id S240493AbiHWNKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 09:10:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239930AbiHWNIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:08:05 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7C8A1322C6
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:10:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661249417; x=1692785417;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+TbYtJBAXfGZg3rIy95CHNlRVLIYrHCdXxpNqLNf9Jk=;
-  b=fDfw28QgAiRcd0nJQ5882gTitoe4VuV/rOaw89SjFaMhlacNIjVFbu3t
-   lowuI2Y0IJSCZdR8yx4tFBEqS/jIvFMnsXscc7pHQ+Pc3yrVeJD0pA4hw
-   DAeCsAChhgrcAOw/pd7uprIQEkBPsJT+zjNVHBIImaHjnLjDODhrklyFM
-   zhYAr3GdaBQbLtmbp4s/RyMTrHQ9bdvsiAkge3b8L1pidQhx7jBv2IneW
-   V9nwRYXOPBrZ2asEQMv7PUK4cwQdW4Ft0f1SFy26eTtqGl+2QOQWiDgua
-   KPo7diRokjtZPdHjA9QZtCxF4VR/8wKfunOFSAI4bmXeFLN8+ZcLomHjL
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="294436120"
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="294436120"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:09:12 -0700
-X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
-   d="scan'208";a="642389949"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.213.81.81]) ([10.213.81.81])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 03:09:08 -0700
-Message-ID: <d2d6f1a3-a9ea-3124-2652-92914172d997@linux.intel.com>
-Date:   Tue, 23 Aug 2022 15:39:06 +0530
+        with ESMTP id S242021AbiHWNJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:09:37 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11D07E303
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:11:19 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id d23so14635942lfl.13
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:11:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=AZasA7ru4RBuOT7il+83aHYYeB5TFBrGiGUj7Hz0hho=;
+        b=rEDtys7/7ehxHoe6Wrw9K9tDKHsQaWvQWc/iO7EXhJIqEvqH8g0cRZm+ntDEI/BBho
+         RUPePCWjNMAQQa7z1vSihgZ+HQaj1h021VoaQeLMiOw0+w1uPPRtPLpnA17oilmxOKig
+         Ck5pabaJqWlll2wAeFXbP4S8W2o47Kvf0V+RivEivn5Gbv5eKO5RlYB5vz4FJFGQqnUJ
+         q/7uO0DlfHX5rRd8SmiH/Nujcdetzhqfzt1CXFAsO1p4RZqtgUs9h82SYNJULDZpgdxi
+         /dTg9cpbEYzGJVHnGv8PaBuVyF0m7BD7n4f9UzIzBqh5GtAVqvBF8tJdfVPd6yHpXRVK
+         6Clw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=AZasA7ru4RBuOT7il+83aHYYeB5TFBrGiGUj7Hz0hho=;
+        b=nFsRHLqgB/CNnMH4GpBkmWGYmIM9V/1ELidHg2wsPP0YYehLPTflW5mH28PJI7ub6W
+         Hw9QpkwOEMAfcnUvRmLIq2Md8/ZYv7AsdkDjlXJOrYTCUmTNfGhwjj0Dhd+JlyO9Kko5
+         ly0zO/jGnhmMv/qcVVJM8NHiAmCAztDoRLI7U4+q+F3qBrHEBuBXFxSFRY0io4QQdgf+
+         9YvOpoE3V5LpuwMpher9q0N2OWcthIiigSdlgYUJTsMRR7G+LNyzug/UnN/snq54G/T9
+         7pnZu0bpm1vmxiQ2caKiVTbIsHO7vWbpi0IvstmCzrdB6ENu75TpOWB+7aCplP5KcN47
+         ZA3g==
+X-Gm-Message-State: ACgBeo2eXPVZwdZ5FloCRGBse+HRz5uui4WkN/foJ7iVxUUB+ptTFk1S
+        CGOP2mOPmz0CcWKr3vt3nZUKDA==
+X-Google-Smtp-Source: AA6agR6pd09B988zCU50PRE+Ehh4CmDVrkjcaGeGv4/suuwgIa/1BEky+q4J4ZmdTHCH0FOq/Grfmg==
+X-Received: by 2002:ac2:4e6a:0:b0:492:f027:218e with SMTP id y10-20020ac24e6a000000b00492f027218emr1721637lfs.676.1661249414775;
+        Tue, 23 Aug 2022 03:10:14 -0700 (PDT)
+Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id 28-20020ac25f5c000000b00492db7f47f2sm1383025lfz.275.2022.08.23.03.10.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 03:10:14 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: net: can: nxp,sja1000: drop ref from reg-io-width
+Date:   Tue, 23 Aug 2022 13:10:11 +0300
+Message-Id: <20220823101011.386970-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [patch net-next 0/4] net: devlink: sync flash and dev info
- command
-Content-Language: en-US
-To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
-        pabeni@redhat.com, edumazet@google.com, saeedm@nvidia.com,
-        jacob.e.keller@intel.com, vikas.gupta@broadcom.com,
-        gospo@broadcom.com, chandrashekar.devegowda@intel.com,
-        soumya.prakash.mishra@intel.com, linuxwwan@intel.com
-References: <20220818130042.535762-1-jiri@resnulli.us>
- <20220818194940.30fd725e@kernel.org> <Yv9I4ACEBRoEFM+I@nanopsycho>
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-In-Reply-To: <Yv9I4ACEBRoEFM+I@nanopsycho>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/19/2022 1:55 PM, Jiri Pirko wrote:
-> Fri, Aug 19, 2022 at 04:49:40AM CEST, kuba@kernel.org wrote:
->> On Thu, 18 Aug 2022 15:00:38 +0200 Jiri Pirko wrote:
->>> Currently it is up to the driver what versions to expose and what flash
->>> update component names to accept. This is inconsistent. Thankfully, only
->>> netdevsim is currently using components, so it is a good time
->>> to sanitize this.
->>
->> Please take a look at recently merged code - 5417197dd516 ("Merge branch
->> 'wwan-t7xx-fw-flashing-and-coredump-support'"), I don't see any versions
->> there so I think you're gonna break them?
-> 
-> Ah, crap. Too late :/ They are passing the string to FW (cmd is
-> the component name here):
-> static int t7xx_devlink_fb_flash(const char *cmd, struct t7xx_port *port)
-> {
->          char flash_command[T7XX_FB_COMMAND_SIZE];
-> 
->          snprintf(flash_command, sizeof(flash_command), "%s:%s", T7XX_FB_CMD_FLASH, cmd);
->          return t7xx_devlink_fb_raw_command(flash_command, port, NULL);
-> }
-> 
-> This breaks the pairing with info.versions assumption. Any possibility
-> to revert this and let them redo?
-> 
-> Ccing m.chetan.kumar@linux.intel.com, chandrashekar.devegowda@intel.com,
-> soumya.prakash.mishra@intel.com
-> 
-> Guys, could you expose one version for component you are flashing? We
-> need 1:1 mapping here.
+reg-io-width is a standard property, so no need for defining its type
 
-Thanks for the heads-up.
-I had a look at the patch & my understanding is driver is supposed
-to expose flash update component name & version details via
-devlink_info_version_running_put_ext().
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml | 1 -
+ 1 file changed, 1 deletion(-)
 
-Is version value a must ? Internally version value is not used for 
-making any decision so in case driver/device doesn't support it should 
-be ok to pass empty string ?
-
-Ex:
-devlink_info_version_running_put_ext(req, "fw", "",
-  DEVLINK_INFO_VERSION_TYPE_COMPONENT);
-
-One observation:-
-While testing I noticed "flash_components:" is not getting displayed as 
-mentioned in cover note.
-
-Below is the snapshot for mtk_t7xx driver. Am I missing something here ?
-
-# devlink dev info
-pci/0000:55:00.0:
-driver mtk_t7xx
-versions:
-        running:
-            boot
-
+diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+index b1327c5b86cf..d919910c690c 100644
+--- a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
++++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
+@@ -31,7 +31,6 @@ properties:
+     maxItems: 1
+ 
+   reg-io-width:
+-    $ref: /schemas/types.yaml#/definitions/uint32
+     description: I/O register width (in bytes) implemented by this device
+     default: 1
+     enum: [ 1, 2, 4 ]
 -- 
-Chetan
+2.34.1
+
