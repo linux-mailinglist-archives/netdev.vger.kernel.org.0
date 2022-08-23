@@ -2,36 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DD4B59E9E1
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:39:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9360659E9D3
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:39:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229879AbiHWRfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 13:35:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47296 "EHLO
+        id S231285AbiHWRhD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 23 Aug 2022 13:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiHWReu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:34:50 -0400
-Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1C4765662
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:13:38 -0700 (PDT)
-Received: from dev006.ch-qa.sw.ru ([172.29.1.11])
-        by relay.virtuozzo.com with esmtp (Exim 4.95)
-        (envelope-from <andrey.zhadchenko@virtuozzo.com>)
-        id 1oQVYq-00HLcB-7c;
-        Tue, 23 Aug 2022 17:12:47 +0200
-From:   Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-To:     netdev@vger.kernel.org
-Cc:     dev@openvswitch.org, pshelar@ovn.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        aconole@redhat.com, mark.d.gray@redhat.com
-Subject: [PATCH net] openvswitch: fix memory leak at failed datapath creation
-Date:   Tue, 23 Aug 2022 18:12:41 +0300
-Message-Id: <20220823151241.497501-1-andrey.zhadchenko@virtuozzo.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S231302AbiHWRgU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:36:20 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A923DC6944
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:17:50 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27NFH3J70000938, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27NFH3J70000938
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 23 Aug 2022 23:17:03 +0800
+Received: from RTEXMBS02.realtek.com.tw (172.21.6.95) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 23 Aug 2022 23:17:17 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Tue, 23 Aug 2022 23:17:16 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Tue, 23 Aug 2022 23:17:16 +0800
+From:   Hau <hau@realtek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHYtkFCqIBipNqwCkqP74BSSxF+S6260IqAgAG+nrA=
+Date:   Tue, 23 Aug 2022 15:17:16 +0000
+Message-ID: <7e24c3c4c3ea42e482a70160aec6930c@realtek.com>
+References: <20220822160714.2904-1-hau@realtek.com> <YwPf8yXud3mYFvnW@lunn.ch>
+In-Reply-To: <YwPf8yXud3mYFvnW@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.129]
+x-kse-serverinfo: RTEXMBS02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/23_=3F=3F_02:07:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -39,65 +73,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
-allocates array via kmalloc.
-If for some reason new_vport() fails during ovs_dp_cmd_new()
-dp->upcall_portids must be freed.
-Add missing kfree.
+> > @@ -914,8 +952,12 @@ static void r8168g_mdio_write(struct
+> rtl8169_private *tp, int reg, int value)
+> >  	if (tp->ocp_base != OCP_STD_PHY_BASE)
+> >  		reg -= 0x10;
+> >
+> > -	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR)
+> > +	if (tp->ocp_base == OCP_STD_PHY_BASE && reg == MII_BMCR) {
+> > +		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value &
+> BMCR_PDOWN)
+> > +			return;
+> > +
+> 
+> Please could you explain this change.
+H/W has issue. If we power down phy, then H/W will become abnormal.
 
-Kmemleak example:
-unreferenced object 0xffff88800c382500 (size 64):
-  comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
-  hex dump (first 32 bytes):
-    5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
-    03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
-  backtrace:
-    [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
-    [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
-    [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
-    [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
-    [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
-    [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
-    [<000000004959cece>] genl_rcv+0x24/0x40
-    [<000000004699ac7f>] netlink_unicast+0x23e/0x360
-    [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
-    [<000000006f4aa380>] sock_sendmsg+0x62/0x70
-    [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
-    [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
-    [<0000000011776020>] __sys_sendmsg+0x59/0xa0
-    [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
-    [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
-Acked-by: Aaron Conole <aconole@redhat.com>
-Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
----
- net/openvswitch/datapath.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 7e8a39a35627..3eb1dc435276 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1802,7 +1802,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 				ovs_dp_reset_user_features(skb, info);
- 		}
+> > +/* Data I/O pin control */
+> > +static void rtl_mdio_dir(struct mdiobb_ctrl *ctrl, int output) {
+> > +	struct bb_info *bitbang = container_of(ctrl, struct bb_info, ctrl);
+> > +	struct rtl8169_private *tp = bitbang->tp;
+> > +	const u16 reg = PINOE;
+> > +	const u16 mask = bitbang->sfp_mask.mdio_oe_mask;
+> > +	u16 value;
+> 
+> Reverse christmas tree please. Please sort this, longest first.
+I will correct this.
  
--		goto err_unlock_and_destroy_meters;
-+		goto err_destroy_pids;
- 	}
- 
- 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
-@@ -1817,6 +1817,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	ovs_notify(&dp_datapath_genl_family, reply, info);
- 	return 0;
- 
-+err_destroy_pids:
-+	if (rcu_dereference_raw(dp->upcall_portids))
-+		kfree(rcu_dereference_raw(dp->upcall_portids));
- err_unlock_and_destroy_meters:
- 	ovs_unlock();
- 	ovs_meters_exit(dp);
--- 
-2.31.1
+> > +/* MDIO bus init function */
+> > +static int rtl_mdio_bitbang_init(struct rtl8169_private *tp) {
+> > +	struct bb_info *bitbang;
+> > +	struct device *d = tp_to_dev(tp);
+> > +	struct mii_bus *new_bus;
+> > +
+> > +	/* create bit control struct for PHY */
+> > +	bitbang = devm_kzalloc(d, sizeof(struct bb_info), GFP_KERNEL);
+> > +	if (!bitbang)
+> > +		return -ENOMEM;
+> > +
+> > +	/* bitbang init */
+> > +	bitbang->tp = tp;
+> > +	bitbang->ctrl.ops = &bb_ops;
+> > +	bitbang->ctrl.op_c22_read = MDIO_READ;
+> > +	bitbang->ctrl.op_c22_write = MDIO_WRITE;
+> > +
+> > +	/* MII controller setting */
+> > +	new_bus = devm_mdiobus_alloc(d);
+> > +	if (!new_bus)
+> > +		return -ENOMEM;
+> > +
+> > +	new_bus->read = mdiobb_read;
+> > +	new_bus->write = mdiobb_write;
+> > +	new_bus->priv = &bitbang->ctrl;
+> 
+> Please use alloc_mdio_bitbang().
+>
+I have tried to use alloc_mdio_bitbang(). But I will get error message " rmmod: ERROR: Module r8169 is in use " when I try to unload r8169.
+After debug, I found it is cause by "__module_get(ctrl->ops->owner); " in alloc_mdio_bitbang().
 
+> > +static u16 rtl_sfp_mdio_read(struct rtl8169_private *tp,
+> > +				  u8 reg)
+> > +{
+> > +	struct mii_bus *bus = tp->mii_bus;
+> > +	struct bb_info *bitbang;
+> > +
+> > +	if (!bus)
+> > +		return ~0;
+> > +
+> > +	bitbang = container_of(bus->priv, struct bb_info, ctrl);
+> > +
+> > +	return bus->read(bus, bitbang->sfp_mask.phy_addr, reg);
+> 
+> By doing this, you are bypassing all the locking. You don't normally need
+> operations like this. When you register the MDIO bus to the core, it will go
+> find any PHYs on the bus. You can then use phylib to access the PHY. A MAC
+> accessing the PHY is generally wrong.
+> 
+Because there is a issue when use alloc_mdio_bitbang() and I just want to use read/write function from bitbanged MDIO framework.
+So I did not register MDIO bus.
+
+Thanks,
+Hau
+
+> ------Please consider the environment before printing this e-mail.
