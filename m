@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8906959EC00
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 21:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 004BF59EC01
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 21:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232345AbiHWTPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 15:15:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
+        id S233046AbiHWTPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 15:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233725AbiHWTPY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 15:15:24 -0400
+        with ESMTP id S234167AbiHWTPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 15:15:32 -0400
 Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9346D79A4F
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 10:52:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03F2C6CD18
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 10:52:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661277168; x=1692813168;
+  t=1661277178; x=1692813178;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QpXL2t+PO1bBQjuLKpDmyzXFb+dtXVkSUGury2sOr1g=;
-  b=DUFumY0fbFx4eTL/sNng/Pp257nzIP7WFafc6tGPWCwUgsSFSDPawvum
-   nrWWiydAZoMQnzz7kAwNOoe/5ha4Kww9D5/9BQnT0VV1WCuQUAS3pUlSI
-   jyHwjRHi/wIOMHiqD2oLPUS188c1jU0gisFyWFwRJQK7nN+vjFvVFkizp
+  bh=PxL+q0mi80vBEXSE2tqreLr3xAALs/zina6F8jQ63Lk=;
+  b=o3eA9rrpcQpmeI4Tkh4J1M1tLjMvHJUZWvkdbJ1v6Z3eJk8L8zU+0H45
+   xvCO4N4wMSrzat5QtesCxFGPxZ10jwVH6eNE2w3KXlHXlPrbgBntWUJLo
+   OXpo/j6Z9Al5cJG4a7iwLp9rgi7RYRZwA5pAfM6wMVgL+oe7gAgXeN5XG
    s=;
 X-IronPort-AV: E=Sophos;i="5.93,258,1654560000"; 
-   d="scan'208";a="220380992"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 17:52:18 +0000
+   d="scan'208";a="220381082"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-90419278.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 17:52:35 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id E3D67453E8;
-        Tue, 23 Aug 2022 17:52:15 +0000 (UTC)
+        by email-inbound-relay-pdx-2c-90419278.us-west-2.amazon.com (Postfix) with ESMTPS id 66D3F453FA;
+        Tue, 23 Aug 2022 17:52:33 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 23 Aug 2022 17:52:15 +0000
+ id 15.0.1497.38; Tue, 23 Aug 2022 17:52:31 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.160) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 23 Aug 2022 17:52:12 +0000
+ Tue, 23 Aug 2022 17:52:29 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -45,10 +45,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Dmitry Vyukov <dvyukov@google.com>
-Subject: [PATCH v4 net 16/17] net: Fix a data-race around netdev_unregister_timeout_secs.
-Date:   Tue, 23 Aug 2022 10:46:59 -0700
-Message-ID: <20220823174700.88411-17-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>
+Subject: [PATCH v4 net 17/17] net: Fix a data-race around sysctl_somaxconn.
+Date:   Tue, 23 Aug 2022 10:47:00 -0700
+Message-ID: <20220823174700.88411-18-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220823174700.88411-1-kuniyu@amazon.com>
 References: <20220823174700.88411-1-kuniyu@amazon.com>
@@ -68,29 +68,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading netdev_unregister_timeout_secs, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_somaxconn, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 5aa3afe107d9 ("net: make unregister netdev warning timeout configurable")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Dmitry Vyukov <dvyukov@google.com>
 ---
- net/core/dev.c | 2 +-
+ net/socket.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 8221322d86db..56c8b0921c9f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10284,7 +10284,7 @@ static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
- 				return dev;
+diff --git a/net/socket.c b/net/socket.c
+index 9b27c5e4e5ba..7378375d3a5b 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -1801,7 +1801,7 @@ int __sys_listen(int fd, int backlog)
  
- 		if (time_after(jiffies, warning_time +
--			       netdev_unregister_timeout_secs * HZ)) {
-+			       READ_ONCE(netdev_unregister_timeout_secs) * HZ)) {
- 			list_for_each_entry(dev, list, todo_list) {
- 				pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
- 					 dev->name, netdev_refcnt_read(dev));
+ 	sock = sockfd_lookup_light(fd, &err, &fput_needed);
+ 	if (sock) {
+-		somaxconn = sock_net(sock->sk)->core.sysctl_somaxconn;
++		somaxconn = READ_ONCE(sock_net(sock->sk)->core.sysctl_somaxconn);
+ 		if ((unsigned int)backlog > somaxconn)
+ 			backlog = somaxconn;
+ 
 -- 
 2.30.2
 
