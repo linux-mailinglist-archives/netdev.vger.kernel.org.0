@@ -2,158 +2,209 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2AD659EF80
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BBB59EF89
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 01:02:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229746AbiHWW6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 18:58:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54430 "EHLO
+        id S230254AbiHWXCq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 19:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229603AbiHWW6O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:58:14 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7831176;
-        Tue, 23 Aug 2022 15:58:12 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id ay12so7906705wmb.1;
-        Tue, 23 Aug 2022 15:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=lk8/tj/nL+5/3atLQyJ228xPqcFNf3nUrZ03uJtpZEE=;
-        b=pvfL7cJb4Q6aj5gWTQZr10k4cTHpOUxS7OR9MD9VoS52aLJQqXyhRq0jV08egaTM99
-         +PZuXYnNSeIR+5K3C2HGqM0kq7LHIw+Bmdtna0MRXVK7AYCWQfuhPS4audm7Iuq6it+t
-         zxDpN7LXKfs3pakXGXkNaf7nkqR2s9gEe1UCs9azV0aGGogLnmVRsknkLmP3C90Wiqod
-         d8jmm9Qo1MIPLKZOwYA+BCnoxz6dM3fB+Vkgi7RPZrHrGPLzexH9gEYz8gDcOSBDz5Vc
-         NQekFrrPeElUGnSETN4rTBDqiBV9Ca5A1nAh7wXsROpOmYDgoFI2tjnwb+qsY/5mJEM9
-         gDpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=lk8/tj/nL+5/3atLQyJ228xPqcFNf3nUrZ03uJtpZEE=;
-        b=Bj8Q4W0SI1hBRnot+EUI5XlWa1COWrjhUFWIZpmGAsnCe6H2n7U3q6ND7iVVFq163u
-         iQRvccUsFGeATGCrClUylJxBWqXRy/+gAlYxH5S3SZO52lIzlPHMHrEqT+FZK+tdLMoN
-         st0/YLRCa5NnzstZ72/pdd89TUyjPR4yYpg+I8sej6d/TPmKHBqJ2M+mQwpfKWWyWCpt
-         BSUC7Pf9i6OS1s30ARsF6VEbv4670vy6rwCFYN+JunssVKijbCtOPEOkN+maBAIMVD9t
-         t5vo0aKXfdKV1bjvw+gUceSv2iaihqvjuedqJQ5UU50pJOVGWDCdkC9sQcGmxp5hW268
-         vx2Q==
-X-Gm-Message-State: ACgBeo0y4xBHYFkf8Zc5ZNq/S6EOtssZ5oC4eKmoYqLp4KfC6kA+MNKs
-        CAROb00OsSlau6+w+fKWDfQ=
-X-Google-Smtp-Source: AA6agR43PKc2OD8KiUkOBN1+RxOPi6GqXs/g9ouzuKC/13rWTetZzknP+V5rl+Lf0JXq4gPbsnRVWg==
-X-Received: by 2002:a7b:cc90:0:b0:3a5:3899:7be1 with SMTP id p16-20020a7bcc90000000b003a538997be1mr3361217wma.19.1661295491434;
-        Tue, 23 Aug 2022 15:58:11 -0700 (PDT)
-Received: from localhost.localdomain ([84.255.184.228])
-        by smtp.gmail.com with ESMTPSA id y6-20020a056000108600b002250c35826dsm15052123wrw.104.2022.08.23.15.58.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 15:58:10 -0700 (PDT)
-From:   Mazin Al Haddad <mazinalhaddad05@gmail.com>
-To:     pontus.fuchs@gmail.com
-Cc:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org, paskripkin@gmail.com,
-        Mazin Al Haddad <mazinalhaddad05@gmail.com>,
-        syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
-Subject: [PATCH v2] ar5523: check endpoints type and direction in probe()
-Date:   Wed, 24 Aug 2022 01:57:54 +0300
-Message-Id: <20220823225754.519945-1-mazinalhaddad05@gmail.com>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S229954AbiHWXCo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 19:02:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED8053DF3B;
+        Tue, 23 Aug 2022 16:02:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B3E261375;
+        Tue, 23 Aug 2022 23:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 560EFC433C1;
+        Tue, 23 Aug 2022 23:02:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661295762;
+        bh=wW4Ve72oIl7Lv3T7dqpRr612P37xIuLgXOLULBk/spU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sa/OdoMNEG0uRaHzf5VF2NNmt3MnbahArHi+cuQLAqqgzmzBZ6+NKfpoXeR/gqlJS
+         f6KiZbG9J2KWl78X1OBYM3ZmMvJTIBBPg/tuoUGSoIJ9kUxvnXbx5ttViJJieMOSxN
+         tghdW0Xl2kg8v6wjHHVOKkUYAdnCKZH49wehxCpttSUAmRDrwlQra8N9F0qkrceoQl
+         qYtjp9OHSWDC6Df+NTzaZiL93eW6pUr4kaFWfbZi6thmvtDqcqoj/SZ0Lpln6Fi7bK
+         03DEhUbO/Q6pHnawTXb6U3rfKJjZep4gRPj1j2qWrEQc40/MfBROFPAmG4rJnTPuMs
+         3EbyOi0Ehpgrg==
+Date:   Tue, 23 Aug 2022 16:02:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     andrei.tachici@stud.acs.upb.ro
+Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        devicetree@vger.kernel.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [net-next v5 2/3] net: ethernet: adi: Add ADIN1110 support
+Message-ID: <20220823160241.36bc2480@kernel.org>
+In-Reply-To: <20220819141941.39635-3-andrei.tachici@stud.acs.upb.ro>
+References: <20220819141941.39635-1-andrei.tachici@stud.acs.upb.ro>
+        <20220819141941.39635-3-andrei.tachici@stud.acs.upb.ro>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes a bug reported by syzbot, where a warning occurs in usb_submit_urb()
-due to the wrong endpoint type. There is no check for both the number
-of endpoints and the type which causes an error as the code tries to
-send a URB to the wrong endpoint.
+On Fri, 19 Aug 2022 17:19:40 +0300 andrei.tachici@stud.acs.upb.ro wrote:
+> +static int adin1110_ndo_set_mac_address(struct net_device *netdev, void *addr)
+> +{
+> +	struct sockaddr *sa = addr;
+> +
+> +	if (netif_running(netdev))
+> +		return -EBUSY;
 
-Fix it by adding a check for the number of endpoints and the
-direction/type of the endpoints. If the endpoints do not match the
-expected configuration -ENODEV is returned.
+Please use eth_prepare_mac_addr_change() instead.
 
-Syzkaller report:
+> +	return adin1110_set_mac_address(netdev, sa->sa_data);
+> +}
 
-usb 1-1: BOGUS urb xfer, pipe 3 != type 1
-WARNING: CPU: 1 PID: 71 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
-Modules linked in:
-CPU: 1 PID: 71 Comm: kworker/1:2 Not tainted 5.19.0-rc7-syzkaller-00150-g32f02a211b0a #0
-Hardware name: Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- <TASK>
- ar5523_cmd+0x420/0x790 drivers/net/wireless/ath/ar5523/ar5523.c:275
- ar5523_cmd_read drivers/net/wireless/ath/ar5523/ar5523.c:302 [inline]
- ar5523_host_available drivers/net/wireless/ath/ar5523/ar5523.c:1376 [inline]
- ar5523_probe+0xc66/0x1da0 drivers/net/wireless/ath/ar5523/ar5523.c:1655
+> +static int adin1110_net_stop(struct net_device *net_dev)
+> +{
+> +	struct adin1110_port_priv *port_priv = netdev_priv(net_dev);
+> +
+> +	netif_stop_queue(port_priv->netdev);
+> +	flush_work(&port_priv->tx_work);
 
-Link: https://syzkaller.appspot.com/bug?extid=1bc2c2afd44f820a669f
-Reported-and-tested-by: syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
-Signed-off-by: Mazin Al Haddad <mazinalhaddad05@gmail.com>
----
-v1->v2 changes:
-	- Fix incorrect check in if statement within switch case (was missing
-		a "!" operator).
-	- Added comments explaining the code.
+What prevents the IRQ from firing right after this point and waking 
+the queue again?
 
- drivers/net/wireless/ath/ar5523/ar5523.c | 33 ++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+> +	phy_stop(port_priv->phydev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void adin1110_tx_work(struct work_struct *work)
+> +{
+> +	struct adin1110_port_priv *port_priv = container_of(work, struct adin1110_port_priv, tx_work);
+> +	struct adin1110_priv *priv = port_priv->priv;
+> +	struct sk_buff *txb;
+> +	bool last;
+> +	int ret;
+> +
+> +	mutex_lock(&priv->lock);
+> +
+> +	last = skb_queue_empty(&port_priv->txq);
+> +
+> +	while (!last) {
+> +		txb = skb_dequeue(&port_priv->txq);
+> +		last = skb_queue_empty(&port_priv->txq);
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 6f937d2cc126..d7e86dc4c293 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -1581,8 +1581,41 @@ static int ar5523_probe(struct usb_interface *intf,
- 	struct usb_device *dev = interface_to_usbdev(intf);
- 	struct ieee80211_hw *hw;
- 	struct ar5523 *ar;
-+	struct usb_host_interface *host = intf->cur_altsetting;
- 	int error = -ENOMEM;
- 
-+	if (host->desc.bNumEndpoints != 4) {
-+		dev_err(&dev->dev, "Wrong number of endpoints\n");
-+		return -ENODEV;
-+	}
-+
-+	// Check for type of endpoint and direction.
-+	for (int i = 0; i < host->desc.bNumEndpoints; ++i) {
-+		struct usb_endpoint_descriptor *ep = &host->endpoint[i].desc;
-+
-+		switch (i) {
-+		case 0:
-+		case 1:
-+			// if endpoint direction and type does not match
-+			if (!((ep->bEndpointAddress & USB_DIR_OUT) &&
-+			      ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-+			      == USB_ENDPOINT_XFER_BULK))){
-+				dev_err(&dev->dev, "Wrong type of endpoints\n");
-+				return -ENODEV;
-+			}
-+			break;
-+		case 2:
-+		case 3:
-+			if (!((ep->bEndpointAddress & USB_DIR_IN) &&
-+			      ((ep->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK)
-+			     == USB_ENDPOINT_XFER_BULK))){
-+				dev_err(&dev->dev, "Wrong type of endpoints\n");
-+				return -ENODEV;
-+			}
-+			break;
-+		}
-+	}
-+
- 	/*
- 	 * Load firmware if the device requires it.  This will return
- 	 * -ENXIO on success and we'll get called back afer the usb
--- 
-2.37.2
+while ((txb = skb_dequeue(&port_priv->txq)))
 
+> +		if (txb) {
+> +			ret = adin1110_write_fifo(port_priv, txb);
+> +			if (ret < 0)
+> +				netdev_err(port_priv->netdev, "Frame write error: %d\n", ret);
+
+This needs rate limiting.
+
+> +			dev_kfree_skb(txb);
+> +		}
+> +	}
+> +
+> +	mutex_unlock(&priv->lock);
+> +}
+> +
+> +static netdev_tx_t adin1110_start_xmit(struct sk_buff *skb, struct net_device *dev)
+> +{
+> +	struct adin1110_port_priv *port_priv = netdev_priv(dev);
+> +	struct adin1110_priv *priv = port_priv->priv;
+> +	netdev_tx_t netdev_ret = NETDEV_TX_OK;
+> +	u32 tx_space_needed;
+> +
+> +	spin_lock(&priv->state_lock);
+> +
+> +	tx_space_needed = skb->len + ADIN1110_FRAME_HEADER_LEN + ADIN1110_INTERNAL_SIZE_HEADER_LEN;
+> +	if (tx_space_needed > priv->tx_space) {
+> +		netif_stop_queue(dev);
+> +		netdev_ret = NETDEV_TX_BUSY;
+> +	} else {
+> +		priv->tx_space -= tx_space_needed;
+> +		skb_queue_tail(&port_priv->txq, skb);
+> +	}
+> +
+> +	spin_unlock(&priv->state_lock);
+
+What is this lock protecting? There's already a lock around Tx.
+
+> +	schedule_work(&port_priv->tx_work);
+> +
+> +	return netdev_ret;
+> +}
+> +
+
+> +static int adin1110_net_bridge_setlink(struct net_device *dev, struct nlmsghdr *nlh, u16 flags,
+> +				       struct netlink_ext_ack *extack)
+> +{
+> +	struct adin1110_port_priv *port_priv = netdev_priv(dev);
+> +	struct nlattr *br_spec;
+> +	struct nlattr *attr;
+> +	int rem;
+> +
+> +	br_spec = nlmsg_find_attr(nlh, sizeof(struct ifinfomsg), IFLA_AF_SPEC);
+> +	if (!br_spec)
+> +		return -EINVAL;
+> +
+> +	nla_for_each_nested(attr, br_spec, rem) {
+> +		u16 mode;
+> +
+> +		if (nla_type(attr) != IFLA_BRIDGE_MODE)
+> +			continue;
+> +
+> +		if (nla_len(attr) < sizeof(mode))
+> +			return -EINVAL;
+> +
+> +		port_priv->priv->br_mode = nla_get_u16(attr);
+> +		adin1110_set_rx_mode(dev);
+> +		break;
+> +	}
+> +
+> +	return 0;
+> +}
+
+I thought this is a callback for legacy SR-IOV NICs. What are you using
+it for in a HW device over SPI? :S
+
+> +static int adin1110_port_set_forwarding_state(struct adin1110_port_priv *port_priv)
+> +{
+> +	struct adin1110_priv *priv = port_priv->priv;
+> +	int ret;
+> +
+> +	port_priv->state = BR_STATE_FORWARDING;
+> +
+> +	if (adin1110_can_offload_forwarding(priv)) {
+> +		ret = adin1110_hw_forwarding(priv, true);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	mutex_lock(&priv->lock);
+> +	ret = adin1110_set_mac_address(port_priv->netdev, port_priv->netdev->dev_addr);
+> +	if (ret < 0)
+> +		goto out;
+> +
+> +	ret = adin1110_setup_rx_mode(port_priv);
+> +out:
+> +	mutex_unlock(&priv->lock);
+> +
+> +	return ret;
+> +}
+
+The bridge support looks quite incomplete here, no?
+There's no access to the FDB of the switch.
+You forward to the host based on the MAC addr of the port not 
+the bridge.
