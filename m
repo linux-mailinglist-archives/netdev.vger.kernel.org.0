@@ -2,64 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12B5159D1C9
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 09:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A106859D1EB
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 09:22:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240296AbiHWHOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 03:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48198 "EHLO
+        id S240723AbiHWHWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 03:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234556AbiHWHOA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:14:00 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640DE520AE;
-        Tue, 23 Aug 2022 00:13:58 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id DF9AE18843AB;
-        Tue, 23 Aug 2022 07:13:55 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id D18CD25032B7;
-        Tue, 23 Aug 2022 07:13:54 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 6FA49A1A0061; Tue, 23 Aug 2022 07:13:54 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S240231AbiHWHWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:22:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F93162A88;
+        Tue, 23 Aug 2022 00:22:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BAD1614FF;
+        Tue, 23 Aug 2022 07:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27798C433C1;
+        Tue, 23 Aug 2022 07:22:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661239358;
+        bh=KRJJ8fx68qtHY2+LrlLu0/eSUh/OLsKwAs0PdVseMkE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NqUaOGdAZ+A9CdryvaBR+hZTlAlB3bdrkVEkyTWOcCRLV/bQQVu6dwSYiYRpxjPV9
+         RtF468lQeihD/VeOiLvfsU7zY88Kz7VWhcjUIEpNMQBThz5F3B0StEbV+4CB3S++Sa
+         DU1Q8UYBZrETBuxPM/QdD82o1MA2ur/Wsi1MJCOA=
+Date:   Tue, 23 Aug 2022 09:22:35 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Stanislav Goriainov <goriainov@ispras.ru>
+Cc:     stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Xiaolong Huang <butterflyhuangxx@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: Re: [PATCH 5.10 0/1] qrtr: Convert qrtr_ports from IDR to XArray
+Message-ID: <YwSAO4MfxISeUGDR@kroah.com>
+References: <20220819194727.18911-1-goriainov@ispras.ru>
 MIME-Version: 1.0
-Date:   Tue, 23 Aug 2022 09:13:54 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <YwR4MQ2xOMlvKocw@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <9dcb4db4a77811308c56fe5b9b7c5257@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220819194727.18911-1-goriainov@ispras.ru>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,28 +55,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-23 08:48, Ido Schimmel wrote:
-> On Mon, Aug 22, 2022 at 09:49:28AM +0200, netdev@kapio-technology.com 
-> wrote:
-
->> As I am not familiar with roaming in this context, I need to know how 
->> the SW
->> bridge should behave in this case.
+On Fri, Aug 19, 2022 at 10:47:26PM +0300, Stanislav Goriainov wrote:
+> Syzkaller reports using smp_processor_id() in preemptible code at
+> radix_tree_node_alloc() in 5.10 stable releases. The problem has 
+> been fixed by the following patch which can be cleanly applied to 
+> the 5.10 branch.
 > 
+> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
 
->> In this case, is the roaming only between locked ports or does the
->> roaming include that the entry can move to a unlocked port, resulting
->> in the locked flag getting removed?
-> 
-> Any two ports. If the "locked" entry in mv88e6xxx cannot move once
-> installed, then the "sticky" flag accurately describes it.
-> 
+Now queued up, thanks.
 
-But since I am also doing the SW bridge implementation without mv88e6xxx 
-I need it to function according to needs.
-Thus the locked entries created in the bridge I shall not put the sticky 
-flag on, but there will be the situation where a locked entry can move 
-to an unlocked port, which we regarded as a bug. In that case there is 
-two possibilities, the locked entry can move to an unlocked port with 
-the locked flag being removed or the locked entry can only move to 
-another locked port?
+greg k-h
