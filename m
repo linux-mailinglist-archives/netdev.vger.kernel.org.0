@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F29D59EC0D
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 21:18:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8906959EC00
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 21:15:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229895AbiHWTR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 15:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53738 "EHLO
+        id S232345AbiHWTPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 15:15:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232438AbiHWTPG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 15:15:06 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00457A8CF1
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 10:52:29 -0700 (PDT)
+        with ESMTP id S233725AbiHWTPY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 15:15:24 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9346D79A4F
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 10:52:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661277150; x=1692813150;
+  t=1661277168; x=1692813168;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=6FBO+g3x9r+CWln8AIWDeAEfzefGazICoBnpQngNpsI=;
-  b=OQpUrY8qQ4lcNi178bX+6oIqCRYJck4U7CAFgqhth3zDwRCH4gwJHuqh
-   ggb7+pdbW53WEHOErbwXF3P6mSxBbIoOWHUJaek/81WdO5+KuPxe88Ao4
-   ssrLVD2/v/6HAXHwQxVGQZuIrvTBnqMZyyCEFr0L3/F12ar11y5Qz9od2
+  bh=QpXL2t+PO1bBQjuLKpDmyzXFb+dtXVkSUGury2sOr1g=;
+  b=DUFumY0fbFx4eTL/sNng/Pp257nzIP7WFafc6tGPWCwUgsSFSDPawvum
+   nrWWiydAZoMQnzz7kAwNOoe/5ha4Kww9D5/9BQnT0VV1WCuQUAS3pUlSI
+   jyHwjRHi/wIOMHiqD2oLPUS188c1jU0gisFyWFwRJQK7nN+vjFvVFkizp
    s=;
 X-IronPort-AV: E=Sophos;i="5.93,258,1654560000"; 
-   d="scan'208";a="122631876"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 17:52:01 +0000
+   d="scan'208";a="220380992"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 17:52:18 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-5feb294a.us-west-2.amazon.com (Postfix) with ESMTPS id 7260DE01E8;
-        Tue, 23 Aug 2022 17:52:01 +0000 (UTC)
+        by email-inbound-relay-pdx-2b-31df91b1.us-west-2.amazon.com (Postfix) with ESMTPS id E3D67453E8;
+        Tue, 23 Aug 2022 17:52:15 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Tue, 23 Aug 2022 17:52:00 +0000
+ id 15.0.1497.38; Tue, 23 Aug 2022 17:52:15 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.160.160) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Tue, 23 Aug 2022 17:51:58 +0000
+ Tue, 23 Aug 2022 17:52:12 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -45,10 +45,10 @@ To:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, Edward Cree <ecree.xilinx@gmail.com>
-Subject: [PATCH v4 net 15/17] net: Fix a data-race around gro_normal_batch.
-Date:   Tue, 23 Aug 2022 10:46:58 -0700
-Message-ID: <20220823174700.88411-16-kuniyu@amazon.com>
+        <netdev@vger.kernel.org>, Dmitry Vyukov <dvyukov@google.com>
+Subject: [PATCH v4 net 16/17] net: Fix a data-race around netdev_unregister_timeout_secs.
+Date:   Tue, 23 Aug 2022 10:46:59 -0700
+Message-ID: <20220823174700.88411-17-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220823174700.88411-1-kuniyu@amazon.com>
 References: <20220823174700.88411-1-kuniyu@amazon.com>
@@ -68,29 +68,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While reading gro_normal_batch, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading netdev_unregister_timeout_secs, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+Fixes: 5aa3afe107d9 ("net: make unregister netdev warning timeout configurable")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Acked-by: Dmitry Vyukov <dvyukov@google.com>
 ---
- include/net/gro.h | 2 +-
+ net/core/dev.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/gro.h b/include/net/gro.h
-index 867656b0739c..24003dea8fa4 100644
---- a/include/net/gro.h
-+++ b/include/net/gro.h
-@@ -439,7 +439,7 @@ static inline void gro_normal_one(struct napi_struct *napi, struct sk_buff *skb,
- {
- 	list_add_tail(&skb->list, &napi->rx_list);
- 	napi->rx_count += segs;
--	if (napi->rx_count >= gro_normal_batch)
-+	if (napi->rx_count >= READ_ONCE(gro_normal_batch))
- 		gro_normal_list(napi);
- }
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 8221322d86db..56c8b0921c9f 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10284,7 +10284,7 @@ static struct net_device *netdev_wait_allrefs_any(struct list_head *list)
+ 				return dev;
  
+ 		if (time_after(jiffies, warning_time +
+-			       netdev_unregister_timeout_secs * HZ)) {
++			       READ_ONCE(netdev_unregister_timeout_secs) * HZ)) {
+ 			list_for_each_entry(dev, list, todo_list) {
+ 				pr_emerg("unregister_netdevice: waiting for %s to become free. Usage count = %d\n",
+ 					 dev->name, netdev_refcnt_read(dev));
 -- 
 2.30.2
 
