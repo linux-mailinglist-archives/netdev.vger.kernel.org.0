@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3899959D2E9
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 10:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CB2359D314
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 10:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241615AbiHWIDQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 04:03:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48266 "EHLO
+        id S241583AbiHWIDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 04:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241538AbiHWIC5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 04:02:57 -0400
+        with ESMTP id S241545AbiHWIC4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 04:02:56 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFEA659D0
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 01:02:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD933659EE
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 01:02:54 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrt-0002w2-Oc; Tue, 23 Aug 2022 10:02:37 +0200
+        id 1oQOrt-0002vy-Nw; Tue, 23 Aug 2022 10:02:37 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrs-001Svh-Dj; Tue, 23 Aug 2022 10:02:36 +0200
+        id 1oQOrs-001SvY-8N; Tue, 23 Aug 2022 10:02:36 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oQOrp-00ALXm-19; Tue, 23 Aug 2022 10:02:33 +0200
+        id 1oQOrp-00ALXv-29; Tue, 23 Aug 2022 10:02:33 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -38,9 +38,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 01/17] net: dsa: microchip: add separate struct ksz_chip_data for KSZ8563 chip
-Date:   Tue, 23 Aug 2022 10:02:15 +0200
-Message-Id: <20220823080231.2466017-2-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v3 02/17] net: dsa: microchip: do per-port Gbit detection instead of per-chip
+Date:   Tue, 23 Aug 2022 10:02:16 +0200
+Message-Id: <20220823080231.2466017-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220823080231.2466017-1-o.rempel@pengutronix.de>
 References: <20220823080231.2466017-1-o.rempel@pengutronix.de>
@@ -59,139 +59,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add separate entry for the KSZ8563 chip. According to the documentation
-it can support Gbit only on RGMII port. So, we will need to be able to
-describe in the followup patch.
+KSZ8563 has two 100Mbit PHYs and CPU port with RGMII support. Since
+1000Mbit configuration for the RGMII capable MAC is present, we should
+use per port validation.
+
+As main part of migration to per-port validation we need to rework
+ksz9477_switch_init() function. Which is using undocumented REG_GLOBAL_OPTIONS
+register to detect per-chip Gbit support. So, it is related to some sort
+of risk for regressions.
+
+To reduce this risk I compared the code with publicly available
+documentations. This function will executed on following currently supported
+chips:
+struct ksz_chip_data            OF compatible
+KSZ9477				KSZ9477
+KSZ9897				KSZ9897
+KSZ9893				KSZ9893, KSZ9563
+KSZ8563				KSZ8563
+KSZ9567				KSZ9567
+
+Only KSZ9893, KSZ9563, KSZ8563 document existence of 0xf == REG_GLOBAL_OPTIONS
+register with bit field description "SKU ID":
+KSZ9893 0x0C
+KSZ9563 0x1C
+KSZ8563 0x3C
+
+The existence of hidden flags is not documented.
+
+KSZ9477, KSZ9897, KSZ9567 do not document this register at all.
+
+Only KSZ8563 is documented as non Gbit chip: 100Mbit PHYs and RGMII CPU
+port. So, this change should not introduce a regression for
+configurations with properly used OF compatibles.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 39 ++++++++++++++++++++++++--
- drivers/net/dsa/microchip/ksz_common.h |  6 ++++
- drivers/net/dsa/microchip/ksz_spi.c    |  2 +-
- 3 files changed, 44 insertions(+), 3 deletions(-)
+ drivers/net/dsa/microchip/ksz9477.c    | 20 +++-----------------
+ drivers/net/dsa/microchip/ksz_common.c |  5 +++++
+ drivers/net/dsa/microchip/ksz_common.h |  2 +-
+ 3 files changed, 9 insertions(+), 18 deletions(-)
 
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index e4f446db0ca18..0f7f44358d7b3 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -320,7 +320,7 @@ void ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ 		return;
+ 
+ 	/* No gigabit support.  Do not write to this register. */
+-	if (!(dev->features & GBIT_SUPPORT) && reg == MII_CTRL1000)
++	if (!dev->info->gbit_capable[addr] && reg == MII_CTRL1000)
+ 		return;
+ 
+ 	ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
+@@ -914,7 +914,7 @@ static void ksz9477_phy_errata_setup(struct ksz_device *dev, int port)
+ 	/* Energy Efficient Ethernet (EEE) feature select must
+ 	 * be manually disabled (except on KSZ8565 which is 100Mbit)
+ 	 */
+-	if (dev->features & GBIT_SUPPORT)
++	if (dev->info->gbit_capable[port])
+ 		ksz9477_port_mmd_write(dev, port, 0x07, 0x3c, 0x0000);
+ 
+ 	/* Register settings are required to meet data sheet
+@@ -941,7 +941,7 @@ void ksz9477_get_caps(struct ksz_device *dev, int port,
+ 	config->mac_capabilities = MAC_10 | MAC_100 | MAC_ASYM_PAUSE |
+ 				   MAC_SYM_PAUSE;
+ 
+-	if (dev->features & GBIT_SUPPORT)
++	if (dev->info->gbit_capable[port])
+ 		config->mac_capabilities |= MAC_1000FD;
+ }
+ 
+@@ -1158,27 +1158,13 @@ int ksz9477_switch_init(struct ksz_device *dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = ksz_read8(dev, REG_GLOBAL_OPTIONS, &data8);
+-	if (ret)
+-		return ret;
+-
+ 	/* Number of ports can be reduced depending on chip. */
+ 	dev->phy_port_cnt = 5;
+ 
+-	/* Default capability is gigabit capable. */
+-	dev->features = GBIT_SUPPORT;
+-
+ 	if (dev->chip_id == KSZ9893_CHIP_ID) {
+ 		dev->features |= IS_9893;
+ 
+-		/* Chip does not support gigabit. */
+-		if (data8 & SW_QW_ABLE)
+-			dev->features &= ~GBIT_SUPPORT;
+ 		dev->phy_port_cnt = 2;
+-	} else {
+-		/* Chip does not support gigabit. */
+-		if (!(data8 & SW_GIGABIT_ABLE))
+-			dev->features &= ~GBIT_SUPPORT;
+ 	}
+ 
+ 	return 0;
 diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index ed7d137cba994..170c05cc0687a 100644
+index 170c05cc0687a..816438d2ed640 100644
 --- a/drivers/net/dsa/microchip/ksz_common.c
 +++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -413,6 +413,29 @@ static const u8 lan937x_shifts[] = {
- };
+@@ -434,6 +434,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.supports_rmii = {false, false, true},
+ 		.supports_rgmii = {false, false, true},
+ 		.internal_phy = {true, true, false},
++		.gbit_capable = {false, false, true},
+ 	},
  
- const struct ksz_chip_data ksz_switch_chips[] = {
-+	[KSZ8563] = {
-+		.chip_id = KSZ8563_CHIP_ID,
-+		.dev_name = "KSZ8563",
-+		.num_vlans = 4096,
-+		.num_alus = 4096,
-+		.num_statics = 16,
-+		.cpu_ports = 0x07,	/* can be configured as cpu port */
-+		.port_cnt = 3,		/* total port count */
-+		.ops = &ksz9477_dev_ops,
-+		.mib_names = ksz9477_mib_names,
-+		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
-+		.reg_mib_cnt = MIB_COUNTER_NUM,
-+		.regs = ksz9477_regs,
-+		.masks = ksz9477_masks,
-+		.shifts = ksz9477_shifts,
-+		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
-+		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
-+		.supports_mii = {false, false, true},
-+		.supports_rmii = {false, false, true},
-+		.supports_rgmii = {false, false, true},
-+		.internal_phy = {true, true, false},
-+	},
-+
  	[KSZ8795] = {
- 		.chip_id = KSZ8795_CHIP_ID,
- 		.dev_name = "KSZ8795",
-@@ -1319,6 +1342,7 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
- 		proto = DSA_TAG_PROTO_KSZ8795;
+@@ -568,6 +569,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 				   false, true, false},
+ 		.internal_phy	= {true, true, true, true,
+ 				   true, false, false},
++		.gbit_capable	= {true, true, true, true, true, true, true},
+ 	},
  
- 	if (dev->chip_id == KSZ8830_CHIP_ID ||
-+	    dev->chip_id == KSZ8563_CHIP_ID ||
- 	    dev->chip_id == KSZ9893_CHIP_ID)
- 		proto = DSA_TAG_PROTO_KSZ9893;
+ 	[KSZ9897] = {
+@@ -596,6 +598,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 				   false, true, true},
+ 		.internal_phy	= {true, true, true, true,
+ 				   true, false, false},
++		.gbit_capable	= {true, true, true, true, true, true, true},
+ 	},
  
-@@ -1638,7 +1662,7 @@ static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 	[KSZ9893] = {
+@@ -619,6 +622,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 		.supports_rmii = {false, false, true},
+ 		.supports_rgmii = {false, false, true},
+ 		.internal_phy = {true, true, false},
++		.gbit_capable = {true, true, true},
+ 	},
  
- static int ksz_switch_detect(struct ksz_device *dev)
- {
--	u8 id1, id2;
-+	u8 id1, id2, id4;
- 	u16 id16;
- 	u32 id32;
- 	int ret;
-@@ -1684,7 +1708,6 @@ static int ksz_switch_detect(struct ksz_device *dev)
- 		switch (id32) {
- 		case KSZ9477_CHIP_ID:
- 		case KSZ9897_CHIP_ID:
--		case KSZ9893_CHIP_ID:
- 		case KSZ9567_CHIP_ID:
- 		case LAN9370_CHIP_ID:
- 		case LAN9371_CHIP_ID:
-@@ -1692,6 +1715,18 @@ static int ksz_switch_detect(struct ksz_device *dev)
- 		case LAN9373_CHIP_ID:
- 		case LAN9374_CHIP_ID:
- 			dev->chip_id = id32;
-+			break;
-+		case KSZ9893_CHIP_ID:
-+			ret = ksz_read8(dev, REG_CHIP_ID4,
-+					&id4);
-+			if (ret)
-+				return ret;
-+
-+			if (id4 == SKU_ID_KSZ8563)
-+				dev->chip_id = KSZ8563_CHIP_ID;
-+			else
-+				dev->chip_id = KSZ9893_CHIP_ID;
-+
- 			break;
- 		default:
- 			dev_err(dev->dev,
+ 	[KSZ9567] = {
+@@ -647,6 +651,7 @@ const struct ksz_chip_data ksz_switch_chips[] = {
+ 				   false, true, true},
+ 		.internal_phy	= {true, true, true, true,
+ 				   true, false, false},
++		.gbit_capable	= {true, true, true, true, true, true, true},
+ 	},
+ 
+ 	[LAN9370] = {
 diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 764ada3a0f42a..2b3877d4ef46f 100644
+index 2b3877d4ef46f..aaa6a910d0819 100644
 --- a/drivers/net/dsa/microchip/ksz_common.h
 +++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -123,6 +123,7 @@ struct ksz_device {
- 
- /* List of supported models */
- enum ksz_model {
-+	KSZ8563,
- 	KSZ8795,
- 	KSZ8794,
- 	KSZ8765,
-@@ -139,6 +140,7 @@ enum ksz_model {
+@@ -61,6 +61,7 @@ struct ksz_chip_data {
+ 	bool supports_rmii[KSZ_MAX_NUM_PORTS];
+ 	bool supports_rgmii[KSZ_MAX_NUM_PORTS];
+ 	bool internal_phy[KSZ_MAX_NUM_PORTS];
++	bool gbit_capable[KSZ_MAX_NUM_PORTS];
  };
  
- enum ksz_chip_id {
-+	KSZ8563_CHIP_ID = 0x8563,
- 	KSZ8795_CHIP_ID = 0x8795,
- 	KSZ8794_CHIP_ID = 0x8794,
- 	KSZ8765_CHIP_ID = 0x8765,
-@@ -482,6 +484,10 @@ static inline int is_lan937x(struct ksz_device *dev)
+ struct ksz_port {
+@@ -503,7 +504,6 @@ static inline int is_lan937x(struct ksz_device *dev)
+ #define SW_START			0x01
  
- #define SW_REV_ID_M			GENMASK(7, 4)
+ /* Used with variable features to indicate capabilities. */
+-#define GBIT_SUPPORT			BIT(0)
+ #define IS_9893				BIT(2)
  
-+/* KSZ9893, KSZ9563, KSZ8563 specific register  */
-+#define REG_CHIP_ID4			0x0f
-+#define SKU_ID_KSZ8563			0x3c
-+
- /* Driver set switch broadcast storm protection at 10% rate. */
- #define BROADCAST_STORM_PROT_RATE	10
- 
-diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
-index 05bd089795f83..746b725b09ec4 100644
---- a/drivers/net/dsa/microchip/ksz_spi.c
-+++ b/drivers/net/dsa/microchip/ksz_spi.c
-@@ -160,7 +160,7 @@ static const struct of_device_id ksz_dt_ids[] = {
- 	},
- 	{
- 		.compatible = "microchip,ksz8563",
--		.data = &ksz_switch_chips[KSZ9893]
-+		.data = &ksz_switch_chips[KSZ8563]
- 	},
- 	{
- 		.compatible = "microchip,ksz9567",
+ /* xMII configuration */
 -- 
 2.30.2
 
