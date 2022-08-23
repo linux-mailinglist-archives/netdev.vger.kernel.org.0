@@ -2,108 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A79859CFB0
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 05:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FDA159CFD5
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 06:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240118AbiHWDtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 23:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46842 "EHLO
+        id S237614AbiHWERF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 00:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239380AbiHWDte (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 23:49:34 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 369015B782;
-        Mon, 22 Aug 2022 20:49:31 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MBZwj1rPtz4x1P;
-        Tue, 23 Aug 2022 13:49:24 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661226566;
-        bh=zwVDoxhDaKTAcllgTeGlBZohftHVRRInejxRQdHAIK8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=UFN5Lbch7VC8nJCLxN/lR03xTpHadiyD81l7r0iexSYhWQBFj5wSZWYU/RXHPnkNF
-         jMaBFEB364BoN2pLaCKkWjAg1qH/jpTkV7rDbs6XNmYJtPpKB7ebxZjmkImkx7rGwI
-         3TXOj2I/KkX/dpEfjKLE8EdLNcudg1LNxSdtk+hDmmeu+2Ayklu0QGghLcHFrX5nh2
-         NChSXHgQtZNfQYpEGuNuez5Q13WoaOaGLEfFRPvIQ7rG0e26JWKilbeU4fHpvdu3fD
-         tcLxy6PHEDAIlho7vhbcpq9ZETuiCvfya1VPV1B4yS4CJUeRmiehfYdueTpGKhOuyj
-         XFN3P88WV5L6w==
-Date:   Tue, 23 Aug 2022 13:49:05 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20220823134905.57ed08d5@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/EpyMkXV1ufNzVjgrnN.Xw7Q";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229684AbiHWERD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 00:17:03 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB3E5D135
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 21:17:01 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id n30-20020a17090a5aa100b001fb0c492d5eso3481831pji.3
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 21:17:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=RQF+Hp7R78XaNSbP7FojiWh6Ao2+lXh+qmPouBKsoxs=;
+        b=hvvCtSMC0Rq+dBBMJ5/nypqanMxOAHvudpyxc+IxZ6lJomJw9YZ+46Td1IjlOeO3sQ
+         6jNaU3VtHrGBlpybAUUCHjrZbX//Xl5mS4RV2d40mCyQSKNo4ZucXdF7F8I1g1fvqZdM
+         Sqpg4AMErjvRTLy6cINr88zSPKEpf9haHufA8oKfqPNnmE66jyNZt3Hbta+VPSyri8B5
+         3plvN2/EuHLtLkTE+mPOETi1Ti3qioAIspnkbs8HD0h8Esn6G+fni3dezZppbtQ8ZtwJ
+         UO9UneKitbkHzuBhN/xJxXiQIveSx4GJEPL06MLK9fyI4FVz9ZDtJeCDPiCj2vduLlpt
+         3RfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=RQF+Hp7R78XaNSbP7FojiWh6Ao2+lXh+qmPouBKsoxs=;
+        b=oawxji5BJgrdvt6EtP8lJ39YFaKt6j3mcF8JNEoeonRsZp4IuS2Vp+GozikmfWgZKx
+         haHgxkV3K5qRx4JCWqo0E/AvJSzwl5Hx9XzS566uSS1xH2vnHBlgaYbClCFCPuKpOro4
+         GzuKxTOJA5LIHtLOh8/xdOoUMqI5wHM3swhsxY0/hmd3i5HyYYh+TFv5uUoy2it+IS18
+         JHP10oZ0zZkAILdCBjrfZJfmVLYTu3yAt94VmEIatXTwK2EKt5TT5MWun7ApTCHZ0r53
+         KYSZoo5BwUm+W3TJniL00rUvAYcE8HqADO/LnEOy7wfE3Nm97ijzyIu3VvFvqe88dBUu
+         CGKA==
+X-Gm-Message-State: ACgBeo08uPxqsl0Uc1ztTbLX99OmqiBxmjYCcxFqqUfgHLlvjBLOZ8/s
+        +cQXf/Xs2uAS/TEL/xR6URASoFvKdU20
+X-Google-Smtp-Source: AA6agR5GsrlymQnzABGSg82b/1ULRf+EGCNJ+vYGzb2JaeGX2VQvvlFplwzTUlar4K29y9a31LyiQW1sAtAP
+X-Received: from jiangzp-glinux-dev.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:4c52])
+ (user=jiangzp job=sendgmr) by 2002:a17:90b:354e:b0:1fa:a4a3:bb3a with SMTP id
+ lt14-20020a17090b354e00b001faa4a3bb3amr1542937pjb.134.1661228220929; Mon, 22
+ Aug 2022 21:17:00 -0700 (PDT)
+Date:   Mon, 22 Aug 2022 21:16:55 -0700
+Message-Id: <20220823041656.3398118-1-jiangzp@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [kernel PATCH v1 0/1] Bluetooth: hci_sync: hold hdev->lock when
+ cleanup hci_conn
+From:   Zhengping Jiang <jiangzp@google.com>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org
+Cc:     Zhengping Jiang <jiangzp@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/EpyMkXV1ufNzVjgrnN.Xw7Q
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+Hold hdev->lock for hci_conn_failed. There are possible race conditions
+which may cause kernel crash.
 
-After merging the net-next tree, today's linux-next build (htmldocs)
-produced this warning:
+Changes in v1:
+- Hold hdev->lock for hci_conn_failed
 
-Documentation/admin-guide/sysctl/net.rst:37: WARNING: Malformed table.
-Text in column margin in table line 4.
+Zhengping Jiang (1):
+  Bluetooth: hci_sync: hold hdev->lock when cleanup hci_conn
 
-=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D =3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-Directory Content               Directory  Content
-=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D =3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
-802       E802 protocol         mptcp     Multipath TCP
-appletalk Appletalk protocol    netfilter Network Filter
-ax25      AX25                  netrom     NET/ROM
-bridge    Bridging              rose      X.25 PLP layer
-core      General parameter     tipc      TIPC
-ethernet  Ethernet protocol     unix      Unix domain sockets
-ipv4      IP version 4          x25       X.25 protocol
-ipv6      IP version 6
-=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D =3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D =3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D
+ net/bluetooth/hci_sync.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Introduced by commit
+-- 
+2.37.1.595.g718a3a8f04-goog
 
-  1202cdd66531 ("Remove DECnet support from kernel")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/EpyMkXV1ufNzVjgrnN.Xw7Q
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMETjEACgkQAVBC80lX
-0GyVmQf9FdALQO+Cp+PfLxtWw6GatjoLFBtyepaauYStFYv6/oCbJwyvHvWK6+8f
-dXe64LS9SGMKVH71yutiNT9uiy3rwBvn356VprYFaHq7fH0d+KMDh8PwAv0uqnhi
-Y4NxI8eJQj0j3DkOFNGzYbVeja6hwDtkxL2D01YuCBr2ZtcExkRBi/7tW7H90Buw
-pRkUtH5+rudCcMD1pcP2LSm+qmn5uxEDWc5GlWDoWokvScFr8nOEILWFhOOCLfWe
-5xxQw2Bm60PqxwrPs5IYWyggAK0zpv1NyRIXjAe9M/weOMrvFbn6V6oseae9/Ttc
-PGuDyP92vrWcXlX7N0uhTaHrtMjpJQ==
-=E256
------END PGP SIGNATURE-----
-
---Sig_/EpyMkXV1ufNzVjgrnN.Xw7Q--
