@@ -2,115 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC98159D255
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 09:39:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E6F359D275
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 09:43:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240494AbiHWHh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 03:37:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45910 "EHLO
+        id S240532AbiHWHj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 03:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240083AbiHWHh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:37:58 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58FC9642F8;
-        Tue, 23 Aug 2022 00:37:56 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id B7DBF1884AE4;
-        Tue, 23 Aug 2022 07:37:54 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id AE68E25032BA;
-        Tue, 23 Aug 2022 07:37:54 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 86C83A1A0060; Tue, 23 Aug 2022 07:37:54 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S236517AbiHWHj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:39:57 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 941BB31DC6
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 00:39:56 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id h204-20020a1c21d5000000b003a5b467c3abso9044440wmh.5
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 00:39:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=/xGaAo+gu3RU5MNzi1hEpBcjB2iHNX2K31piSFhIzSY=;
+        b=25OfZpcTNblgcSVYzYQiCcESXtnS4ySJ8A8RJZ6DY0uELzCZBAx6KbEvGZdULrteEl
+         ueUClFdnHmgWv7xZCX5OLxfk8WmvWNZmbsVLieRyQijMy2bKDW9GMunoRjeaDsEgDMOQ
+         aKwrw6V303ok++rJ+I++g2r1yB/nXsuNjaTksnCeBk6/DDp/rrkGwcePeIGIsGUkhOl8
+         RHMb+/aDNJYMbwyxZAyWR3YQf7DSb21BjooGLdENkB3SHO8nuNApSrCGUvv6S6llYlrT
+         MKSOp4pegA+sxiN5bXVfU/XYCzeRDYwolBKFImKEin2ebmUSUGEjBG7+5OUFIadMx1Or
+         bbaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=/xGaAo+gu3RU5MNzi1hEpBcjB2iHNX2K31piSFhIzSY=;
+        b=x4mVfYeGtyHt0kw21JgteSxSS/fS5MNBs9Zua5ooNyJKYNtUMy4WxZRGh21XHmfLK8
+         8mdz7X8pbzhhmvChh19h6g+2PxCKBDHx0U+PI0iMswZ7YVT+/FKVcWYqgJuW4bCkwVos
+         GuDRINNEx6+5tdH9hyO2XWvkmWJaIElAR9CBkTK/AZu1Vs5cWAjX5Fm0qIRUpIjamuyN
+         J87N9pvaz0UbLpnhkAPZZOQ0aW74S4pGMFm5L9ELvHXTaxip1q81d/KyOKEBud4vUTXc
+         avrys1VlmxkoguoR5wmINki1dx0cGeZH1hnMp/wlMLsZlotY8/uECMrwDKWjAxkpBhPK
+         qXiA==
+X-Gm-Message-State: ACgBeo3UP5XcdfniB8Q5dUHAzcWfV/peciNi3fhbYILDbv1tddXsEYWv
+        hMWEVjTjP/X9c7BHJrIp2bZO0iV8LnxLcw==
+X-Google-Smtp-Source: AA6agR7IPSvfi2l8cDaMLFCeaawGznK919HnbrCRMpCZlUaVkbJhAABZ6msAX1UeIK2TnTxWfW9Kzg==
+X-Received: by 2002:a05:600c:3b9f:b0:3a6:53f:12fb with SMTP id n31-20020a05600c3b9f00b003a6053f12fbmr1296308wms.194.1661240394804;
+        Tue, 23 Aug 2022 00:39:54 -0700 (PDT)
+Received: from localhost.localdomain (bzq-84-110-153-254.static-ip.bezeqint.net. [84.110.153.254])
+        by smtp.gmail.com with ESMTPSA id a8-20020adfdd08000000b0022537d826f3sm11183950wrm.23.2022.08.23.00.39.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 00:39:54 -0700 (PDT)
+From:   Alvaro Karsz <alvaro.karsz@solid-run.com>
+To:     netdev@vger.kernel.org
+Cc:     Alvaro Karsz <alvaro.karsz@solid-run.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Subject: [PATCH] net: virtio_net: fix notification coalescing comments
+Date:   Tue, 23 Aug 2022 10:39:47 +0300
+Message-Id: <20220823073947.14774-1-alvaro.karsz@solid-run.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Date:   Tue, 23 Aug 2022 09:37:54 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <YwSAtgS7fgHNLMEy@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
- <9dcb4db4a77811308c56fe5b9b7c5257@kapio-technology.com>
- <YwSAtgS7fgHNLMEy@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <553c573ad6a2ddfccfc47c7847cc5fb7@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-23 09:24, Ido Schimmel wrote:
-> On Tue, Aug 23, 2022 at 09:13:54AM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-08-23 08:48, Ido Schimmel wrote:
->> > On Mon, Aug 22, 2022 at 09:49:28AM +0200, netdev@kapio-technology.com
->> > wrote:
->> 
->> > > As I am not familiar with roaming in this context, I need to know
->> > > how the SW
->> > > bridge should behave in this case.
->> >
->> 
->> > > In this case, is the roaming only between locked ports or does the
->> > > roaming include that the entry can move to a unlocked port, resulting
->> > > in the locked flag getting removed?
->> >
->> > Any two ports. If the "locked" entry in mv88e6xxx cannot move once
->> > installed, then the "sticky" flag accurately describes it.
->> >
->> 
->> But since I am also doing the SW bridge implementation without 
->> mv88e6xxx I
->> need it to function according to needs.
->> Thus the locked entries created in the bridge I shall not put the 
->> sticky
->> flag on, but there will be the situation where a locked entry can move 
->> to an
->> unlocked port, which we regarded as a bug.
-> 
-> I do not regard this as a bug. It makes sense to me that an authorized
-> port can cause an entry pointing to an unauthorized port to roam to
-> itself. Just like normal learned entries. What I considered as a bug is
-> the fact that the "locked" flag is not cleared when roaming to an
-> authorized port.
-> 
->> In that case there is two possibilities, the locked entry can move to
->> an unlocked port with the locked flag being removed or the locked
->> entry can only move to another locked port?
-> 
-> My suggestion is to allow roaming and maintain / clear the "locked" 
-> flag
-> based on whether the new destination port is locked or not.
+Fix wording in comments for the notifications coalescing feature.
 
-Thus I understand it as saying that the "locked" flag can also be set 
-when roaming from an unlocked port to a locked port?
+Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+---
+ include/uapi/linux/virtio_net.h | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
+index 29ced55514d..6cb842ea897 100644
+--- a/include/uapi/linux/virtio_net.h
++++ b/include/uapi/linux/virtio_net.h
+@@ -56,7 +56,7 @@
+ #define VIRTIO_NET_F_MQ	22	/* Device supports Receive Flow
+ 					 * Steering */
+ #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
+-#define VIRTIO_NET_F_NOTF_COAL	53	/* Guest can handle notifications coalescing */
++#define VIRTIO_NET_F_NOTF_COAL	53	/* Device supports notifications coalescing */
+ #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
+ #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
+ #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
+@@ -364,24 +364,24 @@ struct virtio_net_hash_config {
+  */
+ #define VIRTIO_NET_CTRL_NOTF_COAL		6
+ /*
+- * Set the tx-usecs/tx-max-packets patameters.
+- * tx-usecs - Maximum number of usecs to delay a TX notification.
+- * tx-max-packets - Maximum number of packets to send before a TX notification.
++ * Set the tx-usecs/tx-max-packets parameters.
+  */
+ struct virtio_net_ctrl_coal_tx {
++	/* Maximum number of packets to send before a TX notification */
+ 	__le32 tx_max_packets;
++	/* Maximum number of usecs to delay a TX notification */
+ 	__le32 tx_usecs;
+ };
+ 
+ #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET		0
+ 
+ /*
+- * Set the rx-usecs/rx-max-packets patameters.
+- * rx-usecs - Maximum number of usecs to delay a RX notification.
+- * rx-max-frames - Maximum number of packets to receive before a RX notification.
++ * Set the rx-usecs/rx-max-packets parameters.
+  */
+ struct virtio_net_ctrl_coal_rx {
++	/* Maximum number of packets to receive before a RX notification */
+ 	__le32 rx_max_packets;
++	/* Maximum number of usecs to delay a RX notification */
+ 	__le32 rx_usecs;
+ };
+ 
+-- 
+2.32.0
+
