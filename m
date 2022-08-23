@@ -2,67 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2030659E466
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:32:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BF5A59E4AD
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:51:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241800AbiHWN2t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 09:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
+        id S236423AbiHWNvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 09:51:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240303AbiHWN23 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:28:29 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF537157D1E
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:28:26 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id w19so26514421ejc.7
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:28:26 -0700 (PDT)
+        with ESMTP id S242349AbiHWNuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:50:37 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C2C116571C
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:56:09 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id b16so17515459edd.4
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:56:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc;
-        bh=tDoKHJNCxvovH/OdGSUDSJIA93fGME4N3+WprjnQxsw=;
-        b=iy5C4EFbb1VSRZHG1k7DNq8EVOcOse15as56mgI63fVSvBtJWf0mRirwQie4lPceEn
-         zBbPdZ+yNs4YcmaEuOAA0Cj/lben3WOd78Rhu7t4cTiL3FhOmC0p9FjRH/dVmPXn+SUV
-         BwJ9ywyeAUI6yIGpfmqOgSQ9K6Tm6onWBTRR1Tf1XVVv7U05adHOI7u06xWRiGhOgN2k
-         OagBBMGShyhXjFhrL1VL4aZBb2EmwiXNfhIakTyWquoE/eiCbCkX0B6Qob+VxSYwq1L3
-         DTX2zHJvGV61RptgNj2fF/R7RhNIUSizPxuzNEcuCAVgz7ue6re1x41b6d+1oEBrJa5E
-         s1uQ==
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=CSfrhxT9VAnyJPjGSsK9FNWQxpzeB1/ysg0wyIKwNbo=;
+        b=o+1s4+z44hI/KKr1Dk4qJ+cnrbPWDs8HpV/rQFs3+CacWfFtNXfe9dRvuqwkZRw1kc
+         TbHlDRTcqTMkXvetmyrOJRl2dnEHtlVHiI/uo/qjVW9u8NexN9+2pO3bWk35B/ENgxbW
+         PuyaXqnI/SSRC6U+OAa0UKqeKmsWjGhgBlaDxpIAzd/pNZtq0pWCHTY3lRym0DhiuZcU
+         MEzvyxnEMTVFLDatcNczSPVgp6fbw7xKUfEq4R66aCk71Wu3cONBdxp6IuyaqMrlJ5T6
+         67b0sOLDYkPeo95GXojgq758B2zAOnGyFmq/dkizAnzzjanAQ7dUQPg0y9qY9CULa868
+         WH7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc;
-        bh=tDoKHJNCxvovH/OdGSUDSJIA93fGME4N3+WprjnQxsw=;
-        b=JS+ECqSwuiQKySpeD2yvgKmtd6fgzsASQNQfh3cD3dJg2BViBBkqASu5nSMMbeTH+l
-         ftj5AcNIbN85SqlMXrxjgjHe56lWk6WIiUaO96DLXkBtuOamIe9dTmDv8otOv/YQkzJD
-         k6Q8GD0BvHsnHyu4gmgq9C0XyukRoLDlw685hUUyIquaz2AGQRONuTusdqUw5EYxEPLL
-         XhKZQ9bnu+uY+ipCTmtPEDvGOXSkA4uwkjRyIu0yN5EFM0sSl1tae01I56PdUeAnQhTk
-         uoZHqjZWfJbrYlvVykT4YVt1PN+3QN29m1qkQy6xleHv5a1OaTlE0pmECHDj3XUaT4Qe
-         UaxQ==
-X-Gm-Message-State: ACgBeo2UH36AEnfO1WvmZ4Ur9ipM9KSf4hdzNLzKlNa21xCWDTtc+qwC
-        NriEAQBJj5DydH7/eUGA2xIj6AOC2uswuaneguyd9A==
-X-Google-Smtp-Source: AA6agR7THiCEgefB2sdBBcvdIqgG2vu6qMqwFvww/Dwz6e69ZMVbaQHWEyotbW7T0Rv1YiQcTrclrQ4Eo0hJrTZ/3Nw=
-X-Received: by 2002:a17:907:e8c:b0:73d:8146:9aa1 with SMTP id
- ho12-20020a1709070e8c00b0073d81469aa1mr6396366ejc.253.1661250415034; Tue, 23
- Aug 2022 03:26:55 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=CSfrhxT9VAnyJPjGSsK9FNWQxpzeB1/ysg0wyIKwNbo=;
+        b=5G2RDx3c6idyjcXNh9fv1qfTZHYIgam4dUXqHuUJu0c0/HzyJlvHTb6Sqx8aCmIAEE
+         IXgE6aNZNAfK/b7cDhO2tii7BHXUP0vA2IrjLhjQuK1+qhIWHphmiM09NzberDfUlOhy
+         3/xoBYyzo7TFMuX5InHhSQb5uxSNTj/LPehOI+g5sYsJOxJ5ta4jGGKspSAKsIDokDDJ
+         nR1Dq5keUG53x7768EeoDHe9ISD6lkpZXAs9JhIp7p2/qXpmqN3/ef4b9mtCHTPV1Q/9
+         TPN66nZ8eef3rEapa2eu/a69uBljBRqz1HEE2tPgPQmUySwUECxfuVmN4HxsCqcUzbKB
+         IcBw==
+X-Gm-Message-State: ACgBeo2jnhXHLypCJ3yNc0OwDcHr8Wl9ehhAQ4LnkZgtZ9IFFVNU+drf
+        xX5cCpvQFhE7FOEA0MOIYQdA9BfxLWMoUl0A
+X-Google-Smtp-Source: AA6agR4oA347epn9X35znOZfjzfSU5oXZ19wKjNx051aYhSs5BsqebDkkBZnPa3Fk9VNmwyv6D3b3w==
+X-Received: by 2002:a05:6512:1322:b0:492:de5b:dc3c with SMTP id x34-20020a056512132200b00492de5bdc3cmr3880326lfu.503.1661251242988;
+        Tue, 23 Aug 2022 03:40:42 -0700 (PDT)
+Received: from [192.168.0.11] (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
+        by smtp.gmail.com with ESMTPSA id t20-20020a2e8e74000000b0025e1ec74e25sm2300758ljk.43.2022.08.23.03.40.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 23 Aug 2022 03:40:42 -0700 (PDT)
+Message-ID: <70ae25b9-0500-7539-d71f-52c685783554@linaro.org>
+Date:   Tue, 23 Aug 2022 13:40:40 +0300
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Tue, 23 Aug 2022 15:56:43 +0530
-Message-ID: <CA+G9fYvos=FHZwtGj-fo3TEdWGnw7rZQ=+Gavn=ZA6LCC2_zJw@mail.gmail.com>
-Subject: [next] arm: drivers/net/ethernet/ti/davinci_mdio.c:649: undefined
- reference to `free_mdio_bitbang'
-To:     open list <linux-kernel@vger.kernel.org>,
-        Linux-OMAP <linux-omap@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        regressions@lists.linux.dev,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Ravi Gunasekaran <r-gunasekaran@ti.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 1/6] dt-bindings: net: dsa: mediatek,mt7530: make
+ trivial changes
+Content-Language: en-US
+To:     =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+ <20220820080758.9829-2-arinc.unal@arinc9.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220820080758.9829-2-arinc.unal@arinc9.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -71,80 +98,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-arm builds failed on Linux next-20220823 tag for the following builds.
+On 20/08/2022 11:07, Arınç ÜNAL wrote:
+> Make trivial changes on the binding.
+> 
+> - Update title to include MT7531 switch.
+> - Add me as a maintainer. List maintainers in alphabetical order by first
+> name.
+> - Add description to compatible strings.
+> - Stretch descriptions up to the 80 character limit.
+> - Remove quotes from $ref: "dsa.yaml#".
+> 
+> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/net/dsa/mediatek,mt7530.yaml     | 36 ++++++++++++-------
+>  1 file changed, 24 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> index 17ab6c69ecc7..edf48e917173 100644
+> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+> @@ -4,12 +4,13 @@
+>  $id: http://devicetree.org/schemas/net/dsa/mediatek,mt7530.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>  
+> -title: Mediatek MT7530 Ethernet switch
+> +title: Mediatek MT7530 and MT7531 Ethernet Switches
+>  
+>  maintainers:
+> -  - Sean Wang <sean.wang@mediatek.com>
+> +  - Arınç ÜNAL <arinc.unal@arinc9.com>
+>    - Landen Chao <Landen.Chao@mediatek.com>
+>    - DENG Qingfang <dqfext@gmail.com>
+> +  - Sean Wang <sean.wang@mediatek.com>
+>  
+>  description: |
+>    Port 5 of mt7530 and mt7621 switch is muxed between:
+> @@ -61,10 +62,21 @@ description: |
+>  
+>  properties:
+>    compatible:
+> -    enum:
+> -      - mediatek,mt7530
+> -      - mediatek,mt7531
+> -      - mediatek,mt7621
+> +    oneOf:
+> +      - description:
+> +          Standalone MT7530 and multi-chip module MT7530 in MT7623AI SoC
+> +        items:
 
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+You have one item, so don't make it a list. Just const:xxxxx
 
-Regressions found on arm:
-   - build-clang-nightly-keystone_defconfig
-   - build-clang-13-keystone_defconfig
-   - build-gcc-10-omap2plus_defconfig
-   - build-gcc-8-davinci_all_defconfig
-   - build-gcc-11-davinci_all_defconfig
-   - build-clang-14-omap2plus_defconfig
-   - build-clang-14-keystone_defconfig
-   - build-gcc-10-davinci_all_defconfig
-   - build-clang-14-davinci_all_defconfig
-   - build-clang-11-davinci_all_defconfig
-   - build-gcc-9-davinci_all_defconfig
-   - build-gcc-9-omap2plus_defconfig
-   - build-clang-11-omap2plus_defconfig
-   - build-clang-12-davinci_all_defconfig
-   - build-clang-13-davinci_all_defconfig
-   - build-clang-12-keystone_defconfig
-   - build-gcc-8-omap2plus_defconfig
-   - build-clang-13-omap2plus_defconfig
-   - build-gcc-11-omap2plus_defconfig
-   - build-gcc-8-keystone_defconfig
-   - build-gcc-10-keystone_defconfig
-   - build-clang-nightly-omap2plus_defconfig
-   - build-clang-nightly-davinci_all_defconfig
-   - build-gcc-9-keystone_defconfig
-   - build-gcc-11-keystone_defconfig
-   - build-clang-11-keystone_defconfig
-   - build-clang-12-omap2plus_defconfig
-
-
-Build error:
--------------
-arm-linux-gnueabihf-ld: drivers/net/ethernet/ti/davinci_mdio.o: in
-function `davinci_mdio_remove':
-drivers/net/ethernet/ti/davinci_mdio.c:649: undefined reference to
-`free_mdio_bitbang'
-arm-linux-gnueabihf-ld: drivers/net/ethernet/ti/davinci_mdio.o: in
-function `davinci_mdio_probe':
-drivers/net/ethernet/ti/davinci_mdio.c:545: undefined reference to
-`alloc_mdio_bitbang'
-arm-linux-gnueabihf-ld: drivers/net/ethernet/ti/davinci_mdio.o: in
-function `davinci_mdiobb_read':
-drivers/net/ethernet/ti/davinci_mdio.c:236: undefined reference to `mdiobb_read'
-arm-linux-gnueabihf-ld: drivers/net/ethernet/ti/davinci_mdio.o: in
-function `davinci_mdiobb_write':
-drivers/net/ethernet/ti/davinci_mdio.c:253: undefined reference to
-`mdiobb_write'
-make[1]: *** [Makefile:1250: vmlinux] Error 1
-
-
-metadata:
----------
-Build: https://builds.tuxbuild.com/2DkF0UFq3NZAwUKNFLTyWfDPqem/
-config: https://builds.tuxbuild.com/2DkF0UFq3NZAwUKNFLTyWfDPqem/config
-git_describe: next-20220823
-git_repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
-git_sha: 05477f3653b82d8b3bcf39d2937d9893124976db
-git_short_log: 05477f3653b8 ("Add linux-next specific files for 20220823")
-
-Steps to reproduce:
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-
-# See https://docs.tuxmake.org/ for complete documentation.
-# Original tuxmake command with fragments listed below.
-
-tuxmake --runtime podman --target-arch arm --toolchain gcc-11
---kconfig omap2plus_defconfig
+Same in other places.
 
 
---
-Linaro LKFT
-https://lkft.linaro.org
+Best regards,
+Krzysztof
