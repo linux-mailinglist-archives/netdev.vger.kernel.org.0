@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 435CB59D0E4
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 07:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9AC59D0D8
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 07:56:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240415AbiHWFzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 01:55:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56484 "EHLO
+        id S240416AbiHWFz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 01:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240363AbiHWFzv (ORCPT
+        with ESMTP id S240378AbiHWFzv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 01:55:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB3475F121
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 22:55:49 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71A425E554
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 22:55:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AAE2B81B79
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:55:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9BE6C433D6;
-        Tue, 23 Aug 2022 05:55:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B629B81B7D
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:55:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C501CC433D7;
+        Tue, 23 Aug 2022 05:55:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661234147;
-        bh=hi0GP/0f57rxrMQ7IsEoAgbq1RsA78GeKsMxMAJ82hE=;
+        bh=3fHUWZ7Fu3Ni1Ff/s1+CL1/oTGq+r2hRZzOIbiQKwe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PfcrVtAIZ6e3g6y1hNvRtDJDR8Q+TXFgxcK9bWS6iZQ/kTE4IDehfN+p/z5EF1bxu
-         ZKmKgK23o4j/YV48PAR4R3oHwurD1Mjm+S6DgC/Gwggy2sU5fkFNptnRrJE6aa0Nk8
-         Q2wpdTQAiC0TWHVuEy00wNt9Zu5r1Q0vk0KXarHL9uQJREA5xVe1xh1YrpO0h01GaW
-         AJsB21sc1YHQn1rDgOcCYzeRhe6AcrdjR8vd+tpFzCc8cON/XQfIqohUF5Fd3h9j8V
-         oNhDuGkgyWCiEw6atTUllwHInPug8mfC83n6cH0NWIke9+CsZndAjzH3D7pkkAHnSS
-         IRxz6t0BYxf3g==
+        b=WyukYz4/Zi8NqdhH4DicrePheC/IRvZX55v2zBJLZ5rvgE3wEmzYJIsVT8R/hUEB7
+         HbXFvQSNWTQHi9TYHdIDZne0yxZAVzP1O9nfYqptJLMfdcQzDXddKFtAaQz6RZBWvk
+         sOMTGpoijS8F77TgvJ1z4w9/xe9CjEoPPeEHdueRmgD8VudL8MGBdRCYxY9BDWLGcd
+         p1A7qKUxoh0Z1NnzSPf3QkB8l1r17cBm4zZuOgUoh9oot/R7H7zOAWc8ags4VXg6fV
+         joiNeiHlJ+TIPwQwe7AUl7nYjzUoVubtZeHZbKAdKK7T/4E0QvmvVzZst+M094ILsz
+         3qj6foM/aRxmw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -39,9 +39,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
         Tariq Toukan <tariqt@nvidia.com>,
         Lama Kayal <lkayal@nvidia.com>
-Subject: [net-next 03/15] net/mlx5e: Decouple fs_tcp from en.h
-Date:   Mon, 22 Aug 2022 22:55:21 -0700
-Message-Id: <20220823055533.334471-4-saeed@kernel.org>
+Subject: [net-next 04/15] net/mlx5e: Drop priv argument of ptp function in en_fs
+Date:   Mon, 22 Aug 2022 22:55:22 -0700
+Message-Id: <20220823055533.334471-5-saeed@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220823055533.334471-1-saeed@kernel.org>
 References: <20220823055533.334471-1-saeed@kernel.org>
@@ -59,342 +59,124 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Lama Kayal <lkayal@nvidia.com>
 
-Make flow steering files fs_tcp.c/h independent of en.h
-such that they go through the flow steering API only.
-
-Make error reports be via mlx5_core API instead of netdev_err API, this
-to ensure a safe decoupling from en.h, and prevent redundant argument
-passing.
+Both mlx5e_ptp_alloc_rx_fs and mlx5e_ptp_free_rx_fs only
+make use of two priv member, pass them directly instead.
+This will help dropping priv from all en_fs file.
 
 Signed-off-by: Lama Kayal <lkayal@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en_accel/fs_tcp.c      | 94 +++++++++----------
- .../mellanox/mlx5/core/en_accel/fs_tcp.h      | 14 +--
- .../mellanox/mlx5/core/en_accel/ktls.c        |  8 +-
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  2 +-
- 4 files changed, 59 insertions(+), 59 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  | 24 +++++++++----------
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.h  |  6 +++--
+ .../net/ethernet/mellanox/mlx5/core/en_fs.c   |  4 ++--
+ 3 files changed, 18 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-index a86ae0752760..7f0564ab95eb 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
- /* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
- 
--#include <linux/netdevice.h>
-+#include <mlx5_core.h>
- #include "en_accel/fs_tcp.h"
- #include "fs_core.h"
- 
-@@ -71,11 +71,11 @@ void mlx5e_accel_fs_del_sk(struct mlx5_flow_handle *rule)
- 	mlx5_del_flow_rules(rule);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+index 3fdaacc2abde..6fefce30d296 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.c
+@@ -622,12 +622,10 @@ static int mlx5e_ptp_set_state(struct mlx5e_ptp *c, struct mlx5e_params *params)
+ 	return bitmap_empty(c->state, MLX5E_PTP_STATE_NUM_STATES) ? -EINVAL : 0;
  }
  
--struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
-+struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_flow_steering *fs,
- 					       struct sock *sk, u32 tirn,
- 					       uint32_t flow_tag)
+-static void mlx5e_ptp_rx_unset_fs(struct mlx5e_priv *priv)
++static void mlx5e_ptp_rx_unset_fs(struct mlx5e_flow_steering *fs)
  {
--	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
-+	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(fs);
- 	struct mlx5_flow_destination dest = {};
- 	struct mlx5e_flow_table *ft = NULL;
- 	MLX5_DECLARE_FLOW_ACT(flow_act);
-@@ -92,11 +92,11 @@ struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
- 	case AF_INET:
- 		accel_fs_tcp_set_ipv4_flow(spec, sk);
- 		ft = &fs_tcp->tables[ACCEL_FS_IPV4_TCP];
--		mlx5e_dbg(HW, priv, "%s flow is %pI4:%d -> %pI4:%d\n", __func__,
--			  &inet_sk(sk)->inet_rcv_saddr,
--			  inet_sk(sk)->inet_sport,
--			  &inet_sk(sk)->inet_daddr,
--			  inet_sk(sk)->inet_dport);
-+		mlx5_core_dbg(mlx5e_fs_get_mdev(fs), "%s flow is %pI4:%d -> %pI4:%d\n", __func__,
-+			      &inet_sk(sk)->inet_rcv_saddr,
-+			      inet_sk(sk)->inet_sport,
-+			      &inet_sk(sk)->inet_daddr,
-+			      inet_sk(sk)->inet_dport);
- 		break;
- #if IS_ENABLED(CONFIG_IPV6)
- 	case AF_INET6:
-@@ -138,19 +138,19 @@ struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
- 	flow = mlx5_add_flow_rules(ft->t, spec, &flow_act, &dest, 1);
+-	struct mlx5e_flow_steering *fs = priv->fs;
+-	struct mlx5e_ptp_fs *ptp_fs;
++	struct mlx5e_ptp_fs *ptp_fs = mlx5e_fs_get_ptp(fs);
  
- 	if (IS_ERR(flow))
--		netdev_err(priv->netdev, "mlx5_add_flow_rules() failed, flow is %ld\n",
--			   PTR_ERR(flow));
-+		mlx5_core_err(mlx5e_fs_get_mdev(fs), "mlx5_add_flow_rules() failed, flow is %ld\n",
-+			      PTR_ERR(flow));
+-	ptp_fs = mlx5e_fs_get_ptp(fs);
+ 	if (!ptp_fs->valid)
+ 		return;
  
- out:
- 	kvfree(spec);
- 	return flow;
- }
- 
--static int accel_fs_tcp_add_default_rule(struct mlx5e_priv *priv,
-+static int accel_fs_tcp_add_default_rule(struct mlx5e_flow_steering *fs,
- 					 enum accel_fs_tcp_type type)
- {
--	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
--	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(priv->fs, false);
-+	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(fs);
-+	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(fs, false);
- 	struct mlx5e_flow_table *accel_fs_t;
- 	struct mlx5_flow_destination dest;
- 	MLX5_DECLARE_FLOW_ACT(flow_act);
-@@ -163,9 +163,9 @@ static int accel_fs_tcp_add_default_rule(struct mlx5e_priv *priv,
- 	rule = mlx5_add_flow_rules(accel_fs_t->t, NULL, &flow_act, &dest, 1);
- 	if (IS_ERR(rule)) {
- 		err = PTR_ERR(rule);
--		netdev_err(priv->netdev,
--			   "%s: add default rule failed, accel_fs type=%d, err %d\n",
--			   __func__, type, err);
-+		mlx5_core_err(mlx5e_fs_get_mdev(fs),
-+			      "%s: add default rule failed, accel_fs type=%d, err %d\n",
-+			      __func__, type, err);
- 		return err;
- 	}
- 
-@@ -263,10 +263,10 @@ static int accel_fs_tcp_create_groups(struct mlx5e_flow_table *ft,
- 	return err;
- }
- 
--static int accel_fs_tcp_create_table(struct mlx5e_priv *priv, enum accel_fs_tcp_type type)
-+static int accel_fs_tcp_create_table(struct mlx5e_flow_steering *fs, enum accel_fs_tcp_type type)
- {
--	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
--	struct mlx5_flow_namespace *ns = mlx5e_fs_get_ns(priv->fs, false);
-+	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(fs);
-+	struct mlx5_flow_namespace *ns = mlx5e_fs_get_ns(fs, false);
- 	struct mlx5e_flow_table *ft = &accel_tcp->tables[type];
- 	struct mlx5_flow_table_attr ft_attr = {};
- 	int err;
-@@ -284,14 +284,14 @@ static int accel_fs_tcp_create_table(struct mlx5e_priv *priv, enum accel_fs_tcp_
- 		return err;
- 	}
- 
--	netdev_dbg(priv->netdev, "Created fs accel table id %u level %u\n",
--		   ft->t->id, ft->t->level);
-+	mlx5_core_dbg(mlx5e_fs_get_mdev(fs), "Created fs accel table id %u level %u\n",
-+		      ft->t->id, ft->t->level);
- 
- 	err = accel_fs_tcp_create_groups(ft, type);
- 	if (err)
- 		goto err;
- 
--	err = accel_fs_tcp_add_default_rule(priv, type);
-+	err = accel_fs_tcp_add_default_rule(fs, type);
- 	if (err)
- 		goto err;
- 
-@@ -301,18 +301,18 @@ static int accel_fs_tcp_create_table(struct mlx5e_priv *priv, enum accel_fs_tcp_
- 	return err;
- }
- 
--static int accel_fs_tcp_disable(struct mlx5e_priv *priv)
-+static int accel_fs_tcp_disable(struct mlx5e_flow_steering *fs)
- {
--	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(priv->fs, false);
-+	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(fs, false);
- 	int err, i;
- 
- 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++) {
- 		/* Modify ttc rules destination to point back to the indir TIRs */
- 		err = mlx5_ttc_fwd_default_dest(ttc, fs_accel2tt(i));
- 		if (err) {
--			netdev_err(priv->netdev,
--				   "%s: modify ttc[%d] default destination failed, err(%d)\n",
--				   __func__, fs_accel2tt(i), err);
-+			mlx5_core_err(mlx5e_fs_get_mdev(fs),
-+				      "%s: modify ttc[%d] default destination failed, err(%d)\n",
-+				      __func__, fs_accel2tt(i), err);
- 			return err;
- 		}
- 	}
-@@ -320,10 +320,10 @@ static int accel_fs_tcp_disable(struct mlx5e_priv *priv)
+@@ -801,29 +799,31 @@ int mlx5e_ptp_get_rqn(struct mlx5e_ptp *c, u32 *rqn)
  	return 0;
  }
  
--static int accel_fs_tcp_enable(struct mlx5e_priv *priv)
-+static int accel_fs_tcp_enable(struct mlx5e_flow_steering *fs)
+-int mlx5e_ptp_alloc_rx_fs(struct mlx5e_priv *priv)
++int mlx5e_ptp_alloc_rx_fs(struct mlx5e_flow_steering *fs,
++			  const struct mlx5e_profile *profile)
  {
--	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
--	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(priv->fs, false);
-+	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(fs);
-+	struct mlx5_ttc_table *ttc = mlx5e_fs_get_ttc(fs, false);
- 	struct mlx5_flow_destination dest = {};
- 	int err, i;
+ 	struct mlx5e_ptp_fs *ptp_fs;
  
-@@ -334,18 +334,18 @@ static int accel_fs_tcp_enable(struct mlx5e_priv *priv)
- 		/* Modify ttc rules destination to point on the accel_fs FTs */
- 		err = mlx5_ttc_fwd_dest(ttc, fs_accel2tt(i), &dest);
- 		if (err) {
--			netdev_err(priv->netdev,
--				   "%s: modify ttc[%d] destination to accel failed, err(%d)\n",
--				   __func__, fs_accel2tt(i), err);
-+			mlx5_core_err(mlx5e_fs_get_mdev(fs),
-+				      "%s: modify ttc[%d] destination to accel failed, err(%d)\n",
-+				      __func__, fs_accel2tt(i), err);
- 			return err;
- 		}
- 	}
+-	if (!mlx5e_profile_feature_cap(priv->profile, PTP_RX))
++	if (!mlx5e_profile_feature_cap(profile, PTP_RX))
+ 		return 0;
+ 
+ 	ptp_fs = kzalloc(sizeof(*ptp_fs), GFP_KERNEL);
+ 	if (!ptp_fs)
+ 		return -ENOMEM;
+-	mlx5e_fs_set_ptp(priv->fs, ptp_fs);
++	mlx5e_fs_set_ptp(fs, ptp_fs);
+ 
  	return 0;
  }
  
--static void accel_fs_tcp_destroy_table(struct mlx5e_priv *priv, int i)
-+static void accel_fs_tcp_destroy_table(struct mlx5e_flow_steering *fs, int i)
+-void mlx5e_ptp_free_rx_fs(struct mlx5e_priv *priv)
++void mlx5e_ptp_free_rx_fs(struct mlx5e_flow_steering *fs,
++			  const struct mlx5e_profile *profile)
  {
--	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
-+	struct mlx5e_accel_fs_tcp *fs_tcp = mlx5e_fs_get_accel_tcp(fs);
+-	struct mlx5e_ptp_fs *ptp_fs = mlx5e_fs_get_ptp(priv->fs);
++	struct mlx5e_ptp_fs *ptp_fs = mlx5e_fs_get_ptp(fs);
  
- 	if (IS_ERR_OR_NULL(fs_tcp->tables[i].t))
- 		return;
-@@ -355,43 +355,43 @@ static void accel_fs_tcp_destroy_table(struct mlx5e_priv *priv, int i)
- 	fs_tcp->tables[i].t = NULL;
- }
- 
--void mlx5e_accel_fs_tcp_destroy(struct mlx5e_priv *priv)
-+void mlx5e_accel_fs_tcp_destroy(struct mlx5e_flow_steering *fs)
- {
--	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(priv->fs);
-+	struct mlx5e_accel_fs_tcp *accel_tcp = mlx5e_fs_get_accel_tcp(fs);
- 	int i;
- 
- 	if (!accel_tcp)
+-	if (!mlx5e_profile_feature_cap(priv->profile, PTP_RX))
++	if (!mlx5e_profile_feature_cap(profile, PTP_RX))
  		return;
  
--	accel_fs_tcp_disable(priv);
-+	accel_fs_tcp_disable(fs);
- 
- 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++)
--		accel_fs_tcp_destroy_table(priv, i);
-+		accel_fs_tcp_destroy_table(fs, i);
- 
- 	kfree(accel_tcp);
--	mlx5e_fs_set_accel_tcp(priv->fs, NULL);
-+	mlx5e_fs_set_accel_tcp(fs, NULL);
+-	mlx5e_ptp_rx_unset_fs(priv);
++	mlx5e_ptp_rx_unset_fs(fs);
+ 	kfree(ptp_fs);
  }
  
--int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv)
-+int mlx5e_accel_fs_tcp_create(struct mlx5e_flow_steering *fs)
- {
- 	struct mlx5e_accel_fs_tcp *accel_tcp;
- 	int i, err;
+@@ -849,6 +849,6 @@ int mlx5e_ptp_rx_manage_fs(struct mlx5e_priv *priv, bool set)
+ 		netdev_WARN_ONCE(priv->netdev, "Don't try to remove PTP RX-FS rules");
+ 		return -EINVAL;
+ 	}
+-	mlx5e_ptp_rx_unset_fs(priv);
++	mlx5e_ptp_rx_unset_fs(priv->fs);
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+index 92dbbec472ec..5bce554e131a 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/ptp.h
+@@ -74,8 +74,10 @@ void mlx5e_ptp_close(struct mlx5e_ptp *c);
+ void mlx5e_ptp_activate_channel(struct mlx5e_ptp *c);
+ void mlx5e_ptp_deactivate_channel(struct mlx5e_ptp *c);
+ int mlx5e_ptp_get_rqn(struct mlx5e_ptp *c, u32 *rqn);
+-int mlx5e_ptp_alloc_rx_fs(struct mlx5e_priv *priv);
+-void mlx5e_ptp_free_rx_fs(struct mlx5e_priv *priv);
++int mlx5e_ptp_alloc_rx_fs(struct mlx5e_flow_steering *fs,
++			  const struct mlx5e_profile *profile);
++void mlx5e_ptp_free_rx_fs(struct mlx5e_flow_steering *fs,
++			  const struct mlx5e_profile *profile);
+ int mlx5e_ptp_rx_manage_fs(struct mlx5e_priv *priv, bool set);
  
--	if (!MLX5_CAP_FLOWTABLE_NIC_RX(priv->mdev, ft_field_support.outer_ip_version))
-+	if (!MLX5_CAP_FLOWTABLE_NIC_RX(mlx5e_fs_get_mdev(fs), ft_field_support.outer_ip_version))
- 		return -EOPNOTSUPP;
- 
- 	accel_tcp = kvzalloc(sizeof(*accel_tcp), GFP_KERNEL);
- 	if (!accel_tcp)
- 		return -ENOMEM;
--	mlx5e_fs_set_accel_tcp(priv->fs, accel_tcp);
-+	mlx5e_fs_set_accel_tcp(fs, accel_tcp);
- 
- 	for (i = 0; i < ACCEL_FS_TCP_NUM_TYPES; i++) {
--		err = accel_fs_tcp_create_table(priv, i);
-+		err = accel_fs_tcp_create_table(fs, i);
- 		if (err)
- 			goto err_destroy_tables;
+ enum {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+index ffcc9a94fc7d..a84559b2bd92 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@ -1338,7 +1338,7 @@ int mlx5e_create_flow_steering(struct mlx5e_priv *priv)
+ 		goto err_destroy_l2_table;
  	}
  
--	err = accel_fs_tcp_enable(priv);
-+	err = accel_fs_tcp_enable(fs);
+-	err = mlx5e_ptp_alloc_rx_fs(priv);
++	err = mlx5e_ptp_alloc_rx_fs(priv->fs, priv->profile);
  	if (err)
- 		goto err_destroy_tables;
+ 		goto err_destory_vlan_table;
  
-@@ -399,8 +399,8 @@ int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv)
+@@ -1362,7 +1362,7 @@ int mlx5e_create_flow_steering(struct mlx5e_priv *priv)
  
- err_destroy_tables:
- 	while (--i >= 0)
--		accel_fs_tcp_destroy_table(priv, i);
-+		accel_fs_tcp_destroy_table(fs, i);
- 	kfree(accel_tcp);
--	mlx5e_fs_set_accel_tcp(priv->fs, NULL);
-+	mlx5e_fs_set_accel_tcp(fs, NULL);
- 	return err;
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
-index 589235824543..a032bff482a6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/fs_tcp.h
-@@ -4,19 +4,19 @@
- #ifndef __MLX5E_ACCEL_FS_TCP_H__
- #define __MLX5E_ACCEL_FS_TCP_H__
- 
--#include "en.h"
-+#include "en/fs.h"
- 
- #ifdef CONFIG_MLX5_EN_TLS
--int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv);
--void mlx5e_accel_fs_tcp_destroy(struct mlx5e_priv *priv);
--struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
-+int mlx5e_accel_fs_tcp_create(struct mlx5e_flow_steering *fs);
-+void mlx5e_accel_fs_tcp_destroy(struct mlx5e_flow_steering *fs);
-+struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_flow_steering *fs,
- 					       struct sock *sk, u32 tirn,
- 					       uint32_t flow_tag);
- void mlx5e_accel_fs_del_sk(struct mlx5_flow_handle *rule);
- #else
--static inline int mlx5e_accel_fs_tcp_create(struct mlx5e_priv *priv) { return 0; }
--static inline void mlx5e_accel_fs_tcp_destroy(struct mlx5e_priv *priv) {}
--static inline struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_priv *priv,
-+static inline int mlx5e_accel_fs_tcp_create(struct mlx5e_flow_steering *fs) { return 0; }
-+static inline void mlx5e_accel_fs_tcp_destroy(struct mlx5e_flow_steering *fs) {}
-+static inline struct mlx5_flow_handle *mlx5e_accel_fs_add_sk(struct mlx5e_flow_steering *fs,
- 							     struct sock *sk, u32 tirn,
- 							     uint32_t flow_tag)
- { return ERR_PTR(-EOPNOTSUPP); }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-index 30a70d139046..c0b77963cc7c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls.c
-@@ -118,9 +118,9 @@ int mlx5e_ktls_set_feature_rx(struct net_device *netdev, bool enable)
- 
- 	mutex_lock(&priv->state_lock);
- 	if (enable)
--		err = mlx5e_accel_fs_tcp_create(priv);
-+		err = mlx5e_accel_fs_tcp_create(priv->fs);
- 	else
--		mlx5e_accel_fs_tcp_destroy(priv);
-+		mlx5e_accel_fs_tcp_destroy(priv->fs);
- 	mutex_unlock(&priv->state_lock);
- 
- 	return err;
-@@ -138,7 +138,7 @@ int mlx5e_ktls_init_rx(struct mlx5e_priv *priv)
- 		return -ENOMEM;
- 
- 	if (priv->netdev->features & NETIF_F_HW_TLS_RX) {
--		err = mlx5e_accel_fs_tcp_create(priv);
-+		err = mlx5e_accel_fs_tcp_create(priv->fs);
- 		if (err) {
- 			destroy_workqueue(priv->tls->rx_wq);
- 			return err;
-@@ -154,7 +154,7 @@ void mlx5e_ktls_cleanup_rx(struct mlx5e_priv *priv)
- 		return;
- 
- 	if (priv->netdev->features & NETIF_F_HW_TLS_RX)
--		mlx5e_accel_fs_tcp_destroy(priv);
-+		mlx5e_accel_fs_tcp_destroy(priv->fs);
- 
- 	destroy_workqueue(priv->tls->rx_wq);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 27483aa7be8a..13145ecaf839 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -111,7 +111,7 @@ static void accel_rule_handle_work(struct work_struct *work)
- 	if (unlikely(test_bit(MLX5E_PRIV_RX_FLAG_DELETING, priv_rx->flags)))
- 		goto out;
- 
--	rule = mlx5e_accel_fs_add_sk(accel_rule->priv, priv_rx->sk,
-+	rule = mlx5e_accel_fs_add_sk(accel_rule->priv->fs, priv_rx->sk,
- 				     mlx5e_tir_get_tirn(&priv_rx->tir),
- 				     MLX5_FS_DEFAULT_FLOW_TAG);
- 	if (!IS_ERR_OR_NULL(rule))
+ void mlx5e_destroy_flow_steering(struct mlx5e_priv *priv)
+ {
+-	mlx5e_ptp_free_rx_fs(priv);
++	mlx5e_ptp_free_rx_fs(priv->fs, priv->profile);
+ 	mlx5e_destroy_vlan_table(priv);
+ 	mlx5e_destroy_l2_table(priv);
+ 	mlx5e_destroy_ttc_table(priv);
 -- 
 2.37.1
 
