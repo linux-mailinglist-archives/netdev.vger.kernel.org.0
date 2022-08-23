@@ -2,72 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF6C59E461
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:32:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328B759E411
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 15:31:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240493AbiHWNKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 09:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
+        id S238847AbiHWNKm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 09:10:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242021AbiHWNJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:09:37 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B11D07E303
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:11:19 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id d23so14635942lfl.13
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:11:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=AZasA7ru4RBuOT7il+83aHYYeB5TFBrGiGUj7Hz0hho=;
-        b=rEDtys7/7ehxHoe6Wrw9K9tDKHsQaWvQWc/iO7EXhJIqEvqH8g0cRZm+ntDEI/BBho
-         RUPePCWjNMAQQa7z1vSihgZ+HQaj1h021VoaQeLMiOw0+w1uPPRtPLpnA17oilmxOKig
-         Ck5pabaJqWlll2wAeFXbP4S8W2o47Kvf0V+RivEivn5Gbv5eKO5RlYB5vz4FJFGQqnUJ
-         q/7uO0DlfHX5rRd8SmiH/Nujcdetzhqfzt1CXFAsO1p4RZqtgUs9h82SYNJULDZpgdxi
-         /dTg9cpbEYzGJVHnGv8PaBuVyF0m7BD7n4f9UzIzBqh5GtAVqvBF8tJdfVPd6yHpXRVK
-         6Clw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=AZasA7ru4RBuOT7il+83aHYYeB5TFBrGiGUj7Hz0hho=;
-        b=nFsRHLqgB/CNnMH4GpBkmWGYmIM9V/1ELidHg2wsPP0YYehLPTflW5mH28PJI7ub6W
-         Hw9QpkwOEMAfcnUvRmLIq2Md8/ZYv7AsdkDjlXJOrYTCUmTNfGhwjj0Dhd+JlyO9Kko5
-         ly0zO/jGnhmMv/qcVVJM8NHiAmCAztDoRLI7U4+q+F3qBrHEBuBXFxSFRY0io4QQdgf+
-         9YvOpoE3V5LpuwMpher9q0N2OWcthIiigSdlgYUJTsMRR7G+LNyzug/UnN/snq54G/T9
-         7pnZu0bpm1vmxiQ2caKiVTbIsHO7vWbpi0IvstmCzrdB6ENu75TpOWB+7aCplP5KcN47
-         ZA3g==
-X-Gm-Message-State: ACgBeo2eXPVZwdZ5FloCRGBse+HRz5uui4WkN/foJ7iVxUUB+ptTFk1S
-        CGOP2mOPmz0CcWKr3vt3nZUKDA==
-X-Google-Smtp-Source: AA6agR6pd09B988zCU50PRE+Ehh4CmDVrkjcaGeGv4/suuwgIa/1BEky+q4J4ZmdTHCH0FOq/Grfmg==
-X-Received: by 2002:ac2:4e6a:0:b0:492:f027:218e with SMTP id y10-20020ac24e6a000000b00492f027218emr1721637lfs.676.1661249414775;
-        Tue, 23 Aug 2022 03:10:14 -0700 (PDT)
-Received: from krzk-bin.. (89-27-92-210.bb.dnainternet.fi. [89.27.92.210])
-        by smtp.gmail.com with ESMTPSA id 28-20020ac25f5c000000b00492db7f47f2sm1383025lfz.275.2022.08.23.03.10.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 03:10:14 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: net: can: nxp,sja1000: drop ref from reg-io-width
-Date:   Tue, 23 Aug 2022 13:10:11 +0300
-Message-Id: <20220823101011.386970-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S240412AbiHWNKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 09:10:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380DF133BBC
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 03:11:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFDEF61238
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 10:10:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3B6BBC43141;
+        Tue, 23 Aug 2022 10:10:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661249418;
+        bh=Ha23U3dU1lKaUI9d/wLmyct65n3o243sbAAQP/Lhjlw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=VYBFQ0B8ikDWagVVZM86KYHI44sJPqaKFs58iX54st9jURXW9g7wQMXp4SmW3pn7H
+         kVYKODzFdFeO4Mw5yoyveyJWIcdapzHEmEldNN9FXnfyH8H1UQ+ov6Hmjw9jgQ8LW9
+         ygbY7uE9S150Xgh00FiUx0Ktc/phdNdTN1cfUMRCQfeIvmtCUMGDVnyqvLhG3SeVLv
+         neJoZOcgLc/4enIALC54N5uprK6ykRfdk3o7llwdu4WiRoLXMRg5Ry3anC6aNnivuE
+         KMOv+t/w5awjjT5SqlNVwQgBLikgtvTRxermbwUk9cqWgD3jNatIuCGB8FscxXiflO
+         L2EJkdl+Gc40g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1CE63E2A041;
+        Tue, 23 Aug 2022 10:10:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Subject: Re: [PATCH v3 net-next 0/9] DSA changes for multiple CPU ports (part 3)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166124941811.27612.2369948958047786064.git-patchwork-notify@kernel.org>
+Date:   Tue, 23 Aug 2022 10:10:18 +0000
+References: <20220819174820.3585002-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220819174820.3585002-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, colin.foster@in-advantage.com,
+        roopa@nvidia.com, razor@blackwall.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,25 +60,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-reg-io-width is a standard property, so no need for defining its type
+Hello:
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml | 1 -
- 1 file changed, 1 deletion(-)
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-diff --git a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-index b1327c5b86cf..d919910c690c 100644
---- a/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-+++ b/Documentation/devicetree/bindings/net/can/nxp,sja1000.yaml
-@@ -31,7 +31,6 @@ properties:
-     maxItems: 1
- 
-   reg-io-width:
--    $ref: /schemas/types.yaml#/definitions/uint32
-     description: I/O register width (in bytes) implemented by this device
-     default: 1
-     enum: [ 1, 2, 4 ]
+On Fri, 19 Aug 2022 20:48:11 +0300 you wrote:
+> Those who have been following part 1:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220511095020.562461-1-vladimir.oltean@nxp.com/
+> and part 2:
+> https://patchwork.kernel.org/project/netdevbpf/cover/20220521213743.2735445-1-vladimir.oltean@nxp.com/
+> will know that I am trying to enable the second internal port pair from
+> the NXP LS1028A Felix switch for DSA-tagged traffic via "ocelot-8021q".
+> This series represents part 3 of that effort.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v3,net-next,1/9] net: dsa: walk through all changeupper notifier functions
+    https://git.kernel.org/netdev/net-next/c/4c3f80d22b2e
+  - [v3,net-next,2/9] net: dsa: don't stop at NOTIFY_OK when calling ds->ops->port_prechangeupper
+    https://git.kernel.org/netdev/net-next/c/0498277ee17b
+  - [v3,net-next,3/9] net: bridge: move DSA master bridging restriction to DSA
+    https://git.kernel.org/netdev/net-next/c/920a33cd7231
+  - [v3,net-next,4/9] net: dsa: existing DSA masters cannot join upper interfaces
+    https://git.kernel.org/netdev/net-next/c/4f03dcc6b9a0
+  - [v3,net-next,5/9] net: dsa: only bring down user ports assigned to a given DSA master
+    https://git.kernel.org/netdev/net-next/c/7136097e1199
+  - [v3,net-next,6/9] net: dsa: all DSA masters must be down when changing the tagging protocol
+    https://git.kernel.org/netdev/net-next/c/f41ec1fd1c20
+  - [v3,net-next,7/9] net: dsa: use dsa_tree_for_each_cpu_port in dsa_tree_{setup,teardown}_master
+    https://git.kernel.org/netdev/net-next/c/5dc760d12082
+  - [v3,net-next,8/9] net: mscc: ocelot: set up tag_8021q CPU ports independent of user port affinity
+    https://git.kernel.org/netdev/net-next/c/36a0bf443585
+  - [v3,net-next,9/9] net: mscc: ocelot: adjust forwarding domain for CPU ports in a LAG
+    https://git.kernel.org/netdev/net-next/c/291ac1517af5
+
+You are awesome, thank you!
 -- 
-2.34.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
