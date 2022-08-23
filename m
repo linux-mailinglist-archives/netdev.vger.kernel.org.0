@@ -2,85 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19C5A59EEDD
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:16:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E97059EEE2
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 00:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232282AbiHWWQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 18:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
+        id S232339AbiHWWR6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 18:17:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234372AbiHWWQC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:16:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1DFEB868
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:13:57 -0700 (PDT)
+        with ESMTP id S232392AbiHWWR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 18:17:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A3B303
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:17:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 57C5D616A9
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:13:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DD1C433D7;
-        Tue, 23 Aug 2022 22:13:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76E22B82190
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC3AC433D6;
+        Tue, 23 Aug 2022 22:17:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661292836;
-        bh=Prhox3lhzPWb536NCkfodNU7o6Jkqz6iVRb8D/4bAKw=;
+        s=k20201202; t=1661293066;
+        bh=UtcQgpw08WQTBwbUBvkZDpCzaab5er0XXV9k5g8yEVQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hXqUHX6V4Db4DDJKmkdLlzwQ9W3SGu4V6E5vzVEGZooUSF3qTUTwehxOWzWg+3QWV
-         7suuOVQsoeSaVMFaibKwkAxAwlIoEQCuvDNVszuoTj2wbNQdsHdatmr4PoqeFsdrgE
-         FonjaboEmLQoxDnHOa7T3D5mnQq/tOKdetpesVmV/VWTKI5VWeZj6BWgIqbbWYJZcl
-         3p3YP8RKjdKb1x/sPP5oxK50NSfHlbhLbMHdOf4DdVFYU4ixs+ehkQi4OcOwnPDmT2
-         hzD9YUdiqqt0whiJVU08vX/Paqvlk0c6ZiSKSrTJup6lJSKqM2YflMPszYgbaxVJOr
-         IMcJATvbwNI9w==
-Date:   Tue, 23 Aug 2022 15:13:54 -0700
+        b=M5ydJ3irKtzbcbzI6pkeS8oxl8SNmHYxQB+8XSsX/5FWg9q4bKnSS8qvLXwJxsaHp
+         iytoxBOPtPQRwC+oXbNSMamG0cgrBs6BnEfDyfUI1i756ZX1pICZAHIcc4INOQGEXp
+         oJ+9UxZ67gVZC9ff/xoFc97f6I2NyGCgPoR17e300jOJybTiHEv5qBogSzzFXvDFRr
+         1NmnKdX4wgS3AWENRewFSrAw5Za7qKkny08bE/3j8xH48h6PkxG4cP+tuC2KKk2NVO
+         mcUKrvUg2YhOqIYTSm6QjL4B/sLVSyUECgpVwxQoic9V8udUV6BP+VZPyKlkhyzJJw
+         hXiRtaoiXQiDg==
+Date:   Tue, 23 Aug 2022 15:17:45 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     netdev@vger.kernel.org, Michael Chan <michael.chan@broadcom.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Simon Horman <simon.horman@corigine.com>,
-        Shannon Nelson <snelson@pensando.io>,
-        Ariel Elior <aelior@marvell.com>,
-        Manish Chopra <manishc@marvell.com>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        Fei Qin <fei.qin@corigine.com>,
-        Louis Peens <louis.peens@corigine.com>,
-        Yu Xiao <yu.xiao@corigine.com>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>, Yufeng Mo <moyufeng@huawei.com>,
-        Sixiang Chen <sixiang.chen@corigine.com>,
-        Yinjun Zhang <yinjun.zhang@corigine.com>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Erik Ekman <erik@kryo.se>, Ido Schimmel <idosch@nvidia.com>,
-        Jie Wang <wangjie125@huawei.com>,
-        Moshe Tal <moshet@nvidia.com>,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Marco Bonelli <marco@mebeim.net>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Subject: Re: [PATCH net-next 1/2] ethtool: pass netlink extended ACK to
- .set_fecparam
-Message-ID: <20220823151354.4becbfe7@kernel.org>
-In-Reply-To: <20220823150438.3613327-2-jacob.e.keller@intel.com>
+Cc:     netdev@vger.kernel.org, Paul Greenwalt <paul.greenwalt@intel.com>
+Subject: Re: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC
+ disabled via ETHTOOL_SFECPARAM
+Message-ID: <20220823151745.3b6b67cb@kernel.org>
+In-Reply-To: <20220823150438.3613327-3-jacob.e.keller@intel.com>
 References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <20220823150438.3613327-2-jacob.e.keller@intel.com>
+        <20220823150438.3613327-3-jacob.e.keller@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -94,13 +54,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 08:04:37 -0700 Jacob Keller wrote:
-> Add the netlink extended ACK structure pointer to the interface for
-> .set_fecparam. This allows reporting errors to the user appropriately when
-> using the netlink ethtool interface.
+On Tue, 23 Aug 2022 08:04:38 -0700 Jacob Keller wrote:
+> The default Link Establishment State Machine (LESM) behavior does not
 
-Could you wrap it into a structure perhaps?
+LESM is the algo as specified by the IEEE standard? If so could you add
+the citation (section of the spec where it's defined)?
 
-Would be good if we didn't have to modify the signature of the callback
-next time we need to extend it (especially since struct ethtool_fecparam
-is ioctl uABI so we can't really add fields there).
+Is disabling the only customization we may want?
+
+> allow the use of FEC disabled if the media does not support FEC
+> disabled. However users may want to override this behavior.
+> 
+> To support this, accept the ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF as a request
+> to automatically select an appropriate FEC mode including potentially
+> disabling FEC.
+> 
+> This is distinct from ETHTOOL_FEC_AUTO because that will not allow the LESM
+> to select FEC disabled. It is distinct from ETHTOOL_FEC_OFF because
+> FEC_OFF will always disable FEC without any LESM automatic selection.
+> 
+> This *does* mean that ice is now accepting one "bitwise OR" set for FEC
+> configuration, which is somewhat against the recommendations made in
+> 6dbf94b264e6 ("ethtool: clarify the ethtool FEC interface"), but I am not
+> sure if the addition of an entirely new ETHTOOL_FEC_AUTO_DIS would make any
+> sense here.
+> 
+> With this change, users can opt to allow automatic FEC disable via
+> 
+>   ethtool --set-fec ethX encoding auto off
+
