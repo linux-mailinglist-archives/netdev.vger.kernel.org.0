@@ -2,62 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76AE259CE94
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 04:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF1B659CE9D
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 04:33:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239639AbiHWCaD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 22 Aug 2022 22:30:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55932 "EHLO
+        id S239232AbiHWCbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 22 Aug 2022 22:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239647AbiHWC35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 22:29:57 -0400
+        with ESMTP id S239675AbiHWCbW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 22 Aug 2022 22:31:22 -0400
 Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B62B55B78C;
-        Mon, 22 Aug 2022 19:29:55 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id i77so9878107ioa.7;
-        Mon, 22 Aug 2022 19:29:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2A15B7A1;
+        Mon, 22 Aug 2022 19:31:20 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id r141so9894016iod.4;
+        Mon, 22 Aug 2022 19:31:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=ZcLCHUAHqBvhE+BPVKCIdN13/BM8vZJT4A+cUjlXw4E=;
-        b=ZsrnJoSj2cpPX6B10V/BkhfeaHk9dK40cMk2Tovo2lHKm3FOgJG8biQhE42p8fplsM
-         i8I1c0u1EuBkd3G67MreW/3nSYUQKK68IgYN0v5ar0Gfm5GFQjagcoGbcQ+o0j874W9z
-         vZq3j6ne5/itjXYD80XIIL3wPl0VkU0qj5/lOvwqsi4QTKbQjc1bDr1/hCzDX6bb4AZg
-         nwiC4uH3dwL/kfdo1DDOjuTOMCrDs7mc1GhGk1GGyiYJBx68CK2zOI5wTpgp4ILoO23n
-         bO5monBC/JtnWcXEJOJQBLfD+qXNNNzIffw2xS17sJnQEawHVuFI9Lq/s/KL71rkHmgE
-         bHLQ==
+        bh=wFNsiGjmi80tuNhNG4S7r7aXWiaSaso2Xi6HELhYG6U=;
+        b=Dhy/N0Lc0ZlxKqbiExevPdDkkleHU5w5C8ypiYQuxSPjAfAc6qTPf5p1K3UJ6LjAOb
+         HAHG2/bKGkcHEBKcayoj8EaDwg87nOd4vS4QThBJ/cXZlc+ojoGwjz5+dn8osctWE5Z0
+         NuK27fYs6Bf2lmYl5tbkI0ZTC8w/V0cysXabCrIrlMGnjnTTKK9xWoLiRQwhiDSe0FqQ
+         sBCcz/PBHRtylMrrGft4rgkef+fa5h053KlfHUqYUQD1urwnmUZ7SzX2pZe9qDOYubPL
+         Kye322H2XUYgBCxPjPos+j3drMaO8ETkPivbjH2VBDrQKLT5LdfrB97Ww52rwOZZhrJn
+         BqbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=ZcLCHUAHqBvhE+BPVKCIdN13/BM8vZJT4A+cUjlXw4E=;
-        b=ZJMjuGO/hwdixnxQzmxQrPtd128iZZg/gDC9Uby+YTHuClZKPZ+KUIiqTB21O8+dcR
-         DgVLVnEejSKb5iaX3UcIxWmvDKNjXwY5utg/i+PRoY0o5g9agV9Ya5qNstQ1XmSDC38J
-         4d5vjXz37vh1Y8AKCwumuva3/ckFqwypbvGIWa0Ckguz+G8HJBml7MpsELbQVqjzPZyH
-         Xiek+O9jFOR22a6KQUBSkrX8B5obzJ91MuIRkk/SLrp/0vV63J9zf3/qAzzWDU2FwYgY
-         PTYr+mZiUCRQiusT8bOsxRFH7hRpYZJfGPZIEsCHxNwOMX3ydl94UBjcubS5C4XAsyja
-         MBHQ==
-X-Gm-Message-State: ACgBeo1EAc6nCapb8adkK5+GWYKIeimVZ733oFI20jy1Pu38qeX0qyOp
-        Duv1cBYYUuj5KegM1NrzxcdxjRn5gRHGQYIJfKaVIAsyzrg=
-X-Google-Smtp-Source: AA6agR6CoFAvfIy5sfCheMoJRuj2lfp4KfHBRFUmAnECwZgCfv0LkmTc5eHMzQyVLgn+msrC07DL3vlB6tc8nvKNqB0=
-X-Received: by 2002:a02:3f63:0:b0:349:cef9:d8c2 with SMTP id
- c35-20020a023f63000000b00349cef9d8c2mr5004462jaf.231.1661221794987; Mon, 22
- Aug 2022 19:29:54 -0700 (PDT)
+        bh=wFNsiGjmi80tuNhNG4S7r7aXWiaSaso2Xi6HELhYG6U=;
+        b=frLOKwVGJX4/oRzbQFT214gc7elK6aUsDvdvFS+STFx7qGMB/vUz7Rv4MxL8OnqN5M
+         DSBG3WVrXo4dRD5+GdP2izAZMT1y1KeSHQ2Yv7XHJIXT8k4Zd//akBx24j8miduQipx/
+         dekNwKr5wyttsgOB5bjPfNn0nnTv/Z/XSY5Gg2muWcthyG4iFbyGzn865/gtl1IdpDXj
+         LHBw+Yd0Cqeg+7v2xhkGy/bBpI6CVaodXty5evqX0KJN3lCQ4SOI4pJhCPsL0iEa4ykB
+         mI3WBQ+VVcL2jSg4HUVM1zWuhzB6g2IROJ+tKEJNV3fajd/TKw9vcVxxZDndhV82YxzV
+         +p5A==
+X-Gm-Message-State: ACgBeo0ZHZQkXkFI8q6NmMNCsvkuLfygg+zEH14hyyctE6bdNxSmIMJj
+        /cE9jtlpXByiN/32aH+rQeS+b9dwUpJLn5PeaLA=
+X-Google-Smtp-Source: AA6agR4r89R8hXVIyjTZRkwiiYQeGSBxGDXr5z8qGTYSYIt+jiTteBxWiS0fBz8hdsOdrGGn1YsM6QNKyJ0TaIVsCKo=
+X-Received: by 2002:a6b:2ac4:0:b0:688:3a14:2002 with SMTP id
+ q187-20020a6b2ac4000000b006883a142002mr9665185ioq.62.1661221880083; Mon, 22
+ Aug 2022 19:31:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1661192455.git.dxu@dxuuu.xyz> <073173502d762faf87bde0ca23e609c84848dd7e.1661192455.git.dxu@dxuuu.xyz>
- <CAP01T74XK_6wMi+tzReTkBqmZkKbUqCmV6pVwcbCMrHrv0X0SA@mail.gmail.com> <20220823021923.vmhp5r76dvgwvh2j@kashmir.localdomain>
-In-Reply-To: <20220823021923.vmhp5r76dvgwvh2j@kashmir.localdomain>
+References: <20220822235649.2218031-1-joannelkoong@gmail.com> <20220822235649.2218031-3-joannelkoong@gmail.com>
+In-Reply-To: <20220822235649.2218031-3-joannelkoong@gmail.com>
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Tue, 23 Aug 2022 04:29:17 +0200
-Message-ID: <CAP01T77mwS=_sW803CaBgpFtuwMEd4fS81uTvVKYLdGyg5hv1A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 4/5] bpf: Add support for writing to nf_conn:mark
-To:     Daniel Xu <dxu@dxuuu.xyz>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, pablo@netfilter.org, fw@strlen.de,
-        toke@kernel.org, martin.lau@linux.dev,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Date:   Tue, 23 Aug 2022 04:30:42 +0200
+Message-ID: <CAP01T77h2+a9OonHuiPRFsAForWYJfQ71G6teqbcLg4KuGpK5A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 2/3] bpf: Add xdp dynptrs
+To:     Joanne Koong <joannelkoong@gmail.com>
+Cc:     bpf@vger.kernel.org, andrii@kernel.org, daniel@iogearbox.net,
+        ast@kernel.org, kafai@fb.com, kuba@kernel.org,
+        netdev@vger.kernel.org, "toke@redhat.com" <toke@redhat.com>,
+        "brouer@redhat.com" <brouer@redhat.com>, lorenzo@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -69,302 +67,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 at 04:19, Daniel Xu <dxu@dxuuu.xyz> wrote:
->
-> On Tue, Aug 23, 2022 at 02:16:42AM +0200, Kumar Kartikeya Dwivedi wrote:
-> > On Mon, 22 Aug 2022 at 20:26, Daniel Xu <dxu@dxuuu.xyz> wrote:
-> > >
-> > > Support direct writes to nf_conn:mark from TC and XDP prog types. This
-> > > is useful when applications want to store per-connection metadata. This
-> > > is also particularly useful for applications that run both bpf and
-> > > iptables/nftables because the latter can trivially access this metadata.
-> > >
-> > > One example use case would be if a bpf prog is responsible for advanced
-> > > packet classification and iptables/nftables is later used for routing
-> > > due to pre-existing/legacy code.
-> > >
-> > > Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
-> > > ---
-> > >  include/net/netfilter/nf_conntrack_bpf.h | 22 ++++++
-> > >  net/core/filter.c                        | 34 +++++++++
-> > >  net/netfilter/nf_conntrack_bpf.c         | 91 +++++++++++++++++++++++-
-> > >  net/netfilter/nf_conntrack_core.c        |  1 +
-> > >  4 files changed, 147 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/include/net/netfilter/nf_conntrack_bpf.h b/include/net/netfilter/nf_conntrack_bpf.h
-> > > index a473b56842c5..6fc03066846b 100644
-> > > --- a/include/net/netfilter/nf_conntrack_bpf.h
-> > > +++ b/include/net/netfilter/nf_conntrack_bpf.h
-> > > @@ -3,6 +3,7 @@
-> > >  #ifndef _NF_CONNTRACK_BPF_H
-> > >  #define _NF_CONNTRACK_BPF_H
-> > >
-> > > +#include <linux/bpf.h>
-> > >  #include <linux/btf.h>
-> > >  #include <linux/kconfig.h>
-> > >
-> > > @@ -10,6 +11,13 @@
-> > >      (IS_MODULE(CONFIG_NF_CONNTRACK) && IS_ENABLED(CONFIG_DEBUG_INFO_BTF_MODULES))
-> > >
-> > >  extern int register_nf_conntrack_bpf(void);
-> > > +extern void cleanup_nf_conntrack_bpf(void);
-> > > +extern int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                         const struct btf *btf,
-> > > +                                         const struct btf_type *t, int off,
-> > > +                                         int size, enum bpf_access_type atype,
-> > > +                                         u32 *next_btf_id,
-> > > +                                         enum bpf_type_flag *flag);
-> > >
-> > >  #else
-> > >
-> > > @@ -18,6 +26,20 @@ static inline int register_nf_conntrack_bpf(void)
-> > >         return 0;
-> > >  }
-> > >
-> > > +static inline void cleanup_nf_conntrack_bpf(void)
-> > > +{
-> > > +}
-> > > +
-> > > +static inline int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                                const struct btf *btf,
-> > > +                                                const struct btf_type *t, int off,
-> > > +                                                int size, enum bpf_access_type atype,
-> > > +                                                u32 *next_btf_id,
-> > > +                                                enum bpf_type_flag *flag)
-> > > +{
-> > > +       return -EACCES;
-> > > +}
-> > > +
-> > >  #endif
-> > >
-> > >  #endif /* _NF_CONNTRACK_BPF_H */
-> > > diff --git a/net/core/filter.c b/net/core/filter.c
-> > > index 1acfaffeaf32..25bdbf6dc76b 100644
-> > > --- a/net/core/filter.c
-> > > +++ b/net/core/filter.c
-> > > @@ -18,6 +18,7 @@
-> > >   */
-> > >
-> > >  #include <linux/atomic.h>
-> > > +#include <linux/bpf_verifier.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/types.h>
-> > >  #include <linux/mm.h>
-> > > @@ -55,6 +56,7 @@
-> > >  #include <net/sock_reuseport.h>
-> > >  #include <net/busy_poll.h>
-> > >  #include <net/tcp.h>
-> > > +#include <net/netfilter/nf_conntrack_bpf.h>
-> > >  #include <net/xfrm.h>
-> > >  #include <net/udp.h>
-> > >  #include <linux/bpf_trace.h>
-> > > @@ -8628,6 +8630,21 @@ static bool tc_cls_act_is_valid_access(int off, int size,
-> > >         return bpf_skb_is_valid_access(off, size, type, prog, info);
-> > >  }
-> > >
-> > > +static int tc_cls_act_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                       const struct btf *btf,
-> > > +                                       const struct btf_type *t, int off,
-> > > +                                       int size, enum bpf_access_type atype,
-> > > +                                       u32 *next_btf_id,
-> > > +                                       enum bpf_type_flag *flag)
-> > > +{
-> > > +       if (atype == BPF_READ)
-> > > +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-> > > +                                        flag);
-> > > +
-> > > +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-> > > +                                             next_btf_id, flag);
-> > > +}
-> > > +
-> > >  static bool __is_valid_xdp_access(int off, int size)
-> > >  {
-> > >         if (off < 0 || off >= sizeof(struct xdp_md))
-> > > @@ -8687,6 +8704,21 @@ void bpf_warn_invalid_xdp_action(struct net_device *dev, struct bpf_prog *prog,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
-> > >
-> > > +static int xdp_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                const struct btf *btf,
-> > > +                                const struct btf_type *t, int off,
-> > > +                                int size, enum bpf_access_type atype,
-> > > +                                u32 *next_btf_id,
-> > > +                                enum bpf_type_flag *flag)
-> > > +{
-> > > +       if (atype == BPF_READ)
-> > > +               return btf_struct_access(log, btf, t, off, size, atype, next_btf_id,
-> > > +                                        flag);
-> > > +
-> > > +       return nf_conntrack_btf_struct_access(log, btf, t, off, size, atype,
-> > > +                                             next_btf_id, flag);
-> > > +}
-> > > +
-> > >  static bool sock_addr_is_valid_access(int off, int size,
-> > >                                       enum bpf_access_type type,
-> > >                                       const struct bpf_prog *prog,
-> > > @@ -10581,6 +10613,7 @@ const struct bpf_verifier_ops tc_cls_act_verifier_ops = {
-> > >         .convert_ctx_access     = tc_cls_act_convert_ctx_access,
-> > >         .gen_prologue           = tc_cls_act_prologue,
-> > >         .gen_ld_abs             = bpf_gen_ld_abs,
-> > > +       .btf_struct_access      = tc_cls_act_btf_struct_access,
-> > >  };
-> > >
-> > >  const struct bpf_prog_ops tc_cls_act_prog_ops = {
-> > > @@ -10592,6 +10625,7 @@ const struct bpf_verifier_ops xdp_verifier_ops = {
-> > >         .is_valid_access        = xdp_is_valid_access,
-> > >         .convert_ctx_access     = xdp_convert_ctx_access,
-> > >         .gen_prologue           = bpf_noop_prologue,
-> > > +       .btf_struct_access      = xdp_btf_struct_access,
-> > >  };
-> > >
-> > >  const struct bpf_prog_ops xdp_prog_ops = {
-> > > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> > > index 1cd87b28c9b0..da54355927d4 100644
-> > > --- a/net/netfilter/nf_conntrack_bpf.c
-> > > +++ b/net/netfilter/nf_conntrack_bpf.c
-> > > @@ -6,8 +6,10 @@
-> > >   * are exposed through to BPF programs is explicitly unstable.
-> > >   */
-> > >
-> > > +#include <linux/bpf_verifier.h>
-> > >  #include <linux/bpf.h>
-> > >  #include <linux/btf.h>
-> > > +#include <linux/mutex.h>
-> > >  #include <linux/types.h>
-> > >  #include <linux/btf_ids.h>
-> > >  #include <linux/net_namespace.h>
-> > > @@ -184,6 +186,79 @@ static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
-> > >         return ct;
-> > >  }
-> > >
-> > > +BTF_ID_LIST(btf_nf_conn_ids)
-> > > +BTF_ID(struct, nf_conn)
-> > > +BTF_ID(struct, nf_conn___init)
-> > > +
-> > > +static DEFINE_MUTEX(btf_access_lock);
-> > > +static int (*nfct_bsa)(struct bpf_verifier_log *log,
-> > > +                      const struct btf *btf,
-> > > +                      const struct btf_type *t, int off,
-> > > +                      int size, enum bpf_access_type atype,
-> > > +                      u32 *next_btf_id,
-> > > +                      enum bpf_type_flag *flag);
-> > > +
-> > > +/* Check writes into `struct nf_conn` */
-> > > +static int _nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                          const struct btf *btf,
-> > > +                                          const struct btf_type *t, int off,
-> > > +                                          int size, enum bpf_access_type atype,
-> > > +                                          u32 *next_btf_id,
-> > > +                                          enum bpf_type_flag *flag)
-> > > +{
-> > > +       const struct btf_type *ncit;
-> > > +       const struct btf_type *nct;
-> > > +       size_t end;
-> > > +
-> > > +       ncit = btf_type_by_id(btf, btf_nf_conn_ids[1]);
-> > > +       nct = btf_type_by_id(btf, btf_nf_conn_ids[0]);
-> > > +
-> > > +       if (t != nct && t != ncit) {
-> > > +               bpf_log(log, "only read is supported\n");
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       /* `struct nf_conn` and `struct nf_conn___init` have the same layout
-> > > +        * so we are safe to simply merge offset checks here
-> > > +        */
-> > > +       switch (off) {
-> > > +#if defined(CONFIG_NF_CONNTRACK_MARK)
-> > > +       case offsetof(struct nf_conn, mark):
-> > > +               end = offsetofend(struct nf_conn, mark);
-> > > +               break;
-> > > +#endif
-> > > +       default:
-> > > +               bpf_log(log, "no write support to nf_conn at off %d\n", off);
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       if (off + size > end) {
-> > > +               bpf_log(log,
-> > > +                       "write access at off %d with size %d beyond the member of nf_conn ended at %zu\n",
-> > > +                       off, size, end);
-> > > +               return -EACCES;
-> > > +       }
-> > > +
-> > > +       return 0;
-> > > +}
-> > > +
-> > > +int nf_conntrack_btf_struct_access(struct bpf_verifier_log *log,
-> > > +                                  const struct btf *btf,
-> > > +                                  const struct btf_type *t, int off,
-> > > +                                  int size, enum bpf_access_type atype,
-> > > +                                  u32 *next_btf_id,
-> > > +                                  enum bpf_type_flag *flag)
-> > > +{
-> > > +       int ret = -EACCES;
-> > > +
-> > > +       mutex_lock(&btf_access_lock);
-> > > +       if (nfct_bsa)
-> > > +               ret = nfct_bsa(log, btf, t, off, size, atype, next_btf_id, flag);
-> > > +       mutex_unlock(&btf_access_lock);
-> > > +
-> > > +       return ret;
-> > > +}
-> >
-> > Did you test this for CONFIG_NF_CONNTRACK=m? For me it isn't building :P.
-> >
-> > It won't work like this. When nf_conntrack is a module, the vmlinux.o
-> > of the kernel isn't linked to the object file nf_conntrack_bpf.o.
-> > Hence it would be an undefined reference error. You don't see it in
-> > BPF CI as we set CONFIG_NF_CONNTRACK=y (to simplify testing).
->
-> Sorry about that. Will make sure to test that config setting.
->
++Cc XDP folks
 
-No worries. We should probably think about being able to test it
-automatically in CI, but not sure how that would be possible...
-
-> > So you need to have code that locks and checks the cb pointer when
-> > calling it outside the module, which means the global lock variable
-> > and global cb pointer also need to be in the kernel. The module then
-> > takes the same lock and sets cb pointer when loading. During unload,
-> > it takes the same lock and sets it back to NULL.
-> >
-> > You can have global variables in vmlinux that you reference from
-> > modules. The compiler will emit a relocation for the module object
-> > file which will be handled by the kernel during module load.
+On Tue, 23 Aug 2022 at 02:12, Joanne Koong <joannelkoong@gmail.com> wrote:
 >
-> Sure, I'll take a look. I was trying to keep conntrack symbols out of
-> the core object files as much as possible but looks like that won't be
-> possible.
-
-Yeah, for now hardcoding is ok I figure, later when we have more
-modules doing this we can generalize it.
-
+> Add xdp dynptrs, which are dynptrs whose underlying pointer points
+> to a xdp_buff. The dynptr acts on xdp data. xdp dynptrs have two main
+> benefits. One is that they allow operations on sizes that are not
+> statically known at compile-time (eg variable-sized accesses).
+> Another is that parsing the packet data through dynptrs (instead of
+> through direct access of xdp->data and xdp->data_end) can be more
+> ergonomic and less brittle (eg does not need manual if checking for
+> being within bounds of data_end).
 >
-> However, I think to keep the globals symbols in vmlinux we'll need to
-> EXPORT_SYMBOL_GPL() some symbols. Hopefully that is OK.
+> For reads and writes on the dynptr, this includes reading/writing
+> from/to and across fragments. For data slices, direct access to
+
+It's a bit awkward to have such a difference between xdp and skb
+dynptr's read/write. I understand why it is the way it is, but it
+still doesn't feel right. I'm not sure if we can reconcile the
+differences, but it makes writing common code for both xdp and tc
+harder as it needs to be aware of the differences (and then the flags
+for dynptr_write would differ too). So we're 90% there but not the
+whole way...
+
+> data in fragments is also permitted, but access across fragments
+> is not. The returned data slice is reg type PTR_TO_PACKET | PTR_MAYBE_NULL.
 >
-
-Yes, that should be ok.
-
-> There's also some other issues I'm uncovering with duplicate BTF IDs for
-> nf_conn. Might have to do a lookup by name instead of the BTF_ID_LIST().
+> Any helper calls that change the underlying packet buffer (eg
+> bpf_xdp_adjust_head) invalidates any data slices of the associated
+> dynptr. Whenever such a helper call is made, the verifier marks any
+> PTR_TO_PACKET reg type (which includes xdp dynptr slices since they are
+> PTR_TO_PACKETs) as unknown. The stack trace for this is
+> check_helper_call() -> clear_all_pkt_pointers() ->
+> __clear_all_pkt_pointers() -> mark_reg_unknown()
 >
-
-I think I also hit this problem back when I was working on these
-patches, is it similar to this?
-https://lore.kernel.org/bpf/20211028014428.rsuq6rkfvqzq23tg@apollo.localdomain
-
-I think this might be a bug in the BTF generation, since there should
-only be one BTF ID for a type, either in vmlinux or the module BTF.
-Maybe Andrii would be able to confirm.
-
-> > So please test it once with nf_conntrack built as a module before
-> > sending the next revision. The only thing you need to do before
-> > running ./test_progs -t bpf_nf is loading the module nf_conntrack.ko
-> > (and its dependencies, nf_defrag_ipv{4,6}.ko).
+> For examples of how xdp dynptrs can be used, please see the attached
+> selftests.
 >
-> Will do.
+> Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+> ---
+>  include/linux/bpf.h            |  6 ++++-
+>  include/linux/filter.h         |  3 +++
+>  include/uapi/linux/bpf.h       | 25 +++++++++++++++---
+>  kernel/bpf/helpers.c           | 14 ++++++++++-
+>  kernel/bpf/verifier.c          |  8 +++++-
+>  net/core/filter.c              | 46 +++++++++++++++++++++++++++++-----
+>  tools/include/uapi/linux/bpf.h | 25 +++++++++++++++---
+>  7 files changed, 112 insertions(+), 15 deletions(-)
 >
-> Thanks again for the reviews,
-> Daniel
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 30615d1a0c13..455a215b6c57 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -410,11 +410,15 @@ enum bpf_type_flag {
+>         /* DYNPTR points to sk_buff */
+>         DYNPTR_TYPE_SKB         = BIT(11 + BPF_BASE_TYPE_BITS),
+>
+> +       /* DYNPTR points to xdp_buff */
+> +       DYNPTR_TYPE_XDP         = BIT(12 + BPF_BASE_TYPE_BITS),
+> +
+>         __BPF_TYPE_FLAG_MAX,
+>         __BPF_TYPE_LAST_FLAG    = __BPF_TYPE_FLAG_MAX - 1,
+>  };
+>
+> -#define DYNPTR_TYPE_FLAG_MASK  (DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF | DYNPTR_TYPE_SKB)
+> +#define DYNPTR_TYPE_FLAG_MASK  (DYNPTR_TYPE_LOCAL | DYNPTR_TYPE_RINGBUF | DYNPTR_TYPE_SKB \
+> +                                | DYNPTR_TYPE_XDP)
+>
+>  /* Max number of base types. */
+>  #define BPF_BASE_TYPE_LIMIT    (1UL << BPF_BASE_TYPE_BITS)
+> diff --git a/include/linux/filter.h b/include/linux/filter.h
+> index 649063d9cbfd..80f030239877 100644
+> --- a/include/linux/filter.h
+> +++ b/include/linux/filter.h
+> @@ -1535,5 +1535,8 @@ static __always_inline int __bpf_xdp_redirect_map(struct bpf_map *map, u32 ifind
+>  int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to, u32 len);
+>  int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
+>                           u32 len, u64 flags);
+> +int __bpf_xdp_load_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u32 len);
+> +int __bpf_xdp_store_bytes(struct xdp_buff *xdp, u32 offset, void *buf, u32 len);
+> +void *bpf_xdp_pointer(struct xdp_buff *xdp, u32 offset, u32 len);
+>
+>  #endif /* __LINUX_FILTER_H__ */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 320e6b95d95c..9feea29eebcd 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5283,13 +5283,18 @@ union bpf_attr {
+>   *                   and try again.
+>   *
+>   *                 * The data slice is automatically invalidated anytime
+> - *                   **bpf_dynptr_write**\ () or a helper call that changes
+> - *                   the underlying packet buffer (eg **bpf_skb_pull_data**\ ())
+> + *                   **bpf_dynptr_write**\ () is called.
+> + *
+> + *             For skb-type and xdp-type dynptrs:
+> + *                 * The data slice is automatically invalidated anytime a
+> + *                   helper call that changes the underlying packet buffer
+> + *                   (eg **bpf_skb_pull_data**\ (), **bpf_xdp_adjust_head**\ ())
+>   *                   is called.
+>   *     Return
+>   *             Pointer to the underlying dynptr data, NULL if the dynptr is
+>   *             read-only, if the dynptr is invalid, or if the offset and length
+> - *             is out of bounds or in a paged buffer for skb-type dynptrs.
+> + *             is out of bounds or in a paged buffer for skb-type dynptrs or
+> + *             across fragments for xdp-type dynptrs.
+>   *
+>   * s64 bpf_tcp_raw_gen_syncookie_ipv4(struct iphdr *iph, struct tcphdr *th, u32 th_len)
+>   *     Description
+> @@ -5388,6 +5393,19 @@ union bpf_attr {
+>   *             *flags* is currently unused, it must be 0 for now.
+>   *     Return
+>   *             0 on success or -EINVAL if flags is not 0.
+> + *
+> + * long bpf_dynptr_from_xdp(struct xdp_buff *xdp_md, u64 flags, struct bpf_dynptr *ptr)
+> + *     Description
+> + *             Get a dynptr to the data in *xdp_md*. *xdp_md* must be the BPF program
+> + *             context.
+> + *
+> + *             Calls that change the *xdp_md*'s underlying packet buffer
+> + *             (eg **bpf_xdp_adjust_head**\ ()) do not invalidate the dynptr, but
+> + *             they do invalidate any data slices associated with the dynptr.
+> + *
+> + *             *flags* is currently unused, it must be 0 for now.
+> + *     Return
+> + *             0 on success, -EINVAL if flags is not 0.
+>   */
+>  #define __BPF_FUNC_MAPPER(FN)          \
+>         FN(unspec),                     \
+> @@ -5600,6 +5618,7 @@ union bpf_attr {
+>         FN(tcp_raw_check_syncookie_ipv6),       \
+>         FN(ktime_get_tai_ns),           \
+>         FN(dynptr_from_skb),            \
+> +       FN(dynptr_from_xdp),            \
+>         /* */
+>
+>  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> index 471a01a9b6ae..2b9dc4c6de04 100644
+> --- a/kernel/bpf/helpers.c
+> +++ b/kernel/bpf/helpers.c
+> @@ -1541,6 +1541,8 @@ BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len, struct bpf_dynptr_kern *, src
+>                 return 0;
+>         case BPF_DYNPTR_TYPE_SKB:
+>                 return __bpf_skb_load_bytes(src->data, src->offset + offset, dst, len);
+> +       case BPF_DYNPTR_TYPE_XDP:
+> +               return __bpf_xdp_load_bytes(src->data, src->offset + offset, dst, len);
+>         default:
+>                 WARN(true, "bpf_dynptr_read: unknown dynptr type %d\n", type);
+>                 return -EFAULT;
+> @@ -1583,6 +1585,10 @@ BPF_CALL_5(bpf_dynptr_write, struct bpf_dynptr_kern *, dst, u32, offset, void *,
+>         case BPF_DYNPTR_TYPE_SKB:
+>                 return __bpf_skb_store_bytes(dst->data, dst->offset + offset, src, len,
+>                                              flags);
+> +       case BPF_DYNPTR_TYPE_XDP:
+> +               if (flags)
+> +                       return -EINVAL;
+> +               return __bpf_xdp_store_bytes(dst->data, dst->offset + offset, src, len);
+>         default:
+>                 WARN(true, "bpf_dynptr_write: unknown dynptr type %d\n", type);
+>                 return -EFAULT;
+> @@ -1616,7 +1622,7 @@ BPF_CALL_3(bpf_dynptr_data, struct bpf_dynptr_kern *, ptr, u32, offset, u32, len
+>
+>         type = bpf_dynptr_get_type(ptr);
+>
+> -       /* Only skb dynptrs can get read-only data slices, because the
+> +       /* Only skb and xdp dynptrs can get read-only data slices, because the
+>          * verifier enforces PTR_TO_PACKET accesses
+>          */
+>         is_rdonly = bpf_dynptr_is_rdonly(ptr);
+> @@ -1640,6 +1646,12 @@ BPF_CALL_3(bpf_dynptr_data, struct bpf_dynptr_kern *, ptr, u32, offset, u32, len
+>                 data = skb->data;
+>                 break;
+>         }
+> +       case BPF_DYNPTR_TYPE_XDP:
+> +               /* if the requested data in across fragments, then it cannot
+> +                * be accessed directly - bpf_xdp_pointer will return NULL
+> +                */
+> +               return (unsigned long)bpf_xdp_pointer(ptr->data,
+> +                                                     ptr->offset + offset, len);
+>         default:
+>                 WARN(true, "bpf_dynptr_data: unknown dynptr type %d\n", type);
+>                 return 0;
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 1ea295f47525..d33648eee188 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -686,6 +686,8 @@ static enum bpf_dynptr_type arg_to_dynptr_type(enum bpf_arg_type arg_type)
+>                 return BPF_DYNPTR_TYPE_RINGBUF;
+>         case DYNPTR_TYPE_SKB:
+>                 return BPF_DYNPTR_TYPE_SKB;
+> +       case DYNPTR_TYPE_XDP:
+> +               return BPF_DYNPTR_TYPE_XDP;
+>         default:
+>                 return BPF_DYNPTR_TYPE_INVALID;
+>         }
+> @@ -6078,6 +6080,9 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
+>                         case DYNPTR_TYPE_SKB:
+>                                 err_extra = "skb ";
+>                                 break;
+> +                       case DYNPTR_TYPE_XDP:
+> +                               err_extra = "xdp ";
+> +                               break;
+>                         }
+>
+>                         verbose(env, "Expected an initialized %sdynptr as arg #%d\n",
+> @@ -7439,7 +7444,8 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+>                 mark_reg_known_zero(env, regs, BPF_REG_0);
+>
+>                 if (func_id == BPF_FUNC_dynptr_data &&
+> -                   dynptr_type == BPF_DYNPTR_TYPE_SKB) {
+> +                   (dynptr_type == BPF_DYNPTR_TYPE_SKB ||
+> +                    dynptr_type == BPF_DYNPTR_TYPE_XDP)) {
+>                         regs[BPF_REG_0].type = PTR_TO_PACKET | ret_flag;
+>                         regs[BPF_REG_0].range = meta.mem_size;
+
+It doesn't seem like this is safe. Since PTR_TO_PACKET's range can be
+modified by comparisons with packet pointers loaded from the xdp/skb
+ctx, how do we distinguish e.g. between a pkt slice obtained from some
+frag in a multi-buff XDP vs pkt pointer from a linear area?
+
+Someone can compare data_meta from ctx with PTR_TO_PACKET from
+bpf_dynptr_data on xdp dynptr (which might be pointing to a xdp mb
+frag). While MAX_PACKET_OFF is 0xffff, it can still be used to do OOB
+access for the linear area. reg_is_init_pkt_pointer will return true
+as modified range is not considered for it. Same kind of issues when
+doing comparison with data_end from ctx (though maybe you won't be
+able to do incorrect data access at runtime using that).
+
+I had a pkt_uid field in my patch [0] which disallowed comparisons
+among bpf_packet_pointer slices. Each call assigned a fresh pkt_uid,
+and that disabled comparisons for them. reg->id is used for var_off
+range propagation so it cannot be reused.
+
+Coming back to this: What we really want here is a PTR_TO_MEM with a
+mem_size, so maybe you should go that route instead of PTR_TO_PACKET
+(and add a type tag to maybe pretty print it also as a packet pointer
+in verifier log), or add some way to distinguish slice vs non-slice
+pkt pointers like I did in my patch. You might also want to add some
+tests for this corner case (there are some later in [0] if you want to
+reuse them).
+
+So TBH, I kinda dislike my own solution in [0] :). The complexity does
+not seem worth it. The pkt_uid distinction is more useful (and
+actually would be needed) in Toke's xdp queueing series, where in a
+dequeue program you have multiple xdp_mds and want scoped slice
+invalidations (i.e. adjust_head on one xdp_md doesn't invalidate
+slices of some other xdp_md). Here we can just get away with normal
+PTR_TO_MEM.
+
+... Or just let me know if you handle this correctly already, or if
+this won't be an actual problem :).
+
+  [0]: https://lore.kernel.org/bpf/20220306234311.452206-3-memxor@gmail.com
