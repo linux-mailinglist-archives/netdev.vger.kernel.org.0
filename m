@@ -2,228 +2,321 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D09B859E50E
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 16:19:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D45159E528
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 16:35:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242428AbiHWOTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 10:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        id S242109AbiHWOfD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 10:35:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242416AbiHWOTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 10:19:09 -0400
-Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 2EA9327E7AC;
-        Tue, 23 Aug 2022 04:33:13 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [218.12.19.15])
-        by mail-app2 (Coremail) with SMTP id by_KCgDnqrA5uARjm7mFAw--.5982S4;
-        Tue, 23 Aug 2022 19:21:46 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-        briannorris@chromium.org
-Cc:     johannes@sipsolutions.net, rafael@kernel.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH v8 2/2 RESEND] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
-Date:   Tue, 23 Aug 2022 19:21:27 +0800
-Message-Id: <5cfa5c473ff6d069cb67760ffa04a2f84ef450a8.1661252818.git.duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <cover.1661252818.git.duoming@zju.edu.cn>
-References: <cover.1661252818.git.duoming@zju.edu.cn>
-In-Reply-To: <cover.1661252818.git.duoming@zju.edu.cn>
-References: <cover.1661252818.git.duoming@zju.edu.cn>
-X-CM-TRANSID: by_KCgDnqrA5uARjm7mFAw--.5982S4
-X-Coremail-Antispam: 1UD129KBjvJXoW3Jw4UCryrJFy3JFyfCFyrCrg_yoWxury3pF
-        s8GF95Cr48Xr1qkr48Ja1kXFyYg3ZYka42kr1kZw4xuF4fGryfXF4UKryIgFs8XFs2va43
-        Zrn7Xrnaka45taDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPj14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j6F4UJw
-        A2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0
-        Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2
-        xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v2
-        6r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2
-        Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_
-        Cr0_Gr1UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWUJVW8Jw
-        CI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUOJPEUUUU
-        U
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgULAVZdtbI0NQAWsW
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S241956AbiHWOeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 10:34:44 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0042B5BFD;
+        Tue, 23 Aug 2022 04:50:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661255437; x=1692791437;
+  h=date:from:to:cc:subject:message-id:references:
+   content-transfer-encoding:in-reply-to:mime-version;
+  bh=9JYJ+PSeoG2Lkq000kBr5VhoGA3Ig7whoeyTVi9EkyY=;
+  b=FxgAVa+UBmH/ZDlkrhoH9QVe8svOrL5jsMvwBGRJVVamSER9eLuSFpsT
+   Z29YkZXYLwoFEqnno5vPb7BZbl/F+FHpDcM5L77dn0+3MsKeXnD1KHJUN
+   1OtufK70pQJr0eq/35kDxxWqopr4kLcZm4D6SrQR9dGVWC0Z6dBhk+4kO
+   P++uDApQD4LlVop878oHk40u7qxnGoCqOgaY/XV4NgOJo6LeHgmnYjdzD
+   VnS4d6qsaNKSfwKtkAsnOyYL/ibZUIeqAM9hLmaHdNglTulpi26sTyXd/
+   BZP7vk70aiOzhr9BZaFOAV521PRKlPXRxB70ou6rZJdAFpsmk1EysWjOg
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="274049959"
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="274049959"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Aug 2022 04:24:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,257,1654585200"; 
+   d="scan'208";a="609311210"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga002.jf.intel.com with ESMTP; 23 Aug 2022 04:24:35 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 23 Aug 2022 04:24:35 -0700
+Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Tue, 23 Aug 2022 04:24:34 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Tue, 23 Aug 2022 04:24:34 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.104)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Tue, 23 Aug 2022 04:24:33 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G/P9BpWSlZcaZVdfIhyGlkvC/ttPsslZARahtezajb//w/fcg7GKWp6XP1R/AhUU2eLO5Q13bV25km3fte5wlH22ILVblKivhkP06T6otGk3npPjWxTuB7B1El1AnB1BipJCrwOnugiqmJBZmMce2R18wGB4hno8AhOvo93jzDGnDAnW+svPqdBNV8kCEpRMLGPRBaOeQ+uKy/27B3Vt3eYyM6S2cp7XGBYoq692eSzA9fNbPnY6iMlXWbBfaBcXYzLiqQf1gCuYtmiT6HoySzmBUGSLSfvs5TAPfAQNFhTRjqgFP1Kh/faE+kOt5fnudxpXQZfz0EfzuSi4CpfMkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GIMgftrfPajGJ9OeFPzPzOlcThdi6s7TmD4a+R0mOMY=;
+ b=nUY9Zx5fiz2yG4UrSwFdFeOtW8cCWHIY6FIAcSmT47lcSc0wsyi/OYnmI4Wc8RazQS+9v7yk2MJ2yGujkWHULC0E09at/oveyyG3CEEjFv6gg86QzaJ1bw5KoV84U2pGKGorcn5PGLMSDKcxWSEdZq29xBZJamAtY9/ewSjqODJJ/gwq1gFIw5XItNxl2hpCGeOvWN8uLTXnkkaWMMWwgTq2l4nIsSdBcEoJk9+SoC7+ffWCrij0rF9MxkUdiUO/YbelaPXZgcmDVjHqFQdVE5U8JeEva7KIiM47QLBAuHZEIiPuPN4RIciIvyfS0Yg44TmLdUk2OmJkpVNWB4QKWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com (2603:10b6:8:b3::19) by
+ BN7PR11MB2770.namprd11.prod.outlook.com (2603:10b6:406:b4::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.18; Tue, 23 Aug 2022 11:24:31 +0000
+Received: from DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5876:103b:22ca:39b7]) by DM4PR11MB6117.namprd11.prod.outlook.com
+ ([fe80::5876:103b:22ca:39b7%4]) with mapi id 15.20.5525.011; Tue, 23 Aug 2022
+ 11:24:31 +0000
+Date:   Tue, 23 Aug 2022 13:24:06 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+CC:     "bjorn@kernel.org" <bjorn@kernel.org>,
+        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 00/14] xsk: stop NAPI Rx processing on full
+ XSK RQ
+Message-ID: <YwS41lA+mz0uUZVP@boxer>
+References: <20220413153015.453864-1-maciej.fijalkowski@intel.com>
+ <f1eea2e9ca337e0c4e072bdd94a89859a4539c09.camel@nvidia.com>
+ <93b8740b39267bc550a8f6e0077fb4772535c65e.camel@nvidia.com>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <93b8740b39267bc550a8f6e0077fb4772535c65e.camel@nvidia.com>
+X-ClientProxiedBy: YQXPR0101CA0029.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:c00:15::42) To DM4PR11MB6117.namprd11.prod.outlook.com
+ (2603:10b6:8:b3::19)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b4081a1e-8239-4896-5c74-08da84fa0c95
+X-MS-TrafficTypeDiagnostic: BN7PR11MB2770:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zOiduu3Stbo4uqu4i0ugfYRLd1UVtASMWtBwPJOhtHcsSWRapMf3SSqcuXQx2zUs8d3KGM/n/e6rUoHTR3T0sGfPCWVjcr9NAFzJCkwU1mv0RzEd6MU1wsq/AkJ0XlHbM8Bi7ds0zSK3Zw09G8o9Jq4L+GpD6DiiQtoN/iPmV5X5+gx5EclVs5k4nsU++kbJZuTbTa9ralAjGgtljH6Vb5mfsVkk094hHHWYKFucRZLP8jgxf0V2mwbSIWr5WVBHsfwLXmloottB4NYXMykOSN7h0UcOPkOgVEm/xPpauUhFlGeIGwtEbnP/ZgNmCYaWOIzqdTj0yKeqPNBKKbUHpuEDGKPzdF8C2y8nMxCdLItU3IeJLG8lhL+UHT6/5ijec1sReb/t/2ZOWxCTsd5ubLK5p7nMTTB6+hu7rmFdOpIovPn/S4EQSVz/lLoZJ2c2Dyawv34Ia4qi2ic/WzdE4uFOH63A40KAfiOrY2wzUSaJNUjfdAF1KvTegUYwsM9mZik+EkmfJ5f5WL8UFZ0WNNyBkeB8porCyIjdUyLPZ9zNUKLoTVcT60+CbR/qwHS0JJss0h8uU2C8/+n3MLVxm9jmsw4Bjl7/Hzka1MF6emx5/jOBfbYf7X3TsV5a0YsqL578TLJz8bG19eoF/Cg73lJswWViPiTz+gVHhrrsPOfwElAmOlI4xOt5N/rPJJgiObqfp37gyW0Lsj2CWdBrQN9vE8x4Ge9KZvMK82RyBrFpoKKqAL2QhZdtQJ9YJUYc3XwB1gb+H+2zP4boSSqvcJ32s+lOi0gF+r9c1PU5Ri76boDKQoH4YYOCfG5d7kIwxBPGNHe4uUybotfPf3JP+A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB6117.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(39860400002)(376002)(346002)(366004)(396003)(136003)(478600001)(966005)(82960400001)(6486002)(6916009)(54906003)(316002)(186003)(83380400001)(66574015)(38100700002)(6666004)(6506007)(41300700001)(26005)(6512007)(9686003)(44832011)(2906002)(86362001)(8936002)(8676002)(66476007)(66556008)(33716001)(66946007)(5660300002)(4326008)(67856001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?Z8MXQpTKZAsVxQ0RK5CSeitiUerVHRtrAHKkz480Mg8ewjjKzE00mfdSte?=
+ =?iso-8859-1?Q?nZJ3hNuqF2zUpV6rExO7qhp2McCiPPP/KNDO+77fMGt4l5CTXSeREFpub6?=
+ =?iso-8859-1?Q?Qacf+o4LDxhzfz7jQ1KtSKTgLs4AYHiXvp9dm/S8LkinrpdwNYhYEmE4es?=
+ =?iso-8859-1?Q?0cgpGaplAVnt0yU4aJ8YWU6lBNjOg+1k4LwvWZmbq/DbE/sWL7FXO4PQDM?=
+ =?iso-8859-1?Q?toI3bux2L7a4pryc59+p2ZltaakZZduq9Kyhzy2Jod/pKHe1GKWdAM/uHe?=
+ =?iso-8859-1?Q?PT711fiE/xIKB/ckgg1X6oUEOsCFy2ewtg8gKF/RaMBU4XavVuaeowwR96?=
+ =?iso-8859-1?Q?i6d2IjOrIhLUgGWW7adhFgSsCPLjYMEvAg8wr65PxEW84UasXCNzpcWpVh?=
+ =?iso-8859-1?Q?nh/8DpgABMEROB8bymAmS/w//ou22yDYfthkTV+XAphid8qKJdc16Cb7Q/?=
+ =?iso-8859-1?Q?wxi0ofH37Iq4bC9oWilbtgJzg8Hu3rdu6CEKCWAJ7+RCoS6cVvJ57oggfF?=
+ =?iso-8859-1?Q?IccePLD+Y7h0xQlmchK2+91JTf43oO+SYirB/muWUzQ2hBM2dS7QbztSy4?=
+ =?iso-8859-1?Q?yvDPF2oALJz2APO9rDRUKeF5jDGovMMLTjj/q7UDpCip//D5HwbRn0viW1?=
+ =?iso-8859-1?Q?UctQ88hvw3FzCNH4eQ4f+UNMn4CgnKhHGkHNxYBtbI7VzUFOlkxOaOc8vy?=
+ =?iso-8859-1?Q?79PA/xBt5YQAZ79SnBuWNaU/kHyJIlQo36uwjFN7BggDOBYZgPTkf3qRrj?=
+ =?iso-8859-1?Q?nzEVU63tIz4KwXvaygK7/wdMcCkLoccHmpWdPEVlBe9uqltojyh6ZxXF+D?=
+ =?iso-8859-1?Q?DekLYc8t00DvdhiHC7kGqc6IcPOLyyNpCiszrg+EMFJWvLO7JdUKe5HstE?=
+ =?iso-8859-1?Q?a1Athz7TvGnplokoHIHd7uKfrvRRTsWmhjQOJbtsvko09IOqKRi34IDhC0?=
+ =?iso-8859-1?Q?w/oyOZpatAi03b9jrQ+Z92+A1x6Wol5xjrkEczLYSTT+Z9P08q0cBO3E4C?=
+ =?iso-8859-1?Q?bXv0WP7RhBhjowpyHhMgwlTzAY8ysLQphYo5asPwUhPHGH2Efrsmg3oYsD?=
+ =?iso-8859-1?Q?ZqBrjWMN2LfFxcmozf7aHCLVOtZRt87zji5Pg4hAM9pv8dVprssWfEdfRP?=
+ =?iso-8859-1?Q?+B45RLMdwfqbdyO37+0PQ4w3h3zezTf851bKRx9kMKUDHWmiMuAEr3hgvE?=
+ =?iso-8859-1?Q?Bc8CdfXF4vBmIgYxLUCqq9Lmx8c7bwsR6H1++Di0HUwCOIeuPMtgEvdrD/?=
+ =?iso-8859-1?Q?xMIC/m6SyhDPMxsVJpvApCCOyRISBL0vvK3WSjo0k0FpnGmsmdN4SnbC9u?=
+ =?iso-8859-1?Q?rCqagqASVRA9eVqyolk6nIiR+aaed9JfwNk6l3gLFSkp20CVlFY9Yt8drM?=
+ =?iso-8859-1?Q?ZXuRQ+5BNz8SqBTatK91khhH57Q4cjZ8de4AcV2Me6XhFus+BGDnT/91+z?=
+ =?iso-8859-1?Q?oJepCH8Zg2tHqRR8Vf9WH0pMgfxP3NdMxYzF0BOPeE+7XBwXYlkfY5kQB8?=
+ =?iso-8859-1?Q?oJOTKQmG2ia4Qgk8x1QnNiXnfmqPyT2PIaG3omLsZiWHSl+myqV9442HyW?=
+ =?iso-8859-1?Q?D7lURS06pbEE3bCP/YoZ4/ln4fe6E35w/xlG2tdJy3TTVxssWtLLZhQ39W?=
+ =?iso-8859-1?Q?L30l1Jby5wOVOcq9KQDiwBTh4ucOgSCbWkVlMCzYUkOyvusAH/Xu4ndg?=
+ =?iso-8859-1?Q?=3D=3D?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4081a1e-8239-4896-5c74-08da84fa0c95
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB6117.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 11:24:31.5558
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nosRs+A2ss+4N79Q6QQpCmegbCcUMItrtE/LFzxmORM07qqaPDpjjl1bqSTiRaLJx21CNs/UxSpfjcJt8d16eqUzoYIufJUQJ9cluNFsCSg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2770
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data in mwifiex. The root cause is that dev_coredumpv could not
-be used in atomic contexts, because it calls dev_set_name which
-include operations that may sleep. The call tree shows execution
-paths that could lead to bugs:
+On Tue, Aug 23, 2022 at 09:49:43AM +0000, Maxim Mikityanskiy wrote:
+> Anyone from Intel? Maciej, Björn, Magnus?
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+Hey Maxim,
 
-The corresponding fail log is shown below:
+how about keeping it simple and going with option 1? This behavior was
+even proposed in the v1 submission of the patch set we're talking about.
 
-[  135.275938] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.281029] BUG: sleeping function called from invalid context at include/linux/sched/mm.h:265
-...
-[  135.293613] Call Trace:
-[  135.293613]  <IRQ>
-[  135.293613]  dump_stack_lvl+0x57/0x7d
-[  135.293613]  __might_resched.cold+0x138/0x173
-[  135.293613]  ? dev_coredumpm+0xca/0x2e0
-[  135.293613]  kmem_cache_alloc_trace+0x189/0x1f0
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  dev_coredumpm+0xca/0x2e0
-[  135.293613]  ? devcd_freev+0x10/0x10
-[  135.293613]  dev_coredumpv+0x1c/0x20
-[  135.293613]  ? devcd_match_failing+0x30/0x30
-[  135.293613]  mwifiex_upload_device_dump+0x65/0xb0
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  call_timer_fn+0x122/0x3d0
-[  135.293613]  ? msleep_interruptible+0xb0/0xb0
-[  135.293613]  ? lock_downgrade+0x3c0/0x3c0
-[  135.293613]  ? __next_timer_interrupt+0x13c/0x160
-[  135.293613]  ? lockdep_hardirqs_on_prepare+0xe/0x220
-[  135.293613]  ? mwifiex_dnld_fw+0x1b0/0x1b0
-[  135.293613]  __run_timers.part.0+0x3f8/0x540
-[  135.293613]  ? call_timer_fn+0x3d0/0x3d0
-[  135.293613]  ? arch_restore_msi_irqs+0x10/0x10
-[  135.293613]  ? lapic_next_event+0x31/0x40
-[  135.293613]  run_timer_softirq+0x4f/0xb0
-[  135.293613]  __do_softirq+0x1c2/0x651
-...
-[  135.293613] RIP: 0010:default_idle+0xb/0x10
-[  135.293613] RSP: 0018:ffff888006317e68 EFLAGS: 00000246
-[  135.293613] RAX: ffffffff82ad8d10 RBX: ffff888006301cc0 RCX: ffffffff82ac90e1
-[  135.293613] RDX: ffffed100d9ff1b4 RSI: ffffffff831ad140 RDI: ffffffff82ad8f20
-[  135.293613] RBP: 0000000000000003 R08: 0000000000000000 R09: ffff88806cff8d9b
-[  135.293613] R10: ffffed100d9ff1b3 R11: 0000000000000001 R12: ffffffff84593410
-[  135.293613] R13: 0000000000000000 R14: 0000000000000000 R15: 1ffff11000c62fd2
-...
-[  135.389205] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-This patch uses delayed work to replace timer and moves the operations
-that may sleep into a delayed work in order to mitigate bugs, it was
-tested on Marvell 88W8801 chip whose port is usb and the firmware is
-usb8801_uapsta.bin. The following is the result after using delayed
-work to replace timer.
-
-[  134.936453] usb 1-1: == mwifiex dump information to /sys/class/devcoredump start
-[  135.043344] usb 1-1: == mwifiex dump information to /sys/class/devcoredump end
-
-As we can see, there is no bug now.
-
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
-Changes since v6:
-  - Use clang-format to adjust the format of code.
-
- drivers/net/wireless/marvell/mwifiex/init.c      | 9 +++++----
- drivers/net/wireless/marvell/mwifiex/main.h      | 3 ++-
- drivers/net/wireless/marvell/mwifiex/sta_event.c | 6 +++---
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index fc77489cc51..7dddb4b5dea 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -51,9 +51,10 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
- 
--static void fw_dump_timer_fn(struct timer_list *t)
-+static void fw_dump_work(struct work_struct *work)
- {
--	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
-+	struct mwifiex_adapter *adapter =
-+		container_of(work, struct mwifiex_adapter, devdump_work.work);
- 
- 	mwifiex_upload_device_dump(adapter);
- }
-@@ -309,7 +310,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
--	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
-+	INIT_DELAYED_WORK(&adapter->devdump_work, fw_dump_work);
- }
- 
- /*
-@@ -388,7 +389,7 @@ static void
- mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 87729d251fe..63f861e6b28 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -37,6 +37,7 @@
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
- #include <linux/of_irq.h>
-+#include <linux/workqueue.h>
- 
- #include "decl.h"
- #include "ioctl.h"
-@@ -1043,7 +1044,7 @@ struct mwifiex_adapter {
- 	/* Device dump data/length */
- 	void *devdump_data;
- 	int devdump_len;
--	struct timer_list devdump_timer;
-+	struct delayed_work devdump_work;
- 
- 	bool ignore_btcoex_events;
- };
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index b95e90a7d12..e80e372cce8 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -611,8 +611,8 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 		 * transmission event get lost, in this cornel case,
- 		 * user would still get partial of the dump.
- 		 */
--		mod_timer(&adapter->devdump_timer,
--			  jiffies + msecs_to_jiffies(MWIFIEX_TIMER_10S));
-+		schedule_delayed_work(&adapter->devdump_work,
-+				      msecs_to_jiffies(MWIFIEX_TIMER_10S));
- 	}
- 
- 	/* Overflow check */
-@@ -631,7 +631,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 	return;
- 
- upload_dump:
--	del_timer_sync(&adapter->devdump_timer);
-+	cancel_delayed_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
--- 
-2.17.1
-
+> 
+> Does anyone else have anything to say? IMO, calling XDP for the same
+> packet multiple times is a bug, we should agree on some sane solution.
+> 
+> On Thu, 2022-08-18 at 14:26 +0300, Maxim Mikityanskiy wrote:
+> > Hi Maciej,
+> > 
+> > On Wed, 2022-04-13 at 17:30 +0200, Maciej Fijalkowski wrote:
+> > > v2:
+> > > - add likely for internal redirect return codes in ice and ixgbe
+> > >   (Jesper)
+> > > - do not drop the buffer that head pointed to at full XSK RQ
+> > > (Maxim)
+> > 
+> > I found an issue with this approach. If you don't drop that packet,
+> > you'll need to run the XDP program for the same packet again. If the
+> > XDP program is anything more complex than "redirect-everything-to-
+> > XSK",
+> > it will get confused, for example, if it tracks any state or counts
+> > anything.
+> > 
+> > We can't check whether there is enough space in the XSK RX ring
+> > before
+> > running the XDP program, as we don't know in advance which XSK socket
+> > will be selected.
+> > 
+> > We can't store bpf_redirect_info across NAPI calls to avoid running
+> > the
+> > XDP program second time, as bpf_redirect_info is protected by RCU and
+> > the assumption that the whole XDP_REDIRECT operation happens within
+> > one
+> > NAPI cycle.
+> > 
+> > I see the following options:
+> > 
+> > 1. Drop the packet when an overflow happens. The problem is that it
+> > will happen systematically, but it's still better than the old
+> > behavior
+> > (drop mulitple packets when an overflow happens and hog the CPU).
+> > 
+> > 2. Make this feature opt-in. If the application opts in, it
+> > guarantees
+> > to take measures to handle duplicate packets in XDP properly.
+> > 
+> > 3. Require the XDP program to indicate it supports being called
+> > multiple times for the same packet and pass a flag to it if it's a
+> > repeated run. Drop the packet in the driver if the XDP program
+> > doesn't
+> > indicate this support. The indication can be done similar to how it's
+> > implemented for XDP multi buffer.
+> > 
+> > Thoughts? Other options?
+> > 
+> > Thanks,
+> > Max
+> > 
+> > > - terminate Rx loop only when need_wakeup feature is enabled
+> > > (Maxim)
+> > > - reword from 'stop softirq processing' to 'stop NAPI Rx
+> > > processing'
+> > > - s/ENXIO/EINVAL in mlx5 and stmmac's ndo_xsk_wakeup to keep it
+> > >   consitent with Intel's drivers (Maxim)
+> > > - include Jesper's Acks
+> > > 
+> > > Hi!
+> > > 
+> > > This is a revival of Bjorn's idea [0] to break NAPI loop when XSK
+> > > Rx
+> > > queue gets full which in turn makes it impossible to keep on
+> > > successfully producing descriptors to XSK Rx ring. By breaking out
+> > > of
+> > > the driver side immediately we will give the user space opportunity
+> > > for
+> > > consuming descriptors from XSK Rx ring and therefore provide room
+> > > in the
+> > > ring so that HW Rx -> XSK Rx redirection can be done.
+> > > 
+> > > Maxim asked and Jesper agreed on simplifying Bjorn's original API
+> > > used
+> > > for detecting the event of interest, so let's just simply check for
+> > > -ENOBUFS within Intel's ZC drivers after an attempt to redirect a
+> > > buffer
+> > > to XSK Rx. No real need for redirect API extension.
+> > > 
+> > > One might ask why it is still relevant even after having proper
+> > > busy
+> > > poll support in place - here is the justification.
+> > > 
+> > > For xdpsock that was:
+> > > - run for l2fwd scenario,
+> > > - app/driver processing took place on the same core in busy poll
+> > >   with 2048 budget,
+> > > - HW ring sizes Tx 256, Rx 2048,
+> > > 
+> > > this work improved throughput by 78% and reduced Rx queue full
+> > > statistic
+> > > bump by 99%.
+> > > 
+> > > For testing ice, make sure that you have [1] present on your side.
+> > > 
+> > > This set, besides the work described above, carries also
+> > > improvements
+> > > around return codes in various XSK paths and lastly a minor
+> > > optimization
+> > > for xskq_cons_has_entries(), a helper that might be used when XSK
+> > > Rx
+> > > batching would make it to the kernel.
+> > > 
+> > > Link to v1 and discussion around it is at [2].
+> > > 
+> > > Thanks!
+> > > MF
+> > > 
+> > > [0]:
+> > > https://lore.kernel.org/bpf/20200904135332.60259-1-bjorn.topel@gmail.com/
+> > > [1]:
+> > > https://lore.kernel.org/netdev/20220317175727.340251-1-maciej.fijalkowski@intel.com/
+> > > [2]:
+> > > https://lore.kernel.org/bpf/5864171b-1e08-1b51-026e-5f09b8945076@nvidia.com/T/
+> > > 
+> > > Björn Töpel (1):
+> > >   xsk: improve xdp_do_redirect() error codes
+> > > 
+> > > Maciej Fijalkowski (13):
+> > >   xsk: diversify return codes in xsk_rcv_check()
+> > >   ice: xsk: decorate ICE_XDP_REDIR with likely()
+> > >   ixgbe: xsk: decorate IXGBE_XDP_REDIR with likely()
+> > >   ice: xsk: terminate Rx side of NAPI when XSK Rx queue gets full
+> > >   i40e: xsk: terminate Rx side of NAPI when XSK Rx queue gets full
+> > >   ixgbe: xsk: terminate Rx side of NAPI when XSK Rx queue gets full
+> > >   ice: xsk: diversify return values from xsk_wakeup call paths
+> > >   i40e: xsk: diversify return values from xsk_wakeup call paths
+> > >   ixgbe: xsk: diversify return values from xsk_wakeup call paths
+> > >   mlx5: xsk: diversify return values from xsk_wakeup call paths
+> > >   stmmac: xsk: diversify return values from xsk_wakeup call paths
+> > >   ice: xsk: avoid refilling single Rx descriptors
+> > >   xsk: drop ternary operator from xskq_cons_has_entries
+> > > 
+> > >  .../ethernet/intel/i40e/i40e_txrx_common.h    |  1 +
+> > >  drivers/net/ethernet/intel/i40e/i40e_xsk.c    | 38 ++++++++-----
+> > >  drivers/net/ethernet/intel/ice/ice_txrx.h     |  1 +
+> > >  drivers/net/ethernet/intel/ice/ice_xsk.c      | 53 ++++++++++++---
+> > > ----
+> > >  .../ethernet/intel/ixgbe/ixgbe_txrx_common.h  |  1 +
+> > >  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 52 ++++++++++-----
+> > > ---
+> > >  .../ethernet/mellanox/mlx5/core/en/xsk/tx.c   |  2 +-
+> > >  .../net/ethernet/stmicro/stmmac/stmmac_main.c |  4 +-
+> > >  net/xdp/xsk.c                                 |  4 +-
+> > >  net/xdp/xsk_queue.h                           |  4 +-
+> > >  10 files changed, 99 insertions(+), 61 deletions(-)
+> > > 
+> > 
+> 
