@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 414DA59D15E
+	by mail.lfdr.de (Postfix) with ESMTP id 899E259D15F
 	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 08:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239878AbiHWGfO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 02:35:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S240175AbiHWGgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 02:36:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233179AbiHWGfM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 02:35:12 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF485C96E
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 23:35:08 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id vw19so11803208ejb.1
-        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 23:35:08 -0700 (PDT)
+        with ESMTP id S240664AbiHWGgI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 02:36:08 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B7861123
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 23:36:04 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id d21so6131832eje.3
+        for <netdev@vger.kernel.org>; Mon, 22 Aug 2022 23:36:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=VRLk0mX9Jrz/OShZwVOO/H+ZC51UZFTvvmALnix6+ko=;
-        b=teNrqXC8ZlcNHacEeOVnYIjwKc0OlZK43x12BfU6CKo/Rox4YaVVMBtM/IdmEEH72e
-         j+DTjEXFB/SW163p4rAKWkVxFtnufOQcvq1ngcVC7x36eAy5toYT1UixhJo8dua+5J5b
-         pkxSKtX4KDEVxrgZUBJnJ5CdXVCBfKuQYFUTw0VA9hDno5X4anBLpKlbADgSZDAHsa+t
-         OO6UeF0uP4ZTTdf+h4AOjhiLmXIHaJsO13az8XXUTpNLxTSyCrFaRBhDaHc2RI0aIwKT
-         OU63Y3STrN3/JvbEJO+HnGamTsMaD+FILZsuhVUcTqTkpxRyqb1CI/5PabzhsdTw2HQw
-         JK5g==
+        bh=a1qxDDVjFY05Wu7MGJo6Y/dCYtG8XAWVSuQC3w1MsKo=;
+        b=QcaXWu5JXiNWao3V5ufnpbjG2kS/8r0HY8nzXk6gFrAqSboM/DP1V9Mlf09zhNg3tj
+         HVUH7h9vpzMjl9gKRbGtWOFubUGnEQs5EdxCrAnwBXGcEmh2dJT31MNH3dtcjW2wKo8a
+         t2IvjQMphnMBzNVgRy5f4ms1mvdMDXNKFghQB934EaIM1c5VaZTHo8nJrZt5vq3XIZ6W
+         BM7nkzgIxqWeW4B13duO0xIEEDs3Pb5dtr9b8iOjK5pmocMi+li9pnuq5XOkbnQonEJd
+         uoxR632oyKqsfmW9WA3AKt2hcSun7im9+Hby/dcJQlFivp+DPxnXUgV9VGIg72feV3iU
+         ttEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=VRLk0mX9Jrz/OShZwVOO/H+ZC51UZFTvvmALnix6+ko=;
-        b=U1dJgf8RtG2a+g+iorWEcwj9wnM0mlLDLnMww1YiZ6+8Zchehmi1gloh6dooD8eyAV
-         Lix3cTx0LaMZCuKgO7z/5tITDZg0v50u1iepttg0NBvIlT3k3Z2jcA6MK4L4g68Na43g
-         3/JRcSknR4Cvh2igRT0fDEz5vZ3mgACEDROnSXb7eEKKNkc9cxaLNBHXRg8EXnSoZv3c
-         r9dxPqHZIePCFyxGBTwTA8af9Z7TwQ4ATD0P5wcqiKeyzOkojlbxYGt9ZMn061OIrO1+
-         VZAIexL3SwFDNo03xy1gOcNX7g0S/CmWxBSdxGlP4BAtmEH0ra71F5S2u4OkuMOuPKpY
-         qfFg==
-X-Gm-Message-State: ACgBeo105bkeKMGX5/6KkoJojJvzLEqraIE3TZ1g6E9d391IyIHXhIxa
-        tZnTfMbRFczam2FeQjyAuaJ4hc0jizYQOAcD
-X-Google-Smtp-Source: AA6agR7ibSOl+k9UXZQz10tmOFz2l1HJ3isc/lvs4/mwtp1p0BW8ifSECSjJx403sSPvfTP5ACTPnA==
-X-Received: by 2002:a17:907:2849:b0:732:fd61:5a31 with SMTP id el9-20020a170907284900b00732fd615a31mr14371485ejc.627.1661236506619;
-        Mon, 22 Aug 2022 23:35:06 -0700 (PDT)
+        bh=a1qxDDVjFY05Wu7MGJo6Y/dCYtG8XAWVSuQC3w1MsKo=;
+        b=m7Xp1FcmokAjleC7K12Rh/LjGVTrH9QcJyPGAENcdDIwWjuQjsHxdrXllyU81GXx/3
+         1OixrWa0JQLE0n3BlnLeWQ3auU7wuN8je9cqxkfoP7Ej8c7HLn36nZmgl5nwhNOnbwPN
+         GQA6356WddwHoEv8vWE04zoLvxDFAsPaoETW0vMO7QiXDjIiNeqAEfH5+G/rU81Fv/F1
+         BlqN3QOL7QZwGjfO4mXE+eVkYzR9CWcLJUo8Uv7jgb0U3dsrZlV6RYujIsJdZSxRbpTu
+         wXBPw6LY9UoWXRA3+HL+I1CLO/TeZ6i5fGqYs8ssecLR29hCOrvyPfw3Yer1B4geFQGg
+         TapQ==
+X-Gm-Message-State: ACgBeo3faXNmNoD9/UhVymgTXhV+yL6Be10AkSBji6CLQuSA8PGgae59
+        7q+r193Y3b7yTPvANfai2Kc0lQ==
+X-Google-Smtp-Source: AA6agR7MC9Y/yvHPTS3de7HugKF4v6dgt8mJShMw+PZl+YAHzpOoY7XJDC2eedSuSAZTpZY3Q//YrQ==
+X-Received: by 2002:a17:906:c154:b0:733:197:a8c with SMTP id dp20-20020a170906c15400b0073301970a8cmr15535479ejc.483.1661236563073;
+        Mon, 22 Aug 2022 23:36:03 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id e14-20020a170906314e00b0072b85a735afsm7019748eje.113.2022.08.22.23.35.05
+        by smtp.gmail.com with ESMTPSA id kx9-20020a170907774900b0073d5489fff2sm5237914ejc.120.2022.08.22.23.36.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 23:35:05 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 08:35:04 +0200
+        Mon, 22 Aug 2022 23:36:02 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 08:36:01 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, idosch@nvidia.com,
         pabeni@redhat.com, edumazet@google.com, saeedm@nvidia.com,
         jacob.e.keller@intel.com, vikas.gupta@broadcom.com,
         gospo@broadcom.com
-Subject: Re: [patch net-next v2 1/4] net: devlink: extend info_get() version
- put to indicate a flash component
-Message-ID: <YwR1GCPCKuK4WJRA@nanopsycho>
+Subject: Re: [patch net-next v2 4/4] net: devlink: expose the info about
+ version representing a component
+Message-ID: <YwR1URDk56l5VLDZ@nanopsycho>
 References: <20220822170247.974743-1-jiri@resnulli.us>
- <20220822170247.974743-2-jiri@resnulli.us>
- <20220822200026.12bdfbf9@kernel.org>
+ <20220822170247.974743-5-jiri@resnulli.us>
+ <20220822200116.76f1d11b@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220822200026.12bdfbf9@kernel.org>
+In-Reply-To: <20220822200116.76f1d11b@kernel.org>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -73,15 +73,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 23, 2022 at 05:00:26AM CEST, kuba@kernel.org wrote:
->On Mon, 22 Aug 2022 19:02:44 +0200 Jiri Pirko wrote:
->> +int devlink_info_version_running_put_ext(struct devlink_info_req *req,
->> +					 const char *version_name,
->> +					 const char *version_value,
->> +					 enum devlink_info_version_type version_type);
+Tue, Aug 23, 2022 at 05:01:16AM CEST, kuba@kernel.org wrote:
+>On Mon, 22 Aug 2022 19:02:47 +0200 Jiri Pirko wrote:
+>> If certain version exposed by a driver is marked to be representing a
+>> component, expose this info to the user.
+>> 
+>> Example:
+>> $ devlink dev info
+>> netdevsim/netdevsim10:
+>>   driver netdevsim
+>>   versions:
+>>       running:
+>>         fw.mgmt 10.20.30
+>>       flash_components:
+>>         fw.mgmt
 >
->Why are we hooking into running, wouldn't stored make more sense?
+>I don't think we should add API without a clear use, let's drop this 
+>as well.
 
-I think eventually this should be in both. Netdevsim and mlxsw (which I
-did this originally for) does not have "stored".
+What do you mean? This just simply lists components that are possible to
+use with devlink dev flash. What is not clear? I don't follow.
 
