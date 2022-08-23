@@ -2,74 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BB6759E5FD
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 17:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F22159E4E1
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 16:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243050AbiHWP2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 11:28:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        id S240771AbiHWOFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 10:05:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242234AbiHWP1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 11:27:55 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5E123EF4F
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 04:09:23 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id d21so7355523eje.3
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 04:09:23 -0700 (PDT)
+        with ESMTP id S242455AbiHWOE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 10:04:59 -0400
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6002B6B15D;
+        Tue, 23 Aug 2022 04:15:04 -0700 (PDT)
+Received: by mail-ua1-f41.google.com with SMTP id j10so3065145uaq.12;
+        Tue, 23 Aug 2022 04:15:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=AnsJ0Y716eO2XCTb5oCUff8Jd6ejrCjSW0Iy98AvG/k=;
-        b=Js/BVnj46IBjpP4HTYGEfz+fP1VvCspc1FwlRhkP1uTMQarAbr9rnSYaUG8WMS0mdT
-         8szSJQ+S7p0k9m4BlzQQ+VC8npGwBw8d1xkJUmf3BIUPMyudPJjSX0qbyV+M0z91Ygu3
-         mSahDRZ9nnuYFY0RKsOv8wekpDOOXi3qzLrGtRqypTpQyonKOE1RSF4LUJCkHBhezl5c
-         rmdS/AhGWLPyksCNlD4yLOfPAEm+HY4ZiYFqh+ZcWRYs7elXJpNDx24CJ+S0ECeqxM5d
-         F0Ikp7H/B6bM1bPeCO43rOVKrT89c7/sLvZHZihiFGXOTgKRvYAaO39kIMzlofkgVu0K
-         tVsA==
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0V83ClKygRI6RPQNXMACz/OH2BKvkSJzRaFhLN3Zp+A=;
+        b=peGiddtL48LY1uQt2ecwvHiprqWMUaD4L8suqoWa8a6HtZmbPAqvb4ox8YEaUkx41q
+         H1VxiEdfjriVTGf6OFjgdUqKouBBF1REtOLDrSsSx1wsT27H1Lb/RUVSWPfpcsue4eEz
+         g/wYn4DjL/JSmFu07YRSH20X6uH5aALHY4mErT5bC0dEvrxEyZ/9evIrHpMOHnQA1E6O
+         7WcefxGPNey6/bEFJqmHDlKXCU9AxzMzmr0hBbZGr/ke/IG+ivT6bVaLHikorttDobeI
+         IuAtTIw7lXjy3N0dFUfp27j1/VSojTUDlSEiwymN4p+dEL/YAv2f6k8UOIBaTBCgFLTy
+         Ss3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=AnsJ0Y716eO2XCTb5oCUff8Jd6ejrCjSW0Iy98AvG/k=;
-        b=ATqSVHtGCHNN7zQ0ai335swM2CmFoDfQwVXxaGOFGeDv2CT5cN+vPqnKjlH+veN+cn
-         oqA+ejfJvSC5a0Tm035ImJH0vZBVwMDF9hQmwIUY2acuGtucVTRZ0VDOHQWDZ8pquOkf
-         08PWmUdpbphT/zIRY0iOjDKKBheGndHmqG35MyeXPgL8btRQVNF1WWsrVDVc6/4r+b9U
-         dnwlm2bTrmFFl4EgojAihQ790YZYoHO6G43QE9ZZ4b9c/hrUjs3Wwe5TWhwDGJY0zR3o
-         STgmV2Z9wJ33vA4GjdmJHHdrODhcNkO1aAa1t2BjX37YN2RnktolfY5erqkmrlU3OA0S
-         Pj1A==
-X-Gm-Message-State: ACgBeo1ScVe6zHWz0AFNOQkunVZ+BuDK+TJAFQW0UhDb0TsT+H00qacK
-        g2MKd3MkPVV5MT99nIL/l0M=
-X-Google-Smtp-Source: AA6agR6CmH5EqmWtjH5qIznIKWwDVPBV04GZupeFihyPgWHMsiYSQ/l1Fk1NEKTumEH86LKqKKpUHQ==
-X-Received: by 2002:a17:907:1c20:b0:73d:938e:660 with SMTP id nc32-20020a1709071c2000b0073d938e0660mr3261852ejc.508.1661252890313;
-        Tue, 23 Aug 2022 04:08:10 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:7758:1500:d4cf:79a3:3d29:c3f8? (dynamic-2a01-0c22-7758-1500-d4cf-79a3-3d29-c3f8.c22.pool.telefonica.de. [2a01:c22:7758:1500:d4cf:79a3:3d29:c3f8])
-        by smtp.googlemail.com with ESMTPSA id fj15-20020a0564022b8f00b0044657ecfbb5sm1261089edb.13.2022.08.23.04.08.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 23 Aug 2022 04:08:09 -0700 (PDT)
-Message-ID: <b431feca-bc8c-63d4-bf51-173f11291016@gmail.com>
-Date:   Tue, 23 Aug 2022 13:07:53 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0V83ClKygRI6RPQNXMACz/OH2BKvkSJzRaFhLN3Zp+A=;
+        b=768XeyHdQV02BbyFfv9sqaoQOCEiJNBky3HS3LJyoZbMXk1/ZgqSvM2Xjyu6n1PmHc
+         gcuuM+fShNggsn9oUusSUPx17Eu+CwRI1bVyTISWW8uq143dEsAT/z9t3Ro/0Z1aDnvG
+         qCwGrg8aUPrk1S7wHlcOorPlbW9J/Okw1b42g9ol4BUN3/vNHPNkAEKa7QKSQymWpqnQ
+         pRf5pqbNcl36A05fwBF5X3EZdD98DNt055qOZPe9vhntFRKTXBS+VrdhpBjNMA8aB9Ww
+         5r1k9eNr8lm7g/l4Aj/WSrIgG4Ub6lysS0ZrDOGhinnMY8Wy2Opkr9WfznRvwhXKpw0u
+         1MoA==
+X-Gm-Message-State: ACgBeo2N/KVmnleUd6+kecNcgHigrkzu1FcD4ZwjQxvbw4XQ64aQ4l1G
+        FBR8F4TXxbNcvFjRgvFBtyNatzBThkbLEUIGfao=
+X-Google-Smtp-Source: AA6agR7d/QtNBlmB412v0jegTrKGCDK/ETenFjZIYdAnF+ESjm77V6zKf6XqHP0cxNGbxp+ICTwy2bP6eJdmEmIxs/A=
+X-Received: by 2002:ab0:7706:0:b0:399:17f3:fef1 with SMTP id
+ z6-20020ab07706000000b0039917f3fef1mr8770289uaq.72.1661252934272; Tue, 23 Aug
+ 2022 04:08:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: [PATCH net-next v2 5/5] r8169: remove support for chip version 60
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ceb7b283-a41a-6c7d-1b63-7909da2c8a7a@gmail.com>
-In-Reply-To: <ceb7b283-a41a-6c7d-1b63-7909da2c8a7a@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+References: <20220818143118.17733-1-laoar.shao@gmail.com> <Yv67MRQLPreR9GU5@slm.duckdns.org>
+ <Yv6+HlEzpNy8y5kT@slm.duckdns.org> <CALOAHbDcrj1ifFsNMHBEih5-SXY2rWViig4rQHi9N07JY6CjXA@mail.gmail.com>
+ <Yv/DK+AGlMeBGkF1@slm.duckdns.org> <CALOAHbCvUxQn5Zkp2FJ+eL1VgjeRSq1xQhzdiY87C1Cbib-nig@mail.gmail.com>
+ <YwNold0GMOappUxc@slm.duckdns.org>
+In-Reply-To: <YwNold0GMOappUxc@slm.duckdns.org>
+From:   Yafang Shao <laoar.shao@gmail.com>
+Date:   Tue, 23 Aug 2022 19:08:17 +0800
+Message-ID: <CALOAHbBTR-07La=-KPehFab0WDY4V6LovXbrhLXOqKDurHD-9g@mail.gmail.com>
+Subject: Re: [RFD RESEND] cgroup: Persistent memory usage tracking
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Hao Luo <haoluo@google.com>, jolsa@kernel.org,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Shakeel Butt <shakeelb@google.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Dan Schatzberg <schatzberg.dan@gmail.com>,
+        Lennart Poettering <lennart@poettering.net>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,224 +87,254 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Detection of this chip version has been disabled for few kernel versions now.
-Nobody complained, so remove support for this chip version.
+On Mon, Aug 22, 2022 at 7:29 PM Tejun Heo <tj@kernel.org> wrote:
+>
+> (Sorry, this is a resend. I messed up the header in the first posting.)
+>
+> Hello,
+>
+> This thread started on a bpf-specific memory tracking change proposal and
+> went south, but a lot of people who would be interested are already cc'd, so
+> I'm hijacking it to discuss what to do w/ persistent memory usage tracking.
+>
+> Cc'ing Mina and Yosry who were involved in the discussions on the similar
+> problem re. tmpfs, Dan Schatzberg who has a lot more prod knowledge and
+> experience than me, and Lennart for his thoughts from systemd side.
+>
+> The root problem is that there are resources (almost solely memory
+> currently) that outlive a given instance of a, to use systemd-lingo,
+> service. Page cache is the most common case.
+>
+> Let's say there's system.slice/hello.service. When it runs for the first
+> time, page cache backing its binary will be charged to hello.service.
+> However, when it restarts after e.g. a config change, when the initial
+> hello.service cgroup gets destroyed, we reparent the page cache charges to
+> the parent system.slice and when the second instance starts, its binary will
+> stay charged to system.slice. Over time, some may get reclaimed and
+> refaulted into the new hello.service but that's not guaranteed and most hot
+> pages likely won't.
+>
+> The same problem exists for any memory which is not freed synchronously when
+> the current instance exits. While this isn't a problem for many cases, it's
+> not difficult to imagine situations where the amount of memory which ends up
+> getting pushed to the parent is significant, even clear majority, with big
+> page cache footprint, persistent tmpfs instances and so on, creating issues
+> with accounting accuracy and thus control.
+>
+> I think there are two broad issues to discuss here:
+>
+> [1] Can this be solved by layering the instance cgroups under persistent
+>     entity cgroup?
+>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169.h          |  2 +-
- drivers/net/ethernet/realtek/r8169_main.c     | 57 +++----------------
- .../net/ethernet/realtek/r8169_phy_config.c   | 39 -------------
- 3 files changed, 8 insertions(+), 90 deletions(-)
+Hi,
 
-diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
-index 68cd71289..36d382676 100644
---- a/drivers/net/ethernet/realtek/r8169.h
-+++ b/drivers/net/ethernet/realtek/r8169.h
-@@ -64,7 +64,7 @@ enum mac_version {
- 	RTL_GIGA_MAC_VER_51,
- 	RTL_GIGA_MAC_VER_52,
- 	RTL_GIGA_MAC_VER_53,
--	RTL_GIGA_MAC_VER_60,
-+	/* support for RTL_GIGA_MAC_VER_60 has been removed */
- 	RTL_GIGA_MAC_VER_61,
- 	RTL_GIGA_MAC_VER_63,
- 	RTL_GIGA_MAC_NONE
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index db653776e..243477825 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -137,7 +137,6 @@ static const struct {
- 	[RTL_GIGA_MAC_VER_51] = {"RTL8168ep/8111ep"			},
- 	[RTL_GIGA_MAC_VER_52] = {"RTL8168fp/RTL8117",  FIRMWARE_8168FP_3},
- 	[RTL_GIGA_MAC_VER_53] = {"RTL8168fp/RTL8117",			},
--	[RTL_GIGA_MAC_VER_60] = {"RTL8125A"				},
- 	[RTL_GIGA_MAC_VER_61] = {"RTL8125A",		FIRMWARE_8125A_3},
- 	/* reserve 62 for CFG_METHOD_4 in the vendor driver */
- 	[RTL_GIGA_MAC_VER_63] = {"RTL8125B",		FIRMWARE_8125B_2},
-@@ -680,7 +679,7 @@ static void rtl_pci_commit(struct rtl8169_private *tp)
- 
- static bool rtl_is_8125(struct rtl8169_private *tp)
- {
--	return tp->mac_version >= RTL_GIGA_MAC_VER_60;
-+	return tp->mac_version >= RTL_GIGA_MAC_VER_61;
- }
- 
- static bool rtl_is_8168evl_up(struct rtl8169_private *tp)
-@@ -2258,7 +2257,7 @@ static void rtl_init_rxcfg(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_53:
- 		RTL_W32(tp, RxConfig, RX128_INT_EN | RX_MULTI_EN | RX_DMA_BURST | RX_EARLY_OFF);
- 		break;
--	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+	case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_63:
- 		RTL_W32(tp, RxConfig, RX_FETCH_DFLT_8125 | RX_DMA_BURST);
- 		break;
- 	default:
-@@ -2442,7 +2441,7 @@ static void rtl_wait_txrx_fifo_empty(struct rtl8169_private *tp)
- 		rtl_loop_wait_high(tp, &rtl_txcfg_empty_cond, 100, 42);
- 		rtl_loop_wait_high(tp, &rtl_rxtx_empty_cond, 100, 42);
- 		break;
--	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_61:
-+	case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_61:
- 		rtl_loop_wait_high(tp, &rtl_rxtx_empty_cond, 100, 42);
- 		break;
- 	case RTL_GIGA_MAC_VER_63:
-@@ -2688,7 +2687,7 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- 
- 		switch (tp->mac_version) {
- 		case RTL_GIGA_MAC_VER_46 ... RTL_GIGA_MAC_VER_48:
--		case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+		case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_63:
- 			/* reset ephy tx/rx disable timer */
- 			r8168_mac_ocp_modify(tp, 0xe094, 0xff00, 0);
- 			/* chip can trigger L1.2 */
-@@ -2700,7 +2699,7 @@ static void rtl_hw_aspm_clkreq_enable(struct rtl8169_private *tp, bool enable)
- 	} else {
- 		switch (tp->mac_version) {
- 		case RTL_GIGA_MAC_VER_46 ... RTL_GIGA_MAC_VER_48:
--		case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+		case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_63:
- 			r8168_mac_ocp_modify(tp, 0xe092, 0x00ff, 0);
- 			break;
- 		default:
-@@ -3573,46 +3572,6 @@ static void rtl_hw_start_8125_common(struct rtl8169_private *tp)
- 	udelay(10);
- }
- 
--static void rtl_hw_start_8125a_1(struct rtl8169_private *tp)
--{
--	static const struct ephy_info e_info_8125a_1[] = {
--		{ 0x01, 0xffff, 0xa812 },
--		{ 0x09, 0xffff, 0x520c },
--		{ 0x04, 0xffff, 0xd000 },
--		{ 0x0d, 0xffff, 0xf702 },
--		{ 0x0a, 0xffff, 0x8653 },
--		{ 0x06, 0xffff, 0x001e },
--		{ 0x08, 0xffff, 0x3595 },
--		{ 0x20, 0xffff, 0x9455 },
--		{ 0x21, 0xffff, 0x99ff },
--		{ 0x02, 0xffff, 0x6046 },
--		{ 0x29, 0xffff, 0xfe00 },
--		{ 0x23, 0xffff, 0xab62 },
--
--		{ 0x41, 0xffff, 0xa80c },
--		{ 0x49, 0xffff, 0x520c },
--		{ 0x44, 0xffff, 0xd000 },
--		{ 0x4d, 0xffff, 0xf702 },
--		{ 0x4a, 0xffff, 0x8653 },
--		{ 0x46, 0xffff, 0x001e },
--		{ 0x48, 0xffff, 0x3595 },
--		{ 0x60, 0xffff, 0x9455 },
--		{ 0x61, 0xffff, 0x99ff },
--		{ 0x42, 0xffff, 0x6046 },
--		{ 0x69, 0xffff, 0xfe00 },
--		{ 0x63, 0xffff, 0xab62 },
--	};
--
--	rtl_set_def_aspm_entry_latency(tp);
--
--	/* disable aspm and clock request before access ephy */
--	rtl_hw_aspm_clkreq_enable(tp, false);
--	rtl_ephy_init(tp, e_info_8125a_1);
--
--	rtl_hw_start_8125_common(tp);
--	rtl_hw_aspm_clkreq_enable(tp, true);
--}
--
- static void rtl_hw_start_8125a_2(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8125a_2[] = {
-@@ -3704,7 +3663,6 @@ static void rtl_hw_config(struct rtl8169_private *tp)
- 		[RTL_GIGA_MAC_VER_51] = rtl_hw_start_8168ep_3,
- 		[RTL_GIGA_MAC_VER_52] = rtl_hw_start_8117,
- 		[RTL_GIGA_MAC_VER_53] = rtl_hw_start_8117,
--		[RTL_GIGA_MAC_VER_60] = rtl_hw_start_8125a_1,
- 		[RTL_GIGA_MAC_VER_61] = rtl_hw_start_8125a_2,
- 		[RTL_GIGA_MAC_VER_63] = rtl_hw_start_8125b,
- 	};
-@@ -4099,7 +4057,6 @@ static unsigned int rtl_quirk_packet_padto(struct rtl8169_private *tp,
- 
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
--	case RTL_GIGA_MAC_VER_60:
- 	case RTL_GIGA_MAC_VER_61:
- 	case RTL_GIGA_MAC_VER_63:
- 		padto = max_t(unsigned int, padto, ETH_ZLEN);
-@@ -5143,7 +5100,7 @@ static void rtl_hw_initialize(struct rtl8169_private *tp)
- 	case RTL_GIGA_MAC_VER_40 ... RTL_GIGA_MAC_VER_48:
- 		rtl_hw_init_8168g(tp);
- 		break;
--	case RTL_GIGA_MAC_VER_60 ... RTL_GIGA_MAC_VER_63:
-+	case RTL_GIGA_MAC_VER_61 ... RTL_GIGA_MAC_VER_63:
- 		rtl_hw_init_8125(tp);
- 		break;
- 	default:
-@@ -5234,7 +5191,7 @@ static void rtl_init_mac_address(struct rtl8169_private *tp)
- /* register is set if system vendor successfully tested ASPM 1.2 */
- static bool rtl_aspm_is_safe(struct rtl8169_private *tp)
- {
--	if (tp->mac_version >= RTL_GIGA_MAC_VER_60 &&
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_61 &&
- 	    r8168_mac_ocp_read(tp, 0xc0b2) & 0xf)
- 		return true;
- 
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index 99e4f06f8..8c04cc56b 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -995,44 +995,6 @@ static void rtl8125_legacy_force_mode(struct phy_device *phydev)
- 	phy_modify_paged(phydev, 0xa5b, 0x12, BIT(15), 0);
- }
- 
--static void rtl8125a_1_hw_phy_config(struct rtl8169_private *tp,
--				     struct phy_device *phydev)
--{
--	phy_modify_paged(phydev, 0xad4, 0x10, 0x03ff, 0x0084);
--	phy_modify_paged(phydev, 0xad4, 0x17, 0x0000, 0x0010);
--	phy_modify_paged(phydev, 0xad1, 0x13, 0x03ff, 0x0006);
--	phy_modify_paged(phydev, 0xad3, 0x11, 0x003f, 0x0006);
--	phy_modify_paged(phydev, 0xac0, 0x14, 0x0000, 0x1100);
--	phy_modify_paged(phydev, 0xac8, 0x15, 0xf000, 0x7000);
--	phy_modify_paged(phydev, 0xad1, 0x14, 0x0000, 0x0400);
--	phy_modify_paged(phydev, 0xad1, 0x15, 0x0000, 0x03ff);
--	phy_modify_paged(phydev, 0xad1, 0x16, 0x0000, 0x03ff);
--
--	r8168g_phy_param(phydev, 0x80ea, 0xff00, 0xc400);
--	r8168g_phy_param(phydev, 0x80eb, 0x0700, 0x0300);
--	r8168g_phy_param(phydev, 0x80f8, 0xff00, 0x1c00);
--	r8168g_phy_param(phydev, 0x80f1, 0xff00, 0x3000);
--	r8168g_phy_param(phydev, 0x80fe, 0xff00, 0xa500);
--	r8168g_phy_param(phydev, 0x8102, 0xff00, 0x5000);
--	r8168g_phy_param(phydev, 0x8105, 0xff00, 0x3300);
--	r8168g_phy_param(phydev, 0x8100, 0xff00, 0x7000);
--	r8168g_phy_param(phydev, 0x8104, 0xff00, 0xf000);
--	r8168g_phy_param(phydev, 0x8106, 0xff00, 0x6500);
--	r8168g_phy_param(phydev, 0x80dc, 0xff00, 0xed00);
--	r8168g_phy_param(phydev, 0x80df, 0x0000, 0x0100);
--	r8168g_phy_param(phydev, 0x80e1, 0x0100, 0x0000);
--
--	phy_modify_paged(phydev, 0xbf0, 0x13, 0x003f, 0x0038);
--	r8168g_phy_param(phydev, 0x819f, 0xffff, 0xd0b6);
--
--	phy_write_paged(phydev, 0xbc3, 0x12, 0x5555);
--	phy_modify_paged(phydev, 0xbf0, 0x15, 0x0e00, 0x0a00);
--	phy_modify_paged(phydev, 0xa5c, 0x10, 0x0400, 0x0000);
--	rtl8168g_enable_gphy_10m(phydev);
--
--	rtl8125a_config_eee_phy(phydev);
--}
--
- static void rtl8125a_2_hw_phy_config(struct rtl8169_private *tp,
- 				     struct phy_device *phydev)
- {
-@@ -1188,7 +1150,6 @@ void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,
- 		[RTL_GIGA_MAC_VER_51] = rtl8168ep_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_52] = rtl8117_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_53] = rtl8117_hw_phy_config,
--		[RTL_GIGA_MAC_VER_60] = rtl8125a_1_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_61] = rtl8125a_2_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_63] = rtl8125b_hw_phy_config,
- 	};
+Below is some background of kubernetes.
+In kubernetes, a pod is organized as follows,
+
+               pod
+               |- Container
+               |- Container
+
+IOW, it is a two-layer unit, or a two-layer instance.
+The cgroup dir of the pod is named with a UUID assigned by kubernetes-apiserver.
+Once the old pod is destroyed (that can happen when the user wants to
+update their service), the new pod will have a different UUID.
+That said, different instances will have different cgroup dir.
+
+If we want to introduce a  persistent entity cgroup, we have to make
+it a three-layer unit.
+
+           persistent-entity
+           |- pod
+                 |- Container
+                 |- Container
+
+There will be some issues,
+1.  The kuber-apiserver must maintain the persistent-entity on each host.
+     It needs a great refactor and the compatibility is also a problem
+per my discussion with kubernetes experts.
+2.  How to do the monitor?
+     If there's only one pod under this persistent-entity, we can
+easily get the memory size of  shared resources by:
+         Sizeof(shared-resources) = Sizeof(persistent-entity) - Sizeof(pod)
+    But what if it has N pods and N is dynamically changed ?
+3.  What if it has more than one shared resource?
+     For example, pod-foo has two shared resources A and B, pod-bar
+has two shared resources A and C, and another pod has two shared
+resources B and C.
+     How to deploy them?
+     Pls, note that we can introduce multiple-layer persistent-entity,
+but which one should be the parent ?
+
+So from my perspective, it is almost impossible.
+
+> So, instead of systemd.slice/hello.service, the application runs inside
+> something like systemd.slice/hello.service/hello.service.instance and the
+> service-level cgroup hello.service is not destroyed as long as it is
+> something worth tracking on the system.
+>
+> The benefits are
+>
+> a. While requiring changing how userland organizes cgroup hiearchy, it is a
+>    straight-forward extension of the current architecture and doesn't
+>    require any conceptual or structural changes. All the accounting and
+>    control schemes work exactly the same as before. The only difference is
+>    that we now have a persistent entity representing each service as we want
+>    to track their persistent resource usages.
+>
+> b. Per-instance tracking and control is optional. To me, it seems that the
+>    persistent resource usages would be more meaningful than per-instance and
+>    tracking down to the persistent usages shouldn't add noticeable runtime
+>    overheads while keeping per-instance process management niceties and
+>    allowing use cases to opt-in for per-instance resource tracking and
+>    control as needed.
+>
+> The complications are:
+>
+> a. It requires changing cgroup hierarchy in a very visible way.
+>
+> b. What should be the lifetime rules for persistent cgroups? Do we keep them
+>    around forever or maybe they can be created on the first use and kept
+>    around until the service is removed from the system? When the persistent
+>    cgroup is removed, do we need to make sure that the remaining resource
+>    usages are low enough? Note that this problem exists for any approach
+>    that tries to track persistent usages no matter how it's done.
+>
+> c. Do we need to worry about nesting overhead? Given that there's no reason
+>    to enable controllers w/o persisten states for the instance level and the
+>    nesting overhead is pretty low for memcg, this doesn't seem like a
+>    problem to me. If this becomes a problem, we just need to fix it.
+>
+> A couple alternatives discussed are:
+>
+> a. Userspace keeps reusing the same cgroup for different instances of the
+>    same service. This simplifies some aspects while making others more
+>    complicated. e.g. Determining the current instance's CPU or IO usages now
+>    require the monitoring software remembering what they were when this
+>    instance started and calculating the deltas. Also, if some use cases want
+>    to distinguish persistent vs. instance usages (more on this later), this
+>    isn't gonna work. That said, this definitely is attractive in that it
+>    miminizes overt user visible changes.
+>
+> b. Memory is disassociated rather than just reparented on cgroup destruction
+>    and get re-charged to the next first user. This is attractive in that it
+>    doesn't require any userspace changes; however, I'm not sure how this
+>    would work for non-pageable memory usages such as bpf maps. How would we
+>    detect the next first usage?
+>
+
+JFYI, There is a reuse path for the bpf map, see my previous RFC[1].
+[1] https://lore.kernel.org/bpf/20220619155032.32515-1-laoar.shao@gmail.com/
+
+>
+> [2] Whether and how to solve first and second+ instance charge differences.
+>
+> If we take the layering approach, the first instance will get charged for
+> all memory that it uses while the second+ instances likely won't get charged
+> for a lot of persistent usages. I don't think there is a consensus on
+> whether this needs to be solved and I don't have enough context to form a
+> strong opinion. memcg folks are a lot better equipped to make this decision.
+>
+
+Just sharing our practice.
+For many of our users, it means the memcg is unreliable (at least for
+the observability) when the memory usage is inconsistent.
+So they prefer to drop the page cache (by echoing memory.force_empty)
+when the container (pod) is destroyed, at the cost of taking time to
+reload these page caches next time.  Reliability is more important
+than performance.
+
+> Assuming this needs to be solved, here's a braindump to be taken with a big
+> pinch of salt:
+>
+> I have a bit of difficult time imagining a perfect solution given that
+> whether a given page cache page is persistent or not would be really
+> difficult to know (or maybe all page cache is persistent by default while
+> anon is not). However, the problem still seems worthwhile to consider for
+> big ticket items such as persistent tmpfs mounts and huge bpf maps as they
+> can easily make the differences really big.
+>
+> If we want to solve this problem, here are options that I can think of:
+>
+> a. Let userspace put the charges where they belong using the current
+>    mechanisms. ie. Create persistent entities in the persistent parent
+>    cgroup while there's no current instance.
+>
+>    Pro: It won't require any major kernel or interface changes. There still
+>    need to be some tweaking such as allowing tmpfs pages to be always
+>    charged to the cgroup which created the instance (maybe as long as it's
+>    an ancestor of the faulting cgroup?) but nothing too invasive.
+>
+>    Con: It may not be flexible enough.
+>
+> b. Let userspace specify which cgroup to charge for some of constructs like
+>    tmpfs and bpf maps. The key problems with this approach are
+>
+>    1. How to grant/deny what can be charged where. We must ensure that a
+>       descendant can't move charges up or across the tree without the
+>       ancestors allowing it.
+>
+
+We can add restrictions to check which memcg can be selected
+(regarding the selectable memcg).
+But I think it may be too early to do the restrictions, as only the
+privileged user can set it.
+It is the sys admin's responsbility to select a proper memcg.
+That said, the selectable memcg is not going south.
+
+>    2. How to specify the cgroup to charge. While specifying the target
+>       cgroup directly might seem like an obvious solution, it has a couple
+>       rather serious problems. First, if the descendant is inside a cgroup
+>       namespace, it might be able to see the target cgroup at all.
+
+It is not a problem. Just sharing our practice below.
+$ docker run -tid --privileged    \
+                      --mount
+type=bind,source=/sys/fs/bpf,target=/sys/fs/bpf    \
+                      --mount
+type=bind,source=/sys/fs/cgroup/memory/bpf,target=/bpf-memcg    \
+                      docker-image
+
+The bind-mount can make it work.
+
+>  Second,
+>       it's an interface which is likely to cause misunderstandings on how it
+>       can be used. It's too broad an interface.
+>
+
+As I said above, we just need some restrictions or guidance if that is
+desired now.
+
+>    One solution that I can think of is leveraging the resource domain
+>    concept which is currently only used for threaded cgroups. All memory
+>    usages of threaded cgroups are charged to their resource domain cgroup
+>    which hosts the processes for those threads. The persistent usages have a
+>    similar pattern, so maybe the service level cgroup can declare that it's
+>    the encompassing resource domain and the instance cgroup can say whether
+>    it's gonna charge e.g. the tmpfs instance to its own or the encompassing
+>    resource domain.
+>
+>    This has the benefit that the user only needs to indicate its intention
+>    without worrying about how cgroups are composed and what their IDs are.
+>    It just indicates whether the given resource is persistent and if the
+>    cgroup hierarchy is set up for that, it gets charged that way and if not
+>    it can be just charged to itself.
+>
+>    This is a shower thought but, if we allow nesting such domains (and maybe
+>    name them), we can use it for shared resources too so that co-services
+>    are put inside a shared slice and shared resources are pushed to the
+>    slice level.
+>
+> This became pretty long. I obviously have a pretty strong bias towards
+> solving this within the current basic architecture but other than that most
+> of these decisions are best made by memcg folks. We can hopefully build some
+> consensus on the issue.
+>
+
+JFYI.
+Apologize in advance if my words offend you again.
+
 -- 
-2.37.2
-
+Regards
+Yafang
