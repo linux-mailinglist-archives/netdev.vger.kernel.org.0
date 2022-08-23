@@ -2,227 +2,348 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C97B59D175
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 08:48:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 703C059D17F
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 08:53:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240484AbiHWGs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 02:48:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51512 "EHLO
+        id S240619AbiHWGwb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 02:52:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240307AbiHWGs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 02:48:27 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2068.outbound.protection.outlook.com [40.107.220.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D79C0E031;
-        Mon, 22 Aug 2022 23:48:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F3b3LnUSXa+FZ935aG5s1QmOpNJcs052R8qmdbX5up4jrAGGDThMOtu3mx/L5k89IaxWBFtgb9xSshbAj+KthQVLMy5b7Lr2m7TimyB8siYGUgqA2d87em82P5/R0nXrphjlLGIWgBjh5HBacfby2PjpfSPQk7vJakc3P/9cZYGr/ieqhfpngUtg3HHXViWEU0ePAlaUrr2bm1nGnP+qCHL1cvjWJJ0Bq0Tt09cZ7uDINWzR5GZwGW+5pO7ZrUs/Zam9Zgn/ENhYVGN8Lgf+Tm9+kN5PaO9yx/Sw4xmI+wgBRR0GCRQzwaCYL4E/ZDQCwlsuTvfiqQPwXg970VNXHg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lib8bisyBHrWO6pAcEhBi4DsSbSF2hoDcjmaxglAXEM=;
- b=GbeFhs/GUlTNfbwoIMrjELewD6KCgLRfwkfKrmz9P7djpkPtYIG407o3s/b6w8v6yB/mzuXkqQpkd0l4+QNNcxg8Ik09rK1DDGPWVvgXyQ2Ay3mGeKrB/7uPaxqaOOPjBOPayAsdbrOVzfrjIeYXyv8HYVxLpnF9lrMNpmLlhdEiVPrjDIfeb7tQ8MkwYvSrbLdJuRApYePQV2gqVpQcXH2dhBVp3FQqVNPkl3Avl+xHckM+KtyUF57utX9BdpVyQCsFbeIkn0KuzhKRdTD0okCEAS146fXNlVQILXeHEfUpM1Lz834C+tALHJX4CaM4K7/G69RBZcJsSqAwn6ebww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lib8bisyBHrWO6pAcEhBi4DsSbSF2hoDcjmaxglAXEM=;
- b=ui0dcW18C1lOskPdXIAhazeez8bvY/QYLk9w1PeWKjocqkO8+OLDryFslkmjUpN1QS3lSoTntHWY7mT3rEcdE2SxOL9oZoVuaf1BGCuXZRugir2oztAqV8tc31kR1H3+uA8fYfvBC0J8QTMVOZacEGF1p5jELW5mfJgw5U1om6gSW+kgbpPRNvQhOF+IP2W68o/vlg24ByOKOsvToGwJcaygiw67yyA6SdSbeZHuwfUL2tiVORpncESuaxzRgpfU6Rwl7HoJACd70ICLF0JgHsKQdHAX9ys1pMoPAu14qymYffcSjWY3GJ5vm4iMEedwuQH+uvcY1p7PTei7ONxGbw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com (2603:10b6:208:3e9::22)
- by BL0PR12MB4609.namprd12.prod.outlook.com (2603:10b6:208:8d::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Tue, 23 Aug
- 2022 06:48:24 +0000
-Received: from IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc]) by IA1PR12MB6163.namprd12.prod.outlook.com
- ([fe80::a52c:c6f5:f9f4:59cc%5]) with mapi id 15.20.5546.022; Tue, 23 Aug 2022
- 06:48:23 +0000
-Date:   Tue, 23 Aug 2022 09:48:17 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <YwR4MQ2xOMlvKocw@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
-X-ClientProxiedBy: VI1PR04CA0065.eurprd04.prod.outlook.com
- (2603:10a6:802:2::36) To IA1PR12MB6163.namprd12.prod.outlook.com
- (2603:10b6:208:3e9::22)
+        with ESMTP id S239988AbiHWGwa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 02:52:30 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60ECD3CBC8;
+        Mon, 22 Aug 2022 23:52:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661237549; x=1692773549;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=teYM1P+/2c/MjzYkIezmPusJTcjbZ+PMcUqRsOswTXs=;
+  b=cc7/oInv0oIc3qMUNfmXN9dd0/q9E1yiE0nHaXW8xI2atRvWmih0f/+f
+   LaYfQvvIzFX2C+MhTQDUfYePTuCyE0qdhLQpESjW1sbEfGeZlg+MeC2SE
+   hy+Nw3SNRpc0SNj5euZoJZ5INRyNBHFdVi3MpZ0xDtOxrOmo7HIdO9mGI
+   hnYF3OMb0sUJgmgDyAuqXAWJjpWwwiHiyoWA6Tv9pyRKDxEOkL+QsnLjN
+   wFErZwvhe0lNoKZ82vKvnnJ5YMdQK6s/zY46Yo71c58Y9582UF+Z+dpOP
+   p9zOaNVNjUK/bPB7GoWtu+ZhBauMji8jYENg8T2XEbYP7fqq5/ajfjrVq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10447"; a="292349227"
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="292349227"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:52:29 -0700
+X-IronPort-AV: E=Sophos;i="5.93,256,1654585200"; 
+   d="scan'208";a="585853174"
+Received: from lingshan-mobl.ccr.corp.intel.com (HELO [10.249.174.222]) ([10.249.174.222])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Aug 2022 23:52:25 -0700
+Message-ID: <0b02a7a6-8845-a22c-04c3-076887675980@intel.com>
+Date:   Tue, 23 Aug 2022 14:52:23 +0800
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1990fa58-d901-4ad5-b15e-08da84d3797a
-X-MS-TrafficTypeDiagnostic: BL0PR12MB4609:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: R/V38e+RlkIgeknU8i1OuQhGHQzP8hktCzoIBM5Z0R+q8O8XbtxuMA/lFYJ4UNkr8iWHnKpE7K6s9cKoZWAB7l1fMcJMQUvsjc4V573x1kXorTA3H+c2KRUvU7v/ModFmt4BvmfGXfCR568XtOUmxzWTPzXHJhrd3aevCAc8xnxd7ZGlnrYgPazusnBMhWiCkxZl3kWW7zZrFxOjDFXi8MK9Z07okcdp6opOLRI7b93VKV9JsOaS1SOd/KHYY4kd9B4QxdEoIei03ZXe0GFYrGYjuRWrXr6jmg3ZYz2e2UjYjthjn8Z+Ba8yuOoApM8toUE/gfLzx6QvT3Fwfu0bsGuqKLdb+qY83JlZ46T1EEpmV97K6D4vUebUTcRdrHiHMyegFWlnAaw0nTNd5NI33L3UATSp06gTvpwuUxJ6t3W7ZegzA7pKvJE9M4smYRBclDT+2AmwrQRGXeifQ8iIfmKulIV55bpDc/PSrS6wgnGpfpB5Mh/zarE7wlTocf6U4i4bLMjqCb+pjLcgOP1bq90j8CAy1WylS6pqUYggI9I7vjCkFNzwz7kH1tv8FBS+lDhkUAQYv8ZiAVynKm9taigVkYBc3kgeXMlaMpNINfMOjStej59UHuPAxn192ajPU42Z9LRVOaJU0D6cQcIJu/ww4TWJGw0nzzauq/YMTV9vwqZKgR6vSfiQNvMeacp6gFEVaecy3sg09fZhWWNMAA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB6163.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(396003)(376002)(346002)(39860400002)(366004)(136003)(86362001)(38100700002)(316002)(6916009)(54906003)(8936002)(2906002)(7416002)(5660300002)(66476007)(66946007)(8676002)(4326008)(66556008)(83380400001)(186003)(478600001)(6486002)(53546011)(9686003)(6512007)(6506007)(41300700001)(6666004)(33716001)(26005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AVLSS0nmPVcOuXatzv4in5Kb9yg8X0b0Pi5hKejPnePhKaViH+LeS92+Ay18?=
- =?us-ascii?Q?753PyIok78nK7j+mm/E/s2WG//8MzRbIT14QOyTl0HX/Mhv3ZjP21lXlQh8F?=
- =?us-ascii?Q?8bXK6z+eIPG0yRGjGMul7rQIdFrmUdHfUFDm3/hIfXy6/5aEPYxDo8RJKbz5?=
- =?us-ascii?Q?eyJt8KRci7mpfRJWHcHPpOoZsNp/WopYsjJr3mmXQgnLdRd59n3x4IoxOgqf?=
- =?us-ascii?Q?MfXkhIrQMQ4ORVbO/5pYJxyID5eRv+giq2BYMhsI1I6RnaXm6JMoHV8fdZd/?=
- =?us-ascii?Q?m11zWxWHm3jpYx7r8RnTr34lnRjM7egBvQTw/EMQsG8Br16EYmhiKrJm/cJ3?=
- =?us-ascii?Q?Y4QVUNT3RdPKLPUDcVNjTb7P7PI6l9fr8TtHobfFUoSO91HNZ5y3yJHAY4AJ?=
- =?us-ascii?Q?LP9qyvXsqWmk6zOclP0MVtwfb6PD+aH9SHr2okemtZA99hdQb0u/vYsJwT2U?=
- =?us-ascii?Q?2BP1680bys3BW0mouOpMpMMyJ3ZRNlNa6/hSlTxlGAok/6AgF3Ti8GJRA5d7?=
- =?us-ascii?Q?3yAwuEycrLY0un4SPw/ns5VnwI89Bhd7xCDTT/A/cMHhrc25hEt8nmjZtEPB?=
- =?us-ascii?Q?mh4kZByMURRfuJX5y4jsQOfIGLGH/ZcVwXYa4zkeunRzIWQ1vlRwvmkbKpfq?=
- =?us-ascii?Q?EqH9xYtpqv1uwmF2EOtcbJ5iiAH0319VVgyilRY++CiXjmHU+OBP9MsPhdyl?=
- =?us-ascii?Q?hT0PYINBR/zorUqn9XweePqN2L1u3csdOuWYgcgcsmMepdTrlypbYUReUXCk?=
- =?us-ascii?Q?eQe047QuIF1Gw7lWhcBjDm7mTOR4MxtK7h4u0FuP2dxKAHHtqchEVaxT1jwB?=
- =?us-ascii?Q?FO6vqqgT2DldQvcMUX3k18w5cqt4NgP+z5teWlFKOS0kFNPc8VUwicEqMRo2?=
- =?us-ascii?Q?qvIxqN2UAG9V5yncCFlCslj4IvG5S36WI8POoEVTV9thS2UMninUGQF7gkb5?=
- =?us-ascii?Q?HfFyNvPmdjpGMsnJNE8vCkG1x8Punt7+VcJqsAtkJbG5y1DLOf6xlDxb1/qa?=
- =?us-ascii?Q?UnH5jolfgxKcYkaldZkVH/92M6I5IdNG9NNdYMtTwimjNIlQ8GEBllSitYdN?=
- =?us-ascii?Q?qgueUp/zrD+Trs1/RITHRF/Eg53TS81BaXquJKk6xcOdq/VDupUYmmA4SMh1?=
- =?us-ascii?Q?H3o/Q65G/+nNoQQjkTj2VUu+PtJCIBE9AQqxCj4QqadmhTZLXdlB9C6hvDr0?=
- =?us-ascii?Q?TxLx5a5ONfRJpCl3BRsg24blXX+ijp/YoTj6rzjtGTrEL4uRtZn7W1bSKurx?=
- =?us-ascii?Q?GipEBNNQqXXd9crePrxAMgW4c6cKX2mF5sg0TAUtX4aiRTJEcqwMNdveTIWZ?=
- =?us-ascii?Q?LSDX1NnLXSE8QX+J8YNHlRBKuhJaZinEHpQ9I4QRuN+J9zGRh1m+5QWiMkyp?=
- =?us-ascii?Q?ecfri5C6ea9ShmpjierMgA94b+MIm6zgWncyYe0493jrudWh/uxBtWW+9s8M?=
- =?us-ascii?Q?Kcr7mRp/VtkV9krzHy0RZ8LKnNVwF9j0JJrQfC/+NeKzHtN5K3jIvCINYx89?=
- =?us-ascii?Q?H1xfSpPFt1MSYWnySqQ3IVtzasFD+tNA4uJKjLQJLs6L+qPZ1fJdDKUr9Tov?=
- =?us-ascii?Q?keuVGErh7UfXQqVKe4Ic2XS2Hszb0roeL2MSM+GG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1990fa58-d901-4ad5-b15e-08da84d3797a
-X-MS-Exchange-CrossTenant-AuthSource: IA1PR12MB6163.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Aug 2022 06:48:23.8802
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iu0t9qxIW9++gLibiyStO5K6Pw0wYuYipnS0KPs79rfjL5GTnBIS0EhWMGnDaqwToG9kg1nWuUFHoVN3pl+r2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB4609
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Firefox/102.0 Thunderbird/102.1.2
+Subject: Re: [PATCH 2/2] vDPA: conditionally read fields in virtio-net dev
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, kvm <kvm@vger.kernel.org>,
+        Parav Pandit <parav@nvidia.com>,
+        Yongji Xie <xieyongji@bytedance.com>,
+        "Dawar, Gautam" <gautam.dawar@amd.com>
+References: <c5075d3d-9d2c-2716-1cbf-cede49e2d66f@oracle.com>
+ <20e92551-a639-ec13-3d9c-13bb215422e1@intel.com>
+ <9b6292f3-9bd5-ecd8-5e42-cd5d12f036e7@oracle.com>
+ <22e0236f-b556-c6a8-0043-b39b02928fd6@intel.com>
+ <892b39d6-85f8-bff5-030d-e21288975572@oracle.com>
+ <52a47bc7-bf26-b8f9-257f-7dc5cea66d23@intel.com>
+ <20220817045406-mutt-send-email-mst@kernel.org>
+ <a91fa479-d1cc-a2d6-0821-93386069a2c1@intel.com>
+ <20220817053821-mutt-send-email-mst@kernel.org>
+ <449c2fb2-3920-7bf9-8c5c-a68456dfea76@intel.com>
+ <20220817063450-mutt-send-email-mst@kernel.org>
+ <54aa5a5c-69e2-d372-3e0c-b87f595d213c@redhat.com>
+ <f0b6ea5c-1783-96d2-2d9f-e5cf726b0fc0@oracle.com>
+ <CACGkMEumKfktMUJOTUYL_JYkFbw8qH331gGARPB2bTH=7wKWPg@mail.gmail.com>
+ <4678fc51-a402-d3ea-e875-6eba175933ba@oracle.com>
+ <e06d1f6d-3199-1b75-d369-2e5d69040271@intel.com>
+ <CACGkMEv24Rn9+bJ5mma1ciJNwa7wvRCwJ6jF+CBMbz6DtV8MvA@mail.gmail.com>
+Content-Language: en-US
+From:   "Zhu, Lingshan" <lingshan.zhu@intel.com>
+In-Reply-To: <CACGkMEv24Rn9+bJ5mma1ciJNwa7wvRCwJ6jF+CBMbz6DtV8MvA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 22, 2022 at 09:49:28AM +0200, netdev@kapio-technology.com wrote:
-> On 2022-08-22 07:40, Ido Schimmel wrote:
-> > On Sun, Aug 21, 2022 at 03:43:04PM +0200, netdev@kapio-technology.com
-> > wrote:
-> > 
-> > I personally think that the mv88e6xxx semantics are very weird (e.g., no
-> > roaming, traffic blackhole) and I don't want them to determine how the
-> > feature works in the pure software bridge or other hardware
-> > implementations. On the other hand, I understand your constraints and I
-> > don't want to create a situation where user space is unable to
-> > understand how the data path works from the bridge FDB dump with
-> > mv88e6xxx.
-> > 
-> > My suggestion is to have mv88e6xxx report the "locked" entry to the
-> > bridge driver with additional flags that describe its behavior in terms
-> > of roaming, ageing and forwarding.
-> > 
-> > In terms of roaming, since in mv88e6xxx the entry can't roam you should
-> > report the entry with the "sticky" flag.
-> 
-> As I am not familiar with roaming in this context, I need to know how the SW
-> bridge should behave in this case.
 
-I think I wasn't clear enough. The idea is to make the bridge compatible
-with mv88e6xxx in a way that is discoverable by user space by having
-mv88e6xxx add the locked entry with flags that describe the hardware
-behavior. Therefore, it's not a matter of "how the SW bridge should
-behave", but having it behave in a way that matches the offloaded data
-path.
 
-From what I was able to understand from you, the "locked" entry cannot
-roam at all in mv88e6xxx, which can be described by the "sticky" flag.
+On 8/23/2022 11:26 AM, Jason Wang wrote:
+> On Mon, Aug 22, 2022 at 1:08 PM Zhu, Lingshan <lingshan.zhu@intel.com> wrote:
+>>
+>>
+>> On 8/20/2022 4:55 PM, Si-Wei Liu wrote:
+>>>
+>>> On 8/18/2022 5:42 PM, Jason Wang wrote:
+>>>> On Fri, Aug 19, 2022 at 7:20 AM Si-Wei Liu <si-wei.liu@oracle.com>
+>>>> wrote:
+>>>>>
+>>>>> On 8/17/2022 9:15 PM, Jason Wang wrote:
+>>>>>> 在 2022/8/17 18:37, Michael S. Tsirkin 写道:
+>>>>>>> On Wed, Aug 17, 2022 at 05:43:22PM +0800, Zhu, Lingshan wrote:
+>>>>>>>> On 8/17/2022 5:39 PM, Michael S. Tsirkin wrote:
+>>>>>>>>> On Wed, Aug 17, 2022 at 05:13:59PM +0800, Zhu, Lingshan wrote:
+>>>>>>>>>> On 8/17/2022 4:55 PM, Michael S. Tsirkin wrote:
+>>>>>>>>>>> On Wed, Aug 17, 2022 at 10:14:26AM +0800, Zhu, Lingshan wrote:
+>>>>>>>>>>>> Yes it is a little messy, and we can not check _F_VERSION_1
+>>>>>>>>>>>> because of
+>>>>>>>>>>>> transitional devices, so maybe this is the best we can do for
+>>>>>>>>>>>> now
+>>>>>>>>>>> I think vhost generally needs an API to declare config space
+>>>>>>>>>>> endian-ness
+>>>>>>>>>>> to kernel. vdpa can reuse that too then.
+>>>>>>>>>> Yes, I remember you have mentioned some IOCTL to set the
+>>>>>>>>>> endian-ness,
+>>>>>>>>>> for vDPA, I think only the vendor driver knows the endian,
+>>>>>>>>>> so we may need a new function vdpa_ops->get_endian().
+>>>>>>>>>> In the last thread, we say maybe it's better to add a comment for
+>>>>>>>>>> now.
+>>>>>>>>>> But if you think we should add a vdpa_ops->get_endian(), I can
+>>>>>>>>>> work
+>>>>>>>>>> on it for sure!
+>>>>>>>>>>
+>>>>>>>>>> Thanks
+>>>>>>>>>> Zhu Lingshan
+>>>>>>>>> I think QEMU has to set endian-ness. No one else knows.
+>>>>>>>> Yes, for SW based vhost it is true. But for HW vDPA, only
+>>>>>>>> the device & driver knows the endian, I think we can not
+>>>>>>>> "set" a hardware's endian.
+>>>>>>> QEMU knows the guest endian-ness and it knows that
+>>>>>>> device is accessed through the legacy interface.
+>>>>>>> It can accordingly send endian-ness to the kernel and
+>>>>>>> kernel can propagate it to the driver.
+>>>>>> I wonder if we can simply force LE and then Qemu can do the endian
+>>>>>> conversion?
+>>>>> convert from LE for config space fields only, or QEMU has to forcefully
+>>>>> mediate and covert endianness for all device memory access including
+>>>>> even the datapath (fields in descriptor and avail/used rings)?
+>>>> Former. Actually, I want to force modern devices for vDPA when
+>>>> developing the vDPA framework. But then we see requirements for
+>>>> transitional or even legacy (e.g the Ali ENI parent). So it
+>>>> complicates things a lot.
+>>>>
+>>>> I think several ideas has been proposed:
+>>>>
+>>>> 1) Your proposal of having a vDPA specific way for
+>>>> modern/transitional/legacy awareness. This seems very clean since each
+>>>> transport should have the ability to do that but it still requires
+>>>> some kind of mediation for the case e.g running BE legacy guest on LE
+>>>> host.
+>>> In theory it seems like so, though practically I wonder if we can just
+>>> forbid BE legacy driver from running on modern LE host. For those who
+>>> care about legacy BE guest, they mostly like could and should talk to
+>>> vendor to get native BE support to achieve hardware acceleration,
+> The problem is the hardware still needs a way to know the endian of the guest?
+>
+>>> few
+>>> of them would count on QEMU in mediating or emulating the datapath
+>>> (otherwise I don't see the benefit of adopting vDPA?). I still feel
+>>> that not every hardware vendor has to offer backward compatibility
+>>> (transitional device) with legacy interface/behavior (BE being just
+>>> one),
+> Probably, I agree it is a corner case, and dealing with transitional
+> device for the following setups is very challenge for hardware:
+>
+> - driver without IOMMU_PLATFORM support, (requiring device to send
+> translated request which have security implications)
+> - BE legacy guest on LE host, (requiring device to have a way to know
+> the endian)
+> - device specific requirement (e.g modern virtio-net mandate minimal
+> header length to contain mrg_rxbuf even if the device doesn't offer
+> it)
+>
+> It is not obvious for the hardware vendor, so we may end up defecting
+> in the implementation. Dealing with compatibility for the transitional
+> devices is kind of a nightmare which there's no way for the spec to
+> rule the behavior of legacy devices.
+>
+>>>   this is unlike the situation on software virtio device, which
+>>> has legacy support since day one. I think we ever discussed it before:
+>>> for those vDPA vendors who don't offer legacy guest support, maybe we
+>>> should mandate some feature for e.g. VERSION_1, as these devices
+>>> really don't offer functionality of the opposite side (!VERSION_1)
+>>> during negotiation.
+> I've tried something similar here (a global mandatory instead of per device).
+>
+> https://lkml.org/lkml/2021/6/4/26
+I think this is the best option
+>
+> But for some reason, it is not applied by Michael. It would be a great
+> relief if we support modern devices only. Maybe it's time to revisit
+> this idea then we can introduce new backend features and then we can
+> mandate VERSION_1
+>
+>>> Having it said, perhaps we should also allow vendor device to
+>>> implement only partial support for legacy. We can define "reversed"
+>>> backend feature to denote some part of the legacy
+>>> interface/functionality not getting implemented by device. For
+>>> instance, VHOST_BACKEND_F_NO_BE_VRING, VHOST_BACKEND_F_NO_BE_CONFIG,
+>>> VHOST_BACKEND_F_NO_ALIGNED_VRING,
+>>> VHOST_BACKEND_NET_F_NO_WRITEABLE_MAC, and et al. Not all of these
+>>> missing features for legacy would be easy for QEMU to make up for, so
+>>> QEMU can selectively emulate those at its best when necessary and
+>>> applicable. In other word, this design shouldn't prevent QEMU from
+>>> making up for vendor device's partial legacy support.
+> This looks too heavyweight since it tries to provide compatibility for
+> legacy drivers. Considering we've introduced modern devices for 5+
+> years, I'd rather:
+>
+> - Qemu to mediate the config space stuffs
+So that's what I have suggested, new ops to support VHOST_SET_VRING_ENDIAN,
+then after QEMU issue this IOCTL, no matter success or fail, QEMU will
+know the endian. Then QEMU can mediate the config space.
 
-> In this I am assuming that roaming is regarding unauthorized entries.
+And these ops(get/get_endian) can help us mediate config space fields in
+net_config_fill()
+> - Shadow virtqueue to mediate the datapath (AF_XDP told us shadow ring
+> can perform very well if we do zero-copy).
+>
+>>>> 2) Michael suggests using VHOST_SET_VRING_ENDIAN where it means we
+>>>> need a new config ops for vDPA bus, but it doesn't solve the issue for
+>>>> config space (at least from its name). We probably need a new ioctl
+>>>> for both vring and config space.
+>>> Yep adding a new ioctl makes things better, but I think the key is not
+>>> the new ioctl. It's whether or not we should enforce every vDPA vendor
+>>> driver to implement all transitional interfaces to be spec compliant.
+> I think the answer is no since the spec allows transitional device.
+> And we know things will be greatly simplified if vDPA support non
+> transitional device only.
+>
+> So we can change the question to:
+>
+> 1) do we need (or is it too late) to enforce non transitional device?
+> 2) if yes, can transitional device be mediate in an efficient way?
+>
+> For 1), it's probably too late but we can invent new vDPA features as
+> you suggest to be non transitional. Then we can:
+>
+> 1.1) extend the netlink API to provision non-transitonal device
+> 1.2) work on the non-transtional device in the future
+> 1.3) presenting transitional device via mediation
+>
+> The previous transitional vDPA work as is, it's probably too late to
+> fix all the issue we suffer.
+>
+> For 2), the key part is the datapath mediation, we can use shadow virtqueue.
+>
+>>> If we allow them to reject the VHOST_SET_VRING_ENDIAN  or
+>>> VHOST_SET_CONFIG_ENDIAN call, what could we do? We would still end up
+>>> with same situation of either fail the guest, or trying to
+>>> mediate/emulate, right?
+>>>
+>>> Not to mention VHOST_SET_VRING_ENDIAN is rarely supported by vhost
+>>> today - few distro kernel has CONFIG_VHOST_CROSS_ENDIAN_LEGACY enabled
+>>> and QEMU just ignores the result. vhost doesn't necessarily depend on
+>>> it to determine endianness it looks.
+>> I would like to suggest to add two new config ops get/set_vq_endian()
+>> and get/set_config_endian() for vDPA. This is used to:
+>> a) support VHOST_GET/SET_VRING_ENDIAN as MST suggested, and add
+>> VHOST_SET/GET_CONFIG_ENDIAN for vhost_vdpa.
+>> If the device has not implemented interface to set its endianess, then
+>> no matter success or failure of SET_ENDIAN, QEMU knows the endian-ness
+>> anyway.
+> How can Qemu know the endian in this way? And if it can, there's no
+> need for the new API?
+If we have VHOST_SET_VRING_ENDIAN support for vDPA, then when QEMU sets
+the endian of a vDPA device through VHOST_SET_VRING_ENDIAN, no matter
+this ioctl success or fail, QEMU knows the endian of the device.
+E.g., if QEMU sets BE, but failed, then QEMU knows the device is LE only.
+>
+>> In this case, if the device endianess does not match the guest,
+>> there needs a mediation layer or fail.
+>> b) ops->get_config_endian() can always tell the endian-ness of the
+>> device config space after the vendor driver probing the device. So we
+>> can use this ops->get_config_endian() for
+>> MTU, MAC and other fields handling in vdpa_dev_net_config_fill() and we
+>> don't need to set_features in vdpa_get_config_unlocked(), so no race
+>> conditions.
+>> Every time ops->get_config() returned, we can tell the endian by
+>> ops-config_>get_endian(), we don't need set_features(xxx, 0) if features
+>> negotiation not done.
+>>
+>> The question is: Do we need two pairs of ioctls for both vq and config
+>> space? Can config space endian-ness differ from the vqs?
+>> c) do we need a new netlink attr telling the endian-ness to user space?
+> Generally, I'm not sure this is a good design consider it provides neither:
+>
+> Compatibility with the virtio spec
+I think this is not about the spec, we implement a new pair of ops to 
+set/get_endian(),
+then we can handle the device config space fields properly, at least to 
+vdpa_dev_net_config_fill().
 
-Yes, talking about "locked" entries that are notified by mv88e6xxx to
-the bridge.
+E.g, we can use __virtio16_to_cpu(vdpa->get_endian(), xxx);
 
-> In this case, is the roaming only between locked ports or does the
-> roaming include that the entry can move to a unlocked port, resulting
-> in the locked flag getting removed?
-
-Any two ports. If the "locked" entry in mv88e6xxx cannot move once
-installed, then the "sticky" flag accurately describes it.
-
-> 
-> > In terms of ageing, since
-> > mv88e6xxx is the one doing the ageing and not the bridge driver, report
-> > the entry with the "extern_learn" flag.
-> 
-> Just for the record, I see that entries coming from the driver to the bridge
-> will always have the "extern learn" flag set as can be seen from the
-> SWITCHDEV_FDB_ADD_TO_BRIDGE events handling in br_switchdev_event() in br.c,
-> which I think is the correct behavior.
-
-Yes.
-
-> 
-> > In terms of forwarding, in
-> > mv88e6xxx the entry discards all matching packets. We can introduce a
-> > new FDB flag that instructs the entry to silently discard all matching
-> > packets. Like we have with blackhole routes and nexthops.
-> 
-> Any suggestions to the name of this flag?
-
-I'm not good at naming, but "blackhole" is at least consistent with what
-we already have for routes and nexthop objects.
-
-> 
-> > 
-> > I believe that the above suggestion allows you to fully describe how
-> > these entries work in mv88e6xxx while keeping the bridge driver in sync
-> > with complete visibility towards user space.
-> > 
-> > It also frees the pure software implementation from the constraints of
-> > mv88e6xxx, allowing "locked" entries to behave like any other
-> > dynamically learned entries modulo the fact that they cannot "unlock" a
-> > locked port.
-> > 
-> > Yes, it does mean that user space will get a bit different behavior with
-> > mv88e6xxx compared to a pure software solution, but a) It's only the
-> > corner cases that act a bit differently. As a whole, the feature works
-> > largely the same. b) User space has complete visibility to understand
-> > the behavior of the offloaded data path.
-> > 
-> 
-> > > 
-> > > I will change it in iproute2 to:
-> > > bridge link set dev DEV mab on|off
-> > 
-> > And s/BR_PORT_MACAUTH/BR_PORT_MAB/ ?
-> 
-> Sure, I will do that. :-)
+And this can support VHOST_SET_VRING_ENDIAN.
+>
+> nor
+>
+> Compatibility with the existing vhost API (VHOST_SET_VRING_ENDIAN)
+that's true, but if the endian does not match the guest endian, it can not
+work without a mediation layer anyway.
 
 Thanks
+Zhu Lingshan
+>
+> Thanks
+>
+>> Thanks,
+>> Zhu Lingshan
+>>>> or
+>>>>
+>>>> 3) revisit the idea of forcing modern only device which may simplify
+>>>> things a lot
+>>> I am not actually against forcing modern only config space, given that
+>>> it's not hard for either QEMU or individual driver to mediate or
+>>> emulate, and for the most part it's not conflict with the goal of
+>>> offload or acceleration with vDPA. But forcing LE ring layout IMO
+>>> would just kill off the potential of a very good use case. Currently
+>>> for our use case the priority for supporting 0.9.5 guest with vDPA is
+>>> slightly lower compared to live migration, but it is still in our TODO
+>>> list.
+>>>
+>>> Thanks,
+>>> -Siwei
+>>>
+>>>> which way should we go?
+>>>>
+>>>>> I hope
+>>>>> it's not the latter, otherwise it loses the point to use vDPA for
+>>>>> datapath acceleration.
+>>>>>
+>>>>> Even if its the former, it's a little weird for vendor device to
+>>>>> implement a LE config space with BE ring layout, although still
+>>>>> possible...
+>>>> Right.
+>>>>
+>>>> Thanks
+>>>>
+>>>>> -Siwei
+>>>>>> Thanks
+>>>>>>
+>>>>>>
+>>>>>>>> So if you think we should add a vdpa_ops->get_endian(),
+>>>>>>>> I will drop these comments in the next version of
+>>>>>>>> series, and work on a new patch for get_endian().
+>>>>>>>>
+>>>>>>>> Thanks,
+>>>>>>>> Zhu Lingshan
+>>>>>>> Guests don't get endian-ness from devices so this seems pointless.
+>>>>>>>
+
