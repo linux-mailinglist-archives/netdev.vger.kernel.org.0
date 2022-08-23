@@ -2,351 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C5CE59D2B6
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 09:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C126659D2E8
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 10:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241386AbiHWHyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 03:54:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39392 "EHLO
+        id S241456AbiHWH7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 03:59:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241373AbiHWHyn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:54:43 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F2248E9C;
-        Tue, 23 Aug 2022 00:54:41 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MBhGk4XLBzXdf0;
-        Tue, 23 Aug 2022 15:50:22 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 23 Aug
- 2022 15:54:30 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <jhs@mojatatu.com>,
-        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <vinicius.gomes@intel.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] net: sched: delete duplicate cleanup of backlog and qlen
-Date:   Tue, 23 Aug 2022 15:57:17 +0800
-Message-ID: <20220823075717.28072-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S241452AbiHWH7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 03:59:11 -0400
+Received: from pmg.interduo.pl (pmg.interduo.pl [46.151.191.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D98F24BCC
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 00:59:10 -0700 (PDT)
+Received: from pmg.interduo.pl (localhost [127.0.0.1])
+        by pmg.interduo.pl (Proxmox) with ESMTP id 7C61B26BE9
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:59:07 +0200 (CEST)
+Received: from poczta.interduo.pl (poczta.interduo.pl [46.151.191.149])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pmg.interduo.pl (Proxmox) with ESMTPS id 613AD26D29
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:59:07 +0200 (CEST)
+Received: from poczta.interduo.pl (localhost [127.0.0.1])
+        by poczta.interduo.pl (Postfix) with ESMTP id 3A738EA716
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 09:59:07 +0200 (CEST)
+Authentication-Results: poczta.interduo.pl (amavisd-new);
+        dkim=pass (1024-bit key) reason="pass (just generated, assumed good)"
+        header.d=interduo.pl
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=interduo.pl; h=
+        content-transfer-encoding:content-type:content-type:in-reply-to
+        :from:from:references:to:content-language:subject:subject
+        :user-agent:mime-version:date:date:message-id; s=dkim; t=
+        1661241547; x=1662105548; bh=klNN8/b6Xrkax8ZZfxifnTLwL3uNPNXisSZ
+        0uDxVyQw=; b=ub8nfAuoQldh8ZzDg3Ttz33f98CEQnldZi+XVyCqdSWIoRdY5Rh
+        IQ+K2CaouGNbrHmVwOmy/W1xhq90GPoGtXJxN0yHFORdZDYPeo0Haq3OmWFeM9MO
+        pPbWaO1a52EsWGMbIHGrNPY1ZBO38f+XizAHOL1utaXNoLjaBH6LGAek=
+Received: from poczta.interduo.pl ([127.0.0.1])
+        by poczta.interduo.pl (poczta.interduo.pl [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id aFgNMozYZQg6 for <netdev@vger.kernel.org>;
+        Tue, 23 Aug 2022 09:59:07 +0200 (CEST)
+Received: from [172.20.2.42] (unknown [172.20.2.42])
+        by poczta.interduo.pl (Postfix) with ESMTPSA id 11969EA715;
+        Tue, 23 Aug 2022 09:59:07 +0200 (CEST)
+Message-ID: <c6bce6e3-b789-0c3a-37e0-6b8d7ebc7761@interduo.pl>
+Date:   Tue, 23 Aug 2022 09:59:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: Network interface - allow to set kernel default qlen value
+Content-Language: pl-PL
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org
+References: <6cb185cf-d278-9fde-40c9-12b24332afc8@interduo.pl>
+ <20220822173658.47598987@kernel.org>
+From:   =?UTF-8?Q?Jaros=c5=82aw_K=c5=82opotek?= <jkl@interduo.pl>
+In-Reply-To: <20220822173658.47598987@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The qdisc_reset function has cleared the backlog and qlen of the qdisc.
-There is no need to clear them again in the specific reset function.
+W dniu 23.08.2022 o 02:36, Jakub Kicinski pisze:
+> On Mon, 22 Aug 2022 10:41:40 +0200 Jarosław Kłopotek wrote:
+>> Welcome netdev's,
+>> is it possible to set in kernel default (for example by sysctl) value of
+>> qlen parameter for network interfaces?
+>>
+>> I try to search: sysctl -a | grep qlen | grep default
+>> and didn't find anything.
+>>
+>> Now for setting the qlen - we use scripts in /etc/network/interface.
+>>
+>> This is not so important thing - but could be improved. What do You
+>> think about it?
+> What type of network interfaces are we talking about here?
+> Physical Ethernet links?
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
----
- include/net/sch_generic.h | 1 -
- net/sched/sch_atm.c       | 1 -
- net/sched/sch_cbq.c       | 1 -
- net/sched/sch_choke.c     | 2 --
- net/sched/sch_drr.c       | 2 --
- net/sched/sch_dsmark.c    | 2 --
- net/sched/sch_etf.c       | 3 ---
- net/sched/sch_ets.c       | 2 --
- net/sched/sch_fq_codel.c  | 2 --
- net/sched/sch_fq_pie.c    | 3 ---
- net/sched/sch_hfsc.c      | 2 --
- net/sched/sch_htb.c       | 2 --
- net/sched/sch_multiq.c    | 1 -
- net/sched/sch_prio.c      | 2 --
- net/sched/sch_qfq.c       | 2 --
- net/sched/sch_red.c       | 2 --
- net/sched/sch_sfb.c       | 2 --
- net/sched/sch_skbprio.c   | 3 ---
- net/sched/sch_taprio.c    | 2 --
- net/sched/sch_tbf.c       | 2 --
- net/sched/sch_teql.c      | 1 -
- 21 files changed, 40 deletions(-)
+Ethernet links - for example:
 
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index ec693fe7c553..f2958fb5ae08 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -1137,7 +1137,6 @@ static inline void __qdisc_reset_queue(struct qdisc_skb_head *qh)
- static inline void qdisc_reset_queue(struct Qdisc *sch)
- {
- 	__qdisc_reset_queue(&sch->q);
--	sch->qstats.backlog = 0;
- }
- 
- static inline struct Qdisc *qdisc_replace(struct Qdisc *sch, struct Qdisc *new,
-diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
-index 4c8e994cf0a5..816fd0d7ba38 100644
---- a/net/sched/sch_atm.c
-+++ b/net/sched/sch_atm.c
-@@ -577,7 +577,6 @@ static void atm_tc_reset(struct Qdisc *sch)
- 	pr_debug("atm_tc_reset(sch %p,[qdisc %p])\n", sch, p);
- 	list_for_each_entry(flow, &p->flows, list)
- 		qdisc_reset(flow->q);
--	sch->q.qlen = 0;
- }
- 
- static void atm_tc_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index af126eb3e431..b026daca160e 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -975,7 +975,6 @@ cbq_reset(struct Qdisc *sch)
- 			cl->cpriority = cl->priority;
- 		}
- 	}
--	sch->q.qlen = 0;
- }
- 
- 
-diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
-index 2adbd945bf15..25d2daaa8122 100644
---- a/net/sched/sch_choke.c
-+++ b/net/sched/sch_choke.c
-@@ -315,8 +315,6 @@ static void choke_reset(struct Qdisc *sch)
- 		rtnl_qdisc_drop(skb, sch);
- 	}
- 
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	if (q->tab)
- 		memset(q->tab, 0, (q->tab_mask + 1) * sizeof(struct sk_buff *));
- 	q->head = q->tail = 0;
-diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
-index 18e4f7a0b291..4e5b1cf11b85 100644
---- a/net/sched/sch_drr.c
-+++ b/net/sched/sch_drr.c
-@@ -441,8 +441,6 @@ static void drr_reset_qdisc(struct Qdisc *sch)
- 			qdisc_reset(cl->qdisc);
- 		}
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void drr_destroy_qdisc(struct Qdisc *sch)
-diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
-index 4c100d105269..7da6dc38a382 100644
---- a/net/sched/sch_dsmark.c
-+++ b/net/sched/sch_dsmark.c
-@@ -409,8 +409,6 @@ static void dsmark_reset(struct Qdisc *sch)
- 	pr_debug("%s(sch %p,[qdisc %p])\n", __func__, sch, p);
- 	if (p->q)
- 		qdisc_reset(p->q);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void dsmark_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_etf.c b/net/sched/sch_etf.c
-index c48f91075b5c..d96103b0e2bf 100644
---- a/net/sched/sch_etf.c
-+++ b/net/sched/sch_etf.c
-@@ -445,9 +445,6 @@ static void etf_reset(struct Qdisc *sch)
- 	timesortedlist_clear(sch);
- 	__qdisc_reset_queue(&sch->q);
- 
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
--
- 	q->last = 0;
- }
- 
-diff --git a/net/sched/sch_ets.c b/net/sched/sch_ets.c
-index d73393493553..8de4365886e8 100644
---- a/net/sched/sch_ets.c
-+++ b/net/sched/sch_ets.c
-@@ -727,8 +727,6 @@ static void ets_qdisc_reset(struct Qdisc *sch)
- 	}
- 	for (band = 0; band < q->nbands; band++)
- 		qdisc_reset(q->classes[band].qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void ets_qdisc_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index 839e1235db05..23a042adb74d 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -347,8 +347,6 @@ static void fq_codel_reset(struct Qdisc *sch)
- 		codel_vars_init(&flow->cvars);
- 	}
- 	memset(q->backlogs, 0, q->flows_cnt * sizeof(u32));
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	q->memory_usage = 0;
- }
- 
-diff --git a/net/sched/sch_fq_pie.c b/net/sched/sch_fq_pie.c
-index d6aba6edd16e..35c35465226b 100644
---- a/net/sched/sch_fq_pie.c
-+++ b/net/sched/sch_fq_pie.c
-@@ -521,9 +521,6 @@ static void fq_pie_reset(struct Qdisc *sch)
- 		INIT_LIST_HEAD(&flow->flowchain);
- 		pie_vars_init(&flow->vars);
- 	}
--
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- }
- 
- static void fq_pie_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
-index d3979a6000e7..03efc40e42fc 100644
---- a/net/sched/sch_hfsc.c
-+++ b/net/sched/sch_hfsc.c
-@@ -1484,8 +1484,6 @@ hfsc_reset_qdisc(struct Qdisc *sch)
- 	}
- 	q->eligible = RB_ROOT;
- 	qdisc_watchdog_cancel(&q->watchdog);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index 23a9d6242429..cb5872d22ecf 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -1008,8 +1008,6 @@ static void htb_reset(struct Qdisc *sch)
- 	}
- 	qdisc_watchdog_cancel(&q->watchdog);
- 	__qdisc_reset_queue(&q->direct_queue);
--	sch->q.qlen = 0;
--	sch->qstats.backlog = 0;
- 	memset(q->hlevel, 0, sizeof(q->hlevel));
- 	memset(q->row_mask, 0, sizeof(q->row_mask));
- }
-diff --git a/net/sched/sch_multiq.c b/net/sched/sch_multiq.c
-index cd8ab90c4765..f28050c7f12d 100644
---- a/net/sched/sch_multiq.c
-+++ b/net/sched/sch_multiq.c
-@@ -152,7 +152,6 @@ multiq_reset(struct Qdisc *sch)
- 
- 	for (band = 0; band < q->bands; band++)
- 		qdisc_reset(q->queues[band]);
--	sch->q.qlen = 0;
- 	q->curband = 0;
- }
- 
-diff --git a/net/sched/sch_prio.c b/net/sched/sch_prio.c
-index 3b8d7197c06b..c03a11dd990f 100644
---- a/net/sched/sch_prio.c
-+++ b/net/sched/sch_prio.c
-@@ -135,8 +135,6 @@ prio_reset(struct Qdisc *sch)
- 
- 	for (prio = 0; prio < q->bands; prio++)
- 		qdisc_reset(q->queues[prio]);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static int prio_offload(struct Qdisc *sch, struct tc_prio_qopt *qopt)
-diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
-index d4ce58c90f9f..13246a9dc5c1 100644
---- a/net/sched/sch_qfq.c
-+++ b/net/sched/sch_qfq.c
-@@ -1458,8 +1458,6 @@ static void qfq_reset_qdisc(struct Qdisc *sch)
- 			qdisc_reset(cl->qdisc);
- 		}
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void qfq_destroy_qdisc(struct Qdisc *sch)
-diff --git a/net/sched/sch_red.c b/net/sched/sch_red.c
-index 40adf1f07a82..f1e013e3f04a 100644
---- a/net/sched/sch_red.c
-+++ b/net/sched/sch_red.c
-@@ -176,8 +176,6 @@ static void red_reset(struct Qdisc *sch)
- 	struct red_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	red_restart(&q->vars);
- }
- 
-diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
-index 3d061a13d7ed..31717fa45a4f 100644
---- a/net/sched/sch_sfb.c
-+++ b/net/sched/sch_sfb.c
-@@ -453,8 +453,6 @@ static void sfb_reset(struct Qdisc *sch)
- 	struct sfb_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	q->slot = 0;
- 	q->double_buffering = false;
- 	sfb_zero_all_buckets(q);
-diff --git a/net/sched/sch_skbprio.c b/net/sched/sch_skbprio.c
-index 7a5e4c454715..df72fb83d9c7 100644
---- a/net/sched/sch_skbprio.c
-+++ b/net/sched/sch_skbprio.c
-@@ -213,9 +213,6 @@ static void skbprio_reset(struct Qdisc *sch)
- 	struct skbprio_sched_data *q = qdisc_priv(sch);
- 	int prio;
- 
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
--
- 	for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
- 		__skb_queue_purge(&q->qdiscs[prio]);
- 
-diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
-index 0b941dd63d26..db88a692ef81 100644
---- a/net/sched/sch_taprio.c
-+++ b/net/sched/sch_taprio.c
-@@ -1636,8 +1636,6 @@ static void taprio_reset(struct Qdisc *sch)
- 			if (q->qdiscs[i])
- 				qdisc_reset(q->qdiscs[i]);
- 	}
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- }
- 
- static void taprio_destroy(struct Qdisc *sch)
-diff --git a/net/sched/sch_tbf.c b/net/sched/sch_tbf.c
-index 72102277449e..d0288e223542 100644
---- a/net/sched/sch_tbf.c
-+++ b/net/sched/sch_tbf.c
-@@ -330,8 +330,6 @@ static void tbf_reset(struct Qdisc *sch)
- 	struct tbf_sched_data *q = qdisc_priv(sch);
- 
- 	qdisc_reset(q->qdisc);
--	sch->qstats.backlog = 0;
--	sch->q.qlen = 0;
- 	q->t_c = ktime_get_ns();
- 	q->tokens = q->buffer;
- 	q->ptokens = q->mtu;
-diff --git a/net/sched/sch_teql.c b/net/sched/sch_teql.c
-index 6af6b95bdb67..79aaab51cbf5 100644
---- a/net/sched/sch_teql.c
-+++ b/net/sched/sch_teql.c
-@@ -124,7 +124,6 @@ teql_reset(struct Qdisc *sch)
- 	struct teql_sched_data *dat = qdisc_priv(sch);
- 
- 	skb_queue_purge(&dat->q);
--	sch->q.qlen = 0;
- }
- 
- static void
+ip a s | grep qlen
+
+for example:
+119: ens16np0.1231@ens16np0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 
+qdisc noqueue state UP group default qlen 10000
+(...)
+
 -- 
-2.17.1
+Jarosław Kłopotek
+kom. 607 893 111
+Interduo Bujek Kłopotek Sowa sp.j.
+ul. Krańcowa 17, 21-100 Lubartów
+tel. 81 475 30 00
+
 
