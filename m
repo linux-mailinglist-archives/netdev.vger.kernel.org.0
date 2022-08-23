@@ -2,64 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C74B759E656
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 17:47:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAB0959E576
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 16:58:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243622AbiHWPqD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 11:46:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38946 "EHLO
+        id S232578AbiHWO5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 10:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244368AbiHWPpp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 11:45:45 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9459114EBD6;
-        Tue, 23 Aug 2022 04:42:13 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id CA1721884B1B;
-        Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id C450D25032B7;
-        Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id BEC5AA1A004A; Tue, 23 Aug 2022 11:41:51 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S232278AbiHWO5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 10:57:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125D1308ABA
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:23:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661257350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rBRONIqnt4E6MBax+RN8UNcJe1L53HfRKZaqNtIx+8M=;
+        b=NAdFlsXNZzxQNGQln8ZE5dGAjg2TtnfWjwt1Sim5V68i9T4re4yHDZFORDxCkJS1uRybKJ
+        vocsQU0MXJtg3mfLosEqA8n/EXPw/QcFQ65pBEoPSdRLmuWvj9lKYj3n0Aw+Yew8Z4Rw9v
+        u3iw5xmj+G6fJSAOrGBMxgMI3LSxAC8=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-86-GsjwMKvKOQaBq7vbxumy5A-1; Tue, 23 Aug 2022 08:22:24 -0400
+X-MC-Unique: GsjwMKvKOQaBq7vbxumy5A-1
+Received: by mail-qk1-f198.google.com with SMTP id s9-20020a05620a254900b006b54dd4d6deso11830357qko.3
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:22:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=rBRONIqnt4E6MBax+RN8UNcJe1L53HfRKZaqNtIx+8M=;
+        b=NGSrfJTUK2/weW5l2x+2/C8VA08mtJJJ4Z70gnjZWTjgpS9naqs3Vtrsgnh+cETM7D
+         eSmjFC8XaXnsM3YQKFwpd37SLBJUvyfrjh4Y8jNVcEa0rF//mAr2xX4fzym3YChcYnp/
+         eHDqvIzRpkYtniowUb7HYMMXTjAFm++oIohwrjDYYpLjPsWKtrlTk2+k1aK1/Paq29mH
+         8fZS+AVSbzkzrX3z7OKxROBSBGJN1RKlmSTgp18q66CRcPaqmwJop6rObe2vcfvck21c
+         z08ApXFi0MSsLitW2K1jRF2LXJkSrkfQl9v0lAuE5cRk7Jz546SyawAxD92+D/VJo0d4
+         XjKA==
+X-Gm-Message-State: ACgBeo1gUmQOsKgqjPQGNItoccme/FOXCTsw8/g3r976oyd0GoO1PWa+
+        FmAPQ3sYydSkwkHrW6xNLnDCJwI/jrefPjdWgXiLm/za4exB/zuwUlj5vk2VqpK0VS0Sk/5HXMg
+        SOf9ca7td0nLMHKexz3tUZ1Kp2l7fAOZQ
+X-Received: by 2002:a05:622a:4cd:b0:343:65a4:e212 with SMTP id q13-20020a05622a04cd00b0034365a4e212mr18592697qtx.526.1661257344329;
+        Tue, 23 Aug 2022 05:22:24 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5GKTbzDfd8wryS9ex6M02iafW0bT+KO4ivoTSlfqZwnK57plTGzb+b3/uHyQGZR/6c4pz3OUf4d7o+2xiJpKE=
+X-Received: by 2002:a05:622a:4cd:b0:343:65a4:e212 with SMTP id
+ q13-20020a05622a04cd00b0034365a4e212mr18592683qtx.526.1661257344138; Tue, 23
+ Aug 2022 05:22:24 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Tue, 23 Aug 2022 13:41:51 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+References: <20220822071902.3419042-1-tcs_kernel@tencent.com> <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org>
+In-Reply-To: <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 23 Aug 2022 08:22:13 -0400
+Message-ID: <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
+Subject: Re: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
+To:     Stefan Schmidt <stefan@datenfreihafen.org>
+Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <YwR4MQ2xOMlvKocw@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Haimin Zhang <tcs_kernel@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,16 +79,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-23 08:48, Ido Schimmel wrote:
-> 
-> I'm not good at naming, but "blackhole" is at least consistent with 
-> what
-> we already have for routes and nexthop objects.
-> 
+Hi,
 
-I have changed it the name "masked", as that is also the term used in 
-the documentation for the zero-DPV entries, and I think that it will 
-generally be a more accepted term.
-Thus the name of the flag is now "BR_FDB_ENTRY_MASKED".
+On Tue, Aug 23, 2022 at 5:42 AM Stefan Schmidt
+<stefan@datenfreihafen.org> wrote:
+>
+> Hello.
+>
+> On 22.08.22 09:19, Haimin Zhang wrote:
+> > There is uninit value bug in dgram_sendmsg function in
+> > net/ieee802154/socket.c when the length of valid data pointed by the
+> > msg->msg_name isn't verified.
+> >
+> > This length is specified by msg->msg_namelen. Function
+> > ieee802154_addr_from_sa is called by dgram_sendmsg, which use
+> > msg->msg_name as struct sockaddr_ieee802154* and read it, that will
+> > eventually lead to uninit value read. So we should check the length of
+> > msg->msg_name is not less than sizeof(struct sockaddr_ieee802154)
+> > before entering the ieee802154_addr_from_sa.
+> >
+> > Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+>
+>
+> This patch has been applied to the wpan tree and will be
+> part of the next pull request to net. Thanks!
 
-I hope that is fine with you?
+For me this patch is buggy or at least it is questionable how to deal
+with the size of ieee802154_addr_sa here.
+
+There should be a helper to calculate the size which depends on the
+addr_type field. It is not required to send the last 6 bytes if
+addr_type is IEEE802154_ADDR_SHORT.
+Nitpick is that we should check in the beginning of that function.
+
+- Alex
+
