@@ -2,146 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BCB959E933
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:23:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013DD59E968
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 19:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231761AbiHWRWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 13:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43582 "EHLO
+        id S229628AbiHWR0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 13:26:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240032AbiHWRVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:21:11 -0400
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C787C529;
-        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
-Received: by mail-ot1-f51.google.com with SMTP id l5-20020a05683004a500b0063707ff8244so9929370otd.12;
-        Tue, 23 Aug 2022 07:57:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=32fb+kP/GNTtD4yV9TOnD2b7RZ03KBwBx6+ibrPD+y8=;
-        b=YoKL8784sOKdLGvnkA2TH2RNCwV3bfT8AD1iJP3C9tqeIA/iSuJSEJhdymVWtgAEmn
-         x+yKWkkb/xnGSwa46aYI1x6YjUYo3vauOpH0S0geFzSWm3KqrYpkrC4kAxD3kDEmwTqd
-         3gJJ+YL6YSl8g0vONsduCPwFeG0xYRuYMLoiMaiCrslfB2jb+7A4xJEoSbClHiJv52Ia
-         glNiJ3vy+9wuCDtGtpvHP1kjgSxDJ5c3pxM6+GBJSKAV9+7zphdD/BaoZspk/Z9/XoUS
-         iCkC30zz4WuicUvSWOYqM6Kq5xTx8Hk/L8y4pFTx22B07eyZv+lNP5QDQ6I9HEtSUtWj
-         57JA==
-X-Gm-Message-State: ACgBeo2hfJgWlyBWGGG40rBKOHIEM00NR/Tb2pV7teIOT/LEU7ub2QSy
-        3javVQQcVamBGSYAu794hA==
-X-Google-Smtp-Source: AA6agR5gTDVPXYx4XrmwbScdPsvRYbDyHtuAdNcSHU1Fwpadq2Y01zAfG/CkPYSQeOvRnZjzCO7kHw==
-X-Received: by 2002:a05:6830:2498:b0:638:9325:3370 with SMTP id u24-20020a056830249800b0063893253370mr9666966ots.228.1661266636988;
-        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
-Received: from xps15.. (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.googlemail.com with ESMTPSA id t1-20020a056870600100b0011c65559b04sm3840637oaa.34.2022.08.23.07.57.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 07:57:16 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        with ESMTP id S233730AbiHWRZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 13:25:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C41728A6E9
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 08:00:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAEFD615D7
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 15:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD33CC433D6;
+        Tue, 23 Aug 2022 15:00:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661266825;
+        bh=UUHiE9LZC2RTIOCVRVF7XZp1DDcH0s01VQ1Gm7vcmt0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XqdLuYhh/AyHj69sjgRij6J/7XbGubOeNi1G95iCmEtq9nPu7T5F8Ol6zCFKgokun
+         2F1i5i6XyIIY78AfWbdRrjetfzCWGwVtuFkvGM2l9W/loQDVXGabimP0rOOg34wsg5
+         2IwKCYOf5gQEllcwXJCwMe1QUPrLkBBqinX6YPpga84e2Uy1k9O2X7q3Wmwz8jU3sv
+         kFpcqV3sxvBTOqFGPifZsQHN74WyGLaC5NeSN3FU8f1huhxvJLLojMbZEc5QyuKnnr
+         e5lag0Wy6eW1vljjcPVr5TRlzEktDUf0yRikoWsuRIGWLmKvp45+js0NjDVI4Z6EUh
+         ocOe1RKkeUkrg==
+Date:   Tue, 23 Aug 2022 08:00:23 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>
-Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: net: Add missing (unevaluated|additional)Properties on child nodes
-Date:   Tue, 23 Aug 2022 09:56:36 -0500
-Message-Id: <20220823145649.3118479-5-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sergei Antonov <saproj@gmail.com>
+Subject: Re: [PATCH net] net: dsa: don't dereference NULL extack in
+ dsa_slave_changeupper()
+Message-ID: <20220823080023.43e9da81@kernel.org>
+In-Reply-To: <20220823100834.qikdvkekg6swn7rb@skbuf>
+References: <20220819173925.3581871-1-vladimir.oltean@nxp.com>
+        <20220822182523.6821e176@kernel.org>
+        <20220823100834.qikdvkekg6swn7rb@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to ensure only documented properties are present, node schemas
-must have unevaluatedProperties or additionalProperties set to false
-(typically).
+On Tue, 23 Aug 2022 10:08:34 +0000 Vladimir Oltean wrote:
+> On Mon, Aug 22, 2022 at 06:25:23PM -0700, Jakub Kicinski wrote:
+> > On Fri, 19 Aug 2022 20:39:25 +0300 Vladimir Oltean wrote:  
+> > > diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> > > index c548b969b083..804a00324c8b 100644
+> > > --- a/net/dsa/slave.c
+> > > +++ b/net/dsa/slave.c
+> > > @@ -2487,7 +2487,7 @@ static int dsa_slave_changeupper(struct net_device *dev,
+> > >  			if (!err)
+> > >  				dsa_bridge_mtu_normalization(dp);
+> > >  			if (err == -EOPNOTSUPP) {
+> > > -				if (!extack->_msg)
+> > > +				if (extack && !extack->_msg)
+> > >  					NL_SET_ERR_MSG_MOD(extack,
+> > >  							   "Offloading not supported");  
+> > 
+> > Other offload paths set the extack prior to the driver call,  
+> 
+> Example?
+> 
+> > which has the same effect.  
+> 
+> No, definitely not the same effect. The difference between (a) setting it
+> to "Offloading not supported" before the call to dsa_port_bridge_join()
+> and (b) setting it to "Offloading not supported" only if dsa_port_bridge_join()
+> returned -EOPNOTSUPP is that drivers don't have to set an extack message
+> if they return success, or if they don't implement ds->ops->port_bridge_join.
+> The behavior changes for a driver that doesn't set the extack but
+> returns 0 if I do that.
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/net/cortina,gemini-ethernet.yaml      | 1 +
- Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml     | 4 ++++
- .../devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml        | 1 +
- Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml   | 1 +
- 4 files changed, 7 insertions(+)
+Hm, I was pretty sure that's what we did in tc, but maybe it was just
+discussed and never done. Let me apply, then.
 
-diff --git a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-index cc01b9b5752a..253b5d1407ee 100644
---- a/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-+++ b/Documentation/devicetree/bindings/net/cortina,gemini-ethernet.yaml
-@@ -37,6 +37,7 @@ properties:
- patternProperties:
-   "^ethernet-port@[0-9]+$":
-     type: object
-+    unevaluatedProperties: false
-     description: contains the resources for ethernet port
-     allOf:
-       - $ref: ethernet-controller.yaml#
-diff --git a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-index 31bf825c6598..46e330f45768 100644
---- a/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,cpsw-switch.yaml
-@@ -77,6 +77,8 @@ properties:
- 
-   ethernet-ports:
-     type: object
-+    additionalProperties: false
-+
-     properties:
-       '#address-cells':
-         const: 1
-@@ -89,6 +91,7 @@ properties:
-         description: CPSW external ports
- 
-         $ref: ethernet-controller.yaml#
-+        unevaluatedProperties: false
- 
-         properties:
-           reg:
-@@ -117,6 +120,7 @@ properties:
- 
-   cpts:
-     type: object
-+    unevaluatedProperties: false
-     description:
-       The Common Platform Time Sync (CPTS) module
- 
-diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-index b8281d8be940..fb61a2ce0ea8 100644
---- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpsw-nuss.yaml
-@@ -115,6 +115,7 @@ properties:
-         description: CPSWxG NUSS external ports
- 
-         $ref: ethernet-controller.yaml#
-+        unevaluatedProperties: false
- 
-         properties:
-           reg:
-diff --git a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-index b783ad0d1f53..e9f78cef6b7f 100644
---- a/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-+++ b/Documentation/devicetree/bindings/net/ti,k3-am654-cpts.yaml
-@@ -95,6 +95,7 @@ properties:
- 
-   refclk-mux:
-     type: object
-+    additionalProperties: false
-     description: CPTS reference clock multiplexer clock
-     properties:
-       '#clock-cells':
--- 
-2.34.1
-
+> > Can't we do the same thing here?
+> > Do we care about preserving the extack from another notifier 
+> > handler or something? Does not seem like that's the case judging 
+> > but the commit under Fixes.  
+> 
+> Preserving yes, from another notifier handler no.
+> 
+> DSA suppresses the -EOPNOTSUPP error code from this operation and
+> returns 0 to user space, along with a warning note via extack.
+> 
+> The driver's ds->ops->port_bridge_join() method is given an extack.
+> Therefore, if the driver has set the extack to anything, presumably it
+> is more specific than what DSA has to say.
+> 
+> > If it is the case (and hopefully not) we should add a new macro wrapper.
+> > Manually twiddling with a field starting with an underscore makes
+> > me feel dirty. Perhaps I have been writing too much python lately.  
+> 
+> Ok, can do later (not "net" patch). Also, if you search for _msg in
+> net/dsa/ you'll find more occurrences of accessing it directly.
