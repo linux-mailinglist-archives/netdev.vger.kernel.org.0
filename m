@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76EED59E742
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:29:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEE6259E743
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:30:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244368AbiHWQ3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:29:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47582 "EHLO
+        id S243336AbiHWQ3U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 12:29:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244223AbiHWQ2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:28:38 -0400
+        with ESMTP id S244584AbiHWQ24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:28:56 -0400
 Received: from syslogsrv (unknown [217.20.186.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A5F11C962;
-        Tue, 23 Aug 2022 05:56:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FBB11D50C;
+        Tue, 23 Aug 2022 05:56:17 -0700 (PDT)
 Received: from fg200.ow.s ([172.20.254.44] helo=localhost.localdomain)
         by syslogsrv with esmtp (Exim 4.90_1)
         (envelope-from <maksym.glubokiy@plvision.eu>)
-        id 1oQSGV-000FXN-Gm; Tue, 23 Aug 2022 14:40:15 +0300
+        id 1oQSGX-000FXN-SF; Tue, 23 Aug 2022 14:40:18 +0300
 From:   Maksym Glubokiy <maksym.glubokiy@plvision.eu>
 To:     Taras Chornyi <tchornyi@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
@@ -26,10 +26,10 @@ To:     Taras Chornyi <tchornyi@marvell.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Serhiy Boiko <serhiy.boiko@plvision.eu>,
         Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next 1/3] net: prestera: acl: extract matchall logic into a separate file
-Date:   Tue, 23 Aug 2022 14:39:56 +0300
-Message-Id: <20220823113958.2061401-2-maksym.glubokiy@plvision.eu>
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 2/3] net: prestera: add support for egress traffic mirroring
+Date:   Tue, 23 Aug 2022 14:39:57 +0300
+Message-Id: <20220823113958.2061401-3-maksym.glubokiy@plvision.eu>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220823113958.2061401-1-maksym.glubokiy@plvision.eu>
 References: <20220823113958.2061401-1-maksym.glubokiy@plvision.eu>
@@ -46,276 +46,183 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Serhiy Boiko <serhiy.boiko@plvision.eu>
 
-This commit adds more clarity to handling of TC_CLSMATCHALL_REPLACE and
-TC_CLSMATCHALL_DESTROY events by calling newly added *_mall_*() handlers
-instead of directly calling SPAN API.
+This enables adding matchall rules for egress:
 
-This also extracts matchall rules management out of SPAN API since SPAN
-is a hardware module which is used to implement 'matchall egress mirred'
-action only.
+  tc filter add .. egress .. matchall skip_sw \
+    action mirred egress mirror dev ..
 
-Signed-off-by: Taras Chornyi <tchornyi@marvell.com>
 Signed-off-by: Serhiy Boiko <serhiy.boiko@plvision.eu>
 Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
 ---
- .../net/ethernet/marvell/prestera/Makefile    |  2 +-
- .../ethernet/marvell/prestera/prestera_flow.c |  9 +--
- .../marvell/prestera/prestera_matchall.c      | 66 +++++++++++++++++++
- .../marvell/prestera/prestera_matchall.h      | 15 +++++
- .../ethernet/marvell/prestera/prestera_span.c | 60 +----------------
- .../ethernet/marvell/prestera/prestera_span.h | 10 +--
- 6 files changed, 96 insertions(+), 66 deletions(-)
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_matchall.c
- create mode 100644 drivers/net/ethernet/marvell/prestera/prestera_matchall.h
+ .../ethernet/marvell/prestera/prestera_hw.c   | 30 ++++++++++++++-----
+ .../ethernet/marvell/prestera/prestera_hw.h   |  5 ++--
+ .../marvell/prestera/prestera_matchall.c      |  7 +++--
+ .../ethernet/marvell/prestera/prestera_span.c | 10 ++++---
+ .../ethernet/marvell/prestera/prestera_span.h |  6 ++--
+ 5 files changed, 39 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/Makefile b/drivers/net/ethernet/marvell/prestera/Makefile
-index d395f4131648..df14cee80153 100644
---- a/drivers/net/ethernet/marvell/prestera/Makefile
-+++ b/drivers/net/ethernet/marvell/prestera/Makefile
-@@ -4,6 +4,6 @@ prestera-objs		:= prestera_main.o prestera_hw.o prestera_dsa.o \
- 			   prestera_rxtx.o prestera_devlink.o prestera_ethtool.o \
- 			   prestera_switchdev.o prestera_acl.o prestera_flow.o \
- 			   prestera_flower.o prestera_span.o prestera_counter.o \
--			   prestera_router.o prestera_router_hw.o
-+			   prestera_router.o prestera_router_hw.o prestera_matchall.o
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.c b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+index e0e9ae34ceea..8430db3384f9 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.c
+@@ -78,9 +78,11 @@ enum prestera_cmd_type_t {
+ 	PRESTERA_CMD_TYPE_STP_PORT_SET = 0x1000,
  
- obj-$(CONFIG_PRESTERA_PCI)	+= prestera_pci.o
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flow.c b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-index 2262693bd5cf..3f81eef167fa 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flow.c
-@@ -7,8 +7,9 @@
- #include "prestera.h"
- #include "prestera_acl.h"
- #include "prestera_flow.h"
--#include "prestera_span.h"
- #include "prestera_flower.h"
-+#include "prestera_matchall.h"
-+#include "prestera_span.h"
+ 	PRESTERA_CMD_TYPE_SPAN_GET = 0x1100,
+-	PRESTERA_CMD_TYPE_SPAN_BIND = 0x1101,
+-	PRESTERA_CMD_TYPE_SPAN_UNBIND = 0x1102,
++	PRESTERA_CMD_TYPE_SPAN_INGRESS_BIND = 0x1101,
++	PRESTERA_CMD_TYPE_SPAN_INGRESS_UNBIND = 0x1102,
+ 	PRESTERA_CMD_TYPE_SPAN_RELEASE = 0x1103,
++	PRESTERA_CMD_TYPE_SPAN_EGRESS_BIND = 0x1104,
++	PRESTERA_CMD_TYPE_SPAN_EGRESS_UNBIND = 0x1105,
  
- static LIST_HEAD(prestera_block_cb_list);
- 
-@@ -17,9 +18,9 @@ static int prestera_flow_block_mall_cb(struct prestera_flow_block *block,
- {
- 	switch (f->command) {
- 	case TC_CLSMATCHALL_REPLACE:
--		return prestera_span_replace(block, f);
-+		return prestera_mall_replace(block, f);
- 	case TC_CLSMATCHALL_DESTROY:
--		prestera_span_destroy(block);
-+		prestera_mall_destroy(block);
- 		return 0;
- 	default:
- 		return -EOPNOTSUPP;
-@@ -263,7 +264,7 @@ static void prestera_setup_flow_block_unbind(struct prestera_port *port,
- 
- 	block = flow_block_cb_priv(block_cb);
- 
--	prestera_span_destroy(block);
-+	prestera_mall_destroy(block);
- 
- 	err = prestera_flow_block_unbind(block, port);
- 	if (err)
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_matchall.c b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
-new file mode 100644
-index 000000000000..54573c6a6fe2
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
-@@ -0,0 +1,66 @@
-+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-+/* Copyright (c) 2019-2022 Marvell International Ltd. All rights reserved */
-+
-+#include <linux/kernel.h>
-+#include <linux/list.h>
-+
-+#include "prestera.h"
-+#include "prestera_hw.h"
-+#include "prestera_flow.h"
-+#include "prestera_flower.h"
-+#include "prestera_matchall.h"
-+#include "prestera_span.h"
-+
-+int prestera_mall_replace(struct prestera_flow_block *block,
-+			  struct tc_cls_matchall_offload *f)
-+{
-+	struct prestera_flow_block_binding *binding;
-+	__be16 protocol = f->common.protocol;
-+	struct flow_action_entry *act;
-+	struct prestera_port *port;
-+	int err;
-+
-+	if (!flow_offload_has_one_action(&f->rule->action)) {
-+		NL_SET_ERR_MSG(f->common.extack,
-+			       "Only singular actions are supported");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	act = &f->rule->action.entries[0];
-+
-+	if (!prestera_netdev_check(act->dev)) {
-+		NL_SET_ERR_MSG(f->common.extack,
-+			       "Only Marvell Prestera port is supported");
-+		return -EINVAL;
-+	}
-+	if (!tc_cls_can_offload_and_chain0(act->dev, &f->common))
-+		return -EOPNOTSUPP;
-+	if (act->id != FLOW_ACTION_MIRRED)
-+		return -EOPNOTSUPP;
-+	if (protocol != htons(ETH_P_ALL))
-+		return -EOPNOTSUPP;
-+
-+	port = netdev_priv(act->dev);
-+
-+	list_for_each_entry(binding, &block->binding_list, list) {
-+		err = prestera_span_rule_add(binding, port);
-+		if (err)
-+			goto rollback;
-+	}
-+
-+	return 0;
-+
-+rollback:
-+	list_for_each_entry_continue_reverse(binding,
-+					     &block->binding_list, list)
-+		prestera_span_rule_del(binding);
-+	return err;
-+}
-+
-+void prestera_mall_destroy(struct prestera_flow_block *block)
-+{
-+	struct prestera_flow_block_binding *binding;
-+
-+	list_for_each_entry(binding, &block->binding_list, list)
-+		prestera_span_rule_del(binding);
-+}
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_matchall.h b/drivers/net/ethernet/marvell/prestera/prestera_matchall.h
-new file mode 100644
-index 000000000000..31ad4d02ecbb
---- /dev/null
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_matchall.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-+/* Copyright (c) 2022 Marvell International Ltd. All rights reserved. */
-+
-+#ifndef _PRESTERA_MATCHALL_H_
-+#define _PRESTERA_MATCHALL_H_
-+
-+#include <net/pkt_cls.h>
-+
-+struct prestera_flow_block;
-+
-+int prestera_mall_replace(struct prestera_flow_block *block,
-+			  struct tc_cls_matchall_offload *f);
-+void prestera_mall_destroy(struct prestera_flow_block *block);
-+
-+#endif /* _PRESTERA_MATCHALL_H_ */
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_span.c b/drivers/net/ethernet/marvell/prestera/prestera_span.c
-index 845e9d8c8cc7..766413b9ba1b 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_span.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_span.c
-@@ -120,8 +120,8 @@ static int prestera_span_put(struct prestera_switch *sw, u8 span_id)
+ 	PRESTERA_CMD_TYPE_POLICER_CREATE = 0x1500,
+ 	PRESTERA_CMD_TYPE_POLICER_RELEASE = 0x1501,
+@@ -1432,27 +1434,39 @@ int prestera_hw_span_get(const struct prestera_port *port, u8 *span_id)
  	return 0;
  }
  
--static int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
--				  struct prestera_port *to_port)
-+int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
-+			   struct prestera_port *to_port)
+-int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id)
++int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id,
++			  bool ingress)
+ {
+ 	struct prestera_msg_span_req req = {
+ 		.port = __cpu_to_le32(port->hw_id),
+ 		.dev = __cpu_to_le32(port->dev_id),
+ 		.id = span_id,
+ 	};
++	enum prestera_cmd_type_t cmd_type;
++
++	if (ingress)
++		cmd_type = PRESTERA_CMD_TYPE_SPAN_INGRESS_BIND;
++	else
++		cmd_type = PRESTERA_CMD_TYPE_SPAN_EGRESS_BIND;
++
++	return prestera_cmd(port->sw, cmd_type, &req.cmd, sizeof(req));
+ 
+-	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_SPAN_BIND,
+-			    &req.cmd, sizeof(req));
+ }
+ 
+-int prestera_hw_span_unbind(const struct prestera_port *port)
++int prestera_hw_span_unbind(const struct prestera_port *port, bool ingress)
+ {
+ 	struct prestera_msg_span_req req = {
+ 		.port = __cpu_to_le32(port->hw_id),
+ 		.dev = __cpu_to_le32(port->dev_id),
+ 	};
++	enum prestera_cmd_type_t cmd_type;
+ 
+-	return prestera_cmd(port->sw, PRESTERA_CMD_TYPE_SPAN_UNBIND,
+-			    &req.cmd, sizeof(req));
++	if (ingress)
++		cmd_type = PRESTERA_CMD_TYPE_SPAN_INGRESS_UNBIND;
++	else
++		cmd_type = PRESTERA_CMD_TYPE_SPAN_EGRESS_UNBIND;
++
++	return prestera_cmd(port->sw, cmd_type, &req.cmd, sizeof(req));
+ }
+ 
+ int prestera_hw_span_release(struct prestera_switch *sw, u8 span_id)
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_hw.h b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+index 56e043146dd2..a589450e9f27 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_hw.h
++++ b/drivers/net/ethernet/marvell/prestera/prestera_hw.h
+@@ -243,8 +243,9 @@ int prestera_hw_counter_clear(struct prestera_switch *sw, u32 block_id,
+ 
+ /* SPAN API */
+ int prestera_hw_span_get(const struct prestera_port *port, u8 *span_id);
+-int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id);
+-int prestera_hw_span_unbind(const struct prestera_port *port);
++int prestera_hw_span_bind(const struct prestera_port *port, u8 span_id,
++			  bool ingress);
++int prestera_hw_span_unbind(const struct prestera_port *port, bool ingress);
+ int prestera_hw_span_release(struct prestera_switch *sw, u8 span_id);
+ 
+ /* Router API */
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_matchall.c b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
+index 54573c6a6fe2..3fc13176e046 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_matchall.c
+@@ -43,7 +43,7 @@ int prestera_mall_replace(struct prestera_flow_block *block,
+ 	port = netdev_priv(act->dev);
+ 
+ 	list_for_each_entry(binding, &block->binding_list, list) {
+-		err = prestera_span_rule_add(binding, port);
++		err = prestera_span_rule_add(binding, port, block->ingress);
+ 		if (err)
+ 			goto rollback;
+ 	}
+@@ -53,7 +53,7 @@ int prestera_mall_replace(struct prestera_flow_block *block,
+ rollback:
+ 	list_for_each_entry_continue_reverse(binding,
+ 					     &block->binding_list, list)
+-		prestera_span_rule_del(binding);
++		prestera_span_rule_del(binding, block->ingress);
+ 	return err;
+ }
+ 
+@@ -62,5 +62,6 @@ void prestera_mall_destroy(struct prestera_flow_block *block)
+ 	struct prestera_flow_block_binding *binding;
+ 
+ 	list_for_each_entry(binding, &block->binding_list, list)
+-		prestera_span_rule_del(binding);
++		prestera_span_rule_del(binding, block->ingress);
++
+ }
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_span.c b/drivers/net/ethernet/marvell/prestera/prestera_span.c
+index 766413b9ba1b..f0e9d6ea88c5 100644
+--- a/drivers/net/ethernet/marvell/prestera/prestera_span.c
++++ b/drivers/net/ethernet/marvell/prestera/prestera_span.c
+@@ -121,7 +121,8 @@ static int prestera_span_put(struct prestera_switch *sw, u8 span_id)
+ }
+ 
+ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
+-			   struct prestera_port *to_port)
++			   struct prestera_port *to_port,
++			   bool ingress)
  {
  	struct prestera_switch *sw = binding->port->sw;
  	u8 span_id;
-@@ -145,7 +145,7 @@ static int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
+@@ -135,7 +136,7 @@ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
+ 	if (err)
+ 		return err;
+ 
+-	err = prestera_hw_span_bind(binding->port, span_id);
++	err = prestera_hw_span_bind(binding->port, span_id, ingress);
+ 	if (err) {
+ 		prestera_span_put(sw, span_id);
+ 		return err;
+@@ -145,11 +146,12 @@ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
  	return 0;
  }
  
--static int prestera_span_rule_del(struct prestera_flow_block_binding *binding)
-+int prestera_span_rule_del(struct prestera_flow_block_binding *binding)
+-int prestera_span_rule_del(struct prestera_flow_block_binding *binding)
++int prestera_span_rule_del(struct prestera_flow_block_binding *binding,
++			   bool ingress)
  {
  	int err;
  
-@@ -161,60 +161,6 @@ static int prestera_span_rule_del(struct prestera_flow_block_binding *binding)
- 	return 0;
- }
+-	err = prestera_hw_span_unbind(binding->port);
++	err = prestera_hw_span_unbind(binding->port, ingress);
+ 	if (err)
+ 		return err;
  
--int prestera_span_replace(struct prestera_flow_block *block,
--			  struct tc_cls_matchall_offload *f)
--{
--	struct prestera_flow_block_binding *binding;
--	__be16 protocol = f->common.protocol;
--	struct flow_action_entry *act;
--	struct prestera_port *port;
--	int err;
--
--	if (!flow_offload_has_one_action(&f->rule->action)) {
--		NL_SET_ERR_MSG(f->common.extack,
--			       "Only singular actions are supported");
--		return -EOPNOTSUPP;
--	}
--
--	act = &f->rule->action.entries[0];
--
--	if (!prestera_netdev_check(act->dev)) {
--		NL_SET_ERR_MSG(f->common.extack,
--			       "Only Marvell Prestera port is supported");
--		return -EINVAL;
--	}
--	if (!tc_cls_can_offload_and_chain0(act->dev, &f->common))
--		return -EOPNOTSUPP;
--	if (act->id != FLOW_ACTION_MIRRED)
--		return -EOPNOTSUPP;
--	if (protocol != htons(ETH_P_ALL))
--		return -EOPNOTSUPP;
--
--	port = netdev_priv(act->dev);
--
--	list_for_each_entry(binding, &block->binding_list, list) {
--		err = prestera_span_rule_add(binding, port);
--		if (err)
--			goto rollback;
--	}
--
--	return 0;
--
--rollback:
--	list_for_each_entry_continue_reverse(binding,
--					     &block->binding_list, list)
--		prestera_span_rule_del(binding);
--	return err;
--}
--
--void prestera_span_destroy(struct prestera_flow_block *block)
--{
--	struct prestera_flow_block_binding *binding;
--
--	list_for_each_entry(binding, &block->binding_list, list)
--		prestera_span_rule_del(binding);
--}
--
- int prestera_span_init(struct prestera_switch *sw)
- {
- 	struct prestera_span *span;
 diff --git a/drivers/net/ethernet/marvell/prestera/prestera_span.h b/drivers/net/ethernet/marvell/prestera/prestera_span.h
-index f0644521f78a..4958ce820b52 100644
+index 4958ce820b52..493b68524bcb 100644
 --- a/drivers/net/ethernet/marvell/prestera/prestera_span.h
 +++ b/drivers/net/ethernet/marvell/prestera/prestera_span.h
-@@ -8,13 +8,15 @@
- 
- #define PRESTERA_SPAN_INVALID_ID -1
- 
-+struct prestera_port;
- struct prestera_switch;
--struct prestera_flow_block;
-+struct prestera_flow_block_binding;
- 
- int prestera_span_init(struct prestera_switch *sw);
+@@ -16,7 +16,9 @@ int prestera_span_init(struct prestera_switch *sw);
  void prestera_span_fini(struct prestera_switch *sw);
--int prestera_span_replace(struct prestera_flow_block *block,
--			  struct tc_cls_matchall_offload *f);
--void prestera_span_destroy(struct prestera_flow_block *block);
-+
-+int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
-+			   struct prestera_port *to_port);
-+int prestera_span_rule_del(struct prestera_flow_block_binding *binding);
+ 
+ int prestera_span_rule_add(struct prestera_flow_block_binding *binding,
+-			   struct prestera_port *to_port);
+-int prestera_span_rule_del(struct prestera_flow_block_binding *binding);
++			   struct prestera_port *to_port,
++			   bool ingress);
++int prestera_span_rule_del(struct prestera_flow_block_binding *binding,
++			   bool ingress);
  
  #endif /* _PRESTERA_SPAN_H_ */
 -- 
