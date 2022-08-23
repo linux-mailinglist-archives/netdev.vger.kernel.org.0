@@ -2,148 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 612B959E69D
-	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:09:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAEBA59E6B0
+	for <lists+netdev@lfdr.de>; Tue, 23 Aug 2022 18:14:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244033AbiHWQIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 12:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59906 "EHLO
+        id S244115AbiHWQND (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 12:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244026AbiHWQIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:08:11 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3775252382
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:21:23 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id ce26so11334303ejb.11
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 05:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=tIjipI5OnMsvB27jl6dnoWOVlvj8f8tXSWpU+F+0Z7A=;
-        b=wxmPVTaP1eCrF07C8+DpNK5lzPCmVqgDDn3JZwSsA4+ev1sHD2jJtCHCFCzUK5nfUn
-         9bUKxigj9aW1EvjxlB11vPNNAXlKKJSQuIL5q20m4br435Sm5y01T6Jo4XLJDCwfoVRg
-         ilErwiGBpGJEY3IZI/IatPB1Skfakyoms7mNUmeiZWPoRC30TSWfAg2MMtV6119lv4T6
-         YlLEd+bdBnmKdy8k6UJwLO9behQE6uEbLi+c8RzOWjEHSS7tet3UV0ZtwWBZ9OKp7YyW
-         XKZWSCBEJeI4psi9aPLSS7qgR4yLa7Od2I8mFB8HsHVMviWZn7k2mqcMatYrQL/ED9QE
-         r40A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=tIjipI5OnMsvB27jl6dnoWOVlvj8f8tXSWpU+F+0Z7A=;
-        b=ehGgQH5D1eD/Mt+2hdoRcDMloNUZdi08fpV9zVjTesipdYnkw2VNzX+CIe92FU/Ft7
-         9y6bMGfxg+q/dTPSY+2z5rbYHwNFY90wokgUCj09Wd7ORg6iwiqhBR01oDFvopo5nMRO
-         mRKHsyccU/pLR1CDn0JCVkAC25G77l5fnoGo7ttDbKYFIkFSx7Vu61OcFoGf9exZiqK+
-         XtIBCBiy7Hn1akIwDqwOfJgd2zwQFR9T8lNcL5H9J6dMR+Ax+NchSn4eXvP0opQS19Qi
-         nETe1WnIcuHPbx54AQWHSV6f9SDY5MkI8+FyUl5A8oYmNcSmRviw7cZFSkuVraYe8Bm4
-         Ko5A==
-X-Gm-Message-State: ACgBeo0lJYcwE0GX6Oc/YBcLyrIpv1VoDq9HdPR2k7IoValf/LOKzybx
-        Z+Su9x4uRPo3OKad6bz0wo8yzw==
-X-Google-Smtp-Source: AA6agR4bo5ow9tw8GOM9HxO4q9LA1IHL1IBcRtYXOWlM3UkK9wX/M9yhAJGB7pw6/bU0KQRzApm47A==
-X-Received: by 2002:a17:907:8687:b0:730:7c7b:b9ce with SMTP id qa7-20020a170907868700b007307c7bb9cemr16075162ejc.656.1661257260037;
-        Tue, 23 Aug 2022 05:21:00 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id p21-20020a170906141500b00730a234b863sm7365449ejc.77.2022.08.23.05.20.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 05:20:59 -0700 (PDT)
-Date:   Tue, 23 Aug 2022 14:20:57 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, idosch@nvidia.com, pabeni@redhat.com,
-        edumazet@google.com, saeedm@nvidia.com, jacob.e.keller@intel.com,
-        vikas.gupta@broadcom.com, gospo@broadcom.com,
-        chandrashekar.devegowda@intel.com, soumya.prakash.mishra@intel.com,
-        linuxwwan@intel.com
-Subject: Re: [patch net-next 0/4] net: devlink: sync flash and dev info
- command
-Message-ID: <YwTGKTUY3Ty9OF02@nanopsycho>
-References: <20220818130042.535762-1-jiri@resnulli.us>
- <20220818194940.30fd725e@kernel.org>
- <Yv9I4ACEBRoEFM+I@nanopsycho>
- <d2d6f1a3-a9ea-3124-2652-92914172d997@linux.intel.com>
+        with ESMTP id S244107AbiHWQMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 12:12:34 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F954101D18;
+        Tue, 23 Aug 2022 05:32:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661257896; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=P6EIK7KjGJkQkFCZc60aNu46Ap8gaxZqPsoF83NG1V5IiP2sn8nEONPow8BNWdW6VfTtTjjSHRRT0gP2Li/W6QgTBN6T0oqW0/sin0BJIKEPiowLPea8n7WxT/zwpcQRxq1wv3FIVXbF/LC7P4/qCWTIfydaCL607U3McivNbsc=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661257896; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=Kg0sfx0WR/crCntEVY1ryFztDVm96fjR6hhnhNvqiVo=; 
+        b=CSxlUi4YjDQSlin5fgI/oOYtx9n4qC2ewhNemKRGsgETRPYAcYieMVd3EFxJr8L7AOKHi5cu179YYKx0BHY1G64Jbftb6ZbDvjSHI4hZjcaov8HtTCvRafoRvSn4xXi7zWDS0xZv3YxHqSlXd7Z89GuFFK77LWcravDR2pSSy3I=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661257896;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=Kg0sfx0WR/crCntEVY1ryFztDVm96fjR6hhnhNvqiVo=;
+        b=RsvgFiy43OJmJBpw8P+Usl7X4egqr59jbpgzCeMjq7Jzxff8EmDwXphItkWrb6sf
+        ydwDITP8zcO0rMhfefchEWHWsKL/0lHioOfWr9wHtLxJIAdLYAaMz/9W+C46nKI1GRB
+        kv8EMVS/c+iOgw51O3kVZ2hMQPCgFhTjRqmY/toY=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661257894955331.02530845137676; Tue, 23 Aug 2022 05:31:34 -0700 (PDT)
+Message-ID: <715237fb-05e6-553b-ace3-7b21eee0a5c9@arinc9.com>
+Date:   Tue, 23 Aug 2022 15:31:27 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d2d6f1a3-a9ea-3124-2652-92914172d997@linux.intel.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 2/6] dt-bindings: net: dsa: mediatek,mt7530: fix reset
+ lines
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+ <20220820080758.9829-3-arinc.unal@arinc9.com>
+ <cf10e888-7fe2-7cf8-091a-40207eeb78b5@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <cf10e888-7fe2-7cf8-091a-40207eeb78b5@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 23, 2022 at 12:09:06PM CEST, m.chetan.kumar@linux.intel.com wrote:
->On 8/19/2022 1:55 PM, Jiri Pirko wrote:
->> Fri, Aug 19, 2022 at 04:49:40AM CEST, kuba@kernel.org wrote:
->> > On Thu, 18 Aug 2022 15:00:38 +0200 Jiri Pirko wrote:
->> > > Currently it is up to the driver what versions to expose and what flash
->> > > update component names to accept. This is inconsistent. Thankfully, only
->> > > netdevsim is currently using components, so it is a good time
->> > > to sanitize this.
->> > 
->> > Please take a look at recently merged code - 5417197dd516 ("Merge branch
->> > 'wwan-t7xx-fw-flashing-and-coredump-support'"), I don't see any versions
->> > there so I think you're gonna break them?
->> 
->> Ah, crap. Too late :/ They are passing the string to FW (cmd is
->> the component name here):
->> static int t7xx_devlink_fb_flash(const char *cmd, struct t7xx_port *port)
->> {
->>          char flash_command[T7XX_FB_COMMAND_SIZE];
->> 
->>          snprintf(flash_command, sizeof(flash_command), "%s:%s", T7XX_FB_CMD_FLASH, cmd);
->>          return t7xx_devlink_fb_raw_command(flash_command, port, NULL);
->> }
->> 
->> This breaks the pairing with info.versions assumption. Any possibility
->> to revert this and let them redo?
->> 
->> Ccing m.chetan.kumar@linux.intel.com, chandrashekar.devegowda@intel.com,
->> soumya.prakash.mishra@intel.com
->> 
->> Guys, could you expose one version for component you are flashing? We
->> need 1:1 mapping here.
->
->Thanks for the heads-up.
->I had a look at the patch & my understanding is driver is supposed
->to expose flash update component name & version details via
->devlink_info_version_running_put_ext().
+On 23.08.2022 13:44, Krzysztof Kozlowski wrote:
+> On 20/08/2022 11:07, Arınç ÜNAL wrote:
+>> - Fix description of mediatek,mcm. mediatek,mcm is not used on MT7623NI.
+> 
+> Separate commit. You are still doing here few things at a time.
 
-Yes.
+Will split.
 
->
->Is version value a must ? Internally version value is not used for making any
->decision so in case driver/device doesn't support it should be ok to pass
->empty string ?
+> 
+>> - Add description for reset-gpios.
+>> - Invalidate reset-gpios if mediatek,mcm is used. We cannot use multiple
+>> reset lines at the same time.
+>> - Invalidate mediatek,mcm if the compatible device is mediatek,mt7531.
+>> There is no multi-chip module version of mediatek,mt7531.
+>> - Require mediatek,mcm for mediatek,mt7621 as the compatible string is only
+>> used for the multi-chip module version of MT7530.
+>>
+>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>> ---
+>>   .../bindings/net/dsa/mediatek,mt7530.yaml     | 31 +++++++++++++++++--
+>>   1 file changed, 28 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> index edf48e917173..4c99266ce82a 100644
+>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>> @@ -110,11 +110,15 @@ properties:
+>>     mediatek,mcm:
+>>       type: boolean
+>>       description:
+>> -      if defined, indicates that either MT7530 is the part on multi-chip
+>> -      module belong to MT7623A has or the remotely standalone chip as the
+>> -      function MT7623N reference board provided for.
+>> +      Used for MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs which the MT7530
+>> +      switch is a part of the multi-chip module.
+>>   
+>>     reset-gpios:
+>> +    description:
+>> +      GPIO to reset the switch. Use this if mediatek,mcm is not used.
+>> +      This property is optional because some boards share the reset line with
+>> +      other components which makes it impossible to probe the switch if the
+>> +      reset line is used.
+>>       maxItems: 1
+>>   
+>>     reset-names:
+>> @@ -165,6 +169,9 @@ allOf:
+>>         required:
+>>           - mediatek,mcm
+>>       then:
+>> +      properties:
+>> +        reset-gpios: false
+>> +
+>>         required:
+>>           - resets
+>>           - reset-names
+>> @@ -182,6 +189,24 @@ allOf:
+>>           - core-supply
+>>           - io-supply
+>>   
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+> 
+> Again, not items. This can be just const or enum.
 
-No.
+Will do.
 
->
->Ex:
->devlink_info_version_running_put_ext(req, "fw", "",
-> DEVLINK_INFO_VERSION_TYPE_COMPONENT);
->
->One observation:-
->While testing I noticed "flash_components:" is not getting displayed as
->mentioned in cover note.
-
-You need iproute2 patch for that which is still in my queue:
-https://github.com/jpirko/iproute2_mlxsw/commit/e1d36409362257cc42a435f6695d2058ab7ab683
-
-
->
->Below is the snapshot for mtk_t7xx driver. Am I missing something here ?
->
-># devlink dev info
->pci/0000:55:00.0:
->driver mtk_t7xx
->versions:
->       running:
->           boot
->
->-- 
->Chetan
+> 
+>> +            - const: mediatek,mt7531
+>> +    then:
+>> +      properties:
+>> +        mediatek,mcm: false
+>> +
+>> +  - if:
+>> +      properties:
+>> +        compatible:
+>> +          items:
+> 
+> Ditto.
+Arınç
