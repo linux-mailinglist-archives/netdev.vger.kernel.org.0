@@ -2,103 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D3759FDBC
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 17:02:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABC559FDEF
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 17:11:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238706AbiHXPBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 11:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
+        id S238706AbiHXPLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 11:11:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238389AbiHXPBp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 11:01:45 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D9176752
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 08:01:44 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-335624d1e26so468157817b3.4
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 08:01:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=SPP/yUFsXUbcJ0E8nYDk5pVlg6jkD6mtwnzkQPEI+8s=;
-        b=LCWxIFG3KAsk0AxNDoECYMGs9dMirhMroynvOzDHTq5jZWoGXxXu6mz3FxE14SwoRK
-         saS1Y8yyoX6wyEqPosLnDCi4EJ0qGDlNkr9iM9X0+NVb+CkzY081mag+UcZ5DVzXAH8W
-         QE8p5NXgmDzUQ9YwOrzhn47wvhZpv2qD4JVJc6mkcB5/AuUEUg4QH6fhGg2hyNPNeREz
-         M1tIW97UD8RBiM8S2ZZYyqmhQRoK7cSDtJgQcstkaqv97L1pdSIfkfqgAjhahYV1DRAP
-         T91UR0uxX57Wg4fEvDDgtGCiOqTBis7IrbGw2YFvZQPNsh9ydaB+7VpyW+RDj9H/iJEj
-         Axug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=SPP/yUFsXUbcJ0E8nYDk5pVlg6jkD6mtwnzkQPEI+8s=;
-        b=rs+udnkWyNN3kFkUJWXpk9CxeRYCjVngA0OQhsi3h1/a0/xdxNy9lH++X4W22w/+NP
-         vuIiMBXbA5GTQcYiFJi8paAl7tD9DjKpDRu5i9hdzaPsYCfoEp+YRsj2aw4moRvh1NGh
-         RZPMU+ZrFovDmjDwwPcpibyWd5l/qxSxi4Tezf6UfJ4bQ0beynBsOMLEAb/ThtTcUJk9
-         FQ2jviUhXSJ0O7/m0CZPReduCU/6voGErFMEeH9s3LVv/W2MbITtseYiEOHEcn90RFnq
-         MvyZ1/t5yll85gD9BOgGWMRN8O3fSoWxZI9mjFnw1MlK+TM1cbmE9PwVLXuKrWQnTXv/
-         Zu0Q==
-X-Gm-Message-State: ACgBeo1HYbms4YKmnYniDMsrktod5vSutLazkvIpGni0yoW1/dvxrzhg
-        4i0rKJV9KYGAR1u9jLBDkapsP806ZIVlo4oAh6A=
-X-Google-Smtp-Source: AA6agR5eMjPbdut2H0onQ8ZTFohTtTgS0FfLdYKT4aMJspABWFzqrfvE8rbtU3qLcBJDRa3Ipm8q90PodjJmTTb5Pmc=
-X-Received: by 2002:a0d:cb0a:0:b0:337:1dbc:4c21 with SMTP id
- n10-20020a0dcb0a000000b003371dbc4c21mr29270157ywd.297.1661353303469; Wed, 24
- Aug 2022 08:01:43 -0700 (PDT)
+        with ESMTP id S238039AbiHXPLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 11:11:24 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135B085FF8
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 08:11:22 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1F8E6FF804;
+        Wed, 24 Aug 2022 15:11:15 +0000 (UTC)
+Message-ID: <7d8df50d-48a9-3a14-786d-1e1452a1e73b@ovn.org>
+Date:   Wed, 24 Aug 2022 17:11:15 +0200
 MIME-Version: 1.0
-Received: by 2002:a05:7000:a30c:0:0:0:0 with HTTP; Wed, 24 Aug 2022 08:01:42
- -0700 (PDT)
-Reply-To: sam1965kner@yahoo.com
-From:   Sam <solomonoilresponce@gmail.com>
-Date:   Wed, 24 Aug 2022 16:01:42 +0100
-Message-ID: <CALxgyPCH1vxG=vEiBpRErV9rbfpziFYK9AH0RmZOpHJNGwCPxg@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.6 required=5.0 tests=BAYES_99,BAYES_999,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FREEMAIL_REPLYTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:112a listed in]
-        [list.dnswl.org]
-        *  0.2 BAYES_999 BODY: Bayes spam probability is 99.9 to 100%
-        *      [score: 1.0000]
-        *  3.5 BAYES_99 BODY: Bayes spam probability is 99 to 100%
-        *      [score: 1.0000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [solomonoilresponce[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.1 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *******
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Cc:     dev@openvswitch.org, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, davem@davemloft.net, i.maximets@ovn.org,
+        Aaron Conole <aconole@redhat.com>
+Content-Language: en-US
+To:     Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>,
+        netdev@vger.kernel.org
+References: <20220823151241.497501-1-andrey.zhadchenko@virtuozzo.com>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH net] openvswitch: fix memory leak at failed
+ datapath creation
+In-Reply-To: <20220823151241.497501-1-andrey.zhadchenko@virtuozzo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, I am aware that the Internet has become very unsafe, but
-considering the situation I have no option than to seek for foreign
-partnership through this medium. I will not disclose my Identity until
-I am fully convinced you are the right person for this business deal.
-I have access to very vital information that can be used to move a
-huge amount of money to a
-secured account outside United Kingdom. Full details and modalities
-will be disclosed on your expression of Interest to partner with me. I
-am open for negotiation importantly the funds to be transferred have
-nothing to do with drugs, terrorism or Money laundering. Your full
-corporation will be highly appreciated.
-Await your reply,
-Best regards,
+On 8/23/22 17:12, Andrey Zhadchenko via dev wrote:
+> ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
+> allocates array via kmalloc.
+> If for some reason new_vport() fails during ovs_dp_cmd_new()
+> dp->upcall_portids must be freed.
+> Add missing kfree.
+> 
+> Kmemleak example:
+> unreferenced object 0xffff88800c382500 (size 64):
+>   comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
+>   hex dump (first 32 bytes):
+>     5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
+>     03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
+>   backtrace:
+>     [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
+>     [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
+>     [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
+>     [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
+>     [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
+>     [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
+>     [<000000004959cece>] genl_rcv+0x24/0x40
+>     [<000000004699ac7f>] netlink_unicast+0x23e/0x360
+>     [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
+>     [<000000006f4aa380>] sock_sendmsg+0x62/0x70
+>     [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
+>     [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
+>     [<0000000011776020>] __sys_sendmsg+0x59/0xa0
+>     [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
+>     [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
+> Acked-by: Aaron Conole <aconole@redhat.com>
+> Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
+> ---
+>  net/openvswitch/datapath.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index 7e8a39a35627..3eb1dc435276 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -1802,7 +1802,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  				ovs_dp_reset_user_features(skb, info);
+>  		}
+>  
+> -		goto err_unlock_and_destroy_meters;
+> +		goto err_destroy_pids;
+>  	}
+>  
+>  	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+> @@ -1817,6 +1817,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+>  	ovs_notify(&dp_datapath_genl_family, reply, info);
+>  	return 0;
+>  
+> +err_destroy_pids:
+> +	if (rcu_dereference_raw(dp->upcall_portids))
+> +		kfree(rcu_dereference_raw(dp->upcall_portids));
+
+kfree() as all typical implementations of free()-like functions
+should be perfectly fine to call with a NULL argument.
+
+Also, dereferencing RCU pointer twice is a bad pattern.  I know,
+it's not a real problem here, since no other threads seen that
+pointer yet.  But it's probably better to avoid bad patterns
+anyway, as someone may copy it in the future to other place where
+it will be a problem.
+
+Best regards, Ilya Maximets.
