@@ -2,81 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB16D59FA11
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 14:34:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E303A59FA18
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 14:38:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236296AbiHXMd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 08:33:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33096 "EHLO
+        id S236752AbiHXMih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 08:38:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232039AbiHXMd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 08:33:58 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 701888E453;
-        Wed, 24 Aug 2022 05:33:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=QRXGG0IhUNzmWwnv6Cim5HepItxfwCJgBqcKIXNvnPc=; b=I1JkA6Zr3qxfrFvsOtxbGjw42G
-        KxFGgeLCzkf9s1Efcma1CZSJx6VEa1q7jlFgJ8Q9DTy8ZFHyAacwDXQPYotBTlvWOzQrslDDI5mEa
-        QJj7W1eS8li8mdDsVFvr6SeBdVu8P9EEPoMzS9TY2IxWFJu7eSBA+02ltHWpwJ4jBhTQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQpZi-00ERd6-PF; Wed, 24 Aug 2022 14:33:38 +0200
-Date:   Wed, 24 Aug 2022 14:33:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Suman Ghosh <sumang@marvell.com>
-Cc:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH] octeontx2-pf: Add egress PFC support
-Message-ID: <YwYaoqiS/0+N1TU0@lunn.ch>
-References: <20220823065829.1060339-1-sumang@marvell.com>
- <YwT3V6A4xrS3jAqf@lunn.ch>
- <SJ0PR18MB52165D5FA51E433CAD0E8CBBDB739@SJ0PR18MB5216.namprd18.prod.outlook.com>
+        with ESMTP id S235635AbiHXMig (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 08:38:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11128E9A1
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 05:38:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661344714;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9jr+amK0uWEEWGvSLDxuMVCNNDt0iE/dvefpOk4UgzQ=;
+        b=cTr+YYyzy/Ic98M1akm8TFGRHJungRY0NJyZeLoCDtv4nNdOVAy7iwwjurYG8m/aW7Z9jM
+        P3yoR00CThcxDiWzUdWubvsbsqlkmKQtqOj3qjH8w2LdsUAXmyTK0EQc7oDwpabWgKEprY
+        T9NPCE3/f3kR8XAHq6FG/L381LlvwBM=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-399-JwfHoqY0NdCuNosSrjDINQ-1; Wed, 24 Aug 2022 08:38:33 -0400
+X-MC-Unique: JwfHoqY0NdCuNosSrjDINQ-1
+Received: by mail-qv1-f72.google.com with SMTP id ea4-20020ad458a4000000b0049682af0ca8so9577847qvb.21
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 05:38:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=9jr+amK0uWEEWGvSLDxuMVCNNDt0iE/dvefpOk4UgzQ=;
+        b=3LkN2ES7KSVV8ONXhxXrKScuv3gEfg66cbQLJl4ImBJtg4ONM/IuoDOr63pXtukbq2
+         qaU0GYPPvTTadb2c5v4J7DWKabq7ZkSSQjZMOWZeaW10n5rcr2ESL9FFVeEX3ObC8fOh
+         8Sb2tRLPBM8kk1Loc551HMTyzIoiUJYt7Yon50xp7ZLUe7x2lBt/Ak16vyZvYQNucQbS
+         fBotk5aigQCp+F8w/EdGcGBgSmLz0P1mzOxMzBk238G+KFZ/p1ct9BaGbx2oxM0fgh13
+         EGFJ5rbz+GhCzqImLv9XfN7DBIlpF4jNCMGKFzDb1kjV3ch7dbSdFyAL/Vdbsdpn6UmT
+         NIkw==
+X-Gm-Message-State: ACgBeo3f3hApLE8kjqN3OZIbDaJPIbdpDIoLftXCSkxsptfBXAMaodXD
+        R1034mdl69+cOX89NHHjiqYIuQ7UZs6c9mFAGC9XZQzAuMcrUwVIGmyhJnxNW+FLNqYzOoacbuq
+        jryiEbEL2Zq8yy9M5xbTzOa6imDcmb93+
+X-Received: by 2002:ad4:5d6f:0:b0:496:5ad5:fa40 with SMTP id fn15-20020ad45d6f000000b004965ad5fa40mr24705001qvb.59.1661344713148;
+        Wed, 24 Aug 2022 05:38:33 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5JSXq91N8s0XEtfCISGeusZI4avtWP9oNK+/vGFim1UEwZ9lqifEh6HdmO1keP9tUUF/WsRoUMcvpA/Bit5i4=
+X-Received: by 2002:ad4:5d6f:0:b0:496:5ad5:fa40 with SMTP id
+ fn15-20020ad45d6f000000b004965ad5fa40mr24704987qvb.59.1661344712950; Wed, 24
+ Aug 2022 05:38:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <SJ0PR18MB52165D5FA51E433CAD0E8CBBDB739@SJ0PR18MB5216.namprd18.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220822071902.3419042-1-tcs_kernel@tencent.com>
+ <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org> <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
+ <CAB2z9exhnzte0rpT9t6=VpFCm9x+zZdmr01UHFxqvYy8y9ifag@mail.gmail.com>
+In-Reply-To: <CAB2z9exhnzte0rpT9t6=VpFCm9x+zZdmr01UHFxqvYy8y9ifag@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Wed, 24 Aug 2022 08:38:22 -0400
+Message-ID: <CAK-6q+g-L-6kKW69DYxgXvLdfChF+oQsmi-Y4cvBK2ji2m4WZA@mail.gmail.com>
+Subject: Re: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
+To:     zhang haiming <tcs.kernel@gmail.com>
+Cc:     linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> -	schq = hw->txschq_list[lvl][0];
-> >> +#ifdef CONFIG_DCB
-> >> +	if (txschq_for_pfc)
-> >> +		schq = pfvf->pfc_schq_list[lvl][prio];
-> >> +	else
-> >> +#endif
-> >
-> >Please could you try to remove as many of these #ifdef CONFIG_DCB as
-> >possible. It makes build testing less efficient at finding build
-> >problems. Can you do:
-> >
-> >> +	if (IS_ENABLED(CONFIG_DCB) && txschq_for_pfc)
-> >> +		schq = pfvf->pfc_schq_list[lvl][prio];
-> >
-> [Suman] I will restructured the code. But we cannot use pfvf->pfc_schq_list outside #ifdef CONFIG_DCB as these are defined under the 
-> macro in otx2_common.h
+Hi,
 
-So maybe add a getter and setter in otx2_common.h, which returns
--EOPNOTSUPP or similar when CONFIG_DCB is disabled?
+cc mailing lists again.
 
-	    Andrew
+On Wed, Aug 24, 2022 at 7:55 AM zhang haiming <tcs.kernel@gmail.com> wrote:
+>
+> If msg_namelen is too small like 1, the addr_type field will be
+> unexpected. Meanwhile, check msg_namelen < sizeof(*daddr) is
+
+Then check if space for addr_type is available, if not -EINVAL. If
+addr_type available, evaluate it, if it's unknown -EINVAL, the minimum
+length differs here if it's known.
+
+> necessary and enough as dgram_bind and dgram_connect did.
+>
+
+you probably found similar issues.
+
+It is a nitpick and I see that the current behaviour is not correct here.
+
+- Alex
+
