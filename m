@@ -2,109 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2362D5A023C
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:45:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CFA25A0244
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:48:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238977AbiHXTo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 15:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41936 "EHLO
+        id S237608AbiHXTry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 15:47:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiHXTo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:44:58 -0400
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1496A2D1F5;
-        Wed, 24 Aug 2022 12:44:57 -0700 (PDT)
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-11dca1c9c01so5274729fac.2;
-        Wed, 24 Aug 2022 12:44:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc;
-        bh=GGbTiH5MlwiXaRbgDFTCR8WHSkMV+X8PO6SJOF3rCjU=;
-        b=wSp+vyBHWsXKfDv03XgmUgTZVRdH9F2o9+i42RGg1pXtRTNkWmKo5H+/wHvypB++SD
-         k+kEYR3rTMQpVVciI5VXWwpy9hz0k09SZ5skVg0Nb4Y3ql4+yPjqAcMA+K+aToLEKmOy
-         DSrA61Pmoi9jVeW32xTRDcEP9DZ9pjfKcdkCjMm4heHAQMIf/5Hmv0FmNFQG7cV8HNVm
-         LcTM0vCd+TjglWaVjOdLJT1u3UO8I2e4hwvlQ42FsbMq4CeeiBhNMASt+80eoH7SXg9r
-         3+k1lOwJUCjcD5r6ShhpkPMPynPhXM2u61PRCebpXHyoi6hFEScZwOaDJwaz602FmCHe
-         GFYQ==
-X-Gm-Message-State: ACgBeo31gImf7eHZ9QdUAZESo9oEQXQAOoJCwwoepG6CPs4i0Mfehw5N
-        4ajTGH7iRYQnd8/ljTSiog==
-X-Google-Smtp-Source: AA6agR7g9enQ2VOPXxjiBBaQyiivB97fu0ajQpyomq4xaBUyjmklH9YO+Uml4yuCLV96TFgcFbgd0g==
-X-Received: by 2002:a05:6870:f6a3:b0:11d:1ca9:ed55 with SMTP id el35-20020a056870f6a300b0011d1ca9ed55mr4500889oab.121.1661370296312;
-        Wed, 24 Aug 2022 12:44:56 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id p1-20020a544601000000b00344cc0c4606sm4284544oip.58.2022.08.24.12.44.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 12:44:55 -0700 (PDT)
-Received: (nullmailer pid 2768602 invoked by uid 1000);
-        Wed, 24 Aug 2022 19:44:54 -0000
-Date:   Wed, 24 Aug 2022 14:44:54 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, DENG Qingfang <dqfext@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sander Vanheule <sander@svanheule.net>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        devicetree@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com
-Subject: Re: [PATCH v5 1/7] dt-bindings: net: dsa: mediatek,mt7530: make
- trivial changes
-Message-ID: <20220824194454.GA2768100-robh@kernel.org>
-References: <20220824104040.17527-1-arinc.unal@arinc9.com>
- <20220824104040.17527-2-arinc.unal@arinc9.com>
+        with ESMTP id S234610AbiHXTrx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:47:53 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B2179ED1;
+        Wed, 24 Aug 2022 12:47:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=cliv8fOIUE97X2LZJl8OSkONVdBjqeQgsQroJzWn400=; b=wN3w5NUgq41D/YUu/EkW7FPwjJ
+        woYC+U1ES1nXR04yaNs/qiws1a53aHRx2t4frvxmzV1hxQqjEeMwwh3dBvOQebSFyv/XZPHYROABs
+        Jy3wKUIBoMNyZAX0lxBzbRwgqsEopF4qo6+lF2id3YzFRnsSu52N6ijCso9H8hEjpAW4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oQwLs-00ETnd-95; Wed, 24 Aug 2022 21:47:48 +0200
+Date:   Wed, 24 Aug 2022 21:47:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        michael@walle.cc, UNGLinuxDriver@microchip.com,
+        maxime.chevallier@bootlin.com
+Subject: Re: [PATCH net] net: phy: micrel: Make the GPIO to be non-exclusive
+Message-ID: <YwaAZAXcXhGmu7r9@lunn.ch>
+References: <20220824192827.437095-1-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220824104040.17527-2-arinc.unal@arinc9.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220824192827.437095-1-horatiu.vultur@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Aug 2022 13:40:34 +0300, Arınç ÜNAL wrote:
-> Make trivial changes on the binding.
+On Wed, Aug 24, 2022 at 09:28:27PM +0200, Horatiu Vultur wrote:
+> The same GPIO line can be shared by multiple phys for the coma mode pin.
+> If that is the case then, all the other phys that share the same line
+> will failed to be probed because the access to the gpio line is not
+> non-exclusive.
+> Fix this by making access to the gpio line to be nonexclusive using flag
+> GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
+> probed.
 > 
-> - Update title to include MT7531 switch.
-> - Add me as a maintainer. List maintainers in alphabetical order by first
-> name.
-> - Add description to compatible strings.
-> - Stretch descriptions up to the 80 character limit.
-> - Remove lists for single items.
-> - Remove quotes from $ref: "dsa.yaml#".
-> 
-> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+> Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
+> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
 > ---
->  .../bindings/net/dsa/mediatek,mt7530.yaml     | 39 +++++++++++--------
->  1 file changed, 23 insertions(+), 16 deletions(-)
+>  drivers/net/phy/micrel.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index e78d0bf69bc3..ea72ff64ad33 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -2878,7 +2878,8 @@ static int lan8814_release_coma_mode(struct phy_device *phydev)
+>  	struct gpio_desc *gpiod;
+>  
+>  	gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
+> -					GPIOD_OUT_HIGH_OPEN_DRAIN);
+> +					GPIOD_OUT_HIGH_OPEN_DRAIN |
+> +					GPIOD_FLAGS_BIT_NONEXCLUSIVE);
 
+I would suggest putting a comment here. You are assuming the driver
+never gains a lan8814_take_coma_mode() when the PHY is put into
+suspend, since it sounds like that will put all PHYs on the shared
+GPIO into coma mode.
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-If a tag was not added on purpose, please state why and what changed.
-
+     Andrew
