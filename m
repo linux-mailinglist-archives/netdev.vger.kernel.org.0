@@ -2,77 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A66DA5A024F
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A122D5A034C
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 23:31:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbiHXTwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 15:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
+        id S239961AbiHXVbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 17:31:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233133AbiHXTwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:52:15 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 981B07A519;
-        Wed, 24 Aug 2022 12:52:14 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c16-20020a17090aa61000b001fb3286d9f7so4022530pjq.1;
-        Wed, 24 Aug 2022 12:52:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:from:to:cc;
-        bh=1nu8oahj75UTgypLcyNOx3EXwxh8DT56p0t7+dOXmX0=;
-        b=LTAmQ+2FW4tG9keAelAGoujtNrW/xeh1XYCdsa2ntMUeslU2BQdgTn02mseiYA0WX+
-         umKXJrnOTD1HK5vVLAAvOgn5HGFeOsraSLOjMXob07JFBIioS4OlU9RP1+QL6eKgivfl
-         NSy0PrXs0WcAd6cw4iA7qgG/Ff2fzhn2JaUYjxIYppX+1LsKJ+e9cC8gtdFDys/aByoA
-         xj18Sk2IiqvDGrW93tuGkwa8Ocqd+QxOJS8NVU4ijSdHBga6iu7NCxDr+5wGTxzAk1Gi
-         n9rbTrsOpg/kiB0vLRNRLbn46KXFA5cUfMDbhGdHTOwsb+kdAf3/6a5EeICVoORsUTQn
-         Ccbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:references:message-id:content-transfer-encoding:cc:date
-         :in-reply-to:from:subject:mime-version:x-gm-message-state:from:to:cc;
-        bh=1nu8oahj75UTgypLcyNOx3EXwxh8DT56p0t7+dOXmX0=;
-        b=w5PYvOQzJl93NNbTbL2tPgkr7e75MGr19VEZtQSg+1sifUHlK+HmYZkfyHOU59FTPk
-         h5h2s3LFjVyHqv1RQiTQQU40BXLcqct/4wB99j8mStLI7ZbFR6o1R+FQquD+dOn0IZCM
-         L3ZXHPwn1b0Bk7VIv0g/q5Xd1MpYeDNmHUuZrbSqGWq4UMcRMLwIj47RU420Ivobxagn
-         O8nuLnWR0yk1pP/esh0EK7o/VcjfxdFe7DdpmkGsnsiShZK1qJzvfHUqEWVmbLzR0p0W
-         qaZXSMKADQ6D+ivvJyFuCQA2XRprma9Q1SDoecoyzW22iIGCEQwQx0l6Rxk7fzpRdB43
-         ZCeQ==
-X-Gm-Message-State: ACgBeo2YrUyKUKDOJEeiiEtupeM0NiT10pzOTKcb7PAcuH5ZskXB3EI8
-        NboVzPTf+JhONUCHyf4foLA=
-X-Google-Smtp-Source: AA6agR51+VkdG4JOSWswyaY4Yap2VcDTy5LbH54K1soERUDw0c9lzTefQs+jzkUxK/735D8rvvHlXg==
-X-Received: by 2002:a17:90b:1a88:b0:1f7:3daa:f2f6 with SMTP id ng8-20020a17090b1a8800b001f73daaf2f6mr9996426pjb.245.1661370734096;
-        Wed, 24 Aug 2022 12:52:14 -0700 (PDT)
-Received: from smtpclient.apple ([216.160.66.82])
-        by smtp.gmail.com with ESMTPSA id f26-20020aa79d9a000000b0053602e1d6fcsm6768973pfq.105.2022.08.24.12.52.13
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 24 Aug 2022 12:52:13 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.120.41.1.1\))
-Subject: Re: [net-next v2 0/6] net: support QUIC crypto
-From:   Matt Joras <matt.joras@gmail.com>
-In-Reply-To: <CADvbK_fVRVYjtSkn29ec70mko9aEwnwu+kHYx8bAAWm-n25mjA@mail.gmail.com>
-Date:   Wed, 24 Aug 2022 12:52:12 -0700
-Cc:     Adel Abouchaev <adel.abushaev@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, davem <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        David Ahern <dsahern@kernel.org>, shuah@kernel.org,
-        imagedong@tencent.com, network dev <netdev@vger.kernel.org>,
-        linux-doc@vger.kernel.org, linux-kselftest@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <6BC43AA9-19A5-4FE3-B521-DD862853057E@gmail.com>
-References: <adel.abushaev@gmail.com>
- <20220817200940.1656747-1-adel.abushaev@gmail.com>
- <CADvbK_fVRVYjtSkn29ec70mko9aEwnwu+kHYx8bAAWm-n25mjA@mail.gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-X-Mailer: Apple Mail (2.3696.120.41.1.1)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238348AbiHXVba (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 17:31:30 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2057.outbound.protection.outlook.com [40.107.93.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1B152E46
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 14:31:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hJgWxuaBxP1DG+Beb42Uii+DP1IO66WMkjoG7eusuLt2ivLjt6bDBKgq4WU6vORfeaTvC/BzMdL49Gqx8XwjJwKs1XKiXCwrxPec/hlqq01zqy262b80OHKP0wxpgU8Fb5bfasmbvzKsSKwd7XVekReytjpeAS7FXLvYwkfozJo23ik2S2y3ff2zkUu+Nc5vjRiEEXy1RoEexb6/nxjYE26njVYqca2S6mgbzPCeJH/lHlqkabt2MmiIpwhHG2JEdM68+GzPnyMOI7+pcd94Ae7t06v78qr1oAP5CIydLA+9T2gy9PVBkRIUGu53eVyCU9M/nR/P/e4t+iCr0otkPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CN7H8q0ymifIidGGoT9SfygN8s/Adz5WxUGjDEGoIAg=;
+ b=d+S4XPCygmpy8PJAQkOjgJVT9wbKJkH9vEtaqG0J2L2QlJdtSxPMvMLW7YijyjcC4JJ0p8486O2kT+WNSYKOyPP8H5JLcwl0q/fSuCPvCrK4HuIYOyor3aLOlolsd0Bk8qVVtR9JgGY8D7Ds++uiVV1I2bqk3sGJVLPsc9LstmBc41dGvMyPSLomRGsyKOL84bce3XqV1jUzZs//WpA55UrqCD+z5adVithuclLhLIpUnoCjigQr+DFSu4rf5+nA9XAmQJjiJRLBauPp6mDKl7CXeIhA3tvBfOhtvWvNksPT36lLzoNDZGbRQNQ2lBrGmyuovgT2ZSLGvNr9guwWJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CN7H8q0ymifIidGGoT9SfygN8s/Adz5WxUGjDEGoIAg=;
+ b=bsBNfGtBQcu/NyUBSqltLv21m7qVItFV16q9oinqv9TY4VjMKpd99MYYvR9mVBvEhQThfJylP0pOxmy6HgFNs39PATdmWL7hvwSsqv73pk5NCiMnSM3iFegFsT/nyg6uuGEXWqIwPJGsPpmK03td6qlJ7+nxh2pwW7vDy1uiXVwt3iq6ii06LIwxDyeOMkwnrwZ4EcEZYFNOxJ20i+gBtU13d6WAJaJyF1jKlTU17qAhwc+YrN9EBjxjZk6UIgQwSpZibdTiRXCniHu9TQYvpVhmFjcPpa71k01zGd1aZVtQiwKUR0ieWl/rtfY/B32Tl5ndb+8myBk5BEw/BiFCCQ==
+Received: from MW4PR04CA0054.namprd04.prod.outlook.com (2603:10b6:303:6a::29)
+ by BN7PR12MB2610.namprd12.prod.outlook.com (2603:10b6:408:22::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Wed, 24 Aug
+ 2022 21:31:27 +0000
+Received: from CO1NAM11FT079.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6a:cafe::c) by MW4PR04CA0054.outlook.office365.com
+ (2603:10b6:303:6a::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14 via Frontend
+ Transport; Wed, 24 Aug 2022 21:31:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT079.mail.protection.outlook.com (10.13.175.134) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5566.15 via Frontend Transport; Wed, 24 Aug 2022 21:31:26 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 24 Aug
+ 2022 21:31:26 +0000
+Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
+ 2022 14:31:23 -0700
+References: <Yv9VO1DYAxNduw6A@DEN-LT-70577> <874jy8mo0n.fsf@nvidia.com>
+ <YwKeVQWtVM9WC9Za@DEN-LT-70577> <87v8qklbly.fsf@nvidia.com>
+ <YwXXqB64QLDuKObh@DEN-LT-70577> <87pmgpki9v.fsf@nvidia.com>
+ <YwZoGJXgx/t/Qxam@DEN-LT-70577>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     <Daniel.Machon@microchip.com>
+CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <vinicius.gomes@intel.com>, <vladimir.oltean@nxp.com>,
+        <thomas.petazzoni@bootlin.com>, <Allan.Nielsen@microchip.com>,
+        <maxime.chevallier@bootlin.com>, <roopa@nvidia.com>
+Subject: Re: Basic PCP/DEI-based queue classification
+Date:   Wed, 24 Aug 2022 21:36:54 +0200
+In-Reply-To: <YwZoGJXgx/t/Qxam@DEN-LT-70577>
+Message-ID: <87k06xjplj.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f6839bbe-8bbe-4400-9eaf-08da8618006f
+X-MS-TrafficTypeDiagnostic: BN7PR12MB2610:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pG5ElA3JGGyKi9N3EdbpRoYHOHAuUkU61+JWbXcQjMYQ+VBbI3l6icNghzAdN68s8Gxzz0blx0lpVNjDQVHFklZSTXSaBWXLA8Lf3MU4FTi1c8v7yVpjFwde8TYrI+WnqKGYm7cvTQsaIWoKNYcknP3qQRUbxiVlT0jfoesYUfwE7ejnS4wq3vygLMV6j/MQTmNHDvmbSx6Yt6m6duiKGxAJ2pCwW31QZn3RuuHhXNhJBt05P0aeJTX0ZYLIYV1Xig/qr2V5aUNepnZ0XiZ3NOeG0/KIgw9JGRNwtWKQ2OwRpBDzvWnQeDmGu7lHd+WO/IN5PXHSng/9lFasD8Xx/jAEfKHIuQ9nG1/iKe9brpQDAeFnk5su3ddw2B9iQqI7NUbdEEM+ckYUe4TmAm/9PD+bQaENKdmW+YiliOMeQGOEoIrzWHApCAYrF070ow1b+wuGWqBmkbQFfrEGUAKFVC2TgR5/iXvjNvxY4qs33HlLW5y/ZfAFXXxO6HYc7dBUCnNY5qU01AH0t7EuoD4MdzMLUUrNG1eHX7veI3kHtojIee54s1eDa9I1fh4WamZf8MKgwD6fMWu9OTVSh1FtwfCfh0yydp+Qzlqo8PxQ8PlK8TiI1IsV9r4HbuIHYUDmuj9gAzCtkPS/C5vGCpmRNj4OtttIiwpaXd/IjvpWQ0J1WEYUzlOQRPUmcMx6vO3cNfhfsNnQWmfkHdTDG3yqg/iqddRfAODunVKHcXfyy0tmN1tms4PWdFAeSjftt6cw2K+oKW9/EQ/isOA5ZgziPmlpdTXKunNTxmsyg77pZv4=
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(136003)(346002)(376002)(396003)(46966006)(40470700004)(36840700001)(107886003)(83380400001)(2906002)(70206006)(47076005)(8936002)(8676002)(70586007)(82310400005)(426003)(4326008)(5660300002)(26005)(6666004)(41300700001)(36756003)(16526019)(478600001)(2616005)(186003)(336012)(81166007)(40460700003)(36860700001)(40480700001)(86362001)(356005)(6916009)(316002)(82740400003)(54906003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 21:31:26.9905
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f6839bbe-8bbe-4400-9eaf-08da8618006f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT079.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2610
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -80,159 +108,90 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-> On Aug 24, 2022, at 11:29 AM, Xin Long <lucien.xin@gmail.com> wrote:
->=20
-> On Wed, Aug 17, 2022 at 4:11 PM Adel Abouchaev =
-<adel.abushaev@gmail.com> wrote:
->>=20
->> QUIC requires end to end encryption of the data. The application =
-usually
->> prepares the data in clear text, encrypts and calls send() which =
-implies
->> multiple copies of the data before the packets hit the networking =
-stack.
->> Similar to kTLS, QUIC kernel offload of cryptography reduces the =
-memory
->> pressure by reducing the number of copies.
->>=20
->> The scope of kernel support is limited to the symmetric cryptography,
->> leaving the handshake to the user space library. For QUIC in =
-particular,
->> the application packets that require symmetric cryptography are the =
-1RTT
->> packets with short headers. Kernel will encrypt the application =
-packets
->> on transmission and decrypt on receive. This series implements Tx =
-only,
->> because in QUIC server applications Tx outweighs Rx by orders of
->> magnitude.
->>=20
->> Supporting the combination of QUIC and GSO requires the application =
-to
->> correctly place the data and the kernel to correctly slice it. The
->> encryption process appends an arbitrary number of bytes (tag) to the =
-end
->> of the message to authenticate it. The GSO value should include this
->> overhead, the offload would then subtract the tag size to parse the
->> input on Tx before chunking and encrypting it.
->>=20
->> With the kernel cryptography, the buffer copy operation is conjoined
->> with the encryption operation. The memory bandwidth is reduced by =
-5-8%.
->> When devices supporting QUIC encryption in hardware come to the =
-market,
->> we will be able to free further 7% of CPU utilization which is used
->> today for crypto operations.
->>=20
->> Adel Abouchaev (6):
->>  Documentation on QUIC kernel Tx crypto.
->>  Define QUIC specific constants, control and data plane structures
->>  Add UDP ULP operations, initialization and handling prototype
->>    functions.
->>  Implement QUIC offload functions
->>  Add flow counters and Tx processing error counter
->>  Add self tests for ULP operations, flow setup and crypto tests
->>=20
->> Documentation/networking/index.rst     |    1 +
->> Documentation/networking/quic.rst      |  185 ++++
->> include/net/inet_sock.h                |    2 +
->> include/net/netns/mib.h                |    3 +
->> include/net/quic.h                     |   63 ++
->> include/net/snmp.h                     |    6 +
->> include/net/udp.h                      |   33 +
->> include/uapi/linux/quic.h              |   60 +
->> include/uapi/linux/snmp.h              |    9 +
->> include/uapi/linux/udp.h               |    4 +
->> net/Kconfig                            |    1 +
->> net/Makefile                           |    1 +
->> net/ipv4/Makefile                      |    3 +-
->> net/ipv4/udp.c                         |   15 +
->> net/ipv4/udp_ulp.c                     |  192 ++++
->> net/quic/Kconfig                       |   16 +
->> net/quic/Makefile                      |    8 +
->> net/quic/quic_main.c                   | 1417 =
-++++++++++++++++++++++++
->> net/quic/quic_proc.c                   |   45 +
->> tools/testing/selftests/net/.gitignore |    4 +-
->> tools/testing/selftests/net/Makefile   |    3 +-
->> tools/testing/selftests/net/quic.c     | 1153 +++++++++++++++++++
->> tools/testing/selftests/net/quic.sh    |   46 +
->> 23 files changed, 3267 insertions(+), 3 deletions(-)
->> create mode 100644 Documentation/networking/quic.rst
->> create mode 100644 include/net/quic.h
->> create mode 100644 include/uapi/linux/quic.h
->> create mode 100644 net/ipv4/udp_ulp.c
->> create mode 100644 net/quic/Kconfig
->> create mode 100644 net/quic/Makefile
->> create mode 100644 net/quic/quic_main.c
->> create mode 100644 net/quic/quic_proc.c
->> create mode 100644 tools/testing/selftests/net/quic.c
->> create mode 100755 tools/testing/selftests/net/quic.sh
->>=20
->>=20
->> base-commit: fd78d07c7c35de260eb89f1be4a1e7487b8092ad
->> --
->> 2.30.2
->>=20
-> Hi, Adel,
->=20
-> I don't see how the key update(rfc9001#section-6) is handled on the TX
-> path, which is not using TLS Key update, and "Key Phase" indicates
-> which key will be used after rekeying. Also, I think it is almost
-> impossible to handle the peer rekeying on the RX path either based on
-> your current model in the future.
-Key updates are not something that needs to be handled by the kernel in =
-this
-model. I.e. a key update will be processed as normal by the userspace =
-QUIC code and
-the sockets will have to be re-associated with the new keying material.
->=20
-> The patch seems to get the crypto_ctx by doing a connection hash table
-> lookup in the sendmsg(), which is not good from the performance side.
-> One QUIC connection can go over multiple UDP sockets, but I don't
-> think one socket can be used by multiple QUIC connections. So why not
-> save the ctx in the socket instead?
-There=E2=80=99s nothing preventing a single socket or UDP/IP tuple from =
-being used
-by multiple QUIC connections. This is achievable due to both endpoints =
-having
-CIDs. Note that it is not uncommon for QUIC deployments to use a single =
-socket for
-all connections, rather than the TCP listen/accept model. That being =
-said, it
-would be nice to be able to avoid the lookup cost when using a connected =
-socket.
+<Daniel.Machon@microchip.com> writes:
 
->=20
-> The patch is to reduce the copying operations between user space and
-> the kernel. I might miss something in your user space code, but the
-> msg to send is *already packed* into the Stream Frame in user space,
-> what's the difference if you encrypt it in userspace and then
-> sendmsg(udp_sk) with zero-copy to the kernel.
-I would not say that reducing copy operations is the primary goal of =
-this
-work. There are already ways to achieve minimal copy operations for UDP =
-from
-userspace.=20
->=20
-> Didn't really understand the "GSO" you mentioned, as I don't see any
-> code about kernel GSO, I guess it's just "Fragment size", right?
-> BTW, it=E2=80=98s not common to use "//" for the kernel annotation.
->=20
-> I'm not sure if it's worth adding a ULP layer over UDP for this QUIC
-> TX only. Honestly, I'm more supporting doing a full QUIC stack in the
-> kernel independently with socket APIs to use it:
-> https://github.com/lxin/tls_hs.
-A full QUIC stack in the kernel with associated socket APIs is solving a
-different problem than this work. Having an API to offload crypto =
-operations of QUIC
-allows for the choice of many different QUIC implementations in =
-userspace while
-potentially taking advantage of offloading the main CPU cost of an =
-encrypted protocol.
->=20
-> Thanks.
->=20
+>> > As I hinted earlier, we could also add an entirely new PCP interface
+>> > (like with maxrate), this will give us a bit more flexibility and will
+>> > not crash with anything. This approach will not give is trust for DSCP,
+>> > but maybe we can disregard this and go with a PCP solution initially?
+>> 
+>> I would like to have a line of sight to how things will be done. Not
+>> everything needs to be implemented at once, but we have to understand
+>> how to get there when we need to. At least for issues that we can
+>> already foresee now, such as the DSCP / PCP / default ordering.
+>> 
+>> Adding the PCP rules as a new APP selector, and then expressing the
+>> ordering as a "selector policy" or whatever, IMHO takes care of this
+>> nicely.
+>> 
+>> But OK, let's talk about the "flexibility" bit that you mention: what
+>> does this approach make difficult or impossible?
+>
+> It was merely a concern of not changing too much on something that is
+> already standard. Maybe I dont quite see how the APP interface can be
+> extended to accomodate for: pcp/dei, ingress/egress and trust. Lets
+> try to break it down:
+>
+>   - pcp/dei: 
+>         this *could* be expressed in app->protocol and map 1:1 to the 
+>         pcp table entrise, so that 8*dei+pcp:priority. If I want to map 
+>         pcp 3, with dei 1 to priority 2, it would be encoded 11:2.
 
-Best,
-Matt Joras=
+Yep. In particular something like {sel=255, pid=11, prio=2}.
+
+iproute2 "dcb" would obviously grow brains to let you configure this
+stuff semantically, so e.g.:
+
+# dcb app replace dev X pcp-prio 3:3 3de:2 2:2 2de:1
+
+>   - ingress/egress:
+>         I guess we need a selector for each? I notice that the mellanox
+>         driver uses the dcb_ieee_getapp_prio_dscp_mask_map and
+>         dcb_ieee_getapp_dscp_prio_mask_map for priority map and priority
+>         rewrite map, but these seems to be the same for both ingress and
+>         egress to me?
+
+Ha, I was only thinking about prioritization, not about rewrite at all.
+
+Yeah, mlxsw uses APP rules for rewrite as well. The logic is that if the
+network behind port X uses DSCP value D to express priority P, then
+packets with priority P leaving that port should have DSCP value of D.
+Of course it doesn't work too well, because there are 8 priorities, but
+64 DSCP values. So mlxsw arbitrarily chooses the highest DSCP value.
+
+The situation is similar with PCP, where there are 16 PCP+DEI
+combinations, but only 8 priorities.
+
+So having a way to configure rewrite would be good. But then we are very
+firmly in the extension territory. This would basically need a separate
+APP-like object.
+
+> So far only subtle changes. Now how do you see trust going in. Can you
+> elaborate a little on the policy selector you mentioned?
+
+Sure. In my mind the policy is a array that describes the order in which
+APP rules are applied. "default" is implicitly last.
+
+So "trust DSCP" has a policy of just [DSCP]. "Trust PCP" of [PCP].
+"Trust DSCP, then PCP" of [DSCP, PCP]. "Trust port" (i.e. just default)
+is simply []. Etc.
+
+Individual drivers validate whether their device can implement the
+policy.
+
+I expect most devices to really just support the DSCP and PCP parts, but
+this is flexible in allowing more general configuration in devices that
+allow it.
+
+ABI-wise it is tempting to reuse APP to assign priority to selectors in
+the same way that it currently assigns priority to field values:
+
+# dcb app replace dev X sel-prio dscp:2 pcp:1
+
+But that feels like a hack. It will probably be better to have a
+dedicated object for this:
+
+# dcb app-policy set dev X sel-order dscp pcp
+
+This can be sliced in different ways that we can bikeshed to death
+later. Does the above basically address your request?
