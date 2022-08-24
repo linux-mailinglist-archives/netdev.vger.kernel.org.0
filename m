@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC255A0285
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 22:12:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 881A75A0288
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 22:12:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239947AbiHXUMc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 16:12:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32976 "EHLO
+        id S240167AbiHXUMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 16:12:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229573AbiHXUMb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 16:12:31 -0400
-Received: from sender-of-o50.zoho.in (sender-of-o50.zoho.in [103.117.158.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F02FC18351;
-        Wed, 24 Aug 2022 13:12:28 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661371910; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=C8kXq44ddm3iaKNd1oRbVUneTC5/YlLrbJKbYJFrSyOwIJMx/hjq0CgILBvnIFJPAVQSicL+m8qOpokoVw3ZMaPWfY1DqHUgDEFlLM4BR9i89XFS87vmf19Y8fqV0KN/bA2q4Xjyd0rqGh14dB9VWNk7WC1qPeTFNuguiIM83M8=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1661371910; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=o8+2mxY1s6gN8Aqlaw9vhuuz0VwD5wwLUGg9+r5eCc8=; 
-        b=a2y/UZCDL2gII40gkzMEX9teyJwQWRpdW3QqwSBCO0+lko9tBStKMq5Y9iXI32kmFCGqO+zsYv0vipLJ0JM4ZtGxGEIimp76gV0RiAH+uLPsBv7xo6taYzrPvLNRJKjocfXPwGu9qkAnzZxJ8hvAraFh47hj1R4DbRzuU/D72L8=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661371910;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=o8+2mxY1s6gN8Aqlaw9vhuuz0VwD5wwLUGg9+r5eCc8=;
-        b=f6VU8o9ZHQIjTgQ3f038x8f+Fkqlna8W0jgLN3dR6uixc8bnzogi1i9up8y56WTy
-        RDBnD0ONbiYGEnVYm/gCbndaiFK/AmidbOtlavg2JYTJHdgCJ7krSJGUL/6L26Ttrcr
-        6Nbi62weq+h7ahrASJ+PzNuuJedi/aX/74v2u5QI=
-Received: from localhost.localdomain (103.249.233.18 [103.249.233.18]) by mx.zoho.in
-        with SMTPS id 1661371907172679.3555503675442; Thu, 25 Aug 2022 01:41:47 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-Message-ID: <20220824201136.182039-1-code@siddh.me>
-Subject: Re: [PATCH] wifi: mac80211: Don't finalize CSA in IBSS mode if state is disconnected
-Date:   Thu, 25 Aug 2022 01:41:36 +0530
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220814151512.9985-1-code@siddh.me>
-References: <20220814151512.9985-1-code@siddh.me>
+        with ESMTP id S240155AbiHXUMp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 16:12:45 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADF0618365
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 13:12:43 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id 10so14331345iou.2
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 13:12:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:to:subject:from:to:cc;
+        bh=AUsCic3JN9zpVEn1D9LBfAVAahfOpJCAJY/k/xDwQ9k=;
+        b=ZLeTmPXG/YiGfSOKhcKrcCuC1KD4Xl2qzFZFnKSXLLXS5+nYjGnYMFazuS4gpO9Oh3
+         pxfXXxtYHo8npFBpOyR0vMfI2xIUPsCqvQhI72/jkSByrF504yA7RxoLbiRnnmkb6cfM
+         YjYpZnTwlU4Bkdvh799XjuJKrj4s1UqwUoil0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:content-language:in-reply-to:mime-version
+         :user-agent:date:message-id:from:references:to:subject
+         :x-gm-message-state:from:to:cc;
+        bh=AUsCic3JN9zpVEn1D9LBfAVAahfOpJCAJY/k/xDwQ9k=;
+        b=Sclo7a6ONICDIGkxMuhEyM9iSXPIlJg2ze4v95NCA2iiVvUAR3esvb/rtI3yIHQ3zG
+         aKPQ7OmuectbAEiNbpOlBOHJrYawpQsOItWbybOS7pVvspFf0QBkalDcCxxEYBcKgkv1
+         VM7HiLYjD77liLOE2fc3G3pIc3I3hwwmWyW5jcuJ6bZ2hp6MlqDFA9g0Y5aILIq94ocW
+         ruxEhg42g+P3sz1y9n46LGdj7N85UfLyFbNWoWMAQcVw12kvvA07T/k8h0pUjevXuHqc
+         HsqYHKh/MoFkh2fVuMQUqMEur8djCy5F+dkJoGsceVdcO9r5t9wawvbuI1j0vJBuP4CE
+         HpxA==
+X-Gm-Message-State: ACgBeo2IWsJm9FX3dPhvhkG5kEAli4iutQNn9+TWa+5TSz9zCZQgseR5
+        Gi18f7xcCnTlPnbeSHCME0RLUg==
+X-Google-Smtp-Source: AA6agR6Vlt8aZBycuctok098xfzKSgjUx8repUjgNyGlxpIw7jPbnOYUpPj8dqwOhXRABG2WcDSHDg==
+X-Received: by 2002:a05:6638:2615:b0:349:fc66:cab with SMTP id m21-20020a056638261500b00349fc660cabmr281450jat.170.1661371962995;
+        Wed, 24 Aug 2022 13:12:42 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id x2-20020a0566022c4200b006887640a5edsm164735iov.23.2022.08.24.13.12.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 13:12:42 -0700 (PDT)
+Subject: Re: [net-next] Fix reinitialization of TEST_PROGS in net self tests.
+To:     Adel Abouchaev <adel.abushaev@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <Adel Abouchaev <adel.abushaev@gmail.com>
+ <20220824184351.3759862-1-adel.abushaev@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <3e3edde6-eb35-6197-4ffd-ed7c545b4f85@linuxfoundation.org>
+Date:   Wed, 24 Aug 2022 14:12:41 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220824184351.3759862-1-adel.abushaev@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 14 Aug 2022 20:45:12 +0530  Siddh Raman Pant  wrote:
-> When we are not connected to a channel, sending channel "switch"
-> announcement doesn't make any sense.
->=20
-> The BSS list is empty in that case. This causes the for loop in
-> cfg80211_get_bss() to be bypassed, so the function returns NULL
-> (check line 1424 of net/wireless/scan.c), causing the WARN_ON()
-> in ieee80211_ibss_csa_beacon() to get triggered (check line 500
-> of net/mac80211/ibss.c), which was consequently reported on the
-> syzkaller dashboard.
->=20
-> Thus, check if we have an existing connection before generating
-> the CSA beacon in ieee80211_ibss_finish_csa().
->=20
-> Fixes: cd7760e62c2a ("mac80211: add support for CSA in IBSS mode")
-> Bug report: https://syzkaller.appspot.com/bug?id=3D05603ef4ae8926761b678d=
-2939a3b2ad28ab9ca6
-> Reported-by: syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-> Cc: stable@vger.kernel.org
-
-Tested-by: syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-
-Syzbot is now booting properly and the test ran successfully.
-
-Thanks,
-Siddh
-
-> Signed-off-by: Siddh Raman Pant <code@siddh.me>
+On 8/24/22 12:43 PM, Adel Abouchaev wrote:
+> Fix reinitialization of TEST_PROGS in net self tests.
+> 
+> Signed-off-by: Adel Abouchaev <adel.abushaev@gmail.com>
 > ---
-> The fixes commit is old, and syzkaller shows the problem exists for
-> 4.19 and 4.14 as well, so CC'd stable list.
->=20
->  net/mac80211/ibss.c | 4 ++++
->  1 file changed, 4 insertions(+)
->=20
-> diff --git a/net/mac80211/ibss.c b/net/mac80211/ibss.c
-> index d56890e3fabb..9b283bbc7bb4 100644
-> --- a/net/mac80211/ibss.c
-> +++ b/net/mac80211/ibss.c
-> @@ -530,6 +530,10 @@ int ieee80211_ibss_finish_csa(struct ieee80211_sub_i=
-f_data *sdata)
-> =20
->  =09sdata_assert_lock(sdata);
-> =20
-> +=09/* When not connected/joined, sending CSA doesn't make sense. */
-> +=09if (ifibss->state !=3D IEEE80211_IBSS_MLME_JOINED)
-> +=09=09return -ENOLINK;
-> +
->  =09/* update cfg80211 bss information with the new channel */
->  =09if (!is_zero_ether_addr(ifibss->bssid)) {
->  =09=09cbss =3D cfg80211_get_bss(sdata->local->hw.wiphy,
-> --=20
-> 2.35.1
+>   tools/testing/selftests/net/Makefile | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+> index 11a288b67e2f..4a5978eab848 100644
+> --- a/tools/testing/selftests/net/Makefile
+> +++ b/tools/testing/selftests/net/Makefile
+> @@ -42,7 +42,7 @@ TEST_PROGS += arp_ndisc_evict_nocarrier.sh
+>   TEST_PROGS += ndisc_unsolicited_na_test.sh
+>   TEST_PROGS += arp_ndisc_untracked_subnets.sh
+>   TEST_PROGS += stress_reuseport_listen.sh
+> -TEST_PROGS := l2_tos_ttl_inherit.sh
+> +TEST_PROGS += l2_tos_ttl_inherit.sh
+>   TEST_PROGS_EXTENDED := in_netns.sh setup_loopback.sh setup_veth.sh
+>   TEST_PROGS_EXTENDED += toeplitz_client.sh toeplitz.sh
+>   TEST_GEN_FILES =  socket nettest
+> 
 
+Thank you for fixing this. I am seeing these types of bugs recently
+Have to careful with := vs +=
+
+Reviewed-by: Shuah Khan <skhan@linuxfoundation.org>
+
+thanks,
+-- Shuah
