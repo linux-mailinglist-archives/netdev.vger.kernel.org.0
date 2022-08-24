@@ -2,188 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD80C59F7ED
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 12:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FDCA59F807
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 12:44:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235928AbiHXKj0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 06:39:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
+        id S235869AbiHXKn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 06:43:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234736AbiHXKjZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 06:39:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 707DF7B2A5
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 03:39:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661337563;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=O3xYfW0v9uJkKzARGFEY8k9gHPAe+Br9uY2PeY9ESPQ=;
-        b=BG/3/z+46Lo6NI0507I0yH1KZJE3kWc1RLzDRYHjFRdgc/W6opY0M9pzGqLmt6wK4bi031
-        nV12oXXCMcsyRxH1oJllRobjk5HGNU0yUhwvx/Uevty4aP1xLAsgLsEcuAzxbz0mL3oUxn
-        OE1C7JbjaM3/swj7IP3DpGFTILMUCqg=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-491-3lyL1TE4O2uQc-g3oFI8aw-1; Wed, 24 Aug 2022 06:39:22 -0400
-X-MC-Unique: 3lyL1TE4O2uQc-g3oFI8aw-1
-Received: by mail-ed1-f70.google.com with SMTP id g8-20020a056402424800b0043e81c582a4so10756204edb.17
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 03:39:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=O3xYfW0v9uJkKzARGFEY8k9gHPAe+Br9uY2PeY9ESPQ=;
-        b=A9WRcgosD7FngqTaDiR1Z6vAQxYQIr/FXjOOIDJRYOuOhbdy4mvFOWLhSgRlirT4PV
-         3uodtLrlkuIsMPikWDUpX5qs6zMUwgtm9zDzYLNl42jIAMjRhcyi6YAd1WSQuY1mHWoc
-         6yodB+p93uPqH73tG5SxRLBVOeG7JuGh3XXFj85O3AkZpJlBIh5CbIgv/U8jtd/WHlNC
-         jfRSkzcGpcLut9+pRz7TVNnBb+/t0/RH1L1ON5HEwYYOSjSn6UUSf6opUmtHUTbJksqR
-         FJ09xNPqtSxj1feRdwp87APPVaPgdgHCJJm73jM6XXq+Tgnk7XprPojadbTgpdr3yK7I
-         T58w==
-X-Gm-Message-State: ACgBeo3rK2DhGu/vfa1LiI/1b2iffaNz4zhQNLY+xqiT2iDwmP6HpaAr
-        iVGblGeVOKAyoe6dtga8/Z9/sQJdF50OrEAJH/8zofJxhGvJy4iHZiDmXQNf3SDVAvk7pNxH5ju
-        BVjH+uLQsIznx+NMP
-X-Received: by 2002:a17:907:960f:b0:73d:5b08:68b9 with SMTP id gb15-20020a170907960f00b0073d5b0868b9mr2486522ejc.337.1661337561149;
-        Wed, 24 Aug 2022 03:39:21 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4frG6Hu7UO0my/xwTI4Uji4WMDAPw7YPxEoZhKLbqOnHpY4ukOnnfrWUBRZ49+iEhrhZZ4Gw==
-X-Received: by 2002:a17:907:960f:b0:73d:5b08:68b9 with SMTP id gb15-20020a170907960f00b0073d5b0868b9mr2486500ejc.337.1661337560723;
-        Wed, 24 Aug 2022 03:39:20 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id p15-20020a170906604f00b0073c0b87ba34sm939345ejj.198.2022.08.24.03.39.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 03:39:19 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 3443856052B; Wed, 24 Aug 2022 12:39:18 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Joanne Koong <joannelkoong@gmail.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     bpf@vger.kernel.org, andrii@kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, kafai@fb.com, kuba@kernel.org,
-        netdev@vger.kernel.org, "brouer@redhat.com" <brouer@redhat.com>,
-        lorenzo@kernel.org
-Subject: Re: [PATCH bpf-next v4 2/3] bpf: Add xdp dynptrs
-In-Reply-To: <CAJnrk1aq3gJgz0DKo47SS0J2wTtg1C_B3eVfsh-036nmDKKVWA@mail.gmail.com>
-References: <20220822235649.2218031-1-joannelkoong@gmail.com>
- <20220822235649.2218031-3-joannelkoong@gmail.com>
- <CAP01T77h2+a9OonHuiPRFsAForWYJfQ71G6teqbcLg4KuGpK5A@mail.gmail.com>
- <CAJnrk1aq3gJgz0DKo47SS0J2wTtg1C_B3eVfsh-036nmDKKVWA@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 24 Aug 2022 12:39:18 +0200
-Message-ID: <878rnehqnd.fsf@toke.dk>
+        with ESMTP id S235468AbiHXKn6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 06:43:58 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2FA382D3D;
+        Wed, 24 Aug 2022 03:43:56 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661337795; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=V8wuVU/hNynQg7qL5KKj79KU2uvTdKcQEHSN+Sw2nob+vVldqgwoNBtvaB3oWO5uaaT3sPBE90bZS5qNYadE1IJTTWCkVDIUmlu9kcXFVkKI5IYf4QverM7yzEwPtC8uQok0qjgaILJ9Kz7E64KxhdnfNV5/fl/aZIqKwqBkSjw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661337795; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=WMCxlPsl40flIpJ321yhlNA4xMKLAO8BUfBREIrIJvU=; 
+        b=JJMpF9HrC4TrKi3sKrgQnaYtXmo2TFH42drXwkfpzJKwWC60HIk9gBk/JCLJA5/IUEeqckWBDKrquB1en9F1/fyTtyFlIGaH3vW3v1N8oLDEh2MJdFCNXskmMz+DZZVep6LVp9gop+x4DxXAq3s0fh1dvVsecEHFyXDQ8p/3hpE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661337795;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
+        bh=WMCxlPsl40flIpJ321yhlNA4xMKLAO8BUfBREIrIJvU=;
+        b=K3agrN48Emhnpyu77XElWQgWTnJtB3/KCD9j9iytvc6TX5R7afSVmPh8/jyNeWAI
+        Em0tzS93qxC8nK9Zftxzzk388+610Ut9F6dpO4zdDAvUfN6y/Ff9c7QJy+fx0+ByfFB
+        VZLAu56L0sqXVSRplPq2sllJ2urLNvOuaclDD7HY=
+Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661337793893739.3704277913475; Wed, 24 Aug 2022 03:43:13 -0700 (PDT)
+From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
+Subject: [PATCH v5 0/7] completely rework mediatek,mt7530 binding
+Date:   Wed, 24 Aug 2022 13:40:33 +0300
+Message-Id: <20220824104040.17527-1-arinc.unal@arinc9.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Joanne Koong <joannelkoong@gmail.com> writes:
+Hello.
 
-> On Mon, Aug 22, 2022 at 7:31 PM Kumar Kartikeya Dwivedi
-> <memxor@gmail.com> wrote:
->>
->> +Cc XDP folks
->>
->> On Tue, 23 Aug 2022 at 02:12, Joanne Koong <joannelkoong@gmail.com> wrote:
->> >
->> > Add xdp dynptrs, which are dynptrs whose underlying pointer points
->> > to a xdp_buff. The dynptr acts on xdp data. xdp dynptrs have two main
->> > benefits. One is that they allow operations on sizes that are not
->> > statically known at compile-time (eg variable-sized accesses).
->> > Another is that parsing the packet data through dynptrs (instead of
->> > through direct access of xdp->data and xdp->data_end) can be more
->> > ergonomic and less brittle (eg does not need manual if checking for
->> > being within bounds of data_end).
->> >
->> > For reads and writes on the dynptr, this includes reading/writing
->> > from/to and across fragments. For data slices, direct access to
->>
->> It's a bit awkward to have such a difference between xdp and skb
->> dynptr's read/write. I understand why it is the way it is, but it
->> still doesn't feel right. I'm not sure if we can reconcile the
->> differences, but it makes writing common code for both xdp and tc
->> harder as it needs to be aware of the differences (and then the flags
->> for dynptr_write would differ too). So we're 90% there but not the
->> whole way...
->
-> Yeah, it'd be great if the behavior for skb/xdp progs could be the
-> same, but I'm not seeing a better solution here (unless we invalidate
-> data slices on writes in xdp progs, just to make it match more :P).
->
-> Regarding having 2 different interfaces bpf_dynptr_from_{skb/xdp}, I'm
-> not convinced this is much of a problem - xdp and skb programs already
-> have different interfaces for doing things (eg
-> bpf_{skb/xdp}_{store/load}_bytes).
+This patch series brings complete rework of the mediatek,mt7530 binding.
 
-This is true, but it's quite possible to paper over these differences
-and write BPF code that works for both TC and XDP. Subtle semantic
-differences in otherwise identical functions makes this harder.
+The binding is checked with "make dt_binding_check
+DT_SCHEMA_FILES=mediatek,mt7530.yaml".
 
-Today you can write a function like:
+If anyone knows the GIC bit for interrupt for multi-chip module MT7530 in
+MT7623AI SoC, let me know. I'll add it to the examples.
 
-static inline int parse_pkt(void *data, void* data_end)
-{
-        /* parse data */
-}
+If anyone got a Unielec U7623 or another MT7623AI board, please reach out.
 
-And call it like:
+v5:
+- Remove lists for single items.
+- Split fix reset lines patch, add new patch to fix mediatek,mcm property.
+- Remove Rob's Reviewed-by: from first patch because of new changes.
+- Add Krzysztof's Reviewed-by: and Acked-by: to where they're given.
 
-SEC("xdp")
-int parse_xdp(struct xdp_md *ctx)
-{
-        return parse_pkt(ctx->data, ctx->data_end);
-}
+v4:
+- Define reg property on $defs as it's the same for all switch models.
 
-SEC("tc")
-int parse_tc(struct __sk_buff *skb)
-{
-        return parse_pkt(skb->data, skb->data_end);
-}
+v3:
+- Add Rob's Reviewed-by: to first patch.
+- Explain why to invalidating reset-gpios and mediatek,mcm.
+- Do not change ethernet-ports to ports on examples.
+- Remove platform and, when possible, ethernet nodes from examples.
+- Remove pinctrl binding from examples.
+- Combine removing unnecesary lines patch with relocating port binding.
+- Define $defs of mt7530 and mt7531 port binding and refer to them in each
+compatible device.
+- Remove allOf: for cases where there's only a single if:.
+- Use else: for cpu port 6 which simplifies the binding.
+- State clearly that the DSA driver does not support the MT7530 switch in
+MT7620 SoCs.
 
+v2:
+- Change the way of adding descriptions for each compatible string.
+- Split the patch for updating the json-schema.
+- Make slight changes on the patch for the binding description.
 
-IMO the goal should be to be able to do the equivalent for dynptrs, like:
+Arınç ÜNAL (7):
+  dt-bindings: net: dsa: mediatek,mt7530: make trivial changes
+  dt-bindings: net: dsa: mediatek,mt7530: fix description of mediatek,mcm
+  dt-bindings: net: dsa: mediatek,mt7530: fix reset lines
+  dt-bindings: net: dsa: mediatek,mt7530: update examples
+  dt-bindings: net: dsa: mediatek,mt7530: define port binding per switch
+  dt-bindings: net: dsa: mediatek,mt7530: define phy-mode for switch models
+  dt-bindings: net: dsa: mediatek,mt7530: update binding description
 
-static inline int parse_pkt(struct bpf_dynptr *ptr)
-{
-        __u64 *data;
-        
-	data = bpf_dynptr_data(ptr, 0, sizeof(*data));
-	if (!data)
-		return 0;
-        /* parse data */
-}
+ .../bindings/net/dsa/mediatek,mt7530.yaml       | 677 +++++++++++++++----
+ 1 file changed, 538 insertions(+), 139 deletions(-)
 
-SEC("xdp")
-int parse_xdp(struct xdp_md *ctx)
-{
-	struct bpf_dynptr ptr;
-
-	bpf_dynptr_from_xdp(ctx, 0, &ptr);
-        return parse_pkt(&ptr);
-}
-
-SEC("tc")
-int parse_tc(struct __sk_buff *skb)
-{
-	struct bpf_dynptr ptr;
-
-	bpf_dynptr_from_skb(skb, 0, &ptr);
-        return parse_pkt(&ptr);
-}
-
-
-If the dynptr-based parse_pkt() function has to take special care to
-figure out where the dynptr comes from, it makes it a lot more difficult
-to write reusable packet parsing functions. So I'd be in favour of
-restricting the dynptr interface to the lowest common denominator of the
-skb and xdp interfaces even if that makes things slightly more awkward
-in the specialised cases...
-
--Toke
 
