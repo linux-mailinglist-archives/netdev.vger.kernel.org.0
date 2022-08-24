@@ -2,120 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB64C59FB78
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:36:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 018E659FB8D
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238208AbiHXNfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 09:35:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
+        id S238279AbiHXNlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:41:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237698AbiHXNfy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:35:54 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2060.outbound.protection.outlook.com [40.107.223.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D105578583
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:35:52 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nYRMzZ8nPkBaLuyZx8LKKe6tnn4mBR/X1mjZibE8H1osNGGQEY8IlkEVElpgSPUIb5i6s5eZBBrLoXeGOOLD3EHYDnTVHumaWsoA8pO30joQM69FNKSauqSg48jYcOJB7EafeMHf1W6jmYJ1njcsCTf5YI2839qrqtHHEdAD7ASpSPnACTp8ZjEJJzyRcXZDKc1P6h9lm29FMTipMWiv12B1slTR3MI5fU3HxO/5Yw3LHfGDCOIcLpZ389z5pplD5LC979DlljKtRO+9Q6GHiraiTSPtKcrAGxJrsaVToEJcX71IAVfmdLf8krSf4KrR1Bpu6EaibuyiG4G51yttAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=b5w9o3VyIY59WhkELerk1HAC+JRJNr3uXkw8AqGWEbM=;
- b=IX6dfpJQEnpiw7zMTevHV0J7ISoyV7NCG78gMVr8GuPH3vumK0MHYokx69vyIsoxEjD3AAtQApInTJiAL9urdNm1GuaxlG+50DXbmIagcP74Hc++2DPd/Dx/2RP3E5kB8IXYzVySpjHjC9yeb5Km5e3m7YFKTDFB/8H3BFVjx060Jh/i+DSOyrSp/CEj3R+PIExWgR0U21gnOKvCAHmmLcCscx3eKzZ+LB0MRrDptkF41Xsz6rTS82ej3sxJVhUjhj3dMpY1cQP3kKW+QgDoMS8bejTszkZIGZkoXkQYDw710FeWIY0v1W0siOlbhQ+4oqT5NmIjMYfzk4l8XCbHUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=b5w9o3VyIY59WhkELerk1HAC+JRJNr3uXkw8AqGWEbM=;
- b=hTc1pFCSLC5D/UQ9rXdQM3dGg6INlPqaVKLbhFw0DGlDU05yLACX4DNyMHx6crlxUdipu/vgcM0pw0ExsV60eGsQKY+KCD4USnQVKTjVwKWEEXpgdcEt2VCMOm+XgzU5jnyZfCippSwCPEp38Fv4jZaNPHRfCHJq+qFD7WJVH4LLA1zX+/AfDRdLfwGJv6l5AHUYf/LuNdncbuVO+Hxpvi4T4P3DrgofgTiafUlvmYUGpfJOdcwVLBcKlsdxn2JOiBRRgeHgcLNeT0kKLjBnBvrV8Ncvrr1xNwB+tdXUjzACBXASsvY/YE+eD5gStcBamTgVGEXhpy7Kp78BgH3pOw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
- SN1PR12MB2576.namprd12.prod.outlook.com (2603:10b6:802:22::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.21; Wed, 24 Aug 2022 13:35:50 +0000
-Received: from DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::2caa:b525:f495:8a58]) by DS7PR12MB6288.namprd12.prod.outlook.com
- ([fe80::2caa:b525:f495:8a58%9]) with mapi id 15.20.5566.015; Wed, 24 Aug 2022
- 13:35:50 +0000
-Message-ID: <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
-Date:   Wed, 24 Aug 2022 16:35:41 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
-Content-Language: en-US
-To:     Jacob Keller <jacob.e.keller@intel.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-From:   Gal Pressman <gal@nvidia.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
-In-Reply-To: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LNXP265CA0004.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:5e::16) To DS7PR12MB6288.namprd12.prod.outlook.com
- (2603:10b6:8:93::7)
+        with ESMTP id S238348AbiHXNlM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:41:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8637E306
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:41:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661348471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=/hEf44O5uT0I/vp8P897qbCcMVrv6y/x8AKCXJ5mP/g=;
+        b=DjTnd7jzpHUKswEzrmjyflNfHQnwt32+LTyTvg3L3B7xs8vE5NfcRq+vvQySCm71UWfTM0
+        6pRb/rW8ixJ93jDeVimlUQ6mIRax6GsbFGgEuWeGyMfO7eFPrOhpaV//fwXNAgn+cLGvMy
+        ss/afZ8tz8BrexNSikFCgpZMnxkdZxs=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-607-QvaXZXP5MqaT-dLz9Wri5Q-1; Wed, 24 Aug 2022 09:41:03 -0400
+X-MC-Unique: QvaXZXP5MqaT-dLz9Wri5Q-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E79F1C0BDE3;
+        Wed, 24 Aug 2022 13:41:02 +0000 (UTC)
+Received: from plouf.redhat.com (unknown [10.39.192.211])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C17F18ECC;
+        Wed, 24 Aug 2022 13:40:58 +0000 (UTC)
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
+Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v9 00/23] Introduce eBPF support for HID devices
+Date:   Wed, 24 Aug 2022 15:40:30 +0200
+Message-Id: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a8b842c4-0233-4535-4e23-08da85d58f4b
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2576:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kbgbUiyK3QuFx9M4ehRb99qykEbBMfzUNEBtSM8HDhKDIwQml047aEXoxRvxZR2jCMQD//baU7ZvkfT9FLl29wkBQlaTpj8TRGQToP+mzatsFcaSXfvWraaBa0KgS873XP47hjGrmgoNNEiSekFzD9SmPvOeuL+/hgt5y9a6AuZCuUB5qaeKSxNtJLPJxw0N5BF9Q0Y+IEzZpAYyrTPu73WmyGjbkNClCCGyeZsfIUh+VIOdkpfFkxAriOshqr3k94b2oz2RY0JpKJ/QYNF2t63j8nZs0yFzkB6HiQX9i443hQwtSc4xrYcmAy8sihaB/IFWADG6cOg/kOlXJ9lX+J6dWVvJwtB2pwE+uFclP/qS6k630nof6PckYed0yptFtAz20ujwSZbMtWHt6Y7dIjhHZ6WEGrkSZcYlTNkK54RZeDyaTfJmBPuEP4O5v4JGR4uW373hPMtACzC2+RSqVlrEsy0ddtMl+LsimTunrZQpTtdyXoWRSjZzBLb1JCsjuUwY5qb2xOR5WxQ+YWMRYOM5OR5+hVbXfmfvVX6/jlaK9+MG+IreEEA9Rs63BWKYv4GHL5KX8RdMXdUJvI32Cs/8ZjdHwwlFzMnaAsPzz85nrp1VEXkJYnyfx62XIwGda8UXLVp57/HOT3u3SZYFCI3rCJbVEVOOkCmy+F75EmY/Lmjc/+cdBHRT7mD6/clybp6gCLyD7Sg3IdS1tgUH0D5+pTwcKoPrfk6A0kLfMIAsxXNzWsogSXBHPXxJ+U9wpUpaI0DYiZcG3ueareLXRtRpqfFyu2/agv3ltFe0p+M=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(396003)(376002)(39860400002)(136003)(6666004)(31696002)(5660300002)(36756003)(38100700002)(8936002)(66476007)(4744005)(41300700001)(6486002)(4326008)(66556008)(31686004)(478600001)(6916009)(316002)(8676002)(66946007)(186003)(53546011)(6512007)(2616005)(26005)(2906002)(6506007)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K3piblAwR0pVa0NhNE1McitiLzhiSGJtdmJpTXBKQnFBeGlCZzdUbkpxY29v?=
- =?utf-8?B?Y3p6Tlpid0tzTmFGK0llRDVyWXFvZE1pZkd5WGlwdHIxV0IzTU9ZanY1L2V0?=
- =?utf-8?B?WVhJNE1uaHN3L0RaK0pmUFlCN1J3UlJTOWwrSHhuZVdRWUdPTVNNRGVJZUIv?=
- =?utf-8?B?NmlUQTZEMVMwd2NaTHhYTmZORHplaVVDWUpiS3lzQU02dDBtTUtLRTNnVE1B?=
- =?utf-8?B?aUxBK0pScytuNmJmQmNPWTEzMlc1ZjNDaW14dEpHQ1RWUEYybHdrN1NTWHkx?=
- =?utf-8?B?UTJ0Y3kya0U2bndOR09vanpjTnpYTU1ESmVBV3J0RHhBOGFuaE1GMFArSTl0?=
- =?utf-8?B?TldtU0d4dDhJWW9CaVFVWS8rSGFjK2UwbEFIbWJ3NHVtSXlpV0pVR0F5L2Vt?=
- =?utf-8?B?M2RGelc3WWVPRFBTN3ZCVDNHdnYrZ0NhS012cDJHMkFJMVVaYTJqbGVPNXp4?=
- =?utf-8?B?YXlWUXNFYXdNYjJSVGEvSHl0WmsvV0hibDArSUtqYW1pc24xNHNMY2w3SXBO?=
- =?utf-8?B?ZWtsL05Ob1k5eERrZVVvS2NRc0ZXUU1YVzVJUlB3bm1uNWVkeVU0WmkvNlAx?=
- =?utf-8?B?N1oyQnR4SUxmcWc0TkdwQ0VhemVJQ085VG1FZGp0OWkrdUwwWDJRdkdsUDhv?=
- =?utf-8?B?QzF2eG5uQ1A5dVh5cDY2M0cycUQxZjltalRKWUJyRVI3YUdac3NxZTFhMHJ2?=
- =?utf-8?B?L0FXR3BkcC96ckhjc3ZWYkFBVUR6bHZhNHpoTHRpLzhDd2QrTklodzJORWx4?=
- =?utf-8?B?bXlSTUpWTHRMVGpHK1ZUZER6WVZ6N290VDcxUTRlaW1YTklpOGxSdGx0dnhQ?=
- =?utf-8?B?a3ZaN2p3Z0J6LzRUeThrTnVhNGlxc1d3WkFOemhhOWtJNG9Na0d6NTN1U0cy?=
- =?utf-8?B?M0UwZkJGMjhiUXprNjhlbXhaOEVIZWZ4czNyNXFOSGMrRG9CMmxuM2JrLzRF?=
- =?utf-8?B?QXVuRG5tb2FEZFBpSGR0QWE3WUovWFZESDdhK2w3eDYxeWZFT1ZwZS9PdVdD?=
- =?utf-8?B?N0FtZzE5UjdVSUl5WTh1OU9VZzZXMWtFT3h0TGpRZ0tuSUM2V0lsSkxTb2Rh?=
- =?utf-8?B?aWg1NjNOT085YnFEYWJMNnlYcGRBMkN4VTByN0dSbWZxak5oMnkxc1pNcXFM?=
- =?utf-8?B?MkFYZ3F0aVlDcGgvaG5JUDM5NS9ONHhFSkZEK05rdjluMlZSdFJhb2lMT0pP?=
- =?utf-8?B?R3BpenBqNUlRMWtYWDNxVVdLSkl2T3JBTjNjc3pDMVFNL3RBcjFZMEVkam9N?=
- =?utf-8?B?Z2xJbmEvRkZJRFJvSFoyRWFUMUxjNDBoUG5SRmxlb0dsUTJ4MzRRdXltNENr?=
- =?utf-8?B?a1hHclNNZUxUWVQybzFkdE93Y1ZObUVqUVA0ODkzNTRlVURiS0xaZ0hTNXFj?=
- =?utf-8?B?TXhnNVZjY3FxL3FXMWJ6SWFuZ2pyMTZUcFhhVmpLM2dnZFFWSzRtemRmVkx6?=
- =?utf-8?B?b1owa2JWUkFNNWJiZE1JUWJwRHdDV0R0cDcyZzN6d3Z6MFVSZ2pOb0RpeWo0?=
- =?utf-8?B?RU5ldGI3QWxXTW9JczhNVW5zWll6akhqeGVUMUpPbzg5Zk1lRlNRYkhQYngx?=
- =?utf-8?B?djZYaEhBcEVkY3drZmtlRWFTcDFwNWVWTnJpSlBTRldoeUE2RUVXbWRXM21K?=
- =?utf-8?B?dmtCYmNLQ2hpWGRQYW1SNVA3cVhXTlhtYkZZOTZGZ2ZqTXN5NkxabTVCS0Iz?=
- =?utf-8?B?REVWZzh1SkwwUE5xOXl6NHYzSjNqNmVsQkxCK0ZYTDcwbWRHN1JGVFc3ZGFF?=
- =?utf-8?B?Y0tnVTU3TXRTYzFreW10VjFrMG9rQWY4aS9ZbDc4TksrUG5PNTlob0pkRUJn?=
- =?utf-8?B?dHNrNjdSb3ZqQmNRN0o5VWxMblFXbkhNeEJ1L0JQd00rMEwxL240MGJzRmRQ?=
- =?utf-8?B?QlRrYzMyOTZoeG1tWjN2MXAxOUo4MC9CdmlWYTVYVVM3ZmNFTWpGcm5SZC9V?=
- =?utf-8?B?S2xWTWpRMkVWd1hlb2JZb2QwWU9lckJyWjJ2T0g1QWFVUEp3UGprd0tZUURO?=
- =?utf-8?B?RjdvMjdZNWwwbkJQdXZvN2tCd00wYTMzLy9ldWcwL09RbFhxMnBGTWVhay9r?=
- =?utf-8?B?Szh4a1lDTVFOT1FLZmhSY3lGdnhlOEUzeEtCNE44TGRBL0tyaHprN3c2MmVP?=
- =?utf-8?Q?6RdvT7aX+Zg4n4EDHYECF4WiX?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a8b842c4-0233-4535-4e23-08da85d58f4b
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 13:35:50.6826
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KlXPVtvpheLnzh64lvkoslcrcL0KoyAfbo/eEhg7WJaV4QICCm1R8qkJxqvbQMZD
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2576
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -123,19 +70,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/08/2022 18:04, Jacob Keller wrote:
-> 2) always treat ETHTOOL_FEC_AUTO as "automatic + allow disable"
->
->   This could work, but it means that behavior will differ depending on the
->   firmware version. Users have no way to know that and might be surprised to
->   find the behavior differ across devices which have different firmware
->   which do or don't support this variation of automatic selection.
+Hi,
 
-Hi Jacob,
-This is exactly how it's already implemented in mlx5, and I don't really
-understand how firmware version is related? Is it specific to your
-device firmware?
-Maybe you can workaround that in the driver?
+here comes the v9 of the HID-BPF series.
 
-I feel like we're going the wrong way here having different flags
-interpretations by different drivers.
+Again, for a full explanation of HID-BPF, please refer to the last patch
+in this series (23/23).
+
+This version sees some minor improvements compared to v7 and v8, only
+focusing on the reviews I got. (v8 was a single patch update)
+
+- patch 1/24 in v7 was dropped as it is already fixed upstream
+- patch 1/23 in v9 is now capable of handling all functions, not just
+  kfuncs (tested with the selftests only)
+- some minor nits from Greg's review
+- a rebase on top of the current bpf-next tree as the kfunc definition
+  changed (for the better).
+
+Cheers,
+Benjamin
+
+
+Benjamin Tissoires (23):
+  bpf/verifier: allow all functions to read user provided context
+  bpf/verifier: do not clear meta in check_mem_size
+  selftests/bpf: add test for accessing ctx from syscall program type
+  bpf/verifier: allow kfunc to return an allocated mem
+  selftests/bpf: Add tests for kfunc returning a memory pointer
+  bpf: prepare for more bpf syscall to be used from kernel and user
+    space.
+  libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
+  HID: core: store the unique system identifier in hid_device
+  HID: export hid_report_type to uapi
+  HID: convert defines of HID class requests into a proper enum
+  HID: Kconfig: split HID support and hid-core compilation
+  HID: initial BPF implementation
+  selftests/bpf: add tests for the HID-bpf initial implementation
+  HID: bpf: allocate data memory for device_event BPF programs
+  selftests/bpf/hid: add test to change the report size
+  HID: bpf: introduce hid_hw_request()
+  selftests/bpf: add tests for bpf_hid_hw_request
+  HID: bpf: allow to change the report descriptor
+  selftests/bpf: add report descriptor fixup tests
+  selftests/bpf: Add a test for BPF_F_INSERT_HEAD
+  samples/bpf: HID: add new hid_mouse example
+  samples/bpf: HID: add Surface Dial example
+  Documentation: add HID-BPF docs
+
+ Documentation/hid/hid-bpf.rst                 | 512 +++++++++
+ Documentation/hid/index.rst                   |   1 +
+ drivers/Makefile                              |   2 +-
+ drivers/hid/Kconfig                           |  20 +-
+ drivers/hid/Makefile                          |   2 +
+ drivers/hid/bpf/Kconfig                       |  17 +
+ drivers/hid/bpf/Makefile                      |  11 +
+ drivers/hid/bpf/entrypoints/Makefile          |  93 ++
+ drivers/hid/bpf/entrypoints/README            |   4 +
+ drivers/hid/bpf/entrypoints/entrypoints.bpf.c |  66 ++
+ .../hid/bpf/entrypoints/entrypoints.lskel.h   | 682 ++++++++++++
+ drivers/hid/bpf/hid_bpf_dispatch.c            | 526 ++++++++++
+ drivers/hid/bpf/hid_bpf_dispatch.h            |  28 +
+ drivers/hid/bpf/hid_bpf_jmp_table.c           | 577 ++++++++++
+ drivers/hid/hid-core.c                        |  49 +-
+ include/linux/bpf.h                           |   9 +-
+ include/linux/btf.h                           |  10 +
+ include/linux/hid.h                           |  38 +-
+ include/linux/hid_bpf.h                       | 148 +++
+ include/uapi/linux/hid.h                      |  26 +-
+ include/uapi/linux/hid_bpf.h                  |  25 +
+ kernel/bpf/btf.c                              | 109 +-
+ kernel/bpf/syscall.c                          |  10 +-
+ kernel/bpf/verifier.c                         |  64 +-
+ net/bpf/test_run.c                            |  21 +
+ samples/bpf/.gitignore                        |   2 +
+ samples/bpf/Makefile                          |  27 +
+ samples/bpf/hid_mouse.bpf.c                   | 134 +++
+ samples/bpf/hid_mouse.c                       | 161 +++
+ samples/bpf/hid_surface_dial.bpf.c            | 161 +++
+ samples/bpf/hid_surface_dial.c                | 232 ++++
+ tools/include/uapi/linux/hid.h                |  62 ++
+ tools/include/uapi/linux/hid_bpf.h            |  25 +
+ tools/lib/bpf/skel_internal.h                 |  23 +
+ tools/testing/selftests/bpf/Makefile          |   5 +-
+ tools/testing/selftests/bpf/config            |   3 +
+ tools/testing/selftests/bpf/prog_tests/hid.c  | 990 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/kfunc_call.c     |  76 ++
+ tools/testing/selftests/bpf/progs/hid.c       | 206 ++++
+ .../selftests/bpf/progs/kfunc_call_test.c     | 125 +++
+ 40 files changed, 5198 insertions(+), 84 deletions(-)
+ create mode 100644 Documentation/hid/hid-bpf.rst
+ create mode 100644 drivers/hid/bpf/Kconfig
+ create mode 100644 drivers/hid/bpf/Makefile
+ create mode 100644 drivers/hid/bpf/entrypoints/Makefile
+ create mode 100644 drivers/hid/bpf/entrypoints/README
+ create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.bpf.c
+ create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.lskel.h
+ create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.c
+ create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.h
+ create mode 100644 drivers/hid/bpf/hid_bpf_jmp_table.c
+ create mode 100644 include/linux/hid_bpf.h
+ create mode 100644 include/uapi/linux/hid_bpf.h
+ create mode 100644 samples/bpf/hid_mouse.bpf.c
+ create mode 100644 samples/bpf/hid_mouse.c
+ create mode 100644 samples/bpf/hid_surface_dial.bpf.c
+ create mode 100644 samples/bpf/hid_surface_dial.c
+ create mode 100644 tools/include/uapi/linux/hid.h
+ create mode 100644 tools/include/uapi/linux/hid_bpf.h
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
+ create mode 100644 tools/testing/selftests/bpf/progs/hid.c
+
+-- 
+2.36.1
+
