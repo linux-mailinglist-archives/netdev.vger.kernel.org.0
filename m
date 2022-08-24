@@ -2,68 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8661259F372
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 08:11:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2E0459F38A
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 08:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234826AbiHXGKx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 02:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43134 "EHLO
+        id S233207AbiHXGRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 02:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234850AbiHXGKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 02:10:51 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83AB15A02;
-        Tue, 23 Aug 2022 23:10:48 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id 2so14821317pll.0;
-        Tue, 23 Aug 2022 23:10:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc;
-        bh=dCALWe0Lpc17kneuprlgwYN5B636Jm/G9IT6scrrQtM=;
-        b=ns6RPMp3yGpbXlpltT1jcEkXTkjLNt5QZF7/0wJBrXyh6Gph4aMjACEJW9OBGpnDZI
-         BFzZNVfeQdeoDmQcYho3Kgj1RT8DSj6EGdLiQKpK8EP2zhSr7847bhUYs8oarB392kry
-         D+yNkMx8pS92sh5T9CJmRh/ifrJxMynRYui0CMW2KPVIZ5zrUn1Mx5Ks/CD6Pui7T+dV
-         Q8ehLQjbJI4nRI9m8PQQqX8qXXR9OPi8pameKK7hKlIW/e5JKW+YYJgBJZS3LNiwTYEZ
-         jUQ33o7/UGFnOCJPImCFDPqqCeFRn45B2wiLa/E0zQ4J/QhySELWHGOOgxIHqy7FD80C
-         bp4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=dCALWe0Lpc17kneuprlgwYN5B636Jm/G9IT6scrrQtM=;
-        b=JLupm0LaU2je5A4O2pJNKvWPbVEKcIHVaCRO2Bno/YaRMSbq8Ntd/Qp3IqOLsMeMmB
-         T6nVvdwzB/q9OZvEWjvgLz+0ZgGSHTpiZTqEbdd0GvSZuouDFBEOdbAuNs6VP8BxnNBi
-         JpNJLCJLzkV7k5xFCSgLJO6qIY2PhUnx9DsuJdQPpLSjo6EsFciCJk5AE+s1BAxz4TZH
-         GfgyjxoGbTbvbU7S5nm3fMQcMAynH1P3XqfeUqWp2WfFCMY7D3FWiTs8DWM0E0ViZK4t
-         IvVEWLqrNnD5P3RFbc+wyRq0d5K3d/1lsQTzc9Ma+y0yZD07kecvBPtenWst4lJbeIEz
-         eZIw==
-X-Gm-Message-State: ACgBeo1BbbngWqXmrePwxDppmSAP9zSrPeifkVuDvp+7t4nIN6kbb5h2
-        qHB9wdZMlWOb/2n2rVaHC8o=
-X-Google-Smtp-Source: AA6agR6BuIv0VqqZw4hWd1VS+00+tOon3DOEVQtB2wPk1UvujyKM1QfpGI+ZIKJJNOyX+h5MBb/ZTg==
-X-Received: by 2002:a17:902:f542:b0:173:a8a:d7bf with SMTP id h2-20020a170902f54200b001730a8ad7bfmr4217911plf.134.1661321447866;
-        Tue, 23 Aug 2022 23:10:47 -0700 (PDT)
-Received: from localhost.localdomain ([104.28.240.137])
-        by smtp.gmail.com with ESMTPSA id v30-20020aa799de000000b0052d4ffac466sm11954334pfi.188.2022.08.23.23.10.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Aug 2022 23:10:47 -0700 (PDT)
-From:   Qingfang DENG <dqfext@gmail.com>
-To:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        with ESMTP id S229884AbiHXGRn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 02:17:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31ADF7269F
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 23:17:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2AF9B822DF
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:17:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9466C433C1;
+        Wed, 24 Aug 2022 06:17:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661321859;
+        bh=eutFafDQ+Gs3lRxl6F1VcbigtL2eKPKxbxI3Ub9rHUI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xqxqGNSmhdC8pDFaznH7+hx/SfN7i9jEi4BvkxbiIoL3fHfU81w7IEUmZhTPH6jTz
+         86oceq4T3F7L8+P4F1eLJmkpUxHwXg/CN4a1FeqOpp33uYgWuWTEhR9J8JrmfVbzHU
+         hAFa9sXKh3HcJBYJSrpBNx7328KXH+3wVm9mZvww=
+Date:   Wed, 24 Aug 2022 08:17:36 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net-next] net: phylink: allow RGMII/RTBI in-band status
-Date:   Wed, 24 Aug 2022 14:10:34 +0800
-Message-Id: <20220824061034.3922371-1-dqfext@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Paolo Abeni <pabeni@redhat.com>,
+        Brian Hutchinson <b.hutchman@gmail.com>
+Subject: Re: [PATCH v2 net] net: dsa: microchip: make learning configurable
+ and keep it off while standalone
+Message-ID: <YwXCgC7cP+XHiBuL@kroah.com>
+References: <20220818164809.3198039-1-vladimir.oltean@nxp.com>
+ <20220823143831.2b98886b@kernel.org>
+ <20220823214253.wbzjdxgforuryxqp@skbuf>
+ <20220823150113.22616755@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220823150113.22616755@kernel.org>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,34 +63,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As per RGMII specification v2.0, section 3.4.1, RGMII/RTBI has an
-optional in-band status feature where the PHY's link status, speed and
-duplex mode can be passed to the MAC.
-Allow RGMII/RTBI to use in-band status.
+On Tue, Aug 23, 2022 at 03:01:13PM -0700, Jakub Kicinski wrote:
+> On Wed, 24 Aug 2022 00:42:53 +0300 Vladimir Oltean wrote:
+> > On Tue, Aug 23, 2022 at 02:38:31PM -0700, Jakub Kicinski wrote:
+> > > > @maintainers: when should I submit the backports to "stable", for older
+> > > > trees?  
+> > > 
+> > > "when" as is how long after Thu PR or "when" as in under what
+> > > conditions?  
+> > 
+> > how long after the "net" pull request, yes.
+> > I'm a bit confused as to how patches from "net" reach the stable queue.
+> > If they do get there, I'm pretty confident that Greg or Sasha will send
+> > out an email about patches failing to apply to this and that stable
+> > branch, and I can reply to those with backports.
+> 
+> Adding Greg, cause I should probably know but I don't. 
+> 
+> My understanding is that Greg and Sasha scan Linus's tree periodically
+> and everything with a Fixes tag is pretty much guaranteed to be
+> selected. Whether that's a hard guarantee IDK. Would be neat if it was
+> so we don't have to add the CC: stable lines.
 
-Signed-off-by: Qingfang DENG <dqfext@gmail.com>
----
-v1 -> v2: rebased and targeted to net-next.
+Please add cc: stable lines, that's the documented way to get a patch
+into the stable kernel tree for the past 17+ years.
 
- drivers/net/phy/phylink.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Only recently (5+ years?) have we also been triggering off of the
+"Fixes:" tags, and we only started doing that for subsystems that never
+was adding cc: stable tags :(
 
-diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
-index d2455df1d8d2..e487bdea9b47 100644
---- a/drivers/net/phy/phylink.c
-+++ b/drivers/net/phy/phylink.c
-@@ -634,6 +634,11 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
- 		case PHY_INTERFACE_MODE_SGMII:
- 		case PHY_INTERFACE_MODE_QSGMII:
- 		case PHY_INTERFACE_MODE_QUSGMII:
-+		case PHY_INTERFACE_MODE_RGMII:
-+		case PHY_INTERFACE_MODE_RGMII_ID:
-+		case PHY_INTERFACE_MODE_RGMII_RXID:
-+		case PHY_INTERFACE_MODE_RGMII_TXID:
-+		case PHY_INTERFACE_MODE_RTBI:
- 			phylink_set(pl->supported, 10baseT_Half);
- 			phylink_set(pl->supported, 10baseT_Full);
- 			phylink_set(pl->supported, 100baseT_Half);
--- 
-2.34.1
+And also, the "Fixes:" tags are on the "slow path" to get into the
+stable tree, sometimes taking a very long time, and sometimes just being
+ignored entirely if we are busy with other work.  The only guaranteed
+way is to tag it with cc: stable.
 
+> Also not sure if it's preferred to wait for the failure notification 
+> or you should pre-queue the backport as soon as it reaches Linus.
+> I vague recall someone saying to wait for the notification...
+
+It's easier for us if you wait for the rejection email, otherwise I have
+to know to store it and save it for when I reject it in a few weeks in
+the future, which is a pain on my end given the amount of email we have
+to handle.
+
+thanks,
+
+greg k-h
