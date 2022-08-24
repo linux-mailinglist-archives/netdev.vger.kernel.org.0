@@ -2,142 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5871D5A01F2
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:16:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B45F95A0203
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbiHXTPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 15:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        id S232389AbiHXTUl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 24 Aug 2022 15:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239657AbiHXTPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:15:38 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D861BE0E2;
-        Wed, 24 Aug 2022 12:15:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1661368520;
-        bh=uIvt0oF2zqE3yCPJ59JRPqlEWFJymwqLIf9WiRpbsSA=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=HtIIxLEo6ZzHNLhGsiXIuYquj7+lW1eBf0xCE81uVQsWKUkYnVvyj7ZbMSS9UOVVS
-         29LMF/NffhpoJzDmy/6lt+TTrndJKpaf0npEt4sCynBnvASjqXbYaj5hZiVopUZfB3
-         Vsy9/CwfuVY7Qyi4XixxAOvzMs7Q6iw7l0rVG4Aw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from silverpad ([89.204.135.131]) by mail.gmx.net (mrgmx005
- [212.227.17.184]) with ESMTPSA (Nemesis) id 1MgNcz-1p5TOh1ZL5-00hv5r; Wed, 24
- Aug 2022 21:15:20 +0200
-From:   Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-To:     oliver@neukum.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-Subject: [PATCH v3] r8152: add PID for the Lenovo OneLink+ Dock
-Date:   Wed, 24 Aug 2022 21:14:36 +0200
-Message-Id: <20220824191435.17910-1-jflf_kernel@gmx.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229542AbiHXTUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:20:40 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 23E874A826
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 12:20:36 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27OJJmv46018424, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27OJJmv46018424
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 25 Aug 2022 03:19:48 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Thu, 25 Aug 2022 03:20:03 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 25 Aug 2022 03:20:02 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Thu, 25 Aug 2022 03:20:02 +0800
+From:   Hau <hau@realtek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: RE: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a) + rtl8211fs fiber application
+Thread-Topic: [PATCH v3 net-next] r8169: add support for rtl8168h(revid 0x2a)
+ + rtl8211fs fiber application
+Thread-Index: AQHYtkFCqIBipNqwCkqP74BSSxF+S6260IqAgAG+nrD//4kAAIAAh3Zg//+WBYCAAjVAgA==
+Date:   Wed, 24 Aug 2022 19:20:02 +0000
+Message-ID: <30856551578843f998eac6fd721a6001@realtek.com>
+References: <20220822160714.2904-1-hau@realtek.com> <YwPf8yXud3mYFvnW@lunn.ch>
+ <7e24c3c4c3ea42e482a70160aec6930c@realtek.com> <YwTyxpKbjxz1s8Xe@lunn.ch>
+ <f0e230cebf274ce9ae38bf74e3d5da06@realtek.com> <YwULgfZBDBhnn+Aa@lunn.ch>
+In-Reply-To: <YwULgfZBDBhnn+Aa@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.129]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/24_=3F=3F_03:26:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:i4CYBF3hj89H3McJjNdj1uVYhJzwCVJmjfsyEwCC0v5u5+oDlBW
- hY0vKP2sjbQKu8MySLFit3Tv/yVqxkaBScOozHoFTH/sI1aQnML5nXnQ6TxrOXrx5TNVa55
- phl+gk2pfJhqRrljxYvJN3LZcNhqFJEO5cjf6h0mBejz9dQPKMp28XvbLAhofWYG/EYMFSx
- +NP/hKDikTqTVGPs3Bl3g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:eF0Hp2Ge24I=:T8/AcajRVXkyPojZqW0JHF
- cdN6uGGpllioMgAZLEh9yIidcM+xCY8qD7uTFi7Wh7uRzFs5MYWcFtIUwB5d6Mbeq1KtSlY1Q
- qCq6kWbAO8P57wvpstAb+Hmbwi1KkNuWO3oLrvy4/P/pigfzS50H1V9e2+Kc6RcFVKrhSowgQ
- s22LGs4jXGBIQmERrGVpR/ClWXc48+JlWEKXiFUiluUW+SSdkFngLA12j9aLKTj+Fq6eHx+1w
- ufT2EpPXdtEysbDvFUFHfb9X9jHKj/uDvG9j+qU/GXyevNtTNyDOCmxid2id+nx/jp7t/hLZ9
- ia+MPpW5b3xZTl/9drva4b1CcWiaHO4/teZmYW9FIofuEZSiDUo7J9vH30WW+l2IaGV8zpC8B
- Orqp9JaYVQIbNSMHtQl7wS9rdxuomRwoTNvXVABG1AWRsKjxyCGhORfLtHVvSJEtxPF7XzmSh
- ulB5kwdSAv7QddWW4ZhIpLZhGo/ifEedgVGsGPrZ+ZpnPAyaJ5sXEp0tJb3Fe0CYdAO5cO59I
- 7wGJ7mXG7fDN8rCn2qU1jjxnnu3ZrioCDnbHYjUbaT/ho87KMpBhFy67D93Hx+kUJvx5kFv/0
- EOLRmX3DsLo3TFjdlJ+Qj3fbBTXqyyaRPAdTl1xDNrbRBeIs8Re9KX9GxoRpYntZx06Q6iumE
- NrdxP+EsmItQ8TWiAQD/tQPmDsuJePTDLAfItkIZvm5reH11ZVP3OUKHqyF5knJCexdqz/n4Z
- 0VnYED3qmYBpTIcBent+6VvgvkvuG/pfG+2DtKR7BgimOVym2v3MdSrZcJqIbZzKjlZF+3045
- Aq/+xLasyaHfK0to+X7/1J/EjbMFQcF/fKcTUtUo8mULKgNHx0KPalytNgZIzP/6eT/ksQKEV
- BQkrAi52wEyh2n8EMVe+o5jv/AydpWTOsv9+j+9uN/2z/CZKmJXLir4h1otjvhdZ9nFdgc4RY
- /aLohgwEDCpvc16WeTSzW992H4/Zje0qDJjY1iYshWRjPzdR1WQn5ouSz/yp/QQHAAxPBgN+W
- pTZPVTWgGVijA3UXXBVM723wJ3pUS1fgiHFEThjVdwkc3xLjiVP5By1ixWsVbCugJ+QlVc8Un
- pUKNrP1C3vKwf+H61meUQyeVQBE+fS43n0C+Yq+eMOkEQnV68XRA5NJAA==
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Lenovo OneLink+ Dock contains an RTL8153 controller that behaves as
-a broken CDC device by default. Add the custom Lenovo PID to the r8152
-driver to support it properly.
+> On Tue, Aug 23, 2022 at 03:48:13PM +0000, Hau wrote:
+> > > > > > @@ -914,8 +952,12 @@ static void r8168g_mdio_write(struct
+> > > > > rtl8169_private *tp, int reg, int value)
+> > > > > >  	if (tp->ocp_base != OCP_STD_PHY_BASE)
+> > > > > >  		reg -= 0x10;
+> > > > > >
+> > > > > > -	if (tp->ocp_base == OCP_STD_PHY_BASE && reg ==
+> MII_BMCR)
+> > > > > > +	if (tp->ocp_base == OCP_STD_PHY_BASE && reg ==
+> MII_BMCR) {
+> > > > > > +		if (tp->sfp_if_type != RTL_SFP_IF_NONE && value &
+> > > > > BMCR_PDOWN)
+> > > > > > +			return;
+> > > > > > +
+> > > > >
+> > > > > Please could you explain this change.
+> > > > H/W has issue. If we power down phy, then H/W will become abnormal.
+> > >
+> > > Does the MAC break, or the PHY? If the PHY is the problem, the work
+> > > around should be in the PHY driver, not the MAC driver.
+> > >
+> > It is a workaround. We did not get the root cause yet.
+> 
+> O.K, since you are modifying a PHY register, lets assume it is a PHY issue.
+> Please put the workaround in the PHY driver.
+I will try to do this.
 
-Also, systems compatible with this dock provide a BIOS option to enable
-MAC address passthrough (as per Lenovo document "ThinkPad Docking
-Solutions 2017"). Add the custom PID to the MAC passthrough list too.
+> > > > I have tried to use alloc_mdio_bitbang(). But I will get error message "
+> > > rmmod: ERROR: Module r8169 is in use " when I try to unload r8169.
+> > > > After debug, I found it is cause by
+> > > > "__module_get(ctrl->ops->owner); " in
+> > > alloc_mdio_bitbang().
+> > >
+> > > void free_mdio_bitbang(struct mii_bus *bus) {
+> > >         struct mdiobb_ctrl *ctrl = bus->priv;
+> > >
+> > >         module_put(ctrl->ops->owner);
+> > >         mdiobus_free(bus);
+> > > }
+> > >
+> > > Make sure your cleanup is symmetrical to your setup.
+> > >
+> > I have tried to call free_mdio_bitbang() in rtl_remove_one (). But when I
+> try to unload r8169, rtl_remove_one() did not get called.
+> 
+> So you probably need to dig into driver/base/dd.c and maybe the drivers/pci,
+> to understand why.
+In command "rmmod", if module refcnt not equal to 0, It will show error message " Module r8169 is in use ". And "__module_get()" will increase module refcnt.
+If module refcnt is not equal to 0, rmmod will not delete module.
 
-Tested on a ThinkPad 13 1st gen with the expected results:
+Is that possible for us to call alloc_mdio_bitbang() but set owner to null? I have try this setting, command "rmmod" can be executed normally.
 
-passthrough disabled: Invalid header when reading pass-thru MAC addr
-passthrough enabled:  Using pass-thru MAC addr XX:XX:XX:XX:XX:XX
+Thanks,
+Hau
 
-Signed-off-by: Jean-Francois Le Fillatre <jflf_kernel@gmx.com>
-=2D--
-v2 -> v3: fix commit email address, add revision details
-v1 -> v2: use full author name
-
-
- drivers/net/usb/cdc_ether.c | 7 +++++++
- drivers/net/usb/r8152.c     | 3 +++
- 2 files changed, 10 insertions(+)
-
-diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
-index 2de09ad5b..e11f70911 100644
-=2D-- a/drivers/net/usb/cdc_ether.c
-+++ b/drivers/net/usb/cdc_ether.c
-@@ -777,6 +777,13 @@ static const struct usb_device_id	products[] =3D {
- },
- #endif
-
-+/* Lenovo ThinkPad OneLink+ Dock (based on Realtek RTL8153) */
-+{
-+	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3054, USB_CLASS_COMM,
-+			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
-+	.driver_info =3D 0,
-+},
-+
- /* ThinkPad USB-C Dock (based on Realtek RTL8153) */
- {
- 	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x3062, USB_CLASS_COMM,
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 0f6efaaba..e692a1576 100644
-=2D-- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -770,6 +770,7 @@ enum rtl8152_flags {
- 	RX_EPROTO,
- };
-
-+#define DEVICE_ID_THINKPAD_ONELINK_PLUS_DOCK		0x3054
- #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
- #define DEVICE_ID_THINKPAD_USB_C_DONGLE			0x720c
- #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
-@@ -9584,6 +9585,7 @@ static bool rtl8152_supports_lenovo_macpassthru(stru=
-ct usb_device *udev)
-
- 	if (vendor_id =3D=3D VENDOR_ID_LENOVO) {
- 		switch (product_id) {
-+		case DEVICE_ID_THINKPAD_ONELINK_PLUS_DOCK:
- 		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
- 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
- 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
-@@ -9831,6 +9833,7 @@ static const struct usb_device_id rtl8152_table[] =
-=3D {
- 	REALTEK_USB_DEVICE(VENDOR_ID_MICROSOFT, 0x0927),
- 	REALTEK_USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x304f),
-+	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3054),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3062),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3069),
- 	REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x3082),
-=2D-
-2.34.1
-
+------Please consider the environment before printing this e-mail.
