@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC0659FC0B
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADB659FC24
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:47:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238794AbiHXNqo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 09:46:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33744 "EHLO
+        id S238898AbiHXNrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238753AbiHXNp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:45:27 -0400
+        with ESMTP id S238843AbiHXNpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:45:34 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9D483BEE
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:42:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B837E33D
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:42:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661348546;
+        s=mimecast20190719; t=1661348551;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=myASVuDtf0/22oUIrsPDrmBSpL+6DJQcFIv1o1ky+qo=;
-        b=LsK2NGb5kZJzda4KszmXpNIku3nZJgF2ZGBfS332xAE1fPnkhpoubMKjDQ5bHSavjOxnXx
-        l2elLPl/RUEkJjM44W6ZJvbfFXCjNXeQVqxeO9ofJG3hCJKcAghyWxPRnLGBe7cUVuUm5M
-        MOyq6hJaHamumMvuWFw3BPk6LxTbdKM=
+        bh=TpRNtmCpYgFHdFTR+5IC8iew7IJFvx5mRhUGc8s0P6Q=;
+        b=aaCE2+ckTvzXK9abpYYLX9qwAg2XVfpZJ5ehLnrqvJPdK6ZP6sRAuR9PCq4e6GPKJ9PWEd
+        WZj+wiVr9GUSeTolMXEGcp7RxyX5myraYQOjN7X2t/KkL898qdaWJU0afAUZSIXe+VsOrz
+        TNukLBGrN8NsQHBFjK/Anf9cBhMOb6U=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-52-CpUbmY6mNeiOMfDisTQN2A-1; Wed, 24 Aug 2022 09:42:22 -0400
-X-MC-Unique: CpUbmY6mNeiOMfDisTQN2A-1
+ us-mta-372-HqrrR2n-ODOLX1ZpjtD0zQ-1; Wed, 24 Aug 2022 09:42:26 -0400
+X-MC-Unique: HqrrR2n-ODOLX1ZpjtD0zQ-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C30521C13941;
-        Wed, 24 Aug 2022 13:42:21 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2CE771C0513F;
+        Wed, 24 Aug 2022 13:42:25 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9844C18ECC;
-        Wed, 24 Aug 2022 13:42:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B74118ECC;
+        Wed, 24 Aug 2022 13:42:21 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v9 22/23] HID: bpf: add Surface Dial example
-Date:   Wed, 24 Aug 2022 15:40:53 +0200
-Message-Id: <20220824134055.1328882-24-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v9 22/23] samples/bpf: HID: add Surface Dial example
+Date:   Wed, 24 Aug 2022 15:40:54 +0200
+Message-Id: <20220824134055.1328882-25-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
 References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -66,7 +66,7 @@ Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,6 +83,7 @@ Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 changes in v9:
 - extend the usage section
 - add sleep while waiting
+- changed the title of the commit
 
 no changes in v8
 
@@ -90,8 +91,6 @@ changes in v7:
 - remove unnecessary __must_check definition
 
 new in v6
-
-fix surface dial
 ---
  samples/bpf/.gitignore             |   1 +
  samples/bpf/Makefile               |   6 +-
