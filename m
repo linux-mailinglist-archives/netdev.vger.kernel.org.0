@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E0459F38A
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 08:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7483059F3ED
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 09:07:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233207AbiHXGRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 02:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33886 "EHLO
+        id S233556AbiHXHH3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 03:07:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiHXGRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 02:17:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31ADF7269F
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 23:17:42 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2AF9B822DF
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9466C433C1;
-        Wed, 24 Aug 2022 06:17:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1661321859;
-        bh=eutFafDQ+Gs3lRxl6F1VcbigtL2eKPKxbxI3Ub9rHUI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xqxqGNSmhdC8pDFaznH7+hx/SfN7i9jEi4BvkxbiIoL3fHfU81w7IEUmZhTPH6jTz
-         86oceq4T3F7L8+P4F1eLJmkpUxHwXg/CN4a1FeqOpp33uYgWuWTEhR9J8JrmfVbzHU
-         hAFa9sXKh3HcJBYJSrpBNx7328KXH+3wVm9mZvww=
-Date:   Wed, 24 Aug 2022 08:17:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
-        Arun Ramadoss <arun.ramadoss@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S230002AbiHXHH2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 03:07:28 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A77885FE2;
+        Wed, 24 Aug 2022 00:07:26 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 84B0B1884C76;
+        Wed, 24 Aug 2022 07:07:23 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 6880E25032B8;
+        Wed, 24 Aug 2022 07:07:23 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 5802FA1A0052; Wed, 24 Aug 2022 07:07:23 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+MIME-Version: 1.0
+Date:   Wed, 24 Aug 2022 09:07:23 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Brian Hutchinson <b.hutchman@gmail.com>
-Subject: Re: [PATCH v2 net] net: dsa: microchip: make learning configurable
- and keep it off while standalone
-Message-ID: <YwXCgC7cP+XHiBuL@kroah.com>
-References: <20220818164809.3198039-1-vladimir.oltean@nxp.com>
- <20220823143831.2b98886b@kernel.org>
- <20220823214253.wbzjdxgforuryxqp@skbuf>
- <20220823150113.22616755@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823150113.22616755@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <YwTJ5f5RzkC/DSdi@shredder>
+References: <YvkM7UJ0SX+jkts2@shredder>
+ <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
+ <YwHZ1J9DZW00aJDU@shredder>
+ <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
+ <YwMW4iGccDu6jpaZ@shredder>
+ <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
+ <YwR4MQ2xOMlvKocw@shredder>
+ <9dcb4db4a77811308c56fe5b9b7c5257@kapio-technology.com>
+ <YwSAtgS7fgHNLMEy@shredder>
+ <553c573ad6a2ddfccfc47c7847cc5fb7@kapio-technology.com>
+ <YwTJ5f5RzkC/DSdi@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <5390cb1d1485db40a71bb3fbf674b67a@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 03:01:13PM -0700, Jakub Kicinski wrote:
-> On Wed, 24 Aug 2022 00:42:53 +0300 Vladimir Oltean wrote:
-> > On Tue, Aug 23, 2022 at 02:38:31PM -0700, Jakub Kicinski wrote:
-> > > > @maintainers: when should I submit the backports to "stable", for older
-> > > > trees?  
-> > > 
-> > > "when" as is how long after Thu PR or "when" as in under what
-> > > conditions?  
-> > 
-> > how long after the "net" pull request, yes.
-> > I'm a bit confused as to how patches from "net" reach the stable queue.
-> > If they do get there, I'm pretty confident that Greg or Sasha will send
-> > out an email about patches failing to apply to this and that stable
-> > branch, and I can reply to those with backports.
+On 2022-08-23 14:36, Ido Schimmel wrote:
+> On Tue, Aug 23, 2022 at 09:37:54AM +0200, netdev@kapio-technology.com 
+> wrote:
 > 
-> Adding Greg, cause I should probably know but I don't. 
+> "learning on locked on" is really a misconfiguration, but it can also
+> happen today and entries do not roam with the "locked" flag for the
+> simple reason that it does not exist. I see two options:
 > 
-> My understanding is that Greg and Sasha scan Linus's tree periodically
-> and everything with a Fixes tag is pretty much guaranteed to be
-> selected. Whether that's a hard guarantee IDK. Would be neat if it was
-> so we don't have to add the CC: stable lines.
+> 1. Do not clear / set "locked" flag during roaming. Given learning
+> should be disabled on locked ports, then the only half interesting case
+> is roaming to an unlocked port. Keeping the "locked" flag basically
+> means "if you were to lock the port, then the presence of this entry is
+> not enough to let traffic with the SA be forwarded by the bridge".
+> Unlikely that anyone will do that.
+> 
+> 2. Always set "locked" flag for learned entries (new & roamed) on 
+> locked
+> ports and clear it for learned entries on unlocked ports.
+> 
+> Both options are consistent in how they treat the "locked" flag (either
+> always do nothing or always set/clear) and both do not impact the
+> integrity of the solution when configured correctly (disabling learning
+> on locked ports). I guess users will find option 2 easier to understand
+> / work with.
 
-Please add cc: stable lines, that's the documented way to get a patch
-into the stable kernel tree for the past 17+ years.
-
-Only recently (5+ years?) have we also been triggering off of the
-"Fixes:" tags, and we only started doing that for subsystems that never
-was adding cc: stable tags :(
-
-And also, the "Fixes:" tags are on the "slow path" to get into the
-stable tree, sometimes taking a very long time, and sometimes just being
-ignored entirely if we are busy with other work.  The only guaranteed
-way is to tag it with cc: stable.
-
-> Also not sure if it's preferred to wait for the failure notification 
-> or you should pre-queue the backport as soon as it reaches Linus.
-> I vague recall someone saying to wait for the notification...
-
-It's easier for us if you wait for the rejection email, otherwise I have
-to know to store it and save it for when I reject it in a few weeks in
-the future, which is a pain on my end given the amount of email we have
-to handle.
-
-thanks,
-
-greg k-h
+Roaming to a locked port with an entry without the locked bit set would 
+open the port for said MAC without necessary authorization. Thus I think 
+that the only real option is the 2. case.
