@@ -2,86 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 061B559FA3E
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 14:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 584F959FABD
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237481AbiHXMqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 08:46:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S235671AbiHXNB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234876AbiHXMqt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 08:46:49 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF18790C7E;
-        Wed, 24 Aug 2022 05:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=uSxtp6cCO/JPJLp/Y5uU09OcFls/853lMuOjjJI3vmg=; b=yBwxcpvlq6AVp6sl0roNiulO7G
-        9zTsPRWFSQ+hKKHxduJWNf8atR40bQyrZTzzrCvt6Qye61ELVuCs0qkUyrZzt56GKISn8w17anntT
-        a+w42OOTECaukHBlbqttIJOHfb31EAhQBOeGlj3tLbG4l9PdfauvpVUMldWG5tTU2Nzg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oQpmC-00ERhp-AT; Wed, 24 Aug 2022 14:46:32 +0200
-Date:   Wed, 24 Aug 2022 14:46:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     Dmitry Safonov <dima@arista.com>, David Ahern <dsahern@kernel.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Bob Gilligan <gilligan@arista.com>,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Ivan Delalande <colona@arista.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        Shuah Khan <shuah@kernel.org>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH 00/31] net/tcp: Add TCP-AO support
-Message-ID: <YwYdqEFQuQjXxATb@lunn.ch>
-References: <20220818170005.747015-1-dima@arista.com>
- <fc05893d-7733-1426-3b12-7ba60ef2698f@gmail.com>
- <a83e24c9-ab25-6ca0-8b81-268f92791ae5@kernel.org>
- <8097c38e-e88e-66ad-74d3-2f4a9e3734f4@arista.com>
- <7ad5a9be-4ee9-bab2-4a70-b0f661f91beb@gmail.com>
+        with ESMTP id S237833AbiHXNAX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:00:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E673081684
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:00:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8358D6162F
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 13:00:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DAD6CC433D7;
+        Wed, 24 Aug 2022 13:00:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661346020;
+        bh=dUHr1oi96lmP/PzmstDaNYL661iwoDXcKwAPtP/COa4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DLgc8axnsPScMb6dIWHNJdtvUslquJwWmWEFd31vGPtCCRF3GBzlyT6WSRGp6DCRC
+         RBg3ObW5Z5OownDM7EX7XCDg+dlpC4cD1RqeEZI1pM5+UzZgjuV4OC0fyqqzxFhL08
+         m/YbCK0yJNa1d54YXix+ig3k4cPgi3G1wDZ8PY95fyQOXdgAj9HAWSKs+PmlqIph2s
+         kS/tMhWT9f7znVFtWazmi//vyBD7JwwdbkURTxmYLGhwgAKgrmsvqrs5YncUolrB5+
+         UKNDjpa0NgjR7bboF/HeLzK+8/hzjbhg0MKq8LsJMEQJs+4EAQn6rGqc7YP97RXEgc
+         uDsaXpqUsjwBw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BF5BCC04E59;
+        Wed, 24 Aug 2022 13:00:20 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7ad5a9be-4ee9-bab2-4a70-b0f661f91beb@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v4 net 00/17] net: sysctl: Fix data-races around net.core.XXX
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166134602077.6797.12204234347972679946.git-patchwork-notify@kernel.org>
+Date:   Wed, 24 Aug 2022 13:00:20 +0000
+References: <20220823174700.88411-1-kuniyu@amazon.com>
+In-Reply-To: <20220823174700.88411-1-kuniyu@amazon.com>
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, kuni1840@gmail.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I think it would make sense to push key validity times and the key selection
-> policy entirely in the kernel so that it can handle key rotation/expiration
-> by itself. This way userspace only has to configure the keys and doesn't
-> have to touch established connections at all.
+Hello:
 
-I know nothing aobut TCP-AO, nor much about kTLS. But doesn't kTLS
-have the same issue? Is there anything which can be learnt from kTLS?
-Maybe the same mechanisms can be used? No point inventing something
-new if you can copy/refactor working code?
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> My series has a "flags" field on the key struct where it can filter by IP,
-> prefix, ifindex and so on. It would be possible to add additional flags for
-> making the key only valid between certain times (by wall time).
+On Tue, 23 Aug 2022 10:46:43 -0700 you wrote:
+> This series fixes data-races around all knobs in net_core_table and
+> netns_core_table except for bpf stuff.
+> 
+> These knobs are skipped:
+> 
+>   - 4 bpf knobs
+>   - netdev_rss_key: Written only once by net_get_random_once() and
+>                     read-only knob
+>   - rps_sock_flow_entries: Protected with sock_flow_mutex
+>   - flow_limit_cpu_bitmap: Protected with flow_limit_update_mutex
+>   - flow_limit_table_len: Protected with flow_limit_update_mutex
+>   - default_qdisc: Protected with qdisc_mod_lock
+>   - warnings: Unused
+>   - high_order_alloc_disable: Protected with static_key_mutex
+>   - skb_defer_max: Already using READ_ONCE()
+>   - sysctl_txrehash: Already using READ_ONCE()
+> 
+> [...]
 
-What out for wall clock time, it jumps around in funny ways. Plus the
-kernel has no idea what time zone the wall the wall clock is mounted
-on is in.
+Here is the summary with links:
+  - [v4,net,01/17] net: Fix data-races around sysctl_[rw]mem_(max|default).
+    https://git.kernel.org/netdev/net/c/1227c1771dd2
+  - [v4,net,02/17] net: Fix data-races around weight_p and dev_weight_[rt]x_bias.
+    https://git.kernel.org/netdev/net/c/bf955b5ab8f6
+  - [v4,net,03/17] net: Fix data-races around netdev_max_backlog.
+    https://git.kernel.org/netdev/net/c/5dcd08cd1991
+  - [v4,net,04/17] net: Fix data-races around netdev_tstamp_prequeue.
+    https://git.kernel.org/netdev/net/c/61adf447e386
+  - [v4,net,05/17] ratelimit: Fix data-races in ___ratelimit().
+    https://git.kernel.org/netdev/net/c/6bae8ceb90ba
+  - [v4,net,06/17] net: Fix data-races around sysctl_optmem_max.
+    https://git.kernel.org/netdev/net/c/7de6d09f5191
+  - [v4,net,07/17] net: Fix a data-race around sysctl_tstamp_allow_data.
+    https://git.kernel.org/netdev/net/c/d2154b0afa73
+  - [v4,net,08/17] net: Fix a data-race around sysctl_net_busy_poll.
+    https://git.kernel.org/netdev/net/c/c42b7cddea47
+  - [v4,net,09/17] net: Fix a data-race around sysctl_net_busy_read.
+    https://git.kernel.org/netdev/net/c/e59ef36f0795
+  - [v4,net,10/17] net: Fix a data-race around netdev_budget.
+    https://git.kernel.org/netdev/net/c/2e0c42374ee3
+  - [v4,net,11/17] net: Fix data-races around sysctl_max_skb_frags.
+    https://git.kernel.org/netdev/net/c/657b991afb89
+  - [v4,net,12/17] net: Fix a data-race around netdev_budget_usecs.
+    https://git.kernel.org/netdev/net/c/fa45d484c52c
+  - [v4,net,13/17] net: Fix data-races around sysctl_fb_tunnels_only_for_init_net.
+    https://git.kernel.org/netdev/net/c/af67508ea6cb
+  - [v4,net,14/17] net: Fix data-races around sysctl_devconf_inherit_init_net.
+    https://git.kernel.org/netdev/net/c/a5612ca10d1a
+  - [v4,net,15/17] net: Fix a data-race around gro_normal_batch.
+    https://git.kernel.org/netdev/net/c/8db24af3f02e
+  - [v4,net,16/17] net: Fix a data-race around netdev_unregister_timeout_secs.
+    https://git.kernel.org/netdev/net/c/05e49cfc89e4
+  - [v4,net,17/17] net: Fix a data-race around sysctl_somaxconn.
+    https://git.kernel.org/netdev/net/c/3c9ba81d7204
 
-    Andrew
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
