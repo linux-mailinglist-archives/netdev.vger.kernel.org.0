@@ -2,204 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D36E59F81A
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 12:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B596259F840
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 12:59:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236998AbiHXKou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 06:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60298 "EHLO
+        id S236262AbiHXK7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 06:59:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236956AbiHXKog (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 06:44:36 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92DA282FAD;
-        Wed, 24 Aug 2022 03:44:33 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661337841; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=DGFoXwrSpv+yWpxI5j0y8hE5AkUjtKoMW+7hWOF0FIyThNe93/+I+OJ5bWw/RiKIvgzmlVmsMfve569aTt+VGbmiCaol6VkKyrUSy0I7fvmqftwKzc1zKU9zWNCSX0rjf0QqG5eknnVHXENJne7HuvfloKD0c6xJVBVoCGS2A1w=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661337841; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=cPLqf0aeTGu1FRkQmqhlJeNc1VRyE6MSbUv3PkNrmos=; 
-        b=Rd6sS4uLNCiI61NKW93ZBs+pguQj+iK9NrWQBaxbcrAZZs3PlOkizUbJmq7BXgEvjFtNrXdJNo4kTsCYO/DSH4M0+Pf7hBKnsZ7StDz6GNhlBgOJFzkLsIIkKtlINwnFGoF1NkjMgnTDLZgdFGMtLTP1CtFymaEV+kyHS1pN7SM=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661337841;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=cPLqf0aeTGu1FRkQmqhlJeNc1VRyE6MSbUv3PkNrmos=;
-        b=RxpK93jozgkgCv0QAS28ERzBObDK9gYdsWcbKiZYkzRYWzet0ti917LzNq2xf5B8
-        0ioH1d2tQeOMFaAjWLb+vxEuIIcVrh22QE3Q+w4ROXnnoN0lEVnHec0g9r39OAPGJmT
-        sR4WppFERQ0bW0rAZxrLcxH2opMo5GFCd/lVRgFI=
-Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661337840616440.98601086738756; Wed, 24 Aug 2022 03:44:00 -0700 (PDT)
-From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S236189AbiHXK7H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 06:59:07 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55A6E6613F
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 03:59:06 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id F23A920539;
+        Wed, 24 Aug 2022 10:59:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1661338744; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4S/CnmR5vI3wq2fmClpwFjobmqPL/cm4I7V+2GM9KSU=;
+        b=qz4WewNQcvc1dEKeqj0cn/dyWoMBez+NfgLeu7mWRXoLD4hSFxI1lwaSy4JWCcm3TTSFSJ
+        THNuC7gEIl734C6xWx3VAOmk5QUFtv2tU0DBzpd9JWF/nWfPbmMHWuDowEoyiZNYtNbf18
+        93l6aor5OTlBAU9zkqZ0fpNVrdE6XNc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1661338744;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4S/CnmR5vI3wq2fmClpwFjobmqPL/cm4I7V+2GM9KSU=;
+        b=Tj59XWmU0Q19VxKK2nLgB/4pfYWeoLHC7RxqZOPUgMq2Mm6j4VNH6TPWCjIwfRVFS5lXSJ
+        FKkXunAB8O8GW+Aw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 8A8C313780;
+        Wed, 24 Aug 2022 10:59:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id NygOH3gEBmPeKAAAMHmgww
+        (envelope-from <iluceno@suse.de>); Wed, 24 Aug 2022 10:59:04 +0000
+Date:   Wed, 24 Aug 2022 12:59:01 +0200
+From:   Ismael Luceno <iluceno@suse.de>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v5 7/7] dt-bindings: net: dsa: mediatek,mt7530: update binding description
-Date:   Wed, 24 Aug 2022 13:40:40 +0300
-Message-Id: <20220824104040.17527-8-arinc.unal@arinc9.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220824104040.17527-1-arinc.unal@arinc9.com>
-References: <20220824104040.17527-1-arinc.unal@arinc9.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>
+Subject: Re: Netlink NLM_F_DUMP_INTR flag lost
+Message-ID: <20220824125901.21a28927@pirotess>
+In-Reply-To: <b0246015-7fe6-7f30-c5ae-5531c126366f@gmail.com>
+References: <20220615171113.7d93af3e@pirotess>
+ <20220615090044.54229e73@kernel.org>
+ <20220616171016.56d4ec9c@pirotess>
+ <20220616171612.66638e54@kernel.org>
+ <20220617150110.6366d5bf@pirotess>
+ <9598e112-55b5-a8c0-8a52-0c0f3918e0cd@gmail.com>
+ <20220617082225.333c5223@kernel.org>
+ <b0246015-7fe6-7f30-c5ae-5531c126366f@gmail.com>
+Organization: SUSE
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the description of the binding.
+On 17/Jun/2022 10:28, David Ahern wrote:
+> On 6/17/22 9:22 AM, Jakub Kicinski wrote:
+<...>
+> > FWIW what I think is strange is that we record the gen id before the
+> > dump and then check if the recorded version was old. Like.. what's
+> > the point of that? Nothing updates cb->seq while dumping AFAICS, so
+> > the code is functionally equivalent to this right?
+<...> 
+> FWIW, net/ipv4/nexthop.c sets cb->seq at the end of the loop and the
+> nl_dump_check_consistent follows that.
 
-- Describe the switches, which SoCs they are in, or if they are standalone.
-- Explain the various ways of configuring MT7530's port 5.
-- Remove phy-mode = "rgmii-txid" from description. Same code path is
-followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
+[CCing Florian Westphal because he gave a related talk at netdev 2.2,
+ maybe he can add something]
 
-Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 97 ++++++++++++-------
- 1 file changed, 62 insertions(+), 35 deletions(-)
+It seems to me now that most of the calls to nl_dump_check_consistent
+are redundant.
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index 6d7228687d36..d45af810ea13 100644
---- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-+++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -13,41 +13,68 @@ maintainers:
-   - Sean Wang <sean.wang@mediatek.com>
- 
- description: |
--  Port 5 of mt7530 and mt7621 switch is muxed between:
--  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
--  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
--     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
--     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
--       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
--       connected to external component!
--
--  Port 5 modes/configurations:
--  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
--     GMAC of the SOC.
--     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
--     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
--  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
--     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
--     and RGMII delay.
--  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
--     Port 5 becomes an extra switch port.
--     Only works on platform where external phy TX<->RX lines are swapped.
--     Like in the Ubiquiti ER-X-SFP.
--  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
--     Currently a 2nd CPU port is not supported by DSA code.
--
--  Depending on how the external PHY is wired:
--  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
--  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
--     a ethernet port. But can't interface to the 2nd GMAC.
--
--    Based on the DT the port 5 mode is configured.
--
--  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
--  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
--  phy-mode must be set, see also example 2 below!
--  * mt7621: phy-mode = "rgmii-txid";
--  * mt7623: phy-mode = "rgmii";
-+  There are two versions of MT7530, standalone and in a multi-chip module.
-+
-+  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
-+  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
-+
-+  MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
-+  and the switch registers are directly mapped into SoC's memory map rather than
-+  using MDIO. The DSA driver currently doesn't support this.
-+
-+  There is only the standalone version of MT7531.
-+
-+  Port 5 on MT7530 has got various ways of configuration.
-+
-+  For standalone MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to the gmac of the SoC
-+      which port 5 is wired to. Usually used for connecting the wan port
-+      directly to the CPU to achieve 2 Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      The driver requires the gmac of the SoC to have "mediatek,eth-mac" as the
-+      compatible string and the reg must be 1. So, for now, only gmac1 of an
-+      MediaTek SoC can benefit this. Banana Pi BPI-R2 suits this.
-+      Check out example 5 for a similar configuration.
-+
-+    - Port 5 can be wired to an external phy. Port 5 becomes a DSA slave.
-+      Check out example 7 for a similar configuration.
-+
-+  For multi-chip module MT7530:
-+
-+    - Port 5 can be used as a CPU port.
-+
-+    - PHY 0 or 4 of the switch can be muxed to connect to gmac1 of the SoC.
-+      Usually used for connecting the wan port directly to the CPU to achieve 2
-+      Gbps routing in total.
-+
-+      The driver looks up the reg on the ethernet-phy node which the phy-handle
-+      property refers to on the gmac node to mux the specified phy.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 5.
-+
-+    - In case of an external phy wired to gmac1 of the SoC, port 5 must not be
-+      enabled.
-+
-+      In case of muxing PHY 0 or 4, the external phy must not be enabled.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
-+      Check out example 6.
-+
-+    - Port 5 can be muxed to an external phy. Port 5 becomes a DSA slave.
-+      The external phy must be wired TX to TX to gmac1 of the SoC for this to
-+      work. Ubiquiti EdgeRouter X SFP is wired this way.
-+
-+      Muxing PHY 0 or 4 won't work when the external phy is connected TX to TX.
-+
-+      For the MT7621 SoCs, rgmii2 group must be claimed with gpio function.
-+      Check out example 7.
- 
- properties:
-   compatible:
+Either the rtnl lock is explicitly taken:
+- ethnl_tunnel_info_dumpit
+
+Or are implicitly called with the rtnl lock held:
+- rtnl_dump_ifinfo
+- rtnl_dump_all
+- in_dev_dump_addr
+- inet_netconf_dump_devconf
+- rtm_dump_nexthop
+- rtm_dump_nexthop_bucket
+- mpls_netconf_dump_devconf
+
+Except:
+- inet6_netconf_dump_devconf
+- inet6_dump_addr
+
+I assume the ones that rely on rcu_read_lock are safe too.
+
+Also, the following ones set cb->seq just before calling it:
+- rtm_dump_nh_ctx
+- rtm_dump_res_bucket_ctx
+
+Does it make sense to remove these calls or is anyone looking forward
+to convert the functions to run without the rtnl lock?
+
+Am I missing something here?
+
 -- 
-2.34.1
-
+Ismael Luceno
+SUSE - Support Level 3
