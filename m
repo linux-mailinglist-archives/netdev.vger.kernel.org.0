@@ -2,167 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F65F59F869
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 13:13:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 309A959F75A
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 12:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236572AbiHXLMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 07:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
+        id S236704AbiHXKVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 06:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237049AbiHXLMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 07:12:07 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2073.outbound.protection.outlook.com [40.107.244.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B67858500
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 04:12:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ExT9tnhMFwmr6X/YQpEB5skHgj7x6h/CQpxQiAXQYwZdAomYVKASl/9dvC4yhJIt1L8ACPWgxAqMTYRXLMLGcEyEOqF0fCNLeTyrkkIUV3qXoO4CMawtp6m2u2vmPAnGNd6mUsNu6t861XQNWRvMdv8kBrMct/PJXuyJALv2mU8HXxWO2RB9NcMKoJcZ+PYD1jaTRPBP7fzGhQY1LDx+0JvBNpiI77/iqjAxBG+kr6yfuckByVeAfaL5fQVvM4x+FZ1U9S7qJ2LW+9A3r9j9VqmWmjjtD/xRbPp330Lo3RhCyfECa+/S63eI/mWHNkiFpaVGhRwzj1QCDnZyTBsNtQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pp3LhogPzYOujdA0Ep+CeJ3aFGqE/EehImFGItqecBs=;
- b=fKlNdtlqU8qMuB/FovROQlxDzsQOI3vdgfJ7TCxg44qH2yO5NLYNaKNmofLwHHySNP2c0qgyRFZD47r2HXc4mcB9oW6Ug5Ggv06AQiij1Rab7imB9b63yX3rN+k4ODpvaSSuXhavkItLVl81ytN4OYcysQgIAoMavHyYBndQ+b+w/gizSuCLUwfLBTj/bYL404P5aUd17KM5nFbzEw1YUcCq1qjWj5NJUPIk8imEjGAHz9D8QmtWop1nSaCXnWmcbYBWEFy4Rq3y1rA8BnqDV8yjF3rkqCT2gDGS45VR5oHj1R6el0HRDrpckBJt8qXGeqXgDzgt0e2FvOvRaOTyWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pp3LhogPzYOujdA0Ep+CeJ3aFGqE/EehImFGItqecBs=;
- b=HnwF0FD05NbB0/v+VdvEp6HfjHLhLUFEYE/iINMTZ1460ol0oj6L7CNTAY2hMWSDGnwD8bmqd1X2Qf9JQx265JIV0Pg3CdMaT6GpzABJ+GSSf5zcHZvr9EXWMp4Pl/GSyvH7/z50MmhWF9bAUMt97SWW6Hdi2+34vb9Cgxj3qbe0+uNna3wIbbQzKFPf0GUkl6jTqY6iM0LiDvKCpcRVvbCJZYYMwJhlZBBQvTn7qNF4QxlUBJ+wF7PMJgBPN16UOVVWDkQr3/1VUsY1Dse7Xsb69n8mj4cekBv8vNy9vwcxbzFLPZ1UiV6FUgEGVIcsXVR5mO7uOqPDxGGXRKsQOA==
-Received: from MW4PR03CA0124.namprd03.prod.outlook.com (2603:10b6:303:8c::9)
- by BN6PR12MB1201.namprd12.prod.outlook.com (2603:10b6:404:20::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Wed, 24 Aug
- 2022 11:12:03 +0000
-Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8c:cafe::16) by MW4PR03CA0124.outlook.office365.com
- (2603:10b6:303:8c::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Wed, 24 Aug 2022 11:12:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5566.15 via Frontend Transport; Wed, 24 Aug 2022 11:12:03 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 24 Aug
- 2022 11:12:02 +0000
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
- 2022 04:11:59 -0700
-References: <Yv9VO1DYAxNduw6A@DEN-LT-70577> <874jy8mo0n.fsf@nvidia.com>
- <YwKeVQWtVM9WC9Za@DEN-LT-70577> <87v8qklbly.fsf@nvidia.com>
- <YwXXqB64QLDuKObh@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     <Daniel.Machon@microchip.com>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
-        <vinicius.gomes@intel.com>, <vladimir.oltean@nxp.com>,
-        <thomas.petazzoni@bootlin.com>, <Allan.Nielsen@microchip.com>,
-        <maxime.chevallier@bootlin.com>, <roopa@nvidia.com>
-Subject: Re: Basic PCP/DEI-based queue classification
-Date:   Wed, 24 Aug 2022 11:45:36 +0200
-In-Reply-To: <YwXXqB64QLDuKObh@DEN-LT-70577>
-Message-ID: <87pmgpki9v.fsf@nvidia.com>
+        with ESMTP id S236785AbiHXKVH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 06:21:07 -0400
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F4D2AF2;
+        Wed, 24 Aug 2022 03:21:03 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 3C72820017;
+        Wed, 24 Aug 2022 10:21:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661336462;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=EVcLun4IpqpMJcMOrdpcuGesg4d0g3/ryDpO2out2II=;
+        b=npqIhVkPd3sSVkr7aEO4lt7byUjhng2m53nulc937QZ8HafVHG01yenCyng6Vo8MHvKaEU
+        qAvkxaiQZZliPHn/ckWix77U5K1X0p2nPI2+rIf3fW/4MAQnVkBNzTwUA6WUmelE4hQFgu
+        W2teHfriDqbNQrRHwekIv0bud/e+MWtRVo7bVpumlAKqrTQ/vKEMbHRBxsPzgn8C1Mgs+9
+        0D+CWPS5G58iM7gq+ZdOK/6JBlNkNFUUW1OIPPMoY6Y3VMmFbMhzyPLRAOEA+6ZHP+6NW5
+        i5iGyiAFNKPO7Cj77MXeZPmZJcw7XLyYCVGn1Y2Y6sJQqDKBZTJe/TtePAoSrw==
+Date:   Wed, 24 Aug 2022 12:20:58 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220824122058.1c46e09a@xps-13>
+In-Reply-To: <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+        <20220819191109.0e639918@xps-13>
+        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+        <20220823182950.1c722e13@xps-13>
+        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0b67bb7d-d180-4405-fb83-08da85c1792f
-X-MS-TrafficTypeDiagnostic: BN6PR12MB1201:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RFgCzMKWXe70Gf8nmVHjwv6cmZ+fcOIwQlSNGWFmra5+bfYx+L8JQF8ps9EfMKB7F703mufvh5tppTHmYY3GRUHLhFnZSQecbkQ/ndAJqqsmpWa0MJDQwVDnI4ZRqkiAKnHkZJPCXUCzwWdv/SWz+j9lPVN+eV02ujZQA589uGM6j8RER/GngMh1V6GyYME1nsoW5eNfuV5SMIZ8mTqImERzZ9KVf+WxuexUtwZJuqpQ+NidCJFclxT0l7gTrODz78P1KjBEjxwECjQKIIKdKYnl0+T1bkQH/EaO1ZXF6d1rwgm4QH3qdn1lR/3g6gqTGmWP/7eHmdn+ubEvbodyXbqu+2MtvHMsHnLfiQHGRLewsTbm6sXEmjTUxaTq/xXYoJUlNOm1i6wi50pc5gCyDw/4gimnn0Eukoa6lvnSYexMaDy39ryl270zTaTqwY91VHzyM8GYYXV7OpRIbdZ6x+RUSyJbkSLIBEcefa+dhixcmgd/Pn1SsifSsAAtDA8RVRJjvp1bIBtEBOQS1t/899fsB05zAL/dbe/wBGhWOFXjWMdlJXB2plLT/ACs2X3ay8ULhGl2hTXpZGlsxLq2sr4ttOSZq5ETyYCNn9ZxhWdNh5DGVzuIzEDtzjPIPpnmn5HBlQlsouWZb1VKBWKL+/3VUhJwmbAZcHA8YhXPfo5UBjskXZcyozVWI5Y9chTRM1vT7BqT11XaZx6unJNT4/BeQwQNtbL75MqNTQjMlmLLW3ki3bUWCk2Um+PHj+qAi54zdr++KxBPAVoPcY8jhq0WGCwLYQhdFm3s5iPoDHPt1bU628veV8P9VQyjLG7T
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(39860400002)(346002)(36840700001)(40470700004)(46966006)(70586007)(70206006)(8676002)(36756003)(86362001)(4326008)(36860700001)(82740400003)(356005)(81166007)(426003)(16526019)(336012)(47076005)(26005)(83380400001)(478600001)(6666004)(107886003)(41300700001)(82310400005)(316002)(54906003)(6916009)(40480700001)(40460700003)(2906002)(186003)(2616005)(5660300002)(8936002)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 11:12:03.3466
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b67bb7d-d180-4405-fb83-08da85c1792f
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1201
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Alexander,
 
-<Daniel.Machon@microchip.com> writes:
+aahringo@redhat.com wrote on Tue, 23 Aug 2022 17:44:52 -0400:
 
->> How do the pcp-prio rules work with the APP rules? There's the dscp-prio
->> sparse table, then there will be the pcp-prio (sparse?) table, what
->> happens if a packet arrives that has both headers? In Spectrum switches,
->> DSCP takes precedence, but that may not be universal.
->
-> In lan966x and sparx5 switches, dscp also takes precendence over pcp, in
-> default mode. Wrt. trust: DSCP mapping can be enabled/disabled and trusted
-> per-dscp-value. PCP mapping can be enabled/disabled, but not trusted
-> per-pcp-value. If DSCP mapping is enabled, and the DSCP value is trusted,
-> then DSCP mapping is used, otherwise PCP (if tagged).
+> Hi,
+>=20
+> On Tue, Aug 23, 2022 at 12:29 PM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > Hi Alexander,
+> >
+> > aahringo@redhat.com wrote on Tue, 23 Aug 2022 08:33:30 -0400:
+> > =20
+> > > Hi,
+> > >
+> > > On Fri, Aug 19, 2022 at 1:11 PM Miquel Raynal <miquel.raynal@bootlin.=
+com> wrote: =20
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:51:02 -0400:
+> > > > =20
+> > > > > Hi,
+> > > > >
+> > > > > On Fri, Jul 1, 2022 at 10:36 AM Miquel Raynal <miquel.raynal@boot=
+lin.com> wrote: =20
+> > > > > >
+> > > > > > As a first strep in introducing proper PAN management and assoc=
+iation,
+> > > > > > we need to be able to create coordinator interfaces which might=
+ act as
+> > > > > > coordinator or PAN coordinator.
+> > > > > >
+> > > > > > Hence, let's add the minimum support to allow the creation of t=
+hese
+> > > > > > interfaces. This might be restrained and improved later.
+> > > > > >
+> > > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > > > ---
+> > > > > >  net/mac802154/iface.c | 14 ++++++++------
+> > > > > >  net/mac802154/rx.c    |  2 +-
+> > > > > >  2 files changed, 9 insertions(+), 7 deletions(-)
+> > > > > >
+> > > > > > diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+> > > > > > index 500ed1b81250..7ac0c5685d3f 100644
+> > > > > > --- a/net/mac802154/iface.c
+> > > > > > +++ b/net/mac802154/iface.c
+> > > > > > @@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(struct =
+ieee802154_sub_if_data *sdata,
+> > > > > >                 if (nsdata !=3D sdata && ieee802154_sdata_runni=
+ng(nsdata)) {
+> > > > > >                         int ret;
+> > > > > >
+> > > > > > -                       /* TODO currently we don't support mult=
+iple node types
+> > > > > > -                        * we need to run skb_clone at rx path.=
+ Check if there
+> > > > > > -                        * exist really an use case if we need =
+to support
+> > > > > > -                        * multiple node types at the same time.
+> > > > > > +                       /* TODO currently we don't support mult=
+iple node/coord
+> > > > > > +                        * types we need to run skb_clone at rx=
+ path. Check if
+> > > > > > +                        * there exist really an use case if we=
+ need to support
+> > > > > > +                        * multiple node/coord types at the sam=
+e time.
+> > > > > >                          */
+> > > > > > -                       if (wpan_dev->iftype =3D=3D NL802154_IF=
+TYPE_NODE &&
+> > > > > > -                           nsdata->wpan_dev.iftype =3D=3D NL80=
+2154_IFTYPE_NODE)
+> > > > > > +                       if (wpan_dev->iftype !=3D NL802154_IFTY=
+PE_MONITOR &&
+> > > > > > +                           nsdata->wpan_dev.iftype !=3D NL8021=
+54_IFTYPE_MONITOR)
+> > > > > >                                 return -EBUSY;
+> > > > > >
+> > > > > >                         /* check all phy mac sublayer settings =
+are the same.
+> > > > > > @@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802154_su=
+b_if_data *sdata,
+> > > > > >         wpan_dev->short_addr =3D cpu_to_le16(IEEE802154_ADDR_BR=
+OADCAST);
+> > > > > >
+> > > > > >         switch (type) {
+> > > > > > +       case NL802154_IFTYPE_COORD:
+> > > > > >         case NL802154_IFTYPE_NODE:
+> > > > > >                 ieee802154_be64_to_le64(&wpan_dev->extended_add=
+r,
+> > > > > >                                         sdata->dev->dev_addr);
+> > > > > > @@ -636,6 +637,7 @@ ieee802154_if_add(struct ieee802154_local *=
+local, const char *name,
+> > > > > >         ieee802154_le64_to_be64(ndev->perm_addr,
+> > > > > >                                 &local->hw.phy->perm_extended_a=
+ddr);
+> > > > > >         switch (type) {
+> > > > > > +       case NL802154_IFTYPE_COORD:
+> > > > > >         case NL802154_IFTYPE_NODE:
+> > > > > >                 ndev->type =3D ARPHRD_IEEE802154;
+> > > > > >                 if (ieee802154_is_valid_extended_unicast_addr(e=
+xtended_addr)) {
+> > > > > > diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+> > > > > > index b8ce84618a55..39459d8d787a 100644
+> > > > > > --- a/net/mac802154/rx.c
+> > > > > > +++ b/net/mac802154/rx.c
+> > > > > > @@ -203,7 +203,7 @@ __ieee802154_rx_handle_packet(struct ieee80=
+2154_local *local,
+> > > > > >         }
+> > > > > >
+> > > > > >         list_for_each_entry_rcu(sdata, &local->interfaces, list=
+) {
+> > > > > > -               if (sdata->wpan_dev.iftype !=3D NL802154_IFTYPE=
+_NODE)
+> > > > > > +               if (sdata->wpan_dev.iftype =3D=3D NL802154_IFTY=
+PE_MONITOR)
+> > > > > >                         continue; =20
+> > > > >
+> > > > > I probably get why you are doing that, but first the overall desi=
+gn is
+> > > > > working differently - means you should add an additional receive =
+path
+> > > > > for the special interface type.
+> > > > >
+> > > > > Also we "discovered" before that the receive path of node vs
+> > > > > coordinator is different... Where is the different handling here?=
+ I
+> > > > > don't see it, I see that NODE and COORD are the same now (because=
+ that
+> > > > > is _currently_ everything else than monitor). This change is not
+> > > > > enough and does "something" to handle in some way coordinator rec=
+eive
+> > > > > path but there are things missing.
+> > > > >
+> > > > > 1. Changing the address filters that it signals the transceiver i=
+t's
+> > > > > acting as coordinator
+> > > > > 2. We _should_ also have additional handling for whatever the
+> > > > > additional handling what address filters are doing in mac802154
+> > > > > _because_ there is hardware which doesn't have address filtering =
+e.g.
+> > > > > hwsim which depend that this is working in software like other
+> > > > > transceiver hardware address filters.
+> > > > >
+> > > > > For the 2. one, I don't know if we do that even for NODE right or=
+ we
+> > > > > just have the bare minimal support there... I don't assume that
+> > > > > everything is working correctly here but what I want to see is a
+> > > > > separate receive path for coordinators that people can send patch=
+es to
+> > > > > fix it. =20
+> > > >
+> > > > Yes, we do very little differently between the two modes, that's wh=
+y I
+> > > > took the easy way: just changing the condition. I really don't see =
+what
+> > > > I can currently add here, but I am fine changing the style to easily
+> > > > show people where to add filters for such or such interface, but ri=
+ght
+> > > > now both path will look very "identical", do we agree on that? =20
+> > >
+> > > mostly yes, but there exists a difference and we should at least check
+> > > if the node receive path violates the coordinator receive path and
+> > > vice versa.
+> > > Put it in a receive_path() function and then coord_receive_path(),
+> > > node_receive_path() that calls the receive_path() and do the
+> > > additional filtering for coordinators, etc.
+> > >
+> > > There should be a part in the standard about "third level filter rule
+> > > if it's a coordinator".
+> > > btw: this is because the address filter on the transceiver needs to
+> > > have the "i am a coordinator" boolean set which is missing in this
+> > > series. However it depends on the transceiver filtering level and the
+> > > mac802154 receive path if we actually need to run such filtering or
+> > > not. =20
+> >
+> > I must be missing some information because I can't find any places
+> > where what you suggest is described in the spec.
+> >
+> > I agree there are multiple filtering level so let's go through them one
+> > by one (6.7.2 Reception and rejection):
+> > - first level: is the checksum (FCS) valid?
+> >         yes -> goto second level
+> >         no -> drop
+> > - second level: are we in promiscuous mode?
+> >         yes -> forward to upper layers
+> >         no -> goto second level (bis)
+> > - second level (bis): are we scanning?
+> >         yes -> goto scan filtering
+> >         no -> goto third level
+> > - scan filtering: is it a beacon?
+> >         yes -> process the beacon
+> >         no -> drop
+> > - third level: is the frame valid? (type, source, destination, pan id,
+> >   etc)
+> >         yes -> forward to upper layers
+> >         no -> drop
 
-Nice, so you can actually implement the sparsity of dscp-prio map. And
-since PCP is always second in order, you can backfill any unspecified
-PCP values from the default priority, or 0, and it will be semantically
-the same.
+Actually right now the second level is not enforced, and all the
+filtering levels are a bit fuzzy and spread everywhere in rx.c.
 
->> It looks like adding "PCP" to APP would make the integration easiest.
->> Maybe we could use an out-of-band sel value for the selector, say 256,
->> to likely avoid incompatible standardization?
->> 
->> Then the trust level can be an array of selectors that shows how the
->> rules should be applied. E.g. [TCPUDP, DSCP, PCP]. Some of these
->> configurations are not supported by the HW and will be bounced by the
->> driver.
->
-> We also need to consider the DEI bit. And also whether the mapping is for
-> ingress or egress.
+I'm gonna see if I can at least clarify all of that and only make
+coord-dependent the right section because right now a
+ieee802154_coord_rx() path in ieee802154_rx_handle_packet() does not
+really make sense given that the level 3 filtering rules are mostly
+enforced in ieee802154_subif_frame().
 
-Yeah, I keep saying pcp-prio, but actually what I mean is (pcp,
-dei)-prio. The standard likewise talks about DEI always in connection to
-priority, I believe, nobody prioritizes on DEI alone.
-
-> This suddenly becomes quite an intrusive addition to an already standardized
-> APP interface.
-
-The 802.1q DCB has APP selector at three bits. Even if the standard
-decides to get more bits somewhere, it seems unlikely that they would
-add very many, because how many different fields does one need to
-prioritize on? So I would feel safe using a large value internally in
-Linux. But yeah, it's a concern.
-
-> As I hinted earlier, we could also add an entirely new PCP interface 
-> (like with maxrate), this will give us a bit more flexibility and will 
-> not crash with anything. This approach will not give is trust for DSCP, 
-> but maybe we can disregard this and go with a PCP solution initially?
-
-I would like to have a line of sight to how things will be done. Not
-everything needs to be implemented at once, but we have to understand
-how to get there when we need to. At least for issues that we can
-already foresee now, such as the DSCP / PCP / default ordering.
-
-Adding the PCP rules as a new APP selector, and then expressing the
-ordering as a "selector policy" or whatever, IMHO takes care of this
-nicely.
-
-But OK, let's talk about the "flexibility" bit that you mention: what
-does this approach make difficult or impossible?
+Thanks,
+Miqu=C3=A8l
