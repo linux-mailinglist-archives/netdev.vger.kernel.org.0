@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA9F959FD82
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 16:46:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BABA59FD97
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 16:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238818AbiHXOqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 10:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37670 "EHLO
+        id S239365AbiHXOys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 10:54:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237850AbiHXOqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 10:46:34 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0BC7B7B2
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 07:46:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661352393; x=1692888393;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=HS1Fp1bGgwqC0hZtLUOqx8VKDLu7QN1Ud2w8Ro6VG20=;
-  b=NAhLFZ9gjrXY+wpYYMD2ZmMF0wzu+cXYGhazJ5Z3nfCtGjqglLkopCDn
-   F4sUO3ve3cmvjB88sXj6VyforHE5FQcJgVZPqL06/Z8S+xniikxmjbaMx
-   UGS6fBnjvmXviA68u80yd3EIUBITKKfVOG8/rs4fepv2MY7tOfUlh98mM
-   XV87GnasEDThYW8gd+4L1ic4/8YXM8CKqPJO9Uedp0uTp4Zw73nTb3dla
-   oK730p+ko30VTT2GPmXUnl4+fVvRIqnZsq6gAXyRcDkmqIq3F0mylup0Y
-   MDW/s9dG5UrVB3j548gnDzpkdrC5WDliDayRA759XRpLAoNb8Q4bbnEvI
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="292730363"
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="292730363"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 07:46:32 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="609783201"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 24 Aug 2022 07:46:30 -0700
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27OEkSuw017047;
-        Wed, 24 Aug 2022 15:46:28 +0100
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        Tariq Toukan <tariqt@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Mark Bloch <mbloch@nvidia.com>, Maor Dickman <maord@nvidia.com>
-Subject: Re: [net-next 14/15] net/mlx5: E-Switch, Move send to vport meta rule creation
-Date:   Wed, 24 Aug 2022 16:43:29 +0200
-Message-Id: <20220824144328.1535198-1-olek@wotan.strafe.russland>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220823055533.334471-15-saeed@kernel.org>
-References: <20220823055533.334471-1-saeed@kernel.org> <20220823055533.334471-15-saeed@kernel.org>
+        with ESMTP id S238916AbiHXOyn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 10:54:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129587E005
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 07:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661352882;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mrZSLuJn7B95IjdTvMo0o8DoEvcK6JOywKMgoVwD7sU=;
+        b=gaxgVd7BW5ZYJhHfOYahw1otJvN7J7kcnY+lmv7dtq80Gt6HohEcc0Gu9yNc79JyMP1Tej
+        VwvwRqQZJSbqOx9RMkKQSgUpaYuMwHwVbGOlSdfM+SPSOygALDYnhCwklVoRrIwzW2uWuW
+        3NKYscBROuhcfI6gl7ImRxhh7SNA2L8=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-546-SfsaWxk-Npqtb-Y5J_oCrw-1; Wed, 24 Aug 2022 10:54:40 -0400
+X-MC-Unique: SfsaWxk-Npqtb-Y5J_oCrw-1
+Received: by mail-qv1-f72.google.com with SMTP id o6-20020ad443c6000000b00495d04028a6so9706120qvs.18
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 07:54:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=mrZSLuJn7B95IjdTvMo0o8DoEvcK6JOywKMgoVwD7sU=;
+        b=a/keeILvnRYoej7HkMbfB78sPolq4sVDuZQ5tTWecZbZiq7GmEuj9ZOr03c3FFOORV
+         fQNE2CLLnSY4aaoQVusXHmDTgSFMN6gxmxkx9oImI94+CULphbnunuO/qMnBtlBeCpZl
+         c2htO14vnvZBlWmcohPOw+slTGVujTxA3k+vgMTXP6p7fwAXTGCsBqkVbmtQt3akleIa
+         j0kG5MlvncnG2I5TQiP+nypKyiDwxGYh7ri9VmUbCPwfgwW+g8paoYThaM5q+Jy4uhVt
+         Qf15kwyYuzuuez76YEb+PlZ4pYcVER9061sa+QBq6+mlBKWmDDK0GLs88OKYaf6ZQfr7
+         Y3QA==
+X-Gm-Message-State: ACgBeo2KEsffU+nnk6gJHwMYg7jx0SCYFwsAe3MhMkNRdKMVK3fJuH/w
+        vByxJNSBt1LPh/+WEKG+KewsbuA9Zo8nE0GHswJ4Qa/hVbKjyhSybs8dDGCPc1CcpVIMsyLugI8
+        ehV0YjtMDmpg+uP8Q
+X-Received: by 2002:ad4:5bc1:0:b0:496:fd12:3ece with SMTP id t1-20020ad45bc1000000b00496fd123ecemr7680926qvt.27.1661352880151;
+        Wed, 24 Aug 2022 07:54:40 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR72UV2K5dJzouj4ToPdOWBwcYlwAP0Cd9FyhdTNvGwm0EbEWDmnYH4YmbPekZsiI1DdyE3m+g==
+X-Received: by 2002:ad4:5bc1:0:b0:496:fd12:3ece with SMTP id t1-20020ad45bc1000000b00496fd123ecemr7680904qvt.27.1661352879925;
+        Wed, 24 Aug 2022 07:54:39 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id q30-20020a37f71e000000b006baef6daa45sm14408647qkj.119.2022.08.24.07.54.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 07:54:39 -0700 (PDT)
+Message-ID: <aafa0c1e-647a-1c76-ed20-1d424d222768@redhat.com>
+Date:   Wed, 24 Aug 2022 10:54:38 -0400
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] MAINTAINERS: rectify file entry in BONDING DRIVER
+Content-Language: en-US
+To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220824072945.28606-1-lukas.bulwahn@gmail.com>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <20220824072945.28606-1-lukas.bulwahn@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,92 +84,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeed@kernel.org>
-Date: Mon, 22 Aug 2022 22:55:32 -0700
-
-> From: Roi Dayan <roid@nvidia.com>
+On 8/24/22 03:29, Lukas Bulwahn wrote:
+> Commit c078290a2b76 ("selftests: include bonding tests into the kselftest
+> infra") adds the bonding tests in the directory:
 > 
-> Move the creation of the rules from offloads fdb table init to
-> per rep vport init.
-> This way the driver will creating the send to vport meta rule
-> on any representor, e.g. SF representors.
+>    tools/testing/selftests/drivers/net/bonding/
 > 
-> Signed-off-by: Roi Dayan <roid@nvidia.com>
-> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-> Reviewed-by: Maor Dickman <maord@nvidia.com>
-> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> The file entry in MAINTAINERS for the BONDING DRIVER however refers to:
+> 
+>    tools/testing/selftests/net/bonding/
+> 
+> Hence, ./scripts/get_maintainer.pl --self-test=patterns complains about a
+> broken file pattern.
+> 
+> Repair this file entry in BONDING DRIVER.
+> 
+> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 > ---
->  .../net/ethernet/mellanox/mlx5/core/en_main.c |   4 +-
->  .../net/ethernet/mellanox/mlx5/core/en_rep.c  |  53 ++++++++-
->  .../net/ethernet/mellanox/mlx5/core/en_rep.h  |   9 +-
->  .../net/ethernet/mellanox/mlx5/core/eswitch.c |   1 -
->  .../net/ethernet/mellanox/mlx5/core/eswitch.h |   5 +-
->  .../mellanox/mlx5/core/eswitch_offloads.c     | 112 +++++-------------
->  6 files changed, 90 insertions(+), 94 deletions(-)
+> Jonathan, please ack.
+> Jakub, please pick this on top of the commit above.
+> 
+>   MAINTAINERS | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 2ce15257725b..7d2141516758 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -3671,7 +3671,7 @@ F:	Documentation/networking/bonding.rst
+>   F:	drivers/net/bonding/
+>   F:	include/net/bond*
+>   F:	include/uapi/linux/if_bonding.h
+> -F:	tools/testing/selftests/net/bonding/
+> +F:	tools/testing/selftests/drivers/net/bonding/
+>   
+>   BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
+>   M:	Dan Robertson <dan@dlrobertson.com>
 
-[...]
+Acked-by: Jonathan Toppins <jtoppins@redhat.com>
 
-> +static int
-> +mlx5e_rep_add_meta_tunnel_rule(struct mlx5e_priv *priv)
-> +{
-> +	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;
-> +	struct mlx5e_rep_priv *rpriv = priv->ppriv;
-> +	struct mlx5_eswitch_rep *rep = rpriv->rep;
-> +	struct mlx5_flow_handle *flow_rule;
-> +	struct mlx5_flow_group *g;
-> +	int err;
-> +
-> +	g = esw->fdb_table.offloads.send_to_vport_meta_grp;
-> +	if (!g)
-> +		return 0;
-> +
-> +	flow_rule = mlx5_eswitch_add_send_to_vport_meta_rule(esw, rep->vport);
-> +	if (IS_ERR(flow_rule)) {
-> +		err = PTR_ERR(flow_rule);
-> +		goto out;
-> +	}
-> +
-> +	rpriv->send_to_vport_meta_rule = flow_rule;
-> +
-> +out:
-> +	return err;
-> +}
-
-On my system (LLVM, CONFIG_WERROR=y):
-
-drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-        if (IS_ERR(flow_rule)) {
-            ^~~~~~~~~~~~~~~~~
-drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:489:9: note: uninitialized use occurs here
-        return err;
-               ^~~
-
-I believe you can just
-
-	if (IS_ERR(flow_rule))
-		return PTR_ERR(flow_rule);
-
-	rpriv->send_to_vport_meta_rule = flow_rule;
-
-	return 0;
-}
-
-?
-
-> +
-> +static void
-> +mlx5e_rep_del_meta_tunnel_rule(struct mlx5e_priv *priv)
-> +{
-> +	struct mlx5e_rep_priv *rpriv = priv->ppriv;
-> +
-> +	if (rpriv->send_to_vport_meta_rule)
-> +		mlx5_eswitch_del_send_to_vport_meta_rule(rpriv->send_to_vport_meta_rule);
-> +}
-
-[...]
-
-> -- 
-> 2.37.1
-
-Thanks,
-Olek
