@@ -2,96 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EC315A022B
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:38:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EEBF5A023A
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 21:44:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238726AbiHXTh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 15:37:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        id S237759AbiHXTod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 15:44:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238302AbiHXTh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:37:56 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 676FB792CD
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 12:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661369875; x=1692905875;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GBMUVO5SJrFf+c3wHtRDGdNq1vDaJRcApKC/pNJzKmg=;
-  b=Zpf669+FLXriCVgpb2KjcVp/BJy4OowUFT7hxNAHkrhERMqxQQelN7Su
-   mQQRg+Rb9Yzr7d+JvK7PXa5NhoWB/h27g+wxzlgYJ60lQ1uPbagYiWUW8
-   oWMSPUpShLAHF28cED/YnfktSiM92ha+/fUpK2jjQ9eTJ7+/FJMOoaSU5
-   jKZoXFpqZ62fI2tx6anR5KdWxphA6cnIxVmGm2tBnwCr+bn0Q/fCHEpuW
-   4GtDCvUtRRJmdKazK25PK4hPvsH15Dtx0UV19CTuBrKdgrPCS4nYWk7gy
-   DgFOhy7zU2L9JITXZ4CvaP8eKZ4jJkjf1RgmVt6QlbsKpNjRWx4/LGjgE
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="380351205"
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="380351205"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 12:37:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="785742652"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga005.jf.intel.com with ESMTP; 24 Aug 2022 12:37:53 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 2/2] i40e: Fix incorrect address type for IPv6 flow rules
-Date:   Wed, 24 Aug 2022 12:37:47 -0700
-Message-Id: <20220824193748.874343-3-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220824193748.874343-1-anthony.l.nguyen@intel.com>
-References: <20220824193748.874343-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229664AbiHXToc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 15:44:32 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB231792EC
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 12:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=6iV5LJYHf3uPJB7uV4npg8peLjxSSBg9gX+9L7rCPbU=;
+        t=1661370270; x=1662579870; b=RbqCxR2FMcHeKdVDyscBJyqdLP+rR4J2EtTNjF1k/xU9PWG
+        eigmpyuAnO5O48DQaweTRitfgUpJ13puRvhtzwXUDPjhaF0FLlLWmP5F98fGeMatciqDPo+29M9mV
+        G422+0I3QGKS7veR4k6BtvCyB8EqEjsvcSeA943QmL/xbQV10GQFUguINAr67cSGHevGqF+vbBxZu
+        yXTndRgpcPyXkNPagxZu0w8xlhzP4T9cQrVNZW3smPji61q8vRd39Muz4XQ3bQv7VY0EM3kcp1W+q
+        JH4SXEzommrNF3rhUMiQcB1KTObBUmL6lW/ciN4/n5IT1UBGH8sbni0rk08mfaZA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.96)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1oQwIZ-00GLMp-2R;
+        Wed, 24 Aug 2022 21:44:23 +0200
+Message-ID: <e652424b85218d370a9bbf922cf09f8b21b26822.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 3/6] genetlink: add helper for checking
+ required attrs and use it in devlink
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        mkubecek@suse.cz
+Date:   Wed, 24 Aug 2022 21:44:22 +0200
+In-Reply-To: <20220824045024.1107161-4-kuba@kernel.org>
+References: <20220824045024.1107161-1-kuba@kernel.org>
+         <20220824045024.1107161-4-kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
+On Tue, 2022-08-23 at 21:50 -0700, Jakub Kicinski wrote:
+>=20
+> +/* Report that a root attribute is missing */
+> +#define GENL_REQ_ATTR_CHECK(info, attr) ({				\
+> +	struct genl_info *__info =3D (info);				\
+> +	u32 __attr =3D (attr);						\
+> +	int __retval;							\
+> +									\
+> +	__retval =3D !__info->attrs[__attr];				\
+> +	if (__retval)							\
+> +		NL_SET_ERR_ATTR_MISS(__info->extack,			\
+> +				     __info->userhdr ? : __info->genlhdr, \
+> +				     __attr);				\
+> +	__retval;							\
+> +})
 
-It was not possible to create 1-tuple flow director
-rule for IPv6 flow type. It was caused by incorrectly
-checking for source IP address when validating user provided
-destination IP address.
+Not sure this needs to be a macro btw, could be an inline returning a
+bool? You're not really expanding anything here, nor doing something
+with strings (unlike GENL_SET_ERR_MSG for example.)
 
-Fix this by changing ip6src to correct ip6dst address
-in destination IP address validation for IPv6 flow type.
-
-Fixes: efca91e89b67 ("i40e: Add flow director support for IPv6")
-Signed-off-by: Sylwester Dziedziuch <sylwesterx.dziedziuch@intel.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_ethtool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index 156e92c43780..e9cd0fa6a0d2 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -4485,7 +4485,7 @@ static int i40e_check_fdir_input_set(struct i40e_vsi *vsi,
- 				    (struct in6_addr *)&ipv6_full_mask))
- 			new_mask |= I40E_L3_V6_DST_MASK;
- 		else if (ipv6_addr_any((struct in6_addr *)
--				       &usr_ip6_spec->ip6src))
-+				       &usr_ip6_spec->ip6dst))
- 			new_mask &= ~I40E_L3_V6_DST_MASK;
- 		else
- 			return -EOPNOTSUPP;
--- 
-2.35.1
-
+johannes
