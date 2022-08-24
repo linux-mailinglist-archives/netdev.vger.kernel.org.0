@@ -2,78 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEF9F59F1E4
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 05:16:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FF1959F1EA
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 05:20:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231311AbiHXDQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 23 Aug 2022 23:16:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33032 "EHLO
+        id S233678AbiHXDUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 23 Aug 2022 23:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229616AbiHXDQX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 23:16:23 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D8080B6B;
-        Tue, 23 Aug 2022 20:16:18 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id bh13so13896374pgb.4;
-        Tue, 23 Aug 2022 20:16:18 -0700 (PDT)
+        with ESMTP id S233749AbiHXDU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 23 Aug 2022 23:20:26 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840467E319
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 20:20:24 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id l64so13923996pge.0
+        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 20:20:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=BJUD5l2aVXUXib/aChyV5FqXEQxLOvsk3GBEuWTN+qo=;
-        b=SS8PCzr9mCGT6hDCL3MTyOO09cwwZ25pr+45+0P5oELIAY02hfoTdZqmQJcwaoshCV
-         9gVdVLTNUyi+Z9PbxSjlLt4W+u3AHp4fUtauvng8SmR5ycmCJ4gpU5aas+n1httTbxVi
-         NwHIBlQR0B9clXCc5ehT2BgmVVtFkWU5h9FspXRlz7Kw6MwnWZ0snuUXGHOdB7Xo0+Eu
-         HczAJWrkdYv127ZkZAs9douHAUB1YiERR4ehcjx09pU3uP6KoMKgz0ijR+bf2lfRJgHC
-         jNvJgwjfd1o+efo5NnzG8V1ZLUDCHPTjz65ZZ9elsPC75X7X+u2Eeus9feEC/bgTxNwM
-         HVEg==
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc;
+        bh=Tpi/aztaevRXhD7hpGo9AB7PidGdRBw6bYsB56/l300=;
+        b=XB6y04ENo8HvQCjVqSTd7albmZTzNDOvZK6dd56WyIUeY6UPgQ+li2B2/rjnF1Wb5R
+         iSd0brtowuURBN9eQltZvhyWLXSO0bezLIWJ10amlYxmY1lxdA/CXjEZtLyJmJZN2KSb
+         uVYvSzZAHmSk5ITgHcjd1Jy9LT56JLhxgkw+Ttcu92fLjE2cE6YPBOR765ZAdzQtrUUz
+         ZeG8g+WrjuUVW7T7PNaJ05pGlFDsAAgXEYmX0y+IijBrfjnGn/HXNmvuPsUTGlM8LeTJ
+         6hL5hqyDQpvzvuCr+Y0wvC+FhcPAgkbgSa+MQ/DZRMy/q3FAz5Zn0dxRu1fN0GL2jSF2
+         IfsA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=BJUD5l2aVXUXib/aChyV5FqXEQxLOvsk3GBEuWTN+qo=;
-        b=bDJnzk16c6tI7KNVakep9GzA+T3HhbZIOEHx+yqkBd3QuuGM7pxZ70ndneu02L2pak
-         Gka56JMyDSJHWo41EBjEsG6fueWuu400IbR14iJHu/RkkVs3AyXA/xLgYjf51LVzi3+Z
-         pYAMpb/fNs0hujCO//LHz8OSepcxvHSO4Btzg2p+Xosy4eiutXN9j7gFZ5TCLJjVU9tj
-         g2fHKMq57GEgiDNV/W0x0GKAbEuf266Skmxm6zRrlOqgMMeG6O/zDxFAwf19UnoMTl+7
-         iw6m0YEUzQuyi7d4STRB1Y7F/7ttI2hgMZ3aAAYaya+XaXDdYRFK0+xnywgnojAplGlE
-         kZGA==
-X-Gm-Message-State: ACgBeo3zicjYjB5oc3AHMoetKL15Is1JMlQIZ40/DLQEUUxtm92tYRWF
-        808HCPxCQ7uqJj/Zn2GCDCqKPBJ4hK0gXi+ZyiQ=
-X-Google-Smtp-Source: AA6agR5BmWr4dxeHYbzgF2r3IA5gsuQZCKR7lsQJSY1hZoTXqAIMjDKu2wyQPrlA1TP6jOnZTtK7RPZIAi3vn39Rsbw=
-X-Received: by 2002:a63:1c11:0:b0:41d:89d5:8ef0 with SMTP id
- c17-20020a631c11000000b0041d89d58ef0mr22995080pgc.403.1661310978261; Tue, 23
- Aug 2022 20:16:18 -0700 (PDT)
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc;
+        bh=Tpi/aztaevRXhD7hpGo9AB7PidGdRBw6bYsB56/l300=;
+        b=OraE2Uc4SkbmWJGfdHjB5oTvxOKKjN96MnDGc/aaEppm10MdQS0V5kr21xhOFrfvMF
+         jLpPr/5890iSENzi882CSaR51Kd63yMrUbCAIERdEl2gzzqAYepX8yM2b8UdAI2xrrMm
+         EKnExOoaDMhhtA9QQ6gix36YjbsfuY6qbQ4kAqB7uDkjTj58wS1OIuVVj4r7v871lxde
+         rP4emPJ9MiFrthjCdewxs6GZ/bOMMan2AZRFb5cl+ZOm6tkUvK78WJWoEB0fm3O9LO/V
+         tA1/Cn66IBU21W5tasbsAlSgmpcEKIx8G4pEapaCM5hJsr6AeRrzXuICRjI8ZD8omILn
+         zusQ==
+X-Gm-Message-State: ACgBeo3HR9dfWp5LN+LmujA0Yvph6a8L0yCcx1K5vqaSiP4Ok+LKPl/Q
+        KKbEkJMjS47mnxSooURAM5e3xTIeHSvk5g==
+X-Google-Smtp-Source: AA6agR7AMr/bgz1PhIIsUZbSXs81IoupTfviiyC7K55cuPGqDxEjgc3Q528MF6C4osD9ODAp8cRxWg==
+X-Received: by 2002:a63:1265:0:b0:41d:a571:2805 with SMTP id 37-20020a631265000000b0041da5712805mr22776158pgs.230.1661311223731;
+        Tue, 23 Aug 2022 20:20:23 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id iw3-20020a170903044300b00172709064besm11237792plb.46.2022.08.23.20.20.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 20:20:23 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 11:20:18 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Arkadi Sharshevsky <arkadis@mellanox.com>
+Subject: [Question] Should NLMSG_DONE has flag NLM_F_MULTI?
+Message-ID: <YwWY8ux/PyMWQBWr@Laptop-X1>
 MIME-Version: 1.0
-References: <20220819092607.2628716-1-dqfext@gmail.com> <20220823152625.7d0cbaae@kernel.org>
-In-Reply-To: <20220823152625.7d0cbaae@kernel.org>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Wed, 24 Aug 2022 11:16:06 +0800
-Message-ID: <CALW65jaMSYOFP0njSCBn+T0TZeKjeWp+GWWWKzE2HH0OOO+FxQ@mail.gmail.com>
-Subject: Re: [PATCH net] net: phylink: allow RGMII/RTBI in-band status
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 6:26 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> Qingfang is there a platform which require RGMII to be supported
-> in upstream LTS branches? If there isn't you should re-target
-> the patch at net-next and drop the Fixes tag. Not implementing
-> the entire spec is not considered a bug. Please clarify this
-> in the commit message.
+Hi,
 
-I'll send a v2 to re-target net-next. Thanks.
+When checking the NLMSG_DONE message in kernel, I saw lot of functions would
+set NLM_F_MULTI flag. e.g. netlink_dump_done(),
+devlink_dpipe_{tables, entries, headers}_fill().
+
+But from rfc3549[1]:
+
+   [...] For multipart
+   messages, the first and all following headers have the NLM_F_MULTI
+   Netlink header flag set, except for the last header which has the
+   Netlink header type NLMSG_DONE.
+
+What I understand is the last nlmsghdr(NLMSG_DONE message) doesn't need to
+have NLM_F_MULTI flag. Am I missing something?
+
+[1] https://www.rfc-editor.org/rfc/rfc3549.html#section-2.3.2
+
+Thanks
+Hangbin
