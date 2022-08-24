@@ -2,86 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 549DC5A0065
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 19:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A92465A006B
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 19:32:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240155AbiHXR3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 13:29:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36520 "EHLO
+        id S240101AbiHXRb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 13:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240161AbiHXR3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 13:29:35 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC3E7CB6C
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 10:29:35 -0700 (PDT)
+        with ESMTP id S239329AbiHXRby (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 13:31:54 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D957D78E
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 10:31:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661362175; x=1692898175;
+  t=1661362313; x=1692898313;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=z+MAp943wuKQb3jvUQqu3rm5C8s7xkATrPwEFY0Wdx0=;
-  b=WdCynT4w73bb7PPUClwDlHM9NThkwwib5aIJsSNW1GdzMXNgtzKHGf6D
-   poJFC+PkF1sZ1Uh5OezYjf6lxyPPiIU2xVrP2Q7z9llHmAlJ1kv07pAGe
-   5sXdhX/zQrEfZfObtIvH/hiWBN7n4itQ6dqU+cmC30Udc5z77/VlWNr1X
-   UApZX2i4CYT569rBFh78Doyu/iuD7KdAiCmbBsUaXEOi4S1XTcdqHhTkE
-   fAaHpl8FSAw717RKvOl3WzCEuzjrfkzQw5h7C+FTv4++UGI69C4184rzM
-   mdEG3O6zlip5SlRsHrPx+XNghHqHnKtIftoBfVVI3Slqo87C81dzeyUG5
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="291596833"
+  bh=pilkyqOc9uBMUN9c/u/7N1SpGiAaO0LFzsrRRbibAhQ=;
+  b=NulGYbsR8wE8X9YLc9ff+M9VQUQGKAL2lYLMMQUqVxYMsU62hRDwSF2J
+   FgK/RwIcGce4zcHsSvZatjkRY5uQCDb9hOV42cyjzHCI0+98hqQnLtlr6
+   AnfYkLFgO4BmfiiEazOtZOTwruaDceHWLttKyAFCE9cGSOylpnacYwBQ7
+   cZghM9nZ3ludIJ7fr76ZPsuP1NdbLcY1R+vqAZu5Y9ExA/w5MU04ui5he
+   XxKjI9k7XYWDECg/vgeYdbOGVPQEpy772LKNIxZhuxRYAgcMLFfe00GCe
+   2En0fREAboyQKf/QUNqrBep3XU9icE4T+gUFSCcAwPpapJS8XmSIXpTEK
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="294031268"
 X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="291596833"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:29:34 -0700
+   d="scan'208";a="294031268"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:31:53 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,261,1654585200"; 
-   d="scan'208";a="785704394"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orsmga005.jf.intel.com with ESMTP; 24 Aug 2022 10:29:34 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="699150697"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Aug 2022 10:31:52 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 24 Aug 2022 10:29:34 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ 15.1.2375.31; Wed, 24 Aug 2022 10:31:49 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 24 Aug 2022 10:29:34 -0700
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (104.47.51.41) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ 15.1.2375.31; Wed, 24 Aug 2022 10:31:48 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Wed, 24 Aug 2022 10:31:48 -0700
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.49) by
+ edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 24 Aug 2022 10:29:34 -0700
+ 15.1.2375.31; Wed, 24 Aug 2022 10:31:48 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mmoz0OgWPQujCHf9Sv9xAHu3Bk6UazE78IBmPdHukRUfQIe+ryCRNTanIQvoV6Hoo3FcaKqjS997kLj6sVK3/eb/mAPqZS/oicEPaodS0M7trOiJfVjAMJGnE+h5SYRbY0P0Uj2NMPoHBqr7kezZN3HrZdCIGXe9TsHSHjwUVzyq/Z59MJmexHnFt7xZoaRN6qz2EzyWFXdfCM8XDuOY8zStIvDZufJW40Pq8BAM2vAyIpkYW7Vjf2teBggR2GJTGCuqadrsgTtf4SncTn+n/sA2CA2OuzrUknB2vkc3adcUfAIwvcxqTGV7OEo7NF/yYh8yNhYtLV3iwq0T1zIvOQ==
+ b=XhcdUJAY0w2lINoWOXEQMLWSYPEsuq2hnQMTvbGRxiUt+8RCPj22tQI3RxirBya8zVK5TlW0ZUxdRgOD7L/HJEgxjLNDoib8WS/y/4nWsRBtXOVIDWSg73Vz3kQVSO3qdki+e5xplP3cZ9wMSBKSks3OqdOzGVueVA6xaaoiLq/NvahibbPRHlYai3kCgRlUyB04LP0ZzY/oaHE89StCKAhH9wPssLgwbck1mq7Ktr6W5BvT4tRmt7N2Ol9DrumwPvgMJsDXnSfPYMFSVfrnDntEMGpZYGA93+Bg4IXTw94/OsdZehh5TLvrTLv69BjM3tZFYyhzBWm+cOXNF7oyPw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tlpPlZl5toN7AAunNiw5VKxlvbq4GbksyMU+Hu9UiN4=;
- b=Uk3J4JnRKT2tQC5m203Jmskip7jM3PwQdoswxTAJCIZXu0VmSqbQyfChqertcHkGc+UQGnHqONo1xmBshASBqyocfp4jN8E7VKRpkGWOURJ4kkIlJfUEmxIhsB+eh5p8tme4jqrAZFxRDR8czkPUA+E+h4kcd8+r/orS7GR7VmLNFn8l8LE7q5FLX74Lcfkh062199IuMOixWQFTxVyDw1VVJSTE7FSABdNUgiOGQdqYE5cZDs26OGBf7mCSZmixL1+jA4DQJYBoNv9pvpnLHRB1IRVI+5jh/Qx858j7++ftB5ZTzoaWJfJAX+7uZxjtn+Dp7dY3HbuhSYlkJL8gHw==
+ bh=pilkyqOc9uBMUN9c/u/7N1SpGiAaO0LFzsrRRbibAhQ=;
+ b=R6hmxWOLYf7gEdfDrDBGvNYrt+BCHw4BLzmjfdGjnY6ru37cypoFTGaRfb99hUL+o/kmGFhPTTFh1PsRkXko1OKP01hGpPj1o4prwEYGoGKS/lZ0uZm2INbdSn1cqTUY/piK5iSHruLLR3pPvfb67qpoZSOVcPAOEhdBYE33V2h0tMjm9nJdAZEyJk4qogWnrQmT5Vz82uMQ2sl1oQaiglwPrQm2yc++Nq9arQuVXUGxaKR95gPuEmluvQFBAxlBzK/s/87lEozFEhbo0bg3lsfm049QUTvpBmP9njl6w+aWB1sioDoo22rv8Ptgr5f4mkHt5v+Ar0dVS1wolkBboQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
- by DM5PR11MB1564.namprd11.prod.outlook.com (2603:10b6:4:d::13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.22; Wed, 24 Aug 2022 17:29:31 +0000
+ by BL0PR11MB3505.namprd11.prod.outlook.com (2603:10b6:208:7d::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.22; Wed, 24 Aug
+ 2022 17:31:46 +0000
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5874:aaae:2f96:918a]) by CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5874:aaae:2f96:918a%9]) with mapi id 15.20.5566.014; Wed, 24 Aug 2022
- 17:29:31 +0000
+ 17:31:46 +0000
 From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Greenwalt, Paul" <paul.greenwalt@intel.com>
-Subject: RE: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC
- disabled via ETHTOOL_SFECPARAM
-Thread-Topic: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC
- disabled via ETHTOOL_SFECPARAM
-Thread-Index: AQHYtwG/f8zW/T1x2kmfvh0Pne5Gi629DlOAgAFBZtA=
-Date:   Wed, 24 Aug 2022 17:29:31 +0000
-Message-ID: <CO1PR11MB5089DF4A594B96E33E7656BDD6739@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <20220823150438.3613327-3-jacob.e.keller@intel.com>
- <20220823151745.3b6b67cb@kernel.org>
-In-Reply-To: <20220823151745.3b6b67cb@kernel.org>
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "idosch@nvidia.com" <idosch@nvidia.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "saeedm@nvidia.com" <saeedm@nvidia.com>,
+        "vikas.gupta@broadcom.com" <vikas.gupta@broadcom.com>,
+        "gospo@broadcom.com" <gospo@broadcom.com>
+Subject: RE: [patch net-next v2 4/4] net: devlink: expose the info about
+ version representing a component
+Thread-Topic: [patch net-next v2 4/4] net: devlink: expose the info about
+ version representing a component
+Thread-Index: AQHYtkkWIcI2dxy1T0mjsJmFZSav0K27zKYAgAA8AICAANiggIAA3yIAgACRicA=
+Date:   Wed, 24 Aug 2022 17:31:46 +0000
+Message-ID: <CO1PR11MB508905A2019ED7C98C2CEB6FD6739@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20220822170247.974743-1-jiri@resnulli.us>
+ <20220822170247.974743-5-jiri@resnulli.us>
+ <20220822200116.76f1d11b@kernel.org> <YwR1URDk56l5VLDZ@nanopsycho>
+ <20220823123121.0ae00393@kernel.org> <YwXmNqxEYDk+An2A@nanopsycho>
+In-Reply-To: <YwXmNqxEYDk+An2A@nanopsycho>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -89,54 +101,54 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7755bcd3-01fa-4b14-5a6c-08da85f634aa
-x-ms-traffictypediagnostic: DM5PR11MB1564:EE_
+x-ms-office365-filtering-correlation-id: 3060458f-5251-455a-296d-08da85f684b6
+x-ms-traffictypediagnostic: BL0PR11MB3505:EE_
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Nkbjj7Yv1x3Gv5KR/akn6MzsyuXxdJkcldBkN7gm2kUJvFTk1knDSOENUb88ccEu2CHk3+4JsOSVZTtdAOid6vN10vE1dDySZAKttbqYR46er9k+HhoV8DMYxl3cinBPV6qq1wiftOLaUgE0MIZhdU1v6cHhj7KLau9kP47WqmaXL7FnGW9V2vfh9RWMVGkgd6AEkA4uvp1XYOBs8SU5G1F1oYc930nrdtTzMupTqU7l4FnAklwry2JiZ2WHW2KQumvMTBeo0tNCInir4AS8NudTqNEAxdyzcel3JhRH4X2Dz+CuEZp6YaCWr3ve7vAHrs5MjklrejTbZ/sREuvlbnCY18a3MqA+D7E7YqZKaPdcpXLcF3B6oFTQuj0TCapnAuLUjK52/lIh5TTtx1LcZW6acj4FPAiLBXizCVrHKFGXdjp0GS8xzsDcFy4R6ESyg5mrV3tNzhBpq7PnmufLRudgQ2YH3kyEHFtsKo8T49SQs3T3iu1EYnwcAX5bZyC3un/6boVZPC3nM5crgN46BEQIZDeOinT1L8Mk7/lu3fkzLv7K6I11NtXqygjw2TAN5XXQ+bL/QLbtfpEn4caAl+BBkdenCMC6+8OTbzsFRIEDLP+Zx8zADvmj7JFjJW0VmmOICiC5lOiN38tKFwQDqTh+Qk4QjroIV3rGpSfBjNEdQtXnfU6eFEoVinfxWzhUwh82J7X3WhpqR4cL8QOmoLgC7z5wky3oI5jh2/K0WyvxKUZPsHBmS0YO1tTbHt9jcttkkNrDNsXk5Krku3LsPQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39860400002)(376002)(136003)(366004)(396003)(66556008)(54906003)(6916009)(55016003)(82960400001)(8676002)(66476007)(86362001)(66946007)(76116006)(52536014)(316002)(4326008)(38070700005)(66446008)(186003)(83380400001)(38100700002)(478600001)(71200400001)(9686003)(53546011)(6506007)(7696005)(26005)(33656002)(107886003)(8936002)(5660300002)(64756008)(122000001)(41300700001)(2906002);DIR:OUT;SFP:1102;
+x-microsoft-antispam-message-info: hlmdMCgJ9Lh6gljj32Xx9AovTi+qWQGuOmcJl3sCTMHc0cyTBbWln2dHhtLRJqj5SlTg6G2/1JdHkKjRTjzHWj7v3Mt8pvdPNbCfPE1q3Ldgbl+cKuSj978VplpHToLT+1IK14OZyT+g5NNbQxMSF1lYiO2h6qaBTesyJ0wKlEEji1usI9uecHuyUoHE8JS+X9Ocqj7TSM4yx7CYXBQsa3aURbxpaDpZJX8iW+/X/UraKnxkY5FuHPxpClGdu4XCKfXO5I6q9/DaCdHl67jAWD4OVmTmhK6t0Ch97Z4ISKSDhXxeH8YNRp57AnLg8AEYgOKZ/zjTzc7/gFqMt1JNv158n3/uKbNkzik1Iar2oGDlx3f0h8h9vp/mr0XAgIQ0lcyuf67FxfAKOH77zhZGwUCvFneTfasKwt/iUHhpJdgCILxNn2/dDqYC/RVt9RoyeJOqmi7D1qc/IH+Fmpr8gfog23KwOn+5tJ8Uk0dUNdnikeh6wqWVKXCeVLdQD6cBtF0iTfLeGBFFeJETQpHNwA2AXxdGChhrFpRlS95S+uBYGd0kJxWbuQEfw4GH4NedBFM+n2G3f18u+YXxuuW8dwqZwIezj4pGGqhQtZiKmjYIfSSnO8l1EkGXOPrnFTps6fA+K8mGtaHQ/fc+v4Sc09CYRzTG4d4KBNKAPb5qJjIJKmidssT9Uey8AZtN/WttjvVkUDPxofQ89s8huKc+gdDskil/ga8c7XJgW7UKoHhUAjDE1iTFV5GurCxZh7cNKG/QUhqYBlTvdY2szNyFHg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(396003)(376002)(346002)(136003)(366004)(39860400002)(110136005)(122000001)(54906003)(4326008)(186003)(83380400001)(38100700002)(86362001)(71200400001)(316002)(33656002)(76116006)(38070700005)(66446008)(66476007)(66556008)(82960400001)(8676002)(64756008)(66946007)(478600001)(41300700001)(55016003)(2906002)(6506007)(9686003)(8936002)(7696005)(26005)(53546011)(5660300002)(52536014)(7416002);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3py25Ts/I1Tes8QW7LfSmQ1u/HPbnbsLs4spa+wxViNok3z/fzmgjDaZ5Yvf?=
- =?us-ascii?Q?TuVrjk0/cDOtFpH8kIaUdFZ4LkGoPqD/jImyvjDlrcZT8qXbPbRGzqGXPyDZ?=
- =?us-ascii?Q?lrfXx5PbQtqPY4SSJFbDmEabRUMdrUq2yyq7vuJe5J0dHRwJGtu4IoLkKQXI?=
- =?us-ascii?Q?plDkD+6lBwegrxl6D4ey5RWcsxQnklLmVD8d8UbT5qVWU8j8T3yVAGbHhlXG?=
- =?us-ascii?Q?s3QNehjiHKNiDQqIzEu5vpTYEV9DNDsQHvI41DQJxYWwO7vHyv2i1TcIR1M9?=
- =?us-ascii?Q?5W7sM+BeT4WtEDVmG8EJK1QQ/Suu+WdUb2FfyytWEAKTwZwEkNsdcG2U2hUd?=
- =?us-ascii?Q?UQGodIbEsXU94i/lR3PRHQn/vMCfD03TO9IQ157rATo69/clyYrN5SMzmvsh?=
- =?us-ascii?Q?IQLRwGeYkUzTblj141cYln9QEQWWTmjgYNf0ZS0/PjWOCD4PiDhubG8lTD1g?=
- =?us-ascii?Q?Fwo+BqQhEFzfUaITvsIoLUuHoue5vdNSYRmG/NIVcs6pYiYCgfADXSsy4k8F?=
- =?us-ascii?Q?tq3afVrlWnLaVrwDMT8bcdGUGwrt94yEj1zAFllexj7CoRim3LlempdFPVHD?=
- =?us-ascii?Q?AObBXtyNHqRK8jkOusLBa4GAA+sExNzBLaDcKyZG3wB3pE/L55Y83PNXFUzP?=
- =?us-ascii?Q?5W2xWPBB/SWRBbWWEj171tsBJ3IvySvj6mOoKEbGzzYN18ciKVrNvmsIC7YS?=
- =?us-ascii?Q?Zd8PmYuRMfaUSGDTxlhpriFXtTYD9NDvYa3D67mH9okwq1yhfY60QpIzCHID?=
- =?us-ascii?Q?6qzMxsy0CMe543q579bdb4Z3JYJFgRp5vI+8tVECbnV+JcwMHsACTHRq95g2?=
- =?us-ascii?Q?mPjTYjg0vyXrb1Y1cUV0KpQi2W7L1J3yIxahcsTuCsaeXt9ySd3lAwPEpYyP?=
- =?us-ascii?Q?fyQrWuHpFvjWoO4dQRVyrQ+wpPgBVtTWZrr1QGV0Yy47N4OdJ/iZQJma1X7R?=
- =?us-ascii?Q?jj35sqolM9IHy0IAMaH93pYhx08QS2UIRT/BieeZI0h4FoHo1mdCu+VKBmWI?=
- =?us-ascii?Q?tYjjTw+pydFvBA/HJFiQUsc42CAmom+dm4g0gXD+BlR72jzTMU9YBgCqLk5C?=
- =?us-ascii?Q?mTIITwev+gCi1N8urNQ1C6XzWsoBXnsyHwWgSrU8ylZVJtCKEixpcfC2WapR?=
- =?us-ascii?Q?YenTIbhgvQqSu5RpuIkmTWwqdd64j/aOVgACCMe3gBlzXMs9bDgpKr8zALYI?=
- =?us-ascii?Q?QoVl6P5sZpxmM58rMI1cH5212vp9jp4DouZwJH7jB8GJbwDlwqxFV5tC3SQh?=
- =?us-ascii?Q?eoWIUO4JBv2pCd34E2e+3aF7hb73iIqy+HxLaaIdUyV+OITG5uPtK8S0UO3g?=
- =?us-ascii?Q?8AAVGXarcCpcsBopgYF02RsXpLFgJ0AKX399b3qM+VbNV+y1ZUgEhDmKHfVe?=
- =?us-ascii?Q?q6wNdmUNZN9m/vCxqKhuNVdSKXEac3FrMmXSJJIXir6NdKfys+HFY5GkKYWP?=
- =?us-ascii?Q?A4yCnYO26MdNaFPXhr4HX+7fJYJMYzY0BW5jgkGWW063U6PEReZGb1+aPcSK?=
- =?us-ascii?Q?YORJNojS7Vk12i3XMOB36JCNx2u/TPUvolqdfr7LoaOQPs+IYXqU+B+GKxOA?=
- =?us-ascii?Q?pVp8tp8G3NY7Px02KbEHDsad+7xh6v5kbHHoZYdP?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?foMgBateO12sgZcE81FTSRD72L4xtTrjowYQGMHROlVvv/k83EhWUsdhZg6a?=
+ =?us-ascii?Q?55kWBDEgBoIWXwmBfNQkvZQANIo20gGE5VRO1f1Txt3yRN/jGzBSZ/BFJMVI?=
+ =?us-ascii?Q?DH9sW1/zDxV2toK/jE1JeaghiZc+GFjxPpnGDjqOnIUUJIEdt7xULYq5WZQA?=
+ =?us-ascii?Q?vRtGQLgNs2L0QnQyk9mxMb6zdZ3Lh7+YM3/eKsfjQa3gl6LMlyVgcZHirjqY?=
+ =?us-ascii?Q?nUkoinTr4Umckf0YJHAl8l451hqJUAXpXzlDp81yh7pEDusd/1/BCKS2Be7f?=
+ =?us-ascii?Q?BQ8WIB/rqel5ZaZx30vACi4WB5x6yAq3+Bq9ic2qoVTSIPxvb4+oBL+ZUP6b?=
+ =?us-ascii?Q?KPY1+MWPi5gdJWcgGNlftzqbZWrLSF3fZxdvC/jAzoHKPtd5rRAgY/FdkCGT?=
+ =?us-ascii?Q?tP0PRpn1G7YLm2ZVRxeFwAhH41zMpKQbNOoyQA504yn0DCZww7lBQOajEkIC?=
+ =?us-ascii?Q?tlz9jO1wC+q1+mf9USQ98qMVkcYldsFdckNkC9TUVCtAj2UGpDA8P6KexojR?=
+ =?us-ascii?Q?mDqzU4UkcFqDNQWqbmsc2D6N0YY7nIBa6S58MHDs5ZQy1eBd7Aoi3EbODKim?=
+ =?us-ascii?Q?A6uwW6Y6kfy+Sb/KIjMbFJZBIgotYzDuHPlyEnOl6WPTVLxUDyf2l+AmNjq+?=
+ =?us-ascii?Q?xP3zyNhIiIyTZu+ukGwH0cD5JQ5idlYyH1JeKYfJvhbV9fECwIQD+HloOM3V?=
+ =?us-ascii?Q?+AShrM+6XLlIxU738ebDU8UnJktowyaM9T1j7vb/iRf/0caI+XgTQdNpOO57?=
+ =?us-ascii?Q?c9zKNXFtv9WMpF7P6zDSzhHfGmT2bFtShRFiy7awcCM3se2xBFXRq5uSzHUH?=
+ =?us-ascii?Q?ncrpOQAwQlBbeHirKcx+YsnsEra06oHnzLHRL+og9K+PFApziZRUxI/8dIvk?=
+ =?us-ascii?Q?xIEB4+MzeJbUpzhgYgENs7pi1Ka9HMluUOZkAhIF9W+5b1tGflo4398Tz1dy?=
+ =?us-ascii?Q?/6ETa04IA773jK7D2SLurk11wCz/22rnVluojzWLggVDDLQqk30Vf+iJxgr4?=
+ =?us-ascii?Q?HmVIR/GQ0Mp9TF7B0cMQLAI4FAQEJBzhwHm/oYc52/VTtueGMyjjEO03QU93?=
+ =?us-ascii?Q?oGut8uD2AzwEFrNYCRU03DTgozztnSmSQIoJZR5VaLQrQzNVcdBxguSFYwAX?=
+ =?us-ascii?Q?QBa1ZRsxWaR+ZrCG63/UjBOM7aPV9NSBqq2vAYkNMJllLmOQzQY6jU49o3Ja?=
+ =?us-ascii?Q?xLfxyBs787xYNc+u/qLaIRJJdhU26GRU2y7fvcjjnhYeSGJW/03o6i9W1cCv?=
+ =?us-ascii?Q?nyhJ1eJxl/rB8nIePxXn1BC4ODuyhOGWlfeYtMNyKUz7rUQ6erXu7ff8ELhS?=
+ =?us-ascii?Q?UkPh3HkZNJ9U5WnXwnZVbKSpJI0MegF99PI5OD879x/SCUiXNxcsVa8qrJx9?=
+ =?us-ascii?Q?4oL2g/ST9r0UPWSHMttsGayNTzW61fW1cDUTAk3mJfUUzwbu+bEf/rGHX44n?=
+ =?us-ascii?Q?vuUbd88yM6D9nh7tHaS7YeQjMV2pYG7f+iZmTQg29Kxen790DQ4zmDHbtmvQ?=
+ =?us-ascii?Q?o5JPjauWRfxtXs/r905L/oNXHWXsZ5oCb/H7HGxXGWXqodZNv4p9+Yu/O7PO?=
+ =?us-ascii?Q?tZR57Dpfdrsl0Z40pajISrVzxm0QFvUIUTctL8jH?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7755bcd3-01fa-4b14-5a6c-08da85f634aa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 17:29:31.8062
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3060458f-5251-455a-296d-08da85f684b6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2022 17:31:46.1169
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YBvx4KnGxZuG9k2BewS98wWHVK9EulQIDyz/aaFWJw50tlxqMRJV3NbvDHMCDCt8uHLaTQlO/sFtzA4Pnac88I5ghizdRdaHq/UDBtIdzz0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1564
+X-MS-Exchange-CrossTenant-userprincipalname: U41SdUTuRaMjbkg6zrsu+nXeL5nd+PK/IE8KKP5b5lC8b46ZxskMaIv9GiwoRAKf+t2FRe+wua2J3e5C6a8iZ1tshLcSP7+FBYcGYrCCcw0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR11MB3505
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
@@ -151,52 +163,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 > -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Tuesday, August 23, 2022 3:18 PM
-> To: Keller, Jacob E <jacob.e.keller@intel.com>
-> Cc: netdev@vger.kernel.org; Greenwalt, Paul <paul.greenwalt@intel.com>
-> Subject: Re: [PATCH net-next 2/2] ice: add support for Auto FEC with FEC =
-disabled
-> via ETHTOOL_SFECPARAM
+> From: Jiri Pirko <jiri@resnulli.us>
+> Sent: Wednesday, August 24, 2022 1:50 AM
+> To: Jakub Kicinski <kuba@kernel.org>
+> Cc: netdev@vger.kernel.org; davem@davemloft.net; idosch@nvidia.com;
+> pabeni@redhat.com; edumazet@google.com; saeedm@nvidia.com; Keller, Jacob
+> E <jacob.e.keller@intel.com>; vikas.gupta@broadcom.com;
+> gospo@broadcom.com
+> Subject: Re: [patch net-next v2 4/4] net: devlink: expose the info about =
+version
+> representing a component
 >=20
-> On Tue, 23 Aug 2022 08:04:38 -0700 Jacob Keller wrote:
-> > The default Link Establishment State Machine (LESM) behavior does not
+> Tue, Aug 23, 2022 at 09:31:21PM CEST, kuba@kernel.org wrote:
+> >On Tue, 23 Aug 2022 08:36:01 +0200 Jiri Pirko wrote:
+> >> Tue, Aug 23, 2022 at 05:01:16AM CEST, kuba@kernel.org wrote:
+> >> >I don't think we should add API without a clear use, let's drop this
+> >> >as well.
+> >>
+> >> What do you mean? This just simply lists components that are possible =
+to
+> >> use with devlink dev flash. What is not clear? I don't follow.
+> >
+> >Dumping random internal bits of the kernel is not how we create uAPIs.
+> >
+> >Again, what is the scenario in which user space needs to know
+> >the flashable component today ?
 >=20
-> LESM is the algo as specified by the IEEE standard? If so could you add
-> the citation (section of the spec where it's defined)?
->=20
+> Well, I thought it would be polite to let the user know what component
+> he can pass to the kernel. Now, it is try-fail/success game. But if you
+> think it is okay to let the user in the doubts, no problem. I will drop
+> the patch.
 
-Hm. I am not sure if its part of IEEE standard or if its just the name we u=
-sed for that section of our firmware. I'll get back on this and if its not =
-part of a standard I'll rephrase this a bit so thats clear.
+I would prefer exposing this as well since it lets the user know which name=
+s are valid for flashing.
 
-> Is disabling the only customization we may want?
->=20
+I do have some patches for ice to support individual component update as we=
+ll I can post soon.
 
-Of that, I'm not sure.
-
-> > allow the use of FEC disabled if the media does not support FEC
-> > disabled. However users may want to override this behavior.
-> >
-> > To support this, accept the ETHTOOL_FEC_AUTO | ETHTOOL_FEC_OFF as a
-> request
-> > to automatically select an appropriate FEC mode including potentially
-> > disabling FEC.
-> >
-> > This is distinct from ETHTOOL_FEC_AUTO because that will not allow the =
-LESM
-> > to select FEC disabled. It is distinct from ETHTOOL_FEC_OFF because
-> > FEC_OFF will always disable FEC without any LESM automatic selection.
-> >
-> > This *does* mean that ice is now accepting one "bitwise OR" set for FEC
-> > configuration, which is somewhat against the recommendations made in
-> > 6dbf94b264e6 ("ethtool: clarify the ethtool FEC interface"), but I am n=
-ot
-> > sure if the addition of an entirely new ETHTOOL_FEC_AUTO_DIS would make
-> any
-> > sense here.
-> >
-> > With this change, users can opt to allow automatic FEC disable via
-> >
-> >   ethtool --set-fec ethX encoding auto off
-
+Thanks,
+Jake
