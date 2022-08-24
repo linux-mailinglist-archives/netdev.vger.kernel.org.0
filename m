@@ -2,336 +2,315 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2CC85A049B
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 01:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A83875A04A1
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 01:31:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229923AbiHXX0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 19:26:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40862 "EHLO
+        id S229510AbiHXXbZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 19:31:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiHXX0a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 19:26:30 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3809481E4;
-        Wed, 24 Aug 2022 16:26:28 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id h8so5735536ili.11;
-        Wed, 24 Aug 2022 16:26:28 -0700 (PDT)
+        with ESMTP id S229492AbiHXXbY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 19:31:24 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9697F7B1FA
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 16:31:21 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-336c3b72da5so309828787b3.6
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 16:31:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=4DtSuFmeHUObCD5eRg7i5V6xy48JNioy5DBVx1Wrttw=;
-        b=fC456US7saT8DwJTRMTrXMjo7Uw5VWPP8G/w7erIsZ3qY/XNgapAzTZp6H+4Zod6ab
-         eFIS8n+haS9Mr3RIpyAd049yWQCtJw+IWlOz8Fbr+b6+Ya+0jTuHaMxTuBZ140ImrzdE
-         XJlashnChi32SUn5FOTnxkqTurGxj3+atLEifZBO1SzWNWjuDuc+Ab6hn8kHBuerfDJz
-         15d8QbUR2R+wbiuUr2tnJQLwOIgniBiqqtMupSwEW8Vegxz7xW4dKdIgvQ6BvvFSClB8
-         FVItRaeCU0ZXHPiTcP/kRo6oT48vTWNsVE+yheLQfE0P162Gk0YHbFbNgt1Ix01d3xgJ
-         I1mw==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=zZwPGYUVJye6hZOHHzL0X28s658FnIs2YBQ2ocWzCss=;
+        b=cF1xK3komi00uoI0hPSNz3kMkkbunVkLbCE3VZvLP3r/nUdWxRw8BTi49FuJQq6/u4
+         yvuZwkaZqDjiGwE34UthXs7XHnRhYLTsSHGnhvZmuyhTLnaPROG4ixeeaVZJaO4Gl+md
+         25xA99ZOqiiCQufTqmoxtf0dEXM6sSXSH1TXCbzCHG8pF3o62tU8snvkW25W/PfgrlNg
+         2qS0UbTr8qAuuT30FikKFUFzXTcV6q/6oatK6uqSvujVbmx/C9DJOzkKdyPQeBiePLzi
+         RJR+AJniQqx47Fhzu90eGQ9cG6YmBzDACuguPuG5o63WZVhxFqLd0y/dPJp8GzBN5kEw
+         VnTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=4DtSuFmeHUObCD5eRg7i5V6xy48JNioy5DBVx1Wrttw=;
-        b=qpu9Mu4F7tdOs/qANogM1Qj31cHQp/atdoMHUVrrB9NfRPMu+h5uUe8JOoUH0Thcxv
-         BpVR20S87XWGy77vZZTvuzpqhyjqEPjhjSy8NDr7oL7QnOgclhh5U7AOWEqKVr+YUJ8D
-         9OyPiT+oUSM64OpCrako9eJvb1fPsFIBT6uz0qaBKvstNnmtZHj2n1UnrLOsoTHT/2XX
-         BSY2EJFs9fxQxP+Lp/D0B8H2u1FyokrVCON3P0WpwInORRIJpp7tvWFiZ/ulC7/KqIWX
-         99oygJEmT7RdxJYC+TRIbBUvAbmxNFA5OClUjPgaONCqoV4zQQN0vMuPiM0x+Rvh1m7g
-         vjrg==
-X-Gm-Message-State: ACgBeo1EOp8EWahsi6wzBLAva3VZE8OE9fYuQ+KFWptn+YpiqbOg8lEa
-        A5OXy48jZjd9J4Mvt2sRfZdxBhpw2C2pxgsAdoE=
-X-Google-Smtp-Source: AA6agR4CovdhnarcZeAmZg2Ho9Oc2uBFInTH4dGJKjXV87gmm4+fp8Zl7+HTWCtoiyDrQKBsN1rfS5d3LrByzXRf884=
-X-Received: by 2002:a92:ca07:0:b0:2e9:7f3d:4df5 with SMTP id
- j7-20020a92ca07000000b002e97f3d4df5mr601024ils.216.1661383587817; Wed, 24 Aug
- 2022 16:26:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220822235649.2218031-1-joannelkoong@gmail.com>
- <20220822235649.2218031-2-joannelkoong@gmail.com> <CAEf4BzZm7eUX3w-NwP0JuWtvKbO6GxN911TraY5bA8-z+ocyCg@mail.gmail.com>
-In-Reply-To: <CAEf4BzZm7eUX3w-NwP0JuWtvKbO6GxN911TraY5bA8-z+ocyCg@mail.gmail.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Thu, 25 Aug 2022 01:25:51 +0200
-Message-ID: <CAP01T77izAbefN5CJ1ZdjwUdii=gMFMduKTYtSbYC3S9jbRoEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 1/3] bpf: Add skb dynptrs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Joanne Koong <joannelkoong@gmail.com>, bpf@vger.kernel.org,
-        andrii@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        kafai@fb.com, kuba@kernel.org, netdev@vger.kernel.org
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=zZwPGYUVJye6hZOHHzL0X28s658FnIs2YBQ2ocWzCss=;
+        b=3uIs1hjHOC2RyLdgxOB0AczuF9xwJuaFOMpX/JsMaBwL7WZOnfmrfHA1IzQvqcUYgZ
+         8CzVk2SsL2TVqXP6ClQ2v/DdPh8qp8j7X6RwhIpbUD8EXN5sAPMMFj7CAc6bu7uDRJDy
+         HHS9abh5i3Pxucc1T6qZ96puX6D8Uqu1Xt/tdCo8n5AUsN0riWvBhtpQlWsaoago0n4X
+         KmlwBZjlSAiS7JEVmlaRA9WweEyr6JSmVADHhWNF+vFO1it/2P0fohcGNm1MudRLwQ7J
+         DSHfcHr2QAvc+5vpCoT4+YINOJK3hXxbDBBO7k1w2FDuOqWXj8UPwl4omYyeo9BQgxKI
+         gCyw==
+X-Gm-Message-State: ACgBeo0AeICby7gTD3cauDnMj0PZtT9jhekbxH+Yplio+Z0nOm252SV/
+        baccrhrrJY0fokLM/KdM1maYmA/1HgA=
+X-Google-Smtp-Source: AA6agR5h5uQJogh7+IKIhgXKhJ1iYlE71No2XmYIz3F89/R2dsXV0+PlSKiuaGYk/gFRdhN/S99ls/4tQYU=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:9854:5a1:b9e2:6545])
+ (user=haoluo job=sendgmr) by 2002:a05:6902:154e:b0:695:c309:935f with SMTP id
+ r14-20020a056902154e00b00695c309935fmr1316772ybu.573.1661383880734; Wed, 24
+ Aug 2022 16:31:20 -0700 (PDT)
+Date:   Wed, 24 Aug 2022 16:31:12 -0700
+Message-Id: <20220824233117.1312810-1-haoluo@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.595.g718a3a8f04-goog
+Subject: [RESEND PATCH bpf-next v9 0/5] bpf: rstat: cgroup hierarchical
+From:   Hao Luo <haoluo@google.com>
+To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Hao Luo <haoluo@google.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Aug 2022 at 20:42, Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Aug 22, 2022 at 4:57 PM Joanne Koong <joannelkoong@gmail.com> wrote:
-> >
-> > Add skb dynptrs, which are dynptrs whose underlying pointer points
-> > to a skb. The dynptr acts on skb data. skb dynptrs have two main
-> > benefits. One is that they allow operations on sizes that are not
-> > statically known at compile-time (eg variable-sized accesses).
-> > Another is that parsing the packet data through dynptrs (instead of
-> > through direct access of skb->data and skb->data_end) can be more
-> > ergonomic and less brittle (eg does not need manual if checking for
-> > being within bounds of data_end).
-> >
-> > For bpf prog types that don't support writes on skb data, the dynptr is
-> > read-only. For reads and writes through the bpf_dynptr_read() and
-> > bpf_dynptr_write() interfaces, this supports reading and writing into
-> > data in the non-linear paged buffers. For data slices (through the
-> > bpf_dynptr_data() interface), if the data is in a paged buffer, the user
-> > must first call bpf_skb_pull_data() to pull the data into the linear
-> > portion. The returned data slice from a call to bpf_dynptr_data() is of
-> > reg type PTR_TO_PACKET | PTR_MAYBE_NULL.
-> >
-> > Any bpf_dynptr_write() automatically invalidates any prior data slices
-> > to the skb dynptr. This is because a bpf_dynptr_write() may be writing
-> > to data in a paged buffer, so it will need to pull the buffer first into
-> > the head. The reason it needs to be pulled instead of writing directly to
-> > the paged buffers is because they may be cloned (only the head of the skb
-> > is by default uncloned). As such, any bpf_dynptr_write() will
-> > automatically have its prior data slices invalidated, even if the write
-> > is to data in the skb head (the verifier has no way of differentiating
-> > whether the write is to the head or paged buffers during program load
-> > time). Please note as well that any other helper calls that change the
-> > underlying packet buffer (eg bpf_skb_pull_data()) invalidates any data
-> > slices of the skb dynptr as well. Whenever such a helper call is made,
-> > the verifier marks any PTR_TO_PACKET reg type (which includes skb dynptr
-> > slices since they are PTR_TO_PACKETs) as unknown. The stack trace for
-> > this is check_helper_call() -> clear_all_pkt_pointers() ->
-> > __clear_all_pkt_pointers() -> mark_reg_unknown()
-> >
-> > For examples of how skb dynptrs can be used, please see the attached
-> > selftests.
-> >
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
-> > ---
-> >  include/linux/bpf.h            | 83 +++++++++++++++++-----------
-> >  include/linux/filter.h         |  4 ++
-> >  include/uapi/linux/bpf.h       | 40 ++++++++++++--
-> >  kernel/bpf/helpers.c           | 81 +++++++++++++++++++++++++---
-> >  kernel/bpf/verifier.c          | 99 ++++++++++++++++++++++++++++------
-> >  net/core/filter.c              | 53 ++++++++++++++++--
-> >  tools/include/uapi/linux/bpf.h | 40 ++++++++++++--
-> >  7 files changed, 335 insertions(+), 65 deletions(-)
-> >
->
-> [...]
->
-> > @@ -1521,9 +1532,19 @@ BPF_CALL_5(bpf_dynptr_read, void *, dst, u32, len, struct bpf_dynptr_kern *, src
-> >         if (err)
-> >                 return err;
-> >
-> > -       memcpy(dst, src->data + src->offset + offset, len);
-> > +       type = bpf_dynptr_get_type(src);
-> >
-> > -       return 0;
-> > +       switch (type) {
-> > +       case BPF_DYNPTR_TYPE_LOCAL:
-> > +       case BPF_DYNPTR_TYPE_RINGBUF:
-> > +               memcpy(dst, src->data + src->offset + offset, len);
-> > +               return 0;
-> > +       case BPF_DYNPTR_TYPE_SKB:
-> > +               return __bpf_skb_load_bytes(src->data, src->offset + offset, dst, len);
-> > +       default:
-> > +               WARN(true, "bpf_dynptr_read: unknown dynptr type %d\n", type);
->
-> nit: probably better to WARN_ONCE?
->
-> > +               return -EFAULT;
-> > +       }
-> >  }
-> >
-> >  static const struct bpf_func_proto bpf_dynptr_read_proto = {
-> > @@ -1540,18 +1561,32 @@ static const struct bpf_func_proto bpf_dynptr_read_proto = {
-> >  BPF_CALL_5(bpf_dynptr_write, struct bpf_dynptr_kern *, dst, u32, offset, void *, src,
-> >            u32, len, u64, flags)
-> >  {
-> > +       enum bpf_dynptr_type type;
-> >         int err;
-> >
-> > -       if (!dst->data || flags || bpf_dynptr_is_rdonly(dst))
-> > +       if (!dst->data || bpf_dynptr_is_rdonly(dst))
-> >                 return -EINVAL;
-> >
-> >         err = bpf_dynptr_check_off_len(dst, offset, len);
-> >         if (err)
-> >                 return err;
-> >
-> > -       memcpy(dst->data + dst->offset + offset, src, len);
-> > +       type = bpf_dynptr_get_type(dst);
-> >
-> > -       return 0;
-> > +       switch (type) {
-> > +       case BPF_DYNPTR_TYPE_LOCAL:
-> > +       case BPF_DYNPTR_TYPE_RINGBUF:
-> > +               if (flags)
-> > +                       return -EINVAL;
-> > +               memcpy(dst->data + dst->offset + offset, src, len);
-> > +               return 0;
-> > +       case BPF_DYNPTR_TYPE_SKB:
-> > +               return __bpf_skb_store_bytes(dst->data, dst->offset + offset, src, len,
-> > +                                            flags);
-> > +       default:
-> > +               WARN(true, "bpf_dynptr_write: unknown dynptr type %d\n", type);
->
-> ditto about WARN_ONCE
->
-> > +               return -EFAULT;
-> > +       }
-> >  }
-> >
-> >  static const struct bpf_func_proto bpf_dynptr_write_proto = {
->
-> [...]
->
-> > +static enum bpf_dynptr_type stack_slot_get_dynptr_info(struct bpf_verifier_env *env,
-> > +                                                      struct bpf_reg_state *reg,
-> > +                                                      int *ref_obj_id)
-> >  {
-> >         struct bpf_func_state *state = func(env, reg);
-> >         int spi = get_spi(reg->off);
-> >
-> > -       return state->stack[spi].spilled_ptr.id;
-> > +       if (ref_obj_id)
-> > +               *ref_obj_id = state->stack[spi].spilled_ptr.id;
-> > +
-> > +       return state->stack[spi].spilled_ptr.dynptr.type;
-> >  }
-> >
-> >  static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
-> > @@ -6056,7 +6075,8 @@ static int check_func_arg(struct bpf_verifier_env *env, u32 arg,
-> >                         case DYNPTR_TYPE_RINGBUF:
-> >                                 err_extra = "ringbuf ";
-> >                                 break;
-> > -                       default:
-> > +                       case DYNPTR_TYPE_SKB:
-> > +                               err_extra = "skb ";
-> >                                 break;
-> >                         }
-> >
-> > @@ -7149,6 +7169,7 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> >  {
-> >         enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
-> >         const struct bpf_func_proto *fn = NULL;
-> > +       enum bpf_dynptr_type dynptr_type;
->
-> compiler technically can complain about use of uninitialized
-> dynptr_type, maybe initialize it to BPF_DYNPTR_TYPE_INVALID ?
->
-> >         enum bpf_return_type ret_type;
-> >         enum bpf_type_flag ret_flag;
-> >         struct bpf_reg_state *regs;
-> > @@ -7320,24 +7341,43 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> >                         }
-> >                 }
-> >                 break;
-> > -       case BPF_FUNC_dynptr_data:
-> > -               for (i = 0; i < MAX_BPF_FUNC_REG_ARGS; i++) {
-> > -                       if (arg_type_is_dynptr(fn->arg_type[i])) {
-> > -                               if (meta.ref_obj_id) {
-> > -                                       verbose(env, "verifier internal error: meta.ref_obj_id already set\n");
-> > -                                       return -EFAULT;
-> > -                               }
-> > -                               /* Find the id of the dynptr we're tracking the reference of */
-> > -                               meta.ref_obj_id = stack_slot_get_id(env, &regs[BPF_REG_1 + i]);
-> > -                               break;
-> > -                       }
-> > +       case BPF_FUNC_dynptr_write:
-> > +       {
-> > +               struct bpf_reg_state *reg;
-> > +
-> > +               reg = get_dynptr_arg_reg(fn, regs);
-> > +               if (!reg) {
-> > +                       verbose(env, "verifier internal error: no dynptr in bpf_dynptr_data()\n");
->
-> s/bpf_dynptr_data/bpf_dynptr_write/
->
-> > +                       return -EFAULT;
-> >                 }
-> > -               if (i == MAX_BPF_FUNC_REG_ARGS) {
-> > +
-> > +               /* bpf_dynptr_write() for skb-type dynptrs may pull the skb, so we must
-> > +                * invalidate all data slices associated with it
-> > +                */
-> > +               if (stack_slot_get_dynptr_info(env, reg, NULL) == BPF_DYNPTR_TYPE_SKB)
-> > +                       changes_data = true;
-> > +
-> > +               break;
-> > +       }
-> > +       case BPF_FUNC_dynptr_data:
-> > +       {
-> > +               struct bpf_reg_state *reg;
-> > +
-> > +               reg = get_dynptr_arg_reg(fn, regs);
-> > +               if (!reg) {
-> >                         verbose(env, "verifier internal error: no dynptr in bpf_dynptr_data()\n");
-> >                         return -EFAULT;
-> >                 }
-> > +
-> > +               if (meta.ref_obj_id) {
-> > +                       verbose(env, "verifier internal error: meta.ref_obj_id already set\n");
-> > +                       return -EFAULT;
-> > +               }
-> > +
-> > +               dynptr_type = stack_slot_get_dynptr_info(env, reg, &meta.ref_obj_id);
-> >                 break;
-> >         }
-> > +       }
-> >
-> >         if (err)
-> >                 return err;
-> > @@ -7397,8 +7437,15 @@ static int check_helper_call(struct bpf_verifier_env *env, struct bpf_insn *insn
-> >                 break;
-> >         case RET_PTR_TO_ALLOC_MEM:
-> >                 mark_reg_known_zero(env, regs, BPF_REG_0);
-> > -               regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
-> > -               regs[BPF_REG_0].mem_size = meta.mem_size;
-> > +
-> > +               if (func_id == BPF_FUNC_dynptr_data &&
-> > +                   dynptr_type == BPF_DYNPTR_TYPE_SKB) {
-> > +                       regs[BPF_REG_0].type = PTR_TO_PACKET | ret_flag;
-> > +                       regs[BPF_REG_0].range = meta.mem_size;
-> > +               } else {
-> > +                       regs[BPF_REG_0].type = PTR_TO_MEM | ret_flag;
-> > +                       regs[BPF_REG_0].mem_size = meta.mem_size;
-> > +               }
-> >                 break;
-> >         case RET_PTR_TO_MEM_OR_BTF_ID:
-> >         {
-> > @@ -14141,6 +14188,24 @@ static int do_misc_fixups(struct bpf_verifier_env *env)
-> >                         goto patch_call_imm;
-> >                 }
-> >
-> > +               if (insn->imm == BPF_FUNC_dynptr_from_skb) {
-> > +                       bool is_rdonly = !may_access_direct_pkt_data(env, NULL, BPF_WRITE);
-> > +
-> > +                       insn_buf[0] = BPF_MOV32_IMM(BPF_REG_4, is_rdonly);
-> > +                       insn_buf[1] = *insn;
-> > +                       cnt = 2;
->
-> This might have been discussed before, sorry if I missed it. But why
-> this special rewrite to provide read-only flag vs having two
-> implementations of bpf_dynptr_from_skb() depending on program types?
-> If program type allows read+write access, return
-> bpf_dynptr_from_skb_rdwr(), for those that have read-only access -
-> bpf_dynptr_from_skb_rdonly(), and for others return NULL proto
-> (disable helper)?
->
-> You can then use it very similarly for bpf_dynptr_from_skb_meta().
->
+This patch series allows for using bpf to collect hierarchical cgroup
+stats efficiently by integrating with the rstat framework. The rstat
+framework provides an efficient way to collect cgroup stats percpu and
+propagate them through the cgroup hierarchy.
 
-Related question, it seems we know statically if dynptr is read only
-or not, so why even do all this hidden parameter passing and instead
-just reject writes directly? You only need to be able to set
-MEM_RDONLY on dynptr_data returned PTR_TO_PACKETs, and reject
-dynptr_write when dynptr type is xdp/skb (and ctx is only one). That
-seems simpler than checking it at runtime. Verifier already handles
-MEM_RDONLY generically, you only need to add the guard for
-check_packet_acces (and check_helper_mem_access for meta->raw_mode
-under pkt case), and rejecting dynptr_write seems like a if condition.
+The stats are exposed to userspace in textual form by reading files in
+bpffs, similar to cgroupfs stats by using a cgroup_iter program.
+cgroup_iter is a type of bpf_iter. It walks over cgroups in four modes:
+- walking a cgroup's descendants in pre-order.
+- walking a cgroup's descendants in post-order.
+- walking a cgroup's ancestors.
+- process only a single object.
+
+When attaching cgroup_iter, one needs to set a cgroup to the iter_link
+created from attaching. This cgroup can be passed either as a file
+descriptor or a cgroup id. That cgroup serves as the starting point of
+the walk.
+
+One can also terminate the walk early by returning 1 from the iter
+program.
+
+Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
+program is called with cgroup_mutex held.
+
+** Background on rstat for stats collection **
+(I am using a subscriber analogy that is not commonly used)
+
+The rstat framework maintains a tree of cgroups that have updates and
+which cpus have updates. A subscriber to the rstat framework maintains
+their own stats. The framework is used to tell the subscriber when
+and what to flush, for the most efficient stats propagation. The
+workflow is as follows:
+
+- When a subscriber updates a cgroup on a cpu, it informs the rstat
+  framework by calling cgroup_rstat_updated(cgrp, cpu).
+
+- When a subscriber wants to read some stats for a cgroup, it asks
+  the rstat framework to initiate a stats flush (propagation) by calling
+  cgroup_rstat_flush(cgrp).
+
+- When the rstat framework initiates a flush, it makes callbacks to
+  subscribers to aggregate stats on cpus that have updates, and
+  propagate updates to their parent.
+
+Currently, the main subscribers to the rstat framework are cgroup
+subsystems (e.g. memory, block). This patch series allow bpf programs to
+become subscribers as well.
+
+Patches in this series are organized as follows:
+* Patches 1-2 introduce cgroup_iter prog, and a selftest.
+* Patches 3-5 allow bpf programs to integrate with rstat by adding the
+  necessary hook points and kfunc. A comprehensive selftest that
+  demonstrates the entire workflow for using bpf and rstat to
+  efficiently collect and output cgroup stats is added.
+
+---
+Changelog:
+v8 -> v9:
+- Make UNSPEC (an invalid option) as the default order for cgroup_iter.
+- Use enum for specifying cgroup_iter order, instead of u32.
+- Add BPF_ITER_RESHCED to cgroup_iter.
+- Add cgroup_hierarchical_stats to s390x denylist.
+
+v7 -> v8:
+- Removed the confusing BPF_ITER_DEFAULT (Andrii)
+- s/SELF/SELF_ONLY/g
+- Fixed typo (e.g. outputing) (Andrii)
+- Use "descendants_pre", "descendants_post" etc. instead of "pre",
+  "post" (Andrii)
+
+v6 -> v7:
+- Updated commit/comments in cgroup_iter for read() behavior (Yonghong)
+- Extracted BPF_ITER_SELF and other options out of cgroup_iter, so
+  that they can be used in other iters. Also renamed them. (Andrii)
+- Supports both cgroup_fd and cgroup_id when specifying target cgroup.
+  (Andrii)
+- Avoided using macro for formatting expected output in cgroup_iter
+  selftest. (Andrii)
+- Applied 'static' on all vars and functions in cgroup_iter selftest.
+  (Andrii)
+- Fixed broken buf reading in cgroup_iter selftest. (Andrii)
+- Switched to use bpf_link__destroy() unconditionally. (Andrii)
+- Removed 'volatile' for non-const global vars in selftests. (Andrii)
+- Started using bpf_core_enum_value() to get memory_cgrp_id. (Andrii)
+
+v5 -> v6:
+- Rebased on bpf-next
+- Tidy up cgroup_hierarchical_stats test (Andrii)
+  * 'static' and 'inline'
+  * avoid using libbpf_get_error()
+  * string literals of cgroup paths.
+- Rename patch 8/8 to 'selftests/bpf' (Yonghong)
+- Fix cgroup_iter comments (e.g. PAGE_SIZE and uapi) (Yonghong)
+- Make sure further read() returns OK after previous read() finished
+  properly (Yonghong)
+- Release cgroup_mutex before the last call of show() (Kumar)
+
+v4 -> v5:
+- Rebased on top of new kfunc flags infrastructure, updated patch 1 and
+  patch 6 accordingly.
+- Added docs for sleepable kfuncs.
+
+v3 -> v4:
+- cgroup_iter:
+  * reorder fields in bpf_link_info to avoid break uapi (Yonghong)
+  * comment the behavior when cgroup_fd=0 (Yonghong)
+  * comment on the limit of number of cgroups supported by cgroup_iter.
+    (Yonghong)
+- cgroup_hierarchical_stats selftest:
+  * Do not return -1 if stats are not found (causes overflow in userspace).
+  * Check if child process failed to join cgroup.
+  * Make buf and path arrays in get_cgroup_vmscan_delay() static.
+  * Increase the test map sizes to accomodate cgroups that are not
+    created by the test.
+
+v2 -> v3:
+- cgroup_iter:
+  * Added conditional compilation of cgroup_iter.c in kernel/bpf/Makefile
+    (kernel test) and dropped the !CONFIG_CGROUP patch.
+  * Added validation of traversal_order when attaching (Yonghong).
+  * Fixed previous wording "two modes" to "three modes" (Yonghong).
+  * Fixed the btf_dump selftest broken by this patch (Yonghong).
+  * Fixed ctx_arg_info[0] to use "PTR_TO_BTF_ID_OR_NULL" instead of
+    "PTR_TO_BTF_ID", because the "cgroup" pointer passed to iter prog can
+     be null.
+- Use __diag_push to eliminate __weak noinline warning in
+  bpf_rstat_flush().
+- cgroup_hierarchical_stats selftest:
+  * Added write_cgroup_file_parent() helper.
+  * Added error handling for failed map updates.
+  * Added null check for cgroup in vmscan_flush.
+  * Fixed the signature of vmscan_[start/end].
+  * Correctly return error code when attaching trace programs fail.
+  * Make sure all links are destroyed correctly and not leaking in
+    cgroup_hierarchical_stats selftest.
+  * Use memory.reclaim instead of memory.high as a more reliable way to
+    invoke reclaim.
+  * Eliminated sleeps, the test now runs faster.
+
+v1 -> v2:
+- Redesign of cgroup_iter from v1, based on Alexei's idea [1]:
+  * supports walking cgroup subtree.
+  * supports walking ancestors of a cgroup. (Andrii)
+  * supports terminating the walk early.
+  * uses fd instead of cgroup_id as parameter for iter_link. Using fd is
+    a convention in bpf.
+  * gets cgroup's ref at attach time and deref at detach.
+  * brought back cgroup1 support for cgroup_iter.
+- Squashed the patches adding the rstat flush hook points and kfuncs
+  (Tejun).
+- Added a comment explaining why bpf_rstat_flush() needs to be weak
+  (Tejun).
+- Updated the final selftest with the new cgroup_iter design.
+- Changed CHECKs in the selftest with ASSERTs (Yonghong, Andrii).
+- Removed empty line at the end of the selftest (Yonghong).
+- Renamed test files to cgroup_hierarchical_stats.c.
+- Reordered CGROUP_PATH params order to match struct declaration
+  in the selftest (Michal).
+- Removed memory_subsys_enabled() and made sure memcg controller
+  enablement checks make sense and are documented (Michal).
+
+
+RFC v2 -> v1:
+- Instead of introducing a new program type for rstat flushing, add an
+  empty hook point, bpf_rstat_flush(), and use fentry bpf programs to
+  attach to it and flush bpf stats.
+- Instead of using helpers, use kfuncs for rstat functions.
+- These changes simplify the patchset greatly, with minimal changes to
+  uapi.
+
+RFC v1 -> RFC v2:
+- Instead of rstat flush programs attach to subsystems, they now attach
+  to rstat (global flushers, not per-subsystem), based on discussions
+  with Tejun. The first patch is entirely rewritten.
+- Pass cgroup pointers to rstat flushers instead of cgroup ids. This is
+  much more flexibility and less likely to need a uapi update later.
+- rstat helpers are now only defined if CGROUP_CONFIG.
+- Most of the code is now only defined if CGROUP_CONFIG and
+  CONFIG_BPF_SYSCALL.
+- Move rstat helper protos from bpf_base_func_proto() to
+  tracing_prog_func_proto().
+- rstat helpers argument (cgroup pointer) is now ARG_PTR_TO_BTF_ID, not
+  ARG_ANYTHING.
+- Rewrote the selftest to use the cgroup helpers.
+- Dropped bpf_map_lookup_percpu_elem (already added by Feng).
+- Dropped patch to support cgroup v1 for cgroup_iter.
+- Dropped patch to define some cgroup_put() when !CONFIG_CGROUP. The
+  code that calls it is no longer compiled when !CONFIG_CGROUP.
+
+cgroup_iter was originally introduced in a different patch series[2].
+Hao and I agreed that it fits better as part of this series.
+RFC v1 of this patch series had the following changes from [2]:
+- Getting the cgroup's reference at the time at attaching, instead of
+  at the time when iterating. (Yonghong)
+- Remove .init_seq_private and .fini_seq_private callbacks for
+  cgroup_iter. They are not needed now. (Yonghong)
+
+[1] https://lore.kernel.org/bpf/20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com/
+[2] https://lore.kernel.org/lkml/20220225234339.2386398-9-haoluo@google.com/
+
+Hao Luo (2):
+  bpf: Introduce cgroup iter
+  selftests/bpf: Test cgroup_iter.
+
+Yosry Ahmed (3):
+  cgroup: bpf: enable bpf programs to integrate with rstat
+  selftests/bpf: extend cgroup helpers
+  selftests/bpf: add a selftest for cgroup hierarchical stats collection
+
+ include/linux/bpf.h                           |   8 +
+ include/uapi/linux/bpf.h                      |  30 ++
+ kernel/bpf/Makefile                           |   3 +
+ kernel/bpf/cgroup_iter.c                      | 284 ++++++++++++++
+ kernel/cgroup/rstat.c                         |  48 +++
+ tools/include/uapi/linux/bpf.h                |  30 ++
+ tools/testing/selftests/bpf/DENYLIST.s390x    |   1 +
+ tools/testing/selftests/bpf/cgroup_helpers.c  | 202 ++++++++--
+ tools/testing/selftests/bpf/cgroup_helpers.h  |  19 +-
+ .../selftests/bpf/prog_tests/btf_dump.c       |   4 +-
+ .../prog_tests/cgroup_hierarchical_stats.c    | 357 ++++++++++++++++++
+ .../selftests/bpf/prog_tests/cgroup_iter.c    | 224 +++++++++++
+ tools/testing/selftests/bpf/progs/bpf_iter.h  |   7 +
+ .../bpf/progs/cgroup_hierarchical_stats.c     | 226 +++++++++++
+ .../testing/selftests/bpf/progs/cgroup_iter.c |  39 ++
+ 15 files changed, 1433 insertions(+), 49 deletions(-)
+ create mode 100644 kernel/bpf/cgroup_iter.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_hierarchical_stats.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/cgroup_iter.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_hierarchical_stats.c
+ create mode 100644 tools/testing/selftests/bpf/progs/cgroup_iter.c
+
+-- 
+2.37.1.595.g718a3a8f04-goog
+
