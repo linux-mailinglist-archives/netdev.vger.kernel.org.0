@@ -2,53 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E8695A0001
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 19:03:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 030A25A0003
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 19:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239751AbiHXRD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 13:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56376 "EHLO
+        id S239769AbiHXRD6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 13:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239762AbiHXRDw (ORCPT
+        with ESMTP id S239763AbiHXRDw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 13:03:52 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C24C70E64
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 10:03:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4713F335
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 10:03:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661360631; x=1692896631;
+  t=1661360632; x=1692896632;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MWq7alyiK5Zyc+kYxjYKS7/M6V2Iuv5W8H2iq98w2Ws=;
-  b=UpJeKlZDM/Au3O3O9Lnmv/3yuRyzBH85RwqTM8A19SNDYni/f6Hp/jYU
-   vCbYBJj+4SGeirHpogxsna2vqcj6n3/HhH+x/FgzHoPYecrmspG+BtCty
-   GI/xySZBet7vcXJIMf75Bmux55H87zC2ldNLEvSUbnS08kLUjmzL4BPL8
-   fYbA+IBSDaBQR82svqOesfH75jnU5lYFGWwaPj82nnVyxLqJZV2siCUsL
-   rdHIa3o07LL6zLyodctKrsylrA7XVCquhyr63jzkn/9BJ9icNqBduL0ju
-   czBcVwscuGwNCEsAYpPPaBWI6G4pCD/4VlE2V8xvF5ymRCftypI5VBUDQ
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="280995448"
+  bh=yBrY2EaxOLBldru5T5FhLqzoNLAyTm5L598d6C5EtSk=;
+  b=WvycKjKReFhDHImy8M4UlRa9uqi7DsAoV2LE6GqZUnh6eV+/lny/WX3Q
+   UOA7j21Ck7oadCAJvh3cdCUj2xf0m8mPddQhB0f+ifp+W1LF3Eyh0EC3c
+   gGqdrRRKDA4TN5R7D8ggFB8AxvCLbBzShKZqgrotiLUVMAbI3YCTdQiVJ
+   gahrjr38GphSOUSKjQeULAzU9MPzRX7s1L5PT7CDb6B0wvPNIxVg1UgKT
+   u1yeghhsslSsfwPciWv0ko1Pb7CvYbKqmeTSXYu5lw+yF8nVQL4Q5z5yy
+   55u4UdfOWjfefHwuGkGfqwVTtloxF5j5KyD9MVbcLFUGYZv5hMtTLkyJk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10449"; a="280995450"
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="280995448"
+   d="scan'208";a="280995450"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Aug 2022 10:03:49 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,260,1654585200"; 
-   d="scan'208";a="937989106"
+   d="scan'208";a="937989114"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Aug 2022 10:03:47 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 24 Aug 2022 10:03:48 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Lev Faerman <lev.faerman@intel.com>,
-        Damian Milosek <damian.milosek@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com,
+        Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>,
         Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net-next 2/5] ice: Add port option admin queue commands
-Date:   Wed, 24 Aug 2022 10:03:37 -0700
-Message-Id: <20220824170340.207131-3-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next 3/5] ice: Add additional flags to ice_nvm_write_activate
+Date:   Wed, 24 Aug 2022 10:03:38 -0700
+Message-Id: <20220824170340.207131-4-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220824170340.207131-1-anthony.l.nguyen@intel.com>
 References: <20220824170340.207131-1-anthony.l.nguyen@intel.com>
@@ -65,252 +63,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Implement support for Get/Set Port Options admin queue commands
-(0x06EA/0x06EB). These firmware commands allow the driver to change port
-specific options and will be used in the next patch.
+The ice_nvm_write_activate function is used to issue AdminQ command
+0x0707 which sends a request to firmware to activate a flash bank. For
+basic operations, this command takes an 8bit flag value which defines
+the flags to control the activation process. There are some additional
+flags that are stored in a second 8bit flag field.
 
-Co-developed-by: Lev Faerman <lev.faerman@intel.com>
-Signed-off-by: Lev Faerman <lev.faerman@intel.com>
-Co-developed-by: Damian Milosek <damian.milosek@intel.com>
-Signed-off-by: Damian Milosek <damian.milosek@intel.com>
-Co-developed-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+We can simplify the interface by using a u16 cmd_flags variable. Split
+this over the two bytes of flag storage in the structure.
+
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
 Signed-off-by: Anatolii Gerasymenko <anatolii.gerasymenko@intel.com>
 Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- .../net/ethernet/intel/ice/ice_adminq_cmd.h   |  54 ++++++++
- drivers/net/ethernet/intel/ice/ice_common.c   | 115 ++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_common.h   |   9 ++
- 3 files changed, 178 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_adminq_cmd.h |  6 ++++++
+ drivers/net/ethernet/intel/ice/ice_nvm.c        | 13 +++++++++----
+ drivers/net/ethernet/intel/ice/ice_nvm.h        |  2 +-
+ 3 files changed, 16 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-index 9939238573a4..d3f8b4d1c70a 100644
+index d3f8b4d1c70a..1bdc70aa979d 100644
 --- a/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
 +++ b/drivers/net/ethernet/intel/ice/ice_adminq_cmd.h
-@@ -1423,6 +1423,56 @@ struct ice_aqc_set_port_id_led {
- 	u8 rsvd[13];
- };
- 
-+/* Get Port Options (indirect, 0x06EA) */
-+struct ice_aqc_get_port_options {
-+	u8 lport_num;
-+	u8 lport_num_valid;
-+	u8 port_options_count;
-+#define ICE_AQC_PORT_OPT_COUNT_M	GENMASK(3, 0)
-+#define ICE_AQC_PORT_OPT_MAX		16
-+
-+	u8 innermost_phy_index;
-+	u8 port_options;
-+#define ICE_AQC_PORT_OPT_ACTIVE_M	GENMASK(3, 0)
-+#define ICE_AQC_PORT_OPT_VALID		BIT(7)
-+
-+	u8 pending_port_option_status;
-+#define ICE_AQC_PENDING_PORT_OPT_IDX_M	GENMASK(3, 0)
-+#define ICE_AQC_PENDING_PORT_OPT_VALID	BIT(7)
-+
-+	u8 rsvd[2];
-+	__le32 addr_high;
-+	__le32 addr_low;
-+};
-+
-+struct ice_aqc_get_port_options_elem {
-+	u8 pmd;
-+#define ICE_AQC_PORT_OPT_PMD_COUNT_M	GENMASK(3, 0)
-+
-+	u8 max_lane_speed;
-+#define ICE_AQC_PORT_OPT_MAX_LANE_M	GENMASK(3, 0)
-+#define ICE_AQC_PORT_OPT_MAX_LANE_100M	0
-+#define ICE_AQC_PORT_OPT_MAX_LANE_1G	1
-+#define ICE_AQC_PORT_OPT_MAX_LANE_2500M	2
-+#define ICE_AQC_PORT_OPT_MAX_LANE_5G	3
-+#define ICE_AQC_PORT_OPT_MAX_LANE_10G	4
-+#define ICE_AQC_PORT_OPT_MAX_LANE_25G	5
-+#define ICE_AQC_PORT_OPT_MAX_LANE_50G	6
-+#define ICE_AQC_PORT_OPT_MAX_LANE_100G	7
-+
-+	u8 global_scid[2];
-+	u8 phy_scid[2];
-+	u8 pf2port_cid[2];
-+};
-+
-+/* Set Port Option (direct, 0x06EB) */
-+struct ice_aqc_set_port_option {
-+	u8 lport_num;
-+	u8 lport_num_valid;
-+	u8 selected_port_option;
-+	u8 rsvd[13];
-+};
-+
- /* Set/Get GPIO (direct, 0x06EC/0x06ED) */
- struct ice_aqc_gpio {
- 	__le16 gpio_ctrl_handle;
-@@ -2082,6 +2132,8 @@ struct ice_aq_desc {
- 		struct ice_aqc_gpio read_write_gpio;
- 		struct ice_aqc_sff_eeprom read_write_sff_param;
- 		struct ice_aqc_set_port_id_led set_port_id_led;
-+		struct ice_aqc_get_port_options get_port_options;
-+		struct ice_aqc_set_port_option set_port_option;
- 		struct ice_aqc_get_sw_cfg get_sw_conf;
- 		struct ice_aqc_set_port_params set_port_params;
- 		struct ice_aqc_sw_rules sw_rules;
-@@ -2243,6 +2295,8 @@ enum ice_adminq_opc {
- 	ice_aqc_opc_read_i2c				= 0x06E2,
- 	ice_aqc_opc_write_i2c				= 0x06E3,
- 	ice_aqc_opc_set_port_id_led			= 0x06E9,
-+	ice_aqc_opc_get_port_options			= 0x06EA,
-+	ice_aqc_opc_set_port_option			= 0x06EB,
- 	ice_aqc_opc_set_gpio				= 0x06EC,
- 	ice_aqc_opc_get_gpio				= 0x06ED,
- 	ice_aqc_opc_sff_eeprom				= 0x06EE,
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.c b/drivers/net/ethernet/intel/ice/ice_common.c
-index c8d95b299fee..54c647f81f50 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.c
-+++ b/drivers/net/ethernet/intel/ice/ice_common.c
-@@ -3554,6 +3554,121 @@ ice_aq_set_port_id_led(struct ice_port_info *pi, bool is_orig_mode,
- 	return ice_aq_send_cmd(hw, &desc, NULL, 0, cd);
- }
- 
-+/**
-+ * ice_aq_get_port_options
-+ * @hw: pointer to the HW struct
-+ * @options: buffer for the resultant port options
-+ * @option_count: input - size of the buffer in port options structures,
-+ *                output - number of returned port options
-+ * @lport: logical port to call the command with (optional)
-+ * @lport_valid: when false, FW uses port owned by the PF instead of lport,
-+ *               when PF owns more than 1 port it must be true
-+ * @active_option_idx: index of active port option in returned buffer
-+ * @active_option_valid: active option in returned buffer is valid
-+ * @pending_option_idx: index of pending port option in returned buffer
-+ * @pending_option_valid: pending option in returned buffer is valid
+@@ -1539,6 +1539,12 @@ struct ice_aqc_nvm {
+ #define ICE_AQC_NVM_PERST_FLAG		1
+ #define ICE_AQC_NVM_EMPR_FLAG		2
+ #define ICE_AQC_NVM_EMPR_ENA		BIT(0) /* Write Activate reply only */
++	/* For Write Activate, several flags are sent as part of a separate
++	 * flags2 field using a separate byte. For simplicity of the software
++	 * interface, we pass the flags as a 16 bit value so these flags are
++	 * all offset by 8 bits
++	 */
++#define ICE_AQC_NVM_ACTIV_REQ_EMPR	BIT(8) /* NVM Write Activate only */
+ 	__le16 module_typeid;
+ 	__le16 length;
+ #define ICE_AQC_NVM_ERASE_LEN	0xFFFF
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.c b/drivers/net/ethernet/intel/ice/ice_nvm.c
+index 13cdb5ea594d..c262dc886e6a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.c
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.c
+@@ -1114,14 +1114,18 @@ int ice_nvm_validate_checksum(struct ice_hw *hw)
+  * Update the control word with the required banks' validity bits
+  * and dumps the Shadow RAM to flash (0x0707)
+  *
+- * cmd_flags controls which banks to activate, and the preservation level to
+- * use when activating the NVM bank.
++ * cmd_flags controls which banks to activate, the preservation level to use
++ * when activating the NVM bank, and whether an EMP reset is required for
++ * activation.
 + *
-+ * Calls Get Port Options AQC (0x06ea) and verifies result.
-+ */
-+int
-+ice_aq_get_port_options(struct ice_hw *hw,
-+			struct ice_aqc_get_port_options_elem *options,
-+			u8 *option_count, u8 lport, bool lport_valid,
-+			u8 *active_option_idx, bool *active_option_valid,
-+			u8 *pending_option_idx, bool *pending_option_valid)
-+{
-+	struct ice_aqc_get_port_options *cmd;
-+	struct ice_aq_desc desc;
-+	int status;
-+	u8 i;
-+
-+	/* options buffer shall be able to hold max returned options */
-+	if (*option_count < ICE_AQC_PORT_OPT_COUNT_M)
-+		return -EINVAL;
-+
-+	cmd = &desc.params.get_port_options;
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_get_port_options);
-+
-+	if (lport_valid)
-+		cmd->lport_num = lport;
-+	cmd->lport_num_valid = lport_valid;
-+
-+	status = ice_aq_send_cmd(hw, &desc, options,
-+				 *option_count * sizeof(*options), NULL);
-+	if (status)
-+		return status;
-+
-+	/* verify direct FW response & set output parameters */
-+	*option_count = FIELD_GET(ICE_AQC_PORT_OPT_COUNT_M,
-+				  cmd->port_options_count);
-+	ice_debug(hw, ICE_DBG_PHY, "options: %x\n", *option_count);
-+	*active_option_valid = FIELD_GET(ICE_AQC_PORT_OPT_VALID,
-+					 cmd->port_options);
-+	if (*active_option_valid) {
-+		*active_option_idx = FIELD_GET(ICE_AQC_PORT_OPT_ACTIVE_M,
-+					       cmd->port_options);
-+		if (*active_option_idx > (*option_count - 1))
-+			return -EIO;
-+		ice_debug(hw, ICE_DBG_PHY, "active idx: %x\n",
-+			  *active_option_idx);
-+	}
-+
-+	*pending_option_valid = FIELD_GET(ICE_AQC_PENDING_PORT_OPT_VALID,
-+					  cmd->pending_port_option_status);
-+	if (*pending_option_valid) {
-+		*pending_option_idx = FIELD_GET(ICE_AQC_PENDING_PORT_OPT_IDX_M,
-+						cmd->pending_port_option_status);
-+		if (*pending_option_idx > (*option_count - 1))
-+			return -EIO;
-+		ice_debug(hw, ICE_DBG_PHY, "pending idx: %x\n",
-+			  *pending_option_idx);
-+	}
-+
-+	/* mask output options fields */
-+	for (i = 0; i < *option_count; i++) {
-+		options[i].pmd = FIELD_GET(ICE_AQC_PORT_OPT_PMD_COUNT_M,
-+					   options[i].pmd);
-+		options[i].max_lane_speed = FIELD_GET(ICE_AQC_PORT_OPT_MAX_LANE_M,
-+						      options[i].max_lane_speed);
-+		ice_debug(hw, ICE_DBG_PHY, "pmds: %x max speed: %x\n",
-+			  options[i].pmd, options[i].max_lane_speed);
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * ice_aq_set_port_option
-+ * @hw: pointer to the HW struct
-+ * @lport: logical port to call the command with
-+ * @lport_valid: when false, FW uses port owned by the PF instead of lport,
-+ *               when PF owns more than 1 port it must be true
-+ * @new_option: new port option to be written
-+ *
-+ * Calls Set Port Options AQC (0x06eb).
-+ */
-+int
-+ice_aq_set_port_option(struct ice_hw *hw, u8 lport, u8 lport_valid,
-+		       u8 new_option)
-+{
-+	struct ice_aqc_set_port_option *cmd;
-+	struct ice_aq_desc desc;
-+
-+	if (new_option > ICE_AQC_PORT_OPT_COUNT_M)
-+		return -EINVAL;
-+
-+	cmd = &desc.params.set_port_option;
-+	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_set_port_option);
-+
-+	if (lport_valid)
-+		cmd->lport_num = lport;
-+
-+	cmd->lport_num_valid = lport_valid;
-+	cmd->selected_port_option = new_option;
-+
-+	return ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
-+}
-+
- /**
-  * ice_aq_sff_eeprom
-  * @hw: pointer to the HW struct
-diff --git a/drivers/net/ethernet/intel/ice/ice_common.h b/drivers/net/ethernet/intel/ice/ice_common.h
-index d08f7f9ea8b7..8b6712b92e84 100644
---- a/drivers/net/ethernet/intel/ice/ice_common.h
-+++ b/drivers/net/ethernet/intel/ice/ice_common.h
-@@ -151,6 +151,15 @@ int
- ice_aq_set_port_id_led(struct ice_port_info *pi, bool is_orig_mode,
- 		       struct ice_sq_cd *cd);
++ * Note that the 16bit cmd_flags value is split between two separate 1 byte
++ * flag values in the descriptor.
+  *
+  * On successful return of the firmware command, the response_flags variable
+  * is updated with the flags reported by firmware indicating certain status,
+  * such as whether EMP reset is enabled.
+  */
+-int ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags, u8 *response_flags)
++int ice_nvm_write_activate(struct ice_hw *hw, u16 cmd_flags, u8 *response_flags)
+ {
+ 	struct ice_aqc_nvm *cmd;
+ 	struct ice_aq_desc desc;
+@@ -1130,7 +1134,8 @@ int ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags, u8 *response_flags)
+ 	cmd = &desc.params.nvm;
+ 	ice_fill_dflt_direct_cmd_desc(&desc, ice_aqc_opc_nvm_write_activate);
+ 
+-	cmd->cmd_flags = cmd_flags;
++	cmd->cmd_flags = (u8)(cmd_flags & 0xFF);
++	cmd->offset_high = (u8)((cmd_flags >> 8) & 0xFF);
+ 
+ 	err = ice_aq_send_cmd(hw, &desc, NULL, 0, NULL);
+ 	if (!err && response_flags)
+diff --git a/drivers/net/ethernet/intel/ice/ice_nvm.h b/drivers/net/ethernet/intel/ice/ice_nvm.h
+index 856d1ad4398b..774c2317967d 100644
+--- a/drivers/net/ethernet/intel/ice/ice_nvm.h
++++ b/drivers/net/ethernet/intel/ice/ice_nvm.h
+@@ -34,7 +34,7 @@ ice_aq_update_nvm(struct ice_hw *hw, u16 module_typeid, u32 offset,
  int
-+ice_aq_get_port_options(struct ice_hw *hw,
-+			struct ice_aqc_get_port_options_elem *options,
-+			u8 *option_count, u8 lport, bool lport_valid,
-+			u8 *active_option_idx, bool *active_option_valid,
-+			u8 *pending_option_idx, bool *pending_option_valid);
-+int
-+ice_aq_set_port_option(struct ice_hw *hw, u8 lport, u8 lport_valid,
-+		       u8 new_option);
-+int
- ice_aq_sff_eeprom(struct ice_hw *hw, u16 lport, u8 bus_addr,
- 		  u16 mem_addr, u8 page, u8 set_page, u8 *data, u8 length,
- 		  bool write, struct ice_sq_cd *cd);
+ ice_aq_erase_nvm(struct ice_hw *hw, u16 module_typeid, struct ice_sq_cd *cd);
+ int ice_nvm_validate_checksum(struct ice_hw *hw);
+-int ice_nvm_write_activate(struct ice_hw *hw, u8 cmd_flags, u8 *response_flags);
++int ice_nvm_write_activate(struct ice_hw *hw, u16 cmd_flags, u8 *response_flags);
+ int ice_aq_nvm_update_empr(struct ice_hw *hw);
+ int
+ ice_nvm_set_pkg_data(struct ice_hw *hw, bool del_pkg_data_flag, u8 *data,
 -- 
 2.35.1
 
