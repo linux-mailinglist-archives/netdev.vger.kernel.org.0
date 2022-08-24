@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F9959F6F3
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 11:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F65F59F869
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 13:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiHXJ5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 05:57:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60866 "EHLO
+        id S236572AbiHXLMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 07:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234326AbiHXJ5N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 05:57:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B497679ECA
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 02:57:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661335031;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=67TcKJ9jWGMiEw4kg52hWXxqV/N5/I9VlmIszyd4tqI=;
-        b=bvEH1HGHJzdiAwtzVRPh+TAAZYPV+PosX4ArREjQzdBJtfLhHWdA0rKu+IBplUWWLdi3KP
-        KOl4Kp2N+zIw55D92Rztwuy/5yRFSFsga+WZ/C+nc9WbFRF8p1lvZ/hlYfje/qU1fm4yrv
-        z5+M5Cr+ZPeqJhs87I+8h8M5Bfp+rEw=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-468-_O9o3bk9M92MUBr-1cfSqg-1; Wed, 24 Aug 2022 05:57:10 -0400
-X-MC-Unique: _O9o3bk9M92MUBr-1cfSqg-1
-Received: by mail-wr1-f69.google.com with SMTP id r23-20020adfa157000000b00225660d47b7so797004wrr.6
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 02:57:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:references:cc:to:from
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=67TcKJ9jWGMiEw4kg52hWXxqV/N5/I9VlmIszyd4tqI=;
-        b=CqQuMNOOPgpYJmayu6XlxDb3zxtzIg2a7qzWkIO55SZtEZf+0VzAdU4fbeTxv8li1Q
-         ufVVN1t7vRkMYa3vH71y4tbWZ+9UxXh+z3Ea8GoHvUN3o9sY6R7r8klGF9cV9+iWCJaQ
-         xtF3wrC0iZWdclZEEQlj9sd3aoy9OUWfrKWR0zsmpYIvXoBXvZ9OFVg9hvAms5SZHUPG
-         /OcQPNqbIIDvR2vI9Gq3XCd4HRGvi9HifkVs+T39PR419L0d9a6+0D43SLR+1Ss0EZhd
-         IhhKYbYR5hyNdnsVZLXKAYf3ceu82N1FDf4extBYE9hmuI3OtuTf2J4TN8KjDAgCgPvc
-         TUDw==
-X-Gm-Message-State: ACgBeo0edccgojAy/hLlw5okDli08v8tluW/3lG8Cl7g0pzLfZgyaGNN
-        c9OK7Cjbx+DkXRlOqwZN6Nd9nCsdnQ+jIdW2lZxm2z01surjMfljk8iVjWCnTFbteWd/JyPOZu4
-        HCGJ1o0Cl+XHjaAvc
-X-Received: by 2002:a05:6000:606:b0:225:7264:8f06 with SMTP id bn6-20020a056000060600b0022572648f06mr985428wrb.27.1661335029400;
-        Wed, 24 Aug 2022 02:57:09 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4gyv5u3qg2yLq2zqzn2c9wgxUKEY2z8IPI+Y201XRbuYkIl5QRMnrv7NBI5d1k0Z7rQs+kWw==
-X-Received: by 2002:a05:6000:606:b0:225:7264:8f06 with SMTP id bn6-20020a056000060600b0022572648f06mr985403wrb.27.1661335029194;
-        Wed, 24 Aug 2022 02:57:09 -0700 (PDT)
-Received: from [192.168.110.200] (82-65-22-26.subs.proxad.net. [82.65.22.26])
-        by smtp.gmail.com with ESMTPSA id z13-20020a5d44cd000000b00222ed7ea203sm16236679wrr.100.2022.08.24.02.57.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 24 Aug 2022 02:57:08 -0700 (PDT)
-Message-ID: <5bba0f0e-544e-85ef-627b-6dd35244871a@redhat.com>
-Date:   Wed, 24 Aug 2022 11:57:07 +0200
+        with ESMTP id S237049AbiHXLMH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 07:12:07 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2073.outbound.protection.outlook.com [40.107.244.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B67858500
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 04:12:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ExT9tnhMFwmr6X/YQpEB5skHgj7x6h/CQpxQiAXQYwZdAomYVKASl/9dvC4yhJIt1L8ACPWgxAqMTYRXLMLGcEyEOqF0fCNLeTyrkkIUV3qXoO4CMawtp6m2u2vmPAnGNd6mUsNu6t861XQNWRvMdv8kBrMct/PJXuyJALv2mU8HXxWO2RB9NcMKoJcZ+PYD1jaTRPBP7fzGhQY1LDx+0JvBNpiI77/iqjAxBG+kr6yfuckByVeAfaL5fQVvM4x+FZ1U9S7qJ2LW+9A3r9j9VqmWmjjtD/xRbPp330Lo3RhCyfECa+/S63eI/mWHNkiFpaVGhRwzj1QCDnZyTBsNtQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pp3LhogPzYOujdA0Ep+CeJ3aFGqE/EehImFGItqecBs=;
+ b=fKlNdtlqU8qMuB/FovROQlxDzsQOI3vdgfJ7TCxg44qH2yO5NLYNaKNmofLwHHySNP2c0qgyRFZD47r2HXc4mcB9oW6Ug5Ggv06AQiij1Rab7imB9b63yX3rN+k4ODpvaSSuXhavkItLVl81ytN4OYcysQgIAoMavHyYBndQ+b+w/gizSuCLUwfLBTj/bYL404P5aUd17KM5nFbzEw1YUcCq1qjWj5NJUPIk8imEjGAHz9D8QmtWop1nSaCXnWmcbYBWEFy4Rq3y1rA8BnqDV8yjF3rkqCT2gDGS45VR5oHj1R6el0HRDrpckBJt8qXGeqXgDzgt0e2FvOvRaOTyWA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pp3LhogPzYOujdA0Ep+CeJ3aFGqE/EehImFGItqecBs=;
+ b=HnwF0FD05NbB0/v+VdvEp6HfjHLhLUFEYE/iINMTZ1460ol0oj6L7CNTAY2hMWSDGnwD8bmqd1X2Qf9JQx265JIV0Pg3CdMaT6GpzABJ+GSSf5zcHZvr9EXWMp4Pl/GSyvH7/z50MmhWF9bAUMt97SWW6Hdi2+34vb9Cgxj3qbe0+uNna3wIbbQzKFPf0GUkl6jTqY6iM0LiDvKCpcRVvbCJZYYMwJhlZBBQvTn7qNF4QxlUBJ+wF7PMJgBPN16UOVVWDkQr3/1VUsY1Dse7Xsb69n8mj4cekBv8vNy9vwcxbzFLPZ1UiV6FUgEGVIcsXVR5mO7uOqPDxGGXRKsQOA==
+Received: from MW4PR03CA0124.namprd03.prod.outlook.com (2603:10b6:303:8c::9)
+ by BN6PR12MB1201.namprd12.prod.outlook.com (2603:10b6:404:20::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Wed, 24 Aug
+ 2022 11:12:03 +0000
+Received: from CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8c:cafe::16) by MW4PR03CA0124.outlook.office365.com
+ (2603:10b6:303:8c::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
+ Transport; Wed, 24 Aug 2022 11:12:03 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT037.mail.protection.outlook.com (10.13.174.91) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5566.15 via Frontend Transport; Wed, 24 Aug 2022 11:12:03 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 24 Aug
+ 2022 11:12:02 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 24 Aug
+ 2022 04:11:59 -0700
+References: <Yv9VO1DYAxNduw6A@DEN-LT-70577> <874jy8mo0n.fsf@nvidia.com>
+ <YwKeVQWtVM9WC9Za@DEN-LT-70577> <87v8qklbly.fsf@nvidia.com>
+ <YwXXqB64QLDuKObh@DEN-LT-70577>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     <Daniel.Machon@microchip.com>
+CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <vinicius.gomes@intel.com>, <vladimir.oltean@nxp.com>,
+        <thomas.petazzoni@bootlin.com>, <Allan.Nielsen@microchip.com>,
+        <maxime.chevallier@bootlin.com>, <roopa@nvidia.com>
+Subject: Re: Basic PCP/DEI-based queue classification
+Date:   Wed, 24 Aug 2022 11:45:36 +0200
+In-Reply-To: <YwXXqB64QLDuKObh@DEN-LT-70577>
+Message-ID: <87pmgpki9v.fsf@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user
- provided context
-Content-Language: en-US
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com>
- <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
- <CAADnVQLypx8Yd7L4GByGNEJaWgg0R6ukNV9hz0ge1+ZdW4mdgQ@mail.gmail.com>
- <CAO-hwJK5v8An5W48x2TDH=iNb49iEbC8uGwMbdCak0Bjnmea+w@mail.gmail.com>
-In-Reply-To: <CAO-hwJK5v8An5W48x2TDH=iNb49iEbC8uGwMbdCak0Bjnmea+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0b67bb7d-d180-4405-fb83-08da85c1792f
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1201:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: RFgCzMKWXe70Gf8nmVHjwv6cmZ+fcOIwQlSNGWFmra5+bfYx+L8JQF8ps9EfMKB7F703mufvh5tppTHmYY3GRUHLhFnZSQecbkQ/ndAJqqsmpWa0MJDQwVDnI4ZRqkiAKnHkZJPCXUCzwWdv/SWz+j9lPVN+eV02ujZQA589uGM6j8RER/GngMh1V6GyYME1nsoW5eNfuV5SMIZ8mTqImERzZ9KVf+WxuexUtwZJuqpQ+NidCJFclxT0l7gTrODz78P1KjBEjxwECjQKIIKdKYnl0+T1bkQH/EaO1ZXF6d1rwgm4QH3qdn1lR/3g6gqTGmWP/7eHmdn+ubEvbodyXbqu+2MtvHMsHnLfiQHGRLewsTbm6sXEmjTUxaTq/xXYoJUlNOm1i6wi50pc5gCyDw/4gimnn0Eukoa6lvnSYexMaDy39ryl270zTaTqwY91VHzyM8GYYXV7OpRIbdZ6x+RUSyJbkSLIBEcefa+dhixcmgd/Pn1SsifSsAAtDA8RVRJjvp1bIBtEBOQS1t/899fsB05zAL/dbe/wBGhWOFXjWMdlJXB2plLT/ACs2X3ay8ULhGl2hTXpZGlsxLq2sr4ttOSZq5ETyYCNn9ZxhWdNh5DGVzuIzEDtzjPIPpnmn5HBlQlsouWZb1VKBWKL+/3VUhJwmbAZcHA8YhXPfo5UBjskXZcyozVWI5Y9chTRM1vT7BqT11XaZx6unJNT4/BeQwQNtbL75MqNTQjMlmLLW3ki3bUWCk2Um+PHj+qAi54zdr++KxBPAVoPcY8jhq0WGCwLYQhdFm3s5iPoDHPt1bU628veV8P9VQyjLG7T
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(39860400002)(346002)(36840700001)(40470700004)(46966006)(70586007)(70206006)(8676002)(36756003)(86362001)(4326008)(36860700001)(82740400003)(356005)(81166007)(426003)(16526019)(336012)(47076005)(26005)(83380400001)(478600001)(6666004)(107886003)(41300700001)(82310400005)(316002)(54906003)(6916009)(40480700001)(40460700003)(2906002)(186003)(2616005)(5660300002)(8936002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 11:12:03.3466
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0b67bb7d-d180-4405-fb83-08da85c1792f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT037.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1201
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -103,121 +107,62 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+<Daniel.Machon@microchip.com> writes:
 
-On 7/25/22 18:36, Benjamin Tissoires wrote:
-> On Fri, Jul 22, 2022 at 6:16 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
->>
->> On Fri, Jul 22, 2022 at 1:46 AM Benjamin Tissoires
->> <benjamin.tissoires@redhat.com> wrote:
->>>
->>> When a kfunc was trying to access data from context in a syscall eBPF
->>> program, the verifier was rejecting the call.
->>> This is because the syscall context is not known at compile time, and
->>> so we need to check this when actually accessing it.
->>>
->>> Check for the valid memory access and allow such situation to happen.
->>>
->>> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
->>> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->>>
->>> ---
->>>
->>> changes in v8:
->>> - fixup comment
->>> - return -EACCESS instead of -EINVAL for consistency
->>>
->>> changes in v7:
->>> - renamed access_t into atype
->>> - allow zero-byte read
->>> - check_mem_access() to the correct offset/size
->>>
->>> new in v6
->>> ---
->>>   kernel/bpf/verifier.c | 21 +++++++++++++++++++++
->>>   1 file changed, 21 insertions(+)
->>>
->>> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
->>> index 7c1e056624f9..c807c5d7085a 100644
->>> --- a/kernel/bpf/verifier.c
->>> +++ b/kernel/bpf/verifier.c
->>> @@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
->>>          struct bpf_map *map_ptr;
->>>          bool raw_mode;
->>>          bool pkt_access;
->>> +       bool is_kfunc;
->>>          u8 release_regno;
->>>          int regno;
->>>          int access_size;
->>> @@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
->>>                                     struct bpf_call_arg_meta *meta)
->>>   {
->>>          struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
->>> +       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
->>>          u32 *max_access;
->>>
->>>          switch (base_type(reg->type)) {
->>> @@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
->>>                                  env,
->>>                                  regno, reg->off, access_size,
->>>                                  zero_size_allowed, ACCESS_HELPER, meta);
->>> +       case PTR_TO_CTX:
->>> +               /* in case of a kfunc called in a program of type SYSCALL, the context is
->>> +                * user supplied, so not computed statically.
->>> +                * Dynamically check it now
->>> +                */
->>> +               if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
->>
->> prog_type check looks a bit odd here.
->> Can we generalize with
->> if (!env->ops->convert_ctx_access
-> 
-> Yep, seems to be working fine for my use case and the test cases I
-> have in this series.
-> 
->>
->> In other words any program type that doesn't have ctx rewrites can
->> use helpers to access ctx fields ?
->>
->> Also why kfunc only?
->> It looks safe to allow normal helpers as well.
-> 
-> Well, not sure what is happening here, but if I remove the check for
-> kfunc, the test for PTR_TO_CTX == NULL and size == 0 gives me a
-> -EINVAL.
+>> How do the pcp-prio rules work with the APP rules? There's the dscp-prio
+>> sparse table, then there will be the pcp-prio (sparse?) table, what
+>> happens if a packet arrives that has both headers? In Spectrum switches,
+>> DSCP takes precedence, but that may not be universal.
+>
+> In lan966x and sparx5 switches, dscp also takes precendence over pcp, in
+> default mode. Wrt. trust: DSCP mapping can be enabled/disabled and trusted
+> per-dscp-value. PCP mapping can be enabled/disabled, but not trusted
+> per-pcp-value. If DSCP mapping is enabled, and the DSCP value is trusted,
+> then DSCP mapping is used, otherwise PCP (if tagged).
 
-I finally managed to track down the issue.
+Nice, so you can actually implement the sparsity of dscp-prio map. And
+since PCP is always second in order, you can backfill any unspecified
+PCP values from the default priority, or 0, and it will be semantically
+the same.
 
-The reason was that if we now call check_mem_access for every function 
-check, but also subprogs. And so we ensure that a subprog can access 
-context.
+>> It looks like adding "PCP" to APP would make the integration easiest.
+>> Maybe we could use an out-of-band sel value for the selector, say 256,
+>> to likely avoid incompatible standardization?
+>> 
+>> Then the trust level can be an array of selectors that shows how the
+>> rules should be applied. E.g. [TCPUDP, DSCP, PCP]. Some of these
+>> configurations are not supported by the HW and will be bounced by the
+>> driver.
+>
+> We also need to consider the DEI bit. And also whether the mapping is for
+> ingress or egress.
 
-This is all fine, but that test now tags the subprog accessing the 
-context, even if it is actually null and not accessing it in the code.
+Yeah, I keep saying pcp-prio, but actually what I mean is (pcp,
+dei)-prio. The standard likewise talks about DEI always in connection to
+priority, I believe, nobody prioritizes on DEI alone.
 
-So to restore the previous behavior, I am storing 
-env->prog->aux->max_ctx_offset in btf_check_subprog_arg_match() and 
-restore it after the call to check for the arguments.
+> This suddenly becomes quite an intrusive addition to an already standardized
+> APP interface.
 
-See the v9 for the detail in the code.
+The 802.1q DCB has APP selector at three bits. Even if the standard
+decides to get more bits somewhere, it seems unlikely that they would
+add very many, because how many different fields does one need to
+prioritize on? So I would feel safe using a large value internally in
+Linux. But yeah, it's a concern.
 
-Cheers,
-Benjamin
+> As I hinted earlier, we could also add an entirely new PCP interface 
+> (like with maxrate), this will give us a bit more flexibility and will 
+> not crash with anything. This approach will not give is trust for DSCP, 
+> but maybe we can disregard this and go with a PCP solution initially?
 
-> 
-> The original reason for kfunc only was because I wanted to scope the
-> changes to something I can control, but now I am completely out of
-> ideas on why the NULL test fails if it enters the if branch.
-> 
-> Unfortunately I won't have a lot of time this week to tackle this (I
-> am on holiday with my family), and next will be tough too (at home but
-> doing renovations).
-> 
-> I can send the fixup to remove the prog_type check as I just made sure
-> it works with the selftests. But I won't be able to dig further why it
-> fails without the kfunc check, because not enough time and
-> concentration.
-> 
-> Cheers,
-> Benjamin
+I would like to have a line of sight to how things will be done. Not
+everything needs to be implemented at once, but we have to understand
+how to get there when we need to. At least for issues that we can
+already foresee now, such as the DSCP / PCP / default ordering.
 
+Adding the PCP rules as a new APP selector, and then expressing the
+ordering as a "selector policy" or whatever, IMHO takes care of this
+nicely.
+
+But OK, let's talk about the "flexibility" bit that you mention: what
+does this approach make difficult or impossible?
