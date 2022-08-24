@@ -2,154 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD9E159F2E7
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 07:03:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED8A59F2F8
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 07:07:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234494AbiHXFCb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 01:02:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39590 "EHLO
+        id S232752AbiHXFHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 01:07:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234429AbiHXFCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 01:02:24 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4904457E
-        for <netdev@vger.kernel.org>; Tue, 23 Aug 2022 22:02:22 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id B8BA820527;
-        Wed, 24 Aug 2022 07:02:18 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id jMxkVzYuEGB6; Wed, 24 Aug 2022 07:02:18 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 613CE20536;
-        Wed, 24 Aug 2022 07:02:17 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 4F56380004A;
-        Wed, 24 Aug 2022 07:02:17 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 07:02:17 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 07:02:16 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id DC0FB3182A0D; Wed, 24 Aug 2022 07:02:15 +0200 (CEST)
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-CC:     Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH 6/6] xfrm: policy: fix metadata dst->dev xmit null pointer dereference
-Date:   Wed, 24 Aug 2022 07:02:13 +0200
-Message-ID: <20220824050213.3643599-7-steffen.klassert@secunet.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220824050213.3643599-1-steffen.klassert@secunet.com>
-References: <20220824050213.3643599-1-steffen.klassert@secunet.com>
+        with ESMTP id S229478AbiHXFHf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 01:07:35 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECB696FB;
+        Tue, 23 Aug 2022 22:07:34 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27O57IFL098057;
+        Wed, 24 Aug 2022 00:07:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1661317638;
+        bh=3uOkvUlu5GoWke75BGaH9SEPMxOBvvWpvt1lpr3l0RM=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=FM2/jVEVx7cddXHGRXrkjfn9pXOiFQLHAuS+72GCt1recDhcF2Mbcr33Rnant6zUW
+         R2U4bY016RA5WQ+nwjasSv8rl2PABJZsE2UAvzPfwLm8wROhMyikJcM5UncbLBmMC2
+         lmCs96DL+t3AXJIDlcwJNrn/ACM83VOXAZPKEcDM=
+Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27O57I1Y016301
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 24 Aug 2022 00:07:18 -0500
+Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE112.ent.ti.com
+ (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Wed, 24
+ Aug 2022 00:07:18 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
+ Frontend Transport; Wed, 24 Aug 2022 00:07:18 -0500
+Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27O57ELd057025;
+        Wed, 24 Aug 2022 00:07:15 -0500
+Message-ID: <54b0435b-3aa6-d6c7-9411-818205b9ac71@ti.com>
+Date:   Wed, 24 Aug 2022 10:37:14 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [EXTERNAL] [PATCH net-next] net: ethernet: ti: davinci_mdio: fix
+ build for mdio bitbang uses
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>, <netdev@vger.kernel.org>
+CC:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        <linux-omap@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
+References: <20220824024216.4939-1-rdunlap@infradead.org>
+From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
+In-Reply-To: <20220824024216.4939-1-rdunlap@infradead.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <razor@blackwall.org>
+Hi Randy,
 
-When we try to transmit an skb with metadata_dst attached (i.e. dst->dev
-== NULL) through xfrm interface we can hit a null pointer dereference[1]
-in xfrmi_xmit2() -> xfrm_lookup_with_ifid() due to the check for a
-loopback skb device when there's no policy which dereferences dst->dev
-unconditionally. Not having dst->dev can be interepreted as it not being
-a loopback device, so just add a check for a null dst_orig->dev.
 
-With this fix xfrm interface's Tx error counters go up as usual.
+On 24/08/22 8:12 am, Randy Dunlap wrote:
+> davinci_mdio.c uses mdio bitbang APIs, so it should select
+> MDIO_BITBANG to prevent build errors.
+> 
+> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdio_remove':
+> drivers/net/ethernet/ti/davinci_mdio.c:649: undefined reference to `free_mdio_bitbang'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdio_probe':
+> drivers/net/ethernet/ti/davinci_mdio.c:545: undefined reference to `alloc_mdio_bitbang'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdiobb_read':
+> drivers/net/ethernet/ti/davinci_mdio.c:236: undefined reference to `mdiobb_read'
+> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdiobb_write':
+> drivers/net/ethernet/ti/davinci_mdio.c:253: undefined reference to `mdiobb_write'
+> 
+> Fixes: d04807b80691 ("net: ethernet: ti: davinci_mdio: Add workaround for errata i2329")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+> Cc: Ravi Gunasekaran <r-gunasekaran@ti.com>
+> Cc: linux-omap@vger.kernel.org
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Cc: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
+> ---
+>   drivers/net/ethernet/ti/Kconfig |    1 +
+>   1 file changed, 1 insertion(+)
+> 
+> --- a/drivers/net/ethernet/ti/Kconfig
+> +++ b/drivers/net/ethernet/ti/Kconfig
+> @@ -33,6 +33,7 @@ config TI_DAVINCI_MDIO
+>   	tristate "TI DaVinci MDIO Support"
+>   	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+>   	select PHYLIB
+> +	select MDIO_BITBANG
+>   	help
+>   	  This driver supports TI's DaVinci MDIO module.
+>   
+Thanks for posting this patch before me.
 
-[1] net-next calltrace captured via netconsole:
-  BUG: kernel NULL pointer dereference, address: 00000000000000c0
-  #PF: supervisor read access in kernel mode
-  #PF: error_code(0x0000) - not-present page
-  PGD 0 P4D 0
-  Oops: 0000 [#1] PREEMPT SMP
-  CPU: 1 PID: 7231 Comm: ping Kdump: loaded Not tainted 5.19.0+ #24
-  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.0-1.fc36 04/01/2014
-  RIP: 0010:xfrm_lookup_with_ifid+0x5eb/0xa60
-  Code: 8d 74 24 38 e8 26 a4 37 00 48 89 c1 e9 12 fc ff ff 49 63 ed 41 83 fd be 0f 85 be 01 00 00 41 be ff ff ff ff 45 31 ed 48 8b 03 <f6> 80 c0 00 00 00 08 75 0f 41 80 bc 24 19 0d 00 00 01 0f 84 1e 02
-  RSP: 0018:ffffb0db82c679f0 EFLAGS: 00010246
-  RAX: 0000000000000000 RBX: ffffd0db7fcad430 RCX: ffffb0db82c67a10
-  RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffb0db82c67a80
-  RBP: ffffb0db82c67a80 R08: ffffb0db82c67a14 R09: 0000000000000000
-  R10: 0000000000000000 R11: ffff8fa449667dc8 R12: ffffffff966db880
-  R13: 0000000000000000 R14: 00000000ffffffff R15: 0000000000000000
-  FS:  00007ff35c83f000(0000) GS:ffff8fa478480000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: 00000000000000c0 CR3: 000000001ebb7000 CR4: 0000000000350ee0
-  Call Trace:
-   <TASK>
-   xfrmi_xmit+0xde/0x460
-   ? tcf_bpf_act+0x13d/0x2a0
-   dev_hard_start_xmit+0x72/0x1e0
-   __dev_queue_xmit+0x251/0xd30
-   ip_finish_output2+0x140/0x550
-   ip_push_pending_frames+0x56/0x80
-   raw_sendmsg+0x663/0x10a0
-   ? try_charge_memcg+0x3fd/0x7a0
-   ? __mod_memcg_lruvec_state+0x93/0x110
-   ? sock_sendmsg+0x30/0x40
-   sock_sendmsg+0x30/0x40
-   __sys_sendto+0xeb/0x130
-   ? handle_mm_fault+0xae/0x280
-   ? do_user_addr_fault+0x1e7/0x680
-   ? kvm_read_and_reset_apf_flags+0x3b/0x50
-   __x64_sys_sendto+0x20/0x30
-   do_syscall_64+0x34/0x80
-   entry_SYSCALL_64_after_hwframe+0x46/0xb0
-  RIP: 0033:0x7ff35cac1366
-  Code: eb 0b 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 11 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 72 c3 90 55 48 83 ec 30 44 89 4c 24 2c 4c 89
-  RSP: 002b:00007fff738e4028 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
-  RAX: ffffffffffffffda RBX: 00007fff738e57b0 RCX: 00007ff35cac1366
-  RDX: 0000000000000040 RSI: 0000557164e4b450 RDI: 0000000000000003
-  RBP: 0000557164e4b450 R08: 00007fff738e7a2c R09: 0000000000000010
-  R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000040
-  R13: 00007fff738e5770 R14: 00007fff738e4030 R15: 0000001d00000001
-   </TASK>
-  Modules linked in: netconsole veth br_netfilter bridge bonding virtio_net [last unloaded: netconsole]
-  CR2: 00000000000000c0
-
-CC: Steffen Klassert <steffen.klassert@secunet.com>
-CC: Daniel Borkmann <daniel@iogearbox.net>
-Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
-Signed-off-by: Nikolay Aleksandrov <razor@blackwall.org>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- net/xfrm/xfrm_policy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 4f8bbb825abc..cc6ab79609e2 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3162,7 +3162,7 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
- 	return dst;
- 
- nopol:
--	if (!(dst_orig->dev->flags & IFF_LOOPBACK) &&
-+	if ((!dst_orig->dev || !(dst_orig->dev->flags & IFF_LOOPBACK)) &&
- 	    net->xfrm.policy_default[dir] == XFRM_USERPOLICY_BLOCK) {
- 		err = -EPERM;
- 		goto error;
 -- 
-2.25.1
-
+Regards,
+Ravi
