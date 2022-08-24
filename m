@@ -2,235 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4DF459FB68
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:31:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB64C59FB78
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237624AbiHXNbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 09:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S238208AbiHXNfz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:35:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231596AbiHXNbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:31:08 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F71274BAC
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:31:07 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3375488624aso430854877b3.3
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:31:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=w2b8e9hO7/gpS1qYIlZoa+enOVX2XnWjFsj+OhWz5S0=;
-        b=esZVALWvxHVhLdoaoHFAAxaNC7U1EqPSg8jNxvsKB+w8lYsaCdm9fq/bf4W2se/HHn
-         We0THSi7sq+npYRWYm7abNfVjyAtIRI7YAffV0F4+DdSIMY8V0k5mCE8/HXKdxoKaxbt
-         XhLI/UiSdMN1QY25FdZ5dWFQMzBzsKG1g+d5U+ob+g2JZZSm2ZHjWsao2bQDPXOCsJ4Q
-         4T8X6ZPeqVE5GfcjTnqx0rJp3TBla6B9sr/P3MosAw2A5OCz6uyIvLGl5zouKGVju6EC
-         6g7fHctAtw0WZPSujBsc9E0fzOdTwf11faQCiLzLSBcpR/x+hv0ULGmi+M9fEbRsWPK7
-         uydQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=w2b8e9hO7/gpS1qYIlZoa+enOVX2XnWjFsj+OhWz5S0=;
-        b=8PKt81bymx+FjjDFsemwizehvgvUfk4yNji7U0Hzy3O8zS3nQEW/dNtoNs8gIMesNb
-         q+X01B0WCyvvfcy57P2zGZJ5eo/u+rZEpFMvmu7AMvtaeflACm7nGypny6p9w/BR+VSs
-         jw8Xd712YynogvwlwfwFtnzqnT4G5TaFZi1CayOXmcuEVeiTrs4e7sH1ixtVyaG+TXFh
-         wRb8V396HlRzTWWDQJBOn7RDSNyrUlrF8ciJr8hICZkMP5s/zMefhfzDxlFrwhZO3Nsl
-         ghsk8a2VIx2wL9mkynrYicsFIqV4iYUk/uDq5ty6JoaTksYe8OxLR2oaujVOiy0dcvy7
-         b8pQ==
-X-Gm-Message-State: ACgBeo0cUHgRV9LMRtar7fCL1a/IjTEBjkzAU3sEbxKyEV4B6OdhBaeg
-        9Z9P9MH4u7z2mCnK2gKlW4tPRQQqw60FrGOJbUTprQ==
-X-Google-Smtp-Source: AA6agR7qwrg3dKyo6HjbXmNHYvni+LXXavSrEOfsr6D8aekioQPGAP4dL6tu9zepeQQbL7syGRM8IJI5h/KUI3lnfeM=
-X-Received: by 2002:a0d:c7c3:0:b0:31e:9622:c4f6 with SMTP id
- j186-20020a0dc7c3000000b0031e9622c4f6mr31190064ywd.144.1661347863538; Wed, 24
- Aug 2022 06:31:03 -0700 (PDT)
+        with ESMTP id S237698AbiHXNfy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:35:54 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2060.outbound.protection.outlook.com [40.107.223.60])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D105578583
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:35:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nYRMzZ8nPkBaLuyZx8LKKe6tnn4mBR/X1mjZibE8H1osNGGQEY8IlkEVElpgSPUIb5i6s5eZBBrLoXeGOOLD3EHYDnTVHumaWsoA8pO30joQM69FNKSauqSg48jYcOJB7EafeMHf1W6jmYJ1njcsCTf5YI2839qrqtHHEdAD7ASpSPnACTp8ZjEJJzyRcXZDKc1P6h9lm29FMTipMWiv12B1slTR3MI5fU3HxO/5Yw3LHfGDCOIcLpZ389z5pplD5LC979DlljKtRO+9Q6GHiraiTSPtKcrAGxJrsaVToEJcX71IAVfmdLf8krSf4KrR1Bpu6EaibuyiG4G51yttAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=b5w9o3VyIY59WhkELerk1HAC+JRJNr3uXkw8AqGWEbM=;
+ b=IX6dfpJQEnpiw7zMTevHV0J7ISoyV7NCG78gMVr8GuPH3vumK0MHYokx69vyIsoxEjD3AAtQApInTJiAL9urdNm1GuaxlG+50DXbmIagcP74Hc++2DPd/Dx/2RP3E5kB8IXYzVySpjHjC9yeb5Km5e3m7YFKTDFB/8H3BFVjx060Jh/i+DSOyrSp/CEj3R+PIExWgR0U21gnOKvCAHmmLcCscx3eKzZ+LB0MRrDptkF41Xsz6rTS82ej3sxJVhUjhj3dMpY1cQP3kKW+QgDoMS8bejTszkZIGZkoXkQYDw710FeWIY0v1W0siOlbhQ+4oqT5NmIjMYfzk4l8XCbHUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b5w9o3VyIY59WhkELerk1HAC+JRJNr3uXkw8AqGWEbM=;
+ b=hTc1pFCSLC5D/UQ9rXdQM3dGg6INlPqaVKLbhFw0DGlDU05yLACX4DNyMHx6crlxUdipu/vgcM0pw0ExsV60eGsQKY+KCD4USnQVKTjVwKWEEXpgdcEt2VCMOm+XgzU5jnyZfCippSwCPEp38Fv4jZaNPHRfCHJq+qFD7WJVH4LLA1zX+/AfDRdLfwGJv6l5AHUYf/LuNdncbuVO+Hxpvi4T4P3DrgofgTiafUlvmYUGpfJOdcwVLBcKlsdxn2JOiBRRgeHgcLNeT0kKLjBnBvrV8Ncvrr1xNwB+tdXUjzACBXASsvY/YE+eD5gStcBamTgVGEXhpy7Kp78BgH3pOw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ SN1PR12MB2576.namprd12.prod.outlook.com (2603:10b6:802:22::22) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5546.21; Wed, 24 Aug 2022 13:35:50 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::2caa:b525:f495:8a58]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::2caa:b525:f495:8a58%9]) with mapi id 15.20.5566.015; Wed, 24 Aug 2022
+ 13:35:50 +0000
+Message-ID: <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
+Date:   Wed, 24 Aug 2022 16:35:41 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
+Content-Language: en-US
+To:     Jacob Keller <jacob.e.keller@intel.com>
+References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+From:   Gal Pressman <gal@nvidia.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org
+In-Reply-To: <20220823150438.3613327-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LNXP265CA0004.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:5e::16) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
 MIME-Version: 1.0
-References: <000000000000c98a7f05ac744f53@google.com> <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
-In-Reply-To: <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
-From:   Alexander Potapenko <glider@google.com>
-Date:   Wed, 24 Aug 2022 15:30:25 +0200
-Message-ID: <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-To:     syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Cc:     ath9k-devel@qca.qualcomm.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kvalo@codeaurora.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, phil@philpotter.co.uk
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED,USER_IN_DEF_DKIM_WL,
-        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a8b842c4-0233-4535-4e23-08da85d58f4b
+X-MS-TrafficTypeDiagnostic: SN1PR12MB2576:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: kbgbUiyK3QuFx9M4ehRb99qykEbBMfzUNEBtSM8HDhKDIwQml047aEXoxRvxZR2jCMQD//baU7ZvkfT9FLl29wkBQlaTpj8TRGQToP+mzatsFcaSXfvWraaBa0KgS873XP47hjGrmgoNNEiSekFzD9SmPvOeuL+/hgt5y9a6AuZCuUB5qaeKSxNtJLPJxw0N5BF9Q0Y+IEzZpAYyrTPu73WmyGjbkNClCCGyeZsfIUh+VIOdkpfFkxAriOshqr3k94b2oz2RY0JpKJ/QYNF2t63j8nZs0yFzkB6HiQX9i443hQwtSc4xrYcmAy8sihaB/IFWADG6cOg/kOlXJ9lX+J6dWVvJwtB2pwE+uFclP/qS6k630nof6PckYed0yptFtAz20ujwSZbMtWHt6Y7dIjhHZ6WEGrkSZcYlTNkK54RZeDyaTfJmBPuEP4O5v4JGR4uW373hPMtACzC2+RSqVlrEsy0ddtMl+LsimTunrZQpTtdyXoWRSjZzBLb1JCsjuUwY5qb2xOR5WxQ+YWMRYOM5OR5+hVbXfmfvVX6/jlaK9+MG+IreEEA9Rs63BWKYv4GHL5KX8RdMXdUJvI32Cs/8ZjdHwwlFzMnaAsPzz85nrp1VEXkJYnyfx62XIwGda8UXLVp57/HOT3u3SZYFCI3rCJbVEVOOkCmy+F75EmY/Lmjc/+cdBHRT7mD6/clybp6gCLyD7Sg3IdS1tgUH0D5+pTwcKoPrfk6A0kLfMIAsxXNzWsogSXBHPXxJ+U9wpUpaI0DYiZcG3ueareLXRtRpqfFyu2/agv3ltFe0p+M=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(346002)(396003)(376002)(39860400002)(136003)(6666004)(31696002)(5660300002)(36756003)(38100700002)(8936002)(66476007)(4744005)(41300700001)(6486002)(4326008)(66556008)(31686004)(478600001)(6916009)(316002)(8676002)(66946007)(186003)(53546011)(6512007)(2616005)(26005)(2906002)(6506007)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?K3piblAwR0pVa0NhNE1McitiLzhiSGJtdmJpTXBKQnFBeGlCZzdUbkpxY29v?=
+ =?utf-8?B?Y3p6Tlpid0tzTmFGK0llRDVyWXFvZE1pZkd5WGlwdHIxV0IzTU9ZanY1L2V0?=
+ =?utf-8?B?WVhJNE1uaHN3L0RaK0pmUFlCN1J3UlJTOWwrSHhuZVdRWUdPTVNNRGVJZUIv?=
+ =?utf-8?B?NmlUQTZEMVMwd2NaTHhYTmZORHplaVVDWUpiS3lzQU02dDBtTUtLRTNnVE1B?=
+ =?utf-8?B?aUxBK0pScytuNmJmQmNPWTEzMlc1ZjNDaW14dEpHQ1RWUEYybHdrN1NTWHkx?=
+ =?utf-8?B?UTJ0Y3kya0U2bndOR09vanpjTnpYTU1ESmVBV3J0RHhBOGFuaE1GMFArSTl0?=
+ =?utf-8?B?TldtU0d4dDhJWW9CaVFVWS8rSGFjK2UwbEFIbWJ3NHVtSXlpV0pVR0F5L2Vt?=
+ =?utf-8?B?M2RGelc3WWVPRFBTN3ZCVDNHdnYrZ0NhS012cDJHMkFJMVVaYTJqbGVPNXp4?=
+ =?utf-8?B?YXlWUXNFYXdNYjJSVGEvSHl0WmsvV0hibDArSUtqYW1pc24xNHNMY2w3SXBO?=
+ =?utf-8?B?ZWtsL05Ob1k5eERrZVVvS2NRc0ZXUU1YVzVJUlB3bm1uNWVkeVU0WmkvNlAx?=
+ =?utf-8?B?N1oyQnR4SUxmcWc0TkdwQ0VhemVJQ085VG1FZGp0OWkrdUwwWDJRdkdsUDhv?=
+ =?utf-8?B?QzF2eG5uQ1A5dVh5cDY2M0cycUQxZjltalRKWUJyRVI3YUdac3NxZTFhMHJ2?=
+ =?utf-8?B?L0FXR3BkcC96ckhjc3ZWYkFBVUR6bHZhNHpoTHRpLzhDd2QrTklodzJORWx4?=
+ =?utf-8?B?bXlSTUpWTHRMVGpHK1ZUZER6WVZ6N290VDcxUTRlaW1YTklpOGxSdGx0dnhQ?=
+ =?utf-8?B?a3ZaN2p3Z0J6LzRUeThrTnVhNGlxc1d3WkFOemhhOWtJNG9Na0d6NTN1U0cy?=
+ =?utf-8?B?M0UwZkJGMjhiUXprNjhlbXhaOEVIZWZ4czNyNXFOSGMrRG9CMmxuM2JrLzRF?=
+ =?utf-8?B?QXVuRG5tb2FEZFBpSGR0QWE3WUovWFZESDdhK2w3eDYxeWZFT1ZwZS9PdVdD?=
+ =?utf-8?B?N0FtZzE5UjdVSUl5WTh1OU9VZzZXMWtFT3h0TGpRZ0tuSUM2V0lsSkxTb2Rh?=
+ =?utf-8?B?aWg1NjNOT085YnFEYWJMNnlYcGRBMkN4VTByN0dSbWZxak5oMnkxc1pNcXFM?=
+ =?utf-8?B?MkFYZ3F0aVlDcGgvaG5JUDM5NS9ONHhFSkZEK05rdjluMlZSdFJhb2lMT0pP?=
+ =?utf-8?B?R3BpenBqNUlRMWtYWDNxVVdLSkl2T3JBTjNjc3pDMVFNL3RBcjFZMEVkam9N?=
+ =?utf-8?B?Z2xJbmEvRkZJRFJvSFoyRWFUMUxjNDBoUG5SRmxlb0dsUTJ4MzRRdXltNENr?=
+ =?utf-8?B?a1hHclNNZUxUWVQybzFkdE93Y1ZObUVqUVA0ODkzNTRlVURiS0xaZ0hTNXFj?=
+ =?utf-8?B?TXhnNVZjY3FxL3FXMWJ6SWFuZ2pyMTZUcFhhVmpLM2dnZFFWSzRtemRmVkx6?=
+ =?utf-8?B?b1owa2JWUkFNNWJiZE1JUWJwRHdDV0R0cDcyZzN6d3Z6MFVSZ2pOb0RpeWo0?=
+ =?utf-8?B?RU5ldGI3QWxXTW9JczhNVW5zWll6akhqeGVUMUpPbzg5Zk1lRlNRYkhQYngx?=
+ =?utf-8?B?djZYaEhBcEVkY3drZmtlRWFTcDFwNWVWTnJpSlBTRldoeUE2RUVXbWRXM21K?=
+ =?utf-8?B?dmtCYmNLQ2hpWGRQYW1SNVA3cVhXTlhtYkZZOTZGZ2ZqTXN5NkxabTVCS0Iz?=
+ =?utf-8?B?REVWZzh1SkwwUE5xOXl6NHYzSjNqNmVsQkxCK0ZYTDcwbWRHN1JGVFc3ZGFF?=
+ =?utf-8?B?Y0tnVTU3TXRTYzFreW10VjFrMG9rQWY4aS9ZbDc4TksrUG5PNTlob0pkRUJn?=
+ =?utf-8?B?dHNrNjdSb3ZqQmNRN0o5VWxMblFXbkhNeEJ1L0JQd00rMEwxL240MGJzRmRQ?=
+ =?utf-8?B?QlRrYzMyOTZoeG1tWjN2MXAxOUo4MC9CdmlWYTVYVVM3ZmNFTWpGcm5SZC9V?=
+ =?utf-8?B?S2xWTWpRMkVWd1hlb2JZb2QwWU9lckJyWjJ2T0g1QWFVUEp3UGprd0tZUURO?=
+ =?utf-8?B?RjdvMjdZNWwwbkJQdXZvN2tCd00wYTMzLy9ldWcwL09RbFhxMnBGTWVhay9r?=
+ =?utf-8?B?Szh4a1lDTVFOT1FLZmhSY3lGdnhlOEUzeEtCNE44TGRBL0tyaHprN3c2MmVP?=
+ =?utf-8?Q?6RdvT7aX+Zg4n4EDHYECF4WiX?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8b842c4-0233-4535-4e23-08da85d58f4b
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Aug 2022 13:35:50.6826
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KlXPVtvpheLnzh64lvkoslcrcL0KoyAfbo/eEhg7WJaV4QICCm1R8qkJxqvbQMZD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2576
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-(adding back people originally CCed on the syzkaller bug.
-Unfortunately it isn't possible to reply to all in Google Groups)
+On 23/08/2022 18:04, Jacob Keller wrote:
+> 2) always treat ETHTOOL_FEC_AUTO as "automatic + allow disable"
+>
+>   This could work, but it means that behavior will differ depending on the
+>   firmware version. Users have no way to know that and might be surprised to
+>   find the behavior differ across devices which have different firmware
+>   which do or don't support this variation of automatic selection.
 
-On Wed, Aug 24, 2022 at 3:26 PM Alexander Potapenko <glider@google.com> wro=
-te:
->
->
->
-> On Thursday, August 13, 2020 at 5:32:17 AM UTC+2 syzbot wrote:
->>
->> syzbot has found a reproducer for the following issue on:
->>
->> HEAD commit: ce8056d1 wip: changed copy_from_user where instrumented
->> git tree: https://github.com/google/kmsan.git master
->> console output: https://syzkaller.appspot.com/x/log.txt?x=3D12985a169000=
-00
->> kernel config: https://syzkaller.appspot.com/x/.config?x=3D3afe005fb9959=
-1f
->> dashboard link: https://syzkaller.appspot.com/bug?extid=3D2ca247c2d60c70=
-23de7f
->> compiler: clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2=
-443155a0fb245c8f17f2c1c72b6ea391e86e81)
->> syz repro: https://syzkaller.appspot.com/x/repro.syz?x=3D1468efe2900000
->> C reproducer: https://syzkaller.appspot.com/x/repro.c?x=3D10bb9fba900000
->>
->> IMPORTANT: if you fix the issue, please add the following tag to the com=
-mit:
->> Reported-by: syzbot+2ca247...@syzkaller.appspotmail.com
->>
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->> BUG: KMSAN: uninit-value in ath9k_htc_rx_msg+0x28f/0x1f50 drivers/net/wi=
-reless/ath/ath9k/htc_hst.c:410
->> CPU: 1 PID: 0 Comm: swapper/1 Not tainted 5.8.0-rc5-syzkaller #0
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS =
-Google 01/01/2011
->> Call Trace:
->> <IRQ>
->> __dump_stack lib/dump_stack.c:77 [inline]
->> dump_stack+0x21c/0x280 lib/dump_stack.c:118
->> kmsan_report+0xf7/0x1e0 mm/kmsan/kmsan_report.c:121
->> __msan_warning+0x58/0xa0 mm/kmsan/kmsan_instr.c:215
->> ath9k_htc_rx_msg+0x28f/0x1f50 drivers/net/wireless/ath/ath9k/htc_hst.c:4=
-10
->> ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:638 [in=
-line]
->> ath9k_hif_usb_rx_cb+0x1841/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb=
-.c:671
->> __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
->> usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
->> dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
->> call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
->> expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
->> __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
->> run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
->> __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
->> asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:711
->> </IRQ>
->> __run_on_irqstack arch/x86/include/asm/irq_stack.h:23 [inline]
->> run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:50 [inline]
->> do_softirq_own_stack+0x7c/0xa0 arch/x86/kernel/irq_64.c:77
->> invoke_softirq kernel/softirq.c:390 [inline]
->> __irq_exit_rcu+0x226/0x270 kernel/softirq.c:420
->> irq_exit_rcu+0xe/0x10 kernel/softirq.c:432
->> sysvec_apic_timer_interrupt+0x107/0x130 arch/x86/kernel/apic/apic.c:1091
->> asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.=
-h:593
->> RIP: 0010:native_irq_disable arch/x86/include/asm/irqflags.h:49 [inline]
->> RIP: 0010:arch_local_irq_disable arch/x86/include/asm/irqflags.h:89 [inl=
-ine]
->> RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:112 [inline]
->> RIP: 0010:acpi_idle_do_entry drivers/acpi/processor_idle.c:525 [inline]
->> RIP: 0010:acpi_idle_enter+0x817/0xeb0 drivers/acpi/processor_idle.c:651
->> Code: 85 db 74 0a f7 d3 44 21 fb 48 85 db 74 32 4d 85 ff 75 3a 48 8b 5d =
-a0 e9 0c 00 00 00 e8 12 b2 78 fb 0f 00 2d 25 15 1c 0b fb f4 <fa> eb 5a 84 c=
-0 8b 7d 90 0f 45 7d 94 e8 d8 9a f4 fb e9 74 fc ff ff
->> RSP: 0018:ffff88812df93bc8 EFLAGS: 00000246
->> RAX: 0000000000000000 RBX: ffff8881dfefce70 RCX: 000000012db88000
->> RDX: ffff88812df88000 RSI: 0000000000000000 RDI: 0000000000000000
->> RBP: ffff88812df93ca0 R08: ffffffff86420acc R09: ffff88812fffa000
->> R10: 0000000000000002 R11: ffff88812df88000 R12: ffff88812df889d8
->> R13: ffff8881dfefcc64 R14: 0000000000000000 R15: 0000000000000000
->> cpuidle_enter_state+0x860/0x12b0 drivers/cpuidle/cpuidle.c:235
->> cpuidle_enter+0xe3/0x170 drivers/cpuidle/cpuidle.c:346
->> call_cpuidle kernel/sched/idle.c:126 [inline]
->> cpuidle_idle_call kernel/sched/idle.c:214 [inline]
->> do_idle+0x668/0x810 kernel/sched/idle.c:276
->> cpu_startup_entry+0x45/0x50 kernel/sched/idle.c:372
->> start_secondary+0x1bf/0x240 arch/x86/kernel/smpboot.c:268
->> secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
->>
->> Uninit was created at:
->> kmsan_save_stack_with_flags+0x3c/0x90 mm/kmsan/kmsan.c:144
->> kmsan_internal_alloc_meta_for_pages mm/kmsan/kmsan_shadow.c:269 [inline]
->> kmsan_alloc_page+0xc5/0x1a0 mm/kmsan/kmsan_shadow.c:293
->> __alloc_pages_nodemask+0xdf0/0x1030 mm/page_alloc.c:4889
->> __alloc_pages include/linux/gfp.h:509 [inline]
->> __alloc_pages_node include/linux/gfp.h:522 [inline]
->> alloc_pages_node include/linux/gfp.h:536 [inline]
->> __page_frag_cache_refill mm/page_alloc.c:4964 [inline]
->> page_frag_alloc+0x35b/0x880 mm/page_alloc.c:4994
->> __netdev_alloc_skb+0x2a8/0xc90 net/core/skbuff.c:451
->> __dev_alloc_skb include/linux/skbuff.h:2813 [inline]
->> ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:620 [in=
-line]
->> ath9k_hif_usb_rx_cb+0xe5a/0x1d10 drivers/net/wireless/ath/ath9k/hif_usb.=
-c:671
->> __usb_hcd_giveback_urb+0x687/0x870 drivers/usb/core/hcd.c:1650
->> usb_hcd_giveback_urb+0x1cb/0x730 drivers/usb/core/hcd.c:1716
->> dummy_timer+0xd98/0x71c0 drivers/usb/gadget/udc/dummy_hcd.c:1967
->> call_timer_fn+0x226/0x550 kernel/time/timer.c:1404
->> expire_timers+0x4fc/0x780 kernel/time/timer.c:1449
->> __run_timers+0xaf4/0xd30 kernel/time/timer.c:1773
->> run_timer_softirq+0x2d/0x50 kernel/time/timer.c:1786
->> __do_softirq+0x2ea/0x7f5 kernel/softirq.c:293
->> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D
->>
->
-> This bug bites us quite often on syzbot: https://syzkaller.appspot.com/bu=
-g?id=3D659ddf411502a2fe220c8f9be696d5a8d8db726e (17k crashes)
-> The patch below by phil@philpotter.co.uk (https://syzkaller.appspot.com/t=
-ext?tag=3DPatch&x=3D173dcb51d00000) seems to fix the problem, but I have no=
- idea what's going on there.
->
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wirel=
-ess/ath/ath9k/htc_hst.c
-> index 510e61e97dbc..9dbfff7a388e 100644
-> --- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-> +++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-> @@ -403,7 +403,7 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
->      struct htc_endpoint *endpoint;
->      __be16 *msg_id;
->
-> -    if (!htc_handle || !skb)
-> +    if (!htc_handle || !skb || !pskb_may_pull(skb, sizeof(struct htc_fra=
-me_hdr)))
->          return;
->
->      htc_hdr =3D (struct htc_frame_hdr *) skb->data;
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+Hi Jacob,
+This is exactly how it's already implemented in mlx5, and I don't really
+understand how firmware version is related? Is it specific to your
+device firmware?
+Maybe you can workaround that in the driver?
 
-
-
---=20
-Alexander Potapenko
-Software Engineer
-
-Google Germany GmbH
-Erika-Mann-Stra=C3=9Fe, 33
-80636 M=C3=BCnchen
-
-Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
-Registergericht und -nummer: Hamburg, HRB 86891
-Sitz der Gesellschaft: Hamburg
+I feel like we're going the wrong way here having different flags
+interpretations by different drivers.
