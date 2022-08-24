@@ -2,147 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FACE59FAEE
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:11:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FEDC59FB4E
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238078AbiHXNLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 09:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        id S238210AbiHXN1D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:27:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236684AbiHXNLB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:11:01 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44E3115FC5;
-        Wed, 24 Aug 2022 06:10:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=N9oJQbbnL3ZPdfQrFIR3akJaO1v/S9XNtdetroi1fvA=; b=nd6buqrEq/WpLStrEkR+1pNf4s
-        8wuhU32kQ/2Aw4VCyDQu12J576L66NpSmoH4rbKG6A69+M3JlSVGaeUGPJDrmwIaW7UCSfe2KLZjK
-        zRG0frRccNECb0nSAcHXIAqIQwzAg2zVUe7c6JJ8AHb3dqWJfGTeNF59P2MCx3CjfwkMnd3tj2xJ2
-        w6OxmMlGPIcAK4CTlXlHvX7EC4p36XnLZJAPjWRl3g0w8oYgHVm4+0UapUo5A2yD30y/n59FOZuxt
-        mFDuu4TGzDki5+V3V6tGgsEqvE9T+zh39exnxox3pl0vF86csRx00W38vWmT5qhnESimeb/li7Haj
-        ATYF4zVw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:33914)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1oQq9V-0004EH-Cf; Wed, 24 Aug 2022 14:10:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1oQq9Q-00048p-LO; Wed, 24 Aug 2022 14:10:32 +0100
-Date:   Wed, 24 Aug 2022 14:10:32 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     "xiaowu.ding" <xiaowu.ding@jaguarmicro.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, nicolas.ferre@microchip.com,
-        claudiu.beznea@microchip.com, palmer@dabbelt.com,
-        paul.walmsley@sifive.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
-Subject: Re: [PATCH net-next] driver: cadence macb driver support acpi mode
-Message-ID: <YwYjSPl7murFFpJG@shell.armlinux.org.uk>
-References: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
+        with ESMTP id S236887AbiHXN07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:26:59 -0400
+X-Greylist: delayed 21061 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 24 Aug 2022 06:26:57 PDT
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49DE66C757;
+        Wed, 24 Aug 2022 06:26:54 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 73C1A1C0004;
+        Wed, 24 Aug 2022 13:26:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661347612;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Lw1F0q0Mv6tpsWAvoqGppwUfQHRruH9wmo6EH6tLz4I=;
+        b=pBJFewUO0yXkmDmSCE7jG7fp/LewlvSjCwXdks3yHaygJSLDD08sntk+v2MblKszrc579Q
+        qxqLtivdjDHqQmVuejxgAvmxQYMiG8AaLME9jjRXvFwyQZxn2mQGYaTZ5BIhTCxiPGYUeK
+        sGdbWcZlyHzr/MOAwnxRjxtITrmYZIf+8HhBodWVHXQffjI4vP2hC6H7tGYhKidIDMIABY
+        nxbAi0P2DbI0wvKdqzZFgqeysm02t3mncAiBIZpHgkyqHNYBbBKV6CLxTPERllws20cJL1
+        7GiboaMjDEev0Lx+8XZ9dPCC0eO3UD4H8ZCMQMQfTiCFE5ec9tIuGtNLsKiXIQ==
+Date:   Wed, 24 Aug 2022 15:26:48 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220824152648.4bfb9a89@xps-13>
+In-Reply-To: <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+        <20220819191109.0e639918@xps-13>
+        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+        <20220823182950.1c722e13@xps-13>
+        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+        <20220824122058.1c46e09a@xps-13>
+        <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 08:13:51PM +0800, xiaowu.ding wrote:
-> -static bool macb_phy_handle_exists(struct device_node *dn)
-> +static bool macb_of_phy_handle_exists(struct device_node *dn)
->  {
->  	dn = of_parse_phandle(dn, "phy-handle", 0);
->  	of_node_put(dn);
->  	return dn != NULL;
->  }
->  
-> -static int macb_phylink_connect(struct macb *bp)
-> +static int macb_of_phylink_connect(struct macb *bp)
->  {
->  	struct device_node *dn = bp->pdev->dev.of_node;
->  	struct net_device *dev = bp->dev;
-> @@ -765,7 +767,7 @@ static int macb_phylink_connect(struct macb *bp)
->  	if (dn)
->  		ret = phylink_of_phy_connect(bp->phylink, dn, 0);
->  
-> -	if (!dn || (ret && !macb_phy_handle_exists(dn))) {
-> +	if (!dn || (ret && !macb_of_phy_handle_exists(dn))) {
->  		phydev = phy_find_first(bp->mii_bus);
->  		if (!phydev) {
->  			netdev_err(dev, "no PHY found\n");
-> @@ -786,6 +788,166 @@ static int macb_phylink_connect(struct macb *bp)
->  	return 0;
->  }
->  
-> +#ifdef CONFIG_ACPI
-> +
-> +static bool macb_acpi_phy_handle_exists(struct fwnode_handle *fwnd)
-> +{
-> +	struct fwnode_handle *phy_node;
-> +	bool flag = false;
-> +	/* Only phy-handle is used for ACPI */
-> +	phy_node = fwnode_find_reference(fwnd, "phy-handle", 0);
-> +	flag = !IS_ERR_OR_NULL(phy_node);
-> +
-> +	if (flag)
-> +		fwnode_handle_put(phy_node);
-> +
-> +	return flag;
-> +}
-> +
-> +static int macb_acpi_phylink_connect(struct macb *bp)
-> +{
-> +	struct fwnode_handle *fwnd = bp->pdev->dev.fwnode;
-> +	struct net_device *dev = bp->dev;
-> +	struct phy_device *phydev;
-> +	int ret;
-> +
-> +	if (fwnd)
-> +		ret = phylink_fwnode_phy_connect(bp->phylink, fwnd, 0);
-> +
-> +	if (!fwnd || (ret && !macb_acpi_phy_handle_exists(fwnd))) {
-> +		phydev = phy_find_first(bp->mii_bus);
-> +		if (!phydev) {
-> +			netdev_err(dev, "no PHY found\n");
-> +			return -ENXIO;
-> +		}
-> +
-> +		/* attach the mac to the phy */
-> +		ret = phylink_connect_phy(bp->phylink, phydev);
-> +	}
-> +
-> +	if (ret) {
-> +		netdev_err(dev, "Could not attach PHY (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	phylink_start(bp->phylink);
-> +
-> +	return 0;
-> +}
+Hi Alexander,
 
-You shouldn't need this duplication. phylink_fwnode_phy_connect() can be
-used to connect DT-based PHYs just fine, so you should be able to use it
-for both cases without needing to resort to two copies. This is one of
-the reasons the fwnode API exists.
+aahringo@redhat.com wrote on Wed, 24 Aug 2022 08:43:20 -0400:
 
-The functionality of your macb_acpi_phy_handle_exists() and
-macb_of_phy_handle_exists() should also be the same. Not that
-fwnode_handle_put() is safe to call with NULL or err-pointer fwnodes.
+> Hi,
+>=20
+> On Wed, Aug 24, 2022 at 6:21 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> ...
+> >
+> > Actually right now the second level is not enforced, and all the
+> > filtering levels are a bit fuzzy and spread everywhere in rx.c.
+> >
+> > I'm gonna see if I can at least clarify all of that and only make
+> > coord-dependent the right section because right now a
+> > ieee802154_coord_rx() path in ieee802154_rx_handle_packet() does not
+> > really make sense given that the level 3 filtering rules are mostly
+> > enforced in ieee802154_subif_frame(). =20
+>=20
+> One thing I mentioned before is that we probably like to have a
+> parameter for rx path to give mac802154 a hint on which filtering
+> level it was received. We don't have that, I currently see that this
+> is a parameter for hwsim receiving it on promiscuous level only and
+> all others do third level filtering.
+> We need that now, because the promiscuous mode was only used for
+> sniffing which goes directly into the rx path for monitors. With scan
+> we mix things up here and in my opinion require such a parameter and
+> do filtering if necessary.
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+I am currently trying to implement a slightly different approach. The
+core does not know hwsim is always in promiscuous mode, but it does
+know that it does not check FCS. So the core checks it. This is
+level 1 achieved. Then in level 2 we want to know if the core asked
+the transceiver to enter promiscuous mode, which, if it did, should
+not imply more filtering. If the device is working in promiscuous
+mode but this was not asked explicitly by the core, we don't really
+care, software filtering will apply anyway.
+
+I am reworking the rx path to clarify what is being done and when,
+because I found this part very obscure right now. In the end I don't
+think we need additional rx info from the drivers. Hopefully my
+proposal will clarify why this is (IMHO) not needed.
+
+Thanks,
+Miqu=C3=A8l
