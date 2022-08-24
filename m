@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 018E659FB8D
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A254F59FB94
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 15:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238279AbiHXNlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 09:41:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
+        id S238377AbiHXNlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 09:41:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238348AbiHXNlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:41:12 -0400
+        with ESMTP id S238359AbiHXNlN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 09:41:13 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8637E306
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:41:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19147E03D
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 06:41:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661348471;
+        s=mimecast20190719; t=1661348472;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=/hEf44O5uT0I/vp8P897qbCcMVrv6y/x8AKCXJ5mP/g=;
-        b=DjTnd7jzpHUKswEzrmjyflNfHQnwt32+LTyTvg3L3B7xs8vE5NfcRq+vvQySCm71UWfTM0
-        6pRb/rW8ixJ93jDeVimlUQ6mIRax6GsbFGgEuWeGyMfO7eFPrOhpaV//fwXNAgn+cLGvMy
-        ss/afZ8tz8BrexNSikFCgpZMnxkdZxs=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TByrnl5mvHzHJ+ulIX49DcCahKnXBzMQ+ewrPuje1Cw=;
+        b=Cpzvp7/XVrZTpAUHepvrXkxrwbG/fdRsb4bGCqIahVXHpZ2/CP7rYk+LXqPQfkXK8G4YYj
+        pTvs0gZXygr01LXzkBQY0r79lz5zGrB8tXHGAUZFCl2REb+v+I/2y7I3DLhQ45dbIHCP9l
+        Ot+0c/l4z76pV8FByGHEQbrTbNikNm8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-607-QvaXZXP5MqaT-dLz9Wri5Q-1; Wed, 24 Aug 2022 09:41:03 -0400
-X-MC-Unique: QvaXZXP5MqaT-dLz9Wri5Q-1
+ us-mta-183-Uzb7pSuZNGW9T9cNFwQvOw-1; Wed, 24 Aug 2022 09:41:07 -0400
+X-MC-Unique: Uzb7pSuZNGW9T9cNFwQvOw-1
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5E79F1C0BDE3;
-        Wed, 24 Aug 2022 13:41:02 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DB293101E985;
+        Wed, 24 Aug 2022 13:41:05 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.211])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0C17F18ECC;
-        Wed, 24 Aug 2022 13:40:58 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9B5AB945DD;
+        Wed, 24 Aug 2022 13:41:02 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -54,9 +55,11 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v9 00/23] Introduce eBPF support for HID devices
-Date:   Wed, 24 Aug 2022 15:40:30 +0200
-Message-Id: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to read user provided context
+Date:   Wed, 24 Aug 2022 15:40:31 +0200
+Message-Id: <20220824134055.1328882-2-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
@@ -70,115 +73,113 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When a function was trying to access data from context in a syscall eBPF
+program, the verifier was rejecting the call unless it was accessing the
+first element.
+This is because the syscall context is not known at compile time, and
+so we need to check this when actually accessing it.
 
-here comes the v9 of the HID-BPF series.
+Check for the valid memory access if there is no convert_ctx callback,
+and allow such situation to happen.
 
-Again, for a full explanation of HID-BPF, please refer to the last patch
-in this series (23/23).
+There is a slight hiccup with subprogs. btf_check_subprog_arg_match()
+will check that the types are matching, which is a good thing, but to
+have an accurate result, it hides the fact that the context register may
+be null. This makes env->prog->aux->max_ctx_offset being set to the size
+of the context, which is incompatible with a NULL context.
 
-This version sees some minor improvements compared to v7 and v8, only
-focusing on the reviews I got. (v8 was a single patch update)
+Solve that last problem by storing max_ctx_offset before the type check
+and restoring it after.
 
-- patch 1/24 in v7 was dropped as it is already fixed upstream
-- patch 1/23 in v9 is now capable of handling all functions, not just
-  kfuncs (tested with the selftests only)
-- some minor nits from Greg's review
-- a rebase on top of the current bpf-next tree as the kfunc definition
-  changed (for the better).
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-Cheers,
-Benjamin
+---
 
+changes in v9:
+- rewrote the commit title and description
+- made it so all functions can make use of context even if there is
+  no convert_ctx
+- remove the is_kfunc field in bpf_call_arg_meta
 
-Benjamin Tissoires (23):
-  bpf/verifier: allow all functions to read user provided context
-  bpf/verifier: do not clear meta in check_mem_size
-  selftests/bpf: add test for accessing ctx from syscall program type
-  bpf/verifier: allow kfunc to return an allocated mem
-  selftests/bpf: Add tests for kfunc returning a memory pointer
-  bpf: prepare for more bpf syscall to be used from kernel and user
-    space.
-  libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
-  HID: core: store the unique system identifier in hid_device
-  HID: export hid_report_type to uapi
-  HID: convert defines of HID class requests into a proper enum
-  HID: Kconfig: split HID support and hid-core compilation
-  HID: initial BPF implementation
-  selftests/bpf: add tests for the HID-bpf initial implementation
-  HID: bpf: allocate data memory for device_event BPF programs
-  selftests/bpf/hid: add test to change the report size
-  HID: bpf: introduce hid_hw_request()
-  selftests/bpf: add tests for bpf_hid_hw_request
-  HID: bpf: allow to change the report descriptor
-  selftests/bpf: add report descriptor fixup tests
-  selftests/bpf: Add a test for BPF_F_INSERT_HEAD
-  samples/bpf: HID: add new hid_mouse example
-  samples/bpf: HID: add Surface Dial example
-  Documentation: add HID-BPF docs
+changes in v8:
+- fixup comment
+- return -EACCESS instead of -EINVAL for consistency
 
- Documentation/hid/hid-bpf.rst                 | 512 +++++++++
- Documentation/hid/index.rst                   |   1 +
- drivers/Makefile                              |   2 +-
- drivers/hid/Kconfig                           |  20 +-
- drivers/hid/Makefile                          |   2 +
- drivers/hid/bpf/Kconfig                       |  17 +
- drivers/hid/bpf/Makefile                      |  11 +
- drivers/hid/bpf/entrypoints/Makefile          |  93 ++
- drivers/hid/bpf/entrypoints/README            |   4 +
- drivers/hid/bpf/entrypoints/entrypoints.bpf.c |  66 ++
- .../hid/bpf/entrypoints/entrypoints.lskel.h   | 682 ++++++++++++
- drivers/hid/bpf/hid_bpf_dispatch.c            | 526 ++++++++++
- drivers/hid/bpf/hid_bpf_dispatch.h            |  28 +
- drivers/hid/bpf/hid_bpf_jmp_table.c           | 577 ++++++++++
- drivers/hid/hid-core.c                        |  49 +-
- include/linux/bpf.h                           |   9 +-
- include/linux/btf.h                           |  10 +
- include/linux/hid.h                           |  38 +-
- include/linux/hid_bpf.h                       | 148 +++
- include/uapi/linux/hid.h                      |  26 +-
- include/uapi/linux/hid_bpf.h                  |  25 +
- kernel/bpf/btf.c                              | 109 +-
- kernel/bpf/syscall.c                          |  10 +-
- kernel/bpf/verifier.c                         |  64 +-
- net/bpf/test_run.c                            |  21 +
- samples/bpf/.gitignore                        |   2 +
- samples/bpf/Makefile                          |  27 +
- samples/bpf/hid_mouse.bpf.c                   | 134 +++
- samples/bpf/hid_mouse.c                       | 161 +++
- samples/bpf/hid_surface_dial.bpf.c            | 161 +++
- samples/bpf/hid_surface_dial.c                | 232 ++++
- tools/include/uapi/linux/hid.h                |  62 ++
- tools/include/uapi/linux/hid_bpf.h            |  25 +
- tools/lib/bpf/skel_internal.h                 |  23 +
- tools/testing/selftests/bpf/Makefile          |   5 +-
- tools/testing/selftests/bpf/config            |   3 +
- tools/testing/selftests/bpf/prog_tests/hid.c  | 990 ++++++++++++++++++
- .../selftests/bpf/prog_tests/kfunc_call.c     |  76 ++
- tools/testing/selftests/bpf/progs/hid.c       | 206 ++++
- .../selftests/bpf/progs/kfunc_call_test.c     | 125 +++
- 40 files changed, 5198 insertions(+), 84 deletions(-)
- create mode 100644 Documentation/hid/hid-bpf.rst
- create mode 100644 drivers/hid/bpf/Kconfig
- create mode 100644 drivers/hid/bpf/Makefile
- create mode 100644 drivers/hid/bpf/entrypoints/Makefile
- create mode 100644 drivers/hid/bpf/entrypoints/README
- create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.bpf.c
- create mode 100644 drivers/hid/bpf/entrypoints/entrypoints.lskel.h
- create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.c
- create mode 100644 drivers/hid/bpf/hid_bpf_dispatch.h
- create mode 100644 drivers/hid/bpf/hid_bpf_jmp_table.c
- create mode 100644 include/linux/hid_bpf.h
- create mode 100644 include/uapi/linux/hid_bpf.h
- create mode 100644 samples/bpf/hid_mouse.bpf.c
- create mode 100644 samples/bpf/hid_mouse.c
- create mode 100644 samples/bpf/hid_surface_dial.bpf.c
- create mode 100644 samples/bpf/hid_surface_dial.c
- create mode 100644 tools/include/uapi/linux/hid.h
- create mode 100644 tools/include/uapi/linux/hid_bpf.h
- create mode 100644 tools/testing/selftests/bpf/prog_tests/hid.c
- create mode 100644 tools/testing/selftests/bpf/progs/hid.c
+changes in v7:
+- renamed access_t into atype
+- allow zero-byte read
+- check_mem_access() to the correct offset/size
 
+new in v6
+---
+ kernel/bpf/btf.c      | 11 ++++++++++-
+ kernel/bpf/verifier.c | 19 +++++++++++++++++++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index 903719b89238..386300f52b23 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -6443,8 +6443,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+ {
+ 	struct bpf_prog *prog = env->prog;
+ 	struct btf *btf = prog->aux->btf;
++	u32 btf_id, max_ctx_offset;
+ 	bool is_global;
+-	u32 btf_id;
+ 	int err;
+ 
+ 	if (!prog->aux->func_info)
+@@ -6457,9 +6457,18 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+ 	if (prog->aux->func_info_aux[subprog].unreliable)
+ 		return -EINVAL;
+ 
++	/* subprogs arguments are not actually accessing the data, we need
++	 * to check for the types if they match.
++	 * Store the max_ctx_offset and restore it after btf_check_func_arg_match()
++	 * given that this function will have a side effect of changing it.
++	 */
++	max_ctx_offset = env->prog->aux->max_ctx_offset;
++
+ 	is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
+ 	err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
+ 
++	env->prog->aux->max_ctx_offset = max_ctx_offset;
++
+ 	/* Compiler optimizations can remove arguments from static functions
+ 	 * or mismatched type can be passed into a global function.
+ 	 * In such cases mark the function as unreliable from BTF point of view.
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 2c1f8069f7b7..d694f43ab911 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5229,6 +5229,25 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+ 				env,
+ 				regno, reg->off, access_size,
+ 				zero_size_allowed, ACCESS_HELPER, meta);
++	case PTR_TO_CTX:
++		/* in case the function doesn't know how to access the context,
++		 * (because we are in a program of type SYSCALL for example), we
++		 * can not statically check its size.
++		 * Dynamically check it now.
++		 */
++		if (!env->ops->convert_ctx_access) {
++			enum bpf_access_type atype = meta && meta->raw_mode ? BPF_WRITE : BPF_READ;
++			int offset = access_size - 1;
++
++			/* Allow zero-byte read from PTR_TO_CTX */
++			if (access_size == 0)
++				return zero_size_allowed ? 0 : -EACCES;
++
++			return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
++						atype, -1, false);
++		}
++
++		fallthrough;
+ 	default: /* scalar_value or invalid ptr */
+ 		/* Allow zero-byte read from NULL, regardless of pointer type */
+ 		if (zero_size_allowed && access_size == 0 &&
 -- 
 2.36.1
 
