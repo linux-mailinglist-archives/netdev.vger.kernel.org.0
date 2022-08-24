@@ -2,119 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ED8A59F2F8
-	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 07:07:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1945259F309
+	for <lists+netdev@lfdr.de>; Wed, 24 Aug 2022 07:18:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232752AbiHXFHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 01:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54696 "EHLO
+        id S234660AbiHXFSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 01:18:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiHXFHf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 01:07:35 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ECB696FB;
-        Tue, 23 Aug 2022 22:07:34 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 27O57IFL098057;
-        Wed, 24 Aug 2022 00:07:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1661317638;
-        bh=3uOkvUlu5GoWke75BGaH9SEPMxOBvvWpvt1lpr3l0RM=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=FM2/jVEVx7cddXHGRXrkjfn9pXOiFQLHAuS+72GCt1recDhcF2Mbcr33Rnant6zUW
-         R2U4bY016RA5WQ+nwjasSv8rl2PABJZsE2UAvzPfwLm8wROhMyikJcM5UncbLBmMC2
-         lmCs96DL+t3AXJIDlcwJNrn/ACM83VOXAZPKEcDM=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 27O57I1Y016301
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Aug 2022 00:07:18 -0500
-Received: from DLEE106.ent.ti.com (157.170.170.36) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6; Wed, 24
- Aug 2022 00:07:18 -0500
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2507.6 via
- Frontend Transport; Wed, 24 Aug 2022 00:07:18 -0500
-Received: from [10.24.69.79] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 27O57ELd057025;
-        Wed, 24 Aug 2022 00:07:15 -0500
-Message-ID: <54b0435b-3aa6-d6c7-9411-818205b9ac71@ti.com>
-Date:   Wed, 24 Aug 2022 10:37:14 +0530
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [EXTERNAL] [PATCH net-next] net: ethernet: ti: davinci_mdio: fix
- build for mdio bitbang uses
-Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, <netdev@vger.kernel.org>
-CC:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        <linux-omap@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>,
-        Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-References: <20220824024216.4939-1-rdunlap@infradead.org>
-From:   Ravi Gunasekaran <r-gunasekaran@ti.com>
-In-Reply-To: <20220824024216.4939-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S229483AbiHXFSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 01:18:11 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2B97C757;
+        Tue, 23 Aug 2022 22:18:10 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id c2so14717624plo.3;
+        Tue, 23 Aug 2022 22:18:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:from:to:cc;
+        bh=ZH78XGO0J8HWmCKamBQmSBalWkL1E63hN+valcwD+5g=;
+        b=EEt9Iy6UDSrMZ9hJkDx6qdWc61/Y//XINQqWu/J9xilyWBTZZXZsd8/j/ju6UEHor6
+         1u6XlfNsBTc8oAzyFQvHf3mMQK8b6V66zSsP+OkY+4D7u+duoQqiPJDXSK5ZqhC6VPPM
+         ixh4SA6WQFdquJaKEg2uPaJuUhqAHkzzCXMAL4OlcEYOU0qxp56WKyLrZ0T26blBnCTr
+         fNFfLRFK0n2r7+ZHpBTd+Z4hM/pfgNHTe87utJg0A9Rko/jsDy+SnZzvGWaFrN7yKlIT
+         k2JNUrYW2K/q2xn0IYOBhQnUvbGiDNsPdTQdqHAd63a2zaQkdLwV7pa+wnfaRrg9mqkQ
+         B/fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:subject:references
+         :in-reply-to:message-id:cc:to:from:date:x-gm-message-state:from:to
+         :cc;
+        bh=ZH78XGO0J8HWmCKamBQmSBalWkL1E63hN+valcwD+5g=;
+        b=olOLL65BAoOZ+55sp8XiXZPZ0nMBnWWstzg5mZY+GOxr2THObxG/JYlE4cPD0aqC2p
+         0ven95JDCIer7fn1DIwFLGwcdRDKJOYctHt6j8h5Wc1MBm9fr3dI06K/KwRBA22akQdS
+         XjnuLB114STBGs1W1hQCxhXebtemZAQ7PARN4AZXUMME7KlSPFlalHlQAGXqBvPfcL90
+         avvaBIRCrXR1mJLkEaEgD4IzMps9licz/nv2ZrR1A2pFEh7vPm2o/6jTessd3TfDUk0T
+         gKFWbGst05qS0mH/wFf3mODL71chuz6qJb8ty+8zFqA7Gwx0V61visVl56O2IdbxXysF
+         6ERw==
+X-Gm-Message-State: ACgBeo17pv+DQSLI17L81pi5UYQTtplOxxeUaxwJc9reo3na6EXPk0n3
+        LxQUy0q8863LiacMslUAEVU=
+X-Google-Smtp-Source: AA6agR7/NcaT8gLe8FGl9t7Lw3Wj0RvMgDMQWTrv9F02AwxfhmqfF8R2Ng1UFkZaOpgH4VYG333z6g==
+X-Received: by 2002:a17:90a:604e:b0:1fa:c865:eabb with SMTP id h14-20020a17090a604e00b001fac865eabbmr6686245pjm.46.1661318289950;
+        Tue, 23 Aug 2022 22:18:09 -0700 (PDT)
+Received: from localhost ([98.97.33.232])
+        by smtp.gmail.com with ESMTPSA id w7-20020a170902e88700b001725d542190sm11617763plg.181.2022.08.23.22.18.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Aug 2022 22:18:09 -0700 (PDT)
+Date:   Tue, 23 Aug 2022 22:18:06 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>,
+        "maciej.fijalkowski@intel.com" <maciej.fijalkowski@intel.com>
+Cc:     "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
+        "alexandr.lobakin@intel.com" <alexandr.lobakin@intel.com>,
+        "bjorn@kernel.org" <bjorn@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        "ast@kernel.org" <ast@kernel.org>
+Message-ID: <6305b48ebc40b_6d4fc2083@john.notmuch>
+In-Reply-To: <ff1bb9e386d1231b5b44d645b8f9a02af8abdd79.camel@nvidia.com>
+References: <20220413153015.453864-1-maciej.fijalkowski@intel.com>
+ <f1eea2e9ca337e0c4e072bdd94a89859a4539c09.camel@nvidia.com>
+ <93b8740b39267bc550a8f6e0077fb4772535c65e.camel@nvidia.com>
+ <YwS41lA+mz0uUZVP@boxer>
+ <ff1bb9e386d1231b5b44d645b8f9a02af8abdd79.camel@nvidia.com>
+Subject: Re: [PATCH v2 bpf-next 00/14] xsk: stop NAPI Rx processing on full
+ XSK RQ
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Randy,
+Maxim Mikityanskiy wrote:
+> On Tue, 2022-08-23 at 13:24 +0200, Maciej Fijalkowski wrote:
+> > On Tue, Aug 23, 2022 at 09:49:43AM +0000, Maxim Mikityanskiy wrote:
+> > > Anyone from Intel? Maciej, Bj=C3=B6rn, Magnus?
+> > =
 
+> > Hey Maxim,
+> > =
 
-On 24/08/22 8:12 am, Randy Dunlap wrote:
-> davinci_mdio.c uses mdio bitbang APIs, so it should select
-> MDIO_BITBANG to prevent build errors.
-> 
-> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdio_remove':
-> drivers/net/ethernet/ti/davinci_mdio.c:649: undefined reference to `free_mdio_bitbang'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdio_probe':
-> drivers/net/ethernet/ti/davinci_mdio.c:545: undefined reference to `alloc_mdio_bitbang'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdiobb_read':
-> drivers/net/ethernet/ti/davinci_mdio.c:236: undefined reference to `mdiobb_read'
-> arm-linux-gnueabi-ld: drivers/net/ethernet/ti/davinci_mdio.o: in function `davinci_mdiobb_write':
-> drivers/net/ethernet/ti/davinci_mdio.c:253: undefined reference to `mdiobb_write'
-> 
-> Fixes: d04807b80691 ("net: ethernet: ti: davinci_mdio: Add workaround for errata i2329")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-> Cc: Ravi Gunasekaran <r-gunasekaran@ti.com>
-> Cc: linux-omap@vger.kernel.org
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Naresh Kamboju <naresh.kamboju@linaro.org>
-> Cc: Sudip Mukherjee (Codethink) <sudipm.mukherjee@gmail.com>
-> ---
->   drivers/net/ethernet/ti/Kconfig |    1 +
->   1 file changed, 1 insertion(+)
-> 
-> --- a/drivers/net/ethernet/ti/Kconfig
-> +++ b/drivers/net/ethernet/ti/Kconfig
-> @@ -33,6 +33,7 @@ config TI_DAVINCI_MDIO
->   	tristate "TI DaVinci MDIO Support"
->   	depends on ARCH_DAVINCI || ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
->   	select PHYLIB
-> +	select MDIO_BITBANG
->   	help
->   	  This driver supports TI's DaVinci MDIO module.
->   
-Thanks for posting this patch before me.
+> > how about keeping it simple and going with option 1? This behavior wa=
+s
+> > even proposed in the v1 submission of the patch set we're talking abo=
+ut.
+> =
 
--- 
-Regards,
-Ravi
+> Yeah, I know it was the behavior in v1. It was me who suggested not
+> dropping that packet, and I didn't realize back then that it had this
+> undesired side effect - sorry for that!
+
+Just want to reiterate what was said originally, you'll definately confus=
+e
+our XDP programs if they ever saw the same pkt twice. It would confuse
+metrics and any "tap" and so on.
+
+> =
+
+> Option 1 sounds good to me as the first remedy, we can start with that.=
+
+> =
+
+> However, it's not perfect: when NAPI and the application are pinned to
+> the same core, if the fill ring is bigger than the RX ring (which makes=
+
+> sense in case of multiple sockets on the same UMEM), the driver will
+> constantly get into this condition, drop one packet, yield to
+> userspace, the application will of course clean up the RX ring, but
+> then the process will repeat.
+
+Maybe dumb question haven't followed the entire thread or at least
+don't recall it. Could you yield when you hit a high water mark at
+some point before pkt drop?
+
+> =
+
+> That means, we'll always have a small percentage of packets dropped,
+> which may trigger the congestion control algorithms on the other side,
+> slowing down the TX to unacceptable speeds (because packet drops won't
+> disappear after slowing down just a little).
+> =
+
+> Given the above, we may need a more complex solution for the long term.=
+
+> What do you think?
+> =
+
+> Also, if the application uses poll(), this whole logic (either v1 or
+> v2) seems not needed, because poll() returns to the application when
+> something becomes available in the RX ring, but I guess the reason for
+> adding it was that fantastic 78% performance improvement mentioned in
+> the cover letter?
+> =
