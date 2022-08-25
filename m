@@ -2,83 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD57A5A1BD9
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 00:02:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397FD5A1BDF
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 00:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244116AbiHYWBh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 18:01:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
+        id S244255AbiHYWE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 18:04:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243483AbiHYWBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 18:01:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22EFC74BB8
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 15:01:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB886B82EA3
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 22:01:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B74AC433D6;
-        Thu, 25 Aug 2022 22:01:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661464893;
-        bh=Y0xTf2jAEvB+eIpfAi4hj4XDfv+AJcuVGQtPdgH6Bzg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rHLVocaAiUc6XtbLFh7Bu2LO/6ecH6A+AwzP53Wuucs0VMOMhwduHWF20Dib7oCdC
-         xnpaT28yO33TYU7EYcReq7QtDoPOZNipTKrJWf855XHrVrU6mD1nkSJWYmzuHJX57o
-         WibD71EVrqv6qjxkIs8Wj5SZwBecdMNII4CEyPZnRySfcJuDfgOk0m50/xGFrW/Lyw
-         BFy5PBCkX9JO/lf56QpQa6x26uG4UltPmNWyxoSPd0JxRCPJO6gD/y4tMn/3UCGJdc
-         7POuzqDKxx64RaXK4jj1SVjZuL6v5Hf8P8DDa6K1+WXmtMqUP0km7quFQQtVE+I91v
-         fgrFO3obFIXpw==
-Date:   Thu, 25 Aug 2022 15:01:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        edumazet@google.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, tariqt@nvidia.com,
-        moshe@nvidia.com, saeedm@nvidia.com
-Subject: Re: [patch net-next 0/7] devlink: sanitize per-port region
- creation/destruction
-Message-ID: <20220825150132.5ec89092@kernel.org>
-In-Reply-To: <20220825103400.1356995-1-jiri@resnulli.us>
-References: <20220825103400.1356995-1-jiri@resnulli.us>
+        with ESMTP id S244215AbiHYWEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 18:04:25 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6922DBA158
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 15:04:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YOx0LjkhsdvzduFv7a+lTu01aQT5+odhBTefu99+ESk=; b=AjiqspQ5sPXdr1zjmRySTlokg3
+        0QI5YuOZIVCGRNNEgBYlkFIJ4eQZx9oE+xbZ9yQEZOFLYlKcIfTEAqk2sTCYhY/Jjc1JswVneU9BI
+        J43GD5aIBLkFVWPSI93s1CEAgpUlUJIeuQM5Gi2UiK7cPvXTbM3i587F0SNr85zICkng=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oRKxZ-00Ec2H-7a; Fri, 26 Aug 2022 00:04:21 +0200
+Date:   Fri, 26 Aug 2022 00:04:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Romain Naour <romain.naour@smile.fr>
+Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com,
+        UNGLinuxDriver@microchip.com, arun.ramadoss@microchip.com,
+        Romain Naour <romain.naour@skf.com>
+Subject: Re: [PATCH 1/2] net: dsa: microchip: add KSZ9896 switch support
+Message-ID: <Ywfx5ZpqQ3b1GMBn@lunn.ch>
+References: <20220825213943.2342050-1-romain.naour@smile.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825213943.2342050-1-romain.naour@smile.fr>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Aug 2022 12:33:53 +0200 Jiri Pirko wrote:
-> Currently the only user of per-port devlink regions is DSA. All drivers
-> that use regions register them before devlink registration. For DSA,
-> this was not possible as the internals of struct devlink_port needed for
-> region creation are initialized during port registration.
+On Thu, Aug 25, 2022 at 11:39:42PM +0200, Romain Naour wrote:
+> From: Romain Naour <romain.naour@skf.com>
 > 
-> This introduced a mismatch in creation flow of devlink and devlink port
-> regions. As you can see, it causes the DSA driver to make the port
-> init/exit flow a bit cumbersome.
+> Add support for the KSZ9896 6-port Gigabit Ethernet Switch to the
+> ksz9477 driver.
 > 
-> Fix this by introducing port_init/fini() which could be optionally
-> called by drivers like DSA, to prepare struct devlink_port to be used
-> for region creation purposes before devlink port register is called.
+> Although the KSZ9896 is already listed in the device tree binding
+> documentation since a1c0ed24fe9b (dt-bindings: net: dsa: document
+> additional Microchip KSZ9477 family switches) the chip id
+> (0x00989600) is not recognized by ksz_switch_detect() and rejected
+> by the driver.
 > 
-> Force similar limitation as for devlink params and disallow to create
-> regions after devlink or devlink port are registered. That allows to
-> simplify the devlink region internal API to not to rely on
-> devlink->lock.
+> The KSZ9896 is similar to KSZ9897 but has only one configurable
+> MII/RMII/RGMII/GMII cpu port.
+> 
+> Signed-off-by: Romain Naour <romain.naour@skf.com>
+> Signed-off-by: Romain Naour <romain.naour@smile.fr>
 
-The point of exposing the devlink lock was to avoid forcing drivers 
-to order object registration in a specific way. I don't like.
+Two signed-off-by from the same person is unusual :-)
 
-Please provide some solid motivation here 'cause if it's you like vs 
-I like...
+> ---
+> It seems that the KSZ9896 support has been sent to the kernel netdev
+> mailing list a while ago but got lost after initial review:
+> https://www.spinics.net/lists/netdev/msg554771.html
 
-Also the patches don't apply.
+I'm not sure saying it got lost is true. It looks more like the issues
+pointed out were never addressed.
+
+> The initial testing with the ksz9896 was done on a 5.10 kernel
+> but due to recent changes in dsa microchip driver it was required
+> to rework this initial version for 6.0-rc2 kernel.
+
+This looks sufficiently different that i don't think we need
+Tristram's Signed-off-by as well.
+
+I don't know these chips well enough to do a detailed review.
+
+  Andrew
