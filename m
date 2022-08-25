@@ -2,103 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5208E5A056E
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 02:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A377C5A0575
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 03:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231599AbiHYA4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 20:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
+        id S230338AbiHYBAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 21:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiHYA4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 20:56:38 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C53144540;
-        Wed, 24 Aug 2022 17:56:37 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id r4so24141391edi.8;
-        Wed, 24 Aug 2022 17:56:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Fb8xGD4kaa92dvVnQPrRFtkQAV3xtlSQACdU3g7w0Yo=;
-        b=OrYgLPE69cuXrh8bm5isYc18fYjBF2hdQdbz+PZ6qzP1YKTeUMrFrv69AgJXZM4XyC
-         7DksdJb97ITyn4r0kKmuv77uIP+h0edJeuSoVPqeZelsFQczF4TIEOrPp0geqRY0k1n5
-         5zVLxs9ck0E7hDRGNZYdvlr83XGYat+sECsSfn/du1TJ4hZi5YUajOq0z4DozqzadTzA
-         XRt5OXJpkiXgOB4zuBpZUC9GGwDMHR+JE1ImeKsOFmNp9VU3gzTPOiOf7a/4yrmVcW78
-         mnEuVc1WSggGWrmqd1oKxppmNI61xMGqt+WPCj1I58DkSF/jazpyyrH0WXubYIP0QLGv
-         nCJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Fb8xGD4kaa92dvVnQPrRFtkQAV3xtlSQACdU3g7w0Yo=;
-        b=fzixKzimTo+s6AcD9s0sSwyEBi1awnuxj0X6p5Zdi77GMYdhBWtsIvAX2LfH0bAyw4
-         +b6EKqlg+Mtym7rw9beBqwUCe21UIV5kaeMxEMuWZ/sMVkSOXkT3DikzXM4XbcG3xH8n
-         8UVWvJs8TrOsUQg6DIYy1v2fsbJiE2iq5160jbDIzvatVBzD+YeYJDI/rcdKxuITtCT7
-         mgp08dxUpZWiKTmiBT+p8Al3USVYP3BYA53GoLarq6x2+TKHyWd2da8KibFZSsJywS9Q
-         3PiMmONvIY+GBtK2iXcBsSF7UiW2/Fz8h73gDrcEhcwpCUyZ+D8MIkpiSBeg4kX9EIlX
-         e7PQ==
-X-Gm-Message-State: ACgBeo1a031yF+Aup5qvuNZ2KkplusJcqmmDSBbKIg/SMEumcmQIstM4
-        SOhMsk2Rc2Ii9pGIpK+6+nEK5dL//O335hxplk8aB3z6
-X-Google-Smtp-Source: AA6agR5Vptc/+u0DKWCDlF23ms6GUEpk7kcZM3dVULL9AL7cqxrFGEiy/U1dRol/prPYEdh8P8YsN8uPAugncZRu9IY=
-X-Received: by 2002:a05:6402:28cb:b0:43b:c6d7:ef92 with SMTP id
- ef11-20020a05640228cb00b0043bc6d7ef92mr1188312edb.333.1661388996135; Wed, 24
- Aug 2022 17:56:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220824150051.54eb7748@canb.auug.org.au> <CAP01T74GyRjXRZaDA-E5CXeaoKaf+FegQFxNP9k6kt8cvbt+EA@mail.gmail.com>
-In-Reply-To: <CAP01T74GyRjXRZaDA-E5CXeaoKaf+FegQFxNP9k6kt8cvbt+EA@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 24 Aug 2022 17:56:24 -0700
-Message-ID: <CAADnVQJsGudS7W=GcJGQyrzwsZ26=uCDQUW7MGDZ-RVpdsOH6A@mail.gmail.com>
-Subject: Re: linux-next: Fixes tag needs some work in the bpf-next tree
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        with ESMTP id S229802AbiHYBAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 21:00:46 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67E44474F7;
+        Wed, 24 Aug 2022 18:00:43 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MCl550YM9z4x1G;
+        Thu, 25 Aug 2022 11:00:41 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661389241;
+        bh=AYiOBWb08mU0nHDWsMSihOkyrHhYlKh5jSDYiWjyYpE=;
+        h=Date:From:To:Cc:Subject:From;
+        b=cN+Bcij5a+N9U2JxmpAfvldFOTjMSr8xHhqr8CrWbCM0DPb8ZgwOobDJV7PFCQGZS
+         UCMrnDPz6OpnBGaFRCS90JZwA9grTYcd2xhT+87rrsNvFESv4SsAd+VjShkXd3SbV3
+         AXAMegUdn8i4MTaHnoLCB3HKzXoi6fHKObPbsdxNWa6M+fCLS/RYtGg29vULxs77wQ
+         w4cDz1xRUc3JWQmn9ck03tC8wA8ZWMvy2MD1yWmPy/gNwcGUBH4Y4+hHYkhsT4lb49
+         TQ9Ct4ntshL0bUE2rAeUgo2jHjHXy/WOvKxFNC+BAZwdzXzgahwq+E5WxsbxqJo2XL
+         Yk5vzxvBH8/gA==
+Date:   Thu, 25 Aug 2022 11:00:39 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
         Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
         Networking <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: linux-next: manual merge of the bpf-next tree with the net tree
+Message-ID: <20220825110039.2e398527@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/JS48schjlrZViXtwXqiHQaS";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 10:05 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Wed, 24 Aug 2022 at 07:00, Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Hi all,
-> >
-> > In commit
-> >
-> >   2e5e0e8ede02 ("bpf: Fix reference state management for synchronous callbacks")
-> >
-> > Fixes tag
-> >
-> >   Fixes: 69c87ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-> >
-> > has these problem(s):
-> >
-> >   - Target SHA1 does not exist
-> >
-> > Maybe you meant
-> >
-> > Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
-> >
->
-> Ugh, really sorry, I must have fat fingered and pressed 'x' in vim
-> while editing the commit message. I always generate these using a git
-> fixes alias.
+--Sig_/JS48schjlrZViXtwXqiHQaS
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Since that was caught quickly there weren't that many commits on top.
-Fixed and force pushed bpf-next.
+Hi all,
 
-We actually have a script that checks such sha-s. Not sure how we missed it.
+Today's linux-next merge of the bpf-next tree got a conflict in:
+
+  net/core/filter.c
+
+between commit:
+
+  1227c1771dd2 ("net: Fix data-races around sysctl_[rw]mem_(max|default).")
+
+from the net tree and commit:
+
+  29003875bd5b ("bpf: Change bpf_setsockopt(SOL_SOCKET) to reuse sk_setsock=
+opt()")
+
+from the bpf-next tree.
+
+I fixed it up (I dropped the former patches changes to this file) and
+can carry the fix as necessary. This is now fixed as far as linux-next
+is concerned, but any non trivial conflicts should be mentioned to your
+upstream maintainer when your tree is submitted for merging.  You may
+also want to consider cooperating with the maintainer of the conflicting
+tree to minimise any particularly complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/JS48schjlrZViXtwXqiHQaS
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMGybcACgkQAVBC80lX
+0GyJ+wf8DqH1iGWmAN71OauMREBYz5Y8LhdWk43zTRiKqchRo/tVBHFJpXWxK6qJ
+zFkq+ZBMccgyZ676JBTMrm+nIdL90nwYrwfLVacY0f7yWiDy1RM0tG2IunHWvVHa
+Dsmm6hRVjJh6qqxrV3oan0PYlghpMzYeTDbR2kI23sU0jJ5RVAgfvN66jcfns8XJ
++CTZTBvcd+1ZLYt3+YgwtlfstvJuYvdSp12/GXG3ybUerFilyWBHXJNpayyN7BsE
+sEwtMGkGPzTvQL5mlIxvOZs2QDDzzih3KlWucxdyt3SzSk2uNJ+JWx0u8kaS8r0K
+G0bFUJebIaVa7IvS2KKQalOJQYEMzQ==
+=GXmx
+-----END PGP SIGNATURE-----
+
+--Sig_/JS48schjlrZViXtwXqiHQaS--
