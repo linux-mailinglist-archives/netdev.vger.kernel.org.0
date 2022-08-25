@@ -2,83 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C42425A183C
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD1E5A1853
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:06:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242468AbiHYSBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 14:01:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48122 "EHLO
+        id S242734AbiHYSGx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 14:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239959AbiHYSBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:01:32 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F8D9BB926
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:01:30 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id m16so123982wru.9
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:01:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=V3rvlgPNKsDmC6UL5dXYZgk3cANtUxsUR90LqKgOAbQ=;
-        b=a6PffmLt+X6pz4ybd2Ida2TTy6EB//YQIi59NlbWkZo+1IhI3DlfHtlSCUZMKoilxs
-         AXa/bltqmk2GK6m5I7WWUWbA/bSHH81l4yL6Ti0Qz0dSRb4ohIPzKPjiMDmmfYVKvwHX
-         eE0w3XkJSyYI/LNB+WneBeYxO37+MT1OxYlR7JkVCycOtILprZFng1ywVl6EEdb+r9z3
-         d+GilnHv1cMTk3PiEAxyur+9vJX5TPfYM9mQFqjdhbZGEWlfxiWnxfrFsnuEngLUeU5A
-         08gkkZD7c+WzIY6e3fifHlyc9xGPZWdwtPhfv/pstPL3OJed1JuzBjPQ6BvAIP1D6hEu
-         uOWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=V3rvlgPNKsDmC6UL5dXYZgk3cANtUxsUR90LqKgOAbQ=;
-        b=Uz4wCvKQOWQd0bObCRtFq8BeWVv+nHxaSyVWuY87/0qcJPPeM7bLybSu14S45RsoSn
-         Q6nKO/EUw9wDYPygN/7UwCqMlDAq6NfpMIXRHgSf0Z6W6Yfoev2cbn7G66GmEEWz6zZi
-         4TKC2jympkkQHcb81FN8+kRLijGYrNH8g3CMWvFrUHRuB6Mg1X0J6EaZI/a3VkV77DxT
-         NYd4hAo8BDiCUNVp6br1E7jQKj3V6uEJv5EMCddfobgKFfJWw485nk5LWgWH+c8cvwvj
-         Xh7ph3uRCilQ3a9kO9sxS0Kar8nbnWbRk/BAA56FV3g1vIxTH/LqBeBGfJe/TQ2h8I82
-         Cq7w==
-X-Gm-Message-State: ACgBeo3Z8tpvSvyypnhJJfSbS8vqi+DjM4ZPooM9WSOH9eG7YPqkjenC
-        Yv2avVWiWgEVJ4xHbJ7gHMC2rQ==
-X-Google-Smtp-Source: AA6agR5sIba1irFAGNCFMqOXrLQiFUj+uRicgN0ULEE+D+0rOrfc8apRcnAGT9/SWC3oeu4qLWq1sg==
-X-Received: by 2002:a05:6000:1ac6:b0:225:2e67:6ba4 with SMTP id i6-20020a0560001ac600b002252e676ba4mr3156298wry.321.1661450489190;
-        Thu, 25 Aug 2022 11:01:29 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id r6-20020adfdc86000000b0021e13efa17esm21024963wrj.70.2022.08.25.11.01.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 11:01:28 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 20:01:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+        with ESMTP id S236470AbiHYSGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:06:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB275BD10A;
+        Thu, 25 Aug 2022 11:06:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1567B828F5;
+        Thu, 25 Aug 2022 18:06:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3AD3C433D6;
+        Thu, 25 Aug 2022 18:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661450805;
+        bh=vdTPPyDbO3DHcZ5e2uNSt88PKKTHBmt6XSFXJAjrnZY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GbTSocz+aD9OF41KTFJ8PQlEKuvLWQzcPEkSeVJK0zzw1bzVGw5Fu2PogX5Jgxyq4
+         R9vYsoSXSuIdjBa8KIgvg5QuB8K3w/pL9tWXFtozyMULZ8OxcgT80BrtD6O5EvmSpi
+         0jZgpNCco6IF5COMAiPRQ8TeBN/VrWloMguq8+tLkz3BLDmw04Y1VWoOOrXaFWboXy
+         sDXFBScj9Ft9HNv+wYLWz1RFMx+pE9h3rxhyPUqUAhUUenO4Bxn0Ob5VomVxc62OlY
+         GuqV8qmnuLxr4kv0cRZHO42CfwtAejK6AaywH2JQfIyLUwGQ8HJovK+CMNXdtEkjMo
+         Eho7kmM7DA8xA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net_sched: remove impossible conditions
-Message-ID: <Ywe495TKpyYuIWks@nanopsycho>
-References: <Ywd4NIoS4aiilnMv@kili>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH net-next] net/mlx5e: Do not use err uninitialized in mlx5e_rep_add_meta_tunnel_rule()
+Date:   Thu, 25 Aug 2022 11:06:07 -0700
+Message-Id: <20220825180607.2707947-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ywd4NIoS4aiilnMv@kili>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Aug 25, 2022 at 03:25:08PM CEST, dan.carpenter@oracle.com wrote:
->We no longer allow "handle" to be zero, so there is no need to check
->for that.
->
->Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->---
->This obviously is low priority so it could go to net-next instead.
+Clang warns:
 
-It should. Does not fix anything.
+  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+          if (IS_ERR(flow_rule)) {
+              ^~~~~~~~~~~~~~~~~
+  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:489:9: note: uninitialized use occurs here
+          return err;
+                ^~~
+  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:2: note: remove the 'if' if its condition is always true
+          if (IS_ERR(flow_rule)) {
+          ^~~~~~~~~~~~~~~~~~~~~~~
+  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:474:9: note: initialize the variable 'err' to silence this warning
+          int err;
+                ^
+                  = 0
+  1 error generated.
+
+There is little reason to have the 'goto + error variable' construct in
+this function. Get rid of it and just return the PTR_ERR value in the if
+statement and 0 at the end.
+
+Fixes: 430e2d5e2a98 ("net/mlx5: E-Switch, Move send to vport meta rule creation")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1695
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index c8617a62e542..a977804137a8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -471,22 +471,18 @@ mlx5e_rep_add_meta_tunnel_rule(struct mlx5e_priv *priv)
+ 	struct mlx5_eswitch_rep *rep = rpriv->rep;
+ 	struct mlx5_flow_handle *flow_rule;
+ 	struct mlx5_flow_group *g;
+-	int err;
+ 
+ 	g = esw->fdb_table.offloads.send_to_vport_meta_grp;
+ 	if (!g)
+ 		return 0;
+ 
+ 	flow_rule = mlx5_eswitch_add_send_to_vport_meta_rule(esw, rep->vport);
+-	if (IS_ERR(flow_rule)) {
+-		err = PTR_ERR(flow_rule);
+-		goto out;
+-	}
++	if (IS_ERR(flow_rule))
++		return PTR_ERR(flow_rule);
+ 
+ 	rpriv->send_to_vport_meta_rule = flow_rule;
+ 
+-out:
+-	return err;
++	return 0;
+ }
+ 
+ static void
+
+base-commit: c19d893fbf3f2f8fa864ae39652c7fee939edde2
+-- 
+2.37.2
+
