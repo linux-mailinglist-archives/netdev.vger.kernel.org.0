@@ -2,148 +2,276 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8765A18AB
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:20:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBE9A5A18B3
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240358AbiHYSUE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 14:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54792 "EHLO
+        id S242651AbiHYSVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 14:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236695AbiHYSUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:20:02 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFEE326D1
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:20:00 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id m3so23628346lfg.10
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:20:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=LzcSMU79flsCFGsYwPA8jm006j9ntJHVrXRums+x4hg=;
-        b=SYv3Q3AaGa03fEqdwIrUan3UK8SVmw9Z+8W0B7f1Bj2B8+vTNPtKhvy5T89n7XvozG
-         NDgrl5LlirpCD9r3IS2kZBXYAE8dV6QP7j2D5koQYtr3nUg9jAbPihRKFqrhn5RwEcp7
-         BZd5umqi6jfrO6Cx8Bgf7w4lG0lyQa4YV0Q/DkOpfm5hmLCPyrSHeF6USOHTKnb82axs
-         UbqNS0wIZUyhVt9oIeAumA1MQ798CrLeXJrUDk7NUqGzWAQI6IfNL7t9zG0bFBciPxy1
-         +Yq1LnHzDtJzsiTKE4JhDpzYlvm+dVVQN2UNFpkKFOEdD6wZ+Y0MP9sxzTcXJXAlNHDb
-         gwcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=LzcSMU79flsCFGsYwPA8jm006j9ntJHVrXRums+x4hg=;
-        b=EVlzEyjC8zMqvyv9EDES4RCyEx86SX2/AtlGan6JyiqYpwIQgg1tN2ZPaEBrPPhKDG
-         OX1Lmi5+7LKu1jPbZS+4hpCmXR71aHMb2OSC3W714vtMpJJI4L4BGH7pdR0zjE2vwhFS
-         0AA/++qlZ3XMUDgJpyGXzKyvNC2Vlto0+ObeGN4xk1MnG1K/D+6PVvYmcUFbPHbiFLgd
-         ZrO5jPBWBChUlTo476ztqYWztk1N88TBlXo5huHF5jcUjaHpeHqKyjgaGWNA2L61HR3V
-         X4x8sFjuzsg/p6K32g+jMJjAlDpSzGDL8dJiA4U+lgSNnkTwaEuovShW4H8dijx8kNzr
-         aGSw==
-X-Gm-Message-State: ACgBeo1MBuGDzKxzIEDr5+kXLtvJt7uZwmsf440sV9NqrVFgy9UsCK65
-        2QhBepyz+zFatvmg66pOJZhhTjY3hvYosVfTu1RZ5g==
-X-Google-Smtp-Source: AA6agR4DcOai/4bkoqgXsxN2AlpaLedM35dK8SSB6wQ+78buD9y4OrDy89oUbjQQpHxrnsnUIN+AQrnsjuDafmd1nR8=
-X-Received: by 2002:a05:6512:158b:b0:48b:38:cff8 with SMTP id
- bp11-20020a056512158b00b0048b0038cff8mr1399470lfb.100.1661451598905; Thu, 25
- Aug 2022 11:19:58 -0700 (PDT)
+        with ESMTP id S239089AbiHYSV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:21:28 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993C889839;
+        Thu, 25 Aug 2022 11:21:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E374B82853;
+        Thu, 25 Aug 2022 18:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D530DC43144;
+        Thu, 25 Aug 2022 18:21:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661451684;
+        bh=wVc03IqlubuXAOqXJ2gmSZKR3a5bbQkXHMLhzFsQke0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=C5OByZVEwUfSkcCh+io9ipi8kZbbneck2aly4OWVja6cACq3yNvDpGiNsL7Q6g3/8
+         sev7RHZsIrRo6eLt146i4jwiLiavM5FkKfpXdV8dBIxpQwevameOPiVtj2WJjFnvOB
+         ToNf1V2vebnNTZTFWQGIAjF2fCVlQ+E11ETgE/GUb7C8VQ5QThJz9uCJIA6sYhytXS
+         adFGnBKMMp8ZhnQU7toyjvcaGkOjPdLKWYy8vbQx/6UTOmIQsSLlLlbHjyVIR2ZzBh
+         Vqm6wr74QZnCwLRCx2J5VDJzpYDXcqOtFVUDS/+5Ro3Hwu1Js4JtVUafw7/EPWhVOX
+         6dAclr3/5lT0g==
+Received: by mail-ed1-f54.google.com with SMTP id s11so27151064edd.13;
+        Thu, 25 Aug 2022 11:21:24 -0700 (PDT)
+X-Gm-Message-State: ACgBeo0hzc71aA4oSALQAJ/BWGEYWbLojpbYKeC4MDudz2Q4kPUfb+FI
+        jzQddelqCFidXatB07L899rpsnIahWrTKZEGMyU=
+X-Google-Smtp-Source: AA6agR43BzUtBg/G5aW5QBnzNsvI37mZfgSJ8U+jcWdAWxdZj/Ja5kpYaVwMi1533wDHBuNDlqaXiZHcUtKFhsrxPtM=
+X-Received: by 2002:a05:6402:5201:b0:446:cfe7:9f0c with SMTP id
+ s1-20020a056402520100b00446cfe79f0cmr4211219edd.16.1661451682918; Thu, 25 Aug
+ 2022 11:21:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220825180607.2707947-1-nathan@kernel.org>
-In-Reply-To: <20220825180607.2707947-1-nathan@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Thu, 25 Aug 2022 11:19:47 -0700
-Message-ID: <CAKwvOdmNCT+USwe5Lui27Oa1jfNyy3NwP3jW=Q7JJi1R5ibRnw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net/mlx5e: Do not use err uninitialized in mlx5e_rep_add_meta_tunnel_rule()
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220825134449.18803-1-harald.mommer@opensynergy.com>
+In-Reply-To: <20220825134449.18803-1-harald.mommer@opensynergy.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Thu, 25 Aug 2022 20:21:06 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1biW1qygRS8Mf0F5n8e6044+W-5v+Gnv+gh+Cyzj-Vjg@mail.gmail.com>
+Message-ID: <CAK8P3a1biW1qygRS8Mf0F5n8e6044+W-5v+Gnv+gh+Cyzj-Vjg@mail.gmail.com>
+Subject: Re: [virtio-dev] [RFC PATCH 1/1] can: virtio: Initial virtio CAN driver.
+To:     Harald Mommer <harald.mommer@opensynergy.com>
+Cc:     virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Tom Rix <trix@redhat.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        patches@lists.linux.dev
+        Paolo Abeni <pabeni@redhat.com>,
+        Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
+        Harald Mommer <hmo@opensynergy.com>,
+        Stratos Mailing List <stratos-dev@op-lists.linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:06 AM Nathan Chancellor <nathan@kernel.org> wrote:
+() b
+On Thu, Aug 25, 2022 at 3:44 PM Harald Mommer
+<harald.mommer@opensynergy.com> wrote:
 >
-> Clang warns:
+> - CAN Control
 >
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
->           if (IS_ERR(flow_rule)) {
->               ^~~~~~~~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:489:9: note: uninitialized use occurs here
->           return err;
->                 ^~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:2: note: remove the 'if' if its condition is always true
->           if (IS_ERR(flow_rule)) {
->           ^~~~~~~~~~~~~~~~~~~~~~~
->   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:474:9: note: initialize the variable 'err' to silence this warning
->           int err;
->                 ^
->                   = 0
->   1 error generated.
+>   - "ip link set up can0" starts the virtual CAN controller,
+>   - "ip link set up can0" stops the virtual CAN controller
 >
-> There is little reason to have the 'goto + error variable' construct in
-> this function. Get rid of it and just return the PTR_ERR value in the if
-> statement and 0 at the end.
+> - CAN RX
 >
-> Fixes: 430e2d5e2a98 ("net/mlx5: E-Switch, Move send to vport meta rule creation")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1695
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+>   Receive CAN frames. CAN frames can be standard or extended, classic or
+>   CAN FD. Classic CAN RTR frames are supported.
+>
+> - CAN TX
+>
+>   Send CAN frames. CAN frames can be standard or extended, classic or
+>   CAN FD. Classic CAN RTR frames are supported.
+>
+> - CAN Event indication (BusOff)
+>
+>   The bus off handling is considered code complete but until now bus off
+>   handling is largely untested.
+>
+> Signed-off-by: Harald Mommer <hmo@opensynergy.com>
 
-Thanks for the fix!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+This looks nice overall, but as you say there is still some work needed in all
+the details. I've done a rough first pass at reviewing it, but I have
+no specific
+understanding of CAN, so these are mostly generic comments about
+coding style or network drivers.
 
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> index c8617a62e542..a977804137a8 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> @@ -471,22 +471,18 @@ mlx5e_rep_add_meta_tunnel_rule(struct mlx5e_priv *priv)
->         struct mlx5_eswitch_rep *rep = rpriv->rep;
->         struct mlx5_flow_handle *flow_rule;
->         struct mlx5_flow_group *g;
-> -       int err;
->
->         g = esw->fdb_table.offloads.send_to_vport_meta_grp;
->         if (!g)
->                 return 0;
->
->         flow_rule = mlx5_eswitch_add_send_to_vport_meta_rule(esw, rep->vport);
-> -       if (IS_ERR(flow_rule)) {
-> -               err = PTR_ERR(flow_rule);
-> -               goto out;
-> -       }
-> +       if (IS_ERR(flow_rule))
-> +               return PTR_ERR(flow_rule);
->
->         rpriv->send_to_vport_meta_rule = flow_rule;
->
-> -out:
-> -       return err;
-> +       return 0;
->  }
->
->  static void
->
-> base-commit: c19d893fbf3f2f8fa864ae39652c7fee939edde2
-> --
-> 2.37.2
->
+>  drivers/net/can/Kconfig                 |    1 +
+>  drivers/net/can/Makefile                |    1 +
+>  drivers/net/can/virtio_can/Kconfig      |   12 +
+>  drivers/net/can/virtio_can/Makefile     |    5 +
+>  drivers/net/can/virtio_can/virtio_can.c | 1176 +++++++++++++++++++++++
+>  include/uapi/linux/virtio_can.h         |   69 ++
 
+Since the driver is just one file, you probably don't need the subdirectory.
 
--- 
-Thanks,
-~Nick Desaulniers
+> +struct virtio_can_tx {
+> +       struct list_head list;
+> +       int prio; /* Currently always 0 "normal priority" */
+> +       int putidx;
+> +       struct virtio_can_tx_out tx_out;
+> +       struct virtio_can_tx_in tx_in;
+> +};
+
+Having a linked list of these appears to add a little extra complexity.
+If they are always processed in sequence, using an array would be
+much simpler, as you just need to remember the index.
+
+> +#ifdef DEBUG
+> +static void __attribute__((unused))
+> +virtio_can_hexdump(const void *data, size_t length, size_t base)
+> +{
+> +#define VIRTIO_CAN_MAX_BYTES_PER_LINE 16u
+
+This seems to duplicate print_hex_dump(), maybe just use that?
+
+> +
+> +       while (!virtqueue_get_buf(vq, &len) && !virtqueue_is_broken(vq))
+> +               cpu_relax();
+> +
+> +       mutex_unlock(&priv->ctrl_lock);
+
+A busy loop is probably not what you want here. Maybe just
+wait_for_completion() until the callback happens?
+
+> +       /* Push loopback echo. Will be looped back on TX interrupt/TX NAPI */
+> +       can_put_echo_skb(skb, dev, can_tx_msg->putidx, 0);
+> +
+> +       err = virtqueue_add_sgs(vq, sgs, 1u, 1u, can_tx_msg, GFP_ATOMIC);
+> +       if (err != 0) {
+> +               list_del(&can_tx_msg->list);
+> +               virtio_can_free_tx_idx(priv, can_tx_msg->prio,
+> +                                      can_tx_msg->putidx);
+> +               netif_stop_queue(dev);
+> +               spin_unlock_irqrestore(&priv->tx_lock, flags);
+> +               kfree(can_tx_msg);
+> +               if (err == -ENOSPC)
+> +                       netdev_info(dev, "TX: Stop queue, no space left\n");
+> +               else
+> +                       netdev_warn(dev, "TX: Stop queue, reason = %d\n", err);
+> +               return NETDEV_TX_BUSY;
+> +       }
+> +
+> +       if (!virtqueue_kick(vq))
+> +               netdev_err(dev, "%s(): Kick failed\n", __func__);
+> +
+> +       spin_unlock_irqrestore(&priv->tx_lock, flags);
+
+There should not be a need for a spinlock or disabling interrupts
+in the xmit function. What exactly are you protecting against here?
+
+As a further optimization, you may want to use the xmit_more()
+function, as the virtqueue kick is fairly expensive and can be
+batched here.
+
+> +       kfree(can_tx_msg);
+> +
+> +       /* Flow control */
+> +       if (netif_queue_stopped(dev)) {
+> +               netdev_info(dev, "TX ACK: Wake up stopped queue\n");
+> +               netif_wake_queue(dev);
+> +       }
+
+You may want to add netdev_sent_queue()/netdev_completed_queue()
+based BQL flow control here as well, so you don't have to rely on the
+queue filling up completely.
+
+> +static int virtio_can_probe(struct virtio_device *vdev)
+> +{
+> +       struct net_device *dev;
+> +       struct virtio_can_priv *priv;
+> +       int err;
+> +       unsigned int echo_skb_max;
+> +       unsigned int idx;
+> +       u16 lo_tx = VIRTIO_CAN_ECHO_SKB_MAX;
+> +
+> +       BUG_ON(!vdev);
+
+Not a useful debug check, just remove the BUG_ON(!vdev), here and elsewhere
+
+> +
+> +       echo_skb_max = lo_tx;
+> +       dev = alloc_candev(sizeof(struct virtio_can_priv), echo_skb_max);
+> +       if (!dev)
+> +               return -ENOMEM;
+> +
+> +       priv = netdev_priv(dev);
+> +
+> +       dev_info(&vdev->dev, "echo_skb_max = %u\n", priv->can.echo_skb_max);
+
+Also remove the prints, I assume this is left over from
+initial debugging.
+
+> +       priv->can.do_set_mode = virtio_can_set_mode;
+> +       priv->can.state = CAN_STATE_STOPPED;
+> +       /* Set Virtio CAN supported operations */
+> +       priv->can.ctrlmode_supported = CAN_CTRLMODE_BERR_REPORTING;
+> +       if (virtio_has_feature(vdev, VIRTIO_CAN_F_CAN_FD)) {
+> +               dev_info(&vdev->dev, "CAN FD is supported\n");
+
+> +       } else {
+> +               dev_info(&vdev->dev, "CAN FD not supported\n");
+> +       }
+
+Same here. There should be a way to see CAN FD support as an interactive
+user, but there is no point printing it to the console.
+
+> +
+> +       register_virtio_can_dev(dev);
+> +
+> +       /* Initialize virtqueues */
+> +       err = virtio_can_find_vqs(priv);
+> +       if (err != 0)
+> +               goto on_failure;
+
+Should the register_virtio_can_dev() be done here? I would expect this to be
+the last thing after setting up the queues.
+
+> +static struct virtio_driver virtio_can_driver = {
+> +       .feature_table = features,
+> +       .feature_table_size = ARRAY_SIZE(features),
+> +       .feature_table_legacy = NULL,
+> +       .feature_table_size_legacy = 0u,
+> +       .driver.name =  KBUILD_MODNAME,
+> +       .driver.owner = THIS_MODULE,
+> +       .id_table =     virtio_can_id_table,
+> +       .validate =     virtio_can_validate,
+> +       .probe =        virtio_can_probe,
+> +       .remove =       virtio_can_remove,
+> +       .config_changed = NULL,
+> +#ifdef CONFIG_PM_SLEEP
+> +       .freeze =       virtio_can_freeze,
+> +       .restore =      virtio_can_restore,
+> +#endif
+
+You can remove the #ifdef here and above, and replace that with the
+pm_sleep_ptr() macro in the assignment.
+
+> diff --git a/include/uapi/linux/virtio_can.h b/include/uapi/linux/virtio_can.h
+> new file mode 100644
+> index 000000000000..0ca75c7a98ee
+> --- /dev/null
+> +++ b/include/uapi/linux/virtio_can.h
+> @@ -0,0 +1,69 @@
+> +/* SPDX-License-Identifier: BSD-3-Clause */
+> +/*
+> + * Copyright (C) 2021 OpenSynergy GmbH
+> + */
+> +#ifndef _LINUX_VIRTIO_VIRTIO_CAN_H
+> +#define _LINUX_VIRTIO_VIRTIO_CAN_H
+> +
+> +#include <linux/types.h>
+> +#include <linux/virtio_types.h>
+> +#include <linux/virtio_ids.h>
+> +#include <linux/virtio_config.h>
+
+Maybe a link to the specification here? I assume the definitions in this file
+are all lifted from that document, rather than specific to the driver, right?
+
+         Arnd
