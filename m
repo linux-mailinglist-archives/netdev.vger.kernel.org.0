@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 058425A1B68
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:46:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB6B5A1B66
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244041AbiHYVpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 17:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45088 "EHLO
+        id S244270AbiHYVpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 17:45:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244033AbiHYVoy (ORCPT
+        with ESMTP id S235363AbiHYVoy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 17:44:54 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD3A240BC;
-        Thu, 25 Aug 2022 14:44:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C3E7E10;
+        Thu, 25 Aug 2022 14:44:43 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 133A87F31;
+        by mail.3ffe.de (Postfix) with ESMTPSA id BB5DD7F32;
         Thu, 25 Aug 2022 23:44:38 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661463878;
+        t=1661463879;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=NgLen7ZHBqbaEWUEF25Dd4sUxZqmNPV1jG0lui9seU8=;
-        b=VcqoGrhLt0c3LRfQ2ZcqfMCdqELmHOQRt7EuuHArdq4lvVDTdutbAkdsWIhVK4ynt3vvBk
-        lTqjBwxDVQ/b+HCJJSXLe8mG4KD7ZbbwsLQ5E6+wiiQLgx3YvhoCL5hOeRBU+7209QsH2J
-        2YXZ0DKqzbs7e4ZBerGP+WbfzNoNr0dmVXwwMataxbjLXqphHM9Z9pLnGIFkvihuz7VAyy
-        RxiARaM+V0u0pRJpT24ioa3X0Buu193+e3+Rm4HtplXGSsM+dP+0ENXFb+sXbCcTUyR3N/
-        yn8Y6/fZUzcuJmF4IVkw9TcltcuRM41CDe73f2odmeNwqcuXfTav49Ptd06nZQ==
+        bh=jY0emPBT4127OBFcH8ITuFxvYnQvmd4PIUnzlT5RAgU=;
+        b=dnt/7z9E1egCRFkcjvLveYq3F/v3s9AVVV2A4i8MWA4kJKWtWOP1G1C1qeQs5mwLopjEyN
+        RWXPYRhEb3gx1qz0zByKEtttXf5TMfRsQVoAqGGHjc0aSXsr+ZD3QtwskWWrrl80Sej2OP
+        O2s+M/zm/OPyHifOJwtuqrqW4ZxQb8Du0hEf+6WUYb5RaG2GvM+coYmk71dSb/c+DajxYS
+        CASbw2FCRraHbxzF7Ie3T+lEHesRQEjw70Tncwq9BdnFSrA8fZ8Htd/3E572Oi38BD8Dw3
+        zwUqz7QQcCfv7iWqE/uNeXvJXJpaPRLT20tvDu678oeeDAe5aDDQ8f0J9lwzMw==
 From:   Michael Walle <michael@walle.cc>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
@@ -50,9 +50,9 @@ Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
         Michael Walle <michael@walle.cc>
-Subject: [PATCH v1 04/14] nvmem: core: drop the removal of the cells in nvmem_add_cells()
-Date:   Thu, 25 Aug 2022 23:44:13 +0200
-Message-Id: <20220825214423.903672-5-michael@walle.cc>
+Subject: [PATCH v1 05/14] nvmem: core: add nvmem_add_one_cell()
+Date:   Thu, 25 Aug 2022 23:44:14 +0200
+Message-Id: <20220825214423.903672-6-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220825214423.903672-1-michael@walle.cc>
 References: <20220825214423.903672-1-michael@walle.cc>
@@ -69,64 +69,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If nvmem_add_cells() fails, the whole nvmem_register() will fail
-and the cells will then be removed anyway. This is a prepartion
-to introduce a nvmem_add_one_cell() which can then be used by
-nvmem_add_cells().
-
-This is then the same to what nvmem_add_cells_from_table() and
-nvmem_add_cells_from_of() do.
+Add a new function to add exactly one cell. This will be used by the
+nvmem layout drivers to add custom cells. In contrast to the
+nvmem_add_cells(), this has the advantage that we don't have to assemble
+a list of cells on runtime.
 
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
- drivers/nvmem/core.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ drivers/nvmem/core.c           | 58 ++++++++++++++++++++--------------
+ include/linux/nvmem-provider.h |  5 +++
+ 2 files changed, 39 insertions(+), 24 deletions(-)
 
 diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index ab055e4fc409..be38e62fd190 100644
+index be38e62fd190..3dfd149374a8 100644
 --- a/drivers/nvmem/core.c
 +++ b/drivers/nvmem/core.c
-@@ -515,7 +515,7 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
- 		    int ncells)
- {
- 	struct nvmem_cell_entry **cells;
--	int i, rval;
-+	int i, rval = 0;
- 
- 	cells = kcalloc(ncells, sizeof(*cells), GFP_KERNEL);
- 	if (!cells)
-@@ -525,28 +525,22 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
- 		cells[i] = kzalloc(sizeof(**cells), GFP_KERNEL);
- 		if (!cells[i]) {
- 			rval = -ENOMEM;
--			goto err;
-+			goto out;
- 		}
- 
- 		rval = nvmem_cell_info_to_nvmem_cell_entry(nvmem, &info[i], cells[i]);
- 		if (rval) {
- 			kfree(cells[i]);
--			goto err;
-+			goto out;
- 		}
- 
- 		nvmem_cell_entry_add(cells[i]);
- 	}
- 
-+out:
- 	/* remove tmp array */
- 	kfree(cells);
- 
--	return 0;
--err:
--	while (i--)
--		nvmem_cell_entry_drop(cells[i]);
--
--	kfree(cells);
--
- 	return rval;
+@@ -501,6 +501,35 @@ static int nvmem_cell_info_to_nvmem_cell_entry(struct nvmem_device *nvmem,
+ 	return 0;
  }
  
++/**
++ * nvmem_add_one_cell() - Add one cell information to an nvmem device
++ *
++ * @nvmem: nvmem device to add cells to.
++ * @info: nvmem cell info to add to the device
++ *
++ * Return: 0 or negative error code on failure.
++ */
++int nvmem_add_one_cell(struct nvmem_device *nvmem,
++		       const struct nvmem_cell_info *info)
++{
++	struct nvmem_cell_entry *cell;
++	int rval;
++
++	cell = kzalloc(sizeof(*cell), GFP_KERNEL);
++	if (!cell)
++		return -ENOMEM;
++
++	rval = nvmem_cell_info_to_nvmem_cell_entry(nvmem, info, cell);
++	if (rval) {
++		kfree(cell);
++		return rval;
++	}
++
++	nvmem_cell_entry_add(cell);
++
++	return 0;
++}
++
+ /**
+  * nvmem_add_cells() - Add cell information to an nvmem device
+  *
+@@ -514,34 +543,15 @@ static int nvmem_add_cells(struct nvmem_device *nvmem,
+ 		    const struct nvmem_cell_info *info,
+ 		    int ncells)
+ {
+-	struct nvmem_cell_entry **cells;
+-	int i, rval = 0;
+-
+-	cells = kcalloc(ncells, sizeof(*cells), GFP_KERNEL);
+-	if (!cells)
+-		return -ENOMEM;
++	int i, rval;
+ 
+ 	for (i = 0; i < ncells; i++) {
+-		cells[i] = kzalloc(sizeof(**cells), GFP_KERNEL);
+-		if (!cells[i]) {
+-			rval = -ENOMEM;
+-			goto out;
+-		}
+-
+-		rval = nvmem_cell_info_to_nvmem_cell_entry(nvmem, &info[i], cells[i]);
+-		if (rval) {
+-			kfree(cells[i]);
+-			goto out;
+-		}
+-
+-		nvmem_cell_entry_add(cells[i]);
++		rval = nvmem_add_one_cell(nvmem, &info[i]);
++		if (rval)
++			return rval;
+ 	}
+ 
+-out:
+-	/* remove tmp array */
+-	kfree(cells);
+-
+-	return rval;
++	return 0;
+ }
+ 
+ /**
+diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+index 8f964b394292..e710404959e7 100644
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -138,6 +138,9 @@ struct nvmem_device *devm_nvmem_register(struct device *dev,
+ void nvmem_add_cell_table(struct nvmem_cell_table *table);
+ void nvmem_del_cell_table(struct nvmem_cell_table *table);
+ 
++int nvmem_add_one_cell(struct nvmem_device *nvmem,
++		       const struct nvmem_cell_info *info);
++
+ #else
+ 
+ static inline struct nvmem_device *nvmem_register(const struct nvmem_config *c)
+@@ -155,6 +158,8 @@ devm_nvmem_register(struct device *dev, const struct nvmem_config *c)
+ 
+ static inline void nvmem_add_cell_table(struct nvmem_cell_table *table) {}
+ static inline void nvmem_del_cell_table(struct nvmem_cell_table *table) {}
++static inline int nvmem_add_one_cell(struct nvmem_device *nvmem,
++				     const struct nvmem_cell_info *info) {}
+ 
+ #endif /* CONFIG_NVMEM */
+ #endif  /* ifndef _LINUX_NVMEM_PROVIDER_H */
 -- 
 2.30.2
 
