@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E709A5A0C89
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:26:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E15235A0C94
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:28:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233370AbiHYJ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 05:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40060 "EHLO
+        id S239950AbiHYJ2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 05:28:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239962AbiHYJ0n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:26:43 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A2726DAC5
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 02:26:41 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id u24so13257926lji.0
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 02:26:41 -0700 (PDT)
+        with ESMTP id S237349AbiHYJ2C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:28:02 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C4E3A4B0A;
+        Thu, 25 Aug 2022 02:28:01 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id q18so17833125ljg.12;
+        Thu, 25 Aug 2022 02:28:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=RxV0nDEAfKqC3x7raaUN+mLOW4U9IZpu1YewQ98T9Tc=;
-        b=ZhYOiBsIwUThLbwSJWXxJ6FoRPKj1W6h/5GEgoWpB2n+hQzL5kIpj0oRnzIjXSe3/C
-         OtjcxEwukDFf6VzFa2OlmXfWFvi2s5xZRkP2XfTPOlY05U3T5q7luETEwe2nnDUBFrQe
-         Y7tHaNH3mp024+GPv6ZrN+NCi1xlZ03yffz4/idMyw14ElWesvViaDVBJ4Ku3f37xSsM
-         VTD+RbUIpmBOHwPdy6tHqa2hnFgM2IIRiHpDn4/FUEw3aKI2RVbVtNAdsMJGLftz4Y0d
-         fRE9/ZHcAzg8yw3xAfO0rg7vVzg2R1iYK49Y6aYvK+4m9mD4jPur1ULt0zxlXC5Dh8gN
-         5jlg==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=bHJbCxqGrMvRJ8HABrOLQY8kdlTtP1fT6llzjdoahEI=;
+        b=F6dgYpp2CWa9EjXLyNUb2hkEr++WEmvoD1Es9jHGjD3nl2s+cUcKf5qo2cYDMhDudh
+         IMnajyC+ijg09SfazUHsyiO0CJsRSfB0wPEfyb0993Y1r4EIbJi/1LdCi3HDAa2NJJ8x
+         +zC5tDOVxxCwf6bf8VbNmzwnczL/SPqiYvkU52CUK7TS4elW2cXs3FEUXudhl83S8u0e
+         SrcF8UkWbV35NopLBg8rBAeTUzSBCzzYntRNyOVr8P409yXN8j/WZFl0g97yIgcnKXs1
+         p38SZYMTy2HmGrbnncEsoQwuSsGvytdaxcgP4HxRFbYOOD0lP9V8LJKk3fFJvFeIQvoT
+         SqiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=RxV0nDEAfKqC3x7raaUN+mLOW4U9IZpu1YewQ98T9Tc=;
-        b=05ofqSL7+Gg2ev0lReswoROPBamA8mfRYxoe4KuXRDRvVGxdppSDdl5mfN89LmzZdM
-         YS/asXY7pLDU6yktwP4G5uLlGE+ieRZIKaD5PRkmgPeH0S2cIoQqiqndbGVXtqCFQvpa
-         doXaanKbPj43ckSXuZH0V1q9newQa/uUsDIxM9J/Lax+z8iB4+Kqf4bHq+748RaChVSv
-         Fn0uqeHRDmB4qCMp+69o7Fpr7v18s0xVGifjfIkilkC9ZFezlQWG2QSxXPDhk2gn6Ww/
-         WY07Pn5DAjT5k4VMgtfpgEftWID9p16hmkdTNNRJzG4kM72BXR2dptd7qDVO2TtHxwAe
-         WCGg==
-X-Gm-Message-State: ACgBeo0vxelmQw0YZ5YEg739P6wE8R8IrxTUmdRNflkuOw0tZMSuICO/
-        R+ajE2bqQbMfi409L6+Rb8FgX6O1yo83nlgzchM=
-X-Google-Smtp-Source: AA6agR6MbDM2fAhqpvqqDfFeVUi+SnMLj9pxO/FB81lvKyoidZIEEZcUoIqolLVn2DBU4ejvT7DUkg==
-X-Received: by 2002:a2e:a98b:0:b0:25f:d9e9:588d with SMTP id x11-20020a2ea98b000000b0025fd9e9588dmr849924ljq.205.1661419599336;
-        Thu, 25 Aug 2022 02:26:39 -0700 (PDT)
-Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id p9-20020a2eba09000000b0025df5f38da8sm429740lja.119.2022.08.25.02.26.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 02:26:38 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=bHJbCxqGrMvRJ8HABrOLQY8kdlTtP1fT6llzjdoahEI=;
+        b=R70juOU0TZ9gLbX2BipB38LuUSDYFWfiARCxU9idVW5wvqDp4piQ0V+Cc/RAz5MTod
+         rUxqbSLs53l9TkzUwAQ/ZGqJL/T+LrQrUgYvIT9xoV2vkIiKdcqMdVm4JW2JjMUuQKr6
+         sycDa5QQVuvgbpoqPtIIY3oP9k2Nh9mf0Fj15LE74zx0pkaCaGHNB1GAsvQVhR/Ws0mE
+         I+/SJbvM3zsbRPrkF/mE7ztNDQ72iIxh4oEoWwmKMsHovB44Tfd8MEAch6RsHfdzQ00x
+         21rzPuN7281bQffBfVX6AY28ce9Dtwf9hASyNCjrhhnpZDS2V/qHQ1cOQ2k0ykj+T6YP
+         QPPA==
+X-Gm-Message-State: ACgBeo2SEXae4RP46q+6S/Tj+qclO6MOprNmYSv5uIUYTyb5dD+Enpt+
+        VpWaM5LLZxHl7VF49ynvtBgcowwCC6RXXpt7AZ8=
+X-Google-Smtp-Source: AA6agR450TIsqiag2S5eMHMXUw3UgJhUL8vxaf3i2cYKpNtvBGspRhj5eXNHGG8OC2gIZZGSa5KIZ8mmRqy62CUTnLU=
+X-Received: by 2002:a2e:b0ca:0:b0:261:d46a:4672 with SMTP id
+ g10-20020a2eb0ca000000b00261d46a4672mr775822ljl.460.1661419679767; Thu, 25
+ Aug 2022 02:27:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220719123525.3448926-1-gasmibal@gmail.com> <20220719123525.3448926-3-gasmibal@gmail.com>
+ <a3361036446058fe386634a9016c6925146a078e.camel@sipsolutions.net>
+In-Reply-To: <a3361036446058fe386634a9016c6925146a078e.camel@sipsolutions.net>
+From:   Baligh GASMI <gasmibal@gmail.com>
+Date:   Thu, 25 Aug 2022 11:27:48 +0200
+Message-ID: <CALxDnQYpA+cpUufxkpyqT=JjZUap-i==bn=r2Z3K2Oayh9QhTQ@mail.gmail.com>
+Subject: Re: [RFC/RFT v5 2/4] mac80211: add periodic monitor for channel busy time
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v1 3/3] rmon: Use RMU if available
-Date:   Thu, 25 Aug 2022 11:26:29 +0200
-Message-Id: <20220825092629.236131-4-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220825092629.236131-1-mattias.forsblad@gmail.com>
-References: <20220825092629.236131-1-mattias.forsblad@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        "open list:MAC80211" <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Toke Hoiland-Jorgensen <toke@redhat.com>,
+        Linus Lussing <linus.luessing@c0d3.blue>,
+        Kalle Valo <kvalo@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -76,86 +76,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If RMU is supported, use that interface to
-collect rmon data.
+Ok, noted !
+I will try to find a way or maybe remove this part, since the busy
+time is not trivial to be used in the estimation, as I thought.
+Thanks for your reply.
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 41 ++++++++++++++++++++++++++------
- 1 file changed, 34 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 4c0510abd875..0d0241ace708 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1226,16 +1226,30 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
- 				     u16 bank1_select, u16 histogram)
- {
- 	struct mv88e6xxx_hw_stat *stat;
-+	int offset = 0;
-+	u64 high;
- 	int i, j;
- 
- 	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
- 		stat = &mv88e6xxx_hw_stats[i];
- 		if (stat->type & types) {
--			mv88e6xxx_reg_lock(chip);
--			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
--							      bank1_select,
--							      histogram);
--			mv88e6xxx_reg_unlock(chip);
-+			if (chip->rmu.ops && chip->rmu.ops->get_rmon &&
-+			    !(stat->type & STATS_TYPE_PORT)) {
-+				if (stat->type & STATS_TYPE_BANK1)
-+					offset = 32;
-+
-+				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
-+				if (stat->size == 8) {
-+					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
-+							+ 1];
-+					data[j] += (high << 32);
-+				}
-+			} else {
-+				mv88e6xxx_reg_lock(chip);
-+				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
-+								      bank1_select, histogram);
-+				mv88e6xxx_reg_unlock(chip);
-+			}
- 
- 			j++;
- 		}
-@@ -1304,8 +1318,8 @@ static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
- 	mv88e6xxx_reg_unlock(chip);
- }
- 
--static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
--					uint64_t *data)
-+static void mv88e6xxx_get_ethtool_stats_mdio(struct dsa_switch *ds, int port,
-+					     uint64_t *data)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int ret;
-@@ -1319,7 +1333,20 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 		return;
- 
- 	mv88e6xxx_get_stats(chip, port, data);
-+}
- 
-+static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
-+					uint64_t *data)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+
-+	/* If initialization of RMU isn't available
-+	 * fall back to MDIO access.
-+	 */
-+	if (chip->rmu.ops && chip->rmu.ops->get_rmon)
-+		chip->rmu.ops->get_rmon(chip, port, data);
-+	else
-+		mv88e6xxx_get_ethtool_stats_mdio(ds, port, data);
- }
- 
- static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
--- 
-2.25.1
-
+Le jeu. 25 ao=C3=BBt 2022 =C3=A0 10:58, Johannes Berg
+<johannes@sipsolutions.net> a =C3=A9crit :
+>
+> On Tue, 2022-07-19 at 14:35 +0200, Baligh Gasmi wrote:
+> > Add a worker scheduled periodicaly to calculate the busy time average o=
+f
+> > the current channel.
+> >
+> > This will be used in the estimation for expected throughput.
+> >
+>
+> I really don't think you should/can do this - having a 1-second periodic
+> timer (for each interface even!) is going to be really bad for power
+> consumption.
+>
+> Please find a way to inline the recalculation with statistics updates
+> and/or queries.
+>
+> johannes
