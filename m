@@ -2,88 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B5A15A1208
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:27:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 849855A122D
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242590AbiHYN1I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 09:27:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S241728AbiHYNal (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 09:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241363AbiHYN1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:27:08 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CDC1AB430;
-        Thu, 25 Aug 2022 06:27:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=LNDa6K477WrjL/9qZ6CeDxttXWTu9Hc41m/817r5XA8=; b=3d3bVga53ZEwYBPWZSj5Pkldyk
-        juCaqxxtiWJz9MDemuh3wekoODc0dvLe+XEt2Sf8igh9l2suQ7/uG+D8HQX3LI6/gJwNylWXtn2M2
-        D2YnN51lR54bVKrPm3EN1ZkwfJwmTjROCJ/WCxPaD0Z4wU5S6AAIhh1tR6F/B7JjZQII=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oRCsr-00EZbv-Ke; Thu, 25 Aug 2022 15:26:57 +0200
-Date:   Thu, 25 Aug 2022 15:26:57 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Aminuddin Jamaluddin <aminuddin.jamaluddin@intel.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, tee.min.tan@intel.com,
-        muhammad.husaini.zulkifli@intel.com
-Subject: Re: [PATCH net 1/1] net: phy: marvell: add link status check before
- enabling phy loopback
-Message-ID: <Ywd4oUPEssQ+/OBE@lunn.ch>
-References: <20220825082238.11056-1-aminuddin.jamaluddin@intel.com>
+        with ESMTP id S242713AbiHYNaW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:30:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAE0AE9F6;
+        Thu, 25 Aug 2022 06:30:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90C8BB81DF1;
+        Thu, 25 Aug 2022 13:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 12C67C433B5;
+        Thu, 25 Aug 2022 13:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661434215;
+        bh=bopjZ3EAOBRbSKc1eZBc9NxU1rihzcKJjfdgqWzzU2E=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=TLr0xvGbFxxEp9YqEBDylyS6daeJz3vrb4F58qiKyEDJUeO3tOKr3hJLYJess5Was
+         gAZFg3Jux//RFiPJ35IzPPs6ZVGQRLCBldTnJclsPy1uj1xSxtVqsoTyIiKWYVa7VI
+         eHAd55QiY6OlwyiujUyGq0HY6K2npRYIiSJTv2h2VxoaZ5AMBtXjNQf+Mg1bS5RZ2o
+         K/p+Y1pDQUpgrvq29h7MjHx/zA0Y5sQhfNKEdXYekxxQBiGkvRbrmdtPYDyCmYeXfj
+         ma8kQF9DFwbimpOrfVer0A+9O4aZ8KE8vq0DR5id6IC6rM+AZYsXGZdPIJ37LqepNW
+         TM/32k24YTV3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E5282C4166E;
+        Thu, 25 Aug 2022 13:30:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825082238.11056-1-aminuddin.jamaluddin@intel.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next,v2] net: sched: delete duplicate cleanup of backlog
+ and qlen
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166143421493.23449.11479181390750074314.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Aug 2022 13:30:14 +0000
+References: <20220824005231.345727-1-shaozhengchao@huawei.com>
+In-Reply-To: <20220824005231.345727-1-shaozhengchao@huawei.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, vinicius.gomes@intel.com, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> @@ -2015,14 +2016,23 @@ static int m88e1510_loopback(struct phy_device *phydev, bool enable)
->  		if (err < 0)
->  			return err;
->  
-> -		/* FIXME: Based on trial and error test, it seem 1G need to have
-> -		 * delay between soft reset and loopback enablement.
-> -		 */
-> -		if (phydev->speed == SPEED_1000)
-> -			msleep(1000);
-> +		if (phydev->speed == SPEED_1000) {
-> +			err = phy_read_poll_timeout(phydev, MII_BMSR, val, val & BMSR_LSTATUS,
-> +						    PHY_LOOP_BACK_SLEEP,
-> +						    PHY_LOOP_BACK_TIMEOUT, true);
+Hello:
 
-Is this link with itself?
+This patch was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Have you tested this with the cable unplugged?
+On Wed, 24 Aug 2022 08:52:31 +0800 you wrote:
+> qdisc_reset() is clearing qdisc->q.qlen and qdisc->qstats.backlog
+> _after_ calling qdisc->ops->reset. There is no need to clear them
+> again in the specific reset function.
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+> v1: changelog is slightly inaccurate.
+> 
+> [...]
 
-> +			if (err)
-> +				return err;
+Here is the summary with links:
+  - [net-next,v2] net: sched: delete duplicate cleanup of backlog and qlen
+    https://git.kernel.org/netdev/net-next/c/c19d893fbf3f
 
-I'm just trying to ensure we don't end up here with -ETIMEDOUT.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
->  
-> +#define PHY_LOOP_BACK_SLEEP	1000000
-> +#define PHY_LOOP_BACK_TIMEOUT	8000000
 
-The kernel seems to be pretty consistent in having loopback as one
-word.
-
-	Andrew
