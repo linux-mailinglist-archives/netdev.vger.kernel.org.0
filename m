@@ -2,97 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 288185A095D
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:01:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EE705A096B
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:03:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236772AbiHYHAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 03:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        id S236914AbiHYHBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 03:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236625AbiHYHAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:00:23 -0400
-Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id A2A8C2F3A3;
-        Thu, 25 Aug 2022 00:00:16 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Thu, 25 Aug 2022 14:59:50
- +0800 (GMT+08:00)
-X-Originating-IP: [218.12.16.111]
-Date:   Thu, 25 Aug 2022 14:59:50 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>
-Cc:     "Brian Norris" <briannorris@chromium.org>,
-        "Linux Kernel" <linux-kernel@vger.kernel.org>,
-        "Johannes Berg" <johannes@sipsolutions.net>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "amit karwar" <amitkarwar@gmail.com>,
-        "Ganapathi Bhat" <ganapathi017@gmail.com>,
-        "Sharvari Harisangam" <sharvari.harisangam@nxp.com>,
-        "Xinming Hu" <huxinming820@gmail.com>, kvalo@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v8 0/2] Add new APIs of devcoredump and fix bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <YwcPxT2JLQHXbdFI@kroah.com>
-References: <cover.1661252818.git.duoming@zju.edu.cn>
- <CA+ASDXNf5JV9mj8mbm1OGZ_zd4d8srFc=E++Amg4MoQjqjS_TA@mail.gmail.com>
- <27a2a8a7.99f01.182d2758bc9.Coremail.duoming@zju.edu.cn>
- <YwcPxT2JLQHXbdFI@kroah.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S236775AbiHYHBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:01:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868CEA1A40
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:01:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661410900;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=+7Q/XXN1Xt6SZJFciYXpFS6HHcnYgr65n/puG7GgfQY=;
+        b=Oo7FmtoPw8Cnm3lmDdaM2xF+wAoMJsVOqwspXH6KAmZUwqVUDOAIr37WZs8eJn77yvPoxG
+        9mn2hjQ0ke74YXEwLGEaJbcq1kJrkvwsoLnurzjza6rIdVB7pNvSBPIVo0xQulNmjZ5bGB
+        bmhFw4iwABQ/WT3yHeXQcb+EYTLvJiM=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-434-dzCH_b7FPRODFkRciTFUiA-1; Thu, 25 Aug 2022 03:01:39 -0400
+X-MC-Unique: dzCH_b7FPRODFkRciTFUiA-1
+Received: by mail-pj1-f72.google.com with SMTP id m24-20020a17090b069800b001fac361aec2so8582596pjz.4
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:01:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=+7Q/XXN1Xt6SZJFciYXpFS6HHcnYgr65n/puG7GgfQY=;
+        b=nLQj0OXwy0QGZ3QWTtAQcr2epDXCLYJfSeKjVXNZyGwB7KJI9o9/T9H03pZzYa5lKp
+         XcXKXzJy7KktNLx3xZ+bnt3IQZNza5ebY+/sPP0Ilw4LgU/cr+FNhPrmke3YIw4HL98D
+         SzW2/PFb0+OShxVRsMHRWHFyVxZAyIIZg5OuG6B84JxmOcOQerM2p3J7OGaLPs96YQcc
+         8Z4kUA2qVctbnA6nJWp21HIesM3JSsrpnok2GCCxIe8LWDFWRrMUM3NO8b/V4nQmMhYx
+         5Bbl6xKZOd2GZGIQKsIuehlJFvHo7FjEdIwLTamX6N9azrM3z5dTZTOECTnNEEcOfprt
+         G1Qg==
+X-Gm-Message-State: ACgBeo0ER4v/pZwMzRkDjvpYV1Yy2HGPqfzj5cDX9GBCTmJwxODDLLFl
+        zv9Y7/IzGVH/Q7C/9ixCJky7K8aYqPlvwPyaL//iTw5i6qcKKq3coGBf7+9ZenzVodfh7qnDJLR
+        hZUz34KKuBmHSAtyW
+X-Received: by 2002:a17:90a:1b69:b0:1fa:f9de:fbcf with SMTP id q96-20020a17090a1b6900b001faf9defbcfmr11990631pjq.201.1661410898296;
+        Thu, 25 Aug 2022 00:01:38 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4fQhngR98Oeq2+dGcVYZV3kfTv/ZlLWB36qK/slHkYNTgX2VUISGCAUCdxzL/7nf+paX9Aow==
+X-Received: by 2002:a17:90a:1b69:b0:1fa:f9de:fbcf with SMTP id q96-20020a17090a1b6900b001faf9defbcfmr11990595pjq.201.1661410897994;
+        Thu, 25 Aug 2022 00:01:37 -0700 (PDT)
+Received: from [10.72.12.107] ([119.254.120.70])
+        by smtp.gmail.com with ESMTPSA id 12-20020a17090a034c00b001fb438fb772sm2609158pjf.56.2022.08.25.00.01.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 00:01:37 -0700 (PDT)
+Message-ID: <3a184162-afdc-9103-e786-66d796389e3a@redhat.com>
+Date:   Thu, 25 Aug 2022 15:01:31 +0800
 MIME-Version: 1.0
-Message-ID: <261bd1c5.9ab83.182d3cccd91.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgCXnP3nHQdjPPfoAw--.51580W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtbKGFwBgs-
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [RFC v2 1/7] vhost: expose used buffers
+Content-Language: en-US
+To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
+        sgarzare@redhat.com, mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
+ <20220817135718.2553-2-qtxuning1999@sjtu.edu.cn>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220817135718.2553-2-qtxuning1999@sjtu.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUaHUsIDI1IEF1ZyAyMDIyIDA3OjU5OjMzICswMjAwIEdyZWcgS3JvYWgtSGFy
-dG1hbiB3cm90ZToKIAo+ID4gT24gV2VkLCAyNCBBdWcgMjAyMiAxMzo0MjowOSAtMDcwMCBCcmlh
-biBOb3JyaXMgd3JvdGU6Cj4gPiAKPiA+ID4gT24gVHVlLCBBdWcgMjMsIDIwMjIgYXQgNDoyMSBB
-TSBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4gd3JvdGU6Cj4gPiA+ID4KPiA+ID4g
-PiBUaGUgZmlyc3QgcGF0Y2ggYWRkcyBuZXcgQVBJcyB0byBzdXBwb3J0IG1pZ3JhdGlvbiBvZiB1
-c2Vycwo+ID4gPiA+IGZyb20gb2xkIGRldmljZSBjb3JlZHVtcCByZWxhdGVkIEFQSXMuCj4gPiA+
-ID4KPiA+ID4gPiBUaGUgc2Vjb25kIHBhdGNoIGZpeCBzbGVlcCBpbiBhdG9taWMgY29udGV4dCBi
-dWdzIG9mIG13aWZpZXgKPiA+ID4gPiBjYXVzZWQgYnkgZGV2X2NvcmVkdW1wdigpLgo+ID4gPiA+
-Cj4gPiA+ID4gRHVvbWluZyBaaG91ICgyKToKPiA+ID4gPiAgIGRldmNvcmVkdW1wOiBhZGQgbmV3
-IEFQSXMgdG8gc3VwcG9ydCBtaWdyYXRpb24gb2YgdXNlcnMgZnJvbSBvbGQKPiA+ID4gPiAgICAg
-ZGV2aWNlIGNvcmVkdW1wIHJlbGF0ZWQgQVBJcwo+ID4gPiA+ICAgbXdpZmlleDogZml4IHNsZWVw
-IGluIGF0b21pYyBjb250ZXh0IGJ1Z3MgY2F1c2VkIGJ5IGRldl9jb3JlZHVtcHYKPiA+ID4gCj4g
-PiA+IEkgd291bGQgaGF2ZSBleHBlY3RlZCBhIHRoaXJkIHBhdGNoIGluIGhlcmUsIHRoYXQgYWN0
-dWFsbHkgY29udmVydHMKPiA+ID4gZXhpc3RpbmcgdXNlcnMuIFRoZW4gaW4gdGhlIGZvbGxvd2lu
-ZyByZWxlYXNlIGN5Y2xlLCBjbGVhbiB1cCBhbnkgbmV3Cj4gPiA+IHVzZXJzIG9mIHRoZSBvbGQg
-QVBJIHRoYXQgcG9wIHVwIGluIHRoZSBtZWFudGltZSBhbmQgZHJvcCB0aGUgb2xkIEFQSS4KPiA+
-ID4gCj4gPiA+IEJ1dCBJJ2xsIGRlZmVyIHRvIHRoZSBwZW9wbGUgd2hvIHdvdWxkIGFjdHVhbGx5
-IGJlIG1lcmdpbmcgeW91ciBjb2RlLgo+ID4gPiBUZWNobmljYWxseSBpdCBjb3VsZCBhbHNvIHdv
-cmsgdG8gc2ltcGx5IHByb3ZpZGUgdGhlIEFQSSB0aGlzIGN5Y2xlLAo+ID4gPiBhbmQgY29udmVy
-dCBldmVyeW9uZSBpbiB0aGUgbmV4dC4KPiA+IAo+ID4gVGhhbmsgeW91ciBmb3IgeW91ciB0aW1l
-IGFuZCByZXBseS4KPiA+IAo+ID4gSWYgdGhpcyBwYXRjaCBzZXQgaXMgbWVyZ2VkIGludG8gdGhl
-IGxpbnV4LW5leHQgdHJlZSwgSSB3aWxsIHNlbmQgdGhlIAo+ID4gdGhpcmQgcGF0Y2ggd2hpY2gg
-dGFyZ2V0cyBhdCBsaW51eC1uZXh0IHRyZWUgYW5kIGNvbnZlcnRzIGV4aXN0aW5nIHVzZXJzIAo+
-ID4gYXQgbGF0ZXIgdGltZXIgb2YgdGhpcyByZWxlYXNlIGN5Y2xlLiBCZWNhdXNlIHRoZXJlIGFy
-ZSBuZXcgdXNlcnMgdGhhdCAKPiA+IG1heSB1c2UgdGhlIG9sZCBBUElzIGNvbWVzIGludG8gbGlu
-dXgtbmV4dCB0cmVlIGR1cmluZyB0aGUgcmVtYWluaW5nIHRpbWUKPiA+IG9mIHRoaXMgcmVsZWFz
-ZSBjeWNsZS4KPiAKPiBObywgdGhhdCdzIG5vdCBob3cgdGhpcyB3b3Jrcywgd2UgY2FuJ3QgYWRk
-IHBhdGNoZXMgd2l0aCBuZXcgZnVuY3Rpb25zCj4gdGhhdCBubyBvbmUgdXNlcy4gIEFuZCBpdCdz
-IG5vdCBob3cgSSBhc2tlZCBmb3IgdGhpcyBhcGkgdG8gYmUgbWlncmF0ZWQKPiBvdmVyIHRpbWUg
-cHJvcGVybHkuICBJJ2xsIHRyeSB0byByZXNwb25kIHRvIHlvdXIgcGF0Y2ggd2l0aCBtb3JlIGRl
-dGFpbHMKPiBpbiBhIHdlZWsgb3Igc28gd2hlbiBJIGNhdGNoIHVwIG9uIHBhdGNoIHJldmlldy4u
-LgoKVGhhbmsgeW91IGZvciB5b3VyIHRpbWUgYW5kIEkgbG9vayBmb3J3YXJkIHRvIHlvdXIgcmVw
-bHkuCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
+
+在 2022/8/17 21:57, Guo Zhi 写道:
+> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
+> of descriptors.
+>
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>   drivers/vhost/vhost.c | 14 ++++++++++++--
+>   drivers/vhost/vhost.h |  1 +
+>   2 files changed, 13 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+> index 40097826cff0..7b20fa5a46c3 100644
+> --- a/drivers/vhost/vhost.c
+> +++ b/drivers/vhost/vhost.c
+> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
+>   	vring_used_elem_t __user *used;
+>   	u16 old, new;
+>   	int start;
+> +	int copy_n = count;
+>   
+> +	/**
+> +	 * If in order feature negotiated, devices can notify the use of a batch of buffers to
+> +	 * the driver by only writing out a single used ring entry with the id corresponding
+> +	 * to the head entry of the descriptor chain describing the last buffer in the batch.
+> +	 */
+> +	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+> +		copy_n = 1;
+> +		heads = &heads[count - 1];
+
+
+Do we need to check whether or not the buffer is fully used before doing 
+this?
+
+
+> +	}
+>   	start = vq->last_used_idx & (vq->num - 1);
+>   	used = vq->used->ring + start;
+> -	if (vhost_put_used(vq, heads, start, count)) {
+> +	if (vhost_put_used(vq, heads, start, copy_n)) {
+>   		vq_err(vq, "Failed to write used");
+>   		return -EFAULT;
+>   	}
+> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
+>   
+>   	start = vq->last_used_idx & (vq->num - 1);
+>   	n = vq->num - start;
+> -	if (n < count) {
+> +	if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
+>   		r = __vhost_add_used_n(vq, heads, n);
+>   		if (r < 0)
+>   			return r;
+> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+> index d9109107af08..0d5c49a30421 100644
+> --- a/drivers/vhost/vhost.h
+> +++ b/drivers/vhost/vhost.h
+> @@ -236,6 +236,7 @@ enum {
+>   	VHOST_FEATURES = (1ULL << VIRTIO_F_NOTIFY_ON_EMPTY) |
+>   			 (1ULL << VIRTIO_RING_F_INDIRECT_DESC) |
+>   			 (1ULL << VIRTIO_RING_F_EVENT_IDX) |
+> +			 (1ULL << VIRTIO_F_IN_ORDER) |
+>   			 (1ULL << VHOST_F_LOG_ALL) |
+
+
+Are we sure all vhost devices can support in-order (especially the SCSI)?
+
+It looks better to start from a device specific one.
+
+Thanks
+
+
+>   			 (1ULL << VIRTIO_F_ANY_LAYOUT) |
+>   			 (1ULL << VIRTIO_F_VERSION_1)
+
