@@ -2,45 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D20E5A0922
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 08:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACDA5A092C
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 08:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231615AbiHYGtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 02:49:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        id S236304AbiHYGv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 02:51:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233179AbiHYGth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 02:49:37 -0400
+        with ESMTP id S236411AbiHYGv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 02:51:56 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A47DA0261;
-        Wed, 24 Aug 2022 23:49:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EF76A0637
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 23:51:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
         Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
         :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=24hpcucyamml6m8NyNEu+3X+fzHuCVs+SB/I0KY36kc=;
-        t=1661410177; x=1662619777; b=hyATOmoPVNbJJg6PefBiNT5gOA+H2AqLSVE0jtaNA81CmdD
-        0sR7yInoG5IavIZtqbHckgayV5f6T4SPPSuZ3W2/XCp3+6a+b5dJ3uX0xIcuRbKugwuXX7thffzQm
-        MCdt3+GxR4yZR6HG/ygtiw2FMBV02jccwHbgXDykJWo3QpbMnwJfaStunLatD9mWg7S5JYf84YWBj
-        DnYqsJt9vA7rdM+j5TsiY4+3eS+2OY8uTdvuZwjrObOpNYr/uaKW0T4p7ZuvSL9/wrvyexcNhuwYH
-        kcRsc+DaLdx4cCbgq97G736RaS32ya1O0GsKieMuYwkZ0ZqCAvN9yzbGt8Pni0kA==;
+        Resent-Cc:Resent-Message-ID; bh=Ze8wsywP4VHt6nr4EjsA85VYgSk/IAZKpMwTVDNFXVg=;
+        t=1661410315; x=1662619915; b=Wab+wWaglQzzWZrzUaE8SVL1skeIhC1U338o2FTnDGWY4RS
+        lPs/chkFs4LgHDAQglZlSj64Wrvyd8wIZc98QVOm/FmhskYr3++5sSLLk0vNTpnCDJs6qnKc0ogO9
+        yNZCbh+PhG/H+ujxeDXNjCXhKBm6Noxf9EWY92FyIqAG3gCmjnNi6clY+5tZs+gkxJQEnXEJi9/q4
+        R+TrjkLGYHaJOf05LC6nFijrC0/lLmiuw9GjbsWYpIuC83HmsG5xEUDzbGG6nrEdwlR83BeDmdo+j
+        uQByuBG+29Vi4kDzgGL1tfjP27VeW8q1XqbnsKsBQcwKU5pw044FHSjxA3t30mFw==;
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.96)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1oR6g6-00Gw3e-2M;
-        Thu, 25 Aug 2022 08:49:22 +0200
-Message-ID: <3950b10724620f23e3e84ec2686e5e6ac6fa5e0f.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next v2 2/6] netlink: add support for ext_ack
- missing attributes
+        id 1oR6iU-00Gw9d-1g;
+        Thu, 25 Aug 2022 08:51:50 +0200
+Message-ID: <469e6c0d835994b4d1646dbdb5b1c44e9d335e5c.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next v2 0/6] netlink: support reporting missing
+ attributes
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        mkubecek@suse.cz, corbet@lwn.net, jacob.e.keller@intel.com,
-        fw@strlen.de, razor@blackwall.org, linux-doc@vger.kernel.org
-Date:   Thu, 25 Aug 2022 08:49:21 +0200
-In-Reply-To: <20220825024122.1998968-3-kuba@kernel.org>
+        mkubecek@suse.cz
+Date:   Thu, 25 Aug 2022 08:51:49 +0200
+In-Reply-To: <20220825024122.1998968-1-kuba@kernel.org>
 References: <20220825024122.1998968-1-kuba@kernel.org>
-         <20220825024122.1998968-3-kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.44.4 (3.44.4-1.fc36) 
@@ -57,20 +55,22 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, 2022-08-24 at 19:41 -0700, Jakub Kicinski wrote:
+> This series adds support for reporting missing attributes
+> in a structured way. We can't point at things which don't
+> exist so we point at the containing nest or preceding
+> fixed header
 >=20
-> + * @miss_type: attribute type which was missing
-> + * @miss_nest: nest missing an attribute (NULL if missing top level attr=
-)
 
-nit: maybe use %NULL for appropriate formatting in generated
-documentation
+If you were planning to use the cover letter for anything, then that "or
+preceding fixed header" should now be removed :)
 
->  	const char *_msg;
->  	const struct nlattr *bad_attr;
->  	const struct nla_policy *policy;
-> +	const void *miss_nest;
+Apart from the couple of nits I just sent,
 
-Can be 'const struct nlattr *' now, no? No longer points to a random
-header.
+Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+
+(for the whole set)
+
+Thanks for doing this!
 
 johannes
+
