@@ -2,131 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9567A5A0CC6
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:37:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 896775A0D62
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240474AbiHYJgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 05:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
+        id S235320AbiHYJyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 05:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240500AbiHYJgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:36:44 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2059.outbound.protection.outlook.com [40.107.237.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BB8AB06E;
-        Thu, 25 Aug 2022 02:36:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RobX+dnfoa/oWViwtFUiMqdHD52wDB6uJePeGKHNjp8X1TWXQ+vDqGN4Mwure4k3BPGHMZTtcs4Sw71u+lMqceCwibgRR6Pyqh4RvmlDJyovzynyidcEgQNet68hqLxf+Fqh+IbvCnpPZmqjkow5webPqUj1TQoiAw8eP6ivayyy17+FdadouoUGfYJsza+JRjORKDwrbabF1DD/rFMaLxopOaVWIk4GxZojdAtYGuyoXWcOQeOIhnnhRrwXMA836UfBgCEDC0nr8qs7ig4UvoXOIFTJptSX7OVPm4zHYO6l8l9vxQsR1IGjFDaupzxBl84ZNOKM2PB9oqbzQ9adEg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=k+2vMc+urCwl2Sei7QYJVPkYEo3ePjTEdchVm0HaK4I=;
- b=g/m4UZNaiCy8TO8AgOb5inz0RQwCtWj/nq5uXGE606k6Dpg3mADvvDEozK2nQhlmeJPT3z/pGBjWRtseAIQiGr7/vdHy4JqcC8dDfqsjmBR9uO9CpfUOw46FTA+lu5jA3+neBDY90+bpOv7HWv6fwq57OsH5xc7hc8hAQZXqbO9pJsisTtVBfSLBUrLZlIcvxXflSb+xs9tVglCoX1tyX1XRXCLkUHlcD9IKJJ4LEU0cf2jbP5283885Bysylv2n7PiKylV7OgGqmVwTGWtbUo0N0gAIU3tg8f4NUU9+2kzqKtfxkOmHG9R5CJ8xbtgEh7qo/WeL64liNa3eyAERsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k+2vMc+urCwl2Sei7QYJVPkYEo3ePjTEdchVm0HaK4I=;
- b=eKVhMwqasjSbU4dzH8v4935OSht3uA/zDjIirDnN9StBCUnuZhUgLgg0F2zmKfdvn0Ih+QP98OX3y5kNU/xu7lrDt6Wz49INbm5+nqJCfEP2vx8C9dDJSW0ul8yMe3G4v78Gldq9fhJI3mtVeistCfZGhKEe+C2UrxBVDpTomBqaDdNshZCU02XL04erCz8o8RtPWv/k46QEu/+GBYd4gdCGP3hGxhBvRVrBVY84YnQEU+t4JcHCQIpazjjR//v4MYwMG2Nt6Atj9F72GaEyDNSIJJRjpbrOFEaQk41d+C7J/GCyWpAFql5RgEzbo7C/KnV2SagDtV2ZFcd9bETXDw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7SPRMB0001.namprd12.prod.outlook.com (2603:10b6:510:13c::20)
- by DM5PR1201MB0170.namprd12.prod.outlook.com (2603:10b6:4:59::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.18; Thu, 25 Aug
- 2022 09:36:41 +0000
-Received: from PH7SPRMB0001.namprd12.prod.outlook.com
- ([fe80::3ca6:ba11:2893:980e]) by PH7SPRMB0001.namprd12.prod.outlook.com
- ([fe80::3ca6:ba11:2893:980e%6]) with mapi id 15.20.5504.025; Thu, 25 Aug 2022
- 09:36:41 +0000
-Date:   Thu, 25 Aug 2022 12:36:34 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-Message-ID: <YwdCovUbVpmHfl39@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
- <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
-X-ClientProxiedBy: VI1PR03CA0055.eurprd03.prod.outlook.com
- (2603:10a6:803:50::26) To PH7SPRMB0001.namprd12.prod.outlook.com
- (2603:10b6:510:13c::20)
+        with ESMTP id S239774AbiHYJyZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:54:25 -0400
+X-Greylist: delayed 354 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 25 Aug 2022 02:52:46 PDT
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172F1AE9F7;
+        Thu, 25 Aug 2022 02:52:45 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id D02C3402B;
+        Thu, 25 Aug 2022 11:46:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661420808;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MmqCI6NdaD8MiJoPnI7CffU1uRQPtkasbItKLLzsgpU=;
+        b=Cp5ZKGWQ5qk9vhOrmIFp2QnGnK6gL+V0zsuDCu+RGRapPXgaOatkBOhuW39Qx5zIcc7Hh1
+        +furDz9au55yxHcxLGszruYKhuYDGYLdCSWYcin/WuI6GFw75J4DhX/YsA8lKa5cTXsthN
+        aiuvWO+q1Oa6hSgLusApf/TwZn53tb6EAlZzJ7wi4Nn7zGHew/pY8L7SXXss53zntdvJVB
+        3/UJe1Ru+nia/h+louFDx7RVfHXAIp3nMZA2UkMwcOkLIX7IU/xbxOCXZ2+pn1QA02o5cf
+        feCCoG6ox/eKVXYJFFoXJs2ofwOiABU3afC8FZ3y/toka+q5ccyVifDiPX2dnA==
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3a41959a-3753-4757-57b0-08da867d50f6
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB0170:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Jw5mbp2iWX+9X/W0Lstnvd9EJZrod8rgdBSJJBu5pUPn5j6dNIXtM+PDBkIDsWNA06ElpvZPE9OqyO3U6hW5cB7T6FyuA9qAYTQdMqyBOw93EJRBFx/hFi9UmyZegaDyBWbo+mVyJuAhIu6IJURdhWRHLx6DUQWSj4DRXYflIIFioqxeq37ZbFI5vJYK6blF6qUhE6HgTVGodf3loCxL50HZhnrvN8vqilM/EgLQVm8CcVLalN+t20tdg0wixzspt0GgPyQ4fAenVGXz9jzmmyQpbUWGX6HTPvdjk1zHG30PO0j8Td9D2kcqRC+Y+Q0x/m6V63jLEZLTbovgfiSRPNKGChi/0QIXmLSPt5qRyHzzC+48ipAKw0u5T5/wCHAJl9FgxzDJQjCQ/CNfCmjSWOjRs9DHvkqYgsdwNDkGKfBAnJd6nAAfQCrqMSBZCFT9j+QQcIe8816AO0SCqpWO56eiZFrUk4vAPI1dwEUEftsD2Ht/eypl97xDWtldDjXCDIkEIsVh+ioXhdSGrV7bZBtT16MEPQ4z99fvW37nGVJJvuDvzA2JHVXsCzbupQDiitoL0a2rWisyAsY+IQO10Zw+aWlvQkO3b0Qf35Bbr7yiTQwMo7Du3qOYrJlSyZGQro6x3Lobc4+GnuAnG4HeZ8llz2SmrjjH2ry1RENRAjQn+RHDmHzEY/yeBknddaxgVaa+6fPKWT0TqHeaRxTB+w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0001.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(376002)(136003)(366004)(396003)(39860400002)(346002)(66946007)(8676002)(66556008)(54906003)(6916009)(4326008)(66476007)(38100700002)(86362001)(8936002)(186003)(478600001)(9686003)(6512007)(26005)(6666004)(6486002)(41300700001)(316002)(33716001)(5660300002)(7416002)(6506007)(53546011)(4744005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?fgvYMJC8f9N0rj07oKnAGJ28Yt7sBNP7gjt8dOSlyG2L7E7eTp6VUqpV3Fsq?=
- =?us-ascii?Q?xnI/xh9Jd/2oPHDLptA5+eBCRARmiSNVllpvG42NFgYY/lEIAgqMmciou2En?=
- =?us-ascii?Q?As99OycYePqy48KF8cnaKVdlNbjrIh5xm8/BeObESIfuIjCv/mME3BtiOCdm?=
- =?us-ascii?Q?8E+JkRmoBNio+SYvsWeZ8ztNLDNOwaGcWBJqRIV5f0DGrg0NpsT5D7bX8DwT?=
- =?us-ascii?Q?tRee/aFVSYBQsL2w8BnpUJ6ktqfgKtwuugT/h4UGQnFpp2vKlbQS2F0+WVwn?=
- =?us-ascii?Q?lnLI+zac+gQ3FT0lxnyEw553e6qk5172VALR2AJl0bcuFMVEKCVZZgbbJ1yT?=
- =?us-ascii?Q?d/5P+WFv2awp7W26b4OaKl2/AneTU8OL3LvhzPESCZxu4bcGZ2S/kl4QPlvH?=
- =?us-ascii?Q?rfx/le/8ney5qL0kJ43ri9WoKNSb+V3VNTPC2+HCEjuuYH4s4HWzI0CYVFJe?=
- =?us-ascii?Q?CDh6F3wB3CtfJMFz8LhJDWi5OG+rJ62cKgBKWVIrRC8KgjxAwb84h0ZACjdb?=
- =?us-ascii?Q?3ZCAEHsm0+CvScBX8ob0yjOVJzzm5QFwuyQSGCvJ5K653Weo17u3SpYW96jX?=
- =?us-ascii?Q?h+BBKkv4lQUDFkZ+5W9wBptJmbja1DUr8S3zilIXPwJzytZI4AEThF4dl+vu?=
- =?us-ascii?Q?oMPIyN3p7Sm0ZsGseAbO+vT3saJRuXUbjlLgncM1QtvLM4gYDJH4n44bDsV/?=
- =?us-ascii?Q?OwFlUR7ImT4482C7NK96Y9E3253djpFZyxSIFiu+r7e1OiUkTkkL3fZABnfS?=
- =?us-ascii?Q?XSdSZwhFJ/FuFy11DogEY7EsznTaEqNvyFmu8EWBaMT8MTaxKUZ5OQO7kw1w?=
- =?us-ascii?Q?wt5X9Rti3c7nWi8OasFAm/BQcuqD29hMI1GumvRwODqckZc0lLnhJx2j6aXw?=
- =?us-ascii?Q?KUlelSfaCm4tFrrrK13Fe+WpJs8Oqww27+837sihuUvP+snmuf8PV+mIe3Ok?=
- =?us-ascii?Q?ep7X58+xXNGKd6Eeeqx8qrUAyNgcFmFddYti2F+NqTmmqju4r9O1NzwwQAId?=
- =?us-ascii?Q?1FogIxGKtE4eWEOgI51hSG4dZzAzOxgqhs7a5JEmbYOPYJ3z5eUQylxKcLy6?=
- =?us-ascii?Q?aFSJOCWbRYW5VbjkeoHMAlX40pKRsoWsLu4AG/W9YDC5VSrykt5ZXRjVUZhI?=
- =?us-ascii?Q?ZBkqaKOf78DlBwtyZmMDQTbgSwYCvArdSFgCG7hluaTXpWU28cAy7THfuJYu?=
- =?us-ascii?Q?0n3rA1yls0tH/amt9ewH5LdxFvTXd5T2nbNT4JX458ak7SaChiLJkpyofK1z?=
- =?us-ascii?Q?ziD5oS2z38pWym7NcHieRk+dWqYmyss2e3FBVVpSJRye/Qgg6JtHYbejkyzy?=
- =?us-ascii?Q?u18BgMta8PoCxfyysb9FLbLH7LOCbfNxEfeUx9Q7w3UL+JDHf1XRg6+UkiEZ?=
- =?us-ascii?Q?MUjD7E4dJ64f4+D+/tdqtkrMsUcYOTn3/KcZlawiB9chQU0xQSHsT1slrQEi?=
- =?us-ascii?Q?MQsbF8QqPYrR5T9QKYuXmYahhFcuXlvWRjo5nnwfbG0xrLYkOJTRVGlFwfLR?=
- =?us-ascii?Q?wFQu5imVuTN47NBDAAqCUeVbovZyjUuBlCoXhuMN+krMxYWbJvlAPM9UqcdT?=
- =?us-ascii?Q?ESmyyIhzlB3O6873Fggap/v+25a7DkLmjFYG6a2i?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a41959a-3753-4757-57b0-08da867d50f6
-X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0001.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 09:36:41.5263
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: w0DjLBhncJNP6IebffAaXxMMDNz9c/zH6Pkbj6p4cORvP5Yn120dvgWRfE9DqX2qs+kkAGIgu0ajicAOjjbq6Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0170
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+Date:   Thu, 25 Aug 2022 11:46:48 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <zajec5@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH 5/8] net: add helper eth_addr_add()
+In-Reply-To: <0d9a0ce5-ab34-cf05-158e-e25fc5595b4d@gmail.com>
+References: <20211228142549.1275412-1-michael@walle.cc>
+ <20211228142549.1275412-6-michael@walle.cc>
+ <0d9a0ce5-ab34-cf05-158e-e25fc5595b4d@gmail.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d6fe1cfc6daa78868ba85553998c9c3d@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,19 +71,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 01:41:51PM +0200, netdev@kapio-technology.com wrote:
-> On 2022-08-23 08:48, Ido Schimmel wrote:
-> > 
-> > I'm not good at naming, but "blackhole" is at least consistent with what
-> > we already have for routes and nexthop objects.
-> > 
+Am 2022-01-25 11:24, schrieb Rafał Miłecki:
+> On 28.12.2021 15:25, Michael Walle wrote:
+>> Add a helper to add an offset to a ethernet address. This comes in 
+>> handy
+>> if you have a base ethernet address for multiple interfaces.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>   include/linux/etherdevice.h | 14 ++++++++++++++
+>>   1 file changed, 14 insertions(+)
+>> 
+>> diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
+>> index 2ad71cc90b37..9d621dc85290 100644
+>> --- a/include/linux/etherdevice.h
+>> +++ b/include/linux/etherdevice.h
+>> @@ -486,6 +486,20 @@ static inline void eth_addr_inc(u8 *addr)
+>>   	u64_to_ether_addr(u, addr);
+>>   }
+>>   +/**
+>> + * eth_addr_add() - Add (or subtract) and offset to/from the given 
+>> MAC address.
+>> + *
+>> + * @offset: Offset to add.
+>> + * @addr: Pointer to a six-byte array containing Ethernet address to 
+>> increment.
+>> + */
+>> +static inline void eth_addr_add(u8 *addr, long offset)
+>> +{
+>> +	u64 u = ether_addr_to_u64(addr);
+>> +
+>> +	u += offset;
+>> +	u64_to_ether_addr(u, addr);
+>> +}
 > 
-> I have changed it the name "masked", as that is also the term used in the
-> documentation for the zero-DPV entries, and I think that it will generally
-> be a more accepted term.
+> Please check eth_hw_addr_gen() which contains identical code +
+> eth_hw_addr_set().
+> 
+> You should probably make eth_hw_addr_gen() use your new function as a
+> helper.
 
-"blackhole" is an already accepted term and at least to me it is much
-more clear than "masked". Keep in mind that both L2 neighbours (FDB) and
-L3 neighbours share the same uAPI and eventually we might want to extend
-the use of this flag for L3 neighbours (at least Spectrum supports it),
-so it needs to make sense for both.
+You'd need to copy the mac address first because eth_addr_add()
+modifies the mac address in place. I don't see that this is
+improving anything.
+
+-michael
