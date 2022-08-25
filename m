@@ -2,102 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCDF5A0BD7
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:50:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F64A5A0BF6
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbiHYIuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 04:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
+        id S233222AbiHYI4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 04:56:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232805AbiHYIt7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:49:59 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A28258B54
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:49:58 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id m3so21620775lfg.10
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:49:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:cc:to:from:from:to:cc;
-        bh=Tx7FdpjytekYC2f6qH5xA3rC3v2ZcgkDieJXzV8JXko=;
-        b=bObiL7moe65RHlDdQe6ZeNN2eVyBUssSBYjrg/WFX72aNv/WKTUsxtb+OwXLjnnOgv
-         +h06ag+b9NdacrgbTsCa0rnq31QDrDKzBvHOYy3/XOO7FIhHSNQ4GpLrr8m0D9Dt5CrE
-         P24GKSS0YKlWQgqRHwjo6t660CNo+RRvjeEGxpjMmB+6fRFTk5y+BaCt9OCas4tPxYQP
-         HgX0IVR2+nD/h0bV+tLtvbM9oJfcKRZqG0NiNx3P9AzoNMPAZ3gCFkajInuDvRZIWKVd
-         CM7g3hvpzA0CEsDIky5sMfShV3T3G/h8aSL2raPoNXu2GX6cZNQkFLBbclf9NU4ZsELe
-         15Pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:organization:mime-version:message-id:date
-         :subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=Tx7FdpjytekYC2f6qH5xA3rC3v2ZcgkDieJXzV8JXko=;
-        b=TKFvTKsVWsq9Ph3L+tOwHLnl5MfAfemA98CWPoRW6gVThnAghWeIXG+zxYwYmXdJmB
-         EJ+dtpAWn1CkCGAKiBpRtwMWuj6q2oqLpu2igIk1CjuQ2beSyY5ZarL6ThPU6yFHuauj
-         Tlj+lN3t4/UVVqbWwvR4ficlI/QngQi8aWccdv3pTSUMacAfI22PQstCmhS9a2cQp6eb
-         cxvrFaq51WcME0vt8Yt23pN20uc55jFpRNwQsp88LvOOPmkvpUuJ7kXWxxgX8H4kGw2H
-         niF04aNhKZEm3E5kRbgdktGLomYwY4bRpmHLiZ7NSr/6ljqnCpLDVILdoxM9dYAQaj0i
-         0bKQ==
-X-Gm-Message-State: ACgBeo2a8YYBtfUYDOBWkzHWT1S5qbvtSNcRV+SnEooTy5JRU0Et3ihW
-        voVJXAYEw8AgzeiKIHfvXxhmUvwUx1o=
-X-Google-Smtp-Source: AA6agR7ny54MJZzJcn0iEM3eyuBGBT24X4G0vt4KTFh21+WPYXVoKd0s2Chv9lWz+3YeT5Z0cOEE2A==
-X-Received: by 2002:a05:6512:31d3:b0:492:d019:b292 with SMTP id j19-20020a05651231d300b00492d019b292mr784757lfe.181.1661417396683;
-        Thu, 25 Aug 2022 01:49:56 -0700 (PDT)
-Received: from wse-c0155.labs.westermo.se (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id i1-20020a2ea221000000b00261c30d71e5sm405518ljm.67.2022.08.25.01.49.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 01:49:56 -0700 (PDT)
-From:   Casper Andersson <casper.casan@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net] net: sparx5: fix handling uneven length packets in manual extraction
-Date:   Thu, 25 Aug 2022 10:49:55 +0200
-Message-Id: <20220825084955.684637-1-casper.casan@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S229510AbiHYI4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:56:18 -0400
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36FCAA3D15;
+        Thu, 25 Aug 2022 01:56:16 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=kangjie.xu@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VNCZWjK_1661417770;
+Received: from localhost(mailfrom:kangjie.xu@linux.alibaba.com fp:SMTPD_---0VNCZWjK_1661417770)
+          by smtp.aliyun-inc.com;
+          Thu, 25 Aug 2022 16:56:11 +0800
+From:   Kangjie Xu <kangjie.xu@linux.alibaba.com>
+To:     virtualization@lists.linux-foundation.org
+Cc:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, hengqi@linux.alibaba.com,
+        xuanzhuo@linux.alibaba.com
+Subject: [PATCH] vhost-net: support VIRTIO_F_RING_RESET
+Date:   Thu, 25 Aug 2022 16:56:10 +0800
+Message-Id: <20220825085610.80315-1-kangjie.xu@linux.alibaba.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets that are not of length divisible by 4 (e.g. 77, 78, 79) would
-have the checksum included up to next multiple of 4 (a 77 bytes packet
-would have 3 bytes of ethernet checksum included). The check for the
-value expects it in host (Little) endian.
+Add VIRTIO_F_RING_RESET, which indicates that the driver can reset a
+queue individually.
 
-Fixes: f3cad2611a77 ("net: sparx5: add hostmode with phylink support")
-Signed-off-by: Casper Andersson <casper.casan@gmail.com>
+VIRTIO_F_RING_RESET feature is added to virtio-spec 1.2. The relevant
+information is in
+    oasis-tcs/virtio-spec#124
+    oasis-tcs/virtio-spec#139
+
+The implementation only adds the feature bit in supported features. It
+does not require any other changes because we reuse the existing vhost
+protocol.
+
+The virtqueue reset process can be concluded as two parts:
+1. The driver can reset a virtqueue. When it is triggered, we use the
+set_backend to disable the virtqueue.
+2. After the virtqueue is disabled, the driver may optionally re-enable
+it. The process is basically similar to when the device is started,
+except that the restart process does not need to set features and set
+mem table since they do not change. QEMU will send messages containing
+size, base, addr, kickfd and callfd of the virtqueue in order.
+Specifically, the host kernel will receive these messages in order:
+    a. VHOST_SET_VRING_NUM
+    b. VHOST_SET_VRING_BASE
+    c. VHOST_SET_VRING_ADDR
+    d. VHOST_SET_VRING_KICK
+    e. VHOST_SET_VRING_CALL
+    f. VHOST_NET_SET_BACKEND
+Finally, after we use set_backend to attach the virtqueue, the virtqueue
+will be enabled and start to work.
+
+Signed-off-by: Kangjie Xu <kangjie.xu@linux.alibaba.com>
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/ethernet/microchip/sparx5/sparx5_packet.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-index 304f84aadc36..21844beba72d 100644
---- a/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-+++ b/drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
-@@ -113,6 +113,8 @@ static void sparx5_xtr_grp(struct sparx5 *sparx5, u8 grp, bool byte_swap)
- 			/* This assumes STATUS_WORD_POS == 1, Status
- 			 * just after last data
- 			 */
-+			if (!byte_swap)
-+				val = ntohl((__force __be32)val);
- 			byte_cnt -= (4 - XTR_VALID_BYTES(val));
- 			eof_flag = true;
- 			break;
+Test environment and method:
+    Host: 5.19.0-rc3
+    Qemu: QEMU emulator version 7.0.50 (With vq rset support)
+    Guest: 5.19.0-rc3 (With vq reset support)
+    Test Cmd: ethtool -g eth1; ethtool -G eth1 rx $1 tx $2; ethtool -g eth1;
+
+    The drvier can resize the virtio queue, then virtio queue reset function should
+    be triggered.
+
+    The default is split mode, modify Qemu virtio-net to add PACKED feature to 
+    test packed mode.
+
+Guest Kernel Patch:
+    https://lore.kernel.org/bpf/20220801063902.129329-1-xuanzhuo@linux.alibaba.com/
+
+QEMU Patch:
+    https://lore.kernel.org/qemu-devel/cover.1661414345.git.kangjie.xu@linux.alibaba.com/
+
+Looking forward to your review and comments. Thanks.
+
+ drivers/vhost/net.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 68e4ecd1cc0e..8a34928d4fef 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -73,7 +73,8 @@ enum {
+ 	VHOST_NET_FEATURES = VHOST_FEATURES |
+ 			 (1ULL << VHOST_NET_F_VIRTIO_NET_HDR) |
+ 			 (1ULL << VIRTIO_NET_F_MRG_RXBUF) |
+-			 (1ULL << VIRTIO_F_ACCESS_PLATFORM)
++			 (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
++			 (1ULL << VIRTIO_F_RING_RESET)
+ };
+ 
+ enum {
 -- 
-2.34.1
+2.32.0
 
