@@ -2,121 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A3B5A1A5D
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 22:34:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B617F5A1A65
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 22:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243668AbiHYUe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 16:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
+        id S243725AbiHYUfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 16:35:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230315AbiHYUe1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 16:34:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29071AA4D2
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 13:34:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB1786198D
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 20:34:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 030ECC433C1;
-        Thu, 25 Aug 2022 20:34:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661459666;
-        bh=+F5Tka+4QUVu02FX9Sc/n6Hv7FQixpX/jPi937YF7KQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CtPRmAYV2mLrdWlO3AtUu5oF1xXoRoWkawBn/RhdisSIiSwpAIETQf2xDQdyTtes8
-         ALWIxKWC27it7UQ7tthbh/gfNTr8vwz5NQOz/ZAY4Qt0D3KK+myb18oPHfmg5J4Csc
-         H/Y3BUE8VRF3k3QfP5E5wbgyKDYbEjQSUDWp8OX8s75MSfznP0hy/7dWPBdalTy3oW
-         +1tHmEAxMJQGBgiKiMhe4iATQCuwj58Ims8T/lrY0TFVdiHOgN9+zQWUEZdvlYVk9x
-         vsqeVRAOAGy5aE01kotwZ4nu3qCRjsXAio2LcZENVvSb+Mf/+Mpc5PtuVCs43fA6uG
-         rMs6sQYu43BCw==
-Date:   Thu, 25 Aug 2022 13:34:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Gal Pressman <gal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
-Message-ID: <20220825133425.7bfb34e9@kernel.org>
-In-Reply-To: <CO1PR11MB50891983ACE664FB101F2BAAD6729@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
-        <CO1PR11MB50895C42C04A408CF6151023D6739@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <5d9c6b31-cdf2-1285-6d4b-2368bae8b6f4@nvidia.com>
-        <20220825092957.26171986@kernel.org>
-        <CO1PR11MB50893710E9CA4C720815384ED6729@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <20220825103027.53fed750@kernel.org>
-        <CO1PR11MB50891983ACE664FB101F2BAAD6729@CO1PR11MB5089.namprd11.prod.outlook.com>
+        with ESMTP id S229575AbiHYUfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 16:35:14 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1465832CF
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 13:35:12 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id e28so16204932qts.1
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 13:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=W38//0BN+Mpi0ment/DsNSBH0AG+YpTWl5XPod3ELr0=;
+        b=dGjDuNJ77b0qiF7A7XJwWcfiPoVvBgARtQyqNLS8IOmEjPKNCo+Y6HtxCvKY+Ybt9d
+         NQX5ik4AKTRY2tR63EXfYAvOIY/tq+aG7/TE2kPhRsXRw9fYhpy9/0bUSsQ/5mjMU8dU
+         Gb43y1FYS9WQXZeJSFo9pt1A9Rf2Ho/fK3R61GbJ9sB2+hIaAY8GIig01Rfh6+sEGLIE
+         SD747ay13SeKdEJgvPwoRilBilWpdK4MRdDikVgu8HtSBq78DDXkUsrg1JyGujpPZYpI
+         FheTBoQejDtki6MVt3z6RV3X0pn5U1SQ3BWgyDLLmkirlx0AYA7czdk5nKNnhh3NOsKz
+         A6uQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=W38//0BN+Mpi0ment/DsNSBH0AG+YpTWl5XPod3ELr0=;
+        b=lcllFB/uaR3R5qaweofrMizDo22+yzNi61eCWzDBMWe+qoQgphpLbvrw28NTvClpFw
+         rc3OZjpGCNr4Q6hLWlo7XdqegTVJUAXcMyJlquuqez7A6l2DTpDPfpxvqSCy1kMfXIlL
+         VE2Kcvq/6Qg1RIk3yDPY3Cx6S6mjSIktiEeWy47xd8+jcHeM6bMJ9mP6hpm3Uo1HBErD
+         E7cW9JARI3ourr5yCJhUhJVIZv4M5YMmj8rX6cB53Eww0rS4RgzlnBsERbdtHW7y5Li9
+         zL+qe4huTC+Rj9YprbR2FLOP0eLU9lahX8v2X8RCYcp8SzeboHxnuVz/1ujFEFIlvFgx
+         eByg==
+X-Gm-Message-State: ACgBeo3ZgIU/RLkm5Lr2OkO4hSxJ0rUNOKMCq0rgXtAPpTseRkLeXkiM
+        Y7H9fuj6QsHtzOxO2CkzgaNqio1yGXvpthPD+iA2YQ==
+X-Google-Smtp-Source: AA6agR4Hs5T238NpECmNZXKSZ/N2q9+IQQdN3rjH+KX3J52d9R1NUUbxYt4bJMUf6oj+LM14J6BhhZHuswOZygRYZJg=
+X-Received: by 2002:ac8:7f04:0:b0:343:36d:9a1f with SMTP id
+ f4-20020ac87f04000000b00343036d9a1fmr5195675qtk.566.1661459711891; Thu, 25
+ Aug 2022 13:35:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220824030031.1013441-1-haoluo@google.com> <20220824030031.1013441-2-haoluo@google.com>
+ <CAEf4BzYfA5uzSVsRXJXKnUQFSD1Wmk29VPge-iEO+Los3e2VOg@mail.gmail.com>
+In-Reply-To: <CAEf4BzYfA5uzSVsRXJXKnUQFSD1Wmk29VPge-iEO+Los3e2VOg@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Thu, 25 Aug 2022 13:35:01 -0700
+Message-ID: <CA+khW7hHA2gjv_UhbyhU8HkFwemt4pARVw+e1SHHOteO60PF1g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 1/5] bpf: Introduce cgroup iter
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Aug 2022 17:51:01 +0000 Keller, Jacob E wrote:
-> > Update your FW seems like a reasonable thing to ask customers to do.
-> > Are there cables already qualified for the old FW which would switch
-> > to No FEC under new rules?  
-> 
-> Not sure I follow what you're asking here.
+On Thu, Aug 25, 2022 at 1:18 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Tue, Aug 23, 2022 at 8:01 PM Hao Luo <haoluo@google.com> wrote:
+> >
+[...]
+> >  typedef int (*bpf_iter_attach_target_t)(struct bpf_prog *prog,
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 934a2a8beb87..1c4e1c583880 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -87,10 +87,29 @@ struct bpf_cgroup_storage_key {
+> >         __u32   attach_type;            /* program attach type (enum bpf_attach_type) */
+> >  };
+> >
+> > +enum bpf_cgroup_iter_order {
+> > +       BPF_ITER_ORDER_UNSPEC = 0,
+> > +       BPF_ITER_SELF_ONLY,             /* process only a single object. */
+> > +       BPF_ITER_DESCENDANTS_PRE,       /* walk descendants in pre-order. */
+> > +       BPF_ITER_DESCENDANTS_POST,      /* walk descendants in post-order. */
+> > +       BPF_ITER_ANCESTORS_UP,          /* walk ancestors upward. */
+> > +};
+>
+> just skimming through this, I noticed that we have "enum
+> bpf_cgroup_iter_order" (good, I like) but BPF_ITER_xxx with no CGROUP
+> part in it (not good, don't like :). All the enumerator names have
+> global visibility, so it would probably be best for them to be
+> CGROUP-specific and roughly match the enum name itself:
+> BPF_CGROUP_ITER_SELF_ONLY, etc?
+>
 
-IIRC your NICs only work with qualified cables. I was asking if any of
-the qualified cables would actually negotiate to No FEC under new rules.
-Maybe such cables are very rare and there's no need to be super careful?
-
-> > Can you share how your FW picks the mode exactly?
-> 
-> I'm not entirely sure how it selects, other than it selects from the
-> table of supported modes. It uses some state machine to go through
-> options until a suitable link is made, but the details of how exactly
-> it does this I'm not quite sure.
-
-State machine? So you're trying different FEC modes or reading module
-data and picking one?
-
-Various NICs do either or both, but I believe AUTO means the former.
-
-> The old firmware never picks "No FEC" for some media types, because
-> the standard was that those types would always require FEC of some
-> kind (R or RS). However in practice the modules can work with no FEC
-> anyways, and according to customer reports enabling this has helped
-> with linking issues. That's the sum of my understanding thus far.
-
-Well, according to the IEEE standard there sure are cables which don't
-need FEC. Maybe your customers had problems linking up because switch
-had a different selection algo?
-
-> I would prefer this option of just "auto means also possibly
-> disable", but I wasn't sure how other devices worked and we had some
-> concerns about the change in behavior. Going with this option would
-> significantly simplify things since I could bury the "set the auto
-> disable flag if necessary" into a lower level of the code and only
-> expose a single ICE_FEC_AUTO instead of ICE_FEC_AUTO_DIS...
-> 
-> Thus, I'm happy to respin this, as the new behavior when supported by
-> firmware if we have some consensus there.
-
-Hard to get consensus if we still don't know what the FW does...
-But if there's no new uAPI, just always enabling OFF with AUTO
-then I guess I'd have nothing to complain about as I don't know
-what other drivers do either.
-
-> I am happy to drop or
-> respin the extack changes if you think thats still valuable as well
-> in the event we need to extend that API in the future.
-
-Your call. May be useful to do it sooner rather than later, but 
-we should find at least one use for the extack as a justification.
-
-> > There must be _some_ standardization here, because we're talking
-> > about <5m cables, so we can safely assume it's linking to a ToR
-> > switch.  
-> 
-> I believe so.
+Ack. I will send a patch to fix this right now.
