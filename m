@@ -2,126 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B11835A1937
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:57:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A00F5A195A
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 21:19:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243585AbiHYS5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 14:57:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35460 "EHLO
+        id S243608AbiHYTTX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 15:19:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243531AbiHYS5A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:57:00 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57C64B99DF
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:56:59 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRI20-0004Hp-Pp; Thu, 25 Aug 2022 20:56:44 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRI1y-0007Sw-6r; Thu, 25 Aug 2022 20:56:42 +0200
-Date:   Thu, 25 Aug 2022 20:56:42 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        kernel test robot <lkp@intel.com>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 6/7] ethtool: add interface to interact with
- Ethernet Power Equipment
-Message-ID: <20220825185642.GB2116@pengutronix.de>
-References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
- <20220825130211.3730461-7-o.rempel@pengutronix.de>
- <20220825110756.6361fff7@kernel.org>
+        with ESMTP id S239226AbiHYTTW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 15:19:22 -0400
+Received: from mail-oa1-x2a.google.com (mail-oa1-x2a.google.com [IPv6:2001:4860:4864:20::2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3684225EB1
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 12:19:21 -0700 (PDT)
+Received: by mail-oa1-x2a.google.com with SMTP id 586e51a60fabf-11d2dcc31dbso18022627fac.7
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 12:19:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=e8Gq1eg55USHCL83Reobt5ibzPL8cvMuV1NX5De9ZYY=;
+        b=O7VCw6m6DYZ9SRwwETgBSqa1zuOS859jqBgpBIVSG63HOg7KKdU/QyOTg3x2mMKLlZ
+         /sk+enC4j9MprDEgOepuTKPmBoZ+sG3JQUyandbIfwWBmTyew+NcfQNlQxrCLf562JLt
+         CBDBuBCbwtrJNQe3ltgbUG8+lxI+qESJLbZ0QjttHTgIelL4DCFUrpjqekdSpJmnnmqw
+         5+qWUz8Dkm4iat2Vs0aOfyU5R/QMPzUhEaDtsp239vjwfrvwNLroQmHWmjQKOUL6AgDf
+         0aK+BsUrax9MV0QeahftRbTrPT7WR2Q4AhsrTUIGzz3L/CutBwNsczdrnoWMGQfm8Wko
+         Shzw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=e8Gq1eg55USHCL83Reobt5ibzPL8cvMuV1NX5De9ZYY=;
+        b=kHl6O8H0twBmikrbQMsX65yvKkZw9Nx8K0/PVTXDEoRP3EsGi15NWhPf1aAd15lC6e
+         wMiw24PVL4xnG1qiURe2djdy6k5o6kW7BV+RWTdz9f0gdDeD8ZBflzeTLNEqRMlxp5FG
+         5nqUFhlgjsV6m7+XketolhwjlAbcu4Z0/NsDwd2U57KJ6SeOu75nFF4yN/9mbe5sEA2G
+         HcsO8vlRXML32oGW93PChAkwxHnkqzjeyKeXMNYTxQuhWsPq8GXxyTo5JY6d+4ux0hBT
+         ckbxB9voo+9i7O6bLhPJk67f1eHyvbLH9JYwSaenNc/30cJkNfcYDQH+ud9hYC5gUXWq
+         FUmA==
+X-Gm-Message-State: ACgBeo3DZBK6STgfBnifBO/Kf/ktD6LuLqv3BAwmLGVvA6l8sGNHvqgp
+        3RiGBOPiOsImG456zDEoQxEf8u1lCdkcWD6gtmvZ
+X-Google-Smtp-Source: AA6agR6ZnOvsjUOSNSEGS0LaKYyBUDvqU+sEg8pLS8j9NOxMj3Auk1GEnVJgv+Dn6EqNkIafEGAYyEbTIhKpOvto32I=
+X-Received: by 2002:a05:6870:a78d:b0:11c:437b:ec70 with SMTP id
+ x13-20020a056870a78d00b0011c437bec70mr257186oao.136.1661455160511; Thu, 25
+ Aug 2022 12:19:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220825110756.6361fff7@kernel.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <CAHC9VhTuxxRfJg=Ax5z87Jz6tq1oVRcppB444dHM2gP-FZrkTQ@mail.gmail.com>
+ <8735dux60p.fsf@email.froward.int.ebiederm.org> <CAHC9VhSHJNLS-KJ-Rz1R12PQbqACSksLYLbymF78d5hMkSGc-g@mail.gmail.com>
+ <871qte8wy3.fsf@email.froward.int.ebiederm.org> <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+ <8735du7fnp.fsf@email.froward.int.ebiederm.org> <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
+ <87tu6a4l83.fsf@email.froward.int.ebiederm.org> <20220818140521.GA1000@mail.hallyn.com>
+ <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
+ <20220819144537.GA16552@mail.hallyn.com> <CAHC9VhSZ0aaa3k3704j8_9DJvSNRy-0jfXpy1ncs2Jmo8H0a7g@mail.gmail.com>
+ <875yigp4tp.fsf@email.froward.int.ebiederm.org>
+In-Reply-To: <875yigp4tp.fsf@email.froward.int.ebiederm.org>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Thu, 25 Aug 2022 15:19:09 -0400
+Message-ID: <CAHC9VhTN09ZabnQnsmbSjKgb8spx7_hkh4Z+mq5ArQmfPcVqAg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
+        tixxdz@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 11:07:56AM -0700, Jakub Kicinski wrote:
-> On Thu, 25 Aug 2022 15:02:10 +0200 Oleksij Rempel wrote:
-> > +void ethtool_set_ethtool_pse_ops(const struct ethtool_pse_ops *ops)
-> > +{
-> > +	rtnl_lock();
-> > +	ethtool_pse_ops = ops;
-> > +	rtnl_unlock();
-> > +}
-> > +EXPORT_SYMBOL_GPL(ethtool_set_ethtool_pse_ops);
-> 
-> Do we really need the loose linking on the PSE ops?
-> It's not a lot of code, and the pcdev->ops should be 
-> enough to decouple drivers, it seems.
+On Thu, Aug 25, 2022 at 2:15 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
+> Paul Moore <paul@paul-moore.com> writes:
+> > On Fri, Aug 19, 2022 at 10:45 AM Serge E. Hallyn <serge@hallyn.com> wrote:
+> >>  I am hoping we can come up with
+> >> "something better" to address people's needs, make everyone happy, and
+> >> bring forth world peace.  Which would stack just fine with what's here
+> >> for defense in depth.
+> >>
+> >> You may well not be interested in further work, and that's fine.  I need
+> >> to set aside a few days to think on this.
+> >
+> > I'm happy to continue the discussion as long as it's constructive; I
+> > think we all are.  My gut feeling is that Frederick's approach falls
+> > closest to the sweet spot of "workable without being overly offensive"
+> > (*cough*), but if you've got an additional approach in mind, or an
+> > alternative approach that solves the same use case problems, I think
+> > we'd all love to hear about it.
+>
+> I would love to actually hear the problems people are trying to solve so
+> that we can have a sensible conversation about the trade offs.
 
-Right now i have no good idea how to properly decouple pse-pd from phydev.
+Here are several taken from the previous threads, it's surely not a
+complete list, but it should give you a good idea:
 
-@Andrew, should i care about it on this stage or it is currently not a
-big deal?
+https://lore.kernel.org/linux-security-module/CAHC9VhQnPAsmjmKo-e84XDJ1wmaOFkTKPjjztsOa9Yrq+AeAQA@mail.gmail.com/
 
-> > +static int pse_set_pse_config(struct net_device *dev,
-> > +			      struct netlink_ext_ack *extack,
-> > +			      struct nlattr **tb)
-> > +{
-> > +	struct phy_device *phydev = dev->phydev;
-> > +	struct pse_control_config config = {};
-> > +	const struct ethtool_pse_ops *ops;
-> > +	int ret;
-> > +
-> > +	if (!tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL])
-> > +		return 0;
-> 
-> If SET has no useful attrs the usual response is -EINVAL.
+> As best I can tell without more information people want to use
+> the creation of a user namespace as a signal that the code is
+> attempting an exploit.
 
-ack
+Some use cases are like that, there are several other use cases that
+go beyond this; see all of our previous discussions on this
+topic/patchset.  As has been mentioned before, there are use cases
+that require improved observability, access control, or both.
 
-> > +	ops = ethtool_pse_ops;
-> > +	if (!ops || !ops->set_config)
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	config.admin_cotrol = nla_get_u8(tb[ETHTOOL_A_PODL_PSE_ADMIN_CONTROL]);
-> > +
-> > +	if (!phydev)
-> > +		return -EOPNOTSUPP;
-> > +
-> > +	// todo resolve phydev dependecy
-> 
-> My lack of phydev understanding and laziness are likely the cause,
-> but I haven't found an explanation for this todo. What is it about?
+> As such let me propose instead of returning an error code which will let
+> the exploit continue, have the security hook return a bool.  With true
+> meaning the code can continue and on false it will trigger using SIGSYS
+> to terminate the program like seccomp does.
 
-sorry. old artifact, will be removed. It is part of phydev/phylink
-related discussion in the last patch version.
+Having the kernel forcibly exit the process isn't something that most
+LSMs would likely want.  I suppose we could modify the hook/caller so
+that *if* an LSM wanted to return SIGSYS the system would kill the
+process, but I would want that to be something in addition to
+returning an error code like LSMs normally do (e.g. EACCES).
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+paul-moore.com
