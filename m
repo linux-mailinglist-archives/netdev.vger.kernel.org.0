@@ -2,134 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D5A5A09AB
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCC6A5A09B0
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:12:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237678AbiHYHLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 03:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48128 "EHLO
+        id S237660AbiHYHMM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 03:12:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237865AbiHYHL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:11:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCF907393D
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661411475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8hstYML2crFW9jfle1ivYRn1yE7n1hXLc4hnxMa+ms8=;
-        b=XjLkglLfHZ5x8nYFwbWBstCfcMCtaMrjvI1exvLqQW1u8sUTKHnnSsxF88BznNp13mIjHZ
-        zS6IgIVrdWx2tyfeQWudmNnrO+uX4Irj40OUM0ZDJJLeS25qNseh+Rfo/8CFGo/SYX/UCe
-        Xpa8DzlUd/dxB8xis4qBVITWwOrfbiM=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-270-2meiecJKMRWJfa-kZevgCA-1; Thu, 25 Aug 2022 03:11:14 -0400
-X-MC-Unique: 2meiecJKMRWJfa-kZevgCA-1
-Received: by mail-pl1-f197.google.com with SMTP id s8-20020a170902ea0800b00172e456031eso7364594plg.3
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:11:14 -0700 (PDT)
+        with ESMTP id S237659AbiHYHLp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:11:45 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2215B07B;
+        Thu, 25 Aug 2022 00:11:34 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id 2so17794917pll.0;
+        Thu, 25 Aug 2022 00:11:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc;
+        bh=oTpPF3Aix7VclJ3dXzlNmbBjMMwsnWz3DKrKPEfxiQs=;
+        b=Qf7OX+zLG/7Oqll9BK+bZUXamvgC85QN4W56Sz0Ea2fYSXcQgziGp2AZ+Z7BUe/p1c
+         kV+dsA365zeJDhVdFrpEvJUDe7kIK58TEUh8nIwrSxssURRv9/h+ZaJ/tpYEboFFyYpH
+         iD65XWOeU+xLw7RNA9fpwEhBKh2c1QGgYTKTwzw/haxEuzpLouVKekcqY11B3390kanD
+         SqdfULKZ9+jX6dZH3IEVyExO4PVuhS2zIzGKno5YnWSwqlcJ3wtLArJJJksH9rT1VmzE
+         2586/H49VTSIosSwlO/1RGm1I3asDeHCtHo+GOJUr6Z3lBK/6j0CzwVeZWvwqZx5WIwx
+         doZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=8hstYML2crFW9jfle1ivYRn1yE7n1hXLc4hnxMa+ms8=;
-        b=QcDMK80/IENtGLKVORNaxWXsmXwdPIArl+YMYHX0bA0aZeNyJIkfOzAuNsVX9/xzq6
-         XUn3LhUfSxwXhdxtGBQqCnzUo/7CZ+eVO3lz/6GZnHQPjCmPk0QwfCWRLIY5c7FwbOA7
-         sGLK8sxeC748WE8udKj5qUZ3DR8wRj/Wpi6QeUTkCUCCDL2becyJffr/crbayrq2WXLc
-         ZDZfZveyjZSNx+QdWis2sUanxet5xIu0HMKe543+F0zs2JmsknCW3f/Y+3qpALxjDLcp
-         7V9eUJkWwCU4H/KbSeEj0KrgA5R0/qv+/rstBjIsbZIZe0lL4GXRXj1P+zmAqCWwiZc7
-         ubYw==
-X-Gm-Message-State: ACgBeo1wzVZ/hOBAQ6qBrtKA51ESRs1z0Wz0krpKQMVENTyW2ZlSWzF1
-        810A0pdnT3efs3hlKkylZcccZEbwiwo9NvC6+QfGI4429Q9h749HCST9znlykyR4aejTBYZjLI2
-        V9CZ/y9Gtx+dbuoZh
-X-Received: by 2002:a17:90b:388a:b0:1fb:7dea:c31e with SMTP id mu10-20020a17090b388a00b001fb7deac31emr3196540pjb.162.1661411473477;
-        Thu, 25 Aug 2022 00:11:13 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5CeHBniCJJchbK95vuG0eHIrILIUeqOvLvVnn+uoxSbeGyNwzgMkrqzzDmQjcA7tg+85ezFw==
-X-Received: by 2002:a17:90b:388a:b0:1fb:7dea:c31e with SMTP id mu10-20020a17090b388a00b001fb7deac31emr3196513pjb.162.1661411473242;
-        Thu, 25 Aug 2022 00:11:13 -0700 (PDT)
-Received: from [10.72.12.107] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id h20-20020aa796d4000000b0053671a241a5sm9059808pfq.191.2022.08.25.00.11.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 00:11:12 -0700 (PDT)
-Message-ID: <ac746502-e786-0290-821c-f576c6125efa@redhat.com>
-Date:   Thu, 25 Aug 2022 15:11:02 +0800
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc;
+        bh=oTpPF3Aix7VclJ3dXzlNmbBjMMwsnWz3DKrKPEfxiQs=;
+        b=wrsafaPmbPv23IkZwFW8hcbCNhozehcshFe8IG0k1Bm4Qa3HBTCXSH/VLlj40w4+YA
+         s+RbZd3J8Y22isIVC7UCsD87xxp9AKoz2ej71TZR/UuxQndrQsq9D/YTFOTFw3ANTd16
+         sSOCadAHwUqcuLsC5cUSry6yiFynchPBW8ckhlnIeP7PHVOR9jbPToj9KDmsgrtyXBoP
+         p2vaQSSNj6kDzGJ7ppA0FUwVTm4Laqx+Z2QokLHEklyWMjltjfZDeQob6rj/zb5Lla6h
+         d5EMH3v0CLHug7a8rHmktmj54OpphX13nZtfYBsXSl5Q+qH7glZS1EuTukxXNx+fiS1o
+         HQRw==
+X-Gm-Message-State: ACgBeo2z6PWkODRBV/qqR9MRMIdDbcWal/lsllOa1RAhHjC05p/2jtYU
+        2IWO5YhBkE0FRUC5YKRho73w/dmfYNU2mEwT7lhLoed4c0aiDQ==
+X-Google-Smtp-Source: AA6agR4ZK0b7JGqb3gNnQ0kc+Mxc26x5Tyxqo+Wb8Ot6mgD+DJYcCAk+gYP+dGMh7s8XhA133xWwhPMmPFEC94WJgH0=
+X-Received: by 2002:a17:90b:1803:b0:1fb:45e2:5d85 with SMTP id
+ lw3-20020a17090b180300b001fb45e25d85mr12555863pjb.163.1661411493324; Thu, 25
+ Aug 2022 00:11:33 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [RFC v2 5/7] virtio: unmask F_NEXT flag in desc_extra
-Content-Language: en-US
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        sgarzare@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
- <20220817135718.2553-6-qtxuning1999@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220817135718.2553-6-qtxuning1999@sjtu.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+From:   =?UTF-8?B?157Xmdeb15DXnCDXqdeY16jXkNeV16E=?= 
+        <mdstrauss91@gmail.com>
+Date:   Thu, 25 Aug 2022 10:11:22 +0300
+Message-ID: <CAAMXCFm12u-v1-AZyYM-hXtTJ1YwFyL26gM8RiONDfMs4+U=WQ@mail.gmail.com>
+Subject: ST ST95HF DRIVER security bug
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
+I found a small security bug in the ST95HF driver in Linux kernel .
+Thought it is responsible to report it to you guys so you we can patch it up.
+CVE ID was requested,  when it is reserved I will update.
+I want to thank Krzysztof Kozlowski for helping me out.
 
-在 2022/8/17 21:57, Guo Zhi 写道:
-> We didn't unmask F_NEXT flag in desc_extra in the end of a chain,
-> unmask it so that we can access desc_extra to get next information.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+ST ST95HF DRIVER
+ST95HF is an integrated transceiver for NFC made by ST,
+Buffer overflow can be triggered by the attacker by providing
+malicious size in one of the SPI receive registers.
 
+Details:
+```jsx
+unsigned char st95hf_response_arr[2];
+ret = st95hf_spi_recv_response(&st95context->spicontext,
+      st95hf_response_arr);
+...
 
-I post a similar patch in the past.
+/* Support of long frame */
+if (receivebuff[0] & 0x60)
+len += (((receivebuff[0] & 0x60) >> 5) << 8) | receivebuff[1];
+else
+len += receivebuff[1];
 
-Please share the perf numbers (e.g pps via pktgen).
+/* Now make a transfer to read only relevant bytes */
+tx_takedata.rx_buf = &receivebuff[2];
+tx_takedata.len = len - 2;
 
-Thanks
+spi_message_init(&m);
+spi_message_add_tail(&tx_takedata, &m);
+```
+Driver sets a buffer of 2 bytes for the input bytes but actually
+allows the driver to overflow it with any valid SPI message (short or
+long frame) in the tx_takedata stage.
+It seems like a mistake, but i may be missing something and i am totally wrong.
 
+* Exploitable: I actually think vulnerability can be exploitable by
+any device on the SPI bus.
+   Exploit is quite low risk and impact is negligible, both because it
+requires an actual connected device and because it requires the driver
+to be registered.
 
-> ---
->   drivers/virtio/virtio_ring.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index a5ec724c01d8..1c1b3fa376a2 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -567,7 +567,7 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
->   	}
->   	/* Last one doesn't continue. */
->   	desc[prev].flags &= cpu_to_virtio16(_vq->vdev, ~VRING_DESC_F_NEXT);
-> -	if (!indirect && vq->use_dma_api)
-> +	if (!indirect)
->   		vq->split.desc_extra[prev & (vq->split.vring.num - 1)].flags &=
->   			~VRING_DESC_F_NEXT;
->   
-> @@ -584,6 +584,8 @@ static inline int virtqueue_add_split(struct virtqueue *_vq,
->   					 total_sg * sizeof(struct vring_desc),
->   					 VRING_DESC_F_INDIRECT,
->   					 false);
-> +		vq->split.desc_extra[head & (vq->split.vring.num - 1)].flags &=
-> +			~VRING_DESC_F_NEXT;
->   	}
->   
->   	/* We're using some buffers from the free list. */
-> @@ -693,7 +695,7 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
->   	/* Put back on free list: unmap first-level descriptors and find end */
->   	i = head;
->   
-> -	while (vq->split.vring.desc[i].flags & nextflag) {
-> +	while (vq->split.desc_extra[i].flags & nextflag) {
->   		vring_unmap_one_split(vq, i);
->   		i = vq->split.desc_extra[i].next;
->   		vq->vq.num_free++;
+* Effected versions: v6.0-rc2 - v4.5-rc1
 
+* Introducing commit:
+https://github.com/torvalds/linux/commit/cab47333f0f75b685bce1facecb73bf3632e1360
+
+* Code:
+https://github.com/torvalds/linux/blame/master/drivers/nfc/st95hf/core.c#L284
+https://github.com/torvalds/linux/blob/master/drivers/nfc/st95hf/spi.c#L107
+
+Side note:
+I was wondering if maybe the tag is the source for the content that actually
+overflows the kernel buffer,  In which case it changes the picture a bit.
+But if i understood correctly the messages are used for configuration
+with connected device.
+
+Suggested patch:
+I am actually not sure if we can somehow limit the size to MAX command length.
+I changed it to 1024 because it seems to support 10 bit long frame spi.
+
+```
+diff --git a/drivers/nfc/st95hf/core.c b/drivers/nfc/st95hf/core.c
+index ed704bb77..741ce633b 100644
+--- a/drivers/nfc/st95hf/core.c
++++ b/drivers/nfc/st95hf/core.c
+@@ -281,7 +281,7 @@ static int st95hf_send_recv_cmd(struct
+st95hf_context *st95context,
+        }
+
+        if (cmd_array[cmd].req == SYNC && recv_res) {
+-               unsigned char st95hf_response_arr[2];
++               unsigned char st95hf_response_arr[1024];
+
+                ret = st95hf_spi_recv_response(&st95context->spicontext,
+                                               st95hf_response_arr);
+```
