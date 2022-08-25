@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA155A165B
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 18:08:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F243A5A1673
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 18:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242773AbiHYQIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 12:08:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50444 "EHLO
+        id S242641AbiHYQNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 12:13:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237841AbiHYQIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 12:08:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F747B2DA8;
-        Thu, 25 Aug 2022 09:08:45 -0700 (PDT)
+        with ESMTP id S230173AbiHYQNs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 12:13:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DE64B442C;
+        Thu, 25 Aug 2022 09:13:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AC6761B4E;
-        Thu, 25 Aug 2022 16:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E320BC433D7;
-        Thu, 25 Aug 2022 16:08:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3452AB82A1D;
+        Thu, 25 Aug 2022 16:13:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D6A1C433D6;
+        Thu, 25 Aug 2022 16:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661443724;
-        bh=IMsQUj71lEbOVDscuHJdk+CmFlQ43bhAr+LVmmu7XPY=;
+        s=k20201202; t=1661444024;
+        bh=vZbgVY2G/5OHN0gh3qchTpghD4a8tCzza/y15Oz5I0U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SMb3Rw2CXh0D0k6QofNIIJw1t8s5pxMXZ+HdBCy0bBZG1uYZYNTDsCLtLcdhuRRNH
-         lPtht2fXW+ApBX/T5JbFjUgXxmh1navyVJYyFtbNZR8AjjeMgdP6EZcmJQ5qvkpfcG
-         9mE9OyNKiZbZxnyXKf7IEbr9l0dnhUQ3kYyEvgYDraXxn+hiE72il3x9MvrafedmCE
-         AOd5ccrxBObNPD0j+qZqcl3L3ND6b4gU+s4SFHCqoItbqGC2hq5lirYFbDxlv9CrQV
-         umB4GQBEpqmh7GpS6izlWll15cPgMHvkEZ5xN0EhxrUbBKa5WOfXVVyi0QUCdcg/mo
-         GKZWr9O+95w3g==
-Date:   Thu, 25 Aug 2022 09:08:42 -0700
+        b=P7A+WAnDdtwS91BYv3Rv+pX+9G0TX8G9reOfyDHKMgWrvjxXDNBk1hLpS7tdtM51a
+         Gfi05PdZWtNQPamG+NZ3OIlndVUYqjuF+0xv63qIKv5h/KcPnnqmRj4vVwXbL5EOwX
+         p7oRbum5ZMBMQvfwKVaqqsRbVe8wr6/qJ0MOUFs4tz7+nn58jFq6ear4LQ4xENQfeq
+         at28aIP0Dpr5xz9B7ohAY5O2IbCFjjLVBVSrd5T4mLoD2A5RqKnfB/Zw6IyyXdGlJB
+         5Lf5ZD6Qj3GpmTYrlM1wOvySQhYri3Kvy3rnUj4NAfCXwQ9SeIK7PCdnFhFH27dzBa
+         6i1XM2OMv+ViQ==
+Date:   Thu, 25 Aug 2022 09:13:43 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     andrei.tachici@stud.acs.upb.ro
-Cc:     andrew@lunn.ch, davem@davemloft.net, devicetree@vger.kernel.org,
-        edumazet@google.com, hkallweit1@gmail.com, joel@jms.id.au,
-        krzysztof.kozlowski+dt@linaro.org, l.stelmach@samsung.com,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        vegard.nossum@oracle.com, vladimir.oltean@nxp.com
-Subject: Re: [net-next v5 2/3] net: ethernet: adi: Add ADIN1110 support
-Message-ID: <20220825090842.24c5bc7f@kernel.org>
-In-Reply-To: <20220825105517.19301-1-andrei.tachici@stud.acs.upb.ro>
-References: <20220823160241.36bc2480@kernel.org>
-        <20220825105517.19301-1-andrei.tachici@stud.acs.upb.ro>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Maxim Levitsky <mlevitsk@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        Hayes Wang <hayeswang@realtek.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+Subject: Re: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
+ Thunderbolt 3 dock go crazy
+Message-ID: <20220825091343.2e5f99dd@kernel.org>
+In-Reply-To: <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
+References: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
+        <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
+        <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,36 +58,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Aug 2022 13:55:17 +0300 andrei.tachici@stud.acs.upb.ro wrote:
-> > I thought this is a callback for legacy SR-IOV NICs. What are you using
-> > it for in a HW device over SPI? :S  
+On Thu, 25 Aug 2022 09:26:21 +0200 Thorsten Leemhuis wrote:
+> On 24.08.22 13:16, Thorsten Leemhuis wrote:
+> > Hi, this is your Linux kernel regression tracker.
+> > 
+> > Quick note before the boilerplate: there is another report about issues
+> > caused by cdf0b86b250fd3 also involving a dock, but apparently it's
+> > ignored so far:
+> > https://bugzilla.kernel.org/show_bug.cgi?id=216333  
 > 
-> Here I wanted to allow the user to change between VEPA/VEB. The ADIN2111 switch
-> is not VLAN aware and also can't do any meaningful forwarding when multiple
-> ports from multiple ADIN2111 switches are added to the same software bridge. For these
-> cases I thought the user would like to disable hardware forwarding (VEB).
+> TWIMC, apparently it's the same problem.
+> 
+> Fun fact: Hayes discussed this in privately with the bug reporter
+> according to this comment:
+> https://bugzilla.kernel.org/show_bug.cgi?id=216333#c3
+> 
+> Well, that's not how things normally should be handled, but whatever, he
+> in the end recently submitted a patch to fix it that is already merged
+> to net.git:
+> 
+> https://lore.kernel.org/lkml/20220818080620.14538-394-nic_swsd@realtek.com/
 
-VEPA/VEB is only for traffic originating on the host, it's sort of
-inverse of what you're doing. In SR-IOV host has "multiple ports"
-not the device. So the question is whether the device punts the packets
-produced by the host to the network or tries to switch them internally.
-In the former case the connected switch must support hair-pinning the
-traffic.
+Yup, it will be part of 6.0-rc3. 
 
-A completely different kettle of fish that "should I forward between
-two external ports".
-
-> Should detect the above cases and automatically disable any forwarding instead?
-
-Bridge offloading experts would have to help us out regarding what
-other drivers do, I'd think that offload for a bridge straddling
-multiple ASICs should still be possible. You can program the forwarding
-based on the FDB of the host.
- 
-> Hardware forwarding translates to: I don't know this MAC address (not my MAC address)
-> throw it back to the other port. ADIN2111 can't learn the FDB, although has 16 entries that
-> can be statically programmed.
-
-Do the 16 entries control forwarding (ie. allow you to decide forward
-to other port vs forward to host)? Or just trap the packets that match
-to the host?
+Thanks!
