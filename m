@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB4A5A188B
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:13:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49F3A5A1884
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 20:13:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243322AbiHYSNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 14:13:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41432 "EHLO
+        id S238113AbiHYSNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 14:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40898 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242777AbiHYSNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:13:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440AEBD284
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:12:53 -0700 (PDT)
+        with ESMTP id S243297AbiHYSMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 14:12:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34864BB924
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:12:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661451171;
+        s=mimecast20190719; t=1661451169;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MrW3KirCN30zCt1W75Xnts+OcNfMj70LF3woTfJkL5o=;
-        b=YaEHJTE5zhxkklq2PBI4J5qDh4EJVaTTjPIZHhm1N+vyHas/2+Kz5BkkirDRjPIrB4+rdl
-        1iGIQFHPPNcZ+G8e296zEU1SpyL8gwxJ8oPNay2bDcgRiO7+Trhha2SvLvVDs1rRGpuOAH
-        aj7mORh5IG7hya5qL6zc6xZDYSSx3WU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=fi5a4KAJqfy3ci33ccYmogCkY8ciHV2wHDw8LNbyax8=;
+        b=H8dNzrIddSnqYvhnE8FM6wxIdi82gDs4QYgLoQAAavNEgk/rYfvPZXfNEdoNXrK1zvwqmr
+        2iPJQucd8f1pMICkSt5pXA8xsOyugWlmNqvtGpBS6FQ15Wr5EaTLH/KLyFHQHpyzGP5y7s
+        ItHyKc9cEEn+pAkFYA2S8NO0q6YdTlA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-245-u1E7guKtNGuZI_-XtfJ-4w-1; Thu, 25 Aug 2022 14:12:48 -0400
-X-MC-Unique: u1E7guKtNGuZI_-XtfJ-4w-1
-Received: by mail-wm1-f72.google.com with SMTP id a17-20020a05600c349100b003a545125f6eso2774455wmq.4
+ us-mta-614-j7j06pvjP0K5YxDzIBmiHg-1; Thu, 25 Aug 2022 14:12:47 -0400
+X-MC-Unique: j7j06pvjP0K5YxDzIBmiHg-1
+Received: by mail-wr1-f70.google.com with SMTP id q19-20020adfab13000000b0022588ea1182so119920wrc.20
         for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 11:12:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=MrW3KirCN30zCt1W75Xnts+OcNfMj70LF3woTfJkL5o=;
-        b=4MDXeMKl69XdQ4UzDIZSupPrjMnia/t/lVcyn41Ey95aeyfv1xG7z24lYwu7FuwSjb
-         ZYsiQlcPPf8rgdVz5SaWBGOWKllgkWgkNyJ+xpFRws47LOTQRLEnWnLtoKdxelCfI56q
-         zoJGLMX4a3C/AjPIDaPE9kugpJAyVM23rm2vK782bqfmvkNZy+l++ahEiq65uzkA2Fh/
-         MOeutd9M2wJHXIuCZJ207GZkkIfoOvwhsVKQLuKagEf9Bd0TSlftLMKcViy4/e0+Luih
-         0R7ssNkXPlte5qVAFUfZ8IeUVLpWjZKbFWvGHFt5ayljE5EZQcS9j1I0ii7sH9mVyiWa
-         gAcg==
-X-Gm-Message-State: ACgBeo1Qt+tKA4BATx4WV6py7tfyOibUDgOtkVkPYQjUfQjgYEtbAalt
-        0dp8zVf4Q2qc9WnGnCU6bPHRQwyV0+m3EoVBy/dgR/D3aRCNT25jebNCjo97OX/ueUqIT1yWbXx
-        4LTGEyqWBBhGtbE3nlYNmYhcN+3ITB7WdQCr9yeaZ+5/AI0AeV66JjpFrdBW74SQLBH0w
-X-Received: by 2002:a5d:68c9:0:b0:225:330b:2d0 with SMTP id p9-20020a5d68c9000000b00225330b02d0mr2795033wrw.243.1661451165200;
-        Thu, 25 Aug 2022 11:12:45 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6ao2h70S57Mc6QfTHW3PBLSxOg2mVt1GMZpIHsupvErIGsFwcjS67fyxkj1o1xP3reb4xMcw==
-X-Received: by 2002:a5d:68c9:0:b0:225:330b:2d0 with SMTP id p9-20020a5d68c9000000b00225330b02d0mr2794999wrw.243.1661451164866;
-        Thu, 25 Aug 2022 11:12:44 -0700 (PDT)
+        bh=fi5a4KAJqfy3ci33ccYmogCkY8ciHV2wHDw8LNbyax8=;
+        b=NGq67cesYHhvA7Y4+Rn61j/PiGr1USfiiV4yxwkI5J/N8DDW5xbLHJXQbOI0u/u5R8
+         fEwDI6Pafcta3GFE6DohGP05iqxPEsDhcAAXYH63KWTPrZ7l89K5qJiEMBsFLZE80jhs
+         JVn5+RWEq9xB6I61sqSVqqi2j7Beh7yUX02lL1isto4ZQ9J0pAfV9Een9uIo8oHcc2ct
+         8lt42relp+lYKCx+YiD168x9oajQh2C39JIMegX1fbPBtKh5/F7Zo0x7mL3jigJgeNmz
+         m3T7wJ8OdYlytHUsUiFe8sZytnee928rgYumzERGVn5g9ua1kGq7UNV8nty67gP7IFnh
+         GCOg==
+X-Gm-Message-State: ACgBeo3mbGojPJcS1AiILWtgJk7PS0n5crICHO/Y+s8w6CuropBc9FYe
+        TKs686GxtPXiQum6RCIwWWCCkH2Ohg3B0sHA0jdEfSOxaedUf4V+ErakgBp/AToTvoEgsCwIOa2
+        XgCTUenXSeOvj1Nm97FwPMoNEsfHoHUG2AqR2UT8HXW2W7cBlhbOwKYRhbCinB/6Zr1L9
+X-Received: by 2002:a05:600c:216:b0:3a6:60e1:2726 with SMTP id 22-20020a05600c021600b003a660e12726mr2944921wmi.182.1661451166443;
+        Thu, 25 Aug 2022 11:12:46 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4/nJYROvYiQ2IAfhO3CgdBZ6m1FiBVpd031oI0fdbvWUxPIJUgnQVz/WpVzsga42+sehCrlg==
+X-Received: by 2002:a05:600c:216:b0:3a6:60e1:2726 with SMTP id 22-20020a05600c021600b003a660e12726mr2944883wmi.182.1661451166173;
+        Thu, 25 Aug 2022 11:12:46 -0700 (PDT)
 Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id w1-20020a05600018c100b00225250f2d1bsm20371622wrq.94.2022.08.25.11.12.43
+        by smtp.gmail.com with ESMTPSA id w1-20020a05600018c100b00225250f2d1bsm20371622wrq.94.2022.08.25.11.12.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 11:12:44 -0700 (PDT)
+        Thu, 25 Aug 2022 11:12:45 -0700 (PDT)
 From:   Valentin Schneider <vschneid@redhat.com>
 To:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -79,16 +79,16 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>,
         Gal Pressman <gal@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: [PATCH v3 4/9] cpumask: Introduce for_each_cpu_andnot()
-Date:   Thu, 25 Aug 2022 19:12:05 +0100
-Message-Id: <20220825181210.284283-5-vschneid@redhat.com>
+Subject: [PATCH v3 5/9] lib/test_cpumask: Add for_each_cpu_and(not) tests
+Date:   Thu, 25 Aug 2022 19:12:06 +0100
+Message-Id: <20220825181210.284283-6-vschneid@redhat.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220825181210.284283-1-vschneid@redhat.com>
 References: <20220825181210.284283-1-vschneid@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -97,76 +97,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-for_each_cpu_and() is very convenient as it saves having to allocate a
-temporary cpumask to store the result of cpumask_and(). The same issue
-applies to cpumask_andnot() which doesn't actually need temporary storage
-for iteration purposes.
-
-Following what has been done for for_each_cpu_and(), introduce
-for_each_cpu_andnot().
+Following the recent introduction of for_each_andnot(), add some tests to
+ensure for_each_cpu_and(not) results in the same as iterating over the
+result of cpumask_and(not)().
 
 Signed-off-by: Valentin Schneider <vschneid@redhat.com>
 ---
- include/linux/cpumask.h | 39 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+ lib/test_cpumask.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index 1414ce8cd003..372a642bf9ba 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -238,6 +238,25 @@ unsigned int cpumask_next_and(int n, const struct cpumask *src1p,
- 		nr_cpumask_bits, n + 1);
+diff --git a/lib/test_cpumask.c b/lib/test_cpumask.c
+index 81b17563fcb3..62d499394d8a 100644
+--- a/lib/test_cpumask.c
++++ b/lib/test_cpumask.c
+@@ -29,6 +29,19 @@
+ 		KUNIT_EXPECT_EQ((test), nr_cpu_ids - mask_weight, iter);	\
+ 	} while (0)
+ 
++#define EXPECT_FOR_EACH_CPU_OP_EQ(test, op, mask1, mask2)			\
++	do {									\
++		const cpumask_t *m1 = (mask1);					\
++		const cpumask_t *m2 = (mask2);					\
++		int weight;                                                     \
++		int cpu, iter = 0;						\
++		cpumask_##op(&mask_tmp, m1, m2);                                \
++		weight = cpumask_weight(&mask_tmp);				\
++		for_each_cpu_##op(cpu, mask1, mask2)				\
++			iter++;							\
++		KUNIT_EXPECT_EQ((test), weight, iter);				\
++	} while (0)
++
+ #define EXPECT_FOR_EACH_CPU_WRAP_EQ(test, mask)			\
+ 	do {							\
+ 		const cpumask_t *m = (mask);			\
+@@ -50,6 +63,7 @@
+ 
+ static cpumask_t mask_empty;
+ static cpumask_t mask_all;
++static cpumask_t mask_tmp;
+ 
+ static void test_cpumask_weight(struct kunit *test)
+ {
+@@ -91,10 +105,15 @@ static void test_cpumask_iterators(struct kunit *test)
+ 	EXPECT_FOR_EACH_CPU_EQ(test, &mask_empty);
+ 	EXPECT_FOR_EACH_CPU_NOT_EQ(test, &mask_empty);
+ 	EXPECT_FOR_EACH_CPU_WRAP_EQ(test, &mask_empty);
++	EXPECT_FOR_EACH_CPU_OP_EQ(test, and, &mask_empty, &mask_empty);
++	EXPECT_FOR_EACH_CPU_OP_EQ(test, and, cpu_possible_mask, &mask_empty);
++	EXPECT_FOR_EACH_CPU_OP_EQ(test, andnot, &mask_empty, &mask_empty);
+ 
+ 	EXPECT_FOR_EACH_CPU_EQ(test, cpu_possible_mask);
+ 	EXPECT_FOR_EACH_CPU_NOT_EQ(test, cpu_possible_mask);
+ 	EXPECT_FOR_EACH_CPU_WRAP_EQ(test, cpu_possible_mask);
++	EXPECT_FOR_EACH_CPU_OP_EQ(test, and, cpu_possible_mask, cpu_possible_mask);
++	EXPECT_FOR_EACH_CPU_OP_EQ(test, andnot, cpu_possible_mask, &mask_empty);
  }
  
-+/**
-+ * cpumask_next_andnot - get the next cpu in *src1p & ~*src2p
-+ * @n: the cpu prior to the place to search (ie. return will be > @n)
-+ * @src1p: the first cpumask pointer
-+ * @src2p: the second cpumask pointer
-+ *
-+ * Returns >= nr_cpu_ids if no further cpus set in *src1p & ~*src2p
-+ */
-+static inline
-+unsigned int cpumask_next_andnot(int n, const struct cpumask *src1p,
-+				 const struct cpumask *src2p)
-+{
-+	/* -1 is a legal arg here. */
-+	if (n != -1)
-+		cpumask_check(n);
-+	return find_next_andnot_bit(cpumask_bits(src1p), cpumask_bits(src2p),
-+		nr_cpumask_bits, n + 1);
-+}
-+
- /**
-  * for_each_cpu - iterate over every cpu in a mask
-  * @cpu: the (optionally unsigned) integer iterator
-@@ -317,6 +336,26 @@ unsigned int __pure cpumask_next_wrap(int n, const struct cpumask *mask, int sta
- 		(cpu) = cpumask_next_and((cpu), (mask1), (mask2)),	\
- 		(cpu) < nr_cpu_ids;)
- 
-+/**
-+ * for_each_cpu_andnot - iterate over every cpu present in one mask, excluding
-+ *			 those present in another.
-+ * @cpu: the (optionally unsigned) integer iterator
-+ * @mask1: the first cpumask pointer
-+ * @mask2: the second cpumask pointer
-+ *
-+ * This saves a temporary CPU mask in many places.  It is equivalent to:
-+ *	struct cpumask tmp;
-+ *	cpumask_andnot(&tmp, &mask1, &mask2);
-+ *	for_each_cpu(cpu, &tmp)
-+ *		...
-+ *
-+ * After the loop, cpu is >= nr_cpu_ids.
-+ */
-+#define for_each_cpu_andnot(cpu, mask1, mask2)				\
-+	for ((cpu) = -1;						\
-+		(cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)),	\
-+		(cpu) < nr_cpu_ids;)
-+
- /**
-  * cpumask_any_but - return a "random" in a cpumask, but not this one.
-  * @mask: the cpumask to search
+ static void test_cpumask_iterators_builtin(struct kunit *test)
 -- 
 2.31.1
 
