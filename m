@@ -2,94 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A5545A1D07
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 01:20:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D7715A1D32
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 01:28:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244214AbiHYXUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 19:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59498 "EHLO
+        id S244601AbiHYX2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 19:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244163AbiHYXU3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 19:20:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B01FD33A23
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 16:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661469626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=NsyNVP005GqHR+ZDAjrOhFy3KuxEEcYrhlufP12Pz6w=;
-        b=Jw7qjORmbKYmoL7asXKvm9mHBiFFr48c3iYfHID6iOm0tID6A/we/8Eapvb7qjSGt3cdL0
-        b8yFm91FqxOZf6WpBsRcQrOqVpTclceC5wpjeWJs5Xyw8uBoGqMr4rmHtK0ZaCAePTXAuw
-        jRm3x+4rI95FtvH6bFYVXbqVBvZhF9w=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-374-NTu5-EpFNdaythgciDXoBg-1; Thu, 25 Aug 2022 19:20:25 -0400
-X-MC-Unique: NTu5-EpFNdaythgciDXoBg-1
-Received: by mail-wr1-f70.google.com with SMTP id r23-20020adfa157000000b00225660d47b7so1821547wrr.6
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 16:20:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
-         :from:x-gm-message-state:from:to:cc;
-        bh=NsyNVP005GqHR+ZDAjrOhFy3KuxEEcYrhlufP12Pz6w=;
-        b=lCVP4ebonu/YhAbZ85ML5+PNR5usxunxBkASHVqNBr8ZDjOFPaubZd1klifyyPq3K4
-         BnOWwN30/KqCCo8Jon8DbTFc2H6s+UiroslEnBaRacFGgJqrObc1CdowODim4zLYnIGu
-         VnYdLb61P5Qo/1qLMitYW40DM4PKWUkbm3e0TtCM1cdliVTpwiUry4R3fPUxvoq+LWBM
-         HRzthaipxz7TM6WED3W8tXvS6ovwtYorTPE3scdP74XzF+h7E6eOYf7rbnH8WrbmWE5k
-         XBBkM7CLcX87fxUV+GdUtgSEzZYX3eMctcKx0RWo7h3yiuMMdYkpee32jW26IDJddXis
-         91og==
-X-Gm-Message-State: ACgBeo2P9YreBsPo2ZgQv0BSBufag9h0/dk1qeuJsgiVAe9KUbXh0IZn
-        OBfqwInL4+1Rxz/YKmk37F0kid/SQQeZS0G0lju7IrPm0zhvjfYKmlwJmJQCiCbpevxXHDN+CTD
-        ig+2bcF4Jg8U15VTL
-X-Received: by 2002:a05:600c:1405:b0:3a6:1ac5:3952 with SMTP id g5-20020a05600c140500b003a61ac53952mr9087515wmi.99.1661469624698;
-        Thu, 25 Aug 2022 16:20:24 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5AytvKf7xbC2sZlQpqwvcTIQgNvxwTgOAfWrmpDj0dTzVZcxhtvVKkkE9gF29ELMvMSP5Yyg==
-X-Received: by 2002:a05:600c:1405:b0:3a6:1ac5:3952 with SMTP id g5-20020a05600c140500b003a61ac53952mr9087508wmi.99.1661469624509;
-        Thu, 25 Aug 2022 16:20:24 -0700 (PDT)
-Received: from vschneid.remote.csb ([185.11.37.247])
-        by smtp.gmail.com with ESMTPSA id by6-20020a056000098600b0021f15514e7fsm604309wrb.0.2022.08.25.16.20.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 16:20:24 -0700 (PDT)
-From:   Valentin Schneider <vschneid@redhat.com>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        with ESMTP id S244703AbiHYX17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 19:27:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DABC88B7;
+        Thu, 25 Aug 2022 16:27:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF497B82EE0;
+        Thu, 25 Aug 2022 23:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A62C433D6;
+        Thu, 25 Aug 2022 23:27:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661470026;
+        bh=iwe4PDi8sqTcW4V2i+VH0pepNaqCFMSIbXg+/Qi5ZjU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FKaWhZL8HOc7T0koBNWcRQ3KqzDDdaPr90kjmTkRP2xuZRcqp+YgEahqwJgW149BL
+         cjZjWxC5uyjYx5SQpDOV2IUeUeT4OK9gNjSQXRJH1UAK4dP5iT8WokAFk1JKK2ns28
+         vqTE6DMphV44US2JjrwSWCpfcaFSLIzH9OTPrS70OxAmf4WAQn5AO4JDpHNRkEkhDS
+         207SMODNoqiqJL6iD+cnT3IRTD5EGMx5CuYlvGevptgEVU678z2GnGtTSocY+KN6YI
+         C81GVJVrmd5vTwX4ELfiYoFvsr3fkMf5vWGWDMqA5hKupic8PCtUgEb5l4kGjjr5Uz
+         r+Qvi6FW4froA==
+Date:   Fri, 26 Aug 2022 01:26:59 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Marcus Carlberg <marcus.carlberg@axis.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Subject: Re: [PATCH v3 6/9] sched/core: Merge
- cpumask_andnot()+for_each_cpu() into for_each_cpu_andnot()
-In-Reply-To: <YwfmqT70LsZmCiiG@yury-laptop>
-References: <20220825181210.284283-1-vschneid@redhat.com>
- <20220825181210.284283-7-vschneid@redhat.com>
- <YwfmqT70LsZmCiiG@yury-laptop>
-Date:   Fri, 26 Aug 2022 00:20:22 +0100
-Message-ID: <xhsmhmtbrgbbd.mognet@vschneid.remote.csb>
+        Paolo Abeni <pabeni@redhat.com>, <kernel@axis.com>,
+        Pavana Sharma <pavana.sharma@digi.com>,
+        Ashkan Boldaji <ashkan.boldaji@digi.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3] net: dsa: mv88e6xxx: support RGMII cmode
+Message-ID: <20220826012659.32892fef@thinkpad>
+In-Reply-To: <20220825155140.038e4d12@kernel.org>
+References: <20220822144136.16627-1-marcus.carlberg@axis.com>
+        <20220825123807.3a7e37b7@kernel.org>
+        <20220826000605.5cff0db8@thinkpad>
+        <20220825155140.038e4d12@kernel.org>
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,14 +66,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 25/08/22 14:16, Yury Norov wrote:
-> On Thu, Aug 25, 2022 at 07:12:07PM +0100, Valentin Schneider wrote:
->> This removes the second use of the sched_core_mask temporary mask.
->>
->> Signed-off-by: Valentin Schneider <vschneid@redhat.com>
->
-> Suggested-by: Yury Norov <yury.norov@gmail.com>
->
+On Thu, 25 Aug 2022 15:51:40 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Indeed, forgot that one, sorry!
+> On Fri, 26 Aug 2022 00:06:05 +0200 Marek Beh=C3=BAn wrote:
+> > > On Mon, 22 Aug 2022 16:41:36 +0200 Marcus Carlberg wrote:   =20
+> > > > Since the probe defaults all interfaces to the highest speed possib=
+le
+> > > > (10GBASE-X in mv88e6393x) before the phy mode configuration from the
+> > > > devicetree is considered it is currently impossible to use port 0 in
+> > > > RGMII mode.
+> > > >=20
+> > > > This change will allow RGMII modes to be configurable for port 0
+> > > > enabling port 0 to be configured as RGMII as well as serial dependi=
+ng
+> > > > on configuration.
+> > > >=20
+> > > > Fixes: de776d0d316f ("net: dsa: mv88e6xxx: add support for mv88e639=
+3x family")
+> > > > Signed-off-by: Marcus Carlberg <marcus.carlberg@axis.com>     =20
+> > >=20
+> > > Seems like a new configuration which was not previously supported
+> > > rather than a regression, right? If so I'll drop the Fixes tag
+> > > when applying.   =20
+> >=20
+> > Please leave the fixes tag. This configuration should have been
+> > supported from the beginning. =20
+>=20
+> Could you explain why? Is there an upstream-supported platform
+> already in Linus's tree which doesn't boot or something?
 
+If you mean whether there is a device-tree of such a device, they I
+don't think so, because AFAIK there isn't a device-tree with 6393 in
+upstream Linux other than CN9130-CRB.
+
+But it is possible though that there is such a device which has
+everything but the switch supported on older kernels, due to this RGMII
+bug.
+
+I think RGMII should have been supported on this switch when I send the
+patch adding support for it, and it is a bug that it is not, becuase
+RGMII is supported for similar switches driven by mv88e6xxx driver
+(6390, for example). I don't know why I overlooked it then.
+
+Note that I wouldn't consider adding support for USXGMII a fix, because
+although the switch can do it, it was never done with this driver.
+
+But if you think it doesn't apply anyway, remove the Fixes tag. This is
+just my opinion that it should stay.
+
+Marek
