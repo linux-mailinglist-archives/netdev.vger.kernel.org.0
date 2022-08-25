@@ -2,73 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD0315A1B2B
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:36:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4B2D5A1B45
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235038AbiHYVgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 17:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        id S243897AbiHYVjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 17:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243882AbiHYVgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 17:36:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2F7C12DA
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 14:36:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FEC461B77
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 21:36:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48CFCC433C1;
-        Thu, 25 Aug 2022 21:36:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661463371;
-        bh=qM3D+zLBMHlKr2gyvH3/gwKfhlw2RCIsgIy8IyMc1Sw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eTXNbPgiqcu/8RO2F9L0h2oJHv00RXo+8rSIqSlNGK5t6JXuXQt/touIkqDWdD+wC
-         Q6q+U1KhFngjufhEyAn/TC3aLqXqTRiJ9CqHberbH3thP9TcUjPnz41BEPpnNmDZ3q
-         7ZJWu1I1K2B0wcD5QjG7zI41QEcguaRSdkpxBk1uLF3FtcxYXj+OnsyJQK6UEHQsbA
-         vS2mHbT5rED80dkHRIMp9g8lhHwl2sS8T/FSJ36EWIoj6r+bE9XDeSU6xRpTOEJ5La
-         oI7ZgBtKqtFe92jebVMdQEev3/vMaAzjJ+DqkmQ5RMUHeBokkDN8pjSrDTTwlL1qgL
-         OEj5gJAkeL1FQ==
-Date:   Thu, 25 Aug 2022 14:36:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH xfrm-next v3 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <20220825143610.4f13f730@kernel.org>
-In-Reply-To: <cover.1661260787.git.leonro@nvidia.com>
-References: <cover.1661260787.git.leonro@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S243894AbiHYVjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 17:39:12 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73A0C2295
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 14:39:10 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-3345ad926f2so363380167b3.12
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 14:39:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=lM7WG9YzqdGMor8dcuiLn6myEZpNs7q19yn84bxvLf0=;
+        b=JX+2d/oVQ5mPFVnP0apDqLoeBdHr99X3oV7Oma7L9JPklapt4ivvxn2Gr/DER4dh3e
+         Hoh3zdjQ/XFMOIPuNcla974UM/dYGFbbtJMvpEn6qA7n/uiRjub4L38C5+YPTsvYhm2K
+         Bs95hhPHzn1IdacEVFCEQ2ubIQ+h6lhLRTVca9JG3rBhxsPGw1S6W5te/rizJEuuoGuU
+         eRBdSH9Gi9oS8DgrS+rIaIpih5Qzy0ZvnVgg2ORSZFjjUmivX8EyNg+0rCzt2RIX49rF
+         NoE0Gpcrhdem75wKsWo7VzG6bbjTtknQ+v8i08Ku8d6O5y/LUg/W6j3QG0EUgkWGZhWN
+         e37w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=lM7WG9YzqdGMor8dcuiLn6myEZpNs7q19yn84bxvLf0=;
+        b=MqSh/rPLKXAjg8PCjN/zcl1Ite0ElFyfPCyE6ccBIYkFRWbawb10ZpsrP8MuIi3Pqr
+         XAekxU76svFtlBR39FmHyT9cO54oQGNiz3pJ1aNhjIejL9EWYd8AlkTUnYwhz0EIQaAJ
+         QBF6V3uZUkXfV3BX40BFLdodAOUIqlWqVPmb/ZzqrObmA3xDSU3r0uVB7m3sztkqraOh
+         Ik5KzmyoqxJv+LX5fTxRidW78KdQOohQnOrDWJiTqzy/Tsk47hPadBVHRipduIDySDV3
+         rnb4Gx3uRMLoziLAcph5rbgrxCVmQaVI+thSC8x+ySS4c/Q1u9FVsXHLc8KygRsNQxIt
+         Ij+A==
+X-Gm-Message-State: ACgBeo2BisfkrXVbVGB2Jr634sYoz/Jfs55Y51aN2YW5VmutMP1QMEO4
+        VawGBcT78ryXi3Q9uQMQo2Oik3XpAZU=
+X-Google-Smtp-Source: AA6agR7x138fgpCkoVUmt6DrNUUVI2tvfykUhrAY9z9BQ+qRShblMVzFS3t2I0dDI9TMZhhjaQ/aGWu5cIA=
+X-Received: from haoluo.svl.corp.google.com ([2620:15c:2d4:203:2c4f:653f:78b3:2b5b])
+ (user=haoluo job=sendgmr) by 2002:a0d:e6cc:0:b0:338:c82b:9520 with SMTP id
+ p195-20020a0de6cc000000b00338c82b9520mr6044145ywe.66.1661463549945; Thu, 25
+ Aug 2022 14:39:09 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 14:39:03 -0700
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220825213905.1817722-1-haoluo@google.com>
+Subject: [PATCH bpf-next 0/2] Add CGROUP prefix to cgroup_iter_order
+From:   Hao Luo <haoluo@google.com>
+To:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        Yosry Ahmed <yosryahmed@google.com>,
+        Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 16:31:57 +0300 Leon Romanovsky wrote:
->  * I didn't hear any suggestion what term to use instead of
->    "full offload", so left it as is. It is used in commit messages
->    and documentation only and easy to rename.
->  * Added performance data and background info to cover letter
->  * Reused xfrm_output_resume() function to support multiple XFRM transformations
->  * Add PMTU check in addition to driver .xdo_dev_offload_ok validation
->  * Documentation is in progress, but not part of this series yet.
+As suggested by Andrii, add 'CGROUP' to cgroup_iter_order. This fix is
+divided into two patches. Patch 1/2 fixes the commit that introduced
+cgroup_iter. Patch 2/2 fixes the selftest that uses the
+cgroup_iter_order. This is because the selftest was introduced in a
+different commit. I tested this patchset via the following command:
 
-Since the use case is somewhat in question, perhaps switch to RFC
-postings until the drivers side incl. tc forwarding is implemented?
-Also the perf traces, I don't see them here.
+  test_progs -t cgroup,iter,btf_dump
+
+Hao Luo (2):
+  bpf: Add CGROUP to cgroup_iter order
+  selftests/bpf: Fix test that uses cgroup_iter order
+
+ include/uapi/linux/bpf.h                      | 10 +++---
+ kernel/bpf/cgroup_iter.c                      | 32 +++++++++----------
+ tools/include/uapi/linux/bpf.h                | 10 +++---
+ .../selftests/bpf/prog_tests/btf_dump.c       |  2 +-
+ .../prog_tests/cgroup_hierarchical_stats.c    |  2 +-
+ .../selftests/bpf/prog_tests/cgroup_iter.c    | 10 +++---
+ 6 files changed, 33 insertions(+), 33 deletions(-)
+
+-- 
+2.37.2.672.g94769d06f0-goog
+
