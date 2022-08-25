@@ -2,121 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 120565A1A51
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 22:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D95B15A1A56
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 22:30:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243888AbiHYU2d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 16:28:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43670 "EHLO
+        id S237904AbiHYUaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 16:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243788AbiHYU2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 16:28:18 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1749065839;
-        Thu, 25 Aug 2022 13:27:10 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id v14so5191028ejf.9;
-        Thu, 25 Aug 2022 13:27:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=adXeMAqrdZFFCHGRW4ZrYNTwe8MV97cHNOLtkyOs6EU=;
-        b=l5kivjE0h3XoUlY7SvzjG0YIOLa1TWG4HJ6tD1gMB+eK/qYHFL14CmPxJsT3of3i2K
-         tpRg+9J0YxFu8WNb1uPRhDZql4XgrVUoJsuIJoRelImNhUY2gpZe88Pzp4wyqMpZu7Pr
-         pS8rbDewmJdX7H3kamDg4vPb9sTmX4R4P1/bN/7XqN2HNZ+nBPhoh5qoajQ06Vd4/rKW
-         2/oJFJrhuVn+/xLTu5gliICAK+ir+oStb1iPLNUNAm8WgaYelqg+568OeLmEO7/LquH6
-         IzM+m6qjSFnp0yRfPfe1g54IKT8quqhrfjvJcuooyzi2nWrivaZOAst8+aOup2NVSKb6
-         J0hQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=adXeMAqrdZFFCHGRW4ZrYNTwe8MV97cHNOLtkyOs6EU=;
-        b=rjZrfRVoiKfMAs2xu3lUMwpkTdZpfNLz5nYKYOK3ZY82Yn14Kej4ksiTPYmwfX5XR2
-         PvTbxpj89P1/k9kNzAflFeVa9W4OdwSMqsR1MDmpPRQ+8kdgBxQCy6qQ3S9qclvo0E6f
-         hViyglwVyWhgUgTDSbFf5yk1XfoEAQk79g6bZMGJSPTb0TjR8fE3CXffoCyVBfZMo6d5
-         1aLMOVLpTY45i1bkrmkhNF0hDl88E2PdCZAVPRzRJ/tI0y6KpuqtarNEzOcRvt/7Dgk3
-         G+YFzJAOmmP/KpbiGjWU+i4vNjLGZJ6yuSdR52TrTWlAAyerKXfLQaDSakhXv3jlI2Ui
-         fWXQ==
-X-Gm-Message-State: ACgBeo0DdUM0siXpAHA0U77tORM8FVhtwhwNU35xCMRGv6NLZ0oqU/d3
-        Sr5Jvn0anVrRsa4i8jP+LG8YnIhJSRkUHu+UxXI=
-X-Google-Smtp-Source: AA6agR5gheunS7Kl9cvfMlq4wH8EV38+5zhYf/V2Lq3mkl3vH67KiAEZ4L30JHEiSJQbGAhOZva++8jW+jRVIou1cws=
-X-Received: by 2002:a17:906:8a43:b0:73d:7cc2:245e with SMTP id
- gx3-20020a1709068a4300b0073d7cc2245emr3535868ejc.114.1661459216870; Thu, 25
- Aug 2022 13:26:56 -0700 (PDT)
+        with ESMTP id S242966AbiHYUaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 16:30:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ABC4A4B03;
+        Thu, 25 Aug 2022 13:30:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3F7861950;
+        Thu, 25 Aug 2022 20:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2F5CAC433C1;
+        Thu, 25 Aug 2022 20:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661459415;
+        bh=CMYQBReLM5r+YLqaOB0k8lRI1ZRkAozpKI+rDmosxog=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=d33+GJiNocZLiwOdXC8r484rR5hsk3VzTCunLrIjZ/ABxcdRnPLU7ODwGc+IHfU5K
+         oXk2gdimYLUjPOCdOQ1sPqW0rBZ2YEHeDklEFWemqfGUHHqCHy+EcAw78A79llMSS0
+         LHKDZ431hhswRC5PVQEPHeK7TdOLFhwm2RxjZcS9JVDrlZrjUlADLnlhNW1azGNOy9
+         ClsqLhvqqxYTviavygcjPtr0+ygthCA1++pxYBpxtQ/YrXUj0xcP7HZu9yx5XfGDGH
+         Lu4O0cZ/uyeW0w9pQ7cUD9RYg24wSl1mHm+cKXXDx+nsXiSVoQx6wK60F3vJErI4TE
+         xPk7aPNR2DMJQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 116EEE2A03C;
+        Thu, 25 Aug 2022 20:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1661349907-57222-1-git-send-email-chentao.kernel@linux.alibaba.com>
-In-Reply-To: <1661349907-57222-1-git-send-email-chentao.kernel@linux.alibaba.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 25 Aug 2022 13:26:45 -0700
-Message-ID: <CAEf4BzZPYAZ-ZJXa0CnrpxzFrXjTScfuioF=DOAw4j1L_tMXTg@mail.gmail.com>
-Subject: Re: [PATCH] libbpf: Support raw btf placed in the default path
-To:     "chentao.ct" <chentao.kernel@linux.alibaba.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next] Fix reinitialization of TEST_PROGS in net self tests.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166145941506.19511.11363974197717306541.git-patchwork-notify@kernel.org>
+Date:   Thu, 25 Aug 2022 20:30:15 +0000
+References: <20220824184351.3759862-1-adel.abushaev@gmail.com>
+In-Reply-To: <20220824184351.3759862-1-adel.abushaev@gmail.com>
+To:     Adel Abouchaev <adel.abushaev@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 7:05 AM chentao.ct
-<chentao.kernel@linux.alibaba.com> wrote:
->
-> Now only elf btf can be placed in the default path, raw btf should
-> also can be there.
->
+Hello:
 
-It's not clear what you are trying to achieve. Do you want libbpf to
-attempt to load /boot/vmlinux-%1$s as raw BTF as well (so you can sort
-of sneak in pregenerated BTF), or what exactly?
-btf__load_vmlinux_btf() code already supports loading raw BTF, it just
-needs to be explicitly specified in locations table.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-So with your change locations[i].raw_btf check doesn't make sense and
-we need to clean this up.
-
-But first, let's discuss the use case, instead of your specific solution.
-
-
-> Signed-off-by: chentao.ct <chentao.kernel@linux.alibaba.com>
+On Wed, 24 Aug 2022 11:43:51 -0700 you wrote:
+> Fix reinitialization of TEST_PROGS in net self tests.
+> 
+> Signed-off-by: Adel Abouchaev <adel.abushaev@gmail.com>
 > ---
->  tools/lib/bpf/btf.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index bb1e06e..b22b5b3 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -4661,7 +4661,7 @@ struct btf *btf__load_vmlinux_btf(void)
->         } locations[] = {
->                 /* try canonical vmlinux BTF through sysfs first */
->                 { "/sys/kernel/btf/vmlinux", true /* raw BTF */ },
-> -               /* fall back to trying to find vmlinux ELF on disk otherwise */
-> +               /* fall back to trying to find vmlinux RAW/ELF on disk otherwise */
->                 { "/boot/vmlinux-%1$s" },
->                 { "/lib/modules/%1$s/vmlinux-%1$s" },
->                 { "/lib/modules/%1$s/build/vmlinux" },
-> @@ -4686,7 +4686,7 @@ struct btf *btf__load_vmlinux_btf(void)
->                 if (locations[i].raw_btf)
->                         btf = btf__parse_raw(path);
->                 else
-> -                       btf = btf__parse_elf(path, NULL);
-> +                       btf = btf__parse(path, NULL);
->                 err = libbpf_get_error(btf);
->                 pr_debug("loading kernel BTF '%s': %d\n", path, err);
->                 if (err)
-> --
-> 2.2.1
->
+>  tools/testing/selftests/net/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+
+Here is the summary with links:
+  - [net-next] Fix reinitialization of TEST_PROGS in net self tests.
+    https://git.kernel.org/netdev/net-next/c/88e500affe72
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
