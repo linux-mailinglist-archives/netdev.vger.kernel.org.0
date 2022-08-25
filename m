@@ -2,82 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 351235A1BB7
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:54:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A5345A1BBC
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 23:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237173AbiHYVx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 17:53:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36918 "EHLO
+        id S244178AbiHYV4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 17:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244030AbiHYVx4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 17:53:56 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302182D1E2;
-        Thu, 25 Aug 2022 14:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=1cpnv7cRnMZ16t80+IgphUDcNNToBRnfujnI1hjI/5c=; b=483chnirogxayPXYL2kwLuxOa1
-        mma4b+CW/hU5CXhabflX2kDXsg61q7VuC5K3h7AxEYEiuBxhI1DOJ9bC+9MiPK4ZK+x7ALGJLinoS
-        e/mcSYS8DmuL9csHUhg1JI+GEZ3kEcp0sNHWnLxy58JeXaebuDsT7IFDCF0IEjxgG6y4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oRKnJ-00Ebxa-Ds; Thu, 25 Aug 2022 23:53:45 +0200
-Date:   Thu, 25 Aug 2022 23:53:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Divya Koppera <Divya.Koppera@microchip.com>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
- lan8814 phy
-Message-ID: <YwfvaSFejdtPtZgK@lunn.ch>
-References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825080549.9444-1-Divya.Koppera@microchip.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S244363AbiHYVze (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 17:55:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB23AB7DE;
+        Thu, 25 Aug 2022 14:55:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97ABFB82EA4;
+        Thu, 25 Aug 2022 21:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 46651C433C1;
+        Thu, 25 Aug 2022 21:55:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661464530;
+        bh=X3bWbDSry+e7uc9DbquJWm0oIx95TLMrzzMRVNBSolo=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=qGeJNE9cKdT4TqNeKt9GZddmisRL0I7r47HodrcaMkfcWZbg55w1Gr1qSMVETGTAq
+         0OiljfW40wBVYNqQLh5dXOLr0oitfYqQxtWBxzVsPABkj8ZdBvrTBQmqIQuIhvMoYM
+         TtqBZD0Db4mwuq51IOI9Voxo3oOnQFon7fI9D8IGSQmkYqZNwjw9+hTtdVDXs9NmmD
+         dqBPT3K0FtYqBO8uPxtA0RaXP8VUYjvH+uP8oYWdcetfyPPhe/vGhz7edvoQNmAn6w
+         kMUeHC2ZKO8GoqEZD4Vrv+9k73nl9zqZE93GhEGVr+a7yv25tsmysT0sQj8po8TZf9
+         yY8G5ZMpQI1Ww==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 34D0BC004EF;
+        Thu, 25 Aug 2022 21:55:30 +0000 (UTC)
+Subject: Re: [PULL] Networking for 6.0-rc3
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220825203819.2507927-1-kuba@kernel.org>
+References: <20220825203819.2507927-1-kuba@kernel.org>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220825203819.2507927-1-kuba@kernel.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc3
+X-PR-Tracked-Commit-Id: d974730c8884cd784810b4f2fe903ac882a5fec9
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 4c612826bec1441214816827979b62f84a097e91
+Message-Id: <166146453020.32115.7961228027709825217.pr-tracker-bot@kernel.org>
+Date:   Thu, 25 Aug 2022 21:55:30 +0000
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, pabeni@redhat.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +#define LAN8814_DCQ_CTRL				0xe6
-> +#define LAN8814_DCQ_CTRL_READ_CAPTURE_			BIT(15)
-> +#define LAN8814_DCQ_CTRL_CHANNEL_MASK			GENMASK(1, 0)
-> +#define LAN8814_DCQ_SQI					0xe4
-> +#define LAN8814_DCQ_SQI_MAX				7
-> +#define LAN8814_DCQ_SQI_VAL_MASK			GENMASK(3, 1)
-> +
->  static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
->  {
->  	int data;
-> @@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int lan8814_get_sqi(struct phy_device *phydev)
-> +{
-> +	int rc, val;
-> +
-> +	val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
-> +	if (val < 0)
-> +		return val;
+The pull request you sent on Thu, 25 Aug 2022 13:38:19 -0700:
 
-I just took a quick look at the datasheet. It says:
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc3
 
-All registers references in this section are in MMD Device Address 1
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/4c612826bec1441214816827979b62f84a097e91
 
-So you should be using phy_read_mmd(phydev, MDIO_MMD_PMAPMD, xxx) to
-read/write these registers. The datasheet i have however is missing
-the register map, so i've no idea if it is still 0xe6.
+Thank you!
 
-    Andrew
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
