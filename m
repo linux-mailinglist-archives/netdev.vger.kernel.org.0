@@ -2,56 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 192E65A0AF6
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:06:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1B945A0AFA
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:06:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239234AbiHYIGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 04:06:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
+        id S239116AbiHYIGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 04:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239213AbiHYIGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:06:16 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34CAD44552;
-        Thu, 25 Aug 2022 01:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661414771; x=1692950771;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=9uK5TnxQ+lrTrmdrZfvdGZkX8FHoJoY0NQJe55dWt8Y=;
-  b=mImjrDuuKrz0oHRMl/NuksvT5oaNkKNx7Z+Qf1IYTnbuhORvW6phbOFG
-   5mZENUGPoiaIBdhsz4joV9IfBMzR+qcEkAGTgvfT2wuamqf4Qx4rBPxlI
-   6T56G/zmzIfGbmoCk3tpL7OwspMdyuyq3jkRJeY2Is2WDn2LeakIavSCi
-   gqkFcvytk3ZqgEDVD5IGIY3BFC/NetutGa3WKtJ9lBI4INu67C5pICnP5
-   HdngbsLF2fVThLdLdvDQfodeA2w02Q/BTkl5Ah1GBfbBpMeHvhKnFl8aJ
-   8PcRiZE/IwC7Lc3UNVk/U6btYY7HgHls1phpVLGue8oGkKh4lk/SBJoj3
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,262,1654585200"; 
-   d="scan'208";a="174075197"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Aug 2022 01:06:11 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Thu, 25 Aug 2022 01:06:11 -0700
-Received: from training-HP-280-G1-MT-PC.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Thu, 25 Aug 2022 01:06:07 -0700
-From:   Divya Koppera <Divya.Koppera@microchip.com>
-To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <UNGLinuxDriver@microchip.com>
-Subject: [PATCH net-next] net: phy: micrel: Adding SQI support for lan8814 phy
-Date:   Thu, 25 Aug 2022 13:35:49 +0530
-Message-ID: <20220825080549.9444-1-Divya.Koppera@microchip.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        with ESMTP id S237349AbiHYIGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:06:10 -0400
+Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1A3419B8
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
+Received: by mail-ej1-x64a.google.com with SMTP id gs35-20020a1709072d2300b00730e14fd76eso5977851ejc.15
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
+        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
+        b=lzySq90VxMrFPmXh2/dwioCs6B1SegwMh8h1SsTmX7oweHtHklTxf6cwglcV4JsI+q
+         VQC5BAJbGLcbZlMbIuVfyPf1a/w9tjTHHFYSXkfTGdb81NG6cFzdicSzVrqWOu4ct5Cr
+         tS1OEbijc7gx0NIrKZ+d+6ZzS44EIfPEpJFHNlm3e3/omWOc7eJZzgTW82ei7qHLkqcl
+         pnGB9aB8V3x4fcFHTtLFdrGZIW/vqnTzm8ewyDHTe25uVu7KRIs9dhRkJxQmrsSb/1dZ
+         N1MaVqAYSovM9cPAzvU/zUeG09EBBO/tkF2xDo7TLbKz9daOtij6z9ao/usZR5B/ZfHj
+         TC2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
+         :from:to:cc;
+        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
+        b=xY1yIKDmyg5E8BH82e5wJNhY/wMO0nMRtWMtMHJC7wIs/J5TGxwoZtaLrsGDkduUmy
+         3g4cf/Y934kNBpIPNwxGNVx9+Bkm+lES7RIPjwzeSNUBoGdyfa4bXC9MRJO0AldXLTsv
+         Cn+WHAFMI5/8sDteo9sZBQsxSYQSoLCj570+y1eT3p4WKeBnuX/tKaF+AX2mV36AP5lu
+         hogivElW8CN2Xfn6bMEMRkPlOwyHwHk+G6uavj5YV9muZ/zFUjN/gWGH6RzF3NVXxVpW
+         b1S+mxShpEg6JCqNlPNagMbLQbXGpDZQ8og0DK/eg3reGpuPK1x4DOc8otPqFLpvzaJo
+         a3sQ==
+X-Gm-Message-State: ACgBeo3NNfvM3ko96a6L1BON0K50d2IfNKQDckaKLkXX+RwbtDR4wUNJ
+        F0s+8AJKxqTfmqt3+WSlCWvEtpKwW44=
+X-Google-Smtp-Source: AA6agR6UVFnHcCE6dkRKJ4LXnHFEmWj1dGMEp2KQOHR3+b1DqMPbPRnGL1Du8uuOqH6LOnmqmBgSyVciqtM=
+X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:4984:837b:f1f1:a6a1])
+ (user=glider job=sendgmr) by 2002:a05:6402:2756:b0:443:4a6d:f05a with SMTP id
+ z22-20020a056402275600b004434a6df05amr2178605edd.396.1661414765037; Thu, 25
+ Aug 2022 01:06:05 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 10:05:55 +0200
+Message-Id: <20220825080555.3643572-1-glider@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Subject: [PATCH] ath9k: fix an uninit value use in ath9k_htc_rx_msg()
+From:   Alexander Potapenko <glider@google.com>
+To:     glider@google.com
+Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
+        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,76 +66,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Supports SQI(Signal Quality Index) for lan8814 phy, where
-it has SQI index of 0-7 values and this indicator can be used
-for cable integrity diagnostic and investigating other noise
-sources.
+ath9k_htc_rx_msg() assumes skb->data contains a full
+`struct htc_frame_hdr`, thus it needs a call to pskb_may_pull()
+to ensure there is enough data.
 
-Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+This fixes a long-standing issue reported by KMSAN:
+
+  BUG: KMSAN: uninit-value in ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
+   ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
+   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:653 [inline]
+   ath9k_hif_usb_rx_cb+0x196a/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
+   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
+   usb_hcd_giveback_urb+0x150/0x620 drivers/usb/core/hcd.c:1747
+   dummy_timer+0xd3f/0x4f20 drivers/usb/gadget/udc/dummy_hcd.c:1988
+   call_timer_fn+0x43/0x480 kernel/time/timer.c:1474
+   expire_timers+0x272/0x610 kernel/time/timer.c:1519
+   __run_timers+0x5bc/0x8c0 kernel/time/timer.c:1790
+  ...
+
+  Uninit was created at:
+  ...
+   __alloc_skb+0x34a/0xd70 net/core/skbuff.c:426
+   __netdev_alloc_skb+0x126/0x780 net/core/skbuff.c:494
+   __dev_alloc_skb include/linux/skbuff.h:3264 [inline]
+   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:635 [inline]
+   ath9k_hif_usb_rx_cb+0xe7b/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
+   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
+  ...
+
+Reported-by: syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
+Signed-off-by: Alexander Potapenko <glider@google.com>
 ---
- drivers/net/phy/micrel.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ drivers/net/wireless/ath/ath9k/htc_hst.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e78d0bf69bc3..3775da7afc64 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1975,6 +1975,13 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
- #define LAN8814_CLOCK_MANAGEMENT			0xd
- #define LAN8814_LINK_QUALITY				0x8e
+diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
+index 994ec48b2f669..83a1d2fba2218 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_hst.c
++++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
+@@ -408,7 +408,8 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
+ 	struct htc_endpoint *endpoint;
+ 	__be16 *msg_id;
  
-+#define LAN8814_DCQ_CTRL				0xe6
-+#define LAN8814_DCQ_CTRL_READ_CAPTURE_			BIT(15)
-+#define LAN8814_DCQ_CTRL_CHANNEL_MASK			GENMASK(1, 0)
-+#define LAN8814_DCQ_SQI					0xe4
-+#define LAN8814_DCQ_SQI_MAX				7
-+#define LAN8814_DCQ_SQI_VAL_MASK			GENMASK(3, 1)
-+
- static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
- {
- 	int data;
-@@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device *phydev)
- 	return 0;
- }
+-	if (!htc_handle || !skb)
++	if (!htc_handle || !skb ||
++	    !pskb_may_pull(skb, sizeof(struct htc_frame_hdr)))
+ 		return;
  
-+static int lan8814_get_sqi(struct phy_device *phydev)
-+{
-+	int rc, val;
-+
-+	val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
-+	if (val < 0)
-+		return val;
-+
-+	val &= ~LAN8814_DCQ_CTRL_CHANNEL_MASK;
-+	val |= LAN8814_DCQ_CTRL_READ_CAPTURE_;
-+	rc = lanphy_write_page_reg(phydev, 1, LAN8814_DCQ_CTRL, val);
-+	if (rc < 0)
-+		return rc;
-+
-+	rc = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_SQI);
-+	if (rc < 0)
-+		return rc;
-+
-+	return FIELD_GET(LAN8814_DCQ_SQI_VAL_MASK, rc);
-+}
-+
-+static int lan8814_get_sqi_max(struct phy_device *phydev)
-+{
-+	return LAN8814_DCQ_SQI_MAX;
-+}
-+
- static struct phy_driver ksphy_driver[] = {
- {
- 	.phy_id		= PHY_ID_KS8737,
-@@ -3117,6 +3150,8 @@ static struct phy_driver ksphy_driver[] = {
- 	.resume		= kszphy_resume,
- 	.config_intr	= lan8814_config_intr,
- 	.handle_interrupt = lan8814_handle_interrupt,
-+	.get_sqi	= lan8814_get_sqi,
-+	.get_sqi_max	= lan8814_get_sqi_max,
- }, {
- 	.phy_id		= PHY_ID_LAN8804,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+ 	htc_hdr = (struct htc_frame_hdr *) skb->data;
 -- 
-2.17.1
+2.37.2.672.g94769d06f0-goog
 
