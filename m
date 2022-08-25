@@ -2,101 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB92F5A07CE
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 06:20:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 067AF5A07D1
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 06:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbiHYEUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 00:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60694 "EHLO
+        id S230354AbiHYEVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 00:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiHYEUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 00:20:52 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22F911A39C
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 21:20:51 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id x63-20020a17090a6c4500b001fabbf8debfso3594168pjj.4
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 21:20:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=UpJd1vboMHCSiIKB1BSnbmN2RgQ0C3s8jg9eVBKHTHM=;
-        b=cA9vQpFN68fzTDnbKY3lDUPyxnRDb84jwl/b1jDCidRr/+g0kLgH5k4nh+HsDS7UON
-         pk7ormswvUb4Zcl/m7bbivF6gdXji0UM7OdaKggMoZZlpL9Iy1LO0WlF1UUefb9MgMWr
-         mmVHkeKOG0Dm7S9H19Tq85AGVxuODD8s9LITsLDnRownb8hqjzSyuNArcwaji+bQ+1J8
-         qnVJ0GfVSntk2gYl30C+WXdukpx65W3J7bHhykN2esf7xvvzVDGJeBnaxyZjOQ0+54iu
-         hZPICyyBSg3E0/3vDFnE38GATM2UkLfdI9gSV57g7adqIM9mSO+02+DqucrTSwBhAui/
-         OFGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=UpJd1vboMHCSiIKB1BSnbmN2RgQ0C3s8jg9eVBKHTHM=;
-        b=lIpOxHJKZ8uuvbgsCjxZRNg57WhK/A3cwWiMRHvuL30v/XkU78swZfGu1Q9xdI/dBM
-         mlM+7TYsKa5LIM9o1gisv3rJIQlQQCt8vKMzQ7l9BkSu5Fv2wLKnoL3tHTo9RPiYmApu
-         lguLTKuSQMJC7oBVhR55sm9EqK4bvZMxJC+YfBT2lJHPYg2A3RDRIWPif0r6cKWTjm2P
-         PUf3IiFXhd3gEweq4BAEuPm82yyGuKD6bnyuPX0Kv1RMKuarNNNIPDHKyipmNGd+SMdX
-         s48+jJSVcsABgakG+QmsgaoMG019TL3Sn4X5PXDrQYGezAXyYVr40ggsDiBY9E19v0u+
-         tJcQ==
-X-Gm-Message-State: ACgBeo3HQ5JX1Q4ZI9bs6+0Ps5GXGxJ9h86AUKvoBNLEvI4maYMw77Q2
-        jaq2tqr44SWmTSpfOBEJTmUQhdKaXjs=
-X-Google-Smtp-Source: AA6agR7TXwbc2uph4eM7Hs0kWJ+BS9hCaXyEH5OAMbCWs+tys5T+OD+ou5TlaoQ4Y6/HiXbm/nqASg==
-X-Received: by 2002:a17:90b:4c0b:b0:1f5:b72:3b0b with SMTP id na11-20020a17090b4c0b00b001f50b723b0bmr11479077pjb.227.1661401250629;
-        Wed, 24 Aug 2022 21:20:50 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 22-20020a630d56000000b0041c66a66d41sm11945632pgn.45.2022.08.24.21.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Aug 2022 21:20:50 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 12:20:44 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dmitry Safonov <0x7f454c46@gmail.com>,
-        Florian Westphal <fw@strlen.de>,
-        Arkadi Sharshevsky <arkadis@mellanox.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Question] Should NLMSG_DONE has flag NLM_F_MULTI?
-Message-ID: <Ywb4nCoi24S5iAtx@Laptop-X1>
-References: <YwWY8ux/PyMWQBWr@Laptop-X1>
- <20220824183945.6ce7251d@kernel.org>
+        with ESMTP id S230338AbiHYEVK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 00:21:10 -0400
+Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F6E2A73D;
+        Wed, 24 Aug 2022 21:21:08 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 1351B2800095B;
+        Thu, 25 Aug 2022 06:21:06 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 074654A8C2; Thu, 25 Aug 2022 06:21:06 +0200 (CEST)
+Date:   Thu, 25 Aug 2022 06:21:06 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ferry Toth <fntoth@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Andre Edich <andre.edich@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kernelci-results@groups.io,
+        bot@kernelci.org, gtucker@collabora.com, stable@vger.kernel.org,
+        netdev@vger.kernel.org, linux-omap@vger.kernel.org
+Subject: Re: stable-rc/linux-5.18.y bisection: baseline.login on panda
+Message-ID: <20220825042106.GA16015@wunner.de>
+References: <63068874.170a0220.2f9fc.b822@mx.google.com>
+ <YwaqZ1+zm78vl4L1@sirena.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220824183945.6ce7251d@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YwaqZ1+zm78vl4L1@sirena.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 06:39:45PM -0700, Jakub Kicinski wrote:
-> On Wed, 24 Aug 2022 11:20:18 +0800 Hangbin Liu wrote:
-> > When checking the NLMSG_DONE message in kernel, I saw lot of functions would
-> > set NLM_F_MULTI flag. e.g. netlink_dump_done(),
-> > devlink_dpipe_{tables, entries, headers}_fill().
-> > 
-> > But from rfc3549[1]:
-> > 
-> >    [...] For multipart
-> >    messages, the first and all following headers have the NLM_F_MULTI
-> >    Netlink header flag set, except for the last header which has the
-> >    Netlink header type NLMSG_DONE.
-> > 
-> > What I understand is the last nlmsghdr(NLMSG_DONE message) doesn't need to
-> > have NLM_F_MULTI flag. Am I missing something?
-> > 
-> > [1] https://www.rfc-editor.org/rfc/rfc3549.html#section-2.3.2
+On Wed, Aug 24, 2022 at 11:47:03PM +0100, Mark Brown wrote:
+> On Wed, Aug 24, 2022 at 01:22:12PM -0700, KernelCI bot wrote:
+> The KernelCI bisection bot identified 7eea9a60703ca ("usbnet: smsc95xx:
+> Forward PHY interrupts to PHY driver to avoid polling") as causing a
+> boot regression on Panda in v5.18.  The board stops detecting a link
+> which breks NFS boot:
 > 
-> Looks like you're right, we seem to fairly consistently set it.
-> Yet another thing in Netlink we defined and then used differently?
-> In practice it likely does not matter, I'd think.
+> <6>[    4.953613] smsc95xx 2-1.1:1.0 eth0: register 'smsc95xx' at usb-4a064c00.ehci-1.1, smsc95xx USB 2.0 Ethernet, 02:03:01:8c:13:b0
+> <6>[    5.032928] smsc95xx 2-1.1:1.0 eth0: hardware isn't capable of remote wakeup
+> <6>[    5.044036] smsc95xx 2-1.1:1.0 eth0: Link is Down
+> <6>[   25.053924] Waiting up to 100 more seconds for network.
+> <6>[   45.074005] Waiting up to 80 more seconds for network.
+> <6>[   65.093933] Waiting up to 60 more seconds for network.
+> <6>[   85.123992] Waiting up to 40 more seconds for network.
+> <6>[  105.143951] Waiting up to 20 more seconds for network.
+> <5>[  125.084014] Sending DHCP requests ...... timed out!
 
-Yes, thanks for the confirmation. I have no plan to change the current
-kernel behavior. But for my later patch, I will not add NLM_F_MULTI for
-NLMSG_DONE message.
+Looks like v5.19 boots fine (with the offending commit), so only
+v5.18-stable and v5.15-stable are affected:
 
-Thanks
-Hangbin
+https://storage.kernelci.org/stable-rc/linux-5.19.y/v5.19.3-366-g32f80a5b58e2/arm/multi_v7_defconfig/gcc-10/lab-baylibre/baseline-panda.html
+
+The offending commit was a new feature introduced in v5.19,
+it deliberately wasn't tagged for stable.  Aggressively
+backporting such new features always carries a risk of
+regressions.
+
+Off the cuff I don't see that a prerequisite commit is missing
+in stable kernels.  So just reverting the offending commit in
+v5.18-stable and v5.15-stable (but not in v5.19-stable) might
+be the simplest solution.
+
+Thanks,
+
+Lukas
