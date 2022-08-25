@@ -2,69 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A1E85A0706
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 03:58:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A6CBF5A0711
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 04:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236772AbiHYB5r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 21:57:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48110 "EHLO
+        id S231345AbiHYCEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 22:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234419AbiHYB5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 21:57:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42E8A2232;
-        Wed, 24 Aug 2022 18:51:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDED3B826E9;
-        Thu, 25 Aug 2022 01:51:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1469C433D7;
-        Thu, 25 Aug 2022 01:50:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661392259;
-        bh=51wbqEOiFut6C1SPsrby7OvcY9fMy3mhVfaseztY30E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Uk3uZDzXxL8MYYs9m6YWUu6NLaQzbx22xiqJNhpxc/wtPt2cTKyKXzuA482tN1s5h
-         xUSdj7g92LccFu9wFH0Sz/Kne4BZ9o/nugcR/Cwa0DaMvhzIvwX1utUd1CWBf5dSIR
-         dEDyWwnIcaKv1FDx1s+ihDMoUpqXS4lF07Q75TaYTUer+zg+/yakaPoDGGXK8I6h6c
-         trwHxpKLqY1M8sSgZ+yXeBE6EmljhB3naQSjUjBRaFpIy8knoR/n9Ra3TMYyxFs8Td
-         2evY2V+5WB3ps6R97tBFuf+446sTduvu8DzB/cVLMAaabGezPyrEN83Y3kCTOprKUZ
-         PbKnuybL5v7pw==
-Date:   Wed, 24 Aug 2022 18:50:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Sekhar Nori <nsekhar@ti.com>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: net: Add missing
- (unevaluated|additional)Properties on child nodes
-Message-ID: <20220824185058.554b6d37@kernel.org>
-In-Reply-To: <20220823145649.3118479-5-robh@kernel.org>
-References: <20220823145649.3118479-5-robh@kernel.org>
+        with ESMTP id S230353AbiHYCEb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 22:04:31 -0400
+Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2125EF
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:04:30 -0700 (PDT)
+Received: from dev006.ch-qa.sw.ru ([172.29.1.11])
+        by relay.virtuozzo.com with esmtp (Exim 4.95)
+        (envelope-from <andrey.zhadchenko@virtuozzo.com>)
+        id 1oR2C8-0002wN-7k;
+        Thu, 25 Aug 2022 04:03:43 +0200
+From:   Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
+To:     netdev@vger.kernel.org
+Cc:     dev@openvswitch.org, pshelar@ovn.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        aconole@redhat.com, mark.d.gray@redhat.com, i.maximets@ovn.org
+Subject: [PATCH net v2] openvswitch: fix memory leak at failed datapath creation
+Date:   Thu, 25 Aug 2022 05:03:26 +0300
+Message-Id: <20220825020326.664073-1-andrey.zhadchenko@virtuozzo.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 09:56:36 -0500 Rob Herring wrote:
-> In order to ensure only documented properties are present, node schemas
-> must have unevaluatedProperties or additionalProperties set to false
-> (typically).
+ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
+allocates array via kmalloc.
+If for some reason new_vport() fails during ovs_dp_cmd_new()
+dp->upcall_portids must be freed.
+Add missing kfree.
 
-Would you like this in 6.0 or 6.1? Applies to both, it seems.
+Kmemleak example:
+unreferenced object 0xffff88800c382500 (size 64):
+  comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
+  hex dump (first 32 bytes):
+    5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
+    03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
+  backtrace:
+    [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
+    [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
+    [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
+    [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
+    [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
+    [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
+    [<000000004959cece>] genl_rcv+0x24/0x40
+    [<000000004699ac7f>] netlink_unicast+0x23e/0x360
+    [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
+    [<000000006f4aa380>] sock_sendmsg+0x62/0x70
+    [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
+    [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
+    [<0000000011776020>] __sys_sendmsg+0x59/0xa0
+    [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
+    [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
+Acked-by: Aaron Conole <aconole@redhat.com>
+Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
+---
+v2:
+Remove the unnecessary if(rcu_dereference_raw(dp->upcall_portids))
+
+ net/openvswitch/datapath.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 7e8a39a35627..7179d254b08b 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -1802,7 +1802,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 				ovs_dp_reset_user_features(skb, info);
+ 		}
+ 
+-		goto err_unlock_and_destroy_meters;
++		goto err_destroy_portids;
+ 	}
+ 
+ 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
+@@ -1817,6 +1817,8 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	ovs_notify(&dp_datapath_genl_family, reply, info);
+ 	return 0;
+ 
++err_destroy_portids:
++	kfree(rcu_dereference_raw(dp->upcall_portids));
+ err_unlock_and_destroy_meters:
+ 	ovs_unlock();
+ 	ovs_meters_exit(dp);
+-- 
+2.31.1
+
