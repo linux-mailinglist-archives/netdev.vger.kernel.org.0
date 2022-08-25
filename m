@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E86825A1165
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA5E05A1153
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242191AbiHYNDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 09:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39754 "EHLO
+        id S242133AbiHYNCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 09:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242141AbiHYNCr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:02:47 -0400
+        with ESMTP id S242095AbiHYNCg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:02:36 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E52089832
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 06:02:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6AD7C766
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 06:02:34 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUz-0007zd-9i; Thu, 25 Aug 2022 15:02:17 +0200
+        id 1oRCUz-0007zc-9h; Thu, 25 Aug 2022 15:02:17 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUx-001uGl-49; Thu, 25 Aug 2022 15:02:15 +0200
+        id 1oRCUw-001uGi-Pv; Thu, 25 Aug 2022 15:02:14 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUu-00FeTn-Vu; Thu, 25 Aug 2022 15:02:12 +0200
+        id 1oRCUv-00FeTw-0a; Thu, 25 Aug 2022 15:02:13 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -43,10 +43,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v2 0/7] add generic PSE support 
-Date:   Thu, 25 Aug 2022 15:02:04 +0200
-Message-Id: <20220825130211.3730461-1-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 1/7] dt-bindings: net: pse-dt: add bindings for generic PSE controller
+Date:   Thu, 25 Aug 2022 15:02:05 +0200
+Message-Id: <20220825130211.3730461-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220825130211.3730461-1-o.rempel@pengutronix.de>
+References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -54,58 +56,128 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add generic support for the Ethernet Power Sourcing Equipment.
+Add binding for generic Ethernet PSE controller.
 
-changes are listed within patches.
-
-Oleksij Rempel (7):
-  dt-bindings: net: pse-dt: add bindings for generic PSE controller
-  dt-bindings: net: phy: add PoDL PSE property
-  net: add framework to support Ethernet PSE and PDs devices
-  net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
-  net: mdiobus: search for PSE nodes by parsing PHY nodes.
-  ethtool: add interface to interact with Ethernet Power Equipment
-  net: pse-pd: add generic PSE driver
-
- .../devicetree/bindings/net/ethernet-phy.yaml |   5 +
- .../bindings/net/pse-pd/generic-pse.yaml      |  95 +++++
- Documentation/networking/ethtool-netlink.rst  |  60 +++
- drivers/net/Kconfig                           |   2 +
- drivers/net/Makefile                          |   1 +
- drivers/net/mdio/fwnode_mdio.c                |  58 ++-
- drivers/net/phy/phy_device.c                  |   2 +
- drivers/net/pse-pd/Kconfig                    |  22 +
- drivers/net/pse-pd/Makefile                   |   6 +
- drivers/net/pse-pd/pse_core.c                 | 381 ++++++++++++++++++
- drivers/net/pse-pd/pse_generic.c              | 148 +++++++
- include/linux/ethtool.h                       |  27 ++
- include/linux/phy.h                           |   2 +
- include/linux/pse-pd/pse.h                    | 134 ++++++
- include/uapi/linux/ethtool.h                  |  50 +++
- include/uapi/linux/ethtool_netlink.h          |  17 +
- net/ethtool/Makefile                          |   3 +-
- net/ethtool/common.c                          |  10 +
- net/ethtool/common.h                          |   1 +
- net/ethtool/netlink.c                         |  19 +
- net/ethtool/netlink.h                         |   4 +
- net/ethtool/pse-pd.c                          | 187 +++++++++
- 22 files changed, 1222 insertions(+), 12 deletions(-)
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v2:
+- rename compatible to more generic "ieee802.3-pse"
+- add class and type properties for PoDL and PoE variants
+- add pairs property
+---
+ .../bindings/net/pse-pd/generic-pse.yaml      | 95 +++++++++++++++++++
+ 1 file changed, 95 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
- create mode 100644 drivers/net/pse-pd/Kconfig
- create mode 100644 drivers/net/pse-pd/Makefile
- create mode 100644 drivers/net/pse-pd/pse_core.c
- create mode 100644 drivers/net/pse-pd/pse_generic.c
- create mode 100644 include/linux/pse-pd/pse.h
- create mode 100644 net/ethtool/pse-pd.c
 
+diff --git a/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+new file mode 100644
+index 0000000000000..ecd226df66f4e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/pse-pd/generic-pse.yaml
+@@ -0,0 +1,95 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/pse-pd/generic-pse.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Generic Power Sourcing Equipment
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++description: Generic PSE controller. The device must be referenced by the PHY
++  node to control power injection to the Ethernet cable.
++
++properties:
++  compatible:
++    const: ieee802.3-pse
++
++  '#pse-cells':
++    const: 0
++
++  ieee802.3-pse-supply:
++    description: Power supply for the PSE controller
++
++  ieee802.3-pairs:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    description: Array of number of twisted-pairs capable to deliver power.
++      Since not all circuits are able to support all pair variants, the array of
++      supported variants should be specified.
++      Note - single twisted-pair PSE is formally know as PoDL PSE.
++    items:
++      enum: [1, 2, 4]
++
++  ieee802.3-pse-type:
++    $ref: /schemas/types.yaml#/definitions/uint8
++    minimum: 1
++    maximum: 2
++    description: PSE Type. Describes classification- and class-capabilities.
++      Not compatible with PoDL PSE Type.
++      Type 1 - provides a Class 0, 1, 2, or 3 signature during Physical Layer
++      classification.
++      Type 2 - provides a Class 4 signature during Physical Layer
++      classification, understands 2-Event classification, and is capable of
++      Data Link Layer classification.
++
++  ieee802.3-pse-class:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    items:
++      enum: [0, 1, 2, 3, 4]
++    description: PSE Class. Array of supported classes by the 2 and 4 pair PSE.
++
++  ieee802.3-podl-pse-type:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [a, b, c, d, e]
++    description: PoDL PSE Type. Describes compatibility to physical Layer
++      specifications.
++      Type A - cost optimized for 100BASE-T1
++      Type B - cost optimized for 1000BASE-T1
++      Type C - works with 100BASE-T1 and 1000BASE-T1
++      Type D - optimized for 10BASE-T1S
++      Type E - optimized for 10BASE-T1L
++
++  ieee802.3-podl-pse-class:
++    $ref: /schemas/types.yaml#/definitions/int8-array
++    items:
++      enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
++    description: PoDL PSE Class. Array of supported classes by the
++      single twisted-pair PoDL PSE.
++
++additionalProperties: false
++
++required:
++  - compatible
++  - '#pse-cells'
++  - ieee802.3-pse-supply
++
++examples:
++  - |
++    pse_t1l2: ethernet-pse-1 {
++      compatible = "ieee802.3-pse";
++      ieee802.3-pse-supply = <&reg_t1l1>;
++      ieee802.3-podl-pse-type = "e";
++      ieee802.3-podl-pse-class = /bits/ 8 <0 1>;
++      ieee802.3-pairs = /bits/ 8 <1>;
++      #pse-cells = <0>;
++    };
++  - |
++    pse_poe: ethernet-pse-2 {
++      compatible = "ieee802.3-pse";
++      ieee802.3-pse-supply = <&reg_poe>;
++      ieee802.3-pairs = /bits/ 8 <2 4>;
++      ieee802.3-pse-type = /bits/ 8 <1>;
++      ieee802.3-pse-class = /bits/ 8 <0 1>;
++      #pse-cells = <0>;
++    };
 -- 
 2.30.2
 
