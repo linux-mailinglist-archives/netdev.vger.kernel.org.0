@@ -2,166 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 988A75A0A31
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 201CB5A0A96
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 09:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238176AbiHYH0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 03:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41458 "EHLO
+        id S238408AbiHYHpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 03:45:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237304AbiHYH00 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:26:26 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4BCF68;
-        Thu, 25 Aug 2022 00:26:25 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oR7Fu-0000TJ-L3; Thu, 25 Aug 2022 09:26:22 +0200
-Message-ID: <8c214c0b-4b8f-5e62-5aef-76668987e8fd@leemhuis.info>
-Date:   Thu, 25 Aug 2022 09:26:21 +0200
+        with ESMTP id S238468AbiHYHpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 03:45:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5371C237F8
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:44:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661413497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zWHJOua38RJS2VpD323EH8m9oocDDSERK05+Run3Kgw=;
+        b=Cn4a36+pAlLqtFvozHucJSfObtk/j6MgF5jPPgiZ1FLg+zLrx59SPHbSc+UerGE6E8VYKJ
+        eqvza90QBqIzYOC9WA8V6QQEzGjtuoYS/6i6Utwk2GDJIhni/DRuFc4Hd6Z+AmTPjMB1C6
+        7hcS8/auePgW1ialHfEI6mmpRq0lHQE=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-540-eS46v98jNbGY3pTOgMf0qA-1; Thu, 25 Aug 2022 03:44:56 -0400
+X-MC-Unique: eS46v98jNbGY3pTOgMf0qA-1
+Received: by mail-pf1-f199.google.com with SMTP id x25-20020aa79199000000b005358eeebf49so8683245pfa.17
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 00:44:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=zWHJOua38RJS2VpD323EH8m9oocDDSERK05+Run3Kgw=;
+        b=kOy2g+0FawO/jI8wGqXdppBinDzcwecylMNawXJxdCF+HwsrSRUCBxvabt1ZY6enSX
+         TcZygL5dIpS5qXhi/f2cqyWY/ZxmaiQhIcHjFyZkOUQDwdxl52opSGbdIx0WwgEyyPdy
+         WCeDQrNuSm7Kap89u0pjcs/S48bIs+G6gOFYTmcRqXRGiX76YBCwTuDOxr+wm7yYjK4+
+         1svkyruIemkHOXdy+VFVH6USD2zuw5PcIkSLQbPdCOPFobMt15GiCYNzFsrmhiqojVG+
+         aqYwFYUDyvSkizMoMhJKdefpIZ2XRjmTL791DPUypPJp4CEpB3TftTw1IE17sCKa9MZh
+         lBPA==
+X-Gm-Message-State: ACgBeo3wBN9LNaQ8OyB0+coGqwBguV0azbmHbPnzV0FaBUzIFnecMhLV
+        Noiykn43s52EnnhQD3efWhUD0OVDYSTQkySHbxtjY/4zHBiyOBDdstlToHcVZVCpC3KiEVdu1CW
+        Tglr4YEwITYPZxnXN
+X-Received: by 2002:a65:6949:0:b0:41c:cb9d:3d1f with SMTP id w9-20020a656949000000b0041ccb9d3d1fmr2255951pgq.334.1661413494953;
+        Thu, 25 Aug 2022 00:44:54 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR75sNLCKhijU2tO7/6br2jUgmaSbR8Md7x1+OjmLVGn+Q+XRO2Hc97nH7XGtW3SfJCxbzuBEQ==
+X-Received: by 2002:a65:6949:0:b0:41c:cb9d:3d1f with SMTP id w9-20020a656949000000b0041ccb9d3d1fmr2255934pgq.334.1661413494644;
+        Thu, 25 Aug 2022 00:44:54 -0700 (PDT)
+Received: from [10.72.12.107] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id z24-20020aa79f98000000b0053627e0e860sm11687572pfr.27.2022.08.25.00.44.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 00:44:54 -0700 (PDT)
+Message-ID: <ebf4b376-6a5c-3cfa-38ab-1559ace13b27@redhat.com>
+Date:   Thu, 25 Aug 2022 15:44:41 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: Commit 'r8152: fix a WOL issue' makes Ethernet port on Lenovo
- Thunderbolt 3 dock go crazy
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [RFC v2 6/7] virtio: in order support for virtio_ring
 Content-Language: en-US
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     Maxim Levitsky <mlevitsk@redhat.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        Hayes Wang <hayeswang@realtek.com>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
-References: <3745745afedb2eff890277041896356149a8f2bf.camel@redhat.com>
- <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
-In-Reply-To: <339e2f94-213c-d707-b792-86d53329b3e5@leemhuis.info>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661412385;60a87a1b;
-X-HE-SMSGID: 1oR7Fu-0000TJ-L3
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
+        sgarzare@redhat.com, mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
+References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn>
+ <20220817135718.2553-7-qtxuning1999@sjtu.edu.cn>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220817135718.2553-7-qtxuning1999@sjtu.edu.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 24.08.22 13:16, Thorsten Leemhuis wrote:
-> Hi, this is your Linux kernel regression tracker.
-> 
-> Quick note before the boilerplate: there is another report about issues
-> caused by cdf0b86b250fd3 also involving a dock, but apparently it's
-> ignored so far:
-> https://bugzilla.kernel.org/show_bug.cgi?id=216333
 
-TWIMC, apparently it's the same problem.
-
-Fun fact: Hayes discussed this in privately with the bug reporter
-according to this comment:
-https://bugzilla.kernel.org/show_bug.cgi?id=216333#c3
-
-Well, that's not how things normally should be handled, but whatever, he
-in the end recently submitted a patch to fix it that is already merged
-to net.git:
-
-https://lore.kernel.org/lkml/20220818080620.14538-394-nic_swsd@realtek.com/
-
-Ciao, Thorsten
-
-P.S.:
-
-#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=216333	
-#regzbot fixed-by: b75d612014447
+在 2022/8/17 21:57, Guo Zhi 写道:
+> If in order feature negotiated, we can skip the used ring to get
+> buffer's desc id sequentially.
+>
+> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
+> ---
+>   drivers/virtio/virtio_ring.c | 53 ++++++++++++++++++++++++++++++------
+>   1 file changed, 45 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> index 1c1b3fa376a2..143184ebb5a1 100644
+> --- a/drivers/virtio/virtio_ring.c
+> +++ b/drivers/virtio/virtio_ring.c
+> @@ -144,6 +144,9 @@ struct vring_virtqueue {
+>   			/* DMA address and size information */
+>   			dma_addr_t queue_dma_addr;
+>   			size_t queue_size_in_bytes;
+> +
+> +			/* In order feature batch begin here */
 
 
-> Anyway, moving on:
-> 
-> [TLDR: I'm adding this regression report to the list of tracked
-> regressions; all text from me you find below is based on a few templates
-> paragraphs you might have encountered already already in similar form.]
-> 
-> CCing the regression mailing list, as it should be in the loop for all
-> regressions, as explained here:
-> https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
-> 
-> On 23.08.22 11:20, Maxim Levitsky wrote:
->>
->> I recently bisected an issue on my Lenovo P1 gen3, which is connected to the Lenovo Thunderbolt 3 dock.
->>
->> After I suspend the laptop to ram, the ethernet port led on the dock starts to blink like crazy,
->> its peer port on my ethernet switch blinks as well, and eventually the switch stops forwarding packets,
->> bringing all my network down.
->>
->> Likely the ethernet card in the dock sends some kind of a garbage over the wire.
->>
->> Resuming the laptop, "fixes" the issue (leds stops blinking, and the network starts working again
->> after a minute or so).
->>
->> I also tried to connect the dock directly to my main desktop over a dedicated usb network card
->> and try to capture the packets that are sent, but no packets were captured. I will soon retry
->> this test with another network card. I did use promicious mode.
->>
->>
->> This is the offending commit, and reverting it helps:
->>
->> commit cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
->> Author: Hayes Wang <hayeswang@realtek.com>
->> Date:   Mon Jul 18 16:21:20 2022 +0800
->>
->>     r8152: fix a WOL issue
->>     
->>     This fixes that the platform is waked by an unexpected packet. The
->>     size and range of FIFO is different when the device enters S3 state,
->>     so it is necessary to correct some settings when suspending.
->>     
->>     Regardless of jumbo frame, set RMS to 1522 and MTPS to MTPS_DEFAULT.
->>     Besides, enable MCU_BORW_EN to update the method of calculating the
->>     pointer of data. Then, the hardware could get the correct data.
->>     
->>     Fixes: 195aae321c82 ("r8152: support new chips")
->>     Signed-off-by: Hayes Wang <hayeswang@realtek.com>
->>     Link: https://lore.kernel.org/r/20220718082120.10957-391-nic_swsd@realtek.com
->>     Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->>
->>
->> WOL from dock was enabled in BIOS, but I tested with it disabled as well, and
->> no change in behavier.
->>
->> Any help is welcome. I can test patches if needed, the laptop currently runs 6.0-rc2
->> with this commit reverted.
->>
->> When I find some time I can also narrow the change down by reverting only parts
->> of the patch.
->>
->> Best regards,
->> 	Maxim Levitsky
->>
-> 
-> 
-> Thanks for the report. To be sure below issue doesn't fall through the
-> cracks unnoticed, I'm adding it to regzbot, my Linux kernel regression
-> tracking bot:
-> 
-> #regzbot ^introduced cdf0b86b250fd3c1c3e120c86583ea510c52e4ce
-> #regzbot title net: r8152: ehernet port on Lenovo Thunderbolt 3 dock
-> goes crazy
-> #regzbot ignore-activity
-> 
-> This isn't a regression? This issue or a fix for it are already
-> discussed somewhere else? It was fixed already? You want to clarify when
-> the regression started to happen? Or point out I got the title or
-> something else totally wrong? Then just reply -- ideally with also
-> telling regzbot about it, as explained here:
-> https://linux-regtracking.leemhuis.info/tracked-regression/
-> 
-> Reminder for developers: When fixing the issue, add 'Link:' tags
-> pointing to the report (the mail this one replies to), as explained for
-> in the Linux kernel's documentation; above webpage explains why this is
-> important for tracked regressions.
-> 
-> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-> 
-> P.S.: As the Linux kernel's regression tracker I deal with a lot of
-> reports and sometimes miss something important when writing mails like
-> this. If that's the case here, don't hesitate to tell me in a public
-> reply, it's in everyone's interest to set the public record straight.
+We need tweak the comment, it's not easy for me to understand the 
+meaning here.
+
+
+> +			u16 next_desc_begin;
+>   		} split;
+>   
+>   		/* Available for packed ring */
+> @@ -702,8 +705,13 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
+>   	}
+>   
+>   	vring_unmap_one_split(vq, i);
+> -	vq->split.desc_extra[i].next = vq->free_head;
+> -	vq->free_head = head;
+> +	/* In order feature use desc in order,
+> +	 * that means, the next desc will always be free
+> +	 */
+
+
+Maybe we should add something like "The descriptors are prepared in order".
+
+
+> +	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
+> +		vq->split.desc_extra[i].next = vq->free_head;
+> +		vq->free_head = head;
+> +	}
+>   
+>   	/* Plus final descriptor */
+>   	vq->vq.num_free++;
+> @@ -745,7 +753,7 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
+>   {
+>   	struct vring_virtqueue *vq = to_vvq(_vq);
+>   	void *ret;
+> -	unsigned int i;
+> +	unsigned int i, j;
+>   	u16 last_used;
+>   
+>   	START_USE(vq);
+> @@ -764,11 +772,38 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
+>   	/* Only get used array entries after they have been exposed by host. */
+>   	virtio_rmb(vq->weak_barriers);
+>   
+> -	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
+> -	i = virtio32_to_cpu(_vq->vdev,
+> -			vq->split.vring.used->ring[last_used].id);
+> -	*len = virtio32_to_cpu(_vq->vdev,
+> -			vq->split.vring.used->ring[last_used].len);
+> +	if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
+> +		/* Skip used ring and get used desc in order*/
+> +		i = vq->split.next_desc_begin;
+> +		j = i;
+> +		/* Indirect only takes one descriptor in descriptor table */
+> +		while (!vq->indirect && (vq->split.desc_extra[j].flags & VRING_DESC_F_NEXT))
+> +			j = (j + 1) % vq->split.vring.num;
+
+
+Let's move the expensive mod outside the loop. Or it's split so we can 
+use and here actually since the size is guaranteed to be power of the 
+two? Another question, is it better to store the next_desc in e.g 
+desc_extra?
+
+And this seems very expensive if the device doesn't do the batching 
+(which is not mandatory).
+
+
+> +		/* move to next */
+> +		j = (j + 1) % vq->split.vring.num;
+> +		/* Next buffer will use this descriptor in order */
+> +		vq->split.next_desc_begin = j;
+> +		if (!vq->indirect) {
+> +			*len = vq->split.desc_extra[i].len;
+> +		} else {
+> +			struct vring_desc *indir_desc =
+> +				vq->split.desc_state[i].indir_desc;
+> +			u32 indir_num = vq->split.desc_extra[i].len, buffer_len = 0;
+> +
+> +			if (indir_desc) {
+> +				for (j = 0; j < indir_num / sizeof(struct vring_desc); j++)
+> +					buffer_len += indir_desc[j].len;
+
+
+So I think we need to finalize this, then we can have much more stress 
+on the cache:
+
+https://lkml.org/lkml/2021/10/26/1300
+
+It was reverted since it's too aggressive, we should instead:
+
+1) do the validation only for morden device
+
+2) fail only when we enable the validation via (e.g a module parameter).
+
+Thanks
+
+
+> +			}
+> +
+> +			*len = buffer_len;
+> +		}
+> +	} else {
+> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
+> +		i = virtio32_to_cpu(_vq->vdev,
+> +				    vq->split.vring.used->ring[last_used].id);
+> +		*len = virtio32_to_cpu(_vq->vdev,
+> +				       vq->split.vring.used->ring[last_used].len);
+> +	}
+>   
+>   	if (unlikely(i >= vq->split.vring.num)) {
+>   		BAD_RING(vq, "id %u out of range\n", i);
+> @@ -2236,6 +2271,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
+>   	vq->split.avail_flags_shadow = 0;
+>   	vq->split.avail_idx_shadow = 0;
+>   
+> +	vq->split.next_desc_begin = 0;
+> +
+>   	/* No callback?  Tell other side not to bother us. */
+>   	if (!callback) {
+>   		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+
