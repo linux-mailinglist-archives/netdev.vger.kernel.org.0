@@ -2,137 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10A3E5A1560
+	by mail.lfdr.de (Postfix) with ESMTP id 5D58E5A1561
 	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 17:15:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242595AbiHYPPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 11:15:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45804 "EHLO
+        id S241272AbiHYPPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 11:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242528AbiHYPPF (ORCPT
+        with ESMTP id S242557AbiHYPPF (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 11:15:05 -0400
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C5E4A138;
-        Thu, 25 Aug 2022 08:15:03 -0700 (PDT)
-Received: by mail-qv1-xf2b.google.com with SMTP id s1so1193341qvn.11;
-        Thu, 25 Aug 2022 08:15:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=KftygciUxD9ZLXS1NK53lQjwSu/9WEebAQPIgHLiUng=;
-        b=B3/dZxMqUeTwiC9cfUhY0y1hQo+FSAwfRGlRRYsrTlE0FPpp+9NlU+AZSzk1EPW5VC
-         c+2WxLWlAMCeIgJoOk04iKx6Vy/tesMi38+dQhJZeAwdHG12gRh5kgNVc3CJTcLSVEuX
-         U1oI6/0xwbBTSxaycigIsZ2ek8CYwx6NCgq7HWnm8xCyUDchd28ePWRtFim4M4ctS7ZA
-         a5CjbEaYluhoL5XgmIj7pprKPX2IJnv8DqtoyngWtRAO0T6P0sBUe7YNT/rs6DAckYAg
-         f6kg0HggJg6tVb4Qa/CpAHKKkaGEXCqkganEJInjIl8MOnajJFefRU9thQzrCp4parKP
-         Bw9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=KftygciUxD9ZLXS1NK53lQjwSu/9WEebAQPIgHLiUng=;
-        b=UHCakrwJY8F6eSt3wbLBR1CK1l97N4/BjTCAcX2UenPH4SMt47q/gDne6hVk89osoh
-         a6EdCB3vJqmv59LqvW6SM5R88yhLelZWVfq60Ech82y55gkhZ71R99cteOFtDkFuAMqF
-         6Z3G/cZRbGo5fFUs7/V8C1tqUQLPF4XfmwZnuY2n+sy08/NMfhzFMcoqkoQGRiAzdgdN
-         zNvuLB1mcjOQpfTvjHv366+oPS+vN6tGHEVK3YJOln4f3zNwx1igmVOJZkkCUMA2e1+T
-         c8TPjZ7KqrAgtlUSADnE6yF+sem3pRl6gWMem+28pjpSuOeqCOsz4jZpe0q0lH5R6m/W
-         kvzw==
-X-Gm-Message-State: ACgBeo2zquS3/m6Ij30bF5eOepCQEOw8OsYnT+R/yG4GQhQs1IH1OGIg
-        l7Yt2BpbPjH9k6xMQ+cBU4J1gFgLUQmPGPhdE+eOMNQpRSDmBg==
-X-Google-Smtp-Source: AA6agR5AydfvmV2hOoIZ2sOvD+tDxri7SZnqNHiuDvG3WEZ/1NmrZwUdt523Su9dZ5gE+l2bmuV821iGHJ6Hpz/zrgE=
-X-Received: by 2002:a0c:90a2:0:b0:47b:6b36:f94a with SMTP id
- p31-20020a0c90a2000000b0047b6b36f94amr4046759qvp.26.1661440502240; Thu, 25
- Aug 2022 08:15:02 -0700 (PDT)
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1DD48EAD;
+        Thu, 25 Aug 2022 08:15:02 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 86EDA1884D53;
+        Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 6224C25032B7;
+        Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 4F2C09EC0002; Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-References: <20220825134636.2101222-1-eyal.birger@gmail.com>
- <20220825134636.2101222-3-eyal.birger@gmail.com> <a825aa13-6f82-e6c1-3c5c-7974b14f881e@blackwall.org>
-In-Reply-To: <a825aa13-6f82-e6c1-3c5c-7974b14f881e@blackwall.org>
-From:   Eyal Birger <eyal.birger@gmail.com>
-Date:   Thu, 25 Aug 2022 18:14:51 +0300
-Message-ID: <CAHsH6Gv8Zv722pjtKrWDiSHYKvV0FUxUSnHf_8B+gJnAVYiziQ@mail.gmail.com>
-Subject: Re: [PATCH ipsec-next,v2 2/3] xfrm: interface: support collect
- metadata mode
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, dsahern@kernel.org,
-        contact@proelbtn.com, pablo@netfilter.org,
-        nicolas.dichtel@6wind.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "daniel@iogearbox.net" <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Date:   Thu, 25 Aug 2022 17:14:59 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
+ flag to drivers
+In-Reply-To: <YwdCovUbVpmHfl39@shredder>
+References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
+ <YvkM7UJ0SX+jkts2@shredder>
+ <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
+ <YwHZ1J9DZW00aJDU@shredder>
+ <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
+ <YwMW4iGccDu6jpaZ@shredder>
+ <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
+ <YwR4MQ2xOMlvKocw@shredder>
+ <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
+ <YwdCovUbVpmHfl39@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <824eda8a76f36c8e211289e4ed3d2118@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 5:24 PM Nikolay Aleksandrov <razor@blackwall.org> wrote:
->
-> On 25/08/2022 16:46, Eyal Birger wrote:
-> > This commit adds support for 'collect_md' mode on xfrm interfaces.
-> >
-> > Each net can have one collect_md device, created by providing the
-> > IFLA_XFRM_COLLECT_METADATA flag at creation. This device cannot be
-> > altered and has no if_id or link device attributes.
-> >
-> > On transmit to this device, the if_id is fetched from the attached dst
-> > metadata on the skb. If exists, the link property is also fetched from
-> > the metadata. The dst metadata type used is METADATA_XFRM which holds
-> > these properties.
-> >
-> > On the receive side, xfrmi_rcv_cb() populates a dst metadata for each
-> > packet received and attaches it to the skb. The if_id used in this case is
-> > fetched from the xfrm state, and the link is fetched from the incoming
-> > device. This information can later be used by upper layers such as tc,
-> > ebpf, and ip rules.
-> >
-> > Because the skb is scrubed in xfrmi_rcv_cb(), the attachment of the dst
-> > metadata is postponed until after scrubing. Similarly, xfrm_input() is
-> > adapted to avoid dropping metadata dsts by only dropping 'valid'
-> > (skb_valid_dst(skb) == true) dsts.
-> >
-> > Policy matching on packets arriving from collect_md xfrmi devices is
-> > done by using the xfrm state existing in the skb's sec_path.
-> > The xfrm_if_cb.decode_cb() interface implemented by xfrmi_decode_session()
-> > is changed to keep the details of the if_id extraction tucked away
-> > in xfrm_interface.c.
-> >
-> > Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
-> >
-> > ----
-> >
-> > v2:
-> >   - add "link" property as suggested by Nicolas Dichtel
-> >   - rename xfrm_if_decode_session_params to xfrm_if_decode_session_result
-> > ---
->
-> (+CC Daniel)
->
-> Hi,
-> Generally I really like the idea, but I missed to comment the first round. :)
-> A few comments below..
->
+On 2022-08-25 11:36, Ido Schimmel wrote:
+> On Tue, Aug 23, 2022 at 01:41:51PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-08-23 08:48, Ido Schimmel wrote:
+>> >
+>> > I'm not good at naming, but "blackhole" is at least consistent with what
+>> > we already have for routes and nexthop objects.
+>> >
+>> 
+>> I have changed it the name "masked", as that is also the term used in 
+>> the
+>> documentation for the zero-DPV entries, and I think that it will 
+>> generally
+>> be a more accepted term.
+> 
+> "blackhole" is an already accepted term and at least to me it is much
+> more clear than "masked". Keep in mind that both L2 neighbours (FDB) 
+> and
+> L3 neighbours share the same uAPI and eventually we might want to 
+> extend
+> the use of this flag for L3 neighbours (at least Spectrum supports it),
+> so it needs to make sense for both.
 
-Thanks for the review!
-
-> >  include/net/xfrm.h           |  11 +++-
-<...snip...>
-> >
-> >  static const struct nla_policy xfrmi_policy[IFLA_XFRM_MAX + 1] = {
-> > -     [IFLA_XFRM_LINK]        = { .type = NLA_U32 },
-> > -     [IFLA_XFRM_IF_ID]       = { .type = NLA_U32 },
-> > +     [IFLA_XFRM_UNSPEC]              = { .strict_start_type = IFLA_XFRM_COLLECT_METADATA },
-> > +     [IFLA_XFRM_LINK]                = { .type = NLA_U32 },
->
-> link is signed, so s32
-
-Ack on all comments except this one - I'm a little hesitant to change
-this one as the change would be unrelated to this series.
-
-Thanks!
-Eyal.
+I have changed the name of the flag to 'blackhole', but the struct entry 
+in switchdev_notifier_fdb_info and a function input parameter is still 
+named 'masked'. If that should be changed before I send out V5, please 
+let me know as I hope to get this patch set accepted.
