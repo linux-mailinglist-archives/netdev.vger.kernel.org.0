@@ -2,63 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B945A0AFA
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E46E5A0B09
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239116AbiHYIGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 04:06:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41170 "EHLO
+        id S237857AbiHYIHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 04:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237349AbiHYIGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:06:10 -0400
-Received: from mail-ej1-x64a.google.com (mail-ej1-x64a.google.com [IPv6:2a00:1450:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1A3419B8
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
-Received: by mail-ej1-x64a.google.com with SMTP id gs35-20020a1709072d2300b00730e14fd76eso5977851ejc.15
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 01:06:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:from:to:cc;
-        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
-        b=lzySq90VxMrFPmXh2/dwioCs6B1SegwMh8h1SsTmX7oweHtHklTxf6cwglcV4JsI+q
-         VQC5BAJbGLcbZlMbIuVfyPf1a/w9tjTHHFYSXkfTGdb81NG6cFzdicSzVrqWOu4ct5Cr
-         tS1OEbijc7gx0NIrKZ+d+6ZzS44EIfPEpJFHNlm3e3/omWOc7eJZzgTW82ei7qHLkqcl
-         pnGB9aB8V3x4fcFHTtLFdrGZIW/vqnTzm8ewyDHTe25uVu7KRIs9dhRkJxQmrsSb/1dZ
-         N1MaVqAYSovM9cPAzvU/zUeG09EBBO/tkF2xDo7TLbKz9daOtij6z9ao/usZR5B/ZfHj
-         TC2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:mime-version:message-id:date:x-gm-message-state
-         :from:to:cc;
-        bh=VFoAUZmQSNIybQQWm64jI2jatoCnpAOO4OmYIlm443c=;
-        b=xY1yIKDmyg5E8BH82e5wJNhY/wMO0nMRtWMtMHJC7wIs/J5TGxwoZtaLrsGDkduUmy
-         3g4cf/Y934kNBpIPNwxGNVx9+Bkm+lES7RIPjwzeSNUBoGdyfa4bXC9MRJO0AldXLTsv
-         Cn+WHAFMI5/8sDteo9sZBQsxSYQSoLCj570+y1eT3p4WKeBnuX/tKaF+AX2mV36AP5lu
-         hogivElW8CN2Xfn6bMEMRkPlOwyHwHk+G6uavj5YV9muZ/zFUjN/gWGH6RzF3NVXxVpW
-         b1S+mxShpEg6JCqNlPNagMbLQbXGpDZQ8og0DK/eg3reGpuPK1x4DOc8otPqFLpvzaJo
-         a3sQ==
-X-Gm-Message-State: ACgBeo3NNfvM3ko96a6L1BON0K50d2IfNKQDckaKLkXX+RwbtDR4wUNJ
-        F0s+8AJKxqTfmqt3+WSlCWvEtpKwW44=
-X-Google-Smtp-Source: AA6agR6UVFnHcCE6dkRKJ4LXnHFEmWj1dGMEp2KQOHR3+b1DqMPbPRnGL1Du8uuOqH6LOnmqmBgSyVciqtM=
-X-Received: from glider.muc.corp.google.com ([2a00:79e0:9c:201:4984:837b:f1f1:a6a1])
- (user=glider job=sendgmr) by 2002:a05:6402:2756:b0:443:4a6d:f05a with SMTP id
- z22-20020a056402275600b004434a6df05amr2178605edd.396.1661414765037; Thu, 25
- Aug 2022 01:06:05 -0700 (PDT)
-Date:   Thu, 25 Aug 2022 10:05:55 +0200
-Message-Id: <20220825080555.3643572-1-glider@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
-Subject: [PATCH] ath9k: fix an uninit value use in ath9k_htc_rx_msg()
-From:   Alexander Potapenko <glider@google.com>
-To:     glider@google.com
-Cc:     ath9k-devel@qca.qualcomm.com, davem@davemloft.net, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
+        with ESMTP id S234467AbiHYIHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:07:30 -0400
+Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292298670B;
+        Thu, 25 Aug 2022 01:07:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661414807; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=GPPQ95Ij6UbK9cbdbMjwj3IxV6MmdWMA267hSYszjyUDLDVIWmWLieL9hwf9Si9RpkNXNC7+7yRLuyyvgIqOf1JKVOmqfa2zc9OkZp4PSpCXnF0LU71pRb4ssN9DLyaFNI5TWPFnghHI95Yd0jJQeBkdRJ1UmWLTRvJIMxLJirk=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1661414807; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=4JsieqXDivmRRvE/zWwLdZw6fqOmBPCekC3LYmW4t64=; 
+        b=Q/oh6A4YvYlHfL0xTF1YvF8rL0otqnlGAn1E5jvc8DG6U0TrOvH0AGYaG5Ae+dPA9uAQmFGgS2BcQvzGN7BsxCaGyuYputrWdRDx5ULjIqub6IZ2YDuoFME34nuxK3Wy/99r5JDZ74ON9r0d4IKWlVU5CKAOo5u5mu3dFVTdSgE=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=arinc9.com;
+        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
+        dmarc=pass header.from=<arinc.unal@arinc9.com>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661414807;
+        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
+        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=4JsieqXDivmRRvE/zWwLdZw6fqOmBPCekC3LYmW4t64=;
+        b=F/SWD+LHEElDMK1k3KlaBPED4fBlWutYwKB9PXDF8rgMuI4KbfmzsGA4chOkWLQt
+        TV0IpYKp8DC1pZ5Acq7fzhEU5ragF51BJ3azjmeQGIzmgTDvBTnY2gs0ZCMYV5blpJo
+        nyxrL/Y8Elkx/+CbWBgBJt+KzRXEszGUqrja4fro=
+Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
+        with SMTPS id 1661414805043384.980663798763; Thu, 25 Aug 2022 01:06:45 -0700 (PDT)
+Message-ID: <e2679c3f-87f4-4705-a820-72b46975c851@arinc9.com>
+Date:   Thu, 25 Aug 2022 11:06:37 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v4 4/6] dt-bindings: net: dsa: mediatek,mt7530: define
+ port binding per switch
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220820080758.9829-1-arinc.unal@arinc9.com>
+ <20220820080758.9829-5-arinc.unal@arinc9.com>
+ <c24da513-e015-8bc6-8874-ba63c22be5d6@linaro.org>
+ <ea3ceeab-d92b-6ce5-8ea9-aebb3eaa0a91@arinc9.com>
+ <7248cbce-29b9-aad6-c970-8e150bc23df8@linaro.org>
+From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+In-Reply-To: <7248cbce-29b9-aad6-c970-8e150bc23df8@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ZohoMailClient: External
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,55 +86,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ath9k_htc_rx_msg() assumes skb->data contains a full
-`struct htc_frame_hdr`, thus it needs a call to pskb_may_pull()
-to ensure there is enough data.
+On 25.08.2022 09:33, Krzysztof Kozlowski wrote:
+> On 23/08/2022 15:29, Arınç ÜNAL wrote:
+>>
+>>
+>> On 23.08.2022 13:47, Krzysztof Kozlowski wrote:
+>>> On 20/08/2022 11:07, Arınç ÜNAL wrote:
+>>>> Define DSA port binding per switch model as each switch model requires
+>>>> different values for certain properties.
+>>>>
+>>>> Define reg property on $defs as it's the same for all switch models.
+>>>>
+>>>> Remove unnecessary lines as they are already included from the referred
+>>>> dsa.yaml.
+>>>>
+>>>> Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+>>>> ---
+>>>>    .../bindings/net/dsa/mediatek,mt7530.yaml     | 56 +++++++++++--------
+>>>>    1 file changed, 34 insertions(+), 22 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>>> index 657e162a1c01..7c4374e16f96 100644
+>>>> --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>>> +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
+>>>> @@ -130,38 +130,47 @@ properties:
+>>>>          ethsys.
+>>>>        maxItems: 1
+>>>>    
+>>>> -patternProperties:
+>>>> -  "^(ethernet-)?ports$":
+>>>> -    type: object
+>>>> -
+>>>> -    patternProperties:
+>>>> -      "^(ethernet-)?port@[0-9]+$":
+>>>> -        type: object
+>>>> -        description: Ethernet switch ports
+>>>
+>>> Again, I don't understand why do you remove definitions of these nodes
+>>> from top-level properties. I explained what I expect in previous
+>>> discussion and I am confused to hear "this cannot be done".
+>>
+>> I agree it can be done, but the binding is done with less lines the
+>> current way.
+>>
+>> I would need to add more lines than just for creating the node structure
+>> since dsa.yaml is not referred.
+>>
+>> Then, I would have to create the node structure again for the dsa-port
+>> checks.
+> 
+> I understand you can create binding more concise, but not necessarily
+> more readable. The easiest to grasp is to define all the nodes in
+> top-level and customize them in allOf:if:then. This was actually also
+> needed for earlier dtschema with additionalProperties:false. You keep
+> defining properties in allOf:if:then, even though they are all
+> applicable to all variants. That's unusual and even if it reduces the
+> lines does not make it easier to grasp.
 
-This fixes a long-standing issue reported by KMSAN:
+Understood. Will send v6 with respect to this.
 
-  BUG: KMSAN: uninit-value in ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
-   ath9k_htc_rx_msg+0x544/0x980 drivers/net/wireless/ath/ath9k/htc_hst.c:417
-   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:653 [inline]
-   ath9k_hif_usb_rx_cb+0x196a/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
-   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
-   usb_hcd_giveback_urb+0x150/0x620 drivers/usb/core/hcd.c:1747
-   dummy_timer+0xd3f/0x4f20 drivers/usb/gadget/udc/dummy_hcd.c:1988
-   call_timer_fn+0x43/0x480 kernel/time/timer.c:1474
-   expire_timers+0x272/0x610 kernel/time/timer.c:1519
-   __run_timers+0x5bc/0x8c0 kernel/time/timer.c:1790
-  ...
-
-  Uninit was created at:
-  ...
-   __alloc_skb+0x34a/0xd70 net/core/skbuff.c:426
-   __netdev_alloc_skb+0x126/0x780 net/core/skbuff.c:494
-   __dev_alloc_skb include/linux/skbuff.h:3264 [inline]
-   ath9k_hif_usb_rx_stream drivers/net/wireless/ath/ath9k/hif_usb.c:635 [inline]
-   ath9k_hif_usb_rx_cb+0xe7b/0x1f10 drivers/net/wireless/ath/ath9k/hif_usb.c:686
-   __usb_hcd_giveback_urb+0x522/0x740 drivers/usb/core/hcd.c:1670
-  ...
-
-Reported-by: syzbot+2ca247c2d60c7023de7f@syzkaller.appspotmail.com
-Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
-Signed-off-by: Alexander Potapenko <glider@google.com>
----
- drivers/net/wireless/ath/ath9k/htc_hst.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath9k/htc_hst.c b/drivers/net/wireless/ath/ath9k/htc_hst.c
-index 994ec48b2f669..83a1d2fba2218 100644
---- a/drivers/net/wireless/ath/ath9k/htc_hst.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_hst.c
-@@ -408,7 +408,8 @@ void ath9k_htc_rx_msg(struct htc_target *htc_handle,
- 	struct htc_endpoint *endpoint;
- 	__be16 *msg_id;
- 
--	if (!htc_handle || !skb)
-+	if (!htc_handle || !skb ||
-+	    !pskb_may_pull(skb, sizeof(struct htc_frame_hdr)))
- 		return;
- 
- 	htc_hdr = (struct htc_frame_hdr *) skb->data;
--- 
-2.37.2.672.g94769d06f0-goog
-
+Arınç
