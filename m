@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D58E5A1561
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 17:15:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD3FB5A1566
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 17:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241272AbiHYPPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 11:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        id S242245AbiHYPPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 11:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242557AbiHYPPF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 11:15:05 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1DD48EAD;
-        Thu, 25 Aug 2022 08:15:02 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 86EDA1884D53;
-        Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 6224C25032B7;
-        Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 4F2C09EC0002; Thu, 25 Aug 2022 15:14:59 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S242660AbiHYPP1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 11:15:27 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DE918B28;
+        Thu, 25 Aug 2022 08:15:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21D90B82A12;
+        Thu, 25 Aug 2022 15:15:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48B7C433C1;
+        Thu, 25 Aug 2022 15:15:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661440520;
+        bh=GLChFzUGs8GVVNUhC6wb73XfZUqR7G4/+nAYTdWObeA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=uhDSCpOcTZPed/N0Nd11OBZzL7nJGDwP4rsBH+Em+AWcKn1fwDpCnnTDY1ZLWhqPR
+         48cKOD83JMNKjchGTpkCUMk8KEvDzk4yNWiy7P5P9UOj1T8LKXtPPMJ1kuhN41v9Of
+         aWvuYeNBivAkCoav9rdj/GTOrVPksK6UrF9eiklMxMlWhrGnU1AX+faWTogyOVklq0
+         JTZGxHnMsTM7QxDeUoukHsyb47U0ZHjj9C/j6+rSwf72vKjrbdSjy79Fro9xrQADK9
+         /VyR7TM21LppCtJS5LPLQ23Emygt+HmB4Uk0hFe/+moJKKx8kdvoRJt3XBTvH2RyeN
+         yKhmc7caa6pcg==
+Received: by mail-vk1-f177.google.com with SMTP id q14so10338986vke.9;
+        Thu, 25 Aug 2022 08:15:20 -0700 (PDT)
+X-Gm-Message-State: ACgBeo31k8VDD8ix3nlDSH5Wt/FDkOEM5TZpqklwlp3gVGpsQ1OxpqNP
+        x+6yQ7oCwettLsix7/NaRMUczqco5+zhimv+IA==
+X-Google-Smtp-Source: AA6agR4iu6jSkKeVPC33nDOlssDIK1jrZSrmgKXA6T6zfcamhzM2PVxvbmTTF/xYsdglmwLIzzGgNE4soLyV7FkmpD4=
+X-Received: by 2002:a1f:23c6:0:b0:38c:88f3:f55c with SMTP id
+ j189-20020a1f23c6000000b0038c88f3f55cmr1674826vkj.19.1661440519809; Thu, 25
+ Aug 2022 08:15:19 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Thu, 25 Aug 2022 17:14:59 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+References: <20220823145649.3118479-5-robh@kernel.org> <20220824185058.554b6d37@kernel.org>
+In-Reply-To: <20220824185058.554b6d37@kernel.org>
+From:   Rob Herring <robh@kernel.org>
+Date:   Thu, 25 Aug 2022 10:15:07 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKWb=jnACOs=PmMSUg=oTAWn9eLaSb7R6GVrJWeQXaFMQ@mail.gmail.com>
+Message-ID: <CAL_JsqKWb=jnACOs=PmMSUg=oTAWn9eLaSb7R6GVrJWeQXaFMQ@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: Add missing (unevaluated|additional)Properties
+ on child nodes
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Hans Ulli Kroll <ulli.kroll@googlemail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org,
-        linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v4 net-next 3/6] drivers: net: dsa: add locked fdb entry
- flag to drivers
-In-Reply-To: <YwdCovUbVpmHfl39@shredder>
-References: <5a4cfc6246f621d006af69d4d1f61ed1@kapio-technology.com>
- <YvkM7UJ0SX+jkts2@shredder>
- <34dd1318a878494e7ab595f8727c7d7d@kapio-technology.com>
- <YwHZ1J9DZW00aJDU@shredder>
- <ce4266571b2b47ae8d56bd1f790cb82a@kapio-technology.com>
- <YwMW4iGccDu6jpaZ@shredder>
- <c2822d6dd66a1239ff8b7bfd06019008@kapio-technology.com>
- <YwR4MQ2xOMlvKocw@shredder>
- <15407e4b247e91fd8326b1013d1a8640@kapio-technology.com>
- <YwdCovUbVpmHfl39@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <824eda8a76f36c8e211289e4ed3d2118@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,30 +71,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-25 11:36, Ido Schimmel wrote:
-> On Tue, Aug 23, 2022 at 01:41:51PM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-08-23 08:48, Ido Schimmel wrote:
->> >
->> > I'm not good at naming, but "blackhole" is at least consistent with what
->> > we already have for routes and nexthop objects.
->> >
->> 
->> I have changed it the name "masked", as that is also the term used in 
->> the
->> documentation for the zero-DPV entries, and I think that it will 
->> generally
->> be a more accepted term.
-> 
-> "blackhole" is an already accepted term and at least to me it is much
-> more clear than "masked". Keep in mind that both L2 neighbours (FDB) 
-> and
-> L3 neighbours share the same uAPI and eventually we might want to 
-> extend
-> the use of this flag for L3 neighbours (at least Spectrum supports it),
-> so it needs to make sense for both.
+On Wed, Aug 24, 2022 at 8:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 23 Aug 2022 09:56:36 -0500 Rob Herring wrote:
+> > In order to ensure only documented properties are present, node schemas
+> > must have unevaluatedProperties or additionalProperties set to false
+> > (typically).
+>
+> Would you like this in 6.0 or 6.1? Applies to both, it seems.
 
-I have changed the name of the flag to 'blackhole', but the struct entry 
-in switchdev_notifier_fdb_info and a function input parameter is still 
-named 'masked'. If that should be changed before I send out V5, please 
-let me know as I hope to get this patch set accepted.
+6.1 is fine, but I found a few more cases, so let me send a v2.
+
+Rob
