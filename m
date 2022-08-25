@@ -2,126 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97AA15A1284
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:41:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AFEBC5A12AE
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241679AbiHYNl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 09:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57970 "EHLO
+        id S242700AbiHYNtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 09:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239774AbiHYNlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:41:24 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2080.outbound.protection.outlook.com [40.107.96.80])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFEC40BFA
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 06:41:23 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eXXc8NVY8UvL/slzyVSIONzSJFzD7+UB9hOFwNQ6K6ZmYyWFG6P+AA6e6HzW0Qml39soO+JkYwXgYHRVyNs2GMSo6aol3GTxHGwxRzjCeQizPLJWBhbS+fIOSEci9Vdb5enuA9g3zmuoC+832FHiPXJ2RxN2VXXsaEhuJFAe8u5hF3fQBFDsrC61bMEOyafe8bsEJ+9w9HKm7IBsxBVHYpNJ4UqyRvvX2301LDAEmy39nTNlB7z+vnyugEDgdik6z47ulnpwc8DzPzzd845M1Z5tE1Ih/XwCpD862XDMgg7tZ5+0L+a9eUIzQlsryM3YZZ2jTa3vJFYAzCaj4SWiQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LZPRhmhfYkoqaTPPdH3SvQ5VwUJITCGhwhh6MoWK7ro=;
- b=kcLRZFsL1+tgCpopKa61MmwkHX8mpqP/voAlTbIi3M+3czRGfJvk/ui95k3kJLWeYbT2oPLRHwyDnSbNLF1qpmppwzqxRdCUPmiTyAS7Fb25jodBXVGKLL9EMkvdXzXJCoKUo7ALyHl3tq4BRIdO/b29PeTQHaEm1yJLgPMEJNmywEPGzDRM8an4BE8h+Vn8hLMS+evdXkEHYYlleZ1h2okeB65PQPjo2n7jKBahsjKJh3UZBsGRyIqEp/PKkQeadI8qH0N5bfQcJFJoLYttHuQeluUPdz+vxDCHtdiLWtjgsNjWrpA/xmDTgqf6z/4ZJmVPIu8sdm9V27RKY4ZNiQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LZPRhmhfYkoqaTPPdH3SvQ5VwUJITCGhwhh6MoWK7ro=;
- b=jJLBHyRaAvuO8G9AD77uGvKn1RqzdGBgamMVAsjU67f38yNoJ+IQ32ixkqRdcsMacL2Echs1teWfpjUl9A0gxaLSp+sPX5N0i1nrid+Guwt+2UzMUxKQiVJLQww6mPY6YacH7a1BtnML5ZQSwODqnyC/4fxO4UYlAN++pfFnM3RcOBE1hExsZRX+hQ/JPmR80TRIlPlLD+J+9vWclR9WQ/8lIUwNME9+AO+9pwdyq8i7exgWvSRyQaoIs5h+ljAL/Sg7iHov98ThpI3Yems0y1JknRL3T8mE9RFp8s6P7GSCybDbvspvl9+cgHDpEN2Dy9x5SV0O7e3OuJhH0yECSw==
-Received: from DM6PR04CA0003.namprd04.prod.outlook.com (2603:10b6:5:334::8) by
- MN2PR12MB2943.namprd12.prod.outlook.com (2603:10b6:208:ad::33) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5546.21; Thu, 25 Aug 2022 13:41:17 +0000
-Received: from DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:334:cafe::35) by DM6PR04CA0003.outlook.office365.com
- (2603:10b6:5:334::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Thu, 25 Aug 2022 13:41:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT112.mail.protection.outlook.com (10.13.173.77) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 13:41:16 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
- (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 25 Aug
- 2022 13:41:15 +0000
-Received: from yaviefel (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 25 Aug
- 2022 06:41:13 -0700
-References: <Yv9VO1DYAxNduw6A@DEN-LT-70577> <874jy8mo0n.fsf@nvidia.com>
- <YwKeVQWtVM9WC9Za@DEN-LT-70577> <87v8qklbly.fsf@nvidia.com>
- <YwXXqB64QLDuKObh@DEN-LT-70577> <87pmgpki9v.fsf@nvidia.com>
- <YwZoGJXgx/t/Qxam@DEN-LT-70577> <87k06xjplj.fsf@nvidia.com>
- <Ywdff/6c3nRMRHDb@DEN-LT-70577>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     <Daniel.Machon@microchip.com>
-CC:     <petrm@nvidia.com>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
-        <vinicius.gomes@intel.com>, <vladimir.oltean@nxp.com>,
-        <thomas.petazzoni@bootlin.com>, <Allan.Nielsen@microchip.com>,
-        <maxime.chevallier@bootlin.com>, <roopa@nvidia.com>
-Subject: Re: Basic PCP/DEI-based queue classification
-Date:   Thu, 25 Aug 2022 15:30:58 +0200
-In-Reply-To: <Ywdff/6c3nRMRHDb@DEN-LT-70577>
-Message-ID: <87fshkjv9l.fsf@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail201.nvidia.com (10.129.68.8) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fad45ac7-3eaf-4c1d-af82-08da869f7c68
-X-MS-TrafficTypeDiagnostic: MN2PR12MB2943:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qob+mro7n4zgKOVs0AgF1N62Nx4RnrzWUWAgdez8Gcr4WC+m7DTkscMjr7y6vRvCCmRpxPgY5Pxyg9X4MbyI+mxR7JFGOBxwYIffu+/4+xkBVXA5lCy7vmAB30lufzAPW7GgvO2TbZjE3seTpzvcYJ/NiYiv7ajtLttKtdy/OT1/fo7NKsMnViUqUa27fdfCja0jFyM6H/tY+eDflrk/lJXTF1U5ywjbtbUoMW7W8xoiDrj8UgAr2e3VsmZMnOnqGh/3BIb08FCFzUxcCh8MchpeAy+4rlpONmR0W9xL47kVhPY2D6sN/+6t/H6w8HQQw/1UPrLzIQZFjIjJvh4tV3iNOzDuAffh+Vklk6ALoWXK/N0XEAsYk3qDm88au7JotqXl//yqxjbwzmUxLmPIepdYc2q17zZmNXS7pxCLChbbe5aDCvbJ3+rP+t15DmiYax+TITlYwNH7dzolMPN0GTf4udieg5sG60LpcVIOdBBXdE3U1WiKfpDSCtxcIQzKjHRPIgq4q80kL0eVFfBxSUW+USAGvl7lNuL7Hg0QUz1RVB3gxW2vngZlaOj7ALUEIT8HbnnEu4oItab7oaJdSnxQKQGzf+5gLKI7nzUW2jWjBPCQLiq86t8nGKX24INLXQjP4qjBzWdNmrDiP+wCgkBYExx2lDS4EJJ4AzTNrcXqGToVcS9mqQhbFgpEp90waXugpqGhYIb44p1OR0ImLwOdCDXoTj4BR8XeP8PnKB7gGFKofJuDyUmRgbXjBblki+tahyG1Qao3lKBJfp6S4G4yBkG34Hz0P2QxAex0xUXUoI32iya8tJ6clGvQbrKO
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(39860400002)(376002)(346002)(396003)(46966006)(40470700004)(36840700001)(82740400003)(5660300002)(81166007)(356005)(36860700001)(8936002)(40460700003)(4744005)(36756003)(6666004)(26005)(107886003)(82310400005)(86362001)(478600001)(40480700001)(41300700001)(83380400001)(2906002)(336012)(186003)(426003)(6916009)(54906003)(316002)(16526019)(2616005)(47076005)(70586007)(70206006)(8676002)(4326008)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 13:41:16.4941
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fad45ac7-3eaf-4c1d-af82-08da869f7c68
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT112.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2943
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+        with ESMTP id S234550AbiHYNtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:49:18 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56947B5A47;
+        Thu, 25 Aug 2022 06:49:17 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u14so24694089wrq.9;
+        Thu, 25 Aug 2022 06:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:references:message-id:date:content-transfer-encoding
+         :mime-version:to:from:subject:cc:from:to:cc;
+        bh=WPCuzAnadlF8Wne0s3IEnoZsdJC/bDxJQFxU3psjTgs=;
+        b=FlzrknLGLaeo9haic8LHkTVXed//r/Uo1Mj7KNs51LotXqhLgM/Ilu3eDKHQqK9br8
+         6Sddvm0nb/xLwiZFDnlQLuITzFEBpo8/GHwfL/M4SZ/kEr1FvLW8zxNdwpKcT3wqgL7p
+         Mbp5VON84T1YqhX23l4HXBuMGSAPCjg9Qbz56Q8w6m8zfYc227zADS36fPcOkOXDDCAC
+         s92gjUpEWDNp5jQR2tPmgIoc889z4aFNvLIdMJ3Ldut85qfr2yUe7XLSYhAjEbEiyi38
+         5lVbz/rYIA5a+rwTlPpHsvfwoVMifIDK0sa+4r+VIX/N4iFm9nplkZkquiPUsL6E1i3K
+         o0tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:references:message-id:date:content-transfer-encoding
+         :mime-version:to:from:subject:cc:x-gm-message-state:from:to:cc;
+        bh=WPCuzAnadlF8Wne0s3IEnoZsdJC/bDxJQFxU3psjTgs=;
+        b=iML32XsYisAACYB30kdLN3JzuUcARtG0bHz9Dh1RuDN07kItFuJAOUHfNupIGPNFc1
+         rGFoudBuv/9HhirorKdENHZecFoD1cNHvtmPPL0M/v0nALUIMgLR8QU6h5oLfiF7NPJk
+         9xEp+veewFcbLe/s+JxjmkHzGylqnCfEUm5d20KRw4AGOmLtEO65HCcP4nWGw9D2HAYP
+         Q7nGzXZL5Hhlx1OluE/xcgOE5jmM4WanPUew1ST6f3MypKPJ8WsEeW4hCl8VVs0wONlg
+         AWDuJDpcTlzZIDKId+Eefwl0sWMmtax7zhvutLm++ZwIfPlygPXOCZLKnJ6wV7uqgdy9
+         o6PA==
+X-Gm-Message-State: ACgBeo0adF3XlicxLTerSEBSVtNit1sT5WNLU+wWZKz8dbEUh3kkSHOy
+        eziQW/Zrvhd3KCfPc1AttGE=
+X-Google-Smtp-Source: AA6agR7kjY0ltpAQVeo1IG40uFqkihwFv8LQMkodTNb2FD6raSMp1Eq8kIiXtR3mIHx1AJFokJrDcw==
+X-Received: by 2002:a5d:58ca:0:b0:225:24a8:8861 with SMTP id o10-20020a5d58ca000000b0022524a88861mr2440759wrf.316.1661435355789;
+        Thu, 25 Aug 2022 06:49:15 -0700 (PDT)
+Received: from localhost (freebox.vlq16.iliad.fr. [213.36.7.13])
+        by smtp.gmail.com with ESMTPSA id n7-20020a5d4207000000b002253fd19a6asm19648458wrq.18.2022.08.25.06.49.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 25 Aug 2022 06:49:14 -0700 (PDT)
+Content-Type: text/plain; charset=UTF-8
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, "Felix Fietkau" <nbd@nbd.name>,
+        "Toke Hoiland-Jorgensen" <toke@redhat.com>,
+        "Linus Lussing" <linus.luessing@c0d3.blue>,
+        "Kalle Valo" <kvalo@kernel.org>,
+        "kernel test robot" <lkp@intel.com>
+Subject: Re: [RFC/RFT v5 1/4] mac80211: use AQL airtime for expected
+ throughput.
+From:   "Nicolas Escande" <nico.escande@gmail.com>
+To:     "Baligh Gasmi" <gasmibal@gmail.com>,
+        "Johannes Berg" <johannes@sipsolutions.net>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Date:   Thu, 25 Aug 2022 15:31:40 +0200
+Message-Id: <CMF5B109JKDQ.R3G4GDYBLZT6@syracuse>
+X-Mailer: aerc 0.11.0
+References: <20220719123525.3448926-1-gasmibal@gmail.com>
+ <20220719123525.3448926-2-gasmibal@gmail.com>
+In-Reply-To: <20220719123525.3448926-2-gasmibal@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Baligh,
 
-<Daniel.Machon@microchip.com> writes:
-
-> I will prepare some patches for this soon and make sure to cc you. 
-> Initially I would like to add support for:
+On Tue Jul 19, 2022 at 2:35 PM CEST, Baligh Gasmi wrote:
+> Since the integration of AQL, packet TX airtime estimation is
+> calculated and counted to be used for the dequeue limit.
 >
->   - pcp/dei-prio mapping for ingress only. If things look good, we
->     can add support for rewrite later. Any objections to this?
+> Use this estimated airtime to compute expected throughput for
+> each station.
+>
+> It will be a generic mac80211 implementation. that can be used if the
+> driver do not have get_expected_throughput implementation.
+>
+> Useful for L2 routing protocols, like B.A.T.M.A.N.
+>
+> Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
+> Reported-by: kernel test robot <lkp@intel.com>
+> CC: Felix Fietkau <nbd@nbd.name>
+> ---
+>  net/mac80211/driver-ops.h |  2 ++
+>  net/mac80211/sta_info.c   | 39 +++++++++++++++++++++++++++++++++++++++
+>  net/mac80211/sta_info.h   | 11 +++++++++++
+>  net/mac80211/status.c     |  2 ++
+>  net/mac80211/tx.c         |  8 +++++++-
+>  5 files changed, 61 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/mac80211/driver-ops.h b/net/mac80211/driver-ops.h
+> index 4e2fc1a08681..fa9952154795 100644
+> --- a/net/mac80211/driver-ops.h
+> +++ b/net/mac80211/driver-ops.h
+> @@ -1142,6 +1142,8 @@ static inline u32 drv_get_expected_throughput(struc=
+t ieee80211_local *local,
+>  	trace_drv_get_expected_throughput(&sta->sta);
+>  	if (local->ops->get_expected_throughput && sta->uploaded)
+>  		ret =3D local->ops->get_expected_throughput(&local->hw, &sta->sta);
+> +	else
+> +		ret =3D ewma_avg_est_tp_read(&sta->deflink.status_stats.avg_est_tp);
+>  	trace_drv_return_u32(local, ret);
+>
+>  	return ret;
+> diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+> index e04a0905e941..201aab465234 100644
+> --- a/net/mac80211/sta_info.c
+> +++ b/net/mac80211/sta_info.c
+> @@ -1993,6 +1993,45 @@ void ieee80211_sta_update_pending_airtime(struct i=
+eee80211_local *local,
+>  			       tx_pending, 0);
+>  }
+>
+> +void ieee80211_sta_update_tp(struct ieee80211_local *local,
+> +			     struct sta_info *sta,
+> +			     struct sk_buff *skb,
+> +			     u16 tx_time_est,
+> +			     bool ack, int retry)
+> +{
+> +	unsigned long diff;
+> +	struct rate_control_ref *ref =3D NULL;
+> +
+> +	if (!skb || !sta || !tx_time_est)
+> +		return;
+> +
+> +	if (test_sta_flag(sta, WLAN_STA_RATE_CONTROL))
+> +		ref =3D sta->rate_ctrl;
+> +
+> +	if (ref && ref->ops->get_expected_throughput)
+> +		return;
+> +
+> +	if (local->ops->get_expected_throughput)
+> +		return;
+> +
+> +	tx_time_est +=3D ack ? 4 : 0;
+> +	tx_time_est +=3D retry ? retry * 2 : 2;
+> +
+> +	sta->deflink.tx_stats.tp_tx_size +=3D (skb->len * 8) * 1000;
+> +	sta->deflink.tx_stats.tp_tx_time_est +=3D tx_time_est;
+> +
+> +	diff =3D jiffies - sta->deflink.status_stats.last_tp_update;
+> +	if (diff > HZ / 10) {
+> +		ewma_avg_est_tp_add(&sta->deflink.status_stats.avg_est_tp,
+> +				    sta->deflink.tx_stats.tp_tx_size /
+> +				    sta->deflink.tx_stats.tp_tx_time_est);
+This needs a div_u64(), the arch may not have native 64 bits div support
+> +
+> +		sta->deflink.tx_stats.tp_tx_size =3D 0;
+> +		sta->deflink.tx_stats.tp_tx_time_est =3D 0;
+> +		sta->deflink.status_stats.last_tp_update =3D jiffies;
+> +	}
+> +}
+> +
+>  int sta_info_move_state(struct sta_info *sta,
+>  			enum ieee80211_sta_state new_state)
+>  {
+> diff --git a/net/mac80211/sta_info.h b/net/mac80211/sta_info.h
+> index 35c390bedfba..4200856fefcd 100644
+> --- a/net/mac80211/sta_info.h
+> +++ b/net/mac80211/sta_info.h
+> @@ -123,6 +123,7 @@ enum ieee80211_sta_info_flags {
+>  #define HT_AGG_STATE_STOP_CB		7
+>  #define HT_AGG_STATE_SENT_ADDBA		8
+>
+> +DECLARE_EWMA(avg_est_tp, 8, 16)
+>  DECLARE_EWMA(avg_signal, 10, 8)
+>  enum ieee80211_agg_stop_reason {
+>  	AGG_STOP_DECLINED,
+> @@ -157,6 +158,12 @@ void ieee80211_register_airtime(struct ieee80211_txq=
+ *txq,
+>
+>  struct sta_info;
+>
+> +void ieee80211_sta_update_tp(struct ieee80211_local *local,
+> +			     struct sta_info *sta,
+> +			     struct sk_buff *skb,
+> +			     u16 tx_time_est,
+> +			     bool ack, int retry);
+> +
+>  /**
+>   * struct tid_ampdu_tx - TID aggregation information (Tx).
+>   *
+> @@ -549,6 +556,8 @@ struct link_sta_info {
+>  		s8 last_ack_signal;
+>  		bool ack_signal_filled;
+>  		struct ewma_avg_signal avg_ack_signal;
+> +		struct ewma_avg_est_tp avg_est_tp;
+> +		unsigned long last_tp_update;
+>  	} status_stats;
+>
+>  	/* Updated from TX path only, no locking requirements */
+> @@ -558,6 +567,8 @@ struct link_sta_info {
+>  		struct ieee80211_tx_rate last_rate;
+>  		struct rate_info last_rate_info;
+>  		u64 msdu[IEEE80211_NUM_TIDS + 1];
+> +		u64 tp_tx_size;
+> +		u64 tp_tx_time_est;
+>  	} tx_stats;
+>
+>  	enum ieee80211_sta_rx_bandwidth cur_max_bandwidth;
+> diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+> index e69272139437..1fb93abc1709 100644
+> --- a/net/mac80211/status.c
+> +++ b/net/mac80211/status.c
+> @@ -1152,6 +1152,8 @@ void ieee80211_tx_status_ext(struct ieee80211_hw *h=
+w,
+>  	ack_signal_valid >  		!!(info->status.flags & IEEE80211_TX_STATUS_ACK_S=
+IGNAL_VALID);
+>
+> +	ieee80211_sta_update_tp(local, sta, skb, tx_time_est, acked, retry_coun=
+t);
+> +
+>  	if (pubsta) {
+>  		struct ieee80211_sub_if_data *sdata =3D sta->sdata;
+>
+> diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+> index c425f4fb7c2e..beb79b04c287 100644
+> --- a/net/mac80211/tx.c
+> +++ b/net/mac80211/tx.c
+> @@ -3617,6 +3617,7 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee802=
+11_hw *hw,
+>  	struct ieee80211_tx_data tx;
+>  	ieee80211_tx_result r;
+>  	struct ieee80211_vif *vif =3D txq->vif;
+> +	struct rate_control_ref *ref =3D NULL;
+>
+>  	WARN_ON_ONCE(softirq_count() =3D=3D 0);
+>
+> @@ -3775,8 +3776,13 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80=
+211_hw *hw,
+>  encap_out:
+>  	IEEE80211_SKB_CB(skb)->control.vif =3D vif;
+>
+> +	if (tx.sta && test_sta_flag(tx.sta, WLAN_STA_RATE_CONTROL))
+> +		ref =3D tx.sta->rate_ctrl;
+> +
+>  	if (vif &&
+> -	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL)) =
+{
+> +	    ((!local->ops->get_expected_throughput &&
+> +	     (!ref || !ref->ops->get_expected_throughput)) ||
+> +	    wiphy_ext_feature_isset(local->hw.wiphy, NL80211_EXT_FEATURE_AQL)))=
+ {
+>  		bool ampdu =3D txq->ac !=3D IEEE80211_AC_VO;
+>  		u32 airtime;
+>
+> --
+> 2.37.1
 
-Rewrite is closely related, but we don't have tools to configure it
-anyway, and I don't see how adding a PCP prioritization first makes it
-more difficult to add these later.
-
->   - Support for trust ordering as a new dedicated object.
-
-Sounds good.
-
-But note that I'm not a gatekeeper, I just happened on some opinions :)
