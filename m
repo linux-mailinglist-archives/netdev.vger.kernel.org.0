@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A661D5A0C8B
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7CB5A0C88
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 11:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239976AbiHYJ0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 05:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        id S239876AbiHYJ0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 05:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239950AbiHYJ0l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:26:41 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A126C127
+        with ESMTP id S239952AbiHYJ0m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 05:26:42 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E8DC6D9CE
         for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 02:26:39 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id u24so13257855lji.0
+Received: by mail-lf1-x133.google.com with SMTP id z6so27409245lfu.9
         for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 02:26:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=T9ekehgC8ShYaRqPl/CmP2JYQ1kWyZP0QxKS/Gpxjq0=;
-        b=l62xLFWty4hzpUJp8Hf9adr7Job36E99Exqr44tyf9v6IYzoevfH1ilQc+NU6Gztyo
-         5DED8bItmfirkq0rfU5T50yy+xUstH78CVHvTftNcRTrnPxiJEvbO3GJE0z+DbAzbc17
-         wIwQyRFRN36aGqn1/pZUZUwiU5hptDvQtYGN+Mq4MIawqV0c7prX6dKZKJ3Ew5ayfBvF
-         k4qRJKpWVIvGCSzQS3UgEOhAJSXLYRr8eH3lcOs7iucU2I8G0SfNBZWTzW3vSJcBi/73
-         poeSKv5jovhkGtYrsaSKBaFmAeR0mh8pl6094uleOH9RSHlF21nDVbcZA9rCy7yzeAbD
-         krnA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=S8Zx2yVdWfQp4McVC/xuqCbg9ff1l41m3pSDDGmvNwo=;
+        b=IiGUwh4C9PShqapwN8tlmXdYTvgonGBRWung+dlSEhtW8Kr9/QeIsRlSCmMYTSfa4q
+         R3UpyMP+Itp3hXs7nWaDk+QtRm8HTOClpkeRyM98GEd8KKJxJWY01Jg+r8LeujA8aj4O
+         xAFM4iNpyADbDCfIxAOXYXfFYO1XQmNO4Oe1TQRhYzd6F0AhxWHQctemR0GCp8Z76Tyg
+         2/vHWg/odRKtTzqlC2QvDU5jallp4G3J3jVW0ONUU2/pVroB4jVBnn3ZIUrFNGCsLL7k
+         81qOtK1jc8CEDfiit8wCfb8ohXTSmCNsG6wKx+cwYuS7LFyQxE2kGlrI8t+vmQFwh0TG
+         7Y0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=T9ekehgC8ShYaRqPl/CmP2JYQ1kWyZP0QxKS/Gpxjq0=;
-        b=wiYYeikRyPBPNjtiw3gGRBUjxHwHAlqqqm4oC1G62AQ07yUG/14u25DqW9DpQtelWS
-         ZvV0OIMsTAfhXpAwgvk6IqE2LIw9yCXl2lMlrPqzMgIssUaCAT6HLWaYV3X55MKEYj8Y
-         GmARypKhdy2QQMOvsDqesoHFr3qESZLVnOo6bcUxGpD50czzVYmIhNpf0KdRgMQJneyu
-         Mp/yoiTFKXFlYVHpPK7zhRbqlij7XRPySbCk6q5EQCHyAMWov7XmiB5NaHZ7cXWgNcEs
-         HV/ENLFhscfX9BGDOmMY9J67YXaJLJ+2pxHMmTVCNcC+jhb8DMsE3tmiqCqJpZV6pZx5
-         6t8A==
-X-Gm-Message-State: ACgBeo2kFGOtUBLcEg3hORceH9Mowol1TxM1FtnXV728ph0865sP53a5
-        clefwZGdw/EXBaxojT9F+0rVQdSl8oPqsdgLmNQ=
-X-Google-Smtp-Source: AA6agR5snsT9//hS/+slyGSz8JXPhqsegWe5gbiDUc63iI1M/84zqU/CWejGYtS3BVDOgplR3BeFFQ==
-X-Received: by 2002:a05:651c:12cb:b0:25b:fa3f:c3f with SMTP id 11-20020a05651c12cb00b0025bfa3f0c3fmr881463lje.364.1661419596998;
-        Thu, 25 Aug 2022 02:26:36 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=S8Zx2yVdWfQp4McVC/xuqCbg9ff1l41m3pSDDGmvNwo=;
+        b=nPEX6HSmSj28Kq4cBEPKsoMzrg6+S1nyyOX4mrzmZ7Wb4FXpl20PiImF8tutV9MtDp
+         KshE9wHXPcArrgW+Fsj0qS5vI78bS65fkh2je4d8qXaxqDyh7g34QAyXqk7x2EvmKzbk
+         xCJryWVBttNcidFPn6exX3b+pB14Qmm7Vdp56CNQ2VAlp4iVcGnyqDbPWfJsozKfOHhT
+         FFBchmt30naSjwrUIh62nAUuxAcdkR1jpDCWaxvrBIR4/83T0ed4MVfK+0/hwNjyff6U
+         iak1PcEAFxvNPN9DxleIzscX1No8csNl5LbM52bOqydvbTiCG+K+4H3dUnfaUQc2nTwj
+         HgnQ==
+X-Gm-Message-State: ACgBeo1NTpseaLt4Dg8R+0/WkIFk/ND8KWDSobmTOSsSWyTBi1vCnbG5
+        ZsEVZ/1STuT0ph+t9Q7R2w77g7NooU3pyI1EctU=
+X-Google-Smtp-Source: AA6agR4sX11joE+iQfKn69RZGRBHsGpUwxY0gMryOFiL117QZaMdhb4r7B7Vt5dYyAu8WPcFjffwoA==
+X-Received: by 2002:a05:6512:e99:b0:48b:2ba1:1511 with SMTP id bi25-20020a0565120e9900b0048b2ba11511mr961433lfb.0.1661419597729;
+        Thu, 25 Aug 2022 02:26:37 -0700 (PDT)
 Received: from wse-c0089.raspi.local (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id p9-20020a2eba09000000b0025df5f38da8sm429740lja.119.2022.08.25.02.26.36
+        by smtp.gmail.com with ESMTPSA id p9-20020a2eba09000000b0025df5f38da8sm429740lja.119.2022.08.25.02.26.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 02:26:36 -0700 (PDT)
+        Thu, 25 Aug 2022 02:26:37 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -58,10 +58,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v1 0/3] net: dsa: Add RMU support
-Date:   Thu, 25 Aug 2022 11:26:26 +0200
-Message-Id: <20220825092629.236131-1-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v1 1/3] dsa: Implement RMU layer in DSA
+Date:   Thu, 25 Aug 2022 11:26:27 +0200
+Message-Id: <20220825092629.236131-2-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220825092629.236131-1-mattias.forsblad@gmail.com>
+References: <20220825092629.236131-1-mattias.forsblad@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -74,52 +76,208 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Marvell SOHO switches have the ability to receive and transmit
-Remote Management Frames (Frame2Reg) to the CPU through the
-attached network interface.
-This is handled by the Remote Management Unit (RMU).
-These frames can contain different payloads:
-single switch register read and writes, daisy chained switch
-register read and writes, RMON/MIB dump/dump clear and ATU dump.
-The dump functions are very costly over MDIO but it's
-only a couple of network packets via the RMU.
+Support handling of layer 2 part for RMU frames which is
+handled in-band with other DSA traffic.
 
-Next step could be to implement ATU dump.
-We've found that the gain to use RMU for single
-register read and writes is neglible.
+Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+---
+ include/net/dsa.h             |   7 +++
+ include/uapi/linux/if_ether.h |   1 +
+ net/dsa/tag_dsa.c             | 109 +++++++++++++++++++++++++++++++++-
+ 3 files changed, 114 insertions(+), 3 deletions(-)
 
-RFC -> v1:
-  - Track master interface availability.
-  - Validate destination MAC for incoming frames.
-  - Rate limit outputs.
-  - Cleanup setup function validating upstream port on switch.
-  - Fix return values when setting up RMU.
-  - Prefix defines correctly.
-  - Fix aligned accesses.
-  - Validate that switch exists for incoming frames.
-  - Split RMON stats function.
-
-Regards,
-Mattias Forsblad
-
-Mattias Forsblad (3):
-  dsa: Implement RMU layer in DSA
-  dsa: mv88e6xxx: Add support for RMU in select switches
-  rmon: Use RMU if available
-
- drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c    |  54 +++++-
- drivers/net/dsa/mv88e6xxx/chip.h    |  20 ++
- drivers/net/dsa/mv88e6xxx/global1.c |  84 +++++++++
- drivers/net/dsa/mv88e6xxx/global1.h |   3 +
- drivers/net/dsa/mv88e6xxx/rmu.c     | 276 ++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/rmu.h     |  33 ++++
- include/net/dsa.h                   |   7 +
- include/uapi/linux/if_ether.h       |   1 +
- net/dsa/tag_dsa.c                   | 109 ++++++++++-
- 10 files changed, 578 insertions(+), 10 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
-
---
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index f2ce12860546..54f7f3494f84 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -92,6 +92,7 @@ struct dsa_switch;
+ struct dsa_device_ops {
+ 	struct sk_buff *(*xmit)(struct sk_buff *skb, struct net_device *dev);
+ 	struct sk_buff *(*rcv)(struct sk_buff *skb, struct net_device *dev);
++	int (*inband_xmit)(struct sk_buff *skb, struct net_device *dev, int seq_no);
+ 	void (*flow_dissect)(const struct sk_buff *skb, __be16 *proto,
+ 			     int *offset);
+ 	int (*connect)(struct dsa_switch *ds);
+@@ -1193,6 +1194,12 @@ struct dsa_switch_ops {
+ 	void	(*master_state_change)(struct dsa_switch *ds,
+ 				       const struct net_device *master,
+ 				       bool operational);
++
++	/*
++	 * RMU operations
++	 */
++	int (*inband_receive)(struct dsa_switch *ds, struct sk_buff *skb,
++			int seq_no);
+ };
+ 
+ #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
+diff --git a/include/uapi/linux/if_ether.h b/include/uapi/linux/if_ether.h
+index d370165bc621..9de1bdc7cccc 100644
+--- a/include/uapi/linux/if_ether.h
++++ b/include/uapi/linux/if_ether.h
+@@ -158,6 +158,7 @@
+ #define ETH_P_MCTP	0x00FA		/* Management component transport
+ 					 * protocol packets
+ 					 */
++#define ETH_P_RMU_DSA   0x00FB          /* RMU DSA protocol */
+ 
+ /*
+  *	This is an Ethernet frame header.
+diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
+index e4b6e3f2a3db..36f02e7dd3c3 100644
+--- a/net/dsa/tag_dsa.c
++++ b/net/dsa/tag_dsa.c
+@@ -123,6 +123,90 @@ enum dsa_code {
+ 	DSA_CODE_RESERVED_7    = 7
+ };
+ 
++#define DSA_RMU_RESV1   0x3e
++#define DSA_RMU         1
++#define DSA_RMU_PRIO    6
++#define DSA_RMU_RESV2   0xf
++
++static int dsa_inband_xmit_ll(struct sk_buff *skb, struct net_device *dev,
++			      const u8 *header, int header_len, int seq_no)
++{
++	static const u8 dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
++	struct dsa_port *dp;
++	struct ethhdr *eth;
++	u8 *data;
++
++	if (!dev)
++		return -ENODEV;
++
++	dp = dsa_slave_to_port(dev);
++	if (!dp)
++		return -ENODEV;
++
++	/* Create RMU L2 header */
++	data = skb_push(skb, 6);
++	data[0] = (DSA_CMD_FROM_CPU << 6) | dp->ds->index;
++	data[1] = DSA_RMU_RESV1 << 2 | DSA_RMU << 1;
++	data[2] = DSA_RMU_PRIO << 5 | DSA_RMU_RESV2;
++	data[3] = seq_no;
++	data[4] = 0;
++	data[5] = 0;
++
++	/* Add header if any */
++	if (header) {
++		data = skb_push(skb, header_len);
++		memcpy(data, header, header_len);
++	}
++
++	/* Create MAC header */
++	eth = (struct ethhdr *)skb_push(skb, 2 * ETH_ALEN);
++	memcpy(eth->h_source, dev->dev_addr, ETH_ALEN);
++	memcpy(eth->h_dest, dest_addr, ETH_ALEN);
++
++	skb->protocol = htons(ETH_P_RMU_DSA);
++
++	dev_queue_xmit(skb);
++
++	return 0;
++}
++
++static int dsa_inband_rcv_ll(struct sk_buff *skb, struct net_device *dev)
++{
++	struct dsa_switch *ds;
++	int source_device;
++	u8 *dsa_header;
++	int rcv_seqno;
++	int ret = 0;
++
++	if (!dev || !dev->dsa_ptr)
++		return 0;
++
++	ds = dev->dsa_ptr->ds;
++	if (!ds)
++		return 0;
++
++	dsa_header = skb->data - 2;
++
++	source_device = dsa_header[0] & 0x1f;
++	ds = dsa_switch_find(ds->dst->index, source_device);
++	if (!ds) {
++		net_dbg_ratelimited("DSA inband: Didn't find switch with index %d", source_device);
++		return -EINVAL;
++	}
++
++	/* Get rcv seqno */
++	rcv_seqno = dsa_header[3];
++
++	skb_pull(skb, DSA_HLEN);
++
++	if (ds->ops && ds->ops->inband_receive(ds, skb, rcv_seqno)) {
++		dev_dbg_ratelimited(ds->dev, "DSA inband: error decoding packet");
++		ret = -EIO;
++	}
++
++	return ret;
++}
++
+ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
+ 				   u8 extra)
+ {
+@@ -218,9 +302,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 
+ 		switch (code) {
+ 		case DSA_CODE_FRAME2REG:
+-			/* Remote management is not implemented yet,
+-			 * drop.
+-			 */
++			dsa_inband_rcv_ll(skb, dev);
+ 			return NULL;
+ 		case DSA_CODE_ARP_MIRROR:
+ 		case DSA_CODE_POLICY_MIRROR:
+@@ -325,6 +407,12 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 
+ #if IS_ENABLED(CONFIG_NET_DSA_TAG_DSA)
+ 
++static int dsa_inband_xmit(struct sk_buff *skb, struct net_device *dev,
++			   int seq_no)
++{
++	return dsa_inband_xmit_ll(skb, dev, NULL, 0, seq_no);
++}
++
+ static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	return dsa_xmit_ll(skb, dev, 0);
+@@ -343,6 +431,7 @@ static const struct dsa_device_ops dsa_netdev_ops = {
+ 	.proto	  = DSA_TAG_PROTO_DSA,
+ 	.xmit	  = dsa_xmit,
+ 	.rcv	  = dsa_rcv,
++	.inband_xmit = dsa_inband_xmit,
+ 	.needed_headroom = DSA_HLEN,
+ };
+ 
+@@ -354,6 +443,19 @@ MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_DSA);
+ 
+ #define EDSA_HLEN 8
+ 
++static int edsa_inband_xmit(struct sk_buff *skb, struct net_device *dev,
++			    int seq_no)
++{
++	u8 edsa_header[4];
++
++	edsa_header[0] = (ETH_P_EDSA >> 8) & 0xff;
++	edsa_header[1] = ETH_P_EDSA & 0xff;
++	edsa_header[2] = 0x00;
++	edsa_header[3] = 0x00;
++
++	return dsa_inband_xmit_ll(skb, dev, edsa_header, 4, seq_no);
++}
++
+ static struct sk_buff *edsa_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	u8 *edsa_header;
+@@ -385,6 +487,7 @@ static const struct dsa_device_ops edsa_netdev_ops = {
+ 	.proto	  = DSA_TAG_PROTO_EDSA,
+ 	.xmit	  = edsa_xmit,
+ 	.rcv	  = edsa_rcv,
++	.inband_xmit = edsa_inband_xmit,
+ 	.needed_headroom = EDSA_HLEN,
+ };
+ 
+-- 
 2.25.1
+
