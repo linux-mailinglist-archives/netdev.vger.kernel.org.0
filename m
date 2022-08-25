@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A7A5A116A
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:04:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D3CB5A115D
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:04:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242172AbiHYNCt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 09:02:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39742 "EHLO
+        id S242175AbiHYNDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 09:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242140AbiHYNCr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:02:47 -0400
+        with ESMTP id S242165AbiHYNCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:02:48 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85AC68709D
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 06:02:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 392BE8F95E
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 06:02:43 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUz-0007zW-9f; Thu, 25 Aug 2022 15:02:17 +0200
+        id 1oRCUz-0007zZ-9g; Thu, 25 Aug 2022 15:02:17 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUw-001uGQ-1p; Thu, 25 Aug 2022 15:02:14 +0200
+        id 1oRCUw-001uGX-BU; Thu, 25 Aug 2022 15:02:14 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRCUv-00FeUN-37; Thu, 25 Aug 2022 15:02:13 +0200
+        id 1oRCUv-00FeUi-3j; Thu, 25 Aug 2022 15:02:13 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -43,9 +43,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v2 4/7] net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
-Date:   Thu, 25 Aug 2022 15:02:08 +0200
-Message-Id: <20220825130211.3730461-5-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v2 5/7] net: mdiobus: search for PSE nodes by parsing PHY nodes.
+Date:   Thu, 25 Aug 2022 15:02:09 +0200
+Message-Id: <20220825130211.3730461-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220825130211.3730461-1-o.rempel@pengutronix.de>
 References: <20220825130211.3730461-1-o.rempel@pengutronix.de>
@@ -64,63 +64,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rework error handling as preparation for PSE patch. This patch should
-make it easier to extend this function.
+Some PHYs can be linked with PSE (Power Sourcing Equipment), so search
+for related nodes and attach it to the phydev.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/mdio/fwnode_mdio.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ drivers/net/mdio/fwnode_mdio.c | 37 ++++++++++++++++++++++++++++++++--
+ drivers/net/phy/phy_device.c   |  2 ++
+ include/linux/phy.h            |  2 ++
+ 3 files changed, 39 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 3e79c2c519298..e78ad55c0e091 100644
+index e78ad55c0e091..1e775c449f5db 100644
 --- a/drivers/net/mdio/fwnode_mdio.c
 +++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -108,8 +108,8 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	else
- 		phy = phy_device_create(bus, addr, phy_id, 0, NULL);
- 	if (IS_ERR(phy)) {
--		unregister_mii_timestamper(mii_ts);
--		return PTR_ERR(phy);
-+		rc = PTR_ERR(phy);
-+		goto clean_mii_ts;
+@@ -10,10 +10,31 @@
+ #include <linux/fwnode_mdio.h>
+ #include <linux/of.h>
+ #include <linux/phy.h>
++#include <linux/pse-pd/pse.h>
+ 
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+ 
++static struct pse_control *
++fwnode_find_pse_control(struct fwnode_handle *fwnode)
++{
++	struct pse_control *psec;
++	struct device_node *np;
++
++	if (is_acpi_node(fwnode))
++		return NULL;
++
++	np = to_of_node(fwnode);
++	if (!np)
++		return NULL;
++
++	psec = of_pse_control_get(np);
++	if (IS_ERR_OR_NULL(psec))
++		return NULL;
++
++	return psec;
++}
++
+ static struct mii_timestamper *
+ fwnode_find_mii_timestamper(struct fwnode_handle *fwnode)
+ {
+@@ -89,14 +110,21 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 				struct fwnode_handle *child, u32 addr)
+ {
+ 	struct mii_timestamper *mii_ts = NULL;
++	struct pse_control *psec = NULL;
+ 	struct phy_device *phy;
+ 	bool is_c45 = false;
+ 	u32 phy_id;
+ 	int rc;
+ 
++	psec = fwnode_find_pse_control(child);
++	if (IS_ERR(psec))
++		return PTR_ERR(psec);
++
+ 	mii_ts = fwnode_find_mii_timestamper(child);
+-	if (IS_ERR(mii_ts))
+-		return PTR_ERR(mii_ts);
++	if (IS_ERR(mii_ts)) {
++		rc = PTR_ERR(mii_ts);
++		goto clean_pse;
++	}
+ 
+ 	rc = fwnode_property_match_string(child, "compatible",
+ 					  "ethernet-phy-ieee802.3-c45");
+@@ -132,18 +160,23 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 			goto clean_phy;
  	}
  
- 	if (is_acpi_node(child)) {
-@@ -123,17 +123,13 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 		/* All data is now stored in the phy struct, so register it */
- 		rc = phy_device_register(phy);
- 		if (rc) {
--			phy_device_free(phy);
- 			fwnode_handle_put(phy->mdio.dev.fwnode);
--			return rc;
-+			goto clean_phy;
- 		}
- 	} else if (is_of_node(child)) {
- 		rc = fwnode_mdiobus_phy_device_register(bus, phy, child, addr);
--		if (rc) {
--			unregister_mii_timestamper(mii_ts);
--			phy_device_free(phy);
--			return rc;
--		}
-+		if (rc)
-+			goto clean_phy;
- 	}
- 
++	phy->psec = psec;
++
  	/* phy->mii_ts may already be defined by the PHY driver. A
-@@ -143,5 +139,12 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	 * mii_timestamper probed via the device tree will still have
+ 	 * precedence.
+ 	 */
  	if (mii_ts)
  		phy->mii_ts = mii_ts;
++
  	return 0;
-+
-+clean_phy:
-+	phy_device_free(phy);
-+clean_mii_ts:
-+	unregister_mii_timestamper(mii_ts);
-+
-+	return rc;
+ 
+ clean_phy:
+ 	phy_device_free(phy);
+ clean_mii_ts:
+ 	unregister_mii_timestamper(mii_ts);
++clean_pse:
++	pse_control_put(psec);
+ 
+ 	return rc;
  }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 0c6efd7926907..221bc872ee2fb 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -26,6 +26,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/phy.h>
+ #include <linux/phy_led_triggers.h>
++#include <linux/pse-pd/pse.h>
+ #include <linux/property.h>
+ #include <linux/sfp.h>
+ #include <linux/skbuff.h>
+@@ -988,6 +989,7 @@ EXPORT_SYMBOL(phy_device_register);
+  */
+ void phy_device_remove(struct phy_device *phydev)
+ {
++	pse_control_put(phydev->psec);
+ 	unregister_mii_timestamper(phydev->mii_ts);
+ 
+ 	device_del(&phydev->mdio.dev);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d8442..0c91870b82582 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -588,6 +588,7 @@ struct macsec_ops;
+  * @master_slave_get: Current master/slave advertisement
+  * @master_slave_state: Current master/slave configuration
+  * @mii_ts: Pointer to time stamper callbacks
++ * @psec: Pointer to Power Sourcing Equipment control struct
+  * @lock:  Mutex for serialization access to PHY
+  * @state_queue: Work queue for state machine
+  * @shared: Pointer to private data shared by phys in one package
+@@ -701,6 +702,7 @@ struct phy_device {
+ 	struct phylink *phylink;
+ 	struct net_device *attached_dev;
+ 	struct mii_timestamper *mii_ts;
++	struct pse_control *psec;
+ 
+ 	u8 mdix;
+ 	u8 mdix_ctrl;
 -- 
 2.30.2
 
