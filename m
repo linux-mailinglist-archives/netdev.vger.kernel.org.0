@@ -2,49 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A84225A17FA
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 19:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EFAF5A17FB
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 19:31:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242556AbiHYRaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 13:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
+        id S242557AbiHYRbF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 13:31:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242777AbiHYRac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 13:30:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 897997E818
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 10:30:31 -0700 (PDT)
+        with ESMTP id S231324AbiHYRbD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 13:31:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 758629E13F;
+        Thu, 25 Aug 2022 10:31:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2ACAB82834
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 17:30:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75399C433B5;
-        Thu, 25 Aug 2022 17:30:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27B8BB82834;
+        Thu, 25 Aug 2022 17:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C30AC433D6;
+        Thu, 25 Aug 2022 17:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661448628;
-        bh=epO9j1uf9D/p+TbychYlE/iXaxfaNWoya1HjBilkCZM=;
+        s=k20201202; t=1661448659;
+        bh=a9J1RUT2O0gF/w4I74g6da70M3ycn+P0csL4g8CFH8I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Yp2qTntNBgd7UAKSuOKkjIbYJ60dtR9oans7hqXuFfBuuzmIyZw7Q8mdJMg+nKuG+
-         wE9PK3lRvrY6DJLBTMJAW32dzS4KlPjAlNPVu1KWyJ0/v8G+/kz4ST+KZillb4IieE
-         I5dUT6Y2e9lzwuLZ4od/ZqzvYeI5H/7hnu/GcixkpZQpxr2EJNpwQgDrjHTO2Ja+RR
-         QgyVO8ZfhlGZ7iiezn9UAA5MWTsw1p4shR9PeywQ3Libpm0GP1tBsTaBKuiT7IVPAT
-         2UJhC5PA6AmyIaXYypcHSih071TcWFqqB60jeEf6qqhEETK/wZ/YU9nxwNFUy0J5mC
-         zCVp1DVodSYtg==
-Date:   Thu, 25 Aug 2022 10:30:27 -0700
+        b=SB62L6xXboFqqNr5wL2QhiJh0sDkXssz/JfPQ2SnE8oRgC40TFvQ2PxVRwnFnObSi
+         9wUMcM7BzgULfifWuRU+2++WltXru0bzGuFg/Qr+3hzlH16cJWrlJ+YmoWxELXtxEI
+         I38qKq7h2p3ucimebU8j0gG8f2w1Ygg4vhiCEi5f9AXBJop/aI5Dkhfm8w3ZtGO495
+         0DGp82m3hgOHucM5i/dDpWsXikUqt3aMPfzZeIpZWt2JmjApQwnSE7Vn65aj9K7YXZ
+         d2keLqBSUkHXDm9h3qY95gD2tQa+zIkqh9/S/NzeZg495VXZhDQ3Ih0xqrIgAJcZBx
+         7XjJEfHuKd5pA==
+Date:   Thu, 25 Aug 2022 10:30:58 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     Gal Pressman <gal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
-Message-ID: <20220825103027.53fed750@kernel.org>
-In-Reply-To: <CO1PR11MB50893710E9CA4C720815384ED6729@CO1PR11MB5089.namprd11.prod.outlook.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
-        <CO1PR11MB50895C42C04A408CF6151023D6739@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <5d9c6b31-cdf2-1285-6d4b-2368bae8b6f4@nvidia.com>
-        <20220825092957.26171986@kernel.org>
-        <CO1PR11MB50893710E9CA4C720815384ED6729@CO1PR11MB5089.namprd11.prod.outlook.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 9/9] u64_stat: Remove the obsolete fetch_irq() variants
+Message-ID: <20220825103058.7c2ff52f@kernel.org>
+In-Reply-To: <YwenJaYmzEJGZGUW@linutronix.de>
+References: <20220817162703.728679-1-bigeasy@linutronix.de>
+        <20220817162703.728679-10-bigeasy@linutronix.de>
+        <20220817112745.4efd8217@kernel.org>
+        <Yv5aSquR9S2KxUr2@linutronix.de>
+        <20220818090200.4c6889f2@kernel.org>
+        <Yv5v1E6mfpcxjnLV@linutronix.de>
+        <20220818104505.010ff950@kernel.org>
+        <YwOd7Ex7W21WzQ8N@linutronix.de>
+        <20220822110543.4f1a8962@kernel.org>
+        <YwenJaYmzEJGZGUW@linutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -58,21 +65,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Aug 2022 16:57:50 +0000 Keller, Jacob E wrote:
-> > Sorry, I misinterpreted your previous reply, somehow I thought you
-> > quoted option (3), because my fallible reading of mlx5 was that it
-> > accepts multiple flags.
-> > 
-> > (First) option 2 is fine.
+On Thu, 25 Aug 2022 18:45:25 +0200 Sebastian Andrzej Siewior wrote:
+> On 2022-08-22 11:05:43 [-0700], Jakub Kicinski wrote:
+> > Guess so, but it shouldn't be extra work if we're delaying the driver
+> > conversion till 6.1?  
 > 
-> Even though existing behavior doesn't do that for ice right now and
-> wouldn't be able to do that properly with old firmware?
+> I posted v2 of this series excluding 9/9 as you asked for. I will send
+> it later, splitted (as in net only), once the prerequisite is in Linus'
+> tree.
 
-Update your FW seems like a reasonable thing to ask customers to do.
-Are there cables already qualified for the old FW which would switch
-to No FEC under new rules?
-
-Can you share how your FW picks the mode exactly?
-
-There must be _some_ standardization here, because we're talking about
-<5m cables, so we can safely assume it's linking to a ToR switch.
+Thanks!
