@@ -2,227 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12A9F5A075C
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 04:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D79785A0771
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 04:45:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232089AbiHYCll (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 22:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        id S232268AbiHYCmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 22:42:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232105AbiHYClb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 22:41:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A22719C224
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:41:29 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1928C6174C
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 02:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367A1C43141;
-        Thu, 25 Aug 2022 02:41:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661395288;
-        bh=Wa/s9RPdXFrb+MrDXBINyYO+SrQTQlyk5HAWTsS2Whg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oFOJkPg3TmXoJarvGWXB2zMhvOslsbsddcaUB8klIY1DF2hjCAEpB2zRQNKr5B3Pz
-         kZLyV+VejUrCRGdQBoxsx5tNvz2lYslh0OThI9BFnARHGnW8exh0Vtz0k9KZC+bejy
-         T4Gi4wCTyw5g2d0Bz8Gy2XTCUDKb78yPEZc9zbW3fDA73Upc+1IPDnBIgqjiUJcggL
-         4nQVIPwYEU7GoEku9/0t5fVvlgQl/KFmRC6avRfpwsgAgWwsSCUNsgwokh1WOboyn4
-         y8i+Y9SJvzd8d7FWwxt/nbsKN+oEHJxP+e0XKTlwJjEBcHvi76wd1H/WTz9Dh+e4EJ
-         0XTrarUm6HmEw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        mkubecek@suse.cz, johannes@sipsolutions.net,
-        Jakub Kicinski <kuba@kernel.org>, jiri@nvidia.com
-Subject: [PATCH net-next v2 4/6] devlink: use missing attribute ext_ack
-Date:   Wed, 24 Aug 2022 19:41:20 -0700
-Message-Id: <20220825024122.1998968-5-kuba@kernel.org>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220825024122.1998968-1-kuba@kernel.org>
-References: <20220825024122.1998968-1-kuba@kernel.org>
+        with ESMTP id S231162AbiHYCmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 22:42:08 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30AC9E0E7
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:41:59 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id k17so9592716wmr.2
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:41:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=doFUHdVPTABkZsDuf0MJLhPZVm+o4dycrmtaBb1zaGg=;
+        b=ljEZc6yMBm22SLRA96eNiZ8zgNwa6AiCs/mIj4MH8Lu0ITLXCDbw1rPAThOIFT6Hls
+         ospWapMqLKqRDIfRiC+dCGUxBR5sBvXQ26YTcthtauabE4uJitMLdbltOEAcI4UYmaD8
+         j1f06IYOrOaeiFBdUe+UDv9Lah3WVcDkkdi7vs8AauhaW43RVxrNEy24rmWtaAHHHM+u
+         h7B3HLp+8WRyddXXmzTHtWjnkO1iV1aa6u2vo0XFu1N8LA90hsMIcwYJkyIP72cSCzHn
+         Oy6w8nNGH41msDEU6rjbzxVYJQG80prf38WQ/d2GRWv/I5OlSZFlOdPtahy7/ehSx+7F
+         8fAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=doFUHdVPTABkZsDuf0MJLhPZVm+o4dycrmtaBb1zaGg=;
+        b=HlkHFo1fXcVnOqZd8+7nQo8l+ZIVHiaJzNuiZFOcCSPWA7QPZD+AS/QgXUT/U/HMWZ
+         HsOnUeWcxk7k49oJfPIVqfe99aCrWr4gqYSY8HrRzm2pkqtA/XrYM+yeGaoKZ7DlcqNT
+         AAlqbmnh4CivKQrNaUKp8BQbJH1b6ZnXw7zKlECD0dwVtTIce4g1m8wuWl13FGhPuE3Q
+         AeSMS6RakFTBYk6xkvkoiNGf1HBUjiqr4cBCe6RKZlLr9VXXSyObOXSDEJ7BUO3E179W
+         wqlLYCay4nu65tCl9ZtPV6IAEJospGBZSxj+bt9cb7Q9iFh5RPQYg2HFVvgJl1MGyFoP
+         Ul5g==
+X-Gm-Message-State: ACgBeo1pgADDDjbsPexPKUqfkcY9lXqKITg3zng4wELn7uVPIba4LQ0F
+        vhkWIlERdiVQW0ACJQS5f1ybEv9JqnDaRWpYnIK1dg==
+X-Google-Smtp-Source: AA6agR5GPEqqnND+ToMCQEGITdPdIK1ZE/Wm2wUBTGxdKJhYUMI7lrl6GTXYj8E7Tr2c5EbngEn6ZtlnS1UXQr145V8=
+X-Received: by 2002:a05:600c:1e05:b0:3a5:b441:e9c with SMTP id
+ ay5-20020a05600c1e0500b003a5b4410e9cmr794100wmb.24.1661395317923; Wed, 24 Aug
+ 2022 19:41:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220824233117.1312810-1-haoluo@google.com> <20220824233117.1312810-6-haoluo@google.com>
+ <CAADnVQKC_USyXe1RyWL+EY0q=x=c88opvPW-rWZ5znGJOq63CQ@mail.gmail.com>
+In-Reply-To: <CAADnVQKC_USyXe1RyWL+EY0q=x=c88opvPW-rWZ5znGJOq63CQ@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Wed, 24 Aug 2022 19:41:21 -0700
+Message-ID: <CAJD7tkZGxkV8_3qNy_Q=k-DT2=aGknzT08WiVtESpzur1JxCwA@mail.gmail.com>
+Subject: Re: [RESEND PATCH bpf-next v9 5/5] selftests/bpf: add a selftest for
+ cgroup hierarchical stats collection
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Hao Luo <haoluo@google.com>, LKML <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        David Rientjes <rientjes@google.com>,
+        Stanislav Fomichev <sdf@google.com>,
+        Shakeel Butt <shakeelb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Devlink with its global attr policy has a lot of attribute
-presence check, use the new ext ack reporting when they are
-missing.
+On Wed, Aug 24, 2022 at 7:09 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Aug 24, 2022 at 4:31 PM Hao Luo <haoluo@google.com> wrote:
+> > +
+> > +       for (i = 0; i < N_CGROUPS; i++) {
+> > +               fd = create_and_get_cgroup(cgroups[i].path);
+> > +               if (!ASSERT_GE(fd, 0, "create_and_get_cgroup"))
+> > +                       return fd;
+> > +
+> > +               cgroups[i].fd = fd;
+> > +               cgroups[i].id = get_cgroup_id(cgroups[i].path);
+> > +
+> > +               /*
+> > +                * Enable memcg controller for the entire hierarchy.
+> > +                * Note that stats are collected for all cgroups in a hierarchy
+> > +                * with memcg enabled anyway, but are only exposed for cgroups
+> > +                * that have memcg enabled.
+> > +                */
+> > +               if (i < N_NON_LEAF_CGROUPS) {
+> > +                       err = enable_controllers(cgroups[i].path, "memory");
+> > +                       if (!ASSERT_OK(err, "enable_controllers"))
+> > +                               return err;
+> > +               }
+> > +       }
+>
+> It passes BPF CI, but fails in my setup with:
+>
+> # ./test_progs -t cgroup_hier -vv
+> bpf_testmod.ko is already unloaded.
+> Loading bpf_testmod.ko...
+> Successfully loaded bpf_testmod.ko.
+> setup_bpffs:PASS:mount 0 nsec
+> setup_cgroups:PASS:setup_cgroup_environment 0 nsec
+> setup_cgroups:PASS:get_root_cgroup 0 nsec
+> setup_cgroups:PASS:create_and_get_cgroup 0 nsec
+> (cgroup_helpers.c:92: errno: No such file or directory) Enabling
+> controller memory:
+> /mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control
+> setup_cgroups:FAIL:enable_controllers unexpected error: 1 (errno 2)
+> cleanup_bpffs:FAIL:rmdir /sys/fs/bpf/vmscan/ unexpected error: -1 (errno 2)
+> #36      cgroup_hierarchical_stats:FAIL
+> Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+>
+> How do I debug it?
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: jiri@nvidia.com
----
- net/core/devlink.c | 41 ++++++++++++++++++++---------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
+The failure with ENOENT happens when we try to write "+memory" to
+/mnt/cgroup-test-work-dir6526//test/cgroup.subtree_control, not when
+we try to open it. So the file is there. AFAICT, ENOENT can be
+returned from this write if the memory controller is not enabled on
+this cgroup.
 
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index b50bcc18b8d9..e0073981e92d 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -1710,7 +1710,7 @@ static int devlink_nl_cmd_port_split_doit(struct sk_buff *skb,
- 	struct devlink *devlink = info->user_ptr[0];
- 	u32 count;
- 
--	if (!info->attrs[DEVLINK_ATTR_PORT_SPLIT_COUNT])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PORT_SPLIT_COUNT))
- 		return -EINVAL;
- 	if (!devlink->ops->port_split)
- 		return -EOPNOTSUPP;
-@@ -1838,7 +1838,7 @@ static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
- 	if (!devlink->ops->port_del)
- 		return -EOPNOTSUPP;
- 
--	if (!info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PORT_INDEX)) {
- 		NL_SET_ERR_MSG_MOD(extack, "Port index is not specified");
- 		return -EINVAL;
- 	}
-@@ -2690,7 +2690,7 @@ static int devlink_nl_cmd_sb_pool_set_doit(struct sk_buff *skb,
- 	if (err)
- 		return err;
- 
--	if (!info->attrs[DEVLINK_ATTR_SB_POOL_SIZE])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_SB_POOL_SIZE))
- 		return -EINVAL;
- 
- 	size = nla_get_u32(info->attrs[DEVLINK_ATTR_SB_POOL_SIZE]);
-@@ -2900,7 +2900,7 @@ static int devlink_nl_cmd_sb_port_pool_set_doit(struct sk_buff *skb,
- 	if (err)
- 		return err;
- 
--	if (!info->attrs[DEVLINK_ATTR_SB_THRESHOLD])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_SB_THRESHOLD))
- 		return -EINVAL;
- 
- 	threshold = nla_get_u32(info->attrs[DEVLINK_ATTR_SB_THRESHOLD]);
-@@ -3156,7 +3156,7 @@ static int devlink_nl_cmd_sb_tc_pool_bind_set_doit(struct sk_buff *skb,
- 	if (err)
- 		return err;
- 
--	if (!info->attrs[DEVLINK_ATTR_SB_THRESHOLD])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_SB_THRESHOLD))
- 		return -EINVAL;
- 
- 	threshold = nla_get_u32(info->attrs[DEVLINK_ATTR_SB_THRESHOLD]);
-@@ -3845,7 +3845,7 @@ static int devlink_nl_cmd_dpipe_entries_get(struct sk_buff *skb,
- 	struct devlink_dpipe_table *table;
- 	const char *table_name;
- 
--	if (!info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_DPIPE_TABLE_NAME))
- 		return -EINVAL;
- 
- 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
-@@ -4029,8 +4029,9 @@ static int devlink_nl_cmd_dpipe_table_counters_set(struct sk_buff *skb,
- 	const char *table_name;
- 	bool counters_enable;
- 
--	if (!info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME] ||
--	    !info->attrs[DEVLINK_ATTR_DPIPE_TABLE_COUNTERS_ENABLED])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_DPIPE_TABLE_NAME) ||
-+	    GENL_REQ_ATTR_CHECK(info,
-+				DEVLINK_ATTR_DPIPE_TABLE_COUNTERS_ENABLED))
- 		return -EINVAL;
- 
- 	table_name = nla_data(info->attrs[DEVLINK_ATTR_DPIPE_TABLE_NAME]);
-@@ -4119,8 +4120,8 @@ static int devlink_nl_cmd_resource_set(struct sk_buff *skb,
- 	u64 size;
- 	int err;
- 
--	if (!info->attrs[DEVLINK_ATTR_RESOURCE_ID] ||
--	    !info->attrs[DEVLINK_ATTR_RESOURCE_SIZE])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_RESOURCE_ID) ||
-+	    GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_RESOURCE_SIZE))
- 		return -EINVAL;
- 	resource_id = nla_get_u64(info->attrs[DEVLINK_ATTR_RESOURCE_ID]);
- 
-@@ -4755,7 +4756,7 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 	if (!devlink->ops->flash_update)
- 		return -EOPNOTSUPP;
- 
--	if (!info->attrs[DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_FLASH_UPDATE_FILE_NAME))
- 		return -EINVAL;
- 
- 	supported_params = devlink->ops->supported_flash_update_params;
-@@ -4936,10 +4937,8 @@ static int devlink_nl_cmd_selftests_run(struct sk_buff *skb,
- 	if (!devlink->ops->selftest_run || !devlink->ops->selftest_check)
- 		return -EOPNOTSUPP;
- 
--	if (!info->attrs[DEVLINK_ATTR_SELFTESTS]) {
--		NL_SET_ERR_MSG_MOD(info->extack, "selftest required");
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_SELFTESTS))
- 		return -EINVAL;
--	}
- 
- 	attrs = info->attrs[DEVLINK_ATTR_SELFTESTS];
- 
-@@ -5393,7 +5392,7 @@ static int
- devlink_param_type_get_from_info(struct genl_info *info,
- 				 enum devlink_param_type *param_type)
- {
--	if (!info->attrs[DEVLINK_ATTR_PARAM_TYPE])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PARAM_TYPE))
- 		return -EINVAL;
- 
- 	switch (nla_get_u8(info->attrs[DEVLINK_ATTR_PARAM_TYPE])) {
-@@ -5470,7 +5469,7 @@ devlink_param_get_from_info(struct list_head *param_list,
- {
- 	char *param_name;
- 
--	if (!info->attrs[DEVLINK_ATTR_PARAM_NAME])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PARAM_NAME))
- 		return NULL;
- 
- 	param_name = nla_data(info->attrs[DEVLINK_ATTR_PARAM_NAME]);
-@@ -5536,7 +5535,7 @@ static int __devlink_nl_cmd_param_set_doit(struct devlink *devlink,
- 			return err;
- 	}
- 
--	if (!info->attrs[DEVLINK_ATTR_PARAM_VALUE_CMODE])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_PARAM_VALUE_CMODE))
- 		return -EINVAL;
- 	cmode = nla_get_u8(info->attrs[DEVLINK_ATTR_PARAM_VALUE_CMODE]);
- 	if (!devlink_param_cmode_is_supported(param, cmode))
-@@ -6056,7 +6055,7 @@ static int devlink_nl_cmd_region_get_doit(struct sk_buff *skb,
- 	unsigned int index;
- 	int err;
- 
--	if (!info->attrs[DEVLINK_ATTR_REGION_NAME])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_REGION_NAME))
- 		return -EINVAL;
- 
- 	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
-@@ -6189,8 +6188,8 @@ static int devlink_nl_cmd_region_del(struct sk_buff *skb,
- 	unsigned int index;
- 	u32 snapshot_id;
- 
--	if (!info->attrs[DEVLINK_ATTR_REGION_NAME] ||
--	    !info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID])
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_REGION_NAME) ||
-+	    GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_REGION_SNAPSHOT_ID))
- 		return -EINVAL;
- 
- 	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
-@@ -6238,7 +6237,7 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
- 	u8 *data;
- 	int err;
- 
--	if (!info->attrs[DEVLINK_ATTR_REGION_NAME]) {
-+	if (GENL_REQ_ATTR_CHECK(info, DEVLINK_ATTR_REGION_NAME)) {
- 		NL_SET_ERR_MSG_MOD(info->extack, "No region name provided");
- 		return -EINVAL;
- 	}
--- 
-2.37.2
+In setup_cgroup_environment(), we should be enabling all available
+controllers on /mnt and /mnt/cgroup-test-work-dir6526 by this line:
 
+        if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
+              __enable_controllers(cgroup_workdir, NULL))
+                  return 1;
+
+The first thing that comes to mind is that maybe the memory controller
+is not enabled on your setup at all? Can you check
+/sys/fs/cgroup/cgroup.controllers (or wherever your global cgroup
+mount is)?
+
+I don't know much about namespaces, so I am not sure if the privately
+mounted /mnt directory here would be the same as the cgroup root or
+not. Maybe we can add a pause() somewhere and check
+/mnt/cgroup.controllers as well?
