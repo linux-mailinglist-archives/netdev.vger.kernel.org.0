@@ -2,194 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25BDB5A109A
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 14:34:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA9C85A10B2
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 14:39:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241817AbiHYMeJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 08:34:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        id S241968AbiHYMjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 08:39:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241753AbiHYMeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 08:34:08 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21F7AED89;
-        Thu, 25 Aug 2022 05:34:05 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 2F66B60009;
-        Thu, 25 Aug 2022 12:33:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661430841;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a0zpixNx2moc4UmuE0XK44Om71XCEqAKsnZH44MUnsU=;
-        b=OhIh7lw6Td3ts9utYrzkiL4bYZjhRvcOeJNk3S8Ki5tQ2/rZBcpIJU3eoxfOS5RnmbGddn
-        M1XDe2idXfywORCA8CCQN7rIG2SDALhpxa9xrxBva0YU9KrIYhsrLJSLBWWjgSkEQB4H+h
-        zOBROxxttSprCA1bwoHDIz9tLf0tkxvlrRumjWZbthHVzRG7HhvVJqp3WQBP4q4EkMaxVu
-        /7X7od38ylOeBVapY9PrrCyJMPhMulMnVxIYJEhLLXd5gIHpQoCfqPHQwrO3AAIHYvi4CO
-        8zc/ie+9owpRn4Xf1FmifUV8Lx7NmF6H3FbauxTmZWa14csHmoeG7JgnjhVamg==
-Date:   Thu, 25 Aug 2022 14:33:48 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next 2/2] net: altera: tse: convert to phylink
-Message-ID: <20220825143348.662279d6@pc-10.home>
-In-Reply-To: <YwUVabmOJNDgf/JK@shell.armlinux.org.uk>
-References: <20220823140517.3091239-1-maxime.chevallier@bootlin.com>
-        <20220823140517.3091239-3-maxime.chevallier@bootlin.com>
-        <YwUVabmOJNDgf/JK@shell.armlinux.org.uk>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S241940AbiHYMjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 08:39:07 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2042.outbound.protection.outlook.com [40.107.220.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E4DB441A
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 05:39:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YhiVgR3GiB4TEtQhABLvgd5HLyMWNAqHooVVzsNN45R98/q0RIaIoOI47Ecbj/SnFwAGmYIQbLSfWkpu+58J15JrUWBZX238wqiQwRTDFxx/dkDLZ5rpGut6HHWmT6kkg8cfJPv9XfYvfonlMcWi3Ciz//4roKWEZ3b+wh7SIgjQ5EVW9dlawCVUSiyK8Z2JFlFRmdoeTuhCcfhnaP5VzYZshHO5p588jWnG9opQ20FgQqVS2rN6JhQgg0jZFKasJVLBr7ZxWElJe8HkvEdUWS8bieyGza+7lryGW8LDn5Qh4cWjssLkYnhGS+ATGsyDiz8pCZDynaVcyzrtGkwNHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=dbMOfm54PfEKKMrutHKpzixCxw5/VraMKU5djOyeQE4=;
+ b=frHhKpye/auPYGVEao63FMTZtYOq55DkynsDcbih23YmzfxjcNeuFiA/2aZG7j55GJDpqg8ifmtmlgiPfQmsl2MrzEcqyGz174LdND5NXo5gbf/kSaNNHSRvhC8WILifOWaQeURU47hWt9Oo3VckKUHhLR1DhAhexfLxDyMbt5X9XXxPe6LqjDP8BsyPFjmGzHA6EEc/kPXsz619mQa+5HxUwRTlgg3Povzyp9aR3gbjULuj7+p75OyCUoqZ4RM2TyWD82znFfpq1OBmU+oVTmrWUlJfyKFvn5DFExPWth+WrPbikGROkZXKXRphXwJMM1n4nfcpOHN+LgiXJeRKNA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=bestguesspass action=none header.from=nvidia.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dbMOfm54PfEKKMrutHKpzixCxw5/VraMKU5djOyeQE4=;
+ b=MNce/1FrcY/PME5nkEKBSnU0taBi7Q3r1/4x9qVO2tvLWsZwtYfEDHZ83PqpGAlXrofuxUs5sgLjlN+GMQCrIzWMh8nn34CsJjFA5+q19R8bK5SCirgqGu9WpA5sGtbXvwimXUnmKWsMDug5nl8RD+Jqbl3hEQvPMY3TYvyGKeFXRgqLjo7sJDqxdcEEIpyjOFp4LUj1u+SBDe3mNbOVYFLgBMmI/5Ud/A4KwxMW4L2/4DNV675apZdB3Jp/8H3+ASI/A0F1BX0A03ew54cEarXnPO8StnFV0KWCHqUArzXviKfpow14aFNCnUWk7NWfv8YqtzEq3E5n6gMXohQh3A==
+Received: from MW4PR04CA0267.namprd04.prod.outlook.com (2603:10b6:303:88::32)
+ by DM5PR12MB1947.namprd12.prod.outlook.com (2603:10b6:3:111::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.14; Thu, 25 Aug
+ 2022 12:39:02 +0000
+Received: from CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:88:cafe::8a) by MW4PR04CA0267.outlook.office365.com
+ (2603:10b6:303:88::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
+ Transport; Thu, 25 Aug 2022 12:39:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=bestguesspass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT093.mail.protection.outlook.com (10.13.175.59) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5566.15 via Frontend Transport; Thu, 25 Aug 2022 12:39:00 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 25 Aug
+ 2022 12:39:00 +0000
+Received: from nvidia.com (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Thu, 25 Aug
+ 2022 05:38:56 -0700
+From:   Gavin Li <gavinl@nvidia.com>
+To:     <stephen@networkplumber.org>, <davem@davemloft.net>,
+        <jesse.brandeburg@intel.com>, <alexander.h.duyck@intel.com>,
+        <kuba@kernel.org>, <sridhar.samudrala@intel.com>,
+        <jasowang@redhat.com>, <loseweigh@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <virtio-dev@lists.oasis-open.org>, <mst@redhat.com>
+CC:     <gavi@nvidia.com>, <parav@nvidia.com>
+Subject: [PATCH RESEND v2 0/2] Improve virtio performance for 9k mtu
+Date:   Thu, 25 Aug 2022 15:38:38 +0300
+Message-ID: <20220825123840.20239-1-gavinl@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8367ea30-fb94-48d3-f7b5-08da8696c989
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1947:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 6bohjNJN38jIaPe0uAwddvC2qqG0DT8N04MolZWNJP6NUaHI3MKKwDXjuQTNfHjag924c/0lPuPqg5/7q+7xmHoG3JHdhCahLT2zx/RuSLfCCBP4CK/9R4cRQ5n5btSDjZfB5QErm5Nc5B4cgIE2doo4w695TqEM3580KK3XOG8unYY2bNPMn/mgufcpyfPZzFDGVjW95LDNTmY1MhI0qThb+3bvrIl8QgAbZfkAz4r2Kysh2AYKXR5pURes6sl3DDib6oen00qtdRgKg0TCB1BECsGBExhafs/yiJ67w/0bx/Pk0bI0CPaa/rJFPpZ+/sz10E+8p9ResW5rK8721Cw3RZ889d4tUPme1rTrKxlJc8nC+FA3HQ2GUReiVWB+IryLQTiAFskPitQXjgbTe5tS3wvaNN2ZZ1hJRW3sy1iRh1tnM8+d4vgBxlDW7IpA1btm2Pi9LNEIdW6NLtmqBDUc3GhRdgnVYCyvzZLFHKK3vAyFdwm64O9SfqKulizbjIfCXYUjGpyx4uLOGf7dqqqt1oRR5/yHQtb+5wa0PhqucAaX5lBQcwgQdsq75ygX7gVlnHuPxmcFORtT4VMEeeirpBo1GrwHkUjp5V1apxWI6eHUqJvtPVWA4ijmvHrOXplkPb096HLyTOsruf8/rzEWwDyRxDDR5QgAseHSvqCAhqeibJx+s/zRZCg4gumYLep140LisevniF97mjDsA+dDijUkfGJxRuzeyGmjr2Bg2dVNoYYmY9aH+WL2sFP0WoAxpAUqZEPQag9Bb0plTCwI9Rv1jXC2tg9WQi0V+ztqeY4eraUp/kJurUBTSLba
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(136003)(376002)(39860400002)(396003)(36840700001)(46966006)(40470700004)(2906002)(7416002)(40460700003)(83380400001)(8936002)(4744005)(82310400005)(36860700001)(478600001)(2616005)(5660300002)(36756003)(426003)(921005)(186003)(47076005)(40480700001)(7696005)(70206006)(4326008)(16526019)(54906003)(70586007)(110136005)(1076003)(8676002)(336012)(55016003)(82740400003)(356005)(86362001)(6666004)(26005)(81166007)(107886003)(41300700001)(6286002)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Aug 2022 12:39:00.9575
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8367ea30-fb94-48d3-f7b5-08da8696c989
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT093.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1947
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Russell,
+This small series contains two patches that improves virtio netdevice
+performance for 9K mtu when GRO/ guest TSO is disabled.
 
-On Tue, 23 Aug 2022 18:59:05 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+Gavin Li (2):
+  virtio-net: introduce and use helper function for guest gso support
+    checks
+  virtio-net: use mtu size as buffer length for big packets
 
-> On Tue, Aug 23, 2022 at 04:05:17PM +0200, Maxime Chevallier wrote:
-> > This commit converts the Altera Triple Speed Ethernet Controller to
-> > phylink. This controller supports MII, GMII and RGMII with its MAC,
-> > and SGMII + 1000BaseX through a small embedded PCS.
-> > 
-> > The PCS itself has a register set very similar to what is found in a
-> > typical 802.3 ethernet PHY, but this register set memory-mapped
-> > instead of lying on an mdio bus.
-> > 
-> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>  
-> 
-> This needs some work.
+ drivers/net/virtio_net.c | 52 +++++++++++++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 16 deletions(-)
 
-Looks like it, thanks for the review. From what you said, and after
-some more testing and digging, it looks like the TSE PCS can be used
-as a standalone IP that can be plugged to other macs by putting it in
-the PL part of some socfpga platforms.
-
-Given this and your review, I think I'll resubmit this with a proper PCS
-driver for the TSE PCS, if that makes sense.
-
-Thanks for the pointers,
-
-Maxime
-
-> > +static void alt_tse_mac_link_state(struct phylink_config *config,
-> > +				   struct phylink_link_state
-> > *state) +{
-> > +	struct net_device *ndev = to_net_dev(config->dev);
-> > +	struct altera_tse_private *priv = netdev_priv(ndev);
-> > +
-> > +	u16 bmsr, lpa;
-> > +
-> > +	bmsr = sgmii_pcs_read(priv, MII_BMSR);
-> > +	lpa = sgmii_pcs_read(priv, MII_LPA);
-> > +
-> > +	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
-> > +}
-> > +
-> > +static void alt_tse_mac_an_restart(struct phylink_config *config)
-> > +{
-> > +	struct net_device *ndev = to_net_dev(config->dev);
-> > +	struct altera_tse_private *priv = netdev_priv(ndev);
-> > +	u16 bmcr;
-> > +
-> > +	bmcr = sgmii_pcs_read(priv, MII_BMCR);
-> > +	bmcr |= BMCR_ANRESTART;
-> > +	sgmii_pcs_write(priv, MII_BMCR, bmcr);
-> > +}
-> > +
-> > +static void alt_tse_pcs_config(struct net_device *ndev,
-> > +			       const struct phylink_link_state
-> > *state) +{
-> > +	struct altera_tse_private *priv = netdev_priv(ndev);
-> > +	u32 ctrl, if_mode;
-> > +
-> > +	if (state->interface != PHY_INTERFACE_MODE_SGMII &&
-> > +	    state->interface != PHY_INTERFACE_MODE_1000BASEX)
-> > +		return;
-> > +
-> > +	ctrl = sgmii_pcs_read(priv, MII_BMCR);
-> > +	if_mode = sgmii_pcs_read(priv, SGMII_PCS_IF_MODE);
-> > +
-> > +	/* Set link timer to 1.6ms, as per the MegaCore Function
-> > User Guide */
-> > +	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_0, 0x0D40);
-> > +	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_1, 0x03);
-> > +
-> > +	if (state->interface == PHY_INTERFACE_MODE_SGMII) {
-> > +		if_mode |= PCS_IF_MODE_USE_SGMII_AN |
-> > PCS_IF_MODE_SGMII_ENA;
-> > +	} else if (state->interface ==
-> > PHY_INTERFACE_MODE_1000BASEX) {
-> > +		if_mode &= ~(PCS_IF_MODE_USE_SGMII_AN |
-> > PCS_IF_MODE_SGMII_ENA);
-> > +		if_mode |= PCS_IF_MODE_SGMI_SPEED_1000;
-> > +	}
-> > +
-> > +	ctrl |= (BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_ANENABLE);
-> > +
-> > +	sgmii_pcs_write(priv, MII_BMCR, ctrl);
-> > +	sgmii_pcs_write(priv, SGMII_PCS_IF_MODE, if_mode);
-> > +
-> > +	sgmii_pcs_reset(priv);
-> > +}  
-> 
-> These look like they can be plugged directly into the phylink_pcs
-> support - please use that in preference to bolting it ino the MAC
-> ops - as every other ethernet driver (with the exception of
-> mtk_eth_soc) does today.
-> 
-> > +
-> > +static void alt_tse_mac_config(struct phylink_config *config,
-> > unsigned int mode,
-> > +			       const struct phylink_link_state
-> > *state) +{
-> > +	struct net_device *ndev = to_net_dev(config->dev);
-> > +	struct altera_tse_private *priv = netdev_priv(ndev);
-> > +	u32 ctrl;
-> > +
-> > +	ctrl = csrrd32(priv->mac_dev, tse_csroffs(command_config));
-> > +	ctrl &= ~(MAC_CMDCFG_ENA_10 | MAC_CMDCFG_ETH_SPEED |
-> > MAC_CMDCFG_HD_ENA); +
-> > +	if (state->duplex == DUPLEX_HALF)
-> > +		ctrl |= MAC_CMDCFG_HD_ENA;  
-> 
-> Using state->duplex in mac_config has always been a problem, it's not
-> well defined, and there are paths through phylink where state->duplex
-> does not reflect the state of the link when this function is called.
-> This is why it's always been clearly documented that this shall not be
-> used in mac_config.
-> 
-> > +
-> > +	if (state->speed == SPEED_1000)
-> > +		ctrl |= MAC_CMDCFG_ETH_SPEED;
-> > +	else if (state->speed == SPEED_10)
-> > +		ctrl |= MAC_CMDCFG_ENA_10;  
-> 
-> Using state->speed brings with it the same problems as state->duplex.
-> 
-> Please instead use mac_link_up() (and pcs_link_up()) - which are the
-> only callbacks from phylink that you can be sure give you the
-> speed, duplex and pause settings for the link.
-> 
-> Thanks.
-> 
+-- 
+2.31.1
 
