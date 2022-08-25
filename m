@@ -2,107 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BD1B5A1098
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 14:34:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F01B25A1073
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 14:29:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241773AbiHYMeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 08:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        id S241459AbiHYM32 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 08:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241753AbiHYMeE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 08:34:04 -0400
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F695B1BA3
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 05:34:03 -0700 (PDT)
-Received: by mail-lj1-x22c.google.com with SMTP id l23so8249874lji.1
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 05:34:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=jCJsXsDD/iNK9yC84Ot8gXJYydwvdgJYruOO+RMKvrI=;
-        b=X0emtHDFGDi9aZeHp4BbPnWfi2/2Y32/qXORcbMbYWKU3E3zW5qYD2fFIX9vkLLtbi
-         GaxVEAVJ88+KouE2ppQZ1YY/cHhojhRCMC+vYQvEyA529wnA7GZYMADaflfACAs+eo9S
-         LpWxcvfP08C6kv3IIx+pF1r2CpLfNnjV5HYFfJ98nZWa695TZCeQo9FvF7JycXV5HX1y
-         iGzw5FSl03UOLGVwYURZ1S7qSEZtxQRN3kDgZnPqXfF3F0rbcF8zK1GSKzUooOwi6vv+
-         +jCBhDdJmpvL8ugv1xyrnxp5d6WZ70yIpp6RMlwK5mHmMlwA+sOxcvkaRKaJT+f7J/0N
-         3chA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=jCJsXsDD/iNK9yC84Ot8gXJYydwvdgJYruOO+RMKvrI=;
-        b=ZEvun9qBX6vuKbYyyQZ96ISiP+98CV25rHFoYzw8HfhG7C098rJT7QrhwWHz2V8tll
-         7RZEasayS7NQB02bGS2LfRMZ2nD0mA4q7flBn6HtOOqWWg+4grpZbpRZGR9rNGExIAxA
-         JJhCJSi8YnrAOcS8y6/hxEul71TytB9+bbykH92SFhtCmECTPucBqmc/4naAONPwOAMl
-         Epq5xH4fCU8psYSfs+njgd+H5OIUedf4c8VrKw+XLcg9kKv+git7xiT23uA9p3EiEdAe
-         WAmBCORv5zrZqkBtI4/5UJylgcbjUEA/NyM538a1goRodlbxo2W39jye/Wd77uLcb4jh
-         6LGg==
-X-Gm-Message-State: ACgBeo3W/rqWkieRZyvJB/yHE5iQuBcCAEWLdc7zMxC/RSTOgCb+zlC7
-        yygwUO7hp7s3LBEvQSdxKjDU70d8UW3WOjPlfLUmASTKba8WrA==
-X-Google-Smtp-Source: AA6agR6P48JPVyPvNYYU45h+T28rV7KicTf1wAxtBzXQfFFtmoh/0TG6In5HCdF/3tGmR1cHKNPnpP1O8JBei2WPMG8=
-X-Received: by 2002:a2e:5cd:0:b0:261:a774:36d0 with SMTP id
- 196-20020a2e05cd000000b00261a77436d0mr1080313ljf.312.1661430404639; Thu, 25
- Aug 2022 05:26:44 -0700 (PDT)
+        with ESMTP id S236033AbiHYM31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 08:29:27 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A49EB2CDC;
+        Thu, 25 Aug 2022 05:29:25 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MD2Hg4kgtz1N7WY;
+        Thu, 25 Aug 2022 20:25:51 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 20:29:22 +0800
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 25 Aug 2022 20:29:21 +0800
+Message-ID: <fc76cc5d-e1ee-e84e-c47b-8daa4dea43a0@huawei.com>
+Date:   Thu, 25 Aug 2022 20:29:21 +0800
 MIME-Version: 1.0
-Received: by 2002:a05:6520:2f81:b0:211:5365:cd04 with HTTP; Thu, 25 Aug 2022
- 05:26:43 -0700 (PDT)
-Reply-To: abdwabbom447@gmail.com
-From:   Maddah Hussain <abdwabbomaddah93@gmail.com>
-Date:   Thu, 25 Aug 2022 05:26:43 -0700
-Message-ID: <CAHUCj6ePPKO2fZ8N5TaAgUZpdqdMe+kBm_RVpKXi-1araOz89w@mail.gmail.com>
-Subject: Get Back to me (URGENT)
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: *  0.0 URIBL_BLOCKED ADMINISTRATOR NOTICE: The query to URIBL was
-        *      blocked.  See
-        *      http://wiki.apache.org/spamassassin/DnsBlocklists#dnsbl-block
-        *      for more information.
-        *      [URIs: again.it]
-        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:22c listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [abdwabbomaddah93[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [abdwabbomaddah93[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [abdwabbom447[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] net/sched: fix netdevice reference leaks in
+ attach_one_default_qdisc()
+From:   "wanghai (M)" <wanghai38@huawei.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
+        <brouer@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220817104646.22861-1-wanghai38@huawei.com>
+ <20220818105642.6d58e9d4@kernel.org>
+ <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
+In-Reply-To: <d1463bc2-6abd-7b01-5aac-8b7780b94cca@huawei.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Dear,
-I had sent you a mail but i don't think you received it that's why am
-writing you again.It is important you get back to me as soon as you
-can.
 
-Maddah Hussain
+在 2022/8/19 23:58, wanghai (M) 写道:
+>
+> 在 2022/8/19 1:56, Jakub Kicinski 写道:
+>> On Wed, 17 Aug 2022 18:46:46 +0800 Wang Hai wrote:
+>>> In attach_default_qdiscs(), when attach default qdisc (fq_codel) fails
+>>> and fallback to noqueue, if the original attached qdisc is not released
+>>> and a new one is directly attached, this will cause netdevice reference
+>>> leaks.
+>> Could you provide more details on the failure path? My preference would
+>> be to try to clean up properly there, if possible.
+> Hi Jakub.
+>
+> Here are the details of the failure. Do I need to do cleanup under the 
+> failed path?
+>
+> If a dev has multiple queues and queue 0 fails to attach qdisc
+> because there is no memory in attach_one_default_qdisc(). Then
+> dev->qdisc will be noop_qdisc by default. But the other queues
+> may be able to successfully attach to default qdisc.
+>
+> In this case, the fallback to noqueue process will be triggered
+>
+> static void attach_default_qdiscs(struct net_device *dev)
+> {
+>     ...
+>     if (!netif_is_multiqueue(dev) ||
+>         dev->priv_flags & IFF_NO_QUEUE) {
+>             ...
+>             netdev_for_each_tx_queue(dev, attach_one_default_qdisc, 
+> NULL); // queue 0 attach failed because -ENOBUFS, but the other queues 
+> attach successfully
+>             qdisc = txq->qdisc_sleeping;
+>             rcu_assign_pointer(dev->qdisc, qdisc); // dev->qdisc = 
+> &noop_qdisc
+>             ...
+>     }
+>     ...
+>     if (qdisc == &noop_qdisc) {
+>         ...
+>         netdev_for_each_tx_queue(dev, attach_one_default_qdisc, NULL); 
+> // Re-attach, but not release the previously created qdisc
+>         ...
+>     }
+> }
+>
+Hi Jakub.
+Do you have any other suggestions for this patch? Any replies would be 
+appreciated.
+
+>>> The following is the bug log:
+>>>
+>>> veth0: default qdisc (fq_codel) fail, fallback to noqueue
+>>> unregister_netdevice: waiting for veth0 to become free. Usage count 
+>>> = 32
+>>> leaked reference.
+>>>   qdisc_alloc+0x12e/0x210
+>>>   qdisc_create_dflt+0x62/0x140
+>>>   attach_one_default_qdisc.constprop.41+0x44/0x70
+>>>   dev_activate+0x128/0x290
+>>>   __dev_open+0x12a/0x190
+>>>   __dev_change_flags+0x1a2/0x1f0
+>>>   dev_change_flags+0x23/0x60
+>>>   do_setlink+0x332/0x1150
+>>>   __rtnl_newlink+0x52f/0x8e0
+>>>   rtnl_newlink+0x43/0x70
+>>>   rtnetlink_rcv_msg+0x140/0x3b0
+>>>   netlink_rcv_skb+0x50/0x100
+>>>   netlink_unicast+0x1bb/0x290
+>>>   netlink_sendmsg+0x37c/0x4e0
+>>>   sock_sendmsg+0x5f/0x70
+>>>   ____sys_sendmsg+0x208/0x280
+>>>
+>>> In attach_one_default_qdisc(), release the old one before attaching
+>>> a new qdisc to fix this bug.
+>>>
+>>> Fixes: bf6dba76d278 ("net: sched: fallback to qdisc noqueue if 
+>>> default qdisc setup fail")
+>>> Signed-off-by: Wang Hai <wanghai38@huawei.com>
+>>> ---
+>>>   net/sched/sch_generic.c | 5 +++++
+>>>   1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+>>> index d47b9689eba6..87b61ef14497 100644
+>>> --- a/net/sched/sch_generic.c
+>>> +++ b/net/sched/sch_generic.c
+>>> @@ -1140,6 +1140,11 @@ static void attach_one_default_qdisc(struct 
+>>> net_device *dev,
+>>>         if (!netif_is_multiqueue(dev))
+>>>           qdisc->flags |= TCQ_F_ONETXQUEUE | TCQ_F_NOPARENT;
+>>> +
+>>> +    if (dev_queue->qdisc_sleeping &&
+>>> +        dev_queue->qdisc_sleeping != &noop_qdisc)
+>>> +        qdisc_put(dev_queue->qdisc_sleeping);
+>>> +
+>>>       dev_queue->qdisc_sleeping = qdisc;
+>>>   }
+>> .
+>
+-- 
+Wang Hai
+
