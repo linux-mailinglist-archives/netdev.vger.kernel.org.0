@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A70D5A12B6
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:50:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A13445A12BB
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 15:51:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242789AbiHYNtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 09:49:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43292 "EHLO
+        id S242805AbiHYNuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 09:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242785AbiHYNth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:49:37 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BB10B69D8;
-        Thu, 25 Aug 2022 06:49:32 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id z14-20020a7bc7ce000000b003a5db0388a8so2968511wmk.1;
-        Thu, 25 Aug 2022 06:49:32 -0700 (PDT)
+        with ESMTP id S242802AbiHYNuB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 09:50:01 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459FC4D26F;
+        Thu, 25 Aug 2022 06:49:56 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id l33-20020a05600c1d2100b003a645240a95so2561165wms.1;
+        Thu, 25 Aug 2022 06:49:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=in-reply-to:references:message-id:date:content-transfer-encoding
          :mime-version:to:from:subject:cc:from:to:cc;
-        bh=4uAG3NKnOc0i5V7esuVnskMi7lCBXxtibT9mPDCEo+0=;
-        b=ZBgzRNI1lz/gKw5TMxghidks+ji2IZPtcPnVpUe4Oen7YKsu7voD6rFXOAlK5KRoX0
-         usAe/qtJGJ7MbGi3hiMIbsQvFVjCVNcYVNPhF/yxu7qVG/VXo9QTWa/yL6Oc2B22BdzW
-         wMymH83Srdgojasoi7AgfsUB72a3Z6gwVXDf3HVn4blhvra+Dwc2IVne6q54GjzMzdXD
-         RgYw5RpGYr3PFk4q2DPlNeyyUReTz41nJawhRg2ZhMMTqpw6WtDsf1zCGMw4e9wzEqWD
-         qgRIK3Cr0WkW384smJ8p5BjVha4HVdPpvIeroXN1t2f3//+t2L31aiZ6epOq/Xcqo8Od
-         x+WA==
+        bh=yCz3oQJFqTwqovrPNYSJ6P9F0BIA6bLL58cK1Awy8hY=;
+        b=ZvM8pw8sLdgOhDwhD3L3X2Xo+tUKO2zIu/Fh5YypqWrZbY9BQzjbeNy05SEZFhqmhF
+         tejsgMntHg4uahyjwkiZw+eUpmI+GpFQLrra1lAt1FyGNiQWi6wPbgwyw2mm7t1lhBNE
+         H1uyDZt7q4uM7U4nCGL0ErWtM79kUCIeHnUpyh89NyTR2hWnTluX09hPBb6JsNROWzHV
+         aSf8CdZ32X+1HxkZb0ZouguH83iX1xRQxlVhyEosMcPOEIcR6cgdEilY0Y/PpM75Jj8T
+         0ZtUfr1AGU5ezcPW2z7uZTErB7N5YoSILS3cA8TbiSKAEJBVZEo1mLwEYTbEEOKbyoiE
+         ip4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:references:message-id:date:content-transfer-encoding
          :mime-version:to:from:subject:cc:x-gm-message-state:from:to:cc;
-        bh=4uAG3NKnOc0i5V7esuVnskMi7lCBXxtibT9mPDCEo+0=;
-        b=bcakSLLtQP/0UQihXzjJLCvk7MxMwlBiVrOogD5OLCcSkQcJ/+MloHxFKOTxlVxw7F
-         hs+QQQT+ALdyytOjNVlq9QqWZu/TMVZxkjtd8Q0vThX2BMDTWg+bzbjgqdeeutW28U/p
-         suYkBKmjdce90dEZMfu9/XXs0yWy5OBZvsnfoSTLGe/S2KcigqJBMj2jpoe0OziAUA+4
-         BMkkLH4RKqxFPX2tBYSSOg1p3KH1MvIExaaFRJpgaIsDKUlFaSJOYDwYiAy4bh0WD6TP
-         4wJG6zFLq0JFIo/GQO9181WsXEZAifjqMU9cf58cb4ovvWNZCtpj8YhHniTuoHMBv78p
-         Stvg==
-X-Gm-Message-State: ACgBeo23FjY9rNUicf6aIySneO8yn5Wy9qg5MBDfUp8Q+qhZAF/2/8/V
-        7qWh4msEfZc1NLqZH6IqXB0=
-X-Google-Smtp-Source: AA6agR7WPihDTEFLe+tmDbAbaI0Vpbo1xrcMsB2jo649JsXwIkiC3XqANLjy0/dN1uTaPwJ1K0X98A==
-X-Received: by 2002:a05:600c:25ce:b0:3a5:a3b7:bbfe with SMTP id 14-20020a05600c25ce00b003a5a3b7bbfemr8692940wml.115.1661435371278;
-        Thu, 25 Aug 2022 06:49:31 -0700 (PDT)
+        bh=yCz3oQJFqTwqovrPNYSJ6P9F0BIA6bLL58cK1Awy8hY=;
+        b=tsx6CIZJtnYkFZVtTixhkGcmz6T2+m2KNutZG3znxzqarIRYOp5yyFTxeRYPyUPApa
+         yk72RP9hOe1qDZyXNbcvgTwvnEF2nB33XhyrUNxwhA5kL6eLcDRQFELihe68AB3AawnK
+         gwGQ5P/7hQI9La3FwT0upeJ9b13vqFbW6BdojbahDWu87mbHhq/QeP7FFNTxKSIu/NHl
+         79dFh7G9X8T0ZLHoXi94s0xG9P0O59+2+SPyYUc4WabHgsdP/LjwTjguNiv1S+g0RS/S
+         Ng6eMAYzlh8wp/iw/0v6SheM2IHtKCtq4CW2pAM5YugTpjvoam8/98lb4EDSZHNwcBCp
+         lARw==
+X-Gm-Message-State: ACgBeo3pnJDXnQPW25Zhwxw+6jmqLzVhJKdop4LCK7mI0Msl1jbCd0MJ
+        a4oJn8jA9VFpAypnqjzX08w=
+X-Google-Smtp-Source: AA6agR7vn7Mg6lNsxvU/jEi0ZnXITi/xAhNlK2vPyJCKYaCSO6EVnNSc3FsatM3Rjn/+i8fYnNtO4A==
+X-Received: by 2002:a05:600c:4fcd:b0:3a6:2694:e3ba with SMTP id o13-20020a05600c4fcd00b003a62694e3bamr2529473wmq.160.1661435395114;
+        Thu, 25 Aug 2022 06:49:55 -0700 (PDT)
 Received: from localhost (freebox.vlq16.iliad.fr. [213.36.7.13])
-        by smtp.gmail.com with ESMTPSA id b18-20020adff252000000b00224f605f39dsm19338050wrp.76.2022.08.25.06.49.30
+        by smtp.gmail.com with ESMTPSA id y11-20020a5d470b000000b0022584ab85a8sm1080964wrq.17.2022.08.25.06.49.54
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Aug 2022 06:49:31 -0700 (PDT)
+        Thu, 25 Aug 2022 06:49:54 -0700 (PDT)
 Content-Type: text/plain; charset=UTF-8
 Cc:     "David S . Miller" <davem@davemloft.net>,
         "Eric Dumazet" <edumazet@google.com>,
@@ -57,19 +57,19 @@ Cc:     "David S . Miller" <davem@davemloft.net>,
         "Toke Hoiland-Jorgensen" <toke@redhat.com>,
         "Linus Lussing" <linus.luessing@c0d3.blue>,
         "Kalle Valo" <kvalo@kernel.org>
-Subject: Re: [RFC/RFT v5 2/4] mac80211: add periodic monitor for channel
- busy time
+Subject: Re: [RFC/RFT v5 3/4] mac80211: add busy time factor into expected
+ throughput
 From:   "Nicolas Escande" <nico.escande@gmail.com>
 To:     "Baligh Gasmi" <gasmibal@gmail.com>,
         "Johannes Berg" <johannes@sipsolutions.net>
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-Date:   Thu, 25 Aug 2022 15:35:13 +0200
-Message-Id: <CMF5DQR5IOKQ.1AHXQ8IDOC7IT@syracuse>
+Date:   Thu, 25 Aug 2022 15:36:34 +0200
+Message-Id: <CMF5ERVFCDM9.G96GZB43SEWO@syracuse>
 X-Mailer: aerc 0.11.0
 References: <20220719123525.3448926-1-gasmibal@gmail.com>
- <20220719123525.3448926-3-gasmibal@gmail.com>
-In-Reply-To: <20220719123525.3448926-3-gasmibal@gmail.com>
+ <20220719123525.3448926-4-gasmibal@gmail.com>
+In-Reply-To: <20220719123525.3448926-4-gasmibal@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,143 +81,50 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On Tue Jul 19, 2022 at 2:35 PM CEST, Baligh Gasmi wrote:
-> Add a worker scheduled periodicaly to calculate the busy time average of
-> the current channel.
->
-> This will be used in the estimation for expected throughput.
+> When estimating the expected throughput, take into account the busy time
+> of the current channel.
 >
 > Signed-off-by: Baligh Gasmi <gasmibal@gmail.com>
 > ---
->  net/mac80211/ieee80211_i.h |  6 ++++
->  net/mac80211/iface.c       | 65 ++++++++++++++++++++++++++++++++++++++
->  2 files changed, 71 insertions(+)
+>  net/mac80211/sta_info.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
-> diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
-> index 86ef0a46a68c..2cb388335ce8 100644
-> --- a/net/mac80211/ieee80211_i.h
-> +++ b/net/mac80211/ieee80211_i.h
-> @@ -901,6 +901,7 @@ struct ieee80211_if_nan {
->  	struct idr function_inst_ids;
->  };
->
-> +DECLARE_EWMA(avg_busy, 8, 4)
->  struct ieee80211_sub_if_data {
->  	struct list_head list;
->
-> @@ -1024,6 +1025,11 @@ struct ieee80211_sub_if_data {
->  	} debugfs;
->  #endif
->
-> +	struct delayed_work monitor_work;
-> +	u64 last_time;
-> +	u64 last_time_busy;
-> +	struct ewma_avg_busy avg_busy;
-> +
->  	/* must be last, dynamically sized area in this! */
->  	struct ieee80211_vif vif;
->  };
-> diff --git a/net/mac80211/iface.c b/net/mac80211/iface.c
-> index 15a73b7fdd75..e1b20964933c 100644
-> --- a/net/mac80211/iface.c
-> +++ b/net/mac80211/iface.c
-> @@ -1972,6 +1972,64 @@ static void ieee80211_assign_perm_addr(struct ieee=
-80211_local *local,
->  	mutex_unlock(&local->iflist_mtx);
->  }
->
-> +#define DEFAULT_MONITOR_INTERVAL_MS 1000
-> +
-> +static void ieee80211_if_monitor_work(struct work_struct *work)
-> +{
-> +	struct delayed_work *delayed_work =3D to_delayed_work(work);
-> +	struct ieee80211_sub_if_data *sdata > +		container_of(delayed_work, str=
-uct ieee80211_sub_if_data,
-> +				monitor_work);
-> +	struct survey_info survey;
-> +	struct ieee80211_local *local =3D sdata->local;
-> +	struct ieee80211_chanctx_conf *chanctx_conf;
-> +	struct ieee80211_channel *channel =3D NULL;
-> +	int q =3D 0;
-> +	u64 interval =3D DEFAULT_MONITOR_INTERVAL_MS;
-> +
-> +	rcu_read_lock();
-> +	chanctx_conf =3D rcu_dereference(sdata->vif.chanctx_conf);
-> +	if (chanctx_conf)
-> +		channel =3D chanctx_conf->def.chan;
-> +	rcu_read_unlock();
-> +
-> +	if (!channel)
-> +		goto end;
-> +
-> +	if (!local->started)
-> +		goto end;
-> +
-> +	do {
-> +		survey.filled =3D 0;
-> +		if (drv_get_survey(local, q++, &survey) !=3D 0) {
-> +			survey.filled =3D 0;
-> +			break;
-> +		}
-> +	} while (channel !=3D survey.channel);
-> +
-> +	if (survey.filled & SURVEY_INFO_TIME) {
-> +		/* real interval */
-> +		interval =3D survey.time - sdata->last_time;
-> +		/* store last time */
-> +		sdata->last_time =3D survey.time;
-> +	}
-> +
-> +	if (survey.filled & SURVEY_INFO_TIME_BUSY) {
-> +		/* busy */
-> +		u64 busy =3D survey.time_busy < sdata->last_time_busy ? 0 :
-> +			survey.time_busy - sdata->last_time_busy;
-> +		/* average percent busy time */
-> +		ewma_avg_busy_add(&sdata->avg_busy,
-> +				(busy * 100) / interval);
-This could use a div_u64()
-> +		/* store last busy time */
-> +		sdata->last_time_busy =3D survey.time_busy;
-> +	}
-> +
-> +end:
-> +	schedule_delayed_work(&sdata->monitor_work,
-> +			msecs_to_jiffies(DEFAULT_MONITOR_INTERVAL_MS));
-> +}
-> +
->  int ieee80211_if_add(struct ieee80211_local *local, const char *name,
->  		     unsigned char name_assign_type,
->  		     struct wireless_dev **new_wdev, enum nl80211_iftype type,
-> @@ -2085,6 +2143,8 @@ int ieee80211_if_add(struct ieee80211_local *local,=
- const char *name,
->  			  ieee80211_dfs_cac_timer_work);
->  	INIT_DELAYED_WORK(&sdata->dec_tailroom_needed_wk,
->  			  ieee80211_delayed_tailroom_dec);
-> +	INIT_DELAYED_WORK(&sdata->monitor_work,
-> +			ieee80211_if_monitor_work);
->
->  	for (i =3D 0; i < NUM_NL80211_BANDS; i++) {
->  		struct ieee80211_supported_band *sband;
-> @@ -2156,6 +2216,9 @@ int ieee80211_if_add(struct ieee80211_local *local,=
- const char *name,
->  	list_add_tail_rcu(&sdata->list, &local->interfaces);
->  	mutex_unlock(&local->iflist_mtx);
->
-> +	schedule_delayed_work(&sdata->monitor_work,
-> +			msecs_to_jiffies(DEFAULT_MONITOR_INTERVAL_MS));
-> +
->  	if (new_wdev)
->  		*new_wdev =3D &sdata->wdev;
->
-> @@ -2166,6 +2229,8 @@ void ieee80211_if_remove(struct ieee80211_sub_if_da=
-ta *sdata)
+> diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
+> index 201aab465234..7e32c06ae771 100644
+> --- a/net/mac80211/sta_info.c
+> +++ b/net/mac80211/sta_info.c
+> @@ -2000,6 +2000,8 @@ void ieee80211_sta_update_tp(struct ieee80211_local=
+ *local,
+>  			     bool ack, int retry)
 >  {
->  	ASSERT_RTNL();
+>  	unsigned long diff;
+> +	struct ieee80211_sub_if_data *sdata;
+> +	u32 avg_busy;
+>  	struct rate_control_ref *ref =3D NULL;
 >
-> +	cancel_delayed_work_sync(&sdata->monitor_work);
+>  	if (!skb || !sta || !tx_time_est)
+> @@ -2014,6 +2016,7 @@ void ieee80211_sta_update_tp(struct ieee80211_local=
+ *local,
+>  	if (local->ops->get_expected_throughput)
+>  		return;
+>
+> +	sdata =3D sta->sdata;
+>  	tx_time_est +=3D ack ? 4 : 0;
+>  	tx_time_est +=3D retry ? retry * 2 : 2;
+>
+> @@ -2022,6 +2025,10 @@ void ieee80211_sta_update_tp(struct ieee80211_loca=
+l *local,
+>
+>  	diff =3D jiffies - sta->deflink.status_stats.last_tp_update;
+>  	if (diff > HZ / 10) {
+> +		avg_busy =3D ewma_avg_busy_read(&sdata->avg_busy) >> 1;
+> +		sta->deflink.tx_stats.tp_tx_time_est +> +			(sta->deflink.tx_stats.tp_=
+tx_time_est * avg_busy) / 100;
+Once again div_u64() ?
 > +
->  	mutex_lock(&sdata->local->iflist_mtx);
->  	list_del_rcu(&sdata->list);
->  	mutex_unlock(&sdata->local->iflist_mtx);
+>  		ewma_avg_est_tp_add(&sta->deflink.status_stats.avg_est_tp,
+>  				    sta->deflink.tx_stats.tp_tx_size /
+>  				    sta->deflink.tx_stats.tp_tx_time_est);
 > --
 > 2.37.1
 
