@@ -2,165 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34E695A053D
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 02:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B92375A0544
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 02:44:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231146AbiHYAmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 20:42:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
+        id S229573AbiHYAoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 20:44:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiHYAmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 20:42:31 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 907EB8C031
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 17:42:30 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id f14so14070296qkm.0
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 17:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Wpl+c4YfOpabx/QJ3AnuJKzBxyiE9VbZKz/xHkTKLAk=;
-        b=r7iSTSO5N8EX5GHy2qXheBkYDaCDsoumn505Dy+CVk71CvcADRVPavVRi4XQL41YpW
-         nddUiAQlihuhdYgf94AKk17bP/Lg4DS8ALSrWHJaU/mW2rCqXqPEHTnGcF9m9TMHdXX8
-         4ZdDcMEP7/0zTw+yec8Oo4ycG2RGwygPL66RjvWJ0nF+8FlQ21yYvGdhT+k5HKUjHdOp
-         eRaB7I5AEZq2x2O2rCKYAM4aqUXZ31HsS+FwTsQVkUZOt6S+cZ9sCZRUVTRdDhExxG4l
-         dP0IqFDo49hZ+tPyCYzcAt68UlxzNa6nqGWFhN7Qo8lNrdqTfwr8XombersmaWN+ksBW
-         GsPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Wpl+c4YfOpabx/QJ3AnuJKzBxyiE9VbZKz/xHkTKLAk=;
-        b=ZmPRaPbjOZ40swTmaDPTPSVQU4IoRVrnQRqIU7M9PEkXwsWCUp/bx0nrTVs6AR6YMe
-         mk6oDVDKn/3t78YtAPituIb+bwziayxcwQGsLxS6FsY2YYCJy1ixOn53u983BHTgP9mx
-         OfQWr/8h1AF+V6YZORfQ30mtcW1+U9pUsECX8OWApyxNv5iGvk4Chzx8ImaHO7Ble1WC
-         OvT9UeMWElDvVUdq3Cm66HBUGpIBvLsnmyP0R8VJjo3hY8atk/tMAQS5Zch94XQlf8AF
-         Ko/IDuRc81Gr5sAhNP7g+RnXurTvcj46v+MXslWvqWfozWQ7r8A6JnAFx29gDX7y/by8
-         Q7CA==
-X-Gm-Message-State: ACgBeo3ylBQNQpGV+3uibLWqhv55BrUEAbeg8+Cr2ivpMG3UikOZR5w0
-        nU4rnQYIz2Jv6GI2yRGqErEjPwiayw6Pm7t8syEBYg==
-X-Google-Smtp-Source: AA6agR7knBbdeFoqDGkHsplIJWoJqzu7ZyrCa96vf+uBJ7VxVkfiTHoOoqQNmmSlaEL57z3V58dRrlcwl4ze9iPXBtQ=
-X-Received: by 2002:a37:e118:0:b0:6ba:e5ce:123b with SMTP id
- c24-20020a37e118000000b006bae5ce123bmr1382909qkm.221.1661388149595; Wed, 24
- Aug 2022 17:42:29 -0700 (PDT)
+        with ESMTP id S229476AbiHYAoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 20:44:18 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29628E443;
+        Wed, 24 Aug 2022 17:44:16 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MCkk42Yr3z4x1P;
+        Thu, 25 Aug 2022 10:44:11 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661388252;
+        bh=1Vndnbf3NkpEVFZLd7szmH5QRxMEOYDzMqL/ri28+mU=;
+        h=Date:From:To:Cc:Subject:From;
+        b=gGR6P8c34BE3JjdMUhBLMYc7IuHArFZPEJ2fUKQigFW6kbSkvL3xjKOYLTrEuI7NV
+         5YrxX0X4pOgfaBUA54IzAIx7g9jU2eLgxxECqOLkAoXsr37JRffSWfg4LwkmfLzQWR
+         sMTqNM5n7wk8kCBLeok+gktHA0J78gKH2t8ERK/kpwGdKodq9IQD/zVdISsSn+jGPM
+         OBRlIqKScfZyMtLchrGeRs5dPRTPnlrwR2UTCYwoJksyK3JT2RRBP6dyqV3HPvh6Iy
+         oZI/vMb1eG3oJU4XlghPGnVp+sNLABrPg5bS59LfJtxJ4jOpFsgps//KgzHP6FfX5v
+         SnYiVDJGPYUjQ==
+Date:   Thu, 25 Aug 2022 10:44:10 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Lama Kayal <lkayal@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20220825104410.67d4709c@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20220824233117.1312810-1-haoluo@google.com> <CAADnVQLT3JE8LtOYrs30mL88PNs+NaSeXgQqAPEAup5LUC+BPQ@mail.gmail.com>
-In-Reply-To: <CAADnVQLT3JE8LtOYrs30mL88PNs+NaSeXgQqAPEAup5LUC+BPQ@mail.gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Wed, 24 Aug 2022 17:42:18 -0700
-Message-ID: <CA+khW7gQi+BK7Qy4Khk=Ro72nfNQaR2kNkwZemB9ELnDo4Nk3Q@mail.gmail.com>
-Subject: Re: [RESEND PATCH bpf-next v9 0/5] bpf: rstat: cgroup hierarchical
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:CONTROL GROUP (CGROUP)" <cgroups@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>, Michal Koutny <mkoutny@suse.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        David Rientjes <rientjes@google.com>,
-        Stanislav Fomichev <sdf@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="Sig_/yxbc2kKvNljsdMLPlq08U/I";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 5:29 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 24, 2022 at 4:31 PM Hao Luo <haoluo@google.com> wrote:
-> >
-> > This patch series allows for using bpf to collect hierarchical cgroup
-> > stats efficiently by integrating with the rstat framework. The rstat
-> > framework provides an efficient way to collect cgroup stats percpu and
-> > propagate them through the cgroup hierarchy.
-> >
-> > The stats are exposed to userspace in textual form by reading files in
-> > bpffs, similar to cgroupfs stats by using a cgroup_iter program.
-> > cgroup_iter is a type of bpf_iter. It walks over cgroups in four modes:
-> > - walking a cgroup's descendants in pre-order.
-> > - walking a cgroup's descendants in post-order.
-> > - walking a cgroup's ancestors.
-> > - process only a single object.
-> >
-> > When attaching cgroup_iter, one needs to set a cgroup to the iter_link
-> > created from attaching. This cgroup can be passed either as a file
-> > descriptor or a cgroup id. That cgroup serves as the starting point of
-> > the walk.
-> >
-> > One can also terminate the walk early by returning 1 from the iter
-> > program.
-> >
-> > Note that because walking cgroup hierarchy holds cgroup_mutex, the iter
-> > program is called with cgroup_mutex held.
-> >
-> > ** Background on rstat for stats collection **
-> > (I am using a subscriber analogy that is not commonly used)
-> >
-> > The rstat framework maintains a tree of cgroups that have updates and
-> > which cpus have updates. A subscriber to the rstat framework maintains
-> > their own stats. The framework is used to tell the subscriber when
-> > and what to flush, for the most efficient stats propagation. The
-> > workflow is as follows:
-> >
-> > - When a subscriber updates a cgroup on a cpu, it informs the rstat
-> >   framework by calling cgroup_rstat_updated(cgrp, cpu).
-> >
-> > - When a subscriber wants to read some stats for a cgroup, it asks
-> >   the rstat framework to initiate a stats flush (propagation) by calling
-> >   cgroup_rstat_flush(cgrp).
-> >
-> > - When the rstat framework initiates a flush, it makes callbacks to
-> >   subscribers to aggregate stats on cpus that have updates, and
-> >   propagate updates to their parent.
-> >
-> > Currently, the main subscribers to the rstat framework are cgroup
-> > subsystems (e.g. memory, block). This patch series allow bpf programs to
-> > become subscribers as well.
-> >
-> > Patches in this series are organized as follows:
-> > * Patches 1-2 introduce cgroup_iter prog, and a selftest.
-> > * Patches 3-5 allow bpf programs to integrate with rstat by adding the
-> >   necessary hook points and kfunc. A comprehensive selftest that
-> >   demonstrates the entire workflow for using bpf and rstat to
-> >   efficiently collect and output cgroup stats is added.
-> >
-> > ---
-> > Changelog:
-> > v8 -> v9:
-> > - Make UNSPEC (an invalid option) as the default order for cgroup_iter.
-> > - Use enum for specifying cgroup_iter order, instead of u32.
-> > - Add BPF_ITER_RESHCED to cgroup_iter.
-> > - Add cgroup_hierarchical_stats to s390x denylist.
->
-> What 'RESEND' is for?
-> It seems to confuse patchwork and BPF CI.
->
-> The v9 series made it to patchwork...
->
-> Please just bump the version to v10 next time.
-> Don't add things to subject, since automation cannot recognize
-> that yet.
+--Sig_/yxbc2kKvNljsdMLPlq08U/I
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Sorry about that. I thought it was RESEND because no content has
-changed. It was just adding an entry in s390 denylist.
+Hi all,
 
-Are we good now? Or I need to send a v10?
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+
+between commit:
+
+  21234e3a84c7 ("net/mlx5e: Fix use after free in mlx5e_fs_init()")
+
+from the net tree and commit:
+
+  c7eafc5ed068 ("net/mlx5e: Convert ethtool_steering member of flow_steerin=
+g struct to pointer")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+index e0ce5a233d0b,ef1dfbb78464..000000000000
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@@ -1394,12 -1454,17 +1454,17 @@@ struct mlx5e_flow_steering *mlx5e_fs_in
+  			goto err_free_vlan;
+  	}
+ =20
+- 	return fs;
++ 	err =3D mlx5e_fs_ethtool_alloc(fs);
++ 	if (err)
++ 		goto err_free_tc;
+ =20
++ 	return fs;
++ err_free_tc:
++ 	mlx5e_fs_tc_free(fs);
+ -err_free_fs:
+ -	kvfree(fs);
+  err_free_vlan:
+  	mlx5e_fs_vlan_free(fs);
+ +err_free_fs:
+ +	kvfree(fs);
+  err:
+  	return NULL;
+  }
+
+--Sig_/yxbc2kKvNljsdMLPlq08U/I
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMGxdoACgkQAVBC80lX
+0GzU0Af/Vw/Q9clQ9Xgc6ZttXdvOTt5pZieU75s3WJD+to6UDUoCs/x43QcvA63U
+4QJyKJ+/4y7TatEp8QVQkfMyLfeyPHva97MOWGYMLN+/m8OIqHNde9mSL6F9nRMe
+I/FE3mct9gucyLcoN8yUz+qrJadENmw827s6Nbf7CpbFWYfJk4r6Q0OCsuilnE/d
+8X67SRw0GWFkYgomGcUab7HJQYGN9dLA5ykSjchqy9jps7AuivUbbPM6HCpghLW6
+kjfW3zBfx2Jze1KbgQcQe7ovf+5pHelkPcAjWpg/pDK8E84rU9tqwmapzweQP05X
+QfXxPpTCPcu1PLw0KpK8ftsAE9OTMA==
+=X7iz
+-----END PGP SIGNATURE-----
+
+--Sig_/yxbc2kKvNljsdMLPlq08U/I--
