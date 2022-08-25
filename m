@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 536005A0B56
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD895A0B5B
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 10:25:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239846AbiHYIYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 04:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51666 "EHLO
+        id S239861AbiHYIZL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 04:25:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240022AbiHYIYe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:24:34 -0400
+        with ESMTP id S237975AbiHYIYh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 04:24:37 -0400
 Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5DAA5C4D;
-        Thu, 25 Aug 2022 01:24:19 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1661415827; cv=none; 
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476E2A6AEA;
+        Thu, 25 Aug 2022 01:24:27 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1661415833; cv=none; 
         d=zohomail.com; s=zohoarc; 
-        b=WveFGbUJ8HFRqfC8Rs4r7zqNTDtZuNL4DsaxJ9Lcka6/r5lktmSF5nUiFPQqpWPcNDS3P+Vh70QeGWjBbWNUvaWcR5H9g65kIwXP2+yUzTlBqck0Wl0NwfOp0jXDwC0KsCaVs3gGZZzx2VoX8Fnfd/7rWQvMMZ1hwx7rFIgWQ30=
+        b=HnRx4Bkx6TCRsv/FgLgZBpYA9bs1BqDUM+YPR7AvsbVOHjy+kdDfkoTmM87eqt41lO8ALhGmeyikh+RCXmsCsGTZls9305O7uvaqBcStUj7DhQnAbdlixyQhsb/HhrPqQXG5zpOUmRgjgSsIU3cmNsF6xh4wsCzM4tD2s3rHXw4=
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1661415827; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=WvQp7bofDc+fmpM/tGQGKX7I9TFzZ3zUHUUzYvkJ6AQ=; 
-        b=QAuKLdHpp/IDvBj4IH7U0ju7pA59m7cQOuH6pF5eCzMJdrszLH2BeCiOD+iattujCjIJ0GUxH3vp8/ahWoZZ+e4vdKQO1eXAmsChj/R8jyCRCTat7l/S3xXsiWAlhyf8mywwmwTK2w0iBfPqsidZ2M1SB733GZsYlNwJiL1y6W4=
+        t=1661415833; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=4iatfibaEkRjc+jLuqjlHdBTrArLyKAAD70kGaPgXv8=; 
+        b=hZifc1bBl3vpVa5KYYky7lyUe5hoBsI2riI9HbDrlbLlrco9zRuZB5KouaXckYNNWq3Y1T5bfI3z+eADbuV1MKb7S9408GR7mw297vQtiOBW8JTJP6+j7FwzziFAGCnmLmwi+gE53/BqC6YLd+YM6Uq+VgsH09Clor9bstW2ve4=
 ARC-Authentication-Results: i=1; mx.zohomail.com;
         dkim=pass  header.i=arinc9.com;
         spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
         dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661415827;
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1661415833;
         s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
         h=From:From:To:To:Cc:Cc:Subject:Subject:Date:Date:Message-Id:Message-Id:In-Reply-To:References:MIME-Version:Content-Type:Content-Transfer-Encoding:Reply-To;
-        bh=WvQp7bofDc+fmpM/tGQGKX7I9TFzZ3zUHUUzYvkJ6AQ=;
-        b=YvB4hsneKkf+RiFfnFHgFZCezZFXhNS80tp6iYXSonONhV0OAZCuid/6t9G8+5cW
-        jU8A22KEnfM5a0L4Z8UBvPzf2dRaoirROfkagY+H3HRBn1QjWawaZvRQviwXk20H9X0
-        mqmT0cCbn4DAxtSVS4ig7/osLQ/xgnWW2CkeEG9o=
+        bh=4iatfibaEkRjc+jLuqjlHdBTrArLyKAAD70kGaPgXv8=;
+        b=FLt744MEU/IoMd97w4eXxByxmfH2ZqisXGRT71jke8n8Tq3gmlS+rZTHBZN4JZkt
+        UZQ9zQdzl1QfVCG0h7DrcsgeMqlJIqL6WXMl+pp+aew1jDdZeVSUtcaCpcmyLLa7z9r
+        nQTSk6F0nha98+megiwU5mMHl401AneUzDfpl3N8=
 Received: from arinc9-PC.lan (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1661415824124307.4653486511912; Thu, 25 Aug 2022 01:23:44 -0700 (PDT)
+        with SMTPS id 1661415830692840.2140356682969; Thu, 25 Aug 2022 01:23:50 -0700 (PDT)
 From:   =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,10 +57,11 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>
-Subject: [PATCH v6 5/6] dt-bindings: net: dsa: mediatek,mt7530: define phy-mode per switch
-Date:   Thu, 25 Aug 2022 11:23:00 +0300
-Message-Id: <20220825082301.409450-6-arinc.unal@arinc9.com>
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v6 6/6] dt-bindings: net: dsa: mediatek,mt7530: update binding description
+Date:   Thu, 25 Aug 2022 11:23:01 +0300
+Message-Id: <20220825082301.409450-7-arinc.unal@arinc9.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220825082301.409450-1-arinc.unal@arinc9.com>
 References: <20220825082301.409450-1-arinc.unal@arinc9.com>
@@ -78,126 +79,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Define acceptable phy-mode values for the CPU ports of mt7530 and mt7531
-switches. Remove relevant information from the description of the binding.
+Update the description of the binding.
+
+- Describe the switches, which SoCs they are in, or if they are standalone.
+- Explain the various ways of configuring MT7530's port 5.
+- Remove phy-mode = "rgmii-txid" from description. Same code path is
+followed for delayed rgmii and rgmii phy-mode on mtk_eth_soc.c.
 
 Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../bindings/net/dsa/mediatek,mt7530.yaml     | 73 ++++++++++++++++---
- 1 file changed, 62 insertions(+), 11 deletions(-)
+ .../bindings/net/dsa/mediatek,mt7530.yaml     | 97 ++++++++++++-------
+ 1 file changed, 62 insertions(+), 35 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-index e81b3dce874b..fe8ecaf60240 100644
+index fe8ecaf60240..f9e7b6e20b35 100644
 --- a/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
-@@ -49,17 +49,6 @@ description: |
-   * mt7621: phy-mode = "rgmii-txid";
-   * mt7623: phy-mode = "rgmii";
+@@ -13,41 +13,68 @@ maintainers:
+   - Sean Wang <sean.wang@mediatek.com>
  
--  CPU-Ports need a phy-mode property:
--    Allowed values on mt7530 and mt7621:
--      - "rgmii"
--      - "trgmii"
--    On mt7531:
--      - "1000base-x"
--      - "2500base-x"
--      - "rgmii"
--      - "sgmii"
+ description: |
+-  Port 5 of mt7530 and mt7621 switch is muxed between:
+-  1. GMAC5: GMAC5 can interface with another external MAC or PHY.
+-  2. PHY of port 0 or port 4: PHY interfaces with an external MAC like 2nd GMAC
+-     of the SOC. Used in many setups where port 0/4 becomes the WAN port.
+-     Note: On a MT7621 SOC with integrated switch: 2nd GMAC can only connected to
+-       GMAC5 when the gpios for RGMII2 (GPIO 22-33) are not used and not
+-       connected to external component!
 -
+-  Port 5 modes/configurations:
+-  1. Port 5 is disabled and isolated: An external phy can interface to the 2nd
+-     GMAC of the SOC.
+-     In the case of a build-in MT7530 switch, port 5 shares the RGMII bus with 2nd
+-     GMAC and an optional external phy. Mind the GPIO/pinctl settings of the SOC!
+-  2. Port 5 is muxed to PHY of port 0/4: Port 0/4 interfaces with 2nd GMAC.
+-     It is a simple MAC to PHY interface, port 5 needs to be setup for xMII mode
+-     and RGMII delay.
+-  3. Port 5 is muxed to GMAC5 and can interface to an external phy.
+-     Port 5 becomes an extra switch port.
+-     Only works on platform where external phy TX<->RX lines are swapped.
+-     Like in the Ubiquiti ER-X-SFP.
+-  4. Port 5 is muxed to GMAC5 and interfaces with the 2nd GAMC as 2nd CPU port.
+-     Currently a 2nd CPU port is not supported by DSA code.
 -
+-  Depending on how the external PHY is wired:
+-  1. normal: The PHY can only connect to 2nd GMAC but not to the switch
+-  2. swapped: RGMII TX, RX are swapped; external phy interface with the switch as
+-     a ethernet port. But can't interface to the 2nd GMAC.
+-
+-    Based on the DT the port 5 mode is configured.
+-
+-  Driver tries to lookup the phy-handle of the 2nd GMAC of the master device.
+-  When phy-handle matches PHY of port 0 or 4 then port 5 set-up as mode 2.
+-  phy-mode must be set, see also example 2 below!
+-  * mt7621: phy-mode = "rgmii-txid";
+-  * mt7623: phy-mode = "rgmii";
++  There are two versions of MT7530, standalone and in a multi-chip module.
++
++  MT7530 is a part of the multi-chip module in MT7620AN, MT7620DA, MT7620DAN,
++  MT7620NN, MT7621AT, MT7621DAT, MT7621ST and MT7623AI SoCs.
++
++  MT7530 in MT7620AN, MT7620DA, MT7620DAN and MT7620NN SoCs has got 10/100 PHYs
++  and the switch registers are directly mapped into SoC's memory map rather than
++  using MDIO. The DSA driver currently doesn't support this.
++
++  There is only the standalone version of MT7531.
++
++  Port 5 on MT7530 has got various ways of configuration.
++
++  For standalone MT7530:
++
++    - Port 5 can be used as a CPU port.
++
++    - PHY 0 or 4 of the switch can be muxed to connect to the gmac of the SoC
++      which port 5 is wired to. Usually used for connecting the wan port
++      directly to the CPU to achieve 2 Gbps routing in total.
++
++      The driver looks up the reg on the ethernet-phy node which the phy-handle
++      property refers to on the gmac node to mux the specified phy.
++
++      The driver requires the gmac of the SoC to have "mediatek,eth-mac" as the
++      compatible string and the reg must be 1. So, for now, only gmac1 of an
++      MediaTek SoC can benefit this. Banana Pi BPI-R2 suits this.
++      Check out example 5 for a similar configuration.
++
++    - Port 5 can be wired to an external phy. Port 5 becomes a DSA slave.
++      Check out example 7 for a similar configuration.
++
++  For multi-chip module MT7530:
++
++    - Port 5 can be used as a CPU port.
++
++    - PHY 0 or 4 of the switch can be muxed to connect to gmac1 of the SoC.
++      Usually used for connecting the wan port directly to the CPU to achieve 2
++      Gbps routing in total.
++
++      The driver looks up the reg on the ethernet-phy node which the phy-handle
++      property refers to on the gmac node to mux the specified phy.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
++      Check out example 5.
++
++    - In case of an external phy wired to gmac1 of the SoC, port 5 must not be
++      enabled.
++
++      In case of muxing PHY 0 or 4, the external phy must not be enabled.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with rgmii2 function.
++      Check out example 6.
++
++    - Port 5 can be muxed to an external phy. Port 5 becomes a DSA slave.
++      The external phy must be wired TX to TX to gmac1 of the SoC for this to
++      work. Ubiquiti EdgeRouter X SFP is wired this way.
++
++      Muxing PHY 0 or 4 won't work when the external phy is connected TX to TX.
++
++      For the MT7621 SoCs, rgmii2 group must be claimed with gpio function.
++      Check out example 7.
+ 
  properties:
    compatible:
-     oneOf:
-@@ -164,6 +153,65 @@ required:
-   - compatible
-   - reg
- 
-+$defs:
-+  mt7530-dsa-port:
-+    patternProperties:
-+      "^(ethernet-)?ports$":
-+        patternProperties:
-+          "^(ethernet-)?port@[0-9]+$":
-+            if:
-+              properties:
-+                label:
-+                  const: cpu
-+            then:
-+              if:
-+                properties:
-+                  reg:
-+                    const: 5
-+              then:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - gmii
-+                      - mii
-+                      - rgmii
-+              else:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - rgmii
-+                      - trgmii
-+
-+  mt7531-dsa-port:
-+    patternProperties:
-+      "^(ethernet-)?ports$":
-+        patternProperties:
-+          "^(ethernet-)?port@[0-9]+$":
-+            if:
-+              properties:
-+                label:
-+                  const: cpu
-+            then:
-+              if:
-+                properties:
-+                  reg:
-+                    const: 5
-+              then:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - 1000base-x
-+                      - 2500base-x
-+                      - rgmii
-+                      - sgmii
-+              else:
-+                properties:
-+                  phy-mode:
-+                    enum:
-+                      - 1000base-x
-+                      - 2500base-x
-+                      - sgmii
-+
- allOf:
-   - $ref: dsa.yaml#
-   - if:
-@@ -185,6 +233,7 @@ allOf:
-         compatible:
-           const: mediatek,mt7530
-     then:
-+      $ref: "#/$defs/mt7530-dsa-port"
-       required:
-         - core-supply
-         - io-supply
-@@ -194,6 +243,7 @@ allOf:
-         compatible:
-           const: mediatek,mt7531
-     then:
-+      $ref: "#/$defs/mt7531-dsa-port"
-       properties:
-         mediatek,mcm: false
- 
-@@ -202,6 +252,7 @@ allOf:
-         compatible:
-           const: mediatek,mt7621
-     then:
-+      $ref: "#/$defs/mt7530-dsa-port"
-       required:
-         - mediatek,mcm
- 
 -- 
 2.34.1
 
