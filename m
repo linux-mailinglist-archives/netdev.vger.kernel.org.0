@@ -2,31 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6CBF5A0711
-	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 04:04:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E7705A0715
+	for <lists+netdev@lfdr.de>; Thu, 25 Aug 2022 04:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231345AbiHYCEc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 24 Aug 2022 22:04:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56502 "EHLO
+        id S233811AbiHYCF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 24 Aug 2022 22:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230353AbiHYCEb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 22:04:31 -0400
+        with ESMTP id S231710AbiHYCFz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 24 Aug 2022 22:05:55 -0400
 Received: from relay.virtuozzo.com (relay.virtuozzo.com [130.117.225.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2125EF
-        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:04:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F79F1C93D
+        for <netdev@vger.kernel.org>; Wed, 24 Aug 2022 19:05:54 -0700 (PDT)
 Received: from dev006.ch-qa.sw.ru ([172.29.1.11])
         by relay.virtuozzo.com with esmtp (Exim 4.95)
         (envelope-from <andrey.zhadchenko@virtuozzo.com>)
-        id 1oR2C8-0002wN-7k;
-        Thu, 25 Aug 2022 04:03:43 +0200
+        id 1oR2EC-0002yC-LZ;
+        Thu, 25 Aug 2022 04:05:52 +0200
 From:   Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
 To:     netdev@vger.kernel.org
 Cc:     dev@openvswitch.org, pshelar@ovn.org, davem@davemloft.net,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        aconole@redhat.com, mark.d.gray@redhat.com, i.maximets@ovn.org
-Subject: [PATCH net v2] openvswitch: fix memory leak at failed datapath creation
-Date:   Thu, 25 Aug 2022 05:03:26 +0300
-Message-Id: <20220825020326.664073-1-andrey.zhadchenko@virtuozzo.com>
+        ptikhomirov@virtuozzo.com, alexander.mikhalitsyn@virtuozzo.com,
+        avagin@google.com, brauner@kernel.org, i.maximets@ovn.org,
+        aconole@redhat.com
+Subject: [PATCH net-next v3 0/2] openvswitch: allow specifying ifindex of new interfaces
+Date:   Thu, 25 Aug 2022 05:04:48 +0300
+Message-Id: <20220825020450.664147-1-andrey.zhadchenko@virtuozzo.com>
 X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -39,67 +41,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ovs_dp_cmd_new()->ovs_dp_change()->ovs_dp_set_upcall_portids()
-allocates array via kmalloc.
-If for some reason new_vport() fails during ovs_dp_cmd_new()
-dp->upcall_portids must be freed.
-Add missing kfree.
+Hi!
 
-Kmemleak example:
-unreferenced object 0xffff88800c382500 (size 64):
-  comm "dump_state", pid 323, jiffies 4294955418 (age 104.347s)
-  hex dump (first 32 bytes):
-    5e c2 79 e4 1f 7a 38 c7 09 21 38 0c 80 88 ff ff  ^.y..z8..!8.....
-    03 00 00 00 0a 00 00 00 14 00 00 00 28 00 00 00  ............(...
-  backtrace:
-    [<0000000071bebc9f>] ovs_dp_set_upcall_portids+0x38/0xa0
-    [<000000000187d8bd>] ovs_dp_change+0x63/0xe0
-    [<000000002397e446>] ovs_dp_cmd_new+0x1f0/0x380
-    [<00000000aa06f36e>] genl_family_rcv_msg_doit+0xea/0x150
-    [<000000008f583bc4>] genl_rcv_msg+0xdc/0x1e0
-    [<00000000fa10e377>] netlink_rcv_skb+0x50/0x100
-    [<000000004959cece>] genl_rcv+0x24/0x40
-    [<000000004699ac7f>] netlink_unicast+0x23e/0x360
-    [<00000000c153573e>] netlink_sendmsg+0x24e/0x4b0
-    [<000000006f4aa380>] sock_sendmsg+0x62/0x70
-    [<00000000d0068654>] ____sys_sendmsg+0x230/0x270
-    [<0000000012dacf7d>] ___sys_sendmsg+0x88/0xd0
-    [<0000000011776020>] __sys_sendmsg+0x59/0xa0
-    [<000000002e8f2dc1>] do_syscall_64+0x3b/0x90
-    [<000000003243e7cb>] entry_SYSCALL_64_after_hwframe+0x63/0xcd
+CRIU currently do not support checkpoint/restore of OVS configurations, but
+there was several requests for it. For example,
+https://github.com/lxc/lxc/issues/2909
 
-Fixes: b83d23a2a38b ("openvswitch: Introduce per-cpu upcall dispatch")
-Acked-by: Aaron Conole <aconole@redhat.com>
-Signed-off-by: Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
----
+The main problem is ifindexes of newly created interfaces. We realy need to
+preserve them after restore. Current openvswitch API does not allow to
+specify ifindex. Most of the time we can just create an interface via
+generic netlink requests and plug it into ovs but datapaths (generally any
+OVS_VPORT_TYPE_INTERNAL) can only be created via openvswitch requests which
+do not support selecting ifindex.
+
+This patch allows to do so.
+For new datapaths I decided to use dp_infindex in header as infindex
+because it control ifindex for other requests too.
+For internal vports I reused OVS_VPORT_ATTR_IFINDEX.
+
+The only concern I have is that previously dp_ifindex was not used for
+OVS_DP_VMD_NEW requests and some software may not set it to zero. However
+we have been running this patch at Virtuozzo for 2 years and have not
+encountered this problem. Not sure if it is worth to add new
+ovs_datapath_attr instead.
+
 v2:
-Remove the unnecessary if(rcu_dereference_raw(dp->upcall_portids))
+Added two more patches.
 
- net/openvswitch/datapath.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Add OVS_DP_ATTR_PER_CPU_PIDS to dumps as suggested by Ilya Maximets.
+Without it we won't be able to checkpoint/restore new openvswitch
+configurations which use OVS_DP_F_DISPATCH_UPCALL_PER_CPU flag.
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 7e8a39a35627..7179d254b08b 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -1802,7 +1802,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 				ovs_dp_reset_user_features(skb, info);
- 		}
- 
--		goto err_unlock_and_destroy_meters;
-+		goto err_destroy_portids;
- 	}
- 
- 	err = ovs_dp_cmd_fill_info(dp, reply, info->snd_portid,
-@@ -1817,6 +1817,8 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
- 	ovs_notify(&dp_datapath_genl_family, reply, info);
- 	return 0;
- 
-+err_destroy_portids:
-+	kfree(rcu_dereference_raw(dp->upcall_portids));
- err_unlock_and_destroy_meters:
- 	ovs_unlock();
- 	ovs_meters_exit(dp);
+Found and fixed memory leak on datapath creation error path.
+
+v3:
+Sent memleak fix separately to net.
+Improved patches according to the reviews:
+ - Added new OVS_DP_ATTR_IFINDEX instead of using ovs_header->dp_ifindex
+ - Pre-allocated bigger reply message for upcall pids
+ - Some small fixes
+
+Andrey Zhadchenko (2):
+  openvswitch: allow specifying ifindex of new interfaces
+  openvswitch: add OVS_DP_ATTR_PER_CPU_PIDS to get requests
+
+ include/uapi/linux/openvswitch.h     |  3 +++
+ net/openvswitch/datapath.c           | 21 ++++++++++++++++++---
+ net/openvswitch/vport-internal_dev.c |  1 +
+ net/openvswitch/vport.h              |  2 ++
+ 4 files changed, 24 insertions(+), 3 deletions(-)
+
 -- 
 2.31.1
 
