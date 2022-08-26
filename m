@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10CD75A1E90
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:08:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C7E5A1ECC
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244707AbiHZCIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 22:08:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
+        id S244804AbiHZC1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 22:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244689AbiHZCIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:08:11 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF1ECB5CE;
-        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id r141so190240iod.4;
-        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
+        with ESMTP id S244434AbiHZC1I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:27:08 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D604CB5DC;
+        Thu, 25 Aug 2022 19:27:07 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id y17so156322ilp.10;
+        Thu, 25 Aug 2022 19:27:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
-        b=oKp7GMafkmShi+aJkF+5jK2VKKtkn7+qV8h5HcfyXNqs52MpRiHACqgb34U7tQVpos
-         BZiWLHW7MIlkdWpqT8sn+zGySIZqrR1YFKeCytvv7ImQS/7GGE5S8CP6PWe1dX1LsNpn
-         ID+8f5Zun2vZSdk6ud3ZT0dnlG50nl1qIKHGBXKIz9WHdE4CeDQ/Dpx+PqRanQDPHW7m
-         S/wigs2P9ujolxMLYOxcLAX7FZbLfN1GdpDJcvGFeU/odJD7SsIbhvo+tVZxguDA2OHQ
-         C/rSo/sjyyHdPpI0y9QbRtqh+3MCxasvD2CdLnsAhkdt59N+gNp8xG4OhVlgsOxcLaaG
-         m/sg==
+        bh=BLbW/Hc9+8C/YeGWsEa0wxvXNrLc+FSe/iqx4IWMEKY=;
+        b=nLkOregbT+5WWjBg9MO2obFGHIWiy+pR0M4MCIMhIPzfIvZn1M4FskxC4phWe0GzTq
+         t5oDJYIpmfIZdnF6cgKHF8Yfx/Znr7qQFjafOHPR4pBn3xF3TBf+V/LVnSwgsv3oz0Oa
+         iurqpSQUiqyV7xuVG8UIJRL7fGjyOyoEQL8Pqk6eitCd7iSXjYqONYbyIG/IwMzbJxmQ
+         mqRiMPOcVGuS98KU192H9jmBOAuSiVuwCvVqvTNXoiCVMMuHzCSy5lhH3Didx5MywKzh
+         D4i9+Ums2BDoazHbKt8hzMYg0yNaO7l8pd5vUqNYsnuhDh/qp7Xb/yZINgu/RX8ADVx2
+         WzNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
-        b=6ForWiJhX89Ij9Zx/1zzP1YKcYkf5zlxN2j0MsJ1JstJpA99CRQVR1TcPgLmlT/xmZ
-         ly7XmHBYxlBabcaTbsWfzfbmwWsvgDyHo/gMa//MfVSEXa6hYPGahJed7/RfGgbfhYfy
-         qZUkdOhG7a818z1+Tp9i1kX+QR4FBFlCSDwzecTbmks+nOAzAalJZZbzznh2O5v/yvwX
-         Q8r4aJwfGH7Dvp0PJb2+9zb/9MOnZbftUvIrqXN9Z/Zs1+m9zH5ZGeI2iMcaht9Q39IG
-         /VXTnYVphRyaiGNZB4Wdd/h1qsGCY7NnKJQF/qWygjXBO3aJg/hR8CieBoMUysHMn9L0
-         b7AQ==
-X-Gm-Message-State: ACgBeo2/MWYH0yOa4YOJsiSko4Fns5PkajZA3IcdWAdhSGmyYduWy+fJ
-        QuGDFM9CDqi35Cr51YyQVk1IahmI/O4XvVdJyV9SHE+L
-X-Google-Smtp-Source: AA6agR4ldtT2jXu2MMdWpyUaleDmiGpun9w/4YV89ydabuMBA9T2L5GHZQgrPu70W4tTfH2ZT7eK9ZO8UDRXogqQkRY=
-X-Received: by 2002:a05:6638:16cf:b0:34a:263f:966d with SMTP id
- g15-20020a05663816cf00b0034a263f966dmr497631jat.124.1661479689438; Thu, 25
- Aug 2022 19:08:09 -0700 (PDT)
+        bh=BLbW/Hc9+8C/YeGWsEa0wxvXNrLc+FSe/iqx4IWMEKY=;
+        b=gcT71/2lKxIeDIIwM9AlbIQY+Qd9FCqEFsqlBGzNEowMQzFLEbreRAnfkfu8e28IQA
+         nRL2UfvCm2kWWlnC2QzZlBjbVkW70u87WQm1aF1XLUvLZHcvEtZHpYceC7wgal9NemCg
+         bgiOJqWvDMXSRFJ8teCKv1bI/JHCmxHlaXT+HSxIU1qT+ugYEOTeDaBuHWjb2coUvevl
+         HAisIung7A/XMmkZYcoG1XiACwOMvST0hPEgog0A68Df0swq1BHhIvo7pc0K/Q74sPFn
+         5oXqDBi9TRwSBHoPZW9QaOwCXoXUG7WcqLXqHURMb0V+RfrCA5vTXNEtDMI/ny8rH8Oj
+         Fq9g==
+X-Gm-Message-State: ACgBeo3STx8zrtTbZbFJNWFaCUPzLBFdTA3kb18MW5lSYsb42S2eXKjR
+        XcPmwZezgIVRHSNIWS30+hV0cV/g1i2PcIf71zo=
+X-Google-Smtp-Source: AA6agR7U/3OjyR2q/ujGHj2ZbxQS2mnEgOZ+g5Z97d+MHg8yI9zuc5BjgMabAaB23Ei+qfahXelFbkTkIv8x1zrTOfc=
+X-Received: by 2002:a05:6e02:1c04:b0:2df:6b58:5fe8 with SMTP id
+ l4-20020a056e021c0400b002df6b585fe8mr3230907ilh.68.1661480826341; Thu, 25 Aug
+ 2022 19:27:06 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-6-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220824134055.1328882-6-benjamin.tissoires@redhat.com>
 From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 26 Aug 2022 04:07:33 +0200
-Message-ID: <CAP01T75Xs8HqDzsqJ5_69ei6ujnBXSbOg=ad7fGaei6OVNpiOg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 03/23] selftests/bpf: add test for accessing
- ctx from syscall program type
+Date:   Fri, 26 Aug 2022 04:26:30 +0200
+Message-ID: <CAP01T75YkJx10kTLEb7fQOY18ELRKHQMHsmO-OCjyGnUJzUVZg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 05/23] selftests/bpf: Add tests for kfunc
+ returning a memory pointer
 To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
 Cc:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -82,144 +82,301 @@ X-Mailing-List: netdev@vger.kernel.org
 On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
 <benjamin.tissoires@redhat.com> wrote:
 >
-> We need to also export the kfunc set to the syscall program type,
-> and then add a couple of eBPF programs that are testing those calls.
+> We add 2 new kfuncs that are following the RET_PTR_TO_MEM
+> capability from the previous commit.
+> Then we test them in selftests:
+> the first tests are testing valid case, and are not failing,
+> and the later ones are actually preventing the program to be loaded
+> because they are wrong.
 >
-> The first one checks for valid access, and the second one is OK
-> from a static analysis point of view but fails at run time because
-> we are trying to access outside of the allocated memory.
+> To work around that, we mark the failing ones as not autoloaded
+> (with SEC("?tc")), and we manually enable them one by one, ensuring
+> the verifier rejects them.
+>
+> To be able to use bpf_program__set_autoload() from libbpf, we need
+> to use a plain skeleton, not a light-skeleton, and this is why we
+> also change the Makefile to generate both for kfunc_call_test.c
 >
 > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 >
 > ---
 >
-> no changes in v9
+> changes in v9:
+> - updated to match upstream (net/bpf/test_run.c id sets is now using
+>   flags)
 >
 > no changes in v8
 >
 > changes in v7:
-> - add 1 more case to ensure we can read the entire sizeof(ctx)
-> - add a test case for when the context is NULL
+> - removed stray include/linux/btf.h change
 >
 > new in v6
 > ---
->  net/bpf/test_run.c                            |  1 +
->  .../selftests/bpf/prog_tests/kfunc_call.c     | 28 +++++++++++++++
->  .../selftests/bpf/progs/kfunc_call_test.c     | 36 +++++++++++++++++++
->  3 files changed, 65 insertions(+)
+>  net/bpf/test_run.c                            | 20 +++++
+>  tools/testing/selftests/bpf/Makefile          |  5 +-
+>  .../selftests/bpf/prog_tests/kfunc_call.c     | 48 ++++++++++
+>  .../selftests/bpf/progs/kfunc_call_test.c     | 89 +++++++++++++++++++
+>  4 files changed, 160 insertions(+), 2 deletions(-)
 >
 > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index 25d8ecf105aa..f16baf977a21 100644
+> index f16baf977a21..6accd57d4ded 100644
 > --- a/net/bpf/test_run.c
 > +++ b/net/bpf/test_run.c
-> @@ -1634,6 +1634,7 @@ static int __init bpf_prog_test_run_init(void)
->
->         ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_prog_test_kfunc_set);
->         ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_prog_test_kfunc_set);
-> +       ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_prog_test_kfunc_set);
->         return ret ?: register_btf_id_dtor_kfuncs(bpf_prog_test_dtor_kfunc,
->                                                   ARRAY_SIZE(bpf_prog_test_dtor_kfunc),
->                                                   THIS_MODULE);
-> diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> index eede7c304f86..1edad012fe01 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
-> @@ -9,10 +9,22 @@
->
->  #include "cap_helpers.h"
->
-> +struct syscall_test_args {
-> +       __u8 data[16];
-> +       size_t size;
-> +};
-> +
->  static void test_main(void)
->  {
->         struct kfunc_call_test_lskel *skel;
->         int prog_fd, err;
-> +       struct syscall_test_args args = {
-> +               .size = 10,
-> +       };
-> +       DECLARE_LIBBPF_OPTS(bpf_test_run_opts, syscall_topts,
-> +               .ctx_in = &args,
-> +               .ctx_size_in = sizeof(args),
-> +       );
->         LIBBPF_OPTS(bpf_test_run_opts, topts,
->                 .data_in = &pkt_v4,
->                 .data_size_in = sizeof(pkt_v4),
-> @@ -38,6 +50,22 @@ static void test_main(void)
->         ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
->         ASSERT_EQ(topts.retval, 0, "test_ref_btf_id-retval");
->
-> +       prog_fd = skel->progs.kfunc_syscall_test.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test)");
-> +
-> +       prog_fd = skel->progs.kfunc_syscall_test_fail.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_ERR(err, "bpf_prog_test_run(syscall_test_fail)");
-
-It would be better to assert on the verifier error string, to make
-sure we continue actually testing the error we care about and not
-something else.
-
-> +
-> +       syscall_topts.ctx_in = NULL;
-> +       syscall_topts.ctx_size_in = 0;
-> +
-> +       prog_fd = skel->progs.kfunc_syscall_test_null.prog_fd;
-> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
-> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test_null)");
-> +       ASSERT_EQ(syscall_topts.retval, 0, "syscall_test_null-retval");
-> +
->         kfunc_call_test_lskel__destroy(skel);
+> @@ -606,6 +606,24 @@ noinline void bpf_kfunc_call_memb1_release(struct prog_test_member1 *p)
+>         WARN_ON_ONCE(1);
 >  }
 >
+> +static int *__bpf_kfunc_call_test_get_mem(struct prog_test_ref_kfunc *p, const int size)
+> +{
+> +       if (size > 2 * sizeof(int))
+> +               return NULL;
+> +
+> +       return (int *)p;
+> +}
+> +
+> +noinline int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size)
+> +{
+> +       return __bpf_kfunc_call_test_get_mem(p, rdwr_buf_size);
+> +}
+> +
+> +noinline int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size)
+> +{
+> +       return __bpf_kfunc_call_test_get_mem(p, rdonly_buf_size);
+> +}
+> +
+>  noinline struct prog_test_ref_kfunc *
+>  bpf_kfunc_call_test_kptr_get(struct prog_test_ref_kfunc **pp, int a, int b)
+>  {
+> @@ -712,6 +730,8 @@ BTF_ID_FLAGS(func, bpf_kfunc_call_memb_acquire, KF_ACQUIRE | KF_RET_NULL)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_test_release, KF_RELEASE)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_memb_release, KF_RELEASE)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_memb1_release, KF_RELEASE)
+> +BTF_ID_FLAGS(func, bpf_kfunc_call_test_get_rdwr_mem, KF_RET_NULL)
+> +BTF_ID_FLAGS(func, bpf_kfunc_call_test_get_rdonly_mem, KF_RET_NULL)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_test_kptr_get, KF_ACQUIRE | KF_RET_NULL | KF_KPTR_GET)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_test_pass_ctx)
+>  BTF_ID_FLAGS(func, bpf_kfunc_call_test_pass1)
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 8d59ec7f4c2d..0905315ff86d 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -350,11 +350,12 @@ LINKED_SKELS := test_static_linked.skel.h linked_funcs.skel.h             \
+>                 test_subskeleton.skel.h test_subskeleton_lib.skel.h     \
+>                 test_usdt.skel.h
+>
+> -LSKELS := kfunc_call_test.c fentry_test.c fexit_test.c fexit_sleep.c \
+> +LSKELS := fentry_test.c fexit_test.c fexit_sleep.c \
+>         test_ringbuf.c atomics.c trace_printk.c trace_vprintk.c \
+>         map_ptr_kern.c core_kern.c core_kern_overflow.c
+>  # Generate both light skeleton and libbpf skeleton for these
+> -LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test_subprog.c
+> +LSKELS_EXTRA := test_ksyms_module.c test_ksyms_weak.c kfunc_call_test.c        \
+> +               kfunc_call_test_subprog.c
+>  SKEL_BLACKLIST += $$(LSKELS)
+>
+>  test_static_linked.skel.h-deps := test_static_linked1.o test_static_linked2.o
+> diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> index 1edad012fe01..590417d48962 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> @@ -2,6 +2,7 @@
+>  /* Copyright (c) 2021 Facebook */
+>  #include <test_progs.h>
+>  #include <network_helpers.h>
+> +#include "kfunc_call_test.skel.h"
+>  #include "kfunc_call_test.lskel.h"
+>  #include "kfunc_call_test_subprog.skel.h"
+>  #include "kfunc_call_test_subprog.lskel.h"
+> @@ -53,10 +54,12 @@ static void test_main(void)
+>         prog_fd = skel->progs.kfunc_syscall_test.prog_fd;
+>         err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
+>         ASSERT_OK(err, "bpf_prog_test_run(syscall_test)");
+> +       ASSERT_EQ(syscall_topts.retval, 0, "syscall_test-retval");
+>
+>         prog_fd = skel->progs.kfunc_syscall_test_fail.prog_fd;
+>         err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
+>         ASSERT_ERR(err, "bpf_prog_test_run(syscall_test_fail)");
+> +       ASSERT_EQ(syscall_topts.retval, 0, "syscall_test_fail-retval");
+>
+>         syscall_topts.ctx_in = NULL;
+>         syscall_topts.ctx_size_in = 0;
+> @@ -147,6 +150,48 @@ static void test_destructive(void)
+>         cap_enable_effective(save_caps, NULL);
+>  }
+>
+> +static void test_get_mem(void)
+> +{
+> +       struct kfunc_call_test *skel;
+> +       int prog_fd, err;
+> +       LIBBPF_OPTS(bpf_test_run_opts, topts,
+> +               .data_in = &pkt_v4,
+> +               .data_size_in = sizeof(pkt_v4),
+> +               .repeat = 1,
+> +       );
+> +
+> +       skel = kfunc_call_test__open_and_load();
+> +       if (!ASSERT_OK_PTR(skel, "skel"))
+> +               return;
+> +
+> +       prog_fd = bpf_program__fd(skel->progs.kfunc_call_test_get_mem);
+> +       err = bpf_prog_test_run_opts(prog_fd, &topts);
+> +       ASSERT_OK(err, "bpf_prog_test_run(test_get_mem)");
+> +       ASSERT_EQ(topts.retval, 42, "test_get_mem-retval");
+> +
+> +       kfunc_call_test__destroy(skel);
+> +
+> +       /* start the various failing tests */
+> +       skel = kfunc_call_test__open();
+> +       if (!ASSERT_OK_PTR(skel, "skel"))
+> +               return;
+> +
+> +       bpf_program__set_autoload(skel->progs.kfunc_call_test_get_mem_fail1, true);
+> +       err = kfunc_call_test__load(skel);
+> +       ASSERT_ERR(err, "load(kfunc_call_test_get_mem_fail1)");
+> +       kfunc_call_test__destroy(skel);
+> +
+> +       skel = kfunc_call_test__open();
+> +       if (!ASSERT_OK_PTR(skel, "skel"))
+> +               return;
+> +
+> +       bpf_program__set_autoload(skel->progs.kfunc_call_test_get_mem_fail2, true);
+> +       err = kfunc_call_test__load(skel);
+> +       ASSERT_ERR(err, "load(kfunc_call_test_get_mem_fail2)");
+
+We should match the verifier error string. See e.g. how dynptr tests
+work. Also it would be better to split failure and success tests into
+separate objects.
+
+> +
+> +       kfunc_call_test__destroy(skel);
+> +}
+> +
+>  void test_kfunc_call(void)
+>  {
+>         if (test__start_subtest("main"))
+> @@ -160,4 +205,7 @@ void test_kfunc_call(void)
+>
+>         if (test__start_subtest("destructive"))
+>                 test_destructive();
+> +
+> +       if (test__start_subtest("get_mem"))
+> +               test_get_mem();
+>  }
 > diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-> index 5aecbb9fdc68..da7ae0ef9100 100644
+> index da7ae0ef9100..b4a98d17c2b6 100644
 > --- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
 > +++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
-> @@ -92,4 +92,40 @@ int kfunc_call_test_pass(struct __sk_buff *skb)
+> @@ -14,6 +14,8 @@ extern void bpf_kfunc_call_test_pass1(struct prog_test_pass1 *p) __ksym;
+>  extern void bpf_kfunc_call_test_pass2(struct prog_test_pass2 *p) __ksym;
+>  extern void bpf_kfunc_call_test_mem_len_pass1(void *mem, int len) __ksym;
+>  extern void bpf_kfunc_call_test_mem_len_fail2(__u64 *mem, int len) __ksym;
+> +extern int *bpf_kfunc_call_test_get_rdwr_mem(struct prog_test_ref_kfunc *p, const int rdwr_buf_size) __ksym;
+> +extern int *bpf_kfunc_call_test_get_rdonly_mem(struct prog_test_ref_kfunc *p, const int rdonly_buf_size) __ksym;
+>
+>  SEC("tc")
+>  int kfunc_call_test2(struct __sk_buff *skb)
+> @@ -128,4 +130,91 @@ int kfunc_syscall_test_fail(struct syscall_test_args *args)
 >         return 0;
 >  }
 >
-> +struct syscall_test_args {
-> +       __u8 data[16];
-> +       size_t size;
-> +};
-> +
-> +SEC("syscall")
-> +int kfunc_syscall_test(struct syscall_test_args *args)
+> +SEC("tc")
+> +int kfunc_call_test_get_mem(struct __sk_buff *skb)
 > +{
-> +       const int size = args->size;
+> +       struct prog_test_ref_kfunc *pt;
+> +       unsigned long s = 0;
+> +       int *p = NULL;
+> +       int ret = 0;
 > +
-> +       if (size > sizeof(args->data))
-> +               return -7; /* -E2BIG */
+> +       pt = bpf_kfunc_call_test_acquire(&s);
+> +       if (pt) {
+> +               if (pt->a != 42 || pt->b != 108)
+> +                       ret = -1;
+
+No need to test this I think.
+
 > +
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(args->data));
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args));
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, size);
+> +               p = bpf_kfunc_call_test_get_rdwr_mem(pt, 2 * sizeof(int));
+> +               if (p) {
+> +                       p[0] = 42;
+> +                       ret = p[1]; /* 108 */
+> +               } else {
+> +                       ret = -1;
+> +               }
 > +
-> +       return 0;
+> +               if (ret >= 0) {
+> +                       p = bpf_kfunc_call_test_get_rdonly_mem(pt, 2 * sizeof(int));
+> +                       if (p)
+> +                               ret = p[0]; /* 42 */
+> +                       else
+> +                               ret = -1;
+> +               }
+> +
+> +               bpf_kfunc_call_test_release(pt);
+> +       }
+> +       return ret;
 > +}
 > +
-> +SEC("syscall")
-> +int kfunc_syscall_test_null(struct syscall_test_args *args)
+> +SEC("?tc")
+> +int kfunc_call_test_get_mem_fail1(struct __sk_buff *skb)
 > +{
-> +       bpf_kfunc_call_test_mem_len_pass1(args, 0);
+> +       struct prog_test_ref_kfunc *pt;
+> +       unsigned long s = 0;
+> +       int *p = NULL;
+> +       int ret = 0;
 > +
-
-Where is it testing 'NULL'? It is testing zero_size_allowed.
-
-> +       return 0;
+> +       pt = bpf_kfunc_call_test_acquire(&s);
+> +       if (pt) {
+> +               if (pt->a != 42 || pt->b != 108)
+> +                       ret = -1;
+> +
+> +               p = bpf_kfunc_call_test_get_rdonly_mem(pt, 2 * sizeof(int));
+> +               if (p)
+> +                       p[0] = 42; /* this is a read-only buffer, so -EACCES */
+> +               else
+> +                       ret = -1;
+> +
+> +               bpf_kfunc_call_test_release(pt);
+> +       }
+> +       return ret;
 > +}
 > +
-> +SEC("syscall")
-> +int kfunc_syscall_test_fail(struct syscall_test_args *args)
+> +SEC("?tc")
+> +int kfunc_call_test_get_mem_fail2(struct __sk_buff *skb)
 > +{
-> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args) + 1);
+> +       struct prog_test_ref_kfunc *pt;
+> +       unsigned long s = 0;
+> +       int *p = NULL;
+> +       int ret = 0;
 > +
-> +       return 0;
+> +       pt = bpf_kfunc_call_test_acquire(&s);
+> +       if (pt) {
+> +               if (pt->a != 42 || pt->b != 108)
+> +                       ret = -1;
+> +
+> +               p = bpf_kfunc_call_test_get_rdwr_mem(pt, 2 * sizeof(int));
+> +               if (p) {
+> +                       p[0] = 42;
+> +                       ret = p[1]; /* 108 */
+> +               } else {
+> +                       ret = -1;
+> +               }
+> +
+> +               bpf_kfunc_call_test_release(pt);
+> +       }
+> +       if (p)
+> +               ret = p[0]; /* p is not valid anymore */
+
+Great that this ref_obj_id transfer is tested. A few more small test
+cases that come to mind:
+. oob access to returned ptr_to_mem to ensure size is set correctly.
+. failure when size is not 'const', since this is not going through
+check_mem_size_reg.
+. incorrect acq kfunc type inside kernel so that on use its ret type
+is not struct ptr, so verifier complains about it.
+
+
+> +
+> +       return ret;
 > +}
 > +
 >  char _license[] SEC("license") = "GPL";
