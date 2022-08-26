@@ -2,165 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6EA35A1DBA
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:38:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99EA75A1DBE
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiHZAi3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:38:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
+        id S236165AbiHZAke (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:40:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiHZAi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:38:28 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FAE0C7F91
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 17:38:27 -0700 (PDT)
+        with ESMTP id S235944AbiHZAkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:40:32 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25D739D134;
+        Thu, 25 Aug 2022 17:40:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661474307; x=1693010307;
-  h=message-id:date:subject:to:cc:references:from:
+  t=1661474432; x=1693010432;
+  h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=GNXXwGfLjvGgzI7jdDLuNJBd8JPzg8GS57MQNtwPU+w=;
-  b=BKQIJ0JRR6DaV9N4+pNHYmE2K0uhMyoR2lsJPeSjpTRr03rn+EKBED3d
-   QhaaLJ2k6ZqDVIoSmf3PalhY6fIJahV+d84DmpIcAg7mUz3Sfgeet6CUS
-   sxvnCFxuwVVOa2wBhNYmd8IEI+KqtfOsm9+Q8lxsL4TYWJNwvVPkljunX
-   OgjJ1YV9UkzBfY0cJie9CZj4z3DSNW1OTbnG2xY+/8+6ZNPXxLQZ+UcBl
-   QQX4O7NFL7W65skoOzVVRWkq54CSZQc4pOT9V+z64vr1smCPSIsvbE+Rp
-   veoHWb87BpHbPNNBTXcic3gPzjeg7enTEjOadwbxScMwM6T1qkrFqMi6t
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="293130986"
+  bh=KjiV+/mWKWZMWfqFtFHKSNTrD5zbVH0mxeRnFiDaRBc=;
+  b=fPN+DhvojzuuwEevGCazXrzE3iOvOW3/9M1JyHTE3ByPB+6qkacCKiAQ
+   ByLT+Z4vjvGTFPshozpd5FLwLLkhrNjCzojETi1rDLUDvw+BEz23yMlyJ
+   Iiq42oFrMPGvtuXyCq4tjkkcOHIvDf4uwJ2KZZYW6edzfN8jSFaz642YR
+   SQqVOZIpv4r8YfPxIR/+HX8aDL5Cdwx62z2HXAkw1Ke0oxawGvtcSQkBL
+   opMIrNY+LTYbp22HZPOzNbsXrqeKBxnOT5+hUlaB4cHNeGgBnLMPyedHD
+   Cu9ESB9Kui11IkmsVRBlurlhN5tJmVv5ByAKflENWdbINkbsRrNJuXr94
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="281361034"
 X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="293130986"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 17:38:26 -0700
+   d="scan'208";a="281361034"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Aug 2022 17:40:29 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,264,1654585200"; 
-   d="scan'208";a="671240137"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmsmga008.fm.intel.com with ESMTP; 25 Aug 2022 17:38:26 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="678673817"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Aug 2022 17:40:28 -0700
+Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 25 Aug 2022 17:38:26 -0700
-Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ 15.1.2375.31; Thu, 25 Aug 2022 17:40:27 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 25 Aug 2022 17:38:26 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Thu, 25 Aug 2022 17:38:26 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ 15.1.2375.31 via Frontend Transport; Thu, 25 Aug 2022 17:40:27 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.175)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Thu, 25 Aug 2022 17:38:26 -0700
+ 15.1.2375.31; Thu, 25 Aug 2022 17:40:27 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=StpkLM34klzRl6NZOL4Gbsyvyvw8kkg0WckRzkmiGrGx48N/g+xNEcD6jcKk8nSubZ6yLrSrZfLEVsEYfDTib9RyrJZgMCEkSjOClTGwUg3gRe/m8oPgOVI/DP+Szq9qgW7WGIPMNLFPGU/2lfxN4QvPXR4DL4h4ItolTFjBFmbDNk6yd+kqsuZ/DbluAdj2EzVEECR80cZEhwT1idc1KMX/+9tJO3jRfo4D6GUf195nsRCRiUPBQwSXMPr9X3V/1NJktphBQLsCdIqxMkox0LK+1s7U9tnVDMZKyghcma45BqPzO81dPgAuK9oqAFd4S7Qinvu73ULqCigaBDfwBA==
+ b=gu367k8jn5CFrXwX5ue2Lj2M/wZVkIExpRK1xNCHC3x7QOVQKES6U1Mf3Ltlq9g8eLZyei4lwNpMX1lizOeVoMjt8h7drkoTKVuBoCGi6qagSkw2QdGrcAZtYZ/cHROJWNqG72U+sg8xy1BI+VlnZZDNThBvirv+LvMagXTXbi8Winn2XQmvzy18GObBsaHVsXu5eKVGfpOg/2Yq4+McROD5IpI3Jvznfm6WeC/0PHfU0tV+ehYNuLQE9OVt6Z/RLxORsbQaEIoL+1hDCVFEM8kc/fh4/qVmZhDpGeAlAL3U7Xyuk/awfnV124+esaLOrk5XRicb/HquO1FLHQcolQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5WTg3g29NhhwXRzP3TOzuGz1saI6LRi1WWOFElrMbm0=;
- b=hP0rHrNtz/wDRiKwiDCziCa0ZnPPEDMNBUQsZfOYvydq9DmumngEYO230h7ji6OPLL1UUpWr8YDTfxT0MJxcDHCEMMk3P+LZgQxFqo97NqeRy3fI944O5LKfecIm5eHhr119SqwnFL+dYHJJ25PbaHaGkhVxvwgjAwYNp0ZT23XdYzqwauwWSbtDOksfLKlKhCwO5jsb3+UiKO8JZDs9maq47eB7GCJrEH4uPAYPQM7EfxhPv/vs5gG9xjX3CUbqLrNbQAaJGK8b05rL+gge4KG80Hsd3+7BInt3qOzG94F0xuLiVuDtX40TJ0JDjOUcMGYY16p2Ha8wESksdywRGQ==
+ bh=KjiV+/mWKWZMWfqFtFHKSNTrD5zbVH0mxeRnFiDaRBc=;
+ b=CS634Lzk7T77nGtfNxvHwMQ3oBhOAhi/wcn3PMOmoZcKego0tVCPjVPdVOM8Sj7kOwQTuUm3DTU1CeZFRVwJSFR54LCjUJ00F8nVpsXnsbbKgM7QVNCjgMNT0y7ZQq1eESFMxen2efd9JNiIjKlyp2aVbqA851RhDLwOS69JXuJD0aR2dRt2IM9EZIDZwvvyAZ+Hp9sQChxB7JDAZ48IUkgXt4QBitgbF9ksIQcWkVs3GYkmMbEPLdIMSBm1ywro9drnUdTbiTlT6rvQIitkxdpINWggIjsGoEs7KsLXwcqLJdfSzBfVIFcUdZF1z3J04lhNq8yQObFTiQk2PZRP7Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com (2603:10b6:303:9b::16)
  by BY5PR11MB3975.namprd11.prod.outlook.com (2603:10b6:a03:184::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.16; Fri, 26 Aug
- 2022 00:38:19 +0000
+ 2022 00:40:20 +0000
 Received: from CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5874:aaae:2f96:918a]) by CO1PR11MB5089.namprd11.prod.outlook.com
  ([fe80::5874:aaae:2f96:918a%9]) with mapi id 15.20.5566.015; Fri, 26 Aug 2022
- 00:38:19 +0000
-Message-ID: <bcdfe60a-0eb7-b1cf-15c8-5be7740716a1@intel.com>
-Date:   Thu, 25 Aug 2022 17:38:14 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.13.0
-Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
+ 00:40:20 +0000
+From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        David Ahern <dsahern@kernel.org>,
+        "Stephen Hemminger" <stephen@networkplumber.org>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Subject: RE: [iproute2-next v3 2/3] mnlg: add function to get
+ CTRL_ATTR_MAXATTR value
+Thread-Topic: [iproute2-next v3 2/3] mnlg: add function to get
+ CTRL_ATTR_MAXATTR value
+Thread-Index: AQHYoGkYnhcVdo++8kaRrdbuzzFs+q2QRtiAgDBA9fA=
+Date:   Fri, 26 Aug 2022 00:40:20 +0000
+Message-ID: <CO1PR11MB50890D5A3470D9921711A91AD6759@CO1PR11MB5089.namprd11.prod.outlook.com>
+References: <20220725205650.4018731-1-jacob.e.keller@intel.com>
+ <20220725205650.4018731-3-jacob.e.keller@intel.com>
+ <Yt+b3XGbAixaf124@nanopsycho>
+In-Reply-To: <Yt+b3XGbAixaf124@nanopsycho>
+Accept-Language: en-US
 Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Gal Pressman <gal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
- <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
- <CO1PR11MB50895C42C04A408CF6151023D6739@CO1PR11MB5089.namprd11.prod.outlook.com>
- <5d9c6b31-cdf2-1285-6d4b-2368bae8b6f4@nvidia.com>
- <20220825092957.26171986@kernel.org>
- <CO1PR11MB50893710E9CA4C720815384ED6729@CO1PR11MB5089.namprd11.prod.outlook.com>
- <20220825103027.53fed750@kernel.org>
- <CO1PR11MB50891983ACE664FB101F2BAAD6729@CO1PR11MB5089.namprd11.prod.outlook.com>
- <20220825133425.7bfb34e9@kernel.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-In-Reply-To: <20220825133425.7bfb34e9@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR04CA0007.namprd04.prod.outlook.com
- (2603:10b6:a03:40::20) To CO1PR11MB5089.namprd11.prod.outlook.com
- (2603:10b6:303:9b::16)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 37275ba5-4060-4f96-ade4-08da86fb8e4c
+x-ms-traffictypediagnostic: BY5PR11MB3975:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: otT4CzJ38UullBJDYSJapZenYLZZ/DgM3PH3NbcTTH9CLeS1lLuDC93GdVweH9O6+PiM9OJO5HtldEO1mKimHHFra+yFH3Q0VLaUlMhKOrj4ZMbs3MPTh0hyIyds0iWt5xYhjCj5cbRt0oAMjw5P+TmFn1yRnCDdSEmYk/5btxsWO//W7vWk6twIQZyi8owP5CiqHCycNgP+b4Slx0A7G1AzVezziSWANBSSy8cG+2Z6TRdGd+sK44OfNpifSEqlXr6llpbLX0rQ7kKJjPYL3Nvc1TwAWRQUz4jL/0s+WKJITZFuJkYQgF76OQsBnZJv7i2q2dVKdIU8dSGH/cnPfDCI9T134fjWDWgk81v2Zj2GhaADqSMnDpsi2uWPSyCVB1rjUxEWdiv3RiaUYLfRRRCTIQ/qPnmALRFp464KWqyXULaK4cSpjv2PdK96nMY6PXULdjiXZT3oRysWzkdOVBxKStXNY8jtNKFdM+XP1Y2fEOPvSSKpjUhYBcr1zoZd4MNKgBI1y2YBX8DDNJE0Nl+PWVaua8NKXIHzoaysWGv5S8znmrZSXxmuk0HZ2QypPGUjm20IsU1WIT0e230uh+2s9XhYh3ZgigC1MygfU75Cv3dxEhMSlbTlvTiVKc30iPe/AHW42tfengzGcJV06sEWm86PBgI+uhK4ZSt9mK5Hif4smpCz+ZDktxJ1ytexiZ+9HCXHoiVJeKs2tAaKX+8A+am9lBjDV9DfBp97f0lN+0QjV3w9rpW0WwFvJwP4a1gHOxn1+5KJF976J80fMg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(396003)(366004)(376002)(39860400002)(478600001)(53546011)(41300700001)(82960400001)(86362001)(33656002)(38070700005)(9686003)(186003)(6506007)(83380400001)(52536014)(26005)(7696005)(55016003)(6916009)(54906003)(76116006)(64756008)(316002)(4326008)(66476007)(66446008)(38100700002)(71200400001)(5660300002)(7416002)(66946007)(122000001)(66556008)(8936002)(8676002)(2906002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?OMsmHdScfM2M2sTJfmGKoYnM3h4MUbqujQVyWJ7GQsPIT/KOqnA/jgZ6c/B9?=
+ =?us-ascii?Q?sbLTwUP/65ArniqpLxcFbYdOeQl8JC0xOUTtggplkx6D+6KvZR3eyJpFpjAL?=
+ =?us-ascii?Q?53a9dcApfdjR3XbRDE50lPFJ71v/YPCTM8AOs5q+o45y6hw1GSAC8OhnvAho?=
+ =?us-ascii?Q?x2wT/KcbSPWygzFSBCMJgIBdK5gzy2sM+xzmRIrIFrifMIFBgyZthkFtM1HD?=
+ =?us-ascii?Q?nnbJA7lIennXqIf5ff4fx/JvFTneHXS/puxk/gAKkHDN8XaRkv6JSz4fcZ19?=
+ =?us-ascii?Q?/QXLd37MTKv0YQzNBM3IbOf9Dhb8DAIzg4oXGlNysdhoMizLizS/Wjer9oRp?=
+ =?us-ascii?Q?8LcvGrg8s78L46ZEGOXuOtzDy0lj9AmvlbJCoAbEbVkIkr4EU2x+mVSfvRms?=
+ =?us-ascii?Q?VWkzfrchcktsR0F8ZxjsL/T1HWG0F8n7smNc/ButC7irI5Pkxa/Awu/bVyAn?=
+ =?us-ascii?Q?EuIhRe1Edeph2H0ls2lV5LlUlicABwrhU6GNlZ4qW7Uwu/y0xvtcwsw+6t8+?=
+ =?us-ascii?Q?H8PWOAehmO3+ktr4PD24+JQIfA8PYVqOVMpcue41WittjCysSA2OK119XiU1?=
+ =?us-ascii?Q?IwJFCrX8MevRkQplkIQYcVERsjAx25j1yGA+rTHsfGjga2aStUHYZKHoj24L?=
+ =?us-ascii?Q?mUV8KRYCgBnqt8KWxU/cMNJ7OqUoBIXBL6DQTgj20VUvu6xWrllKuIJ2nsP4?=
+ =?us-ascii?Q?OpeFT7CjMPn8ViwVekDB/7DkMopjM0ymcL3CHztwuA1nIiMJ5QQtxhY8GM0L?=
+ =?us-ascii?Q?J0TaKZPOzAEnG3swCVmPSlR7HAIHOgdDEbjLXtzHnL/BEwiW7+nxIW9i1JIM?=
+ =?us-ascii?Q?cA29Y+8Qvx1K6T3WMtVBRzoFfSnSbRgejaWOSe6D/gdkSupFJoyj94X2IYw1?=
+ =?us-ascii?Q?/MTuEmSvGvf6XtoBC7gHfGiOGHxpml+M71KNE+ZgGsPuQFdA96W3iFDt/bmk?=
+ =?us-ascii?Q?2reJKI45sLAkwI6uGN0Ezj/uyO2ddzHclLl7TdEAI9Pl5ji3CcRzhyOyTwG+?=
+ =?us-ascii?Q?g/mwrR5VinxBcLk0xKv0xYiutq4IOA3xZV3wDBZ1t7TOGbsU46/45hSp1o2b?=
+ =?us-ascii?Q?Ilsdj6VxP3VbuFaNvEVTmrCh6DfQsP/JB617yhzoVxl1Wp+i3RGzuWd/5lab?=
+ =?us-ascii?Q?8rXWEllWqTC1Rp4sTKqZ7d48W1sdVo5f9Y0TIUz5WDUMbwiWWbPbnrJgIHPN?=
+ =?us-ascii?Q?rro+HHmfMD706J8zw09EDvlS8jUoL3SR2GzHMxsq3KT/YyeVn+50KIGUJIH0?=
+ =?us-ascii?Q?WQzsG3G+f0cTms9cS1ztoodQgD0TqnjtZCgcV74B/cl3svTNxl+B+nTnMQ32?=
+ =?us-ascii?Q?XeNmYFagWNqDi6WqPZW7Q6l3iLb6Udr1Re0tD/OtMM2oAvFucF3UjtGPSfBl?=
+ =?us-ascii?Q?yya+dX5GMJ2YkYh3YbqAWK9Nwn15c6ZZWFeZwq3OqqXVwOqJjKVrbZ4xItrD?=
+ =?us-ascii?Q?TJ7eQj+WEcLngHJ0aytZ+ngSXpbxHB6x0WskrgQzHRIPSF8JI3K8vUWuHKph?=
+ =?us-ascii?Q?IjK3Cy5QoAz/PqcqbqXtVmJwgkGmgUJGFvW/ULUX/rnxyve4x6ik7ISxX8sB?=
+ =?us-ascii?Q?O2or0IPB6h1mnv+1sG0C3FtuUolW5wlYEAiKY6fr?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ee46db4-9f0a-446d-c848-08da86fb459f
-X-MS-TrafficTypeDiagnostic: BY5PR11MB3975:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nWOLTnicx4L3xKqfPNS1tOGdMK9uDTYP8IuEvLpL4FsucqYTzCXhQrErjsh8kmbNATl2TTLIJxnvpJxU+/XGW8PBFyyuvpAyPnxNRi7Wr5xsBf2ubrGxGnlS1rEztCc4+m3/mok756a1HH+SQOXbz6xoa0HNkscnMr0XZrtkhgwDuMEDnnbNe2v+vWKX5pa/4xc1IQIMkkGSkcClP1t0QwUOydscWyqjESDlFIpuzxj2S5MAtacuZgkHmGy+cU0eOJhrk6kuywi058QMrJMxIfmfliyfaePssZ3zxajVt9FcHKUc0UfyLLZy1reUP/eKiHvsjScs4EyUYuiKslTmhLBWB1SG+wtIz5/KN75HzoGsV11BNLbo97c9QIR/rP8ASDjuyGGOUwg4jxKymZoza1fJ/gwspFdoUczYRP7Hz2mSFmsfBh6p0QsYDsNg8hjKdqtG6GXntekJgeyGH8UKd2Y+g6Dvs98DLOQli+obWtcTlDdSBhu30w2VRmWbf3neD7sKMkzEbagqXasccfKMckcPcT0itwQgJ2xE3Ae3qKjEryRl/CKktv6+n/f948qwUE2UiPHHknrlEvVviWG5PaeIOZOVYWA1TIDwlZbWYfYio5MlVcapIF8vOERsnv2zTQPDasfvuAB+YIlF4cqnQDCmJNmNeGjWYiO6NeSvEI1RBHc2qmrrJsuFsTIA//wmjGnxd/aj+V4MtI6abog1Lf/f9q7tPioLDzwoQCMbDQM5gDhESkenF9RSj8Zn+Nxi/Zxjvlkj2ilC2ccs9gsfCo4yjYs+Z4GvUGzCot3x/xU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5089.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(346002)(396003)(366004)(376002)(39860400002)(478600001)(53546011)(41300700001)(6512007)(82960400001)(36756003)(86362001)(6666004)(31696002)(186003)(6506007)(2616005)(6486002)(83380400001)(26005)(31686004)(6916009)(54906003)(316002)(4326008)(66476007)(38100700002)(5660300002)(66946007)(66556008)(8936002)(8676002)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MDN1cGhMbWxLQ01CUVJwb2p6ZUZ6SWlveEU1czVvaUpQVFdReXl0Z0gzTTc5?=
- =?utf-8?B?TGczR20xcXg5QXZXRW9Yc3dVSnl0djg0a2FsY0xMRy9SWnU4ZFVvTURDYWFv?=
- =?utf-8?B?Y3FyeVEyaVpwemdTcUpxNkI3UHFSV09WV2ExVzdwN1hUbVdNMHJzRGtBTkRH?=
- =?utf-8?B?cldHM252cFcrcHM0VForaHJRaE9lZW03My81bXc0SFNLMUNsczBWbDhPK1da?=
- =?utf-8?B?aUpTSklPZ2k4VmxVS202UnhLSzF3VUtRbnJySzB3YzFPRDJCNmh6MTdLaWk3?=
- =?utf-8?B?czg3L21rSFZDbHlPV2tDMEtBVnlRVXlTR3l5WnRXRmsyM016Vzc4YnBNTzhH?=
- =?utf-8?B?QUxlS0lRc0xMQkJlODltaGhidVhKdHVwdFVqMjAwYmVaYUlVRzVCTWJTTTVR?=
- =?utf-8?B?bFJhT1AxcnB1NndtUFdGcU5jZW05STlSOHdoTkcwRDhCOVVna2huV053ZkJr?=
- =?utf-8?B?N25UcmRvak45NGdodm1VLzdnWUxqWW1aTndYUnZEaXkzZGVQclIvMWZNTS8x?=
- =?utf-8?B?MUV6Ry9mRjdtcEk0Skt6Rm1LNjlQbThvVENQUm4rZmY0WWZRVWk3YUwwMEhk?=
- =?utf-8?B?ZENkWU1LSWgzK3RQYXNUMStHdTdmZVN3azVndHpPVWZ3Y1hBZFJTWHFGSW12?=
- =?utf-8?B?U2lsanIzblpIR2hmTWNZbEJ2UFNTMHRuL2xQQm55bUpVUGxTWHhneFM0MGN5?=
- =?utf-8?B?Y0p5cmVvdVpBTVF3THk5WE5SMDZkbDBETU1yTjdXUFlreER2Zjl4MEJzNURK?=
- =?utf-8?B?TmdnK09Pa1NWVjFWM0ZnZzJ2RXgwVnA2VmFZUUVuQXJJS3IxTlVqT2hhQ3lw?=
- =?utf-8?B?eUlkRGQxUkh3a0xLSEVteFZyV01SakpZa3RmbUZXbXlBWml6TmY0UFRSS3V0?=
- =?utf-8?B?dzB4eVRVOGF6RTVFRHZCRG9rMVFGYm9rVDR5M3ZXYUw2ZzcxSS84RlJZUmhh?=
- =?utf-8?B?aXpITkx0L3BjVWlvRDZISFVzbGtNS1oxKzB5dzdGMi9WMW1nVmZoOHhKb0Fn?=
- =?utf-8?B?T1VYd0paNVEwdENLMkYxUXJqOXZEdHdXS1YxSHZNUHJSdXFvSmxqbWhxaEdz?=
- =?utf-8?B?ajBrb0VPSmJvd08zQ2JMRlk5bUgycU83Y0tuRld1WXhhTm1rV29aUmRsb3BM?=
- =?utf-8?B?SGhSb09iNlZ1aWozbzYwTkNYRkg4Y2ZoREhKWlRvMzFGL3lBcVVORU9idjZp?=
- =?utf-8?B?Z3VjQjFiMmgyQ0ZkcVRzVGFRR3BqS2tsbEplOUU3c3FqYm9aaXVrdWI3b0g4?=
- =?utf-8?B?M0V2VHYyLzZSNHJxTmZJaGVQTG1vOHBGVDBWbi9FOVZwTmlUMGJCazcwNFJz?=
- =?utf-8?B?SE5YSGZTbkg1VHFVeFRzRkdEU29zUyttbjV1UUdzN25SQ0g5akNXbDdwVEFI?=
- =?utf-8?B?NU1xUExacjZzZXhETlFoaFhaZXBLdHRFWnhyNTQxNnZ1ZlJmOHpDSmFNZ3o4?=
- =?utf-8?B?b0plejZWTWVhWU51N01GbWdaeXBPY2Zla1JGNUJvYTRWa2MzTlNvdFNTMFZR?=
- =?utf-8?B?cUdkTkszNTdEaDFzU0pZUGd0MjVTV0FrVUUzZjEwSGdsSzlWTHlHcEdhbTEz?=
- =?utf-8?B?QStGZVZpR3RGU1l4L3JSeDlVV3dRMHVtcGovRmRadjVXeGN3amU4ZnJsK2R1?=
- =?utf-8?B?VGtCVHhnZ1BCQTB4K2pSSFBsVFI0R0tEUnZrL09iUFlhSmVoTlF2SXgxTWsy?=
- =?utf-8?B?cndoc1Q0c3ltUVk5VTdBd1ZXd1REVmp0QUM4MCsxQ1E4NTArK1RrVU5YVVJy?=
- =?utf-8?B?NGozbGJtWHVkSWY5aTh1S1JFRDlKZHZEcnA4emtGbjJVNGJsbmJScUJvcVIy?=
- =?utf-8?B?RGNxbkV0YnZPNGd5Qi9YQjJsdFV2enhXN2diNVdSVDFwbEIwU01JdnRnK3BW?=
- =?utf-8?B?NWc4RFB3aGE4WnJqRCtiNGxOM0VlT3o3WGJscnRUUkF5bXFFNDNpd0FwWGo3?=
- =?utf-8?B?OU5vZ3B4TVA0ZnR3blBIa0syQmM3QlNGTHVrQTBsZFZxUzk1T21IMHl0b0VX?=
- =?utf-8?B?Q2JPeEl1aGFvdkREd2t4bkptT2o3U0ZYTndEVWFZSWdXbTFFM0x3c1RJUXNy?=
- =?utf-8?B?YW5OdmdKNVQ4SzJ1ZklzLytQdlZXMlYwM3d6K0lXMGVwL3E5Mmg0SlVJNHpL?=
- =?utf-8?B?RWhmN3E2UjNLL3lDU2hQZVJGRVBGK2hOV3dvbHNncDVwY2diellmSWlQRTNn?=
- =?utf-8?B?N3c9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ee46db4-9f0a-446d-c848-08da86fb459f
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 00:38:19.2964
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5089.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37275ba5-4060-4f96-ade4-08da86fb8e4c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 00:40:20.8025
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jdxvcoxRjuxev9VjrXbz2puoTTkf20nu4Kxc0XqIgm0oG95eJ6cGhn4dLVkxug5efU3JUS68+RAGwnpvLNU33MrNzyVdHmu7Ol7eSaEfgY0=
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ALWBKWvWb0/yEOsntBVe1Vg+kRSCl98OBwq07fmgZ56/EKZsPv0e4dJ18D0yRDd7n6C6sMee4+yNKeI1RbbPN8uIBfnERcqRgpK7u62Jepw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB3975
 X-OriginatorOrg: intel.com
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -169,83 +159,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 8/25/2022 1:34 PM, Jakub Kicinski wrote:
-> Hard to get consensus if we still don't know what the FW does...
-> But if there's no new uAPI, just always enabling OFF with AUTO
-> then I guess I'd have nothing to complain about as I don't know
-> what other drivers do either.
-> 
-Ok. I think I have a basic summary of the situation and whats going on
-in the firmware. I'll try to summarize here:
+> -----Original Message-----
+> From: Jiri Pirko <jiri@resnulli.us>
+> Sent: Tuesday, July 26, 2022 12:47 AM
+> To: Keller, Jacob E <jacob.e.keller@intel.com>
+> Cc: netdev@vger.kernel.org; Jonathan Corbet <corbet@lwn.net>; Jiri Pirko
+> <jiri@nvidia.com>; David S. Miller <davem@davemloft.net>; Eric Dumazet
+> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
+> <pabeni@redhat.com>; Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
+> David Ahern <dsahern@kernel.org>; Stephen Hemminger
+> <stephen@networkplumber.org>; linux-doc@vger.kernel.org
+> Subject: Re: [iproute2-next v3 2/3] mnlg: add function to get
+> CTRL_ATTR_MAXATTR value
+>=20
+> Mon, Jul 25, 2022 at 10:56:49PM CEST, jacob.e.keller@intel.com wrote:
+> >Add a new function to extract the CTRL_ATTR_MAXATTR attribute of the
+> >CTRL_CMD_GETFAMILY request. This will be used to allow reading the
+> >maximum supported devlink attribute of the running kernel in an upcoming
+> >change.
+> >
+> >Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+>=20
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 
-Firmware has a state machine that we call the Link Establishment State
-Machine. This is the state machine which will attempt to establish link.
-This state machine only applies when auto-negotiation is not used. If
-auto-negotation is used it will perform the standard auto-negotiation
-flow and set FEC through that method.
+I had a new approach which just extracted maxattr and stored it hwnever we =
+call CTRL_CMD_GETFAMILY, which I think is a preferable approach to this. Th=
+at was part of the series I sent recently to support policy checking. I thi=
+nk I'd prefer that route now over this patch.
 
-The way this works follows this flow:
-
-1) driver sends a set PHY capabilities request. This includes various
-bits including whether to automatically select FEC, and which FEC modes
-to select from. When we enable ETHTOOL_FEC_AUTO, the driver always sets
-all FEC modes with the auto FEC bit.
-
-2) the firmware receives this request and begins the LESM. This starts
-with the firmware generating a list of configurations to attempt. Each
-configuration is a possible link mode combined with a bitwise AND of the
-FEC modes requested above in set PHY capabiltiies and the set of FEC
-modes supported by that link mode. The example I gave was if you plugged
-in a CA-L cable, it would try:
-
-  100G-CAUI4
-  50G-LAUI2
-  25G-AUI-C2C
-  10G-SFI-DA
-
-I'm still not 100% sure how it decides which link modes to choose for
-which cable, but I believe this is in a table stored within the firmware
-module we call the netlist.
-
-2a) for older firmware, the set PHY capabiltiies interface does not have
-a bit to set for requesting No FEC. Instead, each media type has a
-determination made about whether it needed FEC of not. I was told for
-example that CA-N cables would enable No FEC as an option, but CA-L
-cables would not (even though No FEC is supported for the link modes in
-question).
-
-2b) on newer firmware, the set PHY capabilities interface does have a
-bit to request No FEC. In this case, if we set the No FEC bit, then the
-firmware will be able to select No FEC as an option for cables that
-otherwise wouldn't have selected it in the old firmware (such as CA-L
-cables mentioned above).
-
-3) once the firmware has generated the list of possible configurations,
-it will iterate through them in a loop. Each configuration is applied,
-and then we wait some time (the timeout is also stored in the netlist
-module). If link establishes at one of these phases, we stop and use
-that configuration. Otherwise we move to the next configuration and try
-that. Each FEC mode is tried in sequence. (Unless the automatic FEC
-selection bit is *not* set. In that case, only one of the FEC modes is
-tried instead, and it is expected that software only set one bit to try.
-That would perform forced FEC selection instead).
-
-This process will repeat as it iterates through the configurations until
-link is established.
-
-As a side note, the first stage is to try auto-negotiation if enabled.
-So in the case where auto-negotiation is enabled it will first try
-auto-negotiation, then the set of forced configurations, and then loop
-back to trying auto-negotiation before trying the forced configs again.
-
-So from the software programming state, we currently translate
-ETHTOOL_FEC_AUTO by setting the automatic bit as well as setting every
-FEC mode bit, except the "No FEC" bit. This is a new bit which is only
-available on newer firmware.
-
-With the proposed change, we would add the "No FEC" bit when user
-requested both ETHTOOL_FEC_AUTO and ETHTOOL_FEC_OFF simultaneously.
-
-From reading your previous replies, you would prefer to just have the
-driver set the "No FEC" bit always for ETHTOOL_FEC_AUTO when its
-available/supported by firmware?
+Thanks,
+Jake
