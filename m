@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3E95A1D78
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:05:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 825825A1D7C
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:06:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243507AbiHZAFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:05:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33142 "EHLO
+        id S244153AbiHZAGM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiHZAFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:05:50 -0400
-Received: from smtp-fw-6002.amazon.com (smtp-fw-6002.amazon.com [52.95.49.90])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57FEFC3F7A;
-        Thu, 25 Aug 2022 17:05:49 -0700 (PDT)
+        with ESMTP id S243988AbiHZAGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:06:10 -0400
+Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 281BEC7426;
+        Thu, 25 Aug 2022 17:06:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661472350; x=1693008350;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=qT15d4/7lkCIu717lT5uGwSWvWqLZZ3slaU+ViX8FjA=;
-  b=vxT6BDcVUD3WCUSQIzTldHRgwCHPhe+iR4LcGzEaFsGJE+IWJC7S7SLH
-   fhVE0k900X8dzg89uGFDDRqUI4sWnmzWfoXflDUwmMB5jODX/Kxq4DEDj
-   g+ST4S836haNPiUBvNq5xOueuub9MLwVSJvHWGMPhCzlWL/GtdR+o6UTG
+  t=1661472369; x=1693008369;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=EVJmwtFmjoSMCLp5woTEC52zQFeunS69QTL7PANK91k=;
+  b=uUru8t3YmD7nUKrfQHY67YhNuJl6+LZYmtS6YgpG9CE9K0yvMPywh/B4
+   +HFRGY5v1/UaIxP3zG1fUozlEitKqSQfCcOnqQ+4NqKfn3AX0ejasJKPK
+   UnJAij3aXOLb9E0SQsTOybneGlp69lQWgi4UiH5eecGzz0u8+dsGGqviT
    g=;
 X-IronPort-AV: E=Sophos;i="5.93,264,1654560000"; 
-   d="scan'208";a="237588409"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:05:35 +0000
+   d="scan'208";a="253012151"
+Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com) ([10.25.36.210])
+  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:05:54 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2b-2520d768.us-west-2.amazon.com (Postfix) with ESMTPS id 2378D45260;
-        Fri, 26 Aug 2022 00:05:33 +0000 (UTC)
+        by email-inbound-relay-pdx-2b-1f9d5b26.us-west-2.amazon.com (Postfix) with ESMTPS id 8690244C8C;
+        Fri, 26 Aug 2022 00:05:52 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 26 Aug 2022 00:05:32 +0000
+ id 15.0.1497.38; Fri, 26 Aug 2022 00:05:51 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Fri, 26 Aug 2022 00:05:29 +0000
+ Fri, 26 Aug 2022 00:05:48 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,19 +51,21 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-Subject: [PATCH v1 net-next 00/13] tcp/udp: Introduce optional per-netns hash table.
-Date:   Thu, 25 Aug 2022 17:04:32 -0700
-Message-ID: <20220826000445.46552-1-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 01/13] fs/lock: Revive LOCK_MAND.
+Date:   Thu, 25 Aug 2022 17:04:33 -0700
+Message-ID: <20220826000445.46552-2-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826000445.46552-1-kuniyu@amazon.com>
+References: <20220826000445.46552-1-kuniyu@amazon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-Originating-IP: [10.43.162.140]
 X-ClientProxiedBy: EX13D10UWB001.ant.amazon.com (10.43.161.111) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,156 +73,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The more sockets we have in the hash table, the more time we spend
-looking up the socket.  While running a number of small workloads on
-the same host, they penalise each other and cause performance degradation.
+The commit 90f7d7a0d0d6 ("locks: remove LOCK_MAND flock lock support")
+removed LOCK_MAND support from the kernel because nothing checked the
+flag, nor was there no use case.  This patch revives LOCK_MAND to
+introduce a mandatory lock for read/write on /proc/sys.  Currently, it's
+the only use case, so we added two changes while reverting the commit.
 
-Also, the root cause might be a single workload that consumes much more
-resources than the others.  It often happens on a cloud service where
-different workloads share the same computing resource.
+First, we used to allow any f_mode for LOCK_MAND, but now we don't get
+it back.  Instead, we enforce being FMODE_READ|FMODE_WRITE as LOCK_SH
+and LOCK_EX.
 
-On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
-entries), after running iperf3 in different netns, creating 24Mi sockets
-without data transfer in the root netns causes about 10% performance
-regression for the iperf3's connection.
+Second, when f_ops->flock() was called with LOCK_MAND, each function
+returned -EOPNOTSUPP.  The following patch does not use f_ops->flock(),
+so we put the validation before calling f_ops->flock().
 
- thash_entries		sockets		length		Gbps
-	524288		      1		     1		50.7
-			   24Mi		    48		45.1
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+---
+ fs/locks.c                       | 57 ++++++++++++++++++++------------
+ include/uapi/asm-generic/fcntl.h |  5 ---
+ 2 files changed, 35 insertions(+), 27 deletions(-)
 
-It is basically related to the length of the list of each hash bucket.
-For testing purposes to see how performance drops along the length,
-I set 131072 (1Mi / 8) to thash_entries, and here's the result.
-
- thash_entries		sockets		length		Gbps
-        131072		      1		     1		50.7
-			    1Mi		     8		49.9
-			    2Mi		    16		48.9
-			    4Mi		    32		47.3
-			    8Mi		    64		44.6
-			   16Mi		   128		40.6
-			   24Mi		   192		36.3
-			   32Mi		   256		32.5
-			   40Mi		   320		27.0
-			   48Mi		   384		25.0
-
-To resolve the socket lookup degradation, we introduce an optional
-per-netns hash table for TCP and UDP.  With a smaller hash table, we
-can look up sockets faster and isolate noisy neighbours.  Also, we can
-reduce lock contention.
-
-We can control and check the hash size via sysctl knobs.  It requires
-some tuning based on workloads, so the per-netns hash table is disabled
-by default.
-
-  # dmesg | cut -d ' ' -f 5- | grep "established hash"
-  TCP established hash table entries: 524288 (order: 10, 4194304 bytes, vmalloc hugepage)
-
-  # sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = 524288  # can be changed by thash_entries
-
-  # sysctl net.ipv4.tcp_child_ehash_entries
-  net.ipv4.tcp_child_ehash_entries = 0  # disabled by default
-
-  # ip netns add test1
-  # ip netns exec test1 sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = -524288  # share the global ehash
-
-  # sysctl -w net.ipv4.tcp_child_ehash_entries=100
-  net.ipv4.tcp_child_ehash_entries = 100
-
-  # sysctl net.ipv4.tcp_child_ehash_entries
-  net.ipv4.tcp_child_ehash_entries = 128  # rounded up to 2^n
-
-  # ip netns add test2
-  # ip netns exec test2 sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = 128  # own per-netns ehash
-
-  [ UDP has the same interface as udp_hash_entries and
-    udp_child_hash_entries. ]
-
-When creating per-netns concurrently with different sizes, we can
-guarantee the size by doing one of these ways.
-
-  1) Share the global hash table and create per-netns one
-
-  First, unshare() with tcp_child_ehash_entries==0.  It creates dedicated
-  netns sysctl knobs where we can safely change tcp_child_ehash_entries
-  and clone()/unshare() to create a per-netns hash table.
-
-  2) Lock the sysctl knob
-
-  We can use flock(LOCK_MAND) or BPF_PROG_TYPE_CGROUP_SYSCTL to allow/deny
-  read/write on sysctl knobs.
-
-For details, please see each patch.
-
-  patch  1 -  3: mandatory lock support for sysctl (fs stuff)
-  patch  4 -  7: prep patch for per-netns TCP ehash
-  patch       8: add per-netns TCP ehash
-  patch  9 - 12: prep patch for per-netns UDP hash table
-  patch      13: add per-netns UDP hash table
-
-
-Kuniyuki Iwashima (13):
-  fs/lock: Revive LOCK_MAND.
-  sysctl: Support LOCK_MAND for read/write.
-  selftest: sysctl: Add test for flock(LOCK_MAND).
-  net: Introduce init2() for pernet_operations.
-  tcp: Clean up some functions.
-  tcp: Set NULL to sk->sk_prot->h.hashinfo.
-  tcp: Access &tcp_hashinfo via net.
-  tcp: Introduce optional per-netns ehash.
-  udp: Clean up some functions.
-  udp: Set NULL to sk->sk_prot->h.udp_table.
-  udp: Set NULL to udp_seq_afinfo.udp_table.
-  udp: Access &udp_table via net.
-  udp: Introduce optional per-netns hash table.
-
- Documentation/networking/ip-sysctl.rst        |  40 +++++
- .../chelsio/inline_crypto/chtls/chtls_cm.c    |   5 +-
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |   5 +-
- .../net/ethernet/netronome/nfp/crypto/tls.c   |   5 +-
- fs/locks.c                                    |  83 ++++++---
- fs/proc/proc_sysctl.c                         |  25 ++-
- include/linux/fs.h                            |   1 +
- include/net/inet_hashtables.h                 |  16 ++
- include/net/net_namespace.h                   |   3 +
- include/net/netns/ipv4.h                      |   4 +
- include/uapi/asm-generic/fcntl.h              |   5 -
- net/core/filter.c                             |   9 +-
- net/core/net_namespace.c                      |  18 +-
- net/dccp/proto.c                              |   2 +
- net/ipv4/af_inet.c                            |   2 +-
- net/ipv4/esp4.c                               |   3 +-
- net/ipv4/inet_connection_sock.c               |  25 ++-
- net/ipv4/inet_hashtables.c                    | 102 ++++++++---
- net/ipv4/inet_timewait_sock.c                 |   4 +-
- net/ipv4/netfilter/nf_socket_ipv4.c           |   2 +-
- net/ipv4/netfilter/nf_tproxy_ipv4.c           |  17 +-
- net/ipv4/sysctl_net_ipv4.c                    | 113 ++++++++++++
- net/ipv4/tcp.c                                |   1 +
- net/ipv4/tcp_diag.c                           |  18 +-
- net/ipv4/tcp_ipv4.c                           | 122 +++++++++----
- net/ipv4/tcp_minisocks.c                      |   2 +-
- net/ipv4/udp.c                                | 164 ++++++++++++++----
- net/ipv4/udp_diag.c                           |   6 +-
- net/ipv4/udp_offload.c                        |   5 +-
- net/ipv6/esp6.c                               |   3 +-
- net/ipv6/inet6_hashtables.c                   |   4 +-
- net/ipv6/netfilter/nf_socket_ipv6.c           |   2 +-
- net/ipv6/netfilter/nf_tproxy_ipv6.c           |   5 +-
- net/ipv6/tcp_ipv6.c                           |  30 +++-
- net/ipv6/udp.c                                |  31 ++--
- net/ipv6/udp_offload.c                        |   5 +-
- net/mptcp/mptcp_diag.c                        |   7 +-
- tools/testing/selftests/sysctl/.gitignore     |   2 +
- tools/testing/selftests/sysctl/Makefile       |   9 +-
- tools/testing/selftests/sysctl/sysctl_flock.c | 157 +++++++++++++++++
- 40 files changed, 854 insertions(+), 208 deletions(-)
- create mode 100644 tools/testing/selftests/sysctl/.gitignore
- create mode 100644 tools/testing/selftests/sysctl/sysctl_flock.c
-
+diff --git a/fs/locks.c b/fs/locks.c
+index c266cfdc3291..03ff10a3165e 100644
+--- a/fs/locks.c
++++ b/fs/locks.c
+@@ -421,6 +421,10 @@ static inline int flock_translate_cmd(int cmd) {
+ 	case LOCK_UN:
+ 		return F_UNLCK;
+ 	}
++
++	if (cmd & LOCK_MAND)
++		return cmd & (LOCK_MAND | LOCK_RW);
++
+ 	return -EINVAL;
+ }
+ 
+@@ -879,6 +883,10 @@ static bool flock_locks_conflict(struct file_lock *caller_fl,
+ 	if (caller_fl->fl_file == sys_fl->fl_file)
+ 		return false;
+ 
++	if (caller_fl->fl_type & LOCK_MAND ||
++	    sys_fl->fl_type & LOCK_MAND)
++		return true;
++
+ 	return locks_conflict(caller_fl, sys_fl);
+ }
+ 
+@@ -2077,9 +2085,7 @@ EXPORT_SYMBOL(locks_lock_inode_wait);
+  *	- %LOCK_SH -- a shared lock.
+  *	- %LOCK_EX -- an exclusive lock.
+  *	- %LOCK_UN -- remove an existing lock.
+- *	- %LOCK_MAND -- a 'mandatory' flock. (DEPRECATED)
+- *
+- *	%LOCK_MAND support has been removed from the kernel.
++ *	- %LOCK_MAND -- a 'mandatory' flock. (only supported on /proc/sys/)
+  */
+ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
+ {
+@@ -2087,19 +2093,6 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
+ 	struct file_lock fl;
+ 	struct fd f;
+ 
+-	/*
+-	 * LOCK_MAND locks were broken for a long time in that they never
+-	 * conflicted with one another and didn't prevent any sort of open,
+-	 * read or write activity.
+-	 *
+-	 * Just ignore these requests now, to preserve legacy behavior, but
+-	 * throw a warning to let people know that they don't actually work.
+-	 */
+-	if (cmd & LOCK_MAND) {
+-		pr_warn_once("Attempt to set a LOCK_MAND lock via flock(2). This support has been removed and the request ignored.\n");
+-		return 0;
+-	}
+-
+ 	type = flock_translate_cmd(cmd & ~LOCK_NB);
+ 	if (type < 0)
+ 		return type;
+@@ -2109,6 +2102,7 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
+ 	if (!f.file)
+ 		return error;
+ 
++	/* LOCK_MAND supports only read/write on proc_sysctl for now */
+ 	if (type != F_UNLCK && !(f.file->f_mode & (FMODE_READ | FMODE_WRITE)))
+ 		goto out_putf;
+ 
+@@ -2122,12 +2116,18 @@ SYSCALL_DEFINE2(flock, unsigned int, fd, unsigned int, cmd)
+ 	if (can_sleep)
+ 		fl.fl_flags |= FL_SLEEP;
+ 
+-	if (f.file->f_op->flock)
++	if (f.file->f_op->flock) {
++		if (cmd & LOCK_MAND) {
++			error = -EOPNOTSUPP;
++			goto out_putf;
++		}
++
+ 		error = f.file->f_op->flock(f.file,
+ 					    (can_sleep) ? F_SETLKW : F_SETLK,
+ 					    &fl);
+-	else
++	} else {
+ 		error = locks_lock_file_wait(f.file, &fl);
++	}
+ 
+  out_putf:
+ 	fdput(f);
+@@ -2711,7 +2711,11 @@ static void lock_get_status(struct seq_file *f, struct file_lock *fl,
+ 		seq_printf(f, " %s ",
+ 			     (inode == NULL) ? "*NOINODE*" : "ADVISORY ");
+ 	} else if (IS_FLOCK(fl)) {
+-		seq_puts(f, "FLOCK  ADVISORY  ");
++		if (fl->fl_type & LOCK_MAND) {
++			seq_puts(f, "FLOCK  MANDATORY ");
++		} else {
++			seq_puts(f, "FLOCK  ADVISORY  ");
++		}
+ 	} else if (IS_LEASE(fl)) {
+ 		if (fl->fl_flags & FL_DELEG)
+ 			seq_puts(f, "DELEG  ");
+@@ -2727,10 +2731,19 @@ static void lock_get_status(struct seq_file *f, struct file_lock *fl,
+ 	} else {
+ 		seq_puts(f, "UNKNOWN UNKNOWN  ");
+ 	}
+-	type = IS_LEASE(fl) ? target_leasetype(fl) : fl->fl_type;
+ 
+-	seq_printf(f, "%s ", (type == F_WRLCK) ? "WRITE" :
+-			     (type == F_RDLCK) ? "READ" : "UNLCK");
++	if (fl->fl_type & LOCK_MAND) {
++		seq_printf(f, "%s ",
++			   (fl->fl_type & LOCK_READ)
++			   ? (fl->fl_type & LOCK_WRITE) ? "RW   " : "READ "
++			   : (fl->fl_type & LOCK_WRITE) ? "WRITE" : "NONE ");
++	} else {
++		type = IS_LEASE(fl) ? target_leasetype(fl) : fl->fl_type;
++
++		seq_printf(f, "%s ", (type == F_WRLCK) ? "WRITE" :
++			   (type == F_RDLCK) ? "READ" : "UNLCK");
++	}
++
+ 	if (inode) {
+ 		/* userspace relies on this representation of dev_t */
+ 		seq_printf(f, "%d %02x:%02x:%lu ", fl_pid,
+diff --git a/include/uapi/asm-generic/fcntl.h b/include/uapi/asm-generic/fcntl.h
+index 1ecdb911add8..94fb8c6fd543 100644
+--- a/include/uapi/asm-generic/fcntl.h
++++ b/include/uapi/asm-generic/fcntl.h
+@@ -180,11 +180,6 @@ struct f_owner_ex {
+ #define LOCK_NB		4	/* or'd with one of the above to prevent
+ 				   blocking */
+ #define LOCK_UN		8	/* remove lock */
+-
+-/*
+- * LOCK_MAND support has been removed from the kernel. We leave the symbols
+- * here to not break legacy builds, but these should not be used in new code.
+- */
+ #define LOCK_MAND	32	/* This is a mandatory flock ... */
+ #define LOCK_READ	64	/* which allows concurrent read operations */
+ #define LOCK_WRITE	128	/* which allows concurrent write operations */
 -- 
 2.30.2
 
