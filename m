@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC0B5A26B6
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:16:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24C6A5A26BC
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:18:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229946AbiHZLQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 07:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
+        id S241398AbiHZLRo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 07:17:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229888AbiHZLQE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:16:04 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC0D9EAD
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:16:03 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id s23so701366wmj.4
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:16:03 -0700 (PDT)
+        with ESMTP id S238911AbiHZLRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:17:40 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11448DAED7
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:17:39 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id bq11so1398637wrb.12
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:17:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20210112.gappssmtp.com; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc;
-        bh=vRtP9Skqdi6VRUhZFmU/5JLtOk/HwkyzGgOrB5aVaqc=;
-        b=BdK6TUPc3E95StF714NnERXWUrvaQ18TZ48qTAB6uRMvSSkzEVJKaqXmU1jlABADIn
-         k3elOllRLH6zHYKRmAwge10AsGt90U/L65VKqWXeZW3722f3YNZY2M6o0H2gbn4FthOq
-         9/wDAAKJfQrIXOJtNPCu+fMEUpHxgxUQLnAZWXBJD/Wpxp3u6jP3BhpdkUG+5cYGLv0M
-         SietHnFquLDYnlZz24gs/eUGbfFd/mRvtsAkCQhTSptZgFuuwrQA39UkYjGUYIBD7J/U
-         b7brUwjthuTOFYs7QOveQ5WljT0czxdNfL+pV+SxzidtQgnEBBW+r0I2jMyvmZkYAjF2
-         6Q3A==
+        bh=s5HqRvr7PHDgoWZiabiLCmfMHT6gZC+dy6EsiwT3xbQ=;
+        b=7h9g7EK9RqVul2SxQH6CNrg/bVcpzhDCrLUdI6ScWhDU7WNx4ReP5AgoC/a8qWBvS1
+         jVvE5cHj0rgJGVhhf/DJjWMVYJAYGk5HqVZOqAY02dQZ+svPBzEAYE9qbgpbvEuy8smC
+         qppATxVh+u+btTiaVx1FSOheR+KENUYveqzCzybJQdH6iM/C9tqrqLqc9O5nw/12qiTp
+         9K0qVYLbsUfyClH99d5GboIwoku2OvJicFJ73DD2dG681QDpOF3ViGbL+GARN7fKrUkv
+         wkzI10UZCVABrX5D75xc7KumSNIn9kyreUd2ohPOtQ8ojq5h+mxqi8BjK5z3tLbG1/PZ
+         Rcmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=vRtP9Skqdi6VRUhZFmU/5JLtOk/HwkyzGgOrB5aVaqc=;
-        b=Z0YTRNYAWTInTDNMjZUtwr5lh2MycKZRWxOa2LxUX3lrcuD0ro0zuehEkLGNWY+cfU
-         Rjr11XgmUdCkKjOy9xXx0T5muJyVBYAlvSjm/Xqt9j1i0Wc7EoB4x7pM3HEKPoOTIZ6P
-         N709NdhlV7vgEnI0RmjG395jVcDHJUDqa32IGgEOTH5FPG6QNrynMI2ljt3/tHmkKeKO
-         KVqJteKxTaFOELAytzUIlScP2bnj6Eh3nKGCZ4IHqUAvOpzh2ndK3c8esX4jHfLgKWbr
-         vJnl5Ow1nMWefZkfhCj6Q5bM+qEwgckjMTeWAIGPAfeq3krMAMBEi6KYp4UCtZrnXUBD
-         pFJw==
-X-Gm-Message-State: ACgBeo16Wc2PoFPYM9ewinyyubK+SjjVgaamelSpHiufT7tXA9NTRWmi
-        OhlFQvQxTbNwkwsyktf9sfn8ag==
-X-Google-Smtp-Source: AA6agR4QzaWX8XmLz8SGvNyIEQsQ5GQDx172pO0aIEdni0lwQywVURMMxO00o4DMyckU7PnYyS53nA==
-X-Received: by 2002:a05:600c:3048:b0:3a6:5ce0:9701 with SMTP id n8-20020a05600c304800b003a65ce09701mr4969801wmh.97.1661512562030;
-        Fri, 26 Aug 2022 04:16:02 -0700 (PDT)
+        bh=s5HqRvr7PHDgoWZiabiLCmfMHT6gZC+dy6EsiwT3xbQ=;
+        b=sGkvBXGUYEi7kc81UeQBu2sO+d/XmNlPtFYWqU4F9AyvqJmJVge6fUSUlLxnbacBv2
+         meHx4lXAhfpTzz4+RwsPkJdjSgNQCv5U823VeIr299OgRVh5GNUSE7aw3ZeWeafuNr4k
+         EvosN11byiqERQdQg1XiNXtDIGh7kGsXKrEFkYl/ZfxgOy/G2N7TBh0Bhm7kSci61uQ5
+         pMt24+BwiTlY1Z+py7LTeFl90jODs4zfB0ZW1UMqaMJFzIdfdAktg6YmOMglAx2Z0qWi
+         VZ1JO6tyBfrdavS3O5RZAtgxNRYGd2uovFYoVJgogAyZbMSLzW9vJEGadXK0E0wqRFM0
+         W6Ag==
+X-Gm-Message-State: ACgBeo2lNdjVTbZBOke6D+S2WoTP5Igpp1nb9c99+K9f0QYeDLXXqRlY
+        E1hhnxP4TbPVkIbNVtDlxQ3oZw==
+X-Google-Smtp-Source: AA6agR7O+TmV/Wg7dw7LV0qg1aUoBB0fczi0zDl0Ee3qSOIFltVBL8eS4m8i5QweusGvGcmsr9QSKw==
+X-Received: by 2002:a05:6000:15ca:b0:225:4575:746d with SMTP id y10-20020a05600015ca00b002254575746dmr4460103wry.147.1661512658299;
+        Fri, 26 Aug 2022 04:17:38 -0700 (PDT)
 Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id h21-20020a05600c351500b003a60ff7c082sm8622454wmq.15.2022.08.26.04.16.01
+        by smtp.gmail.com with ESMTPSA id by6-20020a056000098600b0021f15514e7fsm2059971wrb.0.2022.08.26.04.17.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 04:16:01 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 13:16:00 +0200
+        Fri, 26 Aug 2022 04:17:37 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 13:17:37 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Wojciech Drewek <wojciech.drewek@intel.com>
 Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
@@ -61,13 +61,14 @@ Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
         simon.horman@corigine.com, pablo@netfilter.org,
         maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
         jchapman@katalix.com, gnault@redhat.com
-Subject: Re: [RFC PATCH net-next 0/5] ice: L2TPv3 offload support
-Message-ID: <YwircDhHhOfqdHy/@nanopsycho>
+Subject: Re: [RFC PATCH net-next 1/5] uapi: move IPPROTO_L2TP to in.h
+Message-ID: <Ywir0R7xdE7RZIhD@nanopsycho>
 References: <20220826110059.119927-1-wojciech.drewek@intel.com>
+ <20220826110059.119927-2-wojciech.drewek@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220826110059.119927-1-wojciech.drewek@intel.com>
+In-Reply-To: <20220826110059.119927-2-wojciech.drewek@intel.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -77,52 +78,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 26, 2022 at 01:00:54PM CEST, wojciech.drewek@intel.com wrote:
->Add support for dissecting L2TPv3 session id in flow dissector. Add support
->for this field in tc-flower and support offloading L2TPv3. Finally, add
->support for hardware offload of L2TPv3 packets based on session id in
->switchdev mode in ice driver.
+Fri, Aug 26, 2022 at 01:00:55PM CEST, wojciech.drewek@intel.com wrote:
+>IPPROTO_L2TP is currently defined in l2tp.h, but most of
+>ip protocols is defined in in.h file. Move it there in order
+>to keep code clean.
 >
->Example filter:
->  # tc filter add dev $PF1 ingress prio 1 protocol ip \
->      flower \
->        ip_proto l2tp \
->        l2tpv3_sid 1234 \
->        skip_sw \
->      action mirred egress redirect dev $VF1_PR
+>Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+>---
+> include/uapi/linux/in.h   | 2 ++
+> include/uapi/linux/l2tp.h | 2 --
+> 2 files changed, 2 insertions(+), 2 deletions(-)
 >
->Changes in iproute2 are required to use the new fields.
->
->ICE COMMS DDP package is required to create a filter in ice.
+>diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+>index 14168225cecd..5a9454c886b3 100644
+>--- a/include/uapi/linux/in.h
+>+++ b/include/uapi/linux/in.h
+>@@ -68,6 +68,8 @@ enum {
+> #define IPPROTO_PIM		IPPROTO_PIM
+>   IPPROTO_COMP = 108,		/* Compression Header Protocol		*/
+> #define IPPROTO_COMP		IPPROTO_COMP
+>+  IPPROTO_L2TP = 115,		/* Layer 2 Tunnelling Protocol		*/
+>+#define IPPROTO_L2TP		IPPROTO_L2TP
+>   IPPROTO_SCTP = 132,		/* Stream Control Transport Protocol	*/
+> #define IPPROTO_SCTP		IPPROTO_SCTP
+>   IPPROTO_UDPLITE = 136,	/* UDP-Lite (RFC 3828)			*/
+>diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
+>index bab8c9708611..7d81c3e1ec29 100644
+>--- a/include/uapi/linux/l2tp.h
+>+++ b/include/uapi/linux/l2tp.h
+>@@ -13,8 +13,6 @@
+> #include <linux/in.h>
+> #include <linux/in6.h>
+> 
+>-#define IPPROTO_L2TP		115
 
-I don't understand what do you mean by this. Could you please explain
-what this mysterious "ICE COMMS DDP package" is? Do I understand it
-correctly that without it, the solution would not work?
+You most certainly cannot do this, as you would break the user including
+linux/l2tp.h and using this.
 
->
->Marcin Szycik (1):
->  ice: Add L2TPv3 hardware offload support
->
->Wojciech Drewek (4):
->  uapi: move IPPROTO_L2TP to in.h
->  flow_dissector: Add L2TPv3 dissectors
->  net/sched: flower: Add L2TPv3 filter
->  flow_offload: Introduce flow_match_l2tpv3
->
-> .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
-> drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
-> drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
-> drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
-> include/net/flow_dissector.h                  |  9 +++
-> include/net/flow_offload.h                    |  6 ++
-> include/uapi/linux/in.h                       |  2 +
-> include/uapi/linux/l2tp.h                     |  2 -
-> include/uapi/linux/pkt_cls.h                  |  2 +
-> net/core/flow_dissector.c                     | 28 ++++++++
-> net/core/flow_offload.c                       |  7 ++
-> net/sched/cls_flower.c                        | 16 +++++
-> 12 files changed, 179 insertions(+), 4 deletions(-)
->
+
+>-
+> /**
+>  * struct sockaddr_l2tpip - the sockaddr structure for L2TP-over-IP sockets
+>  * @l2tp_family:  address family number AF_L2TPIP.
 >-- 
 >2.31.1
 >
