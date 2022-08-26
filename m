@@ -2,115 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84FCC5A2345
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 10:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72E4C5A2364
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 10:43:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245334AbiHZIkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 04:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58906 "EHLO
+        id S244877AbiHZIn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 04:43:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245239AbiHZIj4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 04:39:56 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2277D6305
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:38:58 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id tl26so1100805ejc.9
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:38:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=R71pwovWKW2n+2d6b0m1mgjy0dLnYi4JvtwlQD06gkA=;
-        b=HOYhgdUFdplD2/K5nkpukqq6uv07hu/JT8XDpoArdztp2I4032fFuMUGt3qDx/Z2aN
-         G81QFtnRocphML9ByFf3YBnAsnTgYXseUp46UBefnFeLQ/RAdYwH0ND7MHrrrVv/g81D
-         FLNcCXc1h1kM0geWX62XIGz+V1biKkGWZiVA91kN68Iug1cUEE4lrL5gzMBu5u30tYHj
-         BgQVn9bplMsF7NKZHd+1WQyE0BOUT/lzmRYSqzHxODCibb8F75rLqxgnobNQjUSJ0DzA
-         Biij0ShT3EOMaCOLt8e0yZ3zasIjt6JwGL4YezsWpET4KXZ0DSIrPbY4vs41IWhXLiyS
-         9WJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=R71pwovWKW2n+2d6b0m1mgjy0dLnYi4JvtwlQD06gkA=;
-        b=J2ngosSIjHkfhDW5++5C95JTm7g0Sw3Sl+v4T9g1tzkUlu9kHxISuanhIH8OB1RERY
-         qhXDr1yyR9WMWBp0ZGHeos6lIxFTW+bB5hFyON4D6uZDIfF5k14te1GyNpNT8whcvU6C
-         cHyjZhMC9xELHRg94VeUkw+1ozHXUCgs2syYacu6YDCakNCQKKNzSbNzbf/4bSVo3xS0
-         p9EMqQc9lPN2Iz7nnEStIdheMbV5z+puDGnIOY08KrkGumbNGA21heDHYgUZR11hvH5R
-         STiGEz/zNCjMlCp5vU3zXzTrjHUt7bWiHLfUUoJCe5I1n/d37VUWhFrHqmBXYVNqIVpL
-         NGaQ==
-X-Gm-Message-State: ACgBeo0KdPKC9ZwXC6agDwf7qcG+WwRoK/PfY1r9ZHywV/NvGTirevAd
-        qwje9Ii/pCwSCVA2CbqXxB374Q==
-X-Google-Smtp-Source: AA6agR7xZ/f2/7JcXvjG+baYgsb4aGLjnb/LeMzknsCulmovamHT43pUaI8v/g1EIwOCnTvvdm+aNQ==
-X-Received: by 2002:a17:907:9710:b0:731:67b1:dc3b with SMTP id jg16-20020a170907971000b0073167b1dc3bmr4825640ejc.709.1661503136627;
-        Fri, 26 Aug 2022 01:38:56 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id n17-20020aa7c691000000b0044657ecfbb5sm948867edq.13.2022.08.26.01.38.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 01:38:55 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 10:38:54 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Jiri Pirko <jiri@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        David Ahern <dsahern@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [iproute2-next v3 2/3] mnlg: add function to get
- CTRL_ATTR_MAXATTR value
-Message-ID: <YwiGnm3gj9z9FOmP@nanopsycho>
-References: <20220725205650.4018731-1-jacob.e.keller@intel.com>
- <20220725205650.4018731-3-jacob.e.keller@intel.com>
- <Yt+b3XGbAixaf124@nanopsycho>
- <CO1PR11MB50890D5A3470D9921711A91AD6759@CO1PR11MB5089.namprd11.prod.outlook.com>
+        with ESMTP id S229991AbiHZInK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 04:43:10 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8601629816;
+        Fri, 26 Aug 2022 01:43:00 -0700 (PDT)
+Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 4038C22CF;
+        Fri, 26 Aug 2022 10:42:58 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661503378;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Wb/8RpcvRS+tdrKSkweZ8TUnn8oGwIokn6ovrmThycQ=;
+        b=uUnVGbyDT1WfagYTCq0hXVF7r4GRmZa1bavIz0N9q/TMUVhUjgGSEeANAq03TESnjjlc1f
+        vxODqwoOM//PDizqkf0BAflyaCErZL/s1XobCvIOYzE2uhsEUjlGecQEygnGDEP9XlE9hW
+        ZRl2M9qKuvF0fK58ilFdjOEisSpHQrYm6PpdP2f13PGGT703BXrdx07DJaWOPdpu5kGVf9
+        9emAeOOAlbFa1NMvGQN/oB0rvRBh17HyN962FVvgJ7r/45aqrvXEAw+A499YKSAaOGqgID
+        sC9zbeZSGlwzpKiP+YRErL3exE47L5Q6MJTCQQfKhdIlc1STSRPo7q+dL3agPA==
+From:   Michael Walle <michael@walle.cc>
+To:     divya.koppera@microchip.com
+Cc:     UNGLinuxDriver@microchip.com, andrew@lunn.ch, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for lan8814 phy
+Date:   Fri, 26 Aug 2022 10:42:49 +0200
+Message-Id: <20220826084249.1031557-1-michael@walle.cc>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220825080549.9444-1-Divya.Koppera@microchip.com>
+References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CO1PR11MB50890D5A3470D9921711A91AD6759@CO1PR11MB5089.namprd11.prod.outlook.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 26, 2022 at 02:40:20AM CEST, jacob.e.keller@intel.com wrote:
->
->
->> -----Original Message-----
->> From: Jiri Pirko <jiri@resnulli.us>
->> Sent: Tuesday, July 26, 2022 12:47 AM
->> To: Keller, Jacob E <jacob.e.keller@intel.com>
->> Cc: netdev@vger.kernel.org; Jonathan Corbet <corbet@lwn.net>; Jiri Pirko
->> <jiri@nvidia.com>; David S. Miller <davem@davemloft.net>; Eric Dumazet
->> <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo Abeni
->> <pabeni@redhat.com>; Nguyen, Anthony L <anthony.l.nguyen@intel.com>;
->> David Ahern <dsahern@kernel.org>; Stephen Hemminger
->> <stephen@networkplumber.org>; linux-doc@vger.kernel.org
->> Subject: Re: [iproute2-next v3 2/3] mnlg: add function to get
->> CTRL_ATTR_MAXATTR value
->> 
->> Mon, Jul 25, 2022 at 10:56:49PM CEST, jacob.e.keller@intel.com wrote:
->> >Add a new function to extract the CTRL_ATTR_MAXATTR attribute of the
->> >CTRL_CMD_GETFAMILY request. This will be used to allow reading the
->> >maximum supported devlink attribute of the running kernel in an upcoming
->> >change.
->> >
->> >Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
->> 
->> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
->
->I had a new approach which just extracted maxattr and stored it hwnever we call CTRL_CMD_GETFAMILY, which I think is a preferable approach to this. That was part of the series I sent recently to support policy checking. I think I'd prefer that route now over this patch.
+Hi,
 
-Send it :)
+> Supports SQI(Signal Quality Index) for lan8814 phy, where
+> it has SQI index of 0-7 values and this indicator can be used
+> for cable integrity diagnostic and investigating other noise
+> sources.
+> 
+> Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
+> ---
+>  drivers/net/phy/micrel.c | 35 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+> 
+> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+> index e78d0bf69bc3..3775da7afc64 100644
+> --- a/drivers/net/phy/micrel.c
+> +++ b/drivers/net/phy/micrel.c
+> @@ -1975,6 +1975,13 @@ static int ksz886x_cable_test_get_status(struct phy_device *phydev,
+>  #define LAN8814_CLOCK_MANAGEMENT			0xd
+>  #define LAN8814_LINK_QUALITY				0x8e
+>  
+> +#define LAN8814_DCQ_CTRL				0xe6
+> +#define LAN8814_DCQ_CTRL_READ_CAPTURE_			BIT(15)
 
->
->Thanks,
->Jake
+Why does it end with an underscore?
+
+> +#define LAN8814_DCQ_CTRL_CHANNEL_MASK			GENMASK(1, 0)
+> +#define LAN8814_DCQ_SQI					0xe4
+> +#define LAN8814_DCQ_SQI_MAX				7
+> +#define LAN8814_DCQ_SQI_VAL_MASK			GENMASK(3, 1)
+> +
+>  static int lanphy_read_page_reg(struct phy_device *phydev, int page, u32 addr)
+>  {
+>  	int data;
+> @@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device *phydev)
+>  	return 0;
+>  }
+>  
+> +static int lan8814_get_sqi(struct phy_device *phydev)
+> +{
+> +	int rc, val;
+> +
+> +	val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
+> +	if (val < 0)
+> +		return val;
+> +
+> +	val &= ~LAN8814_DCQ_CTRL_CHANNEL_MASK;
+
+I do have a datasheet for this PHY, but it doesn't mention 0xe6 on EP1.
+So I can only guess that this "channel mask" is for the 4 rx/tx pairs
+on GbE? And you only seem to evaluate one of them. Is that the correct
+thing to do here?
+
+-michael
+
+
+> +	val |= LAN8814_DCQ_CTRL_READ_CAPTURE_;
+> +	rc = lanphy_write_page_reg(phydev, 1, LAN8814_DCQ_CTRL, val);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	rc = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_SQI);
+> +	if (rc < 0)
+> +		return rc;
+> +
+> +	return FIELD_GET(LAN8814_DCQ_SQI_VAL_MASK, rc);
+> +}
