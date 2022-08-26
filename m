@@ -2,54 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91A725A23D4
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:13:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503675A23FC
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245347AbiHZJML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 05:12:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60418 "EHLO
+        id S245437AbiHZJQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 05:16:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245744AbiHZJMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:12:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45318D6BAB
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:11:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F29B7B82FDE
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 09:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4EB8C43140;
-        Fri, 26 Aug 2022 09:11:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661505115;
-        bh=9Hc/ZVlkUQ0mJW0yEFzahKoYD3UoFK4+z1GFwrpL49k=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Cs8GHn6AayJTPqmAovaH6bVh4SJ25tY1xKOrTdOs1qSwKN+aGMCRYO6wXV2AmgBJz
-         RpqI/TkjcSBoTE33daCiYy7LBroapuL2DWd0ZweUWMyrlqso7DynGDmGzotI4pEs7M
-         oreuoGaqlDGIK2AYjLuIYFgPDpanYuk/At/pWZlgcQotq6JjqT9syHWe94mAh9ToaH
-         f9WImR9MAHPfvq+USS7su+hp30m0rCmZq0bgAO/YEqWBEFkvgblkRoigrEtTBOyqt+
-         0LgMVNhsVb/2097Eak1QF4gzOpKB6CsMSQx5RMdNcGr8uTlhVi7nRwEPr8QNpbaSqW
-         lWaJBsj/4Z6tw==
-Date:   Fri, 26 Aug 2022 11:11:47 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Andrey Zhadchenko <andrey.zhadchenko@virtuozzo.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org, pshelar@ovn.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, ptikhomirov@virtuozzo.com,
-        alexander.mikhalitsyn@virtuozzo.com, avagin@google.com,
-        i.maximets@ovn.org, aconole@redhat.com
-Subject: Re: [PATCH net-next v3 0/2] openvswitch: allow specifying ifindex of
- new interfaces
-Message-ID: <20220826091147.eechwvoa6eckhuq4@wittgenstein>
-References: <20220825020450.664147-1-andrey.zhadchenko@virtuozzo.com>
+        with ESMTP id S245340AbiHZJQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:16:17 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7035CD31E0
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:16:15 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id bs25so1076004wrb.2
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:16:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc;
+        bh=lu7t59Y/6eA1q6IQ9qzo0I3g1dYmEshSQSj7OaC0EW8=;
+        b=dvcCrMXMBs0DCb7ARVAJu7t+jiT75dydGgkrAu9UTeywyKhEzYBOO5aNexjt2pIx0+
+         K7MkHMPBzQghhTXWSS1Toqy02QbRGmxnsMlmLIHLKwDRkCtYWrwazDyixvtCmIUaSAZZ
+         iYIySOy7OcSPaWAMXutbQ5WDw70DSs3B3xl4BVG848jVIHdiPWMmrWYYhGoc61hzuuyo
+         vlkHZx1wftk9PboEXIyBJEYW2OI9/CDrRzyhy8aTxyJ60no+qBhaMpW5nxdGQJk/3kIc
+         Ooskhseo2rs58jBrHz9XyQNBqp6nDxZHVK+9s1jKtOXEuziecLY7K1ooQb5qK/WtMb99
+         eKNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc;
+        bh=lu7t59Y/6eA1q6IQ9qzo0I3g1dYmEshSQSj7OaC0EW8=;
+        b=RydeKHXDcpu9gwlgr/TcKmP40WYjuHOEbTb7Kt9RMDmBwoWwciajK7amMoFd068IaO
+         v99f19nuNoKmtAKIYlx32Ya+PA6nyMhvHfwJR3cFJKwW8POk7XBhjA7kERxXVB0Xul4R
+         o35m35hVl1YnJGYjkAvBije9eIZB+fSUiz/oEwz2wY8P9I8u+MV3JWsscHRoMC1OnB04
+         SUuUFKScAoKiMNmSNuXNnFoYxOS/opGOa9PGMld+o8Ksx+MPfAiHeRjb1Q7stFQlFQxT
+         Ds7udEeBiv1EfLzUdglZl5LuZ9lK78KnFpMPkiPgLaal3BySR6tiJfcyprObMpMhmlVs
+         zrUA==
+X-Gm-Message-State: ACgBeo2SGBanlfX6izbuF2zKtUy7fSUl8ncfzkcJl9inftcJ4BLcIDST
+        vpCjRgyuwCMaKQmDfWPcX5ZhGg==
+X-Google-Smtp-Source: AA6agR7xPbWca+rrzIehQRM92IvHTy6OG6rwG2aP/MoK/VzAI6XGc0rUVXUwLjGSnAvlheKNOwCTUQ==
+X-Received: by 2002:a5d:6d8f:0:b0:225:6285:47fb with SMTP id l15-20020a5d6d8f000000b00225628547fbmr4504845wrs.211.1661505373884;
+        Fri, 26 Aug 2022 02:16:13 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:5d94:b816:24d3:cd91? ([2a01:e0a:b41:c160:5d94:b816:24d3:cd91])
+        by smtp.gmail.com with ESMTPSA id t63-20020a1c4642000000b003a673055e68sm8907387wma.0.2022.08.26.02.16.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 02:16:13 -0700 (PDT)
+Message-ID: <a0e1b167-2a80-abe3-c01e-48dc89a7d543@6wind.com>
+Date:   Fri, 26 Aug 2022 11:16:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220825020450.664147-1-andrey.zhadchenko@virtuozzo.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: 747c143 caused icmp redirect to fail
+Content-Language: en-US
+To:     Heng Qi <hengqi@linux.alibaba.com>, linux-kernel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org,
+        edwin.brossette@6wind.com, pabeni@redhat.com
+References: <1661485971-57887-1-git-send-email-hengqi@linux.alibaba.com>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <1661485971-57887-1-git-send-email-hengqi@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,46 +76,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 05:04:48AM +0300, Andrey Zhadchenko wrote:
-> Hi!
-> 
-> CRIU currently do not support checkpoint/restore of OVS configurations, but
-> there was several requests for it. For example,
-> https://github.com/lxc/lxc/issues/2909
-> 
-> The main problem is ifindexes of newly created interfaces. We realy need to
-> preserve them after restore. Current openvswitch API does not allow to
-> specify ifindex. Most of the time we can just create an interface via
-> generic netlink requests and plug it into ovs but datapaths (generally any
-> OVS_VPORT_TYPE_INTERNAL) can only be created via openvswitch requests which
-> do not support selecting ifindex.
-> 
-> This patch allows to do so.
-> For new datapaths I decided to use dp_infindex in header as infindex
-> because it control ifindex for other requests too.
-> For internal vports I reused OVS_VPORT_ATTR_IFINDEX.
-> 
-> The only concern I have is that previously dp_ifindex was not used for
-> OVS_DP_VMD_NEW requests and some software may not set it to zero. However
-> we have been running this patch at Virtuozzo for 2 years and have not
-> encountered this problem. Not sure if it is worth to add new
-> ovs_datapath_attr instead.
-> 
-> v2:
-> Added two more patches.
-> 
-> Add OVS_DP_ATTR_PER_CPU_PIDS to dumps as suggested by Ilya Maximets.
-> Without it we won't be able to checkpoint/restore new openvswitch
-> configurations which use OVS_DP_F_DISPATCH_UPCALL_PER_CPU flag.
-> 
-> Found and fixed memory leak on datapath creation error path.
-> 
-> v3:
-> Sent memleak fix separately to net.
-> Improved patches according to the reviews:
->  - Added new OVS_DP_ATTR_IFINDEX instead of using ovs_header->dp_ifindex
->  - Pre-allocated bigger reply message for upcall pids
->  - Some small fixes
 
-Seems good,
-Acked-by: Christian Brauner (Microsoft) <brauner@kernel.org>
+Le 26/08/2022 à 05:52, Heng Qi a écrit :
+> The detailed description: When testing with selftests/net/icmp_redirect.sh, a redirect exception FAIL occurred for IPv4.
+> This is not in line with actual expectations. r1 changes the route to the destination network 172.16.2.0/24 from 10.1.1.2 to 172.16.1.254. After h1 sends the ping packet, h1 continues to obtain the route to 172.16.2.2, and the result is not as expected.
+> This flaw was introduced by 747c14307214b55dbd8250e1ab44cad8305756f1. When this commit is rolled back, the test will pass.
+> 
+> bug commit: 747c14307214b55dbd8250e1ab44cad8305756f1
+
+Thanks for the report. I will investigate.
