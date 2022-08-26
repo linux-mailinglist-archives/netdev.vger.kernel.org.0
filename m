@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 034955A29C2
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 16:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8100A5A29B4
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 16:41:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344522AbiHZOlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 10:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
+        id S1344480AbiHZOlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 10:41:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344480AbiHZOlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 10:41:02 -0400
+        with ESMTP id S1344510AbiHZOlE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 10:41:04 -0400
 Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED0ACC33F;
-        Fri, 26 Aug 2022 07:40:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7C2B2D85;
+        Fri, 26 Aug 2022 07:41:01 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6B0261BF20D;
-        Fri, 26 Aug 2022 14:40:56 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 98DF81BF208;
+        Fri, 26 Aug 2022 14:40:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661524858;
+        t=1661524860;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fY3AHa++QoYX1T0AIKr3WtVFrfOKMtJ/BSj+z0SXYXs=;
-        b=Y1Pnxs8fvUcI7jFf4rLyWWsYZzDFcWmWoM5jEiHBqVq2TpYFfQyDrgvdfLyrWAfS5t/u9r
-        yGRqJWBqvwp7lVEipSvvt3i42pPMCP9psTM9OTwp2bGTbra65Q/bjeDng7xBfkcPI8nra6
-        LmZppEDxengmW1LBF51bsrPe+qZRdWlBR9MGc+oQi1CNnfQMt0trV7l/XyoLo5dksBl8rZ
-        vvhlt4Z6QKwHNifMBH6jS8p4i+HmeKLZTyDZeFuTQ3/rTgRJYsd+AI+p8PEkOLYTbQzDD0
-        TkgZxRIPB3Sqe2I7jqZp7pEK5BPplPR0mEZkokSqC9d++kowSxVlep819+Itkw==
+        bh=a9IYMuDIyxj+HLkgz7Y6Y6sR1gMiuEZfqG+jyTP97zw=;
+        b=Y8WCw1KNvwhVvLgVRZjtpgUCVwfCwTMQkofzkAIgT2za+K0E5EirGA7Tuic/KShBF+V73j
+        Q6+p60TdklKxuOmQm0ZMMHFpENsvOO44F+Bb3q1TOPvIn9AIFoQcU5aeUCE3+J5+N977EP
+        leSB6NBoAE4ngs/ElCxvkPi8NuvkkoVUuvWOxqZgy6xYJ201hKk3Y1zP/IbRlk88QBqEo7
+        RNbiAg20In7FJYqjdQhWwYRsxN56muz6LKU9kuabCVXFuwFOoJ3d1AkElLLBoPve6qSQI/
+        JBoox4DZiJKtGiFs9SnderUA4B1+wcS4Wjy1ebKyEH6tk6VWaPWPKdV6HHzVvg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 02/11] net: mac802154: Drop IEEE802154_HW_RX_DROP_BAD_CKSUM
-Date:   Fri, 26 Aug 2022 16:40:40 +0200
-Message-Id: <20220826144049.256134-3-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 03/11] net: mac802154: Allow the creation of coordinator interfaces
+Date:   Fri, 26 Aug 2022 16:40:41 +0200
+Message-Id: <20220826144049.256134-4-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220826144049.256134-1-miquel.raynal@bootlin.com>
 References: <20220826144049.256134-1-miquel.raynal@bootlin.com>
@@ -62,96 +62,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This IEEE802154_HW_RX_DROP_BAD_CKSUM flag was only used by hwsim to
-reflect the fact that it would not validate the checksum (FCS). In other
-words, the filtering level of hwsim is always "NONE" while the core
-expects it to be higher.
+As a first strep in introducing proper PAN management and association,
+we need to be able to create coordinator interfaces which might act as
+coordinator or PAN coordinator.
 
-Now that we have access to real filtering levels, we can actually use
-them and always enforce the "NONE" level in hwsim. Handling this case
-correctly in the receive path permits to drop the above mentioned flag.
+Hence, let's add the minimum support to allow the creation of these
+interfaces. This support will be improved later, in particular regarding
+the filtering.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/mac802154_hwsim.c | 10 +++++++++-
- include/net/mac802154.h                  |  4 ----
- net/mac802154/rx.c                       |  6 ++----
- 3 files changed, 11 insertions(+), 9 deletions(-)
+ net/mac802154/iface.c | 14 ++++++++------
+ net/mac802154/main.c  |  2 ++
+ net/mac802154/rx.c    | 11 +++++++----
+ 3 files changed, 17 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-index 38c217bd7c82..d7e4048e8743 100644
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -148,6 +148,8 @@ static int hwsim_hw_start(struct ieee802154_hw *hw)
- 	struct hwsim_phy *phy = hw->priv;
+diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
+index 4bab2807acbe..8467a629e21f 100644
+--- a/net/mac802154/iface.c
++++ b/net/mac802154/iface.c
+@@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
+ 		if (nsdata != sdata && ieee802154_sdata_running(nsdata)) {
+ 			int ret;
  
- 	phy->suspended = false;
-+	hw->phy->filtering = IEEE802154_FILTERING_NONE;
-+
- 	return 0;
- }
+-			/* TODO currently we don't support multiple node types
+-			 * we need to run skb_clone at rx path. Check if there
+-			 * exist really an use case if we need to support
+-			 * multiple node types at the same time.
++			/* TODO currently we don't support multiple node/coord
++			 * types we need to run skb_clone at rx path. Check if
++			 * there exist really an use case if we need to support
++			 * multiple node/coord types at the same time.
+ 			 */
+-			if (wpan_dev->iftype == NL802154_IFTYPE_NODE &&
+-			    nsdata->wpan_dev.iftype == NL802154_IFTYPE_NODE)
++			if (wpan_dev->iftype != NL802154_IFTYPE_MONITOR &&
++			    nsdata->wpan_dev.iftype != NL802154_IFTYPE_MONITOR)
+ 				return -EBUSY;
  
-@@ -161,6 +163,9 @@ static void hwsim_hw_stop(struct ieee802154_hw *hw)
- static int
- hwsim_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
- {
-+	/* hwsim does not filter anything, so enforce the NONE level */
-+	hw->phy->filtering = IEEE802154_FILTERING_NONE;
-+
- 	return 0;
- }
+ 			/* check all phy mac sublayer settings are the same.
+@@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
+ 	wpan_dev->short_addr = cpu_to_le16(IEEE802154_ADDR_BROADCAST);
  
-@@ -791,7 +796,10 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
- 	phy->idx = idx;
- 	INIT_LIST_HEAD(&phy->edges);
+ 	switch (type) {
++	case NL802154_IFTYPE_COORD:
+ 	case NL802154_IFTYPE_NODE:
+ 		ieee802154_be64_to_le64(&wpan_dev->extended_addr,
+ 					sdata->dev->dev_addr);
+@@ -638,6 +639,7 @@ ieee802154_if_add(struct ieee802154_local *local, const char *name,
+ 	ieee802154_le64_to_be64(ndev->perm_addr,
+ 				&local->hw.phy->perm_extended_addr);
+ 	switch (type) {
++	case NL802154_IFTYPE_COORD:
+ 	case NL802154_IFTYPE_NODE:
+ 		ndev->type = ARPHRD_IEEE802154;
+ 		if (ieee802154_is_valid_extended_unicast_addr(extended_addr)) {
+diff --git a/net/mac802154/main.c b/net/mac802154/main.c
+index 40fab08df24b..d03ecb747afc 100644
+--- a/net/mac802154/main.c
++++ b/net/mac802154/main.c
+@@ -219,6 +219,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
  
--	hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;
-+	/* This is a lie, hwsim does not even filter bad FCS, but we need to
-+	 * advertize a PROMISCUOUS to be able to create COORD interfaces.
-+	 */
-+	hw->flags = IEEE802154_HW_PROMISCUOUS;
- 	hw->parent = dev;
+ 	if (hw->flags & IEEE802154_HW_PROMISCUOUS)
+ 		local->phy->supported.iftypes |= BIT(NL802154_IFTYPE_MONITOR);
++	else
++		local->phy->supported.iftypes &= ~BIT(NL802154_IFTYPE_COORD);
  
- 	err = ieee802154_register_hw(hw);
-diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-index 41c28118790c..a45ec09723f3 100644
---- a/include/net/mac802154.h
-+++ b/include/net/mac802154.h
-@@ -111,9 +111,6 @@ struct ieee802154_hw {
-  *	promiscuous mode setting.
-  *
-  * @IEEE802154_HW_RX_OMIT_CKSUM: Indicates that receiver omits FCS.
-- *
-- * @IEEE802154_HW_RX_DROP_BAD_CKSUM: Indicates that receiver will not filter
-- *	frames with bad checksum.
-  */
- enum ieee802154_hw_flags {
- 	IEEE802154_HW_TX_OMIT_CKSUM	= BIT(0),
-@@ -123,7 +120,6 @@ enum ieee802154_hw_flags {
- 	IEEE802154_HW_AFILT		= BIT(4),
- 	IEEE802154_HW_PROMISCUOUS	= BIT(5),
- 	IEEE802154_HW_RX_OMIT_CKSUM	= BIT(6),
--	IEEE802154_HW_RX_DROP_BAD_CKSUM	= BIT(7),
- };
- 
- /* Indicates that receiver omits FCS and xmitter will add FCS on it's own. */
+ 	rc = wpan_phy_register(local->phy);
+ 	if (rc < 0)
 diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index c439125ef2b9..42ebbe45a4c5 100644
+index 42ebbe45a4c5..ea5320411848 100644
 --- a/net/mac802154/rx.c
 +++ b/net/mac802154/rx.c
-@@ -268,10 +268,8 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
+@@ -194,6 +194,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
+ 	int ret;
+ 	struct ieee802154_sub_if_data *sdata;
+ 	struct ieee802154_hdr hdr;
++	struct sk_buff *skb2;
  
- 	ieee802154_monitors_rx(local, skb);
+ 	ret = ieee802154_parse_frame_start(skb, &hdr);
+ 	if (ret) {
+@@ -203,15 +204,17 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
+ 	}
  
--	/* Check if transceiver doesn't validate the checksum.
--	 * If not we validate the checksum here.
--	 */
--	if (local->hw.flags & IEEE802154_HW_RX_DROP_BAD_CKSUM) {
-+	/* Level 1 filtering: Check the FCS by software when relevant */
-+	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
- 		crc = crc_ccitt(0, skb->data, skb->len);
- 		if (crc) {
- 			rcu_read_unlock();
+ 	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+-		if (sdata->wpan_dev.iftype != NL802154_IFTYPE_NODE)
++		if (sdata->wpan_dev.iftype == NL802154_IFTYPE_MONITOR)
+ 			continue;
+ 
+ 		if (!ieee802154_sdata_running(sdata))
+ 			continue;
+ 
+-		ieee802154_subif_frame(sdata, skb, &hdr);
+-		skb = NULL;
+-		break;
++		skb2 = skb_clone(skb, GFP_ATOMIC);
++		if (skb2) {
++			skb2->dev = sdata->dev;
++			ieee802154_subif_frame(sdata, skb2, &hdr);
++		}
+ 	}
+ 
+ 	kfree_skb(skb);
 -- 
 2.34.1
 
