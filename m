@@ -2,150 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC27B5A2258
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 09:53:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 686875A225A
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 09:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245706AbiHZHxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 03:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
+        id S245715AbiHZHxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 03:53:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245725AbiHZHxj (ORCPT
+        with ESMTP id S245731AbiHZHxj (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 03:53:39 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8208BD3EF1
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 00:53:34 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id k9so866026wri.0
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 00:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:from:to:cc;
-        bh=pLGkByOQtUyNIrq+AB6ywJQFRaPW2OijF5FLi8vGm90=;
-        b=fA5Rd+taknD3yl0VFm1rZMyGtDdJHsb+Dih5HDSv4K+CHzlYGoieAFfETL/e0tDgbd
-         S7RLIRP+3jHFbd8m+0S1F/2fDL8OdOBU5aelAqwZkMqy1gfvHeRYL/4EDMjUpUFPymM6
-         +mPYFNG6jkDprQeTnsXZPuNseE/1CJbL6wKRvEMtjp2wQ54muJIe8vf2WrZJhzFqhd8q
-         MMCWjg2WTnhQ/Z6I37gPsG699y59sTUCh1tkK+i/R6DooX3PMfsEVFZ7VIUquzaw5s7S
-         2guWt/jLzJ7iPCCYBTtS5qJrK5zF3T/I/9z7jKRhF7B23vv3/5B7rQfWc6BUfSz7lKA7
-         nWAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:organization:from:references
-         :cc:to:content-language:subject:reply-to:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc;
-        bh=pLGkByOQtUyNIrq+AB6ywJQFRaPW2OijF5FLi8vGm90=;
-        b=YnFV0JyOKM7JA8bjj3y/yWPFlPAQRV2xcS2OUOdKPE6IaVukkK1jgXfnATM6YGaVZh
-         IK1DmFRP5aqwDvn2X91p9boDICPatElTPO8F6QNMSY0ny63awyMHgVRp5Er1fZDl1yQe
-         NJ7/UrEud77YtQ5LE6TuVnu9i2zbBwFPvy8njnAmWUXIvuIJjlm/HevsnEqT+5gAs1ZV
-         gYncUykZZrZ/PQQLT2nc8Nyo2Ska3+0X0jCa4do6Dm7Wx2YP1xYaeJ4m+lauPe+ZF5ic
-         zJXHHSorIytSXmtlUU2UJ3Cyj6ugXYwU0/eA3QbBNVwZMXQMRKQcdFxbtNAeAiW3y+PD
-         0YSw==
-X-Gm-Message-State: ACgBeo2egENTFkOeHpBkJT3qcdDkXCd2L/IMHt0ejXsuSoOqs7lNxK35
-        OBYEqjp/L+70BhrfqfCmOcsYzA==
-X-Google-Smtp-Source: AA6agR6dcDBRP9cKMK4QGQBlOFV2gZL3V/tX7XVXExYygh0kQ336/ycDAMuG/yv0YGb1axMp6BDemQ==
-X-Received: by 2002:a5d:64c6:0:b0:225:4073:8fef with SMTP id f6-20020a5d64c6000000b0022540738fefmr4217818wri.253.1661500412689;
-        Fri, 26 Aug 2022 00:53:32 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:b41:c160:5d94:b816:24d3:cd91? ([2a01:e0a:b41:c160:5d94:b816:24d3:cd91])
-        by smtp.gmail.com with ESMTPSA id r184-20020a1c2bc1000000b003a6125562e1sm1525075wmr.46.2022.08.26.00.53.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 00:53:31 -0700 (PDT)
-Message-ID: <e80f14c5-4ca4-55b0-57e0-108fb73fb828@6wind.com>
-Date:   Fri, 26 Aug 2022 09:53:30 +0200
+Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA84D3EF8;
+        Fri, 26 Aug 2022 00:53:35 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout1.hostsharing.net (Postfix) with ESMTPS id B9BAF30002503;
+        Fri, 26 Aug 2022 09:53:31 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id A6DE64F247; Fri, 26 Aug 2022 09:53:31 +0200 (CEST)
+Date:   Fri, 26 Aug 2022 09:53:31 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <20220826075331.GA32117@wunner.de>
+References: <cover.1652343655.git.lukas@wunner.de>
+ <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
+ <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
+ <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
+ <20220519190841.GA30869@wunner.de>
+ <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
+ <e598a232-6c78-782a-316f-77902644ad6c@samsung.com>
+ <20220826071924.GA21264@wunner.de>
+ <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH ipsec-next,v2 2/3] xfrm: interface: support collect
- metadata mode
-Content-Language: en-US
-To:     Eyal Birger <eyal.birger@gmail.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, dsahern@kernel.org,
-        contact@proelbtn.com, pablo@netfilter.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, "daniel@iogearbox.net" <daniel@iogearbox.net>
-References: <20220825134636.2101222-1-eyal.birger@gmail.com>
- <20220825134636.2101222-3-eyal.birger@gmail.com>
- <a825aa13-6f82-e6c1-3c5c-7974b14f881e@blackwall.org>
- <CAHsH6Gv8Zv722pjtKrWDiSHYKvV0FUxUSnHf_8B+gJnAVYiziQ@mail.gmail.com>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-In-Reply-To: <CAHsH6Gv8Zv722pjtKrWDiSHYKvV0FUxUSnHf_8B+gJnAVYiziQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 26, 2022 at 09:41:46AM +0200, Marek Szyprowski wrote:
+> On 26.08.2022 09:19, Lukas Wunner wrote:
+> > On Fri, Aug 26, 2022 at 08:51:58AM +0200, Marek Szyprowski wrote:
+> >> On 19.05.2022 23:22, Marek Szyprowski wrote:
+> >>> On 19.05.2022 21:08, Lukas Wunner wrote:
+> >>>> On Tue, May 17, 2022 at 12:18:45PM +0200, Marek Szyprowski wrote:
+> >>>>> This patch landed in the recent linux next-20220516 as commit
+> >>>>> 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY
+> >>>>> driver to
+> >>>>> avoid polling"). Unfortunately it breaks smsc95xx usb ethernet
+> >>>>> operation
+> >>>>> after system suspend-resume cycle. On the Odroid XU3 board I got the
+> >>>>> following warning in the kernel log:
+> >>>>>
+> >>>>> # time rtcwake -s10 -mmem
+> >>>>> rtcwake: wakeup from "mem" using /dev/rtc0 at Tue May 17 09:16:07 2022
+> >>>>> PM: suspend entry (deep)
+> >>>>> Filesystems sync: 0.001 seconds
+> >>>>> Freezing user space processes ... (elapsed 0.002 seconds) done.
+> >>>>> OOM killer disabled.
+> >>>>> Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
+> >>>>> printk: Suspending console(s) (use no_console_suspend to debug)
+> >>>>> smsc95xx 4-1.1:1.0 eth0: entering SUSPEND2 mode
+> >>>>> smsc95xx 4-1.1:1.0 eth0: Failed to read reg index 0x00000114: -113
+> >>>>> smsc95xx 4-1.1:1.0 eth0: Error reading MII_ACCESS
+> >>>>> smsc95xx 4-1.1:1.0 eth0: __smsc95xx_mdio_read: MII is busy
+> >>>>> ------------[ cut here ]------------
+> >>>>> WARNING: CPU: 2 PID: 73 at drivers/net/phy/phy.c:946
+> >>>>> phy_state_machine+0x98/0x28c
+> >>>> [...]
+> >>>>> It looks that the driver's suspend/resume operations might need some
+> >>>>> adjustments. After the system suspend/resume cycle the driver is not
+> >>>>> operational anymore. Reverting the $subject patch on top of linux
+> >>>>> next-20220516 restores ethernet operation after system suspend/resume.
+> >>>> Thanks a lot for the report. It seems the PHY is signaling a link
+> >>>> change
+> >>>> shortly before system sleep and by the time the phy_state_machine()
+> >>>> worker
+> >>>> gets around to handle it, the device has already been suspended and thus
+> >>>> refuses any further USB requests with -EHOSTUNREACH (-113):
+> > [...]
+> >>>> Assuming the above theory is correct, calling phy_stop_machine()
+> >>>> after usbnet_suspend() would be sufficient to fix the issue.
+> >>>> It cancels the phy_state_machine() worker.
+> >>>>
+> >>>> The small patch below does that. Could you give it a spin?
+> >>> That's it. Your analysis is right and the patch fixes the issue. Thanks!
+> >>>
+> >>> Feel free to add:
+> >>>
+> >>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> >>>
+> >>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+> >> Gentle ping for the final patch...
+> > Hm?  Actually this issue is supposed to be fixed by mainline commit
+> > 1758bde2e4aa ("net: phy: Don't trigger state machine while in suspend").
+> >
+> > The initial fix attempt that you're replying to should not be necessary
+> > with that commit.
+> >
+> > Are you still seeing issues even with 1758bde2e4aa applied?
+> > Or are you maybe using a custom downstream tree which is missing that commit?
+> 
+> On Linux next-20220825 I still get the following warning during 
+> suspend/resume cycle:
+> 
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 1483 at drivers/net/phy/phy_device.c:323 
+> mdio_bus_phy_resume+0x10c/0x110
+> Modules linked in: exynos_gsc s5p_jpeg s5p_mfc videobuf2_dma_contig 
+> v4l2_mem2mem videobuf2_memops videobuf2_v4l2 videobuf2_common videodev 
+> mc s5p_cec
+> CPU: 0 PID: 1483 Comm: rtcwake Not tainted 6.0.0-rc2-next-20220825 #5482
+> Hardware name: Samsung Exynos (Flattened Device Tree)
+>   unwind_backtrace from show_stack+0x10/0x14
+>   show_stack from dump_stack_lvl+0x58/0x70
+>   dump_stack_lvl from __warn+0xc8/0x220
+>   __warn from warn_slowpath_fmt+0x5c/0xb4
+>   warn_slowpath_fmt from mdio_bus_phy_resume+0x10c/0x110
+>   mdio_bus_phy_resume from dpm_run_callback+0x94/0x208
+>   dpm_run_callback from device_resume+0x124/0x21c
+>   device_resume from dpm_resume+0x108/0x278
+>   dpm_resume from dpm_resume_end+0xc/0x18
+>   dpm_resume_end from suspend_devices_and_enter+0x208/0x70c
+>   suspend_devices_and_enter from pm_suspend+0x364/0x430
+>   pm_suspend from state_store+0x68/0xc8
+>   state_store from kernfs_fop_write_iter+0x110/0x1d4
+>   kernfs_fop_write_iter from vfs_write+0x1c4/0x2ac
+>   vfs_write from ksys_write+0x5c/0xd4
+>   ksys_write from ret_fast_syscall+0x0/0x1c
+> Exception stack(0xf2ee5fa8 to 0xf2ee5ff0)
+> 5fa0:                   00000004 0002b438 00000004 0002b438 00000004 
+> 00000000
+> 5fc0: 00000004 0002b438 000291b0 00000004 0002b438 00000004 befd9c1c 
+> 00028160
+> 5fe0: 0000006c befd9ae8 b6eb4148 b6f118a4
+> irq event stamp: 58381
+> hardirqs last  enabled at (58393): [<c019ff28>] vprintk_emit+0x320/0x344
+> hardirqs last disabled at (58400): [<c019fedc>] vprintk_emit+0x2d4/0x344
+> softirqs last  enabled at (58258): [<c0101694>] __do_softirq+0x354/0x618
+> softirqs last disabled at (58247): [<c012dd18>] __irq_exit_rcu+0x140/0x1ec
+> ---[ end trace 0000000000000000 ]---
+> 
+> The mentioned patch fixes it.
 
-Le 25/08/2022 Ã  17:14, Eyal Birger a Ã©critÂ :
-> On Thu, Aug 25, 2022 at 5:24 PM Nikolay Aleksandrov <razor@blackwall.org> wrote:
->>
->> On 25/08/2022 16:46, Eyal Birger wrote:
->>> This commit adds support for 'collect_md' mode on xfrm interfaces.
->>>
->>> Each net can have one collect_md device, created by providing the
->>> IFLA_XFRM_COLLECT_METADATA flag at creation. This device cannot be
->>> altered and has no if_id or link device attributes.
->>>
->>> On transmit to this device, the if_id is fetched from the attached dst
->>> metadata on the skb. If exists, the link property is also fetched from
->>> the metadata. The dst metadata type used is METADATA_XFRM which holds
->>> these properties.
->>>
->>> On the receive side, xfrmi_rcv_cb() populates a dst metadata for each
->>> packet received and attaches it to the skb. The if_id used in this case is
->>> fetched from the xfrm state, and the link is fetched from the incoming
->>> device. This information can later be used by upper layers such as tc,
->>> ebpf, and ip rules.
->>>
->>> Because the skb is scrubed in xfrmi_rcv_cb(), the attachment of the dst
->>> metadata is postponed until after scrubing. Similarly, xfrm_input() is
->>> adapted to avoid dropping metadata dsts by only dropping 'valid'
->>> (skb_valid_dst(skb) == true) dsts.
->>>
->>> Policy matching on packets arriving from collect_md xfrmi devices is
->>> done by using the xfrm state existing in the skb's sec_path.
->>> The xfrm_if_cb.decode_cb() interface implemented by xfrmi_decode_session()
->>> is changed to keep the details of the if_id extraction tucked away
->>> in xfrm_interface.c.
->>>
->>> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
->>>
->>> ----
->>>
->>> v2:
->>>   - add "link" property as suggested by Nicolas Dichtel
->>>   - rename xfrm_if_decode_session_params to xfrm_if_decode_session_result
->>> ---
->>
->> (+CC Daniel)
->>
->> Hi,
->> Generally I really like the idea, but I missed to comment the first round. :)
->> A few comments below..
->>
-> 
-> Thanks for the review!
-> 
->>>  include/net/xfrm.h           |  11 +++-
-> <...snip...>
->>>
->>>  static const struct nla_policy xfrmi_policy[IFLA_XFRM_MAX + 1] = {
->>> -     [IFLA_XFRM_LINK]        = { .type = NLA_U32 },
->>> -     [IFLA_XFRM_IF_ID]       = { .type = NLA_U32 },
->>> +     [IFLA_XFRM_UNSPEC]              = { .strict_start_type = IFLA_XFRM_COLLECT_METADATA },
->>> +     [IFLA_XFRM_LINK]                = { .type = NLA_U32 },
->>
->> link is signed, so s32
-> 
-> Ack on all comments except this one - I'm a little hesitant to change
-> this one as the change would be unrelated to this series.
-I agree, it's unrelated to this series.
+Color me confused.
+
+With "the mentioned patch", are you referring to 1758bde2e4aa
+or are you referring to the little test patch in this e-mail:
+https://lore.kernel.org/netdev/20220519190841.GA30869@wunner.de/
+
+There's a Tested-by from you on 1758bde2e4aa, so I assume the
+commit fixed the issue at the time.  Does it still occur
+intermittently?  Or does it occur every time?  In the latter case,
+I'd assume some other change was made in the meantime and that
+other change exposed the issue again...
+
+Thanks,
+
+Lukas
