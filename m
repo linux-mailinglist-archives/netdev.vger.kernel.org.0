@@ -2,126 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 990CF5A2B71
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:41:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF1085A2B88
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:46:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344166AbiHZPlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 11:41:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
+        id S237300AbiHZPpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 11:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245401AbiHZPlC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:41:02 -0400
-Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1035D985B1
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:41:01 -0700 (PDT)
-Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-33dc345ad78so45649967b3.3
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:41:01 -0700 (PDT)
+        with ESMTP id S231540AbiHZPph (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:45:37 -0400
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B5863ED53
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:45:35 -0700 (PDT)
+Received: by mail-lf1-x129.google.com with SMTP id z25so2510181lfr.2
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:45:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=lessconfused.com; s=lessconfused;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=1OeVCe7RaC1doJu8eezLP4PkgFav37cmMol81u4t9l0=;
-        b=MmNYu02+TEx7oRzWlw+ehFBhs7toHqKt7pfFMKOKRkCWHoyj0Y/s6qC1e8CE/JnZiY
-         hPtSEled9vImo8EDhazJXl9f8iX8B4+TZ8zmzARN2foW7NNOcE2CdXDHjt9HLUb/NvM2
-         Ti7Ke7ucWlAzJr4UJ36P+lFfsL/DM4cciKV4YnQDPabmqsw+sqUfvf8dK31QW1Aqlp5A
-         Ounvl8oZNElLyPqJCyKpa8bPzrkrRHeVAdAm1mZCXz3j+/FbLk+cZN4i7o703opbAT68
-         1R9fW8BxF45+P8/2Ns30oQZvvi+fCtYklKi51GtFAn7R7MrrmmAqqZVR8B6tRmzi8Hrj
-         RzAA==
+        bh=/iw18RzoUQLkecnuSCWCtSAHlAnE4tLc3GasgZ3eUE0=;
+        b=L2QxI7y6/YAlVT7cbZzbVXUqCmPpE19/qP2JgpgvcKWJM7RI6fv0+slvVT/knkqwMv
+         HoXde8pO8YkYqT5tbOj8JncS2eb6Iois0Glr7ZdIk6qQ7daO6jebEccuqPlAan99cP8M
+         4tvS6z7A7lylPso+V6Oh95GlvJkJWnXvu+hR8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=1OeVCe7RaC1doJu8eezLP4PkgFav37cmMol81u4t9l0=;
-        b=cart/+SkTqzh3eiSg9eVUfqCoqnBTtntvPglYP2IRLsYhZiCUY0zBZGHRUvcrZvv72
-         JT/+HrMmaKMKastqEqdqA0ViBf2lbkZex8+kFO5KH1Owu+l+PiH1wqPscQ5dG9buM141
-         v+lBSeAOEqjbf+JzTmNPOVdfO+ZNnG/AQg7VghM0nhG0/SOvuF27s+WIbk1VIOEafsNb
-         +gS4OBUiZkngytvr+Jy9X5ZcxjWVQZa+FyfbEwSf0092fnNNyq8azAbz3oobGFpNnj2s
-         hW9UvTXb+iHbYhIb3k8ItWLLR+bI8yEmd8oBEFulyiZ6BdqoFrUg2GkWPNs7gFMb/Cg0
-         YKww==
-X-Gm-Message-State: ACgBeo0d8EXwUvXooTYA0TbsL2ElYur5FVRwvA/dX5/u9MwEd8DIx0LB
-        r4u8MV9SSvK8oar72Cb8b98eYVVctOmeCzilFFMs3Q==
-X-Google-Smtp-Source: AA6agR4I1vZ9aaSEGsy2SZ/FjScv9ilUOm+xccAKfebF59/l6wZY5nub/hAQqwvV1BFhnhGhnmcf87Yc2PEUxefCdzI=
-X-Received: by 2002:a25:4291:0:b0:696:56f3:5934 with SMTP id
- p139-20020a254291000000b0069656f35934mr229910yba.55.1661528460963; Fri, 26
- Aug 2022 08:41:00 -0700 (PDT)
+        bh=/iw18RzoUQLkecnuSCWCtSAHlAnE4tLc3GasgZ3eUE0=;
+        b=HCiSo6JoQIpWWyrPf5inGS0WXdFLLvQ+yJWuDyHOdfrmb4xXvBls+PKeGMjTcn87h1
+         QhSAFbVRFgVGmbY0r7ETNT6Ea2ozHYZxLfZws2Xz7akmBdbu1TUsdv9elpH6e1bBqR2G
+         iTCIlPK9SoXUE5zhmIC7jbgyffu2+Uc7jsNyRXDNK6tqlwMy7R5MNsLKWMe4WflsPPji
+         OwQTeh7CEAZFN1GDcuz6UwBwIwQx6HXz8woiWpp6bfRjzqXLHUkqeQRdQ8R8zMLV/UBF
+         HKWXMvUgPrAkwRRZBR3dCDuz2KIyzpAp+5cYUSd/7UiWKpM9R6SS+xU8B/oWGsrkDg3Z
+         yTJA==
+X-Gm-Message-State: ACgBeo1dcZ1GULFJ5SPru+J7fDbQHi9jRaUNFd5FruUtofL27QnstVOw
+        UuAPipAxevV7yl1PJZ5oUr01rOX8leWxpvCU2rFieA==
+X-Google-Smtp-Source: AA6agR7SKgTSgCxgZUTZ/8IvSD0dm7XWjdL3fxsToFr10oQAW3WhQLLbGV+/wAZJIsz3GbVjLwoHPLxFwtjTXH5ZiX4=
+X-Received: by 2002:a05:6512:3406:b0:492:edf2:daf2 with SMTP id
+ i6-20020a056512340600b00492edf2daf2mr2757702lfr.32.1661528733497; Fri, 26 Aug
+ 2022 08:45:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220826000445.46552-1-kuniyu@amazon.com> <20220826000445.46552-7-kuniyu@amazon.com>
-In-Reply-To: <20220826000445.46552-7-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 26 Aug 2022 08:40:49 -0700
-Message-ID: <CANn89iK0FeokqWLPrWY8iger7iYXU5fJQyxaGbGecTe11+8p7A@mail.gmail.com>
-Subject: Re: [PATCH v1 net-next 06/13] tcp: Set NULL to sk->sk_prot->h.hashinfo.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+References: <20220707101423.90106-1-jbrunet@baylibre.com> <00f1e968-c140-29b9-dc82-a6f831171d6f@gmail.com>
+In-Reply-To: <00f1e968-c140-29b9-dc82-a6f831171d6f@gmail.com>
+From:   Da Xue <da@lessconfused.com>
+Date:   Fri, 26 Aug 2022 11:45:21 -0400
+Message-ID: <CACdvmAiyFQTUgEzkva9j8xYJYYBRXg_sfB562f3F515AHmkUoA@mail.gmail.com>
+Subject: Re: [RFC/RFT PATCH] net: stmmac: do not poke MAC_CTRL_REG twice on
+ link up
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Jerome Brunet <jbrunet@baylibre.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Erico Nunes <nunes.erico@gmail.com>, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vyacheslav <adeep@lexina.in>, Qi Duan <qi.duan@amlogic.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 5:07 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> We will soon introduce an optional per-netns ehash.
->
-> This means we cannot use the global sk->sk_prot->h.hashinfo
-> to fetch a TCP hashinfo.
->
-> Instead, set NULL to sk->sk_prot->h.hashinfo for TCP and get
-> a proper hashinfo from net->ipv4.tcp_death_row->hashinfo.
->
-> Note that we need not use sk->sk_prot->h.hashinfo if DCCP is
-> disabled.
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  include/net/inet_hashtables.h   | 10 ++++++++++
->  net/ipv4/af_inet.c              |  2 +-
->  net/ipv4/inet_connection_sock.c |  6 +++---
->  net/ipv4/inet_hashtables.c      | 14 +++++++-------
->  net/ipv4/tcp_ipv4.c             |  2 +-
->  net/ipv6/tcp_ipv6.c             |  2 +-
->  6 files changed, 23 insertions(+), 13 deletions(-)
->
-> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> index 44a419b9e3d5..2c866112433e 100644
-> --- a/include/net/inet_hashtables.h
-> +++ b/include/net/inet_hashtables.h
-> @@ -170,6 +170,16 @@ struct inet_hashinfo {
->         struct inet_listen_hashbucket   *lhash2;
->  };
->
-> +static inline struct inet_hashinfo *inet_get_hashinfo(const struct sock *sk)
-> +{
-> +#if IS_ENABLED(CONFIG_IP_DCCP)
-> +       return sk->sk_prot->h.hashinfo ? :
-> +               sock_net(sk)->ipv4.tcp_death_row->hashinfo;
-> +#else
-> +       return sock_net(sk)->ipv4.tcp_death_row->hashinfo;
-> +#endif
-> +}
->
+Hi Heiner,
 
-If the sk_prot->h.hashinfo must disappear, I would rather add a new
-inet->hashinfo field
+I have been running with the patch reverted for about two weeks now
+without issue but I have a modified u-boot with ethernet bringup
+disabled.
 
-return inet_sk(sk)->hashinfo
+If u-boot brings up ethernet, all of the GXL boards with more than 1GB
+memory experience various bugs. I had to bring the PHY initialization
+patch into Linux proper:
+https://github.com/libre-computer-project/libretech-linux/commit/1a4004c11877d4239b57b182da1ce69a81c0150c
 
-Conceptually, the pointer no longer belongs to sk_prot, and not in struct net,
-otherwise you should name this helper   tcp_or_dccp_get_hashinfo() to avoid
-any temptation to use it for other inet protocol.
+Hope this helps someone.
+
+Best,
+
+Da
+
+On Fri, Aug 26, 2022 at 5:51 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>
+> On 07.07.2022 12:14, Jerome Brunet wrote:
+> > For some reason, poking MAC_CTRL_REG a second time, even with the same
+> > value, causes problem on a dwmac 3.70a.
+> >
+> > This problem happens on all the Amlogic SoCs, on link up, when the RMII
+> > 10/100 internal interface is used. The problem does not happen on boards
+> > using the external RGMII 10/100/1000 interface. Initially we suspected the
+> > PHY to be the problem but after a lot of testing, the problem seems to be
+> > coming from the MAC controller.
+> >
+> >> meson8b-dwmac c9410000.ethernet: IRQ eth_wake_irq not found
+> >> meson8b-dwmac c9410000.ethernet: IRQ eth_lpi not found
+> >> meson8b-dwmac c9410000.ethernet: PTP uses main clock
+> >> meson8b-dwmac c9410000.ethernet: User ID: 0x11, Synopsys ID: 0x37
+> >> meson8b-dwmac c9410000.ethernet:     DWMAC1000
+> >> meson8b-dwmac c9410000.ethernet: DMA HW capability register supported
+> >> meson8b-dwmac c9410000.ethernet: RX Checksum Offload Engine supported
+> >> meson8b-dwmac c9410000.ethernet: COE Type 2
+> >> meson8b-dwmac c9410000.ethernet: TX Checksum insertion supported
+> >> meson8b-dwmac c9410000.ethernet: Wake-Up On Lan supported
+> >> meson8b-dwmac c9410000.ethernet: Normal descriptors
+> >> meson8b-dwmac c9410000.ethernet: Ring mode enabled
+> >> meson8b-dwmac c9410000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+> >
+> > The problem is not systematic. Its occurence is very random from 1/50 to
+> > 1/2. It is fairly easy to detect by setting the kernel to boot over NFS and
+> > possibly setting it to reboot automatically when reaching the prompt.
+> >
+> > When problem happens, the link is reported up by the PHY but no packet are
+> > actually going out. DHCP requests eventually times out and the kernel reset
+> > the interface. It may take several attempts but it will eventually work.
+> >
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+> >> Sending DHCP requests ...... timed out!
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
+> >> IP-Config: Retrying forever (NFS root)...
+> >> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+> >> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
+> >> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
+> >> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+> >> Sending DHCP requests ...... timed out!
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
+> >> IP-Config: Retrying forever (NFS root)...
+> >> [...] 5 retries ...
+> >> IP-Config: Retrying forever (NFS root)...
+> >> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+> >> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
+> >> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
+> >> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
+> >> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+> >> Sending DHCP requests ., OK
+> >> IP-Config: Got DHCP answer from 10.1.1.1, my address is 10.1.3.229
+> >
+> > Of course the same problem happens when not using NFS and it fairly
+> > difficult for IoT products to detect this situation and recover.
+> >
+> > The call to stmmac_mac_set() should be no-op in our case, the bits it sets
+> > have already been set by an earlier call to stmmac_mac_set(). However
+> > removing this call solves the problem. We have no idea why or what is the
+> > actual problem.
+> >
+> > Even weirder, keeping the call to stmmac_mac_set() but inserting a
+> > udelay(1) between writel() and stmmac_mac_set() solves the problem too.
+> >
+> > Suggested-by: Qi Duan <qi.duan@amlogic.com>
+> > Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+> > ---
+> >
+> >  Hi,
+> >
+> >  There is no intention to get this patch merged as it is.
+> >  It is sent with the hope to get a better understanding of the issue
+> >  and more testing.
+> >
+> >  The discussion on this issue initially started on this thread
+> >  https://lore.kernel.org/all/CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com/
+> >
+> >  The patches previously proposed in this thread have not solved the
+> >  problem.
+> >
+> >  The line removed in this patch should be a no-op when it comes to the
+> >  value of MAC_CTRL_REG. So the change should make not a difference but
+> >  it does. Testing result have been very good so far so there must be an
+> >  unexpected consequence on the HW. I hope that someone with more
+> >  knowledge on this controller will be able to shine some light on this.
+> >
+> >  Cheers
+> >  Jerome
+> >
+> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 -
+> >  1 file changed, 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > index d1a7cf4567bc..3dca3cc61f39 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> > @@ -1072,7 +1072,6 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+> >
+> >       writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
+> >
+> > -     stmmac_mac_set(priv, priv->ioaddr, true);
+> >       if (phy && priv->dma_cap.eee) {
+> >               priv->eee_active = phy_init_eee(phy, 1) >= 0;
+> >               priv->eee_enabled = stmmac_eee_init(priv);
+>
+> Now that we have a3a57bf07de2 ("net: stmmac: work around sporadic tx issue on link-up")
+> in linux-next and scheduled for stable:
+>
+> Jerome, can you confirm that after this commit the following is no longer needed?
+> 2c87c6f9fbdd ("net: phy: meson-gxl: improve link-up behavior")
+>
+> Then I'd revert it, referencing the successor workaround / fix in stmmac.
