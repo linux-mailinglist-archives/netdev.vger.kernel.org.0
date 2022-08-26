@@ -2,120 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 62A7E5A2BE6
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 18:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D7BE5A2BEE
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 18:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240660AbiHZQEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 12:04:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55896 "EHLO
+        id S244437AbiHZQFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 12:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229991AbiHZQEM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 12:04:12 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2043.outbound.protection.outlook.com [40.107.94.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1499BD41AB;
-        Fri, 26 Aug 2022 09:04:12 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CjbYo3Ge303vOM3LKpn8r9Z33hwVkjBIl1WkG82zNRejreQPcfJI4e7pZ2vhzdGR8ZLPYHd9bKZ7baO4iHmyP7S3WgfcEwn5UmlXbqJ8/dMhze3gLTEWmjOZnIMIzpNy2Joe6XTWcOg2977seel35x/0bllG5fURd7O+Jp1yXk5P+IQoMD/44n1uiFwl1keKZczKl/+TonDnPzIzeH4/RyzUXcVOtuzkaT+PgVBlu4PEqMvZGw/DOpslcbDY2seIysCZdJl1Mfo+RWwYhlX0pwQissELH2JyxcZaio4GyOHk/gcgirxIv/kxPbfQg+qc0ekGup44qusPhUCLZKgiOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pa7N55Z4cMr2yGVckk89mK79Y4Vn0IbYGFnnTN4bPB8=;
- b=O4cdAJBZxIu3lEPEZcO2TR6HpcOOSftZpFa1J808kKT49RUElORZ3l8dnxZFF70+D5HnDgFt3fnkew8awgQf5wY68m3SJfX8t/JdkTmnmoEpR2lZhlu/3Kk0e5kxXTdRa6v/hOysNr2OxJRWWCnmmv/sM49hryMOV90LCdVVelyQXc1UxsdqRZq+WDoOayM8NBxgO/vNzF5mYSa/TqGt24By9g1mveE6M7X/t0+OhwSek7smRGshBuSp9h1iAy6Lnecjr0YmJDmIELfn2ZQwB/3s5W0n90zJdVNETUHRzo6vBuCUVBEzi96nuEMrQqcZ2PcZuW+9h9kVprfD9dMSYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pa7N55Z4cMr2yGVckk89mK79Y4Vn0IbYGFnnTN4bPB8=;
- b=iQRXt1Egv5icgNpL5Pi+z1bXkIca5Hd9WFu+opSRy6rnCIrKHM1u9Nvok24xM3oW5AbQQIdb6axHELKnkf8ydnxKMe4zz42T9SmHDaU8JTH2BxNWVZOsdSiH3pV6w6als46a8CJcdvAUXQklp0na77Mgx3JcGB6uA/I8Re16SvQZ9oVqJ3l42e+cqMDgSRYnoM7oKDLa4wrDD1bDX1t72R/E2lkCLiDzvqBkUyi/p9nj+dFxGJygEpkGJHSXQNwICava1KHZ85+cviaEL4bwKGiqb9zDWXjDBGIK6YIIX8P7DeKqBwNp8Pa4XvV4cnVSuaINRcWPH+cTx+6/mjNfbA==
-Received: from BN9PR03CA0580.namprd03.prod.outlook.com (2603:10b6:408:10d::15)
- by SN1PR12MB2397.namprd12.prod.outlook.com (2603:10b6:802:27::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Fri, 26 Aug
- 2022 16:04:10 +0000
-Received: from BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:10d:cafe::a0) by BN9PR03CA0580.outlook.office365.com
- (2603:10b6:408:10d::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Fri, 26 Aug 2022 16:04:10 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- BN8NAM11FT060.mail.protection.outlook.com (10.13.177.211) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5566.15 via Frontend Transport; Fri, 26 Aug 2022 16:04:10 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 26 Aug
- 2022 16:04:09 +0000
-Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 26 Aug
- 2022 09:04:05 -0700
-References: <YwjgwoJ3M7Kdq9VK@kili>
-User-agent: mu4e 1.6.6; emacs 28.1
-From:   Petr Machata <petrm@nvidia.com>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-CC:     Ido Schimmel <idosch@nvidia.com>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S1344189AbiHZQFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 12:05:43 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27630BBA50;
+        Fri, 26 Aug 2022 09:05:40 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-11d2dcc31dbso2593876fac.7;
+        Fri, 26 Aug 2022 09:05:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=Bt46CA3gkhtjHQtX98/khRB3Yq8EzK753ZbUa2Xb1R4=;
+        b=kIkRE0KZbp4pkk4FPR93yi1zSdmDWHVWbnKB1c/rrNfb9sSWBcLPwABmAqkz/F80w0
+         IExWhsSBC0tR9XKkD/hFMSkLigyShCYZKrFk9x57VWfK6lNpGe3kIU+n6OXWUyweySbR
+         Q4t3MnESINyKAaD/AVJr2TIl5wuiw54eo48gmG4AcOKlA/uXd0Xhodw+pIu7dxETRhKH
+         m/Q/zHqm5dciTW6z6jfvQsf9RG+5geRub8t7hji/Yzc53f7CAvZGiv6hfGkNmeWCJpd2
+         SWp2zjDYjtQr9dguT8iKp/NXGUWhJUmhheZhYbmynStSUJXWyQhrG5PTRa8SYYfXQZsC
+         q1Jg==
+X-Gm-Message-State: ACgBeo3sY8g9IhGVuleTsJe3cdLUxD/EV40JKnB4dFjxxu+oc+S1IyLX
+        HeAucVo90sehVjJwlqc6mg==
+X-Google-Smtp-Source: AA6agR5qo/Htznv740wYaz6ZBJU7DWuY9xkifeqYbjUccJ1C8uL4cnUGayiUfnbXUI+6wiQlGYSgNw==
+X-Received: by 2002:a05:6870:3484:b0:11e:4465:3d9b with SMTP id n4-20020a056870348400b0011e44653d9bmr2311584oah.46.1661529939549;
+        Fri, 26 Aug 2022 09:05:39 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id y16-20020a056870429000b0010bf07976c9sm1465908oah.41.2022.08.26.09.05.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 09:05:39 -0700 (PDT)
+Received: (nullmailer pid 3267073 invoked by uid 1000);
+        Fri, 26 Aug 2022 16:05:31 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>, Jiri Pirko <jiri@nvidia.com>,
-        <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH net-next] mlxsw: minimal: Return -ENOMEM on allocation
- failure
-Date:   Fri, 26 Aug 2022 18:02:12 +0200
-In-Reply-To: <YwjgwoJ3M7Kdq9VK@kili>
-Message-ID: <87pmgnhtzh.fsf@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.126.230.35]
-X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 825aa730-ffeb-4864-ead7-08da877c9d00
-X-MS-TrafficTypeDiagnostic: SN1PR12MB2397:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oVe3UyIcVRl0/i5byToplgmrgEUtZ8InzlyoGZ7ZuZl5aCaPgYMq60Yg75+xP/1Mf/RCGSnQbV8jCM4g4vDg1S76O+9s/06/mf0iOLAG/vnRc/p7PAehkeJtjJmmDCXUwU9A47YbTW2DVchScrwP7/exDjML0FOIEEEGn1F3quiXbZRAUm9iviBRi3xKNiE7fsFizZYfN6onRKGTbSCuCnP3ZBYiuL1DrpsgWuJJ2a1ZsYQJqOefwVlFdB93IwNEhRgEL6/k1zcbSUZJ0isTPBmpLQfECXpZ6T2w2JxXpbhhFCDyTEJqJfQUtCTlO+xgt6GR+riVx7AudeamFux+YpmK1anlplStz5lwSatmCfGQZ38aJvmeApp6uWMHKTVV9J8CQLFy7zUiMJ10Vy60CGFED9WzsMyKGTBHE7JZ1u1feALJkZl+D7xkSKZP6vIuccQ8gXxz9Jpeo5Jkc3kpHfpLzy3lpQYvvkvoDGBIa9+uJDCYqwrSsMlwkB936xiJxTUIb0wO6hvaa464eRPZEhDwq/GIxBQjnXDYqxb99YnoH/9MlqmPjDnkItFEIX4+yTqqPP/Xgm2vV3W1313qbw+/ACOw/YyvsEzyis1i/rthNgqKDxFTnznW5/DItqvQeBfMWX05qHd1oozwzKOL8GYddd49g9XOk76sA4MhgN5usfbatsRSiX+jkk4lK1dhFa8RUR7x6aqpduc1/HaTtLwO4UGXW9Qs/DOxa2gLBC35DVlkCbW9e978k9NP4XddXgtPiiaA1spIWrpB9T34WKXoMVeB8W9JFI7rZgGkzLmkGmgFPJJq8KEkJMFyZ/Ty
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(376002)(39860400002)(136003)(396003)(46966006)(40470700004)(36840700001)(2906002)(336012)(16526019)(186003)(47076005)(426003)(40480700001)(36756003)(81166007)(6916009)(54906003)(5660300002)(8936002)(36860700001)(82310400005)(2616005)(4744005)(82740400003)(26005)(70206006)(6666004)(70586007)(8676002)(4326008)(86362001)(41300700001)(316002)(356005)(478600001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 16:04:10.4405
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 825aa730-ffeb-4864-ead7-08da877c9d00
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT060.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN1PR12MB2397
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Eric Dumazet <edumazet@google.com>, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        linux-arm-kernel@lists.infradead.org,
+        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Richard Weinberger <richard@nod.at>,
+        linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        linux-mtd@lists.infradead.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+In-Reply-To: <20220825214423.903672-10-michael@walle.cc>
+References: <20220825214423.903672-1-michael@walle.cc> <20220825214423.903672-10-michael@walle.cc>
+Subject: Re: [PATCH v1 09/14] dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
+Date:   Fri, 26 Aug 2022 11:05:31 -0500
+Message-Id: <1661529931.067130.3267072.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 25 Aug 2022 23:44:18 +0200, Michael Walle wrote:
+> Add a schema for the NVMEM layout on Kontron's sl28 boards.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../nvmem/layouts/kontron,sl28-vpd.yaml       | 52 +++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+> 
 
-Dan Carpenter <dan.carpenter@oracle.com> writes:
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-> These error paths return success but they should return -ENOMEM.
->
-> Fixes: 01328e23a476 ("mlxsw: minimal: Extend module to port mapping with slot index")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+yamllint warnings/errors:
 
-Reviewed-by: Petr Machata <petrm@nvidia.com>
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: compatible:0: 'kontron,sl28-vpd' was expected
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: compatible: ['user-otp'] is too short
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: '#address-cells', '#size-cells', 'mac-address@0' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
 
-Thanks!
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
