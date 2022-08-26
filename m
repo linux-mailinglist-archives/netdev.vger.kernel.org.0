@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C8165A1F5A
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 05:14:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8DB5A1F65
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 05:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244746AbiHZDOX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Aug 2022 23:14:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34600 "EHLO
+        id S244831AbiHZDS2 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Aug 2022 23:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230259AbiHZDOV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 23:14:21 -0400
-Received: from smtp237.sjtu.edu.cn (smtp237.sjtu.edu.cn [202.120.2.237])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 004E88036A;
-        Thu, 25 Aug 2022 20:14:18 -0700 (PDT)
-Received: from mta91.sjtu.edu.cn (unknown [10.118.0.91])
-        by smtp237.sjtu.edu.cn (Postfix) with ESMTPS id E88DF10087D60;
-        Fri, 26 Aug 2022 11:14:15 +0800 (CST)
+        with ESMTP id S230106AbiHZDS0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 23:18:26 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711E1CACA0;
+        Thu, 25 Aug 2022 20:18:25 -0700 (PDT)
+Received: from mta90.sjtu.edu.cn (unknown [10.118.0.90])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 0AFF01008B38D;
+        Fri, 26 Aug 2022 11:18:22 +0800 (CST)
 Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 9302937C83F;
-        Fri, 26 Aug 2022 11:14:15 +0800 (CST)
+        by mta90.sjtu.edu.cn (Postfix) with ESMTP id C742D37C893;
+        Fri, 26 Aug 2022 11:18:22 +0800 (CST)
 X-Virus-Scanned: amavisd-new at 
-Received: from mta91.sjtu.edu.cn ([127.0.0.1])
-        by localhost (mta91.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id 2-vxcLwyJSQ7; Fri, 26 Aug 2022 11:14:15 +0800 (CST)
+Received: from mta90.sjtu.edu.cn ([127.0.0.1])
+        by localhost (mta90.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id Ac8wfnO9bUGB; Fri, 26 Aug 2022 11:18:22 +0800 (CST)
 Received: from mstore105.sjtu.edu.cn (mstore101.sjtu.edu.cn [10.118.0.105])
-        by mta91.sjtu.edu.cn (Postfix) with ESMTP id 663D237C83E;
-        Fri, 26 Aug 2022 11:14:15 +0800 (CST)
-Date:   Fri, 26 Aug 2022 11:14:15 +0800 (CST)
+        by mta90.sjtu.edu.cn (Postfix) with ESMTP id 9995E37C894;
+        Fri, 26 Aug 2022 11:18:22 +0800 (CST)
+Date:   Fri, 26 Aug 2022 11:18:21 +0800 (CST)
 From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
 To:     jasowang <jasowang@redhat.com>
 Cc:     eperezma <eperezma@redhat.com>, sgarzare <sgarzare@redhat.com>,
@@ -36,7 +36,7 @@ Cc:     eperezma <eperezma@redhat.com>, sgarzare <sgarzare@redhat.com>,
         linux-kernel <linux-kernel@vger.kernel.org>,
         kvm list <kvm@vger.kernel.org>,
         virtualization <virtualization@lists.linux-foundation.org>
-Message-ID: <384558036.9092726.1661483655362.JavaMail.zimbra@sjtu.edu.cn>
+Message-ID: <1625987692.9093267.1661483901701.JavaMail.zimbra@sjtu.edu.cn>
 In-Reply-To: <ebf4b376-6a5c-3cfa-38ab-1559ace13b27@redhat.com>
 References: <20220817135718.2553-1-qtxuning1999@sjtu.edu.cn> <20220817135718.2553-7-qtxuning1999@sjtu.edu.cn> <ebf4b376-6a5c-3cfa-38ab-1559ace13b27@redhat.com>
 Subject: Re: [RFC v2 6/7] virtio: in order support for virtio_ring
@@ -46,7 +46,7 @@ Content-Transfer-Encoding: 8BIT
 X-Originating-IP: [10.166.246.247]
 X-Mailer: Zimbra 8.8.15_GA_4308 (ZimbraWebClient - GC104 (Mac)/8.8.15_GA_3928)
 Thread-Topic: virtio: in order support for virtio_ring
-Thread-Index: /TRVhvCRWPpoWxEdPT1pQa8SovaRAA==
+Thread-Index: 1vFj+paB+wRk8wd+9SUq6j4kd2DDhA==
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
@@ -91,7 +91,6 @@ X-Mailing-List: netdev@vger.kernel.org
 > We need tweak the comment, it's not easy for me to understand the
 > meaning here.
 > 
-How about this: if in_order feature is negotiated, is the next head to consume.
 > 
 >> +			u16 next_desc_begin;
 >>   		} split;
@@ -111,8 +110,6 @@ How about this: if in_order feature is negotiated, is the next head to consume.
 > 
 > Maybe we should add something like "The descriptors are prepared in order".
 > 
-I will change it to this: The descriptors are made available in order if the in order feature is used. Since the free_head is already a circular list, it must consume it sequentially.
-
 > 
 >> +	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
 >> +		vq->split.desc_extra[i].next = vq->free_head;
@@ -154,19 +151,11 @@ I will change it to this: The descriptors are made available in order if the in 
 > use and here actually since the size is guaranteed to be power of the
 > two? Another question, is it better to store the next_desc in e.g
 > desc_extra?
-
-Thanks, I will use bit operation instead of mod.
-
-We only use one next_desc_begin at the same time, there is no need to store it in desc_extra.
-
 > 
 > And this seems very expensive if the device doesn't do the batching
 > (which is not mandatory).
 > 
 > 
-We will judge whether the device batched the buffer or not, we will only use this way for the batched buffer.
-And Not in order is more expensive, because is following a linked list.
-
 >> +		/* move to next */
 >> +		j = (j + 1) % vq->split.vring.num;
 >> +		/* Next buffer will use this descriptor in order */
@@ -196,6 +185,11 @@ And Not in order is more expensive, because is following a linked list.
 > 
 > Thanks
 > 
+
+Sorry for this obsolete implementation, we will not get buffer'len like this(in a loop).
+Actually, for not skipped buffers, we can get length from used ring directly, for skipped buffers
+I think we don¡¯t have to get the length, because the driver is not interested in the skipped buffers(tx)¡¯ length.
+
 > 
 >> +			}
 >> +
