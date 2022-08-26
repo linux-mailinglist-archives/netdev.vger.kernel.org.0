@@ -2,168 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C8E5A30C6
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 23:02:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5FA5A3195
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 23:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345074AbiHZVAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 17:00:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41296 "EHLO
+        id S231687AbiHZV45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 17:56:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237072AbiHZVAr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 17:00:47 -0400
-Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3839E3433;
-        Fri, 26 Aug 2022 14:00:40 -0700 (PDT)
-Received: by mail.hallyn.com (Postfix, from userid 1001)
-        id 4A92F605; Fri, 26 Aug 2022 16:00:39 -0500 (CDT)
-Date:   Fri, 26 Aug 2022 16:00:39 -0500
-From:   "Serge E. Hallyn" <serge@hallyn.com>
-To:     Song Liu <songliubraving@fb.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Paul Moore <paul@paul-moore.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Frederick Lawler <fred@cloudflare.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "revest@chromium.org" <revest@chromium.org>,
-        "jackmanb@chromium.org" <jackmanb@chromium.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "stephen.smalley.work@gmail.com" <stephen.smalley.work@gmail.com>,
-        "eparis@parisplace.org" <eparis@parisplace.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "brauner@kernel.org" <brauner@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        bpf <bpf@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        "selinux@vger.kernel.org" <selinux@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "kernel-team@cloudflare.com" <kernel-team@cloudflare.com>,
-        "cgzones@googlemail.com" <cgzones@googlemail.com>,
-        "karl@bigbadwolfsecurity.com" <karl@bigbadwolfsecurity.com>,
-        "tixxdz@gmail.com" <tixxdz@gmail.com>
-Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
-Message-ID: <20220826210039.GA15952@mail.hallyn.com>
-References: <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
- <20220818140521.GA1000@mail.hallyn.com>
- <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
- <20220819144537.GA16552@mail.hallyn.com>
- <CAHC9VhSZ0aaa3k3704j8_9DJvSNRy-0jfXpy1ncs2Jmo8H0a7g@mail.gmail.com>
- <875yigp4tp.fsf@email.froward.int.ebiederm.org>
- <CAHC9VhTN09ZabnQnsmbSjKgb8spx7_hkh4Z+mq5ArQmfPcVqAg@mail.gmail.com>
- <0D14C118-E644-4D7B-84C0-CA7752DC0605@fb.com>
- <20220826152445.GB12466@mail.hallyn.com>
- <25C89E75-A900-42C7-A8E4-2800AA2E3387@fb.com>
+        with ESMTP id S231298AbiHZV44 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 17:56:56 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE92CACA2;
+        Fri, 26 Aug 2022 14:56:54 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-32a09b909f6so69161807b3.0;
+        Fri, 26 Aug 2022 14:56:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=YIsmXK/1IMUzBKPFPBCOzWlrG3vuxnAl26/EQEinaGU=;
+        b=Woi3HMQVUTh9wjBeAKXEpTFy4sf0GT5G162/idyorzEjanNHHAAO45K6yb3Gq251vx
+         vdGkWXeLHyJD1Eg5RShfMvgsW17hKDHZr/WeeDtgdpyt32v1ggnnjCHlRuAQ94Dpc11n
+         zS2IwMRHR9s2PGlSxiCxhhs3r1G6RPkeqBKCOCYCE4mPWzWmQqlnHguY0hSWkrhmHkVP
+         c80tnpQQ8aynngWmq9c20Rz5FIJYqJ1lG8EM+uu+/Bn+bD/1qLICngiaAtk0lCNG7gJn
+         U7gXacECwV1iR4jaz+0w7cw+lJzQltivxlZf7vX/cHXdyHNxlEyqXdk9GMeHqzK764xE
+         fj2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=YIsmXK/1IMUzBKPFPBCOzWlrG3vuxnAl26/EQEinaGU=;
+        b=xtJ3U2yLwssHKz6czZ3Qs+tai4dTBlgdlPzgdlZ5kCmBHzUs4Q4+BqpIaYTYJg4xwe
+         8+vxr/EqO+65qpYAatXv95S53IEZZsG2hUZ085JMjr6AbuvME6i/pZREpB+TwwKMdVHE
+         zhSgFb++RH4cSFbCvG7DXaKiDQArf5momXl+O7c2qNE6BUgi8pfDLfxF8QZUUziI3QYR
+         Uh+Gk8zGQwFCCaU4UI2Be3KXwtXeLFSudMPcrXeJo0P1dDs3t9n9xM8UBfk8A5mpAnhj
+         tnR1KXjFx4EWJJVq5bNdBEiyhK1gyMCMIQXSmci6mxjMhgAO0fXPdePWtphaKpNjQ+lq
+         rd9w==
+X-Gm-Message-State: ACgBeo3R57Ucj1iiEZDefLlEEItyUdZ6LUMTw7XMYwhM9jqqaOQLDS4d
+        Z99ETb3AKLCcvbQuHmrV/AEaeUx6m0PGS7sLv6Y=
+X-Google-Smtp-Source: AA6agR4UTuA3qINNphj7afBVZTaQiWFU8zQh4oSl0I8d9SplK6OhHc5jyFq4/aR+zST0rOWp264LYbZR9vv+Gc1Ll04=
+X-Received: by 2002:a5b:68e:0:b0:671:76c9:ff with SMTP id j14-20020a5b068e000000b0067176c900ffmr1606448ybq.630.1661551013566;
+ Fri, 26 Aug 2022 14:56:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <25C89E75-A900-42C7-A8E4-2800AA2E3387@fb.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220820082936.686924-1-dario.binacchi@amarulasolutions.com> <20220820082936.686924-5-dario.binacchi@amarulasolutions.com>
+In-Reply-To: <20220820082936.686924-5-dario.binacchi@amarulasolutions.com>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Sat, 27 Aug 2022 06:56:42 +0900
+Message-ID: <CAMZ6RqKQJZBVOSU7oA3AGSRG11vxdysAyRotHavUzsVRuM28Kw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 4/4] can: bxcan: add support for ST bxCAN controller
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        michael@amarulasolutions.com, Dario Binacchi <dariobin@libero.it>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 05:00:51PM +0000, Song Liu wrote:
-> 
-> 
-> > On Aug 26, 2022, at 8:24 AM, Serge E. Hallyn <serge@hallyn.com> wrote:
-> > 
-> > On Thu, Aug 25, 2022 at 09:58:46PM +0000, Song Liu wrote:
-> >> 
-> >> 
-> >>> On Aug 25, 2022, at 12:19 PM, Paul Moore <paul@paul-moore.com> wrote:
-> >>> 
-> >>> On Thu, Aug 25, 2022 at 2:15 PM Eric W. Biederman <ebiederm@xmission.com> wrote:
-> >>>> Paul Moore <paul@paul-moore.com> writes:
-> >>>>> On Fri, Aug 19, 2022 at 10:45 AM Serge E. Hallyn <serge@hallyn.com> wrote:
-> >>>>>> I am hoping we can come up with
-> >>>>>> "something better" to address people's needs, make everyone happy, and
-> >>>>>> bring forth world peace.  Which would stack just fine with what's here
-> >>>>>> for defense in depth.
-> >>>>>> 
-> >>>>>> You may well not be interested in further work, and that's fine.  I need
-> >>>>>> to set aside a few days to think on this.
-> >>>>> 
-> >>>>> I'm happy to continue the discussion as long as it's constructive; I
-> >>>>> think we all are.  My gut feeling is that Frederick's approach falls
-> >>>>> closest to the sweet spot of "workable without being overly offensive"
-> >>>>> (*cough*), but if you've got an additional approach in mind, or an
-> >>>>> alternative approach that solves the same use case problems, I think
-> >>>>> we'd all love to hear about it.
-> >>>> 
-> >>>> I would love to actually hear the problems people are trying to solve so
-> >>>> that we can have a sensible conversation about the trade offs.
-> >>> 
-> >>> Here are several taken from the previous threads, it's surely not a
-> >>> complete list, but it should give you a good idea:
-> >>> 
-> >>> https://lore.kernel.org/linux-security-module/CAHC9VhQnPAsmjmKo-e84XDJ1wmaOFkTKPjjztsOa9Yrq+AeAQA@mail.gmail.com/
-> >>> 
-> >>>> As best I can tell without more information people want to use
-> >>>> the creation of a user namespace as a signal that the code is
-> >>>> attempting an exploit.
-> >>> 
-> >>> Some use cases are like that, there are several other use cases that
-> >>> go beyond this; see all of our previous discussions on this
-> >>> topic/patchset.  As has been mentioned before, there are use cases
-> >>> that require improved observability, access control, or both.
-> >>> 
-> >>>> As such let me propose instead of returning an error code which will let
-> >>>> the exploit continue, have the security hook return a bool.  With true
-> >>>> meaning the code can continue and on false it will trigger using SIGSYS
-> >>>> to terminate the program like seccomp does.
-> >>> 
-> >>> Having the kernel forcibly exit the process isn't something that most
-> >>> LSMs would likely want.  I suppose we could modify the hook/caller so
-> >>> that *if* an LSM wanted to return SIGSYS the system would kill the
-> >>> process, but I would want that to be something in addition to
-> >>> returning an error code like LSMs normally do (e.g. EACCES).
-> >> 
-> >> I am new to user_namespace and security work, so please pardon me if
-> >> anything below is very wrong. 
-> >> 
-> >> IIUC, user_namespace is a tool that enables trusted userspace code to 
-> >> control the behavior of untrusted (or less trusted) userspace code. 
-> > 
-> > No.  user namespaces are not a way for more trusted code to control the
-> > behavior of less trusted code.
-> 
-> Hmm.. In this case, I think I really need to learn more. 
-> 
-> Thanks for pointing out my misunderstanding.
+On Sat. 20 Aug. 2022 =C3=A0 17:32, Dario Binacchi
+<dario.binacchi@amarulasolutions.com> a =C3=A9crit :
+> Add support for the basic extended CAN controller (bxCAN) found in many
+> low- to middle-end STM32 SoCs. It supports the Basic Extended CAN
+> protocol versions 2.0A and B with a maximum bit rate of 1 Mbit/s.
+>
+> The controller supports two channels (CAN1 as master and CAN2 as slave)
+> and the driver can enable either or both of the channels. They share
+> some of the required logic (e. g. clocks and filters), and that means
+> you cannot use the slave CAN without enabling some hardware resources
+> managed by the master CAN.
+>
+> Each channel has 3 transmit mailboxes, 2 receive FIFOs with 3 stages and
+> 28 scalable filter banks.
+> It also manages 4 dedicated interrupt vectors:
+> - transmit interrupt
+> - FIFO 0 receive interrupt
+> - FIFO 1 receive interrupt
+> - status change error interrupt
+>
+> Driver uses all 3 available mailboxes for transmission and FIFO 0 for
+> reception. Rx filter rules are configured to the minimum. They accept
+> all messages and assign filter 0 to CAN1 and filter 14 to CAN2 in
+> identifier mask mode with 32 bits width. It enables and uses transmit,
+> receive buffers for FIFO 0 and error and status change interrupts.
+>
+> Signed-off-by: Dario Binacchi <dariobin@libero.it>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+>
+> ---
 
-(I thought maybe Eric would chime in with a better explanation, but I'll
-fill it in for now :)
+(...)
 
-One of the main goals of user namespaces is to allow unprivileged users
-to do things like chroot and mount, which are very useful development
-tools, without needing admin privileges.  So it's almost the opposite
-of what you said: rather than to enable trusted userspace code to control
-the behavior of less trusted code, it's to allow less privileged code to
-do things which do not affect other users, without having to assume *more*
-privilege.
+> +static void bxcan_handle_state_change(struct net_device *ndev, u32 esr)
+> +{
+> +       struct bxcan_priv *priv =3D netdev_priv(ndev);
+> +       struct net_device_stats *stats =3D &ndev->stats;
+> +       enum can_state new_state =3D priv->can.state;
+> +       struct can_berr_counter bec;
+> +       enum can_state rx_state, tx_state;
+> +       struct sk_buff *skb;
+> +       struct can_frame *cf;
+> +
+> +       /* Early exit if no error flag is set */
+> +       if (!(esr & (BXCAN_ESR_EWGF | BXCAN_ESR_EPVF | BXCAN_ESR_BOFF)))
+> +               return;
+> +
+> +       bec.txerr =3D BXCAN_TEC(esr);
+> +       bec.rxerr =3D BXCAN_REC(esr);
+> +
+> +       if (esr & BXCAN_ESR_BOFF)
+> +               new_state =3D CAN_STATE_BUS_OFF;
+> +       else if (esr & BXCAN_ESR_EPVF)
+> +               new_state =3D CAN_STATE_ERROR_PASSIVE;
+> +       else if (esr & BXCAN_ESR_EWGF)
+> +               new_state =3D CAN_STATE_ERROR_WARNING;
+> +
+> +       /* state hasn't changed */
+> +       if (unlikely(new_state =3D=3D priv->can.state))
+> +               return;
+> +
+> +       skb =3D alloc_can_err_skb(ndev, &cf);
+> +       if (unlikely(!skb))
+> +               return;
+> +
+> +       tx_state =3D bec.txerr >=3D bec.rxerr ? new_state : 0;
+> +       rx_state =3D bec.txerr <=3D bec.rxerr ? new_state : 0;
+> +       can_change_state(ndev, cf, tx_state, rx_state);
+> +
+> +       if (new_state =3D=3D CAN_STATE_BUS_OFF)
+> +               can_bus_off(ndev);
+> +
+> +       stats->rx_bytes +=3D cf->len;
 
-To be precise, the goals were:
+Please do not increment the stats if the frame is remote (c.f. CAN_RTR_FLAG=
+).
 
-1. uid mapping - allow two users to both "use uid 500" without conflicting
-2. provide (unprivileged) users privilege over their own resources
-3. absolutely no extra privilege over other resources
-4. be able to nest
+> +       stats->rx_packets++;
+> +       netif_rx(skb);
+> +}
 
-While (3) was technically achieved, the problem we have is that
-(2) provides unprivileged users the ability to exercise kernel code
-which they previously could not.
 
--serge
+Yours sincerely,
+Vincent Mailhol
