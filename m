@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51B585A2505
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:52:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E084A5A2511
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241772AbiHZJwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 05:52:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56692 "EHLO
+        id S1344098AbiHZJwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 05:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343728AbiHZJv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:51:58 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8D0AD7D34;
-        Fri, 26 Aug 2022 02:51:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VNIjhRf_1661507513;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VNIjhRf_1661507513)
+        with ESMTP id S1344085AbiHZJwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:52:04 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27C43D83EB;
+        Fri, 26 Aug 2022 02:51:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045176;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VNIZJ0D_1661507514;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VNIZJ0D_1661507514)
           by smtp.aliyun-inc.com;
-          Fri, 26 Aug 2022 17:51:54 +0800
+          Fri, 26 Aug 2022 17:51:55 +0800
 From:   "D. Wythe" <alibuda@linux.alibaba.com>
 To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com
 Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
         linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
         "D. Wythe" <alibuda@linux.alibaba.com>
-Subject: [PATCH net-next v2 03/10] net/smc: allow confirm/delete rkey response deliver multiplex
-Date:   Fri, 26 Aug 2022 17:51:30 +0800
-Message-Id: <47235d256c17a3551ed73b4686aa68dfec0360ac.1661407821.git.alibuda@linux.alibaba.com>
+Subject: [PATCH net-next v2 04/10] net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+Date:   Fri, 26 Aug 2022 17:51:31 +0800
+Message-Id: <fa04adab8e4f3a3554e7a11e11c6dc01a31339d6.1661407821.git.alibuda@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <cover.1661407821.git.alibuda@linux.alibaba.com>
 References: <cover.1661407821.git.alibuda@linux.alibaba.com>
@@ -41,340 +41,218 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-We know that all flows except confirm_rkey and delete_rkey are exclusive,
-confirm/delete rkey flows can run concurrently (local and remote).
+Once confirm/delete rkey response can be multiplex delivered,
+We can allow parallel execution of start (remote) or
+initialization (local) a SMC_LLC_FLOW_RKEY flow.
 
-Although the protocol allows, all flows are actually mutually exclusive
-in implementation, dues to waiting for LLC messages is in serial.
-
-This aggravates the time for establishing or destroying a SMC-R
-connections, connections have to be queued in smc_llc_wait.
-
-We use rtokens or rkey to correlate a confirm/delete rkey message
-with its response.
-
-Before sending a message, we put context with rtokens or rkey into
-wait queue. When a response message received, we wakeup the context
-which with the same rtokens or rkey against the response message.
+This patch will count the flows executed in parallel, and only when
+the count reaches zero will the current flow type be removed.
 
 Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 ---
- net/smc/smc_llc.c | 174 +++++++++++++++++++++++++++++++++++++++++-------------
- net/smc/smc_wr.c  |  10 ----
- net/smc/smc_wr.h  |  10 ++++
- 3 files changed, 143 insertions(+), 51 deletions(-)
+ net/smc/smc_core.h |  1 +
+ net/smc/smc_llc.c  | 69 +++++++++++++++++++++++++++++++++++++++++-------------
+ net/smc/smc_llc.h  |  6 +++++
+ 3 files changed, 60 insertions(+), 16 deletions(-)
 
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index a304ef3..65f9460 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -291,6 +291,7 @@ enum smc_llc_flowtype {
+ struct smc_llc_flow {
+ 	enum smc_llc_flowtype type;
+ 	struct smc_llc_qentry *qentry;
++	refcount_t	parallel_refcnt;
+ };
+ 
+ struct smc_link_group {
 diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index c1ce80b..2c8bfff 100644
+index 2c8bfff..49d92e6 100644
 --- a/net/smc/smc_llc.c
 +++ b/net/smc/smc_llc.c
-@@ -200,6 +200,7 @@ struct smc_llc_msg_delete_rkey_v2 {	/* type 0x29 */
- struct smc_llc_qentry {
- 	struct list_head list;
- 	struct smc_link *link;
-+	void *private;
- 	union smc_llc_msg msg;
- };
- 
-@@ -479,19 +480,17 @@ int smc_llc_send_confirm_link(struct smc_link *link,
- 	return rc;
+@@ -231,10 +231,18 @@ static inline void smc_llc_flow_qentry_set(struct smc_llc_flow *flow,
+ 	flow->qentry = qentry;
  }
  
--/* send LLC confirm rkey request */
--static int smc_llc_send_confirm_rkey(struct smc_link *send_link,
--				     struct smc_buf_desc *rmb_desc)
-+/* build LLC confirm rkey request */
-+static int smc_llc_build_confirm_rkey_request(struct smc_link *send_link,
-+					      struct smc_buf_desc *rmb_desc,
-+					      struct smc_wr_tx_pend_priv **priv)
+-static void smc_llc_flow_parallel(struct smc_link_group *lgr, u8 flow_type,
++static void smc_llc_flow_parallel(struct smc_link_group *lgr, struct smc_llc_flow *flow,
+ 				  struct smc_llc_qentry *qentry)
  {
- 	struct smc_llc_msg_confirm_rkey *rkeyllc;
--	struct smc_wr_tx_pend_priv *pend;
- 	struct smc_wr_buf *wr_buf;
- 	struct smc_link *link;
- 	int i, rc, rtok_ix;
+ 	u8 msg_type = qentry->msg.raw.hdr.common.llc_type;
++	u8 flow_type = flow->type;
++
++	/* SMC_LLC_FLOW_RKEY can be parallel */
++	if (flow_type == SMC_LLC_FLOW_RKEY &&
++	    (msg_type == SMC_LLC_CONFIRM_RKEY || msg_type == SMC_LLC_DELETE_RKEY)) {
++		refcount_inc(&flow->parallel_refcnt);
++		return;
++	}
  
--	if (!smc_wr_tx_link_hold(send_link))
--		return -ENOLINK;
--	rc = smc_llc_add_pending_send(send_link, &wr_buf, &pend);
-+	rc = smc_llc_add_pending_send(send_link, &wr_buf, priv);
- 	if (rc)
- 		goto put_out;
- 	rkeyllc = (struct smc_llc_msg_confirm_rkey *)wr_buf;
-@@ -521,25 +520,20 @@ static int smc_llc_send_confirm_rkey(struct smc_link *send_link,
- 		cpu_to_be64((uintptr_t)rmb_desc->cpu_addr) :
- 		cpu_to_be64((u64)sg_dma_address
- 			    (rmb_desc->sgt[send_link->link_idx].sgl));
--	/* send llc message */
--	rc = smc_wr_tx_send(send_link, pend);
- put_out:
--	smc_wr_tx_link_put(send_link);
- 	return rc;
+ 	if ((msg_type == SMC_LLC_ADD_LINK || msg_type == SMC_LLC_DELETE_LINK) &&
+ 	    flow_type != msg_type && !lgr->delayed_event) {
+@@ -261,7 +269,7 @@ static bool smc_llc_flow_start(struct smc_llc_flow *flow,
+ 	spin_lock_bh(&lgr->llc_flow_lock);
+ 	if (flow->type) {
+ 		/* a flow is already active */
+-		smc_llc_flow_parallel(lgr, flow->type, qentry);
++		smc_llc_flow_parallel(lgr, flow, qentry);
+ 		spin_unlock_bh(&lgr->llc_flow_lock);
+ 		return false;
+ 	}
+@@ -280,6 +288,7 @@ static bool smc_llc_flow_start(struct smc_llc_flow *flow,
+ 		flow->type = SMC_LLC_FLOW_NONE;
+ 	}
+ 	smc_llc_flow_qentry_set(flow, qentry);
++	refcount_set(&flow->parallel_refcnt, 1);
+ 	spin_unlock_bh(&lgr->llc_flow_lock);
+ 	return true;
  }
- 
--/* send LLC delete rkey request */
--static int smc_llc_send_delete_rkey(struct smc_link *link,
--				    struct smc_buf_desc *rmb_desc)
-+/* build LLC delete rkey request */
-+static int smc_llc_build_delete_rkey_request(struct smc_link *link,
-+					     struct smc_buf_desc *rmb_desc,
-+					     struct smc_wr_tx_pend_priv **priv)
+@@ -289,6 +298,7 @@ int smc_llc_flow_initiate(struct smc_link_group *lgr,
+ 			  enum smc_llc_flowtype type)
  {
- 	struct smc_llc_msg_delete_rkey *rkeyllc;
--	struct smc_wr_tx_pend_priv *pend;
- 	struct smc_wr_buf *wr_buf;
+ 	enum smc_llc_flowtype allowed_remote = SMC_LLC_FLOW_NONE;
++	bool accept = false;
  	int rc;
  
--	if (!smc_wr_tx_link_hold(link))
--		return -ENOLINK;
--	rc = smc_llc_add_pending_send(link, &wr_buf, &pend);
-+	rc = smc_llc_add_pending_send(link, &wr_buf, priv);
- 	if (rc)
- 		goto put_out;
- 	rkeyllc = (struct smc_llc_msg_delete_rkey *)wr_buf;
-@@ -548,10 +542,7 @@ static int smc_llc_send_delete_rkey(struct smc_link *link,
- 	smc_llc_init_msg_hdr(&rkeyllc->hd, link->lgr, sizeof(*rkeyllc));
- 	rkeyllc->num_rkeys = 1;
- 	rkeyllc->rkey[0] = htonl(rmb_desc->mr[link->link_idx]->rkey);
--	/* send llc message */
--	rc = smc_wr_tx_send(link, pend);
- put_out:
--	smc_wr_tx_link_put(link);
- 	return rc;
- }
- 
-@@ -2023,7 +2014,8 @@ static void smc_llc_rx_response(struct smc_link *link,
- 	case SMC_LLC_DELETE_RKEY:
- 		if (flowtype != SMC_LLC_FLOW_RKEY || flow->qentry)
- 			break;	/* drop out-of-flow response */
--		goto assign;
-+		__wake_up(&link->lgr->llc_msg_waiter, TASK_NORMAL, 1, qentry);
-+		goto free;
- 	case SMC_LLC_CONFIRM_RKEY_CONT:
- 		/* not used because max links is 3 */
- 		break;
-@@ -2032,6 +2024,7 @@ static void smc_llc_rx_response(struct smc_link *link,
- 					   qentry->msg.raw.hdr.common.type);
- 		break;
- 	}
-+free:
- 	kfree(qentry);
- 	return;
- assign:
-@@ -2191,25 +2184,98 @@ void smc_llc_link_clear(struct smc_link *link, bool log)
- 	cancel_delayed_work_sync(&link->llc_testlink_wrk);
- }
- 
-+static int smc_llc_rkey_response_wake_function(struct wait_queue_entry *wq_entry,
-+					       unsigned int mode, int sync, void *key)
-+{
-+	struct smc_llc_qentry *except, *incoming;
-+	u8 except_llc_type;
+ 	/* all flows except confirm_rkey and delete_rkey are exclusive,
+@@ -300,10 +310,39 @@ int smc_llc_flow_initiate(struct smc_link_group *lgr,
+ 	if (list_empty(&lgr->list))
+ 		return -ENODEV;
+ 	spin_lock_bh(&lgr->llc_flow_lock);
+-	if (lgr->llc_flow_lcl.type == SMC_LLC_FLOW_NONE &&
+-	    (lgr->llc_flow_rmt.type == SMC_LLC_FLOW_NONE ||
+-	     lgr->llc_flow_rmt.type == allowed_remote)) {
+-		lgr->llc_flow_lcl.type = type;
 +
-+	/* not a rkey response */
-+	if (!key)
-+		return 0;
-+
-+	except = wq_entry->private;
-+	incoming = key;
-+
-+	except_llc_type = except->msg.raw.hdr.common.llc_type;
-+
-+	/* except LLC MSG TYPE mismatch */
-+	if (except_llc_type != incoming->msg.raw.hdr.common.llc_type)
-+		return 0;
-+
-+	switch (except_llc_type) {
-+	case SMC_LLC_CONFIRM_RKEY:
-+		if (memcmp(except->msg.confirm_rkey.rtoken, incoming->msg.confirm_rkey.rtoken,
-+			   sizeof(struct smc_rmb_rtoken) *
-+			   except->msg.confirm_rkey.rtoken[0].num_rkeys))
-+			return 0;
-+		break;
-+	case SMC_LLC_DELETE_RKEY:
-+		if (memcmp(except->msg.delete_rkey.rkey, incoming->msg.delete_rkey.rkey,
-+			   sizeof(__be32) * except->msg.delete_rkey.num_rkeys))
-+			return 0;
++	/* Flow is initialized only if the following conditions are met:
++	 * incoming flow	local flow		remote flow
++	 * exclusive		NONE			NONE
++	 * SMC_LLC_FLOW_RKEY	SMC_LLC_FLOW_RKEY	SMC_LLC_FLOW_RKEY
++	 * SMC_LLC_FLOW_RKEY	NONE			SMC_LLC_FLOW_RKEY
++	 * SMC_LLC_FLOW_RKEY	SMC_LLC_FLOW_RKEY	NONE
++	 */
++	switch (type) {
++	case SMC_LLC_FLOW_RKEY:
++		if (!SMC_IS_PARALLEL_FLOW(lgr->llc_flow_lcl.type))
++			break;
++		if (!SMC_IS_PARALLEL_FLOW(lgr->llc_flow_rmt.type))
++			break;
++		/* accepted */
++		accept = true;
 +		break;
 +	default:
-+		pr_warn("smc: invalid except llc msg %d.\n", except_llc_type);
-+		return 0;
-+	}
-+
-+	/* match, save hdr */
-+	memcpy(&except->msg.raw.hdr, &incoming->msg.raw.hdr, sizeof(except->msg.raw.hdr));
-+
-+	wq_entry->private = except->private;
-+	return woken_wake_function(wq_entry, mode, sync, NULL);
-+}
-+
- /* register a new rtoken at the remote peer (for all links) */
- int smc_llc_do_confirm_rkey(struct smc_link *send_link,
- 			    struct smc_buf_desc *rmb_desc)
- {
-+	DEFINE_WAIT_FUNC(wait, smc_llc_rkey_response_wake_function);
- 	struct smc_link_group *lgr = send_link->lgr;
--	struct smc_llc_qentry *qentry = NULL;
--	int rc = 0;
-+	long timeout = SMC_LLC_WAIT_TIME;
-+	struct smc_wr_tx_pend_priv *priv;
-+	struct smc_llc_qentry qentry;
-+	struct smc_wr_tx_pend *pend;
-+	int rc = 0, flags;
- 
--	rc = smc_llc_send_confirm_rkey(send_link, rmb_desc);
-+	if (!smc_wr_tx_link_hold(send_link))
-+		return -ENOLINK;
-+
-+	rc = smc_llc_build_confirm_rkey_request(send_link, rmb_desc, &priv);
- 	if (rc)
- 		goto out;
--	/* receive CONFIRM RKEY response from server over RoCE fabric */
--	qentry = smc_llc_wait(lgr, send_link, SMC_LLC_WAIT_TIME,
--			      SMC_LLC_CONFIRM_RKEY);
--	if (!qentry || (qentry->msg.raw.hdr.flags & SMC_LLC_FLAG_RKEY_NEG))
-+
-+	pend = container_of(priv, struct smc_wr_tx_pend, priv);
-+	/* make a copy of send msg */
-+	memcpy(&qentry.msg.confirm_rkey, send_link->wr_tx_bufs[pend->idx].raw,
-+	       sizeof(qentry.msg.confirm_rkey));
-+
-+	qentry.private = wait.private;
-+	wait.private = &qentry;
-+
-+	add_wait_queue(&lgr->llc_msg_waiter, &wait);
-+
-+	/* send llc message */
-+	rc = smc_wr_tx_send(send_link, priv);
-+	smc_wr_tx_link_put(send_link);
-+	if (rc) {
-+		remove_wait_queue(&lgr->llc_msg_waiter, &wait);
-+		goto out;
-+	}
-+
-+	while (!signal_pending(current) && timeout) {
-+		timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
-+		if (qentry.msg.raw.hdr.flags & SMC_LLC_FLAG_RESP)
++		if (!SMC_IS_NONE_FLOW(lgr->llc_flow_lcl.type))
 +			break;
++		if (!SMC_IS_NONE_FLOW(lgr->llc_flow_rmt.type))
++			break;
++		/* accepted */
++		accept = true;
++		break;
 +	}
-+
-+	remove_wait_queue(&lgr->llc_msg_waiter, &wait);
-+	flags = qentry.msg.raw.hdr.flags;
-+
-+	if (!(flags & SMC_LLC_FLAG_RESP) || flags & SMC_LLC_FLAG_RKEY_NEG)
- 		rc = -EFAULT;
- out:
--	if (qentry)
--		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
- 	return rc;
++	if (accept) {
++		if (SMC_IS_NONE_FLOW(lgr->llc_flow_lcl.type)) {
++			lgr->llc_flow_lcl.type = type;
++			refcount_set(&lgr->llc_flow_lcl.parallel_refcnt, 1);
++		} else {
++			refcount_inc(&lgr->llc_flow_lcl.parallel_refcnt);
++		}
+ 		spin_unlock_bh(&lgr->llc_flow_lock);
+ 		return 0;
+ 	}
+@@ -322,6 +361,10 @@ int smc_llc_flow_initiate(struct smc_link_group *lgr,
+ void smc_llc_flow_stop(struct smc_link_group *lgr, struct smc_llc_flow *flow)
+ {
+ 	spin_lock_bh(&lgr->llc_flow_lock);
++	if (!refcount_dec_and_test(&flow->parallel_refcnt)) {
++		spin_unlock_bh(&lgr->llc_flow_lock);
++		return;
++	}
+ 	memset(flow, 0, sizeof(*flow));
+ 	flow->type = SMC_LLC_FLOW_NONE;
+ 	spin_unlock_bh(&lgr->llc_flow_lock);
+@@ -1729,16 +1772,14 @@ static void smc_llc_delete_link_work(struct work_struct *work)
  }
  
-@@ -2217,26 +2283,52 @@ int smc_llc_do_confirm_rkey(struct smc_link *send_link,
- int smc_llc_do_delete_rkey(struct smc_link_group *lgr,
- 			   struct smc_buf_desc *rmb_desc)
+ /* process a confirm_rkey request from peer, remote flow */
+-static void smc_llc_rmt_conf_rkey(struct smc_link_group *lgr)
++static void smc_llc_rmt_conf_rkey(struct smc_link_group *lgr, struct smc_llc_qentry *qentry)
  {
--	struct smc_llc_qentry *qentry = NULL;
-+	DEFINE_WAIT_FUNC(wait, smc_llc_rkey_response_wake_function);
-+	long timeout = SMC_LLC_WAIT_TIME;
-+	struct smc_wr_tx_pend_priv *priv;
-+	struct smc_llc_qentry qentry;
-+	struct smc_wr_tx_pend *pend;
- 	struct smc_link *send_link;
--	int rc = 0;
-+	int rc = 0, flags;
+ 	struct smc_llc_msg_confirm_rkey *llc;
+-	struct smc_llc_qentry *qentry;
+ 	struct smc_link *link;
+ 	int num_entries;
+ 	int rk_idx;
+ 	int i;
  
- 	send_link = smc_llc_usable_link(lgr);
--	if (!send_link)
-+	if (!send_link || !smc_wr_tx_link_hold(send_link))
- 		return -ENOLINK;
+-	qentry = lgr->llc_flow_rmt.qentry;
+ 	llc = &qentry->msg.confirm_rkey;
+ 	link = qentry->link;
  
--	/* protected by llc_flow control */
--	rc = smc_llc_send_delete_rkey(send_link, rmb_desc);
-+	rc = smc_llc_build_delete_rkey_request(send_link, rmb_desc, &priv);
- 	if (rc)
- 		goto out;
--	/* receive DELETE RKEY response from server over RoCE fabric */
--	qentry = smc_llc_wait(lgr, send_link, SMC_LLC_WAIT_TIME,
--			      SMC_LLC_DELETE_RKEY);
--	if (!qentry || (qentry->msg.raw.hdr.flags & SMC_LLC_FLAG_RKEY_NEG))
-+
-+	pend = container_of(priv, struct smc_wr_tx_pend, priv);
-+	/* make a copy of send msg */
-+	memcpy(&qentry.msg.delete_link, send_link->wr_tx_bufs[pend->idx].raw,
-+	       sizeof(qentry.msg.delete_link));
-+
-+	qentry.private = wait.private;
-+	wait.private = &qentry;
-+
-+	add_wait_queue(&lgr->llc_msg_waiter, &wait);
-+
-+	/* send llc message */
-+	rc = smc_wr_tx_send(send_link, priv);
-+	smc_wr_tx_link_put(send_link);
-+	if (rc) {
-+		remove_wait_queue(&lgr->llc_msg_waiter, &wait);
-+		goto out;
-+	}
-+
-+	while (!signal_pending(current) && timeout) {
-+		timeout = wait_woken(&wait, TASK_INTERRUPTIBLE, timeout);
-+		if (qentry.msg.raw.hdr.flags & SMC_LLC_FLAG_RESP)
-+			break;
-+	}
-+
-+	remove_wait_queue(&lgr->llc_msg_waiter, &wait);
-+	flags = qentry.msg.raw.hdr.flags;
-+
-+	if (!(flags & SMC_LLC_FLAG_RESP) || flags & SMC_LLC_FLAG_RKEY_NEG)
- 		rc = -EFAULT;
- out:
--	if (qentry)
--		smc_llc_flow_qentry_del(&lgr->llc_flow_lcl);
- 	return rc;
+@@ -1765,19 +1806,16 @@ static void smc_llc_rmt_conf_rkey(struct smc_link_group *lgr)
+ 	llc->hd.flags |= SMC_LLC_FLAG_RESP;
+ 	smc_llc_init_msg_hdr(&llc->hd, link->lgr, sizeof(*llc));
+ 	smc_llc_send_message(link, &qentry->msg);
+-	smc_llc_flow_qentry_del(&lgr->llc_flow_rmt);
  }
  
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index 26f8f24..52af94f 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -37,16 +37,6 @@
- static DEFINE_HASHTABLE(smc_wr_rx_hash, SMC_WR_RX_HASH_BITS);
- static DEFINE_SPINLOCK(smc_wr_rx_hash_lock);
+ /* process a delete_rkey request from peer, remote flow */
+-static void smc_llc_rmt_delete_rkey(struct smc_link_group *lgr)
++static void smc_llc_rmt_delete_rkey(struct smc_link_group *lgr, struct smc_llc_qentry *qentry)
+ {
+ 	struct smc_llc_msg_delete_rkey *llc;
+-	struct smc_llc_qentry *qentry;
+ 	struct smc_link *link;
+ 	u8 err_mask = 0;
+ 	int i, max;
  
--struct smc_wr_tx_pend {	/* control data for a pending send request */
--	u64			wr_id;		/* work request id sent */
--	smc_wr_tx_handler	handler;
--	enum ib_wc_status	wc_status;	/* CQE status */
--	struct smc_link		*link;
--	u32			idx;
--	struct smc_wr_tx_pend_priv priv;
--	u8			compl_requested;
--};
--
- /******************************** send queue *********************************/
+-	qentry = lgr->llc_flow_rmt.qentry;
+ 	llc = &qentry->msg.delete_rkey;
+ 	link = qentry->link;
  
- /*------------------------------- completion --------------------------------*/
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index a54e90a..9946ed5 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -46,6 +46,16 @@ struct smc_wr_rx_handler {
- 	u8			type;
- };
+@@ -1815,7 +1853,6 @@ static void smc_llc_rmt_delete_rkey(struct smc_link_group *lgr)
+ finish:
+ 	llc->hd.flags |= SMC_LLC_FLAG_RESP;
+ 	smc_llc_send_message(link, &qentry->msg);
+-	smc_llc_flow_qentry_del(&lgr->llc_flow_rmt);
+ }
  
-+struct smc_wr_tx_pend {	/* control data for a pending send request */
-+	u64			wr_id;		/* work request id sent */
-+	smc_wr_tx_handler	handler;
-+	enum ib_wc_status	wc_status;	/* CQE status */
-+	struct smc_link		*link;
-+	u32			idx;
-+	struct smc_wr_tx_pend_priv priv;
-+	u8			compl_requested;
-+};
+ static void smc_llc_protocol_violation(struct smc_link_group *lgr, u8 type)
+@@ -1916,7 +1953,7 @@ static void smc_llc_event_handler(struct smc_llc_qentry *qentry)
+ 		/* new request from remote, assign to remote flow */
+ 		if (smc_llc_flow_start(&lgr->llc_flow_rmt, qentry)) {
+ 			/* process here, does not wait for more llc msgs */
+-			smc_llc_rmt_conf_rkey(lgr);
++			smc_llc_rmt_conf_rkey(lgr, qentry);
+ 			smc_llc_flow_stop(lgr, &lgr->llc_flow_rmt);
+ 		}
+ 		return;
+@@ -1929,7 +1966,7 @@ static void smc_llc_event_handler(struct smc_llc_qentry *qentry)
+ 		/* new request from remote, assign to remote flow */
+ 		if (smc_llc_flow_start(&lgr->llc_flow_rmt, qentry)) {
+ 			/* process here, does not wait for more llc msgs */
+-			smc_llc_rmt_delete_rkey(lgr);
++			smc_llc_rmt_delete_rkey(lgr, qentry);
+ 			smc_llc_flow_stop(lgr, &lgr->llc_flow_rmt);
+ 		}
+ 		return;
+diff --git a/net/smc/smc_llc.h b/net/smc/smc_llc.h
+index 4404e52..005a81e 100644
+--- a/net/smc/smc_llc.h
++++ b/net/smc/smc_llc.h
+@@ -48,6 +48,12 @@ enum smc_llc_msg_type {
+ #define smc_link_downing(state) \
+ 	(cmpxchg(state, SMC_LNK_ACTIVE, SMC_LNK_INACTIVE) == SMC_LNK_ACTIVE)
+ 
++#define SMC_IS_NONE_FLOW(type)		\
++	((type) == SMC_LLC_FLOW_NONE)
 +
- /* Only used by RDMA write WRs.
-  * All other WRs (CDC/LLC) use smc_wr_tx_send handling WR_ID implicitly
-  */
++#define SMC_IS_PARALLEL_FLOW(type)	\
++	(((type) == SMC_LLC_FLOW_RKEY) || SMC_IS_NONE_FLOW(type))
++
+ /* LLC DELETE LINK Request Reason Codes */
+ #define SMC_LLC_DEL_LOST_PATH		0x00010000
+ #define SMC_LLC_DEL_OP_INIT_TERM	0x00020000
 -- 
 1.8.3.1
 
