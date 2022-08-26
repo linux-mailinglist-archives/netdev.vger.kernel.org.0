@@ -2,135 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD50A5A1F17
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:46:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE1A65A1F20
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244243AbiHZCqJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 25 Aug 2022 22:46:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59016 "EHLO
+        id S244891AbiHZCwy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 22:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235939AbiHZCqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:46:07 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C925F51A3B;
-        Thu, 25 Aug 2022 19:46:05 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27Q2iQoN5005022, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27Q2iQoN5005022
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 26 Aug 2022 10:44:26 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Fri, 26 Aug 2022 10:44:41 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Fri, 26 Aug 2022 10:44:40 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
- RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
- 15.01.2375.007; Fri, 26 Aug 2022 10:44:40 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        Bernie Huang <phhuang@realtek.com>
-Subject: RE: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
-Thread-Topic: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on
- error path in rtw_core_init()
-Thread-Index: AQHYuPPXTVNverb67E6eoXZA/kccLq3AeYDg
-Date:   Fri, 26 Aug 2022 02:44:40 +0000
-Message-ID: <3388603e9a874c2d893b5fff8949390e@realtek.com>
-References: <20220826023817.3908255-1-yangyingliang@huawei.com>
-In-Reply-To: <20220826023817.3908255-1-yangyingliang@huawei.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/25_=3F=3F_11:50:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S229536AbiHZCwx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:52:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAB0CCE3D
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 19:52:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22E7961E53
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 350C3C433D6;
+        Fri, 26 Aug 2022 02:52:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661482371;
+        bh=khs+TMotWIGHy+LjhFrP8SRc5mMLv5fL6JTBsChQvJQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XQkeYjVad24PGWWTWl4NFu2HNN73I8K05lEgw0f7j6qCiRtrDhxmSC+dIF8UFsD72
+         0PTHUAg9MEG3vQbAnk22DnW90BmuIeOB8HzWIQoagqCdDIL2TV3I2aBybVxh1tYmOW
+         5yd4g9yYXg/AvKUnjsfpdmyINkSwmqPXcfct6LxmZW/Z6hGPcnMLOlCSmVszbk3B95
+         BzBrfq615o1yj7ItjtSweG9kYMb+xW1lL2yOhlh7b/SjFGFOSDj9+zg6RJdpSk2/mm
+         dxseT/B8PfG/Jw5blEUutPTRdO+yMWkzP6E8Qu9lfHafcPq6XCEis6IwNFR5MTYE0T
+         QyS+avNnhdUjg==
+Date:   Thu, 25 Aug 2022 19:52:50 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v1 2/3] dsa: mv88e6xxx: Add support for RMU in
+ select switches
+Message-ID: <20220825195250.1f9dbd42@kernel.org>
+In-Reply-To: <20220825092629.236131-3-mattias.forsblad@gmail.com>
+References: <20220825092629.236131-1-mattias.forsblad@gmail.com>
+        <20220825092629.236131-3-mattias.forsblad@gmail.com>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 25 Aug 2022 11:26:28 +0200 Mattias Forsblad wrote:
+> Implement support for handling RMU layer 3 frames
+> including receive and transmit.
 
-> -----Original Message-----
-> From: Yang Yingliang <yangyingliang@huawei.com>
-> Sent: Friday, August 26, 2022 10:38 AM
-> To: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; linux-wireless@vger.kernel.org
-> Cc: tony0620emma@gmail.com; kvalo@kernel.org; Bernie Huang <phhuang@realtek.com>
-> Subject: [PATCH -next v2] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
-> 
-> Add the missing destroy_workqueue() before return from rtw_core_init()
-> in error path.
-> 
-> Fixes: fe101716c7c9 ("rtw88: replace tx tasklet with work queue")
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+clang says:
 
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
-
-Thanks
-
-> ---
-> v2:
->   Change labe name to 'out'.
-> ---
->  drivers/net/wireless/realtek/rtw88/main.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-> index 790dcfed1125..475ce0e3071c 100644
-> --- a/drivers/net/wireless/realtek/rtw88/main.c
-> +++ b/drivers/net/wireless/realtek/rtw88/main.c
-> @@ -2094,7 +2094,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
->  	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
->  	if (ret) {
->  		rtw_warn(rtwdev, "no firmware loaded\n");
-> -		return ret;
-> +		goto out;
->  	}
-> 
->  	if (chip->wow_fw_name) {
-> @@ -2104,11 +2104,15 @@ int rtw_core_init(struct rtw_dev *rtwdev)
->  			wait_for_completion(&rtwdev->fw.completion);
->  			if (rtwdev->fw.firmware)
->  				release_firmware(rtwdev->fw.firmware);
-> -			return ret;
-> +			goto out;
->  		}
->  	}
-> 
->  	return 0;
-> +
-> +out:
-> +	destroy_workqueue(rtwdev->tx_wq);
-> +	return ret;
->  }
->  EXPORT_SYMBOL(rtw_core_init);
-> 
-> --
-> 2.25.1
-> 
-> 
-> ------Please consider the environment before printing this e-mail.
+drivers/net/dsa/mv88e6xxx/rmu.c:127:17: warning: variable 'ethhdr' set but not used [-Wunused-but-set-variable]
++        unsigned char *ethhdr;
++                       ^
