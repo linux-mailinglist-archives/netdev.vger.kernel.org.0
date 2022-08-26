@@ -2,57 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD03A5A2608
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 12:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DDB45A261C
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 12:50:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343841AbiHZKny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 06:43:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
+        id S1343922AbiHZKuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 06:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343763AbiHZKnx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 06:43:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C02D83CE
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 03:43:51 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRWoI-0001QT-PI; Fri, 26 Aug 2022 12:43:34 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oRWoH-0005gY-2G; Fri, 26 Aug 2022 12:43:33 +0200
-Date:   Fri, 26 Aug 2022 12:43:33 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Divya.Koppera@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, davem@davemloft.net, edumazet@google.com,
-        hkallweit1@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        netdev@vger.kernel.org, pabeni@redhat.com
-Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
- lan8814 phy
-Message-ID: <20220826104333.GF2116@pengutronix.de>
-References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
- <20220826084249.1031557-1-michael@walle.cc>
- <CO1PR11MB477162C762EF35B0E115B952E2759@CO1PR11MB4771.namprd11.prod.outlook.com>
- <421712ea840fbe5edffcae4a6cb08150@walle.cc>
- <20220826095429.GE2116@pengutronix.de>
+        with ESMTP id S1343923AbiHZKuS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 06:50:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0248413E13
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 03:50:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 458B0617F1
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 10:50:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A774BC433D7;
+        Fri, 26 Aug 2022 10:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661511015;
+        bh=mjDJOlr25Mw2Vumai+ya3y3Faw4UekwoVcXtjooQgpo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=JcSq6OqZJuOz7wXpGYpySGVtnB5zNHX9RGcTbtKdpao1k4OZanQzMQTgB2qL2hSt+
+         v4QRNKogB82Cayestjqi/M8favgmDXaN4vm91Oes0aO3egniRPuEnBObVCt/dAXQHw
+         Mebt1GlExYeL1uLMsjuky3dGLD87PQMiqUOVXcSoJRqCvJSjjm6Tzv2d2KhHSj5zOH
+         ggQ+7Mz9FfW+ebVz3A7HFphJpmCzs/ULk/JLJHULlKciW/yMuSimzcHqmLGkGxD66j
+         kHK97QK0a/Dktp+L/oy+ECqgWZSamEi+1YojSSl/jYb7uiSa4GGgpeY/DHYxvG6Qa4
+         zS4h9tXaTLWNA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8B806C0C3EC;
+        Fri, 26 Aug 2022 10:50:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220826095429.GE2116@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/5][pull request] Intel Wired LAN Driver Updates
+ 2022-08-24 (ice)
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166151101556.7212.10845119839320704605.git-patchwork-notify@kernel.org>
+Date:   Fri, 26 Aug 2022 10:50:15 +0000
+References: <20220824170340.207131-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220824170340.207131-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,111 +57,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 11:54:29AM +0200, Oleksij Rempel wrote:
-> Hi,
-> 
-> On Fri, Aug 26, 2022 at 11:26:12AM +0200, Michael Walle wrote:
-> > [+ Oleksij Rempel]
-> > 
-> > Hi,
-> > 
-> > Am 2022-08-26 11:11, schrieb Divya.Koppera@microchip.com:
-> > > > > Supports SQI(Signal Quality Index) for lan8814 phy, where it has SQI
-> > > > > index of 0-7 values and this indicator can be used for cable integrity
-> > > > > diagnostic and investigating other noise sources.
-> > > > >
-> > > > > Signed-off-by: Divya Koppera <Divya.Koppera@microchip.com>
-> > 
-> > ..
-> > 
-> > > > > +#define LAN8814_DCQ_CTRL_CHANNEL_MASK                        GENMASK(1,
-> > > > 0)
-> > > > > +#define LAN8814_DCQ_SQI                                      0xe4
-> > > > > +#define LAN8814_DCQ_SQI_MAX                          7
-> > > > > +#define LAN8814_DCQ_SQI_VAL_MASK                     GENMASK(3, 1)
-> > > > > +
-> > > > >  static int lanphy_read_page_reg(struct phy_device *phydev, int page,
-> > > > > u32 addr)  {
-> > > > >       int data;
-> > > > > @@ -2927,6 +2934,32 @@ static int lan8814_probe(struct phy_device
-> > > > *phydev)
-> > > > >       return 0;
-> > > > >  }
-> > > > >
-> > > > > +static int lan8814_get_sqi(struct phy_device *phydev) {
-> > > > > +     int rc, val;
-> > > > > +
-> > > > > +     val = lanphy_read_page_reg(phydev, 1, LAN8814_DCQ_CTRL);
-> > > > > +     if (val < 0)
-> > > > > +             return val;
-> > > > > +
-> > > > > +     val &= ~LAN8814_DCQ_CTRL_CHANNEL_MASK;
-> > > > 
-> > > > I do have a datasheet for this PHY, but it doesn't mention 0xe6 on
-> > > > EP1.
-> > > 
-> > > This register values are present in GPHY hard macro as below
-> > > 
-> > > 4.2.225	DCQ Control Register
-> > > Index (In Decimal):	EP 1.230	Size:	16 bits
-> > > 
-> > > Can you give me the name of the datasheet which you are following, so
-> > > that I'll check and let you know the reason.
-> > 
-> > I have the AN4286/DS00004286A ("LAN8804/LAN8814 GPHY Register
-> > Definitions"). Maybe there is a newer version of it.
-> > 
-> > > 
-> > > > So I can only guess that this "channel mask" is for the 4 rx/tx
-> > > > pairs on GbE?
-> > > 
-> > > Yes channel mask is for wire pair.
-> > > 
-> > > > And you only seem to evaluate one of them. Is that the correct thing
-> > > > to do
-> > > > here?
-> > > > 
-> > > 
-> > > I found in below link is that, get_SQI returns sqi value for 100 base-t1
-> > > phy's
-> > > https://lore.kernel.org/netdev/20200519075200.24631-2-o.rempel@pengutronix.de/T/
-> > 
-> > That one is for the 100base-t1 which has only one pair.
-> > 
-> > > In lan8814 phy only channel 0 is used for 100base-tx. So returning SQI
-> > > value for channel 0.
-> > 
-> > What if the other pairs are bad? Maybe Oleksij has an opinion here.
-> > 
-> > Also 100baseTX (and 10baseT) has two pairs, one for transmitting and one
-> > for receiving. I guess you meassure the SQI on the receiving side. So is
-> > channel 0 correct here?
-> > 
-> > Again this is the first time I hear about SQI but it puzzles me that
-> > it only evaluate one pair in this case. So as a user who reads this
-> > SQI might be misleaded.
-> 
-> Wow! I was so possessed with one-pair networks, that forgot to image
-> that there is 1000Base-T with more then one pairs :D
-> 
-> Yes, your are right. We wont to have readings from all RX channels and
-> be able to export them to the user space. In fact, if i see it
-> correctly, the LAN8814_DCQ_CTRL_CHANNEL_MASK value should be synced with
-> the MDI-X state. Otherwise we will be reading TX channels.
+Hello:
 
-Just an idea not really related to this patch. It will be coll to be
-able to generate diagnostic graphs like this:
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-Interface | pairs | data      | power | SQI | cable | selft
-                  | direction |       |     | test  | test
-eth0                                                  ok
-            0     | RX        | NC    | 7/7 | ok    |
-	    1     | TX        | NC    | NA  | ok    |
-	    2     | NC        | + 10W | NA  | ok    |
-	    3     | NC        | -     | NA  | ok    |
+On Wed, 24 Aug 2022 10:03:35 -0700 you wrote:
+> This series contains updates to ice driver only.
+> 
+> Marcin adds support for TC parsing on TTL and ToS fields.
+> 
+> Anatolli adds support for devlink port split command to allow
+> configuration of various port configurations.
+> 
+> [...]
 
+Here is the summary with links:
+  - [net-next,1/5] ice: Add support for ip TTL & ToS offload
+    https://git.kernel.org/netdev/net-next/c/4c99bc96e050
+  - [net-next,2/5] ice: Add port option admin queue commands
+    https://git.kernel.org/netdev/net-next/c/781f15eac0d2
+  - [net-next,3/5] ice: Add additional flags to ice_nvm_write_activate
+    https://git.kernel.org/netdev/net-next/c/da02ee9c220b
+  - [net-next,4/5] ice: Implement devlink port split operations
+    https://git.kernel.org/netdev/net-next/c/26d1c571e16a
+  - [net-next,5/5] ice: Print human-friendly PHY types
+    https://git.kernel.org/netdev/net-next/c/f8c74ca6d31c
+
+You are awesome, thank you!
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
