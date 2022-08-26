@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB2375A28E5
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 15:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72ED15A2932
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 16:18:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344412AbiHZNzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 09:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57788 "EHLO
+        id S238219AbiHZORk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 10:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344389AbiHZNzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 09:55:13 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CA2F4AD55;
-        Fri, 26 Aug 2022 06:55:08 -0700 (PDT)
+        with ESMTP id S230388AbiHZORj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 10:17:39 -0400
+X-Greylist: delayed 92614 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 26 Aug 2022 07:17:37 PDT
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF579C206;
+        Fri, 26 Aug 2022 07:17:37 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id DF9AF240009;
-        Fri, 26 Aug 2022 13:55:04 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id AC2BD60005;
+        Fri, 26 Aug 2022 14:17:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661522106;
+        t=1661523456;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=f0n7NDlZ2x9VzdQiJVmYZllt4f0/gdngUBcBYKLIb78=;
-        b=N1lWP89KO4Wy/SS5jPW0Q62BS1zHctafmqh5matVeboaDAVEmVQPCreJWUIqD07qax0c7i
-        BtiCq5loF74KAFQJVdfsqvk/lP805ksWNA7uNTcrYdPGJyR1BFoSqKmtFv/8iB1XngxnK7
-        8KJUKJ/ZB+/h+AAPf/Vyxt5St9BjWWUf4StfpFjNDIjLWoOy5c8R40fnaGoOd+jAkRosBh
-        k4Lc2NjZq5Z1Gy3/QtGPnOdza4/oDNyI7bjptLNgCecGFD4ku+rvjrBM+265LwesXlRg4m
-        Bk0BNeaPmKVH9P+HECcZTjdHQJrvuzrHieVMOPkJuD9CugHzlopNPp0+gk5SJQ==
+         content-transfer-encoding:content-transfer-encoding;
+        bh=EBGcmPPjqpaDTKplW8ZCyDWmnpPadRiKMDQ8Yx3Y624=;
+        b=I+1WcXCD02Og/9KlbaCI7e0UycUKzVan9FO6q6YhhiryYyZQbNbtWV40yBXo6I74lmZPFk
+        znY2lDnSwHcLlAukMAc0VqlpfcFlPZyz8bwZMRZabuTFq+re9lEIzgHxEBx9v6cIYnt3NB
+        nVNn5jaXAj9D6zHy/7/IPmJbuTIX6iNqQDhsUEKoJU6sX9z9kTBd8whv8BKlBextLIDxAB
+        KtZztr5OAO3WYl2JweNqfPaKZgSS3HNx+JGIY4H0sGZpqpkLkTEIXwW0rPkDHqWsEi5PG0
+        K4yPR1H4tUPPHPQs/vGxXwudS6tTh0a6MRlNkDn5EdCDlPke/n/Vw0tURFX0NQ==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+To:     davem@davemloft.net
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
         Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH net-next 5/5] dt-bindings: net: altera: tse: add an optional pcs register range
-Date:   Fri, 26 Aug 2022 15:54:51 +0200
-Message-Id: <20220826135451.526756-6-maxime.chevallier@bootlin.com>
+        UNGLinuxDriver@microchip.com, thomas.petazzoni@bootlin.com
+Subject: [PATCH net-next] phy: lan966x: add support for QUSGMII
+Date:   Fri, 26 Aug 2022 16:17:22 +0200
+Message-Id: <20220826141722.563352-1-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220826135451.526756-1-maxime.chevallier@bootlin.com>
-References: <20220826135451.526756-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -59,71 +55,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some implementations of the TSE have their PCS as an external bloc,
-exposed at its own register range. Document this, and add a new example
-showing a case using the pcs and the new phylink conversion to connect
-an sfp port to a TSE mac.
+Makes so that the serdes driver also takes QUSGMII in consideration.
+It's configured exactly as QSGMII as far as the serdes driver is
+concerned.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
- .../devicetree/bindings/net/altr,tse.yaml     | 28 +++++++++++++++++++
- 1 file changed, 28 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/altr,tse.yaml b/Documentation/devicetree/bindings/net/altr,tse.yaml
-index 24e081cd1aa9..921011fc93f9 100644
---- a/Documentation/devicetree/bindings/net/altr,tse.yaml
-+++ b/Documentation/devicetree/bindings/net/altr,tse.yaml
-@@ -40,8 +40,10 @@ allOf:
-       properties:
-         reg:
-           minItems: 6
-+          maxItems: 7
-         reg-names:
-           minItems: 6
-+          maxItems: 7
-           items:
-             - const: control_port
-             - const: rx_csr
-@@ -49,6 +51,7 @@ allOf:
-             - const: rx_resp
-             - const: tx_csr
-             - const: tx_desc
-+            - const: pcs
+Dear netdev and Generic PHY maintainers,
+
+This patch should go through the net-next tree instead of the generic
+PHY tree, as it has a dependency on :
+
+5e61fe157a27 "net: phy: Introduce QUSGMII PHY mode"
+
+This commits only lives in the net-next tree as of today.
+
+Given the simplicity of this patch, would that be OK for you ?
+
+Thanks,
+
+Maxime
+
+ drivers/phy/microchip/lan966x_serdes.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/phy/microchip/lan966x_serdes.c b/drivers/phy/microchip/lan966x_serdes.c
+index e86a879b92b5..d1a50fa81130 100644
+--- a/drivers/phy/microchip/lan966x_serdes.c
++++ b/drivers/phy/microchip/lan966x_serdes.c
+@@ -401,6 +401,9 @@ static int serdes_set_mode(struct phy *phy, enum phy_mode mode, int submode)
+ 	    submode == PHY_INTERFACE_MODE_2500BASEX)
+ 		submode = PHY_INTERFACE_MODE_SGMII;
  
- properties:
-   compatible:
-@@ -99,6 +102,31 @@ required:
- unevaluatedProperties: false
- 
- examples:
-+  - |
-+    tse_sub_0: ethernet@c0100000 {
-+        compatible = "altr,tse-msgdma-1.0";
-+        reg = <0xc0100000 0x00000400>,
-+              <0xc0101000 0x00000020>,
-+              <0xc0102000 0x00000020>,
-+              <0xc0103000 0x00000008>,
-+              <0xc0104000 0x00000020>,
-+              <0xc0105000 0x00000020>,
-+              <0xc0106000 0x00000100>;
-+        reg-names = "control_port", "rx_csr", "rx_desc", "rx_resp", "tx_csr", "tx_desc", "pcs";
-+        interrupt-parent = <&intc>;
-+        interrupts = <0 44 4>,<0 45 4>;
-+        interrupt-names = "rx_irq","tx_irq";
-+        rx-fifo-depth = <2048>;
-+        tx-fifo-depth = <2048>;
-+        address-bits = <48>;
-+        max-frame-size = <1500>;
-+        local-mac-address = [ 00 0C ED 00 00 02 ];
-+        altr,has-supplementary-unicast;
-+        altr,has-hash-multicast-filter;
-+        sfp = <&sfp0>;
-+        phy-mode = "sgmii";
-+        managed = "in-band-status";
-+    };
-   - |
-     tse_sub_1_eth_tse_0: ethernet@1,00001000 {
-         compatible = "altr,tse-msgdma-1.0";
++	if (submode == PHY_INTERFACE_MODE_QUSGMII)
++		submode = PHY_INTERFACE_MODE_QSGMII;
++
+ 	for (i = 0; i < ARRAY_SIZE(lan966x_serdes_muxes); i++) {
+ 		if (macro->idx != lan966x_serdes_muxes[i].idx ||
+ 		    mode != lan966x_serdes_muxes[i].mode ||
 -- 
 2.37.2
 
