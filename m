@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A64D15A1E02
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A855A1E05
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:15:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244087AbiHZBNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 21:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57908 "EHLO
+        id S236115AbiHZBOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 21:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243910AbiHZBNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:13:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2738DC9910;
-        Thu, 25 Aug 2022 18:13:07 -0700 (PDT)
+        with ESMTP id S244166AbiHZBOw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:14:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B1794DB52
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 18:14:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B57CA61DC7;
-        Fri, 26 Aug 2022 01:13:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9D26C433D6;
-        Fri, 26 Aug 2022 01:13:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E667B82F5B
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF10C433C1;
+        Fri, 26 Aug 2022 01:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661476386;
-        bh=KT6LYdhsQfzPbR/7RJY9r7RR6OFX1jQVpKayaiN69Lo=;
+        s=k20201202; t=1661476488;
+        bh=VfObAsnlaZ9IlMnKfJKaygNpef2m24IjFfbyedvcjac=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FqBdKPaiVs0tb0aRViWXXdAu5K9ReqLmNJnAjyBw9dHq2b51+AKsSRFU63FjlP3zg
-         yIao3dIvQ5ZRNTJPIVBsXylJIPYbr6Ter2DN/VvyFg314DBGR4oVAj7hOoWjDYF76u
-         9igZVvg5IOU3ILJgxm7hCBwCXiK+UIpjzAQmugirFp/K13v3WwK7FEwMIcBWG2azMS
-         i/ZfLIwr1ERfSnma4FcT9qKdcxZWkaUfLVBMcINZeZ3k1GfGnayUPSNgoxS69HPakH
-         8x3AsUtH7sBKRls2UShJ9mPY16NEoJuSdEcKunWwTxuBL5bPr2FDyMTHWUmrBcFDo0
-         jnyU798ZJ8fKw==
-Date:   Thu, 25 Aug 2022 18:13:05 -0700
+        b=k8nCBT04PRExcRk1Di/0XRw/iujp/GriPbMhqjIbjEZHvjUfu//XIFxeKmkgWRRfs
+         c5O1cDlFis//YY1A7FQJ9dArDFwL7Tt0qCg8zl4ep3ELqLMpnMvJ9jAnnIS6XMvuCm
+         ZPXPLwTYuQ8XHBzc4qO3udEOzkvEKwTZ9qB3OrF7pSPlB0AC9/Nq9am0hiE5A9SHaL
+         HE+wJowL9t+ki1SB8aB3imrG2wu9dZ4zKSM7E8L1gODxr609+IY6eqS9LUWx4tJeRD
+         /Ntr30dSbMnxbaWj3qZrg9fS9tIrBowcMP+P9vCD495nIqTreiwbslkjf2//0fUu19
+         DC4DT8UI11wyA==
+Date:   Thu, 25 Aug 2022 18:14:46 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <pabeni@redhat.com>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <vladbu@mellanox.com>, <weiyongjun1@huawei.com>,
-        <yuehaibing@huawei.com>
-Subject: Re: [PATCH net-next] net: sched: tbf: don't call qdisc_put() while
- holding tree lock
-Message-ID: <20220825181305.773c9e64@kernel.org>
-In-Reply-To: <20220826011248.323922-1-shaozhengchao@huawei.com>
-References: <20220826011248.323922-1-shaozhengchao@huawei.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        edumazet@google.com
+Subject: Re: [patch net-next] net: devlink: add RNLT lock assertion to
+ devlink_compat_switch_id_get()
+Message-ID: <20220825181446.6d84048b@kernel.org>
+In-Reply-To: <20220825112923.1359194-1-jiri@resnulli.us>
+References: <20220825112923.1359194-1-jiri@resnulli.us>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,14 +54,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 26 Aug 2022 09:12:48 +0800 Zhengchao Shao wrote:
-> The issue is the same to commit c2999f7fb05b ("net: sched: multiq: don't
-> call qdisc_put() while holding tree lock"). Qdiscs call qdisc_put() while
-> holding sch tree spinlock, which results sleeping-while-atomic BUG.
+On Thu, 25 Aug 2022 13:29:23 +0200 Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
 > 
-> Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> Similar to devlink_compat_phys_port_name_get(), make sure that
+> devlink_compat_switch_id_get() is called with RTNL lock held. Comment
+> already says so, so put this in code as well.
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 
-If it's a bug fix for a commit already in Linus's main tree it should
-come with [PATCH net] in the subject (i.e. without the -next).
-Please repost.
+Reviewed-by: Jakub Kicinski <kuba@kernel.org>
