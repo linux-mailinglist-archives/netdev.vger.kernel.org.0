@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8100A5A29B4
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 16:41:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D055A29BE
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 16:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344480AbiHZOlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 10:41:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S1344424AbiHZOlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 10:41:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344510AbiHZOlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 10:41:04 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7C2B2D85;
-        Fri, 26 Aug 2022 07:41:01 -0700 (PDT)
+        with ESMTP id S1344507AbiHZOlG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 10:41:06 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0784DD34EF;
+        Fri, 26 Aug 2022 07:41:04 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 98DF81BF208;
-        Fri, 26 Aug 2022 14:40:58 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 133ED1BF20F;
+        Fri, 26 Aug 2022 14:41:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661524860;
+        t=1661524863;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=a9IYMuDIyxj+HLkgz7Y6Y6sR1gMiuEZfqG+jyTP97zw=;
-        b=Y8WCw1KNvwhVvLgVRZjtpgUCVwfCwTMQkofzkAIgT2za+K0E5EirGA7Tuic/KShBF+V73j
-        Q6+p60TdklKxuOmQm0ZMMHFpENsvOO44F+Bb3q1TOPvIn9AIFoQcU5aeUCE3+J5+N977EP
-        leSB6NBoAE4ngs/ElCxvkPi8NuvkkoVUuvWOxqZgy6xYJ201hKk3Y1zP/IbRlk88QBqEo7
-        RNbiAg20In7FJYqjdQhWwYRsxN56muz6LKU9kuabCVXFuwFOoJ3d1AkElLLBoPve6qSQI/
-        JBoox4DZiJKtGiFs9SnderUA4B1+wcS4Wjy1ebKyEH6tk6VWaPWPKdV6HHzVvg==
+        bh=YcBfJGWfJBPwMcIKjGk6npj52Nug+5Ik8yfWqck5EIc=;
+        b=iSFvW1PL+TKJxDbpF71Crv/lqWrRpd3twVsgTGCGdJg02MWPhK1oUZcnER2hYEPlfIFewj
+        xVp3nAz7FFWRjDezIhVjCNpe9u90XRSUR1xHc5L6X+ayhDgfh0v1/R52rEqlrUOzPk+UyI
+        H76wOlf1x3idTl1itRkNlXEiLacg6ldXzPBVrvjAoN9ntV40nIjWXSj70tXvprDAHyvCyK
+        F3yfauBHIPMB+7R0qDdZmhMd03o+6kew3EA+CkmFdgcsQj9Uif9txjj6a1yIbgfWI180R+
+        BphEGQbYppcS3XOg9g5FGCKHZpbfmqEZArFN9JrGqltgEgFwCf1+1ICYRp3c4w==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 03/11] net: mac802154: Allow the creation of coordinator interfaces
-Date:   Fri, 26 Aug 2022 16:40:41 +0200
-Message-Id: <20220826144049.256134-4-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 04/11] net: ieee802154: Advertize coordinators discovery
+Date:   Fri, 26 Aug 2022 16:40:42 +0200
+Message-Id: <20220826144049.256134-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220826144049.256134-1-miquel.raynal@bootlin.com>
 References: <20220826144049.256134-1-miquel.raynal@bootlin.com>
@@ -62,108 +62,289 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As a first strep in introducing proper PAN management and association,
-we need to be able to create coordinator interfaces which might act as
-coordinator or PAN coordinator.
+Let's introduce the basics for advertizing discovered PANs and
+coordinators, which is:
+- A new "scan" netlink message group.
+- A couple of netlink command/attribute.
+- The main netlink helper to send a netlink message with all the
+  necessary information to forward the main information to the user.
 
-Hence, let's add the minimum support to allow the creation of these
-interfaces. This support will be improved later, in particular regarding
-the filtering.
-
+Co-developed-by: David Girault <david.girault@qorvo.com>
+Signed-off-by: David Girault <david.girault@qorvo.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/iface.c | 14 ++++++++------
- net/mac802154/main.c  |  2 ++
- net/mac802154/rx.c    | 11 +++++++----
- 3 files changed, 17 insertions(+), 10 deletions(-)
+ include/net/cfg802154.h   |  20 +++++++
+ include/net/nl802154.h    |  44 ++++++++++++++
+ net/ieee802154/nl802154.c | 121 ++++++++++++++++++++++++++++++++++++++
+ net/ieee802154/nl802154.h |   6 ++
+ 4 files changed, 191 insertions(+)
 
-diff --git a/net/mac802154/iface.c b/net/mac802154/iface.c
-index 4bab2807acbe..8467a629e21f 100644
---- a/net/mac802154/iface.c
-+++ b/net/mac802154/iface.c
-@@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(struct ieee802154_sub_if_data *sdata,
- 		if (nsdata != sdata && ieee802154_sdata_running(nsdata)) {
- 			int ret;
+diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+index 2f29e95da47a..9d3daf4680b1 100644
+--- a/include/net/cfg802154.h
++++ b/include/net/cfg802154.h
+@@ -258,6 +258,26 @@ struct ieee802154_addr {
+ 	};
+ };
  
--			/* TODO currently we don't support multiple node types
--			 * we need to run skb_clone at rx path. Check if there
--			 * exist really an use case if we need to support
--			 * multiple node types at the same time.
-+			/* TODO currently we don't support multiple node/coord
-+			 * types we need to run skb_clone at rx path. Check if
-+			 * there exist really an use case if we need to support
-+			 * multiple node/coord types at the same time.
- 			 */
--			if (wpan_dev->iftype == NL802154_IFTYPE_NODE &&
--			    nsdata->wpan_dev.iftype == NL802154_IFTYPE_NODE)
-+			if (wpan_dev->iftype != NL802154_IFTYPE_MONITOR &&
-+			    nsdata->wpan_dev.iftype != NL802154_IFTYPE_MONITOR)
- 				return -EBUSY;
++/**
++ * struct ieee802154_coord_desc - Coordinator descriptor
++ * @coord: PAN ID and coordinator address
++ * @page: page this coordinator is using
++ * @channel: channel this coordinator is using
++ * @superframe_spec: SuperFrame specification as received
++ * @link_quality: link quality indicator at which the beacon was received
++ * @gts_permit: the coordinator accepts GTS requests
++ * @node: list item
++ */
++struct ieee802154_coord_desc {
++	struct ieee802154_addr *addr;
++	u8 page;
++	u8 channel;
++	u16 superframe_spec;
++	u8 link_quality;
++	bool gts_permit;
++	struct list_head node;
++};
++
+ struct ieee802154_llsec_key_id {
+ 	u8 mode;
+ 	u8 id;
+diff --git a/include/net/nl802154.h b/include/net/nl802154.h
+index 145acb8f2509..cfe462288695 100644
+--- a/include/net/nl802154.h
++++ b/include/net/nl802154.h
+@@ -58,6 +58,9 @@ enum nl802154_commands {
  
- 			/* check all phy mac sublayer settings are the same.
-@@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802154_sub_if_data *sdata,
- 	wpan_dev->short_addr = cpu_to_le16(IEEE802154_ADDR_BROADCAST);
+ 	NL802154_CMD_SET_WPAN_PHY_NETNS,
  
- 	switch (type) {
-+	case NL802154_IFTYPE_COORD:
- 	case NL802154_IFTYPE_NODE:
- 		ieee802154_be64_to_le64(&wpan_dev->extended_addr,
- 					sdata->dev->dev_addr);
-@@ -638,6 +639,7 @@ ieee802154_if_add(struct ieee802154_local *local, const char *name,
- 	ieee802154_le64_to_be64(ndev->perm_addr,
- 				&local->hw.phy->perm_extended_addr);
- 	switch (type) {
-+	case NL802154_IFTYPE_COORD:
- 	case NL802154_IFTYPE_NODE:
- 		ndev->type = ARPHRD_IEEE802154;
- 		if (ieee802154_is_valid_extended_unicast_addr(extended_addr)) {
-diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index 40fab08df24b..d03ecb747afc 100644
---- a/net/mac802154/main.c
-+++ b/net/mac802154/main.c
-@@ -219,6 +219,8 @@ int ieee802154_register_hw(struct ieee802154_hw *hw)
++	NL802154_CMD_NEW_COORDINATOR,
++	NL802154_CMD_KNOWN_COORDINATOR,
++
+ 	/* add new commands above here */
  
- 	if (hw->flags & IEEE802154_HW_PROMISCUOUS)
- 		local->phy->supported.iftypes |= BIT(NL802154_IFTYPE_MONITOR);
-+	else
-+		local->phy->supported.iftypes &= ~BIT(NL802154_IFTYPE_COORD);
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+@@ -133,6 +136,8 @@ enum nl802154_attrs {
+ 	NL802154_ATTR_PID,
+ 	NL802154_ATTR_NETNS_FD,
  
- 	rc = wpan_phy_register(local->phy);
- 	if (rc < 0)
-diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index 42ebbe45a4c5..ea5320411848 100644
---- a/net/mac802154/rx.c
-+++ b/net/mac802154/rx.c
-@@ -194,6 +194,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
- 	int ret;
- 	struct ieee802154_sub_if_data *sdata;
- 	struct ieee802154_hdr hdr;
-+	struct sk_buff *skb2;
++	NL802154_ATTR_COORDINATOR,
++
+ 	/* add attributes here, update the policy in nl802154.c */
  
- 	ret = ieee802154_parse_frame_start(skb, &hdr);
- 	if (ret) {
-@@ -203,15 +204,17 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
- 	}
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+@@ -218,6 +223,45 @@ enum nl802154_wpan_phy_capability_attr {
+ 	NL802154_CAP_ATTR_MAX = __NL802154_CAP_ATTR_AFTER_LAST - 1
+ };
  
- 	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
--		if (sdata->wpan_dev.iftype != NL802154_IFTYPE_NODE)
-+		if (sdata->wpan_dev.iftype == NL802154_IFTYPE_MONITOR)
- 			continue;
++/**
++ * enum nl802154_coord - Netlink attributes for a coord
++ *
++ * @__NL802154_COORD_INVALID: invalid
++ * @NL802154_COORD_PANID: PANID of the coordinator (2 bytes)
++ * @NL802154_COORD_ADDR: coordinator address, (8 bytes or 2 bytes)
++ * @NL802154_COORD_CHANNEL: channel number, related to @NL802154_COORD_PAGE (u8)
++ * @NL802154_COORD_PAGE: channel page, related to @NL802154_COORD_CHANNEL (u8)
++ * @NL802154_COORD_PREAMBLE_CODE: Preamble code used when the beacon was received,
++ *	this is PHY dependent and optional (u8)
++ * @NL802154_COORD_MEAN_PRF: Mean PRF used when the beacon was received,
++ *     this is PHY dependent and optional (u8)
++ * @NL802154_COORD_SUPERFRAME_SPEC: superframe specification of the PAN (u16)
++ * @NL802154_COORD_LINK_QUALITY: signal quality of beacon in unspecified units,
++ *	scaled to 0..255 (u8)
++ * @NL802154_COORD_GTS_PERMIT: set to true if GTS is permitted on this PAN
++ * @NL802154_COORD_PAYLOAD_DATA: binary data containing the raw data from the
++ *	frame payload, (only if beacon or probe response had data)
++ * @NL802154_COORD_PAD: attribute used for padding for 64-bit alignment
++ * @NL802154_COORD_MAX: highest coordinator attribute
++ */
++enum nl802154_coord {
++	__NL802154_COORD_INVALID,
++	NL802154_COORD_PANID,
++	NL802154_COORD_ADDR,
++	NL802154_COORD_CHANNEL,
++	NL802154_COORD_PAGE,
++	NL802154_COORD_PREAMBLE_CODE,
++	NL802154_COORD_MEAN_PRF,
++	NL802154_COORD_SUPERFRAME_SPEC,
++	NL802154_COORD_LINK_QUALITY,
++	NL802154_COORD_GTS_PERMIT,
++	NL802154_COORD_PAYLOAD_DATA,
++	NL802154_COORD_PAD,
++
++	/* keep last */
++	NL802154_COORD_MAX,
++};
++
+ /**
+  * enum nl802154_cca_modes - cca modes
+  *
+diff --git a/net/ieee802154/nl802154.c b/net/ieee802154/nl802154.c
+index e0b072aecf0f..f6fb7a228747 100644
+--- a/net/ieee802154/nl802154.c
++++ b/net/ieee802154/nl802154.c
+@@ -26,10 +26,12 @@ static struct genl_family nl802154_fam;
+ /* multicast groups */
+ enum nl802154_multicast_groups {
+ 	NL802154_MCGRP_CONFIG,
++	NL802154_MCGRP_SCAN,
+ };
  
- 		if (!ieee802154_sdata_running(sdata))
- 			continue;
+ static const struct genl_multicast_group nl802154_mcgrps[] = {
+ 	[NL802154_MCGRP_CONFIG] = { .name = "config", },
++	[NL802154_MCGRP_SCAN] = { .name = "scan", },
+ };
  
--		ieee802154_subif_frame(sdata, skb, &hdr);
--		skb = NULL;
--		break;
-+		skb2 = skb_clone(skb, GFP_ATOMIC);
-+		if (skb2) {
-+			skb2->dev = sdata->dev;
-+			ieee802154_subif_frame(sdata, skb2, &hdr);
-+		}
- 	}
+ /* returns ERR_PTR values */
+@@ -216,6 +218,9 @@ static const struct nla_policy nl802154_policy[NL802154_ATTR_MAX+1] = {
  
- 	kfree_skb(skb);
+ 	[NL802154_ATTR_PID] = { .type = NLA_U32 },
+ 	[NL802154_ATTR_NETNS_FD] = { .type = NLA_U32 },
++
++	[NL802154_ATTR_COORDINATOR] = { .type = NLA_NESTED },
++
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+ 	[NL802154_ATTR_SEC_ENABLED] = { .type = NLA_U8, },
+ 	[NL802154_ATTR_SEC_OUT_LEVEL] = { .type = NLA_U32, },
+@@ -1281,6 +1286,122 @@ static int nl802154_wpan_phy_netns(struct sk_buff *skb, struct genl_info *info)
+ 	return err;
+ }
+ 
++static int nl802154_prep_new_coord_msg(struct sk_buff *msg,
++				       struct cfg802154_registered_device *rdev,
++				       struct wpan_dev *wpan_dev,
++				       u32 portid, u32 seq, int flags, u8 cmd,
++				       struct ieee802154_coord_desc *desc)
++{
++	struct nlattr *nla;
++	void *hdr;
++
++	hdr = nl802154hdr_put(msg, portid, seq, flags, cmd);
++	if (!hdr)
++		return -ENOBUFS;
++
++	if (nla_put_u32(msg, NL802154_ATTR_WPAN_PHY, rdev->wpan_phy_idx))
++		goto nla_put_failure;
++
++	if (wpan_dev->netdev &&
++	    nla_put_u32(msg, NL802154_ATTR_IFINDEX, wpan_dev->netdev->ifindex))
++		goto nla_put_failure;
++
++	if (nla_put_u64_64bit(msg, NL802154_ATTR_WPAN_DEV,
++			      wpan_dev_id(wpan_dev), NL802154_ATTR_PAD))
++		goto nla_put_failure;
++
++	nla = nla_nest_start_noflag(msg, NL802154_ATTR_COORDINATOR);
++	if (!nla)
++		goto nla_put_failure;
++
++	if (nla_put(msg, NL802154_COORD_PANID, IEEE802154_PAN_ID_LEN,
++		    &desc->addr->pan_id))
++		goto nla_put_failure;
++
++	if (desc->addr->mode == IEEE802154_ADDR_SHORT) {
++		if (nla_put(msg, NL802154_COORD_ADDR,
++			    IEEE802154_SHORT_ADDR_LEN,
++			    &desc->addr->short_addr))
++			goto nla_put_failure;
++	} else {
++		if (nla_put(msg, NL802154_COORD_ADDR,
++			    IEEE802154_EXTENDED_ADDR_LEN,
++			    &desc->addr->extended_addr))
++			goto nla_put_failure;
++	}
++
++	if (nla_put_u8(msg, NL802154_COORD_CHANNEL, desc->channel))
++		goto nla_put_failure;
++
++	if (nla_put_u8(msg, NL802154_COORD_PAGE, desc->page))
++		goto nla_put_failure;
++
++	if (nla_put_u16(msg, NL802154_COORD_SUPERFRAME_SPEC,
++			desc->superframe_spec))
++		goto nla_put_failure;
++
++	if (nla_put_u8(msg, NL802154_COORD_LINK_QUALITY, desc->link_quality))
++		goto nla_put_failure;
++
++	if (desc->gts_permit && nla_put_flag(msg, NL802154_COORD_GTS_PERMIT))
++		goto nla_put_failure;
++
++	/* TODO: NL802154_COORD_PAYLOAD_DATA if any */
++
++	nla_nest_end(msg, nla);
++
++	genlmsg_end(msg, hdr);
++
++	return 0;
++
++ nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++
++	return -EMSGSIZE;
++}
++
++static int nl802154_advertise_coordinator(struct wpan_phy *wpan_phy,
++					  struct wpan_dev *wpan_dev, u8 cmd,
++					  struct ieee802154_coord_desc *desc)
++{
++	struct cfg802154_registered_device *rdev = wpan_phy_to_rdev(wpan_phy);
++	struct sk_buff *msg;
++	int ret;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_ATOMIC);
++	if (!msg)
++		return -ENOMEM;
++
++	ret = nl802154_prep_new_coord_msg(msg, rdev, wpan_dev, 0, 0, 0, cmd, desc);
++	if (ret < 0) {
++		nlmsg_free(msg);
++		return ret;
++	}
++
++	return genlmsg_multicast_netns(&nl802154_fam, wpan_phy_net(wpan_phy),
++				       msg, 0, NL802154_MCGRP_SCAN, GFP_ATOMIC);
++}
++
++int nl802154_advertise_new_coordinator(struct wpan_phy *wpan_phy,
++				       struct wpan_dev *wpan_dev,
++				       struct ieee802154_coord_desc *desc)
++{
++	return nl802154_advertise_coordinator(wpan_phy, wpan_dev,
++					      NL802154_CMD_NEW_COORDINATOR,
++					      desc);
++}
++EXPORT_SYMBOL_GPL(nl802154_advertise_new_coordinator);
++
++int nl802154_advertise_known_coordinator(struct wpan_phy *wpan_phy,
++					 struct wpan_dev *wpan_dev,
++					 struct ieee802154_coord_desc *desc)
++{
++	return nl802154_advertise_coordinator(wpan_phy, wpan_dev,
++					      NL802154_CMD_KNOWN_COORDINATOR,
++					      desc);
++}
++EXPORT_SYMBOL_GPL(nl802154_advertise_known_coordinator);
++
+ #ifdef CONFIG_IEEE802154_NL802154_EXPERIMENTAL
+ static const struct nla_policy nl802154_dev_addr_policy[NL802154_DEV_ADDR_ATTR_MAX + 1] = {
+ 	[NL802154_DEV_ADDR_ATTR_PAN_ID] = { .type = NLA_U16 },
+diff --git a/net/ieee802154/nl802154.h b/net/ieee802154/nl802154.h
+index 8c4b6d08954c..607af197fa0a 100644
+--- a/net/ieee802154/nl802154.h
++++ b/net/ieee802154/nl802154.h
+@@ -4,5 +4,11 @@
+ 
+ int nl802154_init(void);
+ void nl802154_exit(void);
++int nl802154_advertise_new_coordinator(struct wpan_phy *wpan_phy,
++				       struct wpan_dev *wpan_dev,
++				       struct ieee802154_coord_desc *desc);
++int nl802154_advertise_known_coordinator(struct wpan_phy *wpan_phy,
++					 struct wpan_dev *wpan_dev,
++					 struct ieee802154_coord_desc *desc);
+ 
+ #endif /* __IEEE802154_NL802154_H */
 -- 
 2.34.1
 
