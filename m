@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 64E165A268A
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:06:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEB5E5A2689
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:06:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245720AbiHZLGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 07:06:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38076 "EHLO
+        id S245559AbiHZLGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 07:06:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230052AbiHZLEi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:04:38 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D4F2657D
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:04:24 -0700 (PDT)
+        with ESMTP id S1343732AbiHZLEj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:04:39 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A962B1A8
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:04:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661511864; x=1693047864;
+  t=1661511867; x=1693047867;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=7TkI2g42TiyDpYroOfN0n4SxRBLUdO83QwuhHROSfFc=;
-  b=CimjKLTSHT70yJAEcWSJzTyzTjoOFsShoEf/3vfV3vzaW/l8n/ebnXwl
-   RVZ4XHyG6Mftter58jgdyc35QAhXrswKCK0wmKNXyzHrdR79jVK/G5wOe
-   +4RwbCY8wmSzFoQ5KKCCS72HaLyyouT4EG+brpnKgqfZ7zm/5268p7CVl
-   u1ixbXSNoXl2MCYFtRE9nddz4krZzgp5vre+bH02loJwZrZ8q3GnnTIvb
-   wRqQFKAbkaTGvSU4m57Sf4E8OJm/b1N8vIVFJtjMEqr4BwEhUhhtuzRQ/
-   8uW4ZuEbvFUT+NRQQLrhQNO6hZxKt38J6gAj86+WwHzw3m+lVpIgVBpxa
+  bh=ERh9FN6XBrS+my2+cyzr9hMAr8OTT3qzzCLuWO3wz+o=;
+  b=UWh4bVAJP0XdotrgUvq8tzhmC0tdgEzgNUIdeahfzcXCpDZRj5I6I0Mu
+   YWAWQpCimr7OIYi/mFKDA5klwVBLSEL0qOKoZTFbSanVQy4FCn09Fu0ni
+   sCPGwV1vD39Q2/Ao8VeH+gjoyKVunZEK04pwjrLod/7FP2V6uWkEpmqHW
+   65LPmUO0Fhj9ijd7eobf95J2S0iEpBIR9thvuQq+powGXSE6erbSbOnkj
+   N0nSVrfrPHB6UHJpuyZewVb5Qd3oMtsOY97++ZWpdnCrEkSkZRqg98c2I
+   ZFXPwK3bGPr0zHWYWdJNoU7aHU7tNyMSRfLoZHWGQeTGDq6k4LkkUWDM1
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="281453043"
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="274234338"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="281453043"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 04:04:24 -0700
+   d="scan'208";a="274234338"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 04:04:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="610532773"
+   d="scan'208";a="587263977"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga002.jf.intel.com with ESMTP; 26 Aug 2022 04:04:19 -0700
+  by orsmga006.jf.intel.com with ESMTP; 26 Aug 2022 04:04:20 -0700
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27QB4CLt024087;
-        Fri, 26 Aug 2022 12:04:17 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27QB4CLu024087;
+        Fri, 26 Aug 2022 12:04:18 +0100
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
@@ -53,9 +53,9 @@ Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
         simon.horman@corigine.com, pablo@netfilter.org,
         maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
         jchapman@katalix.com, gnault@redhat.com
-Subject: [RFC PATCH net-next 3/5] net/sched: flower: Add L2TPv3 filter
-Date:   Fri, 26 Aug 2022 13:00:57 +0200
-Message-Id: <20220826110059.119927-4-wojciech.drewek@intel.com>
+Subject: [RFC PATCH net-next 4/5] flow_offload: Introduce flow_match_l2tpv3
+Date:   Fri, 26 Aug 2022 13:00:58 +0200
+Message-Id: <20220826110059.119927-5-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220826110059.119927-1-wojciech.drewek@intel.com>
 References: <20220826110059.119927-1-wojciech.drewek@intel.com>
@@ -63,100 +63,65 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for matching on L2TPv3 session ID.
-Session ID can be specified only when ip proto was
-set to IPPROTO_L2TP.
-
-Example filter:
-  # tc filter add dev $PF1 ingress prio 1 protocol ip \
-      flower \
-        ip_proto l2tp \
-        l2tpv3_sid 1234 \
-        skip_sw \
-      action mirred egress redirect dev $VF1_PR
+Allow to offload L2TPv3 filters by adding flow_rule_match_l2tpv3.
+Drivers can extract L2TPv3 specific fields from now on.
 
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
- include/uapi/linux/pkt_cls.h |  2 ++
- net/sched/cls_flower.c       | 16 ++++++++++++++++
- 2 files changed, 18 insertions(+)
+ include/net/flow_offload.h | 6 ++++++
+ net/core/flow_offload.c    | 7 +++++++
+ 2 files changed, 13 insertions(+)
 
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index 877309d6ca3c..648a82f32666 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -592,6 +592,8 @@ enum {
- 	TCA_FLOWER_KEY_PPPOE_SID,	/* be16 */
- 	TCA_FLOWER_KEY_PPP_PROTO,	/* be16 */
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 2a9a9e42e7fd..e343f9f8363e 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -80,6 +80,10 @@ struct flow_match_pppoe {
+ 	struct flow_dissector_key_pppoe *key, *mask;
+ };
  
-+	TCA_FLOWER_KEY_L2TPV3_SID,	/* be32 */
++struct flow_match_l2tpv3 {
++	struct flow_dissector_key_l2tpv3 *key, *mask;
++};
 +
- 	__TCA_FLOWER_MAX,
- };
+ struct flow_rule;
  
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 041d63ff809a..22d32b82bc09 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -69,6 +69,7 @@ struct fl_flow_key {
- 	struct flow_dissector_key_hash hash;
- 	struct flow_dissector_key_num_of_vlans num_of_vlans;
- 	struct flow_dissector_key_pppoe pppoe;
-+	struct flow_dissector_key_l2tpv3 l2tpv3;
- } __aligned(BITS_PER_LONG / 8); /* Ensure that we can do comparisons as longs. */
+ void flow_rule_match_meta(const struct flow_rule *rule,
+@@ -128,6 +132,8 @@ void flow_rule_match_ct(const struct flow_rule *rule,
+ 			struct flow_match_ct *out);
+ void flow_rule_match_pppoe(const struct flow_rule *rule,
+ 			   struct flow_match_pppoe *out);
++void flow_rule_match_l2tpv3(const struct flow_rule *rule,
++			    struct flow_match_l2tpv3 *out);
  
- struct fl_flow_mask_range {
-@@ -712,6 +713,7 @@ static const struct nla_policy fl_policy[TCA_FLOWER_MAX + 1] = {
- 	[TCA_FLOWER_KEY_NUM_OF_VLANS]	= { .type = NLA_U8 },
- 	[TCA_FLOWER_KEY_PPPOE_SID]	= { .type = NLA_U16 },
- 	[TCA_FLOWER_KEY_PPP_PROTO]	= { .type = NLA_U16 },
-+	[TCA_FLOWER_KEY_L2TPV3_SID]	= { .type = NLA_U32 },
- 
- };
- 
-@@ -1790,6 +1792,11 @@ static int fl_set_key(struct net *net, struct nlattr **tb,
- 		fl_set_key_val(tb, key->arp.tha, TCA_FLOWER_KEY_ARP_THA,
- 			       mask->arp.tha, TCA_FLOWER_KEY_ARP_THA_MASK,
- 			       sizeof(key->arp.tha));
-+	} else if (key->basic.ip_proto == IPPROTO_L2TP) {
-+		fl_set_key_val(tb, &key->l2tpv3.session_id,
-+			       TCA_FLOWER_KEY_L2TPV3_SID,
-+			       &mask->l2tpv3.session_id, TCA_FLOWER_UNSPEC,
-+			       sizeof(key->l2tpv3.session_id));
- 	}
- 
- 	if (key->basic.ip_proto == IPPROTO_TCP ||
-@@ -1970,6 +1977,8 @@ static void fl_init_dissector(struct flow_dissector *dissector,
- 			     FLOW_DISSECTOR_KEY_NUM_OF_VLANS, num_of_vlans);
- 	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
- 			     FLOW_DISSECTOR_KEY_PPPOE, pppoe);
-+	FL_KEY_SET_IF_MASKED(mask, keys, cnt,
-+			     FLOW_DISSECTOR_KEY_L2TPV3, l2tpv3);
- 
- 	skb_flow_dissector_init(dissector, keys, cnt);
+ enum flow_action_id {
+ 	FLOW_ACTION_ACCEPT		= 0,
+diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
+index 8cfb63528d18..abe423fd5736 100644
+--- a/net/core/flow_offload.c
++++ b/net/core/flow_offload.c
+@@ -237,6 +237,13 @@ void flow_rule_match_pppoe(const struct flow_rule *rule,
  }
-@@ -3196,6 +3205,13 @@ static int fl_dump_key(struct sk_buff *skb, struct net *net,
- 				  mask->arp.tha, TCA_FLOWER_KEY_ARP_THA_MASK,
- 				  sizeof(key->arp.tha))))
- 		goto nla_put_failure;
-+	else if (key->basic.ip_proto == IPPROTO_L2TP &&
-+		 fl_dump_key_val(skb, &key->l2tpv3.session_id,
-+				 TCA_FLOWER_KEY_L2TPV3_SID,
-+				 &mask->l2tpv3.session_id,
-+				 TCA_FLOWER_UNSPEC,
-+				 sizeof(key->l2tpv3.session_id)))
-+		goto nla_put_failure;
+ EXPORT_SYMBOL(flow_rule_match_pppoe);
  
- 	if ((key->basic.ip_proto == IPPROTO_TCP ||
- 	     key->basic.ip_proto == IPPROTO_UDP ||
++void flow_rule_match_l2tpv3(const struct flow_rule *rule,
++			    struct flow_match_l2tpv3 *out)
++{
++	FLOW_DISSECTOR_MATCH(rule, FLOW_DISSECTOR_KEY_L2TPV3, out);
++}
++EXPORT_SYMBOL(flow_rule_match_l2tpv3);
++
+ struct flow_block_cb *flow_block_cb_alloc(flow_setup_cb_t *cb,
+ 					  void *cb_ident, void *cb_priv,
+ 					  void (*release)(void *cb_priv))
 -- 
 2.31.1
 
