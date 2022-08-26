@@ -1,161 +1,105 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B081E5A20F4
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 08:38:53 +0200 (CEST)
+Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id BC22B5A20F9
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 08:40:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245004AbiHZGih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 02:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
+        id S244807AbiHZGj7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 02:39:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244886AbiHZGi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 02:38:28 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E10E0D11ED
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:38:26 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id s6so763609lfo.11
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:38:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=RxV0nDEAfKqC3x7raaUN+mLOW4U9IZpu1YewQ98T9Tc=;
-        b=VcB0NLRAu5ws5MmPcc12ZQk36km0fAThnCwtcwX+pS+vqTVPNxkZj0M9x0uN4wmOF9
-         5SgU4NxDZoIqtoMX1oEOhTPNkqwWy4UCcq/Isc04W4JkykjqHKVAPYCpBHWsPtLzA794
-         3e1JEympoDzruDucdoF8Hf9Ydj5JQZ35+MX2F4IX8rq0Vc7fICARcxgbM6/N1Z05oqaK
-         UCGfwtJDUb7V9cIxPXHHbz7sEKb7tbdmHZFucpzEduZjPUdBXjMbmNE8FKeBRGfpNaK5
-         7Rzh2x2fXpo4dZ9T4FFeO/kH5SowXmEWQ3mk6xNMkKR58u/2XB7GUXgi3+6cev+AQPi8
-         QI1Q==
+        with ESMTP id S240824AbiHZGj6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 02:39:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B61FA15A19
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:39:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661495996;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ECDJ8QTTg2+F1UM14QHCzubQKC4GAzBG+sQ/KnCfupc=;
+        b=LX0IBTdAxt5/WyOpQCEc39Xg90KOS4qVsHMKdGQPS/EtPnek2g8f329Pr6sUfT0/Hl6iJx
+        f6l5BQI6wiosIU6NyYwWl/k12cZBPBqsCQutvD5bz5IyviDjnMYaL4rqAJISLRpHZ6OUxD
+        vk82rHJIR4qz8JRIT+LcnEFSu1K2r8c=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-90-eUkrWJ9UPu6d7MS1t30p3Q-1; Fri, 26 Aug 2022 02:39:55 -0400
+X-MC-Unique: eUkrWJ9UPu6d7MS1t30p3Q-1
+Received: by mail-qt1-f200.google.com with SMTP id cj19-20020a05622a259300b003446920ea91so696235qtb.10
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:39:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=RxV0nDEAfKqC3x7raaUN+mLOW4U9IZpu1YewQ98T9Tc=;
-        b=17yDHRVZdhBYPURM17fVWngoRJj3ZuU9LnSnPND7KMsHNpv5tRm/hzlBjCzkkWxqbC
-         uUDQYNrq8XEohkho55OtBsiwaF4LD8UGnv5iTZ6Qo9liXLPDZgDJIhok08U3yr7HIixG
-         JKMO3qHIT9W8iUMQuoJW5FC7qKJgQ9eInw8h6LukLDaTdNBTSNSUOpwtm0OclpJDU5Kt
-         6N1mQZh4WWNwLKhySDJtk1wUkCWZJwOR2lL6rVJsf79ZTo5wfy4aAz3pLs7Q6CcQMki+
-         8nSkFOWbNIBxqSUnLhy3RxiiIAKtAI1zwdqNSrY6gT8lMRz+6+V8xft5lwJ2G+uRmC0Z
-         GSoA==
-X-Gm-Message-State: ACgBeo3+Rndrrf2i1UaN0iR7iy1rJCa9OoWcYN+E1n4WZJ5iNRyN0gEl
-        WNy/X0DbBzBpm6hC19o3mi1ojwfy7+BfWwLmBSE=
-X-Google-Smtp-Source: AA6agR7uB2DPZ5GDLKWUhAdSS6HCMnOPEEu10JQs/nV1KkpZKW3rwPzmXMMef5eYJ40I+couD7pE3Q==
-X-Received: by 2002:a05:6512:39c2:b0:492:d15f:d246 with SMTP id k2-20020a05651239c200b00492d15fd246mr2311656lfu.517.1661495905025;
-        Thu, 25 Aug 2022 23:38:25 -0700 (PDT)
-Received: from wse-c0089.westermo.com (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id p6-20020a05651238c600b0048cc076a03dsm253161lft.237.2022.08.25.23.38.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 23:38:24 -0700 (PDT)
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v2 3/3] rmon: Use RMU if available
-Date:   Fri, 26 Aug 2022 08:38:16 +0200
-Message-Id: <20220826063816.948397-4-mattias.forsblad@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220826063816.948397-1-mattias.forsblad@gmail.com>
-References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=ECDJ8QTTg2+F1UM14QHCzubQKC4GAzBG+sQ/KnCfupc=;
+        b=TkrfbgWWgQ/Bx1nGz6ueCIoeIl8LDRUsKiC02zXQKgzbn8MmFnLxSBp85Um3S3wGpf
+         zl4f5EbQsZ4UTFT1EhtnpQnLBrkB53ydaX+CFjFuR48bsumIH/z6yyoLV4yzhcsi5O0y
+         vNuAUf+lNzG1kbEEa4CWlY2Jyb0WZVBNQrCD467IOpyV5C6IiCW52P41FUnzQzYyC5Ts
+         5qJF/yUDWbb6t5VBeQn54Fki3BvRSxoYIyElL8kGFOP3jBNFntc/b8jmErFDhfioQtBf
+         i5tdEvqMyHlilplseulfRMR694gTzowX83nAhvozwow0ez/OPb+ZkfXvsObQy4sph0UF
+         +nig==
+X-Gm-Message-State: ACgBeo06TseOEULmMGkKB0CofVo06b9R4KAXHOM1HT7qQuKog6qrKqW1
+        dD99Ce7zkWGzMQ3JmhOaPErB3rUV4xmOJus7AoKYl5R82t9yynQXbkU/kpc+4sL2wZmSjz70EuZ
+        wpnE5AKYdfW55mHFY0HVErokSo6Z7chTR
+X-Received: by 2002:ad4:5aa2:0:b0:496:e034:dc4b with SMTP id u2-20020ad45aa2000000b00496e034dc4bmr6698953qvg.43.1661495995185;
+        Thu, 25 Aug 2022 23:39:55 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4YdLZqhkPIargP58smhVkNXHwMeO1sdaXJauYCx7PylF3optCdsl/FmY5H0zJi+1AArk9TbCn8SAvSZ+/BpOQ=
+X-Received: by 2002:ad4:5aa2:0:b0:496:e034:dc4b with SMTP id
+ u2-20020ad45aa2000000b00496e034dc4bmr6698942qvg.43.1661495994964; Thu, 25 Aug
+ 2022 23:39:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220819082001.15439-1-ihuguet@redhat.com> <20220825090242.12848-1-ihuguet@redhat.com>
+ <20220825090242.12848-3-ihuguet@redhat.com> <20220825183229.447ee747@kernel.org>
+In-Reply-To: <20220825183229.447ee747@kernel.org>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Fri, 26 Aug 2022 08:39:44 +0200
+Message-ID: <CACT4oufi28iXQscAcmrQAuiKa+PRB81-27AC4E7D41LG1uzeAg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/3] sfc: support PTP over IPv6/UDP
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If RMU is supported, use that interface to
-collect rmon data.
+On Fri, Aug 26, 2022 at 3:32 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 25 Aug 2022 11:02:41 +0200 =C3=8D=C3=B1igo Huguet wrote:
+> > -static int efx_ptp_insert_ipv4_filter(struct efx_nic *efx, u16 port)
+> > +static inline void efx_ptp_init_filter(struct efx_nic *efx,
+> > +                                    struct efx_filter_spec *rxfilter)
+>
+> No static inline in sources unless you actually checked and the
+> compiler does something stupid (pls mention it in the commit message
+> in that case).
 
-Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.c | 41 ++++++++++++++++++++++++++------
- 1 file changed, 34 insertions(+), 7 deletions(-)
+OK, I will change it (I think I should read again and remember the
+coding style document)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 4c0510abd875..0d0241ace708 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1226,16 +1226,30 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
- 				     u16 bank1_select, u16 histogram)
- {
- 	struct mv88e6xxx_hw_stat *stat;
-+	int offset = 0;
-+	u64 high;
- 	int i, j;
- 
- 	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
- 		stat = &mv88e6xxx_hw_stats[i];
- 		if (stat->type & types) {
--			mv88e6xxx_reg_lock(chip);
--			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
--							      bank1_select,
--							      histogram);
--			mv88e6xxx_reg_unlock(chip);
-+			if (chip->rmu.ops && chip->rmu.ops->get_rmon &&
-+			    !(stat->type & STATS_TYPE_PORT)) {
-+				if (stat->type & STATS_TYPE_BANK1)
-+					offset = 32;
-+
-+				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
-+				if (stat->size == 8) {
-+					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
-+							+ 1];
-+					data[j] += (high << 32);
-+				}
-+			} else {
-+				mv88e6xxx_reg_lock(chip);
-+				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
-+								      bank1_select, histogram);
-+				mv88e6xxx_reg_unlock(chip);
-+			}
- 
- 			j++;
- 		}
-@@ -1304,8 +1318,8 @@ static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
- 	mv88e6xxx_reg_unlock(chip);
- }
- 
--static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
--					uint64_t *data)
-+static void mv88e6xxx_get_ethtool_stats_mdio(struct dsa_switch *ds, int port,
-+					     uint64_t *data)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int ret;
-@@ -1319,7 +1333,20 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 		return;
- 
- 	mv88e6xxx_get_stats(chip, port, data);
-+}
- 
-+static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
-+					uint64_t *data)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+
-+	/* If initialization of RMU isn't available
-+	 * fall back to MDIO access.
-+	 */
-+	if (chip->rmu.ops && chip->rmu.ops->get_rmon)
-+		chip->rmu.ops->get_rmon(chip, port, data);
-+	else
-+		mv88e6xxx_get_ethtool_stats_mdio(ds, port, data);
- }
- 
- static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
--- 
-2.25.1
+>
+> > +static inline int
+> > +efx_filter_set_ipv6_local(struct efx_filter_spec *spec, u8 proto,
+> > +                       const struct in6_addr *host, __be16 port)
+>
+> also - unclear why this is defined in the header
+>
+
+This is just because it's the equivalent of other already existing
+similar functions in that file. I think I should keep this one
+untouched for cohesion.
+--=20
+=C3=8D=C3=B1igo Huguet
 
