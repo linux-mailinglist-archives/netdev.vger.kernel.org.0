@@ -2,125 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2613D5A26B1
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BC0B5A26B6
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234090AbiHZLPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 07:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41026 "EHLO
+        id S229946AbiHZLQF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 07:16:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235135AbiHZLO6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:14:58 -0400
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D641EEF1;
-        Fri, 26 Aug 2022 04:14:54 -0700 (PDT)
-Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oRXIa-0004eZ-2C; Fri, 26 Aug 2022 13:14:52 +0200
-Message-ID: <31cceaa5-2684-1aa8-61c6-c1be2d563bb0@leemhuis.info>
-Date:   Fri, 26 Aug 2022 13:14:51 +0200
+        with ESMTP id S229888AbiHZLQE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:16:04 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEC0D9EAD
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:16:03 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id s23so701366wmj.4
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:16:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=vRtP9Skqdi6VRUhZFmU/5JLtOk/HwkyzGgOrB5aVaqc=;
+        b=BdK6TUPc3E95StF714NnERXWUrvaQ18TZ48qTAB6uRMvSSkzEVJKaqXmU1jlABADIn
+         k3elOllRLH6zHYKRmAwge10AsGt90U/L65VKqWXeZW3722f3YNZY2M6o0H2gbn4FthOq
+         9/wDAAKJfQrIXOJtNPCu+fMEUpHxgxUQLnAZWXBJD/Wpxp3u6jP3BhpdkUG+5cYGLv0M
+         SietHnFquLDYnlZz24gs/eUGbfFd/mRvtsAkCQhTSptZgFuuwrQA39UkYjGUYIBD7J/U
+         b7brUwjthuTOFYs7QOveQ5WljT0czxdNfL+pV+SxzidtQgnEBBW+r0I2jMyvmZkYAjF2
+         6Q3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=vRtP9Skqdi6VRUhZFmU/5JLtOk/HwkyzGgOrB5aVaqc=;
+        b=Z0YTRNYAWTInTDNMjZUtwr5lh2MycKZRWxOa2LxUX3lrcuD0ro0zuehEkLGNWY+cfU
+         Rjr11XgmUdCkKjOy9xXx0T5muJyVBYAlvSjm/Xqt9j1i0Wc7EoB4x7pM3HEKPoOTIZ6P
+         N709NdhlV7vgEnI0RmjG395jVcDHJUDqa32IGgEOTH5FPG6QNrynMI2ljt3/tHmkKeKO
+         KVqJteKxTaFOELAytzUIlScP2bnj6Eh3nKGCZ4IHqUAvOpzh2ndK3c8esX4jHfLgKWbr
+         vJnl5Ow1nMWefZkfhCj6Q5bM+qEwgckjMTeWAIGPAfeq3krMAMBEi6KYp4UCtZrnXUBD
+         pFJw==
+X-Gm-Message-State: ACgBeo16Wc2PoFPYM9ewinyyubK+SjjVgaamelSpHiufT7tXA9NTRWmi
+        OhlFQvQxTbNwkwsyktf9sfn8ag==
+X-Google-Smtp-Source: AA6agR4QzaWX8XmLz8SGvNyIEQsQ5GQDx172pO0aIEdni0lwQywVURMMxO00o4DMyckU7PnYyS53nA==
+X-Received: by 2002:a05:600c:3048:b0:3a6:5ce0:9701 with SMTP id n8-20020a05600c304800b003a65ce09701mr4969801wmh.97.1661512562030;
+        Fri, 26 Aug 2022 04:16:02 -0700 (PDT)
+Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
+        by smtp.gmail.com with ESMTPSA id h21-20020a05600c351500b003a60ff7c082sm8622454wmq.15.2022.08.26.04.16.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 04:16:01 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 13:16:00 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Wojciech Drewek <wojciech.drewek@intel.com>
+Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
+        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        marcin.szycik@linux.intel.com, michal.swiatkowski@linux.intel.com,
+        kurt@linutronix.de, boris.sukholitko@broadcom.com,
+        vladbu@nvidia.com, komachi.yoshiki@gmail.com, paulb@nvidia.com,
+        baowen.zheng@corigine.com, louis.peens@corigine.com,
+        simon.horman@corigine.com, pablo@netfilter.org,
+        maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
+        jchapman@katalix.com, gnault@redhat.com
+Subject: Re: [RFC PATCH net-next 0/5] ice: L2TPv3 offload support
+Message-ID: <YwircDhHhOfqdHy/@nanopsycho>
+References: <20220826110059.119927-1-wojciech.drewek@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Content-Language: en-US
-Cc:     Vorpal <kernelbugs@vorpal.se>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
-        Kalle Valo <kvalo@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>
-From:   Thorsten Leemhuis <regressions@leemhuis.info>
-To:     Gregory Greenman <gregory.greenman@intel.com>
-Subject: [regression] Bug 216397 - Kernel 5.19 with NetworkManager and iwd:
- Wifi reconnect on resume is broken
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1661512494;f88e6eba;
-X-HE-SMSGID: 1oRXIa-0004eZ-2C
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826110059.119927-1-wojciech.drewek@intel.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, this is your Linux kernel regression tracker.
+Fri, Aug 26, 2022 at 01:00:54PM CEST, wojciech.drewek@intel.com wrote:
+>Add support for dissecting L2TPv3 session id in flow dissector. Add support
+>for this field in tc-flower and support offloading L2TPv3. Finally, add
+>support for hardware offload of L2TPv3 packets based on session id in
+>switchdev mode in ice driver.
+>
+>Example filter:
+>  # tc filter add dev $PF1 ingress prio 1 protocol ip \
+>      flower \
+>        ip_proto l2tp \
+>        l2tpv3_sid 1234 \
+>        skip_sw \
+>      action mirred egress redirect dev $VF1_PR
+>
+>Changes in iproute2 are required to use the new fields.
+>
+>ICE COMMS DDP package is required to create a filter in ice.
 
-I noticed a regression report in bugzilla.kernel.org that afaics nobody
-acted upon since it was reported. That's why I decided to forward it by
-mail to those that afaics should handle this. I was a bit unsure whom to
-sent this to and in the end went with "iwlwifi maintainer, with wireless
-and MAC80211 maintainer in CC".
+I don't understand what do you mean by this. Could you please explain
+what this mysterious "ICE COMMS DDP package" is? Do I understand it
+correctly that without it, the solution would not work?
 
-To quote from https://bugzilla.kernel.org/show_bug.cgi?id=216397 :
-
->  Vorpal 2022-08-22 16:35:21 UTC
-> 
-> Created attachment 301630 [details]
-> Relevant journalctl.txt
-> 
-> After upgrading to kernel 5.19 (Arch Linux kernel, which is minimally modified, but I tested a few alternative kernels too, such as zen), wifi reconnect on resume is broken when using NetworkManager + iwd.
-> 
-> When downgrading to 5.18 or linux-lts (5.15.62), auto reconnect starts working again.
-> 
-> When switching NetworkManager to use wpa_supplicant auto reconnect starts working on newer kernel again.
-> 
-> Manual reconnection works using iwd+new kernel.
-> 
-> Hardware:
-> * Lenovo Thinkpad T480 with "Intel Corporation Wireless 8265 / 8275 (rev 78)" (according to lspci).
-> * Access point is a Asus AC-68U running the Asus Merlin Firmware.
-> 
-> I have another laptop, with Atheros wifi and the same Arch Linux with NM + iwd setup. It does not suffer from this problem. This appears to be specific to this hardware.
-> 
-> I have attached the relevant fragment of dmesg/journalctl (MAC addresses and SSID changed for privacy).
-> 
-> Additional info:
-> * Arch Linux package version(s):
-> - linux-5.19.3.arch1-1 (also affects 5.19.2 at least)
-> - networkmanager-1.38.4-1
-> - iwd-1.29-1 (broken)
-> - wpa_supplicant-2:2.10-5 (works)
-> 
-> Steps to reproduce:
-> 1. Suspend computer with iwlwifi using NetworkManager + iwd
-> 2. After computer has gone to sleep, wake it up
-> 3. Observe failure to reconnect to wifi network that was connected before.
-> 
-> I do not know if this is a kernel bug, IWD bug or Network Manager bug. Perhaps it is just how they interact.
-> 
-> Distro bug report: https://bugs.archlinux.org/task/75670
-
-See the ticket for details and further comments.
-
-Please look into the issue if you're among the main recipients of this
-mail (and not just CCed). I hope I picked the right people to sent this
-to, if not just let everyone know (and apologies for getting it wrong!).
-
-Anyway, to ensure this is not forgotten lets get this tracked by the the
-Linux kernel regression tracking bot:
-
-#regzbot introduced: v5.18..v5.19
-https://bugzilla.kernel.org/show_bug.cgi?id=216397
-#regzbot ignore-activity
-
-This isn't a regression? This issue or a fix for it are already
-discussed somewhere else? It was fixed already? You want to clarify when
-the regression started to happen? Or point out I got the title or
-something else totally wrong? Then just reply -- ideally with also
-telling regzbot about it, as explained here:
-https://linux-regtracking.leemhuis.info/tracked-regression/
-
-Reminder for developers: When fixing the issue, add 'Link:' tags
-pointing to the report in bugzilla, as the kernel's documentation calls
-for; above page explains why this is important for tracked regressions.
-
-Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
-
-P.S.: As the Linux kernel's regression tracker I deal with a lot of
-reports and sometimes miss something important when writing mails like
-this. If that's the case here, don't hesitate to tell me in a public
-reply, it's in everyone's interest to set the public record straight.
+>
+>Marcin Szycik (1):
+>  ice: Add L2TPv3 hardware offload support
+>
+>Wojciech Drewek (4):
+>  uapi: move IPPROTO_L2TP to in.h
+>  flow_dissector: Add L2TPv3 dissectors
+>  net/sched: flower: Add L2TPv3 filter
+>  flow_offload: Introduce flow_match_l2tpv3
+>
+> .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
+> drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
+> drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
+> drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
+> include/net/flow_dissector.h                  |  9 +++
+> include/net/flow_offload.h                    |  6 ++
+> include/uapi/linux/in.h                       |  2 +
+> include/uapi/linux/l2tp.h                     |  2 -
+> include/uapi/linux/pkt_cls.h                  |  2 +
+> net/core/flow_dissector.c                     | 28 ++++++++
+> net/core/flow_offload.c                       |  7 ++
+> net/sched/cls_flower.c                        | 16 +++++
+> 12 files changed, 179 insertions(+), 4 deletions(-)
+>
+>-- 
+>2.31.1
+>
