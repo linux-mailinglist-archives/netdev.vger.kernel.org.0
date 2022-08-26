@@ -2,123 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D195C5A2B42
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990CF5A2B71
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244258AbiHZP3h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 11:29:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45768 "EHLO
+        id S1344166AbiHZPlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 11:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344484AbiHZP3R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:29:17 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72164DEB72
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:27:49 -0700 (PDT)
-Received: from fsav115.sakura.ne.jp (fsav115.sakura.ne.jp [27.133.134.242])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 27QFRlRp086469;
-        Sat, 27 Aug 2022 00:27:47 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav115.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp);
- Sat, 27 Aug 2022 00:27:47 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 27QFRkNj086466
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Sat, 27 Aug 2022 00:27:47 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <345de429-a88b-7097-d177-adecf9fed342@I-love.SAKURA.ne.jp>
-Date:   Sat, 27 Aug 2022 00:27:46 +0900
+        with ESMTP id S245401AbiHZPlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:41:02 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1035D985B1
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:41:01 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-33dc345ad78so45649967b3.3
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:41:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1OeVCe7RaC1doJu8eezLP4PkgFav37cmMol81u4t9l0=;
+        b=MmNYu02+TEx7oRzWlw+ehFBhs7toHqKt7pfFMKOKRkCWHoyj0Y/s6qC1e8CE/JnZiY
+         hPtSEled9vImo8EDhazJXl9f8iX8B4+TZ8zmzARN2foW7NNOcE2CdXDHjt9HLUb/NvM2
+         Ti7Ke7ucWlAzJr4UJ36P+lFfsL/DM4cciKV4YnQDPabmqsw+sqUfvf8dK31QW1Aqlp5A
+         Ounvl8oZNElLyPqJCyKpa8bPzrkrRHeVAdAm1mZCXz3j+/FbLk+cZN4i7o703opbAT68
+         1R9fW8BxF45+P8/2Ns30oQZvvi+fCtYklKi51GtFAn7R7MrrmmAqqZVR8B6tRmzi8Hrj
+         RzAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1OeVCe7RaC1doJu8eezLP4PkgFav37cmMol81u4t9l0=;
+        b=cart/+SkTqzh3eiSg9eVUfqCoqnBTtntvPglYP2IRLsYhZiCUY0zBZGHRUvcrZvv72
+         JT/+HrMmaKMKastqEqdqA0ViBf2lbkZex8+kFO5KH1Owu+l+PiH1wqPscQ5dG9buM141
+         v+lBSeAOEqjbf+JzTmNPOVdfO+ZNnG/AQg7VghM0nhG0/SOvuF27s+WIbk1VIOEafsNb
+         +gS4OBUiZkngytvr+Jy9X5ZcxjWVQZa+FyfbEwSf0092fnNNyq8azAbz3oobGFpNnj2s
+         hW9UvTXb+iHbYhIb3k8ItWLLR+bI8yEmd8oBEFulyiZ6BdqoFrUg2GkWPNs7gFMb/Cg0
+         YKww==
+X-Gm-Message-State: ACgBeo0d8EXwUvXooTYA0TbsL2ElYur5FVRwvA/dX5/u9MwEd8DIx0LB
+        r4u8MV9SSvK8oar72Cb8b98eYVVctOmeCzilFFMs3Q==
+X-Google-Smtp-Source: AA6agR4I1vZ9aaSEGsy2SZ/FjScv9ilUOm+xccAKfebF59/l6wZY5nub/hAQqwvV1BFhnhGhnmcf87Yc2PEUxefCdzI=
+X-Received: by 2002:a25:4291:0:b0:696:56f3:5934 with SMTP id
+ p139-20020a254291000000b0069656f35934mr229910yba.55.1661528460963; Fri, 26
+ Aug 2022 08:41:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.2
-Subject: [PATCH] 9p/trans_fd: always use O_NONBLOCK read/write
-Content-Language: en-US
-To:     Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Christian Schoenebeck <linux_oss@crudebyte.com>
-References: <00000000000039af4d05915a9f56@google.com>
- <000000000000c1d3ca0593128b24@google.com>
-Cc:     syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>,
-        v9fs-developer@lists.sourceforge.net,
-        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <000000000000c1d3ca0593128b24@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220826000445.46552-1-kuniyu@amazon.com> <20220826000445.46552-7-kuniyu@amazon.com>
+In-Reply-To: <20220826000445.46552-7-kuniyu@amazon.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 26 Aug 2022 08:40:49 -0700
+Message-ID: <CANn89iK0FeokqWLPrWY8iger7iYXU5fJQyxaGbGecTe11+8p7A@mail.gmail.com>
+Subject: Re: [PATCH v1 net-next 06/13] tcp: Set NULL to sk->sk_prot->h.hashinfo.
+To:     Kuniyuki Iwashima <kuniyu@amazon.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot is reporting hung task at p9_fd_close() [1], for p9_mux_poll_stop()
- from p9_conn_destroy() from p9_fd_close() is failing to interrupt already
-started kernel_read() from p9_fd_read() from p9_read_work() and/or
-kernel_write() from p9_fd_write() from p9_write_work() requests.
+On Thu, Aug 25, 2022 at 5:07 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+>
+> We will soon introduce an optional per-netns ehash.
+>
+> This means we cannot use the global sk->sk_prot->h.hashinfo
+> to fetch a TCP hashinfo.
+>
+> Instead, set NULL to sk->sk_prot->h.hashinfo for TCP and get
+> a proper hashinfo from net->ipv4.tcp_death_row->hashinfo.
+>
+> Note that we need not use sk->sk_prot->h.hashinfo if DCCP is
+> disabled.
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  include/net/inet_hashtables.h   | 10 ++++++++++
+>  net/ipv4/af_inet.c              |  2 +-
+>  net/ipv4/inet_connection_sock.c |  6 +++---
+>  net/ipv4/inet_hashtables.c      | 14 +++++++-------
+>  net/ipv4/tcp_ipv4.c             |  2 +-
+>  net/ipv6/tcp_ipv6.c             |  2 +-
+>  6 files changed, 23 insertions(+), 13 deletions(-)
+>
+> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+> index 44a419b9e3d5..2c866112433e 100644
+> --- a/include/net/inet_hashtables.h
+> +++ b/include/net/inet_hashtables.h
+> @@ -170,6 +170,16 @@ struct inet_hashinfo {
+>         struct inet_listen_hashbucket   *lhash2;
+>  };
+>
+> +static inline struct inet_hashinfo *inet_get_hashinfo(const struct sock *sk)
+> +{
+> +#if IS_ENABLED(CONFIG_IP_DCCP)
+> +       return sk->sk_prot->h.hashinfo ? :
+> +               sock_net(sk)->ipv4.tcp_death_row->hashinfo;
+> +#else
+> +       return sock_net(sk)->ipv4.tcp_death_row->hashinfo;
+> +#endif
+> +}
+>
 
-Since p9_socket_open() sets O_NONBLOCK flag, p9_mux_poll_stop() does not
-need to interrupt kernel_read()/kernel_write(). However, since p9_fd_open()
-does not set O_NONBLOCK flag, but pipe blocks unless signal is pending,
-p9_mux_poll_stop() needs to interrupt kernel_read()/kernel_write() when
-the file descriptor refers to a pipe. In other words, pipe file descriptor
-needs to be handled as if socket file descriptor.
+If the sk_prot->h.hashinfo must disappear, I would rather add a new
+inet->hashinfo field
 
-We somehow need to interrupt kernel_read()/kernel_write() on pipes.
+return inet_sk(sk)->hashinfo
 
-A minimal change, which this patch is doing, is to set O_NONBLOCK flag
- from p9_fd_open(), for O_NONBLOCK flag does not affect reading/writing
-of regular files. But this approach changes O_NONBLOCK flag on userspace-
-supplied file descriptors (which might break userspace programs), and
-O_NONBLOCK flag could be changed by userspace. It would be possible to set
-O_NONBLOCK flag every time p9_fd_read()/p9_fd_write() is invoked, but still
-remains small race window for clearing O_NONBLOCK flag.
-
-If we don't want to manipulate O_NONBLOCK flag, we might be able to
-surround kernel_read()/kernel_write() with set_thread_flag(TIF_SIGPENDING)
-and recalc_sigpending(). Since p9_read_work()/p9_write_work() works are
-processed by kernel threads which process global system_wq workqueue,
-signals could not be delivered from remote threads when p9_mux_poll_stop()
- from p9_conn_destroy() from p9_fd_close() is called. Therefore, calling
-set_thread_flag(TIF_SIGPENDING)/recalc_sigpending() every time would be
-needed if we count on signals for making kernel_read()/kernel_write()
-non-blocking.
-
-Link: https://syzkaller.appspot.com/bug?extid=8b41a1365f1106fd0f33 [1]
-Reported-by: syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: syzbot <syzbot+8b41a1365f1106fd0f33@syzkaller.appspotmail.com>
----
-Although syzbot tested that this patch solves hung task problem, syzbot
-cannot verify that this patch will not break functionality of p9 users.
-Please test before applying this patch.
-
- net/9p/trans_fd.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index e758978b44be..9870597da583 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -821,11 +821,13 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
- 		goto out_free_ts;
- 	if (!(ts->rd->f_mode & FMODE_READ))
- 		goto out_put_rd;
-+	ts->rd->f_flags |= O_NONBLOCK;
- 	ts->wr = fget(wfd);
- 	if (!ts->wr)
- 		goto out_put_rd;
- 	if (!(ts->wr->f_mode & FMODE_WRITE))
- 		goto out_put_wr;
-+	ts->wr->f_flags |= O_NONBLOCK;
- 
- 	client->trans = ts;
- 	client->status = Connected;
--- 
-2.18.4
-
+Conceptually, the pointer no longer belongs to sk_prot, and not in struct net,
+otherwise you should name this helper   tcp_or_dccp_get_hashinfo() to avoid
+any temptation to use it for other inet protocol.
