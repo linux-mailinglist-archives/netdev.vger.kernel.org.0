@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 577F45A27C9
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 14:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A06B5A27D4
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 14:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343778AbiHZMZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 08:25:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
+        id S1343974AbiHZM1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 08:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245432AbiHZMZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 08:25:28 -0400
+        with ESMTP id S1343947AbiHZM1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 08:27:14 -0400
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A3E2655B;
-        Fri, 26 Aug 2022 05:25:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F53297B0D;
+        Fri, 26 Aug 2022 05:27:12 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 9CEDD188A411;
-        Fri, 26 Aug 2022 12:25:21 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id D0FDE188F34A;
+        Fri, 26 Aug 2022 12:27:09 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 7296725032BA;
-        Fri, 26 Aug 2022 12:25:21 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id 349A925032D2;
+        Fri, 26 Aug 2022 12:27:09 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 50A509EC00AD; Fri, 26 Aug 2022 11:45:51 +0000 (UTC)
+        id 0103C9EC004B; Fri, 26 Aug 2022 11:45:55 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id 3836A9EC0008;
-        Fri, 26 Aug 2022 11:45:49 +0000 (UTC)
+        by smtp.gigahost.dk (Postfix) with ESMTPSA id 1B7DB9EC0003;
+        Fri, 26 Aug 2022 11:45:53 +0000 (UTC)
 From:   Hans Schultz <netdev@kapio-technology.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
@@ -56,10 +56,12 @@ Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v5 net-next 0/6] Extend locked port feature with FDB locked flag (MAC-Auth/MAB)
-Date:   Fri, 26 Aug 2022 13:45:32 +0200
-Message-Id: <20220826114538.705433-1-netdev@kapio-technology.com>
+Subject: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to extend locked port feature
+Date:   Fri, 26 Aug 2022 13:45:33 +0200
+Message-Id: <20220826114538.705433-2-netdev@kapio-technology.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
 MIME-Version: 1.0
 Organization: Westermo Network Technologies AB
 Content-Transfer-Encoding: 8bit
@@ -72,120 +74,249 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set extends the locked port feature for devices
-that are behind a locked port, but do not have the ability to
-authorize themselves as a supplicant using IEEE 802.1X.
-Such devices can be printers, meters or anything related to
-fixed installations. Instead of 802.1X authorization, devices
-can get access based on their MAC addresses being whitelisted.
+Add an intermediate state for clients behind a locked port to allow for
+possible opening of the port for said clients. The clients mac address
+will be added with the locked flag set, denying access through the port
+for the mac address, but also creating a new FDB add event giving
+userspace daemons the ability to unlock the mac address. This feature
+corresponds to the Mac-Auth and MAC Authentication Bypass (MAB) named
+features. The latter defined by Cisco.
 
-For an authorization daemon to detect that a device is trying
-to get access through a locked port, the bridge will add the
-MAC address of the device to the FDB with a locked flag to it.
-Thus the authorization daemon can catch the FDB add event and
-check if the MAC address is in the whitelist and if so replace
-the FDB entry without the locked flag enabled, and thus open
-the port for the device.
+As locked FDB entries are a security measure to deny access for
+unauthorized hosts on specific ports, they will deny forwarding from
+any port to the (MAC, vlan) pair involved and locked entries will not
+be able by learning or otherwise to change the associated port.
 
-This feature is known as MAC-Auth or MAC Authentication Bypass
-(MAB) in Cisco terminology, where the full MAB concept involves
-additional Cisco infrastructure for authorization. There is no
-real authentication process, as the MAC address of the device
-is the only input the authorization daemon, in the general
-case, has to base the decision if to unlock the port or not.
+Only the kernel can set this FDB entry flag, while userspace can read
+the flag and remove it by replacing or deleting the FDB entry.
 
-With this patch set, an implementation of the offloaded case is
-supplied for the mv88e6xxx driver. When a packet ingresses on
-a locked port, an ATU miss violation event will occur. When
-handling such ATU miss violation interrupts, the MAC address of
-the device is added to the FDB with a zero destination port
-vector (DPV) and the MAC address is communicated through the
-switchdev layer to the bridge, so that a FDB entry with the
-locked flag enabled can be added.
+Locked entries will age out with the set bridge ageing time.
 
-Log:
-        v3:     Added timers and lists in the driver (mv88e6xxx)
-                to keep track of and remove locked entries.
+Also add a 'blackhole' fdb flag, ensuring that no forwarding from any
+port to a destination MAC that has a FDB entry with this flag on will
+occur. The packets will thus be dropped.
 
-        v4:     Leave out enforcing a limit to the number of
-                locked entries in the bridge.
-                Removed the timers in the driver and use the
-                worker only. Add locked FDB flag to all drivers
-                using port_fdb_add() from the dsa api and let
-                all drivers ignore entries with this flag set.
-                Change how to get the ageing timeout of locked
-                entries. See global1_atu.c and switchdev.c.
-                Use struct mv88e6xxx_port for locked entries
-                variables instead of struct dsa_port.
+Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+---
+ include/linux/if_bridge.h      |  1 +
+ include/uapi/linux/if_link.h   |  1 +
+ include/uapi/linux/neighbour.h |  4 +++-
+ net/bridge/br_fdb.c            | 29 +++++++++++++++++++++++++++++
+ net/bridge/br_input.c          | 16 +++++++++++++++-
+ net/bridge/br_netlink.c        |  9 ++++++++-
+ net/bridge/br_private.h        |  4 +++-
+ 7 files changed, 60 insertions(+), 4 deletions(-)
 
-	v5:	Added 'mab' flag to enable MAB/MacAuth feature,
-		in a similar way to the locked feature flag.
-
-		In these implementations for the mv88e6xxx, the
-		switchport must be configured with learning on.
-
-		To tell userspace about the behavior of the
-		locked entries in the driver, a 'blackhole'
-		FDB flag has been added, which locked FDB
-		entries coming from the driver gets. Also the
-		'sticky' flag comes with those locked entries,
-		as the drivers locked entries cannot roam.
-
-		Fixed issues with taking mutex locks, and added
-		a function to read the fid, that supports all
-		versions of the chipset family.
-		
-
-Hans Schultz (6):
-  net: bridge: add locked entry fdb flag to extend locked port feature
-  net: switchdev: add support for offloading of fdb locked flag
-  drivers: net: dsa: add locked fdb entry flag to drivers
-  net: dsa: mv88e6xxx: allow reading FID when handling ATU violations
-  net: dsa: mv88e6xxx: MacAuth/MAB implementation
-  selftests: forwarding: add test of MAC-Auth Bypass to locked port
-    tests
-
- drivers/net/dsa/b53/b53_common.c              |   5 +
- drivers/net/dsa/b53/b53_priv.h                |   1 +
- drivers/net/dsa/hirschmann/hellcreek.c        |   5 +
- drivers/net/dsa/lan9303-core.c                |   5 +
- drivers/net/dsa/lantiq_gswip.c                |   5 +
- drivers/net/dsa/microchip/ksz_common.c        |   5 +
- drivers/net/dsa/mt7530.c                      |   5 +
- drivers/net/dsa/mv88e6xxx/Makefile            |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c              |  81 ++++-
- drivers/net/dsa/mv88e6xxx/chip.h              |  19 ++
- drivers/net/dsa/mv88e6xxx/global1.h           |   1 +
- drivers/net/dsa/mv88e6xxx/global1_atu.c       |  76 ++++-
- drivers/net/dsa/mv88e6xxx/port.c              |  15 +-
- drivers/net/dsa/mv88e6xxx/port.h              |   6 +
- drivers/net/dsa/mv88e6xxx/switchdev.c         | 285 ++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/switchdev.h         |  37 +++
- drivers/net/dsa/ocelot/felix.c                |   5 +
- drivers/net/dsa/qca/qca8k-common.c            |   5 +
- drivers/net/dsa/qca/qca8k.h                   |   1 +
- drivers/net/dsa/sja1105/sja1105_main.c        |   7 +-
- include/linux/if_bridge.h                     |   1 +
- include/net/dsa.h                             |   1 +
- include/net/switchdev.h                       |   3 +
- include/uapi/linux/if_link.h                  |   1 +
- include/uapi/linux/neighbour.h                |   4 +-
- net/bridge/br.c                               |   5 +-
- net/bridge/br_fdb.c                           |  43 ++-
- net/bridge/br_input.c                         |  16 +-
- net/bridge/br_netlink.c                       |   9 +-
- net/bridge/br_private.h                       |   7 +-
- net/bridge/br_switchdev.c                     |   5 +-
- net/dsa/dsa_priv.h                            |   4 +-
- net/dsa/port.c                                |   7 +-
- net/dsa/slave.c                               |   4 +-
- net/dsa/switch.c                              |  10 +-
- .../net/forwarding/bridge_locked_port.sh      | 107 ++++++-
- .../net/forwarding/bridge_sticky_fdb.sh       |  21 +-
- 37 files changed, 768 insertions(+), 50 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/switchdev.h
-
+diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+index d62ef428e3aa..1668ac4d7adc 100644
+--- a/include/linux/if_bridge.h
++++ b/include/linux/if_bridge.h
+@@ -59,6 +59,7 @@ struct br_ip_list {
+ #define BR_MRP_LOST_IN_CONT	BIT(19)
+ #define BR_TX_FWD_OFFLOAD	BIT(20)
+ #define BR_PORT_LOCKED		BIT(21)
++#define BR_PORT_MAB		BIT(22)
+ 
+ #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+ 
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index e36d9d2c65a7..fcbd0b85ad53 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -560,6 +560,7 @@ enum {
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+ 	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+ 	IFLA_BRPORT_LOCKED,
++	IFLA_BRPORT_MAB,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index a998bf761635..bc1440a56b70 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -52,7 +52,9 @@ enum {
+ #define NTF_STICKY	(1 << 6)
+ #define NTF_ROUTER	(1 << 7)
+ /* Extended flags under NDA_FLAGS_EXT: */
+-#define NTF_EXT_MANAGED	(1 << 0)
++#define NTF_EXT_MANAGED		(1 << 0)
++#define NTF_EXT_LOCKED		(1 << 1)
++#define NTF_EXT_BLACKHOLE	(1 << 2)
+ 
+ /*
+  *	Neighbor Cache Entry States.
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index e7f4fccb6adb..1962d9594a48 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
+@@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+ 	struct nda_cacheinfo ci;
+ 	struct nlmsghdr *nlh;
+ 	struct ndmsg *ndm;
++	u32 ext_flags = 0;
+ 
+ 	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+ 	if (nlh == NULL)
+@@ -125,11 +126,18 @@ static int fdb_fill_info(struct sk_buff *skb, const struct net_bridge *br,
+ 		ndm->ndm_flags |= NTF_EXT_LEARNED;
+ 	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+ 		ndm->ndm_flags |= NTF_STICKY;
++	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
++		ext_flags |= NTF_EXT_LOCKED;
++	if (test_bit(BR_FDB_BLACKHOLE, &fdb->flags))
++		ext_flags |= NTF_EXT_BLACKHOLE;
+ 
+ 	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+ 		goto nla_put_failure;
+ 	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+ 		goto nla_put_failure;
++	if (nla_put_u32(skb, NDA_FLAGS_EXT, ext_flags))
++		goto nla_put_failure;
++
+ 	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+ 	ci.ndm_confirmed = 0;
+ 	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+@@ -171,6 +179,7 @@ static inline size_t fdb_nlmsg_size(void)
+ 	return NLMSG_ALIGN(sizeof(struct ndmsg))
+ 		+ nla_total_size(ETH_ALEN) /* NDA_LLADDR */
+ 		+ nla_total_size(sizeof(u32)) /* NDA_MASTER */
++		+ nla_total_size(sizeof(u32)) /* NDA_FLAGS_EXT */
+ 		+ nla_total_size(sizeof(u16)) /* NDA_VLAN */
+ 		+ nla_total_size(sizeof(struct nda_cacheinfo))
+ 		+ nla_total_size(0) /* NDA_FDB_EXT_ATTRS */
+@@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
+ 						      &fdb->flags)))
+ 					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
+ 						  &fdb->flags);
++				if (source->flags & BR_PORT_MAB)
++					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
++				else
++					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+ 			}
+ 
+ 			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags)))
+@@ -1082,6 +1095,16 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
+ 		modified = true;
+ 	}
+ 
++	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags)) {
++		clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
++		modified = true;
++	}
++
++	if (test_bit(BR_FDB_BLACKHOLE, &fdb->flags)) {
++		clear_bit(BR_FDB_BLACKHOLE, &fdb->flags);
++		modified = true;
++	}
++
+ 	if (fdb_handle_notify(fdb, notify))
+ 		modified = true;
+ 
+@@ -1178,6 +1201,12 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
+ 		vg = nbp_vlan_group(p);
+ 	}
+ 
++	if (tb[NDA_FLAGS_EXT] &&
++	    (nla_get_u32(tb[NDA_FLAGS_EXT]) & (NTF_EXT_LOCKED | NTF_EXT_BLACKHOLE))) {
++		pr_info("bridge: RTM_NEWNEIGH has invalid extended flags\n");
++		return -EINVAL;
++	}
++
+ 	if (tb[NDA_FDB_EXT_ATTRS]) {
+ 		attr = tb[NDA_FDB_EXT_ATTRS];
+ 		err = nla_parse_nested(nfea_tb, NFEA_MAX, attr,
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 68b3e850bcb9..3d48aa7fa778 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
+@@ -110,8 +110,19 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+ 
+ 		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+-		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
++		    test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
++		    test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags)) {
++			if (!fdb_src || (READ_ONCE(fdb_src->dst) != p &&
++					 (p->flags & BR_LEARNING))) {
++				unsigned long flags = 0;
++
++				if (p->flags & BR_PORT_MAB) {
++					__set_bit(BR_FDB_ENTRY_LOCKED, &flags);
++					br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);
++				}
++			}
+ 			goto drop;
++		}
+ 	}
+ 
+ 	nbp_switchdev_frame_mark(p, skb);
+@@ -185,6 +196,9 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+ 		if (test_bit(BR_FDB_LOCAL, &dst->flags))
+ 			return br_pass_frame_up(skb);
+ 
++		if (test_bit(BR_FDB_BLACKHOLE, &dst->flags))
++			goto drop;
++
+ 		if (now != dst->used)
+ 			dst->used = now;
+ 		br_forward(dst->dst, skb, local_rcv, false);
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 5aeb3646e74c..34483420c9e4 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -188,6 +188,7 @@ static inline size_t br_port_info_size(void)
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
+ 		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
++		+ nla_total_size(1)	/* IFLA_BRPORT_MAB */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_ROOT_ID */
+ 		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* IFLA_BRPORT_BRIDGE_ID */
+ 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
+@@ -274,7 +275,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+ 	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
+ 		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
+ 	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & BR_ISOLATED)) ||
+-	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)))
++	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & BR_PORT_LOCKED)) ||
++	    nla_put_u8(skb, IFLA_BRPORT_MAB, !!(p->flags & BR_PORT_MAB)))
+ 		return -EMSGSIZE;
+ 
+ 	timerval = br_timer_value(&p->message_age_timer);
+@@ -876,6 +878,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
++	[IFLA_BRPORT_MAB] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
+ 	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
+ };
+@@ -943,6 +946,10 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[],
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, BR_NEIGH_SUPPRESS);
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+ 	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
++	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
++
++	if (!(p->flags & BR_PORT_LOCKED))
++		p->flags &= ~BR_PORT_MAB;
+ 
+ 	changed_mask = old_flags ^ p->flags;
+ 
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 06e5f6faa431..048e4afbc5a0 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
+@@ -251,7 +251,9 @@ enum {
+ 	BR_FDB_ADDED_BY_EXT_LEARN,
+ 	BR_FDB_OFFLOADED,
+ 	BR_FDB_NOTIFY,
+-	BR_FDB_NOTIFY_INACTIVE
++	BR_FDB_NOTIFY_INACTIVE,
++	BR_FDB_ENTRY_LOCKED,
++	BR_FDB_BLACKHOLE,
+ };
+ 
+ struct net_bridge_fdb_key {
 -- 
 2.30.2
 
