@@ -2,130 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FCDF5A2144
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 08:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BAD85A214B
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 08:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244359AbiHZG4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 02:56:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37620 "EHLO
+        id S229810AbiHZG6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 02:58:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244289AbiHZG4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 02:56:39 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16DAAD21E4;
-        Thu, 25 Aug 2022 23:56:38 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id w88-20020a17090a6be100b001fbb0f0b013so680234pjj.5;
-        Thu, 25 Aug 2022 23:56:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=KjTu3WZ7BYoc24FpxzDgvGSEPvPIK+/85ugDuX1XsWs=;
-        b=VzB0bl+iEINcPc60YjOjrVq/MGe3EZIOGIfRN3cOt1lPmr7/2CWr2btJPt7fsoTg0H
-         V3AUk91Yq4C68L+7jvOaSn0ixJnibvNsheUDBe21w3J9B7yzFpryF5gKe+dnMg7Cnq8U
-         As4NbkjBOZDd0qVheRpnG20stTMyRlEddZUII8bfxiZMoK0tKVhFqVlDf9ou+rpvZbJV
-         KlRWHKBmKhR6gVCxhZC9Gwhec9gradkDgrsxBkRtEW1U7N+qItgNvz9oHq/HUw++EAQA
-         ATNNIRV0LfJv7Bu4iuOcko0KrfkTgdnnZlZXxrJ1hmATPqQTWCnKrZwjMR7vJPheapR7
-         uG2Q==
+        with ESMTP id S229676AbiHZG6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 02:58:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D183D21E8
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:58:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661497124;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lhDjsBNvG6YX3uYZc5SWnjBUuk9KrOIEcreK3q1L2fc=;
+        b=it3+OzKDR5k8/dUuEbCzf7o898xNit+dsnNCU5+s8/Xzt5oqcOEWdjtW21FmkOAzWZ9A69
+        YGxrDMLywJGCQJHJE4XeXYBgdse1iSGMZzk62D4PsqWCOQDXhcyJniBYYMHeX3kSnkKZcp
+        xnSCuZuovb9t4/1qCqsZ+w4WBueaxxY=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-154-d-iBx0Z2Nfq5_DKEZ6Pwog-1; Fri, 26 Aug 2022 02:58:42 -0400
+X-MC-Unique: d-iBx0Z2Nfq5_DKEZ6Pwog-1
+Received: by mail-qk1-f200.google.com with SMTP id h20-20020a05620a245400b006bb0c6074baso619642qkn.6
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 23:58:42 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=KjTu3WZ7BYoc24FpxzDgvGSEPvPIK+/85ugDuX1XsWs=;
-        b=Qj9Xrr7zrXavdNn8CiimxTACeHBEuMvsw6yvIABsXK1Bglsp0jdZhas7nZa0b2d3GK
-         wYoY1afo0kvlGR+4SR3q7TrZu0pH4DCJiRIPtV9MnMRA12wRviy49IZpUjlBIW57nRiz
-         nbGqIG+FwFRReFZnyL1ATHI6CrL0ApbO7FWA6g+ZyKyCXjIbU6WetWsLqC2Uz2pJcdWj
-         yvcevJW33LDkaii5cfxKyOcta5noK1w7ftDkEhtx/3V950zZAeXteibC3V34n96O1/qX
-         7mwUW/ILHMIggGjujtA1vgDWfPJstuqkNUyme926Q2/s5vrraVaNWHf7baWdA2wN6viK
-         mqsg==
-X-Gm-Message-State: ACgBeo0E5lvZTh0p0JRGguvuF3b2K6MxgehCXVqkEcf3Yy2t3TCyDTyh
-        nz+hYu/sVaqzciwsMGPchFkgeCz5TFCizg==
-X-Google-Smtp-Source: AA6agR4FshwGd2RWaRUIY579oO0VCN85Bh8OlckOU9Qzl9fecrI2JBRzsZ77xGYhMRL2cKU/LOKMdw==
-X-Received: by 2002:a17:90b:3b50:b0:1fb:632c:f978 with SMTP id ot16-20020a17090b3b5000b001fb632cf978mr2938700pjb.231.1661496997429;
-        Thu, 25 Aug 2022 23:56:37 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id mi6-20020a17090b4b4600b001f52fa1704csm11620478pjb.3.2022.08.25.23.56.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Aug 2022 23:56:36 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Li Zhong <floridsleeves@gmail.com>
-Subject: [PATCH net-next v2] drivers/net/ethernet: check return value of e1e_rphy()
-Date:   Thu, 25 Aug 2022 23:56:27 -0700
-Message-Id: <20220826065627.1615965-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=lhDjsBNvG6YX3uYZc5SWnjBUuk9KrOIEcreK3q1L2fc=;
+        b=cHatQQr4u0L9iwQ41sYpOTkftClmK9Pox8ijkhAA5JHLaT87IBCvHPAsqWkjdLV7Ml
+         4qNvuXmUFo5Z6OmPl1tIi9Xnm4vwW7SccXAWDmfAhKlGhjoHkWaxNfZtwg1d/JLCkcfl
+         RWpjNsUCaJMrIKWSrvyENADb7cg8MtcOCIhUH36wuHqgLavaiw+rDxjR1b9R7YQC60U0
+         DeAM+nis6xxQjw2rnLLhbt55cLA8AlF5z5oKxdEjk+jEs7Xh1pf/cuCvqj7jgW9V+cJI
+         Zp1fggUoh+4h8hX7nHrmUlqX1QxqLNLQgE8qzZxRGM16/mF3UQRjey2e2RDT1AzFTfJZ
+         Grhw==
+X-Gm-Message-State: ACgBeo3+oOXG4EZ2Jk22y8AkZe3C5qSelnXLk2cdBNLWRTBgd3McL2H6
+        fQTmWZxx11kLhf5jhRl+F1A9HJi4iHOzv6JjCesGkEXS1G17fIP6awQtcZnJxD1fNDC+iHx/Pfg
+        KudbRE4rBUk/X9ifWd1OgmdZUCIEKoUYC
+X-Received: by 2002:a05:622a:18e:b0:342:f7a9:a133 with SMTP id s14-20020a05622a018e00b00342f7a9a133mr6787140qtw.402.1661497122352;
+        Thu, 25 Aug 2022 23:58:42 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7hSSB6B1kHe3/zMn4UWOwBOE3zZbpUNoBAiA6kYJSntG5l5c6MmJJPrl1IrCSNuxoCorDF1fimKqJ08l2Xhd8=
+X-Received: by 2002:a05:622a:18e:b0:342:f7a9:a133 with SMTP id
+ s14-20020a05622a018e00b00342f7a9a133mr6787128qtw.402.1661497122105; Thu, 25
+ Aug 2022 23:58:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220819082001.15439-1-ihuguet@redhat.com> <20220825090242.12848-1-ihuguet@redhat.com>
+ <YwegaWH6yL2RHW+6@lunn.ch>
+In-Reply-To: <YwegaWH6yL2RHW+6@lunn.ch>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Fri, 26 Aug 2022 08:58:31 +0200
+Message-ID: <CACT4oufGh++TyEY-FdfUjZpXSxmbC0W2O-y4uprQdYFTevv2pw@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 0/3] sfc: add support for PTP over IPv6 and 802.3
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-e1e_rphy() could return error value, which needs to be checked and
-reported for debugging and diagnose.
+On Thu, Aug 25, 2022 at 6:17 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Aug 25, 2022 at 11:02:39AM +0200, =C3=8D=C3=B1igo Huguet wrote:
+> > Most recent cards (8000 series and newer) had enough hardware support
+> > for this, but it was not enabled in the driver. The transmission of PTP
+> > packets over these protocols was already added in commit bd4a2697e5e2
+> > ("sfc: use hardware tx timestamps for more than PTP"), but receiving
+> > them was already unsupported so synchronization didn't happen.
+>
+> You don't appear to Cc: the PTP maintainer.
+>
+>     Andrew
+>
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- drivers/net/ethernet/intel/e1000e/phy.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+I didn't think about that, but looking at MAINTAINERS, there doesn't
+seem to be any. There are 2 maintainers for the drivers of the clock
+devices, but none for anything related to the network protocol...
 
-diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
-index fd07c3679bb1..060b263348ce 100644
---- a/drivers/net/ethernet/intel/e1000e/phy.c
-+++ b/drivers/net/ethernet/intel/e1000e/phy.c
-@@ -2697,9 +2697,14 @@ static s32 e1000_access_phy_wakeup_reg_bm(struct e1000_hw *hw, u32 offset,
- void e1000_power_up_phy_copper(struct e1000_hw *hw)
- {
- 	u16 mii_reg = 0;
-+	int ret;
- 
- 	/* The PHY will retain its settings across a power down/up cycle */
--	e1e_rphy(hw, MII_BMCR, &mii_reg);
-+	ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
-+	if (ret) {
-+		e_dbg("Error reading PHY register\n");
-+		return;
-+	}
- 	mii_reg &= ~BMCR_PDOWN;
- 	e1e_wphy(hw, MII_BMCR, mii_reg);
- }
-@@ -2715,9 +2720,14 @@ void e1000_power_up_phy_copper(struct e1000_hw *hw)
- void e1000_power_down_phy_copper(struct e1000_hw *hw)
- {
- 	u16 mii_reg = 0;
-+	int ret;
- 
- 	/* The PHY will retain its settings across a power down/up cycle */
--	e1e_rphy(hw, MII_BMCR, &mii_reg);
-+	ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
-+	if (ret) {
-+		e_dbg("Error reading PHY register\n");
-+		return;
-+	}
- 	mii_reg |= BMCR_PDOWN;
- 	e1e_wphy(hw, MII_BMCR, mii_reg);
- 	usleep_range(1000, 2000);
-@@ -3037,7 +3047,11 @@ s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw)
- 		return 0;
- 
- 	/* Do not apply workaround if in PHY loopback bit 14 set */
--	e1e_rphy(hw, MII_BMCR, &data);
-+	ret_val = e1e_rphy(hw, MII_BMCR, &data);
-+	if (ret_val) {
-+		e_dbg("Error reading PHY register\n");
-+		return ret_val;
-+	}
- 	if (data & BMCR_LOOPBACK)
- 		return 0;
- 
--- 
-2.25.1
+--=20
+=C3=8D=C3=B1igo Huguet
 
