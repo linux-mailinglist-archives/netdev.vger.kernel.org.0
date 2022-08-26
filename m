@@ -2,136 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 628355A2336
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 10:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345105A2347
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 10:40:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244882AbiHZIie (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 04:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58246 "EHLO
+        id S245401AbiHZIkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 04:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343703AbiHZIiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 04:38:07 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF8CD59BA
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:37:55 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id tl26so1096437ejc.9
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:37:55 -0700 (PDT)
+        with ESMTP id S245436AbiHZIkB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 04:40:01 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A24D6339
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:39:08 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-334dc616f86so18985267b3.8
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 01:39:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=jykyR+zf1I30R4yEDUKU/XEKf3ZCKoFRCjj/vhhKdZA=;
-        b=Lbg2Oxce/DmSaPuWlaoNRrZmUvZxHDfKwD/2rYgJHBwgTM/ScONAuUs1LiB3ipQBRk
-         +ATgmcZ0ClrL0bDyPd8t+qSpgrmEcgejCdmLk2IBfOmnRuZnGCTfBS3ITilQ9FVOpdxP
-         HD4/5rU8g94XKC/nKNOZX2XNOtIDus8n7AsJb+02CwibtpQLifOrahomUk/ca6NZ3gMf
-         njFo6kChEqv+0Q5ClWhrwTSqtOYiVRBHWZ8+xK+klh2jQGKdTNnb3boYMN5n4fBGD+ZZ
-         Ip70LTwnF9XLEW8cflkGCMyEhC0GWbLz0UEcQb5CTciXGKoNEiIiHfkDvn0jcIXD5aTO
-         /3aQ==
+        d=google.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=Gbnh/nnDbuL5T5BvLNj3zwAmlE8d4k5PawHmbvFEFbk=;
+        b=MNjXddBAOd+w9wkV5muswSppV6x5Jv+YS9ecOjXsUWJBVbPQURDBrSTe3Rss2i0p/r
+         Jhmif2aOct4FrfcfpD9SRO9RHxr4LmccGOUui2+rtO1i6NUewZYaWAF1Uj3qq59pfr91
+         VjwTW2OAdfNyC5ON+2WWx86GER7zk9LtKCZGNCcc/bhubscXBSXf0GihTtUlUsBLA3Xn
+         vuWQ47vl8nc81EKOuzXoehfRScxfeaXU9CceWTlAIRodc4v7g6LuKc+2uSzDQqYIngTy
+         F8vTYNtLOiuY3iezgI6TMtgUOBkC4/bd55SIlfcNGNOfJt1siO9gbTktwflBScPg/B+A
+         IwQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=jykyR+zf1I30R4yEDUKU/XEKf3ZCKoFRCjj/vhhKdZA=;
-        b=J3mRXLOrtb0YXIE3MV8waWmtVH6Isa5VA+u09ySgFuk/tCqh5S06zE9LZAG6JtcM5F
-         cUUfb5oKXDy6GlkMD9h5WW5zfmKwxeYkHwyv3IBQR+MbQOmVLSV3lSrVV+aMt2WoRkrE
-         RUqk+CM8c7W0uZbIR+4KQfYWYckHlqarb68cOM0C/+68Nr5IRBdIINUESUnLuUdojDo5
-         CvKwlesK+ZLmZsr4hXCy2hJM7WuJy6a0O07d7ea3uEPaHxGWKe1BX1PTomaQahlLa/Gv
-         BSn4GEJPXvA1JJJwIpQgP7GSiig8xmRo0R04l1ArGuyVf98GDfZWpV6eHbS54cBBPVzZ
-         LXLw==
-X-Gm-Message-State: ACgBeo103eMYRJlP6owz+sNbuZT0XcsraMle2SbAhLa6etoDzhGSpi0d
-        oF19aQQrRAaOm+1NVUs4fpIUKQ==
-X-Google-Smtp-Source: AA6agR5nvowmkeFxPyjFKmiSmds1PiSN1vbHlJRBgUpT3bDWmXZ+18rGOD/4KKUIrNVfv6VMeQMmyg==
-X-Received: by 2002:a17:907:3da4:b0:73c:d2f4:a633 with SMTP id he36-20020a1709073da400b0073cd2f4a633mr4882349ejc.446.1661503074227;
-        Fri, 26 Aug 2022 01:37:54 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id lb3-20020a170907784300b00730df07629fsm601930ejc.174.2022.08.26.01.37.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 01:37:53 -0700 (PDT)
-Date:   Fri, 26 Aug 2022 10:37:51 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, tariqt@nvidia.com,
-        moshe@nvidia.com, saeedm@nvidia.com
-Subject: Re: [patch net-next 6/7] net: dsa: don't do devlink port setup early
-Message-ID: <YwiGX98N8yRqT/V8@nanopsycho>
-References: <20220825103400.1356995-1-jiri@resnulli.us>
- <20220825103400.1356995-7-jiri@resnulli.us>
- <20220825224724.nwnczlksk3bgg3v3@skbuf>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=Gbnh/nnDbuL5T5BvLNj3zwAmlE8d4k5PawHmbvFEFbk=;
+        b=ONXFBKd1DTiARl03uBoaqCMGc4iO7F0tRai7gMvwEDPy53BJL9UDT5HfSKbs+q/vOY
+         NI9hXw9MBr1c5tOwevZ0iVZqhJ5Hi6tO/+fxxquaqAFTDjOAioJb9lZ3lNw6PJp/g4Tw
+         5RAi6ZN5SzZDyfeAoLlrJu/b+Ih2+MJ9E2G1aU61fjhgoWt2IADMwL/qtyqJFJV5OpMH
+         tBgNIm3UX8R2AyutiFmhBNyxWT171okBczFuxeNuVMEo1ClaMUbeKieu+LHU4GhKZmPc
+         a0uvXBgcRi6Xsf0Re4sAf6ppBFu/5Dz2KQFVQU3qG6nZYhO9AoYQshHE8/XgsFrxFzoa
+         u6Pg==
+X-Gm-Message-State: ACgBeo1lHbGzxrxNkVadIlSFXMYgQo46OPscEkYIIM7d2e3G79HkS2a2
+        iFjyKQQmxm+0mXnb9sW11vrplA985s1HTKpXawGcxQ==
+X-Google-Smtp-Source: AA6agR7kYKsB2aFgL4J8UVJXiRDCFz4t/tXSI4PkJwjvI/Lg1d/SZ2cRrdBUXdzofU6od8Ey4X/QYzkYrxgTJmY4jhk=
+X-Received: by 2002:a81:10a:0:b0:333:618e:190b with SMTP id
+ 10-20020a81010a000000b00333618e190bmr7063483ywb.10.1661503147204; Fri, 26 Aug
+ 2022 01:39:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220825224724.nwnczlksk3bgg3v3@skbuf>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <000000000000c98a7f05ac744f53@google.com> <000000000000734fe705acb9f3a2@google.com>
+ <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com> <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
+ <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
+ <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com> <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
+In-Reply-To: <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
+From:   Alexander Potapenko <glider@google.com>
+Date:   Fri, 26 Aug 2022 10:38:30 +0200
+Message-ID: <CAG_fn=X5a=2vhDR6Lt_6wEUZCmDqhy0dTW62FphATNgpuDbqNg@mail.gmail.com>
+Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     ath9k-devel@qca.qualcomm.com, phil@philpotter.co.uk,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 26, 2022 at 12:47:24AM CEST, olteanv@gmail.com wrote:
->On Thu, Aug 25, 2022 at 12:33:59PM +0200, Jiri Pirko wrote:
->> Note there is no longer needed to reinit port as unused if
->> dsa_port_setup() fails, as it unregisters the devlink port instance on
->> the error path.
->> @@ -957,8 +941,6 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
->>  	dsa_switch_unregister_notifier(ds);
->>  
->>  	if (ds->devlink) {
->> -		dsa_switch_for_each_port(dp, ds)
->> -			dsa_port_devlink_teardown(dp);
->>  		devlink_free(ds->devlink);
->>  		ds->devlink = NULL;
->>  	}
->> @@ -1010,11 +992,8 @@ static int dsa_tree_setup_ports(struct dsa_switch_tree *dst)
->>  	list_for_each_entry(dp, &dst->ports, list) {
->>  		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp)) {
->>  			err = dsa_port_setup(dp);
->> -			if (err) {
->> -				err = dsa_port_reinit_as_unused(dp);
->> -				if (err)
->> -					goto teardown;
->> -			}
->> +			if (err)
->> +				goto teardown;
->>  		}
->>  	}
+On Fri, Aug 26, 2022 at 3:35 AM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
 >
->Please don't delete this, there is still a need.
+> On 2022/08/26 0:09, Alexander Potapenko wrote:
+> > On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
+> > <penguin-kernel@i-love.sakura.ne.jp> wrote:
+> >>
+> >> Hello.
+> > Hi Tetsuo,
+> >
+> >> I found that your patch was applied. But since the reproducer tested o=
+nly 0 byte
+> >> case, I think that rejecting only less than sizeof(struct htc_frame_hd=
+r) bytes
+> >> is not sufficient.
+> >>
+> >> More complete patch with Ack from Toke is waiting at
+> >> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.=
+SAKURA.ne.jp .
+> >
+> > Thanks for letting me know! I just checked that your patch indeed
+> > fixes the issue I am facing.
+> > If it is more complete, I think we'd indeed better use yours.
 >
->First of all, dsa_port_setup() for user ports must not fail the probing
->of the switch - see commit 86f8b1c01a0a ("net: dsa: Do not make user
->port errors fatal").
+> I recognized that "ath9k: fix an uninit value use in ath9k_htc_rx_msg()" =
+is
+> local to KMSAN tree.
+> https://github.com/google/kmsan/commit/d891e35583bf2e81ccc7a2ea548bf7cf47=
+329f40
+I actually did a rebase of KMSAN tree to v6.0-rc2 yesterday and
+dropped that patch (picked yours instead).
+Thanks for the heads-up!
 
-Got it, will leave the unused port here. I will just use
-dsa_port_setup() to init it. Something like:
+--=20
+Alexander Potapenko
+Software Engineer
 
-  	list_for_each_entry(dp, &dst->ports, list) {
-  		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp)) {
-  			err = dsa_port_setup(dp);
-			if (err) {
-				dp->type = DSA_PORT_TYPE_UNUSED;
-				err = dsa_port_setup(dp);
-				if (err)
-					goto teardown;
-			}
-  		}
+Google Germany GmbH
+Erika-Mann-Stra=C3=9Fe, 33
+80636 M=C3=BCnchen
 
-
->
->Also, DSA exposes devlink regions for unused ports too - those have the
->{DSA_PORT_TYPE,DEVLINK_PORT_FLAVOUR}_UNUSED flavor.
-
-Yep.
-
-
->
->I also see some weird behavior when I intentionally break the probing of
->some ports, but I haven't debugged to see exactly why, and it's likely
->I won't have time to debug this week.
-
-Nevermind. Will wait until you have time to test it. Thanks!
-
+Gesch=C3=A4ftsf=C3=BChrer: Paul Manicle, Liana Sebastian
+Registergericht und -nummer: Hamburg, HRB 86891
+Sitz der Gesellschaft: Hamburg
