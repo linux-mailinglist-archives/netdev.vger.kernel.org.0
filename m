@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 686875A225A
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 09:53:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C59325A2265
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 09:54:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245715AbiHZHxp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 03:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34420 "EHLO
+        id S245742AbiHZHyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 03:54:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245731AbiHZHxj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 03:53:39 -0400
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BA84D3EF8;
-        Fri, 26 Aug 2022 00:53:35 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id B9BAF30002503;
-        Fri, 26 Aug 2022 09:53:31 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id A6DE64F247; Fri, 26 Aug 2022 09:53:31 +0200 (CEST)
-Date:   Fri, 26 Aug 2022 09:53:31 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S245631AbiHZHyR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 03:54:17 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DC1D4184;
+        Fri, 26 Aug 2022 00:54:14 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 1F03124000D;
+        Fri, 26 Aug 2022 07:54:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661500452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cFsRR6LmnC4k63fn4bV/oIn6P2jpH43tFW9cuDYXxIQ=;
+        b=JyCkhYhOcTmBUrL8pZuf/UtPlBQVQFuii+TeJVteGPrMeJHSxPvDQ/U+HKHJXMZ45GxvAd
+        LIsHOZkSYXNB43yjT2qOBjd0fdT6o0U0Ky3NSKDd/wdPDTQxPCzxGr9SQZjq5hUfk99/vQ
+        o/pW29HoBMIdYnW1k4i7vEg5hLmTwhKLx9jBBx7e+7+pF6XzeNlwOc4Ady+tVOfQ0ka2TE
+        CzircAyp9GZaYnRedi6XeODWAVGSSBbwiSCDfsXJWKBnMgpdfyFVkSXH+rSS1GFvtlQi9Q
+        SEPuEtWyhXhXT9+VrtG8qEkH097Wro8DTuL0Yk3yROiNJZ6h0/LvhLESGkuEyQ==
+Date:   Fri, 26 Aug 2022 09:54:08 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
- to PHY driver to avoid polling
-Message-ID: <20220826075331.GA32117@wunner.de>
-References: <cover.1652343655.git.lukas@wunner.de>
- <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
- <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
- <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
- <20220519190841.GA30869@wunner.de>
- <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
- <e598a232-6c78-782a-316f-77902644ad6c@samsung.com>
- <20220826071924.GA21264@wunner.de>
- <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220826095408.706438c2@xps-13>
+In-Reply-To: <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+        <20220819191109.0e639918@xps-13>
+        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+        <20220823182950.1c722e13@xps-13>
+        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+        <20220824122058.1c46e09a@xps-13>
+        <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+        <20220824152648.4bfb9a89@xps-13>
+        <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+        <20220825145831.1105cb54@xps-13>
+        <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2b1a1588-505e-dff3-301d-bfc1fb14d685@samsung.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,123 +77,221 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 09:41:46AM +0200, Marek Szyprowski wrote:
-> On 26.08.2022 09:19, Lukas Wunner wrote:
-> > On Fri, Aug 26, 2022 at 08:51:58AM +0200, Marek Szyprowski wrote:
-> >> On 19.05.2022 23:22, Marek Szyprowski wrote:
-> >>> On 19.05.2022 21:08, Lukas Wunner wrote:
-> >>>> On Tue, May 17, 2022 at 12:18:45PM +0200, Marek Szyprowski wrote:
-> >>>>> This patch landed in the recent linux next-20220516 as commit
-> >>>>> 1ce8b37241ed ("usbnet: smsc95xx: Forward PHY interrupts to PHY
-> >>>>> driver to
-> >>>>> avoid polling"). Unfortunately it breaks smsc95xx usb ethernet
-> >>>>> operation
-> >>>>> after system suspend-resume cycle. On the Odroid XU3 board I got the
-> >>>>> following warning in the kernel log:
-> >>>>>
-> >>>>> # time rtcwake -s10 -mmem
-> >>>>> rtcwake: wakeup from "mem" using /dev/rtc0 at Tue May 17 09:16:07 2022
-> >>>>> PM: suspend entry (deep)
-> >>>>> Filesystems sync: 0.001 seconds
-> >>>>> Freezing user space processes ... (elapsed 0.002 seconds) done.
-> >>>>> OOM killer disabled.
-> >>>>> Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
-> >>>>> printk: Suspending console(s) (use no_console_suspend to debug)
-> >>>>> smsc95xx 4-1.1:1.0 eth0: entering SUSPEND2 mode
-> >>>>> smsc95xx 4-1.1:1.0 eth0: Failed to read reg index 0x00000114: -113
-> >>>>> smsc95xx 4-1.1:1.0 eth0: Error reading MII_ACCESS
-> >>>>> smsc95xx 4-1.1:1.0 eth0: __smsc95xx_mdio_read: MII is busy
-> >>>>> ------------[ cut here ]------------
-> >>>>> WARNING: CPU: 2 PID: 73 at drivers/net/phy/phy.c:946
-> >>>>> phy_state_machine+0x98/0x28c
-> >>>> [...]
-> >>>>> It looks that the driver's suspend/resume operations might need some
-> >>>>> adjustments. After the system suspend/resume cycle the driver is not
-> >>>>> operational anymore. Reverting the $subject patch on top of linux
-> >>>>> next-20220516 restores ethernet operation after system suspend/resume.
-> >>>> Thanks a lot for the report. It seems the PHY is signaling a link
-> >>>> change
-> >>>> shortly before system sleep and by the time the phy_state_machine()
-> >>>> worker
-> >>>> gets around to handle it, the device has already been suspended and thus
-> >>>> refuses any further USB requests with -EHOSTUNREACH (-113):
-> > [...]
-> >>>> Assuming the above theory is correct, calling phy_stop_machine()
-> >>>> after usbnet_suspend() would be sufficient to fix the issue.
-> >>>> It cancels the phy_state_machine() worker.
-> >>>>
-> >>>> The small patch below does that. Could you give it a spin?
-> >>> That's it. Your analysis is right and the patch fixes the issue. Thanks!
-> >>>
-> >>> Feel free to add:
-> >>>
-> >>> Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >>>
-> >>> Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> >> Gentle ping for the final patch...
-> > Hm?  Actually this issue is supposed to be fixed by mainline commit
-> > 1758bde2e4aa ("net: phy: Don't trigger state machine while in suspend").
+Hi Alexander,
+
+aahringo@redhat.com wrote on Thu, 25 Aug 2022 21:05:09 -0400:
+
+> Hi,
+>=20
+> On Thu, Aug 25, 2022 at 8:58 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
 > >
-> > The initial fix attempt that you're replying to should not be necessary
-> > with that commit.
+> > Hi Alexander,
 > >
-> > Are you still seeing issues even with 1758bde2e4aa applied?
-> > Or are you maybe using a custom downstream tree which is missing that commit?
-> 
-> On Linux next-20220825 I still get the following warning during 
-> suspend/resume cycle:
-> 
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 1483 at drivers/net/phy/phy_device.c:323 
-> mdio_bus_phy_resume+0x10c/0x110
-> Modules linked in: exynos_gsc s5p_jpeg s5p_mfc videobuf2_dma_contig 
-> v4l2_mem2mem videobuf2_memops videobuf2_v4l2 videobuf2_common videodev 
-> mc s5p_cec
-> CPU: 0 PID: 1483 Comm: rtcwake Not tainted 6.0.0-rc2-next-20220825 #5482
-> Hardware name: Samsung Exynos (Flattened Device Tree)
->   unwind_backtrace from show_stack+0x10/0x14
->   show_stack from dump_stack_lvl+0x58/0x70
->   dump_stack_lvl from __warn+0xc8/0x220
->   __warn from warn_slowpath_fmt+0x5c/0xb4
->   warn_slowpath_fmt from mdio_bus_phy_resume+0x10c/0x110
->   mdio_bus_phy_resume from dpm_run_callback+0x94/0x208
->   dpm_run_callback from device_resume+0x124/0x21c
->   device_resume from dpm_resume+0x108/0x278
->   dpm_resume from dpm_resume_end+0xc/0x18
->   dpm_resume_end from suspend_devices_and_enter+0x208/0x70c
->   suspend_devices_and_enter from pm_suspend+0x364/0x430
->   pm_suspend from state_store+0x68/0xc8
->   state_store from kernfs_fop_write_iter+0x110/0x1d4
->   kernfs_fop_write_iter from vfs_write+0x1c4/0x2ac
->   vfs_write from ksys_write+0x5c/0xd4
->   ksys_write from ret_fast_syscall+0x0/0x1c
-> Exception stack(0xf2ee5fa8 to 0xf2ee5ff0)
-> 5fa0:                   00000004 0002b438 00000004 0002b438 00000004 
-> 00000000
-> 5fc0: 00000004 0002b438 000291b0 00000004 0002b438 00000004 befd9c1c 
-> 00028160
-> 5fe0: 0000006c befd9ae8 b6eb4148 b6f118a4
-> irq event stamp: 58381
-> hardirqs last  enabled at (58393): [<c019ff28>] vprintk_emit+0x320/0x344
-> hardirqs last disabled at (58400): [<c019fedc>] vprintk_emit+0x2d4/0x344
-> softirqs last  enabled at (58258): [<c0101694>] __do_softirq+0x354/0x618
-> softirqs last disabled at (58247): [<c012dd18>] __irq_exit_rcu+0x140/0x1ec
-> ---[ end trace 0000000000000000 ]---
-> 
-> The mentioned patch fixes it.
+> > aahringo@redhat.com wrote on Wed, 24 Aug 2022 17:53:45 -0400:
+> > =20
+> > > Hi,
+> > >
+> > > On Wed, Aug 24, 2022 at 9:27 AM Miquel Raynal <miquel.raynal@bootlin.=
+com> wrote: =20
+> > > >
+> > > > Hi Alexander,
+> > > >
+> > > > aahringo@redhat.com wrote on Wed, 24 Aug 2022 08:43:20 -0400:
+> > > > =20
+> > > > > Hi,
+> > > > >
+> > > > > On Wed, Aug 24, 2022 at 6:21 AM Miquel Raynal <miquel.raynal@boot=
+lin.com> wrote:
+> > > > > ... =20
+> > > > > >
+> > > > > > Actually right now the second level is not enforced, and all the
+> > > > > > filtering levels are a bit fuzzy and spread everywhere in rx.c.
+> > > > > >
+> > > > > > I'm gonna see if I can at least clarify all of that and only ma=
+ke
+> > > > > > coord-dependent the right section because right now a
+> > > > > > ieee802154_coord_rx() path in ieee802154_rx_handle_packet() doe=
+s not
+> > > > > > really make sense given that the level 3 filtering rules are mo=
+stly
+> > > > > > enforced in ieee802154_subif_frame(). =20
+> > > > >
+> > > > > One thing I mentioned before is that we probably like to have a
+> > > > > parameter for rx path to give mac802154 a hint on which filtering
+> > > > > level it was received. We don't have that, I currently see that t=
+his
+> > > > > is a parameter for hwsim receiving it on promiscuous level only a=
+nd
+> > > > > all others do third level filtering.
+> > > > > We need that now, because the promiscuous mode was only used for
+> > > > > sniffing which goes directly into the rx path for monitors. With =
+scan
+> > > > > we mix things up here and in my opinion require such a parameter =
+and
+> > > > > do filtering if necessary. =20
+> > > >
+> > > > I am currently trying to implement a slightly different approach. T=
+he
+> > > > core does not know hwsim is always in promiscuous mode, but it does
+> > > > know that it does not check FCS. So the core checks it. This is
+> > > > level 1 achieved. Then in level 2 we want to know if the core asked
+> > > > the transceiver to enter promiscuous mode, which, if it did, should
+> > > > not imply more filtering. If the device is working in promiscuous
+> > > > mode but this was not asked explicitly by the core, we don't really
+> > > > care, software filtering will apply anyway.
+> > > > =20
+> > >
+> > > I doubt that I will be happy with this solution, this all sounds like
+> > > "for the specific current behaviour that we support 2 filtering levels
+> > > it will work", just do a parameter on which 802.15.4 filtering level
+> > > it was received and the rx path will check what kind of filter is
+> > > required and which not.
+> > > As driver ops start() callback you should say which filtering level
+> > > the receive mode should start with.
+> > > =20
+> > > > I am reworking the rx path to clarify what is being done and when,
+> > > > because I found this part very obscure right now. In the end I don't
+> > > > think we need additional rx info from the drivers. Hopefully my
+> > > > proposal will clarify why this is (IMHO) not needed.
+> > > > =20
+> > >
+> > > Never looked much in 802.15.4 receive path as it just worked but I
+> > > said that there might be things to clean up when filtering things on
+> > > hardware and when on software and I have the feeling we are doing
+> > > things twice. Sometimes it is also necessary to set some skb fields
+> > > e.g. PACKET_HOST, etc. and I think this is what the most important
+> > > part of it is there. However, there are probably some tune ups if we
+> > > know we are in third leveling filtering... =20
+> >
+> > Ok, I've done the following.
+> >
+> > - Adding a PHY parameter which reflects the actual filtering level of
+> >   the transceiver, the default level is 4 (standard situation, you're =
+=20
+>=20
+> 3?
 
-Color me confused.
+Honestly there are only two filtering levels in the normal path and one
+additional for scanning situations. But the spec mentions 4, so I
+figured we should use the same naming to avoid confusing people on what
+"level 3 means, if it's level 3 because level 1 and 2 are identical at
+PHY level, or level 3 which is the scan filtering as mentioned in the
+spec?".
 
-With "the mentioned patch", are you referring to 1758bde2e4aa
-or are you referring to the little test patch in this e-mail:
-https://lore.kernel.org/netdev/20220519190841.GA30869@wunner.de/
+I used this enum to clarify the amount of filtering that is involved,
+hopefully it is clear enough. I remember we talked about this already
+but an unrelated thread, and was not capable of finding it anymore O:-).
 
-There's a Tested-by from you on 1758bde2e4aa, so I assume the
-commit fixed the issue at the time.  Does it still occur
-intermittently?  Or does it occur every time?  In the latter case,
-I'd assume some other change was made in the meantime and that
-other change exposed the issue again...
+/** enum ieee802154_filtering_level - Filtering levels applicable to a PHY
+ * @IEEE802154_FILTERING_NONE: No filtering at all, what is received is
+ *	forwarded to the softMAC
+ * @IEEE802154_FILTERING_1_FCS: First filtering level, frames with an inval=
+id
+ *	FCS should be dropped
+ * @IEEE802154_FILTERING_2_PROMISCUOUS: Second filtering level, promiscuous
+ *	mode, identical in terms of filtering to the first level at the PHY
+ *	level, but no ACK should be transmitted automatically and at the MAC
+ *	level the frame should be forwarded to the upper layer directly
+ * @IEEE802154_FILTERING_3_SCAN: Third filtering level, enforced during sca=
+ns,
+ * 	which only forwards beacons
+ * @IEEE802154_FILTERING_4_FRAME_FIELDS: Fourth filtering level actually
+ *	enforcing the validity of the content of the frame with various checks
+ */
+enum ieee802154_filtering_level {
+	IEEE802154_FILTERING_NONE,
+	IEEE802154_FILTERING_1_FCS,
+	IEEE802154_FILTERING_2_PROMISCUOUS,
+	IEEE802154_FILTERING_3_SCAN,
+	IEEE802154_FILTERING_4_FRAME_FIELDS,
+};
+
+>=20
+> >   receiving data) but of course if the PHY does not support this state
+> >   (like hwsim) it should overwrite this value by setting the actual
+> >   filtering level (none, in the hwsim case) so that the core knows what
+> >   it receives.
+> > =20
+>=20
+> ok.
+>=20
+> > - I've replaced the specific "do not check the FCS" flag only used by
+> >   hwsim by this filtering level, which gives all the information we
+> >   need.
+> > =20
+>=20
+> ok.
+>=20
+> > - I've added a real promiscuous filtering mode which truly does not
+> >   care about the content of the frame but only checks the FCS if not
+> >   already done by the xceiver.
+> > =20
+>=20
+> not sure what a "real promiscuous filtering here is" people have
+> different understanding about it, but 802.15.4 has a definition for
+> it.
+
+Promiscuous, by the 802154 spec means: the FCS is good so the content of
+the received packet must means something, just forward it and let upper
+layers handle it.
+
+Until now there was no real promiscuous mode in the mac NODE rx path.
+Only monitors would get all the frames (including the ones with a wrong
+FCS), which is fine because it's a bit out of the spec, so I'm fine
+with this idea. But otherwise in the NODE/COORD rx path, the FCS should
+be checked even in promiscuous mode to correctly match the spec.
+
+Until now, ieee802154_parse_frame_start() was always called in these
+path and this would validate the frame headers. I've added a more
+precise promiscuous mode in the rx patch which skips any additional
+checks. What happens however is that, if the transceiver disables FCS
+checks in promiscuous mode, then FCS is not checked at all and this is
+invalid. With my current implementation, the devices which do not check
+the FCS might be easily "fixed" by changing their PHY filtering level
+to "FILTERING_NONE" in the promiscuous callback.
+
+> You should consider that having monitors, frames with bad fcs
+> should not be filtered out by hardware. There it comes back what I
+> said before, the filtering level should be a parameter for start()
+> driver ops.
+>=20
+> > - I've also implemented in software filtering level 4 for most
+> > regular =20
+>=20
+> 3?
+>=20
+> >   data packets. Without changing the default PHY level mentioned in
+> > the first item above, this additional filtering will be skipped
+> > which ensures we keep the same behavior of most driver. In the case
+> > of hwsim however, these filters will become active if the MAC is
+> > not in promiscuous mode or in scan mode, which is actually what
+> > people should be expecting.
+> > =20
+>=20
+> To give feedback to that I need to see code. And please don't send the
+> whole feature stuff again, just this specific part of it. Thanks.
+
+The entire filtering feature is split: there are the basis introduced
+before the scan, and then after the whole scan+association thing I've
+introduced additional filtering levels.
+
+> > Hopefully all this fits what you had in mind.
+> >
+> > I have one item left on my current todo list: improving a bit the
+> > userspace tool with a "monitor" command.
+> >
+> > Otherwise the remaining things to do are to discuss the locking
+> > design which might need to be changed to avoid lockdep issues and
+> > keep the rtnl locked eg. during a channel change. I still don't
+> > know how to do that, so it's likely that the right next version
+> > will not include any change in this area unless something pops up. =20
+>=20
+> I try to look at that on the weekend.
+
+I've had an idea yesterday night which seem to work, I think I can drop
+the two patches which you disliked regarding discarding the rtnl in the
+tx path and in hwsim:change_channel().
 
 Thanks,
-
-Lukas
+Miqu=C3=A8l
