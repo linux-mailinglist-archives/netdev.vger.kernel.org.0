@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B43C5A1D81
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE1345A1D80
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244200AbiHZAGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34354 "EHLO
+        id S244354AbiHZAHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244254AbiHZAGj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:06:39 -0400
-Received: from smtp-fw-9102.amazon.com (smtp-fw-9102.amazon.com [207.171.184.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD454C7F83;
-        Thu, 25 Aug 2022 17:06:38 -0700 (PDT)
+        with ESMTP id S244311AbiHZAHJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:07:09 -0400
+Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C59C8748;
+        Thu, 25 Aug 2022 17:07:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661472399; x=1693008399;
+  t=1661472427; x=1693008427;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=AMeidybKzTy6YY1kywsY9OZrxS2aZyZZxaWs+l8aFcM=;
-  b=lgkJDvyf0jxpscjWHBkfy4CoIaohtSuz03OtuhB7EU9BtFHUNbHvILek
-   ta4Xw/LRU5S5xQyi1PzYQOZ5YvciKR2s/CC+WpGUZRuxwcuay9hiSHiSt
-   /HHWwmDtCfa6gIMPmai5JYpbsUqrkNbFYIo9LNQCBZaiDMjTe3K6I120h
-   Q=;
+  bh=r4LdSZUDZ6Wa2PcUEjszgiPOzzF4/l84paO2XRX3n54=;
+  b=VximcEZrQ+cFjvcvCLV7b0oTrdyza2GQnBbANxZa+gdQzCx6KcHkFfai
+   JGkIb5AGrvLnpDV2SU5GsePN3bloPSpM88f3n8IEekAGUYrJcUGeLYZke
+   3wakmXtKu/AX9y+hDuv2YM4OsYFPqZAJ0YXCrn6/znAQNPE6vRjG9EnhU
+   s=;
 X-IronPort-AV: E=Sophos;i="5.93,264,1654560000"; 
-   d="scan'208";a="253012392"
-Received: from pdx4-co-svc-p1-lb2-vlan2.amazon.com (HELO email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com) ([10.25.36.210])
-  by smtp-border-fw-9102.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:06:39 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-1box-2b-3386f33d.us-west-2.amazon.com (Postfix) with ESMTPS id 3279398F7A;
-        Fri, 26 Aug 2022 00:06:38 +0000 (UTC)
+   d="scan'208";a="123539149"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:06:53 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id 7323C451A3;
+        Fri, 26 Aug 2022 00:06:52 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 26 Aug 2022 00:06:37 +0000
+ id 15.0.1497.38; Fri, 26 Aug 2022 00:06:51 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Fri, 26 Aug 2022 00:06:34 +0000
+ Fri, 26 Aug 2022 00:06:48 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,9 +51,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-Subject: [PATCH v1 net-next 04/13] net: Introduce init2() for pernet_operations.
-Date:   Thu, 25 Aug 2022 17:04:36 -0700
-Message-ID: <20220826000445.46552-5-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 05/13] tcp: Clean up some functions.
+Date:   Thu, 25 Aug 2022 17:04:37 -0700
+Message-ID: <20220826000445.46552-6-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826000445.46552-1-kuniyu@amazon.com>
 References: <20220826000445.46552-1-kuniyu@amazon.com>
@@ -63,9 +63,9 @@ Content-Type: text/plain
 X-Originating-IP: [10.43.162.140]
 X-ClientProxiedBy: EX13D10UWB001.ant.amazon.com (10.43.161.111) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,116 +73,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new init function for pernet_operations, init2().
+This patch adds no functional change and cleans up some functions
+that the following patches touch around so that we make them tidy
+and easy to review/revert.  The changes are
 
-We call each init2() during clone() or unshare() only, where we can
-access the parent netns for a child netns creation.
+  - Keep reverse christmas tree order
+  - Remove unnecessary init of port in inet_csk_find_open_port()
+  - Use req_to_sk() once in reqsk_queue_unlink()
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- include/net/net_namespace.h |  3 +++
- net/core/net_namespace.c    | 18 +++++++++++-------
- 2 files changed, 14 insertions(+), 7 deletions(-)
+ net/ipv4/inet_connection_sock.c | 21 ++++++++++-----------
+ net/ipv4/inet_hashtables.c      | 29 +++++++++++++++--------------
+ net/ipv4/tcp_ipv4.c             |  4 ++--
+ 3 files changed, 27 insertions(+), 27 deletions(-)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 8c3587d5c308..3ca426649756 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -410,6 +410,8 @@ struct pernet_operations {
- 	 * from register_pernet_subsys(), unregister_pernet_subsys()
- 	 * register_pernet_device() and unregister_pernet_device().
- 	 *
-+	 * init2() is called during clone() or unshare() only.
-+	 *
- 	 * Exit methods using blocking RCU primitives, such as
- 	 * synchronize_rcu(), should be implemented via exit_batch.
- 	 * Then, destruction of a group of net requires single
-@@ -422,6 +424,7 @@ struct pernet_operations {
- 	 * the calls.
- 	 */
- 	int (*init)(struct net *net);
-+	int (*init2)(struct net *net, struct net *old_net);
- 	void (*pre_exit)(struct net *net);
- 	void (*exit)(struct net *net);
- 	void (*exit_batch)(struct list_head *net_exit_list);
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index 6b9f19122ec1..b120ff97d9f5 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -116,7 +116,8 @@ static int net_assign_generic(struct net *net, unsigned int id, void *data)
- 	return 0;
- }
- 
--static int ops_init(const struct pernet_operations *ops, struct net *net)
-+static int ops_init(const struct pernet_operations *ops,
-+		    struct net *net, struct net *old_net)
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index f0038043b661..8e71d65cfad4 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -286,15 +286,13 @@ inet_csk_find_open_port(const struct sock *sk, struct inet_bind_bucket **tb_ret,
+ 			struct inet_bind_hashbucket **head2_ret, int *port_ret)
  {
- 	int err = -ENOMEM;
- 	void *data = NULL;
-@@ -133,6 +134,8 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
- 	err = 0;
- 	if (ops->init)
- 		err = ops->init(net);
-+	if (!err && ops->init2 && old_net)
-+		err = ops->init2(net, old_net);
- 	if (!err)
- 		return 0;
+ 	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+-	int port = 0;
++	int i, low, high, attempt_half, port, l3mdev;
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	struct net *net = sock_net(sk);
+-	bool relax = false;
+-	int i, low, high, attempt_half;
+ 	struct inet_bind2_bucket *tb2;
+ 	struct inet_bind_bucket *tb;
+ 	u32 remaining, offset;
+-	int l3mdev;
++	bool relax = false;
  
-@@ -301,7 +304,8 @@ EXPORT_SYMBOL_GPL(get_net_ns_by_id);
- /*
-  * setup_net runs the initializers for the network namespace object.
-  */
--static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
-+static __net_init int setup_net(struct net *net, struct net *old_net,
-+				struct user_namespace *user_ns)
+ 	l3mdev = inet_sk_bound_l3mdev(sk);
+ ports_exhausted:
+@@ -471,15 +469,14 @@ int inet_csk_get_port(struct sock *sk, unsigned short snum)
  {
- 	/* Must be called with pernet_ops_rwsem held */
- 	const struct pernet_operations *ops, *saved_ops;
-@@ -323,7 +327,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
- 	mutex_init(&net->ipv4.ra_mutex);
+ 	bool reuse = sk->sk_reuse && sk->sk_state != TCP_LISTEN;
+ 	struct inet_hashinfo *hinfo = sk->sk_prot->h.hashinfo;
+-	int ret = 1, port = snum;
+-	struct net *net = sock_net(sk);
+ 	bool found_port = false, check_bind_conflict = true;
+ 	bool bhash_created = false, bhash2_created = false;
+ 	struct inet_bind_hashbucket *head, *head2;
+ 	struct inet_bind2_bucket *tb2 = NULL;
+ 	struct inet_bind_bucket *tb = NULL;
+ 	bool head2_lock_acquired = false;
+-	int l3mdev;
++	int ret = 1, port = snum, l3mdev;
++	struct net *net = sock_net(sk);
  
- 	list_for_each_entry(ops, &pernet_list, list) {
--		error = ops_init(ops, net);
-+		error = ops_init(ops, net, old_net);
- 		if (error < 0)
- 			goto out_undo;
+ 	l3mdev = inet_sk_bound_l3mdev(sk);
+ 
+@@ -909,14 +906,16 @@ static void reqsk_migrate_reset(struct request_sock *req)
+ /* return true if req was found in the ehash table */
+ static bool reqsk_queue_unlink(struct request_sock *req)
+ {
+-	struct inet_hashinfo *hashinfo = req_to_sk(req)->sk_prot->h.hashinfo;
++	struct sock *sk = req_to_sk(req);
+ 	bool found = false;
+ 
+-	if (sk_hashed(req_to_sk(req))) {
+-		spinlock_t *lock = inet_ehash_lockp(hashinfo, req->rsk_hash);
++	if (sk_hashed(sk)) {
++		struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++		spinlock_t *lock;
+ 
++		lock = inet_ehash_lockp(hashinfo, req->rsk_hash);
+ 		spin_lock(lock);
+-		found = __sk_nulls_del_node_init_rcu(req_to_sk(req));
++		found = __sk_nulls_del_node_init_rcu(sk);
+ 		spin_unlock(lock);
  	}
-@@ -469,7 +473,7 @@ struct net *copy_net_ns(unsigned long flags,
- 	if (rv < 0)
- 		goto put_userns;
+ 	if (timer_pending(&req->rsk_timer) && del_timer_sync(&req->rsk_timer))
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 60d77e234a68..29dce78de179 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -169,13 +169,14 @@ void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
+ static void __inet_put_port(struct sock *sk)
+ {
+ 	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+-	const int bhash = inet_bhashfn(sock_net(sk), inet_sk(sk)->inet_num,
+-			hashinfo->bhash_size);
+-	struct inet_bind_hashbucket *head = &hashinfo->bhash[bhash];
+-	struct inet_bind_hashbucket *head2 =
+-		inet_bhashfn_portaddr(hashinfo, sk, sock_net(sk),
+-				      inet_sk(sk)->inet_num);
++	struct inet_bind_hashbucket *head, *head2;
++	struct net *net = sock_net(sk);
+ 	struct inet_bind_bucket *tb;
++	int bhash;
++
++	bhash = inet_bhashfn(net, inet_sk(sk)->inet_num, hashinfo->bhash_size);
++	head = &hashinfo->bhash[bhash];
++	head2 = inet_bhashfn_portaddr(hashinfo, sk, net, inet_sk(sk)->inet_num);
  
--	rv = setup_net(net, user_ns);
-+	rv = setup_net(net, old_net, user_ns);
+ 	spin_lock(&head->lock);
+ 	tb = inet_csk(sk)->icsk_bind_hash;
+@@ -209,17 +210,17 @@ int __inet_inherit_port(const struct sock *sk, struct sock *child)
+ {
+ 	struct inet_hashinfo *table = sk->sk_prot->h.hashinfo;
+ 	unsigned short port = inet_sk(child)->inet_num;
+-	const int bhash = inet_bhashfn(sock_net(sk), port,
+-			table->bhash_size);
+-	struct inet_bind_hashbucket *head = &table->bhash[bhash];
+-	struct inet_bind_hashbucket *head2 =
+-		inet_bhashfn_portaddr(table, child, sock_net(sk), port);
++	struct inet_bind_hashbucket *head, *head2;
+ 	bool created_inet_bind_bucket = false;
+-	bool update_fastreuse = false;
+ 	struct net *net = sock_net(sk);
++	bool update_fastreuse = false;
+ 	struct inet_bind2_bucket *tb2;
+ 	struct inet_bind_bucket *tb;
+-	int l3mdev;
++	int bhash, l3mdev;
++
++	bhash = inet_bhashfn(net, port, table->bhash_size);
++	head = &table->bhash[bhash];
++	head2 = inet_bhashfn_portaddr(table, child, net, port);
  
- 	up_read(&pernet_ops_rwsem);
+ 	spin_lock(&head->lock);
+ 	spin_lock(&head2->lock);
+@@ -629,8 +630,8 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
+ bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
+ {
+ 	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
+-	struct hlist_nulls_head *list;
+ 	struct inet_ehash_bucket *head;
++	struct hlist_nulls_head *list;
+ 	spinlock_t *lock;
+ 	bool ret = true;
  
-@@ -1107,7 +1111,7 @@ void __init net_ns_init(void)
- 	init_net.key_domain = &init_net_key_domain;
- #endif
- 	down_write(&pernet_ops_rwsem);
--	if (setup_net(&init_net, &init_user_ns))
-+	if (setup_net(&init_net, NULL, &init_user_ns))
- 		panic("Could not setup the initial network namespace");
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index cc2ad67f75be..61a9bf661814 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2406,9 +2406,9 @@ static void *established_get_first(struct seq_file *seq)
  
- 	init_net_initialized = true;
-@@ -1148,7 +1152,7 @@ static int __register_pernet_operations(struct list_head *list,
+ static void *established_get_next(struct seq_file *seq, void *cur)
+ {
+-	struct sock *sk = cur;
+-	struct hlist_nulls_node *node;
+ 	struct tcp_iter_state *st = seq->private;
++	struct hlist_nulls_node *node;
++	struct sock *sk = cur;
  
- 			memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
- 			old = set_active_memcg(memcg);
--			error = ops_init(ops, net);
-+			error = ops_init(ops, net, NULL);
- 			set_active_memcg(old);
- 			mem_cgroup_put(memcg);
- 			if (error)
-@@ -1188,7 +1192,7 @@ static int __register_pernet_operations(struct list_head *list,
- 		return 0;
- 	}
- 
--	return ops_init(ops, &init_net);
-+	return ops_init(ops, &init_net, NULL);
- }
- 
- static void __unregister_pernet_operations(struct pernet_operations *ops)
+ 	++st->num;
+ 	++st->offset;
 -- 
 2.30.2
 
