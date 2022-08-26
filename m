@@ -2,203 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7292F5A2B23
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:27:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C605A2B2E
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 17:27:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236937AbiHZP0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 11:26:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59752 "EHLO
+        id S1344656AbiHZP1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 11:27:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344526AbiHZPZB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:25:01 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5689412AB1
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:20:18 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-33da3a391d8so44278817b3.2
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 08:20:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=fHBBM1OLk/xoOhKyacBzlN1wekNRqbx5WNXFqgp7row=;
-        b=H/TUUPDrXyDpqRV7Lyp/PA8zzzDW9v54FM5LBg2mVCrdI31VAofqoY6VrtiLBYsb1f
-         DHneMHgg1aWq6Ng65kCnXzEF8mg3YmA9BXmt8X0/EeHSOb5Ks+CKb/Ja7XNNJuwoNJ07
-         7P9ocTP45/vu61xBXZ9p9eXBxbXBA9sPx959vIkLFauOAMVBxWqchBQrZ5foMHNxA+PX
-         nHWbL1adYybhueQ/eDTJIi9GwnRP6y9UA1haBjQJOFFYohFSXvybyZHPx+dNpwGnwYDx
-         yyc96RirJviVZbQ13CVANFFPsINg1qeL0gp65DEHcWX0U36Ng6omNzXwzy0VHF+l+NHu
-         jlgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=fHBBM1OLk/xoOhKyacBzlN1wekNRqbx5WNXFqgp7row=;
-        b=XJq0MmUO5JRER8DlUYyDg73OHG1bCvpQaWRnW0U+9XytYK6ijhB69799nqojxpVepU
-         0zOFJW7OyKgS1XNBy57Tar/UJrHnuHgC2YSbiRU3ARtXipUyxd2ebN1nY6lhabay44u3
-         LO4OIRr3ZlXQbHc7qffErYu5hhYoWaaqHF/9tcq0jpHuqtdRyp+Pd8oXYklnJXL9p2Vc
-         Z73Xc0AmJNm+ZKsULOudPok1bfeJo8DdcCxWNEhyuXUM0nMMN3xZcYXM0ZPB+iIMFNJP
-         YEzt10o4I4iNr+fO1GR/yki366GWnUk3w6aceNlFrkAhj/qc6bKSd6J1UGZVHeKh1wxn
-         Pxew==
-X-Gm-Message-State: ACgBeo17gPj3KD0ybE9cHYZmAsbjMQ+/029E+JL9jXjIC+Axf7FJ5NTw
-        O4nK+VHNlei84szn3iOpEfu3OLLnuNEOLWbVTMiBzw==
-X-Google-Smtp-Source: AA6agR44Ahh4VQhTlLmX9Bb9/64T1AhqiQCnUDGh7OtOKoc3vpU1qPaOUOzdEXJ7fuPFcRtLeFfjfUQpln/WGKKsMOI=
-X-Received: by 2002:a05:6902:1081:b0:695:e7c8:886b with SMTP id
- v1-20020a056902108100b00695e7c8886bmr160847ybu.598.1661527217993; Fri, 26 Aug
- 2022 08:20:17 -0700 (PDT)
+        with ESMTP id S1344434AbiHZP0r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 11:26:47 -0400
+Received: from mail.hallyn.com (mail.hallyn.com [178.63.66.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7369C121E;
+        Fri, 26 Aug 2022 08:23:21 -0700 (PDT)
+Received: by mail.hallyn.com (Postfix, from userid 1001)
+        id C68EB77A; Fri, 26 Aug 2022 10:23:19 -0500 (CDT)
+Date:   Fri, 26 Aug 2022 10:23:19 -0500
+From:   "Serge E. Hallyn" <serge@hallyn.com>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Frederick Lawler <fred@cloudflare.com>, kpsingh@kernel.org,
+        revest@chromium.org, jackmanb@chromium.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        jmorris@namei.org, stephen.smalley.work@gmail.com,
+        eparis@parisplace.org, shuah@kernel.org, brauner@kernel.org,
+        casey@schaufler-ca.com, bpf@vger.kernel.org,
+        linux-security-module@vger.kernel.org, selinux@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, kernel-team@cloudflare.com,
+        cgzones@googlemail.com, karl@bigbadwolfsecurity.com,
+        tixxdz@gmail.com
+Subject: Re: [PATCH v5 0/4] Introduce security_create_user_ns()
+Message-ID: <20220826152319.GA12466@mail.hallyn.com>
+References: <871qte8wy3.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhSU_sqMQwdoh0nAFdURqs_cVFbva8=otjcZUo8s+xyC9A@mail.gmail.com>
+ <8735du7fnp.fsf@email.froward.int.ebiederm.org>
+ <CAHC9VhQuRNxzgVeNhDy=p5+RHz5+bTH6zFdU=UvvEhyH1e962A@mail.gmail.com>
+ <87tu6a4l83.fsf@email.froward.int.ebiederm.org>
+ <20220818140521.GA1000@mail.hallyn.com>
+ <CAHC9VhRqBxtV04ARQFPWpMf1aFZo0HP_HiJ+8VpXAT-zXF6UXw@mail.gmail.com>
+ <20220819144537.GA16552@mail.hallyn.com>
+ <CAHC9VhSZ0aaa3k3704j8_9DJvSNRy-0jfXpy1ncs2Jmo8H0a7g@mail.gmail.com>
+ <875yigp4tp.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-References: <20220826000445.46552-1-kuniyu@amazon.com> <20220826000445.46552-5-kuniyu@amazon.com>
-In-Reply-To: <20220826000445.46552-5-kuniyu@amazon.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 26 Aug 2022 08:20:06 -0700
-Message-ID: <CANn89i+7dwkOnKRhiK6-bNi-aK9n885muc4u_RnTCUt-AxyoQg@mail.gmail.com>
-Subject: Re: [PATCH v1 net-next 04/13] net: Introduce init2() for pernet_operations.
-To:     Kuniyuki Iwashima <kuniyu@amazon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <875yigp4tp.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 5:06 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
->
-> This patch adds a new init function for pernet_operations, init2().
+On Thu, Aug 25, 2022 at 01:15:46PM -0500, Eric W. Biederman wrote:
+> Paul Moore <paul@paul-moore.com> writes:
+> 
+> > On Fri, Aug 19, 2022 at 10:45 AM Serge E. Hallyn <serge@hallyn.com> wrote:
+> >>  I am hoping we can come up with
+> >> "something better" to address people's needs, make everyone happy, and
+> >> bring forth world peace.  Which would stack just fine with what's here
+> >> for defense in depth.
+> >>
+> >> You may well not be interested in further work, and that's fine.  I need
+> >> to set aside a few days to think on this.
+> >
+> > I'm happy to continue the discussion as long as it's constructive; I
+> > think we all are.  My gut feeling is that Frederick's approach falls
+> > closest to the sweet spot of "workable without being overly offensive"
+> > (*cough*), but if you've got an additional approach in mind, or an
+> > alternative approach that solves the same use case problems, I think
+> > we'd all love to hear about it.
+> 
+> I would love to actually hear the problems people are trying to solve so
+> that we can have a sensible conversation about the trade offs.
+> 
+> As best I can tell without more information people want to use
+> the creation of a user namespace as a signal that the code is
+> attempting an exploit.
 
-Why ?
+I don't think that's it at all.  I think the problem is that it seems
+you can pretty reliably get a root shell at some point in the future
+by creating a user namespace, leaving it open for a bit, and waiting
+for a new announcement of the latest netfilter or whatever exploit
+that requires root in a user namespace.  Then go back to your userns
+shell and run the exploit.
 
-This seems not really needed...
+So i was hoping we could do something more targeted.  Be it splitting
+off the ability to run code under capable_ns code from uid mapping (to
+an extent), or maybe some limited-livepatch type of thing where
+certain parts of code become inaccessible to code in a non-init userns
+after some sysctl has been toggled, or something cooloer that I've
+failed to think of.
 
-TCP ops->init can trivially reach the parent net_ns if needed,
-because the current process is the one doing the creation of a new net_ns.
-
->
-> We call each init2() during clone() or unshare() only, where we can
-> access the parent netns for a child netns creation.
->
-> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-> ---
->  include/net/net_namespace.h |  3 +++
->  net/core/net_namespace.c    | 18 +++++++++++-------
->  2 files changed, 14 insertions(+), 7 deletions(-)
->
-> diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-> index 8c3587d5c308..3ca426649756 100644
-> --- a/include/net/net_namespace.h
-> +++ b/include/net/net_namespace.h
-> @@ -410,6 +410,8 @@ struct pernet_operations {
->          * from register_pernet_subsys(), unregister_pernet_subsys()
->          * register_pernet_device() and unregister_pernet_device().
->          *
-> +        * init2() is called during clone() or unshare() only.
-> +        *
->          * Exit methods using blocking RCU primitives, such as
->          * synchronize_rcu(), should be implemented via exit_batch.
->          * Then, destruction of a group of net requires single
-> @@ -422,6 +424,7 @@ struct pernet_operations {
->          * the calls.
->          */
->         int (*init)(struct net *net);
-> +       int (*init2)(struct net *net, struct net *old_net);
->         void (*pre_exit)(struct net *net);
->         void (*exit)(struct net *net);
->         void (*exit_batch)(struct list_head *net_exit_list);
-> diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-> index 6b9f19122ec1..b120ff97d9f5 100644
-> --- a/net/core/net_namespace.c
-> +++ b/net/core/net_namespace.c
-> @@ -116,7 +116,8 @@ static int net_assign_generic(struct net *net, unsigned int id, void *data)
->         return 0;
->  }
->
-> -static int ops_init(const struct pernet_operations *ops, struct net *net)
-> +static int ops_init(const struct pernet_operations *ops,
-> +                   struct net *net, struct net *old_net)
->  {
->         int err = -ENOMEM;
->         void *data = NULL;
-> @@ -133,6 +134,8 @@ static int ops_init(const struct pernet_operations *ops, struct net *net)
->         err = 0;
->         if (ops->init)
->                 err = ops->init(net);
-> +       if (!err && ops->init2 && old_net)
-> +               err = ops->init2(net, old_net);
-
-If an error comes here, while ops->init() was a success, we probably
-leave things in a bad state (memory leak ?)
-
->         if (!err)
->                 return 0;
->
-> @@ -301,7 +304,8 @@ EXPORT_SYMBOL_GPL(get_net_ns_by_id);
->  /*
->   * setup_net runs the initializers for the network namespace object.
->   */
-> -static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
-> +static __net_init int setup_net(struct net *net, struct net *old_net,
-> +                               struct user_namespace *user_ns)
->  {
->         /* Must be called with pernet_ops_rwsem held */
->         const struct pernet_operations *ops, *saved_ops;
-> @@ -323,7 +327,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
->         mutex_init(&net->ipv4.ra_mutex);
->
->         list_for_each_entry(ops, &pernet_list, list) {
-> -               error = ops_init(ops, net);
-> +               error = ops_init(ops, net, old_net);
->                 if (error < 0)
->                         goto out_undo;
->         }
-> @@ -469,7 +473,7 @@ struct net *copy_net_ns(unsigned long flags,
->         if (rv < 0)
->                 goto put_userns;
->
-> -       rv = setup_net(net, user_ns);
-> +       rv = setup_net(net, old_net, user_ns);
->
->         up_read(&pernet_ops_rwsem);
->
-> @@ -1107,7 +1111,7 @@ void __init net_ns_init(void)
->         init_net.key_domain = &init_net_key_domain;
->  #endif
->         down_write(&pernet_ops_rwsem);
-> -       if (setup_net(&init_net, &init_user_ns))
-> +       if (setup_net(&init_net, NULL, &init_user_ns))
->                 panic("Could not setup the initial network namespace");
->
->         init_net_initialized = true;
-> @@ -1148,7 +1152,7 @@ static int __register_pernet_operations(struct list_head *list,
->
->                         memcg = mem_cgroup_or_root(get_mem_cgroup_from_obj(net));
->                         old = set_active_memcg(memcg);
-> -                       error = ops_init(ops, net);
-> +                       error = ops_init(ops, net, NULL);
->                         set_active_memcg(old);
->                         mem_cgroup_put(memcg);
->                         if (error)
-> @@ -1188,7 +1192,7 @@ static int __register_pernet_operations(struct list_head *list,
->                 return 0;
->         }
->
-> -       return ops_init(ops, &init_net);
-> +       return ops_init(ops, &init_net, NULL);
->  }
->
->  static void __unregister_pernet_operations(struct pernet_operations *ops)
-> --
-> 2.30.2
->
+-serge
