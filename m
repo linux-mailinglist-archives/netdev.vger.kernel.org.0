@@ -2,112 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D7BE5A2BEE
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 18:06:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C6215A2BFB
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 18:08:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244437AbiHZQFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 12:05:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S229810AbiHZQH1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 12:07:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344189AbiHZQFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 12:05:43 -0400
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27630BBA50;
-        Fri, 26 Aug 2022 09:05:40 -0700 (PDT)
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-11d2dcc31dbso2593876fac.7;
-        Fri, 26 Aug 2022 09:05:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=Bt46CA3gkhtjHQtX98/khRB3Yq8EzK753ZbUa2Xb1R4=;
-        b=kIkRE0KZbp4pkk4FPR93yi1zSdmDWHVWbnKB1c/rrNfb9sSWBcLPwABmAqkz/F80w0
-         IExWhsSBC0tR9XKkD/hFMSkLigyShCYZKrFk9x57VWfK6lNpGe3kIU+n6OXWUyweySbR
-         Q4t3MnESINyKAaD/AVJr2TIl5wuiw54eo48gmG4AcOKlA/uXd0Xhodw+pIu7dxETRhKH
-         m/Q/zHqm5dciTW6z6jfvQsf9RG+5geRub8t7hji/Yzc53f7CAvZGiv6hfGkNmeWCJpd2
-         SWp2zjDYjtQr9dguT8iKp/NXGUWhJUmhheZhYbmynStSUJXWyQhrG5PTRa8SYYfXQZsC
-         q1Jg==
-X-Gm-Message-State: ACgBeo3sY8g9IhGVuleTsJe3cdLUxD/EV40JKnB4dFjxxu+oc+S1IyLX
-        HeAucVo90sehVjJwlqc6mg==
-X-Google-Smtp-Source: AA6agR5qo/Htznv740wYaz6ZBJU7DWuY9xkifeqYbjUccJ1C8uL4cnUGayiUfnbXUI+6wiQlGYSgNw==
-X-Received: by 2002:a05:6870:3484:b0:11e:4465:3d9b with SMTP id n4-20020a056870348400b0011e44653d9bmr2311584oah.46.1661529939549;
-        Fri, 26 Aug 2022 09:05:39 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id y16-20020a056870429000b0010bf07976c9sm1465908oah.41.2022.08.26.09.05.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Aug 2022 09:05:39 -0700 (PDT)
-Received: (nullmailer pid 3267073 invoked by uid 1000);
-        Fri, 26 Aug 2022 16:05:31 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        with ESMTP id S240638AbiHZQHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 12:07:23 -0400
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2052.outbound.protection.outlook.com [40.107.243.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DEDD51E8
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 09:07:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EfQ6NfrMXVJqYMAYE+CxdJmL4zjbLOAmSXuWlsHcK62wcIkfX6kJLEGIlp7ns5vN+rd2i0qVtZOUCh7iqrr2svjp8oPUdO8TBnxoHYGKhXT+m9kVj6QlTQdyj/8JxkWhIEqZ9TXhj21U18xYh88pcnCjGNUMOXNVaAyv3Ks16bCnFgtUl5XMAubzPqKscwRzvTQLxMArN56hViuqCcT8ra2fM1qlz+jcXQ3GPMnYJz+3nWZmGcy/KlkGT+N2v3+veo0JdBqegi9ZIL6P4xoJI6TCQdliRUVU7iL80xEzGYPcn4zsT16oosoFmRm6flWEn9tNOq0UG8ziXYKxuN2pLQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uNNGn6uMr3lb7h9rhzX6y6/AJCeE7meKCYX6rj0cbTo=;
+ b=Z/5UTATyGI6GmgHE7xkCa0CjtmNGENgIjYXc31ylnS35MFKHMMt1xfylgrWZWjL2TRUyf3OIrHHtYsffHFwlXQnUh9LeCqtXNRoKW4/qnRPxG4VnTHtje5ozOzM7bu2pBMvy/4d7Pp9ww+mgNz2M5ae309s7D/CYIm/9OxRw4ZnuJOWiO3RubgS7wMrYnOWgwp7Pixc7enlSw1Ma30lZvVyNBpRgL8vMliGdY9EvlR2/ql3tYrRa107KoDAD5+z7L3wsMcBRRhbZx6XPoD3RKfzhBTcSHEPbHWvRx/ih21bdTxZEetRSqpojvU5dSFdF4PSAE/1HUBd6QF/hHIPUXQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=temperror (sender ip
+ is 12.22.5.238) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=temperror action=none header.from=nvidia.com; dkim=none (message not
+ signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uNNGn6uMr3lb7h9rhzX6y6/AJCeE7meKCYX6rj0cbTo=;
+ b=VCI5SECGweUkwXZimitkPbpeETOvslQRabcZvwM+Tiw2ujYQKDnAQ6SRQbywooVMVbyYdsfwBmS6dSGSw9Y6n8Jg+by9reNWl+SniPo1mkx5eiBi0YpJCySdLIZGTJzl1H5nguO3pf0cwVkNmoC/it1IvH9QNW/LFMdXBJcaNuU6P/SmYNSxUJUFRYI0mTndYLhycQxYKH40HjHnzZ3Aqz5APgJUO4KmVMTMAYebiXAELlzF227YY02aZ2D7jcmnKB1Uv34szDZ+fFF+uYlpcsLKOujpcR3lo8vNgK67/Ox+gPaR+CEAe4vowxVENTlOBPSPTregRPoJP6UXwjKUYw==
+Received: from BN8PR04CA0032.namprd04.prod.outlook.com (2603:10b6:408:70::45)
+ by DM5PR1201MB0044.namprd12.prod.outlook.com (2603:10b6:4:54::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
+ 2022 16:07:20 +0000
+Received: from BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:70:cafe::af) by BN8PR04CA0032.outlook.office365.com
+ (2603:10b6:408:70::45) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
+ Transport; Fri, 26 Aug 2022 16:07:20 +0000
+X-MS-Exchange-Authentication-Results: spf=temperror (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=temperror action=none header.from=nvidia.com;
+Received-SPF: TempError (protection.outlook.com: error in processing during
+ lookup of nvidia.com: DNS Timeout)
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT004.mail.protection.outlook.com (10.13.176.164) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5566.15 via Frontend Transport; Fri, 26 Aug 2022 16:07:19 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Fri, 26 Aug
+ 2022 16:07:18 +0000
+Received: from localhost.localdomain (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Fri, 26 Aug
+ 2022 09:07:15 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Eric Dumazet <edumazet@google.com>, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        linux-arm-kernel@lists.infradead.org,
-        =?utf-8?b?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Richard Weinberger <richard@nod.at>,
-        linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        linux-mtd@lists.infradead.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-In-Reply-To: <20220825214423.903672-10-michael@walle.cc>
-References: <20220825214423.903672-1-michael@walle.cc> <20220825214423.903672-10-michael@walle.cc>
-Subject: Re: [PATCH v1 09/14] dt-bindings: nvmem: add YAML schema for the sl28 vpd layout
-Date:   Fri, 26 Aug 2022 11:05:31 -0500
-Message-Id: <1661529931.067130.3267072.nullmailer@robh.at.kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>
+CC:     Ido Schimmel <idosch@nvidia.com>, Amit Cohen <amcohen@nvidia.com>,
+        "Petr Machata" <petrm@nvidia.com>, <mlxsw@nvidia.com>
+Subject: [PATCH net-next 0/4] mlxsw: Configure max LAG ID for Spectrum-4
+Date:   Fri, 26 Aug 2022 18:06:48 +0200
+Message-ID: <cover.1661527928.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.37.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c4369fe4-ce48-4b3c-1ab2-08da877d0d78
+X-MS-TrafficTypeDiagnostic: DM5PR1201MB0044:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BZ9W91MFnTEdljEBF6qXvVWZgn/Fo5b+cTVJ56DYET8TmGybK2jBW3sUHBlnOd1qMa17zyk1AptUT9F22kC8TqPSvS/Q+mNc7mIaTQboSQEuGaFzIgl6/ytxBwjOog29SvomajRm/JK7RMDMAv3CJ1HN+LzNQOKloijVzMpHP7wCZ2JzMDVQ4IaWqRXgMOiUOsdF5x7bFBclEH1pbYX30+M0XRxYKr2ACwktJp+5d2sSRkp53Y2LzGzjtZEtrByNCV7N6w23aIuBiDotetu/ea6x7EhKhBuT9pcs/qpbZjVfZZXSs9JAtaYqXZO4h65EOpTymPG0xYS34ixx6L1Jj1dJAsmgGOniANTJfR1nv03heJN6GA3ttxmpNonB9BKEnUAW3ux/884/4PzN7JtmOgklO2uNmEyO+MlPLKxBvSunkt/i88KXof89wryhPl4e55FQ4gjxnX9w0Crp1G5+Uy14hO989fNOgQGBz+11s5NID+bTqrHs8B3Iz0b3RJZey1Ri079xdzkBBomCLZIBcJiIbSmEMvPGTcX+sYgnz48B8bNrektkcOYCop0vIZFivYLopSnNfEeXbWg+Ftg895WL2D5XodibJ+GQ4wV1LndDIYG64GGbrTc45Th1r2RY89/9I4SDV5Rgyc4DDvkKLSWVkmcIi32qPNLGTrLiDxgWNk2YDCvqjPdGxqRRtSmM5SoNMJX9KYdsncYxz/eyvv/dbok1KAQaKQ5hXuJLbABSCv5BtycF8vWfMDZYSepEAZxyxPo7nVB4QbnaLEzBvsWpmFOKUTnIujyjdOP5PE1T7bycztReRS96VYp5UxaX
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(346002)(136003)(39860400002)(46966006)(36840700001)(40470700004)(41300700001)(63350400001)(8676002)(82310400005)(478600001)(83380400001)(186003)(336012)(36756003)(26005)(36860700001)(2906002)(426003)(47076005)(6666004)(107886003)(70206006)(16526019)(40460700003)(2616005)(63370400001)(82740400003)(5660300002)(81166007)(70586007)(8936002)(86362001)(316002)(40480700001)(110136005)(54906003)(356005)(4326008)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2022 16:07:19.1108
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4369fe4-ce48-4b3c-1ab2-08da877d0d78
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0044
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 25 Aug 2022 23:44:18 +0200, Michael Walle wrote:
-> Add a schema for the NVMEM layout on Kontron's sl28 boards.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  .../nvmem/layouts/kontron,sl28-vpd.yaml       | 52 +++++++++++++++++++
->  1 file changed, 52 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
-> 
+Amit Cohen writes:
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+In the device, LAG identifiers are stored in the port group table (PGT).
+During initialization, firmware reserves a certain amount of entries at
+the beginning of this table for LAG identifiers.
 
-yamllint warnings/errors:
+In Spectrum-4, the size of the PGT table did not increase, but the
+maximum number of LAG identifiers was doubled, leaving less room for
+others entries (e.g., flood entries) that also reside in the PGT.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: compatible:0: 'kontron,sl28-vpd' was expected
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: compatible: ['user-otp'] is too short
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/mtd.example.dtb: otp-2: '#address-cells', '#size-cells', 'mac-address@0' do not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+Therefore, in order to avoid a regression and as long as there is no
+explicit requirement to support 256 LAGs, configure the firmware to
+allocate the same amount of LAG entries (128) as in Spectrum-{2,3}.
 
-doc reference errors (make refcheckdocs):
+This can be done via the 'max_lag' field in CONFIG_PROFILE command.
 
-See https://patchwork.ozlabs.org/patch/
+Patch set overview:
+Patch #1 edits the comment of the existing 'max_lag' field.
+Patch #2 adds support for configuring 'max_lag' field via CONFIG_PROFILE
+command.
+Patch #3 adds an helper function to get the actual 'max_lag' in the
+device.
+Patch #4 adjusts Spectrum-4 to configure 'max_lag' field.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+Amit Cohen (4):
+  mlxsw: cmd: Edit the comment of 'max_lag' field in CONFIG_PROFILE
+  mlxsw: Support configuring 'max_lag' via CONFIG_PROFILE
+  mlxsw: Add a helper function for getting maximum LAG ID
+  mlxsw: spectrum: Add a copy of 'struct mlxsw_config_profile' for
+    Spectrum-4
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h     |  3 ++
+ drivers/net/ethernet/mellanox/mlxsw/core.c    | 25 ++++++++--
+ drivers/net/ethernet/mellanox/mlxsw/core.h    |  4 ++
+ drivers/net/ethernet/mellanox/mlxsw/pci.c     |  5 ++
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 49 ++++++++++++++++---
+ 5 files changed, 74 insertions(+), 12 deletions(-)
 
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+-- 
+2.35.3
 
