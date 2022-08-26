@@ -2,45 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 632C05A24BA
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61F5E5A24FD
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:52:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245203AbiHZJoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 05:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39594 "EHLO
+        id S245244AbiHZJvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 05:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiHZJoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:44:38 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B39D4F4D;
-        Fri, 26 Aug 2022 02:44:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Content-Type:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-To:Resent-Cc:
-        Resent-Message-ID:In-Reply-To:References;
-        bh=v2jTZUhYTOmemv/vPlUUXTiKKHa/RyOxkjzEnHhLu9M=; t=1661507076; x=1662716676; 
-        b=OJD60mMD+AwEd0bhTb0DWGVbt7K/448ahTJl6liMRgddWHK5rB6KnOAvkZRtw+wWylu7IojrQpn
-        R1XK0S0nmhXmZ9MvGELU5kKr9yVjC6bnvMSNV3Wsn+JRdnlvT8gi2EXZDDefICZkeBiCxDIcwky2h
-        rKzT8kwkHV8vMM2iqoRmYAJDDwpPTDgn9YTmJS2cnzpu8VNrALkggbkRmYzcHLhcaiH2t63GWzK+p
-        TEV4tle+9UbnTef8DDvrUp+jPqhgCh6kwDK2P9pibkQc1H91IkWSWyhs9R41Xn+//sr45F/xavg0j
-        l7DAGDszfk1JyUAWdZjVWJWSe5QI19ktAf/g==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oRVtB-000BfU-2F;
-        Fri, 26 Aug 2022 11:44:33 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Subject: pull-request: wireless-next-2022-08-26
-Date:   Fri, 26 Aug 2022 11:44:29 +0200
-Message-Id: <20220826094430.19793-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S241772AbiHZJvg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:51:36 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DADCD5DE2
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:51:34 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id c93so1449744edf.5
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=M6AWl1HTGvLPHmRBSbB/QbSSEbP2+S+I+PGiAIbFVmQ=;
+        b=ICxQgIIVfPsbBPEEY19A/aF/IHXFAMI8lGUB2j8xHhZ185IVB+BAx/bKYiUmNe001b
+         uhpHw/9pzDlX4GoteCDI/o/MIjta1sCnAe91zB1VstLtY4V02CHtVzEqLZpf96Pv2TOh
+         6j6XJiA0KgtSNk4GRWcoGKzZj0Jkoyrg29sVRx9vMwZbyMsCfgw5lBYMb+zu1WA0gmMF
+         HClv49DEXmQFpPtfqBhmvuWV+FyNuHAdHn4uM1xsz3kyZqA1kLenvrlYKh+nn+63qyPC
+         INfj+QW/Z2MGtzxe9GXU8UQd4luBOUwklipquiSScZB0DWD6Qv7XNfsOEAHHp3C3jxgu
+         Tw/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=M6AWl1HTGvLPHmRBSbB/QbSSEbP2+S+I+PGiAIbFVmQ=;
+        b=Ko2HsfMr5xRCdpF8uqd0Q978X3e6B3AgeUjZbE9IKrSkqGrMKUc2GuC+EvSugawgeR
+         IwzHHmyYYxJdZSSkMDFeb4qBQe/bVcuN5Z5JC6dYZHgGEds4yDouFZhY5gIdsphfxEwK
+         HkQ2K3XLxdlUIA5RQ0ARsEMAKueKrAwB1XedaJf2iccXME6ZlnWNNjJAFt65dlsA248t
+         ZoBpbFtr0Lf0crEXtTHlz7cEy5Xtd7PDzjwpw+xp8FRAxxu2QxWIPMdnpL6i0auX95vt
+         8277GwSwhA3u8PLqxHVBr+RaUuY6BKd/k2dcaRbvmQPNMz8DngIy6oxHOTb3DXqxzxwo
+         tJCQ==
+X-Gm-Message-State: ACgBeo1DwdTukASKtPoKw4HNMbfTYpm/7CDtOcN27okrcOTpGO8iuSMe
+        OyH7DP97y4YTvOUtA36T8PY=
+X-Google-Smtp-Source: AA6agR5z5Od5QlyGlCtzDkRLxGIPKczHUd6MyXKTu8N7GWPtgPz9FBSO8L1a2mCf+dHjFfiaqR2j3g==
+X-Received: by 2002:aa7:df82:0:b0:447:89da:483a with SMTP id b2-20020aa7df82000000b0044789da483amr6173376edy.418.1661507492763;
+        Fri, 26 Aug 2022 02:51:32 -0700 (PDT)
+Received: from ?IPV6:2a01:c22:77de:500:9f5:ce1b:f3e2:f268? (dynamic-2a01-0c22-77de-0500-09f5-ce1b-f3e2-f268.c22.pool.telefonica.de. [2a01:c22:77de:500:9f5:ce1b:f3e2:f268])
+        by smtp.googlemail.com with ESMTPSA id c10-20020aa7c98a000000b00447dc591874sm1036274edt.37.2022.08.26.02.51.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 26 Aug 2022 02:51:32 -0700 (PDT)
+Message-ID: <00f1e968-c140-29b9-dc82-a6f831171d6f@gmail.com>
+Date:   Fri, 26 Aug 2022 11:51:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Content-Language: en-US
+To:     Jerome Brunet <jbrunet@baylibre.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Erico Nunes <nunes.erico@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Vyacheslav <adeep@lexina.in>, Da Xue <da@lessconfused.com>,
+        Qi Duan <qi.duan@amlogic.com>
+References: <20220707101423.90106-1-jbrunet@baylibre.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [RFC/RFT PATCH] net: stmmac: do not poke MAC_CTRL_REG twice on
+ link up
+In-Reply-To: <20220707101423.90106-1-jbrunet@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -48,211 +81,118 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 07.07.2022 12:14, Jerome Brunet wrote:
+> For some reason, poking MAC_CTRL_REG a second time, even with the same
+> value, causes problem on a dwmac 3.70a.
+> 
+> This problem happens on all the Amlogic SoCs, on link up, when the RMII
+> 10/100 internal interface is used. The problem does not happen on boards
+> using the external RGMII 10/100/1000 interface. Initially we suspected the
+> PHY to be the problem but after a lot of testing, the problem seems to be
+> coming from the MAC controller.
+> 
+>> meson8b-dwmac c9410000.ethernet: IRQ eth_wake_irq not found
+>> meson8b-dwmac c9410000.ethernet: IRQ eth_lpi not found
+>> meson8b-dwmac c9410000.ethernet: PTP uses main clock
+>> meson8b-dwmac c9410000.ethernet: User ID: 0x11, Synopsys ID: 0x37
+>> meson8b-dwmac c9410000.ethernet: 	DWMAC1000
+>> meson8b-dwmac c9410000.ethernet: DMA HW capability register supported
+>> meson8b-dwmac c9410000.ethernet: RX Checksum Offload Engine supported
+>> meson8b-dwmac c9410000.ethernet: COE Type 2
+>> meson8b-dwmac c9410000.ethernet: TX Checksum insertion supported
+>> meson8b-dwmac c9410000.ethernet: Wake-Up On Lan supported
+>> meson8b-dwmac c9410000.ethernet: Normal descriptors
+>> meson8b-dwmac c9410000.ethernet: Ring mode enabled
+>> meson8b-dwmac c9410000.ethernet: Enable RX Mitigation via HW Watchdog Timer
+> 
+> The problem is not systematic. Its occurence is very random from 1/50 to
+> 1/2. It is fairly easy to detect by setting the kernel to boot over NFS and
+> possibly setting it to reboot automatically when reaching the prompt.
+> 
+> When problem happens, the link is reported up by the PHY but no packet are
+> actually going out. DHCP requests eventually times out and the kernel reset
+> the interface. It may take several attempts but it will eventually work.
+> 
+>> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+>> Sending DHCP requests ...... timed out!
+>> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
+>> IP-Config: Retrying forever (NFS root)...
+>> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
+>> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+>> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
+>> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
+>> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
+>> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+>> Sending DHCP requests ...... timed out!
+>> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
+>> IP-Config: Retrying forever (NFS root)...
+>> [...] 5 retries ...
+>> IP-Config: Retrying forever (NFS root)...
+>> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
+>> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
+>> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
+>> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
+>> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
+>> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
+>> Sending DHCP requests ., OK
+>> IP-Config: Got DHCP answer from 10.1.1.1, my address is 10.1.3.229
+> 
+> Of course the same problem happens when not using NFS and it fairly
+> difficult for IoT products to detect this situation and recover.
+> 
+> The call to stmmac_mac_set() should be no-op in our case, the bits it sets
+> have already been set by an earlier call to stmmac_mac_set(). However
+> removing this call solves the problem. We have no idea why or what is the
+> actual problem.
+> 
+> Even weirder, keeping the call to stmmac_mac_set() but inserting a
+> udelay(1) between writel() and stmmac_mac_set() solves the problem too.
+> 
+> Suggested-by: Qi Duan <qi.duan@amlogic.com>
+> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+> ---
+> 
+>  Hi,
+> 
+>  There is no intention to get this patch merged as it is.
+>  It is sent with the hope to get a better understanding of the issue
+>  and more testing.
+> 
+>  The discussion on this issue initially started on this thread
+>  https://lore.kernel.org/all/CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com/
+> 
+>  The patches previously proposed in this thread have not solved the
+>  problem.
+> 
+>  The line removed in this patch should be a no-op when it comes to the
+>  value of MAC_CTRL_REG. So the change should make not a difference but
+>  it does. Testing result have been very good so far so there must be an
+>  unexpected consequence on the HW. I hope that someone with more
+>  knowledge on this controller will be able to shine some light on this.
+> 
+>  Cheers
+>  Jerome
+> 
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index d1a7cf4567bc..3dca3cc61f39 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1072,7 +1072,6 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+>  
+>  	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
+>  
+> -	stmmac_mac_set(priv, priv->ioaddr, true);
+>  	if (phy && priv->dma_cap.eee) {
+>  		priv->eee_active = phy_init_eee(phy, 1) >= 0;
+>  		priv->eee_enabled = stmmac_eee_init(priv);
 
-And here's a one for net-next. Nothing major this time
-around either, MLO work continues of course, along with
-various other updates. Drivers are lagging behind a bit,
-but we'll have that sorted out too.
+Now that we have a3a57bf07de2 ("net: stmmac: work around sporadic tx issue on link-up")
+in linux-next and scheduled for stable:
 
-Please pull and let me know if there's any problem.
+Jerome, can you confirm that after this commit the following is no longer needed?
+2c87c6f9fbdd ("net: phy: meson-gxl: improve link-up behavior")
 
-Thanks,
-johannes
-
-
-
-The following changes since commit 63757225a93353bc2ce4499af5501eabdbbf23f9:
-
-  Merge tag 'mlx5-updates-2022-07-28' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2022-07-29 21:39:07 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git tags/wireless-next-2022-08-26
-
-for you to fetch changes up to be50baa40e90a18c3750b31a49be64929488d84b:
-
-  wifi: mac80211: use full 'unsigned int' type (2022-08-26 09:58:54 +0200)
-
-----------------------------------------------------------------
-Various updates:
- * rtw88: operation, locking, warning, and code style fixes
- * rtw89: small updates
- * cfg80211/mac80211: more EHT/MLO (802.11be, WiFi 7) work
- * brcmfmac: a couple of fixes
- * misc cleanups etc.
-
-----------------------------------------------------------------
-Chia-Yuan Li (1):
-      wifi: rtw89: 8852a: correct WDE IMR settings
-
-Chih-Kang Chang (9):
-      wifi: rtw88: fix stopping queues in wrong timing when HW scan
-      wifi: rtw88: fix store OP channel info timing when HW scan
-      wifi: rtw88: add mutex when set SAR
-      wifi: rtw88: add mutex when set regulatory and get Tx power table
-      wifi: rtw88: add the update channel flow to support setting by parameters
-      wifi: rtw88: fix WARNING:rtw_get_tx_power_params() during HW scan
-      wifi: rtw88: add flushing queue before HW scan
-      wifi: rtw88: add flag check before enter or leave IPS
-      wifi: rtw88: prohibit enter IPS during HW scan
-
-Hari Chandrakanthan (1):
-      wifi: mac80211: allow bw change during channel switch in mesh
-
-Ilan Peer (1):
-      wifi: cfg80211: Update RNR parsing to align with Draft P802.11be_D2.0
-
-Johannes Berg (12):
-      wifi: mac80211: accept STA changes without link changes
-      wifi: mac80211: fix use-after-free
-      wifi: mac80211: properly implement MLO key handling
-      wifi: mac80211: use link ID for MLO in queued frames
-      wifi: mac80211_hwsim: split iftype data into AP/non-AP
-      wifi: cfg80211/mac80211: check EHT capability size correctly
-      wifi: mac80211: maintain link_id in link_sta
-      wifi: mac80211_hwsim: fix link change handling
-      wifi: mac80211: set link ID in TX info for beacons
-      wifi: mac80211: fix control port frame addressing
-      wifi: mac80211: allow link address A2 in TXQ dequeue
-      wifi: mac80211: correct SMPS mode in HE 6 GHz capability
-
-Krzysztof Kozlowski (1):
-      dt-bindings: wireless: use spi-peripheral-props.yaml
-
-Lukas Bulwahn (1):
-      wifi: mac80211: clean up a needless assignment in ieee80211_sta_activate_link()
-
-Mordechay Goodstein (1):
-      wifi: mac80211: mlme: don't add empty EML capabilities
-
-Ping-Ke Shih (2):
-      wifi: rtw88: access chip_info by const pointer
-      wifi: rtlwifi: 8192de: correct checking of IQK reload
-
-Po-Hao Huang (1):
-      wifi: rtw88: 8822c: extend supported probe request size
-
-Ruffalo Lavoisier (1):
-      wifi: brcmsmac: remove duplicate words
-
-Ryder Lee (1):
-      wifi: mac80211: read ethtool's sta_stats from sinfo
-
-Sebin Sebastian (1):
-      wifi: qtnfmac: remove braces around single statement blocks
-
-Shaul Triebitz (5):
-      wifi: mac80211: properly set old_links when removing a link
-      wifi: cfg80211: get correct AP link chandef
-      wifi: mac80211: set link BSSID
-      wifi: cfg80211: add link id to txq params
-      wifi: mac80211: use link in TXQ parameter configuration
-
-Vasanthakumar Thiagarajan (2):
-      wifi: mac80211: add link information in ieee80211_rx_status
-      wifi: mac80211: use the corresponding link for stats update
-
-Veerendranath Jakkam (5):
-      wifi: cfg80211: reject connect response with MLO params for WEP
-      wifi: cfg80211: Prevent cfg80211_wext_siwencodeext() on MLD
-      wifi: cfg80211: Add link_id parameter to various key operations for MLO
-      wifi: nl80211: send MLO links channel info in GET_INTERFACE
-      wifi: cfg80211: Add link_id to cfg80211_ch_switch_started_notify()
-
-Wataru Gohda (2):
-      wifi: brcmfmac: Fix to add brcmf_clear_assoc_ies when rmmod
-      wifi: brcmfmac: Fix to add skb free for TIM update info when tx is completed
-
-Wolfram Sang (1):
-      wifi: mac80211: move from strlcpy with unused retval to strscpy
-
-Wright Feng (3):
-      wifi: brcmfmac: fix continuous 802.1x tx pending timeout error
-      wifi: brcmfmac: fix scheduling while atomic issue when deleting flowring
-      wifi: brcmfmac: fix invalid address access when enabling SCAN log level
-
-Xin Gao (1):
-      wifi: mac80211: use full 'unsigned int' type
-
-Zong-Zhe Yang (2):
-      wifi: rtw88: phy: fix warning of possible buffer overflow
-      wifi: rtw89: refine leaving LPS function
-
- .../bindings/net/wireless/microchip,wilc1000.yaml  |   7 +-
- .../bindings/net/wireless/silabs,wfx.yaml          |  15 +-
- .../bindings/net/wireless/ti,wlcore.yaml           |  30 +-
- drivers/net/wireless/ath/ath6kl/cfg80211.c         |   8 +-
- drivers/net/wireless/ath/wil6210/cfg80211.c        |  10 +-
- .../wireless/broadcom/brcm80211/brcmfmac/bcdc.c    |   3 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |  23 +-
- .../wireless/broadcom/brcm80211/brcmfmac/core.c    |   4 +-
- .../broadcom/brcm80211/brcmfmac/flowring.c         |   5 +-
- .../broadcom/brcm80211/brcmfmac/fwsignal.c         |  16 +-
- .../broadcom/brcm80211/brcmfmac/fwsignal.h         |   3 +-
- .../wireless/broadcom/brcm80211/brcmfmac/msgbuf.c  |  25 +-
- .../net/wireless/broadcom/brcm80211/brcmfmac/pno.c |  12 +-
- .../wireless/broadcom/brcm80211/brcmsmac/types.h   |   2 +-
- drivers/net/wireless/mac80211_hwsim.c              | 394 ++++++++++++++++++++-
- drivers/net/wireless/marvell/libertas/cfg.c        |   9 +-
- drivers/net/wireless/marvell/mwifiex/cfg80211.c    |  10 +-
- drivers/net/wireless/microchip/wilc1000/cfg80211.c |  17 +-
- drivers/net/wireless/quantenna/qtnfmac/cfg80211.c  |  16 +-
- .../net/wireless/realtek/rtlwifi/rtl8192de/phy.c   |   9 +-
- drivers/net/wireless/realtek/rtw88/bf.c            |   2 +-
- drivers/net/wireless/realtek/rtw88/coex.c          |  88 ++---
- drivers/net/wireless/realtek/rtw88/coex.h          |  14 +-
- drivers/net/wireless/realtek/rtw88/debug.c         |  11 +-
- drivers/net/wireless/realtek/rtw88/efuse.c         |   4 +-
- drivers/net/wireless/realtek/rtw88/fw.c            |  95 +++--
- drivers/net/wireless/realtek/rtw88/fw.h            |  21 +-
- drivers/net/wireless/realtek/rtw88/mac.c           |  18 +-
- drivers/net/wireless/realtek/rtw88/mac80211.c      |  14 +-
- drivers/net/wireless/realtek/rtw88/main.c          | 213 ++++++-----
- drivers/net/wireless/realtek/rtw88/main.h          |  31 +-
- drivers/net/wireless/realtek/rtw88/pci.c           |  20 +-
- drivers/net/wireless/realtek/rtw88/phy.c           |  65 ++--
- drivers/net/wireless/realtek/rtw88/phy.h           |   2 +-
- drivers/net/wireless/realtek/rtw88/ps.c            |   7 +-
- drivers/net/wireless/realtek/rtw88/regd.c          |   2 +
- drivers/net/wireless/realtek/rtw88/rtw8723d.c      |   3 +-
- drivers/net/wireless/realtek/rtw88/rtw8821c.c      |   3 +-
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |   3 +-
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |   3 +-
- drivers/net/wireless/realtek/rtw88/tx.c            |   8 +-
- drivers/net/wireless/realtek/rtw88/util.c          |   4 +-
- drivers/net/wireless/realtek/rtw89/ps.c            |   3 +-
- drivers/net/wireless/realtek/rtw89/reg.h           |  21 +-
- drivers/net/wireless/rndis_wlan.c                  |  20 +-
- drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c  |  13 +-
- drivers/staging/wlan-ng/cfg80211.c                 |  12 +-
- include/linux/ieee80211.h                          |  14 +-
- include/net/cfg80211.h                             |  43 ++-
- include/net/mac80211.h                             |   9 +
- include/uapi/linux/nl80211.h                       |  14 +-
- net/mac80211/cfg.c                                 | 129 +++++--
- net/mac80211/eht.c                                 |   4 +-
- net/mac80211/ethtool.c                             |  10 +-
- net/mac80211/ibss.c                                |   8 +-
- net/mac80211/ieee80211_i.h                         |   8 +-
- net/mac80211/iface.c                               |  13 +-
- net/mac80211/key.c                                 | 190 +++++++---
- net/mac80211/key.h                                 |  13 +-
- net/mac80211/mesh.c                                |   2 +-
- net/mac80211/mlme.c                                |  73 +++-
- net/mac80211/rx.c                                  | 200 +++++++++--
- net/mac80211/sta_info.c                            |   9 +-
- net/mac80211/tx.c                                  |  65 +++-
- net/mac80211/util.c                                |  32 +-
- net/wireless/core.c                                |  16 +
- net/wireless/ibss.c                                |   2 +-
- net/wireless/nl80211.c                             | 186 +++++++---
- net/wireless/rdev-ops.h                            |  58 +--
- net/wireless/reg.c                                 |   4 +
- net/wireless/scan.c                                |   2 +-
- net/wireless/sme.c                                 |   5 +-
- net/wireless/trace.h                               |  97 +++--
- net/wireless/util.c                                |   4 +-
- net/wireless/wext-compat.c                         |  18 +-
- 75 files changed, 1851 insertions(+), 695 deletions(-)
-
+Then I'd revert it, referencing the successor workaround / fix in stmmac.
