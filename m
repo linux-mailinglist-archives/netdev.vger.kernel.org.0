@@ -2,197 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 61F5E5A24FD
+	by mail.lfdr.de (Postfix) with ESMTP id ADA455A24FE
 	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 11:52:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245244AbiHZJvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 05:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55192 "EHLO
+        id S245408AbiHZJvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 05:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241772AbiHZJvg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:51:36 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DADCD5DE2
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:51:34 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id c93so1449744edf.5
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 02:51:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
-        bh=M6AWl1HTGvLPHmRBSbB/QbSSEbP2+S+I+PGiAIbFVmQ=;
-        b=ICxQgIIVfPsbBPEEY19A/aF/IHXFAMI8lGUB2j8xHhZ185IVB+BAx/bKYiUmNe001b
-         uhpHw/9pzDlX4GoteCDI/o/MIjta1sCnAe91zB1VstLtY4V02CHtVzEqLZpf96Pv2TOh
-         6j6XJiA0KgtSNk4GRWcoGKzZj0Jkoyrg29sVRx9vMwZbyMsCfgw5lBYMb+zu1WA0gmMF
-         HClv49DEXmQFpPtfqBhmvuWV+FyNuHAdHn4uM1xsz3kyZqA1kLenvrlYKh+nn+63qyPC
-         INfj+QW/Z2MGtzxe9GXU8UQd4luBOUwklipquiSScZB0DWD6Qv7XNfsOEAHHp3C3jxgu
-         Tw/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
-         :content-language:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=M6AWl1HTGvLPHmRBSbB/QbSSEbP2+S+I+PGiAIbFVmQ=;
-        b=Ko2HsfMr5xRCdpF8uqd0Q978X3e6B3AgeUjZbE9IKrSkqGrMKUc2GuC+EvSugawgeR
-         IwzHHmyYYxJdZSSkMDFeb4qBQe/bVcuN5Z5JC6dYZHgGEds4yDouFZhY5gIdsphfxEwK
-         HkQ2K3XLxdlUIA5RQ0ARsEMAKueKrAwB1XedaJf2iccXME6ZlnWNNjJAFt65dlsA248t
-         ZoBpbFtr0Lf0crEXtTHlz7cEy5Xtd7PDzjwpw+xp8FRAxxu2QxWIPMdnpL6i0auX95vt
-         8277GwSwhA3u8PLqxHVBr+RaUuY6BKd/k2dcaRbvmQPNMz8DngIy6oxHOTb3DXqxzxwo
-         tJCQ==
-X-Gm-Message-State: ACgBeo1DwdTukASKtPoKw4HNMbfTYpm/7CDtOcN27okrcOTpGO8iuSMe
-        OyH7DP97y4YTvOUtA36T8PY=
-X-Google-Smtp-Source: AA6agR5z5Od5QlyGlCtzDkRLxGIPKczHUd6MyXKTu8N7GWPtgPz9FBSO8L1a2mCf+dHjFfiaqR2j3g==
-X-Received: by 2002:aa7:df82:0:b0:447:89da:483a with SMTP id b2-20020aa7df82000000b0044789da483amr6173376edy.418.1661507492763;
-        Fri, 26 Aug 2022 02:51:32 -0700 (PDT)
-Received: from ?IPV6:2a01:c22:77de:500:9f5:ce1b:f3e2:f268? (dynamic-2a01-0c22-77de-0500-09f5-ce1b-f3e2-f268.c22.pool.telefonica.de. [2a01:c22:77de:500:9f5:ce1b:f3e2:f268])
-        by smtp.googlemail.com with ESMTPSA id c10-20020aa7c98a000000b00447dc591874sm1036274edt.37.2022.08.26.02.51.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Aug 2022 02:51:32 -0700 (PDT)
-Message-ID: <00f1e968-c140-29b9-dc82-a6f831171d6f@gmail.com>
-Date:   Fri, 26 Aug 2022 11:51:25 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Erico Nunes <nunes.erico@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Vyacheslav <adeep@lexina.in>, Da Xue <da@lessconfused.com>,
-        Qi Duan <qi.duan@amlogic.com>
-References: <20220707101423.90106-1-jbrunet@baylibre.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC/RFT PATCH] net: stmmac: do not poke MAC_CTRL_REG twice on
- link up
-In-Reply-To: <20220707101423.90106-1-jbrunet@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S241772AbiHZJvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 05:51:53 -0400
+Received: from out30-42.freemail.mail.aliyun.com (out30-42.freemail.mail.aliyun.com [115.124.30.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C38D758A;
+        Fri, 26 Aug 2022 02:51:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046056;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VNIZezx_1661507507;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VNIZezx_1661507507)
+          by smtp.aliyun-inc.com;
+          Fri, 26 Aug 2022 17:51:48 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, wenjia@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org,
+        "D. Wythe" <alibuda@linux.alibaba.com>
+Subject: [PATCH net-next v2 00/10] optimize the parallelism of SMC-R connections
+Date:   Fri, 26 Aug 2022 17:51:27 +0800
+Message-Id: <cover.1661407821.git.alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07.07.2022 12:14, Jerome Brunet wrote:
-> For some reason, poking MAC_CTRL_REG a second time, even with the same
-> value, causes problem on a dwmac 3.70a.
-> 
-> This problem happens on all the Amlogic SoCs, on link up, when the RMII
-> 10/100 internal interface is used. The problem does not happen on boards
-> using the external RGMII 10/100/1000 interface. Initially we suspected the
-> PHY to be the problem but after a lot of testing, the problem seems to be
-> coming from the MAC controller.
-> 
->> meson8b-dwmac c9410000.ethernet: IRQ eth_wake_irq not found
->> meson8b-dwmac c9410000.ethernet: IRQ eth_lpi not found
->> meson8b-dwmac c9410000.ethernet: PTP uses main clock
->> meson8b-dwmac c9410000.ethernet: User ID: 0x11, Synopsys ID: 0x37
->> meson8b-dwmac c9410000.ethernet: 	DWMAC1000
->> meson8b-dwmac c9410000.ethernet: DMA HW capability register supported
->> meson8b-dwmac c9410000.ethernet: RX Checksum Offload Engine supported
->> meson8b-dwmac c9410000.ethernet: COE Type 2
->> meson8b-dwmac c9410000.ethernet: TX Checksum insertion supported
->> meson8b-dwmac c9410000.ethernet: Wake-Up On Lan supported
->> meson8b-dwmac c9410000.ethernet: Normal descriptors
->> meson8b-dwmac c9410000.ethernet: Ring mode enabled
->> meson8b-dwmac c9410000.ethernet: Enable RX Mitigation via HW Watchdog Timer
-> 
-> The problem is not systematic. Its occurence is very random from 1/50 to
-> 1/2. It is fairly easy to detect by setting the kernel to boot over NFS and
-> possibly setting it to reboot automatically when reaching the prompt.
-> 
-> When problem happens, the link is reported up by the PHY but no packet are
-> actually going out. DHCP requests eventually times out and the kernel reset
-> the interface. It may take several attempts but it will eventually work.
-> 
->> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
->> Sending DHCP requests ...... timed out!
->> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
->> IP-Config: Retrying forever (NFS root)...
->> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
->> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
->> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
->> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
->> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
->> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
->> Sending DHCP requests ...... timed out!
->> meson8b-dwmac ff3f0000.ethernet eth0: Link is Down
->> IP-Config: Retrying forever (NFS root)...
->> [...] 5 retries ...
->> IP-Config: Retrying forever (NFS root)...
->> meson8b-dwmac ff3f0000.ethernet eth0: PHY [0.1:08] driver [Meson G12A Internal PHY] (irq=POLL)
->> meson8b-dwmac ff3f0000.ethernet eth0: Register MEM_TYPE_PAGE_POOL RxQ-0
->> meson8b-dwmac ff3f0000.ethernet eth0: No Safety Features support found
->> meson8b-dwmac ff3f0000.ethernet eth0: PTP not supported by HW
->> meson8b-dwmac ff3f0000.ethernet eth0: configuring for phy/rmii link mode
->> meson8b-dwmac ff3f0000.ethernet eth0: Link is Up - 100Mbps/Full - flow control rx/tx
->> Sending DHCP requests ., OK
->> IP-Config: Got DHCP answer from 10.1.1.1, my address is 10.1.3.229
-> 
-> Of course the same problem happens when not using NFS and it fairly
-> difficult for IoT products to detect this situation and recover.
-> 
-> The call to stmmac_mac_set() should be no-op in our case, the bits it sets
-> have already been set by an earlier call to stmmac_mac_set(). However
-> removing this call solves the problem. We have no idea why or what is the
-> actual problem.
-> 
-> Even weirder, keeping the call to stmmac_mac_set() but inserting a
-> udelay(1) between writel() and stmmac_mac_set() solves the problem too.
-> 
-> Suggested-by: Qi Duan <qi.duan@amlogic.com>
-> Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
-> ---
-> 
->  Hi,
-> 
->  There is no intention to get this patch merged as it is.
->  It is sent with the hope to get a better understanding of the issue
->  and more testing.
-> 
->  The discussion on this issue initially started on this thread
->  https://lore.kernel.org/all/CAK4VdL3-BEBzgVXTMejrAmDjOorvoGDBZ14UFrDrKxVEMD2Zjg@mail.gmail.com/
-> 
->  The patches previously proposed in this thread have not solved the
->  problem.
-> 
->  The line removed in this patch should be a no-op when it comes to the
->  value of MAC_CTRL_REG. So the change should make not a difference but
->  it does. Testing result have been very good so far so there must be an
->  unexpected consequence on the HW. I hope that someone with more
->  knowledge on this controller will be able to shine some light on this.
-> 
->  Cheers
->  Jerome
-> 
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index d1a7cf4567bc..3dca3cc61f39 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -1072,7 +1072,6 @@ static void stmmac_mac_link_up(struct phylink_config *config,
->  
->  	writel(ctrl, priv->ioaddr + MAC_CTRL_REG);
->  
-> -	stmmac_mac_set(priv, priv->ioaddr, true);
->  	if (phy && priv->dma_cap.eee) {
->  		priv->eee_active = phy_init_eee(phy, 1) >= 0;
->  		priv->eee_enabled = stmmac_eee_init(priv);
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Now that we have a3a57bf07de2 ("net: stmmac: work around sporadic tx issue on link-up")
-in linux-next and scheduled for stable:
+This patch set attempts to optimize the parallelism of SMC-R connections,
+mainly to reduce unnecessary blocking on locks, and to fix exceptions that
+occur after thoses optimization.
 
-Jerome, can you confirm that after this commit the following is no longer needed?
-2c87c6f9fbdd ("net: phy: meson-gxl: improve link-up behavior")
+According to Off-CPU graph, SMC worker's off-CPU as that: 
 
-Then I'd revert it, referencing the successor workaround / fix in stmmac.
+smc_close_passive_work			(1.09%)
+	smcr_buf_unuse			(1.08%)
+		smc_llc_flow_initiate	(1.02%)
+	
+smc_listen_work 			(48.17%)
+	__mutex_lock.isra.11 		(47.96%)
+
+
+An ideal SMC-R connection process should only block on the IO events
+of the network, but it's quite clear that the SMC-R connection now is
+queued on the lock most of the time.
+
+The goal of this patchset is to achieve our ideal situation where
+network IO events are blocked for the majority of the connection lifetime.
+
+There are three big locks here:
+
+1. smc_client_lgr_pending & smc_server_lgr_pending
+
+2. llc_conf_mutex
+
+3. rmbs_lock & sndbufs_lock
+
+And an implementation issue:
+
+1. confirm/delete rkey msg can't be sent concurrently while
+protocol allows indeed.
+
+Unfortunately,The above problems together affect the parallelism of
+SMC-R connection. If any of them are not solved. our goal cannot
+be achieved.
+
+After this patch set, we can get a quite ideal off-CPU graph as
+following:
+
+smc_close_passive_work					(41.58%)
+	smcr_buf_unuse					(41.57%)
+		smc_llc_do_delete_rkey			(41.57%)
+
+smc_listen_work						(39.10%)
+	smc_clc_wait_msg				(13.18%)
+		tcp_recvmsg_locked			(13.18)
+	smc_listen_find_device				(25.87%)
+		smcr_lgr_reg_rmbs			(25.87%)
+			smc_llc_do_confirm_rkey		(25.87%)
+
+We can see that most of the waiting times are waiting for network IO
+events. This also has a certain performance improvement on our
+short-lived conenction wrk/nginx benchmark test:
+
++--------------+------+------+-------+--------+------+--------+
+|conns/qps     |c4    | c8   |  c16  |  c32   | c64  |  c200  |
++--------------+------+------+-------+--------+------+--------+
+|SMC-R before  |9.7k  | 10k  |  10k  |  9.9k  | 9.1k |  8.9k  | 
++--------------+------+------+-------+--------+------+--------+
+|SMC-R now     |13k   | 19k  |  18k  |  16k   | 15k  |  12k   |
++--------------+------+------+-------+--------+------+--------+
+|TCP	       |15k   | 35k  |  51k  |  80k   | 100k |  162k  |
++--------------+------+------+-------+--------+------+--------+
+
+The reason why the benefit is not obvious after the number of connections
+has increased dues to workqueue. If we try to change workqueue to UNBOUND,
+we can obtain at least 4-5 times performance improvement, reach up to half
+of TCP. However, this is not an elegant solution, the optimization of it
+will be much more complicated. But in any case, we will submit relevant
+optimization patches as soon as possible.
+
+Please note that the premise here is that the lock related problem
+must be solved first, otherwise, no matter how we optimize the workqueue,
+there won't be much improvement. 
+
+Because there are a lot of related changes to the code, if you have
+any questions or suggestions, please let me know.
+
+Thanks
+D. Wythe
+
+v1 -> v2:
+
+1. Fix panic in SMC-D scenario
+2. Fix lnkc related hashfn calculation exception, caused by operator
+priority.
+3. Remove -EBUSY processing of rhashtable_insert_fast, see more details
+in comments around smcr_link_get_or_create_cluster().
+4. Only wake up one connection if the link has not been active.
+5. Delete obsolete unlock logic in smc_listen_work().
+6. PATCH format, do Reverse Christmas tree.
+7. PATCH format, change all xxx_lnk_xxx function to xxx_link_xxx.
+8. PATCH format, add correct fix tag for the patches for fixes.
+9. PATCH format, fix some spelling error.
+10.PATCH format, rename slow to do_slow in smcr_lgr_reg_rmbs().
+
+
+D. Wythe (10):
+  net/smc: remove locks smc_client_lgr_pending and
+    smc_server_lgr_pending
+  net/smc: fix SMC_CLC_DECL_ERR_REGRMB without smc_server_lgr_pending
+  net/smc: allow confirm/delete rkey response deliver multiplex
+  net/smc: make SMC_LLC_FLOW_RKEY run concurrently
+  net/smc: llc_conf_mutex refactor, replace it with rw_semaphore
+  net/smc: use read semaphores to reduce unnecessary blocking in
+    smc_buf_create() & smcr_buf_unuse()
+  net/smc: reduce unnecessary blocking in smcr_lgr_reg_rmbs()
+  net/smc: replace mutex rmbs_lock and sndbufs_lock with rw_semaphore
+  net/smc: Fix potential panic dues to unprotected
+    smc_llc_srv_add_link()
+  net/smc: fix application data exception
+
+ net/smc/af_smc.c   |  42 +++--
+ net/smc/smc_core.c | 443 +++++++++++++++++++++++++++++++++++++++++++++++------
+ net/smc/smc_core.h |  78 +++++++++-
+ net/smc/smc_llc.c  | 286 +++++++++++++++++++++++++---------
+ net/smc/smc_llc.h  |   6 +
+ net/smc/smc_wr.c   |  10 --
+ net/smc/smc_wr.h   |  10 ++
+ 7 files changed, 725 insertions(+), 150 deletions(-)
+
+-- 
+1.8.3.1
+
