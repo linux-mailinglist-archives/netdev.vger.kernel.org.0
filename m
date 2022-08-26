@@ -2,130 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE7535A1E84
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10CD75A1E90
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 04:08:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244715AbiHZCFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 22:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        id S244707AbiHZCIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 22:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244687AbiHZCFU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:05:20 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E37BB015
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 19:05:18 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id e20so132052wri.13
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 19:05:18 -0700 (PDT)
+        with ESMTP id S244689AbiHZCIL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 22:08:11 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF1ECB5CE;
+        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id r141so190240iod.4;
+        Thu, 25 Aug 2022 19:08:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=Kzixri34zypG42ufXkKog0/vGiEDa4wFdROo3hsMZ/I=;
-        b=Qf1dx/wjrJ5w+gBl9YpLh+MGBOaHIqba8h2ReNzk5Iw9C/ioKt0zwxnw4HpuyVKWZ0
-         ACuuzxk/Ifn982l6uN/T+CISfy7JW0V01msa/MQK4g2ij4HSK9sVosgNuYV0KZsvcYuG
-         evyM5usTgCmfVcXQNLx4wbI7Nurz0r7g2qtdG57zf0rQsNoLaIaL+YUnDzFxFHmHa0bD
-         io2Nq1FMQ+UmYeWk+uPsDtaycgz6qgOrMzLzgyS2BD5DDHtsxmZBvqiXHXwNbMKA8/af
-         tzdfNDJlmh6B/0NAE2DSb2jYCrbFVEYR5QDx52z9xGeufUxGBuBiy25vgGCeh37FVSsv
-         M6qw==
+        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
+        b=oKp7GMafkmShi+aJkF+5jK2VKKtkn7+qV8h5HcfyXNqs52MpRiHACqgb34U7tQVpos
+         BZiWLHW7MIlkdWpqT8sn+zGySIZqrR1YFKeCytvv7ImQS/7GGE5S8CP6PWe1dX1LsNpn
+         ID+8f5Zun2vZSdk6ud3ZT0dnlG50nl1qIKHGBXKIz9WHdE4CeDQ/Dpx+PqRanQDPHW7m
+         S/wigs2P9ujolxMLYOxcLAX7FZbLfN1GdpDJcvGFeU/odJD7SsIbhvo+tVZxguDA2OHQ
+         C/rSo/sjyyHdPpI0y9QbRtqh+3MCxasvD2CdLnsAhkdt59N+gNp8xG4OhVlgsOxcLaaG
+         m/sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=Kzixri34zypG42ufXkKog0/vGiEDa4wFdROo3hsMZ/I=;
-        b=d9wKnFSjtIJeoeKGSUWwTokLMyVdjZrH9/48i2bhgAZ6bYNdhuUZRKBTVU7tUhrZku
-         rv4BPIPsBOtCYFf70b4IHJiig130v4+AVxvRoohi5lS0d4mHba9cOYVFBPvre/N045cH
-         pNyxu84vtBhO8elUl4617n7qcKig7gSSh7QAOUuVBtL4TTj7STAbomW37kMV3l7o/3Yn
-         pWeIypjJtSB1APag4uupcZduKYa0qjPDDATISA59+pQJZsAvitw+vag0mv9tWGTeeVkY
-         djVl8gmGJpe0rkP11x117t/kyqvRc5STvfBM8HWzW8WacYQpheOzEZqnwqy8RixPMT4f
-         OmfA==
-X-Gm-Message-State: ACgBeo0Sf0bD1fm5+tiyRGeJB1ccuj3XoSZ424KdJazq0uh285eoRa0B
-        xlpjODY+nm1RPF6axy9iKaMiZpVaUKRU1WPZtNFVzA==
-X-Google-Smtp-Source: AA6agR4Ugwz397FI+I8x41LSLn8JIR47ZZMDM2UyhPLb74Ha1bezzv8NYyzzY+3+TInTJK5pDILVQNdolvy37VNbY8Q=
-X-Received: by 2002:a5d:6d0c:0:b0:225:4ff9:7e67 with SMTP id
- e12-20020a5d6d0c000000b002254ff97e67mr3663872wrq.534.1661479516896; Thu, 25
- Aug 2022 19:05:16 -0700 (PDT)
+        bh=fERtzDctzEgNBIaU4dCxwXZi2ONbhFJ/oi3xF/aUGXg=;
+        b=6ForWiJhX89Ij9Zx/1zzP1YKcYkf5zlxN2j0MsJ1JstJpA99CRQVR1TcPgLmlT/xmZ
+         ly7XmHBYxlBabcaTbsWfzfbmwWsvgDyHo/gMa//MfVSEXa6hYPGahJed7/RfGgbfhYfy
+         qZUkdOhG7a818z1+Tp9i1kX+QR4FBFlCSDwzecTbmks+nOAzAalJZZbzznh2O5v/yvwX
+         Q8r4aJwfGH7Dvp0PJb2+9zb/9MOnZbftUvIrqXN9Z/Zs1+m9zH5ZGeI2iMcaht9Q39IG
+         /VXTnYVphRyaiGNZB4Wdd/h1qsGCY7NnKJQF/qWygjXBO3aJg/hR8CieBoMUysHMn9L0
+         b7AQ==
+X-Gm-Message-State: ACgBeo2/MWYH0yOa4YOJsiSko4Fns5PkajZA3IcdWAdhSGmyYduWy+fJ
+        QuGDFM9CDqi35Cr51YyQVk1IahmI/O4XvVdJyV9SHE+L
+X-Google-Smtp-Source: AA6agR4ldtT2jXu2MMdWpyUaleDmiGpun9w/4YV89ydabuMBA9T2L5GHZQgrPu70W4tTfH2ZT7eK9ZO8UDRXogqQkRY=
+X-Received: by 2002:a05:6638:16cf:b0:34a:263f:966d with SMTP id
+ g15-20020a05663816cf00b0034a263f966dmr497631jat.124.1661479689438; Thu, 25
+ Aug 2022 19:08:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220825213905.1817722-1-haoluo@google.com> <CAEf4BzaQOj3QqEbKKXhgUmWMF3gef-8+a-dYoe_t4=g+cM2KaQ@mail.gmail.com>
- <CAJD7tkZAE_Kx9z2cXnrheFfEtSZJn4VFczhkVEb3VdcP2o_H+g@mail.gmail.com> <CAEf4BzbMUNo6gj+DJcnvixiMoVr-LX9JZuJbe0Txp71sZJ_F=g@mail.gmail.com>
-In-Reply-To: <CAEf4BzbMUNo6gj+DJcnvixiMoVr-LX9JZuJbe0Txp71sZJ_F=g@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Thu, 25 Aug 2022 19:04:40 -0700
-Message-ID: <CAJD7tkaRiG-ntPKvpy+9g7Rj+c5TF-EcsaaKH4dfVAV=1rdKFQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/2] Add CGROUP prefix to cgroup_iter_order
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Hao Luo <haoluo@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220824134055.1328882-4-benjamin.tissoires@redhat.com>
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Date:   Fri, 26 Aug 2022 04:07:33 +0200
+Message-ID: <CAP01T75Xs8HqDzsqJ5_69ei6ujnBXSbOg=ad7fGaei6OVNpiOg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 03/23] selftests/bpf: add test for accessing
+ ctx from syscall program type
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 7:03 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
 >
-> On Thu, Aug 25, 2022 at 4:20 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > On Thu, Aug 25, 2022 at 2:56 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Thu, Aug 25, 2022 at 2:39 PM Hao Luo <haoluo@google.com> wrote:
-> > > >
-> > > > As suggested by Andrii, add 'CGROUP' to cgroup_iter_order. This fix is
-> > > > divided into two patches. Patch 1/2 fixes the commit that introduced
-> > > > cgroup_iter. Patch 2/2 fixes the selftest that uses the
-> > > > cgroup_iter_order. This is because the selftest was introduced in a
-> > >
-> > > but if you split rename into two patches, you break selftests build
-> > > and thus potentially bisectability of selftests regressions. So I
-> > > think you have to keep both in the same patch.
-> >
-> > I thought fixes to commits still in bpf-next would get squashed. Would
-> > you mind elaborating why we don't do this?
-> >
+> We need to also export the kfunc set to the syscall program type,
+> and then add a couple of eBPF programs that are testing those calls.
 >
-> We don't amend follow up fixes into original commits and preserve history.
+> The first one checks for valid access, and the second one is OK
+> from a static analysis point of view but fails at run time because
+> we are trying to access outside of the allocated memory.
+>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>
+> ---
+>
+> no changes in v9
+>
+> no changes in v8
+>
+> changes in v7:
+> - add 1 more case to ensure we can read the entire sizeof(ctx)
+> - add a test case for when the context is NULL
+>
+> new in v6
+> ---
+>  net/bpf/test_run.c                            |  1 +
+>  .../selftests/bpf/prog_tests/kfunc_call.c     | 28 +++++++++++++++
+>  .../selftests/bpf/progs/kfunc_call_test.c     | 36 +++++++++++++++++++
+>  3 files changed, 65 insertions(+)
+>
+> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> index 25d8ecf105aa..f16baf977a21 100644
+> --- a/net/bpf/test_run.c
+> +++ b/net/bpf/test_run.c
+> @@ -1634,6 +1634,7 @@ static int __init bpf_prog_test_run_init(void)
+>
+>         ret = register_btf_kfunc_id_set(BPF_PROG_TYPE_SCHED_CLS, &bpf_prog_test_kfunc_set);
+>         ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING, &bpf_prog_test_kfunc_set);
+> +       ret = ret ?: register_btf_kfunc_id_set(BPF_PROG_TYPE_SYSCALL, &bpf_prog_test_kfunc_set);
+>         return ret ?: register_btf_id_dtor_kfuncs(bpf_prog_test_dtor_kfunc,
+>                                                   ARRAY_SIZE(bpf_prog_test_dtor_kfunc),
+>                                                   THIS_MODULE);
+> diff --git a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> index eede7c304f86..1edad012fe01 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/kfunc_call.c
+> @@ -9,10 +9,22 @@
+>
+>  #include "cap_helpers.h"
+>
+> +struct syscall_test_args {
+> +       __u8 data[16];
+> +       size_t size;
+> +};
+> +
+>  static void test_main(void)
+>  {
+>         struct kfunc_call_test_lskel *skel;
+>         int prog_fd, err;
+> +       struct syscall_test_args args = {
+> +               .size = 10,
+> +       };
+> +       DECLARE_LIBBPF_OPTS(bpf_test_run_opts, syscall_topts,
+> +               .ctx_in = &args,
+> +               .ctx_size_in = sizeof(args),
+> +       );
+>         LIBBPF_OPTS(bpf_test_run_opts, topts,
+>                 .data_in = &pkt_v4,
+>                 .data_size_in = sizeof(pkt_v4),
+> @@ -38,6 +50,22 @@ static void test_main(void)
+>         ASSERT_OK(err, "bpf_prog_test_run(test_ref_btf_id)");
+>         ASSERT_EQ(topts.retval, 0, "test_ref_btf_id-retval");
+>
+> +       prog_fd = skel->progs.kfunc_syscall_test.prog_fd;
+> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
+> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test)");
+> +
+> +       prog_fd = skel->progs.kfunc_syscall_test_fail.prog_fd;
+> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
+> +       ASSERT_ERR(err, "bpf_prog_test_run(syscall_test_fail)");
 
-Got it. Thanks Andrii.
+It would be better to assert on the verifier error string, to make
+sure we continue actually testing the error we care about and not
+something else.
 
+> +
+> +       syscall_topts.ctx_in = NULL;
+> +       syscall_topts.ctx_size_in = 0;
+> +
+> +       prog_fd = skel->progs.kfunc_syscall_test_null.prog_fd;
+> +       err = bpf_prog_test_run_opts(prog_fd, &syscall_topts);
+> +       ASSERT_OK(err, "bpf_prog_test_run(syscall_test_null)");
+> +       ASSERT_EQ(syscall_topts.retval, 0, "syscall_test_null-retval");
+> +
+>         kfunc_call_test_lskel__destroy(skel);
+>  }
 >
-> > >
-> > > With that:
-> > >
-> > > Acked-by: Andrii Nakryiko <andrii@kernel.org>
-> > >
-> > > > different commit. I tested this patchset via the following command:
-> > > >
-> > > >   test_progs -t cgroup,iter,btf_dump
-> > > >
-> > > > Hao Luo (2):
-> > > >   bpf: Add CGROUP to cgroup_iter order
-> > > >   selftests/bpf: Fix test that uses cgroup_iter order
-> > > >
-> > > >  include/uapi/linux/bpf.h                      | 10 +++---
-> > > >  kernel/bpf/cgroup_iter.c                      | 32 +++++++++----------
-> > > >  tools/include/uapi/linux/bpf.h                | 10 +++---
-> > > >  .../selftests/bpf/prog_tests/btf_dump.c       |  2 +-
-> > > >  .../prog_tests/cgroup_hierarchical_stats.c    |  2 +-
-> > > >  .../selftests/bpf/prog_tests/cgroup_iter.c    | 10 +++---
-> > > >  6 files changed, 33 insertions(+), 33 deletions(-)
-> > > >
-> > > > --
-> > > > 2.37.2.672.g94769d06f0-goog
-> > > >
+> diff --git a/tools/testing/selftests/bpf/progs/kfunc_call_test.c b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> index 5aecbb9fdc68..da7ae0ef9100 100644
+> --- a/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> +++ b/tools/testing/selftests/bpf/progs/kfunc_call_test.c
+> @@ -92,4 +92,40 @@ int kfunc_call_test_pass(struct __sk_buff *skb)
+>         return 0;
+>  }
+>
+> +struct syscall_test_args {
+> +       __u8 data[16];
+> +       size_t size;
+> +};
+> +
+> +SEC("syscall")
+> +int kfunc_syscall_test(struct syscall_test_args *args)
+> +{
+> +       const int size = args->size;
+> +
+> +       if (size > sizeof(args->data))
+> +               return -7; /* -E2BIG */
+> +
+> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(args->data));
+> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args));
+> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, size);
+> +
+> +       return 0;
+> +}
+> +
+> +SEC("syscall")
+> +int kfunc_syscall_test_null(struct syscall_test_args *args)
+> +{
+> +       bpf_kfunc_call_test_mem_len_pass1(args, 0);
+> +
+
+Where is it testing 'NULL'? It is testing zero_size_allowed.
+
+> +       return 0;
+> +}
+> +
+> +SEC("syscall")
+> +int kfunc_syscall_test_fail(struct syscall_test_args *args)
+> +{
+> +       bpf_kfunc_call_test_mem_len_pass1(&args->data, sizeof(*args) + 1);
+> +
+> +       return 0;
+> +}
+> +
+>  char _license[] SEC("license") = "GPL";
+> --
+> 2.36.1
+>
