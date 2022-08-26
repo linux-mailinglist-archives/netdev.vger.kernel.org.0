@@ -2,489 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 79DE25A1DD0
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8580D5A1DD6
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbiHZAwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:52:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60500 "EHLO
+        id S234759AbiHZAyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiHZAwG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:52:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825E8C8766
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 17:52:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661475123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WSFX6y8b5iTiRkZ50bFiPpqWxjJ+SyK+rCI33sJWvZw=;
-        b=EcIwXNsVe9rOq6Azp+SlS2A3qyO1a+63z6fnQWoXIRoInEmh/v6oAVsOTe7/9IRjUmbpBJ
-        Wl5aWkkSLhKJ9aw8d+uBhqDwGvwndevZoixbv1ICsff+7VetyObU9Gumwsv6sOYTDXDdSz
-        h3r+j2y0pxtt/ru04ClJTFkVRmHWqnM=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-500-_aastOFWM16InHXSLYJp6g-1; Thu, 25 Aug 2022 20:52:01 -0400
-X-MC-Unique: _aastOFWM16InHXSLYJp6g-1
-Received: by mail-qk1-f198.google.com with SMTP id bj2-20020a05620a190200b006bba055ab6eso104264qkb.12
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 17:52:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=WSFX6y8b5iTiRkZ50bFiPpqWxjJ+SyK+rCI33sJWvZw=;
-        b=1X2HLq6zCVxDGisESXQqbRI8uYu0tNhnlHhxSNdj52vdi2BZDp2Q2OVI40rEjZpIxE
-         HCkg25zjLGCUEcC6hJV9pYMD0N1BxIR6BSfhjKUBEsMUUF2Ypncc4Z+kHynh/t22q6m7
-         WuRFq8n22FsrTbTG0WSYwnLmODnJV9SPepq/Xe6rt0cJAq8+uSBKZ4Chm/u3WtnSibSo
-         fjJn3LrsGaIiFcFtYDhY7321YG09XcnNE+e8cpmZ7H4u4wcbmenbG5oTzwudqay0Sg3O
-         CRD/n38ro+6HMkb7/KZ9cFsy4dRzRm+Uz9ptnaliaRkjerEuphMXppDt6DDy6s06zV8g
-         l+wQ==
-X-Gm-Message-State: ACgBeo1rSghhpWrCnZ1CHN3pQwl+QTTywHkPsg8/Quc9b/nJ7/UwQ3G8
-        3S2pocoJq/mRKYsMiqFCPjhw0Z0uvpZugik7MNXjfBfDzKXcipjIQ5+oSn3GjRzU5LjeRN6w2xv
-        6CEkDTqR4Iou6d83N3vpeV7AhhmPXGTnR
-X-Received: by 2002:a05:622a:4cd:b0:343:65a4:e212 with SMTP id q13-20020a05622a04cd00b0034365a4e212mr5882713qtx.526.1661475121214;
-        Thu, 25 Aug 2022 17:52:01 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4YJqrZSshF1vlykHNrdknf7xVRzPrl6kocULXRRD4BQKI0CifD9B+puEYkCNRATyY1ZqEJQ/bsP6qBxlDClUw=
-X-Received: by 2002:a05:622a:4cd:b0:343:65a4:e212 with SMTP id
- q13-20020a05622a04cd00b0034365a4e212mr5882695qtx.526.1661475120936; Thu, 25
- Aug 2022 17:52:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
- <20220701143052.1267509-2-miquel.raynal@bootlin.com> <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
- <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
- <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
- <20220824093547.16f05d15@xps-13> <CAK-6q+gqX8w+WEgSk2J9FOdrFJPvqJOsgmaY4wOu=siRszBujA@mail.gmail.com>
- <20220825104035.11806a67@xps-13>
-In-Reply-To: <20220825104035.11806a67@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 25 Aug 2022 20:51:49 -0400
-Message-ID: <CAK-6q+hxSpw1yJR5H5D6gy5gGdm6Qa3VzyjZXA45KFQfVVqwFw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
- coordinator interfaces
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        with ESMTP id S229521AbiHZAyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:54:14 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2119.outbound.protection.outlook.com [40.107.237.119])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0754AC8884
+        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 17:54:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IzJYPFQQ/a4ovwy4p1HV1Kv0clbqUOP/AWOmrnO/SYDhE2lBDHel0QqmzY6EFvr2DP4YvYXrCTYX8EDE5tsvNL8+xvgre8N3UdnRGE7A1e4jbSFdbiSZtwLPCkdiW0O/mMwwJ7+KVnEm36hghepMIuxjFEhKxIWQHftmaA2zi9mFE1nN13kqiCKQJhrM8mmBD3cuxdvt0MNdxjSSgFJCp7HFczEZ+9q/vNXidQCk7nSXimUob6urB0iB7QtNh2RMfM0K4xfq2jx7WRj2jLRqxj2To/4oL3cBGz2aiIsgb1t8C8R8OTR6zSE0c1E4PNp/pWDnkUstIA10ApWYv+670A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qTG0ABxZztEWvEE+dwIM02bkPvZI6Fx2VQ0syqaTb48=;
+ b=PciVBP9YFsgktdWJ+0hyRnbJO/iFsRC8R4+kVtX+nvM+4Fl2PnFQ5OkPL1Qkhpy1pN4dyFcyQ5jGg14T79ySXV9pIo3Oa8W3dA69vU5NsVLu4pCXAlmpNbVkV6lxwWaCfXos1cIkzX5zOlhtfad+UsL7s8pgjKCOGLDQ48MGg2dQUkrKrYN+cfUPEZ/rIwkO7D1yAbntQ97K7cflZBD/L58cAql5RxBQoIBiMV6krlsVPiCxBO2LtMDlRqpeAxSVfUzDgNM8s9mh1eeRvepsqWoQiE40W49BEjV2cJPNCRbGlEWdjk6TlZ1ZyON7h3YXYkIy8UeOnsjlBMkckNeISQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qTG0ABxZztEWvEE+dwIM02bkPvZI6Fx2VQ0syqaTb48=;
+ b=q/iihuxEnoFH/ttxLM+Q9rL45839DnocS6hxopwhx2FyKSPpMlL4pDaN4fr12yUDe02xxX5cESGrMhrDtAr5pF7w+mVGfBVIC8K7tMLk4U5vlgzdZf/4YP8yxMMWpgehjuikNNY8xoaMEuESRYQ9k4DlQimWM+Ck1ZrTxAMWKXA=
+Received: from DM5PR1301MB2172.namprd13.prod.outlook.com (2603:10b6:4:2d::21)
+ by BN6PR13MB1730.namprd13.prod.outlook.com (2603:10b6:404:143::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.4; Fri, 26 Aug
+ 2022 00:54:11 +0000
+Received: from DM5PR1301MB2172.namprd13.prod.outlook.com
+ ([fe80::287b:f749:f9c3:5bba]) by DM5PR1301MB2172.namprd13.prod.outlook.com
+ ([fe80::287b:f749:f9c3:5bba%5]) with mapi id 15.20.5588.003; Fri, 26 Aug 2022
+ 00:54:11 +0000
+From:   Baowen Zheng <baowen.zheng@corigine.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Simon Horman <simon.horman@corigine.com>
+CC:     David Miller <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        oss-drivers <oss-drivers@corigine.com>
+Subject: RE: [PATCH net-next 3/3] nfp: add support for eeprom get and set
+ command
+Thread-Topic: [PATCH net-next 3/3] nfp: add support for eeprom get and set
+ command
+Thread-Index: AQHYuIy/W4rIevAVQkK36zsLnuKrSa3AJ/YAgAAwdBA=
+Date:   Fri, 26 Aug 2022 00:54:10 +0000
+Message-ID: <DM5PR1301MB2172EA32966B95D195FC0B5AE7759@DM5PR1301MB2172.namprd13.prod.outlook.com>
+References: <20220825141223.22346-1-simon.horman@corigine.com>
+        <20220825141223.22346-4-simon.horman@corigine.com>
+ <20220825144920.5c709331@kernel.org>
+In-Reply-To: <20220825144920.5c709331@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3341fdc6-4e12-47b2-9500-08da86fd7d1a
+x-ms-traffictypediagnostic: BN6PR13MB1730:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: swf34hotGzNfYON1LO0ChrD2XbYv3B6o2BfhvTqJI2Be7i58msFCtoLdll2zyVpLYom/NPbdIfGIi2479PL03BY+QjispJ9vq9JxGkdpEXvv5LHHdDlvBZIpTofdqCuSMKhEb2gPbuLnkpWzS7oypB1eAfkKXRgsOReTj8OAt3scWQQyDfozAiiD5R5tR4u2TEUzFDl1drGx4EoPBuw+NqJ8dvadOpp4v1d5rUE3NPHIoSzeWbALRSTvHGLCzKoQykBtDl9hqE0h0HIYyirobGryusQc2i/+ZqnDUUtRNMGa3l97HXrV5cY495XyG1s1Objz6VP4nabpA9e6e0cSv21GuFhmEc1hbY2kJGsgNekf0iNJGin1B0juNR2VzkVescOODs2+O4Y1ZyopXHB/c5kwG3cz8JgDXrAs5trFJ4AlSqhEVWMiTmqAhtH+wtfBrgrLzXTZoPQmr9OtLt7gyhE/+lpS/DP4Ty6p1kSwv1sYURkiK+38Svmomku8CvNFQ1HM4vWR70cyl98diKfst3eIjSNm5Qfa+lzbM7owU6+6TbSPFNe7BHAX4qA/stnL3TbSHDLQPRmOInDYc6627AHbaHjewWDgC8IKhZo/Af4pDwhZ1aevvKxYmXdmtcuaNpCPihFkBBVFRMQvk8euiC6eRgRRbWsAe83dO1NzLGIyi0aRveL3MXALbaeb3fCFDm4ri/dl/s7vXssd5hvku29n9b09CPdzOSvPaosQ1PW2VQ1VVfB08hk9Gw6vYQpxjhttqV53fg54mgSV7iT9Tg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1301MB2172.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39840400004)(366004)(396003)(8936002)(38070700005)(33656002)(86362001)(55016003)(122000001)(38100700002)(52536014)(478600001)(66446008)(66476007)(66556008)(64756008)(66946007)(8676002)(76116006)(4326008)(5660300002)(6636002)(110136005)(54906003)(316002)(71200400001)(41300700001)(7696005)(26005)(6506007)(2906002)(107886003)(9686003)(4744005)(186003)(44832011);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?c3dUak5nYWk3N1dLK0lJUm03YUkvbVpuZExtdWtMSE9hK1FCTmNhdi9MbFpE?=
+ =?utf-8?B?VE5oR1lkcDlWSUpDYWcrQS9CZHNNNkJSOGJwUlVnSDhvUTJpcFJHTG1oWUN3?=
+ =?utf-8?B?NnM2WUQxMG1Tb0RKVXNYYzF3b2lzRDUvU015NXRSV0JIMTYwbGFuanZ1Y0xt?=
+ =?utf-8?B?K2VScmFsRExoZjNpMjNmems0TjA0Z21maU0vK0VUaFVBR0ZJM0J1cHVjcWlw?=
+ =?utf-8?B?OVdjakpmUWovNVVnSHY3d1hsdWpOZUVHZlZxdGxNS0s0WERGRDdvTGEvQlg4?=
+ =?utf-8?B?ZEE5ejZmSDNwNThhTWQxdnpqVVNyNm0rdmR6OThWQzFZNVVCRG8xejU1Mysz?=
+ =?utf-8?B?aTVtVlZzb0kxZHF2UEwwcXZvWlNESHEvZ1Vwemppa1dwUHI4WDdUNlhLL0RE?=
+ =?utf-8?B?am9VNHdXc2ovR1B6Rm11Ukp3aWtTOGFqdUxnd24wWDlsak5MczBQT0V2NnNw?=
+ =?utf-8?B?bm9MMkVSQzNXVENOM3FMUHdYQkk5dzVyM3IrSDVaVFF1d085QlUydmhWSEJH?=
+ =?utf-8?B?V3FaVHVOdG5QNS9WY0hnejlLNWFZU0MzYkdrWDNibjcxZW9NK09Udk1KUmJt?=
+ =?utf-8?B?QjJwUzdtWWorc1BDdUJoNG52SERKMThJczN3ODFwZ2twSlRiRncvZlYyTExn?=
+ =?utf-8?B?di85c2Z5VzYvSHE1V2RZTGU0VnlzYnR5ekNOYXZweEZacXZTVko5RTZBa0xX?=
+ =?utf-8?B?N1BkYkVDSFNuVzgxbHJGRVBEU2ZMbTRQNWxEc1pBOGM2U3FwUEdGYnB3VDNG?=
+ =?utf-8?B?TENreVFKV0ZvZmpVbVBEYzZFRzVmRFdUSVNjOFFLeHVSRTdwa29kTG90bXUy?=
+ =?utf-8?B?NERoVVJYbFZwUXNpZExvMVRGdDVUVURvdmNmZWQ2aG5OM0FWNCtyR3BrUm9u?=
+ =?utf-8?B?d3V6c0VDR0xIRXAxN1VHVVVucjZBVVlzNFRiVTFieXBzMmhZQmpXU29STktT?=
+ =?utf-8?B?eUlnZXdRTGdxbENRZnJ5dmoyWjFnblI4T0JTY2pMNkUvRWVXQnZIdkNRay9j?=
+ =?utf-8?B?REhvMzU3alFZQWxmV2J6MEpHbTZYeWdNUkZDN0g0cHVqMFY4T0syWk14ZGhu?=
+ =?utf-8?B?SmZ6d2F6MnYyY09BT3pCMzdCdHlyZS9hcTdKT0cvQmhTd0t4MWlZMW9qcWZv?=
+ =?utf-8?B?RVZjUUJyWUloODhxTGdrT29LTUdKUG1JK0dBckZQUCt6Y0hhM0tLNGxwS1Bi?=
+ =?utf-8?B?ajFUUllEU1hydEtMaFcrcjVIeXFGR0N4VlVRSjdacFVBUWlDeXErODZpR0dx?=
+ =?utf-8?B?Y2w3emFIQnlDb3FtNUZOVUdOTW9kbHArMi9JbzNZZ1Y5VS9KUTJ2cXlvSGFW?=
+ =?utf-8?B?ZTlSUjgwWlNoTXZSSlhZd1ZuazNpTVNHRWhTTk92cjBXbG9xN2Nwa3FXcVFL?=
+ =?utf-8?B?TjFPSUNhclNveENuOXFyMW1LQXMwVGpIQjFXOFErcEd3RmxrNEUvMHpQVnM2?=
+ =?utf-8?B?b2I4OFdZZFZ6Z3oyMHBYMUhRL1pqNitHZ3dGYlUxTXFiQjhNU2RMNm5SeVNn?=
+ =?utf-8?B?RWpKZUdNVDJ0MS83K1hIb1FrNFZIbTRJRjY2ZlNvNkpMQnBGU1d0ODVGV0s4?=
+ =?utf-8?B?RjE0WTFXNWxoZ3M1Mk1nM2hCNi8vRHhHRDFhLzU3bHlWYmdIbHZXZVB1MlZh?=
+ =?utf-8?B?QnBXVkxVUUd5Q2pQOE9kTkpuVUF5YStwaHFqQ2ZQdzkyUi9QWVFybEVKYko3?=
+ =?utf-8?B?MDFGaGFWTnpWRERIWWVBSHB6Q20zRHZtZk1maHF1SHByOUJhRkJjRFdVWGhD?=
+ =?utf-8?B?RGZmTlBRVVJ3aytmUkVNZHZIbWRVU3MwaEhHTjArUk5hQ1BMZnlUVU54YXB1?=
+ =?utf-8?B?RDg5Z2I4cmwwMlhtSFRPMWRSWmxhWGduOEdlQ21pWEQvS1Y2d2pvU1hueVpS?=
+ =?utf-8?B?SURVU0JBQU40cDgxSnJ0M1FVdTBoNWI4Z1RTVksyNWoweUIzamhndkNpbUgr?=
+ =?utf-8?B?aTF5eUJOREJ4ZENuQkFxRSt0OXVCUjBtMGJKdEpDcmJPSlVPNUV4aVUzbUdR?=
+ =?utf-8?B?R1NocXZIU0dFSnFOQ3g5ditickZtVXA0eXZ3TFlJL1dmUWJNM3FzT0lSUFlP?=
+ =?utf-8?B?a0p3bWtqbGJCell5R3poeWNPYVFhWWZlRDFGTU1xYkZnb2kweVNVNmgvK1hh?=
+ =?utf-8?Q?ZV7hurGZUVT406lgcBCuvs7o9?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1301MB2172.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3341fdc6-4e12-47b2-9500-08da86fd7d1a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 00:54:10.9463
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ABDyQREs6aN0AQa+OHMmNI7fGaG+lOsNtDBU1d1IcJmuw50v6dfqkUFtYrI/YMB0gpwo/INskTl9QZk7iikSy1SdEODaKKy2skFMkSqAPvs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR13MB1730
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, Aug 25, 2022 at 4:41 AM Miquel Raynal <miquel.raynal@bootlin.com> w=
-rote:
->
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Wed, 24 Aug 2022 17:43:11 -0400:
->
-> > On Wed, Aug 24, 2022 at 3:35 AM Miquel Raynal <miquel.raynal@bootlin.co=
-m> wrote:
-> > >
-> > > Hi Alexander,
-> > >
-> > > aahringo@redhat.com wrote on Tue, 23 Aug 2022 17:44:52 -0400:
-> > >
-> > > > Hi,
-> > > >
-> > > > On Tue, Aug 23, 2022 at 12:29 PM Miquel Raynal
-> > > > <miquel.raynal@bootlin.com> wrote:
-> > > > >
-> > > > > Hi Alexander,
-> > > > >
-> > > > > aahringo@redhat.com wrote on Tue, 23 Aug 2022 08:33:30 -0400:
-> > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > On Fri, Aug 19, 2022 at 1:11 PM Miquel Raynal <miquel.raynal@bo=
-otlin.com> wrote:
-> > > > > > >
-> > > > > > > Hi Alexander,
-> > > > > > >
-> > > > > > > aahringo@redhat.com wrote on Tue, 5 Jul 2022 21:51:02 -0400:
-> > > > > > >
-> > > > > > > > Hi,
-> > > > > > > >
-> > > > > > > > On Fri, Jul 1, 2022 at 10:36 AM Miquel Raynal <miquel.rayna=
-l@bootlin.com> wrote:
-> > > > > > > > >
-> > > > > > > > > As a first strep in introducing proper PAN management and=
- association,
-> > > > > > > > > we need to be able to create coordinator interfaces which=
- might act as
-> > > > > > > > > coordinator or PAN coordinator.
-> > > > > > > > >
-> > > > > > > > > Hence, let's add the minimum support to allow the creatio=
-n of these
-> > > > > > > > > interfaces. This might be restrained and improved later.
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > > > > > > ---
-> > > > > > > > >  net/mac802154/iface.c | 14 ++++++++------
-> > > > > > > > >  net/mac802154/rx.c    |  2 +-
-> > > > > > > > >  2 files changed, 9 insertions(+), 7 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/net/mac802154/iface.c b/net/mac802154/iface.=
-c
-> > > > > > > > > index 500ed1b81250..7ac0c5685d3f 100644
-> > > > > > > > > --- a/net/mac802154/iface.c
-> > > > > > > > > +++ b/net/mac802154/iface.c
-> > > > > > > > > @@ -273,13 +273,13 @@ ieee802154_check_concurrent_iface(s=
-truct ieee802154_sub_if_data *sdata,
-> > > > > > > > >                 if (nsdata !=3D sdata && ieee802154_sdata=
-_running(nsdata)) {
-> > > > > > > > >                         int ret;
-> > > > > > > > >
-> > > > > > > > > -                       /* TODO currently we don't suppor=
-t multiple node types
-> > > > > > > > > -                        * we need to run skb_clone at rx=
- path. Check if there
-> > > > > > > > > -                        * exist really an use case if we=
- need to support
-> > > > > > > > > -                        * multiple node types at the sam=
-e time.
-> > > > > > > > > +                       /* TODO currently we don't suppor=
-t multiple node/coord
-> > > > > > > > > +                        * types we need to run skb_clone=
- at rx path. Check if
-> > > > > > > > > +                        * there exist really an use case=
- if we need to support
-> > > > > > > > > +                        * multiple node/coord types at t=
-he same time.
-> > > > > > > > >                          */
-> > > > > > > > > -                       if (wpan_dev->iftype =3D=3D NL802=
-154_IFTYPE_NODE &&
-> > > > > > > > > -                           nsdata->wpan_dev.iftype =3D=
-=3D NL802154_IFTYPE_NODE)
-> > > > > > > > > +                       if (wpan_dev->iftype !=3D NL80215=
-4_IFTYPE_MONITOR &&
-> > > > > > > > > +                           nsdata->wpan_dev.iftype !=3D =
-NL802154_IFTYPE_MONITOR)
-> > > > > > > > >                                 return -EBUSY;
-> > > > > > > > >
-> > > > > > > > >                         /* check all phy mac sublayer set=
-tings are the same.
-> > > > > > > > > @@ -577,6 +577,7 @@ ieee802154_setup_sdata(struct ieee802=
-154_sub_if_data *sdata,
-> > > > > > > > >         wpan_dev->short_addr =3D cpu_to_le16(IEEE802154_A=
-DDR_BROADCAST);
-> > > > > > > > >
-> > > > > > > > >         switch (type) {
-> > > > > > > > > +       case NL802154_IFTYPE_COORD:
-> > > > > > > > >         case NL802154_IFTYPE_NODE:
-> > > > > > > > >                 ieee802154_be64_to_le64(&wpan_dev->extend=
-ed_addr,
-> > > > > > > > >                                         sdata->dev->dev_a=
-ddr);
-> > > > > > > > > @@ -636,6 +637,7 @@ ieee802154_if_add(struct ieee802154_l=
-ocal *local, const char *name,
-> > > > > > > > >         ieee802154_le64_to_be64(ndev->perm_addr,
-> > > > > > > > >                                 &local->hw.phy->perm_exte=
-nded_addr);
-> > > > > > > > >         switch (type) {
-> > > > > > > > > +       case NL802154_IFTYPE_COORD:
-> > > > > > > > >         case NL802154_IFTYPE_NODE:
-> > > > > > > > >                 ndev->type =3D ARPHRD_IEEE802154;
-> > > > > > > > >                 if (ieee802154_is_valid_extended_unicast_=
-addr(extended_addr)) {
-> > > > > > > > > diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-> > > > > > > > > index b8ce84618a55..39459d8d787a 100644
-> > > > > > > > > --- a/net/mac802154/rx.c
-> > > > > > > > > +++ b/net/mac802154/rx.c
-> > > > > > > > > @@ -203,7 +203,7 @@ __ieee802154_rx_handle_packet(struct =
-ieee802154_local *local,
-> > > > > > > > >         }
-> > > > > > > > >
-> > > > > > > > >         list_for_each_entry_rcu(sdata, &local->interfaces=
-, list) {
-> > > > > > > > > -               if (sdata->wpan_dev.iftype !=3D NL802154_=
-IFTYPE_NODE)
-> > > > > > > > > +               if (sdata->wpan_dev.iftype =3D=3D NL80215=
-4_IFTYPE_MONITOR)
-> > > > > > > > >                         continue;
-> > > > > > > >
-> > > > > > > > I probably get why you are doing that, but first the overal=
-l design is
-> > > > > > > > working differently - means you should add an additional re=
-ceive path
-> > > > > > > > for the special interface type.
-> > > > > > > >
-> > > > > > > > Also we "discovered" before that the receive path of node v=
-s
-> > > > > > > > coordinator is different... Where is the different handling=
- here? I
-> > > > > > > > don't see it, I see that NODE and COORD are the same now (b=
-ecause that
-> > > > > > > > is _currently_ everything else than monitor). This change i=
-s not
-> > > > > > > > enough and does "something" to handle in some way coordinat=
-or receive
-> > > > > > > > path but there are things missing.
-> > > > > > > >
-> > > > > > > > 1. Changing the address filters that it signals the transce=
-iver it's
-> > > > > > > > acting as coordinator
-> > > > > > > > 2. We _should_ also have additional handling for whatever t=
-he
-> > > > > > > > additional handling what address filters are doing in mac80=
-2154
-> > > > > > > > _because_ there is hardware which doesn't have address filt=
-ering e.g.
-> > > > > > > > hwsim which depend that this is working in software like ot=
-her
-> > > > > > > > transceiver hardware address filters.
-> > > > > > > >
-> > > > > > > > For the 2. one, I don't know if we do that even for NODE ri=
-ght or we
-> > > > > > > > just have the bare minimal support there... I don't assume =
-that
-> > > > > > > > everything is working correctly here but what I want to see=
- is a
-> > > > > > > > separate receive path for coordinators that people can send=
- patches to
-> > > > > > > > fix it.
-> > > > > > >
-> > > > > > > Yes, we do very little differently between the two modes, tha=
-t's why I
-> > > > > > > took the easy way: just changing the condition. I really don'=
-t see what
-> > > > > > > I can currently add here, but I am fine changing the style to=
- easily
-> > > > > > > show people where to add filters for such or such interface, =
-but right
-> > > > > > > now both path will look very "identical", do we agree on that=
-?
-> > > > > >
-> > > > > > mostly yes, but there exists a difference and we should at leas=
-t check
-> > > > > > if the node receive path violates the coordinator receive path =
-and
-> > > > > > vice versa.
-> > > > > > Put it in a receive_path() function and then coord_receive_path=
-(),
-> > > > > > node_receive_path() that calls the receive_path() and do the
-> > > > > > additional filtering for coordinators, etc.
-> > > > > >
-> > > > > > There should be a part in the standard about "third level filte=
-r rule
-> > > > > > if it's a coordinator".
-> > > > > > btw: this is because the address filter on the transceiver need=
-s to
-> > > > > > have the "i am a coordinator" boolean set which is missing in t=
-his
-> > > > > > series. However it depends on the transceiver filtering level a=
-nd the
-> > > > > > mac802154 receive path if we actually need to run such filterin=
-g or
-> > > > > > not.
-> > > > >
-> > > > > I must be missing some information because I can't find any place=
-s
-> > > > > where what you suggest is described in the spec.
-> > > > >
-> > > > > I agree there are multiple filtering level so let's go through th=
-em one
-> > > > > by one (6.7.2 Reception and rejection):
-> > > > > - first level: is the checksum (FCS) valid?
-> > > > >         yes -> goto second level
-> > > > >         no -> drop
-> > > > > - second level: are we in promiscuous mode?
-> > > > >         yes -> forward to upper layers
-> > > > >         no -> goto second level (bis)
-> > > > > - second level (bis): are we scanning?
-> > > > >         yes -> goto scan filtering
-> > > > >         no -> goto third level
-> > > > > - scan filtering: is it a beacon?
-> > > > >         yes -> process the beacon
-> > > > >         no -> drop
-> > > > > - third level: is the frame valid? (type, source, destination, pa=
-n id,
-> > > > >   etc)
-> > > > >         yes -> forward to upper layers
-> > > > >         no -> drop
-> > > > >
-> > > > > But none of them, as you said, is dependent on the interface type=
-.
-> > > > > There is no mention of a specific filtering operation to do in al=
-l
-> > > > > those cases when running in COORD mode. So I still don't get what
-> > > > > should be included in either node_receive_path() which should be
-> > > > > different than in coord_receive_path() for now.
-> > > > >
-> > > > > There are, however, two situations where the interface type has i=
-ts
-> > > > > importance:
-> > > > > - Enhanced beacon requests with Enhanced beacon filter IE, which =
-asks
-> > > > >   the receiving device to process/drop the request upon certain
-> > > > >   conditions (minimum LQI and/or randomness), as detailed in
-> > > > >   7.4.4.6 Enhanced Beacon Filter IE. But, as mentioned in
-> > > > >   7.5.9 Enhanced Beacon Request command: "The Enhanced Beacon Req=
-uest
-> > > > >   command is optional for an FFD and an RFD", so this series was =
-only
-> > > > >   targeting basic beaconing for now.
-> > > > > - In relaying mode, the destination address must not be validated
-> > > > >   because the message needs to be re-emitted. Indeed, a receiver =
-in
-> > > > >   relaying mode may not be the recipient. This is also optional a=
-nd out
-> > > > >   of the scope of this series.
-> > > > >
-> > > > > Right now I have the below diff, which clarifies the two path, wi=
-thout
-> > > > > too much changes in the current code because I don't really see w=
-hy it
-> > > > > would be necessary. Unless you convince me otherwise or read the =
-spec
-> > > > > differently than I do :) What do you think?
-> > > > >
-> > > >
-> > > > "Reception and rejection"
-> > > >
-> > > > third-level filtering regarding "destination address" and if the
-> > > > device is "PAN coordinator".
-> > > > This is, in my opinion, what the coordinator boolean tells the
-> > > > transceiver to do on hardware when doing address filter there. You =
-can
-> > > > also read that up in datasheets of transceivers as atf86rf233, sear=
-ch
-> > > > for I_AM_COORD.
-> > >
-> > > Oh right, I now see what you mean!
-> > >
-> > > > Whereas they use the word "PAN coordinator" not "coordinator", if t=
-hey
-> > > > really make a difference there at this point..., if so then the ker=
-nel
-> > > > must know if the coordinator is a pan coordinator or coordinator
-> > > > because we need to set the address filter in kernel.
-> > >
-> > > Yes we need to make a difference, you can have several coordinators b=
-ut
-> > > a single PAN coordinator in a PAN. I think we can assume that the PAN
-> > > coordinator is the coordinator with no parent (association-wise). Wit=
-h
-> > > the addition of the association series, I can handle that, so I will
-> > > create the two path as you advise, add a comment about this additiona=
-l
-> > > filter rule that we don't yet support, and finally after the
-> > > association series add another commit to make this filtering rule rea=
-l.
-> > >
-> > > >
-> > > > > Thanks,
-> > > > > Miqu=C3=A8l
-> > > > >
-> > > > > ---
-> > > > >
-> > > > > --- a/net/mac802154/rx.c
-> > > > > +++ b/net/mac802154/rx.c
-> > > > > @@ -194,6 +194,7 @@ __ieee802154_rx_handle_packet(struct ieee8021=
-54_local *local,
-> > > > >         int ret;
-> > > > >         struct ieee802154_sub_if_data *sdata;
-> > > > >         struct ieee802154_hdr hdr;
-> > > > > +       bool iface_found =3D false;
-> > > > >
-> > > > >         ret =3D ieee802154_parse_frame_start(skb, &hdr);
-> > > > >         if (ret) {
-> > > > > @@ -203,18 +204,31 @@ __ieee802154_rx_handle_packet(struct ieee80=
-2154_local *local,
-> > > > >         }
-> > > > >
-> > > > >         list_for_each_entry_rcu(sdata, &local->interfaces, list) =
-{
-> > > > > -               if (sdata->wpan_dev.iftype !=3D NL802154_IFTYPE_N=
-ODE)
-> > > > > +               if (sdata->wpan_dev.iftype =3D=3D NL802154_IFTYPE=
-_MONITOR)
-> > > > >                         continue;
-> > > > >
-> > > > >                 if (!ieee802154_sdata_running(sdata))
-> > > > >                         continue;
-> > > > >
-> > > > > +               iface_found =3D true;
-> > > > > +               break;
-> > > > > +       }
-> > > > > +
-> > > > > +       if (!iface_found) {
-> > > > > +               kfree_skb(skb);
-> > > > > +               return;
-> > > > > +       }
-> > > > > +
-> > > > > +       /* TBD: Additional filtering is possible on NODEs and/or =
-COORDINATORs */
-> > > > > +       switch (sdata->wpan_dev.iftype) {
-> > > > > +       case NL802154_IFTYPE_COORD:
-> > > > > +       case NL802154_IFTYPE_NODE:
-> > > > >                 ieee802154_subif_frame(sdata, skb, &hdr);
-> > > > > -               skb =3D NULL;
-> > > > > +               break;
-> > > > > +       default:
-> > > > > +               kfree_skb(skb);
-> > > > >                 break;
-> > > > >         }
-> > > >
-> > > > Why do you remove the whole interface looping above and make it onl=
-y
-> > > > run for one ?first found? ?
-> > >
-> > > To reduce the indentation level.
-> > >
-> > > > That code changes this behaviour and I do
-> > > > not know why.
-> > >
-> > > The precedent code did:
-> > > for_each_iface() {
-> > >         if (not a node)
-> > >                 continue;
-> > >         if (not running)
-> > >                 continue;
-> > >
-> > >         subif_frame();
-> > >         break;
-> > > }
-> > >
-> > > That final break also elected only the first running node iface.
-> > > Otherwise it would mean that we allow the same skb to be consumed
-> > > twice, which is wrong IMHO?
-> >
-> > no? Why is that wrong? There is a real use-case to have multiple
-> > interfaces on one phy (or to do it in near future, I said that
-> > multiple times). This patch does a step backwards to this.
->
-> So we need to duplicate the skb because it automatically gets freed in
-> the "forward to upper layer" path. Am I right? I'm fine doing so if
-
-What is the definition of "duplicate the skb" here.
-
-> this is the way to go, but I am interested if you can give me a real
-> use case where having NODE+COORDINATOR on the same PHY is useful?
->
-
-Testing.
-
-- Alex
-
+T24gQXVndXN0IDI2LCAyMDIyIDU6NDkgQU0sIEpha3ViIHdyb3RlOg0KPk9uIFRodSwgMjUgQXVn
+IDIwMjIgMTY6MTI6MjMgKzAyMDAgU2ltb24gSG9ybWFuIHdyb3RlOg0KPj4gRnJvbTogQmFvd2Vu
+IFpoZW5nIDxiYW93ZW4uemhlbmdAY29yaWdpbmUuY29tPg0KPj4NCj4+IEFkZCBzdXBwb3J0IGZv
+ciBlZXByb20gZ2V0IGFuZCBzZXQgb3BlcmF0aW9uIHdpdGggZXRodG9vbCBjb21tYW5kLg0KPj4g
+d2l0aCB0aGlzIGNoYW5nZSwgd2UgY2FuIHN1cHBvcnQgY29tbWFuZHMgYXM6DQo+Pg0KPj4gICNl
+dGh0b29sIC1lIGVucDEwMXMwbnAwIG9mZnNldCAwIGxlbmd0aCA2DQo+PiAgT2Zmc2V0ICAgICAg
+ICAgIFZhbHVlcw0KPj4gIC0tLS0tLSAgICAgICAgICAtLS0tLS0NCj4+ICAweDAwMDA6ICAgICAg
+ICAgMDAgMTUgNGQgMTYgNjYgMzMNCj4+DQo+PiAgI2V0aHRvb2wgLUUgZW5wMTAxczBucDAgbWFn
+aWMgMHg0MDAwMTllZSBvZmZzZXQgNSBsZW5ndGggMSB2YWx1ZSAweDg4DQo+Pg0KPj4gV2UgbWFr
+ZSB0aGlzIGNoYW5nZSB0byBwZXJzaXN0IE1BQyBjaGFuZ2UgZHVyaW5nIGRyaXZlciByZWxvYWQg
+YW5kDQo+PiBzeXN0ZW0gcmVib290Lg0KPg0KPklzIHRoZXJlIGFueSBwcmVjZWRlbnQgZm9yIHdy
+aXRpbmcgdGhlIE1BQyBhZGRyZXNzIHdpdGggd2F5Pw0KSGkgSmFrdWIsIGFjdHVhbGx5IGl0IGlz
+IGEgZ2VuZXJhbCB3YXkgdG8gcGVyc2lzdCBNQUMgY2hhbmdlIGR1cmluZyBkcml2ZXIgcmVsb2Fk
+IG9yIHN5c3RlbSByZWJvb3QuIEFGQUlLLCB0aGUgODI1OTlFIHNlcmllcyBOSUMgb2YgSW50ZWwg
+c3VwcG9ydHMgdGhpcyB3YXkgdG8gY2hhbmdlIE1BQy4gDQpUaGUgZGlmZmVyZW5jZSBpcyB0aGUg
+b2Zmc2V0IG9mIE1BQyBpbiBFRVBST00gdG8gc3RvcmUgdGhlIE1BQywgaXQgaXMgZGVmaW5lZCBi
+eSB2ZW5kb3IuDQo=
