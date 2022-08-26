@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 67E205A28E7
+	by mail.lfdr.de (Postfix) with ESMTP id 1FAB85A28E6
 	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 15:56:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344397AbiHZNzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 09:55:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        id S1344386AbiHZNzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 09:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344377AbiHZNzH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 09:55:07 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CAFE3DBE2;
-        Fri, 26 Aug 2022 06:55:03 -0700 (PDT)
+        with ESMTP id S1344387AbiHZNzN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 09:55:13 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966184455E;
+        Fri, 26 Aug 2022 06:55:06 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 72867240017;
-        Fri, 26 Aug 2022 13:55:00 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id EAB0024001A;
+        Fri, 26 Aug 2022 13:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661522102;
+        t=1661522104;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AHbjb2QKfJWi64tXxgD9Cr2PZaKfndc17diijMug5to=;
-        b=IcpqLg+ZglQfOUNCSeYecq+JPigB5eD85iVMUHg5CpE3fMI24BlCGM3XaeZH2O8AhFSUpP
-        UszH065SWZT/esU0+6MVVfXdsC7OINmzR/e9LJZZYa3jIW3GmDxq6mmM0bcKJwlfeAO6qZ
-        i3mOuLeG+i0arMTaHny5cbkkl7WuKjhOn+UrY1gBCcCKEXsQJZfVwo+ic7bB90wAunwnCS
-        IgaqJ75xFF7s7KF74VZVzLnOILfvSui1Kt9tHBSYQS31aeoQqSoxQnRVQy8E0n9Pd00u3H
-        z7PCQhlm3z2a8F+Gvi4ajwsvbZ8sQ42+4M9EpPbvGBFUMwi+2iBGZRRJnfHQpQ==
+        bh=VFKoe52nMX7hHbnB/aUPeg1FIJtUzSxYfxtWLk9lDkU=;
+        b=ZNKkWwGqPImICTKSAC/88R1XglZmNOfy0XqcJpZzvcMbqakruTWq1Q6aos/iMwUM+lX6EO
+        N/OrDfQqT0ipYZetQZjoO7SN71DIiMBqKyFyImiiatQccusdDmW+qr2GzJtL5a+hdjCC05
+        vkDVkQ2tRBBTopuGNOnWBOLjOZfsVTyYcTkMGySaCVwxUcrp6TJ1EkMKP5WHduGzb/dT44
+        LN7A7c3CYwno/AmO81etAqiL58GBkJqqI+nwgvIRfYk575FE2Vvgv/kMO7IPNJH/PF5JeK
+        xTbtk/uq42+xrQKV3mm4M5/wcM7B5ASuixy5YCuBiypCJLyyTk8APR4ZTvBFlw==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -41,276 +41,673 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: [PATCH net-next 3/5] net: pcs: add new PCS driver for altera TSE PCS
-Date:   Fri, 26 Aug 2022 15:54:49 +0200
-Message-Id: <20220826135451.526756-4-maxime.chevallier@bootlin.com>
+Subject: [PATCH net-next 4/5] net: altera: tse: convert to phylink
+Date:   Fri, 26 Aug 2022 15:54:50 +0200
+Message-Id: <20220826135451.526756-5-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <20220826135451.526756-1-maxime.chevallier@bootlin.com>
 References: <20220826135451.526756-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Altera Triple Speed Ethernet has a SGMII/1000BaseC PCS that can be
-integrated in several ways. It can either be part of the TSE MAC's
-address space, accessed through 32 bits accesses on the mapped mdio
-device 0, or through a dedicated 16 bits register set.
+This commit converts the Altera Triple Speed Ethernet Controller to
+phylink. This controller supports MII, GMII and RGMII with its MAC, and
+SGMII + 1000BaseX through a small embedded PCS.
 
-This driver allows using the TSE PCS outside of altera TSE's driver,
-since it can be used standalone by other MACs.
+The PCS itself has a register set very similar to what is found in a
+typical 802.3 ethernet PHY, but this register set memory-mapped instead
+of lying on an mdio bus.
 
 Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 ---
- MAINTAINERS                      |   7 ++
- drivers/net/pcs/Kconfig          |   6 ++
- drivers/net/pcs/Makefile         |   1 +
- drivers/net/pcs/pcs-altera-tse.c | 162 +++++++++++++++++++++++++++++++
- include/linux/pcs-altera-tse.h   |  17 ++++
- 5 files changed, 193 insertions(+)
- create mode 100644 drivers/net/pcs/pcs-altera-tse.c
- create mode 100644 include/linux/pcs-altera-tse.h
+ arch/arm/boot/dts/Makefile                    |   3 +-
+ drivers/net/ethernet/altera/Kconfig           |   2 +
+ drivers/net/ethernet/altera/altera_tse.h      |  19 +-
+ .../net/ethernet/altera/altera_tse_ethtool.c  |  20 +-
+ drivers/net/ethernet/altera/altera_tse_main.c | 414 +++++-------------
+ 5 files changed, 143 insertions(+), 315 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ba954d5a9a2f..20bcfff8626d 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -878,6 +878,13 @@ L:	netdev@vger.kernel.org
- S:	Maintained
- F:	drivers/net/ethernet/altera/
+diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
+index 05d8aef6e5d2..05a2474d244e 100644
+--- a/arch/arm/boot/dts/Makefile
++++ b/arch/arm/boot/dts/Makefile
+@@ -1177,7 +1177,8 @@ dtb-$(CONFIG_ARCH_INTEL_SOCFPGA) += \
+ 	socfpga_cyclone5_socrates.dtb \
+ 	socfpga_cyclone5_sodia.dtb \
+ 	socfpga_cyclone5_vining_fpga.dtb \
+-	socfpga_vt.dtb
++	socfpga_vt.dtb \
++	socfpga_4_in_1.dtb
+ dtb-$(CONFIG_ARCH_SPEAR13XX) += \
+ 	spear1310-evb.dtb \
+ 	spear1340-evb.dtb
+diff --git a/drivers/net/ethernet/altera/Kconfig b/drivers/net/ethernet/altera/Kconfig
+index 914e56b91467..dd7fd41ccde5 100644
+--- a/drivers/net/ethernet/altera/Kconfig
++++ b/drivers/net/ethernet/altera/Kconfig
+@@ -3,6 +3,8 @@ config ALTERA_TSE
+ 	tristate "Altera Triple-Speed Ethernet MAC support"
+ 	depends on HAS_DMA
+ 	select PHYLIB
++	select PHYLINK
++	select PCS_ALTERA_TSE
+ 	help
+ 	  This driver supports the Altera Triple-Speed (TSE) Ethernet MAC.
  
-+ALTERA TSE PCS
-+M:	Maxime Chevallier <maxime.chevallier@bootlin.com>
-+L:	netdev@vger.kernel.org
-+S:	Supported
-+F:	drivers/net/pcs/pcs-altera-tse.c
-+F:	include/linux/pcs-altera-tse.h
-+
- ALTERA UART/JTAG UART SERIAL DRIVERS
- M:	Tobias Klauser <tklauser@distanz.ch>
- L:	linux-serial@vger.kernel.org
-diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 6289b7c765f1..6e7e6c346a3e 100644
---- a/drivers/net/pcs/Kconfig
-+++ b/drivers/net/pcs/Kconfig
-@@ -26,4 +26,10 @@ config PCS_RZN1_MIIC
- 	  on RZ/N1 SoCs. This PCS converts MII to RMII/RGMII or can be set in
- 	  pass-through mode for MII.
- 
-+config PCS_ALTERA_TSE
-+	tristate
-+	help
-+	  This module provides helper functions for the Altera Triple Speed
-+	  Ethernet SGMII PCS, that can be found on the Intel Socfpga family.
-+
- endmenu
-diff --git a/drivers/net/pcs/Makefile b/drivers/net/pcs/Makefile
-index 0ff5388fcdea..4c780d8f2e98 100644
---- a/drivers/net/pcs/Makefile
-+++ b/drivers/net/pcs/Makefile
-@@ -6,3 +6,4 @@ pcs_xpcs-$(CONFIG_PCS_XPCS)	:= pcs-xpcs.o pcs-xpcs-nxp.o
- obj-$(CONFIG_PCS_XPCS)		+= pcs_xpcs.o
- obj-$(CONFIG_PCS_LYNX)		+= pcs-lynx.o
- obj-$(CONFIG_PCS_RZN1_MIIC)	+= pcs-rzn1-miic.o
-+obj-$(CONFIG_PCS_ALTERA_TSE)	+= pcs-altera-tse.o
-diff --git a/drivers/net/pcs/pcs-altera-tse.c b/drivers/net/pcs/pcs-altera-tse.c
-new file mode 100644
-index 000000000000..d9794a5e5443
---- /dev/null
-+++ b/drivers/net/pcs/pcs-altera-tse.c
-@@ -0,0 +1,162 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Bootlin
-+ *
-+ * Maxime Chevallier <maxime.chevallier@bootlin.com>
-+ */
-+
-+#include <linux/netdevice.h>
-+#include <linux/phy.h>
+diff --git a/drivers/net/ethernet/altera/altera_tse.h b/drivers/net/ethernet/altera/altera_tse.h
+index f17acfb579a0..db5eed06e92d 100644
+--- a/drivers/net/ethernet/altera/altera_tse.h
++++ b/drivers/net/ethernet/altera/altera_tse.h
+@@ -27,6 +27,7 @@
+ #include <linux/list.h>
+ #include <linux/netdevice.h>
+ #include <linux/phy.h>
 +#include <linux/phylink.h>
+ 
+ #define ALTERA_TSE_SW_RESET_WATCHDOG_CNTR	10000
+ #define ALTERA_TSE_MAC_FIFO_WIDTH		4	/* TX/RX FIFO width in
+@@ -109,17 +110,6 @@
+ #define MAC_CMDCFG_DISABLE_READ_TIMEOUT_GET(v)	GET_BIT_VALUE(v, 27)
+ #define MAC_CMDCFG_CNT_RESET_GET(v)		GET_BIT_VALUE(v, 31)
+ 
+-/* SGMII PCS register addresses
+- */
+-#define SGMII_PCS_SCRATCH	0x10
+-#define SGMII_PCS_REV		0x11
+-#define SGMII_PCS_LINK_TIMER_0	0x12
+-#define SGMII_PCS_LINK_TIMER_1	0x13
+-#define SGMII_PCS_IF_MODE	0x14
+-#define SGMII_PCS_DIS_READ_TO	0x15
+-#define SGMII_PCS_READ_TO	0x16
+-#define SGMII_PCS_SW_RESET_TIMEOUT 100 /* usecs */
+-
+ /* MDIO registers within MAC register Space
+  */
+ struct altera_tse_mdio {
+@@ -423,6 +413,9 @@ struct altera_tse_private {
+ 	void __iomem *tx_dma_csr;
+ 	void __iomem *tx_dma_desc;
+ 
++	/* SGMII PCS address space */
++	void __iomem *pcs_base;
++
+ 	/* Rx buffers queue */
+ 	struct tse_buffer *rx_ring;
+ 	u32 rx_cons;
+@@ -480,6 +473,10 @@ struct altera_tse_private {
+ 	u32 msg_enable;
+ 
+ 	struct altera_dmaops *dmaops;
++
++	struct phylink *phylink;
++	struct phylink_config phylink_config;
++	struct phylink_pcs *pcs;
+ };
+ 
+ /* Function prototypes
+diff --git a/drivers/net/ethernet/altera/altera_tse_ethtool.c b/drivers/net/ethernet/altera/altera_tse_ethtool.c
+index f0b11a278644..81313c85833e 100644
+--- a/drivers/net/ethernet/altera/altera_tse_ethtool.c
++++ b/drivers/net/ethernet/altera/altera_tse_ethtool.c
+@@ -221,6 +221,22 @@ static void tse_get_regs(struct net_device *dev, struct ethtool_regs *regs,
+ 		buf[i] = csrrd32(priv->mac_dev, i * 4);
+ }
+ 
++static int tse_ethtool_set_link_ksettings(struct net_device *dev,
++					  const struct ethtool_link_ksettings *cmd)
++{
++	struct altera_tse_private *priv = netdev_priv(dev);
++
++	return phylink_ethtool_ksettings_set(priv->phylink, cmd);
++}
++
++static int tse_ethtool_get_link_ksettings(struct net_device *dev,
++					  struct ethtool_link_ksettings *cmd)
++{
++	struct altera_tse_private *priv = netdev_priv(dev);
++
++	return phylink_ethtool_ksettings_get(priv->phylink, cmd);
++}
++
+ static const struct ethtool_ops tse_ethtool_ops = {
+ 	.get_drvinfo = tse_get_drvinfo,
+ 	.get_regs_len = tse_reglen,
+@@ -231,8 +247,8 @@ static const struct ethtool_ops tse_ethtool_ops = {
+ 	.get_ethtool_stats = tse_fill_stats,
+ 	.get_msglevel = tse_get_msglevel,
+ 	.set_msglevel = tse_set_msglevel,
+-	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+-	.set_link_ksettings = phy_ethtool_set_link_ksettings,
++	.get_link_ksettings = tse_ethtool_get_link_ksettings,
++	.set_link_ksettings = tse_ethtool_set_link_ksettings,
+ 	.get_ts_info = ethtool_op_get_ts_info,
+ };
+ 
+diff --git a/drivers/net/ethernet/altera/altera_tse_main.c b/drivers/net/ethernet/altera/altera_tse_main.c
+index 930afc9ec833..89ae6d1623aa 100644
+--- a/drivers/net/ethernet/altera/altera_tse_main.c
++++ b/drivers/net/ethernet/altera/altera_tse_main.c
+@@ -32,6 +32,7 @@
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+ #include <linux/of_platform.h>
 +#include <linux/pcs-altera-tse.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
+ #include <linux/skbuff.h>
+@@ -86,27 +87,6 @@ static inline u32 tse_tx_avail(struct altera_tse_private *priv)
+ 	return priv->tx_cons + priv->tx_ring_size - priv->tx_prod - 1;
+ }
+ 
+-/* PCS Register read/write functions
+- */
+-static u16 sgmii_pcs_read(struct altera_tse_private *priv, int regnum)
+-{
+-	return csrrd32(priv->mac_dev,
+-		       tse_csroffs(mdio_phy0) + regnum * 4) & 0xffff;
+-}
+-
+-static void sgmii_pcs_write(struct altera_tse_private *priv, int regnum,
+-				u16 value)
+-{
+-	csrwr32(value, priv->mac_dev, tse_csroffs(mdio_phy0) + regnum * 4);
+-}
+-
+-/* Check PCS scratch memory */
+-static int sgmii_pcs_scratch_test(struct altera_tse_private *priv, u16 value)
+-{
+-	sgmii_pcs_write(priv, SGMII_PCS_SCRATCH, value);
+-	return (sgmii_pcs_read(priv, SGMII_PCS_SCRATCH) == value);
+-}
+-
+ /* MDIO specific functions
+  */
+ static int altera_tse_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
+@@ -620,117 +600,6 @@ static netdev_tx_t tse_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return ret;
+ }
+ 
+-/* Called every time the controller might need to be made
+- * aware of new link state.  The PHY code conveys this
+- * information through variables in the phydev structure, and this
+- * function converts those variables into the appropriate
+- * register values, and can bring down the device if needed.
+- */
+-static void altera_tse_adjust_link(struct net_device *dev)
+-{
+-	struct altera_tse_private *priv = netdev_priv(dev);
+-	struct phy_device *phydev = dev->phydev;
+-	int new_state = 0;
+-
+-	/* only change config if there is a link */
+-	spin_lock(&priv->mac_cfg_lock);
+-	if (phydev->link) {
+-		/* Read old config */
+-		u32 cfg_reg = ioread32(&priv->mac_dev->command_config);
+-
+-		/* Check duplex */
+-		if (phydev->duplex != priv->oldduplex) {
+-			new_state = 1;
+-			if (!(phydev->duplex))
+-				cfg_reg |= MAC_CMDCFG_HD_ENA;
+-			else
+-				cfg_reg &= ~MAC_CMDCFG_HD_ENA;
+-
+-			netdev_dbg(priv->dev, "%s: Link duplex = 0x%x\n",
+-				   dev->name, phydev->duplex);
+-
+-			priv->oldduplex = phydev->duplex;
+-		}
+-
+-		/* Check speed */
+-		if (phydev->speed != priv->oldspeed) {
+-			new_state = 1;
+-			switch (phydev->speed) {
+-			case 1000:
+-				cfg_reg |= MAC_CMDCFG_ETH_SPEED;
+-				cfg_reg &= ~MAC_CMDCFG_ENA_10;
+-				break;
+-			case 100:
+-				cfg_reg &= ~MAC_CMDCFG_ETH_SPEED;
+-				cfg_reg &= ~MAC_CMDCFG_ENA_10;
+-				break;
+-			case 10:
+-				cfg_reg &= ~MAC_CMDCFG_ETH_SPEED;
+-				cfg_reg |= MAC_CMDCFG_ENA_10;
+-				break;
+-			default:
+-				if (netif_msg_link(priv))
+-					netdev_warn(dev, "Speed (%d) is not 10/100/1000!\n",
+-						    phydev->speed);
+-				break;
+-			}
+-			priv->oldspeed = phydev->speed;
+-		}
+-		iowrite32(cfg_reg, &priv->mac_dev->command_config);
+-
+-		if (!priv->oldlink) {
+-			new_state = 1;
+-			priv->oldlink = 1;
+-		}
+-	} else if (priv->oldlink) {
+-		new_state = 1;
+-		priv->oldlink = 0;
+-		priv->oldspeed = 0;
+-		priv->oldduplex = -1;
+-	}
+-
+-	if (new_state && netif_msg_link(priv))
+-		phy_print_status(phydev);
+-
+-	spin_unlock(&priv->mac_cfg_lock);
+-}
+-static struct phy_device *connect_local_phy(struct net_device *dev)
+-{
+-	struct altera_tse_private *priv = netdev_priv(dev);
+-	char phy_id_fmt[MII_BUS_ID_SIZE + 3];
+-	struct phy_device *phydev = NULL;
+-
+-	if (priv->phy_addr != POLL_PHY) {
+-		snprintf(phy_id_fmt, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
+-			 priv->mdio->id, priv->phy_addr);
+-
+-		netdev_dbg(dev, "trying to attach to %s\n", phy_id_fmt);
+-
+-		phydev = phy_connect(dev, phy_id_fmt, &altera_tse_adjust_link,
+-				     priv->phy_iface);
+-		if (IS_ERR(phydev)) {
+-			netdev_err(dev, "Could not attach to PHY\n");
+-			phydev = NULL;
+-		}
+-
+-	} else {
+-		int ret;
+-		phydev = phy_find_first(priv->mdio);
+-		if (phydev == NULL) {
+-			netdev_err(dev, "No PHY found\n");
+-			return phydev;
+-		}
+-
+-		ret = phy_connect_direct(dev, phydev, &altera_tse_adjust_link,
+-				priv->phy_iface);
+-		if (ret != 0) {
+-			netdev_err(dev, "Could not attach to PHY\n");
+-			phydev = NULL;
+-		}
+-	}
+-	return phydev;
+-}
+-
+ static int altera_tse_phy_get_addr_mdio_create(struct net_device *dev)
+ {
+ 	struct altera_tse_private *priv = netdev_priv(dev);
+@@ -769,91 +638,6 @@ static int altera_tse_phy_get_addr_mdio_create(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-/* Initialize driver's PHY state, and attach to the PHY
+- */
+-static int init_phy(struct net_device *dev)
+-{
+-	struct altera_tse_private *priv = netdev_priv(dev);
+-	struct device_node *phynode;
+-	struct phy_device *phydev;
+-	bool fixed_link = false;
+-	int rc = 0;
+-
+-	/* Avoid init phy in case of no phy present */
+-	if (!priv->phy_iface)
+-		return 0;
+-
+-	priv->oldlink = 0;
+-	priv->oldspeed = 0;
+-	priv->oldduplex = -1;
+-
+-	phynode = of_parse_phandle(priv->device->of_node, "phy-handle", 0);
+-
+-	if (!phynode) {
+-		/* check if a fixed-link is defined in device-tree */
+-		if (of_phy_is_fixed_link(priv->device->of_node)) {
+-			rc = of_phy_register_fixed_link(priv->device->of_node);
+-			if (rc < 0) {
+-				netdev_err(dev, "cannot register fixed PHY\n");
+-				return rc;
+-			}
+-
+-			/* In the case of a fixed PHY, the DT node associated
+-			 * to the PHY is the Ethernet MAC DT node.
+-			 */
+-			phynode = of_node_get(priv->device->of_node);
+-			fixed_link = true;
+-
+-			netdev_dbg(dev, "fixed-link detected\n");
+-			phydev = of_phy_connect(dev, phynode,
+-						&altera_tse_adjust_link,
+-						0, priv->phy_iface);
+-		} else {
+-			netdev_dbg(dev, "no phy-handle found\n");
+-			if (!priv->mdio) {
+-				netdev_err(dev, "No phy-handle nor local mdio specified\n");
+-				return -ENODEV;
+-			}
+-			phydev = connect_local_phy(dev);
+-		}
+-	} else {
+-		netdev_dbg(dev, "phy-handle found\n");
+-		phydev = of_phy_connect(dev, phynode,
+-			&altera_tse_adjust_link, 0, priv->phy_iface);
+-	}
+-	of_node_put(phynode);
+-
+-	if (!phydev) {
+-		netdev_err(dev, "Could not find the PHY\n");
+-		if (fixed_link)
+-			of_phy_deregister_fixed_link(priv->device->of_node);
+-		return -ENODEV;
+-	}
+-
+-	/* Stop Advertising 1000BASE Capability if interface is not GMII
+-	 */
+-	if ((priv->phy_iface == PHY_INTERFACE_MODE_MII) ||
+-	    (priv->phy_iface == PHY_INTERFACE_MODE_RMII))
+-		phy_set_max_speed(phydev, SPEED_100);
+-
+-	/* Broken HW is sometimes missing the pull-up resistor on the
+-	 * MDIO line, which results in reads to non-existent devices returning
+-	 * 0 rather than 0xffff. Catch this here and treat 0 as a non-existent
+-	 * device as well. If a fixed-link is used the phy_id is always 0.
+-	 * Note: phydev->phy_id is the result of reading the UID PHY registers.
+-	 */
+-	if ((phydev->phy_id == 0) && !fixed_link) {
+-		netdev_err(dev, "Bad PHY UID 0x%08x\n", phydev->phy_id);
+-		phy_disconnect(phydev);
+-		return -ENODEV;
+-	}
+-
+-	netdev_dbg(dev, "attached to PHY %d UID 0x%08x Link = %d\n",
+-		   phydev->mdio.addr, phydev->phy_id, phydev->link);
+-
+-	return 0;
+-}
+-
+ static void tse_update_mac_addr(struct altera_tse_private *priv, const u8 *addr)
+ {
+ 	u32 msb;
+@@ -1088,66 +872,6 @@ static void tse_set_rx_mode(struct net_device *dev)
+ 	spin_unlock(&priv->mac_cfg_lock);
+ }
+ 
+-/* Initialise (if necessary) the SGMII PCS component
+- */
+-static int init_sgmii_pcs(struct net_device *dev)
+-{
+-	struct altera_tse_private *priv = netdev_priv(dev);
+-	int n;
+-	unsigned int tmp_reg = 0;
+-
+-	if (priv->phy_iface != PHY_INTERFACE_MODE_SGMII)
+-		return 0; /* Nothing to do, not in SGMII mode */
+-
+-	/* The TSE SGMII PCS block looks a little like a PHY, it is
+-	 * mapped into the zeroth MDIO space of the MAC and it has
+-	 * ID registers like a PHY would.  Sadly this is often
+-	 * configured to zeroes, so don't be surprised if it does
+-	 * show 0x00000000.
+-	 */
+-
+-	if (sgmii_pcs_scratch_test(priv, 0x0000) &&
+-		sgmii_pcs_scratch_test(priv, 0xffff) &&
+-		sgmii_pcs_scratch_test(priv, 0xa5a5) &&
+-		sgmii_pcs_scratch_test(priv, 0x5a5a)) {
+-		netdev_info(dev, "PCS PHY ID: 0x%04x%04x\n",
+-				sgmii_pcs_read(priv, MII_PHYSID1),
+-				sgmii_pcs_read(priv, MII_PHYSID2));
+-	} else {
+-		netdev_err(dev, "SGMII PCS Scratch memory test failed.\n");
+-		return -ENOMEM;
+-	}
+-
+-	/* Starting on page 5-29 of the MegaCore Function User Guide
+-	 * Set SGMII Link timer to 1.6ms
+-	 */
+-	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_0, 0x0D40);
+-	sgmii_pcs_write(priv, SGMII_PCS_LINK_TIMER_1, 0x03);
+-
+-	/* Enable SGMII Interface and Enable SGMII Auto Negotiation */
+-	sgmii_pcs_write(priv, SGMII_PCS_IF_MODE, 0x3);
+-
+-	/* Enable Autonegotiation */
+-	tmp_reg = sgmii_pcs_read(priv, MII_BMCR);
+-	tmp_reg |= (BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_ANENABLE);
+-	sgmii_pcs_write(priv, MII_BMCR, tmp_reg);
+-
+-	/* Reset PCS block */
+-	tmp_reg |= BMCR_RESET;
+-	sgmii_pcs_write(priv, MII_BMCR, tmp_reg);
+-	for (n = 0; n < SGMII_PCS_SW_RESET_TIMEOUT; n++) {
+-		if (!(sgmii_pcs_read(priv, MII_BMCR) & BMCR_RESET)) {
+-			netdev_info(dev, "SGMII PCS block initialised OK\n");
+-			return 0;
+-		}
+-		udelay(1);
+-	}
+-
+-	/* We failed to reset the block, return a timeout */
+-	netdev_err(dev, "SGMII PCS block reset failed.\n");
+-	return -ETIMEDOUT;
+-}
+-
+ /* Open and initialize the interface
+  */
+ static int tse_open(struct net_device *dev)
+@@ -1172,14 +896,6 @@ static int tse_open(struct net_device *dev)
+ 		netdev_warn(dev, "TSE revision %x\n", priv->revision);
+ 
+ 	spin_lock(&priv->mac_cfg_lock);
+-	/* no-op if MAC not operating in SGMII mode*/
+-	ret = init_sgmii_pcs(dev);
+-	if (ret) {
+-		netdev_err(dev,
+-			   "Cannot init the SGMII PCS (error: %d)\n", ret);
+-		spin_unlock(&priv->mac_cfg_lock);
+-		goto phy_error;
+-	}
+ 
+ 	ret = reset_mac(priv);
+ 	/* Note that reset_mac will fail if the clocks are gated by the PHY
+@@ -1237,8 +953,12 @@ static int tse_open(struct net_device *dev)
+ 
+ 	spin_unlock_irqrestore(&priv->rxdma_irq_lock, flags);
+ 
+-	if (dev->phydev)
+-		phy_start(dev->phydev);
++	ret = phylink_of_phy_connect(priv->phylink, priv->device->of_node, 0);
++	if (ret) {
++		netdev_err(dev, "could not connect phylink (%d)\n", ret);
++		goto tx_request_irq_error;
++	}
++	phylink_start(priv->phylink);
+ 
+ 	napi_enable(&priv->napi);
+ 	netif_start_queue(dev);
+@@ -1269,10 +989,7 @@ static int tse_shutdown(struct net_device *dev)
+ 	unsigned long int flags;
+ 	int ret;
+ 
+-	/* Stop the PHY */
+-	if (dev->phydev)
+-		phy_stop(dev->phydev);
+-
++	phylink_stop(priv->phylink);
+ 	netif_stop_queue(dev);
+ 	napi_disable(&priv->napi);
+ 
+@@ -1318,6 +1035,74 @@ static struct net_device_ops altera_tse_netdev_ops = {
+ 	.ndo_validate_addr	= eth_validate_addr,
+ };
+ 
++static void alt_tse_mac_an_restart(struct phylink_config *config)
++{
++}
 +
-+/* SGMII PCS register addresses
-+ */
-+#define SGMII_PCS_SCRATCH	0x10
-+#define SGMII_PCS_REV		0x11
-+#define SGMII_PCS_LINK_TIMER_0	0x12
-+#define   SGMII_PCS_LINK_TIMER_REG(x)		(0x12 + (x))
-+#define SGMII_PCS_LINK_TIMER_1	0x13
-+#define SGMII_PCS_IF_MODE	0x14
-+#define   PCS_IF_MODE_SGMII_ENA		BIT(0)
-+#define   PCS_IF_MODE_USE_SGMII_AN	BIT(1)
-+#define   PCS_IF_MODE_SGMI_SPEED_MASK	GENMASK(3, 2)
-+#define   PCS_IF_MODE_SGMI_SPEED_10	(0 << 2)
-+#define   PCS_IF_MODE_SGMI_SPEED_100	(1 << 2)
-+#define   PCS_IF_MODE_SGMI_SPEED_1000	(2 << 2)
-+#define   PCS_IF_MODE_SGMI_HALF_DUPLEX	BIT(4)
-+#define   PCS_IF_MODE_SGMI_PHY_AN	BIT(5)
-+#define SGMII_PCS_DIS_READ_TO	0x15
-+#define SGMII_PCS_READ_TO	0x16
-+#define SGMII_PCS_SW_RESET_TIMEOUT 100 /* usecs */
++static void alt_tse_mac_config(struct phylink_config *config, unsigned int mode,
++			       const struct phylink_link_state *state)
++{
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct altera_tse_private *priv = netdev_priv(ndev);
 +
-+struct altera_tse_pcs {
-+	struct phylink_pcs pcs;
-+	void __iomem *base;
-+	int reg_width;
++	spin_lock(&priv->mac_cfg_lock);
++	reset_mac(priv);
++	tse_set_mac(priv, true);
++	spin_unlock(&priv->mac_cfg_lock);
++}
++
++static void alt_tse_mac_link_down(struct phylink_config *config,
++				  unsigned int mode, phy_interface_t interface)
++{
++}
++
++static void alt_tse_mac_link_up(struct phylink_config *config,
++				struct phy_device *phy, unsigned int mode,
++				phy_interface_t interface, int speed,
++				int duplex, bool tx_pause, bool rx_pause)
++{
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct altera_tse_private *priv = netdev_priv(ndev);
++	u32 ctrl;
++
++	ctrl = csrrd32(priv->mac_dev, tse_csroffs(command_config));
++	ctrl &= ~(MAC_CMDCFG_ENA_10 | MAC_CMDCFG_ETH_SPEED | MAC_CMDCFG_HD_ENA);
++
++	if (duplex == DUPLEX_HALF)
++		ctrl |= MAC_CMDCFG_HD_ENA;
++
++	if (speed == SPEED_1000)
++		ctrl |= MAC_CMDCFG_ETH_SPEED;
++	else if (speed == SPEED_10)
++		ctrl |= MAC_CMDCFG_ENA_10;
++
++	spin_lock(&priv->mac_cfg_lock);
++	csrwr32(ctrl, priv->mac_dev, tse_csroffs(command_config));
++	spin_unlock(&priv->mac_cfg_lock);
++}
++
++static struct phylink_pcs *alt_tse_select_pcs(struct phylink_config *config,
++					      phy_interface_t interface)
++{
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct altera_tse_private *priv = netdev_priv(ndev);
++
++	if (interface == PHY_INTERFACE_MODE_SGMII ||
++	    interface == PHY_INTERFACE_MODE_1000BASEX)
++		return priv->pcs;
++	else
++		return NULL;
++}
++
++static const struct phylink_mac_ops alt_tse_phylink_ops = {
++	.validate = phylink_generic_validate,
++	.mac_an_restart = alt_tse_mac_an_restart,
++	.mac_config = alt_tse_mac_config,
++	.mac_link_down = alt_tse_mac_link_down,
++	.mac_link_up = alt_tse_mac_link_up,
++	.mac_select_pcs = alt_tse_select_pcs,
 +};
 +
-+static struct altera_tse_pcs *phylink_pcs_to_tse_pcs(struct phylink_pcs *pcs)
-+{
-+	return container_of(pcs, struct altera_tse_pcs, pcs);
-+}
-+
-+static u16 tse_pcs_read(struct altera_tse_pcs *tse_pcs, int regnum)
-+{
-+	if (tse_pcs->reg_width == 4)
-+		return readl(tse_pcs->base + regnum * 4);
-+	else
-+		return readw(tse_pcs->base + regnum * 2);
-+}
-+
-+static void tse_pcs_write(struct altera_tse_pcs *tse_pcs, int regnum,
-+			  u16 value)
-+{
-+	if (tse_pcs->reg_width == 4)
-+		writel(value, tse_pcs->base + regnum * 4);
-+	else
-+		writew(value, tse_pcs->base + regnum * 2);
-+}
-+
-+static int tse_pcs_reset(struct altera_tse_pcs *tse_pcs)
-+{
-+	int i = 0;
-+	u16 bmcr;
-+
-+	/* Reset PCS block */
-+	bmcr = tse_pcs_read(tse_pcs, MII_BMCR);
-+	bmcr |= BMCR_RESET;
-+	tse_pcs_write(tse_pcs, MII_BMCR, bmcr);
-+
-+	for (i = 0; i < SGMII_PCS_SW_RESET_TIMEOUT; i++) {
-+		if (!(tse_pcs_read(tse_pcs, MII_BMCR) & BMCR_RESET))
-+			return 0;
-+		udelay(1);
+ static int request_and_map(struct platform_device *pdev, const char *name,
+ 			   struct resource **res, void __iomem **ptr)
+ {
+@@ -1355,8 +1140,10 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	struct altera_tse_private *priv;
+ 	struct resource *control_port;
+ 	struct resource *dma_res;
++	struct resource *pcs_res;
+ 	struct net_device *ndev;
+ 	void __iomem *descmap;
++	int pcs_reg_width = 2;
+ 	int ret = -ENODEV;
+ 
+ 	ndev = alloc_etherdev(sizeof(struct altera_tse_private));
+@@ -1468,6 +1255,17 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_free_netdev;
+ 
++	/* SGMII PCS address space. The location can vary depending on how the
++	 * IP is integrated. We can have a resource dedicated to it at a specific
++	 * address space, but if it's not the case, we fallback to the mdiophy0
++	 * from the MAC's address space
++	 */
++	ret = request_and_map(pdev, "pcs", &pcs_res,
++			      &priv->pcs_base);
++	if (ret) {
++		priv->pcs_base = priv->mac_dev + tse_csroffs(mdio_phy0);
++		pcs_reg_width = 4;
 +	}
+ 
+ 	/* Rx IRQ */
+ 	priv->rx_irq = platform_get_irq_byname(pdev, "rx_irq");
+@@ -1591,11 +1389,31 @@ static int altera_tse_probe(struct platform_device *pdev)
+ 			 (unsigned long) control_port->start, priv->rx_irq,
+ 			 priv->tx_irq);
+ 
+-	ret = init_phy(ndev);
+-	if (ret != 0) {
+-		netdev_err(ndev, "Cannot attach to PHY (error: %d)\n", ret);
++	priv->pcs = alt_tse_pcs_create(ndev, priv->pcs_base, pcs_reg_width);
 +
-+	return -ETIMEDOUT;
-+}
++	priv->phylink_config.dev = &ndev->dev;
++	priv->phylink_config.type = PHYLINK_NETDEV;
++	priv->phylink_config.mac_capabilities = MAC_SYM_PAUSE | MAC_10 |
++						MAC_100 | MAC_1000FD;
 +
-+static int alt_tse_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
-+			      phy_interface_t interface,
-+			      const unsigned long *advertising,
-+			      bool permit_pause_to_mac)
-+{
-+	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
-+	u32 ctrl, if_mode;
++	phy_interface_set_rgmii(priv->phylink_config.supported_interfaces);
++	__set_bit(PHY_INTERFACE_MODE_MII,
++		  priv->phylink_config.supported_interfaces);
++	__set_bit(PHY_INTERFACE_MODE_GMII,
++		  priv->phylink_config.supported_interfaces);
++	__set_bit(PHY_INTERFACE_MODE_SGMII,
++		  priv->phylink_config.supported_interfaces);
++	__set_bit(PHY_INTERFACE_MODE_1000BASEX,
++		  priv->phylink_config.supported_interfaces);
 +
-+	if (interface != PHY_INTERFACE_MODE_SGMII &&
-+	    interface != PHY_INTERFACE_MODE_1000BASEX)
-+		return 0;
++	priv->phylink = phylink_create(&priv->phylink_config,
++				       of_fwnode_handle(priv->device->of_node),
++				       priv->phy_iface, &alt_tse_phylink_ops);
++	if (IS_ERR(priv->phylink)) {
++		dev_err(&pdev->dev, "failed to create phylink\n");
+ 		goto err_init_phy;
+ 	}
 +
-+	ctrl = tse_pcs_read(tse_pcs, MII_BMCR);
-+	if_mode = tse_pcs_read(tse_pcs, SGMII_PCS_IF_MODE);
-+
-+	/* Set link timer to 1.6ms, as per the MegaCore Function User Guide */
-+	tse_pcs_write(tse_pcs, SGMII_PCS_LINK_TIMER_0, 0x0D40);
-+	tse_pcs_write(tse_pcs, SGMII_PCS_LINK_TIMER_1, 0x03);
-+
-+	if (interface == PHY_INTERFACE_MODE_SGMII) {
-+		if_mode |= PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA;
-+	} else if (interface == PHY_INTERFACE_MODE_1000BASEX) {
-+		if_mode &= ~(PCS_IF_MODE_USE_SGMII_AN | PCS_IF_MODE_SGMII_ENA);
-+		if_mode |= PCS_IF_MODE_SGMI_SPEED_1000;
-+	}
-+
-+	ctrl |= (BMCR_SPEED1000 | BMCR_FULLDPLX | BMCR_ANENABLE);
-+
-+	tse_pcs_write(tse_pcs, MII_BMCR, ctrl);
-+	tse_pcs_write(tse_pcs, SGMII_PCS_IF_MODE, if_mode);
-+
-+	return tse_pcs_reset(tse_pcs);
-+}
-+
-+static void alt_tse_pcs_get_state(struct phylink_pcs *pcs,
-+				  struct phylink_link_state *state)
-+{
-+	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
-+	u16 bmsr, lpa;
-+
-+	bmsr = tse_pcs_read(tse_pcs, MII_BMSR);
-+	lpa = tse_pcs_read(tse_pcs, MII_LPA);
-+
-+	phylink_mii_c22_pcs_decode_state(state, bmsr, lpa);
-+}
-+
-+static void alt_tse_pcs_an_restart(struct phylink_pcs *pcs)
-+{
-+	struct altera_tse_pcs *tse_pcs = phylink_pcs_to_tse_pcs(pcs);
-+	u16 bmcr;
-+
-+	bmcr = tse_pcs_read(tse_pcs, MII_BMCR);
-+	bmcr |= BMCR_ANRESTART;
-+	tse_pcs_write(tse_pcs, MII_BMCR, bmcr);
-+
-+	tse_pcs_reset(tse_pcs);
-+}
-+
-+static const struct phylink_pcs_ops alt_tse_pcs_ops = {
-+	.pcs_get_state = alt_tse_pcs_get_state,
-+	.pcs_config = alt_tse_pcs_config,
-+	.pcs_an_restart = alt_tse_pcs_an_restart,
-+};
-+
-+struct phylink_pcs *alt_tse_pcs_create(struct net_device *ndev,
-+				       void __iomem *pcs_base, int reg_width)
-+{
-+	struct altera_tse_pcs *tse_pcs;
-+
-+	if (reg_width != 4 && reg_width != 2)
-+		return ERR_PTR(-EINVAL);
-+
-+	tse_pcs = devm_kzalloc(&ndev->dev, sizeof(*tse_pcs), GFP_KERNEL);
-+	if (!tse_pcs)
-+		return ERR_PTR(-ENOMEM);
-+
-+	tse_pcs->pcs.ops = &alt_tse_pcs_ops;
-+	tse_pcs->base = pcs_base;
-+	tse_pcs->reg_width = reg_width;
-+
-+	return &tse_pcs->pcs;
-+}
-+EXPORT_SYMBOL_GPL(alt_tse_pcs_create);
-diff --git a/include/linux/pcs-altera-tse.h b/include/linux/pcs-altera-tse.h
-new file mode 100644
-index 000000000000..9c85e7c8ef70
---- /dev/null
-+++ b/include/linux/pcs-altera-tse.h
-@@ -0,0 +1,17 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2022 Bootlin
-+ *
-+ * Maxime Chevallier <maxime.chevallier@bootlin.com>
-+ */
-+
-+#ifndef __LINUX_PCS_ALTERA_TSE_H
-+#define __LINUX_PCS_ALTERA_TSE_H
-+
-+struct phylink;
-+struct net_device;
-+
-+struct phylink_pcs *alt_tse_pcs_create(struct net_device *ndev,
-+				       void __iomem *pcs_base, int reg_width);
-+
-+#endif /* __LINUX_PCS_ALTERA_TSE_H */
+ 	return 0;
+ 
+ err_init_phy:
+@@ -1615,16 +1433,10 @@ static int altera_tse_remove(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct altera_tse_private *priv = netdev_priv(ndev);
+ 
+-	if (ndev->phydev) {
+-		phy_disconnect(ndev->phydev);
+-
+-		if (of_phy_is_fixed_link(priv->device->of_node))
+-			of_phy_deregister_fixed_link(priv->device->of_node);
+-	}
+-
+ 	platform_set_drvdata(pdev, NULL);
+ 	altera_tse_mdio_destroy(ndev);
+ 	unregister_netdev(ndev);
++	phylink_destroy(priv->phylink);
+ 	free_netdev(ndev);
+ 
+ 	return 0;
 -- 
 2.37.2
 
