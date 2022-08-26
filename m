@@ -2,102 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA3B45A28BB
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 15:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0CDE5A28E0
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 15:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236916AbiHZNjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 09:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38398 "EHLO
+        id S1343723AbiHZNzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 09:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230167AbiHZNjv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 09:39:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1FDA1EC60
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 06:39:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661521189;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9fAOu6Q9d8+BK41qr2yyldKzFEjX6253oA+dNZQQI2k=;
-        b=QhuWXtglWbnL02HC6cdguoc+6Au7DGZ49Tt/8g8ZioVMk4G1By/Y+JTti6hNcfY5FHPgup
-        LSWD87JY5TX/7DF3ejMvCv50/cjXqpTdceK7OvX9WX5NKK/3DbVcxNyrPgktA4Rftd2Ixh
-        lPA45Kd2pEu+lokQC3bOu3NNEtgto14=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-SRgt7xkfOTa8wj2msvedJA-1; Fri, 26 Aug 2022 09:39:44 -0400
-X-MC-Unique: SRgt7xkfOTa8wj2msvedJA-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2EEF5185A7A4;
-        Fri, 26 Aug 2022 13:39:44 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A19A8492C3B;
-        Fri, 26 Aug 2022 13:39:43 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <2666575.1661519443@warthog.procyon.org.uk>
-References: <2666575.1661519443@warthog.procyon.org.uk>
-Cc:     dhowells@redhat.com, Eric Dumazet <edumazet@google.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: Not getting ICMP reports from the UDP socket in rxrpc
+        with ESMTP id S230139AbiHZNzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 09:55:00 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74AE1275FC;
+        Fri, 26 Aug 2022 06:54:57 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 176AA240008;
+        Fri, 26 Aug 2022 13:54:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661522096;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YIEtOKyE2S1rP4xNAtZiRn4s6t1T6XAkiZfnPLjfWu4=;
+        b=UvEUK/zYB+YqlMCN5VJVtpW+6MXVn731QA2TuZ+0RYWYpkd6AtzbfFxttccnrUxbr2cKyl
+        4h06ix7+3+DOzZVAk2E0RZSFsOh4gMzS97l4Q8lo81xF+/n6J9G76uLcJzx9pubyS+g7vG
+        6FhG7bgAJBkvFvRZ9P1FkvzQvq2fnX+SLLjW2dNSlCoprHXl01YJURpNM1p8YcHwWqe1/O
+        8Iu0VMcsG5lwA7yZe/6x2O2XTnwHmeCWf8xqDwW2DNMVzR4/R7J1Xa31dPhMxV/ZCOrRf0
+        6+FVan+2xUqP/DP8+tY7udWW3jjCD6rFVUrUmuUKHIB9AJ29U+c32FVCsicCuQ==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH net-next 0/5] net: altera: tse: phylink conversion
+Date:   Fri, 26 Aug 2022 15:54:46 +0200
+Message-Id: <20220826135451.526756-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2764874.1661521182.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: quoted-printable
-Date:   Fri, 26 Aug 2022 14:39:42 +0100
-Message-ID: <2764878.1661521182@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,MISSING_HEADERS,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Howells <dhowells@redhat.com> wrote:
+This series is a rework of a previous series [1], and as Russell stated,
+it needed work :)
 
-> Do you know if ICMP handling has changed inside of ipv4/ipv6?  I've real=
-ised
-> that though rxrpc tries to get ICMP events, they're not coming through.
-> =
+The Altera TSE can be built with a SGMII/1000BaseX PCS, allowing to use
+SFP ports with this MAC, which is the end goal of adding phylink support
+and a proper PCS driver.
 
-> rxrpc_open_socket() does:
-> =
+The PCS itself can either be mapped in the MAC's register space, in that
+case, it's accessed through 32 bits registers, with the higher 16 bits
+always 0. Alternatively, it can sit on its own register space, exposing
+16 bits registers, some of which ressemble the standard PHY registers.
 
-> 	usk->sk_error_report =3D rxrpc_error_report;
-> =
+To tackle that rework, several things needs updating, starting by the DT
+binding, since we add support for a new register range for the PCS.
 
-> to set the error collector and:
-> =
+Hence, the first patch of the series is a conversion to YAML of the
+existing binding.
 
-> 		ip6_sock_set_recverr(usk);
-> 		ip_sock_set_recverr(usk);
-> =
+Then, patch 2 does a bit of simple cleanup to the TSE driver, using nice
+reverse xmas tree definitions.
 
-> as appropriate to say that it wants to get ICMP messages, but they don't=
- seem
-> to come.  I put a printk() into sk_error_report(), but I don't see anyth=
-ing
-> printed when ICMP messages come in (but I do if I telnet to a random por=
-t on
-> my test server).
+Patch 3 adds the actual PCS driver, as a standalone driver. Some future
+series will then reuse that PCS driver from the dwmac-socfpga driver,
+which implements support for this exact PCS too, allowing to share the
+code nicely.
 
-Ah... there's a separate error handling hook (encap_err_lookup) for tunnel=
-s.
-I guess I need that.  Do you know if only ICMP/ICMP6 messages go through t=
-hat
-and not other SO_EE_ORIGIN_* types?
+Patch 4 is then a phylink conversion of the altera_tse driver, to use
+this new PCS driver.
 
-David
+Finally, patch 5 updates the newly converted DT binding to support the
+pcs register range.
+
+This series contains bits and pieces for this conversion, please tell me if
+you want me to send it as individual patches.
+
+Thanks,
+
+Maxime
+
+[1] : https://lore.kernel.org/netdev/20220823140517.3091239-1-maxime.chevallier@bootlin.com/
+
+Maxime Chevallier (5):
+  dt-bindings: net: Convert Altera TSE bindings to yaml
+  net: altera: tse: cosmetic change to use reverse xmas tree ordering
+  net: pcs: add new PCS driver for altera TSE PCS
+  net: altera: tse: convert to phylink
+  dt-bindings: net: altera: tse: add an optional pcs register range
+
+ .../devicetree/bindings/net/altera_tse.txt    | 113 -----
+ .../devicetree/bindings/net/altr,tse.yaml     | 162 +++++++
+ MAINTAINERS                                   |   7 +
+ arch/arm/boot/dts/Makefile                    |   3 +-
+ drivers/net/ethernet/altera/Kconfig           |   2 +
+ drivers/net/ethernet/altera/altera_tse.h      |  19 +-
+ .../net/ethernet/altera/altera_tse_ethtool.c  |  22 +-
+ drivers/net/ethernet/altera/altera_tse_main.c | 453 +++++-------------
+ drivers/net/pcs/Kconfig                       |   6 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-altera-tse.c              | 162 +++++++
+ include/linux/pcs-altera-tse.h                |  17 +
+ 12 files changed, 519 insertions(+), 448 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/altera_tse.txt
+ create mode 100644 Documentation/devicetree/bindings/net/altr,tse.yaml
+ create mode 100644 drivers/net/pcs/pcs-altera-tse.c
+ create mode 100644 include/linux/pcs-altera-tse.h
+
+-- 
+2.37.2
 
