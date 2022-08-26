@@ -2,70 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8028B5A2751
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 14:02:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF7585A2753
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 14:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233141AbiHZMCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 08:02:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52916 "EHLO
+        id S241123AbiHZMDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 08:03:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiHZMCh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 08:02:37 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD35CD7418;
-        Fri, 26 Aug 2022 05:02:33 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 83A1F1888676;
-        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 7AA6425032BD;
-        Fri, 26 Aug 2022 12:02:30 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 21D369EC0004; Fri, 26 Aug 2022 11:46:14 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-Received: from wse-c0127.beijerelectronics.com (unknown [208.127.141.28])
-        by smtp.gigahost.dk (Postfix) with ESMTPSA id DB2899EC0009;
-        Fri, 26 Aug 2022 11:46:11 +0000 (UTC)
-From:   Hans Schultz <netdev@kapio-technology.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Hans Schultz <netdev@kapio-technology.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH v5 net-next 6/6] selftests: forwarding: add test of MAC-Auth Bypass to locked port tests
-Date:   Fri, 26 Aug 2022 13:45:38 +0200
-Message-Id: <20220826114538.705433-7-netdev@kapio-technology.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220826114538.705433-1-netdev@kapio-technology.com>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
+        with ESMTP id S229917AbiHZMDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 08:03:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E27FD75A0
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 05:03:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661515381;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mvhZd1faye/ybfe/MVZNdrwm4QdnFyd9ekOspTqotG4=;
+        b=Er8VnpGfMTToTayej/VIrpuxMjevw2fxg74bzOpjOZorwVcw9wrP5aWsr6obh8/OY5T09v
+        1b5WY2XHs9ZrkiwRjzZmMYSKU1JU+IDHGNBC15H2uD3HkjvePk62uobwLu4voAWvZ8UHcq
+        9Hb4ATMEJ6kiZCiJP96uG3t1mvswX9U=
+Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
+ [209.85.166.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-307-lMNpJrG7Pa6AY3WtaUbkLg-1; Fri, 26 Aug 2022 08:03:00 -0400
+X-MC-Unique: lMNpJrG7Pa6AY3WtaUbkLg-1
+Received: by mail-io1-f71.google.com with SMTP id i14-20020a5d934e000000b006892db5bcd4so770104ioo.22
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 05:03:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc;
+        bh=mvhZd1faye/ybfe/MVZNdrwm4QdnFyd9ekOspTqotG4=;
+        b=3AfwAmtP5N87DiC7EtAKRttbWBDXWJLbnvLBG8XsY/8EoHRxw3fI2hHKSqkAE0O5TF
+         YazIQQNDWC3KAIShMThbiFWwHRSCkggADcieBRONMMUy2i940MCILGXA+OP73A3JDqx6
+         Bn6LdhcoXeSQz0TrAci/s6Ygp5Iv94sgT1Vz8aJ025s8kANDPhZy4FYmWy981RXEZJRw
+         7n/XlvAk8Ss/M5FaUUtmQEAi5Z/y7vL6SrkGIaa8iTzAn2naJ5S0N0gQokUfwLH4jAMs
+         K09N3ZiMkzi15wA4DUQYixeHUNP55sOH1ghW+XVcPgOawovJ+qmPaBSYX3O6CL+sQJTI
+         l5Gg==
+X-Gm-Message-State: ACgBeo0/ZBYZNqBdMpA2cCZtzZNLpDUgsyOIxRkDl4GI/O2YlLN8qQrg
+        IvFdzHdMZChM0YGnr8Q/VEdfg5YIfEdQvrEP+PVhA36eJ/+LIrJ5AvsTFZbY3RTgoOHjv/7P7vd
+        9vwpujWujzfQ7wrI5
+X-Received: by 2002:a05:6638:12cd:b0:349:fd6e:d196 with SMTP id v13-20020a05663812cd00b00349fd6ed196mr3756969jas.143.1661515379674;
+        Fri, 26 Aug 2022 05:02:59 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5f6qvYWg80QTM2iPmnHp4dzNq4p0uPHomTvXhdTgrchbHDQGZaRsMe8Q0awQcEi1LZXc/Egg==
+X-Received: by 2002:a05:6638:12cd:b0:349:fd6e:d196 with SMTP id v13-20020a05663812cd00b00349fd6ed196mr3756952jas.143.1661515379454;
+        Fri, 26 Aug 2022 05:02:59 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id s11-20020a92cc0b000000b002ea2a4b0b63sm996235ilp.85.2022.08.26.05.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Aug 2022 05:02:59 -0700 (PDT)
+Date:   Fri, 26 Aug 2022 06:02:57 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Joao Martins <joao.m.martins@oracle.com>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
+        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        kuba@kernel.org, kevin.tian@intel.com, leonro@nvidia.com,
+        maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V4 vfio 04/10] vfio: Add an IOVA bitmap support
+Message-ID: <20220826060257.6767231e.alex.williamson@redhat.com>
+In-Reply-To: <e78407fa-20db-ed9e-fd3e-a427712f75e7@oracle.com>
+References: <20220815151109.180403-1-yishaih@nvidia.com>
+        <20220815151109.180403-5-yishaih@nvidia.com>
+        <20220825132701.07f9a1c3.alex.williamson@redhat.com>
+        <b230f8e1-1519-3164-fe0e-abf1aa55e5d4@oracle.com>
+        <20220825171532.0123cbac.alex.williamson@redhat.com>
+        <e78407fa-20db-ed9e-fd3e-a427712f75e7@oracle.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,182 +85,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Verify that the MAC-Auth mechanism works by adding a FDB entry with the
-locked flag set, denying access until the FDB entry is replaced with a
-FDB entry without the locked flag set.
+On Fri, 26 Aug 2022 10:37:26 +0100
+Joao Martins <joao.m.martins@oracle.com> wrote:
+> On 8/26/22 00:15, Alex Williamson wrote:
+> > On Thu, 25 Aug 2022 23:24:39 +0100
+> > Joao Martins <joao.m.martins@oracle.com> wrote:  
+> >> On 8/25/22 20:27, Alex Williamson wrote:  
+> >>> Maybe it doesn't really make sense to differentiate the iterator from
+> >>> the bitmap in the API.  In fact, couldn't we reduce the API to simply:
+> >>>
+> >>> int iova_bitmap_init(struct iova_bitmap *bitmap, dma_addr_t iova,
+> >>> 		     size_t length, size_t page_size, u64 __user *data);
+> >>>
+> >>> int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *data,
+> >>> 			 int (*fn)(void *data, dma_addr_t iova,
+> >>> 			 	   size_t length,
+> >>> 				   struct iova_bitmap *bitmap));
+> >>>
+> >>> void iova_bitmap_free(struct iova_bitmap *bitmap);
+> >>>
+> >>> unsigned long iova_bitmap_set(struct iova_bitmap *bitmap,
+> >>> 			      dma_addr_t iova, size_t length);
+> >>>
+> >>> Removes the need for the API to have done, advance, iova, and length
+> >>> functions.
+> >>>     
+> >> True, it would be simpler.
+> >>
+> >> Could also allow us to hide the iterator details enterily and switch to
+> >> container_of() from iova_bitmap pointer. Though, from caller, it would be
+> >> weird to do:
+> >>
+> >> struct iova_bitmap_iter iter;
+> >>
+> >> iova_bitmap_init(&iter.dirty, ....);
+> >>
+> >> Hmm, maybe not that strange.
+> >>
+> >> Unless you are trying to suggest to merge both struct iova_bitmap and
+> >> iova_bitmap_iter together? I was trying to keep them separate more for
+> >> the dirty tracker (IOMMUFD/VFIO, to just be limited to iova_bitmap_set()
+> >> with the generic infra being the one managing that iterator state in a
+> >> separate structure.  
+> > 
+> > Not suggesting the be merged, but why does the embedded mapping
+> > structure need to be exposed to the API?  That's an implementation
+> > detail that's causing confusion and naming issues for which structure
+> > is passed and how do we represent that in the function name.  Thanks,  
+> 
+> I wanted the convention to be that the end 'device' tracker (IOMMU or VFIO
+> vendor driver) does not have "direct" access to the iterator state. So it acesses
+> or modifies only the mapped bitmap *data*. The hardware tracker is always *provided*
+> with a iova_bitmap to set bits but it should not allocate, iterate or pin anything,
+> making things simpler for tracker.
+> 
+> Thus the point was to have a clear division between how you iterate
+> (iova_bitmap_iter* API) and the actual bits manipulation (so far only
+> iova_bitmap_set()) including which data structures you access in the APIs, thus
+> embedding the least accessed there (struct iova_bitmap).
+> 
+> The alternative is to reverse it and just allocate iter state in iova_bitmap_init()
+> and have it stored as a pointer say as iova_bitmap::iter. We encapsulate both and mix
+> the structures, which while not as clean but maybe this is not that big of a deal as
+> I thought it would be
 
-Also add a test that verifies that sticky FDB entries cannot roam.
+Is there really a need for struct iova_bitmap to be defined in a shared
+header, or could we just have a forward declaration?  With the proposed
+interface above, iova_bitmap could be opaque to the caller if it were
+dynamically allocated, ex:
 
-Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
----
- .../net/forwarding/bridge_locked_port.sh      | 107 +++++++++++++++++-
- .../net/forwarding/bridge_sticky_fdb.sh       |  21 +++-
- 2 files changed, 126 insertions(+), 2 deletions(-)
+struct iova_bitmap* iova_bitmap_alloc(dma_addr_t iova, size_t length,
+				      size_t page_size, u64 __user *bitmap);
 
-diff --git a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-index 5b02b6b60ce7..b763b3b9fdf0 100755
---- a/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_locked_port.sh
-@@ -1,7 +1,15 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--ALL_TESTS="locked_port_ipv4 locked_port_ipv6 locked_port_vlan"
-+ALL_TESTS="
-+	locked_port_ipv4
-+	locked_port_ipv6
-+	locked_port_vlan
-+	locked_port_mab
-+	locked_port_station_move
-+	locked_port_mab_station_move
-+"
-+
- NUM_NETIFS=4
- CHECK_TC="no"
- source lib.sh
-@@ -166,6 +174,103 @@ locked_port_ipv6()
- 	log_test "Locked port ipv6"
- }
- 
-+locked_port_mab()
-+{
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work before locking port"
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
-+		echo "SKIP: iproute2 too old; MacAuth feature not supported."
-+		return $ksft_skip
-+	fi
-+
-+	ping_do $h1 192.0.2.2
-+	check_fail $? "MAB: Ping worked on locked port without FDB entry"
-+
-+	bridge fdb show | grep `mac_get $h1` | grep -q "locked"
-+	check_err $? "MAB: No locked fdb entry after ping on locked port"
-+
-+	bridge fdb replace `mac_get $h1` dev $swp1 master static
-+
-+	ping_do $h1 192.0.2.2
-+	check_err $? "MAB: Ping did not work with fdb entry without locked flag"
-+
-+	bridge fdb del `mac_get $h1` dev $swp1 master
-+	bridge link set dev $swp1 learning off
-+	bridge link set dev $swp1 locked off
-+
-+	log_test "Locked port MAB"
-+}
-+
-+# No roaming allowed to a simple locked port
-+locked_port_station_move()
-+{
-+	local mac=a0:b0:c0:c0:b0:a0
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
-+	check_fail $? "Locked port station move: FDB entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
-+	check_err $? "Locked port station move: Entry not found on unlocked port"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0"
-+	check_fail $? "Locked port station move: entry roamed to locked port"
-+
-+	log_test "Locked port station move"
-+}
-+
-+# Roaming to and from a MAB enabled port should work if sticky flag is not set
-+locked_port_mab_station_move()
-+{
-+	local mac=10:20:30:30:20:10
-+
-+	RET=0
-+	check_locked_port_support || return 0
-+
-+	bridge link set dev $swp1 locked on
-+	bridge link set dev $swp1 learning on
-+	if ! bridge link set dev $swp1 mab on 2>/dev/null; then
-+		echo "SKIP: iproute2 too old; MacAuth feature not supported."
-+		return $ksft_skip
-+	fi
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	if bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0" | grep -q sticky; then
-+		echo "SKIP: Roaming not possible with sticky flag, run sticky flag roaming test"
-+		return $ksft_skip
-+	fi
-+
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_err $? "MAB station move: no locked entry on first injection"
-+
-+	$MZ $h2 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_fail $? "MAB station move: locked entry did not move"
-+
-+	bridge fdb show dev $swp2 | grep -q "$mac vlan 1 master br0"
-+	check_err $? "MAB station move: roamed entry not found"
-+
-+	$MZ $h1 -q -t udp -a $mac -b rand
-+	bridge fdb show dev $swp1 | grep -q "$mac vlan 1 master br0 locked"
-+	check_err $? "MAB station move: entry did not roam back to locked port"
-+
-+	log_test "Locked port MAB station move"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
-diff --git a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-index 1f8ef0eff862..bca77bc3fe09 100755
---- a/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-+++ b/tools/testing/selftests/net/forwarding/bridge_sticky_fdb.sh
-@@ -1,7 +1,7 @@
- #!/bin/bash
- # SPDX-License-Identifier: GPL-2.0
- 
--ALL_TESTS="sticky"
-+ALL_TESTS="sticky sticky_no_roaming"
- NUM_NETIFS=4
- TEST_MAC=de:ad:be:ef:13:37
- source lib.sh
-@@ -59,6 +59,25 @@ sticky()
- 	log_test "Sticky fdb entry"
- }
- 
-+# No roaming allowed with the sticky flag set
-+sticky_no_roaming()
-+{
-+	local mac=a8:b4:c2:c2:b4:a8
-+
-+	RET=0
-+
-+	bridge link set dev $swp2 learning on
-+	bridge fdb add $mac dev $swp1 master static sticky
-+	bridge fdb show dev $swp1 | grep "$mac master br0" | grep -q sticky
-+	check_err $? "Sticky no roaming: No sticky FDB entry found after adding"
-+
-+	$MZ $h2 -q -t udp -c 10 -d 100msec -a $mac -b rand
-+	bridge fdb show dev $swp2 | grep "$mac master br0" | grep -q sticky
-+	check_fail $? "Sticky no roaming: Sticky entry roamed"
-+
-+	log_test "Sticky no roaming"
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
--- 
-2.30.2
+Thanks,
+Alex
 
