@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E595A1D8E
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:08:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8AA5A1D8B
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:08:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234674AbiHZAHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
+        id S244444AbiHZAH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:07:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244376AbiHZAHl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:07:41 -0400
-Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC63BC8760;
-        Thu, 25 Aug 2022 17:07:39 -0700 (PDT)
+        with ESMTP id S244170AbiHZAHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:07:54 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21C26C8769;
+        Thu, 25 Aug 2022 17:07:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661472460; x=1693008460;
+  t=1661472473; x=1693008473;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=a1dRuHowJOOUH5w4rh7exnOG18Sv5Ne7vmCLZOHeUHQ=;
-  b=HyBdWx8JAovP9U/gfIiBVyiF7u/mgkv6pMH5wEYFoNWjSs5m50M5awdp
-   6UxctchQVAhETkxtqpW1gS8U8vKQvqrxNnr81anEE8QBHNVjf8549Orik
-   50DC51Uf6kT8WyifOsrdjsWU7frgQGQ+yhTooagWypo4zNCbVCeHrGHGD
-   0=;
-X-IronPort-AV: E=Sophos;i="5.93,264,1654560000"; 
-   d="scan'208";a="1048227570"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:07:23 +0000
+  bh=xgJ5UCRiGkYB82BgWGk27kXitxudv885PYYW9mWyfQc=;
+  b=lw2hWRIY1x7l7kDBmEUIQDadgLXjVuwt1Ps2wD0lzN7PTlUJ7gn38CTL
+   IFPwYCperGKeth9DcAnXbAb07x9wwkd0xXbfUNTfeodVZ58Q4RbLPJnSZ
+   FGvf1kTnJVHtyRwHoI9UUWDPOe6W3uQkb/r2RQlvfpR51oGFT13eFPBGx
+   o=;
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:07:40 +0000
 Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2a-6a4112b2.us-west-2.amazon.com (Postfix) with ESMTPS id 4EE644C0258;
-        Fri, 26 Aug 2022 00:07:22 +0000 (UTC)
+        by email-inbound-relay-pdx-2c-5c4a15b1.us-west-2.amazon.com (Postfix) with ESMTPS id C695945195;
+        Fri, 26 Aug 2022 00:07:38 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 26 Aug 2022 00:07:21 +0000
+ id 15.0.1497.38; Fri, 26 Aug 2022 00:07:36 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Fri, 26 Aug 2022 00:07:18 +0000
+ Fri, 26 Aug 2022 00:07:33 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,9 +49,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-Subject: [PATCH v1 net-next 07/13] tcp: Access &tcp_hashinfo via net.
-Date:   Thu, 25 Aug 2022 17:04:39 -0700
-Message-ID: <20220826000445.46552-8-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 08/13] tcp: Introduce optional per-netns ehash.
+Date:   Thu, 25 Aug 2022 17:04:40 -0700
+Message-ID: <20220826000445.46552-9-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826000445.46552-1-kuniyu@amazon.com>
 References: <20220826000445.46552-1-kuniyu@amazon.com>
@@ -65,752 +63,473 @@ X-ClientProxiedBy: EX13D10UWB001.ant.amazon.com (10.43.161.111) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We will soon introduce an optional per-netns ehash.
+The more sockets we have in the hash table, the more time we spend
+looking up the socket.  While running a number of small workloads on
+the same host, they penalise each other and cause performance degradation.
 
-This means we cannot use tcp_hashinfo directly in most places.
+Also, the root cause might be a single workload that consumes much more
+resources than the others.  It often happens on a cloud service where
+different workloads share the same computing resource.
 
-Instead, access it via net->ipv4.tcp_death_row->hashinfo.
+To resolve the issue, we introduce an optional per-netns hash table for
+TCP, but it's just ehash, and we still share the global bhash and lhash2.
 
-The access will be valid only while initialising tcp_hashinfo
-itself and creating/destroying each netns.
+With a smaller ehash, we can look up non-listener sockets faster and
+isolate such noisy neighbours.  Also, we can reduce lock contention.
+
+We can control the ehash size by a new sysctl knob.  However, depending
+on workloads, it will require very sensitive tuning, so we disable the
+feature by default (net.ipv4.tcp_child_ehash_entries == 0).  Moreover,
+we can fall back to using the global ehash in case we fail to allocate
+enough memory for a new ehash.
+
+We can check the current ehash size by another read-only sysctl knob,
+net.ipv4.tcp_ehash_entries.  A negative value means the netns shares
+the global ehash (per-netns ehash is disabled or failed to allocate
+memory).
+
+  # dmesg | cut -d ' ' -f 5- | grep "established hash"
+  TCP established hash table entries: 524288 (order: 10, 4194304 bytes, vmalloc hugepage)
+
+  # sysctl net.ipv4.tcp_ehash_entries
+  net.ipv4.tcp_ehash_entries = 524288  # can be changed by thash_entries
+
+  # sysctl net.ipv4.tcp_child_ehash_entries
+  net.ipv4.tcp_child_ehash_entries = 0  # disabled by default
+
+  # ip netns add test1
+  # ip netns exec test1 sysctl net.ipv4.tcp_ehash_entries
+  net.ipv4.tcp_ehash_entries = -524288  # share the global ehash
+
+  # sysctl -w net.ipv4.tcp_child_ehash_entries=100
+  net.ipv4.tcp_child_ehash_entries = 100
+
+  # sysctl net.ipv4.tcp_child_ehash_entries
+  net.ipv4.tcp_child_ehash_entries = 128  # rounded up to 2^n
+
+  # ip netns add test2
+  # ip netns exec test2 sysctl net.ipv4.tcp_ehash_entries
+  net.ipv4.tcp_ehash_entries = 128  # own per-netns ehash
+
+When more than two processes in the same netns create per-netns ehash
+concurrently with different sizes, we need to guarantee the size in
+one of the following ways:
+
+  1) Share the global ehash and create per-netns ehash
+
+  First, unshare() with tcp_child_ehash_entries==0.  It creates dedicated
+  netns sysctl knobs where we can safely change tcp_child_ehash_entries
+  and clone()/unshare() to create a per-netns ehash.
+
+  2) Lock the sysctl knob
+
+  We can use flock(LOCK_MAND) or BPF_PROG_TYPE_CGROUP_SYSCTL to allow/deny
+  read/write on sysctl knobs.
+
+Note the default values of two sysctl knobs depend on the ehash size and
+should be tuned carefully:
+
+  tcp_max_tw_buckets  : tcp_child_ehash_entries / 2
+  tcp_max_syn_backlog : max(128, tcp_child_ehash_entries / 128)
+
+Also, we could optimise ehash lookup/iteration further by removing netns
+comparison for the per-netns ehash in the future.
+
+As a bonus, we can dismantle netns faster.  Currently, while destroying
+netns, we call inet_twsk_purge(), which walks through the global ehash.
+It can be potentially big because it can have many sockets other than
+TIME_WAIT in all netns.  Splitting ehash changes that situation, where
+it's only necessary for inet_twsk_purge() to clean up TIME_WAIT sockets
+in each netns.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- .../chelsio/inline_crypto/chtls/chtls_cm.c    |  5 +-
- .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  5 +-
- .../net/ethernet/netronome/nfp/crypto/tls.c   |  5 +-
- net/core/filter.c                             |  5 +-
- net/ipv4/esp4.c                               |  3 +-
- net/ipv4/inet_hashtables.c                    |  2 +-
- net/ipv4/netfilter/nf_socket_ipv4.c           |  2 +-
- net/ipv4/netfilter/nf_tproxy_ipv4.c           | 17 +++--
- net/ipv4/tcp_diag.c                           | 18 +++++-
- net/ipv4/tcp_ipv4.c                           | 63 +++++++++++--------
- net/ipv4/tcp_minisocks.c                      |  2 +-
- net/ipv6/esp6.c                               |  3 +-
- net/ipv6/inet6_hashtables.c                   |  4 +-
- net/ipv6/netfilter/nf_socket_ipv6.c           |  2 +-
- net/ipv6/netfilter/nf_tproxy_ipv6.c           |  5 +-
- net/ipv6/tcp_ipv6.c                           | 16 ++---
- net/mptcp/mptcp_diag.c                        |  7 ++-
- 17 files changed, 98 insertions(+), 66 deletions(-)
+ Documentation/networking/ip-sysctl.rst | 20 +++++++++
+ include/net/inet_hashtables.h          |  6 +++
+ include/net/netns/ipv4.h               |  1 +
+ net/dccp/proto.c                       |  2 +
+ net/ipv4/inet_hashtables.c             | 57 ++++++++++++++++++++++++++
+ net/ipv4/inet_timewait_sock.c          |  4 +-
+ net/ipv4/sysctl_net_ipv4.c             | 57 ++++++++++++++++++++++++++
+ net/ipv4/tcp.c                         |  1 +
+ net/ipv4/tcp_ipv4.c                    | 53 ++++++++++++++++++++----
+ net/ipv6/tcp_ipv6.c                    | 12 +++++-
+ 10 files changed, 202 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index ddfe9208529a..f90bfba4b303 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -1069,8 +1069,7 @@ static void chtls_pass_accept_rpl(struct sk_buff *skb,
- 	cxgb4_l2t_send(csk->egress_dev, skb, csk->l2t_entry);
+diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
+index 56cd4ea059b2..97a0952b11e3 100644
+--- a/Documentation/networking/ip-sysctl.rst
++++ b/Documentation/networking/ip-sysctl.rst
+@@ -1037,6 +1037,26 @@ tcp_challenge_ack_limit - INTEGER
+ 	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
+ 	Default: 1000
+ 
++tcp_ehash_entries - INTEGER
++	Read-only number of hash buckets for TCP sockets in the current
++	networking namespace.
++
++	A negative value means the networking namespace does not own its
++	hash buckets and shares the initial networking namespace's one.
++
++tcp_child_ehash_entries - INTEGER
++	Control the number of hash buckets for TCP sockets in the child
++	networking namespace, which must be set before clone() or unshare().
++
++	The written value except for 0 is rounded up to 2^n.  0 is a special
++	value, meaning the child networking namespace will share the initial
++	networking namespace's hash buckets.
++
++	Note that the child will use the global one in case the kernel
++	fails to allocate enough memory.
++
++	Default: 0
++
+ UDP variables
+ =============
+ 
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 2c866112433e..039440936ab2 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -168,6 +168,8 @@ struct inet_hashinfo {
+ 	/* The 2nd listener table hashed by local port and address */
+ 	unsigned int			lhash2_mask;
+ 	struct inet_listen_hashbucket	*lhash2;
++
++	bool				pernet;
+ };
+ 
+ static inline struct inet_hashinfo *inet_get_hashinfo(const struct sock *sk)
+@@ -214,6 +216,10 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
+ 	hashinfo->ehash_locks = NULL;
  }
  
--static void inet_inherit_port(struct inet_hashinfo *hash_info,
--			      struct sock *lsk, struct sock *newsk)
-+static void inet_inherit_port(struct sock *lsk, struct sock *newsk)
- {
- 	local_bh_disable();
- 	__inet_inherit_port(lsk, newsk);
-@@ -1240,7 +1239,7 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- 						     ipv4.sysctl_tcp_window_scaling),
- 					   tp->window_clamp);
- 	neigh_release(n);
--	inet_inherit_port(&tcp_hashinfo, lsk, newsk);
-+	inet_inherit_port(lsk, newsk);
- 	csk_set_flag(csk, CSK_CONN_INLINE);
- 	bh_unlock_sock(newsk); /* tcp_create_openreq_child ->sk_clone_lock */
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-index 13145ecaf839..9ae36772cc15 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_rx.c
-@@ -461,6 +461,7 @@ static void resync_update_sn(struct mlx5e_rq *rq, struct sk_buff *skb)
- {
- 	struct ethhdr *eth = (struct ethhdr *)(skb->data);
- 	struct net_device *netdev = rq->netdev;
-+	struct net *net = dev_net(netdev);
- 	struct sock *sk = NULL;
- 	unsigned int datalen;
- 	struct iphdr *iph;
-@@ -475,7 +476,7 @@ static void resync_update_sn(struct mlx5e_rq *rq, struct sk_buff *skb)
- 		depth += sizeof(struct iphdr);
- 		th = (void *)iph + sizeof(struct iphdr);
- 
--		sk = inet_lookup_established(dev_net(netdev), &tcp_hashinfo,
-+		sk = inet_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 					     iph->saddr, th->source, iph->daddr,
- 					     th->dest, netdev->ifindex);
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -485,7 +486,7 @@ static void resync_update_sn(struct mlx5e_rq *rq, struct sk_buff *skb)
- 		depth += sizeof(struct ipv6hdr);
- 		th = (void *)ipv6h + sizeof(struct ipv6hdr);
- 
--		sk = __inet6_lookup_established(dev_net(netdev), &tcp_hashinfo,
-+		sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 						&ipv6h->saddr, th->source,
- 						&ipv6h->daddr, ntohs(th->dest),
- 						netdev->ifindex, 0);
-diff --git a/drivers/net/ethernet/netronome/nfp/crypto/tls.c b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-index 78368e71ce83..7948c04a32dc 100644
---- a/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-+++ b/drivers/net/ethernet/netronome/nfp/crypto/tls.c
-@@ -474,6 +474,7 @@ int nfp_net_tls_rx_resync_req(struct net_device *netdev,
- {
- 	struct nfp_net *nn = netdev_priv(netdev);
- 	struct nfp_net_tls_offload_ctx *ntls;
-+	struct net *net = dev_net(netdev);
- 	struct ipv6hdr *ipv6h;
- 	struct tcphdr *th;
- 	struct iphdr *iph;
-@@ -494,13 +495,13 @@ int nfp_net_tls_rx_resync_req(struct net_device *netdev,
- 
- 	switch (ipv6h->version) {
- 	case 4:
--		sk = inet_lookup_established(dev_net(netdev), &tcp_hashinfo,
-+		sk = inet_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 					     iph->saddr, th->source, iph->daddr,
- 					     th->dest, netdev->ifindex);
- 		break;
- #if IS_ENABLED(CONFIG_IPV6)
- 	case 6:
--		sk = __inet6_lookup_established(dev_net(netdev), &tcp_hashinfo,
-+		sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 						&ipv6h->saddr, th->source,
- 						&ipv6h->daddr, ntohs(th->dest),
- 						netdev->ifindex, 0);
-diff --git a/net/core/filter.c b/net/core/filter.c
-index e8508aaafd27..dd5844033b66 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6468,6 +6468,7 @@ static const struct bpf_func_proto bpf_lwt_seg6_adjust_srh_proto = {
- static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
- 			      int dif, int sdif, u8 family, u8 proto)
- {
-+	struct inet_hashinfo *hinfo = net->ipv4.tcp_death_row->hashinfo;
- 	bool refcounted = false;
- 	struct sock *sk = NULL;
- 
-@@ -6476,7 +6477,7 @@ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
- 		__be32 dst4 = tuple->ipv4.daddr;
- 
- 		if (proto == IPPROTO_TCP)
--			sk = __inet_lookup(net, &tcp_hashinfo, NULL, 0,
-+			sk = __inet_lookup(net, hinfo, NULL, 0,
- 					   src4, tuple->ipv4.sport,
- 					   dst4, tuple->ipv4.dport,
- 					   dif, sdif, &refcounted);
-@@ -6490,7 +6491,7 @@ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
- 		struct in6_addr *dst6 = (struct in6_addr *)&tuple->ipv6.daddr;
- 
- 		if (proto == IPPROTO_TCP)
--			sk = __inet6_lookup(net, &tcp_hashinfo, NULL, 0,
-+			sk = __inet6_lookup(net, hinfo, NULL, 0,
- 					    src6, tuple->ipv6.sport,
- 					    dst6, ntohs(tuple->ipv6.dport),
- 					    dif, sdif, &refcounted);
-diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
-index 5c03eba787e5..951c965d9322 100644
---- a/net/ipv4/esp4.c
-+++ b/net/ipv4/esp4.c
-@@ -134,6 +134,7 @@ static void esp_free_tcp_sk(struct rcu_head *head)
- static struct sock *esp_find_tcp_sk(struct xfrm_state *x)
- {
- 	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct net *net = xs_net(x);
- 	struct esp_tcp_sk *esk;
- 	__be16 sport, dport;
- 	struct sock *nsk;
-@@ -160,7 +161,7 @@ static struct sock *esp_find_tcp_sk(struct xfrm_state *x)
++struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
++						 unsigned int ehash_entries);
++void inet_pernet_hashinfo_free(struct inet_hashinfo *hashinfo);
++
+ struct inet_bind_bucket *
+ inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
+ 			struct inet_bind_hashbucket *head,
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index c7320ef356d9..6d9c01879027 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -170,6 +170,7 @@ struct netns_ipv4 {
+ 	int sysctl_tcp_pacing_ca_ratio;
+ 	int sysctl_tcp_wmem[3];
+ 	int sysctl_tcp_rmem[3];
++	unsigned int sysctl_tcp_child_ehash_entries;
+ 	unsigned long sysctl_tcp_comp_sack_delay_ns;
+ 	unsigned long sysctl_tcp_comp_sack_slack_ns;
+ 	int sysctl_max_syn_backlog;
+diff --git a/net/dccp/proto.c b/net/dccp/proto.c
+index 7cd4a6cc99fc..c548ca3e9b0e 100644
+--- a/net/dccp/proto.c
++++ b/net/dccp/proto.c
+@@ -1197,6 +1197,8 @@ static int __init dccp_init(void)
+ 		INIT_HLIST_HEAD(&dccp_hashinfo.bhash2[i].chain);
  	}
- 	spin_unlock_bh(&x->lock);
  
--	sk = inet_lookup_established(xs_net(x), &tcp_hashinfo, x->id.daddr.a4,
-+	sk = inet_lookup_established(net, net->ipv4.tcp_death_row->hashinfo, x->id.daddr.a4,
- 				     dport, x->props.saddr.a4, sport, 0);
- 	if (!sk)
- 		return ERR_PTR(-ENOENT);
++	dccp_hashinfo.pernet = false;
++
+ 	rc = dccp_mib_init();
+ 	if (rc)
+ 		goto out_free_dccp_bhash2;
 diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 23bfff989be6..5eb21a95179b 100644
+index 5eb21a95179b..a57932b14bc6 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -386,7 +386,7 @@ static inline struct sock *inet_lookup_run_bpf(struct net *net,
- 	struct sock *sk, *reuse_sk;
- 	bool no_reuseport;
+@@ -1145,3 +1145,60 @@ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(inet_ehash_locks_alloc);
++
++struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
++						 unsigned int ehash_entries)
++{
++	struct inet_hashinfo *new_hashinfo;
++	int i;
++
++	new_hashinfo = kmalloc(sizeof(*new_hashinfo), GFP_KERNEL);
++	if (!new_hashinfo)
++		goto err;
++
++	new_hashinfo->ehash = kvmalloc_array(ehash_entries,
++					     sizeof(struct inet_ehash_bucket),
++					     GFP_KERNEL);
++	if (!new_hashinfo->ehash)
++		goto free_hashinfo;
++
++	new_hashinfo->ehash_mask = ehash_entries - 1;
++
++	if (inet_ehash_locks_alloc(new_hashinfo))
++		goto free_ehash;
++
++	for (i = 0; i < ehash_entries; i++)
++		INIT_HLIST_NULLS_HEAD(&new_hashinfo->ehash[i].chain, i);
++
++	new_hashinfo->bind_bucket_cachep = hashinfo->bind_bucket_cachep;
++	new_hashinfo->bhash = hashinfo->bhash;
++	new_hashinfo->bind2_bucket_cachep = hashinfo->bind2_bucket_cachep;
++	new_hashinfo->bhash2 = hashinfo->bhash2;
++	new_hashinfo->bhash_size = hashinfo->bhash_size;
++
++	new_hashinfo->lhash2_mask = hashinfo->lhash2_mask;
++	new_hashinfo->lhash2 = hashinfo->lhash2;
++
++	new_hashinfo->pernet = true;
++
++	return new_hashinfo;
++
++free_ehash:
++	kvfree(new_hashinfo->ehash);
++free_hashinfo:
++	kfree(new_hashinfo);
++err:
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(inet_pernet_hashinfo_alloc);
++
++void inet_pernet_hashinfo_free(struct inet_hashinfo *hashinfo)
++{
++	if (!hashinfo->pernet)
++		return;
++
++	inet_ehash_locks_free(hashinfo);
++	kvfree(hashinfo->ehash);
++	kfree(hashinfo);
++}
++EXPORT_SYMBOL_GPL(inet_pernet_hashinfo_free);
+diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
+index 47ccc343c9fb..a5d40acde9d6 100644
+--- a/net/ipv4/inet_timewait_sock.c
++++ b/net/ipv4/inet_timewait_sock.c
+@@ -59,8 +59,10 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
+ 	inet_twsk_bind_unhash(tw, hashinfo);
+ 	spin_unlock(&bhead->lock);
  
--	if (hashinfo != &tcp_hashinfo)
-+	if (hashinfo != net->ipv4.tcp_death_row->hashinfo)
- 		return NULL; /* only TCP is supported */
+-	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount))
++	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount)) {
++		inet_pernet_hashinfo_free(hashinfo);
+ 		kfree(tw->tw_dr);
++	}
  
- 	no_reuseport = bpf_sk_lookup_run_v4(net, IPPROTO_TCP, saddr, sport,
-diff --git a/net/ipv4/netfilter/nf_socket_ipv4.c b/net/ipv4/netfilter/nf_socket_ipv4.c
-index 2d42e4c35a20..9ba496d061cc 100644
---- a/net/ipv4/netfilter/nf_socket_ipv4.c
-+++ b/net/ipv4/netfilter/nf_socket_ipv4.c
-@@ -71,7 +71,7 @@ nf_socket_get_sock_v4(struct net *net, struct sk_buff *skb, const int doff,
- {
- 	switch (protocol) {
- 	case IPPROTO_TCP:
--		return inet_lookup(net, &tcp_hashinfo, skb, doff,
-+		return inet_lookup(net, net->ipv4.tcp_death_row->hashinfo, skb, doff,
- 				   saddr, sport, daddr, dport,
- 				   in->ifindex);
- 	case IPPROTO_UDP:
-diff --git a/net/ipv4/netfilter/nf_tproxy_ipv4.c b/net/ipv4/netfilter/nf_tproxy_ipv4.c
-index b2bae0b0e42a..ce4e0d50a55c 100644
---- a/net/ipv4/netfilter/nf_tproxy_ipv4.c
-+++ b/net/ipv4/netfilter/nf_tproxy_ipv4.c
-@@ -79,6 +79,7 @@ nf_tproxy_get_sock_v4(struct net *net, struct sk_buff *skb,
- 		      const struct net_device *in,
- 		      const enum nf_tproxy_lookup_t lookup_type)
- {
+ 	inet_twsk_put(tw);
+ }
+diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
+index 5490c285668b..03a3187c4705 100644
+--- a/net/ipv4/sysctl_net_ipv4.c
++++ b/net/ipv4/sysctl_net_ipv4.c
+@@ -382,6 +382,48 @@ static int proc_tcp_available_ulp(struct ctl_table *ctl,
+ 	return ret;
+ }
+ 
++static int proc_tcp_ehash_entries(struct ctl_table *table, int write,
++				  void *buffer, size_t *lenp, loff_t *ppos)
++{
++	struct net *net = container_of(table->data, struct net,
++				       ipv4.sysctl_tcp_child_ehash_entries);
 +	struct inet_hashinfo *hinfo = net->ipv4.tcp_death_row->hashinfo;
- 	struct sock *sk;
- 
- 	switch (protocol) {
-@@ -92,12 +93,10 @@ nf_tproxy_get_sock_v4(struct net *net, struct sk_buff *skb,
- 
- 		switch (lookup_type) {
- 		case NF_TPROXY_LOOKUP_LISTENER:
--			sk = inet_lookup_listener(net, &tcp_hashinfo, skb,
--						    ip_hdrlen(skb) +
--						      __tcp_hdrlen(hp),
--						    saddr, sport,
--						    daddr, dport,
--						    in->ifindex, 0);
-+			sk = inet_lookup_listener(net, hinfo, skb,
-+						  ip_hdrlen(skb) + __tcp_hdrlen(hp),
-+						  saddr, sport, daddr, dport,
-+						  in->ifindex, 0);
- 
- 			if (sk && !refcount_inc_not_zero(&sk->sk_refcnt))
- 				sk = NULL;
-@@ -108,9 +107,9 @@ nf_tproxy_get_sock_v4(struct net *net, struct sk_buff *skb,
- 			 */
- 			break;
- 		case NF_TPROXY_LOOKUP_ESTABLISHED:
--			sk = inet_lookup_established(net, &tcp_hashinfo,
--						    saddr, sport, daddr, dport,
--						    in->ifindex);
-+			sk = inet_lookup_established(net, hinfo,
-+						     saddr, sport, daddr, dport,
-+						     in->ifindex);
- 			break;
- 		default:
- 			BUG();
-diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-index 75a1c985f49a..958c923020c0 100644
---- a/net/ipv4/tcp_diag.c
-+++ b/net/ipv4/tcp_diag.c
-@@ -181,13 +181,21 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
- static void tcp_diag_dump(struct sk_buff *skb, struct netlink_callback *cb,
- 			  const struct inet_diag_req_v2 *r)
- {
--	inet_diag_dump_icsk(&tcp_hashinfo, skb, cb, r);
-+	struct inet_hashinfo *hinfo;
++	int tcp_ehash_entries;
++	struct ctl_table tbl;
 +
-+	hinfo = sock_net(cb->skb->sk)->ipv4.tcp_death_row->hashinfo;
++	tcp_ehash_entries = hinfo->ehash_mask + 1;
 +
-+	inet_diag_dump_icsk(hinfo, skb, cb, r);
- }
- 
- static int tcp_diag_dump_one(struct netlink_callback *cb,
- 			     const struct inet_diag_req_v2 *req)
- {
--	return inet_diag_dump_one_icsk(&tcp_hashinfo, cb, req);
-+	struct inet_hashinfo *hinfo;
++	/* A negative number indicates that the child netns
++	 * shares the global ehash.
++	 */
++	if (!net_eq(net, &init_net) && !hinfo->pernet)
++		tcp_ehash_entries *= -1;
 +
-+	hinfo = sock_net(cb->skb->sk)->ipv4.tcp_death_row->hashinfo;
++	tbl.data = &tcp_ehash_entries;
++	tbl.maxlen = sizeof(int);
 +
-+	return inet_diag_dump_one_icsk(hinfo, cb, req);
- }
- 
- #ifdef CONFIG_INET_DIAG_DESTROY
-@@ -195,9 +203,13 @@ static int tcp_diag_destroy(struct sk_buff *in_skb,
- 			    const struct inet_diag_req_v2 *req)
- {
- 	struct net *net = sock_net(in_skb->sk);
--	struct sock *sk = inet_diag_find_one_icsk(net, &tcp_hashinfo, req);
-+	struct inet_hashinfo *hinfo;
-+	struct sock *sk;
- 	int err;
- 
-+	hinfo = net->ipv4.tcp_death_row->hashinfo;
-+	sk = inet_diag_find_one_icsk(net, hinfo, req);
++	return proc_dointvec(&tbl, write, buffer, lenp, ppos);
++}
 +
- 	if (IS_ERR(sk))
- 		return PTR_ERR(sk);
++static int proc_tcp_child_ehash_entries(struct ctl_table *table, int write,
++					void *buffer, size_t *lenp, loff_t *ppos)
++{
++	unsigned int tcp_child_ehash_entries;
++	int ret;
++
++	ret = proc_douintvec(table, write, buffer, lenp, ppos);
++	if (!write || ret)
++		return ret;
++
++	tcp_child_ehash_entries = READ_ONCE(*(unsigned int *)table->data);
++	if (tcp_child_ehash_entries)
++		tcp_child_ehash_entries = roundup_pow_of_two(tcp_child_ehash_entries);
++
++	WRITE_ONCE(*(unsigned int *)table->data, tcp_child_ehash_entries);
++
++	return 0;
++}
++
+ #ifdef CONFIG_IP_ROUTE_MULTIPATH
+ static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
+ 					  void *buffer, size_t *lenp,
+@@ -1321,6 +1363,21 @@ static struct ctl_table ipv4_net_table[] = {
+ 		.extra1         = SYSCTL_ZERO,
+ 		.extra2         = SYSCTL_ONE,
+ 	},
++	{
++		.procname	= "tcp_ehash_entries",
++		.data		= &init_net.ipv4.sysctl_tcp_child_ehash_entries,
++		.mode		= 0444,
++		.proc_handler	= proc_tcp_ehash_entries,
++	},
++	{
++		.procname	= "tcp_child_ehash_entries",
++		.data		= &init_net.ipv4.sysctl_tcp_child_ehash_entries,
++		.maxlen		= sizeof(unsigned int),
++		.mode		= 0644,
++		.proc_handler	= proc_tcp_child_ehash_entries,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_INT_MAX,
++	},
+ 	{
+ 		.procname	= "udp_rmem_min",
+ 		.data		= &init_net.ipv4.sysctl_udp_rmem_min,
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index baf6adb723ad..f8ce673e32cb 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4788,6 +4788,7 @@ void __init tcp_init(void)
+ 		INIT_HLIST_HEAD(&tcp_hashinfo.bhash2[i].chain);
+ 	}
  
++	tcp_hashinfo.pernet = false;
+ 
+ 	cnt = tcp_hashinfo.ehash_mask + 1;
+ 	sysctl_tcp_max_orphans = cnt / 2;
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 7c3b3ce85a5e..b07930643b11 100644
+index b07930643b11..604119f46b52 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -249,7 +249,7 @@ int tcp_v4_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
- 
- 	if (!inet->inet_saddr) {
- 		if (inet_csk(sk)->icsk_bind2_hash) {
--			prev_addr_hashbucket = inet_bhashfn_portaddr(&tcp_hashinfo,
-+			prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
- 								     sk, sock_net(sk),
- 								     inet->inet_num);
- 			prev_sk_rcv_saddr = sk->sk_rcv_saddr;
-@@ -494,7 +494,7 @@ int tcp_v4_err(struct sk_buff *skb, u32 info)
- 	int err;
- 	struct net *net = dev_net(skb->dev);
- 
--	sk = __inet_lookup_established(net, &tcp_hashinfo, iph->daddr,
-+	sk = __inet_lookup_established(net, net->ipv4.tcp_death_row->hashinfo, iph->daddr,
- 				       th->dest, iph->saddr, ntohs(th->source),
- 				       inet_iif(skb), 0);
- 	if (!sk) {
-@@ -759,7 +759,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
- 		 * Incoming packet is checked with md5 hash with finding key,
- 		 * no RST generated if md5 hash doesn't match.
- 		 */
--		sk1 = __inet_lookup_listener(net, &tcp_hashinfo, NULL, 0,
-+		sk1 = __inet_lookup_listener(net, net->ipv4.tcp_death_row->hashinfo, NULL, 0,
- 					     ip_hdr(skb)->saddr,
- 					     th->source, ip_hdr(skb)->daddr,
- 					     ntohs(th->source), dif, sdif);
-@@ -1728,6 +1728,7 @@ EXPORT_SYMBOL(tcp_v4_do_rcv);
- 
- int tcp_v4_early_demux(struct sk_buff *skb)
- {
-+	struct net *net = dev_net(skb->dev);
- 	const struct iphdr *iph;
- 	const struct tcphdr *th;
- 	struct sock *sk;
-@@ -1744,7 +1745,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
- 	if (th->doff < sizeof(struct tcphdr) / 4)
- 		return 0;
- 
--	sk = __inet_lookup_established(dev_net(skb->dev), &tcp_hashinfo,
-+	sk = __inet_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 				       iph->saddr, th->source,
- 				       iph->daddr, ntohs(th->dest),
- 				       skb->skb_iif, inet_sdif(skb));
-@@ -1970,7 +1971,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	th = (const struct tcphdr *)skb->data;
- 	iph = ip_hdr(skb);
- lookup:
--	sk = __inet_lookup_skb(&tcp_hashinfo, skb, __tcp_hdrlen(th), th->source,
-+	sk = __inet_lookup_skb(net->ipv4.tcp_death_row->hashinfo,
-+			       skb, __tcp_hdrlen(th), th->source,
- 			       th->dest, sdif, &refcounted);
- 	if (!sk)
- 		goto no_tcp_socket;
-@@ -2152,9 +2154,9 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	}
- 	switch (tcp_timewait_state_process(inet_twsk(sk), skb, th)) {
- 	case TCP_TW_SYN: {
--		struct sock *sk2 = inet_lookup_listener(dev_net(skb->dev),
--							&tcp_hashinfo, skb,
--							__tcp_hdrlen(th),
-+		struct sock *sk2 = inet_lookup_listener(net,
-+							net->ipv4.tcp_death_row->hashinfo,
-+							skb, __tcp_hdrlen(th),
- 							iph->saddr, th->source,
- 							iph->daddr, th->dest,
- 							inet_iif(skb),
-@@ -2304,15 +2306,16 @@ static bool seq_sk_match(struct seq_file *seq, const struct sock *sk)
-  */
- static void *listening_get_first(struct seq_file *seq)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct tcp_iter_state *st = seq->private;
- 
- 	st->offset = 0;
--	for (; st->bucket <= tcp_hashinfo.lhash2_mask; st->bucket++) {
-+	for (; st->bucket <= hinfo->lhash2_mask; st->bucket++) {
- 		struct inet_listen_hashbucket *ilb2;
- 		struct hlist_nulls_node *node;
- 		struct sock *sk;
- 
--		ilb2 = &tcp_hashinfo.lhash2[st->bucket];
-+		ilb2 = &hinfo->lhash2[st->bucket];
- 		if (hlist_nulls_empty(&ilb2->nulls_head))
- 			continue;
- 
-@@ -2337,6 +2340,7 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
- 	struct tcp_iter_state *st = seq->private;
- 	struct inet_listen_hashbucket *ilb2;
- 	struct hlist_nulls_node *node;
-+	struct inet_hashinfo *hinfo;
- 	struct sock *sk = cur;
- 
- 	++st->num;
-@@ -2348,7 +2352,8 @@ static void *listening_get_next(struct seq_file *seq, void *cur)
- 			return sk;
- 	}
- 
--	ilb2 = &tcp_hashinfo.lhash2[st->bucket];
-+	hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
-+	ilb2 = &hinfo->lhash2[st->bucket];
- 	spin_unlock(&ilb2->lock);
- 	++st->bucket;
- 	return listening_get_first(seq);
-@@ -2370,9 +2375,10 @@ static void *listening_get_idx(struct seq_file *seq, loff_t *pos)
- 	return rc;
+@@ -3109,14 +3109,23 @@ static void __net_exit tcp_sk_exit(struct net *net)
+ 	if (net->ipv4.tcp_congestion_control)
+ 		bpf_module_put(net->ipv4.tcp_congestion_control,
+ 			       net->ipv4.tcp_congestion_control->owner);
+-	if (refcount_dec_and_test(&tcp_death_row->tw_refcount))
++	if (refcount_dec_and_test(&tcp_death_row->tw_refcount)) {
++		inet_pernet_hashinfo_free(tcp_death_row->hashinfo);
+ 		kfree(tcp_death_row);
++	}
  }
  
--static inline bool empty_bucket(const struct tcp_iter_state *st)
-+static inline bool empty_bucket(struct inet_hashinfo *hinfo,
-+				const struct tcp_iter_state *st)
+-static int __net_init tcp_sk_init(struct net *net)
++static void __net_init tcp_set_hashinfo(struct net *net, struct inet_hashinfo *hinfo)
  {
--	return hlist_nulls_empty(&tcp_hashinfo.ehash[st->bucket].chain);
-+	return hlist_nulls_empty(&hinfo->ehash[st->bucket].chain);
+-	int cnt;
++	int ehash_entries = hinfo->ehash_mask + 1;
+ 
++	net->ipv4.tcp_death_row->hashinfo = hinfo;
++	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = ehash_entries / 2;
++	net->ipv4.sysctl_max_syn_backlog = max(128, ehash_entries / 128);
++}
++
++static int __net_init tcp_sk_init(struct net *net)
++{
+ 	net->ipv4.sysctl_tcp_ecn = 2;
+ 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
+ 
+@@ -3145,12 +3154,10 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	net->ipv4.tcp_death_row = kzalloc(sizeof(struct inet_timewait_death_row), GFP_KERNEL);
+ 	if (!net->ipv4.tcp_death_row)
+ 		return -ENOMEM;
++
+ 	refcount_set(&net->ipv4.tcp_death_row->tw_refcount, 1);
+-	cnt = tcp_hashinfo.ehash_mask + 1;
+-	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = cnt / 2;
+-	net->ipv4.tcp_death_row->hashinfo = &tcp_hashinfo;
++	tcp_set_hashinfo(net, &tcp_hashinfo);
+ 
+-	net->ipv4.sysctl_max_syn_backlog = max(128, cnt / 128);
+ 	net->ipv4.sysctl_tcp_sack = 1;
+ 	net->ipv4.sysctl_tcp_window_scaling = 1;
+ 	net->ipv4.sysctl_tcp_timestamps = 1;
+@@ -3206,18 +3213,46 @@ static int __net_init tcp_sk_init(struct net *net)
+ 	return 0;
  }
  
- /*
-@@ -2381,20 +2387,21 @@ static inline bool empty_bucket(const struct tcp_iter_state *st)
-  */
- static void *established_get_first(struct seq_file *seq)
++static int __net_init tcp_sk_init_pernet_hashinfo(struct net *net, struct net *old_net)
++{
++	struct inet_hashinfo *child_hinfo;
++	int ehash_entries;
++
++	ehash_entries = READ_ONCE(old_net->ipv4.sysctl_tcp_child_ehash_entries);
++	if (!ehash_entries)
++		goto out;
++
++	child_hinfo = inet_pernet_hashinfo_alloc(&tcp_hashinfo, ehash_entries);
++	if (child_hinfo)
++		tcp_set_hashinfo(net, child_hinfo);
++	else
++		pr_warn("Failed to allocate TCP ehash (entries: %u) "
++			"for a netns, fallback to use the global one\n",
++			ehash_entries);
++out:
++	return 0;
++}
++
+ static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
  {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct tcp_iter_state *st = seq->private;
++	bool purge_once = true;
+ 	struct net *net;
  
- 	st->offset = 0;
--	for (; st->bucket <= tcp_hashinfo.ehash_mask; ++st->bucket) {
-+	for (; st->bucket <= hinfo->ehash_mask; ++st->bucket) {
- 		struct sock *sk;
- 		struct hlist_nulls_node *node;
--		spinlock_t *lock = inet_ehash_lockp(&tcp_hashinfo, st->bucket);
-+		spinlock_t *lock = inet_ehash_lockp(hinfo, st->bucket);
+-	inet_twsk_purge(&tcp_hashinfo, AF_INET);
++	list_for_each_entry(net, net_exit_list, exit_list) {
++		if (net->ipv4.tcp_death_row->hashinfo->pernet) {
++			inet_twsk_purge(net->ipv4.tcp_death_row->hashinfo, AF_INET);
++		} else if (purge_once) {
++			inet_twsk_purge(&tcp_hashinfo, AF_INET);
++			purge_once = false;
++		}
  
- 		/* Lockless fast path for the common case of empty buckets */
--		if (empty_bucket(st))
-+		if (empty_bucket(hinfo, st))
- 			continue;
- 
- 		spin_lock_bh(lock);
--		sk_nulls_for_each(sk, node, &tcp_hashinfo.ehash[st->bucket].chain) {
-+		sk_nulls_for_each(sk, node, &hinfo->ehash[st->bucket].chain) {
- 			if (seq_sk_match(seq, sk))
- 				return sk;
- 		}
-@@ -2406,6 +2413,7 @@ static void *established_get_first(struct seq_file *seq)
- 
- static void *established_get_next(struct seq_file *seq, void *cur)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct tcp_iter_state *st = seq->private;
- 	struct hlist_nulls_node *node;
- 	struct sock *sk = cur;
-@@ -2420,7 +2428,7 @@ static void *established_get_next(struct seq_file *seq, void *cur)
- 			return sk;
- 	}
- 
--	spin_unlock_bh(inet_ehash_lockp(&tcp_hashinfo, st->bucket));
-+	spin_unlock_bh(inet_ehash_lockp(hinfo, st->bucket));
- 	++st->bucket;
- 	return established_get_first(seq);
- }
-@@ -2458,6 +2466,7 @@ static void *tcp_get_idx(struct seq_file *seq, loff_t pos)
- 
- static void *tcp_seek_last_pos(struct seq_file *seq)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct tcp_iter_state *st = seq->private;
- 	int bucket = st->bucket;
- 	int offset = st->offset;
-@@ -2466,7 +2475,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq)
- 
- 	switch (st->state) {
- 	case TCP_SEQ_STATE_LISTENING:
--		if (st->bucket > tcp_hashinfo.lhash2_mask)
-+		if (st->bucket > hinfo->lhash2_mask)
- 			break;
- 		st->state = TCP_SEQ_STATE_LISTENING;
- 		rc = listening_get_first(seq);
-@@ -2478,7 +2487,7 @@ static void *tcp_seek_last_pos(struct seq_file *seq)
- 		st->state = TCP_SEQ_STATE_ESTABLISHED;
- 		fallthrough;
- 	case TCP_SEQ_STATE_ESTABLISHED:
--		if (st->bucket > tcp_hashinfo.ehash_mask)
-+		if (st->bucket > hinfo->ehash_mask)
- 			break;
- 		rc = established_get_first(seq);
- 		while (offset-- && rc && bucket == st->bucket)
-@@ -2546,16 +2555,17 @@ EXPORT_SYMBOL(tcp_seq_next);
- 
- void tcp_seq_stop(struct seq_file *seq, void *v)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct tcp_iter_state *st = seq->private;
- 
- 	switch (st->state) {
- 	case TCP_SEQ_STATE_LISTENING:
- 		if (v != SEQ_START_TOKEN)
--			spin_unlock(&tcp_hashinfo.lhash2[st->bucket].lock);
-+			spin_unlock(&hinfo->lhash2[st->bucket].lock);
- 		break;
- 	case TCP_SEQ_STATE_ESTABLISHED:
- 		if (v)
--			spin_unlock_bh(inet_ehash_lockp(&tcp_hashinfo, st->bucket));
-+			spin_unlock_bh(inet_ehash_lockp(hinfo, st->bucket));
- 		break;
- 	}
- }
-@@ -2750,6 +2760,7 @@ static int bpf_iter_tcp_realloc_batch(struct bpf_tcp_iter_state *iter,
- static unsigned int bpf_iter_tcp_listening_batch(struct seq_file *seq,
- 						 struct sock *start_sk)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct bpf_tcp_iter_state *iter = seq->private;
- 	struct tcp_iter_state *st = &iter->state;
- 	struct hlist_nulls_node *node;
-@@ -2769,7 +2780,7 @@ static unsigned int bpf_iter_tcp_listening_batch(struct seq_file *seq,
- 			expected++;
- 		}
- 	}
--	spin_unlock(&tcp_hashinfo.lhash2[st->bucket].lock);
-+	spin_unlock(&hinfo->lhash2[st->bucket].lock);
- 
- 	return expected;
- }
-@@ -2777,6 +2788,7 @@ static unsigned int bpf_iter_tcp_listening_batch(struct seq_file *seq,
- static unsigned int bpf_iter_tcp_established_batch(struct seq_file *seq,
- 						   struct sock *start_sk)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct bpf_tcp_iter_state *iter = seq->private;
- 	struct tcp_iter_state *st = &iter->state;
- 	struct hlist_nulls_node *node;
-@@ -2796,13 +2808,14 @@ static unsigned int bpf_iter_tcp_established_batch(struct seq_file *seq,
- 			expected++;
- 		}
- 	}
--	spin_unlock_bh(inet_ehash_lockp(&tcp_hashinfo, st->bucket));
-+	spin_unlock_bh(inet_ehash_lockp(hinfo, st->bucket));
- 
- 	return expected;
+-	list_for_each_entry(net, net_exit_list, exit_list)
+ 		tcp_fastopen_ctx_destroy(net);
++	}
  }
  
- static struct sock *bpf_iter_tcp_batch(struct seq_file *seq)
- {
-+	struct inet_hashinfo *hinfo = seq_file_net(seq)->ipv4.tcp_death_row->hashinfo;
- 	struct bpf_tcp_iter_state *iter = seq->private;
- 	struct tcp_iter_state *st = &iter->state;
- 	unsigned int expected;
-@@ -2818,7 +2831,7 @@ static struct sock *bpf_iter_tcp_batch(struct seq_file *seq)
- 		st->offset = 0;
- 		st->bucket++;
- 		if (st->state == TCP_SEQ_STATE_LISTENING &&
--		    st->bucket > tcp_hashinfo.lhash2_mask) {
-+		    st->bucket > hinfo->lhash2_mask) {
- 			st->state = TCP_SEQ_STATE_ESTABLISHED;
- 			st->bucket = 0;
- 		}
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index cb95d88497ae..361aad67c6d6 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -319,7 +319,7 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
- 		/* Linkage updates.
- 		 * Note that access to tw after this point is illegal.
- 		 */
--		inet_twsk_hashdance(tw, sk, &tcp_hashinfo);
-+		inet_twsk_hashdance(tw, sk, tcp_death_row->hashinfo);
- 		local_bh_enable();
- 	} else {
- 		/* Sorry, if we're out of memory, just CLOSE this
-diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
-index 8220923a12f7..3cdeed3d2e1a 100644
---- a/net/ipv6/esp6.c
-+++ b/net/ipv6/esp6.c
-@@ -151,6 +151,7 @@ static void esp_free_tcp_sk(struct rcu_head *head)
- static struct sock *esp6_find_tcp_sk(struct xfrm_state *x)
- {
- 	struct xfrm_encap_tmpl *encap = x->encap;
-+	struct net *net = xs_net(x);
- 	struct esp_tcp_sk *esk;
- 	__be16 sport, dport;
- 	struct sock *nsk;
-@@ -177,7 +178,7 @@ static struct sock *esp6_find_tcp_sk(struct xfrm_state *x)
- 	}
- 	spin_unlock_bh(&x->lock);
- 
--	sk = __inet6_lookup_established(xs_net(x), &tcp_hashinfo, &x->id.daddr.in6,
-+	sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row->hashinfo, &x->id.daddr.in6,
- 					dport, &x->props.saddr.in6, ntohs(sport), 0, 0);
- 	if (!sk)
- 		return ERR_PTR(-ENOENT);
-diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index 7d53d62783b1..52513a6a54fd 100644
---- a/net/ipv6/inet6_hashtables.c
-+++ b/net/ipv6/inet6_hashtables.c
-@@ -21,8 +21,6 @@
- #include <net/ip.h>
- #include <net/sock_reuseport.h>
- 
--extern struct inet_hashinfo tcp_hashinfo;
--
- u32 inet6_ehashfn(const struct net *net,
- 		  const struct in6_addr *laddr, const u16 lport,
- 		  const struct in6_addr *faddr, const __be16 fport)
-@@ -169,7 +167,7 @@ static inline struct sock *inet6_lookup_run_bpf(struct net *net,
- 	struct sock *sk, *reuse_sk;
- 	bool no_reuseport;
- 
--	if (hashinfo != &tcp_hashinfo)
-+	if (hashinfo != net->ipv4.tcp_death_row->hashinfo)
- 		return NULL; /* only TCP is supported */
- 
- 	no_reuseport = bpf_sk_lookup_run_v6(net, IPPROTO_TCP, saddr, sport,
-diff --git a/net/ipv6/netfilter/nf_socket_ipv6.c b/net/ipv6/netfilter/nf_socket_ipv6.c
-index aa5bb8789ba0..6356407065c7 100644
---- a/net/ipv6/netfilter/nf_socket_ipv6.c
-+++ b/net/ipv6/netfilter/nf_socket_ipv6.c
-@@ -83,7 +83,7 @@ nf_socket_get_sock_v6(struct net *net, struct sk_buff *skb, int doff,
- {
- 	switch (protocol) {
- 	case IPPROTO_TCP:
--		return inet6_lookup(net, &tcp_hashinfo, skb, doff,
-+		return inet6_lookup(net, net->ipv4.tcp_death_row->hashinfo, skb, doff,
- 				    saddr, sport, daddr, dport,
- 				    in->ifindex);
- 	case IPPROTO_UDP:
-diff --git a/net/ipv6/netfilter/nf_tproxy_ipv6.c b/net/ipv6/netfilter/nf_tproxy_ipv6.c
-index 6bac68fb27a3..b0e5fb3e4d95 100644
---- a/net/ipv6/netfilter/nf_tproxy_ipv6.c
-+++ b/net/ipv6/netfilter/nf_tproxy_ipv6.c
-@@ -80,6 +80,7 @@ nf_tproxy_get_sock_v6(struct net *net, struct sk_buff *skb, int thoff,
- 		      const struct net_device *in,
- 		      const enum nf_tproxy_lookup_t lookup_type)
- {
-+	struct inet_hashinfo *hinfo = net->ipv4.tcp_death_row->hashinfo;
- 	struct sock *sk;
- 
- 	switch (protocol) {
-@@ -93,7 +94,7 @@ nf_tproxy_get_sock_v6(struct net *net, struct sk_buff *skb, int thoff,
- 
- 		switch (lookup_type) {
- 		case NF_TPROXY_LOOKUP_LISTENER:
--			sk = inet6_lookup_listener(net, &tcp_hashinfo, skb,
-+			sk = inet6_lookup_listener(net, hinfo, skb,
- 						   thoff + __tcp_hdrlen(hp),
- 						   saddr, sport,
- 						   daddr, ntohs(dport),
-@@ -108,7 +109,7 @@ nf_tproxy_get_sock_v6(struct net *net, struct sk_buff *skb, int thoff,
- 			 */
- 			break;
- 		case NF_TPROXY_LOOKUP_ESTABLISHED:
--			sk = __inet6_lookup_established(net, &tcp_hashinfo,
-+			sk = __inet6_lookup_established(net, hinfo,
- 							saddr, sport, daddr, ntohs(dport),
- 							in->ifindex, 0);
- 			break;
+ static struct pernet_operations __net_initdata tcp_sk_ops = {
+        .init	   = tcp_sk_init,
++       .init2	   = tcp_sk_init_pernet_hashinfo,
+        .exit	   = tcp_sk_exit,
+        .exit_batch = tcp_sk_exit_batch,
+ };
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 791f24da9212..27b2fd98a2c4 100644
+index 27b2fd98a2c4..19f730428720 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -286,12 +286,14 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 		goto failure;
- 	}
+@@ -2229,7 +2229,17 @@ static void __net_exit tcpv6_net_exit(struct net *net)
  
-+	tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
-+
- 	if (!saddr) {
- 		struct inet_bind_hashbucket *prev_addr_hashbucket = NULL;
- 		struct in6_addr prev_v6_rcv_saddr;
- 
- 		if (icsk->icsk_bind2_hash) {
--			prev_addr_hashbucket = inet_bhashfn_portaddr(&tcp_hashinfo,
-+			prev_addr_hashbucket = inet_bhashfn_portaddr(tcp_death_row->hashinfo,
- 								     sk, sock_net(sk),
- 								     inet->inet_num);
- 			prev_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
-@@ -325,7 +327,6 @@ static int tcp_v6_connect(struct sock *sk, struct sockaddr *uaddr,
- 	inet->inet_dport = usin->sin6_port;
- 
- 	tcp_set_state(sk, TCP_SYN_SENT);
--	tcp_death_row = sock_net(sk)->ipv4.tcp_death_row;
- 	err = inet6_hash_connect(tcp_death_row, sk);
- 	if (err)
- 		goto late_failure;
-@@ -403,7 +404,7 @@ static int tcp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 	bool fatal;
- 	int err;
- 
--	sk = __inet6_lookup_established(net, &tcp_hashinfo,
-+	sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 					&hdr->daddr, th->dest,
- 					&hdr->saddr, ntohs(th->source),
- 					skb->dev->ifindex, inet6_sdif(skb));
-@@ -1037,7 +1038,7 @@ static void tcp_v6_send_reset(const struct sock *sk, struct sk_buff *skb)
- 		 * no RST generated if md5 hash doesn't match.
- 		 */
- 		sk1 = inet6_lookup_listener(net,
--					   &tcp_hashinfo, NULL, 0,
-+					   net->ipv4.tcp_death_row->hashinfo, NULL, 0,
- 					   &ipv6h->saddr,
- 					   th->source, &ipv6h->daddr,
- 					   ntohs(th->source), dif, sdif);
-@@ -1636,7 +1637,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	hdr = ipv6_hdr(skb);
- 
- lookup:
--	sk = __inet6_lookup_skb(&tcp_hashinfo, skb, __tcp_hdrlen(th),
-+	sk = __inet6_lookup_skb(net->ipv4.tcp_death_row->hashinfo, skb, __tcp_hdrlen(th),
- 				th->source, th->dest, inet6_iif(skb), sdif,
- 				&refcounted);
- 	if (!sk)
-@@ -1811,7 +1812,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	{
- 		struct sock *sk2;
- 
--		sk2 = inet6_lookup_listener(dev_net(skb->dev), &tcp_hashinfo,
-+		sk2 = inet6_lookup_listener(net, net->ipv4.tcp_death_row->hashinfo,
- 					    skb, __tcp_hdrlen(th),
- 					    &ipv6_hdr(skb)->saddr, th->source,
- 					    &ipv6_hdr(skb)->daddr,
-@@ -1844,6 +1845,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 
- void tcp_v6_early_demux(struct sk_buff *skb)
+ static void __net_exit tcpv6_net_exit_batch(struct list_head *net_exit_list)
  {
-+	struct net *net = dev_net(skb->dev);
- 	const struct ipv6hdr *hdr;
- 	const struct tcphdr *th;
- 	struct sock *sk;
-@@ -1861,7 +1863,7 @@ void tcp_v6_early_demux(struct sk_buff *skb)
- 		return;
- 
- 	/* Note : We use inet6_iif() here, not tcp_v6_iif() */
--	sk = __inet6_lookup_established(dev_net(skb->dev), &tcp_hashinfo,
-+	sk = __inet6_lookup_established(net, net->ipv4.tcp_death_row->hashinfo,
- 					&hdr->saddr, th->source,
- 					&hdr->daddr, ntohs(th->dest),
- 					inet6_iif(skb), inet6_sdif(skb));
-diff --git a/net/mptcp/mptcp_diag.c b/net/mptcp/mptcp_diag.c
-index 7f9a71780437..12b0aac25a39 100644
---- a/net/mptcp/mptcp_diag.c
-+++ b/net/mptcp/mptcp_diag.c
-@@ -81,15 +81,18 @@ static void mptcp_diag_dump_listeners(struct sk_buff *skb, struct netlink_callba
- 	struct mptcp_diag_ctx *diag_ctx = (void *)cb->ctx;
- 	struct nlattr *bc = cb_data->inet_diag_nla_bc;
- 	struct net *net = sock_net(skb->sk);
-+	struct inet_hashinfo *hinfo;
- 	int i;
- 
--	for (i = diag_ctx->l_slot; i <= tcp_hashinfo.lhash2_mask; i++) {
-+	hinfo = net->ipv4.tcp_death_row->hashinfo;
+-	inet_twsk_purge(&tcp_hashinfo, AF_INET6);
++	bool purge_once = true;
++	struct net *net;
 +
-+	for (i = diag_ctx->l_slot; i <= hinfo->lhash2_mask; i++) {
- 		struct inet_listen_hashbucket *ilb;
- 		struct hlist_nulls_node *node;
- 		struct sock *sk;
- 		int num = 0;
++	list_for_each_entry(net, net_exit_list, exit_list) {
++		if (net->ipv4.tcp_death_row->hashinfo->pernet) {
++			inet_twsk_purge(net->ipv4.tcp_death_row->hashinfo, AF_INET6);
++		} else if (purge_once) {
++			inet_twsk_purge(&tcp_hashinfo, AF_INET6);
++			purge_once = false;
++		}
++	}
+ }
  
--		ilb = &tcp_hashinfo.lhash2[i];
-+		ilb = &hinfo->lhash2[i];
- 
- 		rcu_read_lock();
- 		spin_lock(&ilb->lock);
+ static struct pernet_operations tcpv6_net_ops = {
 -- 
 2.30.2
 
