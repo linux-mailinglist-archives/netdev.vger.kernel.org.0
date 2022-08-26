@@ -2,158 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E06935A2049
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 07:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C5D05A2066
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 07:43:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242448AbiHZFXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 01:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
+        id S231532AbiHZFnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 01:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229662AbiHZFXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 01:23:47 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD96CE4A0
-        for <netdev@vger.kernel.org>; Thu, 25 Aug 2022 22:23:46 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27Q1oMNI020745;
-        Thu, 25 Aug 2022 22:23:35 -0700
-Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2045.outbound.protection.outlook.com [104.47.66.45])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3j6fbn2h59-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Aug 2022 22:23:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OpQFlFOQqZ24C91QVmPQff7TD//1ahYLFedNmx5OMFbTtaBOPbqqDwi7j+EJkqrmCMGeySbY1F7/5rDg4RZWgEP0a6qI4JyRkEtGMPjegw47CZwEU9QgciH7PFASkpevoYTq93Wgh/8OlU/4HAXTCKLuproSxpKkMMT7e+5uVh0xumxyshQBbxj9XiJT4ng/4hWoOT1Nbug6bxlu9Owx3Hl4kTRZSAEt9CmzkaRZ5qImoJWAi1SluNUEN/hfAtYja3yfMQ3+MCTrWlwijPuttJl2LxkbZLo3n0Vf7VCpGgZDTan2lMD3mSKFD37GBsj4vZxHinOL6ztbIt8w6d61BQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cEQJEzoqDqFIdFxZBMjt/qK4HippuxNdM68IZaOLvSE=;
- b=Lw8ujUH483LAPIBv2vKdzVFeTig30KA4Enqq6N2ifXnccMwquGZ8SiIctXsA4o0rD9Ly3QB3wM0/VtZzWGEA5LEQ1r8jvazAyKvN0bvtN2v6GLcVPZLBlhAy5AoRkIfmxmQoJaG+mq0Grdn32U5dIAEupFCX+Smy5Sb8Ow52wNGukEa1Ibhi8k60tZkQj9e9pPTmp7R932rcJ+hi3SI7+y/8pjaYwT+yOis4YvF01ft6w+4UzfjkYtbZkJBxOOCpNjidPM5H31hdtJ0NO+qN4pYBD5pJJOAtMgJrCQ8hiEjVOXYg0T9C9m5hywo/0soGKI9OE3XvizrA1bI5GakcdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        with ESMTP id S230147AbiHZFnA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 01:43:00 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79AC2D0206;
+        Thu, 25 Aug 2022 22:42:59 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id u22so691890plq.12;
+        Thu, 25 Aug 2022 22:42:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cEQJEzoqDqFIdFxZBMjt/qK4HippuxNdM68IZaOLvSE=;
- b=YcWj8JJSkyjEfgd/jNvb8/0uZ0XXw8cmIKQ7R7+Vi1yXrE63/M1zO6Zn7ujbDbkLe8BznAv+rMgMHeJycZA6OV9Uww39KmOfT+x2oMBVzQDk0wbgvceuvsFw+IaoQIHKz1JBv/jgz7Za7Ruh42rPKSVNvw+7NQWrzStDza2t21k=
-Received: from SJ0PR18MB5216.namprd18.prod.outlook.com (2603:10b6:a03:430::6)
- by BN8PR18MB2962.namprd18.prod.outlook.com (2603:10b6:408:a3::25) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Fri, 26 Aug
- 2022 05:23:33 +0000
-Received: from SJ0PR18MB5216.namprd18.prod.outlook.com
- ([fe80::a0cb:528f:3593:e24]) by SJ0PR18MB5216.namprd18.prod.outlook.com
- ([fe80::a0cb:528f:3593:e24%5]) with mapi id 15.20.5566.015; Fri, 26 Aug 2022
- 05:23:33 +0000
-From:   Suman Ghosh <sumang@marvell.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>,
-        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [net-next PATCH V3] octeontx2-pf: Add egress PFC
- support
-Thread-Topic: [EXT] Re: [net-next PATCH V3] octeontx2-pf: Add egress PFC
- support
-Thread-Index: AQHYuPdbb4kNaib4mUmbddoyIe8apK3ApUqg
-Date:   Fri, 26 Aug 2022 05:23:33 +0000
-Message-ID: <SJ0PR18MB52162AE97BF2AAAF06ECECD6DB759@SJ0PR18MB5216.namprd18.prod.outlook.com>
-References: <20220825044242.1737126-1-sumang@marvell.com>
- <20220825195544.391577b2@kernel.org>
-In-Reply-To: <20220825195544.391577b2@kernel.org>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8cf6f4e5-827e-4a99-a837-08da87231e99
-x-ms-traffictypediagnostic: BN8PR18MB2962:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: e+fzMt3qppGJwjf3NH/kPHtidjCpGB1i1zdOyOHSwYvvkJJ0zKRL546tV5cvvV3jwpi6gWtpQ7WnYVZ6aw7HAi2bbm1WsSH9w5l17VfwOCEfI/G5DdPO3ETBngiCIj/ybe/Mjfc7lnkQuPofUCgbnnikQKDOzG9C4a8OQqGn6FFCb5JV5FgVqXxQzTV2Jl/BKw2wfqoSzqohA3kpGUUqJh1SOE816vyikkF+d78SbtFmPXBKPzBgtRELFHeqOlKmGKFHUk6lRv6UHXzQXDSe2fxba7CZZ0qJBlrjRCMEHOYl9uGEZ5j3bRmmcNJTBaIIz6S8YHbnQImjnadXUivH7UN/Q9DjRWTmuBeog4jsi4n0gEmOscKZitxo5hYu9PeyasE+PxNc+dYJB5u2EjqtilWJHSjeaaAONOD+cAW79FYGlVVXoez1FOcDjZr6CXENQ+6vbBBoSOn+TkLhdnUGAPA9FYDOycFi003TeenvVH7ZbLi7zRpBwePLp+R8oMASPZV4HJukuSmKMpD1adzbyxIcEJqEJ076/ws+vXtGQFwRxX54dFP8QcZeNUF26bF3HWw04z791mgj3pQH5rLONGpbP60PvF4QUWxbGE8wi55RSDz+7ChtobqF/1b/60McsUMPDk2cm35i+naR31IYeGlITHKvfhQ9FbFQkP3qOYY46VHk6SWKO4VC4+T7YQPxtb7Yyl4OWQ3e5r90z8YRy5rfWVb9MFHJqblX1uI/SqdIJm4oR97YDTpWTEnoOzZdaHmp9cGnQ86no5hgEYJl+w==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB5216.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(396003)(39860400002)(136003)(346002)(376002)(122000001)(6506007)(41300700001)(7696005)(478600001)(71200400001)(83380400001)(186003)(26005)(5660300002)(66556008)(66446008)(8676002)(66946007)(2906002)(4326008)(52536014)(8936002)(316002)(55016003)(6916009)(66476007)(9686003)(76116006)(54906003)(86362001)(38070700005)(33656002)(38100700002)(64756008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?un+S0y7tGxNvBv/bkSr8sFVRlDd5AQu+nlopSx/A4FdD2roXSiTMy6JVjMtn?=
- =?us-ascii?Q?XWsN1VaS415p8+LpXZqwmdaVGwAUhVoOBmbxEDNQJWvcxMFDhx+0x1aztTFj?=
- =?us-ascii?Q?g07NkyuJVX6khYocIM49dZasI4Xep5coVVXXNpCyArd2sk6SNKh0HxEaO7Sz?=
- =?us-ascii?Q?IJlRNBtbLSZhWwYvfU4RtRkqDRyuUSD++/NT3m+MZOkUok4bKTsrwu4S0W3+?=
- =?us-ascii?Q?+oSGzmqdNtZAnpB6kilFl33RKA1sGmNW/V/SrHkzDyJfNXs6VZ7Cdb1tREuM?=
- =?us-ascii?Q?dniwcPCpCFam9DYNQWTv0rq6HB9pnMY6o/C3O4shkRHztT2pR7fYbvihyb7Q?=
- =?us-ascii?Q?Z6ZfBa4Ym7fiHW4AY+dboehh+6BlyALMoVSKbPlVbQ5STZxkeJ6e/IriSnAK?=
- =?us-ascii?Q?nGQVRtrytZNFhtFV04wo/VuAPcudLrXt5vCRrBSzRm+liewTrTD4ooVrvm35?=
- =?us-ascii?Q?QtHu8/k1/wKjHSE2vKwEFwJ3com4S6/czfQuwYtWPMBstb4UwNp6zUXa33Vj?=
- =?us-ascii?Q?zL9clPSbAxjebh2xZx0M8JYXEkjBIDN7sFL22Yt69a3ZrNr561PmGzpLWH9P?=
- =?us-ascii?Q?k+oO7saYtBH/SH6Vh71d6Qg2rcbCDu7XLtfUN8SNvid7Byit1nry+TAEIv4a?=
- =?us-ascii?Q?nfU6sCjx4rapjtryJB/PvvpMMC8e+pfNjv70nO33DnNNE8S7tmrCtw3Qka4Q?=
- =?us-ascii?Q?Nqz2+sOZlbGykKNPsS/u85hQzwkMddvAMnJI2nEHSlx+MIL+E66MVYlWWSYr?=
- =?us-ascii?Q?dNi++/dp0em0mZR+MfdQl3Y8a9c0QrDHbi4u3BowKw36uUrtvlM2pW6nSEBD?=
- =?us-ascii?Q?s4kA5gb9fDOtv3NBkLDanRoJ8Pasrq19gGxo+mNRY3q5x1GRVQVcOERCEDYa?=
- =?us-ascii?Q?JB8970K/jp9FxCape02Vah1NxUGxqE6+s2ejfuCufRZ88D9ZD6a4mbUQXyn9?=
- =?us-ascii?Q?ypIIj1rAuZKCCtQkzpIrvpHNcw4dDMkJm2ukNBxjeS35+ElW2EfJsSI4iJz9?=
- =?us-ascii?Q?pySHm9t3felfXlGPXp4qU6ize7Lu1s1DmzymOjTEFFh2ApHC2zO7yFiDjTst?=
- =?us-ascii?Q?OlIEcxJkrZnC7A4ReUeUqQyDO02d7Kou2ryi22NvC45r1EfuZKypYkwSxA4b?=
- =?us-ascii?Q?RRfUHbg5+OGGaAntfagT/AZVDAYOO4A5jFFZeJO5uEvusVLNiN3EKaLb+uF4?=
- =?us-ascii?Q?jHX+Rw0BivBuLU07kWHPjL2CDWkcghV1UyuuG5ze1ac84YtbTk2OsYBaOvyn?=
- =?us-ascii?Q?ckFCzsekBNo+8l9AxyosuXmhgwsXSrtFu1DC1iOsjVDA3oXqtl/ouliIp4lB?=
- =?us-ascii?Q?mQevHs6O3p6vgYr5+aX2V1GEWgAXnWoul8c2rFYY3vz+nb6LenFtzBIx3cUW?=
- =?us-ascii?Q?SVEmXsR7/OGnNwFcPPwHuSePiCBaDLBqeSYYmAVR0bbTu7ErFP9zI4aN8I+q?=
- =?us-ascii?Q?OhLAnb7S73SlLy/t2vbRbUfRhYVdlqATzpOMnC/L7a2PS0WT8mPqayg6u0HX?=
- =?us-ascii?Q?Tibk7S08N6A5SHNCUy55e3e4LQU7GBxI7oaMkqIumTIwfDpngtu42Afl3oGZ?=
- =?us-ascii?Q?XXY+5DytRzvkyjF0QJYcTgc9OV7S08qfJr9xBtJM?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=1YeSohKprvznhG9NRDHk53lOiY+tzruNA0zvGt6cDqA=;
+        b=QIYjs8ZjdE355CkSF1xQ6exccmZKYEc1ldYwXFNX6soDgzVvKLLilEKEW8BstaCngQ
+         u2lR5DnJVzUwuQuHiJcApUvD4PGhmBLJR6Cm7Upt4hirsCx2tM0rgj6oDvZwAb7Wwcqm
+         k0HGwVHgt+ac9cT+oqf/RhfqYcAOS3yCh8oLPtBMy7wF/0JIrVHGib2HbUu7+bXy9i83
+         txnd5pvztmmAnQyrTUc7nHr7BWNlEuZPFOHy02BU8FMod/i2iA7OHG6R6YAVim4IlB9Z
+         NTfE5Rv7iSb+N0OwR05f25fHMYpZWP1FED5BVglgO0z44oolAcCrjeLrGt9afUkb6a8e
+         tlYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=1YeSohKprvznhG9NRDHk53lOiY+tzruNA0zvGt6cDqA=;
+        b=1xrOBXOKlROt0J6T40JODnTm3SO5Y1hGb2LwKGbe1Lwb6tbCER0Jx4DF2b2VX+c8QR
+         PiPuZ0G6Azaf7p/UVVxAMBvoWeeRUBB1aH11hCTBA9Xdis8bCezLBVZEfb7O34N7yJmv
+         ERG6ObpGRCI/HDgsBCt5kSM18eTjt6tUkSt5ImWkqBszG76zUdF/PwteIxNqnmVsKNSd
+         Ot170+LZJP4HjxohzqdSVPdKjRR6OqyDtbnuIVTmoJX/ygPw3E9PsAWPWWb1K2GdfJ3B
+         0/6PutqSDcCOg3tgBgPzA9EIdF8iWDsHhyia2N1N5Wjps2SqApc/KvHMKVknRifjRy1g
+         B9Ww==
+X-Gm-Message-State: ACgBeo3fIyQfsDIxTwkNCmvQrPk+fSm4ofA8fjV3QJOHgcVOU1n05btt
+        ZQ0SeMmaxVmi80NmP2qiQDzCDF50xsQAFIOKPI0=
+X-Google-Smtp-Source: AA6agR42kqYx1732sUGKVGYoHwU6CxdVQe0DWE+KnwPrgjRLwjUZgsI4L38JkYQD/RyuNhYYMhxwZyJBxYpd0NwXP2I=
+X-Received: by 2002:a17:902:d584:b0:173:19a2:b831 with SMTP id
+ k4-20020a170902d58400b0017319a2b831mr2301769plh.126.1661492578880; Thu, 25
+ Aug 2022 22:42:58 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: marvell.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB5216.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8cf6f4e5-827e-4a99-a837-08da87231e99
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2022 05:23:33.3181
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: s0GPScYip+VTMNjO4QRuX9n0gPRIN9bHMg0xR93+GETSFRuctKI1a929js+sgEMYamSr4hRJ/X6Bohhd0rLoZg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR18MB2962
-X-Proofpoint-GUID: LnB8uTybDFVwhil4aC01jmCg38iXl3-7
-X-Proofpoint-ORIG-GUID: LnB8uTybDFVwhil4aC01jmCg38iXl3-7
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-26_02,2022-08-25_01,2022-06-22_01
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220823060200.1452663-1-floridsleeves@gmail.com> <0056a39d-d7dc-34ea-3a71-6d5d3835c2d5@intel.com>
+In-Reply-To: <0056a39d-d7dc-34ea-3a71-6d5d3835c2d5@intel.com>
+From:   Li Zhong <floridsleeves@gmail.com>
+Date:   Thu, 25 Aug 2022 22:42:48 -0700
+Message-ID: <CAMEuxRraM31C1k9u37ZyxrYVUtKuWdiYUfhw+g=p7_oq-MrMEA@mail.gmail.com>
+Subject: Re: [PATCH v1] drivers/net/ethernet: check return value of e1e_rphy()
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 23, 2022 at 8:19 AM Jesse Brandeburg
+<jesse.brandeburg@intel.com> wrote:
+>
+> On 8/22/2022 11:02 PM, lily wrote:
+> > e1e_rphy() could return error value, which need to be checked.
+>
+> Thanks for having a look at the e1000e driver. Was there some bug you
+> found or is this just a fix based on a tool or observation?
+>
+> If a tool was used, what tool?
+>
+These bugs are detected by a static analysis tool to check whether a
+return error is handled.
 
->External Email
+> For networking patches please follow the guidance at
+> https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
 >
->----------------------------------------------------------------------
->On Thu, 25 Aug 2022 10:12:42 +0530 Suman Ghosh wrote:
->> As of now all transmit queues transmit packets out of same scheduler
->> queue hierarchy. Due to this PFC frames sent by peer are not handled
->> properly, either all transmit queues are backpressured or none.
->> To fix this when user enables PFC for a given priority map relavant
->> transmit queue to a different scheduler queue hierarcy, so that
->> backpressure is applied only to the traffic egressing out of that TXQ.
 >
->Does not build at all now:
+> > Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+> > ---
+> >   drivers/net/ethernet/intel/e1000e/phy.c | 14 +++++++++++---
+> >   1 file changed, 11 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/e1000e/phy.c b/drivers/net/ethernet/intel/e1000e/phy.c
+> > index fd07c3679bb1..15ac302fdee0 100644
+> > --- a/drivers/net/ethernet/intel/e1000e/phy.c
+> > +++ b/drivers/net/ethernet/intel/e1000e/phy.c
+> > @@ -2697,9 +2697,12 @@ static s32 e1000_access_phy_wakeup_reg_bm(struct e1000_hw *hw, u32 offset,
+> >   void e1000_power_up_phy_copper(struct e1000_hw *hw)
+> >   {
+> >       u16 mii_reg = 0;
+> > +     int ret;
+> >
+> >       /* The PHY will retain its settings across a power down/up cycle */
+> > -     e1e_rphy(hw, MII_BMCR, &mii_reg);
+> > +     ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
+> > +     if (ret)
+> > +             return ret;
 >
->ERROR: modpost: drivers/net/ethernet/marvell/octeontx2/nic/rvu_nicvf:
->'otx2_pfc_txschq_update' exported twice. Previous export was in
->drivers/net/ethernet/marvell/octeontx2/nic/rvu_nicpf.ko
->ERROR: modpost: "otx2_txschq_config"
->[drivers/net/ethernet/marvell/octeontx2/nic/rvu_nicvf.ko] undefined!
->ERROR: modpost: "otx2_smq_flush"
->[drivers/net/ethernet/marvell/octeontx2/nic/rvu_nicvf.ko] undefined!
-[Suman] Sorry my bad. Updated the patch with the fix.
+> Can't return value to a void declared function, did you even compile
+> test this?
+
+Sorry for the compilation error. We will fix it in patch v2.
+
+>
+> Maybe it should be like:
+>      if (ret) {
+>         // this is psuedo code
+>          dev_warn(..., "PHY read failed during power up\n");
+>          return;
+>      }
+>
+> >       mii_reg &= ~BMCR_PDOWN;
+> >       e1e_wphy(hw, MII_BMCR, mii_reg);
+> >   }
+> > @@ -2715,9 +2718,12 @@ void e1000_power_up_phy_copper(struct e1000_hw *hw)
+> >   void e1000_power_down_phy_copper(struct e1000_hw *hw)
+> >   {
+> >       u16 mii_reg = 0;
+> > +     int ret;
+> >
+> >       /* The PHY will retain its settings across a power down/up cycle */
+> > -     e1e_rphy(hw, MII_BMCR, &mii_reg);
+> > +     ret = e1e_rphy(hw, MII_BMCR, &mii_reg);
+> > +     if (ret)
+> > +             return ret;
+>
+> same here.
+>
+> >       mii_reg |= BMCR_PDOWN;
+> >       e1e_wphy(hw, MII_BMCR, mii_reg);
+> >       usleep_range(1000, 2000);
+> > @@ -3037,7 +3043,9 @@ s32 e1000_link_stall_workaround_hv(struct e1000_hw *hw)
+> >               return 0;
+> >
+> >       /* Do not apply workaround if in PHY loopback bit 14 set */
+> > -     e1e_rphy(hw, MII_BMCR, &data);
+> > +     ret_val = e1e_rphy(hw, MII_BMCR, &data);
+> > +     if (ret_val)
+> > +             return ret_val;
+> >       if (data & BMCR_LOOPBACK)
+> >               return 0;
+> >
+>
+> Did any of the callers of the above function care about the return code
+> being an error value? This has been like this for a long time...
+
+We manually check this function e1e_rphy(). We think it's possible that
+this function fails and it would be better if we can check the error and
+report it for debugging and diagnosing. Though the possibility of error
+may be low and that's why it has been here for a long time.
