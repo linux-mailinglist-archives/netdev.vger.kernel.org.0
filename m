@@ -2,42 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FF15A1D90
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1538F5A1D92
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 02:08:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244394AbiHZAHz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 20:07:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35248 "EHLO
+        id S243919AbiHZAIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 20:08:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242532AbiHZAHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:07:54 -0400
-Received: from smtp-fw-80007.amazon.com (smtp-fw-80007.amazon.com [99.78.197.218])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E625C876E;
-        Thu, 25 Aug 2022 17:07:53 -0700 (PDT)
+        with ESMTP id S242873AbiHZAIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 20:08:16 -0400
+Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC12C7FAD;
+        Thu, 25 Aug 2022 17:08:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661472473; x=1693008473;
+  t=1661472495; x=1693008495;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=QG8/xaeHJQ4qgHGmjgsXS9m7tqs3JRVyjg7b7hW6y/c=;
-  b=JBnWWy1rMa6GLfezidJXSRtc3UTRW3ewhKUahSrwcJsRm0zXrkRMD5B+
-   ezOgPKunjFa71pPBc+bqZhOzNP2geFo64eDwnWtczE1CBrhNi5Ewi/s7L
-   cX8CGm/TU+NvXdk+5fsnkCqj3VrO6WYCc/jliCdJEvrALoWn6AgAEbUOM
-   M=;
-X-IronPort-AV: E=Sophos;i="5.93,264,1654560000"; 
-   d="scan'208";a="123539416"
-Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-4213ea4c.us-west-2.amazon.com) ([10.25.36.214])
-  by smtp-border-fw-80007.pdx80.corp.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:07:53 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
-        by email-inbound-relay-pdx-2c-4213ea4c.us-west-2.amazon.com (Postfix) with ESMTPS id 7B32D8231F;
-        Fri, 26 Aug 2022 00:07:52 +0000 (UTC)
+  bh=jvA6rXQ4x1824Pdsdu1jyLqM8NOA9+teC+8Pnvq+334=;
+  b=PURFlA/XnOE4mg2Rv00a7giqWGArxAEAeBrBdnsO1U2v1y14rujbGEW1
+   Xx0N2F7biOjqwKaN/sywbL9qkd/Zxunlc14iTkL+sAcyEQlrt9bSwR2Al
+   Di2kYV/AjdnncvSAW3IKsplOfWlFP0izmdn5jp3tvhVJaRjJkCpBo3JtN
+   I=;
+Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com) ([10.43.8.2])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 00:08:12 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-pdx-2a-e6c05252.us-west-2.amazon.com (Postfix) with ESMTPS id 1CAF444EF4;
+        Fri, 26 Aug 2022 00:08:07 +0000 (UTC)
 Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
  EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Fri, 26 Aug 2022 00:07:51 +0000
+ id 15.0.1497.38; Fri, 26 Aug 2022 00:08:06 +0000
 Received: from 88665a182662.ant.amazon.com (10.43.162.140) by
  EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Fri, 26 Aug 2022 00:07:48 +0000
+ Fri, 26 Aug 2022 00:08:03 +0000
 From:   Kuniyuki Iwashima <kuniyu@amazon.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -51,9 +49,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
         Kuniyuki Iwashima <kuni1840@gmail.com>,
         <netdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>
-Subject: [PATCH v1 net-next 09/13] udp: Clean up some functions.
-Date:   Thu, 25 Aug 2022 17:04:41 -0700
-Message-ID: <20220826000445.46552-10-kuniyu@amazon.com>
+Subject: [PATCH v1 net-next 10/13] udp: Set NULL to sk->sk_prot->h.udp_table.
+Date:   Thu, 25 Aug 2022 17:04:42 -0700
+Message-ID: <20220826000445.46552-11-kuniyu@amazon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220826000445.46552-1-kuniyu@amazon.com>
 References: <20220826000445.46552-1-kuniyu@amazon.com>
@@ -65,143 +63,118 @@ X-ClientProxiedBy: EX13D10UWB001.ant.amazon.com (10.43.161.111) To
  EX19D004ANA001.ant.amazon.com (10.37.240.138)
 X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds no functional change and cleans up some functions
-that the following patches touch around so that we make them tidy
-and easy to review/revert.  The change is
+We will soon introduce an optional per-netns hash table
+for UDP.
 
-  - Keep reverse christmas tree order
+This means we cannot use the global sk->sk_prot->h.udp_table
+to fetch a UDP hash table.
+
+Instead, set NULL to sk->sk_prot->h.udp_table for UDP and get
+a proper table from net->ipv4.udp_table.
+
+Note that we still need sk->sk_prot->h.udp_table for UDP LITE.
 
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 ---
- net/ipv4/udp.c | 35 +++++++++++++++++++++--------------
- net/ipv6/udp.c | 12 ++++++++----
- 2 files changed, 29 insertions(+), 18 deletions(-)
+ include/net/netns/ipv4.h |  1 +
+ net/ipv4/udp.c           | 15 +++++++++++----
+ net/ipv6/udp.c           |  2 +-
+ 3 files changed, 13 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 6d9c01879027..c367da5d61e2 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -42,6 +42,7 @@ struct tcp_fastopen_context;
+ 
+ struct netns_ipv4 {
+ 	struct inet_timewait_death_row *tcp_death_row;
++	struct udp_table *udp_table;
+ 
+ #ifdef CONFIG_SYSCTL
+ 	struct ctl_table_header	*forw_hdr;
 diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 34eda973bbf1..c073304e60bb 100644
+index c073304e60bb..1bfae1fbe682 100644
 --- a/net/ipv4/udp.c
 +++ b/net/ipv4/udp.c
-@@ -232,10 +232,10 @@ static int udp_reuseport_add_sock(struct sock *sk, struct udp_hslot *hslot)
+@@ -131,6 +131,11 @@ EXPORT_PER_CPU_SYMBOL_GPL(udp_memory_per_cpu_fw_alloc);
+ #define MAX_UDP_PORTS 65536
+ #define PORTS_PER_CHAIN (MAX_UDP_PORTS / UDP_HTABLE_SIZE_MIN)
+ 
++static struct udp_table *udp_get_table_prot(struct sock *sk)
++{
++	return sk->sk_prot->h.udp_table ? : sock_net(sk)->ipv4.udp_table;
++}
++
+ static int udp_lib_lport_inuse(struct net *net, __u16 num,
+ 			       const struct udp_hslot *hslot,
+ 			       unsigned long *bitmap,
+@@ -232,7 +237,7 @@ static int udp_reuseport_add_sock(struct sock *sk, struct udp_hslot *hslot)
  int udp_lib_get_port(struct sock *sk, unsigned short snum,
  		     unsigned int hash2_nulladdr)
  {
--	struct udp_hslot *hslot, *hslot2;
- 	struct udp_table *udptable = sk->sk_prot->h.udp_table;
--	int    error = 1;
-+	struct udp_hslot *hslot, *hslot2;
+-	struct udp_table *udptable = sk->sk_prot->h.udp_table;
++	struct udp_table *udptable = udp_get_table_prot(sk);
+ 	struct udp_hslot *hslot, *hslot2;
  	struct net *net = sock_net(sk);
-+	int error = 1;
- 
- 	if (!snum) {
- 		int low, high, remaining;
-@@ -2524,10 +2524,13 @@ static struct sock *__udp4_lib_mcast_demux_lookup(struct net *net,
- 						  __be16 rmt_port, __be32 rmt_addr,
- 						  int dif, int sdif)
+ 	int error = 1;
+@@ -2004,7 +2009,7 @@ EXPORT_SYMBOL(udp_disconnect);
+ void udp_lib_unhash(struct sock *sk)
  {
--	struct sock *sk, *result;
- 	unsigned short hnum = ntohs(loc_port);
--	unsigned int slot = udp_hashfn(net, hnum, udp_table.mask);
--	struct udp_hslot *hslot = &udp_table.hash[slot];
-+	struct sock *sk, *result;
-+	struct udp_hslot *hslot;
-+	unsigned int slot;
+ 	if (sk_hashed(sk)) {
+-		struct udp_table *udptable = sk->sk_prot->h.udp_table;
++		struct udp_table *udptable = udp_get_table_prot(sk);
+ 		struct udp_hslot *hslot, *hslot2;
+ 
+ 		hslot  = udp_hashslot(udptable, sock_net(sk),
+@@ -2035,7 +2040,7 @@ EXPORT_SYMBOL(udp_lib_unhash);
+ void udp_lib_rehash(struct sock *sk, u16 newhash)
+ {
+ 	if (sk_hashed(sk)) {
+-		struct udp_table *udptable = sk->sk_prot->h.udp_table;
++		struct udp_table *udptable = udp_get_table_prot(sk);
+ 		struct udp_hslot *hslot, *hslot2, *nhslot2;
+ 
+ 		hslot2 = udp_hashslot2(udptable, udp_sk(sk)->udp_portaddr_hash);
+@@ -2960,7 +2965,7 @@ struct proto udp_prot = {
+ 	.sysctl_wmem_offset	= offsetof(struct net, ipv4.sysctl_udp_wmem_min),
+ 	.sysctl_rmem_offset	= offsetof(struct net, ipv4.sysctl_udp_rmem_min),
+ 	.obj_size		= sizeof(struct udp_sock),
+-	.h.udp_table		= &udp_table,
++	.h.udp_table		= NULL,
+ 	.diag_destroy		= udp_abort,
+ };
+ EXPORT_SYMBOL(udp_prot);
+@@ -3273,6 +3278,8 @@ EXPORT_SYMBOL(udp_flow_hashrnd);
+ 
+ static int __net_init udp_sysctl_init(struct net *net)
+ {
++	net->ipv4.udp_table = &udp_table;
 +
-+	slot = udp_hashfn(net, hnum, udp_table.mask);
-+	hslot = &udp_table.hash[slot];
+ 	net->ipv4.sysctl_udp_rmem_min = PAGE_SIZE;
+ 	net->ipv4.sysctl_udp_wmem_min = PAGE_SIZE;
  
- 	/* Do not bother scanning a too big list */
- 	if (hslot->count > 10)
-@@ -2555,14 +2558,18 @@ static struct sock *__udp4_lib_demux_lookup(struct net *net,
- 					    __be16 rmt_port, __be32 rmt_addr,
- 					    int dif, int sdif)
- {
--	unsigned short hnum = ntohs(loc_port);
--	unsigned int hash2 = ipv4_portaddr_hash(net, loc_addr, hnum);
--	unsigned int slot2 = hash2 & udp_table.mask;
--	struct udp_hslot *hslot2 = &udp_table.hash2[slot2];
- 	INET_ADDR_COOKIE(acookie, rmt_addr, loc_addr);
--	const __portpair ports = INET_COMBINED_PORTS(rmt_port, hnum);
-+	unsigned short hnum = ntohs(loc_port);
-+	unsigned int hash2, slot2;
-+	struct udp_hslot *hslot2;
-+	__portpair ports;
- 	struct sock *sk;
- 
-+	hash2 = ipv4_portaddr_hash(net, loc_addr, hnum);
-+	slot2 = hash2 & udp_table.mask;
-+	hslot2 = &udp_table.hash2[slot2];
-+	ports = INET_COMBINED_PORTS(rmt_port, hnum);
-+
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
- 		if (inet_match(net, sk, acookie, ports, dif, sdif))
- 			return sk;
-@@ -2963,10 +2970,10 @@ EXPORT_SYMBOL(udp_prot);
- 
- static struct sock *udp_get_first(struct seq_file *seq, int start)
- {
--	struct sock *sk;
--	struct udp_seq_afinfo *afinfo;
- 	struct udp_iter_state *state = seq->private;
- 	struct net *net = seq_file_net(seq);
-+	struct udp_seq_afinfo *afinfo;
-+	struct sock *sk;
- 
- 	if (state->bpf_seq_afinfo)
- 		afinfo = state->bpf_seq_afinfo;
-@@ -2997,9 +3004,9 @@ static struct sock *udp_get_first(struct seq_file *seq, int start)
- 
- static struct sock *udp_get_next(struct seq_file *seq, struct sock *sk)
- {
--	struct udp_seq_afinfo *afinfo;
- 	struct udp_iter_state *state = seq->private;
- 	struct net *net = seq_file_net(seq);
-+	struct udp_seq_afinfo *afinfo;
- 
- 	if (state->bpf_seq_afinfo)
- 		afinfo = state->bpf_seq_afinfo;
-@@ -3055,8 +3062,8 @@ EXPORT_SYMBOL(udp_seq_next);
- 
- void udp_seq_stop(struct seq_file *seq, void *v)
- {
--	struct udp_seq_afinfo *afinfo;
- 	struct udp_iter_state *state = seq->private;
-+	struct udp_seq_afinfo *afinfo;
- 
- 	if (state->bpf_seq_afinfo)
- 		afinfo = state->bpf_seq_afinfo;
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 16c176e7c69a..f7e0248a00bc 100644
+index f7e0248a00bc..5dc069d5ad1e 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -1036,12 +1036,16 @@ static struct sock *__udp6_lib_demux_lookup(struct net *net,
- 			int dif, int sdif)
- {
- 	unsigned short hnum = ntohs(loc_port);
--	unsigned int hash2 = ipv6_portaddr_hash(net, loc_addr, hnum);
--	unsigned int slot2 = hash2 & udp_table.mask;
--	struct udp_hslot *hslot2 = &udp_table.hash2[slot2];
--	const __portpair ports = INET_COMBINED_PORTS(rmt_port, hnum);
-+	unsigned int hash2, slot2;
-+	struct udp_hslot *hslot2;
-+	__portpair ports;
- 	struct sock *sk;
+@@ -1747,7 +1747,7 @@ struct proto udpv6_prot = {
+ 	.sysctl_wmem_offset     = offsetof(struct net, ipv4.sysctl_udp_wmem_min),
+ 	.sysctl_rmem_offset     = offsetof(struct net, ipv4.sysctl_udp_rmem_min),
+ 	.obj_size		= sizeof(struct udp6_sock),
+-	.h.udp_table		= &udp_table,
++	.h.udp_table		= NULL,
+ 	.diag_destroy		= udp_abort,
+ };
  
-+	hash2 = ipv6_portaddr_hash(net, loc_addr, hnum);
-+	slot2 = hash2 & udp_table.mask;
-+	hslot2 = &udp_table.hash2[slot2];
-+	ports = INET_COMBINED_PORTS(rmt_port, hnum);
-+
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
- 		if (sk->sk_state == TCP_ESTABLISHED &&
- 		    inet6_match(net, sk, rmt_addr, loc_addr, ports, dif, sdif))
 -- 
 2.30.2
 
