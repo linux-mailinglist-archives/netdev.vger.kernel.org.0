@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C60035A2683
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:06:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B171D5A2686
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 13:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbiHZLF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 07:05:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47848 "EHLO
+        id S242003AbiHZLF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 07:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344200AbiHZLEh (ORCPT
+        with ESMTP id S1344205AbiHZLEh (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 07:04:37 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48BF830F70
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:04:19 -0700 (PDT)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 442452F66C
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 04:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661511859; x=1693047859;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=mVfFXbHXdc5J9BNZWgXlaSHs05hfNO32943brAaakqA=;
-  b=IU87v8YVMv/+E2B7DvjYP/9JrMEZVdivYoXd27l5obyQ6Mb0wFVrV3hK
-   iryIVafHYmxzWYxH5BMYTfjxPT5qfnLc8ckYO+JVNZG/tcVQsfLBgvxdz
-   yAyF+MYGt+jyryzIm4JFF0eoqPHJiFcmN3VFbljmC9E5r2Q4unqaWnL5N
-   PirNrNlzrzeJCe4nos8adRxs09NZOgV6fOM6yWr8532YIJKRgot0nGAW6
-   Q07q/QMRTzsF4VVjfnCMpXRkPdba21AiycYqfIJ3H3CtkA8edvz4hr7MN
-   iI3ZBZs/MEQfOlHx2LBPnT5bpx8jvXRMtxf0WWD5zXhGZd/HE4yaZai+7
+  t=1661511861; x=1693047861;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=WQPUokZJ/zyxD04DZp4EtBIHeKLqWB2LpoPcO5ArG28=;
+  b=TNHE0VneUkeDWxie8pNTsK52blwPHsb2YsBlKflFEiOK6l7RNudXUDAn
+   Ee0aB5NCstnGfYhFrUQLLT4p0dMCTSXnQ7qFcFR01nNHcvpZt1JPy/cIZ
+   zAIw3nI80iKa9uk7F+6uRbpAhVQ4LZRwJ1n4nlLi6ahN+RIzW7HzoNoRW
+   vItFnWxdxFRZwvjTdxeRjh+H03/B9Cg8TwGN6pCoWt0YDmuNT2c/HwCuN
+   +n15KEa2sm2Zq2sb1oCqytfZPeZ6RR7lCkRcOYzl8J7tQ+Q1K8gMQ6SWi
+   a/Rnyf8cB2rZLgCtDx3YdSZ2mGE/twKsS00REMRssfOEcVFtoAr/HD1kk
    w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="380775322"
+X-IronPort-AV: E=McAfee;i="6500,9779,10450"; a="295755173"
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="380775322"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 04:04:19 -0700
+   d="scan'208";a="295755173"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Aug 2022 04:04:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,265,1654585200"; 
-   d="scan'208";a="678830889"
+   d="scan'208";a="752840781"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga004.fm.intel.com with ESMTP; 26 Aug 2022 04:04:14 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 26 Aug 2022 04:04:16 -0700
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27QB4CLq024087;
-        Fri, 26 Aug 2022 12:04:12 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27QB4CLr024087;
+        Fri, 26 Aug 2022 12:04:14 +0100
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
@@ -53,10 +53,12 @@ Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
         simon.horman@corigine.com, pablo@netfilter.org,
         maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
         jchapman@katalix.com, gnault@redhat.com
-Subject: [RFC PATCH net-next 0/5] ice: L2TPv3 offload support
-Date:   Fri, 26 Aug 2022 13:00:54 +0200
-Message-Id: <20220826110059.119927-1-wojciech.drewek@intel.com>
+Subject: [RFC PATCH net-next 1/5] uapi: move IPPROTO_L2TP to in.h
+Date:   Fri, 26 Aug 2022 13:00:55 +0200
+Message-Id: <20220826110059.119927-2-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220826110059.119927-1-wojciech.drewek@intel.com>
+References: <20220826110059.119927-1-wojciech.drewek@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -69,46 +71,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for dissecting L2TPv3 session id in flow dissector. Add support
-for this field in tc-flower and support offloading L2TPv3. Finally, add
-support for hardware offload of L2TPv3 packets based on session id in
-switchdev mode in ice driver.
+IPPROTO_L2TP is currently defined in l2tp.h, but most of
+ip protocols is defined in in.h file. Move it there in order
+to keep code clean.
 
-Example filter:
-  # tc filter add dev $PF1 ingress prio 1 protocol ip \
-      flower \
-        ip_proto l2tp \
-        l2tpv3_sid 1234 \
-        skip_sw \
-      action mirred egress redirect dev $VF1_PR
+Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
+---
+ include/uapi/linux/in.h   | 2 ++
+ include/uapi/linux/l2tp.h | 2 --
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Changes in iproute2 are required to use the new fields.
-
-ICE COMMS DDP package is required to create a filter in ice.
-
-Marcin Szycik (1):
-  ice: Add L2TPv3 hardware offload support
-
-Wojciech Drewek (4):
-  uapi: move IPPROTO_L2TP to in.h
-  flow_dissector: Add L2TPv3 dissectors
-  net/sched: flower: Add L2TPv3 filter
-  flow_offload: Introduce flow_match_l2tpv3
-
- .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
- drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
- include/net/flow_dissector.h                  |  9 +++
- include/net/flow_offload.h                    |  6 ++
- include/uapi/linux/in.h                       |  2 +
- include/uapi/linux/l2tp.h                     |  2 -
- include/uapi/linux/pkt_cls.h                  |  2 +
- net/core/flow_dissector.c                     | 28 ++++++++
- net/core/flow_offload.c                       |  7 ++
- net/sched/cls_flower.c                        | 16 +++++
- 12 files changed, 179 insertions(+), 4 deletions(-)
-
+diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
+index 14168225cecd..5a9454c886b3 100644
+--- a/include/uapi/linux/in.h
++++ b/include/uapi/linux/in.h
+@@ -68,6 +68,8 @@ enum {
+ #define IPPROTO_PIM		IPPROTO_PIM
+   IPPROTO_COMP = 108,		/* Compression Header Protocol		*/
+ #define IPPROTO_COMP		IPPROTO_COMP
++  IPPROTO_L2TP = 115,		/* Layer 2 Tunnelling Protocol		*/
++#define IPPROTO_L2TP		IPPROTO_L2TP
+   IPPROTO_SCTP = 132,		/* Stream Control Transport Protocol	*/
+ #define IPPROTO_SCTP		IPPROTO_SCTP
+   IPPROTO_UDPLITE = 136,	/* UDP-Lite (RFC 3828)			*/
+diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
+index bab8c9708611..7d81c3e1ec29 100644
+--- a/include/uapi/linux/l2tp.h
++++ b/include/uapi/linux/l2tp.h
+@@ -13,8 +13,6 @@
+ #include <linux/in.h>
+ #include <linux/in6.h>
+ 
+-#define IPPROTO_L2TP		115
+-
+ /**
+  * struct sockaddr_l2tpip - the sockaddr structure for L2TP-over-IP sockets
+  * @l2tp_family:  address family number AF_L2TPIP.
 -- 
 2.31.1
 
