@@ -2,81 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B15D5A1E4B
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D86245A1E54
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:47:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244516AbiHZBmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 21:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47732 "EHLO
+        id S244572AbiHZBrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 21:47:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243899AbiHZBmE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:42:04 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12696B5E47;
-        Thu, 25 Aug 2022 18:42:02 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id lx1so459107ejb.12;
-        Thu, 25 Aug 2022 18:42:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=quqbhae9tE+u+AuLu2p96mCxM/yvBDszB/bTDBaigeA=;
-        b=DVfp8xZ0ZsJuW29ra11t3CveVoIOlgCAeTBHFvwcXUXJuPz9MfnvLIr5WvgXV2m6IN
-         qRbBT37zyUFfc7CSq94cpgFL1ZTgzLydSwXzWEXn6Nc0bTbPtpSn1IKlulFxTsorgDsa
-         IWw1SjjYOavpqX1e6EJaiBEay3rjqLipNd5XRPdWCkl1ll1txb/DMSttvVFuKglVt1s3
-         7lg9DR394b2A2VMf+85lRITjVZ650A9QsQ+7wVbVj85eFWP6AjgIFGojK3Fove9I3ZTs
-         b9e+gO965DgLnAFBrXX97X/T6OoOqdi05wZB0FPmDFPv7lB5Xjq70qVDlY9gveHrGCtd
-         2m3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=quqbhae9tE+u+AuLu2p96mCxM/yvBDszB/bTDBaigeA=;
-        b=pkq5yRJuKfS80cXlB5nyne7LRCg/uPwB90+ChOKp9V74smRqCNmToLPuWwWvc+UFVg
-         GFiWDwcr69Z2vWgnIdroxnTXvOHJl1hevQtBmx2MnIYrPT8HyuOyqFqZ3SqQmXiQb/6W
-         zZiu5NnTQao+gCwSP+7Ag97AT226wE7jW0fo29ydWfUPHuRv6C/rdsPsrOjcR7Wev+5g
-         EKTxs1cWPQ0hb+zHVcbJ/75h3pWYk1i1frZnzkA1FVfDjWiFSbbTfLOvcoBhP7rQPyCs
-         wOHGEqqLA+jHtwq5H6kifvOneBzlqcND6WfkZP1H+pmTgbw0uNxL+22vEDh0yFK9B/N1
-         Q5Rw==
-X-Gm-Message-State: ACgBeo1aAsPMJWmZJu7l7y+LMhmoyiCoLmEjJdLruvJOOLsFxFXx77QN
-        t/3wBDzEnoOJeCPwZTUZwhomphwGyBp2DJKAJNM=
-X-Google-Smtp-Source: AA6agR5PS8ZOJ+z0uD7rWY0c7lK03WtKQPHQ4chiwWkm17j7fYBMhw8neFuDjgLE8SeBkxc5+p52ZeKjmmtitPIa/0E=
-X-Received: by 2002:a17:907:e8d:b0:730:a4e8:27ed with SMTP id
- ho13-20020a1709070e8d00b00730a4e827edmr3886774ejc.58.1661478120333; Thu, 25
- Aug 2022 18:42:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-2-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220824134055.1328882-2-benjamin.tissoires@redhat.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 25 Aug 2022 18:41:49 -0700
-Message-ID: <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
- read user provided context
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
+        with ESMTP id S233064AbiHZBrF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:47:05 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8454F00;
+        Thu, 25 Aug 2022 18:47:02 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MDN433Jwjz4wgv;
+        Fri, 26 Aug 2022 11:46:59 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1661478420;
+        bh=Errj4XKH89q1P52Y82X83Hu2p5IV9qbTXCibUzCgWbg=;
+        h=Date:From:To:Cc:Subject:From;
+        b=I6Y+RyWIeumtWhPItavQxWxcpFwen9E6Nf/lYkiKx3X/+zF8cYln1nCmYyE5ohjWw
+         9jYeNZduQP0Xz/6H4SzjGw9ITErqJ4NQamjIAJD47tgwhZk6j2+f9C1GrHG+EqgEnm
+         zeDCPIPgXCAGkGoEGb3EXZXL5qY7J6dhnVQLgMye4ndJRrMD4ggJ51KZaaWcYnSSaQ
+         BC7UZXY44zHydzsN1dqOO1rNHdsDG9xmCeDIae2lD3UJG6hg0UthckDMGEzYxPVpBf
+         YZdWkKkMWxeqc0933ClrodYFF0XUK/B/FLnX5K/KJnVV3A6yx/t8ap24l9Bruwq7kV
+         0llkeUjLYMEtw==
+Date:   Fri, 26 Aug 2022 11:46:55 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Daniel =?UTF-8?B?TcO8bGxlcg==?= <deso@posteo.net>,
+        Hao Luo <haoluo@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Yosry Ahmed <yosryahmed@google.com>
+Subject: linux-next: manual merge of the bpf-next tree with the bpf tree
+Message-ID: <20220826114655.4535c1d0@canb.auug.org.au>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="Sig_/MFR7LOoNg_VNOx55Oz52vhg";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -84,128 +55,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 24, 2022 at 6:41 AM Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> When a function was trying to access data from context in a syscall eBPF
-> program, the verifier was rejecting the call unless it was accessing the
-> first element.
-> This is because the syscall context is not known at compile time, and
-> so we need to check this when actually accessing it.
->
-> Check for the valid memory access if there is no convert_ctx callback,
-> and allow such situation to happen.
->
-> There is a slight hiccup with subprogs. btf_check_subprog_arg_match()
-> will check that the types are matching, which is a good thing, but to
-> have an accurate result, it hides the fact that the context register may
-> be null. This makes env->prog->aux->max_ctx_offset being set to the size
-> of the context, which is incompatible with a NULL context.
->
-> Solve that last problem by storing max_ctx_offset before the type check
-> and restoring it after.
->
-> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> changes in v9:
-> - rewrote the commit title and description
-> - made it so all functions can make use of context even if there is
->   no convert_ctx
-> - remove the is_kfunc field in bpf_call_arg_meta
->
-> changes in v8:
-> - fixup comment
-> - return -EACCESS instead of -EINVAL for consistency
->
-> changes in v7:
-> - renamed access_t into atype
-> - allow zero-byte read
-> - check_mem_access() to the correct offset/size
->
-> new in v6
-> ---
->  kernel/bpf/btf.c      | 11 ++++++++++-
->  kernel/bpf/verifier.c | 19 +++++++++++++++++++
->  2 files changed, 29 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 903719b89238..386300f52b23 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -6443,8 +6443,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
->  {
->         struct bpf_prog *prog = env->prog;
->         struct btf *btf = prog->aux->btf;
-> +       u32 btf_id, max_ctx_offset;
->         bool is_global;
-> -       u32 btf_id;
->         int err;
->
->         if (!prog->aux->func_info)
-> @@ -6457,9 +6457,18 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
->         if (prog->aux->func_info_aux[subprog].unreliable)
->                 return -EINVAL;
->
-> +       /* subprogs arguments are not actually accessing the data, we need
-> +        * to check for the types if they match.
-> +        * Store the max_ctx_offset and restore it after btf_check_func_arg_match()
-> +        * given that this function will have a side effect of changing it.
-> +        */
-> +       max_ctx_offset = env->prog->aux->max_ctx_offset;
-> +
->         is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
->         err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
->
-> +       env->prog->aux->max_ctx_offset = max_ctx_offset;
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I don't understand this.
-If we pass a ctx into a helper and it's going to
-access [0..N] bytes from it why do we need to hide it?
-max_ctx_offset will be used later raw_tp, tp, syscall progs
-to determine whether it's ok to load them.
-By hiding the actual size of access somebody can construct
-a prog that reads out of bounds.
-How is this related to NULL-ness property?
+Hi all,
 
-> +
->         /* Compiler optimizations can remove arguments from static functions
->          * or mismatched type can be passed into a global function.
->          * In such cases mark the function as unreliable from BTF point of view.
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 2c1f8069f7b7..d694f43ab911 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -5229,6 +5229,25 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
->                                 env,
->                                 regno, reg->off, access_size,
->                                 zero_size_allowed, ACCESS_HELPER, meta);
-> +       case PTR_TO_CTX:
-> +               /* in case the function doesn't know how to access the context,
-> +                * (because we are in a program of type SYSCALL for example), we
-> +                * can not statically check its size.
-> +                * Dynamically check it now.
-> +                */
-> +               if (!env->ops->convert_ctx_access) {
-> +                       enum bpf_access_type atype = meta && meta->raw_mode ? BPF_WRITE : BPF_READ;
-> +                       int offset = access_size - 1;
-> +
-> +                       /* Allow zero-byte read from PTR_TO_CTX */
-> +                       if (access_size == 0)
-> +                               return zero_size_allowed ? 0 : -EACCES;
-> +
-> +                       return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
-> +                                               atype, -1, false);
-> +               }
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-This part looks good alone. Without max_ctx_offset save/restore.
+  tools/testing/selftests/bpf/DENYLIST.s390x
 
-> +               fallthrough;
->         default: /* scalar_value or invalid ptr */
->                 /* Allow zero-byte read from NULL, regardless of pointer type */
->                 if (zero_size_allowed && access_size == 0 &&
-> --
-> 2.36.1
->
+between commit:
+
+  27e23836ce22 ("selftests/bpf: Add lru_bug to s390x deny list")
+
+from the bpf tree and commit:
+
+  88886309d2e8 ("selftests/bpf: add a selftest for cgroup hierarchical stat=
+s collection")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/bpf/DENYLIST.s390x
+index 5cadfbdadf36,736b65f61022..000000000000
+--- a/tools/testing/selftests/bpf/DENYLIST.s390x
++++ b/tools/testing/selftests/bpf/DENYLIST.s390x
+@@@ -65,4 -65,6 +65,7 @@@ send_signa
+  select_reuseport                         # intermittently fails on new s3=
+90x setup
+  xdp_synproxy                             # JIT does not support calling k=
+ernel function                                (kfunc)
+  unpriv_bpf_disabled                      # fentry
+ +lru_bug                                  # prog 'printk': failed to auto-=
+attach: -524
++ setget_sockopt                           # attach unexpected error: -524 =
+                                              (trampoline)
++ cb_refs                                  # expected error message unexpec=
+ted error: -524                               (trampoline)
++ cgroup_hierarchical_stats                # JIT does not support calling k=
+ernel function                                (kfunc)
+
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMIJg8ACgkQAVBC80lX
+0Gw2nQf/Wek0iOFLZ7lv8cXDmZxXlT4Q1afkO81LXDo0g7/ya7FbCjyewnCcksaH
+Sgj35dwLh8HPCWQUebBi5gbjYH/OKomVBfoHWIlTs2JvgD8z7KZk16iRGUNsgZLB
+DVMWSSXxybmmJCPm7JhyOXZSSDM9cDKsj3YZvyi6j1aaCyUYskSczGnG3ZEdOFRY
+l2PVESmnLyBwhAeDdSKIb2P1jBzyITzHQi+aO5ro4AFibxWCHLResK/99ba9pGzn
+aJiYWpfQiZbBocv7fgFiqgnqWXyAjyOm8RUZSHg/kLuuivPb6IlzIVFCN4xcR/Oi
+7CZeO1GprSvdp5EOc1sXM7djsO9nng==
+=51f4
+-----END PGP SIGNATURE-----
+
+--Sig_/MFR7LOoNg_VNOx55Oz52vhg--
