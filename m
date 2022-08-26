@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EC495A2644
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 12:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 397F75A2646
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 12:58:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344075AbiHZK44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 26 Aug 2022 06:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60206 "EHLO
+        id S1344117AbiHZK5Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 26 Aug 2022 06:57:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344036AbiHZK4y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 06:56:54 -0400
+        with ESMTP id S1344115AbiHZK5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 26 Aug 2022 06:57:00 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8897434C
-        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 03:56:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFC8761B08
+        for <netdev@vger.kernel.org>; Fri, 26 Aug 2022 03:56:55 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0w-0002uO-7l; Fri, 26 Aug 2022 12:56:38 +0200
+        id 1oRX0x-0002uV-0B; Fri, 26 Aug 2022 12:56:39 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0u-0024Yh-RU; Fri, 26 Aug 2022 12:56:36 +0200
+        id 1oRX0v-0024Z3-Ua; Fri, 26 Aug 2022 12:56:37 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oRX0t-00GB1u-CA; Fri, 26 Aug 2022 12:56:35 +0200
+        id 1oRX0t-00GB23-D0; Fri, 26 Aug 2022 12:56:35 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -38,10 +38,12 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 00/17] net: dsa: microchip: add error handling and register access validation
-Date:   Fri, 26 Aug 2022 12:56:17 +0200
-Message-Id: <20220826105634.3855578-1-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 01/17] net: dsa: microchip: add separate struct ksz_chip_data for KSZ8563 chip
+Date:   Fri, 26 Aug 2022 12:56:18 +0200
+Message-Id: <20220826105634.3855578-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220826105634.3855578-1-o.rempel@pengutronix.de>
+References: <20220826105634.3855578-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -49,7 +51,7 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: netdev@vger.kernel.org
 X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,63 +59,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-changes v4:
-- add Reviewed-by: Vladimir Oltean <olteanv@gmail.com> to all patches
-- fix checkpatch warnings.
+Add separate entry for the KSZ8563 chip. According to the documentation
+it can support Gbit only on RGMII port. So, we will need to be able to
+describe in the followup patch.
 
-changes v3:
-- fix build error in the middle of the patch stack.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 39 ++++++++++++++++++++++++--
+ drivers/net/dsa/microchip/ksz_common.h |  6 ++++
+ drivers/net/dsa/microchip/ksz_spi.c    |  2 +-
+ 3 files changed, 44 insertions(+), 3 deletions(-)
 
-changes v2:
-- add regmap_ranges for KSZ9477
-- drop output clock devicetree in driver validation patches. DTs need
-  some more refactoring and can be done in a separate patch set.
-- remove some unused variables.
-
-This patch series adds error handling for the PHY read/write path and optional
-register access validation.
-After adding regmap_ranges for KSZ8563 some bugs was detected, so
-critical bug fixes are sorted before ragmap_range patch.
-
-Potentially this bug fixes can be ported to stable kernels, but need to be
-reworked.
-
-Oleksij Rempel (17):
-  net: dsa: microchip: add separate struct ksz_chip_data for KSZ8563
-    chip
-  net: dsa: microchip: do per-port Gbit detection instead of per-chip
-  net: dsa: microchip: don't announce extended register support on non
-    Gbit chips
-  net: dsa: microchip: allow to pass return values for PHY read/write
-    accesses
-  net: dsa: microchip: forward error value on all ksz_pread/ksz_pwrite
-    functions
-  net: dsa: microchip: ksz9477: add error handling to ksz9477_r/w_phy
-  net: dsa: microchip: ksz8795: add error handling to ksz8_r/w_phy
-  net: dsa: microchip: KSZ9893: do not write to not supported Output
-    Clock Control Register
-  net: dsa: microchip: add support for regmap_access_tables
-  net: dsa: microchip: add regmap_range for KSZ8563 chip
-  net: dsa: microchip: ksz9477: remove MII_CTRL1000 check from
-    ksz9477_w_phy()
-  net: dsa: microchip: add regmap_range for KSZ9477 chip
-  net: dsa: microchip: ksz9477: use internal_phy instead of phy_port_cnt
-  net: dsa: microchip: remove unused port phy variable
-  net: dsa: microchip: ksz9477: remove unused "on" variable
-  net: dsa: microchip: remove unused sgmii variable
-  net: dsa: microchip: remove IS_9893 flag
-
- drivers/net/dsa/microchip/ksz8.h         |   4 +-
- drivers/net/dsa/microchip/ksz8795.c      | 111 ++++--
- drivers/net/dsa/microchip/ksz9477.c      |  85 ++---
- drivers/net/dsa/microchip/ksz9477.h      |   4 +-
- drivers/net/dsa/microchip/ksz_common.c   | 450 ++++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h   | 102 +++--
- drivers/net/dsa/microchip/ksz_spi.c      |   5 +-
- drivers/net/dsa/microchip/lan937x.h      |   4 +-
- drivers/net/dsa/microchip/lan937x_main.c |   8 +-
- 9 files changed, 651 insertions(+), 122 deletions(-)
-
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 6bd69a7e6809d..5cadc831c75d5 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -413,6 +413,29 @@ static const u8 lan937x_shifts[] = {
+ };
+ 
+ const struct ksz_chip_data ksz_switch_chips[] = {
++	[KSZ8563] = {
++		.chip_id = KSZ8563_CHIP_ID,
++		.dev_name = "KSZ8563",
++		.num_vlans = 4096,
++		.num_alus = 4096,
++		.num_statics = 16,
++		.cpu_ports = 0x07,	/* can be configured as cpu port */
++		.port_cnt = 3,		/* total port count */
++		.ops = &ksz9477_dev_ops,
++		.mib_names = ksz9477_mib_names,
++		.mib_cnt = ARRAY_SIZE(ksz9477_mib_names),
++		.reg_mib_cnt = MIB_COUNTER_NUM,
++		.regs = ksz9477_regs,
++		.masks = ksz9477_masks,
++		.shifts = ksz9477_shifts,
++		.xmii_ctrl0 = ksz9477_xmii_ctrl0,
++		.xmii_ctrl1 = ksz8795_xmii_ctrl1, /* Same as ksz8795 */
++		.supports_mii = {false, false, true},
++		.supports_rmii = {false, false, true},
++		.supports_rgmii = {false, false, true},
++		.internal_phy = {true, true, false},
++	},
++
+ 	[KSZ8795] = {
+ 		.chip_id = KSZ8795_CHIP_ID,
+ 		.dev_name = "KSZ8795",
+@@ -1366,6 +1389,7 @@ static enum dsa_tag_protocol ksz_get_tag_protocol(struct dsa_switch *ds,
+ 		proto = DSA_TAG_PROTO_KSZ8795;
+ 
+ 	if (dev->chip_id == KSZ8830_CHIP_ID ||
++	    dev->chip_id == KSZ8563_CHIP_ID ||
+ 	    dev->chip_id == KSZ9893_CHIP_ID)
+ 		proto = DSA_TAG_PROTO_KSZ9893;
+ 
+@@ -1685,7 +1709,7 @@ static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 
+ static int ksz_switch_detect(struct ksz_device *dev)
+ {
+-	u8 id1, id2;
++	u8 id1, id2, id4;
+ 	u16 id16;
+ 	u32 id32;
+ 	int ret;
+@@ -1731,7 +1755,6 @@ static int ksz_switch_detect(struct ksz_device *dev)
+ 		switch (id32) {
+ 		case KSZ9477_CHIP_ID:
+ 		case KSZ9897_CHIP_ID:
+-		case KSZ9893_CHIP_ID:
+ 		case KSZ9567_CHIP_ID:
+ 		case LAN9370_CHIP_ID:
+ 		case LAN9371_CHIP_ID:
+@@ -1739,6 +1762,18 @@ static int ksz_switch_detect(struct ksz_device *dev)
+ 		case LAN9373_CHIP_ID:
+ 		case LAN9374_CHIP_ID:
+ 			dev->chip_id = id32;
++			break;
++		case KSZ9893_CHIP_ID:
++			ret = ksz_read8(dev, REG_CHIP_ID4,
++					&id4);
++			if (ret)
++				return ret;
++
++			if (id4 == SKU_ID_KSZ8563)
++				dev->chip_id = KSZ8563_CHIP_ID;
++			else
++				dev->chip_id = KSZ9893_CHIP_ID;
++
+ 			break;
+ 		default:
+ 			dev_err(dev->dev,
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 0d9520dc6d2db..eedcbcddd000c 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -124,6 +124,7 @@ struct ksz_device {
+ 
+ /* List of supported models */
+ enum ksz_model {
++	KSZ8563,
+ 	KSZ8795,
+ 	KSZ8794,
+ 	KSZ8765,
+@@ -140,6 +141,7 @@ enum ksz_model {
+ };
+ 
+ enum ksz_chip_id {
++	KSZ8563_CHIP_ID = 0x8563,
+ 	KSZ8795_CHIP_ID = 0x8795,
+ 	KSZ8794_CHIP_ID = 0x8794,
+ 	KSZ8765_CHIP_ID = 0x8765,
+@@ -483,6 +485,10 @@ static inline int is_lan937x(struct ksz_device *dev)
+ 
+ #define SW_REV_ID_M			GENMASK(7, 4)
+ 
++/* KSZ9893, KSZ9563, KSZ8563 specific register  */
++#define REG_CHIP_ID4			0x0f
++#define SKU_ID_KSZ8563			0x3c
++
+ /* Driver set switch broadcast storm protection at 10% rate. */
+ #define BROADCAST_STORM_PROT_RATE	10
+ 
+diff --git a/drivers/net/dsa/microchip/ksz_spi.c b/drivers/net/dsa/microchip/ksz_spi.c
+index 05bd089795f83..746b725b09ec4 100644
+--- a/drivers/net/dsa/microchip/ksz_spi.c
++++ b/drivers/net/dsa/microchip/ksz_spi.c
+@@ -160,7 +160,7 @@ static const struct of_device_id ksz_dt_ids[] = {
+ 	},
+ 	{
+ 		.compatible = "microchip,ksz8563",
+-		.data = &ksz_switch_chips[KSZ9893]
++		.data = &ksz_switch_chips[KSZ8563]
+ 	},
+ 	{
+ 		.compatible = "microchip,ksz9567",
 -- 
 2.30.2
 
