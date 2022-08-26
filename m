@@ -2,75 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A97655A1E6A
-	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:55:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27CB15A1E6D
+	for <lists+netdev@lfdr.de>; Fri, 26 Aug 2022 03:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244631AbiHZBz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 25 Aug 2022 21:55:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
+        id S243808AbiHZB4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 25 Aug 2022 21:56:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244025AbiHZBzW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:55:22 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50563AA4E1;
-        Thu, 25 Aug 2022 18:55:21 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id d15so156469ilf.0;
-        Thu, 25 Aug 2022 18:55:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=USnukc/188Y9AouXvyJSCZFszKTYIwRy8hfHnkd63Zg=;
-        b=jOBJjSn3uhe6R65ntwBq62rWm+g9yTDC+1ZL9gc/4gDeF18XrVNfQKqoHultqxnnQg
-         /1dKMm2Ig2nrGr7oOY1KqXjnqjyATY4gUnZw1unhVyHf2jcpKk00zlmhCVCdpLz5uSQA
-         tI4tZ2Bnx6stX4Wm7UoU7fMg862SH3b5SexcJvKl7vFtzhWiN8iL02zYyGwW+wI9Mdeu
-         JXPrRk89eVO6K9WL7+OQK2FKXJ6z9P+pITKYxYSUzos9RlCy/J7sdR7DHCFwZiNTbXpV
-         41lI3vOyWLmV+C+G6Y+cJtQNVubXlMUeBChPoDqIyrZKi4XoPY0MVIQ/NE9aakL7TaRZ
-         U3sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=USnukc/188Y9AouXvyJSCZFszKTYIwRy8hfHnkd63Zg=;
-        b=nnTpOskY+N5XRMK7A4VFEXQMjTP5fLSIUN1xT7bV5NVgJS0SeX+3e8qD1yjSVDML5c
-         P/aBBCbrIc2VWDGPntOLDCpn5jLf0FEqes1DhZsXz3Tu3CuYOv/t2mGrpa4ZyumRZiO2
-         /CjwHoiZlJqMEsZAQDA0Ml65JdE7NylaLlYpTCrVMYq3Ys1LqSkN/IKo7O+U55HXyV8d
-         1N9eBQfsMRxwrLSFBsHpMqLqaNfBGTdS0+SYvBfgqWhi/bzutgxdvhHEVSqDUmsSLy0v
-         LGGT+LlULeAXSLmjeL+YY1kch2dLFdGZvzBFjCsUYoT8sw2nWxzV0NwHJklZXEdcnjPv
-         Y7dw==
-X-Gm-Message-State: ACgBeo0N0KjA75kJkS2aUkpKr3L98oagsP3fWUGYV+xVKuD9WKbHuM89
-        D21CRX6eDhFrVF8GdHxcbA5bU7LYc8feZCBXwho=
-X-Google-Smtp-Source: AA6agR4O43QbdMCxUFs7+d+4YEhgKIelTI8EfSehAma0P2GR9BHOjomPJCD6G8iaf039fJ1mpL6DAvBvnBsOJGBjU6k=
-X-Received: by 2002:a05:6e02:661:b0:2e2:be22:67f0 with SMTP id
- l1-20020a056e02066100b002e2be2267f0mr3130745ilt.91.1661478920738; Thu, 25 Aug
- 2022 18:55:20 -0700 (PDT)
+        with ESMTP id S231750AbiHZB4o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 25 Aug 2022 21:56:44 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53E6C6B74;
+        Thu, 25 Aug 2022 18:56:42 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MDNC85zHKz1N7K7;
+        Fri, 26 Aug 2022 09:53:08 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 09:56:40 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 26 Aug 2022 09:56:40 +0800
+Subject: Re: [PATCH -next] wifi: rtw88: add missing destroy_workqueue() on
+ error path in rtw_core_init()
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        Bernie Huang <phhuang@realtek.com>
+References: <20220825133731.1877569-1-yangyingliang@huawei.com>
+ <2f08c305927a43d78d6ab86468609288@realtek.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <39e21608-c7e2-422a-1e05-e7ebb250ecac@huawei.com>
+Date:   Fri, 26 Aug 2022 09:56:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com> <20220824134055.1328882-3-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220824134055.1328882-3-benjamin.tissoires@redhat.com>
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Date:   Fri, 26 Aug 2022 03:54:45 +0200
-Message-ID: <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 02/23] bpf/verifier: do not clear meta in check_mem_size
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <2f08c305927a43d78d6ab86468609288@realtek.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,48 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
-<benjamin.tissoires@redhat.com> wrote:
->
-> The purpose of this clear is to prevent meta->raw_mode to be evaluated
-> at true, but this also prevents to forward any other data to the other
-> callees.
->
-> Only switch back raw_mode to false so we don't entirely clear meta.
->
-> Acked-by: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
->
-> ---
->
-> no changes in v9
->
-> no changes in v8
->
-> no changes in v7
->
-> new in v6
-> ---
->  kernel/bpf/verifier.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index d694f43ab911..13190487fb12 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -5287,7 +5287,7 @@ static int check_mem_size_reg(struct bpf_verifier_env *env,
->                  * initialize all the memory that the helper could
->                  * just partially fill up.
->                  */
-> -               meta = NULL;
-> +               meta->raw_mode = false;
+Hi,
 
-But this is adding a side effect, the caller's meta->raw_mode becomes
-false, which the caller may not expect...
+On 2022/8/26 8:44, Ping-Ke Shih wrote:
+>> -----Original Message-----
+>> From: Yang Yingliang <yangyingliang@huawei.com>
+>> Sent: Thursday, August 25, 2022 9:38 PM
+>> To: linux-kernel@vger.kernel.org; netdev@vger.kernel.org; linux-wireless@vger.kernel.org
+>> Cc: tony0620emma@gmail.com; kvalo@kernel.org; Bernie Huang <phhuang@realtek.com>
+>> Subject: [PATCH -next] wifi: rtw88: add missing destroy_workqueue() on error path in rtw_core_init()
+>>
+>> Add the missing destroy_workqueue() before return from rtw_core_init()
+>> in error path.
+>>
+>> Fixes: fe101716c7c9 ("rtw88: replace tx tasklet with work queue")
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+>> ---
+>>   drivers/net/wireless/realtek/rtw88/main.c | 8 ++++++--
+>>   1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+>> index 790dcfed1125..557213e52761 100644
+>> --- a/drivers/net/wireless/realtek/rtw88/main.c
+>> +++ b/drivers/net/wireless/realtek/rtw88/main.c
+>> @@ -2094,7 +2094,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+>>   	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+>>   	if (ret) {
+>>   		rtw_warn(rtwdev, "no firmware loaded\n");
+>> -		return ret;
+>> +		goto destroy_workqueue;
+>>   	}
+>>
+>>   	if (chip->wow_fw_name) {
+>> @@ -2104,11 +2104,15 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+>>   			wait_for_completion(&rtwdev->fw.completion);
+>>   			if (rtwdev->fw.firmware)
+>>   				release_firmware(rtwdev->fw.firmware);
+>> -			return ret;
+>> +			goto destroy_workqueue;
+>>   		}
+>>   	}
+>>
+>>   	return 0;
+>> +
+>> +destroy_workqueue:
+> It's not so good that the label 'destroy_workqueue' is the same as function name.
+> I suggest to just use 'out' instead.
+How about 'out_destory_workqueue' ?
 
+Thanks,
+Yang
 >
->         if (reg->smin_value < 0) {
->                 verbose(env, "R%d min value is negative, either use unsigned or 'var &= const'\n",
-> --
-> 2.36.1
->
+>> +	destroy_workqueue(rtwdev->tx_wq);
+>> +	return ret;
+>>   }
+>>   EXPORT_SYMBOL(rtw_core_init);
+>>
+>> --
+>> 2.25.1
+>>
+>>
+>> ------Please consider the environment before printing this e-mail.
+> .
