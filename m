@@ -2,252 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A58635A3790
-	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 14:17:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CE605A37A6
+	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 14:37:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231699AbiH0MQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Aug 2022 08:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        id S232868AbiH0MhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Aug 2022 08:37:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229659AbiH0MQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 08:16:43 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB8F8C469;
-        Sat, 27 Aug 2022 05:16:42 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-334dc616f86so94666797b3.8;
-        Sat, 27 Aug 2022 05:16:42 -0700 (PDT)
+        with ESMTP id S232827AbiH0MhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 08:37:04 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3AA71C104
+        for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 05:37:01 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id cu2so7632484ejb.0
+        for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 05:37:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date;
-        bh=xvQ/553e0fwNr/YlwFMDOp1bC2WqdzKB2HXZEwukGhQ=;
-        b=J89GPu1sCOxP9yQ6m52w2u6C7CtPn9o6ymz2cF4+SyZpnxRWE6V3YLJQ61bfhLyOQi
-         VK52uUmOt02qCpSdMLtRgjhjgjB2qNvMZauZU1M5PANBx/SgUZcFs7ev+/hA2HDbKAnt
-         JK9stsQYb4xH+JJM5v3TZRn+1zXuFZuhVsR3z7zcq3nIbOn5Q8tROrjQQEJpne9l51IZ
-         jsh713sF2Mji+8ZijNmv4tFNljRkrHlk0RasUmA17c7it0Ujj7InbUiNHG+0P+X6HCoS
-         5DoEp4WbHnEHmUpLRUdIlem9sywiXCDWElyJfH4fe/zD+GyfI/6yEGCD+4rgprawLjo2
-         18tg==
+        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=60sQ4obtzLi3SZDfR4Ml7RLmd2im4duwgOowcHUJA0E=;
+        b=RUrSJPRFEUOf/0y7rG54jPIE7fBG/y8I3porJWpzmqBIrB5cwYbkXSp52fCpri5/U9
+         5AslzChrc10s49NaYNr7Bb0F1eB0SXFa1hhWRlh53vOqFCe7BSYHxnEZ6FImN/dZC8x6
+         EIbW0WdC4OlhX5IMi18aVsxPp8sMYN+4jNj8xBSwZNeKN6mSC2G0U2h7Fkc+DYtxTdbm
+         U+REYLXIqJeClR6sWD1QebLElk0HQMatsKfG7zPYIEEoSXA63Duz+Ub4mUsTY6VfHdfP
+         r6Gdtul4IH7duvg5cctwxc5WuQIznLJzkDUx/TdrV6C6DQDIu8n4LIyoELm28NJ3czUB
+         40qA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=xvQ/553e0fwNr/YlwFMDOp1bC2WqdzKB2HXZEwukGhQ=;
-        b=O7ipfK67Z+MfAt/2Z5XjcPNkossrSoa3Z0I4rxuRBJkFH20fx6asIlPAPHWki/l8z/
-         gSrz6vhF3rOMkCFL5NHobXtERdQ+jbvkINMbfdKHHcxnzXIWOPVP4HoMuAsfuNfXnQ1M
-         N6uJH+9Xn8F4JyMAgw2hNCs32gZGnFh8fsadN4pOzrjUCAWwn1EN9s7N9OBPUZ6poY4G
-         rqg5sLOjjYSZnFCxomzN24O+XuEJefcoZI+EHc2zUXd9BpEWDL45JHXJrVqa/YS/u+qp
-         7Q4Qr3sSbqdgbfWGmad213bYLV+amOF6/omrxAm7XY1Gr0RGnPBhbxiZDMgq2GdheM4h
-         jA0A==
-X-Gm-Message-State: ACgBeo2ymWJ/hDM1b0tKwII91NOeJ0N+ZsffM/qxTboUE5sViPji+t4K
-        R2yXyw02HD8+dHih98nCW32aM103JD93I0jc5Rpc/m/4JYAakNzw
-X-Google-Smtp-Source: AA6agR4TxtbmnqfASdstyr2/pDAOTaobgz5skw9Ws6ZYzuWOvkSQxg/9kXxGHnnI2YwfQ+kPRt6x8c4Nj8PskLwDN+o=
-X-Received: by 2002:a0d:cbd6:0:b0:340:c4ab:7cbb with SMTP id
- n205-20020a0dcbd6000000b00340c4ab7cbbmr1370196ywd.299.1661602601391; Sat, 27
- Aug 2022 05:16:41 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=60sQ4obtzLi3SZDfR4Ml7RLmd2im4duwgOowcHUJA0E=;
+        b=dWT4W7FV1Bhwf8a9A9GkFSbzIuxUkawHQ0ZKVCsWrd0NZ7aar2Hx/H4pLX+1EddZny
+         0nzbq3cQE/l1OPGrr2AQkLH7XbQxqc0KlDvSMlcPI8YrH0JP36RHAdwAG4DlOPDX5+/r
+         20H3KBYoLdLCIXFaamM1OUj426a0iMa9URn6+1FgRAVFxGWVy/iAOhv/OQibhElKFY3Z
+         5WBxgrm+tc/38Ql217WFEyZoP7zZNsunwAmPGNZpM7nDNFx5d5x1NZPgLriJ11f2ZRkA
+         HqxnNkgice+59lrZvNNslBR885/3nykwyiSv3mmfLP6xq8ptlGXtVCNseXAvoxQexot6
+         gIPw==
+X-Gm-Message-State: ACgBeo1FUzvo3Qae42fJnAqkd8X1XvBcoim8S6UBSPLa6XIsXiXMkjcW
+        BAO4ztEUE+QJUMt7aMBTdy1e3w==
+X-Google-Smtp-Source: AA6agR5sYNQ0nCTil9GCFq4HVWtMmefpcbuFJwfLmDuGi3j2vuCCG1uIUd8KLInUazhANSAFtalMhQ==
+X-Received: by 2002:a17:907:7394:b0:73a:d077:9ba1 with SMTP id er20-20020a170907739400b0073ad0779ba1mr7667936ejc.697.1661603820490;
+        Sat, 27 Aug 2022 05:37:00 -0700 (PDT)
+Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
+        by smtp.gmail.com with ESMTPSA id t1-20020a17090616c100b0073100dfa7b5sm2066071ejd.33.2022.08.27.05.36.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Aug 2022 05:37:00 -0700 (PDT)
+Message-ID: <3a2c5c4c-a42c-eaae-be0a-b81a63543c0e@blackwall.org>
+Date:   Sat, 27 Aug 2022 15:36:58 +0300
 MIME-Version: 1.0
-From:   Jiacheng Xu <578001344xu@gmail.com>
-Date:   Sat, 27 Aug 2022 20:16:28 +0800
-Message-ID: <CAO4S-meXAMrhR+SjGaNqWAs7C6j6fiyhHhGPk-Am94KsgisAfw@mail.gmail.com>
-Subject: KASAN: use-after-free in notifier_call_chain
-To:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com
-Cc:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH ipsec-next,v2 2/3] xfrm: interface: support collect
+ metadata mode
+Content-Language: en-US
+To:     nicolas.dichtel@6wind.com, Eyal Birger <eyal.birger@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, dsahern@kernel.org,
+        contact@proelbtn.com, pablo@netfilter.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, "daniel@iogearbox.net" <daniel@iogearbox.net>
+References: <20220825134636.2101222-1-eyal.birger@gmail.com>
+ <20220825134636.2101222-3-eyal.birger@gmail.com>
+ <a825aa13-6f82-e6c1-3c5c-7974b14f881e@blackwall.org>
+ <CAHsH6Gv8Zv722pjtKrWDiSHYKvV0FUxUSnHf_8B+gJnAVYiziQ@mail.gmail.com>
+ <e80f14c5-4ca4-55b0-57e0-108fb73fb828@6wind.com>
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+In-Reply-To: <e80f14c5-4ca4-55b0-57e0-108fb73fb828@6wind.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 26/08/2022 10:53, Nicolas Dichtel wrote:
+> 
+> Le 25/08/2022 à 17:14, Eyal Birger a écrit :
+>> On Thu, Aug 25, 2022 at 5:24 PM Nikolay Aleksandrov <razor@blackwall.org> wrote:
+>>>
+>>> On 25/08/2022 16:46, Eyal Birger wrote:
+>>>> This commit adds support for 'collect_md' mode on xfrm interfaces.
+>>>>
+>>>> Each net can have one collect_md device, created by providing the
+>>>> IFLA_XFRM_COLLECT_METADATA flag at creation. This device cannot be
+>>>> altered and has no if_id or link device attributes.
+>>>>
+>>>> On transmit to this device, the if_id is fetched from the attached dst
+>>>> metadata on the skb. If exists, the link property is also fetched from
+>>>> the metadata. The dst metadata type used is METADATA_XFRM which holds
+>>>> these properties.
+>>>>
+>>>> On the receive side, xfrmi_rcv_cb() populates a dst metadata for each
+>>>> packet received and attaches it to the skb. The if_id used in this case is
+>>>> fetched from the xfrm state, and the link is fetched from the incoming
+>>>> device. This information can later be used by upper layers such as tc,
+>>>> ebpf, and ip rules.
+>>>>
+>>>> Because the skb is scrubed in xfrmi_rcv_cb(), the attachment of the dst
+>>>> metadata is postponed until after scrubing. Similarly, xfrm_input() is
+>>>> adapted to avoid dropping metadata dsts by only dropping 'valid'
+>>>> (skb_valid_dst(skb) == true) dsts.
+>>>>
+>>>> Policy matching on packets arriving from collect_md xfrmi devices is
+>>>> done by using the xfrm state existing in the skb's sec_path.
+>>>> The xfrm_if_cb.decode_cb() interface implemented by xfrmi_decode_session()
+>>>> is changed to keep the details of the if_id extraction tucked away
+>>>> in xfrm_interface.c.
+>>>>
+>>>> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
+>>>>
+>>>> ----
+>>>>
+>>>> v2:
+>>>>   - add "link" property as suggested by Nicolas Dichtel
+>>>>   - rename xfrm_if_decode_session_params to xfrm_if_decode_session_result
+>>>> ---
+>>>
+>>> (+CC Daniel)
+>>>
+>>> Hi,
+>>> Generally I really like the idea, but I missed to comment the first round. :)
+>>> A few comments below..
+>>>
+>>
+>> Thanks for the review!
+>>
+>>>>  include/net/xfrm.h           |  11 +++-
+>> <...snip...>
+>>>>
+>>>>  static const struct nla_policy xfrmi_policy[IFLA_XFRM_MAX + 1] = {
+>>>> -     [IFLA_XFRM_LINK]        = { .type = NLA_U32 },
+>>>> -     [IFLA_XFRM_IF_ID]       = { .type = NLA_U32 },
+>>>> +     [IFLA_XFRM_UNSPEC]              = { .strict_start_type = IFLA_XFRM_COLLECT_METADATA },
+>>>> +     [IFLA_XFRM_LINK]                = { .type = NLA_U32 },
+>>>
+>>> link is signed, so s32
+>>
+>> Ack on all comments except this one - I'm a little hesitant to change
+>> this one as the change would be unrelated to this series.
+> I agree, it's unrelated to this series.
 
-When using modified Syzkaller to fuzz the Linux kernel-5.19, the
-following crash was triggered.
+Ohh right, my bad. I somehow confused this for new code. :)
 
-HEAD commit: 3d7cb6b04c3f Linux-5.19
-git tree: upstream
+Cheers,
+ Nik
 
-console output:
-https://drive.google.com/file/d/1vFxsfRPkb7zceLp-iG-gMaedQngemuLZ/view?usp=sharing
-kernel config: https://drive.google.com/file/d/1wgIUDwP5ho29AM-K7HhysSTfWFpfXYkG/view?usp=sharing
-
-Sorry, I don't have a reproducer for this crash. May the symbolized
-report help.
-
-If you fix this issue, please add the following tag to the commit:
-Reported-by Jiacheng Xu<578001344xu@gmail.com>.
-==================================================================
-BUG: KASAN: use-after-free in notifier_call_chain+0x1ee/0x200
-kernel/notifier.c:75
-Read of size 8 at addr ffff88810e670268 by task syz-executor/7496
-
-CPU: 0 PID: 7496 Comm: syz-executor Not tainted 5.19.0 #2
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-1.13.0-1ubuntu1.1 04/01/2014
-Call Trace:
- <TASK>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_address_description mm/kasan/report.c:313 [inline]
- print_report.cold+0xe5/0x659 mm/kasan/report.c:429
- kasan_report+0x8a/0x1b0 mm/kasan/report.c:491
- notifier_call_chain+0x1ee/0x200 kernel/notifier.c:75
- call_netdevice_notifiers_info+0x86/0x130 net/core/dev.c:1942
- call_netdevice_notifiers_extack net/core/dev.c:1983 [inline]
- call_netdevice_notifiers net/core/dev.c:1997 [inline]
- netdev_wait_allrefs_any net/core/dev.c:10231 [inline]
- netdev_run_todo+0xbca/0x1110 net/core/dev.c:10345
- tun_detach drivers/net/tun.c:704 [inline]
- tun_chr_close+0xe0/0x180 drivers/net/tun.c:3455
- __fput+0x277/0x9d0 fs/file_table.c:317
- task_work_run+0xe0/0x1a0 kernel/task_work.c:177
- exit_task_work include/linux/task_work.h:38 [inline]
- do_exit+0xaf5/0x2da0 kernel/exit.c:795
- do_group_exit+0xd2/0x2f0 kernel/exit.c:925
- get_signal+0x2842/0x2870 kernel/signal.c:2857
- arch_do_signal_or_restart+0x82/0x2270 arch/x86/kernel/signal.c:869
- exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
- exit_to_user_mode_prepare+0x174/0x260 kernel/entry/common.c:201
- __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
- syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
- do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-RIP: 0033:0x7f952e895dfd
-Code: Unable to access opcode bytes at RIP 0x7f952e895dd3.
-RSP: 002b:00007f952f9afcd8 EFLAGS: 00000246 ORIG_RAX: 00000000000000ca
-RAX: fffffffffffffe00 RBX: 00007f952e9bc210 RCX: 00007f952e895dfd
-RDX: 0000000000000000 RSI: 0000000000000080 RDI: 00007f952e9bc218
-RBP: 00007f952e9bc218 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007f952e9bc21c
-R13: 00007ffda9eed5ff R14: 00007ffda9eed7a0 R15: 00007f952f9afdc0
- </TASK>
-
-Allocated by task 6613:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track mm/kasan/common.c:45 [inline]
- set_alloc_info mm/kasan/common.c:436 [inline]
- __kasan_slab_alloc+0x90/0xc0 mm/kasan/common.c:469
- kasan_slab_alloc include/linux/kasan.h:224 [inline]
- slab_post_alloc_hook+0x4d/0x4f0 mm/slab.h:750
- slab_alloc_node mm/slub.c:3243 [inline]
- slab_alloc mm/slub.c:3251 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
- kmem_cache_alloc+0x1be/0x460 mm/slub.c:3268
- kmem_cache_zalloc include/linux/slab.h:723 [inline]
- net_alloc net/core/net_namespace.c:403 [inline]
- copy_net_ns+0xea/0x660 net/core/net_namespace.c:458
- create_new_namespaces.isra.0+0x3cb/0xae0 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xc8/0x1f0 kernel/nsproxy.c:226
- ksys_unshare+0x450/0x920 kernel/fork.c:3165
- __do_sys_unshare kernel/fork.c:3236 [inline]
- __se_sys_unshare kernel/fork.c:3234 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3234
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Freed by task 7516:
- kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
- kasan_set_track+0x21/0x30 mm/kasan/common.c:45
- kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
- ____kasan_slab_free mm/kasan/common.c:366 [inline]
- ____kasan_slab_free mm/kasan/common.c:328 [inline]
- __kasan_slab_free+0x11d/0x190 mm/kasan/common.c:374
- kasan_slab_free include/linux/kasan.h:200 [inline]
- slab_free_hook mm/slub.c:1754 [inline]
- slab_free_freelist_hook mm/slub.c:1780 [inline]
- slab_free mm/slub.c:3536 [inline]
- kmem_cache_free+0xf6/0x490 mm/slub.c:3553
- net_free net/core/net_namespace.c:432 [inline]
- net_free+0x9b/0xd0 net/core/net_namespace.c:428
- cleanup_net+0x7e8/0xa90 net/core/net_namespace.c:615
- process_one_work+0x9cc/0x1650 kernel/workqueue.c:2289
- worker_thread+0x623/0x1070 kernel/workqueue.c:2436
- kthread+0x2e9/0x3a0 kernel/kthread.c:376
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
-
-The buggy address belongs to the object at ffff88810e670000
- which belongs to the cache net_namespace of size 6784
-The buggy address is located 616 bytes inside of
- 6784-byte region [ffff88810e670000, ffff88810e671a80)
-
-The buggy address belongs to the physical page:
-page:ffffea0004399c00 refcount:1 mapcount:0 mapping:0000000000000000
-index:0x0 pfn:0x10e670
-head:ffffea0004399c00 order:3 compound_mapcount:0 compound_pincount:0
-flags: 0x57ff00000010200(slab|head|node=1|zone=2|lastcpupid=0x7ff)
-raw: 057ff00000010200 0000000000000000 dead000000000122 ffff888011a14f00
-raw: 0000000000000000 0000000080040004 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-page_owner tracks the page as allocated
-page last allocated via order 3, migratetype Unmovable, gfp_mask
-0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP
-                 _COMP|__GFP_NOMEMALLOC), pid 6613, tgid 6613
-(syz-executor), ts 47324843590, free_ts 46954173512
- set_page_owner include/linux/page_owner.h:31 [inline]
- post_alloc_hook mm/page_alloc.c:2449 [inline]
- prep_new_page+0x297/0x330 mm/page_alloc.c:2456
- get_page_from_freelist+0x215f/0x3c50 mm/page_alloc.c:4202
- __alloc_pages+0x321/0x710 mm/page_alloc.c:5430
- alloc_pages+0x119/0x250 mm/mempolicy.c:2272
- alloc_slab_page mm/slub.c:1824 [inline]
- allocate_slab mm/slub.c:1969 [inline]
- new_slab+0x2a9/0x3f0 mm/slub.c:2029
- ___slab_alloc+0xd5a/0x1140 mm/slub.c:3031
- __slab_alloc.isra.0+0x4d/0xa0 mm/slub.c:3118
- slab_alloc_node mm/slub.c:3209 [inline]
- slab_alloc mm/slub.c:3251 [inline]
- __kmem_cache_alloc_lru mm/slub.c:3258 [inline]
- kmem_cache_alloc+0x386/0x460 mm/slub.c:3268
- kmem_cache_zalloc include/linux/slab.h:723 [inline]
- net_alloc net/core/net_namespace.c:403 [inline]
- copy_net_ns+0xea/0x660 net/core/net_namespace.c:458
- create_new_namespaces.isra.0+0x3cb/0xae0 kernel/nsproxy.c:110
- unshare_nsproxy_namespaces+0xc8/0x1f0 kernel/nsproxy.c:226
- ksys_unshare+0x450/0x920 kernel/fork.c:3165
- __do_sys_unshare kernel/fork.c:3236 [inline]
- __se_sys_unshare kernel/fork.c:3234 [inline]
- __x64_sys_unshare+0x2d/0x40 kernel/fork.c:3234
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-page last free stack trace:
- reset_page_owner include/linux/page_owner.h:24 [inline]
- free_pages_prepare mm/page_alloc.c:1371 [inline]
- free_pcp_prepare+0x51f/0xd00 mm/page_alloc.c:1421
- free_unref_page_prepare mm/page_alloc.c:3343 [inline]
- free_unref_page+0x19/0x5b0 mm/page_alloc.c:3438
- do_slab_free mm/slub.c:3524 [inline]
- ___cache_free+0x12c/0x140 mm/slub.c:3543
- qlink_free mm/kasan/quarantine.c:168 [inline]
- qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:187
- kasan_quarantine_reduce+0x13d/0x180 mm/kasan/quarantine.c:294
- __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
- kasan_slab_alloc include/linux/kasan.h:224 [inline]
- slab_post_alloc_hook+0x4d/0x4f0 mm/slab.h:750
- slab_alloc_node mm/slub.c:3243 [inline]
- slab_alloc mm/slub.c:3251 [inline]
- __kmalloc+0x184/0x4c0 mm/slub.c:4442
- kmalloc include/linux/slab.h:605 [inline]
- tomoyo_realpath_from_path+0xc3/0x620 security/tomoyo/realpath.c:254
- tomoyo_get_realpath security/tomoyo/file.c:151 [inline]
- tomoyo_path_number_perm+0x1d1/0x590 security/tomoyo/file.c:723
- security_file_ioctl+0x50/0xb0 security/security.c:1551
- __do_sys_ioctl fs/ioctl.c:864 [inline]
- __se_sys_ioctl fs/ioctl.c:856 [inline]
- __x64_sys_ioctl+0xb3/0x200 fs/ioctl.c:856
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-Memory state around the buggy address:
- ffff88810e670100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88810e670180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88810e670200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-                                                          ^
- ffff88810e670280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
- ffff88810e670300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
