@@ -2,129 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AE805A3885
-	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 17:52:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACBDC5A38A6
+	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 18:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233587AbiH0PwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Aug 2022 11:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58792 "EHLO
+        id S232887AbiH0QJg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Aug 2022 12:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbiH0PwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 11:52:13 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B27162F64C
-        for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 08:52:11 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id kk26so8085225ejc.11
-        for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 08:52:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=3YczR2Egl4ZFRyscdYYWi5wk2fHwMzSOUnVWfHdBreM=;
-        b=XzCjQYL7pcKNpZS+XZ/jvaKcz044RvIp2Kqny5OT1idIVch+NIlfnHsadgKWYFDb0E
-         LrNd0hKaoyAkJgnlUbgT753luKRo2WarLndU46VH401AIJex/4AHi+GjE2AERqIw4E67
-         KcTGvWm0Cb47y9tZiiVeDXe5aGt3zgsJdX1yvhdGB9sF/Z6qTtvJ64moVxFbEZ3rr5yl
-         pikp+Km8ABi40dgWtLH8Rsk1foqkvANAJBLYdZG/VUu8A9htUuS+ZXPGuaLcw/QxhNIa
-         TflL902OKXy2G0jqaGBSpTTwIag6f4IKoc6DsHiVXpu3AccPpZkYXLscSaqqcDhfEPOK
-         8xYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=3YczR2Egl4ZFRyscdYYWi5wk2fHwMzSOUnVWfHdBreM=;
-        b=a3lLUmeS8UowjEoHqZI3nMzeH5lJJaz798M3nbAfUbdbUm8bULMaVkmf3Ie1RDw91G
-         rMSeariXtqiIppNvTSaBFbd8rrYoFHnQvD8S/wGcGaqHGYXiBi2aFLndO0guKH0O0jVb
-         kRLy/tK6mQY1NZ/BHtGhzCGj+UkOWKi0gHnHaPUmW+dtC2kK+OYkuRMmvsWsb0iR1yeo
-         yBawbzRcWaAErZ8i74kpGUU6oRvrFM3OkzglfM70xKRJwS/CV1pSQC6Y08rrAShw8hxU
-         OlKeiNnQnwUv1UHlc+jTnUQAnm8fJhyW3BdK7zi1I+m3PZFLVTzqQE/lA2bsPPUSIzZ+
-         LKAg==
-X-Gm-Message-State: ACgBeo0AcHhHb4BQjF77JgqBM4409r3OtR0zdMnqHD+3/Cc/YaatdIgd
-        jI4qQ3B68ju8b3FqEvNLQ0alRg==
-X-Google-Smtp-Source: AA6agR4UGFSDEBI+Zywo6Rd/RBwcZqB0s8dtcq4AUgPmhKGokDX6cNXLGrVlY+XIvgUPkPzXaFkbVA==
-X-Received: by 2002:a17:907:724e:b0:740:e3e5:c01d with SMTP id ds14-20020a170907724e00b00740e3e5c01dmr4496051ejc.38.1661615530225;
-        Sat, 27 Aug 2022 08:52:10 -0700 (PDT)
-Received: from [192.168.0.111] (87-243-81-1.ip.btc-net.bg. [87.243.81.1])
-        by smtp.gmail.com with ESMTPSA id z13-20020a05640235cd00b0044847e0e8ccsm257324edc.28.2022.08.27.08.52.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Aug 2022 08:52:09 -0700 (PDT)
-Message-ID: <80c8a02f-95b9-8e96-b05c-016b43876c15@blackwall.org>
-Date:   Sat, 27 Aug 2022 18:52:07 +0300
+        with ESMTP id S231920AbiH0QJf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 12:09:35 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969752A97D
+        for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 09:09:34 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oRyNC-00063X-8h; Sat, 27 Aug 2022 18:09:26 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 32905D5030;
+        Sat, 27 Aug 2022 16:09:24 +0000 (UTC)
+Date:   Sat, 27 Aug 2022 18:09:22 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     =?utf-8?B?Q3PDs2vDoXM=?= Bence <csokas.bence@prolan.hu>
+Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, qiangqing.zhang@nxp.com,
+        Andrew Lunn <andrew@lunn.ch>, kernel@pengutronix.de
+Subject: BUG: Re: [PATCH v3 resubmit] fec: Restart PPS after link state change
+Message-ID: <20220827160922.642zlcd5foopozru@pengutronix.de>
+References: <20220822081051.7873-1-csokas.bence@prolan.hu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v5 net-next 2/6] net: switchdev: add support for
- offloading of fdb locked flag
-Content-Language: en-US
-To:     Ido Schimmel <idosch@nvidia.com>,
-        Hans Schultz <netdev@kapio-technology.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-3-netdev@kapio-technology.com>
- <Ywo8PONgDW/lUj+X@shredder>
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-In-Reply-To: <Ywo8PONgDW/lUj+X@shredder>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="nmiq5bnmmqpp4iua"
+Content-Disposition: inline
+In-Reply-To: <20220822081051.7873-1-csokas.bence@prolan.hu>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/08/2022 18:46, Ido Schimmel wrote:
-> On Fri, Aug 26, 2022 at 01:45:34PM +0200, Hans Schultz wrote:
->> diff --git a/include/net/switchdev.h b/include/net/switchdev.h
->> index 7dcdc97c0bc3..437945179373 100644
->> --- a/include/net/switchdev.h
->> +++ b/include/net/switchdev.h
->> @@ -247,7 +247,10 @@ struct switchdev_notifier_fdb_info {
->>  	const unsigned char *addr;
->>  	u16 vid;
->>  	u8 added_by_user:1,
->> +	   sticky:1,
-> 
-> If mv88e6xxx reports entries with 'is_local=1, locked=1, blackhole=1',
-> then the 'sticky' bit can be removed for now (we will need it some day
-> to support sticky entries notified from the bridge). This takes care of
-> the discrepancy Nik mentioned here:
-> 
-> https://lore.kernel.org/netdev/d1de0337-ae16-7dca-b212-1a4e85129c31@blackwall.org/
-> 
 
-+1
+--nmiq5bnmmqpp4iua
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->>  	   is_local:1,
->> +	   locked:1,
->> +	   blackhole:1,
->>  	   offloaded:1;
->>  };
+On 22.08.2022 10:10:52, Cs=C3=B3k=C3=A1s Bence wrote:
+> On link state change, the controller gets reset,
+> causing PPS to drop out and the PHC to lose its
+> time and calibration. So we restart it if needed,
+> restoring calibration and time registers.
+>=20
+> Changes since v2:
+> * Add `fec_ptp_save_state()`/`fec_ptp_restore_state()`
+> * Use `ktime_get_real_ns()`
+> * Use `BIT()` macro
+> Changes since v1:
+> * More ECR #define's
+> * Stop PPS in `fec_ptp_stop()`
+>=20
+> Signed-off-by: Cs=C3=B3k=C3=A1s Bence <csokas.bence@prolan.hu>
 
+current net-next/main fails on my imx6 with:
+
+| [   14.001542] BUG: sleeping function called from invalid context at kern=
+el/locking/mutex.c:283                                                     =
+                                           =20
+| [   14.010604] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 13,=
+ name: kworker/0:1                                                         =
+                                           =20
+| [   14.018737] preempt_count: 201, expected: 0                           =
+                                                                           =
+                                           =20
+| [   14.022931] CPU: 0 PID: 13 Comm: kworker/0:1 Not tainted 6.0.0-rc2+ #2=
+25                                                                         =
+                                           =20
+| [   14.029643] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)=
+                                                                           =
+                                           =20
+| [   14.036175] Workqueue: events_power_efficient phy_state_machine       =
+                                                                           =
+                                           =20
+| [   14.042121] [<c010ffe0>] (unwind_backtrace) from [<c010ac04>] (show_st=
+ack+0x10/0x14)                                                             =
+                                           =20
+| [   14.049889] [<c010ac04>] (show_stack) from [<c0ccab04>] (dump_stack_lv=
+l+0x40/0x4c)                                                               =
+                                           =20
+| [   14.057479] [<c0ccab04>] (dump_stack_lvl) from [<c014ed7c>] (__might_r=
+esched+0x11c/0x154)                                                        =
+                                           =20
+| [   14.065678] [<c014ed7c>] (__might_resched) from [<c0cd9c20>] (mutex_lo=
+ck+0x18/0x58)                                                              =
+                                           =20
+| [   14.073356] [<c0cd9c20>] (mutex_lock) from [<c082b59c>] (fec_ptp_getti=
+me+0x2c/0xc4)                                                              =
+                                           =20
+| [   14.081035] [<c082b59c>] (fec_ptp_gettime) from [<c082bff4>] (fec_ptp_=
+save_state+0x14/0x50)                                                      =
+                                           =20
+| [   14.089403] [<c082bff4>] (fec_ptp_save_state) from [<c0826ee0>] (fec_r=
+estart+0x40/0x6f4)                                                         =
+                                           =20
+| [   14.097510] [<c0826ee0>] (fec_restart) from [<c082b170>] (fec_enet_adj=
+ust_link+0xb0/0x21c)                                                       =
+                                           =20
+| [   14.105789] [<c082b170>] (fec_enet_adjust_link) from [<c0819bb4>] (phy=
+_link_change+0x28/0x54)                                                    =
+                                           =20
+| [   14.114333] [<c0819bb4>] (phy_link_change) from [<c0815688>] (phy_chec=
+k_link_status+0x78/0xb4)
+| [   14.122969] [<c0815688>] (phy_check_link_status) from [<c0816bec>] (ph=
+y_state_machine+0x68/0x29c)
+| [   14.131857] [<c0816bec>] (phy_state_machine) from [<c0140604>] (proces=
+s_one_work+0x1f8/0x410)
+| [   14.140398] [<c0140604>] (process_one_work) from [<c01419c8>] (worker_=
+thread+0x2c/0x544)
+| [   14.148502] [<c01419c8>] (worker_thread) from [<c0148a4c>] (kthread+0x=
+e4/0xf0)
+| [   14.155739] [<c0148a4c>] (kthread) from [<c0100170>] (ret_from_fork+0x=
+14/0x24)
+| [   14.162973] Exception stack(0xc2097fb0 to 0xc2097ff8)
+| [   14.168032] 7fa0:                                     00000000 0000000=
+0 00000000 00000000
+| [   14.176217] 7fc0: 00000000 00000000 00000000 00000000 00000000 0000000=
+0 00000000 00000000
+| [   14.184402] 7fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+| [   14.191309] fec 2188000.ethernet lan0: Link is Up - 100Mbps/Full - flo=
+w control rx/tx
+
+Reverting this patch "fixes" the problem.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--nmiq5bnmmqpp4iua
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmMKQbAACgkQrX5LkNig
+010bEAf/UWJ+/nOWssgQgwArjVxAvpQhXfmZ8Tiv8eCHstsOwWPBh95qPLZpA6f6
+npFTo5cp7VQafut8HWQxGTxksyXqt5GooZz0SCjHOBCUDKiAGsU//CsovpSR2Hiz
+mnSV3O0nRfdTc+ZP21/GmwbEsHn+GoomnqvAqDONByg/SmOf/e9XuLGJFXG/hfag
++fVS7d/GlLmWUU5W57T4g/Hj8l9BQ/nqK7dlUT0ND3tJ0au162PVIU9b5lwm/Uuj
+KuIu2JDglxvKaDLhgtcFW31cQCMsHpujGMIRxvLm25ATdwRWOyYn3/yxZEx7fan4
++HjKNyZ1IM2uYnnGq/4ssuk3dBMERA==
+=PkKR
+-----END PGP SIGNATURE-----
+
+--nmiq5bnmmqpp4iua--
