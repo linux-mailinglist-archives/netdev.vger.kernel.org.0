@@ -2,82 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 230EE5A3724
-	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 13:04:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231045A3732
+	for <lists+netdev@lfdr.de>; Sat, 27 Aug 2022 13:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234302AbiH0LEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 27 Aug 2022 07:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
+        id S233440AbiH0LMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 27 Aug 2022 07:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiH0LD7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 07:03:59 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34B59A9A9;
-        Sat, 27 Aug 2022 04:03:57 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id x80so31010pgx.0;
-        Sat, 27 Aug 2022 04:03:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=9QPIuF5VX05eaazS36ZR/e2rlmTFI6M8eQ+pda8Kkzw=;
-        b=k3yu5fZPhUeyIYn086KuMw3nERywjq3XN4eU/iqmd7Nb33+FIhNVcnXCmrQ2W6pLFa
-         +/Fe9Hc13pMESNY2Z7n66WvCYyB6bZkXk455cKTMgQhRUOPlzaML/eq357inOfR0sYix
-         LI72To+iizth3EszqkLT8jW7BZckiYJ0Inyxl4jrtTYkcXbh0ZfwwCV2XeqzSmExsuWS
-         khIsVhMAJaYtMFXW3kStXM8FNMrgZotymqZ7FkTlAlkyO/RshmjrFwf4KzgDo4upOpBt
-         E/0WyMUlL2tnoedM0BHXXzlaR0mBhdu4BWWLvMH9sv1MU9i+QOIIVPsYHK3edWUbMR8N
-         rdHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=9QPIuF5VX05eaazS36ZR/e2rlmTFI6M8eQ+pda8Kkzw=;
-        b=sgkm4o2WPyW3fcg3H4GM9i5KSjmL2rCV9rNKLheWFjJR3tTFBroO5plcISkPhAGxD4
-         Un0JYSGFgLxv5gHVD8X9PQJRHeS8uVUF+TVV13cm5LaQ+B0yAWXzwk4z9yTNT+3fdSK2
-         lurDCbb6R/palx06Wb/nr8jnfFwajJbO9L7TcmU24GQWJPLv0jspVb77Ro6Oj2z9duYS
-         KY9sxop4lJFWb/lvUXqp9h9JZ+PkA4kK5eFP2j016srfm36xDnEcna/T0LIAUEwBNAJr
-         JQMz/EI1zIPfP8s+gLEsQwJUX2KTgYd+qBbwfQm2TRmRIuqmADm9k/+q1o06RbSeOR7X
-         Z9Gg==
-X-Gm-Message-State: ACgBeo0x7RYss8UjFl9JpdsnUV+tId45QZTKHwQL0+YEHdvGZtgPw0RG
-        0/A9vE+RCIW/wtJieyKSNnbYmy+g5H3t7jY6qLk=
-X-Google-Smtp-Source: AA6agR48PF1cBouEoLENq1yBECMWDiJxkro+jc/gbXeo/l743DQRtxmIr00k4auLoGGo03BwaUnI/Sf4Q8CME8H0cMg=
-X-Received: by 2002:a05:6a00:13a2:b0:537:159c:4413 with SMTP id
- t34-20020a056a0013a200b00537159c4413mr7939849pfg.8.1661598237317; Sat, 27 Aug
- 2022 04:03:57 -0700 (PDT)
+        with ESMTP id S230176AbiH0LMn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 27 Aug 2022 07:12:43 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [81.169.146.166])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F11954C99;
+        Sat, 27 Aug 2022 04:12:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1661598744;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=VaJk7sINEIae+TNpvJ5IvFGcM4VJpS4JY8vRgYaAwNo=;
+    b=B2xS/I0gWOpeNipmsYABfVSUN4RhWuEBF0eWc1yd0Qds8tdmY8YN0ZUKtdY4EN7Eno
+    72jNfgxe8AOs84207oWUp6zr8pQetJfVceqPiV9t8CZ4Gf2DnxXUzwuFCFonX7L2Zf/1
+    2whgR4oUgVALbgv1PAn2FvCv7RSddA70MF01/GT98RRfO5DMEkOHNF4noKBZHaLCgkg0
+    ds2DkcE7F5iErMj/hTUY8V8vPZZh4BMIaeW6GLeo8+F8dID2A+3rDh/H3O67Qz5AyoOr
+    Kx/VSTHLHuwW/sl0dnGb7+J5GRsxDdKP82wqkVY38k3g4b3hmQHzAR3iCF3Sx9wYPhfa
+    2Img==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdIrpKytISr6jamATg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfd:d104::1e4]
+    by smtp.strato.de (RZmta 47.47.0 AUTH)
+    with ESMTPSA id Icb1b0y7RBCNIdT
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Sat, 27 Aug 2022 13:12:23 +0200 (CEST)
+Message-ID: <33cab5f4-8391-a59f-0873-b359c9c13917@hartkopp.net>
+Date:   Sat, 27 Aug 2022 13:12:17 +0200
 MIME-Version: 1.0
-References: <20220706172814.169274-1-james.hilliard1@gmail.com>
- <a0bddf0b-e8c4-46ce-b7c6-a22809af1677@fb.com> <CADvTj4ovwExtM-bWUpJELy-OqsT=J9stmqbAXto8ds2n+G8mfw@mail.gmail.com>
- <CAEf4BzYwRyXG1zE5BK1ZXmxLh+ZPU0=yQhNhpqr0JmfNA30tdQ@mail.gmail.com>
- <87v8s260j1.fsf@oracle.com> <CAADnVQLQGHoj_gCOvdFFw2pRxgMubPSp+bRpFeCSa5zvcK2qRQ@mail.gmail.com>
- <CADvTj4qqxckZmxvL=97e-2W5M4DgCCMDV8RCFDg23+cY2URjTA@mail.gmail.com>
- <20220713011851.4a2tnqhdd5f5iwak@macbook-pro-3.dhcp.thefacebook.com>
- <CADvTj4o7z7J=4BOtKM9dthZyfFogV6hL5zKBwiBq7vs+bNhUHA@mail.gmail.com> <CAADnVQJAz7BcZjrBwu-8MjQprh86Z_UpWGMSQtFnowZTc4d6Vw@mail.gmail.com>
-In-Reply-To: <CAADnVQJAz7BcZjrBwu-8MjQprh86Z_UpWGMSQtFnowZTc4d6Vw@mail.gmail.com>
-From:   James Hilliard <james.hilliard1@gmail.com>
-Date:   Sat, 27 Aug 2022 05:03:44 -0600
-Message-ID: <CADvTj4rrUYr0QVRtXL3AfSV8GnwyGioTd_HXD1ca03My_CNBYw@mail.gmail.com>
-Subject: Re: [PATCH v2] bpf/scripts: Generate GCC compatible helpers
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "Jose E. Marchesi" <jose.marchesi@oracle.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Yonghong Song <yhs@fb.com>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.2
+Subject: Re: [RFC PATCH 1/1] can: virtio: Initial virtio CAN driver.
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Harald Mommer <harald.mommer@opensynergy.com>
+Cc:     virtio-dev@lists.oasis-open.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dariusz Stojaczyk <Dariusz.Stojaczyk@opensynergy.com>,
+        Harald Mommer <hmo@opensynergy.com>
+References: <20220825134449.18803-1-harald.mommer@opensynergy.com>
+ <20220827093909.ag3zi7k525k4zuqq@pengutronix.de>
+Content-Language: en-US
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220827093909.ag3zi7k525k4zuqq@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,137 +69,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 12, 2022 at 7:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jul 12, 2022 at 6:29 PM James Hilliard
-> <james.hilliard1@gmail.com> wrote:
-> >
-> > On Tue, Jul 12, 2022 at 7:18 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> > >
-> > > On Tue, Jul 12, 2022 at 07:10:27PM -0600, James Hilliard wrote:
-> > > > On Tue, Jul 12, 2022 at 10:48 AM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > On Tue, Jul 12, 2022 at 4:20 AM Jose E. Marchesi
-> > > > > <jose.marchesi@oracle.com> wrote:
-> > > > > >
-> > > > > >
-> > > > > > > CC Quentin as well
-> > > > > > >
-> > > > > > > On Mon, Jul 11, 2022 at 5:11 PM James Hilliard
-> > > > > > > <james.hilliard1@gmail.com> wrote:
-> > > > > > >>
-> > > > > > >> On Mon, Jul 11, 2022 at 5:36 PM Yonghong Song <yhs@fb.com> wrote:
-> > > > > > >> >
-> > > > > > >> >
-> > > > > > >> >
-> > > > > > >> > On 7/6/22 10:28 AM, James Hilliard wrote:
-> > > > > > >> > > The current bpf_helper_defs.h helpers are llvm specific and don't work
-> > > > > > >> > > correctly with gcc.
-> > > > > > >> > >
-> > > > > > >> > > GCC appears to required kernel helper funcs to have the following
-> > > > > > >> > > attribute set: __attribute__((kernel_helper(NUM)))
-> > > > > > >> > >
-> > > > > > >> > > Generate gcc compatible headers based on the format in bpf-helpers.h.
-> > > > > > >> > >
-> > > > > > >> > > This adds conditional blocks for GCC while leaving clang codepaths
-> > > > > > >> > > unchanged, for example:
-> > > > > > >> > >       #if __GNUC__ && !__clang__
-> > > > > > >> > >       void *bpf_map_lookup_elem(void *map, const void *key)
-> > > > > > >> > > __attribute__((kernel_helper(1)));
-> > > > > > >> > >       #else
-> > > > > > >> > >       static void *(*bpf_map_lookup_elem)(void *map, const void *key) = (void *) 1;
-> > > > > > >> > >       #endif
-> > > > > > >> >
-> > > > > > >> > It does look like that gcc kernel_helper attribute is better than
-> > > > > > >> > '(void *) 1' style. The original clang uses '(void *) 1' style is
-> > > > > > >> > just for simplicity.
-> > > > > > >>
-> > > > > > >> Isn't the original style going to be needed for backwards compatibility with
-> > > > > > >> older clang versions for a while?
-> > > > > > >
-> > > > > > > I'm curious, is there any added benefit to having this special
-> > > > > > > kernel_helper attribute vs what we did in Clang for a long time?
-> > > > > > > Did GCC do it just to be different and require workarounds like this
-> > > > > > > or there was some technical benefit to this?
-> > > > > >
-> > > > > > We did it that way so we could make trouble and piss you off.
-> > > > > >
-> > > > > > Nah :)
-> > > > > >
-> > > > > > We did it that way because technically speaking the clang construction
-> > > > > > works relying on particular optimizations to happen to get correct
-> > > > > > compiled programs, which is not guaranteed to happen and _may_ break in
-> > > > > > the future.
-> > > > > >
-> > > > > > In fact, if you compile a call to such a function prototype with clang
-> > > > > > with -O0 the compiler will try to load the function's address in a
-> > > > > > register and then emit an invalid BPF instruction:
-> > > > > >
-> > > > > >   28:   8d 00 00 00 03 00 00 00         *unknown*
-> > > > > >
-> > > > > > On the other hand the kernel_helper attribute is bullet-proof: will work
-> > > > > > with any optimization level, with any version of the compiler, and in
-> > > > > > our opinion it is also more readable, more tidy and more correct.
-> > > > > >
-> > > > > > Note I'm not saying what you do in clang is not reasonable; it may be,
-> > > > > > obviously it works well enough for you in practice.  Only that we have
-> > > > > > good reasons for doing it differently in GCC.
-> > > > >
-> > > > > Not questioning the validity of the reasons, but they created
-> > > > > the unnecessary difference between compilers.
-> > > >
-> > > > Sounds to me like clang is relying on an unreliable hack that may
-> > > > be difficult to implement in GCC, so let's see what's the best option
-> > > > moving forwards in terms of a migration path for both GCC and clang.
-> > >
-> > > The following is a valid C code:
-> > > static long (*foo) (void) = (void *) 1234;
-> > > foo();
-> > >
-> > > and GCC has to generate correct assembly assuming it runs at -O1 or higher.
-> >
-> > Providing -O1 or higher with gcc-bpf does not seem to work at the moment.
->
-> Let's fix gcc first.
 
-FYI this should now be fixed in master:
-https://github.com/gcc-mirror/gcc/commit/6d1f144b3e6e3761375bea657718f58fb720fb44
 
->
-> > > There is no indirect call insn defined in BPF ISA yet,
-> > > so the -O0 behavior is undefined.
-> >
-> > Well GCC at least seems to be able to compile BPF programs with -O0 using
-> > kernel_helper. I assume -O0 is probably just targeting the minimum BPF ISA
-> > optimization level or something like that which avoids indirect calls.
->
-> There are other reasons why -O0 compiled progs will
-> fail in the verifier.
->
-> > >
-> > > > Or we can just feature detect kernel_helper and leave the (void *)1 style
-> > > > fallback in place until we drop support for clang variants that don't support
-> > > > kernel_helper. This would provide GCC compatibility and a better migration
-> > > > path for clang as well as clang will then automatically use the new variant
-> > > > whenever support for kernel_helper is introduced.
-> > >
-> > > Support for valid C code will not be dropped from clang.
-> >
-> > That wasn't what I was suggesting, I was suggesting adding support for
-> > kernel_helper to clang, and then in the future libbpf(not clang) can
-> > drop support
-> > for the (void *)1 style in the future if desired(or can just keep the
-> > fallback). By
-> > feature detecting kernel_helper and providing a fallback we get a nice clean
-> > migration path.
->
-> Makes sense. That deprecation step is far away though.
-> Assuming that kernel_helper attr is actually necessary
-> we have to add its support to clang as well.
-> We have to keep compilers in sync.
-> gcc-bpf is a niche. If gcc devs want it to become a real
-> alternative to clang they have to always aim for feature parity
-> instead of inventing their own ways of doing things.
+On 8/27/22 11:39, Marc Kleine-Budde wrote:
+> On 25.08.2022 15:44:49, Harald Mommer wrote:
+>> - CAN Control
+>>
+>>    - "ip link set up can0" starts the virtual CAN controller,
+>>    - "ip link set up can0" stops the virtual CAN controller
+>>
+>> - CAN RX
+>>
+>>    Receive CAN frames. CAN frames can be standard or extended, classic or
+>>    CAN FD. Classic CAN RTR frames are supported.
+>>
+>> - CAN TX
+>>
+>>    Send CAN frames. CAN frames can be standard or extended, classic or
+>>    CAN FD. Classic CAN RTR frames are supported.
+>>
+>> - CAN Event indication (BusOff)
+>>
+>>    The bus off handling is considered code complete but until now bus off
+>>    handling is largely untested.
+> 
+> Is there an Open Source implementation of the host side of this
+> interface?
+> 
+> Please fix these checkpatch warnings:
+> 
+> | WARNING: added, moved or deleted file(s), does MAINTAINERS need updating?
+> | #65:
+> | new file mode 100644
+> |
+> | WARNING: Use #include <linux/atomic.h> instead of <asm/atomic.h>
+> | #105: FILE: drivers/net/can/virtio_can/virtio_can.c:7:
+> | +#include <asm/atomic.h>
+> |
+> | WARNING: __always_unused or __maybe_unused is preferred over __attribute__((__unused__))
+> | #186: FILE: drivers/net/can/virtio_can/virtio_can.c:88:
+> | +static void __attribute__((unused))
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #263: FILE: drivers/net/can/virtio_can/virtio_can.c:165:
+> | +	BUG_ON(prio != 0); /* Currently only 1 priority */
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #264: FILE: drivers/net/can/virtio_can/virtio_can.c:166:
+> | +	BUG_ON(atomic_read(&priv->tx_inflight[0]) >= priv->can.echo_skb_max);
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #279: FILE: drivers/net/can/virtio_can/virtio_can.c:181:
+> | +	BUG_ON(prio >= VIRTIO_CAN_PRIO_COUNT);
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #280: FILE: drivers/net/can/virtio_can/virtio_can.c:182:
+> | +	BUG_ON(idx >= priv->can.echo_skb_max);
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #281: FILE: drivers/net/can/virtio_can/virtio_can.c:183:
+> | +	BUG_ON(atomic_read(&priv->tx_inflight[prio]) == 0);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #288: FILE: drivers/net/can/virtio_can/virtio_can.c:190:
+> | +/*
+> | + * Create a scatter-gather list representing our input buffer and put
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #309: FILE: drivers/net/can/virtio_can/virtio_can.c:211:
+> | +/*
+> | + * Send a control message with message type either
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #332: FILE: drivers/net/can/virtio_can/virtio_can.c:234:
+> | +	/*
+> | +	 * The function may be serialized by rtnl lock. Not sure.
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #382: FILE: drivers/net/can/virtio_can/virtio_can.c:284:
+> | +/*
+> | + * See also m_can.c/m_can_set_mode()
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #408: FILE: drivers/net/can/virtio_can/virtio_can.c:310:
+> | +/*
+> | + * Called by issuing "ip link set up can0"
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #443: FILE: drivers/net/can/virtio_can/virtio_can.c:345:
+> | +	/*
+> | +	 * Keep RX napi active to allow dropping of pending RX CAN messages,
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #481: FILE: drivers/net/can/virtio_can/virtio_can.c:383:
+> | +	/*
+> | +	 * No local check for CAN_RTR_FLAG or FD frame against negotiated
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #521: FILE: drivers/net/can/virtio_can/virtio_can.c:423:
+> | +		/*
+> | +		 * May happen if
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #533: FILE: drivers/net/can/virtio_can/virtio_can.c:435:
+> | +	BUG_ON(can_tx_msg->putidx < 0);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #613: FILE: drivers/net/can/virtio_can/virtio_can.c:515:
+> | +		/*
+> | +		 * Here also frames with result != VIRTIO_CAN_RESULT_OK are
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #646: FILE: drivers/net/can/virtio_can/virtio_can.c:548:
+> | +/*
+> | + * Poll TX used queue for sent CAN messages
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #675: FILE: drivers/net/can/virtio_can/virtio_can.c:577:
+> | +/*
+> | + * This function is the NAPI RX poll function and NAPI guarantees that this
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #698: FILE: drivers/net/can/virtio_can/virtio_can.c:600:
+> | +	BUG_ON(len < header_size);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #813: FILE: drivers/net/can/virtio_can/virtio_can.c:715:
+> | +/*
+> | + * See m_can_poll() / m_can_handle_state_errors() m_can_handle_state_change().
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #855: FILE: drivers/net/can/virtio_can/virtio_can.c:757:
+> | +/*
+> | + * Poll RX used queue for received CAN messages
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #897: FILE: drivers/net/can/virtio_can/virtio_can.c:799:
+> | +		/*
+> | +		 * The interrupt function is not assumed to be interrupted by
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #904: FILE: drivers/net/can/virtio_can/virtio_can.c:806:
+> | +		BUG_ON(len < sizeof(struct virtio_can_event_ind));
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #966: FILE: drivers/net/can/virtio_can/virtio_can.c:868:
+> | +	/*
+> | +	 * The order of RX and TX is exactly the opposite as in console and
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #976: FILE: drivers/net/can/virtio_can/virtio_can.c:878:
+> | +	BUG_ON(!priv);
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #977: FILE: drivers/net/can/virtio_can/virtio_can.c:879:
+> | +	BUG_ON(!priv->vdev);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1004: FILE: drivers/net/can/virtio_can/virtio_can.c:906:
+> | +	/*
+> | +	 * From here we have dead silence from the device side so no locks
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1025: FILE: drivers/net/can/virtio_can/virtio_can.c:927:
+> | +	/*
+> | +	 * Is keeping track of allocated elements by an own linked list
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #1060: FILE: drivers/net/can/virtio_can/virtio_can.c:962:
+> | +	BUG_ON(!vdev);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1063: FILE: drivers/net/can/virtio_can/virtio_can.c:965:
+> | +	/*
+> | +	 * CAN needs always access to the config space.
+> |
+> | WARNING: Avoid crashing the kernel - try using WARN_ON & recovery code rather than BUG() or BUG_ON()
+> | #1090: FILE: drivers/net/can/virtio_can/virtio_can.c:992:
+> | +	BUG_ON(!vdev);
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1144: FILE: drivers/net/can/virtio_can/virtio_can.c:1046:
+> | +	/*
+> | +	 * It is possible to consider the number of TX queue places to
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1185: FILE: drivers/net/can/virtio_can/virtio_can.c:1087:
+> | +/*
+> | + * Compare with m_can.c/m_can_suspend(), virtio_net.c/virtnet_freeze() and
+> |
+> | WARNING: networking block comments don't use an empty /* line, use /* Comment...
+> | #1210: FILE: drivers/net/can/virtio_can/virtio_can.c:1112:
+> | +/*
+> | + * Compare with m_can.c/m_can_resume(), virtio_net.c/virtnet_restore() and
+> |
+> | WARNING: Prefer "GPL" over "GPL v2" - see commit bf7fbeeae6db ("module: Cure the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
+> | #1273: FILE: drivers/net/can/virtio_can/virtio_can.c:1175:
+> | +MODULE_LICENSE("GPL v2");
+
+Btw. @Harald:
+
+When you want to express your code to be GPLv2 why is your code GPL-2.0+ 
+then?
+
+diff --git a/drivers/net/can/virtio_can/virtio_can.c 
+b/drivers/net/can/virtio_can/virtio_can.c
+new file mode 100644
+index 000000000000..dafbe5a36511
+--- /dev/null
++++ b/drivers/net/can/virtio_can/virtio_can.c
+@@ -0,0 +1,1176 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * CAN bus driver for the Virtio CAN controller
++ * Copyright (C) 2021 OpenSynergy GmbH
++ */
+
+Best regards,
+Oliver
+
+> |
+> | WARNING: From:/Signed-off-by: email address mismatch: 'From: Harald Mommer <harald.mommer@opensynergy.com>' != 'Signed-off-by: Harald Mommer <hmo@opensynergy.com>'
+> |
+> | total: 0 errors, 38 warnings, 1275 lines checked
+> 
+> regards,
+> Marc
+> 
