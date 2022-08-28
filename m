@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF2055A3C3D
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 08:34:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15AB25A3C3E
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 08:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232297AbiH1Gas (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 02:30:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
+        id S232173AbiH1Gaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 02:30:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232065AbiH1Gan (ORCPT
+        with ESMTP id S232060AbiH1Gan (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 02:30:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E61B932AA0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 987D332A9F
         for <netdev@vger.kernel.org>; Sat, 27 Aug 2022 23:30:40 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoQ-0003be-1n; Sun, 28 Aug 2022 08:30:26 +0200
+        id 1oSBoQ-0003bl-1o; Sun, 28 Aug 2022 08:30:26 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoO-002QZg-H2; Sun, 28 Aug 2022 08:30:24 +0200
+        id 1oSBoP-002QZp-2p; Sun, 28 Aug 2022 08:30:25 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oSBoN-00GdAm-47; Sun, 28 Aug 2022 08:30:23 +0200
+        id 1oSBoN-00GdAw-4u; Sun, 28 Aug 2022 08:30:23 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -43,10 +43,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         David Jander <david@protonic.nl>,
         Luka Perkov <luka.perkov@sartura.hr>,
         Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v4 0/7] add generic PSE support 
-Date:   Sun, 28 Aug 2022 08:30:14 +0200
-Message-Id: <20220828063021.3963761-1-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v4 1/7] dt-bindings: net: phy: add PoDL PSE property
+Date:   Sun, 28 Aug 2022 08:30:15 +0200
+Message-Id: <20220828063021.3963761-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220828063021.3963761-1-o.rempel@pengutronix.de>
+References: <20220828063021.3963761-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -62,48 +64,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add generic support for the Ethernet Power Sourcing Equipment.
+Add property to reference node representing a PoDL Power Sourcing Equipment.
 
-changes are listed within patches.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ Documentation/devicetree/bindings/net/ethernet-phy.yaml | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Oleksij Rempel (7):
-  dt-bindings: net: phy: add PoDL PSE property
-  net: add framework to support Ethernet PSE and PDs devices
-  net: mdiobus: fwnode_mdiobus_register_phy() rework error handling
-  net: mdiobus: search for PSE nodes by parsing PHY nodes.
-  ethtool: add interface to interact with Ethernet Power Equipment
-  dt-bindings: net: pse-dt: add bindings for generic PSE controller
-  net: pse-pd: add regulator based PSE driver
-
- .../devicetree/bindings/net/ethernet-phy.yaml |   5 +
- .../bindings/net/pse-pd/pse-regulator.yaml    |  40 ++
- Documentation/networking/ethtool-netlink.rst  |  59 +++
- drivers/net/Kconfig                           |   2 +
- drivers/net/Makefile                          |   1 +
- drivers/net/mdio/fwnode_mdio.c                |  55 ++-
- drivers/net/phy/phy_device.c                  |   2 +
- drivers/net/pse-pd/Kconfig                    |  22 ++
- drivers/net/pse-pd/Makefile                   |   6 +
- drivers/net/pse-pd/pse_core.c                 | 363 ++++++++++++++++++
- drivers/net/pse-pd/pse_regulator.c            | 148 +++++++
- include/linux/phy.h                           |   2 +
- include/linux/pse-pd/pse.h                    | 155 ++++++++
- include/uapi/linux/ethtool.h                  |  45 +++
- include/uapi/linux/ethtool_netlink.h          |  17 +
- net/ethtool/Makefile                          |   3 +-
- net/ethtool/common.h                          |   1 +
- net/ethtool/netlink.c                         |  19 +
- net/ethtool/netlink.h                         |   4 +
- net/ethtool/pse-pd.c                          | 178 +++++++++
- 20 files changed, 1115 insertions(+), 12 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/pse-pd/pse-regulator.yaml
- create mode 100644 drivers/net/pse-pd/Kconfig
- create mode 100644 drivers/net/pse-pd/Makefile
- create mode 100644 drivers/net/pse-pd/pse_core.c
- create mode 100644 drivers/net/pse-pd/pse_regulator.c
- create mode 100644 include/linux/pse-pd/pse.h
- create mode 100644 net/ethtool/pse-pd.c
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+index ed1415a4381f2..0b7b9dc69d454 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
+@@ -144,6 +144,11 @@ properties:
+       Mark the corresponding energy efficient ethernet mode as
+       broken and request the ethernet to stop advertising it.
+ 
++  ieee802.3-pse:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Specifies a reference to a node representing a Power Sourcing Equipment.
++
+   phy-is-integrated:
+     $ref: /schemas/types.yaml#/definitions/flag
+     description:
 -- 
 2.30.2
 
