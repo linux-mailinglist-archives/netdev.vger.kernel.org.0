@@ -2,139 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 94BDB5A3D36
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 12:44:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 691485A3D41
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 13:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiH1Koc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 06:44:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52238 "EHLO
+        id S229617AbiH1LD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 07:03:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229560AbiH1Koa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 06:44:30 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8634613CDB
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 03:44:28 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id m17-20020a7bce11000000b003a5bedec07bso6716614wmc.0
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 03:44:28 -0700 (PDT)
+        with ESMTP id S229486AbiH1LDY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 07:03:24 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2079525EB0;
+        Sun, 28 Aug 2022 04:03:23 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-33dce2d4bc8so135051587b3.4;
+        Sun, 28 Aug 2022 04:03:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=85rO0BXnVLcRaqiYDdjzNr1g4uH0voSH4cu9w//tBVc=;
-        b=R71+93xpR/gNVc40Aesq8usMDWDhuRubeaTvUt5stGxlyPjw6VTLxM6nqBm/Evbw0t
-         RPST3T6K0S2WEE9al8aMdfM7XWETD+LcEYLUTbfRX67rpuwtSkMKIja5voi79fC5rd83
-         V9SV2YJTyqeRvxP1RdE0ymvYZjO7jCfSCRXYmLr8iCLAeB4MZZ6jPkF3RjMpfmIksL0P
-         JJGK2XJkbsvg+l24gNp+7HnboGLpkU7PS1k3gbkhLYLy5wpIU3WSQVca8retsJCxsZEQ
-         K89cTRHl6hvqCulyzvCZ7bK8ddPG9R7RXYp2YoibiwJN3d3ghD1ST8wLlVUi2a2hTUw+
-         10jg==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=r+ouzV7GsmVD4UNZJ+3dRD0EfUzhHcs91N7oxvmjX50=;
+        b=YteknKlfPSvIVhQ72sQiWwgmuZsP8qxAyGghWV+8ScaxNYmkMw8cbHnQYCDEyKhAR+
+         FIS8bDlWokTV3+YSChO1R/YaGKRLE2jltdwcr2V0oo1RXrTFcZLzM257wcWlAATSB0XZ
+         prG9cVr1W5t0fShPhzlhq6rUZsAb0As/aK+57+2OFwlXrCcUHhnEwbff5aIelOVkKq6T
+         ZCPX33tiqV82sucAm8MToFeMX7PpPak3Zv0Z5BruQ5kXf5gKrH0kJHpqipOgV+fMxn75
+         9nx8SGdXplNCZh2mVwAZl2U50SVC2Nlqq+ktoS14p9qpbcgDnXGmKvghU4I/o6zv/m8D
+         iUKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=85rO0BXnVLcRaqiYDdjzNr1g4uH0voSH4cu9w//tBVc=;
-        b=oBHjiuWFiDWqKRLtgmPr77hj08QD9IeifjxAxe4hOP5yW6pHIXqEE+GlNPK9KawBl0
-         FkSk2E1Yg+Qv30c3cJWf/DyNuMolEcZDsI+yZgxdksJ4++mQ2Wo3A77SgTdCsmtOqsOr
-         JEaB2bTWQDITqZrgnYWSaPGFRMoFA6r7r6K4fmullhcr5D3bXZb41+sQrzBiUG1bfZNJ
-         uM5pj8tfUEWqavoOkrS526yvD4KrwmeIDZPMroMADW0hmkK+q8W9gbIENvtG623vlFc3
-         bojrFUoOtHSLXubuuw1Lhz14R4rvHTqi9KOdIqDo9vdpBVUOzT7DVwOIjjk8U+3Enxh1
-         /nYw==
-X-Gm-Message-State: ACgBeo13Cfd/jTRES3SudF4cIBy7RRGHCvV2LK2GdQenHaD4f9yYKZDM
-        4tnf79xCkbLOB087eq32VF3uRg==
-X-Google-Smtp-Source: AA6agR5pJB1ycqIn1E2FAvrQUq+bYeyS5CvdIKtscf0H0i//AtxYNVhMJH975ePw5ly8d7dyKX7h7A==
-X-Received: by 2002:a05:600c:4e8b:b0:3a5:f5bf:9c5a with SMTP id f11-20020a05600c4e8b00b003a5f5bf9c5amr4331825wmq.85.1661683467029;
-        Sun, 28 Aug 2022 03:44:27 -0700 (PDT)
-Received: from equinox (2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0::2])
-        by smtp.gmail.com with ESMTPSA id r38-20020a05600c322600b003a536d5aa2esm5196364wmp.11.2022.08.28.03.44.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 03:44:26 -0700 (PDT)
-Date:   Sun, 28 Aug 2022 11:44:24 +0100
-From:   Phillip Potter <phil@philpotter.co.uk>
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Alexander Potapenko <glider@google.com>,
-        ath9k-devel@qca.qualcomm.com, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-Message-ID: <YwtHCDTRMtXe/VTt@equinox>
-References: <000000000000c98a7f05ac744f53@google.com>
- <000000000000734fe705acb9f3a2@google.com>
- <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
- <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
- <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
- <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com>
- <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=r+ouzV7GsmVD4UNZJ+3dRD0EfUzhHcs91N7oxvmjX50=;
+        b=GLlduRe6VUPNRTSwBQtWOzIwbFZUNzZ34Y3J3rlIZjSI6h6b9kV2dpGfGUh0BANxbF
+         CY6lrKavPtQtcMzN3aRViBfo9aylHGHsBBtqAIj8E7orMcUNP8PjbCywjcpfN68lZVAb
+         K9lKhV5eFLEAdXk6gtwV4a6A3QxIx9/yesOYZtZfG6JgmJM2OME/1qnR0r/WN4xUiwj+
+         Mos4GSravci+F7QD61H4h90vM1jsO5Mh6eyqGYlYuu4s+3xboytNM7uy2k1MTaEVVwT3
+         kY6P9/YnBIKDKJ6/rdwfANbVM89KrX7XzDF0JOgmPhUxlQphrsa2FWY322PDzBiRVcqF
+         OGwA==
+X-Gm-Message-State: ACgBeo0qeFW1LB6Qc2FZ3AHckockK8neZpe9EH9+xH2fa5bKIgFPUQJh
+        +laq/DEXC8/zQJpTIkLPhgIr/MhwlCiu5Aa4PCaJQmYkRLhj4IaM
+X-Google-Smtp-Source: AA6agR7z0W6+dzuqhcXgo25U/keFBs5uhWuoRjPhaWxGCWmNzBAMxP4DdKEFnv4K8m25vLE9fvD2Kwa2SS4WOPFODM4=
+X-Received: by 2002:a0d:f2c6:0:b0:329:c117:c990 with SMTP id
+ b189-20020a0df2c6000000b00329c117c990mr6472697ywf.464.1661684601900; Sun, 28
+ Aug 2022 04:03:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <46fee955-a5fa-fbd6-bcc4-d9344e6801d9@I-love.SAKURA.ne.jp>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
+In-Reply-To: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
+From:   Jiacheng Xu <578001344xu@gmail.com>
+Date:   Sun, 28 Aug 2022 19:03:07 +0800
+Message-ID: <CAO4S-mfTNEKCs8ZQcT09wDzxX8MfidmbTVzaFMD3oG4i7Ytynw@mail.gmail.com>
+Subject: Re: possible deadlock in rfcomm_sk_state_change
+To:     linux-kernel@vger.kernel.org, marcel@holtmann.org,
+        johan.hedberg@gmail.com, desmondcheongzx@gmail.com
+Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 10:35:43AM +0900, Tetsuo Handa wrote:
-> On 2022/08/26 0:09, Alexander Potapenko wrote:
-> > On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
-> > <penguin-kernel@i-love.sakura.ne.jp> wrote:
-> >>
-> >> Hello.
-> > Hi Tetsuo,
-> > 
-> >> I found that your patch was applied. But since the reproducer tested only 0 byte
-> >> case, I think that rejecting only less than sizeof(struct htc_frame_hdr) bytes
-> >> is not sufficient.
-> >>
-> >> More complete patch with Ack from Toke is waiting at
-> >> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.SAKURA.ne.jp .
-> > 
-> > Thanks for letting me know! I just checked that your patch indeed
-> > fixes the issue I am facing.
-> > If it is more complete, I think we'd indeed better use yours.
-> 
-> I recognized that "ath9k: fix an uninit value use in ath9k_htc_rx_msg()" is
-> local to KMSAN tree.
-> https://github.com/google/kmsan/commit/d891e35583bf2e81ccc7a2ea548bf7cf47329f40
-> 
-> That patch needs to be dropped, for I confirmed that passing pad_len == 8 below
-> still triggers uninit value at ath9k_htc_fw_panic_report(). (My patch does not
-> trigger at ath9k_htc_fw_panic_report().)
-> 
->         fd = syz_usb_connect_ath9k(3, 0x5a, 0x20000800, 0);
->         *(uint16_t*)0x20000880 = 0 + pad_len;
->         *(uint16_t*)0x20000882 = 0x4e00;
->         memmove((uint8_t*)0x20000884, "\x99\x11\x22\x33\x00\x00\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF", 16);
->         syz_usb_ep_write(fd, 0x82, 4 + pad_len, 0x20000880);
-> 
-> 
-> 
-> Also, that patch has a skb leak bug; according to comment for ath9k_htc_rx_msg()
-> 
->  * Service messages (Data, WMI) passed to the corresponding
->  * endpoint RX handlers, which have to free the SKB.
-> 
-> , I think that this function is supposed to free skb if skb != NULL.
-> 
-> If dev_kfree_skb_any(skb) needs to be used when epid is invalid and pipe_id != USB_REG_IN_PIPE,
-> why it is OK to use kfree_skb(skb) if epid == 0x99 and pipe_id != USB_REG_IN_PIPE ?
-> 
-> We don't call kfree_skb(skb) if 0 < epid < ENDPOINT_MAX and endpoint->ep_callbacks.rx == NULL.
-> Why it is OK not to call kfree_skb(skb) in that case?
-> 
-> Callers can't pass such combinations? I leave these questions to ath9k developers...
+Hi,
+
+I believe the deadlock is more than possible but actually real.
+I got a poc that could stably trigger the deadlock.
+
+poc: https://drive.google.com/file/d/1PjqvMtHsrrGM1MIRGKl_zJGR-teAMMQy/view?usp=sharing
+
+Description/Root cause:
+In rfcomm_sock_shutdown(), lock_sock() is called when releasing and
+shutting down socket.
+However, lock_sock() has to be called once more when the sk_state is
+changed because the
+lock is not always held when rfcomm_sk_state_change() is called. One
+such call stack is:
+
+  rfcomm_sock_shutdown():
+    lock_sock();
+    __rfcomm_sock_close():
+      rfcomm_dlc_close():
+        __rfcomm_dlc_close():
+          rfcomm_dlc_lock();
+          rfcomm_sk_state_change():
+            lock_sock();
+
+Besides the recursive deadlock, there is also an
+issue of a lock hierarchy inversion between rfcomm_dlc_lock() and
+lock_sock() if the socket is locked in rfcomm_sk_state_change().
+
+Reference: https://lore.kernel.org/all/20211004180734.434511-1-desmondcheongzx@gmail.com/
+
+On Sun, Aug 28, 2022 at 12:19 AM Jiacheng Xu <578001344xu@gmail.com> wrote:
 >
-
-Hi Tetsuo,
-
-Thank you for this improved patch. My original one was somewhat naive
-attempt at a resolution.
-
-Regards,
-Phil
+> Hello,
+>
+> When using modified Syzkaller to fuzz the Linux kernel-5.19, the
+> following crash was triggered.
+> We would appreciate a CVE ID if this is a security issue.
+>
+> HEAD commit: 3d7cb6b04c3f Linux-5.19
+> git tree: upstream
+>
+> console output:
+> https://drive.google.com/file/d/1NmOGWcfPnY2kSrS0nOwvG1AZ923jFQ3p/view?usp=sharing
+> kernel config: https://drive.google.com/file/d/1wgIUDwP5ho29AM-K7HhysSTfWFpfXYkG/view?usp=sharing
+> syz repro: https://drive.google.com/file/d/16hUTEGw4IcPQA9CZvoF7I5la42TlU-Cx/view?usp=sharing
+> C reproducer: https://drive.google.com/file/d/1YvgzTvV4qaSZPiD4D1IWGL4GuapzHD2w/view?usp=sharing
+>
+> Environment:
+> Ubuntu 20.04 on Linux 5.4.0
+> QEMU 4.2.1:
+> qemu-system-x86_64 \
+>   -m 2G \
+>   -smp 2 \
+>   -kernel /home/workdir/bzImage \
+>   -append "console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
+>   -drive file=/home/workdir/stretch.img,format=raw \
+>   -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
+>   -net nic,model=e1000 \
+>   -enable-kvm \
+>   -nographic \
+>   -pidfile vm.pid \
+>   2>&1 | tee vm.log
+>
+> If you fix this issue, please add the following tag to the commit:
+> Reported-by Jiacheng Xu<578001344xu@gmail.com>
+>
+> ============================================
+> WARNING: possible recursive locking detected
+> 5.19.0 #1 Not tainted
+> --------------------------------------------
+> syz-executor/9064 is trying to acquire lock:
+> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
+> at: lock_sock include/net/sock.h:1677 [inline]
+> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
+> at: rfcomm_sk_state_change+0x6e/0x3a0 net/bluetooth/rfcomm/sock.c:73
+>
+> but task is already holding lock:
+> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
+> at: lock_sock include/net/sock.h:1677 [inline]
+> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
+> at: rfcomm_sock_shutdown+0x57/0x220 net/bluetooth/rfcomm/sock.c:902
+>
+> other info that might help us debug this:
+>  Possible unsafe locking scenario:
+>
+>        CPU0
+>        ----
+>   lock(sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM);
+>   lock(sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM);
+>
+>  *** DEADLOCK ***
+>
+>  May be due to missing lock nesting notation
+>
+> 4 locks held by syz-executor/9064:
+>  #0: ffff888110dac410 (&sb->s_type->i_mutex_key#12){+.+.}-{3:3}, at:
+> inode_lock include/linux/fs.h:741 [inline]
+>  #0: ffff888110dac410 (&sb->s_type->i_mutex_key#12){+.+.}-{3:3}, at:
+> __sock_release+0x86/0x280 net/socket.c:649
+>  #1: ffff888026b13130
+> (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: lock_sock
+> include/net/sock.h:1677 [inline]
+>  #1: ffff888026b13130
+> (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at:
+> rfcomm_sock_shutdown+0x57/0x220 net/bluetooth/rfcomm/sock.c:902
+>  #2: ffffffff8d7d8428 (rfcomm_mutex){+.+.}-{3:3}, at:
+> rfcomm_dlc_close+0x34/0x240 net/bluetooth/rfcomm/core.c:507
+>  #3: ffff8880155d2d28 (&d->lock){+.+.}-{3:3}, at:
+> __rfcomm_dlc_close+0x157/0x710 net/bluetooth/rfcomm/core.c:487
+>
+> stack backtrace:
+> CPU: 0 PID: 9064 Comm: syz-executor Not tainted 5.19.0 #1
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> Call Trace:
+>  <TASK>
+>  __dump_stack lib/dump_stack.c:88 [inline]
+>  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+>  print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
+>  check_deadlock kernel/locking/lockdep.c:3031 [inline]
+>  validate_chain kernel/locking/lockdep.c:3816 [inline]
+>  __lock_acquire.cold+0x152/0x3ca kernel/locking/lockdep.c:5053
+>  lock_acquire kernel/locking/lockdep.c:5665 [inline]
+>  lock_acquire+0x1ab/0x580 kernel/locking/lockdep.c:5630
+>  lock_sock_nested+0x36/0xf0 net/core/sock.c:3389
+>  lock_sock include/net/sock.h:1677 [inline]
+>  rfcomm_sk_state_change+0x6e/0x3a0 net/bluetooth/rfcomm/sock.c:73
+>  __rfcomm_dlc_close+0x1ab/0x710 net/bluetooth/rfcomm/core.c:489
+>  rfcomm_dlc_close+0x1ea/0x240 net/bluetooth/rfcomm/core.c:520
+>  __rfcomm_sock_close+0xda/0x260 net/bluetooth/rfcomm/sock.c:220
+>  rfcomm_sock_shutdown+0xf4/0x220 net/bluetooth/rfcomm/sock.c:905
+>  rfcomm_sock_release+0x5f/0x140 net/bluetooth/rfcomm/sock.c:925
+>  __sock_release+0xcd/0x280 net/socket.c:650
+>  sock_close+0x18/0x20 net/socket.c:1365
+>  __fput+0x277/0x9d0 fs/file_table.c:317
+>  task_work_run+0xe0/0x1a0 kernel/task_work.c:177
+>  exit_task_work include/linux/task_work.h:38 [inline]
+>  do_exit+0xaf5/0x2da0 kernel/exit.c:795
+>  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
+>  get_signal+0x2842/0x2870 kernel/signal.c:2857
+>  arch_do_signal_or_restart+0x82/0x2270 arch/x86/kernel/signal.c:869
+>  exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
+>  exit_to_user_mode_prepare+0x174/0x260 kernel/entry/common.c:201
+>  __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
+>  syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
+>  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+>  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> RIP: 0033:0x7f26c3295dfd
+> Code: Unable to access opcode bytes at RIP 0x7f26c3295dd3.
+> RSP: 002b:00007f26c43fcc58 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+> RAX: fffffffffffffffc RBX: 00007f26c33bc0a0 RCX: 00007f26c3295dfd
+> RDX: 0000000000000080 RSI: 0000000020000000 RDI: 0000000000000004
+> RBP: 00007f26c32ff4c1 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f26c33bc0a0
+> R13: 00007ffc2c88f2df R14: 00007ffc2c88f480 R15: 00007f26c43fcdc0
+>  </TASK>
