@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E470E5A3E0F
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 16:33:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 240F15A3E18
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 16:37:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbiH1OdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 10:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59384 "EHLO
+        id S229738AbiH1OhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 10:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiH1OdI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 10:33:08 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4A632DAC;
-        Sun, 28 Aug 2022 07:33:05 -0700 (PDT)
+        with ESMTP id S229542AbiH1OhC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 10:37:02 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7C72314B;
+        Sun, 28 Aug 2022 07:36:59 -0700 (PDT)
 Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 8858222D1;
-        Sun, 28 Aug 2022 16:33:03 +0200 (CEST)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 0E1D59B1;
+        Sun, 28 Aug 2022 16:36:58 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661697183;
+        t=1661697418;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bwtC9ZIuYAB2A3TteH5zPFKqQJ2DrJO4wxsda0FFBrE=;
-        b=KznYoTy9iue5vF7/hSESEctDdioSRs8n4n2hqBIDkzR7gvg4gOF0YLYEo9M5XjBBVFBc/X
-        bU11LaqPWiz4z+BoPkufiLDYa+HiuGL2Sq1Fc3j8sG/eGpvcyWAiEKM8oApVhSkmH4mO8f
-        8XcTEiX0GMUblPaZ8SNao8Y9aPFl51d8qW7ggOFodL1Uzu1WSo3Yag7EjaYaSZhr93Qsst
-        5DBd99KMGwJECymKB9uiNax2rIiQ7zZI8UkzAtyWEZFhZ5hir3Fna0Jtg8oZvrZWM5i16h
-        OJE9ct0u+HOyIY5TVijhw2FvVap8jhHovp/qpW8PcVtpFIKSaqkdsDFWtps3bw==
+        bh=PX7FBllk+cj5XDth3fcwSHpmqNhOA0Ff5hNRkbJfwhM=;
+        b=HRM3E+Ka7cQ3cBsabC1jV/2VqjHV5p2dTJcBx80ZUckS1bEWgbWlS3eTCgcGp5O3M/t/3v
+        vi9oOY77RFWMaP5LQ2SeQKvdOTpkumQZzJd6rQ5UgOoQ4vjA5OT+JHnSPzgGynHkoazdkP
+        lmwpVmIrUUdq7Qr4x9nGygY92tr9eFGeWRkFrPNHEFFTQDd/sorFow7Dc0DRofYQQ0fvTB
+        nTGqCDTNNp/NWRvuyCBRVWEFVxeUfyCnE/q8yiZ2UFdBDT6U8N9atMXyh4GfNn1NGKnG2i
+        yN9UD19aB5Zuqhh9OSvUqlzuEqdhDaGyOnPQngvUrFLTY+kfxm5QETSDIEtG/w==
 MIME-Version: 1.0
-Date:   Sun, 28 Aug 2022 16:33:03 +0200
+Date:   Sun, 28 Aug 2022 16:36:57 +0200
 From:   Michael Walle <michael@walle.cc>
 To:     =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>
 Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -51,13 +51,13 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 06/14] nvmem: core: introduce NVMEM layouts
-In-Reply-To: <b46d0db0-bd82-9ea3-281d-cc3ee3e9b002@milecki.pl>
+Subject: Re: [RFC PATCH v1 13/14] nvmem: layouts: u-boot-env: add device node
+In-Reply-To: <ca7d8fe6-023f-1e2d-da34-c23d0cdc3b03@milecki.pl>
 References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-7-michael@walle.cc>
- <b46d0db0-bd82-9ea3-281d-cc3ee3e9b002@milecki.pl>
+ <20220825214423.903672-14-michael@walle.cc>
+ <ca7d8fe6-023f-1e2d-da34-c23d0cdc3b03@milecki.pl>
 User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <e62a50dfd968168015dd3e4fab896056@walle.cc>
+Message-ID: <a40fabd8570067426a544bf0b6ece563@walle.cc>
 X-Sender: michael@walle.cc
 Content-Type: text/plain; charset=UTF-8;
  format=flowed
@@ -71,17 +71,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-08-28 16:06, schrieb Rafał Miłecki:
+Am 2022-08-28 15:55, schrieb Rafał Miłecki:
 > On 25.08.2022 23:44, Michael Walle wrote:
->> For now, the content can be
->> described by a device tree or a board file. But this only works if the
->> offsets and lengths are static and don't change.
+>> Register the device node so we can actually make use of the cells from
+>> within the device tree.
+>> 
+>> This obviously only works if the environment variable name can be 
+>> mapped
+>> to the device node, which isn't always the case. Think of "_" vs "-".
+>> But for simple things like ethaddr, this will work.
 > 
-> Not really true (see Broadcom's NVRAM and U-Boot's env data).
+> We probably shouldn't support undocumented syntax (bindings).
 
-All except those two drivers don't add cells on their own. And for
-these it is not possible to add non static cells, except in board
-code maybe. This series make it possible to add this runtime parsing
-to any NVMEM device.
+If we only support a predefined list of variables, we can make them
+device tree compatible anyway. E.g. we could have a mapping
+"serial-number" <-> "serial#"
 
 -michael
+
+> I've identical local patch that waits for
+> [PATCH] dt-bindings: nvmem: u-boot,env: add basic NVMEM cells
+> https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20220703084843.21922-1-zajec5@gmail.com/
+> to be accepted.
