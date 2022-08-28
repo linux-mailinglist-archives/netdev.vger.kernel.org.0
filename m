@@ -2,97 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BFA365A3C8A
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 09:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3184F5A3C90
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 09:50:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbiH1Hpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 03:45:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        id S231919AbiH1HuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 03:50:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233259AbiH1Hph (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 03:45:37 -0400
-Received: from mail-yw1-x1143.google.com (mail-yw1-x1143.google.com [IPv6:2607:f8b0:4864:20::1143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECE333A1B
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 00:45:36 -0700 (PDT)
-Received: by mail-yw1-x1143.google.com with SMTP id 00721157ae682-3321c2a8d4cso129714727b3.5
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 00:45:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version:from:to:cc;
-        bh=js8jdg7UWifkhRoiGZNtqX+ncfiv/MFe1dhMSWZmt4I=;
-        b=CBm02tzvB15XnCVQdKxVar3phi29CnlXeKrxO0gTuRESwAWYVCiswtMUfNkrS04RLQ
-         5wX1m+3TNUMn32KoswBwchRIJR+5G0pSKOWUoTVLRs52DswUiE/AJNJAkBYM+bQEHlQQ
-         8bK5WnN/V82NZWfgt4psw82ev6R+DYSQRXFbmuvaXbfhx8SslRJmHpi5zOtxMuEMuJSD
-         Dh60oAEatqzgsBcILr/QcsecOnPWLU9vywQksWPhD41b7ZqTV7dPmfXkNVOhadbhjSJX
-         F2NotVMH7F4Yby/SY2XpwXDcp25DwnwlYuvP8kvvOBJVZWv2FxvR238pbOKbV5VxWpE0
-         oVRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=to:subject:message-id:date:from:reply-to:mime-version
-         :x-gm-message-state:from:to:cc;
-        bh=js8jdg7UWifkhRoiGZNtqX+ncfiv/MFe1dhMSWZmt4I=;
-        b=0Zx5MnB2/5SXMLCt27KSDgKvVb/NI8blJ2hyEx5EQIjJNiM1Q1uTno7iRNe6OWT3ni
-         e8jOqZRbRamr1fz0vhodN8lOJrIWRkxfDfAeBZ55P8IQ6KeL/P7jXsb8vpoqaRsxrAS5
-         CQP7PldCSSVm7hBlcvacXPoBzrkF7GiVGYO6bnSMCIay1OwvXyIAymls5MyUsH8k8y2U
-         Iood6nAQ0duD4MSQbDoCj5zVS6jq3xmIQQc9BavvQygnr8TEv7eVl1eYkVvGJz4dmg7F
-         PbPBXhk2J1AtokoiK6XaHZh9BToKnHAoA7dcH5DsQxqw5FHSmP5aEEWQ5XQ00eVjKXtK
-         oPuw==
-X-Gm-Message-State: ACgBeo2U4jbIstlM0KBnnUQlXxCEJbFbVD7aYyTST+uyM38AmWrYHj26
-        TQnijEQM3RWsd1SSAGMTIso/HSg2f33iQEokJ5Q=
-X-Google-Smtp-Source: AA6agR7fMazM8kUY0901PIdfzRQ2OVrAM3xbhJpAPbjt7iGx5Udfoum2TdXo39T+sNDSADm9MfXWAY8PxcOgXN5UOcQ=
-X-Received: by 2002:a81:af45:0:b0:33d:cbb3:d06f with SMTP id
- x5-20020a81af45000000b0033dcbb3d06fmr5850924ywj.485.1661672736109; Sun, 28
- Aug 2022 00:45:36 -0700 (PDT)
+        with ESMTP id S232995AbiH1HuA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 03:50:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C56129
+        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 00:49:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4788D60F9F
+        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 07:49:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC369C433C1;
+        Sun, 28 Aug 2022 07:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661672996;
+        bh=xbJwQQOlgYG/lCs1EhIniyAeWg3HCsrc9hLqhK4v/6g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q3pdrOEtk1dUTeox1qGyg/hjI3Jm6x55RPsCYyATaTGh6zgXRY15XX4E7Ymy3VPSU
+         u6oMZvP16EBbWkPj+JVWqRBzFWfQdfgLj+iZrodTTd1G+VETTvjA8A6B2ztAdV3YBG
+         V/QTsAFU2+p+AwUqycLbcX0BYZkKi0GKBFyI0JoTAIF4vU4tK/S2F6WQV6mczjwCci
+         RtTimP7Ch3kPxfb4hOQlh8mOEgU7Y7ik8JmIaq8nhXMlVYv1ixVT4hUk11dpOqYZjw
+         Hn/MVII3f2H4JazQQUTgyia2dSNCr524oMHtWEqfHNtSKWQRFgq8ha/JqTsSbWPU/J
+         +vh9w2oLSNHRw==
+Date:   Sun, 28 Aug 2022 10:49:52 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>, Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <galpress@amazon.com>,
+        Roi Dayan <roid@nvidia.com>, maord@nvidia.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: Re: [patch net-next] net: devlink: add RNLT lock assertion to
+ devlink_compat_switch_id_get()
+Message-ID: <YwseIKn+mhGcnDZa@unreal>
+References: <20220825112923.1359194-1-jiri@resnulli.us>
 MIME-Version: 1.0
-Received: by 2002:a05:7000:c51b:0:0:0:0 with HTTP; Sun, 28 Aug 2022 00:45:35
- -0700 (PDT)
-Reply-To: sam1965kner@yahoo.com
-From:   Sam <jeanemail.keison@gmail.com>
-Date:   Sun, 28 Aug 2022 08:45:35 +0100
-Message-ID: <CANVjhpqFb43Qj7KSjv-3fF5HOmsQ+9pY-u5zfAi4RTWLRfdFNQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_60,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:1143 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6473]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [jeanemail.keison[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220825112923.1359194-1-jiri@resnulli.us>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, I am aware that the Internet has become very unsafe, but
-considering the situation I have no option than to seek for foreign
-partnership through this medium.I will not disclose my Identity until
-I am fully convinced you are the right person for this business deal.
-I have access to very vital information that can be used to move a
-huge amount of money to a secured account outside United Kingdom. Full
-details/modalities will be disclosed on your expression of Interest to
-partner with me. I am open for negotiation importantly the funds to be
-transferred have nothing to do with drugs, terrorism or Money
-laundering, regards.
+On Thu, Aug 25, 2022 at 01:29:23PM +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@nvidia.com>
+> 
+> Similar to devlink_compat_phys_port_name_get(), make sure that
+> devlink_compat_switch_id_get() is called with RTNL lock held. Comment
+> already says so, so put this in code as well.
+> 
+> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+> ---
+>  net/core/devlink.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 6854f574e3ae..3b4dc64eaaae 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -12339,6 +12339,8 @@ int devlink_compat_switch_id_get(struct net_device *dev,
+>  	 * devlink_port instance cannot disappear in the middle. No need to take
+>  	 * any devlink lock as only permanent values are accessed.
+>  	 */
+> +	ASSERT_RTNL();
+> +
+
+This generates a lot of warnings in mlx5.
+
+ [  680.548565] ------------[ cut here ]------------
+ [  680.549293] RTNL: assertion failed at net/core/devlink.c (12508)
+ [  680.550254] WARNING: CPU: 9 PID: 11000 at net/core/devlink.c:12508 devlink_compat_switch_id_get+0xb6/0xc0
+ [  680.552017] Modules linked in: act_csum act_pedit act_tunnel_key geneve act_skbedit act_vlan act_mirred nfnetlink_cttimeout act_gact cls_flower sch_ingress openvswitch nsh mlx5_vdpa vringh vhost_iotlb vdpa mlx5_ib mlx5_core xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat br_netfilter overlay ib_umad ib_ipoib rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi rdma_cm iw_cm ib_cm ib_uverbs ib_core fuse [last unloaded: mlx5_core]
+ [  680.558720] CPU: 9 PID: 11000 Comm: handler5 Tainted: G        W          6.0.0-rc2_net_next_07d3d25 #1
+ [  680.560408] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
+ [  680.562152] RIP: 0010:devlink_compat_switch_id_get+0xb6/0xc0
+ [  680.562689] Code: 87 e6 36 37 00 41 83 e4 01 75 81 ba dc 30 00 00 48 c7 c6 c0 6b 61 82 48 c7 c7 58 d1 59 82 c6 05 e1 a4 11 01 01 e8 74 60 2d 00 <0f> 0b e9 5b ff ff ff cc cc cc 0f 1f 44 00 00 85 f6 41 55 41 54 55
+ [  680.564302] RSP: 0018:ffff8881339134b8 EFLAGS: 00010286
+ [  680.564798] RAX: 0000000000000000 RBX: ffff888133913536 RCX: ffff88852ccab808
+ [  680.565435] RDX: 00000000ffffffd8 RSI: 0000000000000027 RDI: ffff88852ccab800
+ [  680.566083] RBP: ffff888167ad8000 R08: ffffffff83c23a60 R09: 0000000000000001
+ [  680.566722] R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000000
+ [  680.567362] R13: 0000000000000001 R14: ffff888128b00000 R15: 0000000000000000
+ [  680.568030] FS:  00007f2423dfe700(0000) GS:ffff88852cc80000(0000) knlGS:0000000000000000
+ [  680.568788] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+ [  680.569326] CR2: 00000000004e1448 CR3: 0000000127b4a006 CR4: 0000000000370ea0
+ [  680.569970] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+ [  680.570607] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+ [  680.571249] Call Trace:
+ [  680.571546]  <TASK>
+ [  680.571814]  dev_get_port_parent_id+0x99/0x160
+ [  680.572300]  netdev_port_same_parent_id+0x7e/0xe0
+ [  680.572770]  tc_act_can_offload_mirred+0x138/0x210 [mlx5_core]
+ [  680.573461]  parse_tc_actions+0x159/0x5b0 [mlx5_core]
+ [  680.574021]  __mlx5e_add_fdb_flow+0x29b/0x4c0 [mlx5_core]
+ [  680.574588]  mlx5e_configure_flower+0x913/0x18c0 [mlx5_core]
+ [  680.575175]  ? lock_acquire+0xce/0x2d0
+ [  680.575569]  ? tc_setup_cb_add+0x5b/0x200
+ [  680.576030]  tc_setup_cb_add+0xd7/0x200
+ [  680.576615]  fl_hw_replace_filter+0x14c/0x1f0 [cls_flower]
+ [  680.577266]  fl_change+0xbbe/0x1730 [cls_flower]
+ [  680.577748]  tc_new_tfilter+0x3e9/0xd60
+ [  680.578167]  ? tc_del_tfilter+0x810/0x810
+ [  680.578576]  rtnetlink_rcv_msg+0x40e/0x5a0
+ [  680.578995]  ? netlink_deliver_tap+0x7a/0x4b0
+ [  680.579438]  ? if_nlmsg_stats_size+0x2b0/0x2b0
+ [  680.579917]  netlink_rcv_skb+0x4e/0xf0
+ [  680.580317]  netlink_unicast+0x190/0x250
+ [  680.580732]  netlink_sendmsg+0x243/0x4b0
+ [  680.581141]  sock_sendmsg+0x33/0x40
+ [  680.581513]  ____sys_sendmsg+0x1d1/0x1f0
+ [  680.581926]  ___sys_sendmsg+0x72/0xb0
+ [  680.582319]  ? lock_acquire+0xce/0x2d0
+ [  680.582708]  ? find_held_lock+0x2b/0x80
+ [  680.583103]  ? __fget_files+0xb9/0x190
+ [  680.583501]  ? __fget_files+0xd3/0x190
+ [  680.583930]  __sys_sendmsg+0x51/0x90
+ [  680.584315]  do_syscall_64+0x3d/0x90
+ [  680.584699]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+ [  680.585188] RIP: 0033:0x7f2429aa877d
+ [  680.585581] Code: 28 89 54 24 1c 48 89 74 24 10 89 7c 24 08 e8 ba ee ff ff 8b 54 24 1c 48 8b 74 24 10 41 89 c0 8b 7c 24 08 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 33 44 89 c7 48 89 44 24 08 e8 ee ee ff ff 48
+ [  680.587164] RSP: 002b:00007f2423db15a0 EFLAGS: 00000293 ORIG_RAX: 000000000000002e
+ [  680.587909] RAX: ffffffffffffffda RBX: 0000000000000001 RCX: 00007f2429aa877d
+ [  680.588550] RDX: 0000000000000000 RSI: 00007f2423db1640 RDI: 0000000000000036
+ [  680.589189] RBP: 00007f2423db2368 R08: 0000000000000000 R09: 00007f2414000080
+ [  680.589842] R10: 00007f2423db24b0 R11: 0000000000000293 R12: 00007f23f0001550
+ [  680.590508] R13: 0000000000000000 R14: 00007f23f0001550 R15: 00007f2423db1640
+ [  680.591183]  </TASK>
+ [  680.591471] irq event stamp: 1589
+ [  680.591844] hardirqs last  enabled at (1599): [<ffffffff811e0ee7>] __up_console_sem+0x67/0x70
+ [  680.592702] hardirqs last disabled at (1612): [<ffffffff811e0ecc>] __up_console_sem+0x4c/0x70
+ [  680.593498] softirqs last  enabled at (736): [<ffffffff81175f40>] __irq_exit_rcu+0x90/0xc0
+ [  680.594277] softirqs last disabled at (703): [<ffffffff81175f40>] __irq_exit_rcu+0x90/0xc0
+ [  680.595048] ---[ end trace 0000000000000000 ]---
+
+
+>  	devlink_port = netdev_to_devlink_port(dev);
+>  	if (!devlink_port || !devlink_port->switch_port)
+>  		return -EOPNOTSUPP;
+> -- 
+> 2.37.1
+> 
