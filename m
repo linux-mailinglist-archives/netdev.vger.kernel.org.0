@@ -2,222 +2,391 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 691485A3D41
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 13:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C83645A3D4B
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 13:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229617AbiH1LD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 07:03:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42846 "EHLO
+        id S229556AbiH1LVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 07:21:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiH1LDY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 07:03:24 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2079525EB0;
-        Sun, 28 Aug 2022 04:03:23 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-33dce2d4bc8so135051587b3.4;
-        Sun, 28 Aug 2022 04:03:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=r+ouzV7GsmVD4UNZJ+3dRD0EfUzhHcs91N7oxvmjX50=;
-        b=YteknKlfPSvIVhQ72sQiWwgmuZsP8qxAyGghWV+8ScaxNYmkMw8cbHnQYCDEyKhAR+
-         FIS8bDlWokTV3+YSChO1R/YaGKRLE2jltdwcr2V0oo1RXrTFcZLzM257wcWlAATSB0XZ
-         prG9cVr1W5t0fShPhzlhq6rUZsAb0As/aK+57+2OFwlXrCcUHhnEwbff5aIelOVkKq6T
-         ZCPX33tiqV82sucAm8MToFeMX7PpPak3Zv0Z5BruQ5kXf5gKrH0kJHpqipOgV+fMxn75
-         9nx8SGdXplNCZh2mVwAZl2U50SVC2Nlqq+ktoS14p9qpbcgDnXGmKvghU4I/o6zv/m8D
-         iUKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=r+ouzV7GsmVD4UNZJ+3dRD0EfUzhHcs91N7oxvmjX50=;
-        b=GLlduRe6VUPNRTSwBQtWOzIwbFZUNzZ34Y3J3rlIZjSI6h6b9kV2dpGfGUh0BANxbF
-         CY6lrKavPtQtcMzN3aRViBfo9aylHGHsBBtqAIj8E7orMcUNP8PjbCywjcpfN68lZVAb
-         K9lKhV5eFLEAdXk6gtwV4a6A3QxIx9/yesOYZtZfG6JgmJM2OME/1qnR0r/WN4xUiwj+
-         Mos4GSravci+F7QD61H4h90vM1jsO5Mh6eyqGYlYuu4s+3xboytNM7uy2k1MTaEVVwT3
-         kY6P9/YnBIKDKJ6/rdwfANbVM89KrX7XzDF0JOgmPhUxlQphrsa2FWY322PDzBiRVcqF
-         OGwA==
-X-Gm-Message-State: ACgBeo0qeFW1LB6Qc2FZ3AHckockK8neZpe9EH9+xH2fa5bKIgFPUQJh
-        +laq/DEXC8/zQJpTIkLPhgIr/MhwlCiu5Aa4PCaJQmYkRLhj4IaM
-X-Google-Smtp-Source: AA6agR7z0W6+dzuqhcXgo25U/keFBs5uhWuoRjPhaWxGCWmNzBAMxP4DdKEFnv4K8m25vLE9fvD2Kwa2SS4WOPFODM4=
-X-Received: by 2002:a0d:f2c6:0:b0:329:c117:c990 with SMTP id
- b189-20020a0df2c6000000b00329c117c990mr6472697ywf.464.1661684601900; Sun, 28
- Aug 2022 04:03:21 -0700 (PDT)
+        with ESMTP id S229471AbiH1LVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 07:21:18 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFDCA2F644;
+        Sun, 28 Aug 2022 04:21:15 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 6BC321884548;
+        Sun, 28 Aug 2022 11:21:14 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 6273E25032B7;
+        Sun, 28 Aug 2022 11:21:14 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 5CA609EC0009; Sun, 28 Aug 2022 11:21:14 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-References: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
-In-Reply-To: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
-From:   Jiacheng Xu <578001344xu@gmail.com>
-Date:   Sun, 28 Aug 2022 19:03:07 +0800
-Message-ID: <CAO4S-mfTNEKCs8ZQcT09wDzxX8MfidmbTVzaFMD3oG4i7Ytynw@mail.gmail.com>
-Subject: Re: possible deadlock in rfcomm_sk_state_change
-To:     linux-kernel@vger.kernel.org, marcel@holtmann.org,
-        johan.hedberg@gmail.com, desmondcheongzx@gmail.com
-Cc:     netdev@vger.kernel.org, linux-bluetooth@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        FROM_STARTS_WITH_NUMS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Date:   Sun, 28 Aug 2022 13:21:14 +0200
+From:   netdev@kapio-technology.com
+To:     Nikolay Aleksandrov <razor@blackwall.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
+User-Agent: Gigahost Webmail
+Message-ID: <6f067e43d940330ad4355ec6d3445a7d@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
+> On 26/08/2022 14:45, Hans Schultz wrote:
+>> Add an intermediate state for clients behind a locked port to allow 
+>> for
+>> possible opening of the port for said clients. The clients mac address
+>> will be added with the locked flag set, denying access through the 
+>> port
+>> for the mac address, but also creating a new FDB add event giving
+>> userspace daemons the ability to unlock the mac address. This feature
+>> corresponds to the Mac-Auth and MAC Authentication Bypass (MAB) named
+>> features. The latter defined by Cisco.
+>> 
+>> As locked FDB entries are a security measure to deny access for
+>> unauthorized hosts on specific ports, they will deny forwarding from
+>> any port to the (MAC, vlan) pair involved and locked entries will not
+>> be able by learning or otherwise to change the associated port.
+>> 
+>> Only the kernel can set this FDB entry flag, while userspace can read
+>> the flag and remove it by replacing or deleting the FDB entry.
+>> 
+>> Locked entries will age out with the set bridge ageing time.
+>> 
+>> Also add a 'blackhole' fdb flag, ensuring that no forwarding from any
+>> port to a destination MAC that has a FDB entry with this flag on will
+>> occur. The packets will thus be dropped.
+>> 
+>> Signed-off-by: Hans Schultz <netdev@kapio-technology.com>
+>> ---
+>>  include/linux/if_bridge.h      |  1 +
+>>  include/uapi/linux/if_link.h   |  1 +
+>>  include/uapi/linux/neighbour.h |  4 +++-
+>>  net/bridge/br_fdb.c            | 29 +++++++++++++++++++++++++++++
+>>  net/bridge/br_input.c          | 16 +++++++++++++++-
+>>  net/bridge/br_netlink.c        |  9 ++++++++-
+>>  net/bridge/br_private.h        |  4 +++-
+>>  7 files changed, 60 insertions(+), 4 deletions(-)
+>> 
+> 
+> Hi,
+> Please add the blackhole flag in a separate patch.
+> A few more comments and questions below..
+> 
 
-I believe the deadlock is more than possible but actually real.
-I got a poc that could stably trigger the deadlock.
+Okay, shall do. :-)
 
-poc: https://drive.google.com/file/d/1PjqvMtHsrrGM1MIRGKl_zJGR-teAMMQy/view?usp=sharing
+>> diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
+>> index d62ef428e3aa..1668ac4d7adc 100644
+>> --- a/include/linux/if_bridge.h
+>> +++ b/include/linux/if_bridge.h
+>> @@ -59,6 +59,7 @@ struct br_ip_list {
+>>  #define BR_MRP_LOST_IN_CONT	BIT(19)
+>>  #define BR_TX_FWD_OFFLOAD	BIT(20)
+>>  #define BR_PORT_LOCKED		BIT(21)
+>> +#define BR_PORT_MAB		BIT(22)
+>> 
+>>  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
+>> 
+>> diff --git a/include/uapi/linux/if_link.h 
+>> b/include/uapi/linux/if_link.h
+>> index e36d9d2c65a7..fcbd0b85ad53 100644
+>> --- a/include/uapi/linux/if_link.h
+>> +++ b/include/uapi/linux/if_link.h
+>> @@ -560,6 +560,7 @@ enum {
+>>  	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
+>>  	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+>>  	IFLA_BRPORT_LOCKED,
+>> +	IFLA_BRPORT_MAB,
+>>  	__IFLA_BRPORT_MAX
+>>  };
+>>  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+>> diff --git a/include/uapi/linux/neighbour.h 
+>> b/include/uapi/linux/neighbour.h
+>> index a998bf761635..bc1440a56b70 100644
+>> --- a/include/uapi/linux/neighbour.h
+>> +++ b/include/uapi/linux/neighbour.h
+>> @@ -52,7 +52,9 @@ enum {
+>>  #define NTF_STICKY	(1 << 6)
+>>  #define NTF_ROUTER	(1 << 7)
+>>  /* Extended flags under NDA_FLAGS_EXT: */
+>> -#define NTF_EXT_MANAGED	(1 << 0)
+>> +#define NTF_EXT_MANAGED		(1 << 0)
+>> +#define NTF_EXT_LOCKED		(1 << 1)
+>> +#define NTF_EXT_BLACKHOLE	(1 << 2)
+>> 
+>>  /*
+>>   *	Neighbor Cache Entry States.
+>> diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+>> index e7f4fccb6adb..1962d9594a48 100644
+>> --- a/net/bridge/br_fdb.c
+>> +++ b/net/bridge/br_fdb.c
+>> @@ -105,6 +105,7 @@ static int fdb_fill_info(struct sk_buff *skb, 
+>> const struct net_bridge *br,
+>>  	struct nda_cacheinfo ci;
+>>  	struct nlmsghdr *nlh;
+>>  	struct ndmsg *ndm;
+>> +	u32 ext_flags = 0;
+>> 
+>>  	nlh = nlmsg_put(skb, portid, seq, type, sizeof(*ndm), flags);
+>>  	if (nlh == NULL)
+>> @@ -125,11 +126,18 @@ static int fdb_fill_info(struct sk_buff *skb, 
+>> const struct net_bridge *br,
+>>  		ndm->ndm_flags |= NTF_EXT_LEARNED;
+>>  	if (test_bit(BR_FDB_STICKY, &fdb->flags))
+>>  		ndm->ndm_flags |= NTF_STICKY;
+>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))
+>> +		ext_flags |= NTF_EXT_LOCKED;
+>> +	if (test_bit(BR_FDB_BLACKHOLE, &fdb->flags))
+>> +		ext_flags |= NTF_EXT_BLACKHOLE;
+>> 
+>>  	if (nla_put(skb, NDA_LLADDR, ETH_ALEN, &fdb->key.addr))
+>>  		goto nla_put_failure;
+>>  	if (nla_put_u32(skb, NDA_MASTER, br->dev->ifindex))
+>>  		goto nla_put_failure;
+>> +	if (nla_put_u32(skb, NDA_FLAGS_EXT, ext_flags))
+>> +		goto nla_put_failure;
+>> +
+>>  	ci.ndm_used	 = jiffies_to_clock_t(now - fdb->used);
+>>  	ci.ndm_confirmed = 0;
+>>  	ci.ndm_updated	 = jiffies_to_clock_t(now - fdb->updated);
+>> @@ -171,6 +179,7 @@ static inline size_t fdb_nlmsg_size(void)
+>>  	return NLMSG_ALIGN(sizeof(struct ndmsg))
+>>  		+ nla_total_size(ETH_ALEN) /* NDA_LLADDR */
+>>  		+ nla_total_size(sizeof(u32)) /* NDA_MASTER */
+>> +		+ nla_total_size(sizeof(u32)) /* NDA_FLAGS_EXT */
+>>  		+ nla_total_size(sizeof(u16)) /* NDA_VLAN */
+>>  		+ nla_total_size(sizeof(struct nda_cacheinfo))
+>>  		+ nla_total_size(0) /* NDA_FDB_EXT_ATTRS */
+>> @@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct 
+>> net_bridge_port *source,
+>>  						      &fdb->flags)))
+>>  					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
+>>  						  &fdb->flags);
+>> +				if (source->flags & BR_PORT_MAB)
+>> +					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+>> +				else
+>> +					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+> Please add a test for that bit and only then change it.
+> 
 
-Description/Root cause:
-In rfcomm_sock_shutdown(), lock_sock() is called when releasing and
-shutting down socket.
-However, lock_sock() has to be called once more when the sk_state is
-changed because the
-lock is not always held when rfcomm_sk_state_change() is called. One
-such call stack is:
+Okay.
 
-  rfcomm_sock_shutdown():
-    lock_sock();
-    __rfcomm_sock_close():
-      rfcomm_dlc_close():
-        __rfcomm_dlc_close():
-          rfcomm_dlc_lock();
-          rfcomm_sk_state_change():
-            lock_sock();
+>>  			}
+>> 
+>>  			if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, &flags)))
+>> @@ -1082,6 +1095,16 @@ static int fdb_add_entry(struct net_bridge *br, 
+>> struct net_bridge_port *source,
+>>  		modified = true;
+>>  	}
+>> 
+>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags)) {
+>> +		clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+>> +		modified = true;
+>> +	}
+>> +
+>> +	if (test_bit(BR_FDB_BLACKHOLE, &fdb->flags)) {
+>> +		clear_bit(BR_FDB_BLACKHOLE, &fdb->flags);
+>> +		modified = true;
+>> +	}
+>> +
+>>  	if (fdb_handle_notify(fdb, notify))
+>>  		modified = true;
+>> 
+>> @@ -1178,6 +1201,12 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr 
+>> *tb[],
+>>  		vg = nbp_vlan_group(p);
+>>  	}
+>> 
+>> +	if (tb[NDA_FLAGS_EXT] &&
+>> +	    (nla_get_u32(tb[NDA_FLAGS_EXT]) & (NTF_EXT_LOCKED | 
+>> NTF_EXT_BLACKHOLE))) {
+>> +		pr_info("bridge: RTM_NEWNEIGH has invalid extended flags\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>>  	if (tb[NDA_FDB_EXT_ATTRS]) {
+>>  		attr = tb[NDA_FDB_EXT_ATTRS];
+>>  		err = nla_parse_nested(nfea_tb, NFEA_MAX, attr,
+>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>> index 68b3e850bcb9..3d48aa7fa778 100644
+>> --- a/net/bridge/br_input.c
+>> +++ b/net/bridge/br_input.c
+>> @@ -110,8 +110,19 @@ int br_handle_frame_finish(struct net *net, 
+>> struct sock *sk, struct sk_buff *skb
+>>  			br_fdb_find_rcu(br, eth_hdr(skb)->h_source, vid);
+>> 
+>>  		if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+>> -		    test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+>> +		    test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
+>> +		    test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags)) {
+>> +			if (!fdb_src || (READ_ONCE(fdb_src->dst) != p &&
+>> +					 (p->flags & BR_LEARNING))) {
+> 
+> please break the second part of the check on a new line instead
+> 
+>> +				unsigned long flags = 0;
+>> +
+>> +				if (p->flags & BR_PORT_MAB) {
+> 
+> combine this and the above as one "if" block, no need to have a new one 
+> here
+> which preferrably starts with the MAB check
+> 
 
-Besides the recursive deadlock, there is also an
-issue of a lock hierarchy inversion between rfcomm_dlc_lock() and
-lock_sock() if the socket is locked in rfcomm_sk_state_change().
+As the above if is an "or", and the MAB check works as an "and", it will 
+have to be replicated for all "or" checks, thus twice in the above if.
+The first check in the above "or" is for new entries, while the second 
+part of the "or" is to allow roaming to a locked port.
 
-Reference: https://lore.kernel.org/all/20211004180734.434511-1-desmondcheongzx@gmail.com/
+>> +					__set_bit(BR_FDB_ENTRY_LOCKED, &flags);
+>> +					br_fdb_update(br, p, eth_hdr(skb)->h_source, vid, flags);> 
+>> +				}
+>> +			}
+>>  			goto drop;
+>> +		}
+>>  	}
+>> 
+>>  	nbp_switchdev_frame_mark(p, skb);
+>> @@ -185,6 +196,9 @@ int br_handle_frame_finish(struct net *net, struct 
+>> sock *sk, struct sk_buff *skb
+>>  		if (test_bit(BR_FDB_LOCAL, &dst->flags))
+>>  			return br_pass_frame_up(skb);
+>> 
+>> +		if (test_bit(BR_FDB_BLACKHOLE, &dst->flags))
+>> +			goto drop;
+>> +
+> Not happy about adding a new test in arguably the most used fast-path,
+> but I don't see
+> a better way to do blackhole right now. Could you please make it an 
+> unlikely() ?
 
-On Sun, Aug 28, 2022 at 12:19 AM Jiacheng Xu <578001344xu@gmail.com> wrote:
->
-> Hello,
->
-> When using modified Syzkaller to fuzz the Linux kernel-5.19, the
-> following crash was triggered.
-> We would appreciate a CVE ID if this is a security issue.
->
-> HEAD commit: 3d7cb6b04c3f Linux-5.19
-> git tree: upstream
->
-> console output:
-> https://drive.google.com/file/d/1NmOGWcfPnY2kSrS0nOwvG1AZ923jFQ3p/view?usp=sharing
-> kernel config: https://drive.google.com/file/d/1wgIUDwP5ho29AM-K7HhysSTfWFpfXYkG/view?usp=sharing
-> syz repro: https://drive.google.com/file/d/16hUTEGw4IcPQA9CZvoF7I5la42TlU-Cx/view?usp=sharing
-> C reproducer: https://drive.google.com/file/d/1YvgzTvV4qaSZPiD4D1IWGL4GuapzHD2w/view?usp=sharing
->
-> Environment:
-> Ubuntu 20.04 on Linux 5.4.0
-> QEMU 4.2.1:
-> qemu-system-x86_64 \
->   -m 2G \
->   -smp 2 \
->   -kernel /home/workdir/bzImage \
->   -append "console=ttyS0 root=/dev/sda earlyprintk=serial net.ifnames=0" \
->   -drive file=/home/workdir/stretch.img,format=raw \
->   -net user,host=10.0.2.10,hostfwd=tcp:127.0.0.1:10021-:22 \
->   -net nic,model=e1000 \
->   -enable-kvm \
->   -nographic \
->   -pidfile vm.pid \
->   2>&1 | tee vm.log
->
-> If you fix this issue, please add the following tag to the commit:
-> Reported-by Jiacheng Xu<578001344xu@gmail.com>
->
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.19.0 #1 Not tainted
-> --------------------------------------------
-> syz-executor/9064 is trying to acquire lock:
-> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
-> at: lock_sock include/net/sock.h:1677 [inline]
-> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
-> at: rfcomm_sk_state_change+0x6e/0x3a0 net/bluetooth/rfcomm/sock.c:73
->
-> but task is already holding lock:
-> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
-> at: lock_sock include/net/sock.h:1677 [inline]
-> ffff888026b13130 (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0},
-> at: rfcomm_sock_shutdown+0x57/0x220 net/bluetooth/rfcomm/sock.c:902
->
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
->
->        CPU0
->        ----
->   lock(sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM);
->   lock(sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM);
->
->  *** DEADLOCK ***
->
->  May be due to missing lock nesting notation
->
-> 4 locks held by syz-executor/9064:
->  #0: ffff888110dac410 (&sb->s_type->i_mutex_key#12){+.+.}-{3:3}, at:
-> inode_lock include/linux/fs.h:741 [inline]
->  #0: ffff888110dac410 (&sb->s_type->i_mutex_key#12){+.+.}-{3:3}, at:
-> __sock_release+0x86/0x280 net/socket.c:649
->  #1: ffff888026b13130
-> (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at: lock_sock
-> include/net/sock.h:1677 [inline]
->  #1: ffff888026b13130
-> (sk_lock-AF_BLUETOOTH-BTPROTO_RFCOMM){+.+.}-{0:0}, at:
-> rfcomm_sock_shutdown+0x57/0x220 net/bluetooth/rfcomm/sock.c:902
->  #2: ffffffff8d7d8428 (rfcomm_mutex){+.+.}-{3:3}, at:
-> rfcomm_dlc_close+0x34/0x240 net/bluetooth/rfcomm/core.c:507
->  #3: ffff8880155d2d28 (&d->lock){+.+.}-{3:3}, at:
-> __rfcomm_dlc_close+0x157/0x710 net/bluetooth/rfcomm/core.c:487
->
-> stack backtrace:
-> CPU: 0 PID: 9064 Comm: syz-executor Not tainted 5.19.0 #1
-> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> 1.13.0-1ubuntu1.1 04/01/2014
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_deadlock_bug kernel/locking/lockdep.c:2988 [inline]
->  check_deadlock kernel/locking/lockdep.c:3031 [inline]
->  validate_chain kernel/locking/lockdep.c:3816 [inline]
->  __lock_acquire.cold+0x152/0x3ca kernel/locking/lockdep.c:5053
->  lock_acquire kernel/locking/lockdep.c:5665 [inline]
->  lock_acquire+0x1ab/0x580 kernel/locking/lockdep.c:5630
->  lock_sock_nested+0x36/0xf0 net/core/sock.c:3389
->  lock_sock include/net/sock.h:1677 [inline]
->  rfcomm_sk_state_change+0x6e/0x3a0 net/bluetooth/rfcomm/sock.c:73
->  __rfcomm_dlc_close+0x1ab/0x710 net/bluetooth/rfcomm/core.c:489
->  rfcomm_dlc_close+0x1ea/0x240 net/bluetooth/rfcomm/core.c:520
->  __rfcomm_sock_close+0xda/0x260 net/bluetooth/rfcomm/sock.c:220
->  rfcomm_sock_shutdown+0xf4/0x220 net/bluetooth/rfcomm/sock.c:905
->  rfcomm_sock_release+0x5f/0x140 net/bluetooth/rfcomm/sock.c:925
->  __sock_release+0xcd/0x280 net/socket.c:650
->  sock_close+0x18/0x20 net/socket.c:1365
->  __fput+0x277/0x9d0 fs/file_table.c:317
->  task_work_run+0xe0/0x1a0 kernel/task_work.c:177
->  exit_task_work include/linux/task_work.h:38 [inline]
->  do_exit+0xaf5/0x2da0 kernel/exit.c:795
->  do_group_exit+0xd2/0x2f0 kernel/exit.c:925
->  get_signal+0x2842/0x2870 kernel/signal.c:2857
->  arch_do_signal_or_restart+0x82/0x2270 arch/x86/kernel/signal.c:869
->  exit_to_user_mode_loop kernel/entry/common.c:166 [inline]
->  exit_to_user_mode_prepare+0x174/0x260 kernel/entry/common.c:201
->  __syscall_exit_to_user_mode_work kernel/entry/common.c:283 [inline]
->  syscall_exit_to_user_mode+0x19/0x50 kernel/entry/common.c:294
->  do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
->  entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> RIP: 0033:0x7f26c3295dfd
-> Code: Unable to access opcode bytes at RIP 0x7f26c3295dd3.
-> RSP: 002b:00007f26c43fcc58 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
-> RAX: fffffffffffffffc RBX: 00007f26c33bc0a0 RCX: 00007f26c3295dfd
-> RDX: 0000000000000080 RSI: 0000000020000000 RDI: 0000000000000004
-> RBP: 00007f26c32ff4c1 R08: 0000000000000000 R09: 0000000000000000
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007f26c33bc0a0
-> R13: 00007ffc2c88f2df R14: 00007ffc2c88f480 R15: 00007f26c43fcdc0
->  </TASK>
+Surely.
+
+> 
+> I guess the blackhole flag will be allowed for user-space to set at
+> some point, why
+> not do it from the start?
+
+I guess it should be so. :-)
+
+> 
+> Actually adding a BR_FDB_LOCAL and BR_FDB_BLACKHOLE would be a conflict 
+> above -
+> the packet will be received. So you should move the blackhole check 
+> above the
+> BR_FDB_LOCAL one if user-space is allowed to set it to any entry.
+> 
+>>  		if (now != dst->used)
+>>  			dst->used = now;
+>>  		br_forward(dst->dst, skb, local_rcv, false);
+>> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+>> index 5aeb3646e74c..34483420c9e4 100644
+>> --- a/net/bridge/br_netlink.c
+>> +++ b/net/bridge/br_netlink.c
+>> @@ -188,6 +188,7 @@ static inline size_t br_port_info_size(void)
+>>  		+ nla_total_size(1)	/* IFLA_BRPORT_NEIGH_SUPPRESS */
+>>  		+ nla_total_size(1)	/* IFLA_BRPORT_ISOLATED */
+>>  		+ nla_total_size(1)	/* IFLA_BRPORT_LOCKED */
+>> +		+ nla_total_size(1)	/* IFLA_BRPORT_MAB */
+>>  		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* 
+>> IFLA_BRPORT_ROOT_ID */
+>>  		+ nla_total_size(sizeof(struct ifla_bridge_id))	/* 
+>> IFLA_BRPORT_BRIDGE_ID */
+>>  		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_DESIGNATED_PORT */
+>> @@ -274,7 +275,8 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+>>  	    nla_put_u8(skb, IFLA_BRPORT_MRP_IN_OPEN,
+>>  		       !!(p->flags & BR_MRP_LOST_IN_CONT)) ||
+>>  	    nla_put_u8(skb, IFLA_BRPORT_ISOLATED, !!(p->flags & 
+>> BR_ISOLATED)) ||
+>> -	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & 
+>> BR_PORT_LOCKED)))
+>> +	    nla_put_u8(skb, IFLA_BRPORT_LOCKED, !!(p->flags & 
+>> BR_PORT_LOCKED)) ||
+>> +	    nla_put_u8(skb, IFLA_BRPORT_MAB, !!(p->flags & BR_PORT_MAB)))
+>>  		return -EMSGSIZE;
+>> 
+>>  	timerval = br_timer_value(&p->message_age_timer);
+>> @@ -876,6 +878,7 @@ static const struct nla_policy 
+>> br_port_policy[IFLA_BRPORT_MAX + 1] = {
+>>  	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
+>>  	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
+>>  	[IFLA_BRPORT_LOCKED] = { .type = NLA_U8 },
+>> +	[IFLA_BRPORT_MAB] = { .type = NLA_U8 },
+>>  	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
+>>  	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
+>>  };
+>> @@ -943,6 +946,10 @@ static int br_setport(struct net_bridge_port *p, 
+>> struct nlattr *tb[],
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, 
+>> BR_NEIGH_SUPPRESS);
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+>> +	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
+>> +
+>> +	if (!(p->flags & BR_PORT_LOCKED))
+>> +		p->flags &= ~BR_PORT_MAB;
+>> 
+>>  	changed_mask = old_flags ^ p->flags;
+>> 
+>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>> index 06e5f6faa431..048e4afbc5a0 100644
+>> --- a/net/bridge/br_private.h
+>> +++ b/net/bridge/br_private.h
+>> @@ -251,7 +251,9 @@ enum {
+>>  	BR_FDB_ADDED_BY_EXT_LEARN,
+>>  	BR_FDB_OFFLOADED,
+>>  	BR_FDB_NOTIFY,
+>> -	BR_FDB_NOTIFY_INACTIVE
+>> +	BR_FDB_NOTIFY_INACTIVE,
+>> +	BR_FDB_ENTRY_LOCKED,
+>> +	BR_FDB_BLACKHOLE,
+>>  };
+>> 
+>>  struct net_bridge_fdb_key {
+> 
+> Cheers,
+>  Nik
