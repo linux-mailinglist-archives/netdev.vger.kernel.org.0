@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EF1985A3D1F
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 12:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16E845A3D2D
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 12:23:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229469AbiH1KHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 06:07:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
+        id S229583AbiH1KXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 06:23:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiH1KHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 06:07:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74155019C
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 03:07:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661681220;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=14CrMrsMqvL52d0T4i+Eis9sUHf/qEXpAevdr1VIHQ4=;
-        b=Fuzf2maYxI4k+LXrIWQ4QJTc4TmRWINd16ECvoHIDQGBFqfcryHCBtXfQbVgddCFkUmBuu
-        BjzueI21mCQNICvhdw9vOd086CA3PdPH1vUCWoy8I6gwIbEh71S1XkmP+YKeaZEJpwdE9A
-        0QFL1LU3/QJLhYSTkW/9szfZS2zLB8Y=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-412-ek95qOA5NU-ZrPYQiUEXeQ-1; Sun, 28 Aug 2022 06:06:59 -0400
-X-MC-Unique: ek95qOA5NU-ZrPYQiUEXeQ-1
-Received: by mail-ed1-f71.google.com with SMTP id z6-20020a05640240c600b0043e1d52fd98so3917555edb.22
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 03:06:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=14CrMrsMqvL52d0T4i+Eis9sUHf/qEXpAevdr1VIHQ4=;
-        b=cOJkk29xXAq0UdIzU/AYbkHdSVuh9VZ1dQGoUFGi/Yb2ceZNq12b3kgrH73SquoAM+
-         Eh5XFs2t88v/ghTAYR+kS1e7/nFY9dgThH2+nFTykH9iib9WJKGTeX/McMIPF9RUBk9X
-         JWty3h/hTbWKGFxiriXd2qCamfcsBDcGDBpMG0p4EMyTVgIJheH4CcqYoqCI7IRw7gD/
-         HnB/kHNKaWjSZk5zMfZcIEwjgqHJk55y8P39QSzDrff6TGeoITg/SmXoNceDx0bA/6fg
-         pDVJADrklwc8ssyzvPod5jggfMOG/949aIJ4agy39HRVkMi6BKIo/M/P39YW6SHRxLgc
-         n3zw==
-X-Gm-Message-State: ACgBeo2VWmKQUDhueEbLnWoPhqIM74meI9yz9qugm+ZkwyuRJBboBWZP
-        hSu+pR+OA2atW96BAk1pKiX2Ge99xc5UHi2tQ7aR0xP4zAqbbb7WavBaWPF+mKaWE1k1+TF2nbQ
-        G1x4+pBDpvVQvHPM6
-X-Received: by 2002:a17:907:7e92:b0:741:5f7e:f1ac with SMTP id qb18-20020a1709077e9200b007415f7ef1acmr2550295ejc.176.1661681218135;
-        Sun, 28 Aug 2022 03:06:58 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR49h+fcAPKsk2axqfcGtUxsXDLnwykWThCOpo+s8NAVOUfMmGKoEiLZFHA2oDTMuS6moodiOw==
-X-Received: by 2002:a17:907:7e92:b0:741:5f7e:f1ac with SMTP id qb18-20020a1709077e9200b007415f7ef1acmr2550289ejc.176.1661681217926;
-        Sun, 28 Aug 2022 03:06:57 -0700 (PDT)
-Received: from redhat.com ([2.55.191.225])
-        by smtp.gmail.com with ESMTPSA id w17-20020aa7dcd1000000b004479df2ff82sm4138855edu.51.2022.08.28.03.06.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 03:06:56 -0700 (PDT)
-Date:   Sun, 28 Aug 2022 06:06:53 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Alvaro Karsz <alvaro.karsz@solid-run.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH] net: virtio_net: fix notification coalescing comments
-Message-ID: <20220828060617-mutt-send-email-mst@kernel.org>
-References: <20220823073947.14774-1-alvaro.karsz@solid-run.com>
+        with ESMTP id S229436AbiH1KXe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 06:23:34 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35F74B0E4;
+        Sun, 28 Aug 2022 03:23:32 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id DDFDB18845DE;
+        Sun, 28 Aug 2022 10:23:30 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id D259325032B7;
+        Sun, 28 Aug 2022 10:23:30 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id C77859EC0009; Sun, 28 Aug 2022 10:23:30 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220823073947.14774-1-alvaro.karsz@solid-run.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Date:   Sun, 28 Aug 2022 12:23:30 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <Ywo16vHMqxxszWzX@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <dd9a4156fe421f6be3a49f5b928ef77e@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,62 +75,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 23, 2022 at 10:39:47AM +0300, Alvaro Karsz wrote:
-> Fix wording in comments for the notifications coalescing feature.
+On 2022-08-27 17:19, Ido Schimmel wrote:
+> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
+>> 
+>>  	nbp_switchdev_frame_mark(p, skb);
+>> @@ -943,6 +946,10 @@ static int br_setport(struct net_bridge_port *p, 
+>> struct nlattr *tb[],
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS, 
+>> BR_NEIGH_SUPPRESS);
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+>>  	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+>> +	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
+>> +
+>> +	if (!(p->flags & BR_PORT_LOCKED))
+>> +		p->flags &= ~BR_PORT_MAB;
+
+The reason for this is that I wanted it to be so that if you have MAB 
+enabled (and locked of course) and unlock the port, it will 
+automatically clear both flags instead of having to first disable MAB 
+and then unlock the port.
+
 > 
-> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-
-
-> ---
->  include/uapi/linux/virtio_net.h | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+> Any reason not to emit an error if MAB is enabled while the port is
+> unlocked? Something like this (untested):
 > 
-> diff --git a/include/uapi/linux/virtio_net.h b/include/uapi/linux/virtio_net.h
-> index 29ced55514d..6cb842ea897 100644
-> --- a/include/uapi/linux/virtio_net.h
-> +++ b/include/uapi/linux/virtio_net.h
-> @@ -56,7 +56,7 @@
->  #define VIRTIO_NET_F_MQ	22	/* Device supports Receive Flow
->  					 * Steering */
->  #define VIRTIO_NET_F_CTRL_MAC_ADDR 23	/* Set MAC address */
-> -#define VIRTIO_NET_F_NOTF_COAL	53	/* Guest can handle notifications coalescing */
-> +#define VIRTIO_NET_F_NOTF_COAL	53	/* Device supports notifications coalescing */
->  #define VIRTIO_NET_F_HASH_REPORT  57	/* Supports hash report */
->  #define VIRTIO_NET_F_RSS	  60	/* Supports RSS RX steering */
->  #define VIRTIO_NET_F_RSC_EXT	  61	/* extended coalescing info */
-> @@ -364,24 +364,24 @@ struct virtio_net_hash_config {
->   */
->  #define VIRTIO_NET_CTRL_NOTF_COAL		6
->  /*
-> - * Set the tx-usecs/tx-max-packets patameters.
-> - * tx-usecs - Maximum number of usecs to delay a TX notification.
-> - * tx-max-packets - Maximum number of packets to send before a TX notification.
-> + * Set the tx-usecs/tx-max-packets parameters.
->   */
->  struct virtio_net_ctrl_coal_tx {
-> +	/* Maximum number of packets to send before a TX notification */
->  	__le32 tx_max_packets;
-> +	/* Maximum number of usecs to delay a TX notification */
->  	__le32 tx_usecs;
->  };
->  
->  #define VIRTIO_NET_CTRL_NOTF_COAL_TX_SET		0
->  
->  /*
-> - * Set the rx-usecs/rx-max-packets patameters.
-> - * rx-usecs - Maximum number of usecs to delay a RX notification.
-> - * rx-max-frames - Maximum number of packets to receive before a RX notification.
-> + * Set the rx-usecs/rx-max-packets parameters.
->   */
->  struct virtio_net_ctrl_coal_rx {
-> +	/* Maximum number of packets to receive before a RX notification */
->  	__le32 rx_max_packets;
-> +	/* Maximum number of usecs to delay a RX notification */
->  	__le32 rx_usecs;
->  };
->  
-> -- 
-> 2.32.0
-
+> diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+> index 5aeb3646e74c..18353a4c29e1 100644
+> --- a/net/bridge/br_netlink.c
+> +++ b/net/bridge/br_netlink.c
+> @@ -944,6 +944,12 @@ static int br_setport(struct net_bridge_port *p,
+> struct nlattr *tb[],
+>         br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
+>         br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
+> 
+> +       if (!(p->flags & BR_PORT_LOCKED) && (p->flags & BR_PORT_MAB)) {
+> +               NL_SET_ERR_MSG(extack, "MAB cannot be enabled when
+> port is unlocked");
+> +               p->flags = old_flags;
+> +               return -EINVAL;
+> +       }
+> +
+>         changed_mask = old_flags ^ p->flags;
+> 
+>         err = br_switchdev_set_port_flag(p, p->flags, changed_mask, 
+> extack);
+> 
