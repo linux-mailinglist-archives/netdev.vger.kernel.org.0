@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B07E5A3CFD
-	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 11:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E41FB5A3D0C
+	for <lists+netdev@lfdr.de>; Sun, 28 Aug 2022 11:55:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiH1J2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 05:28:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58444 "EHLO
+        id S229500AbiH1Jzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 05:55:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiH1J2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 05:28:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19F9550AC
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 02:28:39 -0700 (PDT)
+        with ESMTP id S229448AbiH1Jzt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 05:55:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9613C43E5D;
+        Sun, 28 Aug 2022 02:55:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8532A60F2C
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 09:28:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A66BC433C1;
-        Sun, 28 Aug 2022 09:28:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A1EDB80A3A;
+        Sun, 28 Aug 2022 09:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A978C433C1;
+        Sun, 28 Aug 2022 09:55:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661678918;
-        bh=1sWq5xPtyKIhGc9UXdt4kBKH1wr8hfjZcwvqZ3WTgMo=;
+        s=k20201202; t=1661680546;
+        bh=TcwxDWZtQS6kMjN2jg9yz87Lt7T5qZ8ftJVQLc8rmrI=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Un3CU9Uwoxlt00QFjAnQCl6T4GLLygZWmfDLyZP1gbhA/dXzbU/meKxKfxpDM1MMH
-         yyjmSnjziqaqZR2sW2QQbTjgGQakn40FRcfV0fULnjTxLluO6S49Ap1o/94VJ5f8rG
-         INfi+eurEaI8QrlxE7pP61Fqza9kEeBh8A1vD5wmYp1DgRdz9RCasukMFOPbna8Kyn
-         gvkbm2xuU2aRTroj/LQ/FpN5iiJ3eljzAXK/jFPQQD+gmM8zvmbllvDsrkxH8WbT4k
-         m8mYN8G4CTqLMYaGFH+RTYCvz4gQa/3e9MOXeL551NyFLYz7+AT2ViBfwEQXoJscj2
-         IzJeJUMbJ4aJg==
-Date:   Sun, 28 Aug 2022 12:28:34 +0300
+        b=Rxq1frQ4Y7jG/7PA4ZNlJ7bYY/4+1Ihaz96hMvhmyswpnbYQ9NfPX9HShQ2ybT6pW
+         It1NQhz+dlZPJe19lcZ+FwtAT1QC0wS7J1y0qZMHoD7pMwPnwLHGMNDo4YxxCJxpdg
+         nDMHMiQE91NuwChoGUW2JC84wJEQOE5uSBM8uP79WzpX9vAq5FH5bhXnTFAkrLlLjx
+         v3OlNw401ZIXH6LvhActC8mcqhOjRwjzPO+wygYnRinPMZaebAgt7yWX4EZAMZiQcM
+         Lgz0AKaIZMWaXfsiePeR9j5QbrhaGtdZhnfw6+8k071rcdP/AOYfBpyBuuee1BNVGS
+         bQmnUOm6KjyYg==
+Date:   Sun, 28 Aug 2022 12:55:41 +0300
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH xfrm-next v3 0/6] Extend XFRM core to allow full offload
- configuration
-Message-ID: <Yws1Qs4+1Omo8DPL@unreal>
-References: <cover.1661260787.git.leonro@nvidia.com>
- <20220825143610.4f13f730@kernel.org>
- <YwhnsWtzwC/wLq1i@unreal>
- <20220826164522.33bfe68c@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, patches@lists.linux.dev
+Subject: Re: [PATCH net-next] net/mlx5e: Do not use err uninitialized in
+ mlx5e_rep_add_meta_tunnel_rule()
+Message-ID: <Yws7nQsU8hIf7gZT@unreal>
+References: <20220825180607.2707947-1-nathan@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220826164522.33bfe68c@kernel.org>
+In-Reply-To: <20220825180607.2707947-1-nathan@kernel.org>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,65 +61,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 04:45:22PM -0700, Jakub Kicinski wrote:
-> On Fri, 26 Aug 2022 09:26:57 +0300 Leon Romanovsky wrote:
-> > On Thu, Aug 25, 2022 at 02:36:10PM -0700, Jakub Kicinski wrote:
-> > > On Tue, 23 Aug 2022 16:31:57 +0300 Leon Romanovsky wrote:  
-> > > >  * I didn't hear any suggestion what term to use instead of
-> > > >    "full offload", so left it as is. It is used in commit messages
-> > > >    and documentation only and easy to rename.
-> > > >  * Added performance data and background info to cover letter
-> > > >  * Reused xfrm_output_resume() function to support multiple XFRM transformations
-> > > >  * Add PMTU check in addition to driver .xdo_dev_offload_ok validation
-> > > >  * Documentation is in progress, but not part of this series yet.  
-> > > 
-> > > Since the use case is somewhat in question, perhaps switch to RFC
-> > > postings until the drivers side incl. tc forwarding is implemented?  
-
-<...>
-
-> > We also don't offload anything related to routing as we can't
-> > differentiate between local traffic.
+On Thu, Aug 25, 2022 at 11:06:07AM -0700, Nathan Chancellor wrote:
+> Clang warns:
 > 
-> Yeah, nah, that's not what I'm asking for.
-> I said forwarding, not sending traffic thru a different virtual
-> interface. The TC rules must forward from or two the IPSec ifc.
+>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:6: error: variable 'err' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
+>           if (IS_ERR(flow_rule)) {
+>               ^~~~~~~~~~~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:489:9: note: uninitialized use occurs here
+>           return err;
+>                 ^~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:481:2: note: remove the 'if' if its condition is always true
+>           if (IS_ERR(flow_rule)) {
+>           ^~~~~~~~~~~~~~~~~~~~~~~
+>   drivers/net/ethernet/mellanox/mlx5/core/en_rep.c:474:9: note: initialize the variable 'err' to silence this warning
+>           int err;
+>                 ^
+>                   = 0
+>   1 error generated.
 > 
-> That was the use case Jason mentioned.
-
-I see, word "TC" confused me, sorry about that.
-
-My next mlx5-related task after this IPsec full offload will be accepted
-is to extend mlx5 with extra eswitch logic.
-
-There is no change in API, xfrm code or behavior, just internal change
-where IPsec flow steering tables will be created and how they will be
-created/destroyed. 
-
-Unfortunately, this "just.." change is a complicated task due to mlx5 core
-internal implementation and will take time, but as I said, I will do it.
-
+> There is little reason to have the 'goto + error variable' construct in
+> this function. Get rid of it and just return the PTR_ERR value in the if
+> statement and 0 at the end.
 > 
-> > > Also the perf traces, I don't see them here.  
-> > 
-> > It is worth to separate it to standalone discussion with a title:
-> > "why crypto is not fast enough?". I don't think that mixed discussions
-> > about full offload which Steffen said that he is interested and
-> > research about crypto bottlenecks will be productive. These discussions
-> > are orthogonal.
+> Fixes: 430e2d5e2a98 ("net/mlx5: E-Switch, Move send to vport meta rule creation")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1695
+> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
 > 
-> What do you mean by crypto bottlenecks?
 
-I think that I used same language all the time.
-* IPsec SW - software path
-* IPsec crypto - HW offload of crypto part
-* IPsec full offload - state and policy offloads to the HW. 
-
-I will try to be more clear next time.
-
-> 
-> Please use more precise language. crypto here may mean "crypto only
-> offload" or "crypto as done by CPU". I have no idea which one you mean.
-> 
-> We are very much interested in the former, the latter is indeed out of
-> scope here.
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
