@@ -2,58 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A80D5A4C49
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0375A4C80
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:53:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229743AbiH2Msz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:48:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60568 "EHLO
+        id S229564AbiH2Mxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230104AbiH2Msj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:48:39 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813FFB775E
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:34:32 -0700 (PDT)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-        by gnuweeb.org (Postfix) with ESMTPSA id E8BEB80B4F
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 12:34:31 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1661776471;
-        bh=N1uDE91BqGxI7oqT6ZPOAuib3sKIAcIKvPFQNbnaYxM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cj/5EiuksvAtUjyMmn4aZqVyxlpZLPb6ng2YG/1uTnVbncK+3A4+nBH7Zdxp6AN5e
-         fL60A9jw7nXZL15bBIUt68u1X0B2cx4R1ovBIZ2Zn1TWoEhwOi5O2nQQ8u1Ot6qy0O
-         Q5a/frtZArUHr25DgYlJb+JTWMaCJEGl0BeaEiduIcRnIfNsqVuHjw8RKXPqhx4Z6V
-         xzxa19ddlFflfNKt6ZmTpLauuMwUoo8+/4jB6wYkyuji3YM5av/lBft4vdFRsUJm3B
-         AjZoLQ8mlcWCiII6XeQd/5ypJsQW5T045sDlZyYj19OXvFp19d6hp8oS1ViKUd+jvy
-         1gCK2ThuHzyQA==
-Received: by mail-lf1-f46.google.com with SMTP id v26so694166lfd.10
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:34:31 -0700 (PDT)
-X-Gm-Message-State: ACgBeo2TJIG0Bxbtyw5V+DjxFMPld1M0STNzPHnM8dmsOSRmzRVaJPtZ
-        a7J7zVANjkuWkCYOEaAJGJCyGIZZ8e10TKhs/62w6w==
-X-Google-Smtp-Source: AA6agR5GbTehGGG7rAld1ZY9g1RxolXE4vO8PFMy3NVNbJcN02f2heEEbGWkSswl8x7LF06IOKxexLhBjrUnAxndPJM=
-X-Received: by 2002:a05:6512:12c2:b0:492:dc0c:f4ac with SMTP id
- p2-20020a05651212c200b00492dc0cf4acmr6997012lfg.612.1661776469902; Mon, 29
- Aug 2022 05:34:29 -0700 (PDT)
+        with ESMTP id S230081AbiH2Mxb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:53:31 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360C961D98
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=8aMX122KRKlsn1AeTHhkeZ8O0HoIa4hJOfBCXHbGG8Y=; b=pMwjrccx3oB0vVb1OzEEcgQYO3
+        DaD529H1nXQaVKdlyC0BwVOqhkxMv1ktgHgc7WnHhQYUSPU5YFtyK7J3gBq/wDCGfSv1Q46gIla+l
+        8WWhNiRw12WJJu8NIJFp0Lclz0/hmJCoYtyCfjKzt7wYygSL5bHBvwCO8OpeUiSxtcF0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oSe6I-00ExkP-23; Mon, 29 Aug 2022 14:42:46 +0200
+Date:   Mon, 29 Aug 2022 14:42:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [PATCH net-next v2 1/3] dsa: Implement RMU layer in DSA
+Message-ID: <Ywy0RrY0Ih3lBBxx@lunn.ch>
+References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
+ <20220826063816.948397-2-mattias.forsblad@gmail.com>
+ <YwkelQ7NWgNU2+xm@lunn.ch>
+ <5f550ab1-13b5-d78c-d4be-abc6fd7ac8f9@gmail.com>
 MIME-Version: 1.0
-References: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
-In-Reply-To: <20220829111643.266866-1-cui.jinpeng2@zte.com.cn>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Date:   Mon, 29 Aug 2022 19:34:18 +0700
-X-Gmail-Original-Message-ID: <CAGzmLMW-D8cGbZruQ=Vy7Yu8j5nCqGvNC8mMw-XeNjHr62Mf6g@mail.gmail.com>
-Message-ID: <CAGzmLMW-D8cGbZruQ=Vy7Yu8j5nCqGvNC8mMw-XeNjHr62Mf6g@mail.gmail.com>
-Subject: Re: [PATCH linux-next] wifi: cfg80211: remove redundant ret variable
-To:     cgel.zte@gmail.com
-Cc:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com,
-        kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
-        edumazet@google.com, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5f550ab1-13b5-d78c-d4be-abc6fd7ac8f9@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -63,13 +54,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 6:35 PM <cgel.zte@gmail.com> wrote:
-> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
->
-> Return value from cfg80211_rx_mgmt() directly instead of
-> taking this in another redundant variable.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> > Hi Mattias
+> > 
+> > Vladimer pointed you towards the qca driver, in a comment for your
+> > RFC. qca already has support for switch commands via Ethernet frames.
+> > 
+> > The point he was trying to make is that you should look at that
+> > code. The concept of executing a command via an Ethernet frame, and
+> > expecting a reply via an Ethernet frame is generic. The format of
+> > those frames is specific to the switch. We want the generic parts to
+> > look the same for all switches. If possible, we want to implement it
+> > once in the dsa core, so all switch drivers share it. Less code,
+> > better tested code, less bugs, easier maintenance.
+> > 
+> > Take a look at qca_tagger_data. Please use the same mechanism with
+> 
+> This I can do which makes sense.
+> 
+> > mv88e6xxx. But also look deeper. What else can be shared? You need a
+> 
+> I can also make a generic dsa_eth_tx_timeout routine which
+> handles the sending and receiving of cmd frames.
+> 
+> > buffer to put the request in, you need to send it, you need to wait
+> 
+> The skb is the buffer and it's up to the driver to decode it properly?
 
-Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Yes, the tagger layer passes the skb, which contains the complete
+Ethernet frame, plus additional meta data. But you need to watch out
+for the life cycle of that skb:
+
+        /* Ethernet mgmt read/write packet */
+        if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
+                if (likely(tagger_data->rw_reg_ack_handler))
+                        tagger_data->rw_reg_ack_handler(ds, skb);
+                return NULL;
+        }
+
+returning NULL means the DSA core will free the skb when the call to
+qca_tag_rcv() returns. So either you need to take a copy of the data,
+clone the skb, or change this code somehow. See what makes most sense
+for generic code.
+
+
+> I've looked into the qca driver and that uses a small static buffer
+> for replies, no buffer lifetime cycle.
+> 
+> > for the reply, you need to pass the results to the driver, you need to
+> > free that buffer afterwards. That should all be common. Look at these
+> > parts in the qca driver. Can you make them generic, move them into the
+> > DSA core? Are there other parts which could be shared?
+> 
+> I cannot change the qca code as I have no way of verifying that the
+> resulting code works.
+
+You can change it. You can at least compile test your change. The QCA
+developers are also quite active, and so will probably help out
+testing whatever you change. And ideally, you want lots of simple,
+obviously correct changes, which i can review and say look correct.
+
+Changing code which you cannot test is very normal in Linux, do your
+best, and ask for testing.
+
+      Andrew
