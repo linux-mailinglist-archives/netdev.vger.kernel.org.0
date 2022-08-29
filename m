@@ -2,94 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1A5E5A45F8
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:22:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 676195A4624
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229756AbiH2JWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48430 "EHLO
+        id S229960AbiH2Jcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2JWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:22:34 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CD115A806;
-        Mon, 29 Aug 2022 02:22:33 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 30DEF38F;
-        Mon, 29 Aug 2022 11:22:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661764951;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=OUc1LWdpbz87/rNtBwzA999uipsSxmoZtcNrouUeHHE=;
-        b=VXlqjc+QqsODaMUjfx6UczpKtVyzDsKuFWOsE/xhziHxDKsN9y0pb6hWS1PuiFLeWiUhNB
-        GCrNztMmGP/YkZ6aaoW4Pki5uDc1mlc4DGRWi1hUeCgZzlBI3zXLBfVVtKxDMzfaBnkmda
-        /z8wJPQEkrwMwAkVjTD6UAHUIzGKWojx+MbkHwKmk7eO4EttsvqywM8gz2GjTaRcuuLXZQ
-        +wSYq5YX2UbZaYKCofGSYeYVWC93PpSiIeUscJFMHuH/XiwzLHdnejxyxvF+8R454nrQM9
-        Bs8GxzeJPIg8JSOfFM4g+Ya+YxBgQf+PLqNm08o7VE0MevpZxrKuyAZDxISPnQ==
+        with ESMTP id S229671AbiH2Jcd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:32:33 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65405466D;
+        Mon, 29 Aug 2022 02:32:31 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 22BC1188493F;
+        Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id 10FD125032B7;
+        Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id 0C1E59EC0005; Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 11:22:30 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
+Date:   Mon, 29 Aug 2022 11:32:29 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] reset: microchip-sparx5: issue a reset on startup
-In-Reply-To: <578bdccee9a92dd74bb6a1b87fb5011bf7279e57.camel@microchip.com>
-References: <20220826115607.1148489-1-michael@walle.cc>
- <20220826115607.1148489-2-michael@walle.cc>
- <578bdccee9a92dd74bb6a1b87fb5011bf7279e57.camel@microchip.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <392c923d59b581fdc9c8f8a13a2ae258@walle.cc>
-X-Sender: michael@walle.cc
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <Ywo16vHMqxxszWzX@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <42392a323bdc5324e1e4682fca378c90@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Steen,
+On 2022-08-27 17:19, Ido Schimmel wrote:
+> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
+> How about the below (untested):
+> 
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 68b3e850bcb9..9143a94a1c57 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -109,9 +109,18 @@ int br_handle_frame_finish(struct net *net,
+> struct sock *sk, struct sk_buff *skb
+>                 struct net_bridge_fdb_entry *fdb_src =
+>                         br_fdb_find_rcu(br, eth_hdr(skb)->h_source, 
+> vid);
+> 
+> -               if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
+> -                   test_bit(BR_FDB_LOCAL, &fdb_src->flags))
+> +               if (!fdb_src) {
+> +                       if (p->flags & BR_PORT_MAB) {
+> +                               __set_bit(BR_FDB_ENTRY_LOCKED, &flags);
+> +                               br_fdb_update(br, p, 
+> eth_hdr(skb)->h_source,
+> +                                             vid, flags);
+> +                       }
+> +                       goto drop;
+> +               } else if (READ_ONCE(fdb_src->dst) != p ||
+> +                          test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
+> +                          test_bit(BR_FDB_LOCKED, &fdb_src->flags)) {
+>                         goto drop;
+> +               }
+>         }
+> 
+> The semantics are very clear, IMO. On FDB miss, add a locked FDB entry
+> and drop the packet. On FDB mismatch, drop the packet.
+> 
+> Entry can roam from an unauthorized port to an authorized port, but not
+> the other way around. Not sure what is the use case for allowing 
+> roaming
+> between unauthorized ports.
+> 
+> Note that with the above, locked entries are not refreshed and will
+> therefore age out unless replaced by user space.
+> 
 
-Am 2022-08-29 11:14, schrieb Steen Hegelund:
-> On Fri, 2022-08-26 at 13:56 +0200, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> Originally this was used in by the switch core driver to issue a 
->> reset.
->> But it turns out, this isn't just a switch core reset but instead it
->> will reset almost the complete SoC.
->> 
->> Instead of adding almost all devices of the SoC a shared reset line,
->> issue the reset once early on startup. Keep the reset controller for
->> backwards compatibility, but make the actual reset a noop.
->> 
->> Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
->> Signed-off-by: Michael Walle <michael@walle.cc>
-..
+Okay I was under the impression that entries should be able to roam 
+freely between authorized and unauthorized ports in the bridge as long 
+as the locked flag is on when roaming to the MAB enabled port. As you 
+know roaming is not a big issue with mv88e6xxx.
 
-> Tested-by: Steen Hegelund <Steen.Hegelund@microchip.com> on Sparx5
+As I see this code, an entry cannot roam to an authorized port as there 
+is no update after the port mismatch check and the packet is dropped as 
+it should in this case in the locked section.
 
-Thanks for testing!
-
--michael
