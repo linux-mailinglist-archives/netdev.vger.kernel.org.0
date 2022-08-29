@@ -2,74 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 752565A4588
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4DA5A458C
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:55:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbiH2IzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 04:55:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41838 "EHLO
+        id S229778AbiH2Izj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 04:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229669AbiH2IzV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:55:21 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11F013F33;
-        Mon, 29 Aug 2022 01:55:17 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 00ECB18848CB;
-        Mon, 29 Aug 2022 08:55:16 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id EC9B325032B7;
-        Mon, 29 Aug 2022 08:55:15 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id DE5709EC0003; Mon, 29 Aug 2022 08:55:15 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229880AbiH2Izi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:55:38 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 280C02A42B;
+        Mon, 29 Aug 2022 01:55:34 -0700 (PDT)
+Received: from [IPV6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98] (p200300e9d7011d41444abdf5adf89c98.dip0.t-ipconnect.de [IPv6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 04503C04DF;
+        Mon, 29 Aug 2022 10:55:31 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1661763332;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IR5r053jYKiiUav7LjqLc9Puhvx5djJKdCrkqggGylI=;
+        b=RtH45SbWKB8TanE9NUt36SCO0wdLhcmjbcKeLGOdUrDWxlDzTHDJpUXUEVcJoCyrLHAmzZ
+        ovqCFArVxuNp8JRU7AGDWitF+psagUlzlOh5v1WOA/w6gVIAaeRA7bK4B0P6Nosfr2y2kH
+        1oCuJs9B8au6wSC3w2zXBFAC+UQEsnTqFqIlqv9kRSGV1oQAeywUsyUD0Q4TJczAT2bUUu
+        Xo+txNn2ivE1eaB4htd6KrvEIuloMtO3IxbozSj1dzxFIE1naJaUlECI4sJIk9zVAox4tz
+        sZw5MoplQ4ObeFpFn/AvV7m8EuCUGsSk0T6HcqW5pS/R7s5d5Cqus0nypfBwXA==
+Message-ID: <8752aa54-28a3-9ae3-45ca-947551f31773@datenfreihafen.org>
+Date:   Mon, 29 Aug 2022 10:55:31 +0200
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 10:55:15 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] ieee802154: cc2520: add rc code in cc2520_tx()
+Content-Language: en-US
+To:     Li Qiong <liqiong@nfschina.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
- MAC-Auth Bypass to locked port tests
-In-Reply-To: <YwxtVhlPjq+M9QMY@shredder>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-7-netdev@kapio-technology.com>
- <YwpgvkojEdytzCAB@shredder>
- <7654860e4d7d43c15d482c6caeb6a773@kapio-technology.com>
- <YwxtVhlPjq+M9QMY@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <c1123f1b242ea037867a5ec7130232f4@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-wpan@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>
+References: <20220829071259.18330-1-liqiong@nfschina.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220829071259.18330-1-liqiong@nfschina.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,53 +64,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-29 09:40, Ido Schimmel wrote:
-> On Sun, Aug 28, 2022 at 02:00:29PM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-08-27 20:21, Ido Schimmel wrote:
->> > "locked on learning on" is counter intuitive and IMO very much a
->> > misconfiguration that we should have disallowed when the "locked" option
->> > was introduced. It is my understanding that the only reason we are even
->> > talking about it is because mv88e6xxx needs it for MAB for some reason.
->> 
->> As the way mv88e6xxx implements "learning off" is to remove port 
->> association
->> for ingress packets on a port, but that breaks many other things such 
->> as
->> refreshing ATU entries and violation interrupts, so it is needed and 
->> the
->> question is then what is the worst to have 'learning on' on a locked 
->> port or
->> to have the locked port enabling learning in the driver silently?
->> 
->> Opinions seem to differ. Note that even on locked ports without MAB, 
->> port
->> association on ingress is still needed in future as I have a dynamic 
->> ATU
->> patch set coming, that uses age out violation and hardware refreshing 
->> to let
->> the hardware keep the dynamic entries as long as the authorized 
->> station is
->> sending, but will age the entry out if the station keeps silent for 
->> the
->> ageing time. But that patch set is dependent on this patch set, and I 
->> don't
->> think I can send it before this is accepted...
+
+Hello Qiong.
+
+On 29.08.22 09:12, Li Qiong wrote:
+> The rc code is 0 at the error path "status & CC2520_STATUS_TX_UNDERFLOW".
+> Assign rc code with '-EINVAL' at this error path to fix it.
 > 
+> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+> ---
+>   drivers/net/ieee802154/cc2520.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ieee802154/cc2520.c b/drivers/net/ieee802154/cc2520.c
+> index 1e1f40f628a0..c69b87d3837d 100644
+> --- a/drivers/net/ieee802154/cc2520.c
+> +++ b/drivers/net/ieee802154/cc2520.c
+> @@ -504,6 +504,7 @@ cc2520_tx(struct ieee802154_hw *hw, struct sk_buff *skb)
+>   		goto err_tx;
+>   
+>   	if (status & CC2520_STATUS_TX_UNDERFLOW) {
+> +		rc = -EINVAL;
+>   		dev_err(&priv->spi->dev, "cc2520 tx underflow exception\n");
+>   		goto err_tx;
+>   	}
 
-> # bridge link set dev swp1 learning on locked on
-> # bridge link set dev swp2 learning on locked on
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
 
-As we must think in how most drivers work, which I am not knowledgeable 
-of, I think that it is probably the best to think of the way mv88e6xxx 
-works as an outlier.
-If that is true, then I think the best option is to go with:
-#bridge link set dev $swp1 learning off locked on
-#bridge link set dev $swp2 learning off locked on
-
-Then the cleanup side will just be:
-#bridge link set dev $swp1 locked off
-#bridge link set dev $swp2 locked off
-
-The state 'learning off' is then consistent with the behavior of both 
-the bridge and driver after the cleanup.
+regards
+Stefan Schmidt
