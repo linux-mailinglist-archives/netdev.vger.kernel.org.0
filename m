@@ -2,146 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E555A468E
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26EEF5A468F
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:56:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229880AbiH2Jzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:55:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42020 "EHLO
+        id S229564AbiH2J4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiH2Jzl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:55:41 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2131.outbound.protection.outlook.com [40.107.243.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B7FF42AE5;
-        Mon, 29 Aug 2022 02:55:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dBTUF0xQmNAraJOAhfDfzmwtgEhJ+yBSHF27kqmc44Poaagaslil+HTRJQAQAjjMrAYZCn+9BCaXqWo5zsAWxtAwz6Hr1lRv5l7MDFYtxe9zT6C8Bj53c+KqXhH9WlPWN0t73e6QTkPFperGcdErFklIuL2XfewpaEZtRyHxYPT0yoi+5QQc1vVIjAAwqbMdJcJyvqxc46q214CElXhd6dOj0DkNLEPD/ahqkayaE81hORK+ZIZsQud4FAe63erwIQoIBxxVw3U0hE47OLNsmLJg+VQwNtlycLtxjFkg1tJWC6UltqrbmuSPeR7HxNJP30j9O33nEt8jBdW7trDi1A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/evPD/eudXYVCRnFN0h1sTxn/bpCjtDSzl4WubTNexc=;
- b=i3SiO+Kex+mbY8F5guGpcfsyng01B0Nkix5ruWZ4m/N0XwXyhYfzf8XhAA/8tKWKZxV2OIeqh/NxhqKtcGJhqNlRZV5MX5Veg/e9p31wjylpRDb2rn9ekOCrumH3BZJHWF/t4Xzyeda4t+FD/cU5oJHbSvPir/1idqNE/W8IcSAG3GQ6hAb995jsrnjAJeKhJHFgfRHmgKTx/d2uXKhyrR9/GZoqNBd0+5j03FVy2sAIvteHrGIRrNG/bK/JTPyLZJaGOci3mszjApbTDK4D1H0MZLKsfDsJoy7OJXvKGAZMNlbitznE9okmQGaWAx7yWwBUCkXk0xtvk4FxYNvYRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+        with ESMTP id S229598AbiH2J4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:56:18 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362D04D83D
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 02:56:17 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so988661pja.4
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 02:56:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/evPD/eudXYVCRnFN0h1sTxn/bpCjtDSzl4WubTNexc=;
- b=bacUaa/DxyLXYlK70Pi1iMkkJcRJU9giBZ+Gm83XHTU/ZMO3ckCHhl+9LjRPoyXPMPhzuREXIqtRlxxHE1R8ixDXhbXSbQNVtU4/7VkO8daXRLcYr+mjz2Zwob3zjeQA05Lt/uujBTnHUF8KdrVi1C89dnTxYERl3a4x0pOT8lw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BY3PR13MB4915.namprd13.prod.outlook.com (2603:10b6:a03:366::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Mon, 29 Aug
- 2022 09:55:34 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::a1e6:3e37:b3f3:7576]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::a1e6:3e37:b3f3:7576%9]) with mapi id 15.20.5588.010; Mon, 29 Aug 2022
- 09:55:34 +0000
-Date:   Mon, 29 Aug 2022 11:55:26 +0200
-From:   Simon Horman <simon.horman@corigine.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catherine Sullivan <csully@google.com>,
-        David Awogbemila <awogbemila@google.com>,
-        Dimitris Michailidis <dmichail@fungible.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Hans Ulli Kroll <ulli.kroll@googlemail.com>,
-        Jeroen de Borst <jeroendb@google.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=4puvxp4NasGiCkk6TT4/GuLNqUhsCyJE+FTPyVrKYIY=;
+        b=PbLtLG5Y28pMVZX3nQACKcRK5guzs7XpGBkAXLaXv0P+D/9EnsUSnxKDygusj6c7Ld
+         mwB2CrSqL7lACMu5nEhkWAdzZu1n3gN/3SwNOoqYlAVjWIY32j0XTxXeNUzAMNnofHGK
+         gECTKuzzwub+rIOomHWJKhDx+fWEpZifDaCrWBiNcW5spJYc4DBkYhBwRyD9jDk9cbph
+         oGkM4pGh6XgtWKmw+7zciw+EhAMDIs6F5wrh5GBighR1EYXvZLp9t0dc0OmAzOPN3uDL
+         LNhyfqcM8RIXA4PAq/36IUV80hqvyqcOQGeEgkG0JStrUK5yA7TjkI9RKz/C7VLSgSHS
+         iUXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=4puvxp4NasGiCkk6TT4/GuLNqUhsCyJE+FTPyVrKYIY=;
+        b=gLUKuA6HBsskXR6G4fZR644WsS5H2zoGdzQcj2gabyRG7RIdeSndlJYRUhtB92qDGr
+         gHuthql8iHpWsM12IpGZDkgir5NLSdUqZnHqDxez88U0DyOrrM3uyHCduZqgru9IQQJl
+         tn8Pljbgn9GGOCrpT9KH1nSTso1awF7RLbS1Mi0MaReur10KoAlAtVMbkZPhDy9L6P/8
+         MoUBgsoUmVSayFPYWGMpDe045vkd8Tbh5k70lKSvUuVeZCipbcRDtLXd3YTmejM2E1+E
+         XRmF1QLo0tRdlYaaMlQehzKaBGyGcaoiOS/uTIDiWl/kfqDHxjH9BigN5Zd6D3LPECFY
+         GxVw==
+X-Gm-Message-State: ACgBeo3phN/ku7LtO32z/C73RISjPb97UJc7Gx4RI4NByEqP6C60m4Ym
+        L9qLC1PUCQ2Ir9p1B6y1uds=
+X-Google-Smtp-Source: AA6agR74TqIjvzFpEAgbpU6PqZni8vq017omLdjc1MmmumKPg2CiifigiQ9tWpWdkF3WJvvW10iTjw==
+X-Received: by 2002:a17:902:f790:b0:170:d401:66d2 with SMTP id q16-20020a170902f79000b00170d40166d2mr15734842pln.124.1661766976712;
+        Mon, 29 Aug 2022 02:56:16 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id g6-20020aa79f06000000b0052dce4edceesm6808940pfr.169.2022.08.29.02.56.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Aug 2022 02:56:15 -0700 (PDT)
+Date:   Mon, 29 Aug 2022 17:56:06 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-wireless@vger.kernel.org, oss-drivers@corigine.com,
-        stable@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: Use u64_stats_fetch_begin_irq() for stats
- fetch.
-Message-ID: <YwyNDi3p72DBvZ/3@corigine.com>
-References: <20220825113645.212996-1-bigeasy@linutronix.de>
- <20220825113645.212996-3-bigeasy@linutronix.de>
+        David Ahern <dsahern@gmail.com>, LiLiang <liali@redhat.com>
+Subject: Re: [PATCH net] bonding: fix lladdr finding and confirmation
+Message-ID: <YwyNNsaD8+QYd4Ot@Laptop-X1>
+References: <20220825041327.608748-1-liuhangbin@gmail.com>
+ <191411.1661728843@nyx>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220825113645.212996-3-bigeasy@linutronix.de>
-X-ClientProxiedBy: AM0PR05CA0088.eurprd05.prod.outlook.com
- (2603:10a6:208:136::28) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7af69fc8-9740-47b8-0dc9-08da89a49d99
-X-MS-TrafficTypeDiagnostic: BY3PR13MB4915:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W2Mw9Q8vroRXJAdWJp+sx6e47/KgjC/hHTLxIyZouqrN1MtqsPbwBbKhwBB6AbgHLaI8u1asF8jXqqkZWc551WQ/AOJVVZ35rxzBuCjoVNxA8WYCnEwKUSlgWpiTZox4FAAiAyYt5+mGBI9RyK6FWAON4EHtjxV9agDyBsk3nVShDHvwS8Ub4dQhNobAIbRSNURLf1a0OJqwEFmPTXqPszzZWQSLFPWpBWq0oFdgcsL/955BIlMrsZdNeS9VWQOkpV3MFPYGHPF02dKcYtRs1BnPjoVch7l7YLb0K+JywzuogqQoqy8pIQ3EMScdhlInUwa2DWJxT1kn+Rk+advSPQHEUBCDKuHFnQ6KwF2K3pk/d4XGQTFWKwV2K8ss97nEBdLcXbs38f3Q2MTELIbG5neC7uE6fSVASzauUPRIH47qtyIhp9Mx1n/CxesAr/hGUsoALe1JEsZuohw1F8cXtu/HdywXpMMKmpGY3K7gVBvL9cWZJgpsAwS1UzFqe6rP5VCKphNZ2TCFQJyXsMbZaAbHF/1ju2vT5p5eNq11AA0j/DUix9o/EqiYLwYYLFv5gH+4NrfaC6AzUnbMROX7awXXXILTMSVS6MkuE8Xvpscg1pZcUTZkKudXa6xeoyOPOnxBmckVebsCDPt0kaFbxOcCdCwne4f0wjjkk3WkV5/iefkGF3LgKU+754tfI4S02BNl7+xP53LMXZz2tCTYtzWTLof4xP7JMCZm4hS4ujjtsnNip9mgXhRRVTB23f4O
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(376002)(136003)(346002)(39830400003)(478600001)(6486002)(186003)(52116002)(2616005)(83380400001)(86362001)(6506007)(41300700001)(6666004)(4744005)(6512007)(36756003)(4326008)(38100700002)(66946007)(66556008)(66476007)(5660300002)(7416002)(44832011)(2906002)(54906003)(8936002)(8676002)(316002)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N2YK+Cq6zfvh8+Dvqu0Chd2C9OwUJQnvVTxUHOieV048D6Io/j3P0R3eaKJe?=
- =?us-ascii?Q?VSqDx6nsiS9VJVpdnU2pgUge3LBIisOP2L35It2YDtacKQW99nF/IbWLNsrA?=
- =?us-ascii?Q?yi5RfusvohaLbj9e2tU1CZxHEdAFogrbkLTnMjtnPbYglt/cYnqyeTg/L2YI?=
- =?us-ascii?Q?Icj9Wzr9A1NJt1ccNOofXox+sX+r7/58OzPmP6rUC/WnG+dAvnj8ZmMAzr2u?=
- =?us-ascii?Q?yIr0OORsvM1kdOdFavk5U+PgQKkQHiFNWcANpnRBwmnSI4pEIEAuY+rLJp7/?=
- =?us-ascii?Q?KGDYcgwmnzho+rv9eSabM+7pQiL3aTkZVYR2QKgC10CtS+Bg9Fuyp7vY4nSU?=
- =?us-ascii?Q?lqd/YqlbLkw92fRNe+J//53pxa3ioWUixhfkXmXxehzSONDZWw8Jnky9RiC3?=
- =?us-ascii?Q?Tj6m9zRN+FxYOGYXOH+1pdREJapU+V3/8XTm2f/jFEyqETDg5uzEDKG2abpr?=
- =?us-ascii?Q?1QGGaTA4ks0KBDw7D5JLmE9iSe648s2XV/AY/DSkgzk+6HZ7QNhnHG0Gkon9?=
- =?us-ascii?Q?U+hriSB9ugmx3tfkYscLRnXZUcTh+WvMcjZpaVOnrM51TW0HYQSjEhxK7MQm?=
- =?us-ascii?Q?jVc6uQG4mtQfGoL45MU/Ywyc4tV9wgFO0Hdx8i89QfyZtRFLfaGFVYsTQD3G?=
- =?us-ascii?Q?3Y9pt+NcLzD4AWUeqT3efkOLnQNJt+3v5/78ZxNkSkxlYeSFcFtbrACez9Im?=
- =?us-ascii?Q?6cinM9c0hGzfUzGQ9Jmi8gHjVMJ/uhxtknFI1ETKiVeGlVla8mUHFYZpsotM?=
- =?us-ascii?Q?UPA5shDIT1DTOVoYDj++ACIckcc/V7WfxsKaqvOhe+CR57tTl0eRzps3zNNF?=
- =?us-ascii?Q?lOXxiNlCT9u4TYPF9dqywERBiuuuAF0L/EFsEXiEhw7Gj9Lkrune/FhWTpXS?=
- =?us-ascii?Q?EhqJGIj/dDVRVSDX5XqxzuwMzaFnsIVcHT+OpsvS8a1axzvxaN6Xzc/726PM?=
- =?us-ascii?Q?FCBqmiEDE6Tk3zR7r8R8Kkl1l/cy2vkZDoMcFLuhGwMfiGRDDeHwEjr0Z6w1?=
- =?us-ascii?Q?YVDK/5vkxV9yWhTRul8EJ/7stzRM3Efw//Is4jhUUpfgqqCObLSBRL0n79aq?=
- =?us-ascii?Q?b1ut05p+j78V6t0jH6tvgxPfOqhQEsnbT74UzaqMkoWjZsp2LgwXt4v7WjUz?=
- =?us-ascii?Q?qXs5Kotpva8NTWcjgW0uWVevBn5oA32XSsua5EdJYW/NJNSy3nLBH5Bv4FCr?=
- =?us-ascii?Q?qV9OmVMmuyYPrajbWykydt+grRFKHf5XJnr0qh/xkOOu8s7lCiVLy9b+RmOT?=
- =?us-ascii?Q?0t+/f+m/3LghEKUhuQJVPUOi6xY7gYVSU9MVR9Kulk+ePwYGp1GqgRXW3h4L?=
- =?us-ascii?Q?B+pAIbQ2sYBxbXirFLcJ8kAcqjKP3HZWLEaYIFeMCpho+9YtMLZSWpXNALeV?=
- =?us-ascii?Q?alRfNkOxgQ0hGuMkDKaKHb/RJOV8cO6+bNwlk9mUr9Y3kl3ZJqWE5t6w2fuz?=
- =?us-ascii?Q?mRClctsM943H2aPzZhsjiATDndF1iU4gK3zCbmLLXHzvi0HVwzKZ1tmfzSRu?=
- =?us-ascii?Q?XftO8I9OiQbqj2DBL3J6XIZvBVCjHwM1I2ku1e7QfPuxh+gmZ2VolWPJ6Wid?=
- =?us-ascii?Q?dPRR71eo8be4L4w09HaXDfDCL+ej+nsBCaMAyr7RiPKagdui/ctsF6l9nEYR?=
- =?us-ascii?Q?2GiX4xAlsdQxq5IDfQnhz4AnMo8cGRCnG0BSiopYy2tDaZooy4VrYT8KwoWY?=
- =?us-ascii?Q?zX6D3Q=3D=3D?=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7af69fc8-9740-47b8-0dc9-08da89a49d99
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 09:55:33.9447
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FdVfWAx5uUBYk5x/VlZwQ47qQOogoSI1CkLWEH2PEtbThrFQSdaPUs273MANzeIwFHzzEGARmFbOKBBqCOiBtMIjYlG3CUHXIUPk02M9huo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY3PR13MB4915
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <191411.1661728843@nyx>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 01:36:45PM +0200, Sebastian Andrzej Siewior wrote:
-> On 32bit-UP u64_stats_fetch_begin() disables only preemption. If the
-> reader is in preemptible context and the writer side
-> (u64_stats_update_begin*()) runs in an interrupt context (IRQ or
-> softirq) then the writer can update the stats during the read operation.
-> This update remains undetected.
+On Sun, Aug 28, 2022 at 04:20:43PM -0700, Jay Vosburgh wrote:
+> Hangbin Liu <liuhangbin@gmail.com> wrote:
 > 
-> Use u64_stats_fetch_begin_irq() to ensure the stats fetch on 32bit-UP
-> are not interrupted by a writer. 32bit-SMP remains unaffected by this
-> change.
+> >There are 3 issues when setting lladdr as bonding IPv6 target
+> >
+> >1. On the send side. When ns_ip6_target was set, the ipv6_dev_get_saddr()
+> >   will be called to get available src addr and send IPv6 neighbor solicit
+> >   message.
+> >
+> >   If the target is global address, ipv6_dev_get_saddr() will get any
+> >   available src address. But if the target is link local address,
+> >   ipv6_dev_get_saddr() will only get available address from out interace,
+> 
+> 	Should this be "our interface"?
 
-Thanks,
+Ah, yes.
 
-for the NFP driver portion:
+> >
+> >2. On the receive side. The slave was set down before enslave to bond.
+> >   This makes slaves remove mcast address 33:33:00:00:00:01( The IPv6
+> >   maddr ff02::1 is kept even when the interface down). When bond set
+> >   slave up, the ipv6_mc_up() was not called due to commit c2edacf80e15
+> >   ("bonding / ipv6: no addrconf for slaves separately from master").
+> >   This makes the slave interface never add the all node mcast address
+> >   33:33:00:00:00:01. So there is no way to accept unsolicited NA with
+> >   dest ff02::1.
+> >
+> >   Fix this by adding all node mcast address 33:33:00:00:00:01 back when
+> >   the slave interface up.
+> >
+> >3. On the validating side. The NA message with all-nodes multicast dest
+> >   address should also be valid.
+> >
+> >   Also rename bond_validate_ns() to bond_validate_na().
+> 
+> 	I'm not exactly sure which change matches which of the three
+> above fixes; should this be three separate patches?
 
-Reviewed-by: Simon Horman <simon.horman@corigine.com>
+The 1st case(send side) is fixed in function bond_ns_send_all().
+The 2nd case(receive side) is fixed in addrconf_notify().
+The 3rd case(validating side) is fixed in bond_validate_ns/na()
+
+> 
+> >Reported-by: LiLiang <liali@redhat.com>
+> >Fixes: 5e1eeef69c0f ("bonding: NS target should accept link local address")
+> 
+> 	Is this fixes tag correct for all the fixes?  Number 2 cites a
+> different commit (c2edacf80e15). 
+
+Before we support link local target for bonding. Commit (c2edacf80e15) works
+as bond device could up and add the all node multicast correctly.
+
+After we adding the link local target for bonding. The bond could not up
+and not able to add node multicast address. So I think the fixes tag should
+not be commit (c2edacf80e15).
+
+> Again, should these be three separate patches?
+
+I thought these 3 parts are all to fix lladdr target. So I put them together.
+If you think it's easier to review. I can separate the patches of course.
+
+> 
+> >@@ -3246,14 +3256,14 @@ static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
+> > 	 * see bond_arp_rcv().
+> > 	 */
+> > 	if (bond_is_active_slave(slave))
+> >-		bond_validate_ns(bond, slave, saddr, daddr);
+> >+		bond_validate_na(bond, slave, saddr, daddr);
+> > 	else if (curr_active_slave &&
+> > 		 time_after(slave_last_rx(bond, curr_active_slave),
+> > 			    curr_active_slave->last_link_up))
+> >-		bond_validate_ns(bond, slave, saddr, daddr);
+> >+		bond_validate_na(bond, slave, saddr, daddr);
+> > 	else if (curr_arp_slave &&
+> > 		 bond_time_in_interval(bond, slave_last_tx(curr_arp_slave), 1))
+> >-		bond_validate_ns(bond, slave, saddr, daddr);
+> >+		bond_validate_na(bond, slave, saddr, daddr);
+> 
+> 	Is this logic correct?  If I'm not mistaken, there are two
+> receive cases:
+> 
+> 	1- We receive a reply (Neighbor Advertisement) to our request
+> (Neighbor Solicitation).
+> 
+> 	2- We receive a copy of our request (NS), which passed through
+> the switch and was received by another interface of the bond.
+
+No, we don't have this case for IPv6 because I did a check in
+
+static int bond_na_rcv(const struct sk_buff *skb, struct bonding *bond,
+                       struct slave *slave)
+{
+	[...]
+
+        if (skb->pkt_type == PACKET_OTHERHOST ||
+            skb->pkt_type == PACKET_LOOPBACK ||
+            hdr->icmp6_type != NDISC_NEIGHBOUR_ADVERTISEMENT)
+                goto out;
+
+Here we will ignore none NA messages.
+
+Thanks
+Hangbin
+> 
+> 	For the ARP monitor implementation, in the second case, the
+> source and target IP addresses are swapped for the validation.
+> 
+> 	Is such a swap necessary for the NS/NA monitor implementation?
+> I would expect this to be in the second block of the if (inside the
+> "else if (curr_active_slave &&" block).
+> 
+> 	-J
+> 
+> > out:
+> > 	return RX_HANDLER_ANOTHER;
+> >diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+> >index e15f64f22fa8..77750b6327e7 100644
+> >--- a/net/ipv6/addrconf.c
+> >+++ b/net/ipv6/addrconf.c
+> >@@ -3557,11 +3557,14 @@ static int addrconf_notify(struct notifier_block *this, unsigned long event,
+> > 		fallthrough;
+> > 	case NETDEV_UP:
+> > 	case NETDEV_CHANGE:
+> >-		if (dev->flags & IFF_SLAVE)
+> >+		if (idev && idev->cnf.disable_ipv6)
+> > 			break;
+> > 
+> >-		if (idev && idev->cnf.disable_ipv6)
+> >+		if (dev->flags & IFF_SLAVE) {
+> >+			if (event == NETDEV_UP && !IS_ERR_OR_NULL(idev))
+> >+				ipv6_mc_up(idev);
+> > 			break;
+> >+		}
+> > 
+> > 		if (event == NETDEV_UP) {
+> > 			/* restore routes for permanent addresses */
+> >-- 
+> >2.37.1
+> >
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
