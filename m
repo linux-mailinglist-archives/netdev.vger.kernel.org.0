@@ -2,71 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A66C25A4C15
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C624B5A4B98
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:24:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229769AbiH2MkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:40:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
+        id S232252AbiH2MYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiH2Mjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:39:42 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9882ED65;
-        Mon, 29 Aug 2022 05:23:38 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 38ADC18839D6;
-        Mon, 29 Aug 2022 11:09:13 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 137FC25032B8;
-        Mon, 29 Aug 2022 11:09:13 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id E69209EC0002; Mon, 29 Aug 2022 11:09:12 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 13:09:12 +0200
-From:   netdev@kapio-technology.com
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S230222AbiH2MXv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:23:51 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 06318A7AB4;
+        Mon, 29 Aug 2022 05:08:19 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 9CBAE1E80D5E;
+        Mon, 29 Aug 2022 19:09:05 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id baIy2p6apqZl; Mon, 29 Aug 2022 19:09:02 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 0D4FF1E80D59;
+        Mon, 29 Aug 2022 19:09:02 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-User-Agent: Gigahost Webmail
-Message-ID: <d90a67c5ca6035f7ae75b7bada430e03@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yu Zhe <yuzhe@nfschina.com>,
+        Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH v2] wifi: brcmfmac: add error code in brcmf_notify_sched_scan_results()
+Date:   Mon, 29 Aug 2022 19:12:56 +0800
+Message-Id: <20220829111256.21923-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20220829065831.14023-1-liqiong@nfschina.com>
+References: <20220829065831.14023-1-liqiong@nfschina.com>
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,41 +53,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
+The err code is 0 at the first two "out_err" paths, add error code
+'-EINVAL' for these error paths.
 
->> @@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct 
->> net_bridge_port *source,
->>  						      &fdb->flags)))
->>  					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
->>  						  &fdb->flags);
->> +				if (source->flags & BR_PORT_MAB)
->> +					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
->> +				else
->> +					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
-> Please add a test for that bit and only then change it.
-> 
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+v1->v2:
+- Modify subject.
+- Resend patch and CC to linux-wireless.
+---
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Something like this?
-
-@@ -749,6 +756,12 @@ void br_fdb_update(struct net_bridge *br, struct 
-net_bridge_port *source,
-                                                       &fdb->flags)))
-                                         
-clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
-                                                   &fdb->flags);
-+                               if 
-(unlikely(test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))) {
-+                                       if (!(source->flags & 
-BR_PORT_MAB))
-+                                               
-clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
-+                               } else
-+                                       if (source->flags & BR_PORT_MAB)
-+                                               
-set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
-                         }
-
-                         if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, 
-&flags)))
-
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index db45da33adfd..b965649bb0e4 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -3553,6 +3553,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
+ 	WARN_ON(status != BRCMF_PNO_SCAN_COMPLETE);
+ 	brcmf_dbg(SCAN, "PFN NET FOUND event. count: %d\n", result_count);
+ 	if (!result_count) {
++		err = -EINVAL;
+ 		bphy_err(drvr, "FALSE PNO Event. (pfn_count == 0)\n");
+ 		goto out_err;
+ 	}
+@@ -3560,6 +3561,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
+ 	netinfo_start = brcmf_get_netinfo_array(pfn_result);
+ 	datalen = e->datalen - ((void *)netinfo_start - (void *)pfn_result);
+ 	if (datalen < result_count * sizeof(*netinfo)) {
++		err = -EINVAL;
+ 		bphy_err(drvr, "insufficient event data\n");
+ 		goto out_err;
+ 	}
+-- 
+2.11.0
 
