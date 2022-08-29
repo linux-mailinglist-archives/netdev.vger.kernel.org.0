@@ -2,118 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A0375A4C80
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D5715A4D5E
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 15:16:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229564AbiH2Mxt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:53:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
+        id S230119AbiH2NP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 09:15:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230081AbiH2Mxb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:53:31 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360C961D98
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:42:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=8aMX122KRKlsn1AeTHhkeZ8O0HoIa4hJOfBCXHbGG8Y=; b=pMwjrccx3oB0vVb1OzEEcgQYO3
-        DaD529H1nXQaVKdlyC0BwVOqhkxMv1ktgHgc7WnHhQYUSPU5YFtyK7J3gBq/wDCGfSv1Q46gIla+l
-        8WWhNiRw12WJJu8NIJFp0Lclz0/hmJCoYtyCfjKzt7wYygSL5bHBvwCO8OpeUiSxtcF0=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oSe6I-00ExkP-23; Mon, 29 Aug 2022 14:42:46 +0200
-Date:   Mon, 29 Aug 2022 14:42:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Mattias Forsblad <mattias.forsblad@gmail.com>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH net-next v2 1/3] dsa: Implement RMU layer in DSA
-Message-ID: <Ywy0RrY0Ih3lBBxx@lunn.ch>
-References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
- <20220826063816.948397-2-mattias.forsblad@gmail.com>
- <YwkelQ7NWgNU2+xm@lunn.ch>
- <5f550ab1-13b5-d78c-d4be-abc6fd7ac8f9@gmail.com>
+        with ESMTP id S230134AbiH2NPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 09:15:17 -0400
+X-Greylist: delayed 367 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 06:14:39 PDT
+Received: from vigilant-mayer.142-93-222-223.plesk.page (unknown [142.93.222.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7627E80C
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 06:14:38 -0700 (PDT)
+Received: by vigilant-mayer.142-93-222-223.plesk.page (Postfix, from userid 10000)
+        id 13182801E0; Mon, 29 Aug 2022 18:38:30 +0530 (IST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mahalaxmicomforts.in; s=default; t=1661778510;
+        bh=ND5AOm67fsxqsS67IIcME2voQIrfvmX0Amq3UNP4fq0=; h=To:Subject:From;
+        b=R8hkLrT77slTWAfKD6zfN2t4ONoRj9RvgApAaimBcb3kEr4bvzMC6ENwlYL+lrmRe
+         wwNWn0rXYKA3/0Qs5nDgOH8+Uebhptn8pa8BYXECIs5FgGOyfZ9UQ/DJ5tDrhN9H5X
+         WEmqZs4ZtlToWbMt40PLDyLbQBvafGuOnZOv6AWA=
+To:     netdev@vger.kernel.org
+Subject: =?us-ascii?Q?Telegram:_TOP_3_Handelsroboter,
+ _die_Menschen_zu?=  =?us-ascii?Q?_Millionaren_machen?=
+Date:   Mon, 29 Aug 2022 13:08:29 +0000
+From:   WordPress <admin@mahalaxmicomforts.in>
+Message-ID: <aodFvnQbOmyoDVNLBjZhDsRVNgmvWoLzvwDUOPWZIk@mahalaxmicomforts.in>
+X-Mailer: PHPMailer 6.5.3 (https://github.com/PHPMailer/PHPMailer)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5f550ab1-13b5-d78c-d4be-abc6fd7ac8f9@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+X-PPP-Message-ID: <166177851003.469166.2252683266342124108@vigilant-mayer.142-93-222-223.plesk.page>
+X-PPP-Vhost: mahalaxmicomforts.in
+X-Spam-Status: Yes, score=7.9 required=5.0 tests=BAD_ENC_HEADER,BAYES_50,
+        DKIM_INVALID,DKIM_SIGNED,RCVD_IN_VALIDITY_RPBL,RDNS_NONE,
+        SCC_BODY_URI_ONLY,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_DBL_SPAM,URIBL_PH_SURBL autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: *  2.5 URIBL_DBL_SPAM Contains a spam URL listed in the Spamhaus DBL
+        *      blocklist
+        *      [URIs: booclothing.com]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 BAD_ENC_HEADER Message has bad MIME encoding in the header
+        *  0.6 URIBL_PH_SURBL Contains an URL listed in the PH SURBL blocklist
+        *      [URIs: booclothing.com]
+        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
+        *      https://senderscore.org/blocklistlookup/
+        *      [142.93.222.223 listed in bl.score.senderscore.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 SPF_NONE SPF: sender does not publish an SPF Record
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        *  0.8 RDNS_NONE Delivered to internal network by a host with no rDNS
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.1 DKIM_INVALID DKIM or DK signature exists, but is not valid
+        *  1.7 SCC_BODY_URI_ONLY No description available.
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Hi Mattias
-> > 
-> > Vladimer pointed you towards the qca driver, in a comment for your
-> > RFC. qca already has support for switch commands via Ethernet frames.
-> > 
-> > The point he was trying to make is that you should look at that
-> > code. The concept of executing a command via an Ethernet frame, and
-> > expecting a reply via an Ethernet frame is generic. The format of
-> > those frames is specific to the switch. We want the generic parts to
-> > look the same for all switches. If possible, we want to implement it
-> > once in the dsa core, so all switch drivers share it. Less code,
-> > better tested code, less bugs, easier maintenance.
-> > 
-> > Take a look at qca_tagger_data. Please use the same mechanism with
-> 
-> This I can do which makes sense.
-> 
-> > mv88e6xxx. But also look deeper. What else can be shared? You need a
-> 
-> I can also make a generic dsa_eth_tx_timeout routine which
-> handles the sending and receiving of cmd frames.
-> 
-> > buffer to put the request in, you need to send it, you need to wait
-> 
-> The skb is the buffer and it's up to the driver to decode it properly?
+Jamestoice
+Telegram: TOP 3 Handelsroboter, die Menschen zu Millionaren machen
+Sind Sie es leid, in Schulden zu leben? Es gibt einen Ausweg und es ist sehr einfach. http://6000-bitcoin-to-usd.booclothing.com/dayli-news-2542
 
-Yes, the tagger layer passes the skb, which contains the complete
-Ethernet frame, plus additional meta data. But you need to watch out
-for the life cycle of that skb:
-
-        /* Ethernet mgmt read/write packet */
-        if (pk_type == QCA_HDR_RECV_TYPE_RW_REG_ACK) {
-                if (likely(tagger_data->rw_reg_ack_handler))
-                        tagger_data->rw_reg_ack_handler(ds, skb);
-                return NULL;
-        }
-
-returning NULL means the DSA core will free the skb when the call to
-qca_tag_rcv() returns. So either you need to take a copy of the data,
-clone the skb, or change this code somehow. See what makes most sense
-for generic code.
-
-
-> I've looked into the qca driver and that uses a small static buffer
-> for replies, no buffer lifetime cycle.
-> 
-> > for the reply, you need to pass the results to the driver, you need to
-> > free that buffer afterwards. That should all be common. Look at these
-> > parts in the qca driver. Can you make them generic, move them into the
-> > DSA core? Are there other parts which could be shared?
-> 
-> I cannot change the qca code as I have no way of verifying that the
-> resulting code works.
-
-You can change it. You can at least compile test your change. The QCA
-developers are also quite active, and so will probably help out
-testing whatever you change. And ideally, you want lots of simple,
-obviously correct changes, which i can review and say look correct.
-
-Changing code which you cannot test is very normal in Linux, do your
-best, and ask for testing.
-
-      Andrew
