@@ -2,541 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 317A85A5181
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 18:21:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73F2B5A51B0
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 18:26:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229782AbiH2QVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 12:21:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
+        id S230448AbiH2Q0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 12:26:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230290AbiH2QVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 12:21:10 -0400
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56B53AE65
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1661790063; x=1693326063;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=84YgVWHm18b2Dg1KREFg/fNgnpyJGu5Kw6e5gFH0TUI=;
-  b=VLuKTDjG64HpOr32wIKjOQv5Ex1hp4JlbYv+pcHySb6oP8E4BecX9oOY
-   kewTZCTMC+5xyWw+0+NGb42KXZnr4rHQ3fAx4MyDV8dgpGH4EV2ADcTxs
-   32VOkQEWgCT1n17npbEVqkN/zUMxOqdHW06zuNGs+DsCAMjEnid+zhjR2
-   4=;
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6001.iad6.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 16:20:50 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2c-51ba86d8.us-west-2.amazon.com (Postfix) with ESMTPS id 0A0EC122C56;
-        Mon, 29 Aug 2022 16:20:50 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Mon, 29 Aug 2022 16:20:49 +0000
-Received: from 88665a182662.ant.amazon.com.com (10.43.162.158) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Mon, 29 Aug 2022 16:20:47 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>
-Subject: [PATCH v2 net-next 5/5] tcp: Introduce optional per-netns ehash.
-Date:   Mon, 29 Aug 2022 09:19:20 -0700
-Message-ID: <20220829161920.99409-6-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220829161920.99409-1-kuniyu@amazon.com>
-References: <20220829161920.99409-1-kuniyu@amazon.com>
+        with ESMTP id S229985AbiH2Q0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 12:26:49 -0400
+Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960C679A7F;
+        Mon, 29 Aug 2022 09:26:43 -0700 (PDT)
+Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id C6634188488E;
+        Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
+        by mailout.gigahost.dk (Postfix) with ESMTP id BD87425032B7;
+        Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+Received: by smtp.gigahost.dk (Postfix, from userid 1000)
+        id B1D6C9EC0002; Mon, 29 Aug 2022 16:26:41 +0000 (UTC)
+X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.158]
-X-ClientProxiedBy: EX13D02UWB002.ant.amazon.com (10.43.161.160) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Date:   Mon, 29 Aug 2022 18:26:41 +0200
+From:   netdev@kapio-technology.com
+To:     Ido Schimmel <idosch@nvidia.com>
+Cc:     Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
+ extend locked port feature
+In-Reply-To: <Ywzlfzns/vDDiKB1@shredder>
+References: <20220826114538.705433-1-netdev@kapio-technology.com>
+ <20220826114538.705433-2-netdev@kapio-technology.com>
+ <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
+ <972663825881d135d19f9e391b2b7587@kapio-technology.com>
+ <Ywzlfzns/vDDiKB1@shredder>
+User-Agent: Gigahost Webmail
+Message-ID: <1bfb557cbae4a640b7e042d202c677cb@kapio-technology.com>
+X-Sender: netdev@kapio-technology.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The more sockets we have in the hash table, the longer we spend looking
-up the socket.  While running a number of small workloads on the same
-host, they penalise each other and cause performance degradation.
+On 2022-08-29 18:12, Ido Schimmel wrote:
+> On Mon, Aug 29, 2022 at 04:02:46PM +0200, netdev@kapio-technology.com 
+> wrote:
+>> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
+>> > On 26/08/2022 14:45, Hans Schultz wrote:
+>> >
+>> > Hi,
+>> > Please add the blackhole flag in a separate patch.
+>> > A few more comments and questions below..
+>> >
+>> 
+>> Hi,
+>> if userspace is to set this flag I think I need to change stuff in
+>> rtnetlink.c, as I will need to extent struct ndmsg with a new u32 
+>> entry as
+>> the old u8 flags is full.
+> 
+> You cannot extend 'struct ndmsg'. That's why 'NDA_FLAGS_EXT' was
+> introduced. See:
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2c611ad97a82b51221bb0920cc6cac0b1d4c0e52
+> 
+> 'NTF_EXT_BLACKHOLE' belongs in 'NDA_FLAGS_EXT' like you have it now, 
+> but
+> the kernel should not reject it in br_fdb_add().
+> 
+>> Maybe this is straight forward, but I am not so sure as I don't know 
+>> that
+>> code too well. Maybe someone can give me a hint...?
 
-The root cause might be a single workload that consumes much more
-resources than the others.  It often happens on a cloud service where
-different workloads share the same computing resource.
-
-On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
-entries), after running iperf3 in different netns, creating 24Mi sockets
-without data transfer in the root netns causes about 10% performance
-regression for the iperf3's connection.
-
- thash_entries		sockets		length		Gbps
-	524288		      1		     1		50.7
-			   24Mi		    48		45.1
-
-It is basically related to the length of the list of each hash bucket.
-For testing purposes to see how performance drops along the length,
-I set 131072 (1Mi / 8) to thash_entries, and here's the result.
-
- thash_entries		sockets		length		Gbps
-        131072		      1		     1		50.7
-			    1Mi		     8		49.9
-			    2Mi		    16		48.9
-			    4Mi		    32		47.3
-			    8Mi		    64		44.6
-			   16Mi		   128		40.6
-			   24Mi		   192		36.3
-			   32Mi		   256		32.5
-			   40Mi		   320		27.0
-			   48Mi		   384		25.0
-
-To resolve the socket lookup degradation, we introduce an optional
-per-netns hash table for TCP, but it's just ehash, and we still share
-the global bhash, bhash2 and lhash2.
-
-With a smaller ehash, we can look up non-listener sockets faster and
-isolate such noisy neighbours.  Also, we can reduce lock contention.
-
-We can control the ehash size by a new sysctl knob.  However, depending
-on workloads, it will require very sensitive tuning, so we disable the
-feature by default (net.ipv4.tcp_child_ehash_entries == 0).  Moreover,
-we can fall back to using the global ehash in case we fail to allocate
-enough memory for a new ehash.  The maximum size is 16Mi, which is large
-enough that even if we have 48Mi sockets, the average list length is 3,
-and regression would be less than 1%.
-
-We can check the current ehash size by another read-only sysctl knob,
-net.ipv4.tcp_ehash_entries.  A negative value means the netns shares
-the global ehash (per-netns ehash is disabled or failed to allocate
-memory).
-
-  # dmesg | cut -d ' ' -f 5- | grep "established hash"
-  TCP established hash table entries: 524288 (order: 10, 4194304 bytes, vmalloc hugepage)
-
-  # sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = 524288  # can be changed by thash_entries
-
-  # sysctl net.ipv4.tcp_child_ehash_entries
-  net.ipv4.tcp_child_ehash_entries = 0  # disabled by default
-
-  # ip netns add test1
-  # ip netns exec test1 sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = -524288  # share the global ehash
-
-  # sysctl -w net.ipv4.tcp_child_ehash_entries=100
-  net.ipv4.tcp_child_ehash_entries = 100
-
-  # sysctl net.ipv4.tcp_child_ehash_entries
-  net.ipv4.tcp_child_ehash_entries = 128  # rounded up to 2^n
-
-  # ip netns add test2
-  # ip netns exec test2 sysctl net.ipv4.tcp_ehash_entries
-  net.ipv4.tcp_ehash_entries = 128  # own a per-netns ehash
-
-When more than two processes in the same netns create per-netns ehash
-concurrently with different sizes, we need to guarantee the size in
-one of the following ways:
-
-  1) Share the global ehash and create per-netns ehash
-
-  First, unshare() with tcp_child_ehash_entries==0.  It creates dedicated
-  netns sysctl knobs where we can safely change tcp_child_ehash_entries
-  and clone()/unshare() to create a per-netns ehash.
-
-  2) Control write on sysctl by BPF
-
-  We can use BPF_PROG_TYPE_CGROUP_SYSCTL to allow/deny read/write on
-  sysctl knobs.
-
-Note the default values of two sysctl knobs depend on the ehash size and
-should be tuned carefully:
-
-  tcp_max_tw_buckets  : tcp_child_ehash_entries / 2
-  tcp_max_syn_backlog : max(128, tcp_child_ehash_entries / 128)
-
-Also, we could optimise ehash lookup/iteration further by removing netns
-comparison for the per-netns ehash in the future.
-
-As a bonus, we can dismantle netns faster.  Currently, while destroying
-netns, we call inet_twsk_purge(), which walks through the global ehash.
-It can be potentially big because it can have many sockets other than
-TIME_WAIT in all netns.  Splitting ehash changes that situation, where
-it's only necessary for inet_twsk_purge() to clean up TIME_WAIT sockets
-in each netns.
-
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
----
- Documentation/networking/ip-sysctl.rst | 22 ++++++++++
- include/net/inet_hashtables.h          |  6 +++
- include/net/netns/ipv4.h               |  1 +
- net/dccp/proto.c                       |  2 +
- net/ipv4/inet_hashtables.c             | 57 +++++++++++++++++++++++++
- net/ipv4/inet_timewait_sock.c          |  4 +-
- net/ipv4/sysctl_net_ipv4.c             | 58 ++++++++++++++++++++++++++
- net/ipv4/tcp.c                         |  1 +
- net/ipv4/tcp_ipv4.c                    | 38 ++++++++++++++---
- net/ipv4/tcp_minisocks.c               |  9 +++-
- 10 files changed, 189 insertions(+), 9 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index 56cd4ea059b2..6aea22a54634 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1037,6 +1037,28 @@ tcp_challenge_ack_limit - INTEGER
- 	in RFC 5961 (Improving TCP's Robustness to Blind In-Window Attacks)
- 	Default: 1000
- 
-+tcp_ehash_entries - INTEGER
-+	Read-only number of hash buckets for TCP sockets in the current
-+	networking namespace.
-+
-+	A negative value means the networking namespace does not own its
-+	hash buckets and shares the initial networking namespace's one.
-+
-+tcp_child_ehash_entries - INTEGER
-+	Control the number of hash buckets for TCP sockets in the child
-+	networking namespace, which must be set before clone() or unshare().
-+
-+	The written value except for 0 is rounded up to 2^n.  0 is a special
-+	value, meaning the child networking namespace will share the initial
-+	networking namespace's hash buckets.
-+
-+	Note that the child will use the global one in case the kernel
-+	fails to allocate enough memory.
-+
-+	Possible values: 0, 2^n (n: 0 - 24 (16Mi))
-+
-+	Default: 0
-+
- UDP variables
- =============
- 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 1ff5603cddff..8800fa2f9401 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -168,6 +168,8 @@ struct inet_hashinfo {
- 	/* The 2nd listener table hashed by local port and address */
- 	unsigned int			lhash2_mask;
- 	struct inet_listen_hashbucket	*lhash2;
-+
-+	bool				pernet;
- };
- 
- static inline struct inet_hashinfo *tcp_or_dccp_get_hashinfo(const struct sock *sk)
-@@ -214,6 +216,10 @@ static inline void inet_ehash_locks_free(struct inet_hashinfo *hashinfo)
- 	hashinfo->ehash_locks = NULL;
- }
- 
-+struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
-+						 unsigned int ehash_entries);
-+void inet_pernet_hashinfo_free(struct inet_hashinfo *hashinfo);
-+
- struct inet_bind_bucket *
- inet_bind_bucket_create(struct kmem_cache *cachep, struct net *net,
- 			struct inet_bind_hashbucket *head,
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index c7320ef356d9..6d9c01879027 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -170,6 +170,7 @@ struct netns_ipv4 {
- 	int sysctl_tcp_pacing_ca_ratio;
- 	int sysctl_tcp_wmem[3];
- 	int sysctl_tcp_rmem[3];
-+	unsigned int sysctl_tcp_child_ehash_entries;
- 	unsigned long sysctl_tcp_comp_sack_delay_ns;
- 	unsigned long sysctl_tcp_comp_sack_slack_ns;
- 	int sysctl_max_syn_backlog;
-diff --git a/net/dccp/proto.c b/net/dccp/proto.c
-index 7cd4a6cc99fc..c548ca3e9b0e 100644
---- a/net/dccp/proto.c
-+++ b/net/dccp/proto.c
-@@ -1197,6 +1197,8 @@ static int __init dccp_init(void)
- 		INIT_HLIST_HEAD(&dccp_hashinfo.bhash2[i].chain);
- 	}
- 
-+	dccp_hashinfo.pernet = false;
-+
- 	rc = dccp_mib_init();
- 	if (rc)
- 		goto out_free_dccp_bhash2;
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 643d3a7031eb..706abe7a3021 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -1145,3 +1145,60 @@ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(inet_ehash_locks_alloc);
-+
-+struct inet_hashinfo *inet_pernet_hashinfo_alloc(struct inet_hashinfo *hashinfo,
-+						 unsigned int ehash_entries)
-+{
-+	struct inet_hashinfo *new_hashinfo;
-+	int i;
-+
-+	new_hashinfo = kmalloc(sizeof(*new_hashinfo), GFP_KERNEL);
-+	if (!new_hashinfo)
-+		goto err;
-+
-+	new_hashinfo->ehash = kvmalloc_array(ehash_entries,
-+					     sizeof(struct inet_ehash_bucket),
-+					     GFP_KERNEL_ACCOUNT);
-+	if (!new_hashinfo->ehash)
-+		goto free_hashinfo;
-+
-+	new_hashinfo->ehash_mask = ehash_entries - 1;
-+
-+	if (inet_ehash_locks_alloc(new_hashinfo))
-+		goto free_ehash;
-+
-+	for (i = 0; i < ehash_entries; i++)
-+		INIT_HLIST_NULLS_HEAD(&new_hashinfo->ehash[i].chain, i);
-+
-+	new_hashinfo->bind_bucket_cachep = hashinfo->bind_bucket_cachep;
-+	new_hashinfo->bhash = hashinfo->bhash;
-+	new_hashinfo->bind2_bucket_cachep = hashinfo->bind2_bucket_cachep;
-+	new_hashinfo->bhash2 = hashinfo->bhash2;
-+	new_hashinfo->bhash_size = hashinfo->bhash_size;
-+
-+	new_hashinfo->lhash2_mask = hashinfo->lhash2_mask;
-+	new_hashinfo->lhash2 = hashinfo->lhash2;
-+
-+	new_hashinfo->pernet = true;
-+
-+	return new_hashinfo;
-+
-+free_ehash:
-+	kvfree(new_hashinfo->ehash);
-+free_hashinfo:
-+	kfree(new_hashinfo);
-+err:
-+	return NULL;
-+}
-+EXPORT_SYMBOL_GPL(inet_pernet_hashinfo_alloc);
-+
-+void inet_pernet_hashinfo_free(struct inet_hashinfo *hashinfo)
-+{
-+	if (!hashinfo->pernet)
-+		return;
-+
-+	inet_ehash_locks_free(hashinfo);
-+	kvfree(hashinfo->ehash);
-+	kfree(hashinfo);
-+}
-+EXPORT_SYMBOL_GPL(inet_pernet_hashinfo_free);
-diff --git a/net/ipv4/inet_timewait_sock.c b/net/ipv4/inet_timewait_sock.c
-index 47ccc343c9fb..a5d40acde9d6 100644
---- a/net/ipv4/inet_timewait_sock.c
-+++ b/net/ipv4/inet_timewait_sock.c
-@@ -59,8 +59,10 @@ static void inet_twsk_kill(struct inet_timewait_sock *tw)
- 	inet_twsk_bind_unhash(tw, hashinfo);
- 	spin_unlock(&bhead->lock);
- 
--	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount))
-+	if (refcount_dec_and_test(&tw->tw_dr->tw_refcount)) {
-+		inet_pernet_hashinfo_free(hashinfo);
- 		kfree(tw->tw_dr);
-+	}
- 
- 	inet_twsk_put(tw);
- }
-diff --git a/net/ipv4/sysctl_net_ipv4.c b/net/ipv4/sysctl_net_ipv4.c
-index 5490c285668b..2bd323ade893 100644
---- a/net/ipv4/sysctl_net_ipv4.c
-+++ b/net/ipv4/sysctl_net_ipv4.c
-@@ -39,6 +39,7 @@ static u32 u32_max_div_HZ = UINT_MAX / HZ;
- static int one_day_secs = 24 * 3600;
- static u32 fib_multipath_hash_fields_all_mask __maybe_unused =
- 	FIB_MULTIPATH_HASH_FIELD_ALL_MASK;
-+static unsigned int tcp_child_ehash_entries_max = 16 * 1024 * 1024;
- 
- /* obsolete */
- static int sysctl_tcp_low_latency __read_mostly;
-@@ -382,6 +383,48 @@ static int proc_tcp_available_ulp(struct ctl_table *ctl,
- 	return ret;
- }
- 
-+static int proc_tcp_ehash_entries(struct ctl_table *table, int write,
-+				  void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	struct net *net = container_of(table->data, struct net,
-+				       ipv4.sysctl_tcp_child_ehash_entries);
-+	struct inet_hashinfo *hinfo = net->ipv4.tcp_death_row->hashinfo;
-+	int tcp_ehash_entries;
-+	struct ctl_table tbl;
-+
-+	tcp_ehash_entries = hinfo->ehash_mask + 1;
-+
-+	/* A negative number indicates that the child netns
-+	 * shares the global ehash.
-+	 */
-+	if (!net_eq(net, &init_net) && !hinfo->pernet)
-+		tcp_ehash_entries *= -1;
-+
-+	tbl.data = &tcp_ehash_entries;
-+	tbl.maxlen = sizeof(int);
-+
-+	return proc_dointvec(&tbl, write, buffer, lenp, ppos);
-+}
-+
-+static int proc_tcp_child_ehash_entries(struct ctl_table *table, int write,
-+					void *buffer, size_t *lenp, loff_t *ppos)
-+{
-+	unsigned int tcp_child_ehash_entries;
-+	int ret;
-+
-+	ret = proc_douintvec_minmax(table, write, buffer, lenp, ppos);
-+	if (!write || ret)
-+		return ret;
-+
-+	tcp_child_ehash_entries = READ_ONCE(*(unsigned int *)table->data);
-+	if (tcp_child_ehash_entries)
-+		tcp_child_ehash_entries = roundup_pow_of_two(tcp_child_ehash_entries);
-+
-+	WRITE_ONCE(*(unsigned int *)table->data, tcp_child_ehash_entries);
-+
-+	return 0;
-+}
-+
- #ifdef CONFIG_IP_ROUTE_MULTIPATH
- static int proc_fib_multipath_hash_policy(struct ctl_table *table, int write,
- 					  void *buffer, size_t *lenp,
-@@ -1321,6 +1364,21 @@ static struct ctl_table ipv4_net_table[] = {
- 		.extra1         = SYSCTL_ZERO,
- 		.extra2         = SYSCTL_ONE,
- 	},
-+	{
-+		.procname	= "tcp_ehash_entries",
-+		.data		= &init_net.ipv4.sysctl_tcp_child_ehash_entries,
-+		.mode		= 0444,
-+		.proc_handler	= proc_tcp_ehash_entries,
-+	},
-+	{
-+		.procname	= "tcp_child_ehash_entries",
-+		.data		= &init_net.ipv4.sysctl_tcp_child_ehash_entries,
-+		.maxlen		= sizeof(unsigned int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_tcp_child_ehash_entries,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= &tcp_child_ehash_entries_max,
-+	},
- 	{
- 		.procname	= "udp_rmem_min",
- 		.data		= &init_net.ipv4.sysctl_udp_rmem_min,
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 306b94dedc8d..08baf7f7ca96 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4788,6 +4788,7 @@ void __init tcp_init(void)
- 		INIT_HLIST_HEAD(&tcp_hashinfo.bhash2[i].chain);
- 	}
- 
-+	tcp_hashinfo.pernet = false;
- 
- 	cnt = tcp_hashinfo.ehash_mask + 1;
- 	sysctl_tcp_max_orphans = cnt / 2;
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index f4a502d57d45..8792eb9561d0 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -3110,15 +3110,43 @@ static void __net_exit tcp_sk_exit(struct net *net)
- 		bpf_module_put(net->ipv4.tcp_congestion_control,
- 			       net->ipv4.tcp_congestion_control->owner);
- 	if (refcount_dec_and_test(&tcp_death_row->tw_refcount)) {
-+		inet_pernet_hashinfo_free(tcp_death_row->hashinfo);
- 		kfree(tcp_death_row);
- 		net->ipv4.tcp_death_row = NULL;
- 	}
- }
- 
--static int __net_init tcp_sk_init(struct net *net)
-+static void __net_init tcp_set_hashinfo(struct net *net)
- {
--	int cnt;
-+	struct inet_hashinfo *hinfo;
-+	unsigned int ehash_entries;
-+	struct net *old_net;
-+
-+	if (net_eq(net, &init_net))
-+		goto fallback;
-+
-+	old_net = current->nsproxy->net_ns;
-+	ehash_entries = READ_ONCE(old_net->ipv4.sysctl_tcp_child_ehash_entries);
-+	if (!ehash_entries)
-+		goto fallback;
-+
-+	hinfo = inet_pernet_hashinfo_alloc(&tcp_hashinfo, ehash_entries);
-+	if (!hinfo) {
-+		pr_warn("Failed to allocate TCP ehash (entries: %u) "
-+			"for a netns, fallback to the global one\n",
-+			ehash_entries);
-+fallback:
-+		hinfo = &tcp_hashinfo;
-+		ehash_entries = tcp_hashinfo.ehash_mask + 1;
-+	}
- 
-+	net->ipv4.tcp_death_row->hashinfo = hinfo;
-+	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = ehash_entries / 2;
-+	net->ipv4.sysctl_max_syn_backlog = max(128U, ehash_entries / 128);
-+}
-+
-+static int __net_init tcp_sk_init(struct net *net)
-+{
- 	net->ipv4.sysctl_tcp_ecn = 2;
- 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
- 
-@@ -3147,12 +3175,10 @@ static int __net_init tcp_sk_init(struct net *net)
- 	net->ipv4.tcp_death_row = kzalloc(sizeof(struct inet_timewait_death_row), GFP_KERNEL);
- 	if (!net->ipv4.tcp_death_row)
- 		return -ENOMEM;
-+
- 	refcount_set(&net->ipv4.tcp_death_row->tw_refcount, 1);
--	cnt = tcp_hashinfo.ehash_mask + 1;
--	net->ipv4.tcp_death_row->sysctl_max_tw_buckets = cnt / 2;
--	net->ipv4.tcp_death_row->hashinfo = &tcp_hashinfo;
-+	tcp_set_hashinfo(net);
- 
--	net->ipv4.sysctl_max_syn_backlog = max(128, cnt / 128);
- 	net->ipv4.sysctl_tcp_sack = 1;
- 	net->ipv4.sysctl_tcp_window_scaling = 1;
- 	net->ipv4.sysctl_tcp_timestamps = 1;
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 9168c5a33344..9b35752478a2 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -349,6 +349,7 @@ EXPORT_SYMBOL_GPL(tcp_twsk_destructor);
- 
- void tcp_twsk_purge(struct list_head *net_exit_list, int family)
- {
-+	bool purged_once = false;
- 	struct net *net;
- 
- 	list_for_each_entry(net, net_exit_list, exit_list) {
-@@ -365,8 +366,12 @@ void tcp_twsk_purge(struct list_head *net_exit_list, int family)
- 		    refcount_read(&net->ipv4.tcp_death_row->tw_refcount) == 1)
- 			continue;
- 
--		inet_twsk_purge(&tcp_hashinfo, family);
--		break;
-+		if (net->ipv4.tcp_death_row->hashinfo->pernet) {
-+			inet_twsk_purge(net->ipv4.tcp_death_row->hashinfo, family);
-+		} else if (!purged_once) {
-+			inet_twsk_purge(&tcp_hashinfo, family);
-+			purged_once = true;
-+		}
- 	}
- }
- EXPORT_SYMBOL_GPL(tcp_twsk_purge);
--- 
-2.30.2
-
+Thanks! I see that I was in trouble there... :D
