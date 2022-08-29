@@ -2,123 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EFCB5A516C
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 18:18:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B2015A5174
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 18:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229696AbiH2QSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 12:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40062 "EHLO
+        id S230267AbiH2QUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 12:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2QSh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 12:18:37 -0400
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 826C452DD6
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:18:32 -0700 (PDT)
-Received: by mail-wm1-x333.google.com with SMTP id bd26-20020a05600c1f1a00b003a5e82a6474so4695625wmb.4
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:18:32 -0700 (PDT)
+        with ESMTP id S229831AbiH2QUM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 12:20:12 -0400
+Received: from smtp-fw-9103.amazon.com (smtp-fw-9103.amazon.com [207.171.188.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D429E13E0E
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:19:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=qaZiFJufiSPKZcnNHbg8MAn8rJRW/A3NE9R1PZr/vQc=;
-        b=aoyMKFiZq6qsAQhX8u1tcaY13Tob/9wOy8KPzqZkIYMINtVKlBdKjs8mZy7PtX8J8N
-         MbzKTCJiKAdvznkO+xwcK0WS5GZOrKW5uHvNw96c5wxnGowieToqugssyDNMnP9RGET8
-         RjuJUatB2sYELS3lKG+F5j9waJwdyZSOyUWZWNgb2PkbQBskvPy3vUdUZY6buduS22os
-         f2aIc/yd1H81yy31oakuIUhcpiSAouGJXGs3uB/yNnD/f8i6IoQOeOwnEigjI2Zsy3G2
-         Fq9EHWsQFoi0YsB/0dJcG1MN76z6nOZR2Fos2l6xCrI6e6u4AEqwJTMpXXFmK2Vpj8z8
-         02Dg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=qaZiFJufiSPKZcnNHbg8MAn8rJRW/A3NE9R1PZr/vQc=;
-        b=LQqfgJDYZX7z074LZXUDoc96pAcHNclnQrgoP+LjpXPXXEPAL3r6Q/dTs3OINkd1MA
-         9szr4xzq8ZO0QsZGGLIGxvgY0kWp9KVn6zsTq/HQSuJQ1hJdZ5iqFFsYpYFX5CjcI1ZR
-         k8r4h+dwoWAQSpG5IF96qLUvTAX7OdFtkvsjEppfbXaYGply10kNpVl1VPLbeC0ZoRVN
-         LHjktzeiHY+Cf9wUmIp2acfjZbp7pu4GLwiOlaT6lGD1LXF1ZK5uTs02KYVj9UIXh+9+
-         3MzJi4gmCBnhNKrwZ7V6PdwjoiJaVxVD5QmEaDYB0t5lezjU6uxpE8yuqBoTt5zvbVUd
-         FtYw==
-X-Gm-Message-State: ACgBeo3cP7a6K35ACt/KYR7y6wfQgHlgjmUItRBvR9WnCmi0oJGGunGU
-        ShUzTikLSt4pXvUDBldsbCh4o/rYKUfHAYagvGw=
-X-Google-Smtp-Source: AA6agR5WL7v3NpBhMOF0ZZX29m+dHv8Qkkz8adtzXD54Vg0s77zlMeI2XhYyX6Io+2R/uO2c0S9bUIhEsCFf9a2kl1k=
-X-Received: by 2002:a05:600c:3b9f:b0:3a6:53f:12fb with SMTP id
- n31-20020a05600c3b9f00b003a6053f12fbmr7480809wms.194.1661789910892; Mon, 29
- Aug 2022 09:18:30 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1661790004; x=1693326004;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=JxBsmF3NfZ6ka+3LX+vyu7re0q5Yhx77CfbMk0kxX9o=;
+  b=fL3J3UT64HIVe4WtxopBi2jKqULXA8U9LbWzaGSOF7FNM6XTRaaYL3Ow
+   O6EjBHKoKhP91FmQoe/FviOWmLez3DJB0vgjGFR7y8pAF4+VKoqbOEeo9
+   wuX1gsHtt3tLox5M2te6J+932QjwdtgRgeHZiJCR9mKq+TOGgBTBmpvJk
+   g=;
+X-IronPort-AV: E=Sophos;i="5.93,272,1654560000"; 
+   d="scan'208";a="1049130367"
+Received: from pdx4-co-svc-p1-lb2-vlan3.amazon.com (HELO email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com) ([10.25.36.214])
+  by smtp-border-fw-9103.sea19.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 16:19:41 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
+        by email-inbound-relay-pdx-2c-7d0c7241.us-west-2.amazon.com (Postfix) with ESMTPS id 6887045043;
+        Mon, 29 Aug 2022 16:19:41 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Mon, 29 Aug 2022 16:19:40 +0000
+Received: from 88665a182662.ant.amazon.com.com (10.43.162.158) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Mon, 29 Aug 2022 16:19:38 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+CC:     Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH v2 net-next 0/5] tcp: Introduce optional per-netns ehash.
+Date:   Mon, 29 Aug 2022 09:19:15 -0700
+Message-ID: <20220829161920.99409-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <5aea96db-9248-6cff-d985-d4cd91a429@tarent.de> <20220826170632.4c975f21@kernel.org>
- <95259a4e-5911-6b7b-65c1-ca33312c23ec@tarent.de> <e6509d55-ea5e-ee51-692f-2fe75ba28a21@tarent.de>
-In-Reply-To: <e6509d55-ea5e-ee51-692f-2fe75ba28a21@tarent.de>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Mon, 29 Aug 2022 09:18:19 -0700
-Message-ID: <CAA93jw5DQ7U_TU2SpJNEx4wHxcisb-Am8AHQJHk6hkJNV+w_RQ@mail.gmail.com>
-Subject: Re: inter-qdisc communication?
-To:     Thorsten Glaser <t.glaser@tarent.de>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.158]
+X-ClientProxiedBy: EX13D02UWB002.ant.amazon.com (10.43.161.160) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 9:08 AM Thorsten Glaser <t.glaser@tarent.de> wrote:
->
-> On Mon, 29 Aug 2022, Thorsten Glaser wrote:
->
-> > All references to ifb seem to cargo-cult the following filter=E2=80=A6
-> >
-> >       protocol ip u32 match u32 0 0 flowid 1:1
-> >        action mirred egress redirect dev ifb0
->
-> > I require any and all traffic of all protocols to be redirected.
-> > Not just IPv4, and not just traffic that matches anything. Can I
-> > do that with the filter, and will this =E2=80=9Ctrick=E2=80=9D get me t=
-he effect
-> > I want to have?
->
-> https://wiki.gentoo.org/wiki/Traffic_shaping#Traffic_Shaping_Script
-> has =E2=80=9Cprotocol all=E2=80=9D but there is still a filter required? =
-Looking at
-> net/sched/cls_u32.c this is _quite_ an amount of code involved; is
-> there really no pass-all? Maybe it=E2=80=99s time to write one=E2=80=A6
+The more sockets we have in the hash table, the longer we spend looking
+up the socket.  While running a number of small workloads on the same
+host, they penalise each other and cause performance degradation.
 
-In general I would really like to simplify the ingress path within the
-kernel for common cases. My dream has been, of course, to be able to
-do this:
+The root cause might be a single workload that consumes much more
+resources than the others.  It often happens on a cloud service where
+different workloads share the same computing resource.
 
-tc qdisc add dev eth0 ingress cake bandwidth 40Mbit.
+On EC2 c5.24xlarge instance (196 GiB memory and 524288 (1Mi / 2) ehash
+entries), after running iperf3 in different netns, creating 24Mi sockets
+without data transfer in the root netns causes about 10% performance
+regression for the iperf3's connection.
 
-without needing a filter, mirred, and especially, have it remain multicore.
+ thash_entries		sockets		length		Gbps
+	524288		      1		     1		50.7
+			   24Mi		    48		45.1
 
+It is basically related to the length of the list of each hash bucket.
+For testing purposes to see how performance drops along the length,
+I set 131072 (1Mi / 8) to thash_entries, and here's the result.
 
-> bye,
-> //mirabilos
-> --
-> Infrastrukturexperte =E2=80=A2 tarent solutions GmbH
-> Am Dickobskreuz 10, D-53121 Bonn =E2=80=A2 http://www.tarent.de/
-> Telephon +49 228 54881-393 =E2=80=A2 Fax: +49 228 54881-235
-> HRB AG Bonn 5168 =E2=80=A2 USt-ID (VAT): DE122264941
-> Gesch=C3=A4ftsf=C3=BChrer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, A=
-lexander Steeg
->
->                         *************************************************=
-***
-> /=E2=81=80\ The UTF-8 Ribbon
-> =E2=95=B2 =E2=95=B1 Campaign against      Mit dem tarent-Newsletter nicht=
-s mehr verpassen:
->  =E2=95=B3  HTML eMail! Also,     https://www.tarent.de/newsletter
-> =E2=95=B1 =E2=95=B2 header encryption!
->                         *************************************************=
-***
+ thash_entries		sockets		length		Gbps
+        131072		      1		     1		50.7
+			    1Mi		     8		49.9
+			    2Mi		    16		48.9
+			    4Mi		    32		47.3
+			    8Mi		    64		44.6
+			   16Mi		   128		40.6
+			   24Mi		   192		36.3
+			   32Mi		   256		32.5
+			   40Mi		   320		27.0
+			   48Mi		   384		25.0
+
+To resolve the socket lookup degradation, we introduce an optional
+per-netns hash table for TCP, but it's just ehash, and we still share
+the global bhash, bhash2 and lhash2.
+
+With a smaller ehash, we can look up non-listener sockets faster and
+isolate such noisy neighbours.  Also, we can reduce lock contention.
+
+For details, please see the last patch.
+
+  patch 1 - 3: prep for per-netns ehash
+  patch     4: small optimisation for netns dismantle without TIME_WAIT sockets
+  patch     5: add per-netns ehash
 
 
+Changes:
+  v2:
+    * Drop flock() and UDP stuff
+    * Patch 2
+      * Rename inet_get_hashinfo() to tcp_or_dccp_get_hashinfo() (Eric Dumazet)
+    * Patch 4
+      * Remove unnecessary inet_twsk_purge() calls for unshare()
+      * Factorise inet_twsk_purge() calls (Eric Dumazet)
+    * Patch 5
+      * Change max buckets size as 16Mi
+      * Use unsigned int for ehash size (Eric Dumazet)
+      * Use GFP_KERNEL_ACCOUNT for the per-netns ehash allocation (Eric Dumazet)
+      * Use current->nsproxy->net_ns for parent netns (Eric Dumazet)
 
---=20
-FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_code=
-l/
-Dave T=C3=A4ht CEO, TekLibre, LLC
+  v1: https://lore.kernel.org/netdev/20220826000445.46552-1-kuniyu@amazon.com/
+
+
+Kuniyuki Iwashima (5):
+  tcp: Clean up some functions.
+  tcp: Set NULL to sk->sk_prot->h.hashinfo.
+  tcp: Access &tcp_hashinfo via net.
+  tcp: Save unnecessary inet_twsk_purge() calls.
+  tcp: Introduce optional per-netns ehash.
+
+ Documentation/networking/ip-sysctl.rst        |  22 ++++
+ .../chelsio/inline_crypto/chtls/chtls_cm.c    |   5 +-
+ .../mellanox/mlx5/core/en_accel/ktls_rx.c     |   5 +-
+ .../net/ethernet/netronome/nfp/crypto/tls.c   |   5 +-
+ include/net/inet_hashtables.h                 |  16 +++
+ include/net/netns/ipv4.h                      |   1 +
+ include/net/tcp.h                             |   1 +
+ net/core/filter.c                             |   5 +-
+ net/dccp/proto.c                              |   2 +
+ net/ipv4/af_inet.c                            |   2 +-
+ net/ipv4/esp4.c                               |   3 +-
+ net/ipv4/inet_connection_sock.c               |  22 ++--
+ net/ipv4/inet_hashtables.c                    | 102 ++++++++++++----
+ net/ipv4/inet_timewait_sock.c                 |   4 +-
+ net/ipv4/netfilter/nf_socket_ipv4.c           |   2 +-
+ net/ipv4/netfilter/nf_tproxy_ipv4.c           |  17 ++-
+ net/ipv4/sysctl_net_ipv4.c                    |  58 +++++++++
+ net/ipv4/tcp.c                                |   1 +
+ net/ipv4/tcp_diag.c                           |  18 ++-
+ net/ipv4/tcp_ipv4.c                           | 113 ++++++++++++------
+ net/ipv4/tcp_minisocks.c                      |  31 ++++-
+ net/ipv6/esp6.c                               |   3 +-
+ net/ipv6/inet6_hashtables.c                   |   4 +-
+ net/ipv6/netfilter/nf_socket_ipv6.c           |   2 +-
+ net/ipv6/netfilter/nf_tproxy_ipv6.c           |   5 +-
+ net/ipv6/tcp_ipv6.c                           |  20 ++--
+ net/mptcp/mptcp_diag.c                        |   7 +-
+ 27 files changed, 362 insertions(+), 114 deletions(-)
+
+-- 
+2.30.2
+
