@@ -2,80 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E41355A404B
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 02:16:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A1575A4066
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 02:38:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229494AbiH2AQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 28 Aug 2022 20:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
+        id S229541AbiH2Aix (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 28 Aug 2022 20:38:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiH2AQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 20:16:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEFB2A970
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 17:16:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661732193;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SzkAkorlo+AmttOHZ6iqjGEde1HkM0doNAcGjEIWZ4o=;
-        b=UgpOLiMhLm2QiGP+kik5FokYWZQ1uJ1WpQDfo48pGtywOBFSlIoE9dSHfe5MF7kkMQBTHX
-        mD8j5H9RhR3KCERfymdZbohYQHYfd8MsmnsTQVkKzepZL71wJM4zEVLwtiGWSHDf7lt+7L
-        2ADqL+jG9ZdD+Oa/6IcqDLgNdfo5xJY=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-39-G_VFmnrOPFKLpEq-Cv8rMA-1; Sun, 28 Aug 2022 20:16:32 -0400
-X-MC-Unique: G_VFmnrOPFKLpEq-Cv8rMA-1
-Received: by mail-qv1-f72.google.com with SMTP id gh7-20020a05621429c700b00496b1a465b1so4132344qvb.5
-        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 17:16:31 -0700 (PDT)
+        with ESMTP id S229478AbiH2Aiw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 28 Aug 2022 20:38:52 -0400
+Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7906730F7A
+        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 17:38:51 -0700 (PDT)
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com [209.85.219.69])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id AA29B3F11B
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 00:38:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1661733527;
+        bh=4PvcaSn9SR/N2+L+4sbnNGR1gZv1OGDCz0dIwBtUT4M=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=DLRRa8u7L0ZNOzghawbr36hyRvwKSspfDPfYZRiDnku6SrSDVeNmYBv0syZ9ptxD1
+         XXdDEU4I6lt+AmEl3xCkNJlZ0YG5tQx1ZPzUDWcb2THbQDC0zRN/8Z2Ft7okIU50Ms
+         SGD3SSrqNXANMHrp+t3P9bakmmbX1tOF0yMLQWpD4HzDt/3k8QmJg4pL8xNhUJsR1e
+         pY7athD+t89T6QNCQiyT6cOzntVpiriDjr8KRQkuiL4/xaopQ050qcC85j6KKHyinZ
+         FvN2bJF5sz4X1/C6DOA8UXvgcI/I01+Rf7bAXUIVQxm/KMKQgDII/klJ53D4vGP+W/
+         quWHRLzl60fQA==
+Received: by mail-qv1-f69.google.com with SMTP id e17-20020ad44431000000b00498f6fa689eso2035098qvt.9
+        for <netdev@vger.kernel.org>; Sun, 28 Aug 2022 17:38:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=SzkAkorlo+AmttOHZ6iqjGEde1HkM0doNAcGjEIWZ4o=;
-        b=jhS2CB+a6nuhX20w87/qYz2HuVO6hJATJFVvb4sbAR6E2yeczgoSJNA282y3Fyx/fr
-         L6eHIeXg2hEgUrGX7ZxhoPHay4mFsoCoNf/6XAqdA3IGa4LxPKxlHutAeoZvskOgohCy
-         Zbs6RM4/rqdKLRHZtNW4UBlJje/vE+sWrLIhRp5AY6bIvAxSzfFjQaLxrawrhyvYyKJG
-         qUD2YtGxCHNBqJlqh+4km7Q7QmiZeEGHBiuddCgkpg+DcyXR+nAd1Wr0cXdVGuAKa2J/
-         pNhNSEuu7f6GDMqE5/GCEa9xUyJ/qEaeyx8s7JcoRpKnBojqIYkF3hQ5EqTtDbuIfReo
-         ZDmw==
-X-Gm-Message-State: ACgBeo2pNAKOGHXQmbrvIA4NLs9RrkTtFCRfCKhYu8ra7cQQ3dfdWheg
-        ImZmkCXPV0Hvx2kp9qsuDpIMnZ9PeKbtFN6tS6xDJ+vFVMYFTYoVdZwTpxEm9JtEzsEtM3/D7D+
-        WN68+Vw1dcucnKtwihk48aTdB8ZcmBGjt
-X-Received: by 2002:a05:622a:1302:b0:344:8a9d:817d with SMTP id v2-20020a05622a130200b003448a9d817dmr8364115qtk.339.1661732191499;
-        Sun, 28 Aug 2022 17:16:31 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6YH2nJIo0b6SviiSUMGBKXXeJaHL95jdsa0u6iUg5nlt6EWo3hqWiTPzDu5EZVS+GBLuTCvNVZOaiGzM0z1Ys=
-X-Received: by 2002:a05:622a:1302:b0:344:8a9d:817d with SMTP id
- v2-20020a05622a130200b003448a9d817dmr8364092qtk.339.1661732191317; Sun, 28
- Aug 2022 17:16:31 -0700 (PDT)
+        h=message-id:date:content-transfer-encoding:content-id:mime-version
+         :comments:references:in-reply-to:subject:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=4PvcaSn9SR/N2+L+4sbnNGR1gZv1OGDCz0dIwBtUT4M=;
+        b=5FxcssEBtpDTRkR7t6uTcV6ztgucBPBISMRCeZbjcR5aPxwPkxiA6rEP83ntN37C1v
+         a3oOJkO1iTP7vAURbL45NXnBu2kjAaWpYwdkssPxjV/DVcooGcCKwKqp3MqH8R5zw8Az
+         kq5Y8WuxFgiS+XOum/XWSbo9Lot5l0tBd4shagG7i2KGnNCDTjTDykeK8gf7ZKINsVdH
+         RKWsVRyBLLfZJc9l1SD/9bVjMPiMtAbyux8uqkIOkI8V3zJtlQIN99vDGz0sZcbx5YNS
+         mGF37FK41a6P2QPlVSHks6j2Dei1N+wrnvukGi81NS+Bw+9Dd5r9T8MNGBWbrkDQUBcH
+         3hWw==
+X-Gm-Message-State: ACgBeo2wbM/3nF3T2tfpS2fsX3szMlLMKOtviuqAZBnFEmPRW5lWo2+Y
+        S0HKtKV7gAxg9+i0piZpEDrX1CscvCPtSUiNQWdU6CfzzGVS0h5mELAG+h8NQeWH17udG+5AbdS
+        chK0seL9pSa5GUTGxkdPq0MnfuU8U4tWuog==
+X-Received: by 2002:a05:622a:103:b0:343:3ce4:c383 with SMTP id u3-20020a05622a010300b003433ce4c383mr8506780qtw.388.1661733526609;
+        Sun, 28 Aug 2022 17:38:46 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5N/GOlvVyfCJNqu4InPuCkSG75lRXx6dDgVegmmEFZx2FWayJk7nXeOZd9IEelrnujtVffbA==
+X-Received: by 2002:a05:622a:103:b0:343:3ce4:c383 with SMTP id u3-20020a05622a010300b003433ce4c383mr8506776qtw.388.1661733526431;
+        Sun, 28 Aug 2022 17:38:46 -0700 (PDT)
+Received: from nyx.localdomain (097-085-172-131.biz.spectrum.com. [97.85.172.131])
+        by smtp.gmail.com with ESMTPSA id ge17-20020a05622a5c9100b003430589dd34sm4279395qtb.57.2022.08.28.17.38.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 17:38:46 -0700 (PDT)
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id 231E72410F8; Sun, 28 Aug 2022 17:38:45 -0700 (PDT)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id 150A528011F;
+        Sun, 28 Aug 2022 17:38:45 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Fernando Fernandez Mancera <ffmancera@riseup.net>
+cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] Documentation: bonding: clarify supported modes for tlb_dynamic_lb
+In-reply-to: <20220826154738.4039-1-ffmancera@riseup.net>
+References: <20220826154738.4039-1-ffmancera@riseup.net>
+Comments: In-reply-to Fernando Fernandez Mancera <ffmancera@riseup.net>
+   message dated "Fri, 26 Aug 2022 17:47:38 +0200."
+X-Mailer: MH-E 8.6+git; nmh 1.7.1; Emacs 29.0.50
 MIME-Version: 1.0
-References: <20220826142954.254853-1-miquel.raynal@bootlin.com>
-In-Reply-To: <20220826142954.254853-1-miquel.raynal@bootlin.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 28 Aug 2022 20:16:20 -0400
-Message-ID: <CAK-6q+imPjpBxSZG7e5nxYYgtkrM5pfncxza9=vA+sq+eFQsUw@mail.gmail.com>
-Subject: Re: [PATCH] net: mac802154: Fix a condition in the receive path
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <192002.1661733525.1@nyx>
+Content-Transfer-Encoding: quoted-printable
+Date:   Sun, 28 Aug 2022 17:38:45 -0700
+Message-ID: <192003.1661733525@nyx>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,55 +87,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Fernando Fernandez Mancera <ffmancera@riseup.net> wrote:
 
-On Fri, Aug 26, 2022 at 10:31 AM Miquel Raynal
-<miquel.raynal@bootlin.com> wrote:
+>tlb_dynamic_lb bonding option is compatible with balance-tlb and balance-=
+alb
+>modes. In order to be consistent with other option documentation, it shou=
+ld
+>mention both modes not only balance-tlb.
 >
-> Upon reception, a packet must be categorized, either it's destination is
-> the host, or it is another host. A packet with no destination addressing
-> fields may be valid in two situations:
-> - the packet has no source field: only ACKs are built like that, we
->   consider the host as the destination.
-> - the packet has a valid source field: it is directed to the PAN
->   coordinator, as for know we don't have this information we consider we
->   are not the PAN coordinator.
+>Signed-off-by: Fernando Fernandez Mancera <ffmancera@riseup.net>
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+
+>---
+> Documentation/networking/bonding.rst | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> There was likely a copy/paste error made during a previous cleanup
-> because the if clause is now containing exactly the same condition as in
-> the switch case, which can never be true. In the past the destination
-> address was used in the switch and the source address was used in the
-> if, which matches what the spec says.
+>diff --git a/Documentation/networking/bonding.rst b/Documentation/network=
+ing/bonding.rst
+>index 7823a069a903..96cd7a26f3d9 100644
+>--- a/Documentation/networking/bonding.rst
+>+++ b/Documentation/networking/bonding.rst
+>@@ -846,7 +846,7 @@ primary_reselect
+> tlb_dynamic_lb
+> =
+
+> 	Specifies if dynamic shuffling of flows is enabled in tlb
+>-	mode. The value has no effect on any other modes.
+>+	or alb mode. The value has no effect on any other modes.
+> =
+
+> 	The default behavior of tlb mode is to shuffle active flows across
+> 	slaves based on the load in that interval. This gives nice lb
+>-- =
+
+>2.30.2
 >
-> Cc: stable@vger.kernel.org
-> Fixes: ae531b9475f6 ("ieee802154: use ieee802154_addr instead of *_sa variants")
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  net/mac802154/rx.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-> index b8ce84618a55..c439125ef2b9 100644
-> --- a/net/mac802154/rx.c
-> +++ b/net/mac802154/rx.c
-> @@ -44,7 +44,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
->
->         switch (mac_cb(skb)->dest.mode) {
->         case IEEE802154_ADDR_NONE:
-> -               if (mac_cb(skb)->dest.mode != IEEE802154_ADDR_NONE)
-> +               if (hdr->source.mode != IEEE802154_ADDR_NONE)
->                         /* FIXME: check if we are PAN coordinator */
->                         skb->pkt_type = PACKET_OTHERHOST;
->                 else
-
-
-This patch looks okay but it should not be addressed to stable. Leave
-of course the fixes tag.
-
-Wpan sends pull requests to net and they have their own way to get
-into the stable tree when they are in net.
-
-Thanks.
-
-- Alex
-
