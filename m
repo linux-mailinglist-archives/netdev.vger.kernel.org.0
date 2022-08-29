@@ -2,264 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BC3A5A52B8
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 19:06:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D712B5A52C0
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 19:09:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiH2RG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 13:06:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        id S231205AbiH2RJF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 13:09:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231315AbiH2RF0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 13:05:26 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D9DA9D64F;
-        Mon, 29 Aug 2022 10:04:40 -0700 (PDT)
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MGcCG2XVCz67Ybb;
-        Tue, 30 Aug 2022 01:00:58 +0800 (CST)
-Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Mon, 29 Aug 2022 19:04:37 +0200
-Received: from mscphis00759.huawei.com (10.123.66.134) by
- lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 29 Aug 2022 18:04:36 +0100
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-To:     <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <hukeping@huawei.com>, <anton.sirazetdinov@huawei.com>
-Subject: [PATCH v7 18/18] landlock: Document Landlock's network support
-Date:   Tue, 30 Aug 2022 01:04:01 +0800
-Message-ID: <20220829170401.834298-19-konstantin.meskhidze@huawei.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
-References: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
+        with ESMTP id S231454AbiH2RIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 13:08:45 -0400
+Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B81057E23
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 10:08:19 -0700 (PDT)
+Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-33dce2d4bc8so211970847b3.4
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 10:08:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=xICyMVVdCsY5/fofBo/xR4lYqmLE701ZtHc0T6bkZNY=;
+        b=f2mnCMTUX8MUcwoig9BX5a/hSjp+haWVlmf/zgLb1ELSvOm4uiJPmBTdc9u7mpkywY
+         tRpcIfusLS82Y1a6vcFzbfzXwHeCu6PMEvaOgzBsxlccY1llfu5kN9XGPU0vpG3hhdnv
+         0yvXSMaUSu4L0cByn9rY8ZqMIk4O/F7PdjtWDnW3XyQouMtnpCqMGaMuRwCd39znHM2y
+         208DPvXLnpvYdHqfW5k8BN24f9Us8BGbwVErhbN9a3a4ELCIVR8T/EFvlrh1+787gf3/
+         FEr018E1RH9SPJIVg+pAs9j3RV+dyC0szpV28VCjQ5AbGBKiiFRGvieGmRgRr/I0Ue5r
+         ip4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=xICyMVVdCsY5/fofBo/xR4lYqmLE701ZtHc0T6bkZNY=;
+        b=taOhxfldAigWeE2NBLjAw/G9S2Nxg0pFi1amwyQgCyF2Jw72kWxo4bqeT6r7ksy2oQ
+         lJWY+Nt0qeDhAvMb2u6xlKnvKOFaFs1Rt3FNxurUyFOfL1OXiZdhmxwt7x8KvCuT810k
+         N/pT4TdQ/Rc/VJuEPO/nBZuXeLZrGXvZ/mFai3t6j+BgE01AjL6rJrh+Phxd855hoUIE
+         mv2clXzBL9xuJa9CUm1wKviJOwyz5UE0F8GTmA5GV+HPU17ui6HvTjsR1VPBQzv1lTSx
+         TVMQvra1MI0xydlqb4Y/k5/nUu/ZeecmtazPdRH/ZTB7XEeVdg3PXGbaCLKzKu9U0ubR
+         89/Q==
+X-Gm-Message-State: ACgBeo1tuGuiqAtpX1NVjSYkoLSW/4KVYdUkXoRL8UcD3pBli6qpIzDb
+        vOJYhUXKyZG0A4vDEoCjn5MqzjP34RUSd+KG8HH33g==
+X-Google-Smtp-Source: AA6agR5yrPfoLQlXKTsr14uC5F5xcL/3RWe+3GyqlPJK4pfC0blNh/6a1jD6exelzaWA170WinDrqAKgH/iopkF9eN0=
+X-Received: by 2002:a25:7cc6:0:b0:67a:6a2e:3d42 with SMTP id
+ x189-20020a257cc6000000b0067a6a2e3d42mr9035859ybc.231.1661792898498; Mon, 29
+ Aug 2022 10:08:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.123.66.134]
-X-ClientProxiedBy: mscpeml100002.china.huawei.com (7.188.26.75) To
- lhrpeml500004.china.huawei.com (7.191.163.9)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220829081704.255235-1-shaozhengchao@huawei.com> <20220829081704.255235-2-shaozhengchao@huawei.com>
+In-Reply-To: <20220829081704.255235-2-shaozhengchao@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 29 Aug 2022 10:08:07 -0700
+Message-ID: <CANn89iLqXB-O7AP5qf+gGtK48fgYYxpciCyZa76jJNac9Bq1aQ@mail.gmail.com>
+Subject: Re: [PATCH net-next,v2 1/3] net: sched: choke: remove unused
+ variables in struct choke_sched_data
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, weiyongjun1@huawei.com,
+        YueHaibing <yuehaibing@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe network access rules for TCP sockets.
-Add network access example in the tutorial.
-Point out AF_UNSPEC socket family behaviour.
-Point out UDP sockets issues.
-Add kernel configuration support for network.
+On Mon, Aug 29, 2022 at 1:14 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+>
+> The variable "other" in the struct choke_sched_data is not used. Remove it.
+>
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+> v1: qdisc_drop() already counts drops, unnecessary to use "other" to duplicate the same information.
+> ---
+>  include/uapi/linux/pkt_sched.h | 1 -
+>  net/sched/sch_choke.c          | 2 --
+>  2 files changed, 3 deletions(-)
+>
+> diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+> index f292b467b27f..32d49447cc7a 100644
+> --- a/include/uapi/linux/pkt_sched.h
+> +++ b/include/uapi/linux/pkt_sched.h
+> @@ -396,7 +396,6 @@ struct tc_choke_qopt {
+>  struct tc_choke_xstats {
+>         __u32           early;          /* Early drops */
+>         __u32           pdrop;          /* Drops due to queue limits */
+> -       __u32           other;          /* Drops due to drop() calls */
 
-Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
----
+You can not remove a field in UAPI.
 
-Changes since v6:
-* Adds network support documentaion.
-
----
- Documentation/userspace-api/landlock.rst | 84 +++++++++++++++++++-----
- 1 file changed, 66 insertions(+), 18 deletions(-)
-
-diff --git a/Documentation/userspace-api/landlock.rst b/Documentation/userspace-api/landlock.rst
-index 2509c2fbf98f..4b099d1b5a9d 100644
---- a/Documentation/userspace-api/landlock.rst
-+++ b/Documentation/userspace-api/landlock.rst
-@@ -11,10 +11,10 @@ Landlock: unprivileged access control
- :Date: August 2022
-
- The goal of Landlock is to enable to restrict ambient rights (e.g. global
--filesystem access) for a set of processes.  Because Landlock is a stackable
--LSM, it makes possible to create safe security sandboxes as new security layers
--in addition to the existing system-wide access-controls. This kind of sandbox
--is expected to help mitigate the security impact of bugs or
-+filesystem or network access) for a set of processes.  Because Landlock
-+is a stackable LSM, it makes possible to create safe security sandboxes as new
-+security layers in addition to the existing system-wide access-controls. This
-+kind of sandbox is expected to help mitigate the security impact of bugs or
- unexpected/malicious behaviors in user space applications.  Landlock empowers
- any process, including unprivileged ones, to securely restrict themselves.
-
-@@ -30,18 +30,20 @@ Landlock rules
-
- A Landlock rule describes an action on an object.  An object is currently a
- file hierarchy, and the related filesystem actions are defined with `access
--rights`_.  A set of rules is aggregated in a ruleset, which can then restrict
--the thread enforcing it, and its future children.
-+rights`_.  Since ABI version 3 a port "object" appears with related network actions
-+for TCP4/TCP6 sockets families.  A set of rules is aggregated in a ruleset, which
-+can then restrict the thread enforcing it, and its future children.
-
- Defining and enforcing a security policy
- ----------------------------------------
-
- We first need to define the ruleset that will contain our rules.  For this
- example, the ruleset will contain rules that only allow read actions, but write
--actions will be denied.  The ruleset then needs to handle both of these kind of
-+actions will be denied. The ruleset then needs to handle both of these kind of
- actions.  This is required for backward and forward compatibility (i.e. the
- kernel and user space may not know each other's supported restrictions), hence
--the need to be explicit about the denied-by-default access rights.
-+the need to be explicit about the denied-by-default access rights.  Also ruleset
-+will have network rules for specific ports, so it should handle network actions.
-
- .. code-block:: c
-
-@@ -62,6 +64,9 @@ the need to be explicit about the denied-by-default access rights.
-             LANDLOCK_ACCESS_FS_MAKE_SYM |
-             LANDLOCK_ACCESS_FS_REFER |
-             LANDLOCK_ACCESS_FS_TRUNCATE,
-+        .handled_access_net =
-+            LANDLOCK_ACCESS_NET_BIND_TCP |
-+            LANDLOCK_ACCESS_NET_CONNECT_TCP,
-     };
-
- Because we may not know on which kernel version an application will be
-@@ -70,9 +75,9 @@ should try to protect users as much as possible whatever the kernel they are
- using.  To avoid binary enforcement (i.e. either all security features or
- none), we can leverage a dedicated Landlock command to get the current version
- of the Landlock ABI and adapt the handled accesses.  Let's check if we should
--remove the `LANDLOCK_ACCESS_FS_REFER` or `LANDLOCK_ACCESS_FS_TRUNCATE` access
--rights, which are only supported starting with the second and third version of
--the ABI.
-+remove the `LANDLOCK_ACCESS_FS_REFER` or `LANDLOCK_ACCESS_FS_TRUNCATE` or
-+network access rights, which are only supported starting with the second and
-+third version of the ABI.
-
- .. code-block:: c
-
-@@ -87,9 +92,13 @@ the ABI.
-             /* Removes LANDLOCK_ACCESS_FS_REFER for ABI < 2 */
-             ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_REFER;
-             __attribute__((fallthrough));
-+            /* Removes network support for ABI < 2 */
-+            ruleset_attr.handled_access_net = 0;
-     case 2:
-             /* Removes LANDLOCK_ACCESS_FS_TRUNCATE for ABI < 3 */
-             ruleset_attr.handled_access_fs &= ~LANDLOCK_ACCESS_FS_TRUNCATE;
-+            /* Removes network support for ABI < 3 */
-+            ruleset_attr.handled_access_net = 0;
-     }
-
- This enables to create an inclusive ruleset that will contain our rules.
-@@ -129,6 +138,24 @@ descriptor.
-     }
-     err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_PATH_BENEATH,
-                             &path_beneath, 0);
-+
-+It may also be required to create rules following the same logic as explained
-+for the ruleset creation, by filtering access rights according to the Landlock
-+ABI version.  In this example, this is not required because all of the requested
-+`allowed_access` rights are already available in ABI 1.
-+
-+For network part we can add number of rules containing a port number and actions
-+that a process is allowed to do for certian ports.
-+
-+.. code-block:: c
-+
-+    struct landlock_net_service_attr net_service = {
-+        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
-+        .port = 8080,
-+    };
-+
-+    err = landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+                            &net_service, 0);
-     close(path_beneath.parent_fd);
-     if (err) {
-         perror("Failed to update ruleset");
-@@ -136,13 +163,9 @@ descriptor.
-         return 1;
-     }
-
--It may also be required to create rules following the same logic as explained
--for the ruleset creation, by filtering access rights according to the Landlock
--ABI version.  In this example, this is not required because all of the requested
--`allowed_access` rights are already available in ABI 1.
--
- We now have a ruleset with one rule allowing read access to ``/usr`` while
--denying all other handled accesses for the filesystem.  The next step is to
-+denying all other handled accesses for the filesystem.  The ruleset also contains
-+a rule allowing to bind current proccess to the port 8080.  The next step is to
- restrict the current thread from gaining more privileges (e.g. thanks to a SUID
- binary).
-
-@@ -280,6 +303,13 @@ It should also be noted that truncating files does not require the
- system call, this can also be done through :manpage:`open(2)` with the flags
- `O_RDONLY | O_TRUNC`.
-
-+AF_UNSPEC socket family
-+-----------------------
-+
-+Sockets of AF_UNSPEC family types are treated as AF_INET(TCP4) socket for bind()
-+hook.  But connect() hook is not allowed by Landlock for AF_UNSPEC sockets. This
-+logic prevents from disconnecting already connected sockets.
-+
- Compatibility
- =============
-
-@@ -339,7 +369,7 @@ Access rights
- -------------
-
- .. kernel-doc:: include/uapi/linux/landlock.h
--    :identifiers: fs_access
-+    :identifiers: fs_access net_access
-
- Creating a new ruleset
- ----------------------
-@@ -358,6 +388,7 @@ Extending a ruleset
-
- .. kernel-doc:: include/uapi/linux/landlock.h
-     :identifiers: landlock_rule_type landlock_path_beneath_attr
-+                  landlock_net_service_attr
-
- Enforcing a ruleset
- -------------------
-@@ -406,6 +437,13 @@ Memory usage
- Kernel memory allocated to create rulesets is accounted and can be restricted
- by the Documentation/admin-guide/cgroup-v1/memory.rst.
-
-+UDP sockets restricting
-+-----------------------
-+
-+Current network part supports to restrict just TCP sockets type. UPD sockets sandboxing
-+adds additional issues due to unconnected nature of the protocol. UDP sockets support
-+might come in future Landlock versions.
-+
- Previous limitations
- ====================
-
-@@ -435,6 +473,13 @@ always allowed when using a kernel that only supports the first or second ABI.
- Starting with the Landlock ABI version 3, it is now possible to securely control
- truncation thanks to the new `LANDLOCK_ACCESS_FS_TRUNCATE` access right.
-
-+Network support (ABI < 3)
-+-------------------------
-+
-+Starting with the Landlock ABI version 3, it is now possible to restrict TCP
-+sockets bind() and connect() syscalls for specific ports allowing processes
-+to establish secure connections.
-+
- .. _kernel_support:
-
- Kernel support
-@@ -453,6 +498,9 @@ still enable it by adding ``lsm=landlock,[...]`` to
- Documentation/admin-guide/kernel-parameters.rst thanks to the bootloader
- configuration.
-
-+To support Landlock's network part, the kernel must be configured with `CONFIG_NET=y`
-+and `CONFIG_INET=y` options. For TCP6 family sockets `CONFIG_IPV6=y` must be switched on.
-+
- Questions and answers
- =====================
-
---
-2.25.1
-
+>         __u32           marked;         /* Marked packets */
+>         __u32           matched;        /* Drops due to flow match */
+>  };
+> diff --git a/net/sched/sch_choke.c b/net/sched/sch_choke.c
+> index 25d2daaa8122..3ac3e5c80b6f 100644
+> --- a/net/sched/sch_choke.c
+> +++ b/net/sched/sch_choke.c
+> @@ -60,7 +60,6 @@ struct choke_sched_data {
+>                 u32     forced_drop;    /* Forced drops, qavg > max_thresh */
+>                 u32     forced_mark;    /* Forced marks, qavg > max_thresh */
+>                 u32     pdrop;          /* Drops due to queue limits */
+> -               u32     other;          /* Drops due to drop() calls */
+>                 u32     matched;        /* Drops to flow match */
+>         } stats;
+>
+> @@ -464,7 +463,6 @@ static int choke_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
+>                 .early  = q->stats.prob_drop + q->stats.forced_drop,
+>                 .marked = q->stats.prob_mark + q->stats.forced_mark,
+>                 .pdrop  = q->stats.pdrop,
+> -               .other  = q->stats.other,
+>                 .matched = q->stats.matched,
+>         };
+>
+> --
+> 2.17.1
+>
