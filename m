@@ -2,46 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24B755A428A
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D245A4297
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229652AbiH2FsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 01:48:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
+        id S229516AbiH2FuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 01:50:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiH2FsO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:48:14 -0400
-Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78F9474C6;
-        Sun, 28 Aug 2022 22:48:11 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=chentao.kernel@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VNXn-x8_1661752085;
-Received: from 30.227.91.73(mailfrom:chentao.kernel@linux.alibaba.com fp:SMTPD_---0VNXn-x8_1661752085)
-          by smtp.aliyun-inc.com;
-          Mon, 29 Aug 2022 13:48:06 +0800
-Message-ID: <107876eb-4bfe-4d18-607c-08c16271c832@linux.alibaba.com>
-Date:   Mon, 29 Aug 2022 13:48:05 +0800
+        with ESMTP id S229468AbiH2FuF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:50:05 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6579213F26;
+        Sun, 28 Aug 2022 22:50:04 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id b9so5343196qka.2;
+        Sun, 28 Aug 2022 22:50:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=zkDe2fzQ9fEV4RqEIAa8ZUKyTere+0TLjVrnWosBhRQ=;
+        b=aOW7Y4CbPGtc6IgJZvMrZn3xcKjgGn4VhZsRtd1KFi3sBjd1hCxJ93Z40GJ1tRRMCm
+         keCqRDoYP7q+JQslnKgTaZ4GoipL9iILi4+yrWjOM84RmS7o0UBxDimEGV4y4evSN0TX
+         c/P9AY8thKfolw7bDmMkQGCDKuIr3M9FTW8sbKFfOFmOo/WfSeRaiWFnCWEaRej+wGId
+         X3tAbWU4DRvyPqfwQ803n+8AJ6lHArOecOW3hT66u6l3tZS2R+yYx3AL+GPOMG3GFNWi
+         l0BIRD4KARAe8uh66EIr5mFSRoIJEV5iEjsMfDk1THUOwmFGQx9PAFInC28B26QpCYoB
+         DZKA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=zkDe2fzQ9fEV4RqEIAa8ZUKyTere+0TLjVrnWosBhRQ=;
+        b=c2dQkDOz4PsAH+y0Xj74cHz8tze4/6S33yM5VdMfO6AZpg0CYqKdYvGUTLcmNlg04i
+         DTKEFhg+bgw+RodZ/ak7zU3k70KuzrFTbjBxe1d1wjIAyYdFccDPLIPL60YYMZbjs62x
+         SgO7Cun0q9B4dgaLt8g1ySkgG0dscDFNctWOQBa2/QYzWi/L49Zb00ob9MtYjfoVLyRb
+         5skQd3WS+0RLTApeGUY0lszUFu/NAMp8kAPyg8jKEKcbXJVfV/k3j892lz/VKGKZyszY
+         VQRCLYFWfRnG9AcKjYeg/kbHnNqME0UE5CilTNCrGYLlpgF1hbQGX154Fy6XJp6ELL+e
+         0UnA==
+X-Gm-Message-State: ACgBeo3ibAEoTCQ0u/IqP4RidfX+sYVgU15mi4BKImTHMFx+g4etJMRl
+        FFn5ADe+ZKjW3SJsK011D8U=
+X-Google-Smtp-Source: AA6agR4DMfIHHFLozo4VOWYncXwROqclALGVpkca9iCXjcvKb5eACoAVsr7k552lI/ZnrZ4y+nVmwQ==
+X-Received: by 2002:a05:620a:573:b0:6bb:2865:e3cc with SMTP id p19-20020a05620a057300b006bb2865e3ccmr7468670qkp.15.1661752203552;
+        Sun, 28 Aug 2022 22:50:03 -0700 (PDT)
+Received: from localhost ([2600:1700:65a0:ab60:5e78:4de7:b681:c052])
+        by smtp.gmail.com with ESMTPSA id v38-20020a05622a18a600b0031ef0081d77sm4751644qtc.79.2022.08.28.22.50.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Aug 2022 22:50:02 -0700 (PDT)
+Date:   Sun, 28 Aug 2022 22:50:01 -0700
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, jhs@mojatatu.com, jiri@resnulli.us,
+        weiyongjun1@huawei.com, yuehaibing@huawei.com
+Subject: Re: [PATCH net-next] net: sched: using TCQ_MIN_PRIO_BANDS in
+ prio_tune()
+Message-ID: <YwxTiZ7tfMaaDBBM@pop-os.localdomain>
+References: <20220826041035.80129-1-shaozhengchao@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH] libbpf: Support raw btf placed in the default path
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1661349907-57222-1-git-send-email-chentao.kernel@linux.alibaba.com>
- <CAEf4BzZPYAZ-ZJXa0CnrpxzFrXjTScfuioF=DOAw4j1L_tMXTg@mail.gmail.com>
-From:   Tao Chen <chentao.kernel@linux.alibaba.com>
-In-Reply-To: <CAEf4BzZPYAZ-ZJXa0CnrpxzFrXjTScfuioF=DOAw4j1L_tMXTg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220826041035.80129-1-shaozhengchao@huawei.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -49,63 +72,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nakryiko, thank you for your reply. Yes, i happed to put the raw
-BTF made by myself in /boot on kernel4.19, unluckly it reported error.
-So is it possible to allow the raw BTF in /boot directly, athough we
-can set the specified btf location again to solve the problem with the
-bpf_object_open_opts interface.  
+On Fri, Aug 26, 2022 at 12:10:35PM +0800, Zhengchao Shao wrote:
+> Using TCQ_MIN_PRIO_BANDS instead of magic number in prio_tune().
+> 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 
-As you say, maybe we can remove the locations[i].raw_btf check, just
-use the btf__parse. It looks more concise.
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-
-在 2022/8/26 上午4:26, Andrii Nakryiko 写道:
-> On Wed, Aug 24, 2022 at 7:05 AM chentao.ct
-> <chentao.kernel@linux.alibaba.com> wrote:
->>
->> Now only elf btf can be placed in the default path, raw btf should
->> also can be there.
->>
-> 
-> It's not clear what you are trying to achieve. Do you want libbpf to
-> attempt to load /boot/vmlinux-%1$s as raw BTF as well (so you can sort
-> of sneak in pregenerated BTF), or what exactly?
-> btf__load_vmlinux_btf() code already supports loading raw BTF, it just
-> needs to be explicitly specified in locations table.
-> 
-> So with your change locations[i].raw_btf check doesn't make sense and
-> we need to clean this up.
-> 
-> But first, let's discuss the use case, instead of your specific solution.
-> 
-> 
->> Signed-off-by: chentao.ct <chentao.kernel@linux.alibaba.com>
->> ---
->>   tools/lib/bpf/btf.c | 4 ++--
->>   1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
->> index bb1e06e..b22b5b3 100644
->> --- a/tools/lib/bpf/btf.c
->> +++ b/tools/lib/bpf/btf.c
->> @@ -4661,7 +4661,7 @@ struct btf *btf__load_vmlinux_btf(void)
->>          } locations[] = {
->>                  /* try canonical vmlinux BTF through sysfs first */
->>                  { "/sys/kernel/btf/vmlinux", true /* raw BTF */ },
->> -               /* fall back to trying to find vmlinux ELF on disk otherwise */
->> +               /* fall back to trying to find vmlinux RAW/ELF on disk otherwise */
->>                  { "/boot/vmlinux-%1$s" },
->>                  { "/lib/modules/%1$s/vmlinux-%1$s" },
->>                  { "/lib/modules/%1$s/build/vmlinux" },
->> @@ -4686,7 +4686,7 @@ struct btf *btf__load_vmlinux_btf(void)
->>                  if (locations[i].raw_btf)
->>                          btf = btf__parse_raw(path);
->>                  else
->> -                       btf = btf__parse_elf(path, NULL);
->> +                       btf = btf__parse(path, NULL);
->>                  err = libbpf_get_error(btf);
->>                  pr_debug("loading kernel BTF '%s': %d\n", path, err);
->>                  if (err)
->> --
->> 2.2.1
->>
+Thanks.
