@@ -2,166 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9277A5A5247
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 18:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B36C15A5286
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 19:04:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230283AbiH2QyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 12:54:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
+        id S231205AbiH2REN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 13:04:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229987AbiH2Qx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 12:53:58 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A6586FDC
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:53:56 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-333a4a5d495so210464917b3.10
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 09:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=9MtsKETAQYOSHqFu76VaqNu9/OI/sudex9QgrJ+4kBc=;
-        b=GkigFTjyHH7is6HjX0lTNqflphvgUtePF1XkUbJ96E6tMjfmSRYp9GOrgI3MdlbNUo
-         QYZMp/AJjX8zb0DFpUP54KXklFUXSYyiPnQ+BdDPTuaVrnC+76pjnqSwWb2IShm+3vg9
-         qYyMFQonnPOUNhlaPQ6vo/y/78MMn/2z7Su6JqZ8m0il46X0xHmcCfcPX1ANvneijpz+
-         7x7HQhve0w11lcy3wQguKjS21Aw9iu2kT14R25/YV6nkbSEcpB9yOy8aGppE28AOGLOA
-         Ecr2pOqoJDmImu9wRyxaIrqFwyebiYoFdK3nI/XhhHGEf34fCazy8PBXbCHBzPSeauOv
-         4wJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=9MtsKETAQYOSHqFu76VaqNu9/OI/sudex9QgrJ+4kBc=;
-        b=cCrIeBqCKtRxD2AoFj/KYmrTcxZQKUuyjE0/KNAFNfSU0iy3ggkD+pN/xvv3gB06bU
-         RrCOLbbrqBuh8GqL6eH17f3QvYKo1r1n/kK6GaJqTMHOkD/LvmMh9vpsW/0dVEEzh+Ug
-         Vb2pOPEbZTAOEuIUH5DLaluSyMFgQcelhdarOGJXXBa8iYhIJ53iV7fxGYQdmKCBeqgy
-         9EJSoJg5iZHXxhaRQmT0Zgq8UFlts6ujvOyUzh0XrMKs/W0Ltl/gVbifRdz8GaGDbLVj
-         jrJgRDgwh8p7c9oOuJrQCeXgVc+dNKQ7zMZXcvF3QlIdSQxEnXbmd+GAISAomnrc1Qi6
-         IVSA==
-X-Gm-Message-State: ACgBeo1kwLJIeP3cCl2GX9JpOr7hptVxeUgYzdCbNyVK5uRf9aLLjfvG
-        rCqmOyijIycF1lqwy1nmzNRvCrPncP2dIRCkkUQK+A==
-X-Google-Smtp-Source: AA6agR6vYRcCWI4aLx5ChcGNh/P9ALo35RiZdOMZ6Ksu8rOYk58+KuX1X4i0lMY4WQ9LWVWY5CZkfJ57W1WfOgDHwDI=
-X-Received: by 2002:a25:b78a:0:b0:695:900e:e211 with SMTP id
- n10-20020a25b78a000000b00695900ee211mr8421162ybh.427.1661792034737; Mon, 29
- Aug 2022 09:53:54 -0700 (PDT)
+        with ESMTP id S230196AbiH2REM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 13:04:12 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 697809BB4F;
+        Mon, 29 Aug 2022 10:04:11 -0700 (PDT)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MGcGH4FRvz686pS;
+        Tue, 30 Aug 2022 01:03:35 +0800 (CST)
+Received: from lhrpeml500004.china.huawei.com (7.191.163.9) by
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 29 Aug 2022 19:04:08 +0200
+Received: from mscphis00759.huawei.com (10.123.66.134) by
+ lhrpeml500004.china.huawei.com (7.191.163.9) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 18:04:07 +0100
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+To:     <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>, <gnoack3000@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <hukeping@huawei.com>, <anton.sirazetdinov@huawei.com>
+Subject: [PATCH v7 00/18] Network support for Landlock
+Date:   Tue, 30 Aug 2022 01:03:43 +0800
+Message-ID: <20220829170401.834298-1-konstantin.meskhidze@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <cover.1651800598.git.peilin.ye@bytedance.com> <cover.1661158173.git.peilin.ye@bytedance.com>
- <CANn89iJsOHK1qgudpfFW9poC4NRBZiob-ynTOuRBkuJTw6FaJw@mail.gmail.com> <YwzthDleRuvyEsXC@pop-os.localdomain>
-In-Reply-To: <YwzthDleRuvyEsXC@pop-os.localdomain>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Aug 2022 09:53:43 -0700
-Message-ID: <CANn89iJMBQ8--_hUihCcBEVawsZQLqL9x9V1=5pzrxTy+w8Z4A@mail.gmail.com>
-Subject: Re: [PATCH RFC v2 net-next 0/5] net: Qdisc backpressure infrastructure
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Dave Taht <dave.taht@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.123.66.134]
+X-ClientProxiedBy: mscpeml100002.china.huawei.com (7.188.26.75) To
+ lhrpeml500004.china.huawei.com (7.191.163.9)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 9:47 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Aug 22, 2022 at 09:22:39AM -0700, Eric Dumazet wrote:
-> > On Mon, Aug 22, 2022 at 2:10 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
-> > >
-> > > From: Peilin Ye <peilin.ye@bytedance.com>
-> > >
-> > > Hi all,
-> > >
-> > > Currently sockets (especially UDP ones) can drop a lot of packets at TC
-> > > egress when rate limited by shaper Qdiscs like HTB.  This patchset series
-> > > tries to solve this by introducing a Qdisc backpressure mechanism.
-> > >
-> > > RFC v1 [1] used a throttle & unthrottle approach, which introduced several
-> > > issues, including a thundering herd problem and a socket reference count
-> > > issue [2].  This RFC v2 uses a different approach to avoid those issues:
-> > >
-> > >   1. When a shaper Qdisc drops a packet that belongs to a local socket due
-> > >      to TC egress congestion, we make part of the socket's sndbuf
-> > >      temporarily unavailable, so it sends slower.
-> > >
-> > >   2. Later, when TC egress becomes idle again, we gradually recover the
-> > >      socket's sndbuf back to normal.  Patch 2 implements this step using a
-> > >      timer for UDP sockets.
-> > >
-> > > The thundering herd problem is avoided, since we no longer wake up all
-> > > throttled sockets at the same time in qdisc_watchdog().  The socket
-> > > reference count issue is also avoided, since we no longer maintain socket
-> > > list on Qdisc.
-> > >
-> > > Performance is better than RFC v1.  There is one concern about fairness
-> > > between flows for TBF Qdisc, which could be solved by using a SFQ inner
-> > > Qdisc.
-> > >
-> > > Please see the individual patches for details and numbers.  Any comments,
-> > > suggestions would be much appreciated.  Thanks!
-> > >
-> > > [1] https://lore.kernel.org/netdev/cover.1651800598.git.peilin.ye@bytedance.com/
-> > > [2] https://lore.kernel.org/netdev/20220506133111.1d4bebf3@hermes.local/
-> > >
-> > > Peilin Ye (5):
-> > >   net: Introduce Qdisc backpressure infrastructure
-> > >   net/udp: Implement Qdisc backpressure algorithm
-> > >   net/sched: sch_tbf: Use Qdisc backpressure infrastructure
-> > >   net/sched: sch_htb: Use Qdisc backpressure infrastructure
-> > >   net/sched: sch_cbq: Use Qdisc backpressure infrastructure
-> > >
-> >
-> > I think the whole idea is wrong.
-> >
->
-> Be more specific?
->
-> > Packet schedulers can be remote (offloaded, or on another box)
->
-> This is not the case we are dealing with (yet).
->
-> >
-> > The idea of going back to socket level from a packet scheduler should
-> > really be a last resort.
->
-> I think it should be the first resort, as we should backpressure to the
-> source, rather than anything in the middle.
->
-> >
-> > Issue of having UDP sockets being able to flood a network is tough, I
-> > am not sure the core networking stack
-> > should pretend it can solve the issue.
->
-> It seems you misunderstand it here, we are not dealing with UDP on the
-> network, just on an end host. The backpressure we are dealing with is
-> from Qdisc to socket on _TX side_ and on one single host.
->
-> >
-> > Note that FQ based packet schedulers can also help already.
->
-> It only helps TCP pacing.
+Hi,
+This is a new V7 patch related to Landlock LSM network confinement.
+It is based on the landlock's -next branch on top of v5.19 kernel version:
+https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/log/?h=next
 
-FQ : Fair Queue.
+It brings refactoring of previous patch version V6 and based on
+Mickaёl's two commits in -tmp-net branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/commit/?id=8f4104b3dc59e7f110c9b83cdf034d010a2d006f
+https://git.kernel.org/pub/scm/linux/kernel/git/mic/linux.git/commit/?id=7d6cf40a6f81adf607ad3cc17aaa11e256beeea4
 
-It definitely helps without the pacing part...
+All test were run in QEMU evironment and compiled with
+ -static flag.
+ 1. network_test: 18/18 tests passed.
+ 2. base_test: 7/7 tests passed.
+ 3. fs_test: 61/61 tests passed.
+ 4. ptrace_test: 8/8 tests passed.
 
->
-> Thanks.
+LCOV - code coverage report:
+            Hit  Total  Coverage
+Lines:      952  1010    94.2 %
+Functions:  79   82      96.3 %
+
+Previous versions:
+v6: https://lore.kernel.org/linux-security-module/20220621082313.3330667-1-konstantin.meskhidze@huawei.com/
+v5: https://lore.kernel.org/linux-security-module/20220516152038.39594-1-konstantin.meskhidze@huawei.com
+v4: https://lore.kernel.org/linux-security-module/20220309134459.6448-1-konstantin.meskhidze@huawei.com/
+v3: https://lore.kernel.org/linux-security-module/20220124080215.265538-1-konstantin.meskhidze@huawei.com/
+v2: https://lore.kernel.org/linux-security-module/20211228115212.703084-1-konstantin.meskhidze@huawei.com/
+v1: https://lore.kernel.org/linux-security-module/20211210072123.386713-1-konstantin.meskhidze@huawei.com/
+
+Konstantin Meskhidze (18):
+  landlock: rename access mask
+  landlock: refactor landlock_find_rule/insert_rule
+  landlock: refactor merge/inherit_ruleset functions
+  landlock: move helper functions
+  landlock: refactor helper functions
+  landlock: refactor landlock_add_rule syscall
+  landlock: user space API network support
+  landlock: add network rules support
+  landlock: implement TCP network hooks
+  seltests/landlock: move helper function
+  seltests/landlock: add tests for bind() hooks
+  seltests/landlock: add tests for connect() hooks
+  seltests/landlock: add AF_UNSPEC family test
+  seltests/landlock: add rules overlapping test
+  seltests/landlock: add ruleset expanding test
+  seltests/landlock: add invalid input data test
+  samples/landlock: add network demo
+  landlock: Document Landlock's network support
+
+ Documentation/userspace-api/landlock.rst    |  84 ++-
+ include/uapi/linux/landlock.h               |  49 ++
+ samples/landlock/sandboxer.c                | 123 ++-
+ security/landlock/Kconfig                   |   1 +
+ security/landlock/Makefile                  |   2 +
+ security/landlock/fs.c                      | 144 +---
+ security/landlock/limits.h                  |   7 +-
+ security/landlock/net.c                     | 161 ++++
+ security/landlock/net.h                     |  26 +
+ security/landlock/ruleset.c                 | 369 +++++++--
+ security/landlock/ruleset.h                 | 136 +++-
+ security/landlock/setup.c                   |   2 +
+ security/landlock/syscalls.c                | 168 +++--
+ tools/testing/selftests/landlock/common.h   |  10 +
+ tools/testing/selftests/landlock/config     |   4 +
+ tools/testing/selftests/landlock/fs_test.c  |  10 -
+ tools/testing/selftests/landlock/net_test.c | 786 ++++++++++++++++++++
+ 17 files changed, 1796 insertions(+), 286 deletions(-)
+ create mode 100644 security/landlock/net.c
+ create mode 100644 security/landlock/net.h
+ create mode 100644 tools/testing/selftests/landlock/net_test.c
+
+--
+2.25.1
+
