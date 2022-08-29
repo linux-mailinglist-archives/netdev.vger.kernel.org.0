@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8702D5A5758
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 00:59:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6E645A5766
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 01:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229530AbiH2W7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 18:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37158 "EHLO
+        id S229477AbiH2XEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 19:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2W7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 18:59:17 -0400
+        with ESMTP id S229579AbiH2XEE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 19:04:04 -0400
 Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9493A86892
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 15:59:16 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-334dc616f86so232412427b3.8
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 15:59:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5C37FF83
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 16:04:03 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-3321c2a8d4cso232918497b3.5
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 16:04:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=TpzfH8uFA8X+gJilMZHJck1FdXHlT1YXvSC1/1vNKak=;
-        b=Am+UOqsZNc2yS1ZK5qkXXJnM5T8vlzHOPzm4S4xa8Acz38rCXradL5qKxIx8kF29KL
-         8TtqZJdjfzgHpJMduxT7nfKXnO3FhMWL/gXAl/nB26bFU9xJrNsCgrmGYpj9Y33o/d/g
-         02+MjFWCIqegahYM26M+tvRE7AsoYNUyZALI3/batAa5uD4Z/YQmoaiEJr2i++4XIqbU
-         RluJOy4LS+yH4FlpVovEYEI3dh+xsAhaagy0R8KbYZas7lRxTzXf9TU+JlCqV96Mtx49
-         OTpABqmKgRRXi1yNTaAL3wErWOYCS8/eYhFMPzzdbYFuL2EHXulMKWxiSbG8rjZn63oC
-         gnng==
+        bh=VgKmaJrTCTlRH6lbCtDIfR3bgLAZ/TV2yC0AJYMaHsQ=;
+        b=HoHxOLd0xZFHarEsuMxuKC0evFLwjIFFz3n1TMPlbAi/qWnCAq46T6y86KAJzuoDzv
+         byHkKIdsXqpCY6HrWdG0cMGPDasd3ZC/wfWtgavwgs/mJTv6HjVkKlvrHXoO5YgYrEVA
+         CsXs1d2NohDl7aufaA+bqyT66cSfnYVzKlq7zSQiEMtymudNIEbBnSPiAiLwLPzIGvJJ
+         lH4kyYiULFam6uh5z4HPUPTlXDBX9U+EadTJ0W1+vRSMEDTR3qjc7Me4p6bBKreSeZWR
+         dAmRDGKaQKQJmpzv5/8V9GegeerQ8Sv2syWHo0Wd8KpNqedJiH8xZ3UwFt2SUM1x7lJM
+         QPAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=TpzfH8uFA8X+gJilMZHJck1FdXHlT1YXvSC1/1vNKak=;
-        b=Vz1qRELFvZBBrOBAzG5Vyjwp5o0/R3HTYCYhkNFt14j/b4mIvZqFHM0aaJbt1vWbSX
-         dwSKSpKCpvHtsV1krs2y3jkUtt0hyqG+NZuRwsstGPy/Xot6IgoWtkxpfFPDKseFgox0
-         H3uRy/aZ8V4LBg9yebOSQnh0egamxA1F93VGkj51rtazqdzvxOY73vlPBMqm0qSH1naV
-         1uEgAheWGmWVQ2HhpLDS+DTErwR0y/R1lks10p6wC0phT7KDP/F3CdvGw5CKVw0TfQTt
-         uIjb/PdE0h95hjGJB+YxyQkFOdlQiHsCPmBv59/3WQW6n3CGdDrZcI3vCXxNLxpLFUAg
-         OumQ==
-X-Gm-Message-State: ACgBeo3VvaZ6HBR23LOllYUwjjr6NvOt+HoHzksCFoWf4Xzeqq98Jx6F
-        2/VWC5rbihJBC3FM3gSct0W7qkfnoW7jZ0NTQSw68Q==
-X-Google-Smtp-Source: AA6agR7AKQX1x+rDnZU+gBuPplTEeRAswrPKXXHVQDIouMdeqzDB+c4f6JIbGivJAYda5/tyEN4xSx5/LvKCjr7QuuQ=
-X-Received: by 2002:a0d:fd06:0:b0:324:e4fe:9e6c with SMTP id
- n6-20020a0dfd06000000b00324e4fe9e6cmr10973781ywf.332.1661813955613; Mon, 29
- Aug 2022 15:59:15 -0700 (PDT)
+        bh=VgKmaJrTCTlRH6lbCtDIfR3bgLAZ/TV2yC0AJYMaHsQ=;
+        b=xT3nxCslmvSvG6YOR5gTTL6X/eLfHtwjRS1fX3+rrTCXwqkxh5o3JLxOg8lhG4/NBA
+         5mvCtn+/HuAhbu1SZPqI6WKXCR5FiFnULpRL2B0YwQmYmae3NKaMBbB+lLHtIPkyapIL
+         Sp0n/OPR0WW6T+e/LAdGoPKmMaX8xpp776T/IJpxKKOIzv3SPdD9iX9T6gOoEzOzQs+x
+         G0cGIebOnA73IqXsDJWhD5yzpxKvbcj7E+Xt/7g9GrmxwY7LF2mvxOfIm9qi5/aZLvbe
+         Bore1GJkQkHIgNlXHZ/txaEf5SuJbdWrM1bjBNPIQiSjqydpDrXycL7ISgiqjjMyM34T
+         sp5Q==
+X-Gm-Message-State: ACgBeo1qlO1J7Sh5BnrFs+g8l594R9fwh1y1/sGLzXub4dQfOJBz22Td
+        v8OhIKrgo+rY5G5XEEx1fJyn2pkEeAcU7jicviKocQAvR/Y=
+X-Google-Smtp-Source: AA6agR5OslaNJ/n/paBZ8htQZt1nBz4CEh9ttoio/BHxfsZSJO1aQCMUCQ+lG5z8MG5Gnm659MsKcH6NwK97EVfhqDw=
+X-Received: by 2002:a0d:dd12:0:b0:340:cba4:e0d3 with SMTP id
+ g18-20020a0ddd12000000b00340cba4e0d3mr9000299ywe.278.1661814241740; Mon, 29
+ Aug 2022 16:04:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220829161920.99409-1-kuniyu@amazon.com> <20220829161920.99409-6-kuniyu@amazon.com>
-In-Reply-To: <20220829161920.99409-6-kuniyu@amazon.com>
+References: <20220829161920.99409-1-kuniyu@amazon.com> <20220829161920.99409-4-kuniyu@amazon.com>
+In-Reply-To: <20220829161920.99409-4-kuniyu@amazon.com>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 29 Aug 2022 15:59:04 -0700
-Message-ID: <CANn89iJ55OHnWh88-pRxMt4d_4cbr5Fa+JOH2VDrT1SWq1t=ZA@mail.gmail.com>
-Subject: Re: [PATCH v2 net-next 5/5] tcp: Introduce optional per-netns ehash.
+Date:   Mon, 29 Aug 2022 16:03:50 -0700
+Message-ID: <CANn89iL0FpMHZ0YETN8DaO1Tj+P2kA1FBrH+8D4or9M9beqRug@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next 3/5] tcp: Access &tcp_hashinfo via net.
 To:     Kuniyuki Iwashima <kuniyu@amazon.com>
 Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -69,36 +69,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 9:21 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+On Mon, Aug 29, 2022 at 9:20 AM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
 >
-> The more sockets we have in the hash table, the longer we spend looking
-> up the socket.  While running a number of small workloads on the same
-> host, they penalise each other and cause performance degradation.>
-
-...
-> +static int proc_tcp_child_ehash_entries(struct ctl_table *table, int write,
-> +                                       void *buffer, size_t *lenp, loff_t *ppos)
-> +{
-> +       unsigned int tcp_child_ehash_entries;
-> +       int ret;
-> +
-> +       ret = proc_douintvec_minmax(table, write, buffer, lenp, ppos);
-> +       if (!write || ret)
-> +               return ret;
-> +
-> +       tcp_child_ehash_entries = READ_ONCE(*(unsigned int *)table->data);
-> +       if (tcp_child_ehash_entries)
-> +               tcp_child_ehash_entries = roundup_pow_of_two(tcp_child_ehash_entries);
-
-This is not thread safe.
-
-You could simply perform the roundup_pow_of_two() elsewhere,
-eg in tcp_set_hashinfo() (and leave the sysctl as set by the user)
-
-> +
-> +       WRITE_ONCE(*(unsigned int *)table->data, tcp_child_ehash_entries);
-> +
-> +       return 0;
-> +}
-> +
+> We will soon introduce an optional per-netns ehash.
 >
+> This means we cannot use tcp_hashinfo directly in most places.
+>
+> Instead, access it via net->ipv4.tcp_death_row->hashinfo.
+>
+> The access will be valid only while initialising tcp_hashinfo
+> itself and creating/destroying each netns.
+>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+> ---
+>  .../mellanox/mlx5/core/en_accel/ktls_rx.c     |  5 +-
+>  .../net/ethernet/netronome/nfp/crypto/tls.c   |  5 +-
+
+I would probably omit changes in these two drivers, they look pure noise to me.
+
+It is unfortunate enough that some drivers go deep in TCP stack, no need
+to make your patches intrusive.
