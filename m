@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 335505A4ADC
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:00:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A66C25A4C15
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230100AbiH2MAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:00:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        id S229769AbiH2MkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiH2MA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:00:28 -0400
+        with ESMTP id S230080AbiH2Mjm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:39:42 -0400
 Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D8B72FE0;
-        Mon, 29 Aug 2022 04:45:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9882ED65;
+        Mon, 29 Aug 2022 05:23:38 -0700 (PDT)
 Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id A21921884505;
-        Mon, 29 Aug 2022 11:34:21 +0000 (UTC)
+        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 38ADC18839D6;
+        Mon, 29 Aug 2022 11:09:13 +0000 (UTC)
 Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 9954B25032B7;
-        Mon, 29 Aug 2022 11:34:21 +0000 (UTC)
+        by mailout.gigahost.dk (Postfix) with ESMTP id 137FC25032B8;
+        Mon, 29 Aug 2022 11:09:13 +0000 (UTC)
 Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 8D1D49EC0003; Mon, 29 Aug 2022 11:34:21 +0000 (UTC)
+        id E69209EC0002; Mon, 29 Aug 2022 11:09:12 +0000 (UTC)
 X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 13:34:21 +0200
+Date:   Mon, 29 Aug 2022 13:09:12 +0200
 From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>
 Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -45,23 +45,22 @@ Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Jiri Pirko <jiri@resnulli.us>,
         Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
         Christian Marangi <ansuelsmth@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org,
         bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
 Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
  extend locked port feature
-In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
+In-Reply-To: <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
 References: <20220826114538.705433-1-netdev@kapio-technology.com>
  <20220826114538.705433-2-netdev@kapio-technology.com>
- <Ywo16vHMqxxszWzX@shredder>
+ <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
 User-Agent: Gigahost Webmail
-Message-ID: <ae1fb003f7e1abdecaa36243e3b1a16c@kapio-technology.com>
+Message-ID: <d90a67c5ca6035f7ae75b7bada430e03@kapio-technology.com>
 X-Sender: netdev@kapio-technology.com
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
@@ -75,49 +74,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-27 17:19, Ido Schimmel wrote:
-> 
-> How about the below (untested):
-> 
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index 68b3e850bcb9..9143a94a1c57 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -109,9 +109,18 @@ int br_handle_frame_finish(struct net *net,
-> struct sock *sk, struct sk_buff *skb
->                 struct net_bridge_fdb_entry *fdb_src =
->                         br_fdb_find_rcu(br, eth_hdr(skb)->h_source, 
-> vid);
-> 
-> -               if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
-> -                   test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-> +               if (!fdb_src) {
-> +                       if (p->flags & BR_PORT_MAB) {
-> +                               __set_bit(BR_FDB_ENTRY_LOCKED, &flags);
-> +                               br_fdb_update(br, p, 
-> eth_hdr(skb)->h_source,
-> +                                             vid, flags);
-> +                       }
-> +                       goto drop;
-> +               } else if (READ_ONCE(fdb_src->dst) != p ||
-> +                          test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
-> +                          test_bit(BR_FDB_LOCKED, &fdb_src->flags)) {
->                         goto drop;
-> +               }
->         }
-> 
-> The semantics are very clear, IMO. On FDB miss, add a locked FDB entry
-> and drop the packet. On FDB mismatch, drop the packet.
-> 
-> Entry can roam from an unauthorized port to an authorized port, but not
-> the other way around. Not sure what is the use case for allowing 
-> roaming
-> between unauthorized ports.
-> 
-> Note that with the above, locked entries are not refreshed and will
-> therefore age out unless replaced by user space.
+> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
+
+>> @@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct 
+>> net_bridge_port *source,
+>>  						      &fdb->flags)))
+>>  					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
+>>  						  &fdb->flags);
+>> +				if (source->flags & BR_PORT_MAB)
+>> +					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+>> +				else
+>> +					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+> Please add a test for that bit and only then change it.
 > 
 
-Okay, I got the semantics (locked/unlocked vs unauthorized/authorized) 
-reversed, so I will go with your suggestion.
+Something like this?
+
+@@ -749,6 +756,12 @@ void br_fdb_update(struct net_bridge *br, struct 
+net_bridge_port *source,
+                                                       &fdb->flags)))
+                                         
+clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
+                                                   &fdb->flags);
++                               if 
+(unlikely(test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags))) {
++                                       if (!(source->flags & 
+BR_PORT_MAB))
++                                               
+clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
++                               } else
++                                       if (source->flags & BR_PORT_MAB)
++                                               
+set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
+                         }
+
+                         if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, 
+&flags)))
+
 
