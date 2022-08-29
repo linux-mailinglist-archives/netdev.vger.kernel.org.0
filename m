@@ -2,105 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59D8B5A425F
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:37:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B755A428A
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229624AbiH2FhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 01:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
+        id S229652AbiH2FsR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 01:48:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2FhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:37:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFB919C1B;
-        Sun, 28 Aug 2022 22:37:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD6461011;
-        Mon, 29 Aug 2022 05:37:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1177C433D6;
-        Mon, 29 Aug 2022 05:37:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661751431;
-        bh=AQA+8MVuBm1m9fzmtwrEJo7mlb2Azsxin4LYiGaKpIk=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=p/Suk4mvkxPk6oTLabA8smQe8SbKHOag2bcZg714x36x6ojtqwmjvvZb1QRS5YGXM
-         6rFXIzNH9Va92lj5EOnBENdtfG1PPM9uFyTBNngnwI0eylYhpMVBZqpB5KXCUS4mvO
-         nWc4O2c/dPtFehR598n/yoAIjBzHs00NFxdRLKlSUyUvE9PFeXnYl7rXUS5Y/d2/p4
-         wRK8SbLdCWNbb6aLRLKNMqys88naJm4trVL9ZLvvBpYPl3bmuPEpuOme4+IhFOga2b
-         mfbOKSIGGzBO+eySpnVnLhcO0hjebvwbi09AEQq4mcoDvUgmlIAZBNsSZlE9NcgHoL
-         0M+ncqbY5CtNw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-Cc:     Alexander Potapenko <glider@google.com>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        phil@philpotter.co.uk, ath9k-devel@qca.qualcomm.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
-References: <000000000000c98a7f05ac744f53@google.com>
-        <000000000000734fe705acb9f3a2@google.com>
-        <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
-        <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
-        <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
-        <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com>
-        <878rnc8ghv.fsf@toke.dk>
-Date:   Mon, 29 Aug 2022 08:36:57 +0300
-In-Reply-To: <878rnc8ghv.fsf@toke.dk> ("Toke \=\?utf-8\?Q\?H\=C3\=B8iland-J\?\=
- \=\?utf-8\?Q\?\=C3\=B8rgensen\=22's\?\= message of
-        "Thu, 25 Aug 2022 17:55:40 +0200")
-Message-ID: <87a67nhapy.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S229645AbiH2FsO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:48:14 -0400
+Received: from out199-1.us.a.mail.aliyun.com (out199-1.us.a.mail.aliyun.com [47.90.199.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A78F9474C6;
+        Sun, 28 Aug 2022 22:48:11 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046059;MF=chentao.kernel@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VNXn-x8_1661752085;
+Received: from 30.227.91.73(mailfrom:chentao.kernel@linux.alibaba.com fp:SMTPD_---0VNXn-x8_1661752085)
+          by smtp.aliyun-inc.com;
+          Mon, 29 Aug 2022 13:48:06 +0800
+Message-ID: <107876eb-4bfe-4d18-607c-08c16271c832@linux.alibaba.com>
+Date:   Mon, 29 Aug 2022 13:48:05 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH] libbpf: Support raw btf placed in the default path
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1661349907-57222-1-git-send-email-chentao.kernel@linux.alibaba.com>
+ <CAEf4BzZPYAZ-ZJXa0CnrpxzFrXjTScfuioF=DOAw4j1L_tMXTg@mail.gmail.com>
+From:   Tao Chen <chentao.kernel@linux.alibaba.com>
+In-Reply-To: <CAEf4BzZPYAZ-ZJXa0CnrpxzFrXjTScfuioF=DOAw4j1L_tMXTg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
+Hi Nakryiko, thank you for your reply. Yes, i happed to put the raw
+BTF made by myself in /boot on kernel4.19, unluckly it reported error.
+So is it possible to allow the raw BTF in /boot directly, athough we
+can set the specified btf location again to solve the problem with the
+bpf_object_open_opts interface.  
 
-> Alexander Potapenko <glider@google.com> writes:
->
->> On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
->> <penguin-kernel@i-love.sakura.ne.jp> wrote:
->>>
->>> Hello.
->> Hi Tetsuo,
+As you say, maybe we can remove the locations[i].raw_btf check, just
+use the btf__parse. It looks more concise.
+
+
+在 2022/8/26 上午4:26, Andrii Nakryiko 写道:
+> On Wed, Aug 24, 2022 at 7:05 AM chentao.ct
+> <chentao.kernel@linux.alibaba.com> wrote:
 >>
->>> I found that your patch was applied. But since the reproducer tested on=
-ly 0 byte
->>> case, I think that rejecting only less than sizeof(struct htc_frame_hdr=
-) bytes
->>> is not sufficient.
->>>
->>> More complete patch with Ack from Toke is waiting at
->>> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.S=
-AKURA.ne.jp .
+>> Now only elf btf can be placed in the default path, raw btf should
+>> also can be there.
 >>
->> Thanks for letting me know! I just checked that your patch indeed
->> fixes the issue I am facing.
->> If it is more complete, I think we'd indeed better use yours.
->
-> FWIW, that patch is just waiting for Kalle to apply it, and I just
-> noticed this whole thread has used his old email address, so updating
-> that now as a gentle ping :)
-
-I was on vacation but back now, I'll start processing patches soon.
-
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+> 
+> It's not clear what you are trying to achieve. Do you want libbpf to
+> attempt to load /boot/vmlinux-%1$s as raw BTF as well (so you can sort
+> of sneak in pregenerated BTF), or what exactly?
+> btf__load_vmlinux_btf() code already supports loading raw BTF, it just
+> needs to be explicitly specified in locations table.
+> 
+> So with your change locations[i].raw_btf check doesn't make sense and
+> we need to clean this up.
+> 
+> But first, let's discuss the use case, instead of your specific solution.
+> 
+> 
+>> Signed-off-by: chentao.ct <chentao.kernel@linux.alibaba.com>
+>> ---
+>>   tools/lib/bpf/btf.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+>> index bb1e06e..b22b5b3 100644
+>> --- a/tools/lib/bpf/btf.c
+>> +++ b/tools/lib/bpf/btf.c
+>> @@ -4661,7 +4661,7 @@ struct btf *btf__load_vmlinux_btf(void)
+>>          } locations[] = {
+>>                  /* try canonical vmlinux BTF through sysfs first */
+>>                  { "/sys/kernel/btf/vmlinux", true /* raw BTF */ },
+>> -               /* fall back to trying to find vmlinux ELF on disk otherwise */
+>> +               /* fall back to trying to find vmlinux RAW/ELF on disk otherwise */
+>>                  { "/boot/vmlinux-%1$s" },
+>>                  { "/lib/modules/%1$s/vmlinux-%1$s" },
+>>                  { "/lib/modules/%1$s/build/vmlinux" },
+>> @@ -4686,7 +4686,7 @@ struct btf *btf__load_vmlinux_btf(void)
+>>                  if (locations[i].raw_btf)
+>>                          btf = btf__parse_raw(path);
+>>                  else
+>> -                       btf = btf__parse_elf(path, NULL);
+>> +                       btf = btf__parse(path, NULL);
+>>                  err = libbpf_get_error(btf);
+>>                  pr_debug("loading kernel BTF '%s': %d\n", path, err);
+>>                  if (err)
+>> --
+>> 2.2.1
+>>
