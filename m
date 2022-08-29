@@ -2,72 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 989C95A47CC
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 13:02:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89F705A49E3
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 13:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230071AbiH2LCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 07:02:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42186 "EHLO
+        id S232383AbiH2Lab (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 07:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230033AbiH2LBv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 07:01:51 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CE1D0C1;
-        Mon, 29 Aug 2022 04:01:31 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 24F0C1884980;
-        Mon, 29 Aug 2022 11:01:29 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 0C5DA25032B7;
-        Mon, 29 Aug 2022 11:01:29 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id E0ADE9EC0003; Mon, 29 Aug 2022 11:01:28 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S232713AbiH2L3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 07:29:45 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on20616.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eaa::616])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5061D7437D;
+        Mon, 29 Aug 2022 04:17:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kiBPSpahkAXKssEk2POI4wvpIJj2a8jdhCKowcSF9fqzUBNbiE8sEh6RqZL+capUhFEgkP0QF4ntyb4wEtP+zUi5c6ozU2Y7em+vNqIFtuDouO6ihPmJACUbkwXxHjCx8hoXQzIlIwR40KQT8+E1siNwPi09TYlO+b1axoanN7IWNJ4dFxXu+ujudxAQz2NiXxLV4uQWrnnulBrta/YSsNymyKxX1yGvcJKNp0lJGgd8J5aMLyHvzS22NB8PScwkPURyt2YDdbD7IRacTPSRCZZqUg3XrziBhZEqHUPBeeQ7uxOIg2mlbPq8G+nD4ofAFbqz8yLWSSYnqiicL/dLZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xlROFYK3+0EuvVBgXLR4y5Wwp9l0uJG6v0e/9cDU/5U=;
+ b=eyvDurdqYiuYh6ev198sDXdVKS4VoNA0BT1rBnE9VRU4pO2xkUjkokg8rm4Vl3qs+z+8DcojefwkD8d7Up949CqKHj8ffApYA1jCsAieWhe4WDHZmySpr5rfduB2EnQcIaP/AeyAt0Fxs9N9G8H93fQy09m93ENHTZ/RJk3rWm8stMBk0dSL/QuXL377GqR4cYiFumpZvdPtAMVtaVef+WWH2BzbhrXpe88YLpE3amt/4x11c6lml6GrQ6XK0Y59MEVNWmOgHp/cw1YgANA7QGdbNULpkT49Cyrmd/C/vn7bMkTBPyhhuRhK0gSKQpU5J5cgIhKxKbymoHGVqn03PQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.236) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xlROFYK3+0EuvVBgXLR4y5Wwp9l0uJG6v0e/9cDU/5U=;
+ b=ciC76CLAGP/GmSadStEJW1qAsDE1JH9v3/Sx4HzJTL3y6zmgQPzOuUr9qd0pFG/TxPxI3DTqbam5Q5USH0e885bHlnItmL/i9/iq89zNmOVDQCPOv3zy888vvx8W4Y8CnFLeprCL4/ZJpAas86HEZLBZRpQvUu19H3xP/rsZje20Cp6nPYJsoaDHwYyknuvL1aSlu+f03KfpJ1FZ0mJz2x1MLAFJzs2CfX/9YXo4nnvKqY/TWjIjwCpKekol78DSHPdY2UTVyIkZwTLzqhvjL9e3DlV4I1lFmZ8qUd12VmqqKw/22tG1AAohWkGJKj8IB+RYDrh7RWyFiaiGsSWuxw==
+Received: from DS7PR03CA0220.namprd03.prod.outlook.com (2603:10b6:5:3ba::15)
+ by DM6PR12MB3323.namprd12.prod.outlook.com (2603:10b6:5:11f::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Mon, 29 Aug
+ 2022 11:14:10 +0000
+Received: from DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:3ba:cafe::a7) by DS7PR03CA0220.outlook.office365.com
+ (2603:10b6:5:3ba::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
+ Transport; Mon, 29 Aug 2022 11:14:10 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT033.mail.protection.outlook.com (10.13.172.221) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5566.15 via Frontend Transport; Mon, 29 Aug 2022 11:14:10 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Mon, 29 Aug
+ 2022 11:14:09 +0000
+Received: from yaviefel (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Mon, 29 Aug
+ 2022 04:14:06 -0700
+References: <20220829105454.266509-1-cui.jinpeng2@zte.com.cn>
+User-agent: mu4e 1.6.6; emacs 28.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     <cgel.zte@gmail.com>
+CC:     <idosch@nvidia.com>, <petrm@nvidia.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: Re: [PATCH linux-next] mlxsw: remove redundant err variable
+Date:   Mon, 29 Aug 2022 13:11:38 +0200
+In-Reply-To: <20220829105454.266509-1-cui.jinpeng2@zte.com.cn>
+Message-ID: <87edwzi9ok.fsf@nvidia.com>
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 13:01:28 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <Ywo16vHMqxxszWzX@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <63c78aabe2683b9639717c1a74dbdacc@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 170f094b-20fd-47b9-ad1a-08da89af9928
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3323:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: sZF0O/BYKYQo2B86Au4TXASZnOKoqYojwon4IawspaCa/xPSfltYrG+eTctm8y1of71fgVvUCGmrq371H+7znfLql/0keOzTtdluqG6Qux0rmjkY/Wac1hhXErKPxBku1HvtFoHA6rK0KL8sl82i53dLZLCnLQzv6YABhkuNq2GfBHibMKdLhGb4Rx6GPaJ5uqDmN71F5cdAagLlB+Xy9wQzx0NAAFXZA7lE6InathBKqwZW1nmDSbrNg8XEe5VGZ2fidXkmEi2hKQAfxOiuZ1arztMK1/Y0xtlBJc1suYDtVDiast9Nf19nw8mVMfpymwycMrYQwwZQtb5jkjm2Us/PXxlMcD+p2KN2DvQb8I6US4IAuLJynPKC91N+m17stgydZZ3hckFjc94wp+xl64vmIXecQUm9Lg4Wgj/0F2t9lE1fhSLm+CuBnrJ6FNVcr5ypW3IqPx/82LENgBnHafo8uaXtJ6U7CbRE0DGYXHro4DPiwcVoTwULsu/C2y4ykyVAaNRD7OEf9HnhTHIOTuTaH+vraAnevuTVpXgty+KToYeid/yTwVlhaeaQgkXGqmADH2x42dPgVXWqLj1hh4zKJz9twZYydZc35gOCA2Dna0MKTvxS+akU7s2caqskqpC4WAPQC2oW35o8oRlXCLh5tSyTz1VoCH0QjrA17A0EmNGLOmJD4TYAOujGhOC+w7bEiz4Wv7ZFtWsxhq43ZsqLRra9Vi6r8jrE2OkmMDBhyocKYValxSHtBNiU3+xVxka44p1YD8kJMY7h35xCsIVs6D1Wq5/GXjVMiHPtgzMl6NwAhmkpuzTIAwBVo/hX
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(39860400002)(376002)(346002)(40470700004)(46966006)(36840700001)(86362001)(8936002)(5660300002)(356005)(6666004)(82740400003)(2906002)(81166007)(82310400005)(478600001)(26005)(41300700001)(336012)(426003)(40460700003)(36756003)(186003)(6916009)(70586007)(4744005)(54906003)(316002)(40480700001)(70206006)(4326008)(47076005)(2616005)(16526019)(8676002)(36860700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2022 11:14:10.4458
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 170f094b-20fd-47b9-ad1a-08da89af9928
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT033.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3323
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,45 +104,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-27 17:19, Ido Schimmel wrote:
-> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
 
-How about this?
+cgel.zte@gmail.com writes:
 
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 1064a5b2d478..82bb50851716 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -103,8 +103,19 @@ int br_handle_frame_finish(struct net *net, struct 
-sock *sk, struct sk_buff *skb
-                         br_fdb_find_rcu(br, eth_hdr(skb)->h_source, 
-vid);
+> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+>
+> Return value from mlxsw_core_bus_device_register() directly
+> instead of taking this in another redundant variable.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-                 if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
--                   test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-+                   test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
-+                   test_bit(BR_FDB_ENTRY_LOCKED, &fdb_src->flags)) {
-+                       if (!fdb_src || ((READ_ONCE(fdb_src->dst) != p) 
-&&
-+                                        
-(!unlikely(test_bit(BR_FDB_LOCAL, &fdb_src->flags))))) {
-+                               unsigned long flags = 0;
-+
-+                               if (p->flags & BR_PORT_MAB) {
-+                                       __set_bit(BR_FDB_ENTRY_LOCKED, 
-&flags);
-+                                       br_fdb_update(br, p, 
-eth_hdr(skb)->h_source, vid, flags);
-+                               }
-+                       }
-                         goto drop;
-+               }
-         }
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 
-         nbp_switchdev_frame_mark(p, skb);
-
-It will allow roaming to a MAB enabled port (no roaming to a simply 
-locked port should be allowed of course), and it will not change a local 
-entry and not rely on 'learning on' on the locked port of course.
-Roaming to an unlocked port will also be allowed, and the locked flag 
-will be removed in this case according to code in br_fdb_update().
+Thanks!
