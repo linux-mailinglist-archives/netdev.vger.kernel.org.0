@@ -2,81 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C995A4C28
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:43:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA1D35A4C2F
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:46:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiH2Mn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
+        id S230020AbiH2MqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:46:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229937AbiH2MnC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:43:02 -0400
-Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840E7868A6
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:27:51 -0700 (PDT)
-Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
-        by gnuweeb.org (Postfix) with ESMTPSA id 52E3180866
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 12:27:50 +0000 (UTC)
-X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
-        s=default; t=1661776070;
-        bh=F3P0jtYe8nBBFXZxxubIcGD7PfjN1LKYQeyor8Ohfao=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hnHmjuybxncoUr/QXrr0zwmmO5H7sZXbDhSBkRu+5H95jeJ04EzsNX3c7JRgnrLxY
-         KeaMEGtVG+vnsLk+NqC5hsXtQBwB5mPkTbyJbE3tfqCf3rpgx0OUWQ2e4Q0ZNJGWPr
-         9r+XG0NfCAWDjrQ/ko9zbOZOUhFH7LUhQKeL+BgsEbjHh40/gZfCFATrRezTKm8UE4
-         HP6XSLI882kHdLmjrbid+PudCtjkOHCaATFEVrX5s5/Szfh5BaDVv1iMW0Bw7tK0zt
-         OtYTgde6RKHq/fr1R6lmTMxVdiUygm7A8OH0Bkj6OJxiLte7y1dNcGk8npnnu39nyl
-         r5om56wW1C+Tw==
-Received: by mail-lf1-f50.google.com with SMTP id br21so5143001lfb.0
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:27:50 -0700 (PDT)
-X-Gm-Message-State: ACgBeo3b/ujBaqsSZmysAp7ag6NSL4yfsP6ZGr8nqwNGLNdokakGwiqD
-        KBE99nNRGgtqnAM3dOiKZJSsd/YhHUQ1wwuYZWYMog==
-X-Google-Smtp-Source: AA6agR6/MaCwdTGYPhxBfRk9aiC96sUXc/nQmdHSZZRK4ihB3EWrLnr+Dp4zIwQ7qLnb+azquQLTlBSE8gM9pP+lBEM=
-X-Received: by 2002:a05:6512:2353:b0:492:db5e:775b with SMTP id
- p19-20020a056512235300b00492db5e775bmr5846597lfu.656.1661776058426; Mon, 29
- Aug 2022 05:27:38 -0700 (PDT)
+        with ESMTP id S229573AbiH2MqA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:46:00 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48A796741;
+        Mon, 29 Aug 2022 05:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=oPV5NlAapyYKsMKix8J75RJ02IN7sGmLcvFnbH2RKWA=; b=20wFvXOaYJIZPTsPGsPrCPepIh
+        4rNSfHsAu4ElWMwNcC0k2+qtA5Op1OnO8WFZI/KAU1TJ5wK5gYw4Ki5LQuIRje2Uez63NKAuoCM5z
+        7K3/AnAGde4HwVjdc4LkYrhQoV81xImhX8IG8S5H2OLj+csizhCC8JYJZEoHnXgAI9Pc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oSduP-00Exg8-PQ; Mon, 29 Aug 2022 14:30:29 +0200
+Date:   Mon, 29 Aug 2022 14:30:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Divya.Koppera@microchip.com
+Cc:     michael@walle.cc, o.rempel@pengutronix.de,
+        UNGLinuxDriver@microchip.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, pabeni@redhat.com
+Subject: Re: [PATCH net-next] net: phy: micrel: Adding SQI support for
+ lan8814 phy
+Message-ID: <YwyxZQrpuJo98yGk@lunn.ch>
+References: <20220825080549.9444-1-Divya.Koppera@microchip.com>
+ <20220826084249.1031557-1-michael@walle.cc>
+ <CO1PR11MB477162C762EF35B0E115B952E2759@CO1PR11MB4771.namprd11.prod.outlook.com>
+ <421712ea840fbe5edffcae4a6cb08150@walle.cc>
+ <CO1PR11MB47715CFC7E22969BD00F9E6AE2769@CO1PR11MB4771.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20220829115516.267647-1-cui.jinpeng2@zte.com.cn>
-In-Reply-To: <20220829115516.267647-1-cui.jinpeng2@zte.com.cn>
-From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
-Date:   Mon, 29 Aug 2022 19:27:27 +0700
-X-Gmail-Original-Message-ID: <CAGzmLMV80OLRB+OA=SLk5fEvy2jecYogg636D_HijgzthUoqnQ@mail.gmail.com>
-Message-ID: <CAGzmLMV80OLRB+OA=SLk5fEvy2jecYogg636D_HijgzthUoqnQ@mail.gmail.com>
-Subject: Re: [PATCH linux-next] wifi: cfg80211: remove redundant err variable
-To:     cgel.zte@gmail.com
-Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, kvalo@kernel.org,
-        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        johannes.berg@intel.com, a.fatoum@pengutronix.de,
-        quic_vjakkam@quicinc.com, loic.poulain@linaro.org,
-        hzamani.cs91@gmail.com, hdegoede@redhat.com, smoch@web.de,
-        prestwoj@gmail.com, Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Zeal Robot <zealci@zte.com.cn>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CO1PR11MB47715CFC7E22969BD00F9E6AE2769@CO1PR11MB4771.namprd11.prod.outlook.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 7:12 PM wrote:
-> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
->
-> Return value from brcmf_fil_iovar_data_set() and
-> brcmf_config_ap_mgmt_ie() directly instead of
-> taking this in another redundant variable.
->
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> Yes Channel 0 is correct.
+> 
+> > Again this is the first time I hear about SQI but it puzzles me that
+> > it only evaluate one pair in this case. So as a user who reads this
+> > SQI might be misleaded.
+> > 
+> 
+> Yeah, It needs uAPI extension.
 
-Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+I think the current uAPI actually allows it, sort of. You can have
+multiple instances of a netlink property in a netlink message.  So
+simply add 2 or 4 ETHTOOL_A_LINKSTATE_SQI properties. The existing
+user space tools will likely just print the first value it
+finds. Newer versions can walk the messages and print them all.
+
+The alternative is to add a new nest, like i did for cable test
+results:
+
+ +-+-------------------------------------------+--------+---------------------+
+ | | ``ETHTOOL_A_CABLE_NEST_RESULT``           | nested | cable test result   |
+ +-+-+-----------------------------------------+--------+---------------------+
+ | | | ``ETHTOOL_A_CABLE_RESULTS_PAIR``        | u8     | pair number         |
+ +-+-+-----------------------------------------+--------+---------------------+
+ | | | ``ETHTOOL_A_CABLE_RESULTS_CODE``        | u8     | result code         |
+ +-+-+-----------------------------------------+--------+---------------------+
+
+You can then explicitly indicate which cable pair the SQI value
+corresponds to. In order to keep backwards compatibility, you would
+still need to provide ETHTOOL_A_LINKSTATE_SQI, and then additionally
+have these nests.
+
+     Andrew
