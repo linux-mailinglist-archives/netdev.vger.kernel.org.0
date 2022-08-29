@@ -2,66 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 888095A45AD
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA055A45B3
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:06:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229868AbiH2JEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:04:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52300 "EHLO
+        id S229493AbiH2JGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229841AbiH2JEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:04:22 -0400
-X-Greylist: delayed 685 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 02:04:20 PDT
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71E305A3CA;
-        Mon, 29 Aug 2022 02:04:20 -0700 (PDT)
-Received: from [IPV6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98] (p200300e9d7011d41444abdf5adf89c98.dip0.t-ipconnect.de [IPv6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        with ESMTP id S229446AbiH2JGO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:06:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2BF1A3B7;
+        Mon, 29 Aug 2022 02:06:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 943E8C04DF;
-        Mon, 29 Aug 2022 11:04:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1661763858;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qHvwfHuNYAk8OvC72SRrqcUiCcrjxTKqL/yWDeOoZxU=;
-        b=Kf2CAKty6v99mACoOIjIrdrwsaGCQapKVZwmoLzRNA1JCabAdEtyUAq4JD2FVf5cOYbQRv
-        t4L5MY8NtJXmKwaRqKEKGnpnjsZcsz6VmKpQ9LQTsEE6H0qLVx6/us/tHaKgYFFOglUKkD
-        xxppgraU0P4rIAQqwNdl1WgE0fkafMne1e3c8EsKrrZeSmv4+oCSRta8CMGVY/nJPfZOU7
-        CrmgBgIAncImh279v6W+gR1M9ZLGVYBBL8yfv/3ik91OB+hBkzn3GFNc8r5sKLqj+I0pqf
-        BFWcONs7mqJM/t3DIF/aCM6n27PwhKGE/uUrz3LZezfHXtqVF9EDAvFgxzm41Q==
-Message-ID: <8c2f3ef3-af8b-f31b-8742-bdd7cace45d0@datenfreihafen.org>
-Date:   Mon, 29 Aug 2022 11:04:18 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17C95B80DD6;
+        Mon, 29 Aug 2022 09:06:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0E61C433C1;
+        Mon, 29 Aug 2022 09:06:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661763970;
+        bh=YxiSEiU77AdSBWd5wKKmc+hVh2H8m4okfNHl0r7sunw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dNgP346bm9X914Gn21n2UWqpMfES9xOcNa/OUgCvtGxwHG4B7Mytn1S6F+ACoxLp7
+         clMS0VATqpxjYpgxwxuasf3c1A810wm1hxCT2gZ5yT3eWZXsXVZU9pPPkplh4DZkam
+         9A7qVwdvWGh0XOuCRUDFBO3nn98XpslHPfA7ZAWwwlcV/cjkznTeHkd6cU1S2t3Hy3
+         yfUqNy01x41pTGXY6v1sNTCMLFRX0QWciTgvtFMPYZlEn+T61mI9WRofgaWASS2kRa
+         Al0cBVPCZKsup9wB4R8om+AIvQQyUVgHEn0OutaoLP2fa2z0IhXWiaTwNlV/RvrFO+
+         HX1anmVoIlk0g==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Chris Mi <cmi@nvidia.com>, Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH mlx5-next] RDMA/mlx5: Move function mlx5_core_query_ib_ppcnt() to mlx5_ib
+Date:   Mon, 29 Aug 2022 12:06:04 +0300
+Message-Id: <fd47b9138412bd94ed30f838026cbb4cf3878150.1661763871.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net: mac802154: Fix a condition in the receive path
-Content-Language: en-US
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>, linux-wpan@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        stable@vger.kernel.org
-References: <20220826142954.254853-1-miquel.raynal@bootlin.com>
- <57b7d918-1da1-f490-4882-5ed25ea17503@datenfreihafen.org>
- <20220829110159.6321a85f@xps-13>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220829110159.6321a85f@xps-13>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -70,64 +53,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Miquel
+From: Chris Mi <cmi@nvidia.com>
 
-On 29.08.22 11:01, Miquel Raynal wrote:
-> Hi Stefan,
-> 
-> stefan@datenfreihafen.org wrote on Mon, 29 Aug 2022 10:52:52 +0200:
-> 
->> Hello Miquel.
->>
->> On 26.08.22 16:29, Miquel Raynal wrote:
->>> Upon reception, a packet must be categorized, either it's destination is
->>> the host, or it is another host. A packet with no destination addressing
->>> fields may be valid in two situations:
->>> - the packet has no source field: only ACKs are built like that, we
->>>     consider the host as the destination.
->>> - the packet has a valid source field: it is directed to the PAN
->>>     coordinator, as for know we don't have this information we consider we
->>>     are not the PAN coordinator.
->>>
->>> There was likely a copy/paste error made during a previous cleanup
->>> because the if clause is now containing exactly the same condition as in
->>> the switch case, which can never be true. In the past the destination
->>> address was used in the switch and the source address was used in the
->>> if, which matches what the spec says.
->>>
->>> Cc: stable@vger.kernel.org
->>> Fixes: ae531b9475f6 ("ieee802154: use ieee802154_addr instead of *_sa variants")
->>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
->>> ---
->>>    net/mac802154/rx.c | 2 +-
->>>    1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
->>> index b8ce84618a55..c439125ef2b9 100644
->>> --- a/net/mac802154/rx.c
->>> +++ b/net/mac802154/rx.c
->>> @@ -44,7 +44,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
->>>    >   	switch (mac_cb(skb)->dest.mode) {
->>>    	case IEEE802154_ADDR_NONE:
->>> -		if (mac_cb(skb)->dest.mode != IEEE802154_ADDR_NONE)
->>> +		if (hdr->source.mode != IEEE802154_ADDR_NONE)
->>>    			/* FIXME: check if we are PAN coordinator */
->>>    			skb->pkt_type = PACKET_OTHERHOST;
->>>    		else
->>
->>
->> This patch has been applied to the wpan tree and will be
->> part of the next pull request to net. Thanks!
-> 
-> Great, thanks!
-> 
-> We should expect it not to apply until the tag mentioned in Fixes
-> because in 2015 or so there was some cleaned done by Alexander which
-> move things around a little bit, but I think we are fine skipping those
-> older releases anyway.
+This patch doesn't change any functionality, but move one function
+to mlx5_ib because it is not used by mlx5_core.
 
-The machinery behind stable handles this already. It checks for the 
-fixes tag and also sees if patches apply.
+The actual fix is in the next patch.
 
-regards
-Stefan Schmidt
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ drivers/infiniband/hw/mlx5/mad.c              | 25 +++++++++++++++++--
+ .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -----------------
+ include/linux/mlx5/driver.h                   |  2 --
+ 3 files changed, 23 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/infiniband/hw/mlx5/mad.c b/drivers/infiniband/hw/mlx5/mad.c
+index 293ed709e5ed..d834ec13b1b3 100644
+--- a/drivers/infiniband/hw/mlx5/mad.c
++++ b/drivers/infiniband/hw/mlx5/mad.c
+@@ -147,6 +147,28 @@ static void pma_cnt_assign(struct ib_pma_portcounters *pma_cnt,
+ 			     vl_15_dropped);
+ }
+ 
++static int query_ib_ppcnt(struct mlx5_core_dev *dev, u8 port_num, void *out,
++			  size_t sz)
++{
++	u32 *in;
++	int err;
++
++	in  = kvzalloc(sz, GFP_KERNEL);
++	if (!in) {
++		err = -ENOMEM;
++		return err;
++	}
++
++	MLX5_SET(ppcnt_reg, in, local_port, port_num);
++
++	MLX5_SET(ppcnt_reg, in, grp, MLX5_INFINIBAND_PORT_COUNTERS_GROUP);
++	err = mlx5_core_access_reg(dev, in, sz, out,
++				   sz, MLX5_REG_PPCNT, 0, 0);
++
++	kvfree(in);
++	return err;
++}
++
+ static int process_pma_cmd(struct mlx5_ib_dev *dev, u32 port_num,
+ 			   const struct ib_mad *in_mad, struct ib_mad *out_mad)
+ {
+@@ -202,8 +224,7 @@ static int process_pma_cmd(struct mlx5_ib_dev *dev, u32 port_num,
+ 			goto done;
+ 		}
+ 
+-		err = mlx5_core_query_ib_ppcnt(mdev, mdev_port_num,
+-					       out_cnt, sz);
++		err = query_ib_ppcnt(mdev, mdev_port_num, out_cnt, sz);
+ 		if (!err)
+ 			pma_cnt_assign(pma_cnt, out_cnt);
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+index e1bd54574ea5..a1548e6bfb35 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
+@@ -493,29 +493,6 @@ int mlx5_query_port_vl_hw_cap(struct mlx5_core_dev *dev,
+ }
+ EXPORT_SYMBOL_GPL(mlx5_query_port_vl_hw_cap);
+ 
+-int mlx5_core_query_ib_ppcnt(struct mlx5_core_dev *dev,
+-			     u8 port_num, void *out, size_t sz)
+-{
+-	u32 *in;
+-	int err;
+-
+-	in  = kvzalloc(sz, GFP_KERNEL);
+-	if (!in) {
+-		err = -ENOMEM;
+-		return err;
+-	}
+-
+-	MLX5_SET(ppcnt_reg, in, local_port, port_num);
+-
+-	MLX5_SET(ppcnt_reg, in, grp, MLX5_INFINIBAND_PORT_COUNTERS_GROUP);
+-	err = mlx5_core_access_reg(dev, in, sz, out,
+-				   sz, MLX5_REG_PPCNT, 0, 0);
+-
+-	kvfree(in);
+-	return err;
+-}
+-EXPORT_SYMBOL_GPL(mlx5_core_query_ib_ppcnt);
+-
+ static int mlx5_query_pfcc_reg(struct mlx5_core_dev *dev, u32 *out,
+ 			       u32 out_size)
+ {
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index 96b16fbe1aa4..9ccfd9dd0d0f 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -1084,8 +1084,6 @@ int mlx5_core_destroy_psv(struct mlx5_core_dev *dev, int psv_num);
+ void mlx5_core_put_rsc(struct mlx5_core_rsc_common *common);
+ int mlx5_query_odp_caps(struct mlx5_core_dev *dev,
+ 			struct mlx5_odp_caps *odp_caps);
+-int mlx5_core_query_ib_ppcnt(struct mlx5_core_dev *dev,
+-			     u8 port_num, void *out, size_t sz);
+ 
+ int mlx5_init_rl_table(struct mlx5_core_dev *dev);
+ void mlx5_cleanup_rl_table(struct mlx5_core_dev *dev);
+-- 
+2.37.2
+
