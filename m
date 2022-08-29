@@ -2,72 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47A6B5A4C00
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:36:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C995A4C28
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:43:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229850AbiH2Mf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:35:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36478 "EHLO
+        id S229929AbiH2Mn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiH2Mfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:35:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FEBF72EDD
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:19:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72C8C6113E
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 12:18:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FE6C433C1;
-        Mon, 29 Aug 2022 12:18:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661775524;
-        bh=8rgL+Gyhi/dvXx6tyId7k/0lsOPBUanu+XWFHRQQD3Y=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ecCiNdfRpc2ADtVCRe+YBvsFKtzwRoHhwB0F96tN112fDdCHAunhZHGGwvzmHcGz6
-         86JPz5Y08319lmEubrMXF3u9bGV2O6U67K7eb+jPVZvSMD0rNLKvsdQSn/zkuYGI39
-         limlGXOxQrVEzFiglfLa1IMw+xlBxSsauFeXjSg9CL5oCaKVK8/Sdu5E2KzLGwet2s
-         QUL845IQ2Z6FW+o7dyxGyYMS7ZCcWMDaXweKosuwMnOZ4qnnUn3TZa0mhblf1K+Ewq
-         T0RKDvtfuRLWTfKidyOOQZI1Lb5RB4spS1h8FtnMQgAOc7mCmWJWDs+KgabaQ7F2XB
-         zlmDO2uQtKFUQ==
-Date:   Mon, 29 Aug 2022 15:18:40 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     davem@davemloft.net, jiri@resnulli.us, kuba@kernel.org,
-        netdev@vger.kernel.org, maord@nvidia.com, saeedm@nvidia.com,
-        roid@nvidia.com, jiri@nvidia.com
-Subject: Re: [PATCH net-next] Revert "net: devlink: add RNLT lock assertion
- to devlink_compat_switch_id_get()"
-Message-ID: <YwyuoJI08MVhX2YX@unreal>
-References: <20220829121324.3980376-1-vladbu@nvidia.com>
+        with ESMTP id S229937AbiH2MnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:43:02 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840E7868A6
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:27:51 -0700 (PDT)
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+        by gnuweeb.org (Postfix) with ESMTPSA id 52E3180866
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 12:27:50 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1661776070;
+        bh=F3P0jtYe8nBBFXZxxubIcGD7PfjN1LKYQeyor8Ohfao=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=hnHmjuybxncoUr/QXrr0zwmmO5H7sZXbDhSBkRu+5H95jeJ04EzsNX3c7JRgnrLxY
+         KeaMEGtVG+vnsLk+NqC5hsXtQBwB5mPkTbyJbE3tfqCf3rpgx0OUWQ2e4Q0ZNJGWPr
+         9r+XG0NfCAWDjrQ/ko9zbOZOUhFH7LUhQKeL+BgsEbjHh40/gZfCFATrRezTKm8UE4
+         HP6XSLI882kHdLmjrbid+PudCtjkOHCaATFEVrX5s5/Szfh5BaDVv1iMW0Bw7tK0zt
+         OtYTgde6RKHq/fr1R6lmTMxVdiUygm7A8OH0Bkj6OJxiLte7y1dNcGk8npnnu39nyl
+         r5om56wW1C+Tw==
+Received: by mail-lf1-f50.google.com with SMTP id br21so5143001lfb.0
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 05:27:50 -0700 (PDT)
+X-Gm-Message-State: ACgBeo3b/ujBaqsSZmysAp7ag6NSL4yfsP6ZGr8nqwNGLNdokakGwiqD
+        KBE99nNRGgtqnAM3dOiKZJSsd/YhHUQ1wwuYZWYMog==
+X-Google-Smtp-Source: AA6agR6/MaCwdTGYPhxBfRk9aiC96sUXc/nQmdHSZZRK4ihB3EWrLnr+Dp4zIwQ7qLnb+azquQLTlBSE8gM9pP+lBEM=
+X-Received: by 2002:a05:6512:2353:b0:492:db5e:775b with SMTP id
+ p19-20020a056512235300b00492db5e775bmr5846597lfu.656.1661776058426; Mon, 29
+ Aug 2022 05:27:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829121324.3980376-1-vladbu@nvidia.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220829115516.267647-1-cui.jinpeng2@zte.com.cn>
+In-Reply-To: <20220829115516.267647-1-cui.jinpeng2@zte.com.cn>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+Date:   Mon, 29 Aug 2022 19:27:27 +0700
+X-Gmail-Original-Message-ID: <CAGzmLMV80OLRB+OA=SLk5fEvy2jecYogg636D_HijgzthUoqnQ@mail.gmail.com>
+Message-ID: <CAGzmLMV80OLRB+OA=SLk5fEvy2jecYogg636D_HijgzthUoqnQ@mail.gmail.com>
+Subject: Re: [PATCH linux-next] wifi: cfg80211: remove redundant err variable
+To:     cgel.zte@gmail.com
+Cc:     aspriel@gmail.com, franky.lin@broadcom.com,
+        hante.meuleman@broadcom.com, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        johannes.berg@intel.com, a.fatoum@pengutronix.de,
+        quic_vjakkam@quicinc.com, loic.poulain@linaro.org,
+        hzamani.cs91@gmail.com, hdegoede@redhat.com, smoch@web.de,
+        prestwoj@gmail.com, Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Zeal Robot <zealci@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 02:13:24PM +0200, Vlad Buslov wrote:
-> This reverts commit 6005a8aecee8afeba826295321a612ab485c230e.
-> 
-> The assertion was intentionally removed in commit 043b8413e8c0 ("net:
-> devlink: remove redundant rtnl lock assert") and, contrary what is
-> described in the commit message, the comment reflects that: "Caller must
-> hold RTNL mutex or reference to dev...".
-> 
-> Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
-> ---
->  net/core/devlink.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
+On Mon, Aug 29, 2022 at 7:12 PM wrote:
+> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+>
+> Return value from brcmf_fil_iovar_data_set() and
+> brcmf_config_ap_mgmt_ie() directly instead of
+> taking this in another redundant variable.
+>
+> Reported-by: Zeal Robot <zealci@zte.com.cn>
+> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
 
-Thanks,
-Tested-by: Leon Romanovsky <leonro@nvidia.com>
+Reviewed-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
