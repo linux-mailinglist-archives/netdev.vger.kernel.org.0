@@ -2,97 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F0635A4576
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:51:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71A345A457D
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229838AbiH2Ivp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 04:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        id S229636AbiH2Iw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 04:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiH2Ivo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:51:44 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79D558512;
-        Mon, 29 Aug 2022 01:51:43 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id f4so5535589qkl.7;
-        Mon, 29 Aug 2022 01:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=n1RoIBdIPyN20pMev+MpGGOGbH+r3UUo8doQJrELPuk=;
-        b=qD5Nh6G+wVQcHlj2sUePl1OdlCmXxx3mhE8Ri4/M405cWanYkXelOsGZFJyNaScz3h
-         eNrPR86qfa5mIopQCPUKpt8qS3sq4u/AZzxNB/ESZR8fta9M7Tgu5Efb4ryJL6PFiVk1
-         fG6hvY4I6MMsOFt877TkZL1R9epMJt3Wy7jY8K0jNJHq+uSkSdtltv15Er5zJa+q2olX
-         IC+uWG9xGFALXAvti9bZQ4AtBjHxJJO/GWUwYjJXtQZBNmJY5ZiF0S5GtMoklt9FdcKB
-         1kzZ12hIRgyFaCR6x2gWeMIOF5MNvSSunOJo3rPQ2ma3Qz4Wu/k/fWGISmvjJWVSv0ni
-         xRGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=n1RoIBdIPyN20pMev+MpGGOGbH+r3UUo8doQJrELPuk=;
-        b=DlG/N+dnQXi13W45qB99iG6k9dylTetjNXBQns7AZ3FAVNdZI8mxVnSCJaeF8tvCIO
-         aLhzi5PzkFpAn4wa73eSwNRhw1KbLbZpUjbvM+4BdbEHIedipU6ddTh3vsVGAOvUIMzM
-         t2X84wSDjRXV0aklV0Rnislpx1YjNpiOmrEGvapJdeuw1QQ/C0rWvQxW2SWljt6lhAkT
-         4xv62z4MESOZ+/uF/Yys0Jcbam9vkelxD5n7G+nD5a1T/fSerseYCAAV5lH/+ttq+AYw
-         R5UmoW7wFaT8PSOHMqGAbfLA0BU+P3QB7VY+28MfjvSCBU6fozU11ATyDs5N9DtE+VNi
-         qvlA==
-X-Gm-Message-State: ACgBeo0AVjU7ptTKO1l0btklcr2+AsOY1Zk7qJp3LpNST9MxwswYOtP6
-        2kX6//RSgv8f26nkA/DpjHMapytPW7nmns3kNhE=
-X-Google-Smtp-Source: AA6agR40fCruIILl7anmrNlDJvfNeKro7XUHv8CeZeuIbNXLfiWNndTBx4wilKNMi640mX75UJ4eJQ==
-X-Received: by 2002:a05:620a:4496:b0:6bb:8db4:6b49 with SMTP id x22-20020a05620a449600b006bb8db46b49mr7684364qkp.703.1661763102970;
-        Mon, 29 Aug 2022 01:51:42 -0700 (PDT)
-Received: from [10.176.68.61] ([192.19.148.250])
-        by smtp.gmail.com with ESMTPSA id br18-20020a05620a461200b006bb0f9b89cfsm5482488qkb.87.2022.08.29.01.51.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Aug 2022 01:51:42 -0700 (PDT)
-Message-ID: <a054ffb1-527b-836c-f43e-9f76058cc9ed@gmail.com>
-Date:   Mon, 29 Aug 2022 10:51:40 +0200
+        with ESMTP id S229463AbiH2Iw5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:52:57 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [78.47.171.185])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B45E43E75B;
+        Mon, 29 Aug 2022 01:52:56 -0700 (PDT)
+Received: from [IPV6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98] (p200300e9d7011d41444abdf5adf89c98.dip0.t-ipconnect.de [IPv6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id 2E315C040C;
+        Mon, 29 Aug 2022 10:52:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1661763173;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=iQ5Dq6aO7k3wThAyTmRb5rc7/WX+rXnICW9j+3SuS4g=;
+        b=KDPkutYIE5yP5HSJFWizVWmOQKBZs43E5JToRFTN0ckLi9tA68csIs2y8IU0DXAKu1GCqn
+        OkE7qU0U0krvmHygQFUKjOEOreba8CTK4veqI0JQFD+qgvZBoyQYNgI8rwRGs+kWTfe7jN
+        B9XlyszWC5Gjmsxm8g1NEMCMO4ms1cYsGZ1UKBRcmyFaE6Tr2gbaoRORGi6o0I75wmDHdb
+        In0xUdb83KLK7cO8e3rVXwwHa3a8MXQb/tUySbghVhHcbDHErojlm9T9P+SygoZs2Prt5X
+        nxc3M+mMJ3TVsPZ/nSM4SSTG0+VeTyiqzO9AU7AwyBIczjj0NMio2yD77RaB9Q==
+Message-ID: <57b7d918-1da1-f490-4882-5ed25ea17503@datenfreihafen.org>
+Date:   Mon, 29 Aug 2022 10:52:52 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH] wifi: cfg80211: add error code in
- brcmf_notify_sched_scan_results()
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] net: mac802154: Fix a condition in the receive path
 Content-Language: en-US
-To:     Li Qiong <liqiong@nfschina.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yu Zhe <yuzhe@nfschina.com>
-References: <20220829065831.14023-1-liqiong@nfschina.com>
-From:   Arend Van Spriel <aspriel@gmail.com>
-In-Reply-To: <20220829065831.14023-1-liqiong@nfschina.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        linux-wpan@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        stable@vger.kernel.org
+References: <20220826142954.254853-1-miquel.raynal@bootlin.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <20220826142954.254853-1-miquel.raynal@bootlin.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/29/2022 8:58 AM, Li Qiong wrote:
-> The err code is 0 at the first two "out_err" paths, add error code
-> '-EINVAL' for these error paths.
 
-There is no added value provided in this change. There is an error 
-message, but it is otherwise silently ignored as there is no additional 
-fault handling required.
+Hello Miquel.
 
-Regards,
-Arend
-
-> Signed-off-by: Li Qiong <liqiong@nfschina.com>
+On 26.08.22 16:29, Miquel Raynal wrote:
+> Upon reception, a packet must be categorized, either it's destination is
+> the host, or it is another host. A packet with no destination addressing
+> fields may be valid in two situations:
+> - the packet has no source field: only ACKs are built like that, we
+>    consider the host as the destination.
+> - the packet has a valid source field: it is directed to the PAN
+>    coordinator, as for know we don't have this information we consider we
+>    are not the PAN coordinator.
+> 
+> There was likely a copy/paste error made during a previous cleanup
+> because the if clause is now containing exactly the same condition as in
+> the switch case, which can never be true. In the past the destination
+> address was used in the switch and the source address was used in the
+> if, which matches what the spec says.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: ae531b9475f6 ("ieee802154: use ieee802154_addr instead of *_sa variants")
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
->   1 file changed, 2 insertions(+)
+>   net/mac802154/rx.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
+> index b8ce84618a55..c439125ef2b9 100644
+> --- a/net/mac802154/rx.c
+> +++ b/net/mac802154/rx.c
+> @@ -44,7 +44,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
+>   
+>   	switch (mac_cb(skb)->dest.mode) {
+>   	case IEEE802154_ADDR_NONE:
+> -		if (mac_cb(skb)->dest.mode != IEEE802154_ADDR_NONE)
+> +		if (hdr->source.mode != IEEE802154_ADDR_NONE)
+>   			/* FIXME: check if we are PAN coordinator */
+>   			skb->pkt_type = PACKET_OTHERHOST;
+>   		else
+
+
+This patch has been applied to the wpan tree and will be
+part of the next pull request to net. Thanks!
+
+regards
+Stefan Schmidt
