@@ -2,111 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C0BD5A4478
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:04:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4395A447F
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 10:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229768AbiH2IE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 04:04:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S229481AbiH2IFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 04:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiH2IE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:04:28 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 308F64F654;
-        Mon, 29 Aug 2022 01:04:27 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 8D99C1883996;
-        Mon, 29 Aug 2022 08:04:25 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 82C7625032B7;
-        Mon, 29 Aug 2022 08:04:25 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 72B209EC0004; Mon, 29 Aug 2022 08:04:25 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
-MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 10:04:25 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229833AbiH2IF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 04:05:29 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5CC193FE;
+        Mon, 29 Aug 2022 01:05:27 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 58D61C0002;
+        Mon, 29 Aug 2022 08:05:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661760326;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QMq6SaZxih7nZIC2bQAgwcycjB3AsLB32Ejo7VBvV3U=;
+        b=IdTntAaF9C/gteGTzwtwToWqQQt4xQO8lNR9hU0Km/gK0xaK5g7u3LShODHrl2HoTGqFwk
+        7iJZCy7RoWhz5DYd1eJGiadAPigUdvma9bDzlCULT36pDB8kc7nFhNOfPRXZvmR8rVyAwa
+        LQrn/uV7SyiFMKGG7yXgHxZGAzIksm8BQyqVQetTntu5Dgc2FxYyA0FxUqWYoQYuqi8806
+        9TT5ZmGxnEsltA1fcCQ0GL44k9fEn+jZ0wy/FcbZTwu54LdqxoEOMD2la6Fcbaj/cWEFEv
+        P3/kL9fNBXeK3aKa2rxZieleBrxSXIrgprbYN6AOPgMZYf04/W8nBLRZSq9YgA==
+Date:   Mon, 29 Aug 2022 10:05:21 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <YwxwPJOx/n5SHZM5@shredder>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <Ywo16vHMqxxszWzX@shredder>
- <dd9a4156fe421f6be3a49f5b928ef77e@kapio-technology.com>
- <YwxwPJOx/n5SHZM5@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <7e4b58a75ece9cce4c841c33d7d66265@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220829100521.04b52196@xps-13>
+In-Reply-To: <CAK-6q+gZ5fSdNptvQoKpf1SOqODv70gzbFTYyWBagC6AFtAkig@mail.gmail.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+        <20220819191109.0e639918@xps-13>
+        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+        <20220823182950.1c722e13@xps-13>
+        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+        <20220824093547.16f05d15@xps-13>
+        <CAK-6q+gqX8w+WEgSk2J9FOdrFJPvqJOsgmaY4wOu=siRszBujA@mail.gmail.com>
+        <20220825104035.11806a67@xps-13>
+        <CAK-6q+hxSpw1yJR5H5D6gy5gGdm6Qa3VzyjZXA45KFQfVVqwFw@mail.gmail.com>
+        <CAK-6q+jbBg4kCh88Oz7mBa0RBBX_+cqqoPjT3POEjbQKX1ZDKw@mail.gmail.com>
+        <20220826100825.4f79c777@xps-13>
+        <CAK-6q+gZ5fSdNptvQoKpf1SOqODv70gzbFTYyWBagC6AFtAkig@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-29 09:52, Ido Schimmel wrote:
-> On Sun, Aug 28, 2022 at 12:23:30PM +0200, netdev@kapio-technology.com 
-> wrote:
->> On 2022-08-27 17:19, Ido Schimmel wrote:
->> > On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
->> > >
->> > >  	nbp_switchdev_frame_mark(p, skb);
->> > > @@ -943,6 +946,10 @@ static int br_setport(struct net_bridge_port
->> > > *p, struct nlattr *tb[],
->> > >  	br_set_port_flag(p, tb, IFLA_BRPORT_NEIGH_SUPPRESS,
->> > > BR_NEIGH_SUPPRESS);
->> > >  	br_set_port_flag(p, tb, IFLA_BRPORT_ISOLATED, BR_ISOLATED);
->> > >  	br_set_port_flag(p, tb, IFLA_BRPORT_LOCKED, BR_PORT_LOCKED);
->> > > +	br_set_port_flag(p, tb, IFLA_BRPORT_MAB, BR_PORT_MAB);
->> > > +
->> > > +	if (!(p->flags & BR_PORT_LOCKED))
->> > > +		p->flags &= ~BR_PORT_MAB;
->> 
->> The reason for this is that I wanted it to be so that if you have MAB
->> enabled (and locked of course) and unlock the port, it will 
->> automatically
->> clear both flags instead of having to first disable MAB and then 
->> unlock the
->> port.
-> 
-> User space can just do:
-> 
-> # bridge link set dev swp1 locked off mab off
-> 
-> I prefer not to push such logic into the kernel and instead fail
-> explicitly. I won't argue if more people are in favor.
+Hi Alexander,
 
-I shall do it as you suggest. It sounds fair. :-)
+aahringo@redhat.com wrote on Sun, 28 Aug 2022 22:31:19 -0400:
+
+> Hi,
+>=20
+> On Fri, Aug 26, 2022 at 4:08 AM Miquel Raynal <miquel.raynal@bootlin.com>=
+ wrote:
+> ...
+> > >
+> > > I need to say that I really used multiple monitors at the same time on
+> > > one phy only and I did that with hwsim to run multiple user space
+> > > stacks. It was working and I was happy and didn't need to do a lot of
+> > > phy creations in hwsim. =20
+> >
+> > Indeed, looking at the code, you could use as many MONITOR interfaces
+> > you needed, but only a single NODE. I've changed that to use as many
+> > NODE and COORD that we wish.
+> > =20
+>=20
+> Be careful there, there is a reason why we don't allow this and this
+> has to do with support of multiple address filters... but here it
+> depends also what you mean with "use".
+
+I've updated this part, you're right I was not careful enough on the
+per-iface filtering part, I think it's fine now. Basically, compared to
+the v2 sent last week, I've stopped considering that if one interface
+was in promiscuous mode, all of them should and did a per-PHY check, so
+that otherwise we can apply the necessary filtering if needed.
+
+> I need to admit, you can achieve the same behaviour of multiple user
+> space stacks and one monitor, _but_ you can easily filter the traffic
+> if you do it per interface...
+
+Thanks,
+Miqu=C3=A8l
