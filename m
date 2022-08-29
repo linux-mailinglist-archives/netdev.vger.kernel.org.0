@@ -2,80 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA86F5A4378
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 09:00:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AAF75A437A
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 09:01:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbiH2HAA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 03:00:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43554 "EHLO
+        id S229601AbiH2HBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 03:01:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiH2G75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 02:59:57 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B001F14019;
-        Sun, 28 Aug 2022 23:59:55 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id 6B7041E80D59;
-        Mon, 29 Aug 2022 14:55:12 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id HuvKuX657c9E; Mon, 29 Aug 2022 14:55:09 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 33B0B1E80D2C;
-        Mon, 29 Aug 2022 14:55:08 +0800 (CST)
-From:   Li Qiong <liqiong@nfschina.com>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yu Zhe <yuzhe@nfschina.com>, Li Qiong <liqiong@nfschina.com>
-Subject: [PATCH] wifi: cfg80211: add error code in brcmf_notify_sched_scan_results()
-Date:   Mon, 29 Aug 2022 14:58:31 +0800
-Message-Id: <20220829065831.14023-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.11.0
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,RDNS_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+        with ESMTP id S229536AbiH2HBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 03:01:00 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D662846DB9;
+        Mon, 29 Aug 2022 00:00:58 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.55])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MGLpm2KH0z1N7dl;
+        Mon, 29 Aug 2022 14:57:20 +0800 (CST)
+Received: from [10.174.178.66] (10.174.178.66) by
+ dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 29 Aug 2022 15:00:56 +0800
+Message-ID: <012b98b7-dd8f-2df6-6b78-a0da6dd8065a@huawei.com>
+Date:   Mon, 29 Aug 2022 15:00:55 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH net-next] net: sched: remove redundant NULL check in
+ change hook function
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <toke@toke.dk>, <jhs@mojatatu.com>, <jiri@resnulli.us>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <stephen@networkplumber.org>,
+        <cake@lists.bufferbloat.net>, <weiyongjun1@huawei.com>,
+        <yuehaibing@huawei.com>
+References: <20220827014910.215062-1-shaozhengchao@huawei.com>
+ <YwxQQOzw/dGKJKyB@pop-os.localdomain>
+From:   shaozhengchao <shaozhengchao@huawei.com>
+In-Reply-To: <YwxQQOzw/dGKJKyB@pop-os.localdomain>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.178.66]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The err code is 0 at the first two "out_err" paths, add error code
-'-EINVAL' for these error paths.
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
----
- drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 2 ++
- 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index db45da33adfd..b965649bb0e4 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -3553,6 +3553,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
- 	WARN_ON(status != BRCMF_PNO_SCAN_COMPLETE);
- 	brcmf_dbg(SCAN, "PFN NET FOUND event. count: %d\n", result_count);
- 	if (!result_count) {
-+		err = -EINVAL;
- 		bphy_err(drvr, "FALSE PNO Event. (pfn_count == 0)\n");
- 		goto out_err;
- 	}
-@@ -3560,6 +3561,7 @@ brcmf_notify_sched_scan_results(struct brcmf_if *ifp,
- 	netinfo_start = brcmf_get_netinfo_array(pfn_result);
- 	datalen = e->datalen - ((void *)netinfo_start - (void *)pfn_result);
- 	if (datalen < result_count * sizeof(*netinfo)) {
-+		err = -EINVAL;
- 		bphy_err(drvr, "insufficient event data\n");
- 		goto out_err;
- 	}
--- 
-2.11.0
+On 2022/8/29 13:36, Cong Wang wrote:
+> On Sat, Aug 27, 2022 at 09:49:10AM +0800, Zhengchao Shao wrote:
+>> Currently, the change function can be called by two ways. The one way is
+>> that qdisc_change() will call it. Before calling change function,
+>> qdisc_change() ensures tca[TCA_OPTIONS] is not empty. The other way is
+>> that .init() will call it. The opt parameter is also checked before
+>> calling change function in .init(). Therefore, it's no need to check the
+>> input parameter opt in change function.
+>>
+> 
+> Right.. but the one below:
+> 
+>> diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
+>> index c50a0853dcb9..e23d3dbb7272 100644
+>> --- a/net/sched/sch_gred.c
+>> +++ b/net/sched/sch_gred.c
+>> @@ -413,9 +413,6 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
+>>   	bool red_flags_changed;
+>>   	int i;
+>>   
+>> -	if (!dps)
+>> -		return -EINVAL;
+>> -
+> 
+> I don't think anyone checks tb[TCA_GRED_DPS]. What you intended to patch
+> is gred_change(), right?
+> 
+> Thanks.
 
+Hi Wang:
+	Thank you for your reply. You are right. I will send v2.
+
+Zhengchao Shao
