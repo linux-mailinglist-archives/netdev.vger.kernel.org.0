@@ -2,59 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 646295A5582
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 22:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47DB85A5594
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 22:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiH2U0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 16:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45488 "EHLO
+        id S229644AbiH2UcY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 29 Aug 2022 16:32:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229457AbiH2U0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 16:26:54 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6D7684EEC
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 13:26:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=FsiOi/MKNshkwXrXXDUR96Js8Cbk4s9g2JOQwV2l54g=; b=45kO2lSm7Do44GycqIeHSRQGUE
-        OEnx6q4PR6O1TtZuZ7NNn2gRbbVG3Ow7+PykXfjwXZ/bs0BLrnRitRuzX23nXMom2dD5tFvERN8xB
-        TBF4JRjNNlWgrbgITVdUbbCl5zW9rmnYn6A14ikqQGVQeuR+WEy4rXMyem91n/xmQelQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oSlLG-00F08X-J7; Mon, 29 Aug 2022 22:26:42 +0200
-Date:   Mon, 29 Aug 2022 22:26:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: phy: smsc: use device-managed clock API
-Message-ID: <Yw0hAgJa9hRNOQYR@lunn.ch>
-References: <b222be68-ba7e-999d-0a07-eca0ecedf74e@gmail.com>
+        with ESMTP id S229597AbiH2UcX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 16:32:23 -0400
+Received: from x61w.mirbsd.org (xdsl-85-197-1-163.nc.de [85.197.1.163])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DAD83F1C
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 13:32:21 -0700 (PDT)
+Received: by x61w.mirbsd.org (Postfix, from userid 1000)
+        id 8924624668; Mon, 29 Aug 2022 22:32:18 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by x61w.mirbsd.org (Postfix) with ESMTP id E29A724667
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 22:32:18 +0200 (CEST)
+Date:   Mon, 29 Aug 2022 22:32:18 +0200 (CEST)
+From:   Thorsten Glaser <t.glaser@tarent.de>
+To:     netdev@vger.kernel.org
+Subject: continuous REPL mode for tc(8)
+Message-ID: <33c27582-9b59-60f9-3323-c661b9524c51@tarent.de>
+Content-Language: de-DE-1901
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b222be68-ba7e-999d-0a07-eca0ecedf74e@gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=0.1 required=5.0 tests=BAYES_00,KHOP_HELO_FCRDNS,
+        RDNS_DYNAMIC,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 28, 2022 at 07:26:55PM +0200, Heiner Kallweit wrote:
-> Simplify the code by using the device-managed clock API.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Hi,
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+perhaps, if not inter-qdisc communication, can I at least have
+a mode for tc to run in a loop, so I lose the fork+exec overhead
+when calling tc change a *lot* of times?
 
-    Andrew
+How difficult to implement is that?
+
+Could I, maybe, even just call main() multiple times, or does
+that leak?
+
+Thanks in advance,
+//mirabilos
+-- 
+Infrastrukturexperte • tarent solutions GmbH
+Am Dickobskreuz 10, D-53121 Bonn • http://www.tarent.de/
+Telephon +49 228 54881-393 • Fax: +49 228 54881-235
+HRB AG Bonn 5168 • USt-ID (VAT): DE122264941
+Geschäftsführer: Dr. Stefan Barth, Kai Ebenrett, Boris Esser, Alexander Steeg
+
+                        ****************************************************
+/⁀\ The UTF-8 Ribbon
+╲ ╱ Campaign against      Mit dem tarent-Newsletter nichts mehr verpassen:
+ ╳  HTML eMail! Also,     https://www.tarent.de/newsletter
+╱ ╲ header encryption!
+                        ****************************************************
