@@ -2,128 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 676195A4624
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:32:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D4505A465B
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:47:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229960AbiH2Jcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37648 "EHLO
+        id S229694AbiH2Jr3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:47:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229671AbiH2Jcd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:32:33 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65405466D;
-        Mon, 29 Aug 2022 02:32:31 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 22BC1188493F;
-        Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 10FD125032B7;
-        Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 0C1E59EC0005; Mon, 29 Aug 2022 09:32:30 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S229504AbiH2Jr2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:47:28 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC63B2CCB8
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 02:47:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661766447; x=1693302447;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=EPtlX6EM1eW9HL7W3h+VCUGWIBUjNVtJCzuBn9atU0U=;
+  b=evp2vH7Wh93cJGnncQ1qc0ShmqUzD7g3HLIxfShrqX6tNvbyknK23xzi
+   X9BVe9Vd2rPtGrTkX1aadg23YDucejG/aIUdE1d9i/6KORS9//mbV0TNX
+   c2iTd7j+aSZWNsVAQaU9snznNXihUru+05Ze+Ji18OQfqBwudVLZ0+XDB
+   ref4Uw9CMl4mtCwPTwZlBuOnMbCHAuuZU8m2jAfKbK2LL6PVW58+AHJj3
+   r2AHzRlTvSJFHKkgvVSlszBpU90HoNKcc4qYVkYKXkrV87b+07HycIRuy
+   q/jqYV0nRmXYWpr9i/fVrm2gfxlWn17KRFFohiqhsMKu2twYZSIeaS/GO
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="281827679"
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="281827679"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 02:47:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="607397962"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 29 Aug 2022 02:47:22 -0700
+Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 27T9lK8d021475;
+        Mon, 29 Aug 2022 10:47:20 +0100
+From:   Wojciech Drewek <wojciech.drewek@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        marcin.szycik@linux.intel.com, michal.swiatkowski@linux.intel.com,
+        kurt@linutronix.de, boris.sukholitko@broadcom.com,
+        vladbu@nvidia.com, komachi.yoshiki@gmail.com, paulb@nvidia.com,
+        baowen.zheng@corigine.com, louis.peens@corigine.com,
+        simon.horman@corigine.com, pablo@netfilter.org,
+        maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
+        jchapman@katalix.com, gnault@redhat.com
+Subject: [RFC PATCH net-next v2 0/5] ice: L2TPv3 offload support
+Date:   Mon, 29 Aug 2022 11:44:07 +0200
+Message-Id: <20220829094412.554018-1-wojciech.drewek@intel.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 11:32:29 +0200
-From:   netdev@kapio-technology.com
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <Ywo16vHMqxxszWzX@shredder>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <Ywo16vHMqxxszWzX@shredder>
-User-Agent: Gigahost Webmail
-Message-ID: <42392a323bdc5324e1e4682fca378c90@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-27 17:19, Ido Schimmel wrote:
-> On Fri, Aug 26, 2022 at 01:45:33PM +0200, Hans Schultz wrote:
-> How about the below (untested):
-> 
-> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-> index 68b3e850bcb9..9143a94a1c57 100644
-> --- a/net/bridge/br_input.c
-> +++ b/net/bridge/br_input.c
-> @@ -109,9 +109,18 @@ int br_handle_frame_finish(struct net *net,
-> struct sock *sk, struct sk_buff *skb
->                 struct net_bridge_fdb_entry *fdb_src =
->                         br_fdb_find_rcu(br, eth_hdr(skb)->h_source, 
-> vid);
-> 
-> -               if (!fdb_src || READ_ONCE(fdb_src->dst) != p ||
-> -                   test_bit(BR_FDB_LOCAL, &fdb_src->flags))
-> +               if (!fdb_src) {
-> +                       if (p->flags & BR_PORT_MAB) {
-> +                               __set_bit(BR_FDB_ENTRY_LOCKED, &flags);
-> +                               br_fdb_update(br, p, 
-> eth_hdr(skb)->h_source,
-> +                                             vid, flags);
-> +                       }
-> +                       goto drop;
-> +               } else if (READ_ONCE(fdb_src->dst) != p ||
-> +                          test_bit(BR_FDB_LOCAL, &fdb_src->flags) ||
-> +                          test_bit(BR_FDB_LOCKED, &fdb_src->flags)) {
->                         goto drop;
-> +               }
->         }
-> 
-> The semantics are very clear, IMO. On FDB miss, add a locked FDB entry
-> and drop the packet. On FDB mismatch, drop the packet.
-> 
-> Entry can roam from an unauthorized port to an authorized port, but not
-> the other way around. Not sure what is the use case for allowing 
-> roaming
-> between unauthorized ports.
-> 
-> Note that with the above, locked entries are not refreshed and will
-> therefore age out unless replaced by user space.
-> 
+Add support for dissecting L2TPv3 session id in flow dissector. Add support
+for this field in tc-flower and support offloading L2TPv3. Finally, add
+support for hardware offload of L2TPv3 packets based on session id in
+switchdev mode in ice driver.
 
-Okay I was under the impression that entries should be able to roam 
-freely between authorized and unauthorized ports in the bridge as long 
-as the locked flag is on when roaming to the MAB enabled port. As you 
-know roaming is not a big issue with mv88e6xxx.
+Example filter:
+  # tc filter add dev $PF1 ingress prio 1 protocol ip \
+      flower \
+        ip_proto l2tp \
+        l2tpv3_sid 1234 \
+        skip_sw \
+      action mirred egress redirect dev $VF1_PR
 
-As I see this code, an entry cannot roam to an authorized port as there 
-is no update after the port mismatch check and the packet is dropped as 
-it should in this case in the locked section.
+Changes in iproute2 are required to use the new fields.
+
+ICE COMMS DDP package is required to create a filter in ice.
+COMMS DDP package contains profiles of more advanced protocols.
+Without COMMS DDP package hw offload will not work, however
+sw offload will still work.
+
+Marcin Szycik (1):
+  ice: Add L2TPv3 hardware offload support
+
+Wojciech Drewek (4):
+  uapi: move IPPROTO_L2TP to in.h
+  flow_dissector: Add L2TPv3 dissectors
+  net/sched: flower: Add L2TPv3 filter
+  flow_offload: Introduce flow_match_l2tpv3
+
+ .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
+ drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
+ drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
+ include/net/flow_dissector.h                  |  9 +++
+ include/net/flow_offload.h                    |  6 ++
+ include/uapi/linux/in.h                       |  2 +
+ include/uapi/linux/l2tp.h                     |  2 -
+ include/uapi/linux/pkt_cls.h                  |  2 +
+ net/core/flow_dissector.c                     | 28 ++++++++
+ net/core/flow_offload.c                       |  7 ++
+ net/sched/cls_flower.c                        | 16 +++++
+ 12 files changed, 179 insertions(+), 4 deletions(-)
+
+-- 
+2.31.1
 
