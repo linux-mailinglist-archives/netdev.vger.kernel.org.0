@@ -2,101 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A756D5A425A
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:36:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59D8B5A425F
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 07:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229600AbiH2FgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 01:36:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34980 "EHLO
+        id S229624AbiH2FhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 01:37:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229588AbiH2FgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:36:04 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B3517E36;
-        Sun, 28 Aug 2022 22:36:03 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id w196so9194241oiw.10;
-        Sun, 28 Aug 2022 22:36:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=YPIk4Y6Ukvku/o4Tv5ZXhZ7lEnBtiiRp5ib7DSWGFM8=;
-        b=Y2xNXQgUOvz57ZKdc/N+XMhEmLBm3bj1XlrpxOKnPOLBHuD5HmoY+DnVWRW0mN6ADh
-         VPvL08VGntcxFZlFmTsY0KVnEMpTn2crFVNbylHVURnsprc1R4w+ono9iXtTBWTwWyXU
-         x8EaxkKwqg9+puYxL/yEm3qTriPDWm74Z5kLYF+UgeKsEYEknMN/fCEXpHd8nt+8FljG
-         nzbWg/aQakThnqhYoMXVVZk+TTTYsKC/Pg2YtsoOh64hr86qXWJR1my4Z5l93GMcQr1G
-         fDMQleXph7i5wXyuigTsrEwfCeKUKZaIhPoezvyykO0QXPHnk1B0YvbB5JUSVdj3cIBl
-         Gsrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=YPIk4Y6Ukvku/o4Tv5ZXhZ7lEnBtiiRp5ib7DSWGFM8=;
-        b=GXZ1KWKE6DE4vGR59zTYfqeCGMYf/Vn7lyEpFWU4qUqklDF8QJ/hmGp9YuTuodGMtw
-         ut2Wpm+owjv0f7cliL4d2N3l7Sp//pmd8fZkXnSpzPpj9a20yosvy8CB32isicvnqvSj
-         5jahGgbDuK46hlGdmZyPucaUq86h18iSpS3uf9Jz0JzBMVAeaxyIFrqAYbNhLwOPf0Cr
-         h5wFarbEod7UiXyL72++sdIamxTkKakkhv3WqHXBOEmz8bKZWaL/HM3IbJihUCaVp3zv
-         J9zhKRQynKE7p4sPqwr/EVVRxsYUWcw+LBrC1pNaw3UOtQqGUym49Ekj9ZFB62O7xEFz
-         Q3hA==
-X-Gm-Message-State: ACgBeo0ZlAM11g2Km7RUXpdoNMTDQ9Un+wS6fEMyFnoJU3vT7baYIQg3
-        roEn2QUj3BxgIOzeq+RhhGsj17qXb/Y=
-X-Google-Smtp-Source: AA6agR4GofH7Oodg45bBR88TpKCljUFomt/mN0bMVxq3I+QI5h2I1XrvzY/CghUNf0ozvIqP0b/nsA==
-X-Received: by 2002:a05:6808:1594:b0:343:2e08:ceaf with SMTP id t20-20020a056808159400b003432e08ceafmr6448552oiw.181.1661751363041;
-        Sun, 28 Aug 2022 22:36:03 -0700 (PDT)
-Received: from localhost ([2600:1700:65a0:ab60:5e78:4de7:b681:c052])
-        by smtp.gmail.com with ESMTPSA id r65-20020a4a3744000000b00445313616aesm4592061oor.21.2022.08.28.22.36.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Aug 2022 22:36:02 -0700 (PDT)
-Date:   Sun, 28 Aug 2022 22:36:00 -0700
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org, toke@toke.dk,
-        jhs@mojatatu.com, jiri@resnulli.us, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        stephen@networkplumber.org, cake@lists.bufferbloat.net,
-        weiyongjun1@huawei.com, yuehaibing@huawei.com
-Subject: Re: [PATCH net-next] net: sched: remove redundant NULL check in
- change hook function
-Message-ID: <YwxQQOzw/dGKJKyB@pop-os.localdomain>
-References: <20220827014910.215062-1-shaozhengchao@huawei.com>
+        with ESMTP id S229457AbiH2FhN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 01:37:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCFB919C1B;
+        Sun, 28 Aug 2022 22:37:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AD6461011;
+        Mon, 29 Aug 2022 05:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1177C433D6;
+        Mon, 29 Aug 2022 05:37:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661751431;
+        bh=AQA+8MVuBm1m9fzmtwrEJo7mlb2Azsxin4LYiGaKpIk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=p/Suk4mvkxPk6oTLabA8smQe8SbKHOag2bcZg714x36x6ojtqwmjvvZb1QRS5YGXM
+         6rFXIzNH9Va92lj5EOnBENdtfG1PPM9uFyTBNngnwI0eylYhpMVBZqpB5KXCUS4mvO
+         nWc4O2c/dPtFehR598n/yoAIjBzHs00NFxdRLKlSUyUvE9PFeXnYl7rXUS5Y/d2/p4
+         wRK8SbLdCWNbb6aLRLKNMqys88naJm4trVL9ZLvvBpYPl3bmuPEpuOme4+IhFOga2b
+         mfbOKSIGGzBO+eySpnVnLhcO0hjebvwbi09AEQq4mcoDvUgmlIAZBNsSZlE9NcgHoL
+         0M+ncqbY5CtNw==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+Cc:     Alexander Potapenko <glider@google.com>,
+        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        phil@philpotter.co.uk, ath9k-devel@qca.qualcomm.com,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: KMSAN: uninit-value in ath9k_htc_rx_msg
+References: <000000000000c98a7f05ac744f53@google.com>
+        <000000000000734fe705acb9f3a2@google.com>
+        <a142d63c-7810-40ff-9c24-7160c63bafebn@googlegroups.com>
+        <CAG_fn=U=Vfv3ymNM6W++sbivieQoUuXfAxsC9SsmdtQiTjSi8g@mail.gmail.com>
+        <1a0b4d24-6903-464f-7af0-65c9788545af@I-love.SAKURA.ne.jp>
+        <CAG_fn=Wq51FMbty4c_RwjBSFWS1oceL1rOAUzCyRnGEzajQRAg@mail.gmail.com>
+        <878rnc8ghv.fsf@toke.dk>
+Date:   Mon, 29 Aug 2022 08:36:57 +0300
+In-Reply-To: <878rnc8ghv.fsf@toke.dk> ("Toke \=\?utf-8\?Q\?H\=C3\=B8iland-J\?\=
+ \=\?utf-8\?Q\?\=C3\=B8rgensen\=22's\?\= message of
+        "Thu, 25 Aug 2022 17:55:40 +0200")
+Message-ID: <87a67nhapy.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220827014910.215062-1-shaozhengchao@huawei.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 27, 2022 at 09:49:10AM +0800, Zhengchao Shao wrote:
-> Currently, the change function can be called by two ways. The one way is
-> that qdisc_change() will call it. Before calling change function,
-> qdisc_change() ensures tca[TCA_OPTIONS] is not empty. The other way is
-> that .init() will call it. The opt parameter is also checked before
-> calling change function in .init(). Therefore, it's no need to check the
-> input parameter opt in change function.
-> 
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@toke.dk> writes:
 
-Right.. but the one below:
+> Alexander Potapenko <glider@google.com> writes:
+>
+>> On Thu, Aug 25, 2022 at 4:34 PM Tetsuo Handa
+>> <penguin-kernel@i-love.sakura.ne.jp> wrote:
+>>>
+>>> Hello.
+>> Hi Tetsuo,
+>>
+>>> I found that your patch was applied. But since the reproducer tested on=
+ly 0 byte
+>>> case, I think that rejecting only less than sizeof(struct htc_frame_hdr=
+) bytes
+>>> is not sufficient.
+>>>
+>>> More complete patch with Ack from Toke is waiting at
+>>> https://lkml.kernel.org/r/7acfa1be-4b5c-b2ce-de43-95b0593fb3e5@I-love.S=
+AKURA.ne.jp .
+>>
+>> Thanks for letting me know! I just checked that your patch indeed
+>> fixes the issue I am facing.
+>> If it is more complete, I think we'd indeed better use yours.
+>
+> FWIW, that patch is just waiting for Kalle to apply it, and I just
+> noticed this whole thread has used his old email address, so updating
+> that now as a gentle ping :)
 
-> diff --git a/net/sched/sch_gred.c b/net/sched/sch_gred.c
-> index c50a0853dcb9..e23d3dbb7272 100644
-> --- a/net/sched/sch_gred.c
-> +++ b/net/sched/sch_gred.c
-> @@ -413,9 +413,6 @@ static int gred_change_table_def(struct Qdisc *sch, struct nlattr *dps,
->  	bool red_flags_changed;
->  	int i;
->  
-> -	if (!dps)
-> -		return -EINVAL;
-> -
+I was on vacation but back now, I'll start processing patches soon.
 
-I don't think anyone checks tb[TCA_GRED_DPS]. What you intended to patch
-is gred_change(), right?
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-Thanks.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
