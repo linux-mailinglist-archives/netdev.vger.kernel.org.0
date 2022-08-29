@@ -2,65 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D64335A45BF
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 082B45A45CE
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:14:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiH2JIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:08:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
+        id S229851AbiH2JO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:14:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229753AbiH2JIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:08:45 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58F15924C;
-        Mon, 29 Aug 2022 02:08:44 -0700 (PDT)
-Received: from [IPV6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98] (p200300e9d7011d41444abdf5adf89c98.dip0.t-ipconnect.de [IPv6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id DC52CC025B;
-        Mon, 29 Aug 2022 11:08:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1661764123;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kmK1xA3ChRDfbs0TeBtj2omjGednU5QOYRX/hf9CLvY=;
-        b=J+LMzCfIJh5USARdHZll17yWkpMM1GhQgg1nTknvtwECow/iAbAECbttAsIAccrGZEybGM
-        08W/WHkggZ3BtxYj//RWM4fb/HJ7zRB6Y786DRIVJdCcIhGmwBF9hOqB3EHiYEQtx4nJf1
-        L/kDChq0CZNHqnZFVvqJlUW3UDjwvwp9Xwk6Kj7wrHhoQmOouGtMbKsc11KOXl1vd/EkD5
-        57lfPrUI0d5A3Kjwtxv1JmNd/0MshTo44MWx4gNe10j4oUPvWttWBCmSkTQkpykLd9vK7o
-        ZhrrnBc7rnU9hF/WJFM1N7OaxgGCrlZ8n7U36me0IzjP8OQEopcpeu/qk9YV4g==
-Message-ID: <85f66a3a-95fa-5aaa-def0-998bf3f5139f@datenfreihafen.org>
-Date:   Mon, 29 Aug 2022 11:08:42 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
-Content-Language: en-US
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229556AbiH2JO0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:14:26 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263395A888;
+        Mon, 29 Aug 2022 02:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661764463; x=1693300463;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=SkoUiCpoaLtos4E0x642lOYDy66PcPTByQrF05aPtKw=;
+  b=Hq6j4yBUoW5re95Oy4CzPcpTQ26RwbaAN99ZAf368XHSraEQBjc82fQW
+   5z2+tXlOshDZY1YXJqJ4U4h8dqaFoucL2Hvecno9LZ9lXV6Xk1Y2agrkI
+   Djn3uVDyi6KAQsNl9lBjsqxb83myxbr6PeNTV2yzgBjAA30hG0E3qWWUc
+   sG7VdFa3saONO7495pbbGjqqsb91V8WzivM5NVLA03b8B7rtnfrefXliO
+   PUEfEyyNHHzf4ZkNLTj7MxM9xfPvIvdisjRMc4UprBMpXxRiAxUjpZTj9
+   FLipomQBqa+EYvK7QAjdLX76QNKjdODrAFWB7jRhnmoe/5FVkRWa3BjMh
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
+   d="scan'208";a="174590204"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2022 02:14:22 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 29 Aug 2022 02:14:22 -0700
+Received: from den-dk-m31857.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 29 Aug 2022 02:14:19 -0700
+Message-ID: <578bdccee9a92dd74bb6a1b87fb5011bf7279e57.camel@microchip.com>
+Subject: Re: [PATCH 1/3] reset: microchip-sparx5: issue a reset on startup
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     Michael Walle <michael@walle.cc>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Haimin Zhang <tcs_kernel@tencent.com>
-References: <20220822071902.3419042-1-tcs_kernel@tencent.com>
- <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org>
- <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+CC:     <UNGLinuxDriver@microchip.com>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Mon, 29 Aug 2022 11:14:18 +0200
+In-Reply-To: <20220826115607.1148489-2-michael@walle.cc>
+References: <20220826115607.1148489-1-michael@walle.cc>
+         <20220826115607.1148489-2-michael@walle.cc>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.4 
+MIME-Version: 1.0
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,53 +73,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Michael,
 
-Hello Alex.
+On Fri, 2022-08-26 at 13:56 +0200, Michael Walle wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know th=
+e content is safe
+>=20
+> Originally this was used in by the switch core driver to issue a reset.
+> But it turns out, this isn't just a switch core reset but instead it
+> will reset almost the complete SoC.
+>=20
+> Instead of adding almost all devices of the SoC a shared reset line,
+> issue the reset once early on startup. Keep the reset controller for
+> backwards compatibility, but make the actual reset a noop.
+>=20
+> Suggested-by: Philipp Zabel <p.zabel@pengutronix.de>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> =C2=A0drivers/reset/reset-microchip-sparx5.c | 22 +++++++++++++++++-----
+> =C2=A01 file changed, 17 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/reset/reset-microchip-sparx5.c b/drivers/reset/reset=
+-microchip-sparx5.c
+> index 00b612a0effa..f3528dd1d084 100644
+> --- a/drivers/reset/reset-microchip-sparx5.c
+> +++ b/drivers/reset/reset-microchip-sparx5.c
+> @@ -33,11 +33,8 @@ static struct regmap_config sparx5_reset_regmap_config=
+ =3D {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .reg_stride=C2=A0=C2=A0=C2=A0=
+=C2=A0 =3D 4,
+> =C2=A0};
+>=20
+> -static int sparx5_switch_reset(struct reset_controller_dev *rcdev,
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned long id)
+> +static int sparx5_switch_reset(struct mchp_reset_context *ctx)
+> =C2=A0{
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct mchp_reset_context *ctx =3D
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 container_of(rcdev, struct mchp_reset_context, rcdev);
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 val;
+>=20
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Make sure the core is PROTE=
+CTED from reset */
+> @@ -54,8 +51,14 @@ static int sparx5_switch_reset(struct reset_controller=
+_dev *rcdev,
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 1, 100);
+> =C2=A0}
+>=20
+> +static int sparx5_reset_noop(struct reset_controller_dev *rcdev,
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 unsigned long id)
+> +{
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return 0;
+> +}
+> +
+> =C2=A0static const struct reset_control_ops sparx5_reset_ops =3D {
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .reset =3D sparx5_switch_reset,
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 .reset =3D sparx5_reset_noop,
+> =C2=A0};
+>=20
+> =C2=A0static int mchp_sparx5_map_syscon(struct platform_device *pdev, cha=
+r *name,
+> @@ -122,6 +125,11 @@ static int mchp_sparx5_reset_probe(struct platform_d=
+evice *pdev)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ctx->rcdev.of_node =3D dn;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ctx->props =3D device_get_matc=
+h_data(&pdev->dev);
+>=20
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Issue the reset very early, our =
+actual reset callback is a noop. */
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 err =3D sparx5_switch_reset(ctx);
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (err)
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 return err;
+> +
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return devm_reset_controller_r=
+egister(&pdev->dev, &ctx->rcdev);
+> =C2=A0}
+>=20
+> @@ -163,6 +171,10 @@ static int __init mchp_sparx5_reset_init(void)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return platform_driver_registe=
+r(&mchp_sparx5_reset_driver);
+> =C2=A0}
+>=20
+> +/*
+> + * Because this is a global reset, keep this postcore_initcall() to issu=
+e the
+> + * reset as early as possible during the kernel startup.
+> + */
+> =C2=A0postcore_initcall(mchp_sparx5_reset_init);
+>=20
+> =C2=A0MODULE_DESCRIPTION("Microchip Sparx5 switch reset driver");
+> --
+> 2.30.2
+>=20
 
-On 23.08.22 14:22, Alexander Aring wrote:
-> Hi,
-> 
-> On Tue, Aug 23, 2022 at 5:42 AM Stefan Schmidt
-> <stefan@datenfreihafen.org> wrote:
->>
->> Hello.
->>
->> On 22.08.22 09:19, Haimin Zhang wrote:
->>> There is uninit value bug in dgram_sendmsg function in
->>> net/ieee802154/socket.c when the length of valid data pointed by the
->>> msg->msg_name isn't verified.
->>>
->>> This length is specified by msg->msg_namelen. Function
->>> ieee802154_addr_from_sa is called by dgram_sendmsg, which use
->>> msg->msg_name as struct sockaddr_ieee802154* and read it, that will
->>> eventually lead to uninit value read. So we should check the length of
->>> msg->msg_name is not less than sizeof(struct sockaddr_ieee802154)
->>> before entering the ieee802154_addr_from_sa.
->>>
->>> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
->>
->>
->> This patch has been applied to the wpan tree and will be
->> part of the next pull request to net. Thanks!
-> 
-> For me this patch is buggy or at least it is questionable how to deal
-> with the size of ieee802154_addr_sa here.
+Tested-by: Steen Hegelund <Steen.Hegelund@microchip.com> on Sparx5
 
-You are right. I completely missed this. Thanks for spotting!
-
-> There should be a helper to calculate the size which depends on the
-> addr_type field. It is not required to send the last 6 bytes if
-> addr_type is IEEE802154_ADDR_SHORT.
-> Nitpick is that we should check in the beginning of that function.
-
-Haimin, in ieee802154 we could have two different sizes for 
-ieee802154_addr_sa depending on the addr_type. We have short and 
-extended addresses.
-
-Could you please rework this patch to take this into account as Alex 
-suggested?
-
-I reverted your original patch from my tree.
-
-regards
-Stefan Schmidt
+BR
+Steen
