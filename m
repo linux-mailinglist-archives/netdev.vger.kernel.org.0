@@ -2,108 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0271A5A4BA3
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:25:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96D865A4B18
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 14:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230518AbiH2MZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 08:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34438 "EHLO
+        id S230072AbiH2MJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 08:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiH2MZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:25:25 -0400
-Received: from mailout-taastrup.gigahost.dk (mailout-taastrup.gigahost.dk [46.183.139.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1EB923F5;
-        Mon, 29 Aug 2022 05:09:16 -0700 (PDT)
-Received: from mailout.gigahost.dk (mailout.gigahost.dk [89.186.169.112])
-        by mailout-taastrup.gigahost.dk (Postfix) with ESMTP id 5AC4E1884942;
-        Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-Received: from smtp.gigahost.dk (smtp.gigahost.dk [89.186.169.109])
-        by mailout.gigahost.dk (Postfix) with ESMTP id 4B03125032B7;
-        Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-Received: by smtp.gigahost.dk (Postfix, from userid 1000)
-        id 42CC79EC0001; Mon, 29 Aug 2022 11:43:18 +0000 (UTC)
-X-Screener-Id: 413d8c6ce5bf6eab4824d0abaab02863e8e3f662
+        with ESMTP id S231896AbiH2MId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 08:08:33 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCFE923EC;
+        Mon, 29 Aug 2022 04:54:06 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id E2D7822CF;
+        Mon, 29 Aug 2022 13:43:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661773419;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGfXO8M5+5YvwKhNeBpH83lxpoFv1FGhpqzUTAy+muk=;
+        b=uY+mickqs0q3gOo6RsPw4cjvYLdsV+Xqw900xwmrhJAwo/T+cpIcPkiDjhePcPAVSnWFJ6
+        m0Vnd84Tcf6BZ4+o1n5NBnyJBcmgJJLD+oWlP+xYzRi/BRo3joG1aD+4koc6dIrw/cZE3k
+        E3BD1NcpHGbCW6gz4yEnupNMWo9RAvFYmdP3zM9uVLHcyMidjS9aN/0FHE3oiwEPPcJ+xT
+        ulO7DsVHtDIly1V9D5rzccMPJVau1BcKQSktzSFQ7vk7x8r0XLOdUWAifp1YHwy8QOnHHQ
+        JGOYPaa+uMvDHfkOQpMTX6Z0X/6S/cF0AWr1fzfU1zKaFOJCFxyUcuPGDusaRg==
 MIME-Version: 1.0
-Date:   Mon, 29 Aug 2022 13:43:18 +0200
-From:   netdev@kapio-technology.com
-To:     Nikolay Aleksandrov <razor@blackwall.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+Date:   Mon, 29 Aug 2022 13:43:38 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag to
- extend locked port feature
-In-Reply-To: <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
-User-Agent: Gigahost Webmail
-Message-ID: <e1e07c4ebdcc494d9a20d1a8ec398b48@kapio-technology.com>
-X-Sender: netdev@kapio-technology.com
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>
+Cc:     UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] reset: microchip-sparx5: fix the broken switch reset
+In-Reply-To: <20220826115607.1148489-1-michael@walle.cc>
+References: <20220826115607.1148489-1-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <1156fa93251e3d2d198ec27a671faad0@walle.cc>
+X-Sender: michael@walle.cc
 Content-Type: text/plain; charset=US-ASCII;
  format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
->> @@ -879,6 +888,10 @@ void br_fdb_update(struct net_bridge *br, struct 
->> net_bridge_port *source,
->>  						      &fdb->flags)))
->>  					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
->>  						  &fdb->flags);
->> +				if (source->flags & BR_PORT_MAB)
->> +					set_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
->> +				else
->> +					clear_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags);
-> Please add a test for that bit and only then change it.
+Am 2022-08-26 13:56, schrieb Michael Walle:
+> The reset which is used by the switch to reset the switch core has many
+> different side effects. It is not just a switch reset. Thus don't treat 
+> it
+> as one, but just issue the reset early during boot.
 > 
+> Michael Walle (3):
+>   reset: microchip-sparx5: issue a reset on startup
+>   dt-bindings: net: sparx5: don't require a reset line
+>   net: lan966x: make reset optional
+> 
+>  .../bindings/net/microchip,sparx5-switch.yaml |  2 --
+>  .../ethernet/microchip/lan966x/lan966x_main.c |  3 ++-
+>  drivers/reset/reset-microchip-sparx5.c        | 22 ++++++++++++++-----
+>  3 files changed, 19 insertions(+), 8 deletions(-)
 
-Okay, I have revised this part now. I hope that it is suitable?
+Philipp, you could just patch #1, I guess. I'd then
+resend patches #2 and #3 to the netdev ML targetting net-next.
+As long as the device tree itself isn't changed, there should
+be no dependency between these two.
 
-@@ -749,6 +756,10 @@ void br_fdb_update(struct net_bridge *br, struct 
-net_bridge_port *source,
-                                                       &fdb->flags)))
-                                         
-clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
-                                                   &fdb->flags);
-+                               /* Allow roaming from an unauthorized 
-port to an
-+                                * authorized port */
-+                               if 
-(unlikely(test_bit(BR_FDB_ENTRY_LOCKED, &fdb->flags)))
-+                                       clear_bit(BR_FDB_ENTRY_LOCKED, 
-&fdb->flags);
-                         }
-
-                         if (unlikely(test_bit(BR_FDB_ADDED_BY_USER, 
-&flags)))
-
+-michael
