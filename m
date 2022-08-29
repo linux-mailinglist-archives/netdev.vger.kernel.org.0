@@ -2,49 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBA055A45B3
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:06:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D64335A45BF
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 11:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiH2JGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 05:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
+        id S229883AbiH2JIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 05:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiH2JGO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:06:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D2BF1A3B7;
-        Mon, 29 Aug 2022 02:06:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S229753AbiH2JIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 05:08:45 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A58F15924C;
+        Mon, 29 Aug 2022 02:08:44 -0700 (PDT)
+Received: from [IPV6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98] (p200300e9d7011d41444abdf5adf89c98.dip0.t-ipconnect.de [IPv6:2003:e9:d701:1d41:444a:bdf5:adf8:9c98])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17C95B80DD6;
-        Mon, 29 Aug 2022 09:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0E61C433C1;
-        Mon, 29 Aug 2022 09:06:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661763970;
-        bh=YxiSEiU77AdSBWd5wKKmc+hVh2H8m4okfNHl0r7sunw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=dNgP346bm9X914Gn21n2UWqpMfES9xOcNa/OUgCvtGxwHG4B7Mytn1S6F+ACoxLp7
-         clMS0VATqpxjYpgxwxuasf3c1A810wm1hxCT2gZ5yT3eWZXsXVZU9pPPkplh4DZkam
-         9A7qVwdvWGh0XOuCRUDFBO3nn98XpslHPfA7ZAWwwlcV/cjkznTeHkd6cU1S2t3Hy3
-         yfUqNy01x41pTGXY6v1sNTCMLFRX0QWciTgvtFMPYZlEn+T61mI9WRofgaWASS2kRa
-         Al0cBVPCZKsup9wB4R8om+AIvQQyUVgHEn0OutaoLP2fa2z0IhXWiaTwNlV/RvrFO+
-         HX1anmVoIlk0g==
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Chris Mi <cmi@nvidia.com>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH mlx5-next] RDMA/mlx5: Move function mlx5_core_query_ib_ppcnt() to mlx5_ib
-Date:   Mon, 29 Aug 2022 12:06:04 +0300
-Message-Id: <fd47b9138412bd94ed30f838026cbb4cf3878150.1661763871.git.leonro@nvidia.com>
-X-Mailer: git-send-email 2.37.2
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id DC52CC025B;
+        Mon, 29 Aug 2022 11:08:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
+        s=2021; t=1661764123;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kmK1xA3ChRDfbs0TeBtj2omjGednU5QOYRX/hf9CLvY=;
+        b=J+LMzCfIJh5USARdHZll17yWkpMM1GhQgg1nTknvtwECow/iAbAECbttAsIAccrGZEybGM
+        08W/WHkggZ3BtxYj//RWM4fb/HJ7zRB6Y786DRIVJdCcIhGmwBF9hOqB3EHiYEQtx4nJf1
+        L/kDChq0CZNHqnZFVvqJlUW3UDjwvwp9Xwk6Kj7wrHhoQmOouGtMbKsc11KOXl1vd/EkD5
+        57lfPrUI0d5A3Kjwtxv1JmNd/0MshTo44MWx4gNe10j4oUPvWttWBCmSkTQkpykLd9vK7o
+        ZhrrnBc7rnU9hF/WJFM1N7OaxgGCrlZ8n7U36me0IzjP8OQEopcpeu/qk9YV4g==
+Message-ID: <85f66a3a-95fa-5aaa-def0-998bf3f5139f@datenfreihafen.org>
+Date:   Mon, 29 Aug 2022 11:08:42 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] net/ieee802154: fix uninit value bug in dgram_sendmsg
+Content-Language: en-US
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Haimin Zhang <tcs.kernel@gmail.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Haimin Zhang <tcs_kernel@tencent.com>
+References: <20220822071902.3419042-1-tcs_kernel@tencent.com>
+ <f7e87879-1ac6-65e5-5162-c251204f07d4@datenfreihafen.org>
+ <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+In-Reply-To: <CAK-6q+hf27dY9d-FyAh2GtA_zG5J4kkHEX2Qj38Rac_PH63bQg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -53,112 +68,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chris Mi <cmi@nvidia.com>
 
-This patch doesn't change any functionality, but move one function
-to mlx5_ib because it is not used by mlx5_core.
+Hello Alex.
 
-The actual fix is in the next patch.
+On 23.08.22 14:22, Alexander Aring wrote:
+> Hi,
+> 
+> On Tue, Aug 23, 2022 at 5:42 AM Stefan Schmidt
+> <stefan@datenfreihafen.org> wrote:
+>>
+>> Hello.
+>>
+>> On 22.08.22 09:19, Haimin Zhang wrote:
+>>> There is uninit value bug in dgram_sendmsg function in
+>>> net/ieee802154/socket.c when the length of valid data pointed by the
+>>> msg->msg_name isn't verified.
+>>>
+>>> This length is specified by msg->msg_namelen. Function
+>>> ieee802154_addr_from_sa is called by dgram_sendmsg, which use
+>>> msg->msg_name as struct sockaddr_ieee802154* and read it, that will
+>>> eventually lead to uninit value read. So we should check the length of
+>>> msg->msg_name is not less than sizeof(struct sockaddr_ieee802154)
+>>> before entering the ieee802154_addr_from_sa.
+>>>
+>>> Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
+>>
+>>
+>> This patch has been applied to the wpan tree and will be
+>> part of the next pull request to net. Thanks!
+> 
+> For me this patch is buggy or at least it is questionable how to deal
+> with the size of ieee802154_addr_sa here.
 
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/mad.c              | 25 +++++++++++++++++--
- .../net/ethernet/mellanox/mlx5/core/port.c    | 23 -----------------
- include/linux/mlx5/driver.h                   |  2 --
- 3 files changed, 23 insertions(+), 27 deletions(-)
+You are right. I completely missed this. Thanks for spotting!
 
-diff --git a/drivers/infiniband/hw/mlx5/mad.c b/drivers/infiniband/hw/mlx5/mad.c
-index 293ed709e5ed..d834ec13b1b3 100644
---- a/drivers/infiniband/hw/mlx5/mad.c
-+++ b/drivers/infiniband/hw/mlx5/mad.c
-@@ -147,6 +147,28 @@ static void pma_cnt_assign(struct ib_pma_portcounters *pma_cnt,
- 			     vl_15_dropped);
- }
- 
-+static int query_ib_ppcnt(struct mlx5_core_dev *dev, u8 port_num, void *out,
-+			  size_t sz)
-+{
-+	u32 *in;
-+	int err;
-+
-+	in  = kvzalloc(sz, GFP_KERNEL);
-+	if (!in) {
-+		err = -ENOMEM;
-+		return err;
-+	}
-+
-+	MLX5_SET(ppcnt_reg, in, local_port, port_num);
-+
-+	MLX5_SET(ppcnt_reg, in, grp, MLX5_INFINIBAND_PORT_COUNTERS_GROUP);
-+	err = mlx5_core_access_reg(dev, in, sz, out,
-+				   sz, MLX5_REG_PPCNT, 0, 0);
-+
-+	kvfree(in);
-+	return err;
-+}
-+
- static int process_pma_cmd(struct mlx5_ib_dev *dev, u32 port_num,
- 			   const struct ib_mad *in_mad, struct ib_mad *out_mad)
- {
-@@ -202,8 +224,7 @@ static int process_pma_cmd(struct mlx5_ib_dev *dev, u32 port_num,
- 			goto done;
- 		}
- 
--		err = mlx5_core_query_ib_ppcnt(mdev, mdev_port_num,
--					       out_cnt, sz);
-+		err = query_ib_ppcnt(mdev, mdev_port_num, out_cnt, sz);
- 		if (!err)
- 			pma_cnt_assign(pma_cnt, out_cnt);
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/port.c b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-index e1bd54574ea5..a1548e6bfb35 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/port.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/port.c
-@@ -493,29 +493,6 @@ int mlx5_query_port_vl_hw_cap(struct mlx5_core_dev *dev,
- }
- EXPORT_SYMBOL_GPL(mlx5_query_port_vl_hw_cap);
- 
--int mlx5_core_query_ib_ppcnt(struct mlx5_core_dev *dev,
--			     u8 port_num, void *out, size_t sz)
--{
--	u32 *in;
--	int err;
--
--	in  = kvzalloc(sz, GFP_KERNEL);
--	if (!in) {
--		err = -ENOMEM;
--		return err;
--	}
--
--	MLX5_SET(ppcnt_reg, in, local_port, port_num);
--
--	MLX5_SET(ppcnt_reg, in, grp, MLX5_INFINIBAND_PORT_COUNTERS_GROUP);
--	err = mlx5_core_access_reg(dev, in, sz, out,
--				   sz, MLX5_REG_PPCNT, 0, 0);
--
--	kvfree(in);
--	return err;
--}
--EXPORT_SYMBOL_GPL(mlx5_core_query_ib_ppcnt);
--
- static int mlx5_query_pfcc_reg(struct mlx5_core_dev *dev, u32 *out,
- 			       u32 out_size)
- {
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 96b16fbe1aa4..9ccfd9dd0d0f 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1084,8 +1084,6 @@ int mlx5_core_destroy_psv(struct mlx5_core_dev *dev, int psv_num);
- void mlx5_core_put_rsc(struct mlx5_core_rsc_common *common);
- int mlx5_query_odp_caps(struct mlx5_core_dev *dev,
- 			struct mlx5_odp_caps *odp_caps);
--int mlx5_core_query_ib_ppcnt(struct mlx5_core_dev *dev,
--			     u8 port_num, void *out, size_t sz);
- 
- int mlx5_init_rl_table(struct mlx5_core_dev *dev);
- void mlx5_cleanup_rl_table(struct mlx5_core_dev *dev);
--- 
-2.37.2
+> There should be a helper to calculate the size which depends on the
+> addr_type field. It is not required to send the last 6 bytes if
+> addr_type is IEEE802154_ADDR_SHORT.
+> Nitpick is that we should check in the beginning of that function.
 
+Haimin, in ieee802154 we could have two different sizes for 
+ieee802154_addr_sa depending on the addr_type. We have short and 
+extended addresses.
+
+Could you please rework this patch to take this into account as Alex 
+suggested?
+
+I reverted your original patch from my tree.
+
+regards
+Stefan Schmidt
