@@ -2,70 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D5715A4D5E
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 15:16:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251DE5A4D1F
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 15:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230119AbiH2NP5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 09:15:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36916 "EHLO
+        id S230314AbiH2NLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 09:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230134AbiH2NPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 09:15:17 -0400
-X-Greylist: delayed 367 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 29 Aug 2022 06:14:39 PDT
-Received: from vigilant-mayer.142-93-222-223.plesk.page (unknown [142.93.222.223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F7627E80C
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 06:14:38 -0700 (PDT)
-Received: by vigilant-mayer.142-93-222-223.plesk.page (Postfix, from userid 10000)
-        id 13182801E0; Mon, 29 Aug 2022 18:38:30 +0530 (IST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mahalaxmicomforts.in; s=default; t=1661778510;
-        bh=ND5AOm67fsxqsS67IIcME2voQIrfvmX0Amq3UNP4fq0=; h=To:Subject:From;
-        b=R8hkLrT77slTWAfKD6zfN2t4ONoRj9RvgApAaimBcb3kEr4bvzMC6ENwlYL+lrmRe
-         wwNWn0rXYKA3/0Qs5nDgOH8+Uebhptn8pa8BYXECIs5FgGOyfZ9UQ/DJ5tDrhN9H5X
-         WEmqZs4ZtlToWbMt40PLDyLbQBvafGuOnZOv6AWA=
-To:     netdev@vger.kernel.org
-Subject: =?us-ascii?Q?Telegram:_TOP_3_Handelsroboter,
- _die_Menschen_zu?=  =?us-ascii?Q?_Millionaren_machen?=
-Date:   Mon, 29 Aug 2022 13:08:29 +0000
-From:   WordPress <admin@mahalaxmicomforts.in>
-Message-ID: <aodFvnQbOmyoDVNLBjZhDsRVNgmvWoLzvwDUOPWZIk@mahalaxmicomforts.in>
-X-Mailer: PHPMailer 6.5.3 (https://github.com/PHPMailer/PHPMailer)
+        with ESMTP id S229709AbiH2NLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 09:11:12 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B231096;
+        Mon, 29 Aug 2022 06:10:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yMN137tQOiEvCCugp8sfYuKyYpdctIsrHd3N7Y4xCc0=; b=HVYaRpe8Vtcbr+q8D2qz1UeUrA
+        ApHFNDSSLiZ2wHmuhVzqrwsX3/lNtzgjy/UfWdtupPVPxRrTOUiJuhkupRQLkVKQAn5caCje96480
+        Jt6vaOzi/UHjLAUwOE6YQS/xoYJS+7yuuGDVJzOZyCdBcqxdlgWItzVchN/4+JQlW3Y8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oSeWZ-00ExtK-M7; Mon, 29 Aug 2022 15:09:55 +0200
+Date:   Mon, 29 Aug 2022 15:09:55 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Anand Moon <anand@edgeble.ai>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Sugar Zhang <sugar.zhang@rock-chips.com>,
+        David Wu <david.wu@rock-chips.com>,
+        Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126
+ support
+Message-ID: <Ywy6o2d9j4Z7+WYX@lunn.ch>
+References: <20220829065044.1736-1-anand@edgeble.ai>
+ <20220829065044.1736-2-anand@edgeble.ai>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-PPP-Message-ID: <166177851003.469166.2252683266342124108@vigilant-mayer.142-93-222-223.plesk.page>
-X-PPP-Vhost: mahalaxmicomforts.in
-X-Spam-Status: Yes, score=7.9 required=5.0 tests=BAD_ENC_HEADER,BAYES_50,
-        DKIM_INVALID,DKIM_SIGNED,RCVD_IN_VALIDITY_RPBL,RDNS_NONE,
-        SCC_BODY_URI_ONLY,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
-        URIBL_DBL_SPAM,URIBL_PH_SURBL autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: *  2.5 URIBL_DBL_SPAM Contains a spam URL listed in the Spamhaus DBL
-        *      blocklist
-        *      [URIs: booclothing.com]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 BAD_ENC_HEADER Message has bad MIME encoding in the header
-        *  0.6 URIBL_PH_SURBL Contains an URL listed in the PH SURBL blocklist
-        *      [URIs: booclothing.com]
-        *  1.3 RCVD_IN_VALIDITY_RPBL RBL: Relay in Validity RPBL,
-        *      https://senderscore.org/blocklistlookup/
-        *      [142.93.222.223 listed in bl.score.senderscore.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 SPF_NONE SPF: sender does not publish an SPF Record
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.8 RDNS_NONE Delivered to internal network by a host with no rDNS
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.1 DKIM_INVALID DKIM or DK signature exists, but is not valid
-        *  1.7 SCC_BODY_URI_ONLY No description available.
-X-Spam-Level: *******
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829065044.1736-2-anand@edgeble.ai>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jamestoice
-Telegram: TOP 3 Handelsroboter, die Menschen zu Millionaren machen
-Sind Sie es leid, in Schulden zu leben? Es gibt einen Ausweg und es ist sehr einfach. http://6000-bitcoin-to-usd.booclothing.com/dayli-news-2542
+On Mon, Aug 29, 2022 at 06:50:42AM +0000, Anand Moon wrote:
+> Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
+> via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
+> 
+> This patch adds rv1126 support by adding delay lines of M0 and M1
+> simultaneously.
 
+What does 'delay lines' mean with respect to RGMII?
+
+The RGMII signals need a 2ns delay between the clock and the data
+lines. There are three places this can happen:
+
+1) In the PHY
+2) Extra long lines on the PCB
+3) In the MAC
+
+Generally, 1) is used, and controlled via phy-mode. A value of
+PHY_INTERFACE_MODE_RGMII_ID passed to the PHY driver means it will add
+these delays.
+
+You don't want both the MAC and the PHY adding delays.
+
+    Andrew
