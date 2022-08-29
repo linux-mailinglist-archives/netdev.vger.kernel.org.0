@@ -2,52 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD4C5A4733
-	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 12:32:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 180555A479B
+	for <lists+netdev@lfdr.de>; Mon, 29 Aug 2022 12:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbiH2KcO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 06:32:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37676 "EHLO
+        id S229761AbiH2Kws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 06:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229487AbiH2KcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 06:32:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C54858B7D;
-        Mon, 29 Aug 2022 03:32:13 -0700 (PDT)
+        with ESMTP id S229658AbiH2Kwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 06:52:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECD85D113;
+        Mon, 29 Aug 2022 03:52:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB1BF6108B;
-        Mon, 29 Aug 2022 10:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60AAC433D6;
-        Mon, 29 Aug 2022 10:32:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661769132;
-        bh=TR5k2Yh8gwGWFbzhitEfL7Rh1/zEpiSLk+TrzVaWXOI=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=HTMjuFBy6+vGraHsxJBXt61FOrZE16rCSuDIX7J9zsNP2dAfbVPhBN2fCuk+cUc6p
-         XzIGM35vwf3hugYZM/x+xlkdAOEEgAQQymtIi+eiuEszD0cssDnMZ6EBKOJpy64nyw
-         VZocptAW0fki4n5/eIVIPYhc+LchLbDuMu7IXvxjqfi2PHHHbFreCrgxkZesagAzqD
-         02vg4VIaL/JIfX8D+TgaSN/MQmVD1CpDflxZSBDbXeGX5/S7Tvi39cnVClOUyeiAvH
-         RCfc3377H6dALCZXOiswrcwKSUxQZffetMqzbCnn4umcysouB99Bq7hc5i6FfBwqt4
-         bQ5uw3PFBmo8w==
-From:   Kalle Valo <kvalo@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 414D4B80EB7;
+        Mon, 29 Aug 2022 10:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 615A6C433C1;
+        Mon, 29 Aug 2022 10:52:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1661770364;
+        bh=/qIsYw7pC3OIg+O4ZZaXLIShhig52gT7JK1V5dIC2aQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bW5qBkU/BjWLkoMTqUDhSWImKCsyGqCJ7COVb5SVLcYf+AJvg5pmWK72NW2LED9H8
+         aB+Bbi2Ynuaeyr3Iog1aOr1Z+5+6VrHtFfV1/zYYwNz7YuOopg8eAKufS6BRNYsLtb
+         1Qur/6PmQyPO0Lm4KtTEdnfKZkfACECueXrCokcw=
+Date:   Mon, 29 Aug 2022 12:52:40 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Mazin Al Haddad <mazinalhaddad05@gmail.com>
-Cc:     pontus.fuchs@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        skhan@linuxfoundation.org,
-        syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
+Cc:     pontus.fuchs@gmail.com, netdev@vger.kernel.org, kvalo@kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        edumazet@google.com,
+        syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel-mentees@lists.linuxfoundation.org, davem@davemloft.net
 Subject: Re: [PATCH v3] ar5523: check endpoints type and direction in probe()
+Message-ID: <YwyaeNX2vYcHttfU@kroah.com>
 References: <20220827110148.203104-1-mazinalhaddad05@gmail.com>
-Date:   Mon, 29 Aug 2022 13:32:06 +0300
-In-Reply-To: <20220827110148.203104-1-mazinalhaddad05@gmail.com> (Mazin Al
-        Haddad's message of "Sat, 27 Aug 2022 14:01:49 +0300")
-Message-ID: <871qszibmh.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220827110148.203104-1-mazinalhaddad05@gmail.com>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,16 +54,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mazin Al Haddad <mazinalhaddad05@gmail.com> writes:
-
+On Sat, Aug 27, 2022 at 02:01:49PM +0300, Mazin Al Haddad wrote:
 > Fixes a bug reported by syzbot, where a warning occurs in usb_submit_urb()
 > due to the wrong endpoint type. There is no check for both the number
 > of endpoints and the type.
->
+> 
 > Fix it by adding a check for the number of endpoints and the
 > direction/type of the endpoints. If the endpoints do not match -ENODEV is
 > returned.
->
+> 
 > usb 1-1: BOGUS urb xfer, pipe 3 != type 1
 > WARNING: CPU: 1 PID: 71 at drivers/usb/core/urb.c:502 usb_submit_urb+0xed2/0x18a0 drivers/usb/core/urb.c:502
 > Modules linked in:
@@ -80,14 +75,74 @@ Mazin Al Haddad <mazinalhaddad05@gmail.com> writes:
 >  ar5523_cmd_read drivers/net/wireless/ath/ar5523/ar5523.c:302 [inline]
 >  ar5523_host_available drivers/net/wireless/ath/ar5523/ar5523.c:1376 [inline]
 >  ar5523_probe+0xc66/0x1da0 drivers/net/wireless/ath/ar5523/ar5523.c:1655
->
+> 
 > Link: https://syzkaller.appspot.com/bug?extid=1bc2c2afd44f820a669f
 > Reported-and-tested-by: syzbot+1bc2c2afd44f820a669f@syzkaller.appspotmail.com
 > Signed-off-by: Mazin Al Haddad <mazinalhaddad05@gmail.com>
+> ---
+> v2->v3 changes:
+>  - Make use of helper functions instead of checking for direction
+> 	 and type manually. 
+> 
+>  drivers/net/wireless/ath/ar5523/ar5523.c | 38 ++++++++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+> 
+> diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+> index 6f937d2cc126..69979e8f99fd 100644
+> --- a/drivers/net/wireless/ath/ar5523/ar5523.c
+> +++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+> @@ -1581,8 +1581,46 @@ static int ar5523_probe(struct usb_interface *intf,
+>  	struct usb_device *dev = interface_to_usbdev(intf);
+>  	struct ieee80211_hw *hw;
+>  	struct ar5523 *ar;
+> +	struct usb_host_interface *host = intf->cur_altsetting;
+> +	struct usb_endpoint_descriptor *cmd_tx, *cmd_rx, *data_tx, *data_rx;
+>  	int error = -ENOMEM;
+>  
+> +	if (host->desc.bNumEndpoints != 4) {
+> +		dev_err(&dev->dev, "Wrong number of endpoints\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	for (int i = 0; i < host->desc.bNumEndpoints; ++i) {
+> +		struct usb_endpoint_descriptor *ep = &host->endpoint[i].desc;
+> +
+> +		if (usb_endpoint_is_bulk_out(ep)) {
+> +			if (!cmd_tx) {
+> +				if (ep->bEndpointAddress == AR5523_CMD_TX_PIPE)
+> +					cmd_tx = ep;
+> +			}
+> +			if (!data_tx) {
+> +				if (ep->bEndpointAddress == AR5523_DATA_TX_PIPE)
+> +					data_tx = ep;
+> +				}
+> +		}
+> +
+> +		if (usb_endpoint_is_bulk_in(ep)) {
+> +			if (!cmd_rx) {
+> +				if (ep->bEndpointAddress == AR5523_CMD_RX_PIPE)
+> +					cmd_rx = ep;
+> +			}
+> +			if (!data_rx) {
+> +				if (ep->bEndpointAddress == AR5523_DATA_RX_PIPE)
+> +					data_rx = ep;
+> +			}
+> +		}
+> +	}
+> +
+> +	if (!cmd_tx || !data_tx || !cmd_rx || !data_rx) {
+> +		dev_warn("wrong number of endpoints\n");
+> +		return -ENODEV;
+> +	}
 
-Has this been tested on a real ar5523 hardware?
+So you save off all of these values, and then do not use them anywhere?
+Why not properly save them to the device structure and then you can get
+rid of the odd ar5523_cmd_tx_pipe() macros?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Also, I don't see why you can't use the USB core function for finding
+endpoints, all you want is the first 2 bulk in and 2 bulk out, that
+should be much simpler to use than the above long codebase.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+thanks,
+
+greg k-h
