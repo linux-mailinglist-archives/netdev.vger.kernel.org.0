@@ -2,88 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37B1F5A6649
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:29:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472A05A6659
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:32:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiH3O3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 10:29:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S230248AbiH3Ocb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 10:32:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiH3O3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:29:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857F861D96
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 07:29:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661869777;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lmXShkPGu5qohlisPijwUoqxiVIKAZ+9/TfZzFh7608=;
-        b=eAZwpzBRq66v6mdO4T8oG9UPPoc/kb9yp97P6UazL9CpW8F5dQPmFTyKof7svpybYwCxjO
-        m2b79YQUVHj7uFoxT+IilbO5glGjw3scJH5NJOb17zjbqbOZH5lekyMIBKZ34fvnH1Sgoo
-        qBe3ZNJx8MgFKh7chIOYczlZDBoy+Zo=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-274-9M5JOG0_OPSMGCsuVxa0rQ-1; Tue, 30 Aug 2022 10:29:36 -0400
-X-MC-Unique: 9M5JOG0_OPSMGCsuVxa0rQ-1
-Received: by mail-pj1-f71.google.com with SMTP id g9-20020a17090a290900b001fd59cc2c14so4921400pjd.7
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 07:29:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=lmXShkPGu5qohlisPijwUoqxiVIKAZ+9/TfZzFh7608=;
-        b=ljslbkBb7Agawonij26NlyLWBIPTZoX4qmumReAEqn7aH39o07tL1zaXGbTRR7kdS2
-         PKCcWxSj1zirBh0t/iOGqQN6z9ltN/tmiYtGg8odAcGL80x7F8y0C8A0dPPPX7TqsBt6
-         AUWnXcv5yBskG+s34mG1Ocp3uFcnSYohf9eTQisONW17HwrpqmmiOcpOs98BMmJxyW2S
-         DdGE4V640FyN/Vx6KuDDb1lRJZ2QaEmfhhqmaQmlS7whHflmhjV0l6enrfStqrPUukgM
-         8YgFto92I+OVxu2X7DuCQGp22tY9WNhWqFbkaXQ+gKoPFHFpwCppLsJDCIe02qSUmXMR
-         5Mtw==
-X-Gm-Message-State: ACgBeo3EAu2YNLRlHwpRcRAjcCf60jimzYIskr6HakpLvYAdwsplr/IJ
-        Pg89XeagoBMUmqZs3yqRpFe3cRs1crX9aC9HrdgiTjpOodeeQqAX+/R11MgSoCFBOLVxyc6RmX0
-        DB4kFr4E2fGCG1RGXdesEdsTDhIX1+Tst
-X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id k11-20020a63d10b000000b0041dbd7d7759mr18107751pgg.196.1661869775388;
-        Tue, 30 Aug 2022 07:29:35 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6ZkHiVpznHXYfoQbkr7dm3Zi5mkVALp/HWJ4F89gPVcA8KOGuI5YxXe4p2AipIfQA48i4dFJ6SAqik3HjUw/A=
-X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id
- k11-20020a63d10b000000b0041dbd7d7759mr18107710pgg.196.1661869775042; Tue, 30
- Aug 2022 07:29:35 -0700 (PDT)
+        with ESMTP id S229607AbiH3Oc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:32:27 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211AEB4418;
+        Tue, 30 Aug 2022 07:32:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661869946; x=1693405946;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TOi0v9SkYKwWc+jiFkG96rSe/DF4YstNR/7kmvZAV0g=;
+  b=J9D+fEPwT1P2nQexckwBdR/F8NlzdOSbxsscshQBrwOdZcjwCmyivov5
+   aq0pcLKag6/npcg29kNb+ASri/qYdcTbrXSXk8UP/uci3G2lG3oEBk4+J
+   VVsr4AhmLGK4Qo/bmQZ/a5lTQlAFAbEV2OQd1wUY2ALa9flKfmM0OfiYl
+   SarlYZKGjlI9LAP+wRdy34+7tdCrPr668NnzAe+vOlK1LpLANYPxRjXRe
+   Jd9rRMkG2yqPok7pYByefMuV+BVSwd/QHt2rWny9dLmDSOM3JcfM7y+2R
+   EUncPRxz+H8gRv2Px47kFUqDzpZtxQmPctp5+YmgkiJloxYE5acjH4MmB
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="295190437"
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="295190437"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 07:32:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,275,1654585200"; 
+   d="scan'208";a="701002188"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by FMSMGA003.fm.intel.com with ESMTP; 30 Aug 2022 07:32:21 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oT2Hs-0000KL-0j;
+        Tue, 30 Aug 2022 14:32:20 +0000
+Date:   Tue, 30 Aug 2022 22:31:32 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     liuyacan@corp.netease.com, kgraul@linux.ibm.com,
+        davem@davemloft.net, wenjia@linux.ibm.com, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     kbuild-all@lists.01.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liuyacan <liuyacan@corp.netease.com>
+Subject: Re: [PATCH net] net/smc: Fix possible access to freed memory in link
+ clear
+Message-ID: <202208302233.4HlN35vT-lkp@intel.com>
+References: <20220829145435.2756430-1-liuyacan@corp.netease.com>
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
- <20220824134055.1328882-2-benjamin.tissoires@redhat.com> <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
- <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
-In-Reply-To: <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Tue, 30 Aug 2022 16:29:23 +0200
-Message-ID: <CAO-hwJLd9wXx+ppccBYPKZDymO0sk++Nt2E3-R97PY7LbfJfTg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
- read user provided context
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220829145435.2756430-1-liuyacan@corp.netease.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -92,201 +67,263 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 3:51 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Fri, 26 Aug 2022 at 03:42, Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
-> >
-> > On Wed, Aug 24, 2022 at 6:41 AM Benjamin Tissoires
-> > <benjamin.tissoires@redhat.com> wrote:
-> > >
-> > > When a function was trying to access data from context in a syscall eBPF
-> > > program, the verifier was rejecting the call unless it was accessing the
-> > > first element.
-> > > This is because the syscall context is not known at compile time, and
-> > > so we need to check this when actually accessing it.
-> > >
-> > > Check for the valid memory access if there is no convert_ctx callback,
-> > > and allow such situation to happen.
-> > >
-> > > There is a slight hiccup with subprogs. btf_check_subprog_arg_match()
-> > > will check that the types are matching, which is a good thing, but to
-> > > have an accurate result, it hides the fact that the context register may
-> > > be null. This makes env->prog->aux->max_ctx_offset being set to the size
-> > > of the context, which is incompatible with a NULL context.
-> > >
-> > > Solve that last problem by storing max_ctx_offset before the type check
-> > > and restoring it after.
-> > >
-> > > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> > >
-> > > ---
-> > >
-> > > changes in v9:
-> > > - rewrote the commit title and description
-> > > - made it so all functions can make use of context even if there is
-> > >   no convert_ctx
-> > > - remove the is_kfunc field in bpf_call_arg_meta
-> > >
-> > > changes in v8:
-> > > - fixup comment
-> > > - return -EACCESS instead of -EINVAL for consistency
-> > >
-> > > changes in v7:
-> > > - renamed access_t into atype
-> > > - allow zero-byte read
-> > > - check_mem_access() to the correct offset/size
-> > >
-> > > new in v6
-> > > ---
-> > >  kernel/bpf/btf.c      | 11 ++++++++++-
-> > >  kernel/bpf/verifier.c | 19 +++++++++++++++++++
-> > >  2 files changed, 29 insertions(+), 1 deletion(-)
-> > >
-> > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > > index 903719b89238..386300f52b23 100644
-> > > --- a/kernel/bpf/btf.c
-> > > +++ b/kernel/bpf/btf.c
-> > > @@ -6443,8 +6443,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
-> > >  {
-> > >         struct bpf_prog *prog = env->prog;
-> > >         struct btf *btf = prog->aux->btf;
-> > > +       u32 btf_id, max_ctx_offset;
-> > >         bool is_global;
-> > > -       u32 btf_id;
-> > >         int err;
-> > >
-> > >         if (!prog->aux->func_info)
-> > > @@ -6457,9 +6457,18 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
-> > >         if (prog->aux->func_info_aux[subprog].unreliable)
-> > >                 return -EINVAL;
-> > >
-> > > +       /* subprogs arguments are not actually accessing the data, we need
-> > > +        * to check for the types if they match.
-> > > +        * Store the max_ctx_offset and restore it after btf_check_func_arg_match()
-> > > +        * given that this function will have a side effect of changing it.
-> > > +        */
-> > > +       max_ctx_offset = env->prog->aux->max_ctx_offset;
-> > > +
-> > >         is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
-> > >         err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
-> > >
-> > > +       env->prog->aux->max_ctx_offset = max_ctx_offset;
-> >
-> > I don't understand this.
-> > If we pass a ctx into a helper and it's going to
-> > access [0..N] bytes from it why do we need to hide it?
-> > max_ctx_offset will be used later raw_tp, tp, syscall progs
-> > to determine whether it's ok to load them.
-> > By hiding the actual size of access somebody can construct
-> > a prog that reads out of bounds.
-> > How is this related to NULL-ness property?
->
-> Same question, was just typing exactly the same thing.
+Hi,
 
-The test I have that is failing in patch 2/23 is the following, with
-args being set to NULL by userspace:
+Thank you for the patch! Yet something to improve:
 
-SEC("syscall")
-int kfunc_syscall_test_null(struct syscall_test_args *args)
-{
-       bpf_kfunc_call_test_mem_len_pass1(args, 0);
+[auto build test ERROR on net/master]
 
-       return 0;
-}
+url:    https://github.com/intel-lab-lkp/linux/commits/liuyacan-corp-netease-com/net-smc-Fix-possible-access-to-freed-memory-in-link-clear/20220829-231821
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git cb10b0f91c5f76de981ef927e7dadec60c5a5d96
+config: arm64-randconfig-r005-20220830 (https://download.01.org/0day-ci/archive/20220830/202208302233.4HlN35vT-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f8be00c954c559c7ae24f34abade4faebc350ec9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review liuyacan-corp-netease-com/net-smc-Fix-possible-access-to-freed-memory-in-link-clear/20220829-231821
+        git checkout f8be00c954c559c7ae24f34abade4faebc350ec9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash net/smc/
 
-Basically:
-if userspace declares the following:
- DECLARE_LIBBPF_OPTS(bpf_test_run_opts, syscall_topts,
-               .ctx_in = NULL,
-               .ctx_size_in = 0,
-       );
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-The verifier is happy with the current released kernel:
-kfunc_syscall_test_fail() never dereferences the ctx pointer, it just
-passes it around to bpf_kfunc_call_test_mem_len_pass1(), which in turn
-is also happy because it says it is not accessing the data at all (0
-size memory parameter).
+All errors (new ones prefixed by >>):
 
-In the current code, check_helper_mem_access() actually returns
--EINVAL, but doesn't change max_ctx_offset (it's still at the value of
-0 here). The program is now marked as unreliable, but the verifier
-goes on.
+   net/smc/smc_wr.c: In function 'smc_wr_rx_process_cqes':
+>> net/smc/smc_wr.c:468:60: error: invalid type argument of '->' (have 'struct ib_wc')
+     468 |                                 if (link->clearing && wc[i]->wr_id == link->wr_rx_id) {
+         |                                                            ^~
+   In file included from net/smc/smc_wr.c:27:
+   net/smc/smc_wr.c: In function 'smc_wr_drain_cq':
+>> net/smc/smc_wr.c:641:48: error: 'struct smc_link' has no member named 'drained'; did you mean 'rx_drained'?
+     641 |                                          (lnk->drained == 1),
+         |                                                ^~~~~~~
+   include/linux/wait.h:276:24: note: in definition of macro '___wait_cond_timeout'
+     276 |         bool __cond = (condition);                                              \
+         |                        ^~~~~~~~~
+   net/smc/smc_wr.c:640:9: note: in expansion of macro 'wait_event_interruptible_timeout'
+     640 |         wait_event_interruptible_timeout(lnk->wr_rx_drain_wait,
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> net/smc/smc_wr.c:641:48: error: 'struct smc_link' has no member named 'drained'; did you mean 'rx_drained'?
+     641 |                                          (lnk->drained == 1),
+         |                                                ^~~~~~~
+   include/linux/wait.h:310:21: note: in definition of macro '___wait_event'
+     310 |                 if (condition)                                                  \
+         |                     ^~~~~~~~~
+   include/linux/wait.h:506:32: note: in expansion of macro '___wait_cond_timeout'
+     506 |         ___wait_event(wq_head, ___wait_cond_timeout(condition),                 \
+         |                                ^~~~~~~~~~~~~~~~~~~~
+   include/linux/wait.h:535:25: note: in expansion of macro '__wait_event_interruptible_timeout'
+     535 |                 __ret = __wait_event_interruptible_timeout(wq_head,             \
+         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   net/smc/smc_wr.c:640:9: note: in expansion of macro 'wait_event_interruptible_timeout'
+     640 |         wait_event_interruptible_timeout(lnk->wr_rx_drain_wait,
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When adding this patch, if we declare a syscall eBPF (or any other
-function that doesn't have env->ops->convert_ctx_access), the previous
-"test" is failing because this ensures the syscall program has to have
-a valid ctx pointer.
-btf_check_func_arg_match() now calls check_mem_access() which
-basically validates the fact that the program can dereference the ctx.
 
-So now, without the max_ctx_offset store/restore, the verifier
-enforces that the provided ctx is not null.
+vim +468 net/smc/smc_wr.c
 
-What I thought that would happen was that if we were to pass a NULL
-context from userspace, but the eBPF program dereferences it (or in
-that case have a subprog or a function call that dereferences it),
-then max_ctx_offset would still be set to the proper value because of
-that internal dereference, and so the verifier would reject with
--EINVAL the call to the eBPF program.
+   449	
+   450	static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
+   451	{
+   452		struct smc_link *link;
+   453		int i;
+   454	
+   455		for (i = 0; i < num; i++) {
+   456			link = wc[i].qp->qp_context;
+   457			if (wc[i].status == IB_WC_SUCCESS) {
+   458				link->wr_rx_tstamp = jiffies;
+   459				smc_wr_rx_demultiplex(&wc[i]);
+   460				smc_wr_rx_post(link); /* refill WR RX */
+   461			} else {
+   462				/* handle status errors */
+   463				switch (wc[i].status) {
+   464				case IB_WC_RETRY_EXC_ERR:
+   465				case IB_WC_RNR_RETRY_EXC_ERR:
+   466				case IB_WC_WR_FLUSH_ERR:
+   467					smcr_link_down_cond_sched(link);
+ > 468					if (link->clearing && wc[i]->wr_id == link->wr_rx_id) {
+   469						link->rx_drained = 1;
+   470						wake_up(&link->wr_rx_drain_wait);
+   471					}
+   472					break;
+   473				default:
+   474					smc_wr_rx_post(link); /* refill WR RX */
+   475					break;
+   476				}
+   477			}
+   478		}
+   479	}
+   480	
+   481	static void smc_wr_rx_tasklet_fn(struct tasklet_struct *t)
+   482	{
+   483		struct smc_ib_device *dev = from_tasklet(dev, t, recv_tasklet);
+   484		struct ib_wc wc[SMC_WR_MAX_POLL_CQE];
+   485		int polled = 0;
+   486		int rc;
+   487	
+   488	again:
+   489		polled++;
+   490		do {
+   491			memset(&wc, 0, sizeof(wc));
+   492			rc = ib_poll_cq(dev->roce_cq_recv, SMC_WR_MAX_POLL_CQE, wc);
+   493			if (polled == 1) {
+   494				ib_req_notify_cq(dev->roce_cq_recv,
+   495						 IB_CQ_SOLICITED_MASK
+   496						 | IB_CQ_REPORT_MISSED_EVENTS);
+   497			}
+   498			if (!rc)
+   499				break;
+   500			smc_wr_rx_process_cqes(&wc[0], rc);
+   501		} while (rc > 0);
+   502		if (polled == 1)
+   503			goto again;
+   504	}
+   505	
+   506	void smc_wr_rx_cq_handler(struct ib_cq *ib_cq, void *cq_context)
+   507	{
+   508		struct smc_ib_device *dev = (struct smc_ib_device *)cq_context;
+   509	
+   510		tasklet_schedule(&dev->recv_tasklet);
+   511	}
+   512	
+   513	int smc_wr_rx_post_init(struct smc_link *link)
+   514	{
+   515		u32 i;
+   516		int rc = 0;
+   517	
+   518		for (i = 0; i < link->wr_rx_cnt; i++)
+   519			rc = smc_wr_rx_post(link);
+   520		return rc;
+   521	}
+   522	
+   523	/***************************** init, exit, misc ******************************/
+   524	
+   525	void smc_wr_remember_qp_attr(struct smc_link *lnk)
+   526	{
+   527		struct ib_qp_attr *attr = &lnk->qp_attr;
+   528		struct ib_qp_init_attr init_attr;
+   529	
+   530		memset(attr, 0, sizeof(*attr));
+   531		memset(&init_attr, 0, sizeof(init_attr));
+   532		ib_query_qp(lnk->roce_qp, attr,
+   533			    IB_QP_STATE |
+   534			    IB_QP_CUR_STATE |
+   535			    IB_QP_PKEY_INDEX |
+   536			    IB_QP_PORT |
+   537			    IB_QP_QKEY |
+   538			    IB_QP_AV |
+   539			    IB_QP_PATH_MTU |
+   540			    IB_QP_TIMEOUT |
+   541			    IB_QP_RETRY_CNT |
+   542			    IB_QP_RNR_RETRY |
+   543			    IB_QP_RQ_PSN |
+   544			    IB_QP_ALT_PATH |
+   545			    IB_QP_MIN_RNR_TIMER |
+   546			    IB_QP_SQ_PSN |
+   547			    IB_QP_PATH_MIG_STATE |
+   548			    IB_QP_CAP |
+   549			    IB_QP_DEST_QPN,
+   550			    &init_attr);
+   551	
+   552		lnk->wr_tx_cnt = min_t(size_t, SMC_WR_BUF_CNT,
+   553				       lnk->qp_attr.cap.max_send_wr);
+   554		lnk->wr_rx_cnt = min_t(size_t, SMC_WR_BUF_CNT * 3,
+   555				       lnk->qp_attr.cap.max_recv_wr);
+   556	}
+   557	
+   558	static void smc_wr_init_sge(struct smc_link *lnk)
+   559	{
+   560		int sges_per_buf = (lnk->lgr->smc_version == SMC_V2) ? 2 : 1;
+   561		bool send_inline = (lnk->qp_attr.cap.max_inline_data > SMC_WR_TX_SIZE);
+   562		u32 i;
+   563	
+   564		for (i = 0; i < lnk->wr_tx_cnt; i++) {
+   565			lnk->wr_tx_sges[i].addr = send_inline ? (uintptr_t)(&lnk->wr_tx_bufs[i]) :
+   566				lnk->wr_tx_dma_addr + i * SMC_WR_BUF_SIZE;
+   567			lnk->wr_tx_sges[i].length = SMC_WR_TX_SIZE;
+   568			lnk->wr_tx_sges[i].lkey = lnk->roce_pd->local_dma_lkey;
+   569			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge[0].lkey =
+   570				lnk->roce_pd->local_dma_lkey;
+   571			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge[1].lkey =
+   572				lnk->roce_pd->local_dma_lkey;
+   573			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge[0].lkey =
+   574				lnk->roce_pd->local_dma_lkey;
+   575			lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge[1].lkey =
+   576				lnk->roce_pd->local_dma_lkey;
+   577			lnk->wr_tx_ibs[i].next = NULL;
+   578			lnk->wr_tx_ibs[i].sg_list = &lnk->wr_tx_sges[i];
+   579			lnk->wr_tx_ibs[i].num_sge = 1;
+   580			lnk->wr_tx_ibs[i].opcode = IB_WR_SEND;
+   581			lnk->wr_tx_ibs[i].send_flags =
+   582				IB_SEND_SIGNALED | IB_SEND_SOLICITED;
+   583			if (send_inline)
+   584				lnk->wr_tx_ibs[i].send_flags |= IB_SEND_INLINE;
+   585			lnk->wr_tx_rdmas[i].wr_tx_rdma[0].wr.opcode = IB_WR_RDMA_WRITE;
+   586			lnk->wr_tx_rdmas[i].wr_tx_rdma[1].wr.opcode = IB_WR_RDMA_WRITE;
+   587			lnk->wr_tx_rdmas[i].wr_tx_rdma[0].wr.sg_list =
+   588				lnk->wr_tx_rdma_sges[i].tx_rdma_sge[0].wr_tx_rdma_sge;
+   589			lnk->wr_tx_rdmas[i].wr_tx_rdma[1].wr.sg_list =
+   590				lnk->wr_tx_rdma_sges[i].tx_rdma_sge[1].wr_tx_rdma_sge;
+   591		}
+   592	
+   593		if (lnk->lgr->smc_version == SMC_V2) {
+   594			lnk->wr_tx_v2_sge->addr = lnk->wr_tx_v2_dma_addr;
+   595			lnk->wr_tx_v2_sge->length = SMC_WR_BUF_V2_SIZE;
+   596			lnk->wr_tx_v2_sge->lkey = lnk->roce_pd->local_dma_lkey;
+   597	
+   598			lnk->wr_tx_v2_ib->next = NULL;
+   599			lnk->wr_tx_v2_ib->sg_list = lnk->wr_tx_v2_sge;
+   600			lnk->wr_tx_v2_ib->num_sge = 1;
+   601			lnk->wr_tx_v2_ib->opcode = IB_WR_SEND;
+   602			lnk->wr_tx_v2_ib->send_flags =
+   603				IB_SEND_SIGNALED | IB_SEND_SOLICITED;
+   604		}
+   605	
+   606		/* With SMC-Rv2 there can be messages larger than SMC_WR_TX_SIZE.
+   607		 * Each ib_recv_wr gets 2 sges, the second one is a spillover buffer
+   608		 * and the same buffer for all sges. When a larger message arrived then
+   609		 * the content of the first small sge is copied to the beginning of
+   610		 * the larger spillover buffer, allowing easy data mapping.
+   611		 */
+   612		for (i = 0; i < lnk->wr_rx_cnt; i++) {
+   613			int x = i * sges_per_buf;
+   614	
+   615			lnk->wr_rx_sges[x].addr =
+   616				lnk->wr_rx_dma_addr + i * SMC_WR_BUF_SIZE;
+   617			lnk->wr_rx_sges[x].length = SMC_WR_TX_SIZE;
+   618			lnk->wr_rx_sges[x].lkey = lnk->roce_pd->local_dma_lkey;
+   619			if (lnk->lgr->smc_version == SMC_V2) {
+   620				lnk->wr_rx_sges[x + 1].addr =
+   621						lnk->wr_rx_v2_dma_addr + SMC_WR_TX_SIZE;
+   622				lnk->wr_rx_sges[x + 1].length =
+   623						SMC_WR_BUF_V2_SIZE - SMC_WR_TX_SIZE;
+   624				lnk->wr_rx_sges[x + 1].lkey =
+   625						lnk->roce_pd->local_dma_lkey;
+   626			}
+   627			lnk->wr_rx_ibs[i].next = NULL;
+   628			lnk->wr_rx_ibs[i].sg_list = &lnk->wr_rx_sges[x];
+   629			lnk->wr_rx_ibs[i].num_sge = sges_per_buf;
+   630		}
+   631		lnk->wr_reg.wr.next = NULL;
+   632		lnk->wr_reg.wr.num_sge = 0;
+   633		lnk->wr_reg.wr.send_flags = IB_SEND_SIGNALED;
+   634		lnk->wr_reg.wr.opcode = IB_WR_REG_MR;
+   635		lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
+   636	}
+   637	
+   638	void smc_wr_drain_cq(struct smc_link *lnk)
+   639	{
+   640		wait_event_interruptible_timeout(lnk->wr_rx_drain_wait,
+ > 641						 (lnk->drained == 1),
+   642						 SMC_WR_RX_WAIT_DRAIN_TIME);
+   643	}
+   644	
 
-If I add another test that has the following ebpf prog (with ctx_in
-being set to NULL by the userspace):
-
-SEC("syscall")
-int kfunc_syscall_test_null_fail(struct syscall_test_args *args)
-{
-       bpf_kfunc_call_test_mem_len_pass1(args, sizeof(*args));
-
-       return 0;
-}
-
-Then the call of the program is actually failing with -EINVAL, even
-with this patch.
-
-But again, if setting from userspace a ctx of NULL with a 0 size is
-not considered as valid, then we can just drop that hunk and add a
-test to enforce it.
-
-Cheers,
-Benjamin
-
->
-> >
-> > > +
-> > >         /* Compiler optimizations can remove arguments from static functions
-> > >          * or mismatched type can be passed into a global function.
-> > >          * In such cases mark the function as unreliable from BTF point of view.
-> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > > index 2c1f8069f7b7..d694f43ab911 100644
-> > > --- a/kernel/bpf/verifier.c
-> > > +++ b/kernel/bpf/verifier.c
-> > > @@ -5229,6 +5229,25 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
-> > >                                 env,
-> > >                                 regno, reg->off, access_size,
-> > >                                 zero_size_allowed, ACCESS_HELPER, meta);
-> > > +       case PTR_TO_CTX:
-> > > +               /* in case the function doesn't know how to access the context,
-> > > +                * (because we are in a program of type SYSCALL for example), we
-> > > +                * can not statically check its size.
-> > > +                * Dynamically check it now.
-> > > +                */
-> > > +               if (!env->ops->convert_ctx_access) {
-> > > +                       enum bpf_access_type atype = meta && meta->raw_mode ? BPF_WRITE : BPF_READ;
-> > > +                       int offset = access_size - 1;
-> > > +
-> > > +                       /* Allow zero-byte read from PTR_TO_CTX */
-> > > +                       if (access_size == 0)
-> > > +                               return zero_size_allowed ? 0 : -EACCES;
-> > > +
-> > > +                       return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
-> > > +                                               atype, -1, false);
-> > > +               }
-> >
-> > This part looks good alone. Without max_ctx_offset save/restore.
->
-> +1, save/restore would be incorrect.
->
-
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
