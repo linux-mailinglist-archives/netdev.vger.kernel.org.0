@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C428B5A69B8
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:22:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B02A5A69BF
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231363AbiH3RWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 13:22:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60388 "EHLO
+        id S230058AbiH3RWp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 13:22:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbiH3RVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:21:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A6A8DDB63;
-        Tue, 30 Aug 2022 10:20:26 -0700 (PDT)
+        with ESMTP id S231313AbiH3RWG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:22:06 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DF3AB06D;
+        Tue, 30 Aug 2022 10:20:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8953EB81D0C;
-        Tue, 30 Aug 2022 17:20:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3264C43150;
-        Tue, 30 Aug 2022 17:20:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7A4F61799;
+        Tue, 30 Aug 2022 17:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 447B6C433C1;
+        Tue, 30 Aug 2022 17:20:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880023;
-        bh=I5qbucz9hEvTK5aZplOe8XJDRDj5Cv0jBV9i3aOvbeo=;
+        s=k20201202; t=1661880033;
+        bh=5iiar+J6TCsmXD3hNSgz2r5MFxDu8jF9ygS0YzWuqv4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hsbkq94mxzlF1kLR/iTHL7BLWchmQ8bicn6kwHWHf6tGu5SzAw8CBmXR44fVkw8wn
-         AR0fpgvFVSCVvM3XiuMXgrw2HXfNSJfblp38p7kEe9FVxzrEwwy5zHSbj4pjezciuQ
-         87ZYIimcwG0yJWXQycuezMLcxIWCOrK3vezltlQkpBxU636y+EmQt6ZJn7XITeX+WM
-         TTyDybSn1gUp3v509uhd4dV/ydxrTZzxMVvaFSO6Oj29QCDlLGOvEdCxHp1O6Owzpj
-         aS1mh9vFYncWRrtFHCEmzbPgiwJrqHQZswoaQmIskBaaloxTw7VYWcqhFc1KQ+zw9W
-         zs/pV3s4iXwzg==
+        b=n4EtRBinJ+H41M1dVJHfM6j/ByvA9I1l3M9ZXt1laYcTSX52TefS/0UeThLKJoTzp
+         kFeG/9NhmBVIvadN6yxuwfla1I/t9hAP+oysTjXKr4bWYH+6dmV+p+rMeV6EZwxlXp
+         M9FBWsC3BPR/Jv5RgvZlqK2pem1lK6n7HHnFl+EVIgEQKJaAPH6eaARgPjAxZTJy+P
+         g9W3k1YJvF1TOnZcXX6SqTNObUGlrVFiZ340sIUkvlWPjwmuYnu7yHwtlvXmh9Sj/u
+         MyBVKpEryavqk2gQ3lYQ3N7amAX+tebDHpd2vygmeIuqoI4e5YeWwu5tfnOTHVi3jh
+         rtsEAblYyWh1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Westphal <fw@strlen.de>, Sasha Levin <sashal@kernel.org>,
-        pablo@netfilter.org, kadlec@netfilter.org, davem@davemloft.net,
+Cc:     =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, qiangqing.zhang@nxp.com,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.19 21/33] netfilter: conntrack: work around exceeded receive window
-Date:   Tue, 30 Aug 2022 13:18:12 -0400
-Message-Id: <20220830171825.580603-21-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.19 24/33] fec: Restart PPS after link state change
+Date:   Tue, 30 Aug 2022 13:18:15 -0400
+Message-Id: <20220830171825.580603-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220830171825.580603-1-sashal@kernel.org>
 References: <20220830171825.580603-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,134 +59,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-[ Upstream commit cf97769c761abfeac8931b35fe0e1a8d5fabc9d8 ]
+[ Upstream commit f79959220fa5fbda939592bf91c7a9ea90419040 ]
 
-When a TCP sends more bytes than allowed by the receive window, all future
-packets can be marked as invalid.
-This can clog up the conntrack table because of 5-day default timeout.
+On link state change, the controller gets reset,
+causing PPS to drop out and the PHC to lose its
+time and calibration. So we restart it if needed,
+restoring calibration and time registers.
 
-Sequence of packets:
- 01 initiator > responder: [S], seq 171, win 5840, options [mss 1330,sackOK,TS val 63 ecr 0,nop,wscale 1]
- 02 responder > initiator: [S.], seq 33211, ack 172, win 65535, options [mss 1460,sackOK,TS val 010 ecr 63,nop,wscale 8]
- 03 initiator > responder: [.], ack 33212, win 2920, options [nop,nop,TS val 068 ecr 010], length 0
- 04 initiator > responder: [P.], seq 172:240, ack 33212, win 2920, options [nop,nop,TS val 279 ecr 010], length 68
+Changes since v2:
+* Add `fec_ptp_save_state()`/`fec_ptp_restore_state()`
+* Use `ktime_get_real_ns()`
+* Use `BIT()` macro
+Changes since v1:
+* More ECR #define's
+* Stop PPS in `fec_ptp_stop()`
 
-Window is 5840 starting from 33212 -> 39052.
-
- 05 responder > initiator: [.], ack 240, win 256, options [nop,nop,TS val 872 ecr 279], length 0
- 06 responder > initiator: [.], seq 33212:34530, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-This is fine, conntrack will flag the connection as having outstanding
-data (UNACKED), which lowers the conntrack timeout to 300s.
-
- 07 responder > initiator: [.], seq 34530:35848, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 08 responder > initiator: [.], seq 35848:37166, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 09 responder > initiator: [.], seq 37166:38484, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
- 10 responder > initiator: [.], seq 38484:39802, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 1318
-
-Packet 10 is already sending more than permitted, but conntrack doesn't
-validate this (only seq is tested vs. maxend, not 'seq+len').
-
-38484 is acceptable, but only up to 39052, so this packet should
-not have been sent (or only 568 bytes, not 1318).
-
-At this point, connection is still in '300s' mode.
-
-Next packet however will get flagged:
- 11 responder > initiator: [P.], seq 39802:40128, ack 240, win 256, options [nop,nop,TS val 892 ecr 279], length 326
-
-nf_ct_proto_6: SEQ is over the upper bound (over the window of the receiver) .. LEN=378 .. SEQ=39802 ACK=240 ACK PSH ..
-
-Now, a couple of replies/acks comes in:
-
- 12 initiator > responder: [.], ack 34530, win 4368,
-[.. irrelevant acks removed ]
- 16 initiator > responder: [.], ack 39802, win 8712, options [nop,nop,TS val 296201291 ecr 2982371892], length 0
-
-This ack is significant -- this acks the last packet send by the
-responder that conntrack considered valid.
-
-This means that ack == td_end.  This will withdraw the
-'unacked data' flag, the connection moves back to the 5-day timeout
-of established conntracks.
-
- 17 initiator > responder: ack 40128, win 10030, ...
-
-This packet is also flagged as invalid.
-
-Because conntrack only updates state based on packets that are
-considered valid, packet 11 'did not exist' and that gets us:
-
-nf_ct_proto_6: ACK is over upper bound 39803 (ACKed data not seen yet) .. SEQ=240 ACK=40128 WINDOW=10030 RES=0x00 ACK URG
-
-Because this received and processed by the endpoints, the conntrack entry
-remains in a bad state, no packets will ever be considered valid again:
-
- 30 responder > initiator: [F.], seq 40432, ack 2045, win 391, ..
- 31 initiator > responder: [.], ack 40433, win 11348, ..
- 32 initiator > responder: [F.], seq 2045, ack 40433, win 11348 ..
-
-... all trigger 'ACK is over bound' test and we end up with
-non-early-evictable 5-day default timeout.
-
-NB: This patch triggers a bunch of checkpatch warnings because of silly
-indent.  I will resend the cleanup series linked below to reduce the
-indent level once this change has propagated to net-next.
-
-I could route the cleanup via nf but that causes extra backport work for
-stable maintainers.
-
-Link: https://lore.kernel.org/netfilter-devel/20220720175228.17880-1-fw@strlen.de/T/#mb1d7147d36294573cc4f81d00f9f8dadfdd06cd8
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nf_conntrack_proto_tcp.c | 31 ++++++++++++++++++++++++++
- 1 file changed, 31 insertions(+)
+ drivers/net/ethernet/freescale/fec.h      | 10 ++++++
+ drivers/net/ethernet/freescale/fec_main.c | 42 ++++++++++++++++++++---
+ drivers/net/ethernet/freescale/fec_ptp.c  | 29 ++++++++++++++++
+ 3 files changed, 77 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
-index a63b51dceaf2c..a634c72b1ffcf 100644
---- a/net/netfilter/nf_conntrack_proto_tcp.c
-+++ b/net/netfilter/nf_conntrack_proto_tcp.c
-@@ -655,6 +655,37 @@ static bool tcp_in_window(struct nf_conn *ct,
- 		    tn->tcp_be_liberal)
- 			res = true;
- 		if (!res) {
-+			bool seq_ok = before(seq, sender->td_maxend + 1);
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index ed7301b691694..0cebe4b63adb7 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -634,6 +634,13 @@ struct fec_enet_private {
+ 	int pps_enable;
+ 	unsigned int next_counter;
+ 
++	struct {
++		struct timespec64 ts_phc;
++		u64 ns_sys;
++		u32 at_corr;
++		u8 at_inc_corr;
++	} ptp_saved_state;
 +
-+			if (!seq_ok) {
-+				u32 overshot = end - sender->td_maxend + 1;
-+				bool ack_ok;
+ 	u64 ethtool_stats[];
+ };
+ 
+@@ -644,5 +651,8 @@ void fec_ptp_disable_hwts(struct net_device *ndev);
+ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+ int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+ 
++void fec_ptp_save_state(struct fec_enet_private *fep);
++int fec_ptp_restore_state(struct fec_enet_private *fep);
 +
-+				ack_ok = after(sack, receiver->td_end - MAXACKWINDOW(sender) - 1);
+ /****************************************************************************/
+ #endif /* FEC_H */
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index a90275143d873..436815fef197f 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -285,8 +285,11 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
+ #define FEC_MMFR_TA		(2 << 16)
+ #define FEC_MMFR_DATA(v)	(v & 0xffff)
+ /* FEC ECR bits definition */
+-#define FEC_ECR_MAGICEN		(1 << 2)
+-#define FEC_ECR_SLEEP		(1 << 3)
++#define FEC_ECR_RESET   BIT(0)
++#define FEC_ECR_ETHEREN BIT(1)
++#define FEC_ECR_MAGICEN BIT(2)
++#define FEC_ECR_SLEEP   BIT(3)
++#define FEC_ECR_EN1588  BIT(4)
+ 
+ #define FEC_MII_TIMEOUT		30000 /* us */
+ 
+@@ -982,6 +985,9 @@ fec_restart(struct net_device *ndev)
+ 	u32 temp_mac[2];
+ 	u32 rcntl = OPT_FRAME_SIZE | 0x04;
+ 	u32 ecntl = 0x2; /* ETHEREN */
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
 +
-+				if (in_recv_win &&
-+				    ack_ok &&
-+				    overshot <= receiver->td_maxwin &&
-+				    before(sack, receiver->td_end + 1)) {
-+					/* Work around TCPs that send more bytes than allowed by
-+					 * the receive window.
-+					 *
-+					 * If the (marked as invalid) packet is allowed to pass by
-+					 * the ruleset and the peer acks this data, then its possible
-+					 * all future packets will trigger 'ACK is over upper bound' check.
-+					 *
-+					 * Thus if only the sequence check fails then do update td_end so
-+					 * possible ACK for this data can update internal state.
-+					 */
-+					sender->td_end = end;
-+					sender->flags |= IP_CT_TCP_FLAG_DATA_UNACKNOWLEDGED;
++	fec_ptp_save_state(fep);
+ 
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+@@ -1135,7 +1141,7 @@ fec_restart(struct net_device *ndev)
+ 	}
+ 
+ 	if (fep->bufdesc_ex)
+-		ecntl |= (1 << 4);
++		ecntl |= FEC_ECR_EN1588;
+ 
+ 	if (fep->quirks & FEC_QUIRK_DELAYED_CLKS_SUPPORT &&
+ 	    fep->rgmii_txc_dly)
+@@ -1156,6 +1162,14 @@ fec_restart(struct net_device *ndev)
+ 	if (fep->bufdesc_ex)
+ 		fec_ptp_start_cyclecounter(ndev);
+ 
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
 +
-+					nf_ct_l4proto_log_invalid(skb, ct, hook_state,
-+								  "%u bytes more than expected", overshot);
-+					return res;
-+				}
-+			}
+ 	/* Enable interrupts we wish to service */
+ 	if (fep->link)
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+@@ -1206,6 +1220,8 @@ fec_stop(struct net_device *ndev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	u32 rmii_mode = readl(fep->hwp + FEC_R_CNTRL) & (1 << 8);
+ 	u32 val;
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++	u32 ecntl = 0;
+ 
+ 	/* We cannot expect a graceful transmit stop without link !!! */
+ 	if (fep->link) {
+@@ -1215,6 +1231,8 @@ fec_stop(struct net_device *ndev)
+ 			netdev_err(ndev, "Graceful transmit stop did not complete!\n");
+ 	}
+ 
++	fec_ptp_save_state(fep);
 +
- 			nf_ct_l4proto_log_invalid(skb, ct, hook_state,
- 			"%s",
- 			before(seq, sender->td_maxend + 1) ?
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+ 	 * instead of reset MAC itself.
+@@ -1234,12 +1252,28 @@ fec_stop(struct net_device *ndev)
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 	writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+ 
++	if (fep->bufdesc_ex)
++		ecntl |= FEC_ECR_EN1588;
++
+ 	/* We have to keep ENET enabled to have MII interrupt stay working */
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC &&
+ 		!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
+-		writel(2, fep->hwp + FEC_ECNTRL);
++		ecntl |= FEC_ECR_ETHEREN;
+ 		writel(rmii_mode, fep->hwp + FEC_R_CNTRL);
+ 	}
++
++	writel(ecntl, fep->hwp + FEC_ECNTRL);
++
++	if (fep->bufdesc_ex)
++		fec_ptp_start_cyclecounter(ndev);
++
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
+ }
+ 
+ 
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 3dc3c0b626c21..c74d04f4b2fd2 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -633,7 +633,36 @@ void fec_ptp_stop(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 
++	if (fep->pps_enable)
++		fec_ptp_enable_pps(fep, 0);
++
+ 	cancel_delayed_work_sync(&fep->time_keep);
+ 	if (fep->ptp_clock)
+ 		ptp_clock_unregister(fep->ptp_clock);
+ }
++
++void fec_ptp_save_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc_corr;
++
++	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++	fep->ptp_saved_state.ns_sys = ktime_get_ns();
++
++	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
++	atime_inc_corr = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_CORR_MASK;
++	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
++}
++
++int fec_ptp_restore_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
++	u64 ns_sys;
++
++	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
++	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
++	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
++
++	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
++	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
++	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++}
 -- 
 2.35.1
 
