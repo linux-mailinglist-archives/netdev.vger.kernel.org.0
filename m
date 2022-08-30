@@ -2,52 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCD615A6A6C
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3298F5A6B2B
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:48:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231305AbiH3R3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 13:29:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        id S232068AbiH3RsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 13:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231875AbiH3R2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:28:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501A71670C1;
-        Tue, 30 Aug 2022 10:26:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D91D9617B2;
-        Tue, 30 Aug 2022 17:24:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D12C4347C;
-        Tue, 30 Aug 2022 17:24:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880290;
-        bh=6JmD2+JK8pwdRoPXDm6ONoHrQ/7bSyaKr0JerEnY4Rs=;
-        h=Date:From:To:Cc:Subject:From;
-        b=bFuWWnaqFPON02rz7uU2CAczrW+/GoCDFV8ePY47z/2L+m6q0/q7M1Evc/Pby+cKu
-         KsYKrcMi8vKQ4+YrMZ+KxiDZ4zqMTdvC5LAM320k5bJSQMbx6eZTNC4NL73jbboVg2
-         lRNQxPHsotXE8pFeOCar54RQNeqpMEQo96LUPOjHaGQfiZL6YpFludXm5i4qqfsmfP
-         u651Is2xB4DYRca/KsXBfk2Dl5z3op4MM9XZgWPPIRFISWBoDdIOhnFWxwA3iGjI5k
-         0yonpSwpbcodjzWqD0xeeFFDjQE1jWZMvZFPfHLM0kTf7kimstlTyp3aCcQn7Y+10i
-         lxCxwYy7Mm66Q==
-Date:   Tue, 30 Aug 2022 12:24:44 -0500
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S231800AbiH3Rr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:47:56 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EC1104009
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 10:44:34 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id w19so9184596ljj.7
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 10:44:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=rmlcaT4uod7PpBdmIDlVofuYmhAw0mWF1ocMR7J7jHQ=;
+        b=cVmXkrXVB/VhRGL6WXUplEkAQijZtZRPc62bxRDQjALkNmsWvRBHB8+SZLdTSrr7Q2
+         jJNPQDHL443hUjM3gm9pRsjjswMMUUxwAqnjJ44an8iwVtGJlPxWlPBGfVEN0PSk3fd+
+         X+K160op9w//KYces00QD69pfUOTiQTGjOuQTQVU5NvlTqXtaYCcyzab4kSChbBP2AvF
+         cw4SrUCA15vFvM6aZQFS1XZeIaQvGIENMA7nLQ/WODSBrmSLF8GYf6oHwHXfBmhEnv7O
+         bq2DewdxbnUmsAbQejrrnx3RQO+QBInCtHIXVri/Q9fTZ16CIKB6QI3CpcUI/nSZE5Ul
+         8AHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=rmlcaT4uod7PpBdmIDlVofuYmhAw0mWF1ocMR7J7jHQ=;
+        b=7m5kJD/KTvotqo3UVuEF81oMHcxC9KnVfOM0Nn6y8I4e/hzg55MJ7mz5YuRQ77Ppr2
+         +CrEcWWVoU2y0FgxzIS9y9dTBGcLXdB8OVqwBButnztm3Sudf3mmb3Uol2V/re+6EJ0Y
+         CcUP6XsTK7Lm5miWjaBoEJN4qaQ0/U2csLLPr20sc0GTwwfrk1E3heV79QM6lWABNifz
+         SU/rqIuv0/1TesM/GSYBPlYkAtntmmLgNbbbSEXyMhj2LevdeVo1ht8Q88BgIGZ0AeuA
+         ojRFKDF6cJt7g3cr4sA7lsi7orL78OWidsC2+YbtcEul9ZD4poMJLBRZyw5Niyr/rGOC
+         t1Nw==
+X-Gm-Message-State: ACgBeo0sAbs5w3/EjSg7tImrHEod2KG7uq/+k2nJNlUqW6jaKRxwcytI
+        429bCGZ+B6XVM0WTIzMamMmFFUlIxoaYSgzL
+X-Google-Smtp-Source: AA6agR4PY6CaaARXSRtsxN/bcXrQHnxvJheo2EM1aAUGuEOPcsmtvuMW25Oc0Y2r7Drxt2Wkb0cBYQ==
+X-Received: by 2002:a05:6512:3b20:b0:492:c04a:1520 with SMTP id f32-20020a0565123b2000b00492c04a1520mr8189476lfv.86.1661880699713;
+        Tue, 30 Aug 2022 10:31:39 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id 13-20020a2e050d000000b0026392faf543sm1235119ljf.77.2022.08.30.10.31.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 10:31:39 -0700 (PDT)
+Message-ID: <23539312-caaa-78f0-cd6c-899a826f9947@linaro.org>
+Date:   Tue, 30 Aug 2022 20:31:37 +0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v3 1/3] dt-bindings: can: nxp,sja1000: Document RZ/N1
+ power-domains support
+Content-Language: en-US
+To:     Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] uapi: net/ipv4: Use __DECLARE_FLEX_ARRAY() helper
-Message-ID: <Yw5H3E3a6mmpuTeT@work>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        linux-renesas-soc@vger.kernel.org
+References: <20220830164518.1381632-1-biju.das.jz@bp.renesas.com>
+ <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,108 +89,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We now have a cleaner way to keep compatibility with user-space
-(a.k.a. not breaking it) when we need to keep in place a one-element
-array (for its use in user-space) together with a flexible-array
-member (for its use in kernel-space) without making it hard to read
-at the source level. This is through the use of the new
-__DECLARE_FLEX_ARRAY() helper macro.
+On 30/08/2022 19:45, Biju Das wrote:
+> Document RZ/N1 power-domains support. Also update the example with
+> power-domains property.
+> 
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v3:
+>  * Documented power-domains support.
 
-The size and memory layout of the structure is preserved after the
-changes. See below.
+You made them required, so it would be nice to see reason in such
+change. The commit msg says only what you did, but not why you did it.
 
-Before changes:
-
-$ pahole -C ip_msfilter net/ipv4/igmp.o
-struct ip_msfilter {
-	union {
-		struct {
-			__be32     imsf_multiaddr_aux;   /*     0     4 */
-			__be32     imsf_interface_aux;   /*     4     4 */
-			__u32      imsf_fmode_aux;       /*     8     4 */
-			__u32      imsf_numsrc_aux;      /*    12     4 */
-			__be32     imsf_slist[1];        /*    16     4 */
-		};                                       /*     0    20 */
-		struct {
-			__be32     imsf_multiaddr;       /*     0     4 */
-			__be32     imsf_interface;       /*     4     4 */
-			__u32      imsf_fmode;           /*     8     4 */
-			__u32      imsf_numsrc;          /*    12     4 */
-			__be32     imsf_slist_flex[0];   /*    16     0 */
-		};                                       /*     0    16 */
-	};                                               /*     0    20 */
-
-	/* size: 20, cachelines: 1, members: 1 */
-	/* last cacheline: 20 bytes */
-};
-
-After changes:
-
-$ pahole -C ip_msfilter net/ipv4/igmp.o
-struct ip_msfilter {
-	struct {
-		__be32             imsf_multiaddr;       /*     0     4 */
-		__be32             imsf_interface;       /*     4     4 */
-		__u32              imsf_fmode;           /*     8     4 */
-		__u32              imsf_numsrc;          /*    12     4 */
-		union {
-			__be32     imsf_slist[1];        /*    16     4 */
-			struct {
-				struct {
-				} __empty_imsf_slist_flex; /*    16     0 */
-				__be32 imsf_slist_flex[0]; /*    16     0 */
-			};                               /*    16     0 */
-		};                                       /*    16     4 */
-	};                                               /*     0    20 */
-
-	/* size: 20, cachelines: 1, members: 1 */
-	/* last cacheline: 20 bytes */
-};
-
-In the past, we had to duplicate the whole original structure within
-a union, and update the names of all the members. Now, we just need to
-declare the flexible-array member to be used in kernel-space through
-the __DECLARE_FLEX_ARRAY() helper together with the one-element array,
-within a union. This makes the source code more clean and easier to read.
-
-Link: https://github.com/KSPP/linux/issues/193
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- include/uapi/linux/in.h | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
-
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 14168225cecd..fa4dc8f8f081 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -188,20 +188,14 @@ struct ip_mreq_source {
- };
- 
- struct ip_msfilter {
--	union {
--		struct {
--			__be32		imsf_multiaddr_aux;
--			__be32		imsf_interface_aux;
--			__u32		imsf_fmode_aux;
--			__u32		imsf_numsrc_aux;
-+	struct {
-+		__be32		imsf_multiaddr;
-+		__be32		imsf_interface;
-+		__u32		imsf_fmode;
-+		__u32		imsf_numsrc;
-+		union {
- 			__be32		imsf_slist[1];
--		};
--		struct {
--			__be32		imsf_multiaddr;
--			__be32		imsf_interface;
--			__u32		imsf_fmode;
--			__u32		imsf_numsrc;
--			__be32		imsf_slist_flex[];
-+			__DECLARE_FLEX_ARRAY(__be32, imsf_slist_flex);
- 		};
- 	};
- };
--- 
-2.34.1
-
+Best regards,
+Krzysztof
