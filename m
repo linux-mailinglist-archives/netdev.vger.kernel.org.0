@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63E375A612E
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 12:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BF5C5A6137
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 12:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229747AbiH3Kx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 06:53:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33086 "EHLO
+        id S229959AbiH3Kxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 06:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiH3KxZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 06:53:25 -0400
+        with ESMTP id S229875AbiH3Kxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 06:53:33 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2925061B3C;
-        Tue, 30 Aug 2022 03:53:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF4A61B3C;
+        Tue, 30 Aug 2022 03:53:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1661856801; x=1693392801;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=0NJnagFhYLzXOTkxodmjd0RzxVp5Xg3XokjLa4kfVAM=;
-  b=b+nr4ziGfbQ59wDdi6BQLTlZBpRLL3vGddR6pmkXkOEJiszR6uvFTDhv
-   eraKuSy0izOonCs/edgswxyf710Yoo+qE3RW8fFxeVI25PFVnSTeg+e+I
-   fc9/CWZfP1gWEtNMAj1dorKg8HfvFffShtIg4z0oBaXGrqHvb8Sv9uYYl
-   i7n55vfwmFx98Dfc1P1kSPgBvTGwxH66iAaANyQ4rLpH3HJhYLWCrGrwK
-   HPQm7Ic6OXHI33dDG9dY8iV7dVn9uV8c+To181kB55bjwBVJfUe7mbJpG
-   L0ExznqEskHE9zvqqTyeN/vY4Aw81hT2lsEm+oum8+pMcE5YocB2m0FXE
-   A==;
+  t=1661856811; x=1693392811;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=3JtcZwD8ykfZwltMBZg2Y5mHojyWHZBx52LH+LqU5qU=;
+  b=i9Iq2HTPW9om5KJ41RLiywtBmNGflLfPq2Pmq2kHVgel4j/pJnuAtSKH
+   36P/BIaaReJwiP/BrbfqtBpCFChSjdeU0mpj+Nbo1oRG/lAYqU5LMtG7M
+   kRMmxh3slbemT8IXaEgiZnfm68UF+YJRyOO6HISLHFOhx1jNWeW1mJ50B
+   xC2SdJnn+Iw/ngalDuEqomqnd2uHDc8/XGEsEr2sa6uxlcNrhaosJbwQy
+   ncyaK0OUZOm8sS81ZLN9W9FipbH//7KBGVFnH1s817jGXgSmpFzVTui4c
+   L3bT/xOLp1ieYXWfbADrpOns7+zOTm9bSJ7p18tUcfPXNnS0uiCgQKIiW
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="188626258"
+   d="scan'208";a="188626311"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:53:21 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 30 Aug 2022 03:53:30 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Tue, 30 Aug 2022 03:53:21 -0700
+ 15.1.2507.12; Tue, 30 Aug 2022 03:53:29 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 03:53:16 -0700
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 03:53:24 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Woojung Huh <woojung.huh@microchip.com>,
@@ -51,10 +51,12 @@ CC:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>,
         "Russell King" <linux@armlinux.org.uk>,
         Tristram Ha <Tristram.Ha@microchip.com>
-Subject: [RFC Patch net-next v3 0/3] net: dsa: microchip: lan937x: enable interrupt for internal phy link detection
-Date:   Tue, 30 Aug 2022 16:23:00 +0530
-Message-ID: <20220830105303.22067-1-arun.ramadoss@microchip.com>
+Subject: [RFC Patch net-next v3 1/3] net: dsa: microchip: use dev_ops->reset instead of exit in ksz_switch_register
+Date:   Tue, 30 Aug 2022 16:23:01 +0530
+Message-ID: <20220830105303.22067-2-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220830105303.22067-1-arun.ramadoss@microchip.com>
+References: <20220830105303.22067-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -68,30 +70,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series enables the internal phy link detection for lan937x using the
-interrupt method. lan937x acts as the interrupt controller for the internal
-ports and phy, the irq_domain is registered for the individual ports and in
-turn for the individual port interrupts.
+ksz8_switch_exit, ksz9477_switch_exit and lan937x_switch_exit functions
+all call the reset function which is assigned to dev_ops->reset hooks.
+So instead of calling the dev_ops->exit in ksz_switch_register during
+the error condition of dsa_register_switch, dev_ops->reset is used now.
+The dev_ops->exit can be extended in lan937x for freeing up the irq
+during the ksz_spi_remove. If we add the irq remove in the exit function
+and it is called during the dsa_switch_register error condition, kernel
+panic happens since irq is setup only in setup operation. To avoid the
+kernel panic, dev_ops->reset is used instead of exit.
 
-RFC v2 -> v3
-- Used the interrupt controller implementation of phy link
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in RFC v2
-- fixed the compilation issue
-
-Arun Ramadoss (3):
-  net: dsa: microchip: use dev_ops->reset instead of exit in
-    ksz_switch_register
-  net: dsa: microchip: add reference to ksz_device inside the ksz_port
-  net: dsa: microchip: lan937x: add interrupt support for port phy link
-
- drivers/net/dsa/microchip/ksz_common.c   |   5 +-
- drivers/net/dsa/microchip/ksz_common.h   |  17 ++
- drivers/net/dsa/microchip/ksz_spi.c      |   2 +
- drivers/net/dsa/microchip/lan937x_main.c | 332 ++++++++++++++++++++++-
- drivers/net/dsa/microchip/lan937x_reg.h  |  12 +
- 5 files changed, 361 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 6bd69a7e6809..da9bdf753f7a 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1963,7 +1963,7 @@ int ksz_switch_register(struct ksz_device *dev)
+ 
+ 	ret = dsa_register_switch(dev->ds);
+ 	if (ret) {
+-		dev->dev_ops->exit(dev);
++		dev->dev_ops->reset(dev);
+ 		return ret;
+ 	}
+ 
 -- 
 2.36.1
 
