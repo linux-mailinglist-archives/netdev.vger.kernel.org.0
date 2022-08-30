@@ -2,63 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C0C35A6F66
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 23:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C7B5A703A
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 23:59:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbiH3Vp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 17:45:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45192 "EHLO
+        id S231958AbiH3V7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 17:59:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231756AbiH3VpH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 17:45:07 -0400
+        with ESMTP id S231964AbiH3V7e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 17:59:34 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E694A1BF
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 14:44:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B17561119
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 14:55:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1336FB81E1E
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 21:44:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E326C433D6;
-        Tue, 30 Aug 2022 21:44:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFB6DB81DFC
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 21:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18B61C433D6;
+        Tue, 30 Aug 2022 21:54:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661895892;
-        bh=TlCu5H0Q3mFWJMJGwAo8vmUKF47doBTo0SZgHdP5hHs=;
+        s=k20201202; t=1661896456;
+        bh=b97XBs8QqgMTyMfc3j0JxoiCdLrkh0Jv4p8m+L5fDg8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S558ScDQQFvT+C8bPnSEdwQetw9ELVd/83Bt6QInSIR6ndElmLiOsIxGIJdQmYrBz
-         t8zM/bX7jKbhStIDF6gxZPBiHmySjiQy91EgYs8XzreO5bES8COs95KDZENcQsluF9
-         S8SytwPgQkfsUdk6UNxHVAhvF92H7BLN6eUnye9jvkb3ahbgoNZ/XlC3RxXczqKJtS
-         0TpWicKjC2kmuWWTJn2ZxjKZLMBN6HquVzVvDoHCu9QfGuMX0CFdB10o5u7eRTiuFg
-         CObeOdBUxN3UeegabfL/TjAXkNThzIo0GzkzbAumQp6nasiRKfJa3SqVfosS3W74Yb
-         HnAB4MFAAmOOA==
-Date:   Tue, 30 Aug 2022 14:44:51 -0700
+        b=btJMeBOfAEEXF1iHT+S7GirNmgDyb5aB1hMu3AycLVc8E5YYdRmhtQA4a1jwyNBzx
+         LWdOTTQOwh+FkMlOn9tP6T0hLHMMDt0+4SE2E6iNp6hq6B8PTygdNe5VYQTuD3r9E4
+         21J7vfeJpNzCSNkKdXXGbItvCM6Rx9/qG1Bd/hDmyJUB2dQHgzgkKBsTZXx11aJyZ2
+         pKO5hRBBV9+gUp4h7pt/b51JHmEKjpAQtbbdJ3RxMBf0zpPHby3rrvQGssvb4Ke9b9
+         BmnEHvo1PK8KrF1F5NoIHmjnpIDcSGptliCGgJnnrAZyOSrrC0K5pNKN8wI5OMJfCC
+         upJ+EmvNWZ2Bw==
+Date:   Tue, 30 Aug 2022 14:54:14 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-Cc:     Gal Pressman <gal@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Simon Horman <horms@verge.net.au>,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net-next 0/2] ice: support FEC automatic disable
-Message-ID: <20220830144451.64fb8ea8@kernel.org>
-In-Reply-To: <26384052-86fa-dc29-51d8-f154a0a71561@intel.com>
-References: <20220823150438.3613327-1-jacob.e.keller@intel.com>
-        <e8251cef-585b-8992-f3b2-5d662071cab3@nvidia.com>
-        <CO1PR11MB50895C42C04A408CF6151023D6739@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <5d9c6b31-cdf2-1285-6d4b-2368bae8b6f4@nvidia.com>
-        <20220825092957.26171986@kernel.org>
-        <CO1PR11MB50893710E9CA4C720815384ED6729@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <20220825103027.53fed750@kernel.org>
-        <CO1PR11MB50891983ACE664FB101F2BAAD6729@CO1PR11MB5089.namprd11.prod.outlook.com>
-        <20220825133425.7bfb34e9@kernel.org>
-        <bcdfe60a-0eb7-b1cf-15c8-5be7740716a1@intel.com>
-        <20220825180107.38915c09@kernel.org>
-        <9d962e38-1aa9-d0ed-261e-eb77c82b186b@intel.com>
-        <20220826165711.015e7827@kernel.org>
-        <b1c03626-1df1-e4e5-815e-f35c6346cbed@nvidia.com>
-        <SA2PR11MB51005070A0E456D7DD169A1FD6769@SA2PR11MB5100.namprd11.prod.outlook.com>
-        <b20f0964-42b7-53af-fe24-540d6cd011de@nvidia.com>
-        <3f72e038-016d-8b1c-a215-243199bac033@intel.com>
-        <26384052-86fa-dc29-51d8-f154a0a71561@intel.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, <davem@davemloft.net>,
+        <pabeni@redhat.com>, <edumazet@google.com>,
+        "Anirudh Venkataramanan" <anirudh.venkataramanan@intel.com>,
+        <netdev@vger.kernel.org>,
+        Lukasz Plachno <lukasz.plachno@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Gurucharan <gurucharanx.g@intel.com>
+Subject: Re: [PATCH net-next 5/5] ice: Print human-friendly PHY types
+Message-ID: <20220830145414.3a2ba804@kernel.org>
+In-Reply-To: <3b248522-3193-cd31-3452-78e02b95c369@intel.com>
+References: <20220824170340.207131-1-anthony.l.nguyen@intel.com>
+        <20220824170340.207131-6-anthony.l.nguyen@intel.com>
+        <20220825200344.32cb445f@kernel.org>
+        <3b248522-3193-cd31-3452-78e02b95c369@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -72,35 +61,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Aug 2022 13:09:20 -0700 Jacob Keller wrote:
-> I'm trying to figure out what my next steps are here.
+On Tue, 30 Aug 2022 11:33:07 -0700 Jesse Brandeburg wrote:
+> > Is this not something that can be read via ethtool -m ?  
 > 
-> Jakub, from earlier discussion it sounded like you are ok with accepting
-> patch to include "No FEC" into our auto override behavior, with no uAPI
-> changes. Is that still ok given the recent dicussion regarding going
-> beyond the spec?
+> Hi Jakub, I saw Dave committed this, but I wanted to answer.
+> 
+> AFAIK ethtool -m just dumps the eeprom in a hexdump. This data is part 
+> of a firmware response about "all the things" that it knows about the 
+> current link and PHY/cable.
 
-Yes, I reserve the right to change my mind :) but AFAIU it doesn't make
-things worse, so fine by me.
+ethtool -m decodes the information into text format. Perhaps it doesn't
+understand the EEPROM layout for the SFP type you're checking?
+I'd be surprised but it's possible.
 
-> I'm also happy to rename the flag in ice so that its not misnamed and
-> clearly indicates its behavior.
+Obviously PHY stuff outside the SFP would not be reported there, but
+most of the prints look like module info.
 
-Which flag? A new ethtool priv flag?
+> these *debug* prints extra information on the phy that the driver gets 
+> in one call, but is not clearly mapped today to a single ethtool command.
+> 
+> Would this be a good candidate for debugfs (read only) file for our 
+> driver, or should we just leave it as dev_dbg() output?
 
-> Gal seems against extending uAPI to indicate or support "ignore spec".
-> To be properly correct that would mean changing ice to stop setting the
-> AUTO_FEC flag. As explained above, I believe this will lead to breakage
-> in situations where we used to link and function properly.
-
-Stop setting the AUTO_FEC flag or start using a new standard compliant
-AUTO flag?
-
-Gal, within the spec do you iterate over modes or pick one mode somehow
-(the spec gives a set, AFAICT)?
-
-> I have no way to verify whether other vendors actually follow this or
-> not, as it essentially requires checking with modules that wouldn't link
-> otherwise and likely requires a lot of trial and error.
-
-Getting some input from Broadcom or Netronome would be useful, yes :(
+The prints themselves are not a big deal, but it'd be great if the info
+which is available via ethtool -m was stripped. Just to move to
+"standard APIs" wherever possible, it's not a big deal.
