@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 052DB5A638E
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:38:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBD55A6398
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229683AbiH3MiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 08:38:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46096 "EHLO
+        id S229962AbiH3Mi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 08:38:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiH3MiU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:38:20 -0400
+        with ESMTP id S229674AbiH3MiX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:38:23 -0400
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1407EA59AD;
-        Tue, 30 Aug 2022 05:38:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D324EA172;
+        Tue, 30 Aug 2022 05:38:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661863099; x=1693399099;
+  t=1661863101; x=1693399101;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=90P7fGfuhj3K+stD+JFr7Exph53pJwV1li4UPbJ6Kg4=;
-  b=Bw/L6ZTpSMUlG0R77FbPdjRui6DmDhekkzQUcHr/CA2XCP9RvwSiDIO/
-   0b/Xe+J/hFNoNlr78S2pnYgmBl7iACGshSP6IWVCNpRS3B73X/GgcSCah
-   McOPWvz/2O+AWm2z2aLtlDr4MTNDg7juV8qDOHHe/yq3hbfgr378DoPHm
-   VKgEtizQtxoT5UhJDLlO/9I9FWf1DCn5ywBWuiXTVR2DoQ0LcowFMgJF/
-   OAIvicop1JsgAprYrJwUTSx6VVAftRQ+2yTI/mBgDLB+xubJPmAIgmzn0
-   montuBivmU7BOV/X2hb6l9lYfdIrZsMwyyLA/osq/SMh/oLHmsrXzrt5f
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321289546"
+  bh=3oOsAJbtvFZwqYYFDrI/ZRzxiKYeStTLQyTM5B7ilko=;
+  b=aURN8M7hkNHpfCrhszscZ3+ojnRP8Q13CZmxbrhHQszM1TWmISJr9pX1
+   5I0q4UVLbI6qNds+vPYOKykzJ7WEPNSVtHlJmQcML9HUyUMUA+22FeYpP
+   obWsdsq9Sgn2RVkpO7tRd5s7q3X6qEyAcUzGa45t9OkvO4w7+Ud1lTsRF
+   beLvXVDDSieCiAa0dyj3m35oBhfo4pvJGtbWHXPKc20zw6dnIEdFgPm4g
+   nA44qbX5gWMEQ0c7aHGOxq/cmHYH9c3Fx/B5zv+xLZJ6GqSMhCOldVKa6
+   6Mwqw9W6xQdhTolVJmnzGHG05sXwh6mF56o6yEkhDlGqtpgLxvLqXCi10
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321289549"
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="321289546"
+   d="scan'208";a="321289549"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:38:18 -0700
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:38:21 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
-   d="scan'208";a="588585199"
+   d="scan'208";a="588585216"
 Received: from boxer.igk.intel.com ([10.102.20.173])
-  by orsmga006.jf.intel.com with ESMTP; 30 Aug 2022 05:38:17 -0700
+  by orsmga006.jf.intel.com with ESMTP; 30 Aug 2022 05:38:19 -0700
 From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 To:     intel-wired-lan@lists.osuosl.org
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         anthony.l.nguyen@intel.com, magnus.karlsson@intel.com,
         Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Subject: [PATCH intel-net 1/2] ice: xsk: change batched Tx descriptor cleaning
-Date:   Tue, 30 Aug 2022 14:38:02 +0200
-Message-Id: <20220830123803.9361-2-maciej.fijalkowski@intel.com>
+Subject: [PATCH intel-net 2/2] ice: xsk: drop power of 2 ring size restriction for AF_XDP
+Date:   Tue, 30 Aug 2022 14:38:03 +0200
+Message-Id: <20220830123803.9361-3-maciej.fijalkowski@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220830123803.9361-1-maciej.fijalkowski@intel.com>
 References: <20220830123803.9361-1-maciej.fijalkowski@intel.com>
@@ -60,294 +60,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-AF_XDP Tx descriptor cleaning in ice driver currently works in a "lazy"
-way - descriptors are not cleaned immediately after send. We rather hold
-on with cleaning until we see that free space in ring drops below
-particular threshold. This was supposed to reduce the amount of
-unnecessary work related to cleaning and instead of keeping the ring
-empty, ring was rather saturated.
+We had multiple customers in the past months that reported commit
+296f13ff3854 ("ice: xsk: Force rings to be sized to power of 2")
+makes them unable to use ring size of 8160 in conjunction with AF_XDP.
+Remove this restriction.
 
-In AF_XDP realm cleaning Tx descriptors implies producing them to CQ.
-This is a way of letting know user space that particular descriptor has
-been sent, as John points out in [0].
-
-We tried to implement serial descriptor cleaning which would be used in
-conjunction with batched cleaning but it made code base more convoluted
-and probably harder to maintain in future. Therefore we step away from
-batched cleaning in a current form in favor of an approach where we set
-RS bit on every last descriptor from a batch and clean always at the
-beginning of ice_xmit_zc().
-
-This means that we give up a bit of Tx performance, but this doesn't
-hurt l2fwd scenario due to the fact that Tx side is much faster than Rx
-and Rx is the one that has to catch Tx up. txonly can be treaten as
-AF_XDP based packet generator.
-
-FWIW Tx descriptors are still produced in a batched way.
-
-Fixes: 126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
-[0]: https://lore.kernel.org/bpf/62b0a20232920_3573208ab@john.notmuch/
-
-Fixes: 126cdfe1007a ("ice: xsk: Improve AF_XDP ZC Tx and use batching API")
+Fixes: 296f13ff3854 ("ice: xsk: Force rings to be sized to power of 2")
 Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_txrx.c |   2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c  | 143 +++++++++-------------
- drivers/net/ethernet/intel/ice/ice_xsk.h  |   7 +-
- 3 files changed, 64 insertions(+), 88 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_xsk.c | 22 ++++++++--------------
+ 1 file changed, 8 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index 836dce840712..b97d34d0741f 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -1464,7 +1464,7 @@ int ice_napi_poll(struct napi_struct *napi, int budget)
- 		bool wd;
- 
- 		if (tx_ring->xsk_pool)
--			wd = ice_xmit_zc(tx_ring, ICE_DESC_UNUSED(tx_ring), budget);
-+			wd = ice_xmit_zc(tx_ring);
- 		else if (ice_ring_is_xdp(tx_ring))
- 			wd = true;
- 		else
 diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.c b/drivers/net/ethernet/intel/ice/ice_xsk.c
-index 49ba8bfdbf04..46efe72d1342 100644
+index 46efe72d1342..d51e45ea4499 100644
 --- a/drivers/net/ethernet/intel/ice/ice_xsk.c
 +++ b/drivers/net/ethernet/intel/ice/ice_xsk.c
-@@ -719,69 +719,57 @@ ice_clean_xdp_tx_buf(struct ice_tx_ring *xdp_ring, struct ice_tx_buf *tx_buf)
- }
+@@ -329,13 +329,6 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+ 	bool if_running, pool_present = !!pool;
+ 	int ret = 0, pool_failure = 0;
  
- /**
-- * ice_clean_xdp_irq_zc - Reclaim resources after transmit completes on XDP ring
-- * @xdp_ring: XDP ring to clean
-- * @napi_budget: amount of descriptors that NAPI allows us to clean
-- *
-- * Returns count of cleaned descriptors
-+ * ice_clean_xdp_irq_zc - produce AF_XDP descriptors to CQ
-+ * @xdp_ring: XDP Tx ring
-  */
--static u16 ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring, int napi_budget)
-+static void ice_clean_xdp_irq_zc(struct ice_tx_ring *xdp_ring)
+-	if (!is_power_of_2(vsi->rx_rings[qid]->count) ||
+-	    !is_power_of_2(vsi->tx_rings[qid]->count)) {
+-		netdev_err(vsi->netdev, "Please align ring sizes to power of 2\n");
+-		pool_failure = -EINVAL;
+-		goto failure;
+-	}
+-
+ 	if_running = netif_running(vsi->netdev) && ice_is_xdp_ena_vsi(vsi);
+ 
+ 	if (if_running) {
+@@ -358,7 +351,6 @@ int ice_xsk_pool_setup(struct ice_vsi *vsi, struct xsk_buff_pool *pool, u16 qid)
+ 			netdev_err(vsi->netdev, "ice_qp_ena error = %d\n", ret);
+ 	}
+ 
+-failure:
+ 	if (pool_failure) {
+ 		netdev_err(vsi->netdev, "Could not %sable buffer pool, error = %d\n",
+ 			   pool_present ? "en" : "dis", pool_failure);
+@@ -465,11 +457,10 @@ static bool __ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
+ bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count)
  {
--	u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
--	int budget = napi_budget / tx_thresh;
--	u16 next_dd = xdp_ring->next_dd;
--	u16 ntc, cleared_dds = 0;
--
--	do {
--		struct ice_tx_desc *next_dd_desc;
--		u16 desc_cnt = xdp_ring->count;
--		struct ice_tx_buf *tx_buf;
--		u32 xsk_frames;
--		u16 i;
--
--		next_dd_desc = ICE_TX_DESC(xdp_ring, next_dd);
--		if (!(next_dd_desc->cmd_type_offset_bsz &
--		    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE)))
--			break;
-+	u16 ntc = xdp_ring->next_to_clean;
-+	struct ice_tx_desc *tx_desc;
-+	u16 cnt = xdp_ring->count;
-+	struct ice_tx_buf *tx_buf;
-+	u16 xsk_frames = 0;
-+	u16 last_rs;
-+	int i;
+ 	u16 rx_thresh = ICE_RING_QUARTER(rx_ring);
+-	u16 batched, leftover, i, tail_bumps;
++	u16 leftover, i, tail_bumps;
  
--		cleared_dds++;
--		xsk_frames = 0;
--		if (likely(!xdp_ring->xdp_tx_active)) {
--			xsk_frames = tx_thresh;
--			goto skip;
--		}
-+	last_rs = xdp_ring->next_to_use ? xdp_ring->next_to_use - 1 : cnt - 1;
-+	tx_desc = ICE_TX_DESC(xdp_ring, last_rs);
-+	if ((tx_desc->cmd_type_offset_bsz &
-+	    cpu_to_le64(ICE_TX_DESC_DTYPE_DESC_DONE))) {
-+		if (last_rs >= ntc)
-+			xsk_frames = last_rs - ntc + 1;
-+		else
-+			xsk_frames = last_rs + cnt - ntc + 1;
-+	}
+-	batched = ALIGN_DOWN(count, rx_thresh);
+-	tail_bumps = batched / rx_thresh;
+-	leftover = count & (rx_thresh - 1);
++	tail_bumps = count / rx_thresh;
++	leftover = count - (tail_bumps * rx_thresh);
  
--		ntc = xdp_ring->next_to_clean;
-+	if (!xsk_frames)
-+		return;
+ 	for (i = 0; i < tail_bumps; i++)
+ 		if (!__ice_alloc_rx_bufs_zc(rx_ring, rx_thresh))
+@@ -968,14 +959,17 @@ bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi)
+  */
+ void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring)
+ {
+-	u16 count_mask = rx_ring->count - 1;
+ 	u16 ntc = rx_ring->next_to_clean;
+ 	u16 ntu = rx_ring->next_to_use;
  
--		for (i = 0; i < tx_thresh; i++) {
--			tx_buf = &xdp_ring->tx_buf[ntc];
-+	if (likely(!xdp_ring->xdp_tx_active))
-+		goto skip;
+-	for ( ; ntc != ntu; ntc = (ntc + 1) & count_mask) {
++	while (ntc != ntu) {
+ 		struct xdp_buff *xdp = *ice_xdp_buf(rx_ring, ntc);
  
--			if (tx_buf->raw_buf) {
--				ice_clean_xdp_tx_buf(xdp_ring, tx_buf);
--				tx_buf->raw_buf = NULL;
--			} else {
--				xsk_frames++;
--			}
-+	ntc = xdp_ring->next_to_clean;
-+	for (i = 0; i < xsk_frames; i++) {
-+		tx_buf = &xdp_ring->tx_buf[ntc];
- 
--			ntc++;
--			if (ntc >= xdp_ring->count)
--				ntc = 0;
-+		if (tx_buf->raw_buf) {
-+			ice_clean_xdp_tx_buf(xdp_ring, tx_buf);
-+			tx_buf->raw_buf = NULL;
-+		} else {
-+			xsk_frames++;
- 		}
+ 		xsk_buff_free(xdp);
 +
 +		ntc++;
-+		if (ntc >= xdp_ring->count)
++		if (ntc >= rx_ring->count)
 +			ntc = 0;
-+	}
- skip:
--		xdp_ring->next_to_clean += tx_thresh;
--		if (xdp_ring->next_to_clean >= desc_cnt)
--			xdp_ring->next_to_clean -= desc_cnt;
--		if (xsk_frames)
--			xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
--		next_dd_desc->cmd_type_offset_bsz = 0;
--		next_dd = next_dd + tx_thresh;
--		if (next_dd >= desc_cnt)
--			next_dd = tx_thresh - 1;
--	} while (--budget);
--
--	xdp_ring->next_dd = next_dd;
--
--	return cleared_dds * tx_thresh;
-+	tx_desc->cmd_type_offset_bsz = 0;
-+	xdp_ring->next_to_clean += xsk_frames;
-+	if (xdp_ring->next_to_clean >= cnt)
-+		xdp_ring->next_to_clean -= cnt;
-+	if (xsk_frames)
-+		xsk_tx_completed(xdp_ring->xsk_pool, xsk_frames);
- }
- 
- /**
-@@ -816,7 +804,6 @@ static void ice_xmit_pkt(struct ice_tx_ring *xdp_ring, struct xdp_desc *desc,
- static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
- 			       unsigned int *total_bytes)
- {
--	u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
- 	u16 ntu = xdp_ring->next_to_use;
- 	struct ice_tx_desc *tx_desc;
- 	u32 i;
-@@ -836,13 +823,6 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
  	}
- 
- 	xdp_ring->next_to_use = ntu;
--
--	if (xdp_ring->next_to_use > xdp_ring->next_rs) {
--		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
--		tx_desc->cmd_type_offset_bsz |=
--			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
--		xdp_ring->next_rs += tx_thresh;
--	}
  }
  
- /**
-@@ -855,7 +835,6 @@ static void ice_xmit_pkt_batch(struct ice_tx_ring *xdp_ring, struct xdp_desc *de
- static void ice_fill_tx_hw_ring(struct ice_tx_ring *xdp_ring, struct xdp_desc *descs,
- 				u32 nb_pkts, unsigned int *total_bytes)
- {
--	u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
- 	u32 batched, leftover, i;
- 
- 	batched = ALIGN_DOWN(nb_pkts, PKTS_PER_BATCH);
-@@ -864,54 +843,54 @@ static void ice_fill_tx_hw_ring(struct ice_tx_ring *xdp_ring, struct xdp_desc *d
- 		ice_xmit_pkt_batch(xdp_ring, &descs[i], total_bytes);
- 	for (; i < batched + leftover; i++)
- 		ice_xmit_pkt(xdp_ring, &descs[i], total_bytes);
-+}
- 
--	if (xdp_ring->next_to_use > xdp_ring->next_rs) {
--		struct ice_tx_desc *tx_desc;
-+/**
-+ * ice_set_rs_bit - set RS bit on last produced descriptor (one behind current NTU)
-+ * @xdp_ring: XDP ring to produce the HW Tx descriptors on
-+ */
-+static void ice_set_rs_bit(struct ice_tx_ring *xdp_ring)
-+{
-+	u16 ntu = xdp_ring->next_to_use ? xdp_ring->next_to_use - 1 : xdp_ring->count - 1;
-+	struct ice_tx_desc *tx_desc;
- 
--		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
--		tx_desc->cmd_type_offset_bsz |=
--			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
--		xdp_ring->next_rs += tx_thresh;
--	}
-+	tx_desc = ICE_TX_DESC(xdp_ring, ntu);
-+	tx_desc->cmd_type_offset_bsz |=
-+		cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
- }
- 
- /**
-  * ice_xmit_zc - take entries from XSK Tx ring and place them onto HW Tx ring
-  * @xdp_ring: XDP ring to produce the HW Tx descriptors on
-- * @budget: number of free descriptors on HW Tx ring that can be used
-- * @napi_budget: amount of descriptors that NAPI allows us to clean
-  *
-  * Returns true if there is no more work that needs to be done, false otherwise
-  */
--bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, u32 budget, int napi_budget)
-+bool ice_xmit_zc(struct ice_tx_ring *xdp_ring)
- {
- 	struct xdp_desc *descs = xdp_ring->xsk_pool->tx_descs;
--	u16 tx_thresh = ICE_RING_QUARTER(xdp_ring);
- 	u32 nb_pkts, nb_processed = 0;
- 	unsigned int total_bytes = 0;
-+	int budget;
-+
-+	ice_clean_xdp_irq_zc(xdp_ring);
- 
--	if (budget < tx_thresh)
--		budget += ice_clean_xdp_irq_zc(xdp_ring, napi_budget);
-+	budget = ICE_DESC_UNUSED(xdp_ring);
-+	budget = min_t(u16, budget, ICE_RING_QUARTER(xdp_ring));
- 
- 	nb_pkts = xsk_tx_peek_release_desc_batch(xdp_ring->xsk_pool, budget);
- 	if (!nb_pkts)
- 		return true;
- 
- 	if (xdp_ring->next_to_use + nb_pkts >= xdp_ring->count) {
--		struct ice_tx_desc *tx_desc;
--
- 		nb_processed = xdp_ring->count - xdp_ring->next_to_use;
- 		ice_fill_tx_hw_ring(xdp_ring, descs, nb_processed, &total_bytes);
--		tx_desc = ICE_TX_DESC(xdp_ring, xdp_ring->next_rs);
--		tx_desc->cmd_type_offset_bsz |=
--			cpu_to_le64(ICE_TX_DESC_CMD_RS << ICE_TXD_QW1_CMD_S);
--		xdp_ring->next_rs = tx_thresh - 1;
- 		xdp_ring->next_to_use = 0;
- 	}
- 
- 	ice_fill_tx_hw_ring(xdp_ring, &descs[nb_processed], nb_pkts - nb_processed,
- 			    &total_bytes);
- 
-+	ice_set_rs_bit(xdp_ring);
- 	ice_xdp_ring_update_tail(xdp_ring);
- 	ice_update_tx_ring_stats(xdp_ring, nb_pkts, total_bytes);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_xsk.h b/drivers/net/ethernet/intel/ice/ice_xsk.h
-index 21faec8e97db..35dd3c57c4df 100644
---- a/drivers/net/ethernet/intel/ice/ice_xsk.h
-+++ b/drivers/net/ethernet/intel/ice/ice_xsk.h
-@@ -26,12 +26,9 @@ bool ice_alloc_rx_bufs_zc(struct ice_rx_ring *rx_ring, u16 count);
- bool ice_xsk_any_rx_ring_ena(struct ice_vsi *vsi);
- void ice_xsk_clean_rx_ring(struct ice_rx_ring *rx_ring);
- void ice_xsk_clean_xdp_ring(struct ice_tx_ring *xdp_ring);
--bool ice_xmit_zc(struct ice_tx_ring *xdp_ring, u32 budget, int napi_budget);
-+bool ice_xmit_zc(struct ice_tx_ring *xdp_ring);
- #else
--static inline bool
--ice_xmit_zc(struct ice_tx_ring __always_unused *xdp_ring,
--	    u32 __always_unused budget,
--	    int __always_unused napi_budget)
-+ice_xmit_zc(struct ice_tx_ring __always_unused *xdp_ring)
- {
- 	return false;
- }
 -- 
 2.34.1
 
