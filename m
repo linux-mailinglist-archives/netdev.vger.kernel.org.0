@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5273A5A6E01
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 22:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D68D5A6E02
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 22:01:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231831AbiH3UBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 16:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41284 "EHLO
+        id S231923AbiH3UBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 16:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231839AbiH3UAc (ORCPT
+        with ESMTP id S231843AbiH3UAc (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 16:00:32 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2063.outbound.protection.outlook.com [40.107.20.63])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9388248CE;
-        Tue, 30 Aug 2022 13:00:10 -0700 (PDT)
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2054.outbound.protection.outlook.com [40.107.20.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79C2E26118;
+        Tue, 30 Aug 2022 13:00:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Xn53/oWyjP4HaHaQnPYXfCin0iGd8diCnHBRNkrKoEWSejEnhKKubzJFiSRD/UwQutJ2FlSKA6seTewNrfrsbYn7EhoeYff5XgmN0hXE2YakaUGQC5wSup/t3tDz1LoeJjv0ddblRn+HvHkyxhR80uJwmpFX9OQZ7/PZUit5GN4MR3L1/rOPlh3hpIvyRg5h2escCvwlBAhDpzE95HiShbtzncM4hfhNGHbQSePMdyLrIwHItmv5iYWzOXJXgVsp6scMbRpLR8/ZLYhdqnI8ZahAiRJ0I+PPePbgMiGHwExKSXvg1f/lRht3WrHc/QqwwZgXA1i/UHPTVICMYF01fQ==
+ b=MX9fUD/AJ9Zo1yw6WH7sfiGT3mxINEgfI+iPlh/CF2s1TeR6cZqLM6r7lbz7iGwrcqmhFhROk6IPqzffLvZPlCEJGunyMQyQ3XS824mtj2cYa604kyUAsDD7eikxEDlXhHw/UfdHOo4qDn4j1FH4iPMZIORUAu+Ye82sI9nR1ubuA0pTGwpfu7uYr7lvxqgKwDhqTajyDgTJVxqMpfmYawh4GPYQfo/nt869K8KsbQS8GRqnW4ZYWBeMaOsBS9TupzMOHbA30pdsmrUxiDF/7ypJeE7sGVmb3gH2tSWHbFYWM9/XDricctoL4aFxNklgJtY0haL6SdHTXIWXyvAqTg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NpsdEmkxc9C67B5T8k6L60wsiFWrP+l1QjhHW9L0hMI=;
- b=E52jhXUmXph/L5cf7g4tFWRHlt9di5jtAPj1/+PMnETjMCa+Ia8va1INrv0bIyP8m0AzS4BEXdffFstn5zVv3g3qSk839gcSJ1y6r3oLoo3PSk1fSKC7IBBwJN5dT1w50DCxYmS0nzU+yZhzjusoj3E3pE+eOQ+TZfoGaZaCh7B6niGO6Gp0ZZWBtS1WL14I6zAN2mJCUOet0vebZAhaS85pqpJvVKB+FpRVRUsnpVLlNZAiBvEG4VZXXd4lxdQt0Qc9OJ3OJAMKv6UpTD9drVEOBXejd8Qa3h5OzijMWmhSMBgtGgKf1O3QdaDDd3k39SM64SzjXuUylJL2Yw1BDA==
+ bh=5h1VvgX8MF+zSQTU/wgwjESwnjvrwOu4/+TM8gKSDzw=;
+ b=gbhHSmufoxGQgIX+NtuNqr0cuiL5/4bxjlz3XoqADt3MaJ+h1gISHGlGSd/LO3POEtdOWNy+wHInp375HMImRQlue6fjUkpoWXheBPq0KXXIyhOndWHx/EPb4HmwILt72MGLSDM8yBk+2yQXcDeyDZepsDEcDB+siC2bRVrB26hkdAvO3N/I/KVjpypnRfK+IfqgZ/hOJgZ3bNP/PCSbwUMheFrAuXeqEfDEibUzFC3QNot52xXLyNWlsHWQdA9ozjWalntWfM+jpwH2RPiEfyPov10qmJ4laUwLyScmntchX1sI1hAEZA39NuREq9DP2DYhHtDxbIQNobXLh76wcQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NpsdEmkxc9C67B5T8k6L60wsiFWrP+l1QjhHW9L0hMI=;
- b=c7Sywb+d+HtcOPJ+1JKlHHsgRHOCVDxMzAk8vQ/Qd/9NCkmw9+33vvXm7bg2p9GvmiPntWEcajDJFtWS5eq24JYjQk4xAkjnYJ3XznJ91d063qEVYE6tqZNDBltAnE8cwF2dyg4sqL4DBF3WFhEMc+PQ6huUy2nLqJKJ65iYd8A=
+ bh=5h1VvgX8MF+zSQTU/wgwjESwnjvrwOu4/+TM8gKSDzw=;
+ b=nzxdLwJlxaz52/2/lYTwiJO6WrJcLsCVC+yIx1bWS4sc2O0gkHJ7rEpP3d6URh9dexBA35Y3zo7bjkZgXQ3zY+rydAqChavULHjibwMc0/Ar85VAgo17NCn45MaBbdOeyaKRFD6HuvdzF50cc9KCBYPY2Rl3abmTo+f7udWw8hc=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by VI1PR04MB6270.eurprd04.prod.outlook.com (2603:10a6:803:fb::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.21; Tue, 30 Aug
- 2022 19:59:50 +0000
+ 2022 19:59:52 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.010; Tue, 30 Aug 2022
- 19:59:50 +0000
+ 19:59:52 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -65,9 +65,9 @@ Cc:     linux-kernel@vger.kernel.org,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>,
         Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
         Sean Wang <sean.wang@mediatek.com>
-Subject: [PATCH net-next 5/9] net: dsa: suppress appending ethtool stats to LAG DSA masters
-Date:   Tue, 30 Aug 2022 22:59:28 +0300
-Message-Id: <20220830195932.683432-6-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 6/9] net: dsa: suppress device links to LAG DSA masters
+Date:   Tue, 30 Aug 2022 22:59:29 +0300
+Message-Id: <20220830195932.683432-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220830195932.683432-1-vladimir.oltean@nxp.com>
 References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
@@ -78,52 +78,52 @@ X-ClientProxiedBy: BE0P281CA0005.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b8b01ff9-d3c7-4cde-9376-08da8ac232b3
+X-MS-Office365-Filtering-Correlation-Id: 2a29cc30-7549-4d07-0ca6-08da8ac233b5
 X-MS-TrafficTypeDiagnostic: VI1PR04MB6270:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FC2TOZweVZkK7F3THyUd4rKv4VGwkoTcBJCplxiUQoWLWLsk0oATD6q8yhF2FrphhPorLlQs0bRvxFnEyKQM6oR/h99C0kwZXWvnSZx/NBVWj6bKN1RYdfnXmZw74ZeoOE30otSmqWRG5+KVXWykSYVtK01ka28FxWgL3n1mIsDueIIJ7aLc+s4yxdEK00dwGCIUieyxbSQJShkgfB/PxwH/UP4YsI0GRdGxM1htwWTXA7m6CQyJh8eotqRaP0uyrKq/Bxcy2O9ogH/FFDjBE8wnXDbvrxcs56JQ5VPGDRqt4WQreQOkoLrQsjxM1SrDJP63PUtsR/mzLZiBNr0+pvkzFXpt5DUmEwrwkn2+u4UDx1hLT6d9K6VuAqEeXSygL86ZHSx2BE2k9n75ORSAwWP2YR6A3AXyHTCk4t0fhLpM30eBz28Zd2TXL/nW4o0eMQYtqJPwfs9cDZ05j7n3m/CozuMWzSfhzThn61h/MVKH/enGdI7Taz5WshpErQ8gjzENX45o3AANfgLgE5feI2R+EUvbOtXSb5EW85YxCmeGJHuBhvbfuLetOULMUU9nmuMXxNw/rCTnO7sOJq/xzrWk43k4IJUvTnWUUEryQYAzZhdaV17d8ExR2CiiK2iD4HsoNcRZ+xnpCY9etG3QHMxhqZgcuczP2aLGCFBGyTsZKherq3gszj+4pfqk2mIUZ8lSWrQ6kZDrJ5MqV3jOmCcuWwhfb0NhaFaGMt+B8NC1SDHNf1F8GWKG/NkS4VNH
+X-Microsoft-Antispam-Message-Info: u7mMc6YbL2dyR5Dlgft3HDjQL1R34c02ANXzZYtQW7LaES2Qv256F/ph9lsdx63F+WHKvAUbCwh9/cBCNi2vvI3PTw0SEnYB/doY/+FgMZj90LXrlIS5COGEWZHu16RkJ2QwmsOC4Rqlb5N2a9LdKK6U46YCzQUj0lxfk3m30fqfUYQPUl0MFtwDmjr+brzTucNvHESnVSsNwqZ5rO1HuMiizDVFpumpOiAOF2OIASZoFEvs8XCt9eqsdR9M/A9LjGRezuYqTsZPjrZU+4mpsdglenDh442HfvISrxkfAneYNI1by15n82KEf2GLwMH48s6SvOT5/ceBCrG+IL9wDaaOQm8ns71Oin2vwz3rxcJBID9y+YAu3QaFxjLkev9wl8JS5GSUmdyy7CrUhNur/BQJfYTcHelinRaB4ydPD9SwlfrByGf4BiCuV8Iqe3+KqXhctKrSosn8h5iFA0C1/U9BbMLzVVm8jtf+ux2+jMP5D22tN1lFvbBe/LS/9wV4t+l6innv8doyAdeAHgktFVgJaCQmIAHpk8tkdCJEu8haeVwhKXj0/AV6uOZxpD2L0SgLtn6fuZf7acXb1IgkC4kRU7w3mBlGi/+uRvNfjBayk7igNtXDaYeVB6FplpdixkkKk2HrWOIqIspxrGQymGFBlafP7sCcpJUmKuyFDyWdiT0umt4CmJYh3OsnPG54WWb91by17f7z0O8Wr7z+VH1o2GVZGnDJfkyB86QTlgQLV0DGoKsBBgSXV1Pcd5Ao
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(366004)(39860400002)(136003)(376002)(41300700001)(66476007)(6486002)(8676002)(4326008)(66946007)(478600001)(66556008)(52116002)(2906002)(83380400001)(44832011)(26005)(5660300002)(6506007)(6512007)(7416002)(6666004)(8936002)(2616005)(316002)(86362001)(6916009)(54906003)(36756003)(38350700002)(1076003)(38100700002)(186003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?zu13r9vWXBHz8+LE5BTuGOZ5NfdTXpSrHkB+Yln6w0F3YkNSWGeOqJbbIw1A?=
- =?us-ascii?Q?l/GOFBfJ9AB3cvnUfKBE8GZya8etjRHkMpAKqdTVX0jleCt0829nvUHNhKfu?=
- =?us-ascii?Q?ClNAWYfvriTinW4OC9Ex+5biD11UeZXoIwlVyyQlS661Jd3rJx7l+HtwOgV0?=
- =?us-ascii?Q?U+zGtM6Te3QA2N/yHSKS5Fyf7xwtbQMGdmjB2s6GOpHyg+Njpe53F5KczKCz?=
- =?us-ascii?Q?op7tWBG1O0bOrY+zJv5uOL/OLYLL5ms5DAoGSjl9rqNnbzyhOgq5OdOIKxFM?=
- =?us-ascii?Q?dj4GFIZ0A3BVHvWO0VI4MMCFwfKPC3GvxhguXVK2suUcfEMxLLq8/7z9zpDn?=
- =?us-ascii?Q?MeA+k5/X0aLtZm1eULnACMd0awa4bV4Nk9+EeFJbwkEQc3R0hM4NzNZYaRDO?=
- =?us-ascii?Q?bhA6vOMc5naJ9agQRspyqdn2lfu6afHhAoLFZMrbXbbp4SRGycB9+UXKu0ye?=
- =?us-ascii?Q?Nl5+libOm0qcZOurORd0Edqzk/9FZXkf+4EiCenJpZdSkap1d30LoR6lPu3i?=
- =?us-ascii?Q?eaxxWFbTe1Xt5W31jwYN8dFoIzrRnECrAtyIc7lbuPzJyY0fWjSDtFys5c40?=
- =?us-ascii?Q?0TK4PuaANVvqQzf7WCHflnBbBodef2mcVg7brvDD9i3iK1XPn+g+Kxv1b6FK?=
- =?us-ascii?Q?5aaTuBH9Gxc2U/iopAQNKFDY2w/uhwje3bwMc2kUf0RDgc2qJn1WBilGuM9I?=
- =?us-ascii?Q?lQSlvfi+1GTks3jnLXg8TLUv6TAjAquZH6T1uItV2Ry/tEA8H0J6Ugtrdn9S?=
- =?us-ascii?Q?UN3aC8h6sEzjaM8Ik4/iE0YfEWnYfNi8DK2AdsULlMiHoWeJ9r8NMjPuT0Xf?=
- =?us-ascii?Q?XAmJsT+ynA1EfG+rJWzEODvk/urJv6jNtZ0D0M53LvUd37h0CR2bAhomvh/q?=
- =?us-ascii?Q?q8+H7BH2SVZawNRIJxNdcGHzQhbyp7Q3sqNovXobdnhW0Smi9OQwN1ZfTjHl?=
- =?us-ascii?Q?vpjDaqU6N68uWSkh4gRPe2xfBiS8ytYneZGErgnuXIFJAqlrDTfOiDGCXH2t?=
- =?us-ascii?Q?ILNSscsSj6eGTY4vsqY34RkSz0aTBtnDPyWZ/DL4FXkTfRZUTRdQiWCLCYN0?=
- =?us-ascii?Q?45J8OXjtV5WOusRarjQixz83hn1DlzT1HU/bHu1okfOUq3tHjp0YKXZYUiIw?=
- =?us-ascii?Q?qR7dMI1AYgLAt1aQ9QUnesA2HXuSOFx8DIC+LpmslVO+cGYY+2nyt+YZZQ4+?=
- =?us-ascii?Q?D8nongtkIVKCxxg/x90rKfMun6C4Mby/20KaHj0GLOIjH0iA/UwfF3cCc509?=
- =?us-ascii?Q?8RbgkOtT7CSXQXTVjl4VUuVPskxZ8VL8JAE92Jr9n4xBI4ALnMb5SLOaWHNi?=
- =?us-ascii?Q?ubJ/UKvfUSuvI3GNfQakG/+qwv0DivHA48F31Sj3sTS6MYFIiYIkM/1ErYPI?=
- =?us-ascii?Q?XuIL/QfPUQJeUewUwZsk9haRNdp+Qz08Bjb5EQHGzo/4clpoueucAUlDEyyT?=
- =?us-ascii?Q?JQF6mlghkv1d/MOVoK588NyWmf/2s6M8fESG6b8avFqmVugjeft6ytBQ5rPK?=
- =?us-ascii?Q?YRn8vWUjWZeLTo6aOmdv4vGCMSZEcsQOcKKc6K4sXtU4p9ZXsLmaLW97AXs+?=
- =?us-ascii?Q?JAD2ZUAN+gByECxtcI2vz6eKMpcsL2+RLngDiVru0M3MLWk8yUhLuuZrSDaP?=
- =?us-ascii?Q?+w=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6LEXVcW47Vw/cPTf1OpT7bGSXlQKhSU7a1duPde37Tt8n3lTToEjJF5zasRq?=
+ =?us-ascii?Q?bkQ5n8jJp4p6kt2jJ/fyT4aLdVSwmKehO7J8tJvCrewB+urEJAujlcljr3TY?=
+ =?us-ascii?Q?WWInl7cyXxBqXysRlVEsytIaL9jxULi35HfnUhx34rFRLbv8fUOz81Lf0jPb?=
+ =?us-ascii?Q?Ybt9EV6aVawbUuQ4/eM/TY8J9l3HcodscYbqGAS7qSJPCAe3/cavEajt4oiw?=
+ =?us-ascii?Q?5wtmH70ea5zUagxgXxhjzuThUt/b1sWpaNYsvoxlgaLiQlP+uJXy6KFl1mrR?=
+ =?us-ascii?Q?XIrBvg/Mg8OEv5TiXJO+y4YTtpoX2iALK/2nz7CJrvnKPYN8Wq7jVBqrCEFX?=
+ =?us-ascii?Q?5SZV+fvdbbSMAKaUrRg9oseTqFe8+9rIf/rzwdUUaeVwnH4WJyOSLuPTMV/S?=
+ =?us-ascii?Q?yQOs8fOTfiP6KfETXsWbeEeQDQJrpJhh3eDeJ4wwHMi7EHZ+SX9LDYB/yKTu?=
+ =?us-ascii?Q?qGKGrNj0HaJwvJNQRs/NlbRCuQejU8Nz3cm9VOiIN81Rn8fLehs9+QPJmMl5?=
+ =?us-ascii?Q?DZn2jkX4yEgIQmiT3CRXk+iiWLk4hgI5MWlU8unkOTP+MFMy954OrQ/+76sX?=
+ =?us-ascii?Q?E8J7yHlURgg1czX8Nvwxq7x2GThoLY5mfpqCTslW0E4ymWUVE123faHU3J71?=
+ =?us-ascii?Q?zpjPZGQeoWeP011o4vHA94rP9u196UYxi2jWcfn8MkTLSIFGGlwkADKAe8x+?=
+ =?us-ascii?Q?NT4L4wOyp6pTpZz48E1hNoTijMTVxTww9PGZypqTxC2zusF1mbpNqDX5ial/?=
+ =?us-ascii?Q?SdKJxTiAvK/44vamyQJK6uXuBzHvmmigytTZhiZEOE5j52blQtm7eaGGgNKp?=
+ =?us-ascii?Q?kON53d1AknE9j7qZESIje9YCvI6istwYLhhVaVFS0fq+rKyMNhD1AWCCj2J7?=
+ =?us-ascii?Q?o5jdS7zq4Qu9y5L4OdPkjfD4ghvhLBCq7MQyJMiSBS1mEeXP67pA6R4J5TP7?=
+ =?us-ascii?Q?qddIwXbzBCdxTdy11119acLgPaRaCOS8b8j5+Kclxc2oPYjXKXsVGU9VF2Zg?=
+ =?us-ascii?Q?ArADQid/kS/7t5xTybxEJ3z6uDbVWHs759NBXT+9fDqRK6/MZ4ZlMTpJUgH/?=
+ =?us-ascii?Q?h+gffdihAJouQAB6hido5RS6FpeL6cZd2r1jIRerZoOhWESvwbqvOmIM5VDI?=
+ =?us-ascii?Q?fWTg8KDhWMfyIOt346gMDeC+ANOQ3eXLoi7DDXglGWzoNjRDod+v+OD2Jmbj?=
+ =?us-ascii?Q?5nOKPVzvuLOhFDy8UYPyVa912HVfVvm2+JUjaVA3Y0EZ7Ey0DbzQgXoI3OMD?=
+ =?us-ascii?Q?0Aroz6pRO4cVxQXedZDyYK+lahQ8/5lIHoQghwqpH4hWGMVV/EiYuKP0ZOqi?=
+ =?us-ascii?Q?3ms209BDRIWp0xRuxZvHz3Ia6o1syDagKF6eY3oAfInEGescM4/BYhIeHfFA?=
+ =?us-ascii?Q?pyPuGdva+vnDmLaOykWOE1Rr62ql1guaEXHOt4Bie6y3ilCbu0nKmvLNxP5A?=
+ =?us-ascii?Q?Nf/x5Th0c1TVH8l3ZnpSMVT2QKendkHG6wHzAJkqtL4xFby0EPbJhUwISuQ4?=
+ =?us-ascii?Q?Xfii6nTxI+ieLyoBEEYTpfeKdvh0WIx8fYWYg5+VinSbCUtAjEtC3Q217soO?=
+ =?us-ascii?Q?+S/sxzKeTdoTFHJyvBAUZBpG3mpZSGA5AtWhWrPFV3jUPr6eKLZeg5tMqfLk?=
+ =?us-ascii?Q?2g=3D=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8b01ff9-d3c7-4cde-9376-08da8ac232b3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a29cc30-7549-4d07-0ca6-08da8ac233b5
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2022 19:59:50.7139
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2022 19:59:52.3856
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CxzWJUFIwGx2lRoT+z2lu4OgbJZpoqoYiAYXWMLTqnkOD7ZROINKNJJmzLu/phOdu/GoXTkEGFtDYBRBI5zmGA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: pzOpWh0kyD9v8hKaycQliaunNsjklcCo/migVX+XlKLZN7wTFrxbHz1Z7sLHlORwqAfjdDsd8cNi4kCq2ArXfw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB6270
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -135,58 +135,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the discussion about tracking the admin/oper state of LAG DSA
-masters, we have the problem here that struct dsa_port *cpu_dp caches a
-single pair of orig_ethtool_ops and netdev_ops pointers.
-
-So if we call dsa_master_setup(bond0, cpu_dp) where cpu_dp is also the
-dev->dsa_ptr of one of the physical DSA masters, we'd effectively
-overwrite what we cached from that physical netdev with what replaced
-from the bonding interface.
-
-We don't need DSA ethtool stats on the bonding interface when used as
-DSA master, it's good enough to have them just on the physical DSA
-masters, so suppress this logic.
+These don't work (print a harmless error about the operation failing)
+and make little sense to have anyway, because when a LAG DSA master goes
+away, we will introduce logic to move our CPU port back to the first
+physical DSA master. So suppress these device links in preparation for
+adding support for LAG DSA masters.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/master.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/dsa/master.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/net/dsa/master.c b/net/dsa/master.c
-index fb810edc8281..99d773b24223 100644
+index 99d773b24223..2176c14b97a8 100644
 --- a/net/dsa/master.c
 +++ b/net/dsa/master.c
-@@ -226,6 +226,9 @@ static int dsa_master_ethtool_setup(struct net_device *dev)
- 	struct dsa_switch *ds = cpu_dp->ds;
- 	struct ethtool_ops *ops;
+@@ -364,12 +364,14 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
+ 	mtu = ETH_DATA_LEN + dsa_tag_protocol_overhead(tag_ops);
  
-+	if (netif_is_lag_master(dev))
-+		return 0;
-+
- 	ops = devm_kzalloc(ds->dev, sizeof(*ops), GFP_KERNEL);
- 	if (!ops)
- 		return -ENOMEM;
-@@ -250,6 +253,9 @@ static void dsa_master_ethtool_teardown(struct net_device *dev)
- {
- 	struct dsa_port *cpu_dp = dev->dsa_ptr;
+ 	/* The DSA master must use SET_NETDEV_DEV for this to work. */
+-	consumer_link = device_link_add(ds->dev, dev->dev.parent,
+-					DL_FLAG_AUTOREMOVE_CONSUMER);
+-	if (!consumer_link)
+-		netdev_err(dev,
+-			   "Failed to create a device link to DSA switch %s\n",
+-			   dev_name(ds->dev));
++	if (!netif_is_lag_master(dev)) {
++		consumer_link = device_link_add(ds->dev, dev->dev.parent,
++						DL_FLAG_AUTOREMOVE_CONSUMER);
++		if (!consumer_link)
++			netdev_err(dev,
++				   "Failed to create a device link to DSA switch %s\n",
++				   dev_name(ds->dev));
++	}
  
-+	if (netif_is_lag_master(dev))
-+		return;
-+
- 	dev->ethtool_ops = cpu_dp->orig_ethtool_ops;
- 	cpu_dp->orig_ethtool_ops = NULL;
- }
-@@ -257,6 +263,9 @@ static void dsa_master_ethtool_teardown(struct net_device *dev)
- static void dsa_netdev_ops_set(struct net_device *dev,
- 			       const struct dsa_netdevice_ops *ops)
- {
-+	if (netif_is_lag_master(dev))
-+		return;
-+
- 	dev->dsa_ptr->netdev_ops = ops;
- }
- 
+ 	/* The switch driver may not implement ->port_change_mtu(), case in
+ 	 * which dsa_slave_change_mtu() will not update the master MTU either,
 -- 
 2.34.1
 
