@@ -2,56 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E9F5A65B1
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 15:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A42C5A65A6
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 15:53:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229792AbiH3Nzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 09:55:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        id S229987AbiH3NxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 09:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231314AbiH3NzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 09:55:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B79F22528;
-        Tue, 30 Aug 2022 06:54:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42CFAB81BE0;
-        Tue, 30 Aug 2022 13:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id ABE86C433D7;
-        Tue, 30 Aug 2022 13:40:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661866817;
-        bh=/FnZxDKSLo9LrWC08IxjXeMpRFAHK/7E68wtFYgJmVM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=jKy0NFPXSQof04cfJoaSeUfintscoKwz693pH9CJ/Jq9pq6JJhiyf8tKvmWcJr7le
-         p8mkMAEqoBIEU0fs/LRYQk8k0wgjE4pVrUjX4JEVzDtS6w+0+xz4pKQe3214vgY9kZ
-         urT7AOw3CWIZ3LZPf8W8jqOA5NQXOOJ+UERL1I0WL1dXbHip1ZkytpeZ3CMTMnYAYc
-         qlxftSex42sSWNLgwC5jsaZqhMeODqlTujV3Y3tajZzHHOWGB++jb6UXVUUpwOH0hs
-         QygUKZtEJhHBC4VQN9x+DV/jgtkUZM79EeqMipsS6LO9E4PNqvDQ5RZ8FhcWXm+OF1
-         4RV3FF2Kpd/Jg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8DF8DE924D4;
-        Tue, 30 Aug 2022 13:40:17 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231293AbiH3NxC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 09:53:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B15F2B
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 06:52:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661867525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UJVr43uWt8PVxH448vHnmIse/JFMIMR/CqYNuTX+I0E=;
+        b=KI7ulRrjwIRswM84L4UQTjrai6STk1iriWRqGA6jCAUemjt/O/Jq4GL3eh1lR7kBuzEmLk
+        LwFT+I9gvzmHpe3KaRWBzMKmqDIrRpbikUdgomMjuEvipR5DBWZ5mn8ydYmFoqk+zuGlEq
+        uloRZ/DfE5tRMfnv6hS6qKdl2wNwfFU=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-228-YlCxLSVOP0eXVPAoevcmxw-1; Tue, 30 Aug 2022 09:52:04 -0400
+X-MC-Unique: YlCxLSVOP0eXVPAoevcmxw-1
+Received: by mail-pf1-f200.google.com with SMTP id c142-20020a621c94000000b005324991c5b8so4627253pfc.15
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 06:52:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=UJVr43uWt8PVxH448vHnmIse/JFMIMR/CqYNuTX+I0E=;
+        b=pSq0WaVaHqHkZaw0+thhxruDnaKijBeaCd9/BcltgvZPrb9Y0Ensh3ad511dwXKj/R
+         hRLWAba/LtT6yOeVvQ3rNXHeepqc43IHl9WrlVzX2aU/6ZOfzGYRDV5B0O6qGqwji8jJ
+         jx1ukVB+E74eUQ6tGAKgOg3tGmcvR3cNBTp/Hq/VRdHkvioAazK1q3pC8d3JXVlB92f4
+         DdTc2NENI92hxLdxtNUctOxrAVVNPekKs4kEZhWkbSKShkHifNml1hwD4mKeQKdUFj+5
+         V1hG4uWeoOIraSA72H+fIoE2jE+VjlC/b6Yb9aI3KgL+e1EDRmPR1jsgCC36et2aWtSc
+         ysWw==
+X-Gm-Message-State: ACgBeo0ipCJSKRaLiLCTJaRRY3aYSLcm7hmvpRULu6rjR69tgQliDXEL
+        dzl7gYdsbMAAbELM2q5BQ6a9NDQOEW9e7NUJc6K9q/LatbN88u7sWnDg/jYxboaeChgdvgIoMq0
+        uwZoy6hcRT3t/UKcZruMOhFj3eamym/HX
+X-Received: by 2002:a65:6255:0:b0:42c:87b1:485b with SMTP id q21-20020a656255000000b0042c87b1485bmr3977293pgv.491.1661867522197;
+        Tue, 30 Aug 2022 06:52:02 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4uttRB0OgUCrHoIJFyDwUqMmth8JbBFJmcReY4G9C4XP9O/bnAzP100AWpX19LwnHtW0ssr0V6liTxxc7zEVI=
+X-Received: by 2002:a65:6255:0:b0:42c:87b1:485b with SMTP id
+ q21-20020a656255000000b0042c87b1485bmr3977270pgv.491.1661867521925; Tue, 30
+ Aug 2022 06:52:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net/sched: fix netdevice reference leaks in
- attach_default_qdiscs()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166186681757.11746.2553114028017365543.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Aug 2022 13:40:17 +0000
-References: <20220826090055.24424-1-wanghai38@huawei.com>
-In-Reply-To: <20220826090055.24424-1-wanghai38@huawei.com>
-To:     Wang Hai <wanghai38@huawei.com>
-Cc:     kuba@kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, brouer@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+ <20220824134055.1328882-3-benjamin.tissoires@redhat.com> <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
+In-Reply-To: <CAP01T76tie9dpjacCLxCcAjtra12GxfmeO9f_mYnUU6pO4otzQ@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Tue, 30 Aug 2022 15:51:50 +0200
+Message-ID: <CAO-hwJL6cy8JbXFSmSVtkNQHZkuYoHsvb1=JxvLSnBeeRBMZ5A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 02/23] bpf/verifier: do not clear meta in check_mem_size
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,30 +88,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Fri, Aug 26, 2022 at 3:55 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
+> <benjamin.tissoires@redhat.com> wrote:
+> >
+> > The purpose of this clear is to prevent meta->raw_mode to be evaluated
+> > at true, but this also prevents to forward any other data to the other
+> > callees.
+> >
+> > Only switch back raw_mode to false so we don't entirely clear meta.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > no changes in v9
+> >
+> > no changes in v8
+> >
+> > no changes in v7
+> >
+> > new in v6
+> > ---
+> >  kernel/bpf/verifier.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > index d694f43ab911..13190487fb12 100644
+> > --- a/kernel/bpf/verifier.c
+> > +++ b/kernel/bpf/verifier.c
+> > @@ -5287,7 +5287,7 @@ static int check_mem_size_reg(struct bpf_verifier_env *env,
+> >                  * initialize all the memory that the helper could
+> >                  * just partially fill up.
+> >                  */
+> > -               meta = NULL;
+> > +               meta->raw_mode = false;
+>
+> But this is adding a side effect, the caller's meta->raw_mode becomes
+> false, which the caller may not expect...
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+Turns out that I don't need that patch anymore because I am not
+checking against is_kfunc in the previous patch. So dropping it from
+the next revision.
 
-On Fri, 26 Aug 2022 17:00:55 +0800 you wrote:
-> In attach_default_qdiscs(), if a dev has multiple queues and queue 0 fails
-> to attach qdisc because there is no memory in attach_one_default_qdisc().
-> Then dev->qdisc will be noop_qdisc by default. But the other queues may be
-> able to successfully attach to default qdisc.
-> 
-> In this case, the fallback to noqueue process will be triggered. If the
-> original attached qdisc is not released and a new one is directly
-> attached, this will cause netdevice reference leaks.
-> 
-> [...]
+Cheers,
+Benjamin
 
-Here is the summary with links:
-  - [net,v2] net/sched: fix netdevice reference leaks in attach_default_qdiscs()
-    https://git.kernel.org/netdev/net/c/f612466ebecb
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+>
+> >
+> >         if (reg->smin_value < 0) {
+> >                 verbose(env, "R%d min value is negative, either use unsigned or 'var &= const'\n",
+> > --
+> > 2.36.1
+> >
+>
 
