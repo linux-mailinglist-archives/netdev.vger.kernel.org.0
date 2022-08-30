@@ -2,735 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABFBD5A62DB
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 048A75A62D5
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:06:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229791AbiH3MIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 08:08:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54202 "EHLO
+        id S230008AbiH3MGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 08:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229920AbiH3MHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:07:54 -0400
+        with ESMTP id S229987AbiH3MF5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:05:57 -0400
 Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2181A5FF4C
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 05:07:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E8276741
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 05:05:21 -0700 (PDT)
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27U2RscF029779;
-        Tue, 30 Aug 2022 05:03:12 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=OK5JYZ1+UeRFNoXBtiMqmmxhksWl4mU/gtnhgYwP1BA=;
- b=Hg7eWrdyzqvhDcYCLQfQM9cX/NNHL3vyB89kBrytRoJD+N/MgAIV57fvf+Ll7KFnTMrj
- o0NJTda5VX+Gk+sBwrqjshmiEiVNchKM6AU93+QGinb+R0vJd3jgw6nF9sfYxX/o3ugR
- vGZM4zDX7ZIeXL7WKfIgFj8EvNpPr2PE+SIkwkJupGXq9vW1bwJvFO8FGiCMx87VlqLc
- wVLM7QPcXuCgpmp9YqbJorbzrSF+RtT3w8kCBB2BUYbkVLIN6vuD8UzlZ57g3MEhXz0D
- oAW0DfmZmw9ccMBGoVE2wSbMprA9M8ZaBzqxaOK+PbLfbq9YyjX8lersr5Hfa2qbWkBi Ow== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3j8s2ewrgt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 30 Aug 2022 05:03:12 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 30 Aug
- 2022 05:03:10 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 30 Aug 2022 05:03:10 -0700
-Received: from localhost.localdomain (unknown [10.28.36.166])
-        by maili.marvell.com (Postfix) with ESMTP id 593493F7089;
-        Tue, 30 Aug 2022 05:03:07 -0700 (PDT)
+        by mx0a-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27UBtkKl029784;
+        Tue, 30 Aug 2022 05:03:50 -0700
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2107.outbound.protection.outlook.com [104.47.55.107])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3j8s2ewrks-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 30 Aug 2022 05:03:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dgMQoNaSUEOD+Jff3zto8h9PcJhP8fjpT79O5JeQwyPZJYjyApwmCCFfqofDHXaZR5cY8ScmPHemrHlmVf4k1SyyNaDdeUJhF+T7DMoj6/700VzKpWCfMthg4FmR8plQe0gjH6+QTTjoE07L9fJLIb1FylGS6k9TWEy38UEVEpM3nkbfuY8Cn6GzYDue4xm1aRifhMF2Ed3qGPUWVa+UspONWcEaRsOp8G5iPSW9ShiBgGWvgUHCa7ksi1grLWJDEYh9Osl3ZhpilHxB6kQcx7EkSrcgik1Sr73lqxaP96XM/m/7JNq6tFjWf1cKyo4tYRzbrvs9PEkXAcf9YkeNkw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=u4NILq8DSZTLT9UO3uq+XQmZcJ0tlmPmZ5TMuzp4c2A=;
+ b=GlH1U5HTGdS+SeV5xcH11OrRM8qEVoJXNXwYZvUTEZQma+WhoWmZr3sygkan5ESSEUuXQ94+3mAf45DgeOUYUhS7OxJoIHbMagpJyu53yxiwfiTf2A674BIUOui0ZIqZ8bukdOML3YzUcAvVcoZuAhzk7GZ+Ni1/bbisTIF8h+XmlKElmuP/5QSSWL+OxVZ2eVN1yr6mkfAQGJm7ANQK1NPBRddg6nTl1tmARMDuzYFQva95itQWUNAeYJuGj2V9qPetOvkn4Mj5WIxchPsayRjonDgf9KE1i4pX5JKJmJlcRpHM8nFcJw1g0YakDvAj7oFbX3GHvrDV22I/8Ggp0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=u4NILq8DSZTLT9UO3uq+XQmZcJ0tlmPmZ5TMuzp4c2A=;
+ b=NfUfxjuPlS9IP/YuetXm1PbSJkc0npz562s9tgPDVuN5nZ3asyPMXPV9h7VCspXt29UXRH6TilOkwqqiqEGrmwJlfQEWrZZYcokzWnBPTc5FkYHO5ZVS03V84wspIgsXKfRzDIWpW4t5Zqz3JZmanbk/9CQR4L4XZyf9+XgyUoA=
+Received: from SJ0PR18MB5216.namprd18.prod.outlook.com (2603:10b6:a03:430::6)
+ by BN6PR18MB1522.namprd18.prod.outlook.com (2603:10b6:404:12a::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Tue, 30 Aug
+ 2022 12:03:48 +0000
+Received: from SJ0PR18MB5216.namprd18.prod.outlook.com
+ ([fe80::a0cb:528f:3593:e24]) by SJ0PR18MB5216.namprd18.prod.outlook.com
+ ([fe80::a0cb:528f:3593:e24%5]) with mapi id 15.20.5566.021; Tue, 30 Aug 2022
+ 12:03:48 +0000
 From:   Suman Ghosh <sumang@marvell.com>
-To:     <sgoutham@marvell.com>, <lcherian@marvell.com>,
-        <gakula@marvell.com>, <jerinj@marvell.com>, <hkelam@marvell.com>,
-        <sbhatta@marvell.com>, <davem@davemloft.net>,
-        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
-        <netdev@vger.kernel.org>
-CC:     Suman Ghosh <sumang@marvell.com>
-Subject: [net-next PATCH V6] octeontx2-pf: Add egress PFC support
-Date:   Tue, 30 Aug 2022 17:33:04 +0530
-Message-ID: <20220830120304.158060-1-sumang@marvell.com>
-X-Mailer: git-send-email 2.25.1
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Jerin Jacob Kollanukkaran <jerinj@marvell.com>,
+        Hariprasad Kelam <hkelam@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [EXT] Re: [net-next PATCH V5] octeontx2-pf: Add egress PFC
+ support
+Thread-Topic: [EXT] Re: [net-next PATCH V5] octeontx2-pf: Add egress PFC
+ support
+Thread-Index: AQHYvGI6E3BrzQ2evU2hcVEf+qlckq3HWC9w
+Date:   Tue, 30 Aug 2022 12:03:48 +0000
+Message-ID: <SJ0PR18MB52161CD6B76022B762944F4BDB799@SJ0PR18MB5216.namprd18.prod.outlook.com>
+References: <20220826075751.2005604-1-sumang@marvell.com>
+ <686875c4c9b6d8c2ad17b506f7784a8fb8bf351b.camel@redhat.com>
+In-Reply-To: <686875c4c9b6d8c2ad17b506f7784a8fb8bf351b.camel@redhat.com>
+Accept-Language: en-IN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 36c0d9a3-0f4c-457a-530f-08da8a7fb230
+x-ms-traffictypediagnostic: BN6PR18MB1522:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: u70EA6Rvd65zRb15fkW+jXhSO0zvA4TwHxd4PXWM3cYZMwBgYIhFyQPy5TzEmTYklehbqrD6WIAZDR8UeHFIC5xanG1+mKEsTfGD63QjC9vAvAjNYVKImXoIynjLMd3WJtOcV2rxDf87gWg3uNROY+sGr8Di+mgQD7R0a7WLWv7O3b/sLtNd+NHc/lk591ZPhU2y1v8wPT/0ZbLtHgUbA6N/PGIxGuWKwFVD3GBzlztSt0YeuMf4PBmW9VY8n1pTjrxL9HtU7y5uW9CGTBtttjM28QWdrmUjU0Mssw1hum1okgWHGbDvSDPdFYlHwigLLAcxnNLz9b0KO+alGFKUIz1yURik4Ezmrpj4npzAb4/di37jHmdorVqwNfiQ/hs4cokAJ7SjtnIFpp4vkpBdMVBZ838N+OdEzUKGG75SkDxnFMxa4kLDz7ZM6wFv8d35ItuhRiT93ca6UvCN+AGtWvZVViswstcschQxMiLgauUNj7BdcIvvGDIkAh8EW3d+DGSIFJN647aKNCr6uYDUdOasmxPNXD180jvT1ttIyh7ixDMzdFZGQ7XyhkqE0bn9pz6oRJCiPXkEYWUC9pppCDSL98aXcSoVSbf39hnDWaXIxwyGxFNIXyb091gwdR/15rsojxzzup5RNKE8iGCqg+u953kvhtBxIcgVFQwWXqaiDYvGu8HD676xLoDcVaFD7eFyE2nY7EE297RB/MYhymw82o5PNsRmSPaDT/+ZP+A5an4ftdi31WnUqFEIDvsig44YTefzauKDvjfR3da3oWl33NMJKt8g/PIO77cRrZQ=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR18MB5216.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(396003)(39860400002)(366004)(346002)(38100700002)(122000001)(186003)(2906002)(26005)(7696005)(6506007)(9686003)(86362001)(83380400001)(55016003)(921005)(33656002)(38070700005)(66446008)(66476007)(66556008)(66946007)(64756008)(316002)(478600001)(8676002)(76116006)(71200400001)(110136005)(8936002)(52536014)(5660300002)(41300700001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?QVUzVXVqUnRSMkdGWG5JWFlVUGJvNnFvZjdwendCZ1NOdFgvQW04WWFNL3gx?=
+ =?utf-8?B?Z3JxNUdkTFJ4K2VVT2lzcWxuLzJzYjUzTFpGYy9IeFhOZVNvU09KR1VsTm00?=
+ =?utf-8?B?UTJJZ1F2Ty9acHhScjl1ZWlPcjNMd0o3QlBIS0FtM0pVMGY4VGxwS3d3bWFK?=
+ =?utf-8?B?WTgvL1JHcVR6cldBRlZiMVM3Ky96aG0xQS8vclg2TUZ2SndVdGEvUzlQK3JI?=
+ =?utf-8?B?VVo0NGxoVU1hcDRKOFV0M2pwaG5ONWZkUCthRlhXOWlOOThPTjBBR2NIdTFz?=
+ =?utf-8?B?aXhMWnZ6Y3R6c2pmYlg5Mm1VMUZrMVYvRXB6V05Kc0cyM0EyOTYrSHY1eGVT?=
+ =?utf-8?B?QU51MEZzQThxcG5BamdGa2ZpM2hPbmJ4a0NHMlhqU1dvaDh5QUdHeW9pZ3Nn?=
+ =?utf-8?B?bEd4cThnWTEyTlRzMENDSU02TXVkTzFSdHdFU0g0bXlVUmVTb0Q1WGF5ZHZh?=
+ =?utf-8?B?dThXZ1dvZmNMNGhGYXR6eDlvWi9HcXNUeVI2dU92N1lMUm9EVVhLMU1ZZThY?=
+ =?utf-8?B?WG1YSVQ4NGJBZWxteWlDc0VvS3BaVktrZjVaTjMvc0xKVjFhSWdqS1NRbE45?=
+ =?utf-8?B?S1R3VFlVS1BlTGJYSGNNQllWeERkbmswTm9tbk9iK1UzOFRrY0xmOG9tbVlt?=
+ =?utf-8?B?ZDIrNzF0NUw1VGNHVW1uQ1dLc3duclZuY2dpYWR2OVZnMjg3QUNFcnVvV1dx?=
+ =?utf-8?B?Q1pjWnBIQU9RenViWU5DR0g4akdsY1RTMFFBRzRxOHpTanlSQTcrSUc3M0Er?=
+ =?utf-8?B?VmJ5NFduQTBBNDRKaUJjM2FrTGh6VmVWT0JJQWROejhDNzBrYVlYd2kwb1c1?=
+ =?utf-8?B?Y3RtN2NxcktwMXpwL2JydjMySnpSOWt0cG04amFrK1kxUlRVYjNWMnZiV1Zh?=
+ =?utf-8?B?U2RuTDRuSnpLTy9PeXQwWHFhWUNnS2JrZkpoelFxNzB1aEpCU3hFdi9obFl3?=
+ =?utf-8?B?N21INEgyRU93NHVkVXdSMFd2dTdtYTNha3hUU2pwLzFxNFhlc0FZdElueVlN?=
+ =?utf-8?B?RVhtV04wSXI1c3VrL29BZy9mTEhPeUlud2Q2ZWJLaXhHelR0T01OTWdiclE0?=
+ =?utf-8?B?cVVoVlNEb0lMWTJWUm00MTRzb3hNc2VhdVJvYk5vL2RJTEdiK3RqaUZpSmxi?=
+ =?utf-8?B?aUZZRk1qTDJtNlo1bVFmUllRcnVoc2dxa3NrRkEvYndiMG5kTytRUGRTaHZs?=
+ =?utf-8?B?cnNhTDh1SC84SDdVUGVuN3dWWDJqb1JrREp5bSt6SExIaWNTQWMyeU9OSGRL?=
+ =?utf-8?B?SmtKSjJHeXF2dzNBTFNXeVRnTGVVYjBpa3FiSHVJT0JkNStDTWp2V1ZJd0VB?=
+ =?utf-8?B?bGpHM2pMUDd1YzBLanNjTGkzODVHSVREcXhBQ3l0SDV6MllnR2tnaXhpTjIz?=
+ =?utf-8?B?SXQxU1lYblRWSk5rQVRzdFJ3WW40Qk1NTUtheHVSTVErSXRpWE93ZFovN1hk?=
+ =?utf-8?B?d29ueTdFY1Eva3M1VktpUjZjb1YzWFZQQVVnK202a2ExYXExYVRnbHhnZGJP?=
+ =?utf-8?B?bDVxQlZPb21nSHpUejJvcDVMdXlYRUpTbGJvbEp1T1AyQTRYUFo5MUhvWmJ3?=
+ =?utf-8?B?QWIwd08xbEZKbzF0TWlqKzdJQnhkZGd6L1hqUU9rTzdIZ1Axb3ZmaytrYWNH?=
+ =?utf-8?B?U2tHdmJtSUdVK3owclpsd2RnOFh0YnlhSytyMzc1NU1xaUJYZjhRRzRIRGtO?=
+ =?utf-8?B?bDF1eFRGVmMvd0habmVyd1ZYSjM0MjBKVFBWSzBUT1VRekRxbWtYQ2ZodW5q?=
+ =?utf-8?B?a3k2RHhZd2tVZXVqV2JaVmJLM1IwT2NBN2N5dnQrTm50cHVsaEs5UXVUdG1v?=
+ =?utf-8?B?RnBxVUJKZVlMMmlDS3RIS0pOdE8zWlVmb3hMZ25PZytCbmoyVnQxTjN3WWY1?=
+ =?utf-8?B?RGVweWZ2YU9iL2pPa2wzNmJid1A1SnVnTHQrWnRmZU1QRXErdnBQQ0ZqQ243?=
+ =?utf-8?B?Ym4zSkFMRm1GTnZLcFhDVXVUSVFTaUhQSFFOS3VmRWg5d3pmMVo1Z0dic2dw?=
+ =?utf-8?B?aW9heU8rck1tVjZVd2VsczRXRzZHSmF1ZWxhTVkwSXR0UjZ5OFdoaUVRaHFV?=
+ =?utf-8?B?UEdKOStpUmMzLzh5LzE3blFtSUE2UEpoVWFWaS9FWlpMT3ZuYnIrWVBjTWQ5?=
+ =?utf-8?Q?UjMP0lmICHGaczoflkvnZffyN?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: ILK1KpgNoVwowMGGqp41zLqP11G7Q8g1
-X-Proofpoint-ORIG-GUID: ILK1KpgNoVwowMGGqp41zLqP11G7Q8g1
+X-OriginatorOrg: marvell.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR18MB5216.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36c0d9a3-0f4c-457a-530f-08da8a7fb230
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Aug 2022 12:03:48.0868
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Kcr3WFyrqZhLCW4dDP4g1VKY+cFhD5piR3B0h+BhLPzaEnCh9JU39E3tBV6oiipnwlqt0a0q3aQg1xuogRHIkw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR18MB1522
+X-Proofpoint-GUID: 7thWyNw-H8n9bUgpp-KoFL0bE_eWZS7A
+X-Proofpoint-ORIG-GUID: 7thWyNw-H8n9bUgpp-KoFL0bE_eWZS7A
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-30_06,2022-08-30_01,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of now all transmit queues transmit packets out of same scheduler
-queue hierarchy. Due to this PFC frames sent by peer are not handled
-properly, either all transmit queues are backpressured or none.
-To fix this when user enables PFC for a given priority map relavant
-transmit queue to a different scheduler queue hierarcy, so that
-backpressure is applied only to the traffic egressing out of that TXQ.
-
-Signed-off-by: Suman Ghosh <sumang@marvell.com>
----
-Changes since v5:
-- Fixed couple of review comments regarding reverse x-mas tree order and removing one
-  unwanted variable.
-
- .../ethernet/marvell/octeontx2/nic/cn10k.c    |   3 +-
- .../marvell/octeontx2/nic/otx2_common.c       |  59 +++-
- .../marvell/octeontx2/nic/otx2_common.h       |  28 +-
- .../marvell/octeontx2/nic/otx2_dcbnl.c        | 300 ++++++++++++++++++
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  |  54 +++-
- 5 files changed, 427 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-index fd4f083c699e..826f691de259 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/cn10k.c
-@@ -86,8 +86,7 @@ int cn10k_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
- 	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16; /* 128 byte */
- 	aq->sq.cq_ena = 1;
- 	aq->sq.ena = 1;
--	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
--	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
-+	aq->sq.smq = otx2_get_smq_idx(pfvf, qidx);
- 	aq->sq.smq_rr_weight = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
- 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
- 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index d686c7b6252f..bc3e6aae6efa 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -586,8 +586,9 @@ void otx2_get_mac_from_af(struct net_device *netdev)
- }
- EXPORT_SYMBOL(otx2_get_mac_from_af);
- 
--int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
-+int otx2_txschq_config(struct otx2_nic *pfvf, int lvl, int prio, bool txschq_for_pfc)
- {
-+	u16 (*schq_list)[MAX_TXSCHQ_PER_FUNC];
- 	struct otx2_hw *hw = &pfvf->hw;
- 	struct nix_txschq_config *req;
- 	u64 schq, parent;
-@@ -602,7 +603,13 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 	req->lvl = lvl;
- 	req->num_regs = 1;
- 
--	schq = hw->txschq_list[lvl][0];
-+	schq_list = hw->txschq_list;
-+#ifdef CONFIG_DCB
-+	if (txschq_for_pfc)
-+		schq_list = pfvf->pfc_schq_list;
-+#endif
-+
-+	schq = schq_list[lvl][prio];
- 	/* Set topology e.t.c configuration */
- 	if (lvl == NIX_TXSCH_LVL_SMQ) {
- 		req->reg[0] = NIX_AF_SMQX_CFG(schq);
-@@ -611,7 +618,7 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 				  (0x2ULL << 36);
- 		req->num_regs++;
- 		/* MDQ config */
--		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL4][0];
-+		parent = schq_list[NIX_TXSCH_LVL_TL4][prio];
- 		req->reg[1] = NIX_AF_MDQX_PARENT(schq);
- 		req->regval[1] = parent << 16;
- 		req->num_regs++;
-@@ -619,14 +626,14 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		req->reg[2] = NIX_AF_MDQX_SCHEDULE(schq);
- 		req->regval[2] =  dwrr_val;
- 	} else if (lvl == NIX_TXSCH_LVL_TL4) {
--		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL3][0];
-+		parent = schq_list[NIX_TXSCH_LVL_TL3][prio];
- 		req->reg[0] = NIX_AF_TL4X_PARENT(schq);
- 		req->regval[0] = parent << 16;
- 		req->num_regs++;
- 		req->reg[1] = NIX_AF_TL4X_SCHEDULE(schq);
- 		req->regval[1] = dwrr_val;
- 	} else if (lvl == NIX_TXSCH_LVL_TL3) {
--		parent = hw->txschq_list[NIX_TXSCH_LVL_TL2][0];
-+		parent = schq_list[NIX_TXSCH_LVL_TL2][prio];
- 		req->reg[0] = NIX_AF_TL3X_PARENT(schq);
- 		req->regval[0] = parent << 16;
- 		req->num_regs++;
-@@ -635,11 +642,13 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		if (lvl == hw->txschq_link_cfg_lvl) {
- 			req->num_regs++;
- 			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
--			/* Enable this queue and backpressure */
--			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+			/* Enable this queue and backpressure
-+			 * and set relative channel
-+			 */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12) | prio;
- 		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL2) {
--		parent =  hw->txschq_list[NIX_TXSCH_LVL_TL1][0];
-+		parent = schq_list[NIX_TXSCH_LVL_TL1][prio];
- 		req->reg[0] = NIX_AF_TL2X_PARENT(schq);
- 		req->regval[0] = parent << 16;
- 
-@@ -650,8 +659,10 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 		if (lvl == hw->txschq_link_cfg_lvl) {
- 			req->num_regs++;
- 			req->reg[2] = NIX_AF_TL3_TL2X_LINKX_CFG(schq, hw->tx_link);
--			/* Enable this queue and backpressure */
--			req->regval[2] = BIT_ULL(13) | BIT_ULL(12);
-+			/* Enable this queue and backpressure
-+			 * and set relative channel
-+			 */
-+			req->regval[2] = BIT_ULL(13) | BIT_ULL(12) | prio;
- 		}
- 	} else if (lvl == NIX_TXSCH_LVL_TL1) {
- 		/* Default config for TL1.
-@@ -676,6 +687,31 @@ int otx2_txschq_config(struct otx2_nic *pfvf, int lvl)
- 
- 	return otx2_sync_mbox_msg(&pfvf->mbox);
- }
-+EXPORT_SYMBOL(otx2_txschq_config);
-+
-+int otx2_smq_flush(struct otx2_nic *pfvf, int smq)
-+{
-+	struct nix_txschq_config *req;
-+	int rc;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+
-+	req = otx2_mbox_alloc_msg_nix_txschq_cfg(&pfvf->mbox);
-+	if (!req) {
-+		mutex_unlock(&pfvf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	req->lvl = NIX_TXSCH_LVL_SMQ;
-+	req->reg[0] = NIX_AF_SMQX_CFG(smq);
-+	req->regval[0] |= BIT_ULL(49);
-+	req->num_regs++;
-+
-+	rc = otx2_sync_mbox_msg(&pfvf->mbox);
-+	mutex_unlock(&pfvf->mbox.lock);
-+	return rc;
-+}
-+EXPORT_SYMBOL(otx2_smq_flush);
- 
- int otx2_txsch_alloc(struct otx2_nic *pfvf)
- {
-@@ -806,8 +842,7 @@ int otx2_sq_aq_init(void *dev, u16 qidx, u16 sqb_aura)
- 	aq->sq.max_sqe_size = NIX_MAXSQESZ_W16; /* 128 byte */
- 	aq->sq.cq_ena = 1;
- 	aq->sq.ena = 1;
--	/* Only one SMQ is allocated, map all SQ's to that SMQ  */
--	aq->sq.smq = pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
-+	aq->sq.smq = otx2_get_smq_idx(pfvf, qidx);
- 	aq->sq.smq_rr_quantum = mtu_to_dwrr_weight(pfvf, pfvf->tx_max_pktlen);
- 	aq->sq.default_chan = pfvf->hw.tx_chan_base;
- 	aq->sq.sqe_stype = NIX_STYPE_STF; /* Cache SQB */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index b28029cc4316..23948626b1ef 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -40,6 +40,11 @@
- 
- #define NAME_SIZE                               32
- 
-+#ifdef CONFIG_DCB
-+/* Max priority supported for PFC */
-+#define NIX_PF_PFC_PRIO_MAX			8
-+#endif
-+
- enum arua_mapped_qtypes {
- 	AURA_NIX_RQ,
- 	AURA_NIX_SQ,
-@@ -196,7 +201,7 @@ struct otx2_hw {
- 
- 	/* NIX */
- 	u8			txschq_link_cfg_lvl;
--	u16		txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
-+	u16			txschq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
- 	u16			matchall_ipolicer;
- 	u32			dwrr_mtu;
- 
-@@ -415,6 +420,8 @@ struct otx2_nic {
- 	/* PFC */
- 	u8			pfc_en;
- 	u8			*queue_to_pfc_map;
-+	u16			pfc_schq_list[NIX_TXSCH_LVL_CNT][MAX_TXSCHQ_PER_FUNC];
-+	bool			pfc_alloc_status[NIX_PF_PFC_PRIO_MAX];
- #endif
- 
- 	/* napi event count. It is needed for adaptive irq coalescing. */
-@@ -785,6 +792,16 @@ static inline void otx2_dma_unmap_page(struct otx2_nic *pfvf,
- 			     dir, DMA_ATTR_SKIP_CPU_SYNC);
- }
- 
-+static inline u16 otx2_get_smq_idx(struct otx2_nic *pfvf, u16 qidx)
-+{
-+#ifdef CONFIG_DCB
-+	if (pfvf->pfc_alloc_status[qidx])
-+		return pfvf->pfc_schq_list[NIX_TXSCH_LVL_SMQ][qidx];
-+#endif
-+
-+	return pfvf->hw.txschq_list[NIX_TXSCH_LVL_SMQ][0];
-+}
-+
- /* MSI-X APIs */
- void otx2_free_cints(struct otx2_nic *pfvf, int n);
- void otx2_set_cints_affinity(struct otx2_nic *pfvf);
-@@ -807,7 +824,7 @@ void otx2_free_aura_ptr(struct otx2_nic *pfvf, int type);
- void otx2_sq_free_sqbs(struct otx2_nic *pfvf);
- int otx2_config_nix(struct otx2_nic *pfvf);
- int otx2_config_nix_queues(struct otx2_nic *pfvf);
--int otx2_txschq_config(struct otx2_nic *pfvf, int lvl);
-+int otx2_txschq_config(struct otx2_nic *pfvf, int lvl, int prio, bool pfc_en);
- int otx2_txsch_alloc(struct otx2_nic *pfvf);
- int otx2_txschq_stop(struct otx2_nic *pfvf);
- void otx2_sqb_flush(struct otx2_nic *pfvf);
-@@ -888,6 +905,8 @@ bool otx2_xdp_sq_append_pkt(struct otx2_nic *pfvf, u64 iova, int len, u16 qidx);
- u16 otx2_get_max_mtu(struct otx2_nic *pfvf);
- int otx2_handle_ntuple_tc_features(struct net_device *netdev,
- 				   netdev_features_t features);
-+int otx2_smq_flush(struct otx2_nic *pfvf, int smq);
-+
- /* tc support */
- int otx2_init_tc(struct otx2_nic *nic);
- void otx2_shutdown_tc(struct otx2_nic *nic);
-@@ -907,5 +926,10 @@ void otx2_dmacflt_update_pfmac_flow(struct otx2_nic *pfvf);
- void otx2_update_bpid_in_rqctx(struct otx2_nic *pfvf, int vlan_prio, int qidx, bool pfc_enable);
- int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf);
- int otx2_dcbnl_set_ops(struct net_device *dev);
-+/* PFC support */
-+int otx2_pfc_txschq_config(struct otx2_nic *pfvf);
-+int otx2_pfc_txschq_alloc(struct otx2_nic *pfvf);
-+int otx2_pfc_txschq_update(struct otx2_nic *pfvf);
-+int otx2_pfc_txschq_stop(struct otx2_nic *pfvf);
- #endif
- #endif /* OTX2_COMMON_H */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-index 723d2506d309..ccaf97bb1ce0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_dcbnl.c
-@@ -7,6 +7,289 @@
- 
- #include "otx2_common.h"
- 
-+static int otx2_check_pfc_config(struct otx2_nic *pfvf)
-+{
-+	u8 tx_queues = pfvf->hw.tx_queues, prio;
-+	u8 pfc_en = pfvf->pfc_en;
-+
-+	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
-+		if ((pfc_en & (1 << prio)) &&
-+		    prio > tx_queues - 1) {
-+			dev_warn(pfvf->dev,
-+				 "Increase number of tx queues from %d to %d to support PFC.\n",
-+				 tx_queues, prio + 1);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+int otx2_pfc_txschq_config(struct otx2_nic *pfvf)
-+{
-+	u8 pfc_en, pfc_bit_set;
-+	int prio, lvl, err;
-+
-+	pfc_en = pfvf->pfc_en;
-+	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
-+		pfc_bit_set = pfc_en & (1 << prio);
-+
-+		/* Either PFC bit is not set
-+		 * or tx scheduler is not allocated for the priority
-+		 */
-+		if (!pfc_bit_set || !pfvf->pfc_alloc_status[prio])
-+			continue;
-+
-+		/* configure the scheduler for the tls*/
-+		for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++) {
-+			err = otx2_txschq_config(pfvf, lvl, prio, true);
-+			if (err) {
-+				dev_err(pfvf->dev,
-+					"%s configure PFC tx schq for lvl:%d, prio:%d failed!\n",
-+					__func__, lvl, prio);
-+				return err;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int otx2_pfc_txschq_alloc_one(struct otx2_nic *pfvf, u8 prio)
-+{
-+	struct nix_txsch_alloc_req *req;
-+	struct nix_txsch_alloc_rsp *rsp;
-+	int lvl, rc;
-+
-+	/* Get memory to put this msg */
-+	req = otx2_mbox_alloc_msg_nix_txsch_alloc(&pfvf->mbox);
-+	if (!req)
-+		return -ENOMEM;
-+
-+	/* Request one schq per level upto max level as configured
-+	 * link config level. These rest of the scheduler can be
-+	 * same as hw.txschq_list.
-+	 */
-+	for (lvl = 0; lvl < pfvf->hw.txschq_link_cfg_lvl; lvl++)
-+		req->schq[lvl] = 1;
-+
-+	rc = otx2_sync_mbox_msg(&pfvf->mbox);
-+	if (rc)
-+		return rc;
-+
-+	rsp = (struct nix_txsch_alloc_rsp *)
-+	      otx2_mbox_get_rsp(&pfvf->mbox.mbox, 0, &req->hdr);
-+	if (IS_ERR(rsp))
-+		return PTR_ERR(rsp);
-+
-+	/* Setup transmit scheduler list */
-+	for (lvl = 0; lvl < pfvf->hw.txschq_link_cfg_lvl; lvl++) {
-+		if (!rsp->schq[lvl])
-+			return -ENOSPC;
-+
-+		pfvf->pfc_schq_list[lvl][prio] = rsp->schq_list[lvl][0];
-+	}
-+
-+	/* Set the Tx schedulers for rest of the levels same as
-+	 * hw.txschq_list as those will be common for all.
-+	 */
-+	for (; lvl < NIX_TXSCH_LVL_CNT; lvl++)
-+		pfvf->pfc_schq_list[lvl][prio] = pfvf->hw.txschq_list[lvl][0];
-+
-+	pfvf->pfc_alloc_status[prio] = true;
-+	return 0;
-+}
-+
-+int otx2_pfc_txschq_alloc(struct otx2_nic *pfvf)
-+{
-+	u8 pfc_en = pfvf->pfc_en;
-+	u8 pfc_bit_set;
-+	int err, prio;
-+
-+	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
-+		pfc_bit_set = pfc_en & (1 << prio);
-+
-+		if (!pfc_bit_set || pfvf->pfc_alloc_status[prio])
-+			continue;
-+
-+		/* Add new scheduler to the priority */
-+		err = otx2_pfc_txschq_alloc_one(pfvf, prio);
-+		if (err) {
-+			dev_err(pfvf->dev, "%s failed to allocate PFC TX schedulers\n", __func__);
-+			return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static int otx2_pfc_txschq_stop_one(struct otx2_nic *pfvf, u8 prio)
-+{
-+	struct nix_txsch_free_req *free_req;
-+
-+	mutex_lock(&pfvf->mbox.lock);
-+	/* free PFC TLx nodes */
-+	free_req = otx2_mbox_alloc_msg_nix_txsch_free(&pfvf->mbox);
-+	if (!free_req) {
-+		mutex_unlock(&pfvf->mbox.lock);
-+		return -ENOMEM;
-+	}
-+
-+	free_req->flags = TXSCHQ_FREE_ALL;
-+	otx2_sync_mbox_msg(&pfvf->mbox);
-+	mutex_unlock(&pfvf->mbox.lock);
-+
-+	pfvf->pfc_alloc_status[prio] = false;
-+	return 0;
-+}
-+
-+static int otx2_pfc_update_sq_smq_mapping(struct otx2_nic *pfvf, int prio)
-+{
-+	struct nix_cn10k_aq_enq_req *cn10k_sq_aq;
-+	struct net_device *dev = pfvf->netdev;
-+	bool if_up = netif_running(dev);
-+	struct nix_aq_enq_req *sq_aq;
-+
-+	if (if_up) {
-+		if (pfvf->pfc_alloc_status[prio])
-+			netif_tx_stop_all_queues(pfvf->netdev);
-+		else
-+			netif_tx_stop_queue(netdev_get_tx_queue(dev, prio));
-+	}
-+
-+	if (test_bit(CN10K_LMTST, &pfvf->hw.cap_flag)) {
-+		cn10k_sq_aq = otx2_mbox_alloc_msg_nix_cn10k_aq_enq(&pfvf->mbox);
-+		if (!cn10k_sq_aq)
-+			return -ENOMEM;
-+
-+		/* Fill AQ info */
-+		cn10k_sq_aq->qidx = prio;
-+		cn10k_sq_aq->ctype = NIX_AQ_CTYPE_SQ;
-+		cn10k_sq_aq->op = NIX_AQ_INSTOP_WRITE;
-+
-+		/* Fill fields to update */
-+		cn10k_sq_aq->sq.ena = 1;
-+		cn10k_sq_aq->sq_mask.ena = 1;
-+		cn10k_sq_aq->sq_mask.smq = GENMASK(9, 0);
-+		cn10k_sq_aq->sq.smq = otx2_get_smq_idx(pfvf, prio);
-+	} else {
-+		sq_aq = otx2_mbox_alloc_msg_nix_aq_enq(&pfvf->mbox);
-+		if (!sq_aq)
-+			return -ENOMEM;
-+
-+		/* Fill AQ info */
-+		sq_aq->qidx = prio;
-+		sq_aq->ctype = NIX_AQ_CTYPE_SQ;
-+		sq_aq->op = NIX_AQ_INSTOP_WRITE;
-+
-+		/* Fill fields to update */
-+		sq_aq->sq.ena = 1;
-+		sq_aq->sq_mask.ena = 1;
-+		sq_aq->sq_mask.smq = GENMASK(8, 0);
-+		sq_aq->sq.smq = otx2_get_smq_idx(pfvf, prio);
-+	}
-+
-+	otx2_sync_mbox_msg(&pfvf->mbox);
-+
-+	if (if_up) {
-+		if (pfvf->pfc_alloc_status[prio])
-+			netif_tx_start_all_queues(pfvf->netdev);
-+		else
-+			netif_tx_start_queue(netdev_get_tx_queue(dev, prio));
-+	}
-+
-+	return 0;
-+}
-+
-+int otx2_pfc_txschq_update(struct otx2_nic *pfvf)
-+{
-+	bool if_up = netif_running(pfvf->netdev);
-+	u8 pfc_en = pfvf->pfc_en, pfc_bit_set;
-+	struct mbox *mbox = &pfvf->mbox;
-+	int err, prio;
-+
-+	mutex_lock(&mbox->lock);
-+	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
-+		pfc_bit_set = pfc_en & (1 << prio);
-+
-+		/* tx scheduler was created but user wants to disable now */
-+		if (!pfc_bit_set && pfvf->pfc_alloc_status[prio]) {
-+			mutex_unlock(&mbox->lock);
-+			if (if_up)
-+				netif_tx_stop_all_queues(pfvf->netdev);
-+
-+			otx2_smq_flush(pfvf, pfvf->pfc_schq_list[NIX_TXSCH_LVL_SMQ][prio]);
-+			if (if_up)
-+				netif_tx_start_all_queues(pfvf->netdev);
-+
-+			/* delete the schq */
-+			err = otx2_pfc_txschq_stop_one(pfvf, prio);
-+			if (err) {
-+				dev_err(pfvf->dev,
-+					"%s failed to stop PFC tx schedulers for priority: %d\n",
-+					__func__, prio);
-+				return err;
-+			}
-+
-+			mutex_lock(&mbox->lock);
-+			goto update_sq_smq_map;
-+		}
-+
-+		/* Either PFC bit is not set
-+		 * or Tx scheduler is already mapped for the priority
-+		 */
-+		if (!pfc_bit_set || pfvf->pfc_alloc_status[prio])
-+			continue;
-+
-+		/* Add new scheduler to the priority */
-+		err = otx2_pfc_txschq_alloc_one(pfvf, prio);
-+		if (err) {
-+			mutex_unlock(&mbox->lock);
-+			dev_err(pfvf->dev,
-+				"%s failed to allocate PFC tx schedulers for priority: %d\n",
-+				__func__, prio);
-+			return err;
-+		}
-+
-+update_sq_smq_map:
-+		err = otx2_pfc_update_sq_smq_mapping(pfvf, prio);
-+		if (err) {
-+			mutex_unlock(&mbox->lock);
-+			dev_err(pfvf->dev, "%s failed PFC Tx schq sq:%d mapping", __func__, prio);
-+			return err;
-+		}
-+	}
-+
-+	err = otx2_pfc_txschq_config(pfvf);
-+	mutex_unlock(&mbox->lock);
-+	if (err)
-+		return err;
-+
-+	return 0;
-+}
-+
-+int otx2_pfc_txschq_stop(struct otx2_nic *pfvf)
-+{
-+	u8 pfc_en, pfc_bit_set;
-+	int prio, err;
-+
-+	pfc_en = pfvf->pfc_en;
-+	for (prio = 0; prio < NIX_PF_PFC_PRIO_MAX; prio++) {
-+		pfc_bit_set = pfc_en & (1 << prio);
-+		if (!pfc_bit_set || !pfvf->pfc_alloc_status[prio])
-+			continue;
-+
-+		/* Delete the existing scheduler */
-+		err = otx2_pfc_txschq_stop_one(pfvf, prio);
-+		if (err) {
-+			dev_err(pfvf->dev, "%s failed to stop PFC TX schedulers\n", __func__);
-+			return err;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int otx2_config_priority_flow_ctrl(struct otx2_nic *pfvf)
- {
- 	struct cgx_pfc_cfg *req;
-@@ -128,6 +411,17 @@ static int otx2_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
- 	/* Save PFC configuration to interface */
- 	pfvf->pfc_en = pfc->pfc_en;
- 
-+	if (pfvf->hw.tx_queues >= NIX_PF_PFC_PRIO_MAX)
-+		goto process_pfc;
-+
-+	/* Check if the PFC configuration can be
-+	 * supported by the tx queue configuration
-+	 */
-+	err = otx2_check_pfc_config(pfvf);
-+	if (err)
-+		return err;
-+
-+process_pfc:
- 	err = otx2_config_priority_flow_ctrl(pfvf);
- 	if (err)
- 		return err;
-@@ -136,6 +430,12 @@ static int otx2_dcbnl_ieee_setpfc(struct net_device *dev, struct ieee_pfc *pfc)
- 	if (pfc->pfc_en)
- 		otx2_nix_config_bp(pfvf, true);
- 
-+	err = otx2_pfc_txschq_update(pfvf);
-+	if (err) {
-+		dev_err(pfvf->dev, "%s failed to update TX schedulers\n", __func__);
-+		return err;
-+	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 9376d0e62914..49a4ff01cecb 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1389,18 +1389,40 @@ static int otx2_init_hw_resources(struct otx2_nic *pf)
- 		goto err_free_sq_ptrs;
- 	}
- 
-+#ifdef CONFIG_DCB
-+	if (pf->pfc_en) {
-+		err = otx2_pfc_txschq_alloc(pf);
-+		if (err) {
-+			mutex_unlock(&mbox->lock);
-+			goto err_free_sq_ptrs;
-+		}
-+	}
-+#endif
-+
- 	err = otx2_config_nix_queues(pf);
- 	if (err) {
- 		mutex_unlock(&mbox->lock);
- 		goto err_free_txsch;
- 	}
-+
- 	for (lvl = 0; lvl < NIX_TXSCH_LVL_CNT; lvl++) {
--		err = otx2_txschq_config(pf, lvl);
-+		err = otx2_txschq_config(pf, lvl, 0, false);
-+		if (err) {
-+			mutex_unlock(&mbox->lock);
-+			goto err_free_nix_queues;
-+		}
-+	}
-+
-+#ifdef CONFIG_DCB
-+	if (pf->pfc_en) {
-+		err = otx2_pfc_txschq_config(pf);
- 		if (err) {
- 			mutex_unlock(&mbox->lock);
- 			goto err_free_nix_queues;
- 		}
- 	}
-+#endif
-+
- 	mutex_unlock(&mbox->lock);
- 	return err;
- 
-@@ -1455,6 +1477,11 @@ static void otx2_free_hw_resources(struct otx2_nic *pf)
- 	if (err)
- 		dev_err(pf->dev, "RVUPF: Failed to stop/free TX schedulers\n");
- 
-+#ifdef CONFIG_DCB
-+	if (pf->pfc_en)
-+		otx2_pfc_txschq_stop(pf);
-+#endif
-+
- 	mutex_lock(&mbox->lock);
- 	/* Disable backpressure */
- 	if (!(pf->pcifunc & RVU_PFVF_FUNC_MASK))
-@@ -1853,6 +1880,30 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
- 	return NETDEV_TX_OK;
- }
- 
-+static u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
-+			     struct net_device *sb_dev)
-+{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+#ifdef CONFIG_DCB
-+	u8 vlan_prio;
-+#endif
-+
-+#ifdef CONFIG_DCB
-+	if (!skb->vlan_present)
-+		goto pick_tx;
-+
-+	vlan_prio = skb->vlan_tci >> 13;
-+	if ((vlan_prio > pf->hw.tx_queues - 1) ||
-+	    !pf->pfc_alloc_status[vlan_prio])
-+		goto pick_tx;
-+
-+	return vlan_prio;
-+
-+pick_tx:
-+#endif
-+	return netdev_pick_tx(netdev, skb, NULL);
-+}
-+
- static netdev_features_t otx2_fix_features(struct net_device *dev,
- 					   netdev_features_t features)
- {
-@@ -2447,6 +2498,7 @@ static const struct net_device_ops otx2_netdev_ops = {
- 	.ndo_open		= otx2_open,
- 	.ndo_stop		= otx2_stop,
- 	.ndo_start_xmit		= otx2_xmit,
-+	.ndo_select_queue	= otx2_select_queue,
- 	.ndo_fix_features	= otx2_fix_features,
- 	.ndo_set_mac_address    = otx2_set_mac_address,
- 	.ndo_change_mtu		= otx2_change_mtu,
--- 
-2.25.1
-
+Pj4gK2ludCBvdHgyX3BmY190eHNjaHFfdXBkYXRlKHN0cnVjdCBvdHgyX25pYyAqcGZ2Zikgew0K
+Pj4gKwl1OCBwZmNfZW4gPSBwZnZmLT5wZmNfZW4sIHBmY19iaXRfc2V0Ow0KPj4gKwlzdHJ1Y3Qg
+bWJveCAqbWJveCA9ICZwZnZmLT5tYm94Ow0KPj4gKwlib29sIGlmX3VwID0gbmV0aWZfcnVubmlu
+ZyhwZnZmLT5uZXRkZXYpOw0KPg0KPnBsZWFzZSwgcmVzcGVjdCB0aGUgcmV2ZXJzZSB4LW1hcyB0
+cmVlIGluIHZhcmlhYmxlcyBkZWNsYXJhdGlvbi4NCltTdW1hbl0gRG9uZQ0KPg0KPlsuLi5dDQo+
+PiBAQCAtMTg1Myw2ICsxODgwLDMyIEBAIHN0YXRpYyBuZXRkZXZfdHhfdCBvdHgyX3htaXQoc3Ry
+dWN0IHNrX2J1ZmYNCj4qc2tiLCBzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2KQ0KPj4gIAlyZXR1
+cm4gTkVUREVWX1RYX09LOw0KPj4gIH0NCj4+DQo+PiArc3RhdGljIHUxNiBvdHgyX3NlbGVjdF9x
+dWV1ZShzdHJ1Y3QgbmV0X2RldmljZSAqbmV0ZGV2LCBzdHJ1Y3QNCj5za19idWZmICpza2IsDQo+
+PiArCQkJICAgICBzdHJ1Y3QgbmV0X2RldmljZSAqc2JfZGV2KQ0KPj4gK3sNCj4+ICsJc3RydWN0
+IG90eDJfbmljICpwZiA9IG5ldGRldl9wcml2KG5ldGRldik7ICNpZmRlZiBDT05GSUdfRENCDQo+
+PiArCXU4IHZsYW5fcHJpbzsNCj4+ICsjZW5kaWYNCj4+ICsJaW50IHR4cTsNCj4+ICsNCj4+ICsj
+aWZkZWYgQ09ORklHX0RDQg0KPj4gKwlpZiAoIXNrYi0+dmxhbl9wcmVzZW50KQ0KPj4gKwkJZ290
+byBwaWNrX3R4Ow0KPj4gKw0KPj4gKwl2bGFuX3ByaW8gPSBza2ItPnZsYW5fdGNpID4+IDEzOw0K
+Pj4gKwlpZiAoKHZsYW5fcHJpbyA+IHBmLT5ody50eF9xdWV1ZXMgLSAxKSB8fA0KPj4gKwkgICAg
+IXBmLT5wZmNfYWxsb2Nfc3RhdHVzW3ZsYW5fcHJpb10pDQo+PiArCQlnb3RvIHBpY2tfdHg7DQo+
+PiArDQo+PiArCXJldHVybiB2bGFuX3ByaW87DQo+PiArDQo+PiArcGlja190eDoNCj4+ICsjZW5k
+aWYNCj4+ICsJdHhxID0gbmV0ZGV2X3BpY2tfdHgobmV0ZGV2LCBza2IsIE5VTEwpOw0KPj4gKwly
+ZXR1cm4gdHhxOw0KPg0KPllvdSBjYW4ganVzdA0KPglyZXR1cm4gbmV0ZGV2X3BpY2tfdHgobmV0
+ZGV2LCBza2IsIE5VTEwpOw0KPg0KPmFuZCBhdm9pZCBkZWNsYXJpbmcgdHhxLg0KW1N1bWFuXSBE
+b25lDQo+DQo+Q2hlZXJzLA0KPg0KPlBhb2xvDQoNCg==
