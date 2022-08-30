@@ -2,86 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D615A6011
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 12:02:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CE9F5A6019
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 12:03:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230012AbiH3KCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 06:02:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        id S230046AbiH3KDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 06:03:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229874AbiH3KBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 06:01:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D865657E3D;
-        Tue, 30 Aug 2022 03:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C926B81691;
-        Tue, 30 Aug 2022 10:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 35DCFC433D7;
-        Tue, 30 Aug 2022 10:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661853615;
-        bh=RbNLgaU0VdiLiev6MW1xgBhP2qXRPB2B/gTgDJZSro4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rrRSmSBAuqTb7nmgI9Ax8p5okymXy69indsZ2I27ALkxb8HpmWELEEWM77wLt8cFF
-         IGOz23VfGROtZ3bbz4QWsb0GwUtkVjjO8IfGlm+tj6K2+yzHqjEW7hPdbI3WtbezuH
-         83xVsDSUhL2QeIwZ6RKW9E3yihwjxN8b184ar9kBH1kgNxKsig+jsZ8TxTFPeHUX8t
-         mjMMSQ4OYE33FP+Plv8iltZnEsJKrz2FDPnGpErkoGBRju3oBu4ePZPOSkdCPcZZQF
-         PiocDs6mjAvnnw0q3Ggz9V5Xt5zm3vwIGxG+6TffXRGoHjAjsnmAzOsg7TOdu0qSSc
-         77tNaj3V+sdFg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1445FE924D8;
-        Tue, 30 Aug 2022 10:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229547AbiH3KCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 06:02:21 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB35EAB423
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 03:00:32 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id i188-20020a1c3bc5000000b003a7b6ae4eb2so4644032wma.4
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 03:00:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=0b21QXH6O+BTSjJFC+3rM4trmoZDQJp1tN7KcWJ7AWo=;
+        b=bj2skJMvdzjz078Ov7MeI6BrC+N8Z5RAt9LSxeTNWaAnfcX8+MsUHuhMzu6Zr43jXl
+         5eYhsEw9px1Nr+tnrxEsaTOoR2yVUPieVwxjNScLwOhaMlJWU4hQBD6dhxYJMR8uOcor
+         vVG1GtsCq7uf6ByVQ9ZNo6fepvO8/Ok3rtJfuXaSI2CHFZZn/04ojSlQQRVWucmrnauV
+         2Htia78+PAK8OqN2EiI+gwGHBBnlaQ4BKEz1X6+7kjG725Bx1m5INH+w9BABmX2/EPhK
+         1nv5lhnddkrwyEQHNAgxL4HnwjXIAiHaayAilECTJYlSW+2n2Ts92WPKc85Tb4391coD
+         suTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=0b21QXH6O+BTSjJFC+3rM4trmoZDQJp1tN7KcWJ7AWo=;
+        b=UcnYzXSDp7U9lc2Aub4/V/by+O329qbQFdRB6bSjTRMvvygzTyX+NCHGo5FPhxb9IB
+         M+Vfz1CVyA5Au9pDrMq6SH+wjE0z0e1l+ZdsKp6lC5KxOkcoB45wvtYAPmzoECxue7FE
+         ebrBi7EG6hE07Q4UgA47pgr4NxphSgo88zwbMdV9zbFKs+WWQb2tkY87we9TTfNXxWLy
+         ScqzTetsgDkveLLSu9ofqMmOMB4QLb5zhdwJ4+iIEd/u1srLizRYLMOiDLXzHdQtJbjF
+         734v5j6Vs2evj1VP9KG6yM2dd3pe6gQM2+CfKN7d+dLphaWj3xOIgFNljM3Zwp6YoL9f
+         Khrg==
+X-Gm-Message-State: ACgBeo0NcOXB9bilXg9PH55PRWmXcdGxMGVGa2WodSBFqSKvjJkUXmCJ
+        1hv524bUZtAPOKZSK5g4sOI01uJeGG3WFVF1Oaziig==
+X-Google-Smtp-Source: AA6agR6aNmu8tqzPRfJhzC1q15Zhh3XEe9S9CQ3NvFq+tQCjwhaY+BTSAAxNwSJGvY+m7hbap1HrnznQheLiT4TU10o=
+X-Received: by 2002:a05:600c:1550:b0:3a6:1d8c:247e with SMTP id
+ f16-20020a05600c155000b003a61d8c247emr9133266wmg.63.1661853630619; Tue, 30
+ Aug 2022 03:00:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net,v2] net: sched: tbf: don't call qdisc_put() while holding
- tree lock
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166185361506.21797.5581795536615394834.git-patchwork-notify@kernel.org>
-Date:   Tue, 30 Aug 2022 10:00:15 +0000
-References: <20220826013930.340121-1-shaozhengchao@huawei.com>
-In-Reply-To: <20220826013930.340121-1-shaozhengchao@huawei.com>
-To:     Zhengchao Shao <shaozhengchao@huawei.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, vladbu@mellanox.com, weiyongjun1@huawei.com,
-        yuehaibing@huawei.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220829065044.1736-1-anand@edgeble.ai>
+In-Reply-To: <20220829065044.1736-1-anand@edgeble.ai>
+From:   Jagan Teki <jagan@edgeble.ai>
+Date:   Tue, 30 Aug 2022 15:30:19 +0530
+Message-ID: <CA+VMnFwF4UVah9rbdhwjbuTuYFXwNFuDD==x0oYDxYiO+V-c-Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: rockchip-dwmac: add rv1126
+ compatible string
+To:     Anand Moon <anand@edgeble.ai>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 29 Aug 2022 at 12:23, Anand Moon <anand@edgeble.ai> wrote:
+>
+> Add compatible string for RV1126 gmac, and constrain it to
+> be compatible with Synopsys dwmac 4.20a.
+>
+> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
+> Signed-off-by: Anand Moon <anand@edgeble.ai>
+> ---
+>  Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+> index 083623c8d718..346e248a6ba5 100644
+> --- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+> +++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
+> @@ -26,6 +26,7 @@ select:
+>            - rockchip,rk3399-gmac
+>            - rockchip,rk3568-gmac
+>            - rockchip,rv1108-gmac
+> +          - rockchip,rv1126-gmac
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Fri, 26 Aug 2022 09:39:30 +0800 you wrote:
-> The issue is the same to commit c2999f7fb05b ("net: sched: multiq: don't
-> call qdisc_put() while holding tree lock"). Qdiscs call qdisc_put() while
-> holding sch tree spinlock, which results sleeping-while-atomic BUG.
-> 
-> Fixes: c266f64dbfa2 ("net: sched: protect block state with mutex")
-> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v2] net: sched: tbf: don't call qdisc_put() while holding tree lock
-    https://git.kernel.org/netdev/net/c/b05972f01e7d
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+it needs to be in the properties menu as well.
