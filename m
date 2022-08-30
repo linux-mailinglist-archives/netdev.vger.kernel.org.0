@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B21975A6A3B
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:27:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B18C5A6A75
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 19:29:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231675AbiH3R07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 13:26:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46386 "EHLO
+        id S231736AbiH3R3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 13:29:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231620AbiH3R03 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:26:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9E111C14D;
-        Tue, 30 Aug 2022 10:24:26 -0700 (PDT)
+        with ESMTP id S231783AbiH3R2l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 13:28:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B87CDB24A4;
+        Tue, 30 Aug 2022 10:25:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 002DB617A0;
-        Tue, 30 Aug 2022 17:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 122A3C43140;
-        Tue, 30 Aug 2022 17:22:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D66E617B6;
+        Tue, 30 Aug 2022 17:24:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C72F9C433C1;
+        Tue, 30 Aug 2022 17:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661880168;
-        bh=NltYM8yBpipvmbgQ7bMkNGD+BO0E+n1bKzDEVzlfdvw=;
+        s=k20201202; t=1661880250;
+        bh=NY6JsWI4b+Cby3KUaRVvcFmBg7BbC3hULZdp9WjljhA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uI6eZr9pB+Y2UreJ8DpnGGKitMKN0a9DDD4QSDA6TSM2Ph4c26zbuN4bSdIfFig2m
-         WtEwyaoRNDUEj3AFLJqHlbkZz6RHXJKJ19CuwtUNIUXDmsZCIoOkyBUr67qCNKmeOl
-         YpgESmLFFC5DZH7cBDCmDtYwNzjbtR+YMEhgQmbesg/9NiaK9Xyozgv1fJMnCbS4FF
-         KiB/H0+u3F2+ZLKX5BXFEo08grki7SIbMaVaqEFt8arUY2CTd2KmgDFIgmDv44Ey6t
-         IrUSp1fRrgzS/a1nhNQDgVg56cATrGhh4jtlDlKsAD2ZBxPzPIuGoohG2KjDdIjT//
-         tIrwmb06lDDIg==
+        b=vExd6F6wEdjlYzT6zkCD3pd6Cyx2HIjthgkvXesJMB8+fyReuZq7sUaQ+DHoMQ6oW
+         mEI2DbZVay9ejfTkQwT0QbipWIcyj9AY1V8cKY64M8OFas+ERPsT3nEh/jeSEG1Pg+
+         5gEpXAzBp6Ubvd3A29zlVQd89c7HPK9A8Zb5eHEatRGzp72XpqCcYPV4Cy7mFA9hvY
+         NCxCLtC00AmyLzoem1yI1K9dR6X3xM3PI8gNa2WEci+IAG2XMmga0WJBOFoQgxsuUa
+         k4kSrJQTRjAK0Nd3kGqk9rHtvsTFog5KC8WRQjVdw55xEY50vuoCdhl7LxMFDtW8ON
+         rGrkidMqSVEVQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     lily <floridsleeves@gmail.com>,
+Cc:     =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, asml.silence@gmail.com,
-        imagedong@tencent.com, luiz.von.dentz@intel.com,
-        vasily.averin@linux.dev, jk@codeconstruct.com.au,
+        Sasha Levin <sashal@kernel.org>, qiangqing.zhang@nxp.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 18/23] net/core/skbuff: Check the return value of skb_copy_bits()
-Date:   Tue, 30 Aug 2022 13:21:35 -0400
-Message-Id: <20220830172141.581086-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 12/16] fec: Restart PPS after link state change
+Date:   Tue, 30 Aug 2022 13:23:13 -0400
+Message-Id: <20220830172317.581397-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220830172141.581086-1-sashal@kernel.org>
-References: <20220830172141.581086-1-sashal@kernel.org>
+In-Reply-To: <20220830172317.581397-1-sashal@kernel.org>
+References: <20220830172317.581397-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,36 +59,200 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: lily <floridsleeves@gmail.com>
+From: Csókás Bence <csokas.bence@prolan.hu>
 
-[ Upstream commit c624c58e08b15105662b9ab9be23d14a6b945a49 ]
+[ Upstream commit f79959220fa5fbda939592bf91c7a9ea90419040 ]
 
-skb_copy_bits() could fail, which requires a check on the return
-value.
+On link state change, the controller gets reset,
+causing PPS to drop out and the PHC to lose its
+time and calibration. So we restart it if needed,
+restoring calibration and time registers.
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
+Changes since v2:
+* Add `fec_ptp_save_state()`/`fec_ptp_restore_state()`
+* Use `ktime_get_real_ns()`
+* Use `BIT()` macro
+Changes since v1:
+* More ECR #define's
+* Stop PPS in `fec_ptp_stop()`
+
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/skbuff.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/freescale/fec.h      | 10 ++++++
+ drivers/net/ethernet/freescale/fec_main.c | 42 ++++++++++++++++++++---
+ drivers/net/ethernet/freescale/fec_ptp.c  | 29 ++++++++++++++++
+ 3 files changed, 77 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 5ebef94e14dc6..161406cd991ae 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -4188,9 +4188,8 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 				SKB_GSO_CB(nskb)->csum_start =
- 					skb_headroom(nskb) + doffset;
- 			} else {
--				skb_copy_bits(head_skb, offset,
--					      skb_put(nskb, len),
--					      len);
-+				if (skb_copy_bits(head_skb, offset, skb_put(nskb, len), len))
-+					goto err;
- 			}
- 			continue;
- 		}
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 6ea98af63b341..0b8a06d833d5c 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -593,6 +593,13 @@ struct fec_enet_private {
+ 	int pps_enable;
+ 	unsigned int next_counter;
+ 
++	struct {
++		struct timespec64 ts_phc;
++		u64 ns_sys;
++		u32 at_corr;
++		u8 at_inc_corr;
++	} ptp_saved_state;
++
+ 	u64 ethtool_stats[];
+ };
+ 
+@@ -603,5 +610,8 @@ void fec_ptp_disable_hwts(struct net_device *ndev);
+ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+ int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
+ 
++void fec_ptp_save_state(struct fec_enet_private *fep);
++int fec_ptp_restore_state(struct fec_enet_private *fep);
++
+ /****************************************************************************/
+ #endif /* FEC_H */
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index d8bdaf2e5365c..b0999596b7858 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -253,8 +253,11 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
+ #define FEC_MMFR_TA		(2 << 16)
+ #define FEC_MMFR_DATA(v)	(v & 0xffff)
+ /* FEC ECR bits definition */
+-#define FEC_ECR_MAGICEN		(1 << 2)
+-#define FEC_ECR_SLEEP		(1 << 3)
++#define FEC_ECR_RESET   BIT(0)
++#define FEC_ECR_ETHEREN BIT(1)
++#define FEC_ECR_MAGICEN BIT(2)
++#define FEC_ECR_SLEEP   BIT(3)
++#define FEC_ECR_EN1588  BIT(4)
+ 
+ #define FEC_MII_TIMEOUT		30000 /* us */
+ 
+@@ -950,6 +953,9 @@ fec_restart(struct net_device *ndev)
+ 	u32 temp_mac[2];
+ 	u32 rcntl = OPT_FRAME_SIZE | 0x04;
+ 	u32 ecntl = 0x2; /* ETHEREN */
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++
++	fec_ptp_save_state(fep);
+ 
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+@@ -1101,7 +1107,7 @@ fec_restart(struct net_device *ndev)
+ 	}
+ 
+ 	if (fep->bufdesc_ex)
+-		ecntl |= (1 << 4);
++		ecntl |= FEC_ECR_EN1588;
+ 
+ #ifndef CONFIG_M5272
+ 	/* Enable the MIB statistic event counters */
+@@ -1115,6 +1121,14 @@ fec_restart(struct net_device *ndev)
+ 	if (fep->bufdesc_ex)
+ 		fec_ptp_start_cyclecounter(ndev);
+ 
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
++
+ 	/* Enable interrupts we wish to service */
+ 	if (fep->link)
+ 		writel(FEC_DEFAULT_IMASK, fep->hwp + FEC_IMASK);
+@@ -1150,6 +1164,8 @@ fec_stop(struct net_device *ndev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	u32 rmii_mode = readl(fep->hwp + FEC_R_CNTRL) & (1 << 8);
+ 	u32 val;
++	struct ptp_clock_request ptp_rq = { .type = PTP_CLK_REQ_PPS };
++	u32 ecntl = 0;
+ 
+ 	/* We cannot expect a graceful transmit stop without link !!! */
+ 	if (fep->link) {
+@@ -1159,6 +1175,8 @@ fec_stop(struct net_device *ndev)
+ 			netdev_err(ndev, "Graceful transmit stop did not complete!\n");
+ 	}
+ 
++	fec_ptp_save_state(fep);
++
+ 	/* Whack a reset.  We should wait for this.
+ 	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
+ 	 * instead of reset MAC itself.
+@@ -1180,12 +1198,28 @@ fec_stop(struct net_device *ndev)
+ 	}
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
++	if (fep->bufdesc_ex)
++		ecntl |= FEC_ECR_EN1588;
++
+ 	/* We have to keep ENET enabled to have MII interrupt stay working */
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC &&
+ 		!(fep->wol_flag & FEC_WOL_FLAG_SLEEP_ON)) {
+-		writel(2, fep->hwp + FEC_ECNTRL);
++		ecntl |= FEC_ECR_ETHEREN;
+ 		writel(rmii_mode, fep->hwp + FEC_R_CNTRL);
+ 	}
++
++	writel(ecntl, fep->hwp + FEC_ECNTRL);
++
++	if (fep->bufdesc_ex)
++		fec_ptp_start_cyclecounter(ndev);
++
++	/* Restart PPS if needed */
++	if (fep->pps_enable) {
++		/* Clear flag so fec_ptp_enable_pps() doesn't return immediately */
++		fep->pps_enable = 0;
++		fec_ptp_restore_state(fep);
++		fep->ptp_caps.enable(&fep->ptp_caps, &ptp_rq, 1);
++	}
+ }
+ 
+ 
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index c5ae673005908..63e221b95abed 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -638,7 +638,36 @@ void fec_ptp_stop(struct platform_device *pdev)
+ 	struct net_device *ndev = platform_get_drvdata(pdev);
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 
++	if (fep->pps_enable)
++		fec_ptp_enable_pps(fep, 0);
++
+ 	cancel_delayed_work_sync(&fep->time_keep);
+ 	if (fep->ptp_clock)
+ 		ptp_clock_unregister(fep->ptp_clock);
+ }
++
++void fec_ptp_save_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc_corr;
++
++	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++	fep->ptp_saved_state.ns_sys = ktime_get_ns();
++
++	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
++	atime_inc_corr = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_CORR_MASK;
++	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
++}
++
++int fec_ptp_restore_state(struct fec_enet_private *fep)
++{
++	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
++	u64 ns_sys;
++
++	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
++	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
++	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
++
++	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
++	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
++	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++}
 -- 
 2.35.1
 
