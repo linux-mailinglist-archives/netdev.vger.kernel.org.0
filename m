@@ -2,155 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99C645A6177
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 13:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 449C95A617E
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 13:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbiH3LPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 07:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
+        id S229447AbiH3LSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 07:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229449AbiH3LPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 07:15:30 -0400
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4C35C341
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 04:15:25 -0700 (PDT)
-Received: from imsva.intranet.prolan.hu (imsva.intranet.prolan.hu [10.254.254.252])
-        by fw2.prolan.hu (Postfix) with ESMTPS id 2913A7F51C;
-        Tue, 30 Aug 2022 13:15:22 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 120E434064;
-        Tue, 30 Aug 2022 13:15:22 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ECCCC3405A;
-        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
-Received: from fw2.prolan.hu (unknown [10.254.254.253])
-        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
-        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
-Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
-        by fw2.prolan.hu (Postfix) with ESMTPS id BC4037F51C;
-        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
-        t=1661858121; bh=NGZHmdqYBUo+DVYi7aKUNmOooUXw3O4V6ojsrhk3Un4=;
-        h=From:To:CC:Subject:Date:From;
-        b=MBEaa3sEFanOA7/fWlg0LebUcULYs0oRKx7GA+07CY98un256+05YjnOxXKoSgDL4
-         SoMsxbRoGxv+ByrvK96vdHmgo8AfSF+SOTZi0k45K9IjqTGCletu0IANcs83QSPI0j
-         QgKlN7w5CEYTu54RfzEFDg+bLLz/yWlV3JJkrwroJJ+ueOZP70TwfsT8zm95HvJM3S
-         U4V6jgox0TMkCnGazexkmbDRRmPp3t3rDHI1Ao2HY+7wrhNKbOVUKcPWAYdJJxE2Zi
-         U9ByhMdaeW4CdXyarYJSXsYak/Fth6pqpGCxqdr875/OMYIMOJdoD4X8YdjH/Bo1mB
-         kdfpMrakWhZiw==
-Received: from atlas.intranet.prolan.hu (10.254.0.229) by
- atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id
- 15.1.2507.12; Tue, 30 Aug 2022 13:15:21 +0200
-Received: from P-01011.intranet.prolan.hu (10.254.7.28) by
- atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 13:15:21 +0200
-From:   =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
-To:     <netdev@vger.kernel.org>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <qiangqing.zhang@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>, <kernel@pengutronix.de>,
-        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH v2] net: fec: Use unlocked timecounter reads for saving state
-Date:   Tue, 30 Aug 2022 13:15:16 +0200
-Message-ID: <20220830111516.82875-1-csokas.bence@prolan.hu>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        with ESMTP id S229543AbiH3LSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 07:18:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEEEBF32D5
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 04:18:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661858299;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4JiCrE3IiQ8+CEWNeSS2asHnnk4i6y9uPZlIK6ZR5Vo=;
+        b=CXLfW2x3JptwX1+XI6FB+q3v79MalWmzXlyhXYtAKH6Dkztc2a3jrHvrTGxY5dfaoPGCrL
+        yeIuryopN3By6Ii4DtmYVKtztiverSMO7juNkGmyndnYjB4eAWP+wR3ex0UbB6MzxvRjAj
+        51yC24omGiGo69I/fl7DhnGd3Ufcvr4=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-574-bHl1VotkNA24-1aQ72JtKg-1; Tue, 30 Aug 2022 07:18:18 -0400
+X-MC-Unique: bHl1VotkNA24-1aQ72JtKg-1
+Received: by mail-wr1-f72.google.com with SMTP id d11-20020adfc08b000000b002207555c1f6so1675780wrf.7
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 04:18:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:user-agent:references
+         :in-reply-to:date:to:from:subject:message-id:x-gm-message-state:from
+         :to:cc;
+        bh=4JiCrE3IiQ8+CEWNeSS2asHnnk4i6y9uPZlIK6ZR5Vo=;
+        b=LxnuaXWN7NKr5QfsM9Lzx8yDUwYsaQ629pyewHC0BvK0zzDOPORh3V1/XLv83PyttI
+         645IGqn/1NYXGgrTGxAiACjESamw5Hbb5czpwcYI/CfWDIQazHPAYB08/FTievL1pg8H
+         5heT1BzyjlnT+5/095UIfwspmZDTRa/tuzZw3/KeikjYcYLlseEXiWrjfsUB/anmSmiM
+         Fe/l08TEnllG3j7YGLQF1NNQadQ5xvwTNC1lG4yMXOltZoUoCMVAdMaFddVQ7Fo2lNpY
+         e1G5SnALUXNuLZUAsiOlb4/n+CkhTK6a7b7AXYUp4inYHmQRjuFM7ULe9q5rviXmQ+H4
+         NbFg==
+X-Gm-Message-State: ACgBeo0JlCg8DOTRU2Em9pZJ5tNDI94PqyS6qo/Y6eQmByOw1x3jYkaU
+        8sIqXl/c8BVHaoyDK2IbJi3VO+uYeqayvkMQjACPBJaVYIkWd6WBgP9yKYorV5lQdVV2THkmLyF
+        0cCRgDdzEv1zLZy62
+X-Received: by 2002:a05:600c:3509:b0:3a6:1888:a4bd with SMTP id h9-20020a05600c350900b003a61888a4bdmr9447096wmq.191.1661858297249;
+        Tue, 30 Aug 2022 04:18:17 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4HvigwPSq8EiiHGqkmNWGcILJriKSRCBxytXiIBYXM6+WZflMGWDs2vCn+PQYGB3CfWu298A==
+X-Received: by 2002:a05:600c:3509:b0:3a6:1888:a4bd with SMTP id h9-20020a05600c350900b003a61888a4bdmr9447079wmq.191.1661858297005;
+        Tue, 30 Aug 2022 04:18:17 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-97-176.dyn.eolo.it. [146.241.97.176])
+        by smtp.gmail.com with ESMTPSA id e29-20020a5d595d000000b0022584e771adsm9252134wri.113.2022.08.30.04.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 30 Aug 2022 04:18:16 -0700 (PDT)
+Message-ID: <686875c4c9b6d8c2ad17b506f7784a8fb8bf351b.camel@redhat.com>
+Subject: Re: [net-next PATCH V5] octeontx2-pf: Add egress PFC support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Suman Ghosh <sumang@marvell.com>, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
+        hkelam@marvell.com, sbhatta@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, netdev@vger.kernel.org
+Date:   Tue, 30 Aug 2022 13:18:15 +0200
+In-Reply-To: <20220826075751.2005604-1-sumang@marvell.com>
+References: <20220826075751.2005604-1-sumang@marvell.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1661858121;VERSION=7934;MC=2749217230;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
-X-ESET-Antispam: OK
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29971EF456637263
-X-TM-AS-GCONF: 00
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-`fec_ptp_save_state()` may be called from an atomic context,
-which makes `fec_ptp_gettime()` unable to acquire a mutex.
-Using the lower-level timecounter ops remedies the problem.
+Hello,
 
-Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Fixes: f79959220fa5
+Just a couple of minor nit, see below.
 
-Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
----
- drivers/net/ethernet/freescale/fec.h     |  4 ++--
- drivers/net/ethernet/freescale/fec_ptp.c | 19 +++++++++++++------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+On Fri, 2022-08-26 at 13:27 +0530, Suman Ghosh wrote:
+[...]
+> +int otx2_pfc_txschq_update(struct otx2_nic *pfvf)
+> +{
+> +	u8 pfc_en = pfvf->pfc_en, pfc_bit_set;
+> +	struct mbox *mbox = &pfvf->mbox;
+> +	bool if_up = netif_running(pfvf->netdev);
 
-diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
-index b656cda75c92..7bc7ab4b5d3a 100644
---- a/drivers/net/ethernet/freescale/fec.h
-+++ b/drivers/net/ethernet/freescale/fec.h
-@@ -597,7 +597,7 @@ struct fec_enet_private {
- 	unsigned int next_counter;
- 
- 	struct {
--		struct timespec64 ts_phc;
-+		u64 ns_phc;
- 		u64 ns_sys;
- 		u32 at_corr;
- 		u8 at_inc_corr;
-@@ -613,7 +613,7 @@ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
- int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
- 
- void fec_ptp_save_state(struct fec_enet_private *fep);
--int fec_ptp_restore_state(struct fec_enet_private *fep);
-+void fec_ptp_restore_state(struct fec_enet_private *fep);
- 
- /****************************************************************************/
- #endif /* FEC_H */
-diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
-index 78fb8818d168..2ad93668844a 100644
---- a/drivers/net/ethernet/freescale/fec_ptp.c
-+++ b/drivers/net/ethernet/freescale/fec_ptp.c
-@@ -636,7 +636,13 @@ void fec_ptp_save_state(struct fec_enet_private *fep)
- {
- 	u32 atime_inc_corr;
- 
--	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
-+	if (preempt_count_equals(0)) {
-+		spin_lock_irqsave(&fep->tmreg_lock, flags);
-+		fep->ptp_saved_state.ns_phc = timecounter_read(&fep->tc);
-+		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
-+	} else {
-+		fep->ptp_saved_state.ns_phc = timecounter_read(&fep->tc);
-+	}
- 	fep->ptp_saved_state.ns_sys = ktime_get_ns();
- 
- 	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
-@@ -644,16 +650,17 @@ void fec_ptp_save_state(struct fec_enet_private *fep)
- 	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
- }
- 
--int fec_ptp_restore_state(struct fec_enet_private *fep)
-+void fec_ptp_restore_state(struct fec_enet_private *fep)
- {
- 	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
--	u64 ns_sys;
-+	u64 ns;
- 
- 	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
- 	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
- 	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
- 
--	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
--	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
--	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
-+	ns = ktime_get_ns() - fep->ptp_saved_state.ns_sys + fep->ptp_saved_state.ns_phc;
-+
-+	writel(ns & fep->cc.mask, fep->hwp + FEC_ATIME);
-+	timecounter_init(&fep->tc, &fep->cc, ns);
- }
--- 
-2.25.1
+please, respect the reverse x-mas tree in variables declaration.
+
+[...]
+> @@ -1853,6 +1880,32 @@ static netdev_tx_t otx2_xmit(struct sk_buff *skb, struct net_device *netdev)
+>  	return NETDEV_TX_OK;
+>  }
+>  
+> +static u16 otx2_select_queue(struct net_device *netdev, struct sk_buff *skb,
+> +			     struct net_device *sb_dev)
+> +{
+> +	struct otx2_nic *pf = netdev_priv(netdev);
+> +#ifdef CONFIG_DCB
+> +	u8 vlan_prio;
+> +#endif
+> +	int txq;
+> +
+> +#ifdef CONFIG_DCB
+> +	if (!skb->vlan_present)
+> +		goto pick_tx;
+> +
+> +	vlan_prio = skb->vlan_tci >> 13;
+> +	if ((vlan_prio > pf->hw.tx_queues - 1) ||
+> +	    !pf->pfc_alloc_status[vlan_prio])
+> +		goto pick_tx;
+> +
+> +	return vlan_prio;
+> +
+> +pick_tx:
+> +#endif
+> +	txq = netdev_pick_tx(netdev, skb, NULL);
+> +	return txq;
+
+You can just
+	return netdev_pick_tx(netdev, skb, NULL);
+
+and avoid declaring txq.
+
+Cheers,
+
+Paolo
 
