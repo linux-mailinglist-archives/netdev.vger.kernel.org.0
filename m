@@ -2,290 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20B9F5A663C
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:25:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37B1F5A6649
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229897AbiH3OYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 10:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
+        id S229965AbiH3O3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 10:29:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229521AbiH3OYu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:24:50 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2EA39E;
-        Tue, 30 Aug 2022 07:24:44 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id A3381121;
-        Tue, 30 Aug 2022 16:24:42 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661869482;
+        with ESMTP id S229541AbiH3O3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:29:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857F861D96
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 07:29:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661869777;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ksexceGYLzmlYsHeH0rjdnvsXlkUmLS38Dmp/YO60oQ=;
-        b=vgKzVwKoXHDPNbBLh16JW5TCnOV8a8HQ798Pb8eyYspmZ3tboetf7xkqhdVTNV75NEbsgC
-        DyPK+R0ZHfA3nvuUi1OfNu9br6i6h/1t6Th07icjgTwEPluILSZAOCrVzxdNsq7vr8lRp6
-        zW1CjEOzHYX8mMVQaW5EgQayN4ZjLAxPeIwdf1jIRqhLZtdvTcyLfHLik39GTXW+xH0LAR
-        ASXeiz99Oul80NtAzgjRaRMeoUEPC3Hqynqbv9BbgyDbRnSqz4tYgdyjrOVhdOBfPBnZoz
-        VSZqUQ/03BO1K5PMYhx1KZ23RiNLReB/pIpePCho7cRjjvNXU0H6Dz4Ep29DXQ==
+        bh=lmXShkPGu5qohlisPijwUoqxiVIKAZ+9/TfZzFh7608=;
+        b=eAZwpzBRq66v6mdO4T8oG9UPPoc/kb9yp97P6UazL9CpW8F5dQPmFTyKof7svpybYwCxjO
+        m2b79YQUVHj7uFoxT+IilbO5glGjw3scJH5NJOb17zjbqbOZH5lekyMIBKZ34fvnH1Sgoo
+        qBe3ZNJx8MgFKh7chIOYczlZDBoy+Zo=
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
+ [209.85.216.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-274-9M5JOG0_OPSMGCsuVxa0rQ-1; Tue, 30 Aug 2022 10:29:36 -0400
+X-MC-Unique: 9M5JOG0_OPSMGCsuVxa0rQ-1
+Received: by mail-pj1-f71.google.com with SMTP id g9-20020a17090a290900b001fd59cc2c14so4921400pjd.7
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 07:29:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=lmXShkPGu5qohlisPijwUoqxiVIKAZ+9/TfZzFh7608=;
+        b=ljslbkBb7Agawonij26NlyLWBIPTZoX4qmumReAEqn7aH39o07tL1zaXGbTRR7kdS2
+         PKCcWxSj1zirBh0t/iOGqQN6z9ltN/tmiYtGg8odAcGL80x7F8y0C8A0dPPPX7TqsBt6
+         AUWnXcv5yBskG+s34mG1Ocp3uFcnSYohf9eTQisONW17HwrpqmmiOcpOs98BMmJxyW2S
+         DdGE4V640FyN/Vx6KuDDb1lRJZ2QaEmfhhqmaQmlS7whHflmhjV0l6enrfStqrPUukgM
+         8YgFto92I+OVxu2X7DuCQGp22tY9WNhWqFbkaXQ+gKoPFHFpwCppLsJDCIe02qSUmXMR
+         5Mtw==
+X-Gm-Message-State: ACgBeo3EAu2YNLRlHwpRcRAjcCf60jimzYIskr6HakpLvYAdwsplr/IJ
+        Pg89XeagoBMUmqZs3yqRpFe3cRs1crX9aC9HrdgiTjpOodeeQqAX+/R11MgSoCFBOLVxyc6RmX0
+        DB4kFr4E2fGCG1RGXdesEdsTDhIX1+Tst
+X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id k11-20020a63d10b000000b0041dbd7d7759mr18107751pgg.196.1661869775388;
+        Tue, 30 Aug 2022 07:29:35 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6ZkHiVpznHXYfoQbkr7dm3Zi5mkVALp/HWJ4F89gPVcA8KOGuI5YxXe4p2AipIfQA48i4dFJ6SAqik3HjUw/A=
+X-Received: by 2002:a63:d10b:0:b0:41d:bd7d:7759 with SMTP id
+ k11-20020a63d10b000000b0041dbd7d7759mr18107710pgg.196.1661869775042; Tue, 30
+ Aug 2022 07:29:35 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Tue, 30 Aug 2022 16:24:42 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 06/14] nvmem: core: introduce NVMEM layouts
-In-Reply-To: <e2d91011-583e-a88d-94f9-beb194416326@linaro.org>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-7-michael@walle.cc>
- <e2d91011-583e-a88d-94f9-beb194416326@linaro.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <ae27e9d300a9c9eca4e9ec0c702b5e0a@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
+ <20220824134055.1328882-2-benjamin.tissoires@redhat.com> <CAADnVQKgkFpLh_URJn6qCiAONteA1dwZHd6=4cZn15g1JCAPag@mail.gmail.com>
+ <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
+In-Reply-To: <CAP01T75ec_T0M6DU=JE2tfNsWRZuPSMu_7JHA7ZoOBw5eDh1Bg@mail.gmail.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Tue, 30 Aug 2022 16:29:23 +0200
+Message-ID: <CAO-hwJLd9wXx+ppccBYPKZDymO0sk++Nt2E3-R97PY7LbfJfTg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 01/23] bpf/verifier: allow all functions to
+ read user provided context
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-08-30 15:36, schrieb Srinivas Kandagatla:
-> On 25/08/2022 22:44, Michael Walle wrote:
->> NVMEM layouts are used to generate NVMEM cells during runtime. Think 
->> of
->> an EEPROM with a well-defined conent. For now, the content can be
->> described by a device tree or a board file. But this only works if the
->> offsets and lengths are static and don't change. One could also argue
->> that putting the layout of the EEPROM in the device tree is the wrong
->> place. Instead, the device tree should just have a specific compatible
->> string.
->> 
->> Right now there are two use cases:
->>   (1) The NVMEM cell needs special processing. E.g. if it only 
->> specifies
->>       a base MAC address offset and you need to add an offset, or it
->>       needs to parse a MAC from ASCII format or some proprietary 
->> format.
->>       (Post processing of cells is added in a later commit).
->>   (2) u-boot environment parsing. The cells don't have a particular
->>       offset but it needs parsing the content to determine the offsets
->>       and length.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
->>   drivers/nvmem/Kconfig          |  2 ++
->>   drivers/nvmem/Makefile         |  1 +
->>   drivers/nvmem/core.c           | 57 
->> ++++++++++++++++++++++++++++++++++
->>   drivers/nvmem/layouts/Kconfig  |  5 +++
->>   drivers/nvmem/layouts/Makefile |  4 +++
->>   include/linux/nvmem-provider.h | 38 +++++++++++++++++++++++
->>   6 files changed, 107 insertions(+)
->>   create mode 100644 drivers/nvmem/layouts/Kconfig
->>   create mode 100644 drivers/nvmem/layouts/Makefile
-> 
-> update to ./Documentation/driver-api/nvmem.rst would help others.
+On Fri, Aug 26, 2022 at 3:51 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Fri, 26 Aug 2022 at 03:42, Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> >
+> > On Wed, Aug 24, 2022 at 6:41 AM Benjamin Tissoires
+> > <benjamin.tissoires@redhat.com> wrote:
+> > >
+> > > When a function was trying to access data from context in a syscall eBPF
+> > > program, the verifier was rejecting the call unless it was accessing the
+> > > first element.
+> > > This is because the syscall context is not known at compile time, and
+> > > so we need to check this when actually accessing it.
+> > >
+> > > Check for the valid memory access if there is no convert_ctx callback,
+> > > and allow such situation to happen.
+> > >
+> > > There is a slight hiccup with subprogs. btf_check_subprog_arg_match()
+> > > will check that the types are matching, which is a good thing, but to
+> > > have an accurate result, it hides the fact that the context register may
+> > > be null. This makes env->prog->aux->max_ctx_offset being set to the size
+> > > of the context, which is incompatible with a NULL context.
+> > >
+> > > Solve that last problem by storing max_ctx_offset before the type check
+> > > and restoring it after.
+> > >
+> > > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> > >
+> > > ---
+> > >
+> > > changes in v9:
+> > > - rewrote the commit title and description
+> > > - made it so all functions can make use of context even if there is
+> > >   no convert_ctx
+> > > - remove the is_kfunc field in bpf_call_arg_meta
+> > >
+> > > changes in v8:
+> > > - fixup comment
+> > > - return -EACCESS instead of -EINVAL for consistency
+> > >
+> > > changes in v7:
+> > > - renamed access_t into atype
+> > > - allow zero-byte read
+> > > - check_mem_access() to the correct offset/size
+> > >
+> > > new in v6
+> > > ---
+> > >  kernel/bpf/btf.c      | 11 ++++++++++-
+> > >  kernel/bpf/verifier.c | 19 +++++++++++++++++++
+> > >  2 files changed, 29 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > > index 903719b89238..386300f52b23 100644
+> > > --- a/kernel/bpf/btf.c
+> > > +++ b/kernel/bpf/btf.c
+> > > @@ -6443,8 +6443,8 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+> > >  {
+> > >         struct bpf_prog *prog = env->prog;
+> > >         struct btf *btf = prog->aux->btf;
+> > > +       u32 btf_id, max_ctx_offset;
+> > >         bool is_global;
+> > > -       u32 btf_id;
+> > >         int err;
+> > >
+> > >         if (!prog->aux->func_info)
+> > > @@ -6457,9 +6457,18 @@ int btf_check_subprog_arg_match(struct bpf_verifier_env *env, int subprog,
+> > >         if (prog->aux->func_info_aux[subprog].unreliable)
+> > >                 return -EINVAL;
+> > >
+> > > +       /* subprogs arguments are not actually accessing the data, we need
+> > > +        * to check for the types if they match.
+> > > +        * Store the max_ctx_offset and restore it after btf_check_func_arg_match()
+> > > +        * given that this function will have a side effect of changing it.
+> > > +        */
+> > > +       max_ctx_offset = env->prog->aux->max_ctx_offset;
+> > > +
+> > >         is_global = prog->aux->func_info_aux[subprog].linkage == BTF_FUNC_GLOBAL;
+> > >         err = btf_check_func_arg_match(env, btf, btf_id, regs, is_global, 0);
+> > >
+> > > +       env->prog->aux->max_ctx_offset = max_ctx_offset;
+> >
+> > I don't understand this.
+> > If we pass a ctx into a helper and it's going to
+> > access [0..N] bytes from it why do we need to hide it?
+> > max_ctx_offset will be used later raw_tp, tp, syscall progs
+> > to determine whether it's ok to load them.
+> > By hiding the actual size of access somebody can construct
+> > a prog that reads out of bounds.
+> > How is this related to NULL-ness property?
+>
+> Same question, was just typing exactly the same thing.
 
-Sure. Didn't know about that one.
+The test I have that is failing in patch 2/23 is the following, with
+args being set to NULL by userspace:
 
->> diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
->> index bab8a29c9861..1416837b107b 100644
->> --- a/drivers/nvmem/Kconfig
->> +++ b/drivers/nvmem/Kconfig
->> @@ -357,4 +357,6 @@ config NVMEM_U_BOOT_ENV
->>     	  If compiled as module it will be called nvmem_u-boot-env.
->>   +source "drivers/nvmem/layouts/Kconfig"
->> +
->>   endif
->> diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
->> index 399f9972d45b..cd5a5baa2f3a 100644
->> --- a/drivers/nvmem/Makefile
->> +++ b/drivers/nvmem/Makefile
->> @@ -5,6 +5,7 @@
->>     obj-$(CONFIG_NVMEM)		+= nvmem_core.o
->>   nvmem_core-y			:= core.o
->> +obj-y				+= layouts/
->>     # Devices
->>   obj-$(CONFIG_NVMEM_BCM_OCOTP)	+= nvmem-bcm-ocotp.o
->> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
->> index 3dfd149374a8..5357fc378700 100644
->> --- a/drivers/nvmem/core.c
->> +++ b/drivers/nvmem/core.c
->> @@ -74,6 +74,9 @@ static LIST_HEAD(nvmem_lookup_list);
->>     static BLOCKING_NOTIFIER_HEAD(nvmem_notifier);
->>   +static DEFINE_SPINLOCK(nvmem_layout_lock);
->> +static LIST_HEAD(nvmem_layouts);
->> +
->>   static int __nvmem_reg_read(struct nvmem_device *nvmem, unsigned int 
->> offset,
->>   			    void *val, size_t bytes)
->>   {
->> @@ -744,6 +747,56 @@ static int nvmem_add_cells_from_of(struct 
->> nvmem_device *nvmem)
->>   	return 0;
->>   }
->>   +int nvmem_register_layout(struct nvmem_layout *layout)
->> +{
->> +	spin_lock(&nvmem_layout_lock);
->> +	list_add(&layout->node, &nvmem_layouts);
->> +	spin_unlock(&nvmem_layout_lock);
->> +
->> +	return 0;
->> +}
->> +EXPORT_SYMBOL_GPL(nvmem_register_layout);
-> 
-> we should provide nvmem_unregister_layout too, so that providers can
-> add them if they can in there respective drivers.
+SEC("syscall")
+int kfunc_syscall_test_null(struct syscall_test_args *args)
+{
+       bpf_kfunc_call_test_mem_len_pass1(args, 0);
 
-Actually, that was the idea; that you can have layouts outside of 
-layouts/.
-I also had a nvmem_unregister_layout() but removed it because it was 
-dead
-code. Will re-add it again.
+       return 0;
+}
 
->> +
->> +static struct nvmem_layout *nvmem_get_compatible_layout(struct 
->> device_node *np)
->> +{
->> +	struct nvmem_layout *p, *ret = NULL;
->> +
->> +	spin_lock(&nvmem_layout_lock);
->> +
->> +	list_for_each_entry(p, &nvmem_layouts, node) {
->> +		if (of_match_node(p->of_match_table, np)) {
->> +			ret = p;
->> +			break;
->> +		}
->> +	}
->> +
->> +	spin_unlock(&nvmem_layout_lock);
->> +
->> +	return ret;
->> +}
->> +
->> +static int nvmem_add_cells_from_layout(struct nvmem_device *nvmem)
->> +{
->> +	struct nvmem_layout *layout;
->> +
->> +	layout = nvmem_get_compatible_layout(nvmem->dev.of_node);
->> +	if (layout)
->> +		layout->add_cells(&nvmem->dev, nvmem, layout);
-> 
-> access to add_cells can crash hear as we did not check it before
-> adding in to list.
-> Or
-> we could relax add_cells callback for usecases like imx-octop.
+Basically:
+if userspace declares the following:
+ DECLARE_LIBBPF_OPTS(bpf_test_run_opts, syscall_topts,
+               .ctx_in = NULL,
+               .ctx_size_in = 0,
+       );
 
-good catch, will use layout && layout->add_cells.
+The verifier is happy with the current released kernel:
+kfunc_syscall_test_fail() never dereferences the ctx pointer, it just
+passes it around to bpf_kfunc_call_test_mem_len_pass1(), which in turn
+is also happy because it says it is not accessing the data at all (0
+size memory parameter).
 
->> +
->> +	return 0;
->> +}
->> +
->> +const void *nvmem_layout_get_match_data(struct nvmem_device *nvmem,
->> +					struct nvmem_layout *layout)
->> +{
->> +	const struct of_device_id *match;
->> +
->> +	match = of_match_node(layout->of_match_table, nvmem->dev.of_node);
->> +
->> +	return match ? match->data : NULL;
->> +}
->> +EXPORT_SYMBOL_GPL(nvmem_layout_get_match_data);
->> +
->>   /**
->>    * nvmem_register() - Register a nvmem device for given 
->> nvmem_config.
->>    * Also creates a binary entry in 
->> /sys/bus/nvmem/devices/dev-name/nvmem
->> @@ -872,6 +925,10 @@ struct nvmem_device *nvmem_register(const struct 
->> nvmem_config *config)
->>   	if (rval)
->>   		goto err_remove_cells;
->>   +	rval = nvmem_add_cells_from_layout(nvmem);
->> +	if (rval)
->> +		goto err_remove_cells;
->> +
->>   	blocking_notifier_call_chain(&nvmem_notifier, NVMEM_ADD, nvmem);
->>     	return nvmem;
->> diff --git a/drivers/nvmem/layouts/Kconfig 
->> b/drivers/nvmem/layouts/Kconfig
->> new file mode 100644
->> index 000000000000..9ad3911d1605
->> --- /dev/null
->> +++ b/drivers/nvmem/layouts/Kconfig
->> @@ -0,0 +1,5 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +
->> +menu "Layout Types"
->> +
->> +endmenu
->> diff --git a/drivers/nvmem/layouts/Makefile 
->> b/drivers/nvmem/layouts/Makefile
->> new file mode 100644
->> index 000000000000..6fdb3c60a4fa
->> --- /dev/null
->> +++ b/drivers/nvmem/layouts/Makefile
->> @@ -0,0 +1,4 @@
->> +# SPDX-License-Identifier: GPL-2.0
->> +#
->> +# Makefile for nvmem layouts.
->> +#
->> diff --git a/include/linux/nvmem-provider.h 
->> b/include/linux/nvmem-provider.h
->> index e710404959e7..323685841e9f 100644
->> --- a/include/linux/nvmem-provider.h
->> +++ b/include/linux/nvmem-provider.h
->> @@ -127,6 +127,28 @@ struct nvmem_cell_table {
->>   	struct list_head	node;
->>   };
->>   +/**
->> + * struct nvmem_layout - NVMEM layout definitions
->> + *
->> + * @name:		Layout name.
->> + * @of_match_table:	Open firmware match table.
->> + * @add_cells:		Will be called if a nvmem device is found which
->> + *			has this layout. The function will add layout
->> + *			specific cells with nvmem_add_one_cell().
->> + * @node:		List node.
->> + *
->> + * A nvmem device can hold a well defined structure which can just be
->> + * evaluated during runtime. For example a TLV list, or a list of 
->> "name=val"
->> + * pairs. A nvmem layout can parse the nvmem device and add 
->> appropriate
->> + * cells.
->> + */
->> +struct nvmem_layout {
->> +	const char *name;
->> +	const struct of_device_id *of_match_table;
-> 
-> looking at this, I think its doable to convert the existing
-> cell_post_process callback to layouts by adding a layout specific
-> callback here.
+In the current code, check_helper_mem_access() actually returns
+-EINVAL, but doesn't change max_ctx_offset (it's still at the value of
+0 here). The program is now marked as unreliable, but the verifier
+goes on.
 
-can you elaborate on that?
+When adding this patch, if we declare a syscall eBPF (or any other
+function that doesn't have env->ops->convert_ctx_access), the previous
+"test" is failing because this ensures the syscall program has to have
+a valid ctx pointer.
+btf_check_func_arg_match() now calls check_mem_access() which
+basically validates the fact that the program can dereference the ctx.
 
--michael
+So now, without the max_ctx_offset store/restore, the verifier
+enforces that the provided ctx is not null.
+
+What I thought that would happen was that if we were to pass a NULL
+context from userspace, but the eBPF program dereferences it (or in
+that case have a subprog or a function call that dereferences it),
+then max_ctx_offset would still be set to the proper value because of
+that internal dereference, and so the verifier would reject with
+-EINVAL the call to the eBPF program.
+
+If I add another test that has the following ebpf prog (with ctx_in
+being set to NULL by the userspace):
+
+SEC("syscall")
+int kfunc_syscall_test_null_fail(struct syscall_test_args *args)
+{
+       bpf_kfunc_call_test_mem_len_pass1(args, sizeof(*args));
+
+       return 0;
+}
+
+Then the call of the program is actually failing with -EINVAL, even
+with this patch.
+
+But again, if setting from userspace a ctx of NULL with a 0 size is
+not considered as valid, then we can just drop that hunk and add a
+test to enforce it.
+
+Cheers,
+Benjamin
+
+>
+> >
+> > > +
+> > >         /* Compiler optimizations can remove arguments from static functions
+> > >          * or mismatched type can be passed into a global function.
+> > >          * In such cases mark the function as unreliable from BTF point of view.
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 2c1f8069f7b7..d694f43ab911 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -5229,6 +5229,25 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+> > >                                 env,
+> > >                                 regno, reg->off, access_size,
+> > >                                 zero_size_allowed, ACCESS_HELPER, meta);
+> > > +       case PTR_TO_CTX:
+> > > +               /* in case the function doesn't know how to access the context,
+> > > +                * (because we are in a program of type SYSCALL for example), we
+> > > +                * can not statically check its size.
+> > > +                * Dynamically check it now.
+> > > +                */
+> > > +               if (!env->ops->convert_ctx_access) {
+> > > +                       enum bpf_access_type atype = meta && meta->raw_mode ? BPF_WRITE : BPF_READ;
+> > > +                       int offset = access_size - 1;
+> > > +
+> > > +                       /* Allow zero-byte read from PTR_TO_CTX */
+> > > +                       if (access_size == 0)
+> > > +                               return zero_size_allowed ? 0 : -EACCES;
+> > > +
+> > > +                       return check_mem_access(env, env->insn_idx, regno, offset, BPF_B,
+> > > +                                               atype, -1, false);
+> > > +               }
+> >
+> > This part looks good alone. Without max_ctx_offset save/restore.
+>
+> +1, save/restore would be incorrect.
+>
+
