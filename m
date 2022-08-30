@@ -2,121 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 814AC5A6384
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:38:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C56135A6388
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 14:38:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229684AbiH3MiM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 08:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46006 "EHLO
+        id S229686AbiH3MiX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 08:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiH3Mhx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:37:53 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD896E9271
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 05:37:40 -0700 (PDT)
-Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MH6Ct5CQWzYcmm;
-        Tue, 30 Aug 2022 20:33:14 +0800 (CST)
-Received: from dggpemm500011.china.huawei.com (7.185.36.110) by
- dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 20:37:37 +0800
-Received: from localhost.localdomain (10.137.16.177) by
- dggpemm500011.china.huawei.com (7.185.36.110) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 20:37:37 +0800
-From:   Zhen Chen <chenzhen126@huawei.com>
-To:     <edumazet@google.com>, <davem@davemloft.net>,
-        <kuznet@ms2.inr.ac.ru>, <yoshfuji@linux-ipv6.org>,
-        <netdev@vger.kernel.org>
-CC:     <yanan@huawei.com>, <caowangbao@huawei.com>
-Subject: [PATCH] tcp: use linear buffer for small frames
-Date:   Tue, 30 Aug 2022 20:33:45 +0800
-Message-ID: <20220830123345.1909199-1-chenzhen126@huawei.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S229558AbiH3MiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 08:38:17 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35968F14CC;
+        Tue, 30 Aug 2022 05:38:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661863097; x=1693399097;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ar3h548rpaRpqxHgVz0lKjqIVfTKSVBgjMXjddGtLcY=;
+  b=NU7q07zQZN2n5s4CQoHdldOniemc3fz+pwdUa9HZkmTrpWtUhHAdkZMp
+   R4+Y2kbE9JAi51pC14sqckPf5WkB+fRdAGL9oxL1M4qYm3B3sCtPvc27z
+   rppuX3VhNCn58AYlxFNV9MtBY9LHbNnXoM9qdziTSNtoL9cSp5KbieYvP
+   Hwv/iOPWW2J6KsIgyX3xU/MiJfyqcu7L/HtuGTCmBFpFT/Vxzhxq3CSk1
+   QgWItS/c7tlmhlIGtIEBystKpD0vdIvs+VD/F4e3wuM9aqXGKrbHBJO8w
+   h/tMJJRVHxZFgecdL+xLcn44qIhBD6Amp3TsSN1AWXRj0II0B6VpkckKC
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10454"; a="321289544"
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="321289544"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 05:38:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="588585167"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by orsmga006.jf.intel.com with ESMTP; 30 Aug 2022 05:38:15 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH intel-net 0/2] ice: xsk: ZC changes
+Date:   Tue, 30 Aug 2022 14:38:01 +0200
+Message-Id: <20220830123803.9361-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.137.16.177]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500011.china.huawei.com (7.185.36.110)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-472c2e07eef0 ("tcp: add one skb cache for tx") and related patches added a
-machanism to relax slab layer in tcp stack, by caching one skb per socket.
-The feature is disabled by default and the patch also dropped linear payload
-for small frames, which caused about 5% of performance regression for small
-packets because nic drivers would bother to deal with fraglist than before.
+Hi,
 
-As d8b81175e412 ("tcp: remove sk_{tr}x_skb_cache") reverted the whole
-machanism but skipped the linear part, just make the revert complete.
+this set consists of two fixes to issues that were either pointed out on
+indirectly (John was reviewing AF_XDP selftests that were testing ice's
+ZC support) mailing list or were directly reported by customers.
 
-Signed-off-by: Zhen Chen <chenzhen126@huawei.com>
----
- net/ipv4/tcp.c | 28 +++++++++++++++++++++++++++-
- 1 file changed, 27 insertions(+), 1 deletion(-)
+First patch allows user space to see done descriptor in CQ even after a
+single frame being transmitted and second patch removes the need for
+having HW rings sized to power of 2 number of descriptors when used
+against AF_XDP.
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index e5011c136fdb..0b6010051598 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1154,6 +1154,30 @@ int tcp_sendpage(struct sock *sk, struct page *page, int offset,
- }
- EXPORT_SYMBOL(tcp_sendpage);
- 
-+/* Do not bother using a page frag for very small frames.
-+ * But use this heuristic only for the first skb in write queue.
-+ *
-+ * Having no payload in skb->head allows better SACK shifting
-+ * in tcp_shift_skb_data(), reducing sack/rack overhead, because
-+ * write queue has less skbs.
-+ * Each skb can hold up to MAX_SKB_FRAGS * 32Kbytes, or ~0.5 MB.
-+ * This also speeds up tso_fragment(), since it wont fallback
-+ * to tcp_fragment().
-+ */
-+static int linear_payload_sz(bool first_skb)
-+{
-+	if (first_skb)
-+		return SKB_WITH_OVERHEAD(2048 - MAX_TCP_HEADER);
-+	return 0;
-+}
-+
-+static int select_size(bool first_skb, bool zc)
-+{
-+	if (zc)
-+		return 0;
-+	return linear_payload_sz(first_skb);
-+}
-+
- void tcp_free_fastopen_req(struct tcp_sock *tp)
- {
- 	if (tp->fastopen_req) {
-@@ -1311,6 +1335,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 
- 		if (copy <= 0 || !tcp_skb_can_collapse_to(skb)) {
- 			bool first_skb;
-+			int linear;
- 
- new_segment:
- 			if (!sk_stream_memory_free(sk))
-@@ -1322,7 +1347,8 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
- 					goto restart;
- 			}
- 			first_skb = tcp_rtx_and_write_queues_empty(sk);
--			skb = tcp_stream_alloc_skb(sk, 0, sk->sk_allocation,
-+			linear = select_size(first_skb, zc);
-+			skb = tcp_stream_alloc_skb(sk, linear, sk->sk_allocation,
- 						   first_skb);
- 			if (!skb)
- 				goto wait_for_space;
+Thanks!
+Maciej
+
+Maciej Fijalkowski (2):
+  ice: xsk: change batched Tx descriptor cleaning
+  ice: xsk: drop power of 2 ring size restriction for AF_XDP
+
+ drivers/net/ethernet/intel/ice/ice_txrx.c |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c  | 165 +++++++++-------------
+ drivers/net/ethernet/intel/ice/ice_xsk.h  |   7 +-
+ 3 files changed, 72 insertions(+), 102 deletions(-)
+
 -- 
-2.23.0
+2.34.1
 
