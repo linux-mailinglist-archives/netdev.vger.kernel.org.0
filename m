@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26EDE5A6CEF
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 21:16:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C725A6CF9
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 21:18:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231303AbiH3TQt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 15:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49848 "EHLO
+        id S230461AbiH3TSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 15:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiH3TQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 15:16:43 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 598A070E62;
-        Tue, 30 Aug 2022 12:16:29 -0700 (PDT)
+        with ESMTP id S229808AbiH3TSh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 15:18:37 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552A367C87;
+        Tue, 30 Aug 2022 12:18:35 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8744A60002;
-        Tue, 30 Aug 2022 19:16:25 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 54FF1C0007;
+        Tue, 30 Aug 2022 19:18:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661886988;
+        t=1661887113;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=pEs/624W+YKYvj5zK7eZjM1JCt8Sw3adqq+ghpUn+WU=;
-        b=gAi2AYe+rzZDIMKdSyGAjdksSyWKke1CHDdI0PPJ1NnHrqIptMBcrgXs2kclPV9FvOh5uN
-        TDcgLl/CrP49/ZS85XzgEsckc4qx7Ff/uq7oXEirfngVZsA3ZtFsKG9YSQYHot6OCkXygF
-        jQji4IghD3zlXZeH+K6/fp8rftOMgcrhlLiJEjbvIRe6YHUcNKkx2jAo4aPkE6o8r/jYVI
-        iE/Le2UxGMlFERgKFceBwAWKsPaT4DowtCgLnM32Kx80YDX/RbvhF2oqXWrzB06kF0B5/7
-        UuoGCGt6fC+mJtVndhAfvDN2TTYBMZTyLy5Vm1fUUBNNTRQMLm8quq9+tDJjnw==
-Date:   Tue, 30 Aug 2022 21:16:17 +0200
+        bh=RP9MukXjGqIyLr5AlW9DcIAeUcb51pnZKdqEvgTxjz4=;
+        b=bcButg8Oj1dC+1XpgnZvKko1SSZKrj7zqULopY2oEcYUUNFp6EOkSfkYWn2Zi1wGUSkpCv
+        IiPln8/8eFmxA25/J8B9v1H8WLwbNpiASNLx5TvkmGHpIzE/HjeyaIHHpo35lbKGH3Czjk
+        QOEYLVXREHUDyUHgYwF394ioScoxyBcFM65x4jV+RlGfD8doDkcG665wkxE1Mi2buSATZk
+        qtcHp4K+QkiKoAHvg+esCwB1+EreMJG38OtrpHPlEhaUHEI+ZBIO/pWpuQFvAwt19BKOBl
+        aFiV5PZ/LCYCBU8IXTh76A2DaJxLTOgwUCZDeEIqKr+h2JYc261i+zPV/OtZ0A==
+Date:   Tue, 30 Aug 2022 21:18:28 +0200
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
@@ -42,172 +42,123 @@ Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v2 1/5] dt-bindings: net: Convert Altera TSE
- bindings to yaml
-Message-ID: <20220830211617.54d2abc9@pc-10.home>
-In-Reply-To: <4a37d318-8c83-148b-89b3-9729bc7c9761@linaro.org>
+Subject: Re: [PATCH net-next v2 5/5] dt-bindings: net: altera: tse: add an
+ optional pcs register range
+Message-ID: <20220830211828.35971761@pc-10.home>
+In-Reply-To: <c8236663-055c-d6da-64ed-ae3f7fb2e690@linaro.org>
 References: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
-        <20220830095549.120625-2-maxime.chevallier@bootlin.com>
-        <4a37d318-8c83-148b-89b3-9729bc7c9761@linaro.org>
+        <20220830095549.120625-6-maxime.chevallier@bootlin.com>
+        <c8236663-055c-d6da-64ed-ae3f7fb2e690@linaro.org>
 Organization: Bootlin
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Aug 2022 20:13:56 +0300
+On Tue, 30 Aug 2022 20:14:52 +0300
 Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
 > On 30/08/2022 12:55, Maxime Chevallier wrote:
-> > This converts the bindings for the Altera Triple-Speed Ethernet to
-> > yaml.  
-> 
-> Do not use "This commit/patch".
-> https://elixir.bootlin.com/linux/v5.17.1/source/Documentation/process/submitting-patches.rst#L95
-
-ack
-
+> > Some implementations of the TSE have their PCS as an external bloc,
+> > exposed at its own register range. Document this, and add a new
+> > example showing a case using the pcs and the new phylink conversion
+> > to connect an sfp port to a TSE mac.
 > > 
-> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>  
-> 
-> Rebase your changes on some decent kernel and use
-> get_maintainers.pl...
-
-I'm rebased against net-next, so I don't understand how I'm supposed to
-do for this series, should I sent binding patches separately and based
-on another tree ?
-
-I'll cc you next time, sorry about that.
-
+> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
 > > ---
-> > V1->V2:
-> >  - Removed unnedded maxItems
-> >  - Added missing minItems
-> >  - Fixed typos in some properties names
-> >  - Fixed the mdio subnode definition
+> > V1->V2 :
+> >  - Fixed example
 > > 
-> >  .../devicetree/bindings/net/altera_tse.txt    | 113 -------------
-> >  .../devicetree/bindings/net/altr,tse.yaml     | 156
-> > ++++++++++++++++++ 2 files changed, 156 insertions(+), 113
-> > deletions(-) delete mode 100644
-> > Documentation/devicetree/bindings/net/altera_tse.txt create mode
-> > 100644 Documentation/devicetree/bindings/net/altr,tse.yaml 
-> 
-> (...)
-> 
+> >  .../devicetree/bindings/net/altr,tse.yaml     | 29
+> > ++++++++++++++++++- 1 file changed, 28 insertions(+), 1 deletion(-)
+> > 
 > > diff --git a/Documentation/devicetree/bindings/net/altr,tse.yaml
-> > b/Documentation/devicetree/bindings/net/altr,tse.yaml new file mode
-> > 100644 index 000000000000..1676e13b8c64
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/altr,tse.yaml
-> > @@ -0,0 +1,156 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/altr,tse.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Altera Triple Speed Ethernet MAC driver (TSE)
-> > +
-> > +maintainers:
-> > +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
-> > +
-> > +allOf:  
+> > b/Documentation/devicetree/bindings/net/altr,tse.yaml index
+> > 1676e13b8c64..4b314861a831 100644 ---
+> > a/Documentation/devicetree/bindings/net/altr,tse.yaml +++
+> > b/Documentation/devicetree/bindings/net/altr,tse.yaml @@ -39,6
+> > +39,7 @@ allOf: properties:
+> >          reg:
+> >            minItems: 6
+> > +          maxItems: 7
+> >          reg-names:
+> >            minItems: 6
+> >            items:
+> > @@ -48,6 +49,7 @@ allOf:
+> >              - const: rx_resp
+> >              - const: tx_csr
+> >              - const: tx_desc
+> > +            - const: pcs
+> >  
+> >  properties:
+> >    compatible:
+> > @@ -58,7 +60,7 @@ properties:
+> >  
+> >    reg:
+> >      minItems: 4
+> > -    maxItems: 6
+> > +    maxItems: 7
+> >  
+> >    reg-names:
+> >      minItems: 4
+> > @@ -69,6 +71,7 @@ properties:
+> >        - const: rx_resp
+> >        - const: tx_csr
+> >        - const: tx_desc
+> > +      - const: pcs
+> >        - const: s1
+> >    
 > 
-> Put allOf below "required".
+> So now 8 items?
 
-Ack
+I'll also remove that. My understanding was that on top of the
+allOf:if/then, I was supposed to re-list all possible values. I got
+that wrong, so that's not needed at all.
 
-> > +  - $ref: "ethernet-controller.yaml#"
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - altr,tse-1.0
-> > +              - ALTR,tse-1.0
-> > +    then:
-> > +      properties:
-> > +        reg:
-> > +          minItems: 4
-> > +        reg-names:
-> > +          items:
-> > +            - const: control_port
-> > +            - const: rx_csr
-> > +            - const: tx_csr
-> > +            - const: s1
-> > +
-> > +  - if:
-> > +      properties:
-> > +        compatible:
-> > +          contains:
-> > +            enum:
-> > +              - altr,tse-msgdma-1.0
-> > +    then:
-> > +      properties:
-> > +        reg:
-> > +          minItems: 6
-> > +        reg-names:
-> > +          minItems: 6  
 > 
-> No need for minItems.
-
-Ok I'll remove it
-
-> > +          items:
-> > +            - const: control_port
-> > +            - const: rx_csr
-> > +            - const: rx_desc
-> > +            - const: rx_resp
-> > +            - const: tx_csr
-> > +            - const: tx_desc
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - altr,tse-1.0
-> > +      - ALTR,tse-1.0  
+> >    interrupts:
+> > @@ -122,6 +125,30 @@ required:
+> >  unevaluatedProperties: false
+> >  
+> >  examples:
+> > +  - |
+> > +    tse_sub_0: ethernet@c0100000 {
+> > +        compatible = "altr,tse-msgdma-1.0";
+> > +        reg = <0xc0100000 0x00000400>,
+> > +              <0xc0101000 0x00000020>,
+> > +              <0xc0102000 0x00000020>,
+> > +              <0xc0103000 0x00000008>,
+> > +              <0xc0104000 0x00000020>,
+> > +              <0xc0105000 0x00000020>,
+> > +              <0xc0106000 0x00000100>;
+> > +        reg-names = "control_port", "rx_csr", "rx_desc",
+> > "rx_resp", "tx_csr", "tx_desc", "pcs";
+> > +        interrupt-parent = <&intc>;
+> > +        interrupts = <0 44 4>,<0 45 4>;
+> > +        interrupt-names = "rx_irq","tx_irq";
+> > +        rx-fifo-depth = <2048>;
+> > +        tx-fifo-depth = <2048>;
+> > +        max-frame-size = <1500>;
+> > +        local-mac-address = [ 00 0C ED 00 00 02 ];  
 > 
-> This is deprecated compatible. You need oneOf and then deprecated:
-> true.
+> 00 00 00 00 00 00
+> (easier to spot that it is invalid)
 
-Ok thanks for the tip
+Ack, thanks !
 
-> > +      - altr,tse-msgdma-1.0
-> > +
-> > +  reg:
-> > +    minItems: 4
-> > +    maxItems: 6
-> > +
-> > +  reg-names:
-> > +    minItems: 4
-> > +    items:
-> > +      - const: control_port
-> > +      - const: rx_csr
-> > +      - const: rx_desc
-> > +      - const: rx_resp
-> > +      - const: tx_csr
-> > +      - const: tx_desc
-> > +      - const: s1  
-> 
-> This is messed up. You allow only 6 items maximum, but list 7. It
-> contradicts your other variants in allOf:if:then.
-
-I'll remove that part then, apparently it's not needed at all if the
-allOf:if:then cover all cases.
-
-Thanks for the review,
+Best regards,
 
 Maxime
+
 > 
 > Best regards,
 > Krzysztof
