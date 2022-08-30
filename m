@@ -2,78 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A641B5A5BC9
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 08:27:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D62685A5BF0
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 08:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbiH3G1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 02:27:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58550 "EHLO
+        id S229864AbiH3GiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 02:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230143AbiH3G1X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 02:27:23 -0400
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45775C96E
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 23:27:16 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 691CA20561;
-        Tue, 30 Aug 2022 08:27:15 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id SOOHuiywBH9C; Tue, 30 Aug 2022 08:27:14 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id DBE632052D;
-        Tue, 30 Aug 2022 08:27:14 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id CE19680004A;
-        Tue, 30 Aug 2022 08:27:14 +0200 (CEST)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+        with ESMTP id S229437AbiH3GiT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 02:38:19 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF80772B43;
+        Mon, 29 Aug 2022 23:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1661841495; x=1693377495;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=TLaqPVLrpojss4E0SFkXfjgiQtLN1ZQWbWlL778Wpzg=;
+  b=hBKWKfGWyULSpfvvE2zmF+Fz+IIoIhH8g5ROvq5TeMx85tP0IJ2/zJR3
+   p/5CE1R8urVFCy2cHiPkjTmwsUGnuBfX3MKc0FQUS6Ac/Z3WyCf19BQCJ
+   ASIuReWMn/B5/kVi40lKhbkop/cX2tZvzt9QK0K+IeALZZ+pMsEUDvjO4
+   6MIAmhru/O1I4XkbL5a3chi37wk7rN05lTzPHCsZ666Y2vBbOeG0uNqEw
+   3Z1a6NiHV/2L9KPcaTRlNivkq8dlBkv/IF6DfZu8uJMFQI6W5f0SAJMTk
+   +AUAHGkH1XFj4ZKJLPeJf/+xaPWc3WjkoGUe1mbuqbexKfjRI+9A18S57
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,274,1654585200"; 
+   d="scan'208";a="111327811"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Aug 2022 23:37:59 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Tue, 30 Aug 2022 08:27:14 +0200
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.31; Tue, 30 Aug
- 2022 08:27:14 +0200
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 263573183BE2; Tue, 30 Aug 2022 08:27:14 +0200 (CEST)
-Date:   Tue, 30 Aug 2022 08:27:14 +0200
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>
-Subject: Re: [PATCH ipsec] esp: choose the correct inner protocol for GSO on
- inter address family tunnels
-Message-ID: <20220830062714.GN2950045@gauss3.secunet.de>
-References: <4b5a7ed6ce98b91362f2d16c84655919299c40e3.1661341717.git.sd@queasysnail.net>
+ 15.1.2507.12; Mon, 29 Aug 2022 23:37:58 -0700
+Received: from soft-dev3-1.microsemi.net (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 29 Aug 2022 23:37:55 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <michael@walle.cc>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH net v3] net: phy: micrel: Make the GPIO to be non-exclusive
+Date:   Tue, 30 Aug 2022 08:40:55 +0200
+Message-ID: <20220830064055.2340403-1-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <4b5a7ed6ce98b91362f2d16c84655919299c40e3.1661341717.git.sd@queasysnail.net>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 25, 2022 at 05:16:51PM +0200, Sabrina Dubroca wrote:
-> Commit 23c7f8d7989e ("net: Fix esp GSO on inter address family
-> tunnels.") is incomplete. It passes to skb_eth_gso_segment the
-> protocol for the outer IP version, instead of the inner IP version, so
-> we end up calling inet_gso_segment on an inner IPv6 packet and
-> ipv6_gso_segment on an inner IPv4 packet and the packets are dropped.
-> 
-> This patch completes the fix by selecting the correct protocol based
-> on the inner mode's family.
-> 
-> Fixes: c35fe4106b92 ("xfrm: Add mode handlers for IPsec on layer 2")
-> Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+The same GPIO line can be shared by multiple phys for the coma mode pin.
+If that is the case then, all the other phys that share the same line
+will failed to be probed because the access to the gpio line is not
+non-exclusive.
+Fix this by making access to the gpio line to be nonexclusive using flag
+GPIOD_FLAGS_BIT_NONEXCLUSIVE. This allows all the other PHYs to be
+probed.
 
-Applied, thanks a lot Sabrina!
+Fixes: 738871b09250ee ("net: phy: micrel: add coma mode GPIO")
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+---
+v2->v3:
+- add Reviewed-by Andrew Lunn
+- mark that the patch is for net and not net-next
+
+v1->v2:
+- add comment describing that there should not be anyone putting back
+  the phy in coma mode.
+---
+ drivers/net/phy/micrel.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index e78d0bf69bc3..6f52b4fb6888 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -2873,12 +2873,18 @@ static int lan8814_config_init(struct phy_device *phydev)
+ 	return 0;
+ }
+ 
++/* It is expected that there will not be any 'lan8814_take_coma_mode'
++ * function called in suspend. Because the GPIO line can be shared, so if one of
++ * the phys goes back in coma mode, then all the other PHYs will go, which is
++ * wrong.
++ */
+ static int lan8814_release_coma_mode(struct phy_device *phydev)
+ {
+ 	struct gpio_desc *gpiod;
+ 
+ 	gpiod = devm_gpiod_get_optional(&phydev->mdio.dev, "coma-mode",
+-					GPIOD_OUT_HIGH_OPEN_DRAIN);
++					GPIOD_OUT_HIGH_OPEN_DRAIN |
++					GPIOD_FLAGS_BIT_NONEXCLUSIVE);
+ 	if (IS_ERR(gpiod))
+ 		return PTR_ERR(gpiod);
+ 
+-- 
+2.33.0
+
