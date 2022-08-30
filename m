@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C82E65A6F56
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 23:43:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E8915A6F57
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 23:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbiH3Vn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 17:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
+        id S231723AbiH3Vnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 17:43:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229522AbiH3Vn1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 17:43:27 -0400
+        with ESMTP id S231680AbiH3Vn2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 17:43:28 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA70C8B2EA
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 14:43:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8DE68B9BD
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 14:43:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661895795;
+        s=mimecast20190719; t=1661895797;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
         bh=zFRR0acvkckiwuQhdIkt5k47ZpuUerQuvus48A9VabU=;
-        b=M37YsIU8BgRjWOK2h0i90ZOJpLw5u15ZtpgH2rta6r15TV1jKgQgh0LO0wSnJGld1f+g7f
-        YtnBZC6/WynNoU4xOI5BXtisWcCvw2EL1XEnFD/I7GPwYB9+jBSwXbsfNB4eJMcH3y1OeG
-        AREHHYaxnEuwy/29DV8awv0mtX3v1eI=
+        b=hyRbIDMt22mqiDUTTIjnkGonGdV2nfsap+SYsGKQbvoVm608iFGb18kvLP1xS/AnA8FXOB
+        ucbI8hiXoaWBv/reqyDiqyHPUbyQyDFdy0Bp1Vb+y919F400OnAluieG08DsCeF/mrrtug
+        sft+OfumPmro8VS1Aw/eH/sS2yrJTiQ=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-544-tsngv6PEMhmtsjPx4QfRhQ-1; Tue, 30 Aug 2022 17:43:12 -0400
-X-MC-Unique: tsngv6PEMhmtsjPx4QfRhQ-1
+ us-mta-496-4uKP6pM4O_uYQBQbLLyfJA-1; Tue, 30 Aug 2022 17:43:14 -0400
+X-MC-Unique: 4uKP6pM4O_uYQBQbLLyfJA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id DE9C73804061;
-        Tue, 30 Aug 2022 21:43:11 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BF57429AB3FF;
+        Tue, 30 Aug 2022 21:43:13 +0000 (UTC)
 Received: from swamp.redhat.com (unknown [10.40.194.110])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5CCC91410F37;
-        Tue, 30 Aug 2022 21:43:10 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6946C1415117;
+        Tue, 30 Aug 2022 21:43:12 +0000 (UTC)
 From:   Petr Oros <poros@redhat.com>
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
@@ -47,8 +48,10 @@ To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
         netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
         linux-kernel@vger.kernel.org (open list)
 Subject: [PATCH] Revert "iavf: Add waiting for response from PF in set mac"
-Date:   Tue, 30 Aug 2022 23:43:08 +0200
-Message-Id: <20220830214309.3813378-1-poros@redhat.com>
+Date:   Tue, 30 Aug 2022 23:43:09 +0200
+Message-Id: <20220830214309.3813378-2-poros@redhat.com>
+In-Reply-To: <20220830214309.3813378-1-poros@redhat.com>
+References: <20220830214309.3813378-1-poros@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
