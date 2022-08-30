@@ -2,1175 +2,432 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D35275A594D
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 04:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86EF35A595E
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 04:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229927AbiH3CVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 29 Aug 2022 22:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
+        id S229995AbiH3CXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 29 Aug 2022 22:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229929AbiH3CVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 22:21:45 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A33B8E4DF
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 19:21:42 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id d15so5506947ilf.0
-        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 19:21:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=hSrtmbD5tGbHhzXL/Xxe83Hw7sJKH+j6Af+kAfpm9lY=;
-        b=B6vmMUyPFpsrub0HDxKgNKC5vIEPxtv+6uZ27pmZS/+4pyJL65sPsUpjdPO5NsCaXb
-         3kANtiRlIisJYNfhK4/SKSLbAKUrqYW8j8YjqUcCMLip8sIz3Lel3iNIvu1mRTrGiZHi
-         0SZxg0ZxefDqHc+ldEuKe2MBiIKTCAk+mzzgXwVxJhNA8RAgFfszb8dfqAzoiFRBFSqd
-         6aprfGrSQdh1tGFpN4lZGKE7xeyuS+y4e/B0S0/8JT890vlHnN9FeH6/VuV3UfbPkxaP
-         CWuYKN9ssNSbxL8hHS0LK2AQKPp3PPO/6vXPdn3yUJFiV4/fSfqzBDgi801Ndv1arEN+
-         kcVg==
+        with ESMTP id S230017AbiH3CXj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 29 Aug 2022 22:23:39 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B469F0DA
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 19:23:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661826203;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZxibbypsGRWy4MBpQHFvvolnCvhtLm9cEs3KiYj/qd4=;
+        b=EIU7gGeHzK12C21GMayBIcgjS9cKYYEq370KQPV8XwZnZ9NNuftzsFAq+i1euWtkReWtIQ
+        OBDyNpdFdVpzassmWcGEc9ulN1hpVb/tRkw91dK6J4dr9Ccwbp/5feHEKWVq6lnRpO49hl
+        RWytUxcu5+KIcvxcR9z7zF0NDcKN4xM=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-81-Bmqt7K49NLK-zd8tQ4uUxA-1; Mon, 29 Aug 2022 22:23:21 -0400
+X-MC-Unique: Bmqt7K49NLK-zd8tQ4uUxA-1
+Received: by mail-qv1-f71.google.com with SMTP id a1-20020a0ccdc1000000b00498f818cc40so3997643qvn.8
+        for <netdev@vger.kernel.org>; Mon, 29 Aug 2022 19:23:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=hSrtmbD5tGbHhzXL/Xxe83Hw7sJKH+j6Af+kAfpm9lY=;
-        b=IUeSnnlHU+3fkYUGYbwaHxZrW+UDUHP/AwhwmXTDadeRzTUyoTWLSXn8E+2P6HWhii
-         b4cjwt8j/BN9D4nobhBV1vUpzEn/ydM7l6qqnlTTDw3xEblPhpZAwP1YH7QpKMA4os33
-         GJ8dN5j1V4h8yaUnyIxXLByW/sll+3K4zNG/cfVca9peqLizVLFIvs+Co4c3HdLM71AH
-         UkvYPm449mojLUJUmihyUwiTKqZUADDOanZ+FvKzr8bSYTMa7PeR4MyXrcl109tiUdau
-         sm7+xbWVttc4Ppu3VHrgOPTxGGUdIdjA+4WfggPgx+9UYsncuS4AwxqaRd/4OKgvK1Q5
-         jtUQ==
-X-Gm-Message-State: ACgBeo2fN4bfdDk2GrBRLs9Z0eauJkGKW1Z0bqMQMBs+RzrURn7FUyDQ
-        xWkQVm7zROuTSFNZWX5TBX5VNvV2HZpawgTjTx4=
-X-Google-Smtp-Source: AA6agR40YzS+IWyNeEEuvP8N9FgSwX3SWxNaBo3umgt243cxkPKz/Pzch+AHrgLuAcvWkcRkjKrA4nj2PYFgtJsWd+M=
-X-Received: by 2002:a05:6e02:170b:b0:2e6:7ab0:648a with SMTP id
- u11-20020a056e02170b00b002e67ab0648amr11766336ill.140.1661826101652; Mon, 29
- Aug 2022 19:21:41 -0700 (PDT)
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=ZxibbypsGRWy4MBpQHFvvolnCvhtLm9cEs3KiYj/qd4=;
+        b=hgrL8IROTEkKnSazgPSivL1PWv/5mu6z3sByMdjgoCNnpmy1VDv4b5O1Zo6LVjg+GY
+         zP77WA8sAsWUxYvDQbOwDDmZQB4QQff9YyU8zPiDdVgsx+SEbjMgPZOgMvqyohx/FWDo
+         r3dEjc5ZRyMbajGimQovnc4kNq+RdvVEfoK0ayUQjVe41uG0xW5RFdAKbY1GjNeve8rL
+         V7ZsAl1POX7DeSThz3hc7ZKWwNbE9zlgxQKia1hKnQdWx+LXnki+mn/xWWV7YVKHfbK6
+         P9LgN2TOjQeXCHKgvqTgyXg57uLEG5+jOIVTc1C6Dh+cXVQ3569AfKDoebogDcc+juZA
+         YvlA==
+X-Gm-Message-State: ACgBeo2tOrlnIgP8pTk7sEzH+2FqD6RuOd+v1IgGIxLY7iX9cBGcMV9J
+        UkE1OFHWvnSLjI2eP0pCUoEN/Nnxic+NL/0AYom43rFvJyQ6gb/zdRbVKu5gg/V+X1/WWyTTTp4
+        SEBbkuo0lp+G8H/8m/K5ySiAOjItfhXxQ
+X-Received: by 2002:a05:6214:2462:b0:496:2772:3211 with SMTP id im2-20020a056214246200b0049627723211mr13283349qvb.28.1661826201120;
+        Mon, 29 Aug 2022 19:23:21 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6lgQGeVCvHiRSKG0spHEakflySFj/7NdOXdqUG6H9n9PTGxtgrPbzU2U0cCPAXfptMPAn3guvbDzerDZXfjRg=
+X-Received: by 2002:a05:6214:2462:b0:496:2772:3211 with SMTP id
+ im2-20020a056214246200b0049627723211mr13283334qvb.28.1661826200791; Mon, 29
+ Aug 2022 19:23:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
-In-Reply-To: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
-From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Tue, 30 Aug 2022 05:21:28 +0300
-Message-ID: <CAHNKnsT1E1A25iNN143kRZ=R5cC=P6zDJ+RkXhKYZopG4i38yQ@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/5] net: wwan: t7xx: Enable devlink based fw
- flashing and coredump collection
-To:     M Chetan Kumar <m.chetan.kumar@intel.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        M Chetan Kumar <m.chetan.kumar@linux.intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+ <20220701143052.1267509-2-miquel.raynal@bootlin.com> <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+ <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+ <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+ <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+ <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+ <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+ <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
+ <20220829100214.3c6dad63@xps-13>
+In-Reply-To: <20220829100214.3c6dad63@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 29 Aug 2022 22:23:09 -0400
+Message-ID: <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,THIS_AD,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 16, 2022 at 7:12 AM <m.chetan.kumar@intel.com> wrote:
-> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+Hi,
+
+On Mon, Aug 29, 2022 at 4:02 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 >
-> This patch brings-in support for t7xx wwan device firmware flashing &
-> coredump collection using devlink.
+> Hi Alexander,
 >
-> Driver Registers with Devlink framework.
-> Implements devlink ops flash_update callback that programs modem firmware.
-> Creates region & snapshot required for device coredump log collection.
-> On early detection of wwan device in fastboot mode driver sets up CLDMA0 HW
-> tx/rx queues for raw data transfer then registers with devlink framework.
-> Upon receiving firmware image & partition details driver sends fastboot
-> commands for flashing the firmware.
+> aahringo@redhat.com wrote on Sun, 28 Aug 2022 22:52:14 -0400:
 >
-> In this flow the fastboot command & response gets exchanged between driver
-> and device. Once firmware flashing is success completion status is reported
-> to user space application.
+> > Hi,
+> >
+> > On Fri, Aug 26, 2022 at 3:54 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > Hi Alexander,
+> > >
+> > > aahringo@redhat.com wrote on Thu, 25 Aug 2022 21:05:09 -0400:
+> > >
+> > > > Hi,
+> > > >
+> > > > On Thu, Aug 25, 2022 at 8:58 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > >
+> > > > > Hi Alexander,
+> > > > >
+> > > > > aahringo@redhat.com wrote on Wed, 24 Aug 2022 17:53:45 -0400:
+> > > > >
+> > > > > > Hi,
+> > > > > >
+> > > > > > On Wed, Aug 24, 2022 at 9:27 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > > > >
+> > > > > > > Hi Alexander,
+> > > > > > >
+> > > > > > > aahringo@redhat.com wrote on Wed, 24 Aug 2022 08:43:20 -0400:
+> > > > > > >
+> > > > > > > > Hi,
+> > > > > > > >
+> > > > > > > > On Wed, Aug 24, 2022 at 6:21 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > > > > > > > ...
+> > > > > > > > >
+> > > > > > > > > Actually right now the second level is not enforced, and all the
+> > > > > > > > > filtering levels are a bit fuzzy and spread everywhere in rx.c.
+> > > > > > > > >
+> > > > > > > > > I'm gonna see if I can at least clarify all of that and only make
+> > > > > > > > > coord-dependent the right section because right now a
+> > > > > > > > > ieee802154_coord_rx() path in ieee802154_rx_handle_packet() does not
+> > > > > > > > > really make sense given that the level 3 filtering rules are mostly
+> > > > > > > > > enforced in ieee802154_subif_frame().
+> > > > > > > >
+> > > > > > > > One thing I mentioned before is that we probably like to have a
+> > > > > > > > parameter for rx path to give mac802154 a hint on which filtering
+> > > > > > > > level it was received. We don't have that, I currently see that this
+> > > > > > > > is a parameter for hwsim receiving it on promiscuous level only and
+> > > > > > > > all others do third level filtering.
+> > > > > > > > We need that now, because the promiscuous mode was only used for
+> > > > > > > > sniffing which goes directly into the rx path for monitors. With scan
+> > > > > > > > we mix things up here and in my opinion require such a parameter and
+> > > > > > > > do filtering if necessary.
+> > > > > > >
+> > > > > > > I am currently trying to implement a slightly different approach. The
+> > > > > > > core does not know hwsim is always in promiscuous mode, but it does
+> > > > > > > know that it does not check FCS. So the core checks it. This is
+> > > > > > > level 1 achieved. Then in level 2 we want to know if the core asked
+> > > > > > > the transceiver to enter promiscuous mode, which, if it did, should
+> > > > > > > not imply more filtering. If the device is working in promiscuous
+> > > > > > > mode but this was not asked explicitly by the core, we don't really
+> > > > > > > care, software filtering will apply anyway.
+> > > > > > >
+> > > > > >
+> > > > > > I doubt that I will be happy with this solution, this all sounds like
+> > > > > > "for the specific current behaviour that we support 2 filtering levels
+> > > > > > it will work", just do a parameter on which 802.15.4 filtering level
+> > > > > > it was received and the rx path will check what kind of filter is
+> > > > > > required and which not.
+> > > > > > As driver ops start() callback you should say which filtering level
+> > > > > > the receive mode should start with.
+> > > > > >
+> > > > > > > I am reworking the rx path to clarify what is being done and when,
+> > > > > > > because I found this part very obscure right now. In the end I don't
+> > > > > > > think we need additional rx info from the drivers. Hopefully my
+> > > > > > > proposal will clarify why this is (IMHO) not needed.
+> > > > > > >
+> > > > > >
+> > > > > > Never looked much in 802.15.4 receive path as it just worked but I
+> > > > > > said that there might be things to clean up when filtering things on
+> > > > > > hardware and when on software and I have the feeling we are doing
+> > > > > > things twice. Sometimes it is also necessary to set some skb fields
+> > > > > > e.g. PACKET_HOST, etc. and I think this is what the most important
+> > > > > > part of it is there. However, there are probably some tune ups if we
+> > > > > > know we are in third leveling filtering...
+> > > > >
+> > > > > Ok, I've done the following.
+> > > > >
+> > > > > - Adding a PHY parameter which reflects the actual filtering level of
+> > > > >   the transceiver, the default level is 4 (standard situation, you're
+> > > >
+> > > > 3?
+> > >
+> > > Honestly there are only two filtering levels in the normal path and one
+> > > additional for scanning situations. But the spec mentions 4, so I
+> > > figured we should use the same naming to avoid confusing people on what
+> > > "level 3 means, if it's level 3 because level 1 and 2 are identical at
+> > > PHY level, or level 3 which is the scan filtering as mentioned in the
+> > > spec?".
+> > >
+> > > I used this enum to clarify the amount of filtering that is involved,
+> > > hopefully it is clear enough. I remember we talked about this already
+> > > but an unrelated thread, and was not capable of finding it anymore O:-).
+> > >
+> > > /** enum ieee802154_filtering_level - Filtering levels applicable to a PHY
+> > >  * @IEEE802154_FILTERING_NONE: No filtering at all, what is received is
+> > >  *      forwarded to the softMAC
+> > >  * @IEEE802154_FILTERING_1_FCS: First filtering level, frames with an invalid
+> > >  *      FCS should be dropped
+> > >  * @IEEE802154_FILTERING_2_PROMISCUOUS: Second filtering level, promiscuous
+> > >  *      mode, identical in terms of filtering to the first level at the PHY
+> > >  *      level, but no ACK should be transmitted automatically and at the MAC
+> > >  *      level the frame should be forwarded to the upper layer directly
+> > >  * @IEEE802154_FILTERING_3_SCAN: Third filtering level, enforced during scans,
+> > >  *      which only forwards beacons
+> > >  * @IEEE802154_FILTERING_4_FRAME_FIELDS: Fourth filtering level actually
+> > >  *      enforcing the validity of the content of the frame with various checks
+> > >  */
+> > > enum ieee802154_filtering_level {
+> > >         IEEE802154_FILTERING_NONE,
+> > >         IEEE802154_FILTERING_1_FCS,
+> > >         IEEE802154_FILTERING_2_PROMISCUOUS,
+> > >         IEEE802154_FILTERING_3_SCAN,
+> > >         IEEE802154_FILTERING_4_FRAME_FIELDS,
+> > > };
+> > >
+> >
+> > I am fine to drop all this level number naming at all and we do our
+> > own filtering definition here, additionally to the mandatory ones.
 >
-> Below is the devlink command usage for firmware flashing
+> I can add intermediate filtering levels but I don't know what they are,
+> you need to give me an exhaustive list of what you have in mind?
 >
-> $devlink dev flash pci/$BDF file ABC.img component ABC
+
+see below.
+
+> > E.g. The SCAN filter can also be implemented in e.g. atusb by using
+> > other filter modes which are based on 802.15.4 modes (or level
+> > whatever).
 >
-> Note: ABC.img is the firmware to be programmed to "ABC" partition.
+> That is actually what I've proposed. The core requests a level of
+> filtering among the official ones, the PHY driver when it gets the
+> request does what is possible and adjusts the final filtering level to
+> what it achieved. The core will then have to handle the missing checks.
 >
-> In case of coredump collection when wwan device encounters an exception
-> it reboots & stays in fastboot mode for coredump collection by host driver.
-> On detecting exception state driver collects the core dump, creates the
-> devlink region & reports an event to user space application for dump
-> collection. The user space application invokes devlink region read command
-> for dump collection.
+
+We talked about the same thing months ago.
+
+I am fine with that, but see below.
+
+> > I am currently thinking about if we might need to change something
+> > here in the default handling of the monitor interface, it should use
+> > 802.15.4 compatible modes (and this is what we should expect is always
+> > being supported). IEEE802154_FILTERING_NONE is not a 802.15.4
+> > filtering mode and is considered to be optional. So the default
+> > behaviour of the monitor should be IEEE802154_FILTERING_FCS with a
+> > possibility to have a switch to change to IEEE802154_FILTERING_NONE
+> > mode if it's supported by the hardware.
 >
-> Below are the devlink commands used for coredump collection.
+> That's what I've done, besides that the default filtering level for a
+> monitor interface is PROMISCUOUS and not FCS. In practice, the
+
+Who says what the default filtering is for a monitor interface?
+
+> filtering regarding the incoming frames will be exactly the same
+> between FCS, PROMISCUOUS and SCAN, but in the PROMISCUOUS case we ask
+> the PHY not to send ACKS (which is not the case of the FCS filtering
+> level, acks can be automatically sent by the PHY, we don't want that).
 >
-> devlink region new pci/$BDF/mr_dump
-> devlink region read pci/$BDF/mr_dump snapshot $ID address $ADD length $LEN
-> devlink region del pci/$BDF/mr_dump snapshot $ID
+
+Usually it's when we don't have a working address filter, then there
+is no auto ackknowledge feature activated (I think this can be counted
+as general rule for now). This is currently the case with the
+set_promiscuousmode() driver ops.
+
+> > You should also add a note on the filter level/modes which are
+> > mandatory (means given by the spec) and put their level inside there?
+> >
+> > > >
+> > > > >   receiving data) but of course if the PHY does not support
+> > > > > this state (like hwsim) it should overwrite this value by
+> > > > > setting the actual filtering level (none, in the hwsim case) so
+> > > > > that the core knows what it receives.
+> > > > >
+> > > >
+> > > > ok.
+> > > >
+> > > > > - I've replaced the specific "do not check the FCS" flag only
+> > > > > used by hwsim by this filtering level, which gives all the
+> > > > > information we need.
+> > > > >
+> > > >
+> > > > ok.
+> > > >
+> > > > > - I've added a real promiscuous filtering mode which truly does
+> > > > > not care about the content of the frame but only checks the FCS
+> > > > > if not already done by the xceiver.
+> > > > >
+> > > >
+> > > > not sure what a "real promiscuous filtering here is" people have
+> > > > different understanding about it, but 802.15.4 has a definition
+> > > > for it.
+> > >
+> > > Promiscuous, by the 802154 spec means: the FCS is good so the
+> > > content of the received packet must means something, just forward
+> > > it and let upper layers handle it.
+> > >
+> > > Until now there was no real promiscuous mode in the mac NODE rx
+> > > path. Only monitors would get all the frames (including the ones
+> > > with a wrong FCS), which is fine because it's a bit out of the
+> > > spec, so I'm fine with this idea. But otherwise in the NODE/COORD
+> > > rx path, the FCS should be checked even in promiscuous mode to
+> > > correctly match the spec.
+> >
+> > If we parse the frame, the FCS should always be checked. The frame
+> > should _never_ be parsed before it hits the monitor receive path.
 >
-> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
-> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
-> Signed-off-by: Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
-
-[skipped]
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
-> index a87c4cae94ef..1017d21aad59 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_pci.h
-> +++ b/drivers/net/wwan/t7xx/t7xx_pci.h
-> @@ -59,6 +59,7 @@ typedef irqreturn_t (*t7xx_intr_callback)(int irq, void *param);
->   * @md_pm_lock: protects PCIe sleep lock
->   * @sleep_disable_count: PCIe L1.2 lock counter
->   * @sleep_lock_acquire: indicates that sleep has been disabled
-> + * @dl: devlink struct
->   */
->  struct t7xx_pci_dev {
->         t7xx_intr_callback      intr_handler[EXT_INT_NUM];
-> @@ -79,6 +80,7 @@ struct t7xx_pci_dev {
->         spinlock_t              md_pm_lock;             /* Protects PCI resource lock */
->         unsigned int            sleep_disable_count;
->         struct completion       sleep_lock_acquire;
-> +       struct t7xx_devlink     *dl;
->  };
+> Yes.
 >
->  enum t7xx_pm_id {
-> diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
-> index 6a96ee6d9449..070097a658d1 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_port.h
-> +++ b/drivers/net/wwan/t7xx/t7xx_port.h
-> @@ -129,6 +129,7 @@ struct t7xx_port {
->         int                             rx_length_th;
->         bool                            chan_enable;
->         struct task_struct              *thread;
-> +       struct t7xx_devlink     *dl;
-
-The devlink state container is the device wide entity, and the device
-state container already carries a pointer to it. So why do we need a
-pointer copy inside the port state container?
-
->  };
+> >
+> > The wording "real promiscuous mode" is in my opinion still debatable,
+> > however that's not the point here.
 >
->  int t7xx_get_port_mtu(struct t7xx_port *port);
-> diff --git a/drivers/net/wwan/t7xx/t7xx_port_devlink.c b/drivers/net/wwan/t7xx/t7xx_port_devlink.c
-> new file mode 100644
-> index 000000000000..026a1db42f69
-> --- /dev/null
-> +++ b/drivers/net/wwan/t7xx/t7xx_port_devlink.c
-> @@ -0,0 +1,705 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2022, Intel Corporation.
-> + */
-> +
-> +#include <linux/bitfield.h>
-> +#include <linux/debugfs.h>
-> +#include <linux/vmalloc.h>
-> +
-> +#include "t7xx_hif_cldma.h"
-> +#include "t7xx_pci_rescan.h"
-> +#include "t7xx_port_devlink.h"
-> +#include "t7xx_port_proxy.h"
-> +#include "t7xx_state_monitor.h"
-> +#include "t7xx_uevent.h"
-> +
-> +static struct t7xx_devlink_region_info t7xx_devlink_region_list[T7XX_TOTAL_REGIONS] = {
-> +       {"mr_dump", T7XX_MRDUMP_SIZE},
-> +       {"lk_dump", T7XX_LKDUMP_SIZE},
-> +};
-
-This array probably should be const.
-
-Also, region indexes can be used in the array initialization to
-clearly state element relations with other arrays:
-
-static const t7xx_devlink_region_info t7xx_devlink_region_infos[] = {
-   [T7XX_MRDUMP_INDEX] = {"mr_dump", T7XX_MRDURM_SIZE},
-   [T7XX_LDDUMP_INDEX] = {"ld_dump", T7XX_LKDUMP_SIZE},
-};
-
-> +static int t7xx_devlink_port_read(struct t7xx_port *port, char *buf, size_t count)
-> +{
-> +       int ret = 0, read_len;
-> +       struct sk_buff *skb;
-> +
-> +       spin_lock_irq(&port->rx_wq.lock);
-> +       if (skb_queue_empty(&port->rx_skb_list)) {
-> +               ret = wait_event_interruptible_locked_irq(port->rx_wq,
-> +                                                         !skb_queue_empty(&port->rx_skb_list));
-> +               if (ret == -ERESTARTSYS) {
-> +                       spin_unlock_irq(&port->rx_wq.lock);
-> +                       return -EINTR;
-> +               }
-> +       }
-> +       skb = skb_dequeue(&port->rx_skb_list);
-> +       spin_unlock_irq(&port->rx_wq.lock);
-> +
-> +       read_len = count > skb->len ? skb->len : count;
-> +       memcpy(buf, skb->data, read_len);
-> +       dev_kfree_skb(skb);
-
-Here the call will lose the remaining packet data if the buffer is
-less than the skb data. Should the driver keep the skb leftover data
-for subsequent port read calls? E.g.
-
-if (read_len < skb->len) {
-    skb_pull(skb, read_len);
-    skb_queue_head(&port->rx_skb_list, skb);
-} else {
-    consume_skb(skb);
-}
-
-> +
-> +       return ret ? ret : read_len;
-> +}
-> +
-> +static int t7xx_devlink_port_write(struct t7xx_port *port, const char *buf, size_t count)
-> +{
-> +       const struct t7xx_port_conf *port_conf = port->port_conf;
-> +       size_t actual_count;
-> +       struct sk_buff *skb;
-> +       int ret, txq_mtu;
-> +
-> +       txq_mtu = t7xx_get_port_mtu(port);
-> +       if (txq_mtu < 0)
-> +               return -EINVAL;
-> +
-> +       actual_count = count > txq_mtu ? txq_mtu : count;
-> +       skb = __dev_alloc_skb(actual_count, GFP_KERNEL);
-
-This way the function will lose data past the MTU boundary. Should the
-fragmentation code be implemented here and should the
-t7xx_devlink_fb_send_buffer() wrapper be dropped? Or maybe place
-WARN_ON() here at least?
-
-> +       if (!skb)
-> +               return -ENOMEM;
-> +
-> +       skb_put_data(skb, buf, actual_count);
-> +       ret = t7xx_port_send_raw_skb(port, skb);
-> +       if (ret) {
-> +               dev_err(port->dev, "write error on %s, size: %zu, ret: %d\n",
-> +                       port_conf->name, actual_count, ret);
-> +               dev_kfree_skb(skb);
-> +               return ret;
-> +       }
-> +
-> +       return actual_count;
-> +}
-> +
-> +static int t7xx_devlink_fb_handle_response(struct t7xx_port *port, int *data)
-> +{
-> +       int ret = 0, index = 0, return_data = 0, read_bytes;
-> +       char status[T7XX_FB_RESPONSE_SIZE + 1];
-> +
-> +       while (index < T7XX_FB_RESP_COUNT) {
-> +               index++;
-> +               read_bytes = t7xx_devlink_port_read(port, status, T7XX_FB_RESPONSE_SIZE);
-> +               if (read_bytes < 0) {
-> +                       dev_err(port->dev, "status read failed");
-> +                       ret = -EIO;
-> +                       break;
-> +               }
-> +
-> +               status[read_bytes] = '\0';
-> +               if (!strncmp(status, T7XX_FB_RESP_INFO, strlen(T7XX_FB_RESP_INFO))) {
-> +                       break;
-> +               } else if (!strncmp(status, T7XX_FB_RESP_OKAY, strlen(T7XX_FB_RESP_OKAY))) {
-> +                       break;
-> +               } else if (!strncmp(status, T7XX_FB_RESP_FAIL, strlen(T7XX_FB_RESP_FAIL))) {
-> +                       ret = -EPROTO;
-> +                       break;
-> +               } else if (!strncmp(status, T7XX_FB_RESP_DATA, strlen(T7XX_FB_RESP_DATA))) {
-> +                       if (data) {
-> +                               if (!kstrtoint(status + strlen(T7XX_FB_RESP_DATA), 16,
-> +                                              &return_data)) {
-> +                                       *data = return_data;
-> +                               } else {
-> +                                       dev_err(port->dev, "kstrtoint error!\n");
-> +                                       ret = -EPROTO;
-> +                               }
-> +                       }
-> +                       break;
-> +               }
-> +       }
-> +
-> +       return ret;
-> +}
-> +
-> +static int t7xx_devlink_fb_raw_command(char *cmd, struct t7xx_port *port, int *data)
-> +{
-> +       int ret, cmd_size = strlen(cmd);
-> +
-> +       if (cmd_size > T7XX_FB_COMMAND_SIZE) {
-
-Just curious, is T7XX_FB_COMMAND_SIZE a real hardware limitation or is
-this just-in-case check?
-
-> +               dev_err(port->dev, "command length %d is long\n", cmd_size);
-> +               return -EINVAL;
-> +       }
-> +
-> +       if (cmd_size != t7xx_devlink_port_write(port, cmd, cmd_size)) {
-> +               dev_err(port->dev, "raw command = %s write failed\n", cmd);
-> +               return -EIO;
-> +       }
-> +
-> +       dev_dbg(port->dev, "raw command = %s written to the device\n", cmd);
-> +       ret = t7xx_devlink_fb_handle_response(port, data);
-> +       if (ret)
-> +               dev_err(port->dev, "raw command = %s response FAILURE:%d\n", cmd, ret);
-> +
-> +       return ret;
-> +}
-> +
-> +static int t7xx_devlink_fb_send_buffer(struct t7xx_port *port, const u8 *buf, size_t size)
-> +{
-> +       size_t remaining = size, offset = 0, len;
-> +       int write_done;
-> +
-> +       if (!size)
-> +               return -EINVAL;
-> +
-> +       while (remaining) {
-> +               len = min_t(size_t, remaining, CLDMA_DEDICATED_Q_BUFF_SZ);
-> +               write_done = t7xx_devlink_port_write(port, buf + offset, len);
-> +
-> +               if (write_done < 0) {
-> +                       dev_err(port->dev, "write to device failed in %s", __func__);
-> +                       return -EIO;
-> +               } else if (write_done != len) {
-> +                       dev_err(port->dev, "write Error. Only %d/%zu bytes written",
-> +                               write_done, len);
-> +                       return -EIO;
-> +               }
-> +
-> +               remaining -= len;
-> +               offset += len;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +static int t7xx_devlink_fb_download_command(struct t7xx_port *port, size_t size)
-> +{
-> +       char download_command[T7XX_FB_COMMAND_SIZE];
-> +
-> +       snprintf(download_command, sizeof(download_command), "%s:%08zx",
-> +                T7XX_FB_CMD_DOWNLOAD, size);
-> +       return t7xx_devlink_fb_raw_command(download_command, port, NULL);
-> +}
-> +
-> +static int t7xx_devlink_fb_download(struct t7xx_port *port, const u8 *buf, size_t size)
-> +{
-> +       int ret;
-> +
-> +       if (size <= 0 || size > SIZE_MAX) {
-> +               dev_err(port->dev, "file is too large to download");
-> +               return -EINVAL;
-> +       }
-> +
-> +       ret = t7xx_devlink_fb_download_command(port, size);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = t7xx_devlink_fb_send_buffer(port, buf, size);
-> +       if (ret)
-> +               return ret;
-> +
-> +       return t7xx_devlink_fb_handle_response(port, NULL);
-> +}
-> +
-> +static int t7xx_devlink_fb_flash(const char *cmd, struct t7xx_port *port)
-> +{
-> +       char flash_command[T7XX_FB_COMMAND_SIZE];
-> +
-> +       snprintf(flash_command, sizeof(flash_command), "%s:%s", T7XX_FB_CMD_FLASH, cmd);
-> +       return t7xx_devlink_fb_raw_command(flash_command, port, NULL);
-> +}
-> +
-> +static int t7xx_devlink_fb_flash_partition(const char *partition, const u8 *buf,
-> +                                          struct t7xx_port *port, size_t size)
-> +{
-> +       int ret;
-> +
-> +       ret = t7xx_devlink_fb_download(port, buf, size);
-> +       if (ret)
-> +               return ret;
-> +
-> +       return t7xx_devlink_fb_flash(partition, port);
-> +}
-> +
-> +static int t7xx_devlink_fb_get_core(struct t7xx_port *port)
-> +{
-> +       struct t7xx_devlink_region_info *mrdump_region;
-> +       char mrdump_complete_event[T7XX_FB_EVENT_SIZE];
-> +       u32 mrd_mb = T7XX_MRDUMP_SIZE / (1024 * 1024);
-> +       struct t7xx_devlink *dl = port->dl;
-> +       int clen, dlen = 0, result = 0;
-> +       unsigned long long zipsize = 0;
-> +       char mcmd[T7XX_FB_MCMD_SIZE];
-> +       size_t offset_dlen = 0;
-> +       char *mdata;
-> +
-> +       set_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +       mdata = kmalloc(T7XX_FB_MDATA_SIZE, GFP_KERNEL);
-> +       if (!mdata) {
-> +               result = -ENOMEM;
-> +               goto get_core_exit;
-> +       }
-> +
-> +       mrdump_region = dl->dl_region_info[T7XX_MRDUMP_INDEX];
-> +       mrdump_region->dump = vmalloc(mrdump_region->default_size);
-
-Maybe move this allocation to the devlink initialization function to
-make it symmetrical to the buffer freeing on devlink deinitialization?
-
-> +       if (!mrdump_region->dump) {
-> +               kfree(mdata);
-> +               result = -ENOMEM;
-> +               goto get_core_exit;
-> +       }
-> +
-> +       result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_MRDUMP, port, NULL);
-> +       if (result) {
-> +               dev_err(port->dev, "%s command failed\n", T7XX_FB_CMD_OEM_MRDUMP);
-> +               vfree(mrdump_region->dump);
-> +               kfree(mdata);
-> +               goto get_core_exit;
-> +       }
-> +
-> +       while (mrdump_region->default_size > offset_dlen) {
-> +               clen = t7xx_devlink_port_read(port, mcmd, sizeof(mcmd));
-
-Just terminate the response string and you can use strcmp() below. E.g.
-
-clen = t7xx_devlink_port_read(port, mcmd, sizeof(mcmd) - 1);
-mcmd[clen] = '\0';
-if (strcmp(mcmd, ....) != 0) {
-    ...
-} else if (strcmp(mcmd, ...) != 0) {
-    ....
-}
-
-> +               if (clen == strlen(T7XX_FB_CMD_RTS) &&
-> +                   (!strncmp(mcmd, T7XX_FB_CMD_RTS, strlen(T7XX_FB_CMD_RTS)))) {
-> +                       memset(mdata, 0, T7XX_FB_MDATA_SIZE);
-> +                       dlen = 0;
-> +                       memset(mcmd, 0, sizeof(mcmd));
-> +                       clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_CTS);
-> +
-> +                       if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-
-This command string copying and sending can be simplified to:
-
-t7xx_devlink_fb_raw_command(T7XX_FB_CMD_CTS, port, NULL)
-
-> +                               dev_err(port->dev, "write for _CTS failed:%d\n", clen);
-> +                               goto get_core_free_mem;
-> +                       }
-> +
-> +                       dlen = t7xx_devlink_port_read(port, mdata, T7XX_FB_MDATA_SIZE);
-> +                       if (dlen <= 0) {
-> +                               dev_err(port->dev, "read data error(%d)\n", dlen);
-> +                               goto get_core_free_mem;
-> +                       }
-> +
-> +                       zipsize += (unsigned long long)(dlen);
-> +                       memcpy(mrdump_region->dump + offset_dlen, mdata, dlen);
-
-Why is this reading into the intermediate buffer needed?
-t7xx_devlink_port_read() will copy the data from an skb to the buffer
-using memcpy(). So why not just use the dump buffer with a proper
-offer? E.g.
-
-t7xx_devlink_port_read(..., mrdump_region->dump + offset_dlen,
-mrdump_region->default_size - offset_dlen);
-
-BTW, copying memory between the buffers without the dlen check can
-potentially cause a buffer overflow.
-
-> +                       offset_dlen += dlen;
-> +                       memset(mcmd, 0, sizeof(mcmd));
-> +                       clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_FIN);
-> +                       if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-
-t7xx_devlink_fb_raw_command(T7XX_FB_CMD_FIN, port, NULL) ?
-
-> +                               dev_err(port->dev, "%s: _FIN failed, (Read %05d:%05llu)\n",
-> +                                       __func__, clen, zipsize);
-> +                               goto get_core_free_mem;
-> +                       }
-> +               } else if ((clen == strlen(T7XX_FB_RESP_MRDUMP_DONE)) &&
-> +                         (!strncmp(mcmd, T7XX_FB_RESP_MRDUMP_DONE,
-> +                                   strlen(T7XX_FB_RESP_MRDUMP_DONE)))) {
-> +                       dev_dbg(port->dev, "%s! size:%zd\n", T7XX_FB_RESP_MRDUMP_DONE, offset_dlen);
-> +                       mrdump_region->actual_size = offset_dlen;
-> +                       snprintf(mrdump_complete_event, sizeof(mrdump_complete_event),
-> +                                "%s size=%zu", T7XX_UEVENT_MRDUMP_READY, offset_dlen);
-> +                       t7xx_uevent_send(dl->dev, mrdump_complete_event);
-> +                       kfree(mdata);
-> +                       result = 0;
-> +                       goto get_core_exit;
-> +               } else {
-> +                       dev_err(port->dev, "getcore protocol error (read len %05d)\n", clen);
-> +                       goto get_core_free_mem;
-> +               }
-> +       }
-> +
-> +       dev_err(port->dev, "mrdump exceeds %uMB size. Discarded!", mrd_mb);
-> +       t7xx_uevent_send(port->dev, T7XX_UEVENT_MRD_DISCD);
-> +
-> +get_core_free_mem:
-> +       kfree(mdata);
-> +       vfree(mrdump_region->dump);
-> +       clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +       return -EPROTO;
-> +
-> +get_core_exit:
-> +       clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
-> +       return result;
-> +}
-> +
-> +static int t7xx_devlink_fb_dump_log(struct t7xx_port *port)
-> +{
-> +       struct t7xx_devlink_region_info *lkdump_region;
-> +       char lkdump_complete_event[T7XX_FB_EVENT_SIZE];
-> +       struct t7xx_devlink *dl = port->dl;
-> +       int dlen, datasize = 0, result;
-> +       size_t offset_dlen = 0;
-> +       u8 *data;
-> +
-> +       set_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +       result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_LKDUMP, port, &datasize);
-> +       if (result) {
-> +               dev_err(port->dev, "%s command returns failure\n", T7XX_FB_CMD_OEM_LKDUMP);
-> +               goto lkdump_exit;
-> +       }
-> +
-> +       lkdump_region = dl->dl_region_info[T7XX_LKDUMP_INDEX];
-> +       if (datasize > lkdump_region->default_size) {
-> +               dev_err(port->dev, "lkdump size is more than %dKB. Discarded!",
-> +                       T7XX_LKDUMP_SIZE / 1024);
-> +               t7xx_uevent_send(dl->dev, T7XX_UEVENT_LKD_DISCD);
-> +               result = -EPROTO;
-> +               goto lkdump_exit;
-> +       }
-> +
-> +       data = kzalloc(datasize, GFP_KERNEL);
-> +       if (!data) {
-> +               result = -ENOMEM;
-> +               goto lkdump_exit;
-> +       }
-> +
-> +       lkdump_region->dump = vmalloc(lkdump_region->default_size);
-> +       if (!lkdump_region->dump) {
-> +               kfree(data);
-> +               result = -ENOMEM;
-> +               goto lkdump_exit;
-> +       }
-> +
-> +       while (datasize > 0) {
-> +               dlen = t7xx_devlink_port_read(port, data, datasize);
-> +               if (dlen <= 0) {
-> +                       dev_err(port->dev, "lkdump read error ret = %d", dlen);
-> +                       kfree(data);
-> +                       result = -EPROTO;
-> +                       goto lkdump_exit;
-> +               }
-> +
-> +               memcpy(lkdump_region->dump + offset_dlen, data, dlen);
-> +               datasize -= dlen;
-> +               offset_dlen += dlen;
-> +       }
-> +
-> +       dev_dbg(port->dev, "LKDUMP DONE! size:%zd\n", offset_dlen);
-> +       lkdump_region->actual_size = offset_dlen;
-> +       snprintf(lkdump_complete_event, sizeof(lkdump_complete_event), "%s size=%zu",
-> +                T7XX_UEVENT_LKDUMP_READY, offset_dlen);
-> +       t7xx_uevent_send(dl->dev, lkdump_complete_event);
-> +       kfree(data);
-> +       clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +       return t7xx_devlink_fb_handle_response(port, NULL);
-> +
-> +lkdump_exit:
-> +       clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
-> +       return result;
-> +}
-> +
-> +static int t7xx_devlink_flash_update(struct devlink *devlink,
-> +                                    struct devlink_flash_update_params *params,
-> +                                    struct netlink_ext_ack *extack)
-> +{
-> +       struct t7xx_devlink *dl = devlink_priv(devlink);
-> +       const char *component = params->component;
-> +       const struct firmware *fw = params->fw;
-> +       char flash_event[T7XX_FB_EVENT_SIZE];
-> +       struct t7xx_port *port;
-> +       int ret;
-> +
-> +       port = dl->port;
-> +       if (port->dl->mode != T7XX_FB_DL_MODE) {
-> +               dev_err(port->dev, "Modem is not in fastboot download mode!");
-> +               ret = -EPERM;
-> +               goto err_out;
-> +       }
-> +
-> +       if (dl->status != T7XX_DEVLINK_IDLE) {
-> +               dev_err(port->dev, "Modem is busy!");
-> +               ret = -EBUSY;
-> +               goto err_out;
-> +       }
-> +
-> +       if (!component || !fw->data) {
-> +               ret = -EINVAL;
-> +               goto err_out;
-> +       }
-> +
-> +       set_bit(T7XX_FLASH_STATUS, &dl->status);
-> +       dev_dbg(port->dev, "flash partition name:%s binary size:%zu\n", component, fw->size);
-> +       ret = t7xx_devlink_fb_flash_partition(component, fw->data, port, fw->size);
-> +       if (ret) {
-> +               devlink_flash_update_status_notify(devlink, "flashing failure!",
-> +                                                  params->component, 0, 0);
-> +               snprintf(flash_event, sizeof(flash_event), "%s for [%s]",
-> +                        T7XX_UEVENT_FLASHING_FAILURE, params->component);
-> +       } else {
-> +               devlink_flash_update_status_notify(devlink, "flashing success!",
-> +                                                  params->component, 0, 0);
-> +               snprintf(flash_event, sizeof(flash_event), "%s for [%s]",
-> +                        T7XX_UEVENT_FLASHING_SUCCESS, params->component);
-> +       }
-> +
-> +       t7xx_uevent_send(dl->dev, flash_event);
-> +
-> +err_out:
-> +       clear_bit(T7XX_FLASH_STATUS, &dl->status);
-> +       return ret;
-> +}
-> +
-> +static int t7xx_devlink_reload_down(struct devlink *devlink, bool netns_change,
-> +                                   enum devlink_reload_action action,
-> +                                   enum devlink_reload_limit limit,
-> +                                   struct netlink_ext_ack *extack)
-> +{
-> +       struct t7xx_devlink *dl = devlink_priv(devlink);
-> +
-> +       switch (action) {
-> +       case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-> +               dl->set_fastboot_dl = 1;
-
-A devlink expert may correct me, but this use of the driver reload
-action to implicitly switch to fastboot mode looks like an incorrect
-API use (see the reload action description in
-Documentation/networking/devlink/devlink-reload.rst).
-
-Most probably, the driver should implement a devlink param that
-controls the device operation mode: normal or fastboot. Or just one
-boolean param 'fastboot' that enables/disables fastboot mode. And only
-after explicitly switching the device mode, the user should fire the
-driver/firmware reload command.
-
-To me, this looks like a less surprising way for the user to switch
-between normal and flashing modes.
-
-> +               return 0;
-> +       case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
-> +               return t7xx_devlink_fb_raw_command(T7XX_FB_CMD_REBOOT, dl->port, NULL);
-> +       default:
-> +               /* Unsupported action should not get to this function */
-> +               return -EOPNOTSUPP;
-> +       }
-> +}
-> +
-> +static int t7xx_devlink_reload_up(struct devlink *devlink,
-> +                                 enum devlink_reload_action action,
-> +                                 enum devlink_reload_limit limit,
-> +                                 u32 *actions_performed,
-> +                                 struct netlink_ext_ack *extack)
-> +{
-> +       struct t7xx_devlink *dl = devlink_priv(devlink);
-> +       *actions_performed = BIT(action);
-> +       switch (action) {
-> +       case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-> +       case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
-> +               t7xx_rescan_queue_work(dl->mtk_dev->pdev);
-> +               return 0;
-> +       default:
-> +               /* Unsupported action should not get to this function */
-> +               return -EOPNOTSUPP;
-> +       }
-> +}
-> +
-> +/* Call back function for devlink ops */
-> +static const struct devlink_ops devlink_flash_ops = {
-> +       .supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-
-There is no such flag since f94b606325c1 ("net: devlink: limit flash
-component name to match version returned by info_get()").
-
-> +       .flash_update = t7xx_devlink_flash_update,
-> +       .reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
-> +                         BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
-> +       .reload_down = t7xx_devlink_reload_down,
-> +       .reload_up = t7xx_devlink_reload_up,
-> +};
-> +
-> +static int t7xx_devlink_region_snapshot(struct devlink *dl, const struct devlink_region_ops *ops,
-> +                                       struct netlink_ext_ack *extack, u8 **data)
-> +{
-> +       struct t7xx_devlink_region_info *region_info = ops->priv;
-> +       struct t7xx_devlink *t7xx_dl = devlink_priv(dl);
-> +       u8 *snapshot_mem;
-> +
-> +       if (t7xx_dl->status != T7XX_DEVLINK_IDLE) {
-> +               dev_err(t7xx_dl->dev, "Modem is busy!");
-> +               return -EBUSY;
-> +       }
-> +
-> +       dev_dbg(t7xx_dl->dev, "accessed devlink region:%s index:%d", ops->name, region_info->entry);
-
-Since the region info pointer is stored inside the ops private data
-pointer, the region index can be evaluated using pointer arithmetic:
-
-int idx = region_info - t7xx_devlink_region_list;
-
-if (idx == T7XX_MRDUMP_INDEX) {
-    ...
-} else if (idx == T7XX_LKDUMP_INDEX) {
-    ...
-} else {
-    return -ENOENT;
-}
-
-> +       if (!strncmp(ops->name, "mr_dump", strlen("mr_dump"))) {
-> +               if (!region_info->dump) {
-> +                       dev_err(t7xx_dl->dev, "devlink region:%s dump memory is not valid!",
-> +                               region_info->region_name);
-> +                       return -ENOMEM;
-> +               }
-> +
-> +               snapshot_mem = vmalloc(region_info->default_size);
-> +               if (!snapshot_mem)
-> +                       return -ENOMEM;
-> +
-> +               memcpy(snapshot_mem, region_info->dump, region_info->default_size);
-> +               *data = snapshot_mem;
-> +       } else if (!strncmp(ops->name, "lk_dump", strlen("lk_dump"))) {
-> +               int ret;
-> +
-> +               ret = t7xx_devlink_fb_dump_log(t7xx_dl->port);
-> +               if (ret)
-> +                       return ret;
-> +
-> +               *data = region_info->dump;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +/* To create regions for dump files */
-> +static int t7xx_devlink_create_region(struct t7xx_devlink *dl)
-
-This function is entitled 'create_region', but it creates multiple
-regionS at once. It is better to rename it to 'create_regionS'.
-
-Am I right if I say that this code was copied from the iosm driver? I
-am asking because the iosm devlink integration was merged too quickly
-without proper review. My bad. And now I see that it suffers from the
-same issues as noted below.
-
-> +{
-> +       struct devlink_region_ops *region_ops;
-> +       int rc, i;
-> +
-> +       region_ops = dl->dl_region_ops;
-> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++) {
-> +               region_ops[i].name = t7xx_devlink_region_list[i].region_name;
-
-As Ilpo already said, it is a matter of taste how to design the loops,
-but I had construct it like this:
-
-BUILD_BUG_ON(ARRAY_SIZE(t7xx_devlink_region_list) > ARRAY_SIZE(dl->regions));
-for (i = 0; i < ARRAY_SIZE(t7xx_devlink_region_list); ++i) {
-    region_ops = &dl->dl_region_ops[i];
-    region_ops->name = t7xx_devlink_region_list[i].name;
-
-Please note the BUILD_BUG_ON() use: checking the sizes of related
-arrays may save a lot of time in the future and helps to document this
-relationship.
-
-> +               region_ops[i].snapshot = t7xx_devlink_region_snapshot;
-> +               region_ops[i].destructor = vfree;
-> +               dl->dl_region[i] =
-> +               devlink_region_create(dl->dl_ctx, &region_ops[i], T7XX_MAX_SNAPSHOTS,
-> +                                     t7xx_devlink_region_list[i].default_size);
-
-indentation
-
-> +
-
-Odd empty line between the region creation call and the result check.
-
-> +               if (IS_ERR(dl->dl_region[i])) {
-> +                       rc = PTR_ERR(dl->dl_region[i]);
-> +                       dev_err(dl->dev, "devlink region fail,err %d", rc);
-> +                       for ( ; i >= 0; i--)
-> +                               devlink_region_destroy(dl->dl_region[i]);
-> +
-> +                       return rc;
-> +               }
-> +
-> +               t7xx_devlink_region_list[i].entry = i;
-> +               region_ops[i].priv = t7xx_devlink_region_list + i;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +/* To Destroy devlink regions */
-> +static void t7xx_devlink_destroy_region(struct t7xx_devlink *dl)
-> +{
-> +       u8 i;
-> +
-> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++)
-> +               devlink_region_destroy(dl->dl_region[i]);
-> +}
-> +
-> +int t7xx_devlink_register(struct t7xx_pci_dev *t7xx_dev)
-> +{
-> +       struct devlink *dl_ctx;
-> +
-> +       dl_ctx = devlink_alloc(&devlink_flash_ops, sizeof(struct t7xx_devlink),
-> +                              &t7xx_dev->pdev->dev);
-> +       if (!dl_ctx)
-> +               return -ENOMEM;
-> +
-> +       devlink_set_features(dl_ctx, DEVLINK_F_RELOAD);
-> +       devlink_register(dl_ctx);
-> +       t7xx_dev->dl = devlink_priv(dl_ctx);
-> +       t7xx_dev->dl->dl_ctx = dl_ctx;
-> +
-> +       return 0;
-> +}
-> +
-> +void t7xx_devlink_unregister(struct t7xx_pci_dev *t7xx_dev)
-> +{
-> +       struct devlink *dl_ctx = priv_to_devlink(t7xx_dev->dl);
-> +
-> +       devlink_unregister(dl_ctx);
-> +       devlink_free(dl_ctx);
-> +}
-> +
-> +/**
-> + * t7xx_devlink_region_init - Initialize/register devlink to t7xx driver
-> + * @port: Pointer to port structure
-> + * @dw: Pointer to devlink work structure
-> + * @wq: Pointer to devlink workqueue structure
-> + *
-> + * Returns: Pointer to t7xx_devlink on success and NULL on failure
-> + */
-> +static struct t7xx_devlink *t7xx_devlink_region_init(struct t7xx_port *port,
-> +                                                    struct t7xx_devlink_work *dw,
-> +                                                    struct workqueue_struct *wq)
-
-This function is entitled 'region_init', but it contains the common
-devlink initialization code. Probably some or all of its contents
-should be moved to the caller function (t7xx_devlink_init) to
-consolidate the initialization code.
-
-> +{
-> +       struct t7xx_pci_dev *mtk_dev = port->t7xx_dev;
-> +       struct t7xx_devlink *dl = mtk_dev->dl;
-> +       int rc, i;
-> +
-> +       dl->dl_ctx = mtk_dev->dl->dl_ctx;
-> +       dl->mtk_dev = mtk_dev;
-> +       dl->dev = &mtk_dev->pdev->dev;
-> +       dl->mode = T7XX_FB_NO_MODE;
-> +       dl->status = T7XX_DEVLINK_IDLE;
-> +       dl->dl_work = dw;
-> +       dl->dl_wq = wq;
-> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++) {
-> +               dl->dl_region_info[i] = &t7xx_devlink_region_list[i];
-
-This assignment will lead to various hard-to-investigate issues once a
-user connects a couple of modems to a host. Since the region_info
-structure contains the run-time modified fields. See also comments
-near the structure definition above.
-
-> +               dl->dl_region_info[i]->dump = NULL;
-> +       }
-> +       dl->port = port;
-> +       port->dl = dl;
-> +
-> +       rc = t7xx_devlink_create_region(dl);
-> +       if (rc) {
-> +               dev_err(dl->dev, "devlink region creation failed, rc %d", rc);
-> +               return NULL;
-> +       }
-> +
-> +       return dl;
-> +}
-> +
-> +/**
-> + * t7xx_devlink_region_deinit - To unintialize the devlink from T7XX driver.
-> + * @dl:        Devlink instance
-> + */
-> +static void t7xx_devlink_region_deinit(struct t7xx_devlink *dl)
-> +{
-> +       dl->mode = T7XX_FB_NO_MODE;
-> +       t7xx_devlink_destroy_region(dl);
-> +}
-> +
-> +static void t7xx_devlink_work_handler(struct work_struct *data)
-> +{
-> +       struct t7xx_devlink_work *dl_work;
-> +
-> +       dl_work = container_of(data, struct t7xx_devlink_work, work);
-> +       t7xx_devlink_fb_get_core(dl_work->port);
-> +}
-> +
-> +static int t7xx_devlink_init(struct t7xx_port *port)
-> +{
-> +       struct t7xx_devlink_work *dl_work;
-> +       struct workqueue_struct *wq;
-> +
-> +       dl_work = kmalloc(sizeof(*dl_work), GFP_KERNEL);
-> +       if (!dl_work)
-> +               return -ENOMEM;
-> +
-> +       wq = create_workqueue("t7xx_devlink");
-> +       if (!wq) {
-> +               kfree(dl_work);
-> +               dev_err(port->dev, "create_workqueue failed\n");
-> +               return -ENODATA;
-> +       }
-> +
-> +       INIT_WORK(&dl_work->work, t7xx_devlink_work_handler);
-> +       dl_work->port = port;
-> +       port->rx_length_th = T7XX_MAX_QUEUE_LENGTH;
-> +
-> +       if (!t7xx_devlink_region_init(port, dl_work, wq))
-> +               return -ENOMEM;
-> +
-> +       return 0;
-> +}
-> +
-> +static void t7xx_devlink_uninit(struct t7xx_port *port)
-> +{
-> +       struct t7xx_devlink *dl = port->dl;
-> +       struct sk_buff *skb;
-> +       unsigned long flags;
-> +
-> +       vfree(dl->dl_region_info[T7XX_MRDUMP_INDEX]->dump);
-> +       if (dl->dl_wq)
-> +               destroy_workqueue(dl->dl_wq);
-> +       kfree(dl->dl_work);
-> +
-> +       t7xx_devlink_region_deinit(port->dl);
-> +       spin_lock_irqsave(&port->rx_skb_list.lock, flags);
-> +       while ((skb = __skb_dequeue(&port->rx_skb_list)) != NULL)
-> +               dev_kfree_skb(skb);
-> +       spin_unlock_irqrestore(&port->rx_skb_list.lock, flags);
-
-skb_queue_purge(&port->rx_skb_list) ?
-
-> +}
-
-[skipped]
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_port_devlink.h b/drivers/net/wwan/t7xx/t7xx_port_devlink.h
-> new file mode 100644
-> index 000000000000..85384e40519e
-> --- /dev/null
-> +++ b/drivers/net/wwan/t7xx/t7xx_port_devlink.h
-> @@ -0,0 +1,85 @@
-> +/* SPDX-License-Identifier: GPL-2.0-only
-> + *
-> + * Copyright (c) 2022, Intel Corporation.
-> + */
-> +
-> +#ifndef __T7XX_PORT_DEVLINK_H__
-> +#define __T7XX_PORT_DEVLINK_H__
-> +
-> +#include <net/devlink.h>
-> +
-> +#include "t7xx_pci.h"
-> +
-> +#define T7XX_MAX_QUEUE_LENGTH 32
-> +#define T7XX_FB_COMMAND_SIZE  64
-> +#define T7XX_FB_RESPONSE_SIZE 64
-> +#define T7XX_FB_MCMD_SIZE     64
-> +#define T7XX_FB_MDATA_SIZE    1024
-> +#define T7XX_FB_RESP_COUNT    30
-> +
-> +#define T7XX_FB_CMD_RTS          "_RTS"
-> +#define T7XX_FB_CMD_CTS          "_CTS"
-> +#define T7XX_FB_CMD_FIN          "_FIN"
-> +#define T7XX_FB_CMD_OEM_MRDUMP   "oem mrdump"
-> +#define T7XX_FB_CMD_OEM_LKDUMP   "oem dump_pllk_log"
-> +#define T7XX_FB_CMD_DOWNLOAD     "download"
-> +#define T7XX_FB_CMD_FLASH        "flash"
-> +#define T7XX_FB_CMD_REBOOT       "reboot"
-> +#define T7XX_FB_RESP_MRDUMP_DONE "MRDUMP08_DONE"
-> +#define T7XX_FB_RESP_OKAY        "OKAY"
-> +#define T7XX_FB_RESP_FAIL        "FAIL"
-> +#define T7XX_FB_RESP_DATA        "DATA"
-> +#define T7XX_FB_RESP_INFO        "INFO"
-> +
-> +#define T7XX_FB_EVENT_SIZE      50
-> +
-> +#define T7XX_MAX_SNAPSHOTS  1
-> +#define T7XX_MAX_REGION_NAME_LENGTH 20
-> +#define T7XX_MRDUMP_SIZE    (160 * 1024 * 1024)
-> +#define T7XX_LKDUMP_SIZE    (256 * 1024)
-> +#define T7XX_TOTAL_REGIONS  2
-> +
-> +#define T7XX_FLASH_STATUS   0
-> +#define T7XX_MRDUMP_STATUS  1
-> +#define T7XX_LKDUMP_STATUS  2
-> +#define T7XX_DEVLINK_IDLE   0
-> +
-> +#define T7XX_FB_NO_MODE     0
-> +#define T7XX_FB_DL_MODE     1
-> +#define T7XX_FB_DUMP_MODE   2
-> +
-> +#define T7XX_MRDUMP_INDEX   0
-> +#define T7XX_LKDUMP_INDEX   1
-
-Maybe convert these macros to enum and use them more actively? E.g.
-
-/* Internal region indexes */
-enum t7xx_regions {
-    T7XX_REGION_MRDUMP,
-    T7XX_REGION_LKDUMP,
-    T7XX_REGIONS_NUM
-};
-
-> +struct t7xx_devlink_work {
-> +       struct work_struct work;
-> +       struct t7xx_port *port;
-> +};
-
-You can embed the _work_ structure into the t7xx_devlink structure, so
-you do not need this ad hoc structure with all the dynamic memory
-allocation and pointers juggling associated with it.
-
-> +struct t7xx_devlink_region_info {
-> +       char region_name[T7XX_MAX_REGION_NAME_LENGTH];
-> +       u32 default_size;
-> +       u32 actual_size;
-> +       u32 entry;
-> +       u8 *dump;
-> +};
-
-This structure mixes static initialization data and run-time state.
-Also, the set of arrays inside the t7xx_devlink structure makes the
-code harder to read. What if we split this structure into a static
-configuration structure and a runtime state container structure? And
-place all runtime data (e.g. ops, devlink region pointer, etc.) into
-this common state container.
-
-struct t7xx_devlink_region_info {
-    const char *name;
-    size_t size;
-};
-
-struct t7xx_devlink_region {
-    const struct t7xx_devlink_region_info *info;
-    struct devlink_region_ops ops;
-    struct devlink_region *dlreg;
-    size_t data_len;
-    void *buf;
-};
-
-struct t7xx_devlink {
-    ...
-    struct t7xx_devlink_region regions[T7XX_TOTAL_REGIONS];
-};
-
-So the initialization will become:
-
-for (...) {
-    dl->region[i].info = &t7xx_devlink_regions[i];
-    dl->region[i].ops.name = dl->region[i].info->name;
-    dl->region[i].ops.priv = &dl->region[i];
-    ...
-}
-
-And the region index always can be evaluated from the info pointer:
-
-idx = ((struct t7xx_devlink_region *)ops->priv)->info - t7xx_devlink_regions;
-
-> +struct t7xx_devlink {
-> +       struct t7xx_pci_dev *mtk_dev;
-> +       struct t7xx_port *port;
-> +       struct device *dev;
-
-This field is unused.
-
-> +       struct devlink *dl_ctx;
-> +       struct t7xx_devlink_work *dl_work;
-> +       struct workqueue_struct *dl_wq;
-> +       struct t7xx_devlink_region_info *dl_region_info[T7XX_TOTAL_REGIONS];
-> +       struct devlink_region_ops dl_region_ops[T7XX_TOTAL_REGIONS];
-> +       struct devlink_region *dl_region[T7XX_TOTAL_REGIONS];
-> +       u8 mode;
-> +       unsigned long status;
-> +       int set_fastboot_dl;
-> +};
-> +
-> +int t7xx_devlink_register(struct t7xx_pci_dev *t7xx_dev);
-> +void t7xx_devlink_unregister(struct t7xx_pci_dev *t7xx_dev);
-> +
-> +#endif /*__T7XX_PORT_DEVLINK_H__*/
-
-[skipped]
-
-> diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.c b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-> index 9c222809371b..00e143c8d568 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-> +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-
-[skipped]
-
-> @@ -239,8 +252,16 @@ static void t7xx_lk_stage_event_handling(struct t7xx_fsm_ctl *ctl, unsigned int
->                         return;
->                 }
+> I meant "like it is described in the spec".
 >
-> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
-> +                       port->dl->mode = T7XX_FB_DUMP_MODE;
-> +               else
-> +                       port->dl->mode = T7XX_FB_DL_MODE;
->                 port->port_conf->ops->enable_chl(port);
->                 t7xx_cldma_start(md_ctrl);
-> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
-> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DUMP_MODE);
-> +               else
-> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DL_MODE);
->                 break;
+> > > Until now, ieee802154_parse_frame_start() was always called in these
+> > > path and this would validate the frame headers. I've added a more
+> > > precise promiscuous mode in the rx patch which skips any additional
+> > > checks. What happens however is that, if the transceiver disables
+> > > FCS checks in promiscuous mode, then FCS is not checked at all and
+> > > this is invalid. With my current implementation, the devices which
+> > > do not check the FCS might be easily "fixed" by changing their PHY
+> > > filtering level to "FILTERING_NONE" in the promiscuous callback.
+> > >
+> > > > You should consider that having monitors, frames with bad fcs
+> > > > should not be filtered out by hardware. There it comes back what I
+> > > > said before, the filtering level should be a parameter for start()
+> > > > driver ops.
+> > > >
+> > > > > - I've also implemented in software filtering level 4 for most
+> > > > > regular
+> > > >
+> > > > 3?
+> > > >
+> > > > >   data packets. Without changing the default PHY level
+> > > > > mentioned in the first item above, this additional filtering
+> > > > > will be skipped which ensures we keep the same behavior of most
+> > > > > driver. In the case of hwsim however, these filters will become
+> > > > > active if the MAC is not in promiscuous mode or in scan mode,
+> > > > > which is actually what people should be expecting.
+> > > > >
+> > > >
+> > > > To give feedback to that I need to see code. And please don't
+> > > > send the whole feature stuff again, just this specific part of
+> > > > it. Thanks.
+> > >
+> > > The entire filtering feature is split: there are the basis
+> > > introduced before the scan, and then after the whole
+> > > scan+association thing I've introduced additional filtering levels.
+> > >
+> >
+> > No idea what that means.
 >
->         case LK_EVENT_RESET:
-
-[skipped]
-
-> @@ -318,6 +349,7 @@ static void fsm_routine_ready(struct t7xx_fsm_ctl *ctl)
+> In my series, the first patches address the missing bits about
+> filtering. Then there are patches about the scan. And finally there are
+> two patches improving the filtering, which are not actually needed
+> right now for the scan to work.
 >
->         ctl->curr_state = FSM_STATE_READY;
->         t7xx_fsm_broadcast_ready_state(ctl);
-> +       t7xx_uevent_send(&md->t7xx_dev->pdev->dev, T7XX_UEVENT_MODEM_READY);
->         t7xx_md_event_notify(md, FSM_READY);
->  }
 
-These UEVENT things look at least unrelated to the patch. If the
-deriver is really need it, please factor out it into a separate patch
-with a comment describing why userspace wants to see these events.
+ok.
 
-On the other hand, this looks like a custom tracing implementation. It
-might be better to use simple debug messages instead or even the
-tracing API, which is much more powerful than any uevent.
+> > > > > Hopefully all this fits what you had in mind.
+> > > > >
+> > > > > I have one item left on my current todo list: improving a bit
+> > > > > the userspace tool with a "monitor" command.
+> > > > >
+> > > > > Otherwise the remaining things to do are to discuss the locking
+> > > > > design which might need to be changed to avoid lockdep issues
+> > > > > and keep the rtnl locked eg. during a channel change. I still
+> > > > > don't know how to do that, so it's likely that the right next
+> > > > > version will not include any change in this area unless
+> > > > > something pops up.
+> > > >
+> > > > I try to look at that on the weekend.
+> > >
+> > > I've had an idea yesterday night which seem to work, I think I can
+> > > drop the two patches which you disliked regarding discarding the
+> > > rtnl in the tx path and in hwsim:change_channel().
+> >
+> > I would like to bring the filtering level question at first upstream.
+> > If you don't mind.
+>
+> The additional filtering which I've written has nothing to do with the
+> scan, and more importantly it uses many new enums/helpers which are
+> added along the way (by the scan series and the association series).
+> Hence moving this filtering earlier in the series is a real pain and
+> would anyway not bring anything really useful at this stage. All the
+> important filtering changes are already available in the v2 series sent
+> last week.
+>
+> Not mentioning, I would really like to move forward on the scan series
+> as it's been in the air for quite some time.
+>
 
---
-Sergey
+I did not see the v2 until now. Sorry for that.
+
+However I think there are missing bits here at the receive handling
+side. Which are:
+
+1. Do a stop_tx(), stop_rx(), start_rx(filtering_level) to go into
+other filtering modes while ifup.
+
+I don't want to see all filtering modes here, just what we currently
+support with NONE (then with FCS check on software if necessary),
+?THIRD/FOURTH? LEVEL filtering and that's it. What I don't want to see
+is runtime changes of phy flags. To tell the receive path what to
+filter and what's not.
+
+2. set the pan coordinator bit for hw address filter. And there is a
+TODO about setting pkt_type in mac802154 receive path which we should
+take a look into. This bit should be addressed for coordinator support
+even if there is the question about coordinator vs pan coordinator,
+then the kernel needs a bit as coordinator iface type parameter to
+know if it's a pan coordinator and not coordinator.
+
+I think it makes total sense to split this work in transmit handling,
+where we had no support at all to send something besides the usual
+data path, and receive handling, where we have no way to change the
+filtering level besides interface type and ifup time of an interface.
+We are currently trying to make a receive path working in a way that
+"the other ideas flying around which are good" can be introduced in
+future.
+If this is done, then take care about how to add the rest of it.
+
+I will look into v2 the next few days.
+
+- Alex
+
