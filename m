@@ -2,66 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CA325A648A
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 15:19:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78D945A649D
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 15:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiH3NTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 09:19:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36184 "EHLO
+        id S230078AbiH3NZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 09:25:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiH3NTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 09:19:41 -0400
-Received: from corp-front08-corp.i.nease.net (corp-front08-corp.i.nease.net [59.111.134.158])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DAEED83DC;
-        Tue, 30 Aug 2022 06:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
-        Date:Message-Id:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding; bh=H6P2wgLWIp5yNMxykpRUGtpzFAdWl9bhHK
-        xCsyU70W0=; b=ZVAkTSVzo2Qri69gXRveThlo0hgeXDBboPJzU5w/a+Rbd/zT6k
-        v0+pfDeqqUazHFFBQeS4BjATcckNahlMGgdkG+fgekprIG7m6APqDvTGatU3s5yA
-        jn31N4jgqXZc72KPVA+Qq1Q7uZ1iSfVggJw2YJfn4/H0m5uEYrkZW0H8Q=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by corp-front08-corp.i.nease.net (Coremail) with SMTP id nhDICgBXvppTDg5jy+8UAA--.19890S2;
-        Tue, 30 Aug 2022 21:19:15 +0800 (HKT)
-From:   liuyacan@corp.netease.com
-To:     wintera@linux.ibm.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, liuyacan@corp.netease.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        tonylu@linux.alibaba.com, wenjia@linux.ibm.com,
-        ubraun@linux.vnet.ibm.com
-Subject: [PATCH net v3] net/smc: Fix possible access to freed memory in link clear
-Date:   Tue, 30 Aug 2022 21:19:05 +0800
-Message-Id: <20220830131905.286785-1-liuyacan@corp.netease.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <b3245c33-125c-7483-318a-a78dfbdac5ee@linux.ibm.com>
-References: <b3245c33-125c-7483-318a-a78dfbdac5ee@linux.ibm.com>
+        with ESMTP id S229957AbiH3NZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 09:25:53 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB175C34D;
+        Tue, 30 Aug 2022 06:25:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=ChRLCxcp2Pv+XebXI/mR0LbNe8f7KSwCYY4t/Bic+Qw=; b=My8BgyGGaGQz8KT9o94tZ4PapB
+        mwV9r3Sb0UFfymn4r1wKTWa4N//oMkkGslOZb1fO6jNlocpVBUDqE1nSydtwiS/esoqtVo5C4moKl
+        jWHoikY/fICHGOcvbR/qLNe5mrwhXVIK9KGM9gBxW4kOWBSok6iKd9k5m8UXQ52uMPrA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oT1FU-00F4ht-Lb; Tue, 30 Aug 2022 15:25:48 +0200
+Date:   Tue, 30 Aug 2022 15:25:48 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arun Ramadoss <arun.ramadoss@microchip.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Tristram Ha <Tristram.Ha@microchip.com>
+Subject: Re: [RFC Patch net-next v3 3/3] net: dsa: microchip: lan937x: add
+ interrupt support for port phy link
+Message-ID: <Yw4P3OJgtTtmgBHN@lunn.ch>
+References: <20220830105303.22067-1-arun.ramadoss@microchip.com>
+ <20220830105303.22067-4-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: nhDICgBXvppTDg5jy+8UAA--.19890S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3ArWUKF15AF18XFy8Gw1kGrg_yoWxXFWfpF
-        W7Gr1xCr48Jr1kWFn5CFy7Z3W5t3WIkF1rG34avr95ZFnrGw18tF1Sgr12vF98JF4qga4S
-        vrW8Xw1xKrn8JaUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUULYb7IF0VCFI7km07C26c804VAKzcIF0wAFF20E14v26r4j6ryU
-        M7CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2
-        IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84AC
-        jcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
-        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
-        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
-        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
-        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
-        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
-        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
-        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
-        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
-        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l
-        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
-        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
-X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAOCVt77xO05QAQsf
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830105303.22067-4-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,164 +58,188 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yacan Liu <liuyacan@corp.netease.com>
+> @@ -85,6 +94,7 @@ struct ksz_port {
+>  	u32 rgmii_tx_val;
+>  	u32 rgmii_rx_val;
+>  	struct ksz_device *ksz_dev;
+> +	struct ksz_irq irq;
 
-After modifying the QP to the Error state, all RX WR would be completed
-with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
-wait for it is done, but destroy the QP and free the link group directly.
-So there is a risk that accessing the freed memory in tasklet context.
+Here irq is of type ksz_irq.
 
-Here is a crash example:
+>  	u8 num;
+>  };
+>  
+> @@ -103,6 +113,7 @@ struct ksz_device {
+>  	struct regmap *regmap[3];
+>  
+>  	void *priv;
+> +	int irq;
 
- BUG: unable to handle page fault for address: ffffffff8f220860
- #PF: supervisor write access in kernel mode
- #PF: error_code(0x0002) - not-present page
- PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
- Oops: 0002 [#1] SMP PTI
- CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
- Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
- RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
- Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
- RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
- RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
- RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
- RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
- R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
- R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
- FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
- DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
- DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
- Call Trace:
-  <IRQ>
-  _raw_spin_lock_irqsave+0x30/0x40
-  mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
-  smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
-  tasklet_action_common.isra.21+0x66/0x100
-  __do_softirq+0xd5/0x29c
-  asm_call_irq_on_stack+0x12/0x20
-  </IRQ>
-  do_softirq_own_stack+0x37/0x40
-  irq_exit_rcu+0x9d/0xa0
-  sysvec_call_function_single+0x34/0x80
-  asm_sysvec_call_function_single+0x12/0x20
+Here it is of type int.
 
-Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
-Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
+>  
+>  	struct gpio_desc *reset_gpio;	/* Optional reset GPIO */
+>  
+> @@ -124,6 +135,8 @@ struct ksz_device {
+>  	u16 mirror_tx;
+>  	u32 features;			/* chip specific features */
+>  	u16 port_mask;
+> +	struct mutex lock_irq;		/* IRQ Access */
+> +	struct ksz_irq girq;
 
----
-Change in v3:
-  -- Tune commit message (Signed-Off tag, Fixes tag)
-     Tune code to avoid column length exceeding
-Change in v2:
-  -- Fix some compile warnings and errors
----
- net/smc/smc_core.c |  2 ++
- net/smc/smc_core.h |  2 ++
- net/smc/smc_wr.c   | 13 +++++++++++++
- net/smc/smc_wr.h   |  3 +++
- 4 files changed, 20 insertions(+)
+And here you have the type ksz_irq called qirq. This is going to be
+confusing.
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index ff49a11f5..b632a33f1 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -752,6 +752,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
- 	atomic_inc(&lnk->smcibdev->lnk_cnt);
- 	refcount_set(&lnk->refcnt, 1); /* link refcnt is set to 1 */
- 	lnk->clearing = 0;
-+	lnk->rx_drained = 0;
- 	lnk->path_mtu = lnk->smcibdev->pattr[lnk->ibport - 1].active_mtu;
- 	lnk->link_id = smcr_next_link_id(lgr);
- 	lnk->lgr = lgr;
-@@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
- 	smcr_buf_unmap_lgr(lnk);
- 	smcr_rtoken_clear_link(lnk);
- 	smc_ib_modify_qp_error(lnk);
-+	smc_wr_drain_cq(lnk);
- 	smc_wr_free_link(lnk);
- 	smc_ib_destroy_queue_pair(lnk);
- 	smc_ib_dealloc_protection_domain(lnk);
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index fe8b524ad..0a469a3e7 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -117,6 +117,7 @@ struct smc_link {
- 	u64			wr_rx_id;	/* seq # of last recv WR */
- 	u32			wr_rx_cnt;	/* number of WR recv buffers */
- 	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
-+	wait_queue_head_t       wr_rx_drain_wait; /* wait for WR drain */
- 
- 	struct ib_reg_wr	wr_reg;		/* WR register memory region */
- 	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-@@ -138,6 +139,7 @@ struct smc_link {
- 	u8			link_idx;	/* index in lgr link array */
- 	u8			link_is_asym;	/* is link asymmetric? */
- 	u8			clearing : 1;	/* link is being cleared */
-+	u8                      rx_drained : 1; /* link is drained */
- 	refcount_t		refcnt;		/* link reference count */
- 	struct smc_link_group	*lgr;		/* parent link group */
- 	struct work_struct	link_down_wrk;	/* wrk to bring link down */
-diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-index 26f8f240d..958f4b78a 100644
---- a/net/smc/smc_wr.c
-+++ b/net/smc/smc_wr.c
-@@ -465,6 +465,11 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
- 			case IB_WC_RNR_RETRY_EXC_ERR:
- 			case IB_WC_WR_FLUSH_ERR:
- 				smcr_link_down_cond_sched(link);
-+				if (link->clearing &&
-+				    wc[i].wr_id == link->wr_rx_id) {
-+					link->rx_drained = 1;
-+					wake_up(&link->wr_rx_drain_wait);
-+				}
- 				break;
- 			default:
- 				smc_wr_rx_post(link); /* refill WR RX */
-@@ -631,6 +636,13 @@ static void smc_wr_init_sge(struct smc_link *lnk)
- 	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
- }
- 
-+void smc_wr_drain_cq(struct smc_link *lnk)
-+{
-+	wait_event_interruptible_timeout(lnk->wr_rx_drain_wait,
-+					 (lnk->rx_drained == 1),
-+					 SMC_WR_RX_WAIT_DRAIN_TIME);
-+}
-+
- void smc_wr_free_link(struct smc_link *lnk)
- {
- 	struct ib_device *ibdev;
-@@ -889,6 +901,7 @@ int smc_wr_create_link(struct smc_link *lnk)
- 	atomic_set(&lnk->wr_tx_refcnt, 0);
- 	init_waitqueue_head(&lnk->wr_reg_wait);
- 	atomic_set(&lnk->wr_reg_refcnt, 0);
-+	init_waitqueue_head(&lnk->wr_rx_drain_wait);
- 	return rc;
- 
- dma_unmap:
-diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-index a54e90a11..2a7ebdba3 100644
---- a/net/smc/smc_wr.h
-+++ b/net/smc/smc_wr.h
-@@ -27,6 +27,8 @@
- 
- #define SMC_WR_TX_PEND_PRIV_SIZE 32
- 
-+#define SMC_WR_RX_WAIT_DRAIN_TIME       (2 * HZ)
-+
- struct smc_wr_tx_pend_priv {
- 	u8			priv[SMC_WR_TX_PEND_PRIV_SIZE];
- };
-@@ -101,6 +103,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
- int smc_wr_create_link(struct smc_link *lnk);
- int smc_wr_alloc_link_mem(struct smc_link *lnk);
- int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
-+void smc_wr_drain_cq(struct smc_link *lnk);
- void smc_wr_free_link(struct smc_link *lnk);
- void smc_wr_free_link_mem(struct smc_link *lnk);
- void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
--- 
-2.20.1
+I suggest you make the first one called pirq, for port, and then we
+have girq for global, and irq is just a number.
 
+>  static int lan937x_cfg(struct ksz_device *dev, u32 addr, u8 bits, bool set)
+>  {
+>  	return regmap_update_bits(dev->regmap[0], addr, bits, set ? bits : 0);
+> @@ -171,6 +175,7 @@ static int lan937x_mdio_register(struct ksz_device *dev)
+>  	struct device_node *mdio_np;
+>  	struct mii_bus *bus;
+>  	int ret;
+> +	int p;
+>  
+>  	mdio_np = of_get_child_by_name(dev->dev->of_node, "mdio");
+>  	if (!mdio_np) {
+> @@ -194,6 +199,16 @@ static int lan937x_mdio_register(struct ksz_device *dev)
+>  
+>  	ds->slave_mii_bus = bus;
+>  
+> +	for (p = 0; p < KSZ_MAX_NUM_PORTS; p++) {
+> +		if (BIT(p) & ds->phys_mii_mask) {
+> +			unsigned int irq;
+> +
+> +			irq = irq_find_mapping(dev->ports[p].irq.domain,
+> +					       PORT_SRC_PHY_INT);
+
+This could return an error code. You really should check for it, the
+irq subsystem is not going to be happy with a negative irq number.
+
+> +			ds->slave_mii_bus->irq[p] = irq;
+> +		}
+> +	}
+> +
+>  	ret = devm_of_mdiobus_register(ds->dev, bus, mdio_np);
+>  	if (ret) {
+>  		dev_err(ds->dev, "unable to register MDIO bus %s\n",
+
+I don't see anywhere you destroy the mappings you created above when
+the MDIO bus is unregistered. The equivalent of
+mv88e6xxx_g2_irq_mdio_free().
+
+
+> +static irqreturn_t lan937x_girq_thread_fn(int irq, void *dev_id)
+> +{
+> +	struct ksz_device *dev = dev_id;
+> +	unsigned int nhandled = 0;
+> +	unsigned int sub_irq;
+> +	unsigned int n;
+> +	u32 data;
+> +	int ret;
+> +
+> +	ret = ksz_read32(dev, REG_SW_INT_STATUS__4, &data);
+> +	if (ret)
+> +		goto out;
+> +
+> +	if (data & POR_READY_INT) {
+> +		ret = ksz_write32(dev, REG_SW_INT_STATUS__4, POR_READY_INT);
+> +		if (ret)
+> +			goto out;
+> +	}
+
+What do these two read/writes do? It seems like you are discarding an
+interrupt?
+
+
+> +
+> +	/* Read global interrupt status register */
+> +	ret = ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data);
+> +	if (ret)
+> +		goto out;
+> +
+> +	for (n = 0; n < dev->girq.nirqs; ++n) {
+> +		if (data & (1 << n)) {
+> +			sub_irq = irq_find_mapping(dev->girq.domain, n);
+> +			handle_nested_irq(sub_irq);
+> +			++nhandled;
+> +		}
+> +	}
+> +out:
+> +	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
+> +}
+> +
+> +static irqreturn_t lan937x_pirq_thread_fn(int irq, void *dev_id)
+> +{
+> +	struct ksz_port *port = dev_id;
+> +	unsigned int nhandled = 0;
+> +	struct ksz_device *dev;
+> +	unsigned int sub_irq;
+> +	unsigned int n;
+> +	u8 data;
+> +
+> +	dev = port->ksz_dev;
+> +
+> +	/* Read global interrupt status register */
+> +	ksz_pread8(dev, port->num, REG_PORT_INT_STATUS, &data);
+
+I think global here should be port?
+
+> +
+> +	for (n = 0; n < port->irq.nirqs; ++n) {
+> +		if (data & (1 << n)) {
+> +			sub_irq = irq_find_mapping(port->irq.domain, n);
+> +			handle_nested_irq(sub_irq);
+> +			++nhandled;
+> +		}
+> +	}
+> +
+> +	return (nhandled > 0 ? IRQ_HANDLED : IRQ_NONE);
+> +}
+> +
+
+>  int lan937x_setup(struct dsa_switch *ds)
+>  {
+>  	struct ksz_device *dev = ds->priv;
+> +	struct dsa_port *dp;
+>  	int ret;
+>  
+>  	/* enable Indirect Access from SPI to the VPHY registers */
+> @@ -395,10 +688,22 @@ int lan937x_setup(struct dsa_switch *ds)
+>  		return ret;
+>  	}
+>  
+> +	if (dev->irq > 0) {
+> +		ret = lan937x_girq_setup(dev);
+> +		if (ret)
+> +			return ret;
+> +
+> +		dsa_switch_for_each_user_port(dp, dev->ds) {
+> +			ret = lan937x_pirq_setup(dev, dp->index);
+> +			if (ret)
+> +				goto out_girq;
+> +		}
+> +	}
+> +
+
+>  void lan937x_switch_exit(struct ksz_device *dev)
+>  {
+> +	struct dsa_port *dp;
+> +
+>  	lan937x_reset_switch(dev);
+> +
+> +	if (dev->irq > 0) {
+> +		dsa_switch_for_each_user_port(dp, dev->ds) {
+> +			lan937x_pirq_free(&dev->ports[dp->index], dp->index);
+> +		}
+> +
+> +		lan937x_girq_free(dev);
+
+This is where your problem with exit vs reset is coming from. You
+setup all the interrupt code in setup(). But currently there is no
+function which is the opposite of setup(). Generally, it is called
+tairdown. Add such a function.
+
+	  Andrew
