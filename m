@@ -2,129 +2,290 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 389D65A6630
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B9F5A663C
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 16:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230189AbiH3OYA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Aug 2022 10:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41078 "EHLO
+        id S229897AbiH3OYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 10:24:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229822AbiH3OXu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:23:50 -0400
-Received: from us-smtp-delivery-44.mimecast.com (us-smtp-delivery-44.mimecast.com [207.211.30.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507DDF8249
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 07:23:48 -0700 (PDT)
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-455-BcsVEOvLNLi5CaMoJIYAjw-1; Tue, 30 Aug 2022 10:23:43 -0400
-X-MC-Unique: BcsVEOvLNLi5CaMoJIYAjw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S229521AbiH3OYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 10:24:50 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC2EA39E;
+        Tue, 30 Aug 2022 07:24:44 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id AB774101E989;
-        Tue, 30 Aug 2022 14:23:42 +0000 (UTC)
-Received: from hog.localdomain (unknown [10.39.195.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DB1524010FA1;
-        Tue, 30 Aug 2022 14:23:41 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     steffen.klassert@secunet.com, Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next 6/6] xfrm: add extack to verify_sec_ctx_len
-Date:   Tue, 30 Aug 2022 16:23:12 +0200
-Message-Id: <8321c2da6fce07658c226dc473b17b6b17f3f676.1661162395.git.sd@queasysnail.net>
-In-Reply-To: <cover.1661162395.git.sd@queasysnail.net>
-References: <cover.1661162395.git.sd@queasysnail.net>
+        by mail.3ffe.de (Postfix) with ESMTPSA id A3381121;
+        Tue, 30 Aug 2022 16:24:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1661869482;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ksexceGYLzmlYsHeH0rjdnvsXlkUmLS38Dmp/YO60oQ=;
+        b=vgKzVwKoXHDPNbBLh16JW5TCnOV8a8HQ798Pb8eyYspmZ3tboetf7xkqhdVTNV75NEbsgC
+        DyPK+R0ZHfA3nvuUi1OfNu9br6i6h/1t6Th07icjgTwEPluILSZAOCrVzxdNsq7vr8lRp6
+        zW1CjEOzHYX8mMVQaW5EgQayN4ZjLAxPeIwdf1jIRqhLZtdvTcyLfHLik39GTXW+xH0LAR
+        ASXeiz99Oul80NtAzgjRaRMeoUEPC3Hqynqbv9BbgyDbRnSqz4tYgdyjrOVhdOBfPBnZoz
+        VSZqUQ/03BO1K5PMYhx1KZ23RiNLReB/pIpePCho7cRjjvNXU0H6Dz4Ep29DXQ==
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: queasysnail.net
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252; x-default=true
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Date:   Tue, 30 Aug 2022 16:24:42 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH v1 06/14] nvmem: core: introduce NVMEM layouts
+In-Reply-To: <e2d91011-583e-a88d-94f9-beb194416326@linaro.org>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-7-michael@walle.cc>
+ <e2d91011-583e-a88d-94f9-beb194416326@linaro.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <ae27e9d300a9c9eca4e9ec0c702b5e0a@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- net/xfrm/xfrm_user.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+Am 2022-08-30 15:36, schrieb Srinivas Kandagatla:
+> On 25/08/2022 22:44, Michael Walle wrote:
+>> NVMEM layouts are used to generate NVMEM cells during runtime. Think 
+>> of
+>> an EEPROM with a well-defined conent. For now, the content can be
+>> described by a device tree or a board file. But this only works if the
+>> offsets and lengths are static and don't change. One could also argue
+>> that putting the layout of the EEPROM in the device tree is the wrong
+>> place. Instead, the device tree should just have a specific compatible
+>> string.
+>> 
+>> Right now there are two use cases:
+>>   (1) The NVMEM cell needs special processing. E.g. if it only 
+>> specifies
+>>       a base MAC address offset and you need to add an offset, or it
+>>       needs to parse a MAC from ASCII format or some proprietary 
+>> format.
+>>       (Post processing of cells is added in a later commit).
+>>   (2) u-boot environment parsing. The cells don't have a particular
+>>       offset but it needs parsing the content to determine the offsets
+>>       and length.
+>> 
+>> Signed-off-by: Michael Walle <michael@walle.cc>
+>> ---
+>>   drivers/nvmem/Kconfig          |  2 ++
+>>   drivers/nvmem/Makefile         |  1 +
+>>   drivers/nvmem/core.c           | 57 
+>> ++++++++++++++++++++++++++++++++++
+>>   drivers/nvmem/layouts/Kconfig  |  5 +++
+>>   drivers/nvmem/layouts/Makefile |  4 +++
+>>   include/linux/nvmem-provider.h | 38 +++++++++++++++++++++++
+>>   6 files changed, 107 insertions(+)
+>>   create mode 100644 drivers/nvmem/layouts/Kconfig
+>>   create mode 100644 drivers/nvmem/layouts/Makefile
+> 
+> update to ./Documentation/driver-api/nvmem.rst would help others.
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 9fd30914f1ff..772a051feedb 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -102,7 +102,7 @@ static void verify_one_addr(struct nlattr **attrs, enum xfrm_attr_type_t type,
- 		*addrp = nla_data(rt);
- }
- 
--static inline int verify_sec_ctx_len(struct nlattr **attrs)
-+static inline int verify_sec_ctx_len(struct nlattr **attrs, struct netlink_ext_ack *extack)
- {
- 	struct nlattr *rt = attrs[XFRMA_SEC_CTX];
- 	struct xfrm_user_sec_ctx *uctx;
-@@ -112,8 +112,10 @@ static inline int verify_sec_ctx_len(struct nlattr **attrs)
- 
- 	uctx = nla_data(rt);
- 	if (uctx->len > nla_len(rt) ||
--	    uctx->len != (sizeof(struct xfrm_user_sec_ctx) + uctx->ctx_len))
-+	    uctx->len != (sizeof(struct xfrm_user_sec_ctx) + uctx->ctx_len)) {
-+		NL_SET_ERR_MSG(extack, "Invalid security context length");
- 		return -EINVAL;
-+	}
- 
- 	return 0;
- }
-@@ -264,7 +266,7 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
- 		goto out;
- 	if ((err = verify_one_alg(attrs, XFRMA_ALG_COMP)))
- 		goto out;
--	if ((err = verify_sec_ctx_len(attrs)))
-+	if ((err = verify_sec_ctx_len(attrs, NULL)))
- 		goto out;
- 	if ((err = verify_replay(p, attrs)))
- 		goto out;
-@@ -1800,7 +1802,7 @@ static int xfrm_add_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	err = verify_newpolicy_info(p, extack);
- 	if (err)
- 		return err;
--	err = verify_sec_ctx_len(attrs);
-+	err = verify_sec_ctx_len(attrs, extack);
- 	if (err)
- 		return err;
- 
-@@ -2136,7 +2138,7 @@ static int xfrm_get_policy(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
- 		struct xfrm_sec_ctx *ctx;
- 
--		err = verify_sec_ctx_len(attrs);
-+		err = verify_sec_ctx_len(attrs, extack);
- 		if (err)
- 			return err;
- 
-@@ -2441,7 +2443,7 @@ static int xfrm_add_pol_expire(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		struct nlattr *rt = attrs[XFRMA_SEC_CTX];
- 		struct xfrm_sec_ctx *ctx;
- 
--		err = verify_sec_ctx_len(attrs);
-+		err = verify_sec_ctx_len(attrs, extack);
- 		if (err)
- 			return err;
- 
-@@ -2533,7 +2535,7 @@ static int xfrm_add_acquire(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	err = verify_newpolicy_info(&ua->policy, extack);
- 	if (err)
- 		goto free_state;
--	err = verify_sec_ctx_len(attrs);
-+	err = verify_sec_ctx_len(attrs, extack);
- 	if (err)
- 		goto free_state;
- 
--- 
-2.37.2
+Sure. Didn't know about that one.
 
+>> diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
+>> index bab8a29c9861..1416837b107b 100644
+>> --- a/drivers/nvmem/Kconfig
+>> +++ b/drivers/nvmem/Kconfig
+>> @@ -357,4 +357,6 @@ config NVMEM_U_BOOT_ENV
+>>     	  If compiled as module it will be called nvmem_u-boot-env.
+>>   +source "drivers/nvmem/layouts/Kconfig"
+>> +
+>>   endif
+>> diff --git a/drivers/nvmem/Makefile b/drivers/nvmem/Makefile
+>> index 399f9972d45b..cd5a5baa2f3a 100644
+>> --- a/drivers/nvmem/Makefile
+>> +++ b/drivers/nvmem/Makefile
+>> @@ -5,6 +5,7 @@
+>>     obj-$(CONFIG_NVMEM)		+= nvmem_core.o
+>>   nvmem_core-y			:= core.o
+>> +obj-y				+= layouts/
+>>     # Devices
+>>   obj-$(CONFIG_NVMEM_BCM_OCOTP)	+= nvmem-bcm-ocotp.o
+>> diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+>> index 3dfd149374a8..5357fc378700 100644
+>> --- a/drivers/nvmem/core.c
+>> +++ b/drivers/nvmem/core.c
+>> @@ -74,6 +74,9 @@ static LIST_HEAD(nvmem_lookup_list);
+>>     static BLOCKING_NOTIFIER_HEAD(nvmem_notifier);
+>>   +static DEFINE_SPINLOCK(nvmem_layout_lock);
+>> +static LIST_HEAD(nvmem_layouts);
+>> +
+>>   static int __nvmem_reg_read(struct nvmem_device *nvmem, unsigned int 
+>> offset,
+>>   			    void *val, size_t bytes)
+>>   {
+>> @@ -744,6 +747,56 @@ static int nvmem_add_cells_from_of(struct 
+>> nvmem_device *nvmem)
+>>   	return 0;
+>>   }
+>>   +int nvmem_register_layout(struct nvmem_layout *layout)
+>> +{
+>> +	spin_lock(&nvmem_layout_lock);
+>> +	list_add(&layout->node, &nvmem_layouts);
+>> +	spin_unlock(&nvmem_layout_lock);
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(nvmem_register_layout);
+> 
+> we should provide nvmem_unregister_layout too, so that providers can
+> add them if they can in there respective drivers.
+
+Actually, that was the idea; that you can have layouts outside of 
+layouts/.
+I also had a nvmem_unregister_layout() but removed it because it was 
+dead
+code. Will re-add it again.
+
+>> +
+>> +static struct nvmem_layout *nvmem_get_compatible_layout(struct 
+>> device_node *np)
+>> +{
+>> +	struct nvmem_layout *p, *ret = NULL;
+>> +
+>> +	spin_lock(&nvmem_layout_lock);
+>> +
+>> +	list_for_each_entry(p, &nvmem_layouts, node) {
+>> +		if (of_match_node(p->of_match_table, np)) {
+>> +			ret = p;
+>> +			break;
+>> +		}
+>> +	}
+>> +
+>> +	spin_unlock(&nvmem_layout_lock);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int nvmem_add_cells_from_layout(struct nvmem_device *nvmem)
+>> +{
+>> +	struct nvmem_layout *layout;
+>> +
+>> +	layout = nvmem_get_compatible_layout(nvmem->dev.of_node);
+>> +	if (layout)
+>> +		layout->add_cells(&nvmem->dev, nvmem, layout);
+> 
+> access to add_cells can crash hear as we did not check it before
+> adding in to list.
+> Or
+> we could relax add_cells callback for usecases like imx-octop.
+
+good catch, will use layout && layout->add_cells.
+
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +const void *nvmem_layout_get_match_data(struct nvmem_device *nvmem,
+>> +					struct nvmem_layout *layout)
+>> +{
+>> +	const struct of_device_id *match;
+>> +
+>> +	match = of_match_node(layout->of_match_table, nvmem->dev.of_node);
+>> +
+>> +	return match ? match->data : NULL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(nvmem_layout_get_match_data);
+>> +
+>>   /**
+>>    * nvmem_register() - Register a nvmem device for given 
+>> nvmem_config.
+>>    * Also creates a binary entry in 
+>> /sys/bus/nvmem/devices/dev-name/nvmem
+>> @@ -872,6 +925,10 @@ struct nvmem_device *nvmem_register(const struct 
+>> nvmem_config *config)
+>>   	if (rval)
+>>   		goto err_remove_cells;
+>>   +	rval = nvmem_add_cells_from_layout(nvmem);
+>> +	if (rval)
+>> +		goto err_remove_cells;
+>> +
+>>   	blocking_notifier_call_chain(&nvmem_notifier, NVMEM_ADD, nvmem);
+>>     	return nvmem;
+>> diff --git a/drivers/nvmem/layouts/Kconfig 
+>> b/drivers/nvmem/layouts/Kconfig
+>> new file mode 100644
+>> index 000000000000..9ad3911d1605
+>> --- /dev/null
+>> +++ b/drivers/nvmem/layouts/Kconfig
+>> @@ -0,0 +1,5 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +
+>> +menu "Layout Types"
+>> +
+>> +endmenu
+>> diff --git a/drivers/nvmem/layouts/Makefile 
+>> b/drivers/nvmem/layouts/Makefile
+>> new file mode 100644
+>> index 000000000000..6fdb3c60a4fa
+>> --- /dev/null
+>> +++ b/drivers/nvmem/layouts/Makefile
+>> @@ -0,0 +1,4 @@
+>> +# SPDX-License-Identifier: GPL-2.0
+>> +#
+>> +# Makefile for nvmem layouts.
+>> +#
+>> diff --git a/include/linux/nvmem-provider.h 
+>> b/include/linux/nvmem-provider.h
+>> index e710404959e7..323685841e9f 100644
+>> --- a/include/linux/nvmem-provider.h
+>> +++ b/include/linux/nvmem-provider.h
+>> @@ -127,6 +127,28 @@ struct nvmem_cell_table {
+>>   	struct list_head	node;
+>>   };
+>>   +/**
+>> + * struct nvmem_layout - NVMEM layout definitions
+>> + *
+>> + * @name:		Layout name.
+>> + * @of_match_table:	Open firmware match table.
+>> + * @add_cells:		Will be called if a nvmem device is found which
+>> + *			has this layout. The function will add layout
+>> + *			specific cells with nvmem_add_one_cell().
+>> + * @node:		List node.
+>> + *
+>> + * A nvmem device can hold a well defined structure which can just be
+>> + * evaluated during runtime. For example a TLV list, or a list of 
+>> "name=val"
+>> + * pairs. A nvmem layout can parse the nvmem device and add 
+>> appropriate
+>> + * cells.
+>> + */
+>> +struct nvmem_layout {
+>> +	const char *name;
+>> +	const struct of_device_id *of_match_table;
+> 
+> looking at this, I think its doable to convert the existing
+> cell_post_process callback to layouts by adding a layout specific
+> callback here.
+
+can you elaborate on that?
+
+-michael
