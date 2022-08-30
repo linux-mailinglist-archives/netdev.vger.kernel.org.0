@@ -2,110 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA0C05A5FD7
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 11:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A6A15A5FEC
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 11:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbiH3Jvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 05:51:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
+        id S229848AbiH3J4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 05:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229566AbiH3Jvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 05:51:39 -0400
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FDEA99E6
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 02:51:38 -0700 (PDT)
-Received: by mail-lj1-x22b.google.com with SMTP id y10so7614142ljq.0
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 02:51:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=OZx7CXPFdb10H0xu0NSPqWrYCSjPK24Uy/HfTWOH//4=;
-        b=kC5A1mX+xDikgnDcr7JMJ7Xh9FA5m6m/stgKGiyrNn7X1h4MSJQr3CKRu3mcr0IVx6
-         G8v6uEAhqkW/LNunRbgLqfwXKtS9F9O6f/It3ql33artcKjJATnx32DCvQy3CIoVkWOQ
-         7Ej9rIdgH3JzgwL1zn8mrBUbk8710oRo/QNyzf0A4PLc1lmThYPckg8BHj9o38qkt5RK
-         KDX58RY6Un0UvirfySmINKbNRGx5lgZxxbQIShWD4DR+KNO2Ug/sjbTq3vjEQHqp+I80
-         ujHrLu5sZQduZIOTZL0GAgBpwttvFpPn6jt9WDH5eJTeCG+93pAGr6jofOp1IF1Etcxf
-         0FBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=OZx7CXPFdb10H0xu0NSPqWrYCSjPK24Uy/HfTWOH//4=;
-        b=w3c1LzX5TPiXqiyReB0suNGdw8jYokx206McOq6pFhhIUswKakKepMr/7TtsF/+m8R
-         ZvAsTEAtpTfyjOyRkzg/LPPHni0zwREdBBmneKM+pFUKBvhfWTbBYwLaIVeMcOjeojq9
-         SZUoltIQ0BXQbOIlO1cz3nA1PI8/VQtU9tXKAwR45RWSWLcMSowyPARzLYuQd8k45gCK
-         5TK1flR6O4C8A0pagejGgl5mAhL7VIr0T3bNpQlVo+HgbUH+n+QusUz96nlLNP3bu8X/
-         07uur+C9wxOCY8bu6alm+1gbITgxAWgfbzF/VsAJIRRnGvV4OUzFeGNAs/j4QMA7daoj
-         Dacw==
-X-Gm-Message-State: ACgBeo24JApCPk3H+ZyyHASzgyXiiNErLAZF233ll1L1TnuA6j0sfbmE
-        V+j6f8H+f8VOnng3SCPE5WVnMA==
-X-Google-Smtp-Source: AA6agR5v85O5PIwaAIzwgZ0Qweg2MSL5uz1/BanFJtMm/TtLQSKoRfwm/67TG+/dKxbrv7SQ53m9aw==
-X-Received: by 2002:a2e:8553:0:b0:265:d5df:e137 with SMTP id u19-20020a2e8553000000b00265d5dfe137mr2107520ljj.70.1661853096592;
-        Tue, 30 Aug 2022 02:51:36 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id c28-20020ac244bc000000b00492ef1ee7b0sm1541791lfm.290.2022.08.30.02.51.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 02:51:36 -0700 (PDT)
-Message-ID: <e4d6eba8-497f-adb2-6f34-35883b8ec50d@linaro.org>
-Date:   Tue, 30 Aug 2022 12:51:34 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH 1/2] dt-bindings: net: rockchip-dwmac: add rv1126
- compatible string
-Content-Language: en-US
-To:     Anand Moon <anand@edgeble.ai>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S229873AbiH3J4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 05:56:12 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D523ECD8;
+        Tue, 30 Aug 2022 02:55:56 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0847B1BF209;
+        Tue, 30 Aug 2022 09:55:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1661853353;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=fNe7O3XpPrKWPRiBDZbqoQEmh7mC5aGWDTgnBM7l0Y4=;
+        b=X2eVFd1qvXvmNmg0+jyQHr4YkkmSfTlnrgKIXOpOJB/PPGW4SWQ9TB5gJxjYAntLFQWIXF
+        49cRvnWRdg/WeH3pnthiGwuOhHqGHjTFj/+sMKXrpYXccAiONmldTIOEnr8I0AOKU5Pjom
+        YFktlpPIZOO/8cJDutCi+tSMz2rnKtydUW4AckPeMqwpFZiQMsLp090DPj8uCBkOaY+J71
+        ceYhgbv8VQDTzyUiJ3inR/ezCuymXbgzHghEsonA99TS9an9jwCpmKV65aMV3WsKaY661x
+        kj6VqQ2c2ox521TZ80+I4hbzz3DH2GhmL+fL2tKVAuznw6UqKIY9Ynh1wEInaA==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        David Wu <david.wu@rock-chips.com>
-Cc:     Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220829065044.1736-1-anand@edgeble.ai>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220829065044.1736-1-anand@edgeble.ai>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
+Subject: [PATCH net-next v2 0/5] net: altera: tse: phylink conversion
+Date:   Tue, 30 Aug 2022 11:55:44 +0200
+Message-Id: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.37.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/08/2022 09:50, Anand Moon wrote:
-> Add compatible string for RV1126 gmac, and constrain it to
-> be compatible with Synopsys dwmac 4.20a.
-> 
-> Signed-off-by: Jagan Teki <jagan@edgeble.ai>
-> Signed-off-by: Anand Moon <anand@edgeble.ai>
-> ---
->  Documentation/devicetree/bindings/net/rockchip-dwmac.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-> index 083623c8d718..346e248a6ba5 100644
-> --- a/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-> +++ b/Documentation/devicetree/bindings/net/rockchip-dwmac.yaml
-> @@ -26,6 +26,7 @@ select:
->            - rockchip,rk3399-gmac
->            - rockchip,rk3568-gmac
->            - rockchip,rv1108-gmac
-> +          - rockchip,rv1126-gmac
+This is V2 of a series converting the Altera TSE driver to phylink,
+introducing a new PCS driver along the way.
 
-That's not a complete change. What about the other place listing
-compatibles? Did you test the bindings on your DTS?
+The Altera TSE can be built with a SGMII/1000BaseX PCS, allowing to use
+SFP ports with this MAC, which is the end goal of adding phylink support
+and a proper PCS driver.
 
-Best regards,
-Krzysztof
+The PCS itself can either be mapped in the MAC's register space, in that
+case, it's accessed through 32 bits registers, with the higher 16 bits
+always 0. Alternatively, it can sit on its own register space, exposing
+16 bits registers, some of which ressemble the standard PHY registers.
+
+To tackle that rework, several things needs updating, starting by the DT
+binding, since we add support for a new register range for the PCS.
+
+Hence, the first patch of the series is a conversion to YAML of the
+existing binding.
+
+Then, patch 2 does a bit of simple cleanup to the TSE driver, using nice
+reverse xmas tree definitions.
+
+Patch 3 adds the actual PCS driver, as a standalone driver. Some future
+series will then reuse that PCS driver from the dwmac-socfpga driver,
+which implements support for this exact PCS too, allowing to share the
+code nicely.
+
+Patch 4 is then a phylink conversion of the altera_tse driver, to use
+this new PCS driver.
+
+Finally, patch 5 updates the newly converted DT binding to support the
+pcs register range.
+
+This series contains bits and pieces for this conversion, please tell me if
+you want me to send it as individual patches.
+
+Thanks,
+
+Maxime
+
+V2 Changes :
+ - Fixed the binding after the YAML conversion
+ - Added a pcs_validate() callback
+ - Introduced a comment to justify a soft reset for the PCS
+
+Maxime Chevallier (5):
+  dt-bindings: net: Convert Altera TSE bindings to yaml
+  net: altera: tse: cosmetic change to use reverse xmas tree ordering
+  net: pcs: add new PCS driver for altera TSE PCS
+  net: altera: tse: convert to phylink
+  dt-bindings: net: altera: tse: add an optional pcs register range
+
+ .../devicetree/bindings/net/altera_tse.txt    | 113 -----
+ .../devicetree/bindings/net/altr,tse.yaml     | 183 +++++++
+ MAINTAINERS                                   |   7 +
+ drivers/net/ethernet/altera/Kconfig           |   2 +
+ drivers/net/ethernet/altera/altera_tse.h      |  19 +-
+ .../net/ethernet/altera/altera_tse_ethtool.c  |  22 +-
+ drivers/net/ethernet/altera/altera_tse_main.c | 453 +++++-------------
+ drivers/net/pcs/Kconfig                       |   6 +
+ drivers/net/pcs/Makefile                      |   1 +
+ drivers/net/pcs/pcs-altera-tse.c              | 171 +++++++
+ include/linux/pcs-altera-tse.h                |  17 +
+ 11 files changed, 547 insertions(+), 447 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/net/altera_tse.txt
+ create mode 100644 Documentation/devicetree/bindings/net/altr,tse.yaml
+ create mode 100644 drivers/net/pcs/pcs-altera-tse.c
+ create mode 100644 include/linux/pcs-altera-tse.h
+
+-- 
+2.37.2
+
