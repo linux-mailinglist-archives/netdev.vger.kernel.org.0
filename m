@@ -2,226 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FE0E5A6CFD
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 21:19:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC5D5A6D45
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 21:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230490AbiH3TTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 15:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51984 "EHLO
+        id S231739AbiH3TZm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 15:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231414AbiH3TTR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 15:19:17 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2107D785BE
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 12:19:12 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id b26so5503334ljk.12
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 12:19:12 -0700 (PDT)
+        with ESMTP id S231709AbiH3TZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 15:25:24 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93E47D787;
+        Tue, 30 Aug 2022 12:23:41 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id bq23so16904589lfb.7;
+        Tue, 30 Aug 2022 12:23:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=/6LyHTH38BgY0ADcdGBfZVTBqdZgfLuEbTGF5dLunuo=;
-        b=hO62t4GV1LIJ8G8QoUwW8V2/xBSvQhASIkjPuucMOlEmS69QhTSItRIwJNp0cvysTH
-         QQcWYZ6Ju9ckQiXoigOFbXCNApCr8BpaeCnLmud2OV0Egl6ip9uYJDbfzOIy7g+7x+15
-         t+p7GjKmXxt51yTWqHw9GALpa9u2Af+2s25v5YHHu7AmdP0EDcKlv9ovddd0HwehL6iV
-         OWCsU4+kaL8xL/t1ADgowuzgU0gtwit9Mcf8dCd9B8qnpW2whzAy1TDg+DezQnD1hGmY
-         +pTWB6/kY3T88JUEvjMgr+8HdKCj5kYpbKQSH+NSa7V3hYJhW1qu/oIfeCO15XvOhUuI
-         AThQ==
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=PofCDqq1/P6k1Jn4y9ZY/hH9ZV66RzTw5eiKc3y6V2I=;
+        b=dPArg/S1a5fJ8tPg31l2B55zSCu+K+g5akN0VMJWu7fJIwhOcW2KYWU7wLFuLysusJ
+         H1DIL1HVNbmxB9DQ9q8CCUlav5EsGYwD4/j6FzTeFVEDYOBb5JlA3PGAw3wIQFrV3U4n
+         YlVjhJw7k97BFNY9IFOyPVoH8Unl/qNIKrUtePUN1Gh4p4Teg1nzGAUVK+CGBVC0MorR
+         5m5XdvXnTJhK1kJ7fdUWuwpOXHm2QEh8JgWRD5XuzKv7EjLAIGeCdXi6UnK6xtUgTbZP
+         9BYRpn/Bg8l8jCeD/2VeCRYSdo+OYDTMdjuB0CrE5nMxFm9gDrZG+63sVUSQ6WIg4hpF
+         eq9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=/6LyHTH38BgY0ADcdGBfZVTBqdZgfLuEbTGF5dLunuo=;
-        b=ZZZ7ze0T8IxIo/4vnlLSM5MLjo+PsAjdQkE7PR8wYW0htwEfWmG2v+ARh3cfaDpwrP
-         5Gp/dMrVHp0Gd+NfX8g6ZET4qGYG8z+/PEWGCU4IT8JvspfSpMmEATqPNuuIpxmKOUWo
-         9KaGorxndukyLbbrvN+jeBb4mGCvO1Kxn4/2AtAGLyIJS1VQPtZEUnV1BRpLa3SaLKbP
-         GBlHsqnIPIQ09oLo4PDeIoKOdaLaqxBJJXhe1LOL158Jo9rl8QVFIRycNN2q9tBIH9TU
-         XM/TTZxEQt38kGwtLVdBw9uOi41nRAJJ2VJQ5KPzLHhtFLwwN3cxljYFrY3UtZKVu8we
-         n5Dw==
-X-Gm-Message-State: ACgBeo1rq60wh1CjIS/j59oblSXzxLyR0GOr4LGtthHh+qsfo7XrQUY8
-        l/Tp2NIK9P0hR++9bKoEuO+QPA==
-X-Google-Smtp-Source: AA6agR7145igvHGfdZHSgAoxdGPymGfhempqbzQL8ie7cg1cpL7s/xcLE5T2BWNxethJ3rFwI9FUSg==
-X-Received: by 2002:a05:651c:154b:b0:261:d6f3:5550 with SMTP id y11-20020a05651c154b00b00261d6f35550mr7607592ljp.528.1661887151106;
-        Tue, 30 Aug 2022 12:19:11 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id i23-20020a2e8097000000b00261bfa93f55sm1879969ljg.11.2022.08.30.12.19.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 30 Aug 2022 12:19:10 -0700 (PDT)
-Message-ID: <b88512ff-d062-276c-981d-98ec65cb8527@linaro.org>
-Date:   Tue, 30 Aug 2022 22:19:09 +0300
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=PofCDqq1/P6k1Jn4y9ZY/hH9ZV66RzTw5eiKc3y6V2I=;
+        b=DzI3r5M04I6I9AbjkJoAb5dgZamfgdSPVkas81AZyAab4w6ZdSnZ1eQVXouSJ/2osD
+         i28pzbV3oNwJhllzO5fV+YUsqmCxXHX5cL+6TkV/IRGRmuw8V1sAtLkp1qHJKuHiMjhF
+         UU+0wyvhoOniF2XkHH3pFpk9dFTg0KElcHeZntdJZCVbdgLXLNe43WiJgchiRz7sCx7X
+         XcyBqOILFXO1Fw7fyv7nPClmkaJGQOz+Md8OSC4ZNcxI+a++Z/dd9tVDB1G+lPR1vAPY
+         /BKYxyJtL7ZwBQwqqeyKzUSxkHv850GJFnWs6fmOzyeOA7UZYrlWUiYyo57oED3EuxAM
+         w7Gw==
+X-Gm-Message-State: ACgBeo2ZLpYbjYXMGI9HMxy4IU0rTYUeT/V/FCiDaWlkQ8RmVS/ZzTkz
+        WC5O6psir1Qa6CXzfRRy0DoVj3YmLOTALy2Ebis=
+X-Google-Smtp-Source: AA6agR4SGoPeOqG3H6+/IqX3usnWitUxXya7RJa19u8/Z8QK2EQwDD9pb/Bihiuzq6jPnFFwBhCvbRGGKdGrYQUcbok=
+X-Received: by 2002:a05:6512:1ce:b0:494:81fc:e755 with SMTP id
+ f14-20020a05651201ce00b0049481fce755mr815471lfp.106.1661887417943; Tue, 30
+ Aug 2022 12:23:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH net-next v2 1/5] dt-bindings: net: Convert Altera TSE
- bindings to yaml
-Content-Language: en-US
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+References: <CAO4S-me4hoy0W6GASU3tOFF16+eaotxPbw+kqyc6vuxtxJyDZg@mail.gmail.com>
+ <CAO4S-mfTNEKCs8ZQcT09wDzxX8MfidmbTVzaFMD3oG4i7Ytynw@mail.gmail.com>
+ <f53dfd70-f8b3-8401-3f5a-d738b2f242e1@gmail.com> <CABBYNZLZv_Y6E-rFc3kKFk+PqwNkWAzneAw=cUTEY4yW-cTs1Q@mail.gmail.com>
+In-Reply-To: <CABBYNZLZv_Y6E-rFc3kKFk+PqwNkWAzneAw=cUTEY4yW-cTs1Q@mail.gmail.com>
+From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Date:   Tue, 30 Aug 2022 12:23:26 -0700
+Message-ID: <CABBYNZJxzA0U5bL6d0KtAkZw6yfUSNcpaH3Oh=xZFZdER8FCog@mail.gmail.com>
+Subject: Re: possible deadlock in rfcomm_sk_state_change
+To:     Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Cc:     Jiacheng Xu <578001344xu@gmail.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org
-References: <20220830095549.120625-1-maxime.chevallier@bootlin.com>
- <20220830095549.120625-2-maxime.chevallier@bootlin.com>
- <4a37d318-8c83-148b-89b3-9729bc7c9761@linaro.org>
- <20220830211617.54d2abc9@pc-10.home>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220830211617.54d2abc9@pc-10.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 30/08/2022 22:16, Maxime Chevallier wrote:
->>> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>  
->>
->> Rebase your changes on some decent kernel and use
->> get_maintainers.pl...
-> 
-> I'm rebased against net-next, so I don't understand how I'm supposed to
-> do for this series, should I sent binding patches separately and based
-> on another tree ?
-> 
-> I'll cc you next time, sorry about that.
+Hi Desmond,
 
-net-next is correct, I just assumed it is some older tree since you did
-not Cc me.
+On Tue, Aug 30, 2022 at 10:41 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Desmond,
+>
+> On Mon, Aug 29, 2022 at 11:48 PM Desmond Cheong Zhi Xi
+> <desmondcheongzx@gmail.com> wrote:
+> >
+> > +cc Bluetooth and Networking maintainers
+> >
+> > Hi Jiacheng,
+> >
+> > On 28/8/22 04:03, Jiacheng Xu wrote:
+> > > Hi,
+> > >
+> > > I believe the deadlock is more than possible but actually real.
+> > > I got a poc that could stably trigger the deadlock.
+> > >
+> > > poc: https://drive.google.com/file/d/1PjqvMtHsrrGM1MIRGKl_zJGR-teAMMQy/view?usp=sharing
+> > >
+> > > Description/Root cause:
+> > > In rfcomm_sock_shutdown(), lock_sock() is called when releasing and
+> > > shutting down socket.
+> > > However, lock_sock() has to be called once more when the sk_state is
+> > > changed because the
+> > > lock is not always held when rfcomm_sk_state_change() is called. One
+> > > such call stack is:
+> > >
+> > >    rfcomm_sock_shutdown():
+> > >      lock_sock();
+> > >      __rfcomm_sock_close():
+> > >        rfcomm_dlc_close():
+> > >          __rfcomm_dlc_close():
+> > >            rfcomm_dlc_lock();
+> > >            rfcomm_sk_state_change():
+> > >              lock_sock();
+> > >
+> > > Besides the recursive deadlock, there is also an
+> > > issue of a lock hierarchy inversion between rfcomm_dlc_lock() and
+> > > lock_sock() if the socket is locked in rfcomm_sk_state_change().
+> >
+> >
+> > Thanks for the poc and for following the trail all the way to the root
+> > cause - this was a known issue and I didn't realize the patch wasn't
+> > applied.
+> >
+> > >  > Reference:
+> > https://lore.kernel.org/all/20211004180734.434511-1-desmondcheongzx@gmail.com/
+> > >
+> >
+> > Fwiw, I tested the patch again with syzbot. It still applies cleanly to
+> > the head of bluetooth-next and seems to address the root cause.
+> >
+> > Any thoughts from the maintainers on this issue and the proposed fix?
+>
+> We probably need to introduce a test to rfcomm-tester to reproduce
+> this sort of problem, I also would like to avoid introducing a work
+> just to trigger a state change since we don't have such problem on the
+> likes of L2CAP socket so perhaps we need to rework the code a little
+> bit to avoid the locking problems.
 
-> 
->>> ---
->>> V1->V2:
->>>  - Removed unnedded maxItems
->>>  - Added missing minItems
->>>  - Fixed typos in some properties names
->>>  - Fixed the mdio subnode definition
->>>
->>>  .../devicetree/bindings/net/altera_tse.txt    | 113 -------------
->>>  .../devicetree/bindings/net/altr,tse.yaml     | 156
->>> ++++++++++++++++++ 2 files changed, 156 insertions(+), 113
->>> deletions(-) delete mode 100644
->>> Documentation/devicetree/bindings/net/altera_tse.txt create mode
->>> 100644 Documentation/devicetree/bindings/net/altr,tse.yaml 
->>
->> (...)
->>
->>> diff --git a/Documentation/devicetree/bindings/net/altr,tse.yaml
->>> b/Documentation/devicetree/bindings/net/altr,tse.yaml new file mode
->>> 100644 index 000000000000..1676e13b8c64
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/net/altr,tse.yaml
->>> @@ -0,0 +1,156 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/net/altr,tse.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Altera Triple Speed Ethernet MAC driver (TSE)
->>> +
->>> +maintainers:
->>> +  - Maxime Chevallier <maxime.chevallier@bootlin.com>
->>> +
->>> +allOf:  
->>
->> Put allOf below "required".
-> 
-> Ack
-> 
->>> +  - $ref: "ethernet-controller.yaml#"
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            enum:
->>> +              - altr,tse-1.0
->>> +              - ALTR,tse-1.0
->>> +    then:
->>> +      properties:
->>> +        reg:
->>> +          minItems: 4
->>> +        reg-names:
->>> +          items:
->>> +            - const: control_port
->>> +            - const: rx_csr
->>> +            - const: tx_csr
->>> +            - const: s1
->>> +
->>> +  - if:
->>> +      properties:
->>> +        compatible:
->>> +          contains:
->>> +            enum:
->>> +              - altr,tse-msgdma-1.0
->>> +    then:
->>> +      properties:
->>> +        reg:
->>> +          minItems: 6
->>> +        reg-names:
->>> +          minItems: 6  
->>
->> No need for minItems.
-> 
-> Ok I'll remove it
-> 
->>> +          items:
->>> +            - const: control_port
->>> +            - const: rx_csr
->>> +            - const: rx_desc
->>> +            - const: rx_resp
->>> +            - const: tx_csr
->>> +            - const: tx_desc
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - altr,tse-1.0
->>> +      - ALTR,tse-1.0  
->>
->> This is deprecated compatible. You need oneOf and then deprecated:
->> true.
-> 
-> Ok thanks for the tip
-> 
->>> +      - altr,tse-msgdma-1.0
->>> +
->>> +  reg:
->>> +    minItems: 4
->>> +    maxItems: 6
->>> +
->>> +  reg-names:
->>> +    minItems: 4
->>> +    items:
->>> +      - const: control_port
->>> +      - const: rx_csr
->>> +      - const: rx_desc
->>> +      - const: rx_resp
->>> +      - const: tx_csr
->>> +      - const: tx_desc
->>> +      - const: s1  
->>
->> This is messed up. You allow only 6 items maximum, but list 7. It
->> contradicts your other variants in allOf:if:then.
-> 
-> I'll remove that part then, apparently it's not needed at all if the
-> allOf:if:then cover all cases.
+It looks like for L2CAP we use lock_sock_nested on teardown, we don't
+have the exact same behavior in RFCOMM but I think that might be worth
+a try if we can use that instead of introducing yet another work item.
 
-Right. The typical pattern is like clocks/clock-names here:
+> > Best,
+> > Desmond
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
 
-https://elixir.bootlin.com/linux/v5.19-rc6/source/Documentation/devicetree/bindings/clock/samsung,exynos7-clock.yaml#L57
 
-Best regards,
-Krzysztof
+
+-- 
+Luiz Augusto von Dentz
