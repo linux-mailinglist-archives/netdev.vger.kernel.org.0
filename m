@@ -2,73 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0485A6E36
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 22:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E8CD5A6E3B
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 22:15:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbiH3UPN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 16:15:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37588 "EHLO
+        id S231248AbiH3UP0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 16:15:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbiH3UPL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 16:15:11 -0400
+        with ESMTP id S231487AbiH3UPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 16:15:17 -0400
 Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360F4286F3
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 13:15:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6A202ED5C
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 13:15:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
-        from:to:cc:subject:date:message-id:mime-version
-        :content-transfer-encoding; s=k1; bh=o5bbG2QOos7wbpnJ9f9b1soaRzy
-        Nj3QB+LXiYlOUDrk=; b=jl4cFYrW3QsnaisG+EQo4/w8W65Z99uyKtMIIlZZvJ7
-        HHToWX5iASwMZEqjUKHO02jLpbyEjIyTyx+L+LRY9Wr+4MCCb38sRCoqXJgfOssl
-        BaNH791fTjxEA7yzH6Ipd/Fk8gaYWTsFfrKNs+mt0h2TCijHzmLJSEh+PQfpuXgI
-        =
-Received: (qmail 422647 invoked from network); 30 Aug 2022 22:14:59 +0200
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 30 Aug 2022 22:14:59 +0200
-X-UD-Smtp-Session: l3s3148p1@TazhCHvnUu0gAwDtxxrgAFH1RcxMblwv
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=k1; bh=4LFY4ioMkY3dYD
+        XeDSSXk/8F+iRs2Svtr3dX2Fp34ks=; b=MkZ1Rw4IxB5xvLqkBs6Lxg8V0u/Pwn
+        Mldk0Ip7V7tGgKb69zq7J3w4hxnUMb22dOYhpKRz8DqTJOkjKTXlYAvSH1G+X1hh
+        ZAjPxvdQYh4h8LtEa0wjJ8ic1dN9rboXv62JKqXiAcQfUr1LDpAppQnwNpbyLnxl
+        RSK+73AmBjdaA=
+Received: (qmail 422781 invoked from network); 30 Aug 2022 22:15:02 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 30 Aug 2022 22:15:02 +0200
+X-UD-Smtp-Session: l3s3148p1@XAYJCXvnYu0gAwDtxxrgAFH1RcxMblwv
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Kalle Valo <kvalo@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        Jon Mason <jdmason@kudzu.us>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Petko Manolov <petkan@nucleusys.com>,
-        Oliver Neukum <oneukum@suse.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        ntb@lists.linux.dev, linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH v2 1/3] net: move from strlcpy with unused retval to strscpy
-Date:   Tue, 30 Aug 2022 22:14:52 +0200
-Message-Id: <20220830201457.7984-1-wsa+renesas@sang-engineering.com>
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>, Jouni Malinen <j@w1.fi>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Herton Ronaldo Krzesinski <herton@canonical.com>,
+        Hin-Tak Leung <htl10@users.sourceforge.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        b43-dev@lists.infradead.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, libertas-dev@lists.infradead.org
+Subject: [PATCH v2 2/3] net: wireless: move from strlcpy with unused retval to strscpy
+Date:   Tue, 30 Aug 2022 22:14:53 +0200
+Message-Id: <20220830201457.7984-2-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220830201457.7984-1-wsa+renesas@sang-engineering.com>
+References: <20220830201457.7984-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -87,685 +73,401 @@ Generated by a coccinelle script.
 
 Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
 Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for CAN
 ---
 
 Changes since v1:
 * split into smaller patches
-* added given tags
 
- drivers/net/Space.c                          |  2 +-
- drivers/net/bonding/bond_main.c              |  2 +-
- drivers/net/can/sja1000/peak_pcmcia.c        |  2 +-
- drivers/net/can/usb/peak_usb/pcan_usb_core.c |  2 +-
- drivers/net/dsa/b53/b53_common.c             |  2 +-
- drivers/net/dsa/bcm_sf2_cfp.c                |  2 +-
- drivers/net/dsa/hirschmann/hellcreek.c       |  2 +-
- drivers/net/dsa/mv88e6xxx/chip.c             |  2 +-
- drivers/net/dummy.c                          |  2 +-
- drivers/net/fjes/fjes_ethtool.c              |  6 +++---
- drivers/net/geneve.c                         |  4 ++--
- drivers/net/hamradio/hdlcdrv.c               |  2 +-
- drivers/net/hyperv/netvsc_drv.c              |  4 ++--
- drivers/net/ipvlan/ipvlan_main.c             |  4 ++--
- drivers/net/macvlan.c                        |  4 ++--
- drivers/net/net_failover.c                   |  4 ++--
- drivers/net/netconsole.c                     | 10 +++++-----
- drivers/net/ntb_netdev.c                     |  6 +++---
- drivers/net/phy/adin.c                       |  2 +-
- drivers/net/phy/bcm-phy-lib.c                |  2 +-
- drivers/net/phy/marvell.c                    |  2 +-
- drivers/net/phy/micrel.c                     |  2 +-
- drivers/net/phy/mscc/mscc_main.c             |  2 +-
- drivers/net/phy/phy_device.c                 |  2 +-
- drivers/net/rionet.c                         |  8 ++++----
- drivers/net/team/team.c                      |  4 ++--
- drivers/net/tun.c                            |  8 ++++----
- drivers/net/usb/aqc111.c                     |  2 +-
- drivers/net/usb/asix_common.c                |  4 ++--
- drivers/net/usb/catc.c                       |  4 ++--
- drivers/net/usb/pegasus.c                    |  2 +-
- drivers/net/usb/r8152.c                      |  6 +++---
- drivers/net/usb/rtl8150.c                    |  4 ++--
- drivers/net/usb/sierra_net.c                 |  4 ++--
- drivers/net/usb/usbnet.c                     |  6 +++---
- drivers/net/veth.c                           |  4 ++--
- drivers/net/virtio_net.c                     |  6 +++---
- drivers/net/vmxnet3/vmxnet3_ethtool.c        |  6 +++---
- drivers/net/vrf.c                            |  4 ++--
- drivers/net/vxlan/vxlan_core.c               |  4 ++--
- 40 files changed, 75 insertions(+), 75 deletions(-)
+ drivers/net/wireless/ath/ath6kl/init.c                    | 2 +-
+ drivers/net/wireless/ath/carl9170/fw.c                    | 2 +-
+ drivers/net/wireless/ath/wil6210/main.c                   | 2 +-
+ drivers/net/wireless/ath/wil6210/netdev.c                 | 2 +-
+ drivers/net/wireless/ath/wil6210/wmi.c                    | 2 +-
+ drivers/net/wireless/atmel/atmel.c                        | 2 +-
+ drivers/net/wireless/broadcom/b43/leds.c                  | 2 +-
+ drivers/net/wireless/broadcom/b43legacy/leds.c            | 2 +-
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c | 8 ++++----
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c   | 8 ++++----
+ .../net/wireless/broadcom/brcm80211/brcmfmac/firmware.c   | 2 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c   | 2 +-
+ drivers/net/wireless/intel/ipw2x00/ipw2100.c              | 6 +++---
+ drivers/net/wireless/intel/ipw2x00/ipw2200.c              | 6 +++---
+ drivers/net/wireless/intel/iwlegacy/3945-mac.c            | 2 +-
+ drivers/net/wireless/intersil/hostap/hostap_ioctl.c       | 2 +-
+ drivers/net/wireless/marvell/libertas/ethtool.c           | 4 ++--
+ drivers/net/wireless/microchip/wilc1000/mon.c             | 2 +-
+ drivers/net/wireless/quantenna/qtnfmac/cfg80211.c         | 2 +-
+ drivers/net/wireless/quantenna/qtnfmac/commands.c         | 2 +-
+ drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c       | 2 +-
+ drivers/net/wireless/wl3501_cs.c                          | 8 ++++----
+ 22 files changed, 36 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/net/Space.c b/drivers/net/Space.c
-index f475eef14390..83214e2e70ab 100644
---- a/drivers/net/Space.c
-+++ b/drivers/net/Space.c
-@@ -68,7 +68,7 @@ static int netdev_boot_setup_add(char *name, struct ifmap *map)
- 	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
- 		if (s[i].name[0] == '\0' || s[i].name[0] == ' ') {
- 			memset(s[i].name, 0, sizeof(s[i].name));
--			strlcpy(s[i].name, name, IFNAMSIZ);
-+			strscpy(s[i].name, name, IFNAMSIZ);
- 			memcpy(&s[i].map, map, sizeof(s[i].map));
- 			break;
- 		}
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 2f4da2c13c0a..dc618bf51c5e 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -5619,7 +5619,7 @@ static int bond_ethtool_get_link_ksettings(struct net_device *bond_dev,
- static void bond_ethtool_get_drvinfo(struct net_device *bond_dev,
- 				     struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
- 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version), "%d",
- 		 BOND_ABI_VERSION);
- }
-diff --git a/drivers/net/can/sja1000/peak_pcmcia.c b/drivers/net/can/sja1000/peak_pcmcia.c
-index 131a084c3535..ebd5941c3f53 100644
---- a/drivers/net/can/sja1000/peak_pcmcia.c
-+++ b/drivers/net/can/sja1000/peak_pcmcia.c
-@@ -478,7 +478,7 @@ static void pcan_free_channels(struct pcan_pccard *card)
- 		if (!netdev)
- 			continue;
+diff --git a/drivers/net/wireless/ath/ath6kl/init.c b/drivers/net/wireless/ath/ath6kl/init.c
+index 9b5c7d8f2b95..201e45554070 100644
+--- a/drivers/net/wireless/ath/ath6kl/init.c
++++ b/drivers/net/wireless/ath/ath6kl/init.c
+@@ -1014,7 +1014,7 @@ static int ath6kl_fetch_fw_apin(struct ath6kl *ar, const char *name)
  
--		strlcpy(name, netdev->name, IFNAMSIZ);
-+		strscpy(name, netdev->name, IFNAMSIZ);
+ 		switch (ie_id) {
+ 		case ATH6KL_FW_IE_FW_VERSION:
+-			strlcpy(ar->wiphy->fw_version, data,
++			strscpy(ar->wiphy->fw_version, data,
+ 				min(sizeof(ar->wiphy->fw_version), ie_len+1));
  
- 		unregister_sja1000dev(netdev);
+ 			ath6kl_dbg(ATH6KL_DBG_BOOT,
+diff --git a/drivers/net/wireless/ath/carl9170/fw.c b/drivers/net/wireless/ath/carl9170/fw.c
+index 1ab09e1c9ec5..4c1aecd1163c 100644
+--- a/drivers/net/wireless/ath/carl9170/fw.c
++++ b/drivers/net/wireless/ath/carl9170/fw.c
+@@ -105,7 +105,7 @@ static void carl9170_fw_info(struct ar9170 *ar)
+ 			 CARL9170FW_GET_MONTH(fw_date),
+ 			 CARL9170FW_GET_DAY(fw_date));
  
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index 8c9d53f6e24c..225697d70a9a 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -962,7 +962,7 @@ static void peak_usb_disconnect(struct usb_interface *intf)
- 
- 		dev_prev_siblings = dev->prev_siblings;
- 		dev->state &= ~PCAN_USB_STATE_CONNECTED;
--		strlcpy(name, netdev->name, IFNAMSIZ);
-+		strscpy(name, netdev->name, IFNAMSIZ);
- 
- 		unregister_netdev(netdev);
- 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 48cf344750ff..59cdfc51ce06 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -972,7 +972,7 @@ void b53_get_strings(struct dsa_switch *ds, int port, u32 stringset,
- 
- 	if (stringset == ETH_SS_STATS) {
- 		for (i = 0; i < mib_size; i++)
--			strlcpy(data + i * ETH_GSTRING_LEN,
-+			strscpy(data + i * ETH_GSTRING_LEN,
- 				mibs[i].name, ETH_GSTRING_LEN);
- 	} else if (stringset == ETH_SS_PHY_STATS) {
- 		phydev = b53_get_phy_device(ds, port);
-diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
-index edbe5e7f1cb6..22bc295bebdb 100644
---- a/drivers/net/dsa/bcm_sf2_cfp.c
-+++ b/drivers/net/dsa/bcm_sf2_cfp.c
-@@ -1296,7 +1296,7 @@ void bcm_sf2_cfp_get_strings(struct dsa_switch *ds, int port,
- 				 "CFP%03d_%sCntr",
- 				 i, bcm_sf2_cfp_stats[j].name);
- 			iter = (i - 1) * s + j;
--			strlcpy(data + iter * ETH_GSTRING_LEN,
-+			strscpy(data + iter * ETH_GSTRING_LEN,
- 				buf, ETH_GSTRING_LEN);
- 		}
- 	}
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 01f90994dedd..ea8bbfce0f1f 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -288,7 +288,7 @@ static void hellcreek_get_strings(struct dsa_switch *ds, int port,
- 	for (i = 0; i < ARRAY_SIZE(hellcreek_counter); ++i) {
- 		const struct hellcreek_counter *counter = &hellcreek_counter[i];
- 
--		strlcpy(data + i * ETH_GSTRING_LEN,
-+		strscpy(data + i * ETH_GSTRING_LEN,
- 			counter->name, ETH_GSTRING_LEN);
+-		strlcpy(ar->hw->wiphy->fw_version, motd_desc->release,
++		strscpy(ar->hw->wiphy->fw_version, motd_desc->release,
+ 			sizeof(ar->hw->wiphy->fw_version));
  	}
  }
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 07e9a4da924c..22288d3e73a4 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -1128,7 +1128,7 @@ static void mv88e6xxx_atu_vtu_get_strings(uint8_t *data)
- 	unsigned int i;
+diff --git a/drivers/net/wireless/ath/wil6210/main.c b/drivers/net/wireless/ath/wil6210/main.c
+index 7da87c9f363f..94e61dbe94f8 100644
+--- a/drivers/net/wireless/ath/wil6210/main.c
++++ b/drivers/net/wireless/ath/wil6210/main.c
+@@ -1305,7 +1305,7 @@ void wil_get_board_file(struct wil6210_priv *wil, char *buf, size_t len)
+ 			board_file = WIL_BOARD_FILE_NAME;
+ 	}
  
- 	for (i = 0; i < ARRAY_SIZE(mv88e6xxx_atu_vtu_stats_strings); i++)
--		strlcpy(data + i * ETH_GSTRING_LEN,
-+		strscpy(data + i * ETH_GSTRING_LEN,
- 			mv88e6xxx_atu_vtu_stats_strings[i],
- 			ETH_GSTRING_LEN);
- }
-diff --git a/drivers/net/dummy.c b/drivers/net/dummy.c
-index f82ad7419508..aa0fc00faecb 100644
---- a/drivers/net/dummy.c
-+++ b/drivers/net/dummy.c
-@@ -102,7 +102,7 @@ static const struct net_device_ops dummy_netdev_ops = {
- static void dummy_get_drvinfo(struct net_device *dev,
- 			      struct ethtool_drvinfo *info)
- {
--	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
-+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+-	strlcpy(buf, board_file, len);
++	strscpy(buf, board_file, len);
  }
  
- static const struct ethtool_ops dummy_ethtool_ops = {
-diff --git a/drivers/net/fjes/fjes_ethtool.c b/drivers/net/fjes/fjes_ethtool.c
-index 746736c83873..19c99529566b 100644
---- a/drivers/net/fjes/fjes_ethtool.c
-+++ b/drivers/net/fjes/fjes_ethtool.c
-@@ -151,11 +151,11 @@ static void fjes_get_drvinfo(struct net_device *netdev,
+ static int wil_get_bl_info(struct wil6210_priv *wil)
+diff --git a/drivers/net/wireless/ath/wil6210/netdev.c b/drivers/net/wireless/ath/wil6210/netdev.c
+index 87a88f26233e..e76b38ad1d44 100644
+--- a/drivers/net/wireless/ath/wil6210/netdev.c
++++ b/drivers/net/wireless/ath/wil6210/netdev.c
+@@ -445,7 +445,7 @@ int wil_if_add(struct wil6210_priv *wil)
  
- 	plat_dev = adapter->plat_dev;
+ 	wil_dbg_misc(wil, "entered");
  
--	strlcpy(drvinfo->driver, fjes_driver_name, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, fjes_driver_version,
-+	strscpy(drvinfo->driver, fjes_driver_name, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, fjes_driver_version,
- 		sizeof(drvinfo->version));
+-	strlcpy(wiphy->fw_version, wil->fw_version, sizeof(wiphy->fw_version));
++	strscpy(wiphy->fw_version, wil->fw_version, sizeof(wiphy->fw_version));
  
--	strlcpy(drvinfo->fw_version, "none", sizeof(drvinfo->fw_version));
-+	strscpy(drvinfo->fw_version, "none", sizeof(drvinfo->fw_version));
- 	snprintf(drvinfo->bus_info, sizeof(drvinfo->bus_info),
- 		 "platform:%s", plat_dev->name);
- }
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 7962c37b3f14..ce3a710a9b4e 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -1200,8 +1200,8 @@ static const struct net_device_ops geneve_netdev_ops = {
- static void geneve_get_drvinfo(struct net_device *dev,
- 			       struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->version, GENEVE_NETDEV_VER, sizeof(drvinfo->version));
--	strlcpy(drvinfo->driver, "geneve", sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, GENEVE_NETDEV_VER, sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, "geneve", sizeof(drvinfo->driver));
- }
+ 	rc = wiphy_register(wiphy);
+ 	if (rc < 0) {
+diff --git a/drivers/net/wireless/ath/wil6210/wmi.c b/drivers/net/wireless/ath/wil6210/wmi.c
+index ea7bd403e706..6a5976a2944c 100644
+--- a/drivers/net/wireless/ath/wil6210/wmi.c
++++ b/drivers/net/wireless/ath/wil6210/wmi.c
+@@ -780,7 +780,7 @@ static void wmi_evt_ready(struct wil6210_vif *vif, int id, void *d, int len)
+ 		return; /* FW load will fail after timeout */
+ 	}
+ 	/* ignore MAC address, we already have it from the boot loader */
+-	strlcpy(wiphy->fw_version, wil->fw_version, sizeof(wiphy->fw_version));
++	strscpy(wiphy->fw_version, wil->fw_version, sizeof(wiphy->fw_version));
  
- static const struct ethtool_ops geneve_ethtool_ops = {
-diff --git a/drivers/net/hamradio/hdlcdrv.c b/drivers/net/hamradio/hdlcdrv.c
-index 8297411e87ea..a6184d6c7b15 100644
---- a/drivers/net/hamradio/hdlcdrv.c
-+++ b/drivers/net/hamradio/hdlcdrv.c
-@@ -600,7 +600,7 @@ static int hdlcdrv_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+ 	if (len > offsetof(struct wmi_ready_event, rfc_read_calib_result)) {
+ 		wil_dbg_wmi(wil, "rfc calibration result %d\n",
+diff --git a/drivers/net/wireless/atmel/atmel.c b/drivers/net/wireless/atmel/atmel.c
+index 0361c8eb2008..45d079b93384 100644
+--- a/drivers/net/wireless/atmel/atmel.c
++++ b/drivers/net/wireless/atmel/atmel.c
+@@ -1518,7 +1518,7 @@ struct net_device *init_atmel_card(unsigned short irq, unsigned long port,
+ 	priv->firmware = NULL;
+ 	priv->firmware_type = fw_type;
+ 	if (firmware) /* module parameter */
+-		strlcpy(priv->firmware_id, firmware, sizeof(priv->firmware_id));
++		strscpy(priv->firmware_id, firmware, sizeof(priv->firmware_id));
+ 	priv->bus_type = card_present ? BUS_TYPE_PCCARD : BUS_TYPE_PCI;
+ 	priv->station_state = STATION_STATE_DOWN;
+ 	priv->do_rx_crc = 0;
+diff --git a/drivers/net/wireless/broadcom/b43/leds.c b/drivers/net/wireless/broadcom/b43/leds.c
+index 982a772a9d87..bfe1be345844 100644
+--- a/drivers/net/wireless/broadcom/b43/leds.c
++++ b/drivers/net/wireless/broadcom/b43/leds.c
+@@ -118,7 +118,7 @@ static int b43_register_led(struct b43_wldev *dev, struct b43_led *led,
+ 	led->wl = dev->wl;
+ 	led->index = led_index;
+ 	led->activelow = activelow;
+-	strlcpy(led->name, name, sizeof(led->name));
++	strscpy(led->name, name, sizeof(led->name));
+ 	atomic_set(&led->state, 0);
  
- 	case HDLCDRVCTL_DRIVERNAME:
- 		if (s->ops && s->ops->drvname) {
--			strlcpy(bi.data.drivername, s->ops->drvname,
-+			strscpy(bi.data.drivername, s->ops->drvname,
- 				sizeof(bi.data.drivername));
- 			break;
- 		}
-diff --git a/drivers/net/hyperv/netvsc_drv.c b/drivers/net/hyperv/netvsc_drv.c
-index 15ebd5426604..5f08482065ca 100644
---- a/drivers/net/hyperv/netvsc_drv.c
-+++ b/drivers/net/hyperv/netvsc_drv.c
-@@ -935,8 +935,8 @@ int netvsc_recv_callback(struct net_device *net,
- static void netvsc_get_drvinfo(struct net_device *net,
- 			       struct ethtool_drvinfo *info)
- {
+ 	led->led_dev.name = led->name;
+diff --git a/drivers/net/wireless/broadcom/b43legacy/leds.c b/drivers/net/wireless/broadcom/b43legacy/leds.c
+index 38b5be3a84e2..79e6fd205bfb 100644
+--- a/drivers/net/wireless/broadcom/b43legacy/leds.c
++++ b/drivers/net/wireless/broadcom/b43legacy/leds.c
+@@ -88,7 +88,7 @@ static int b43legacy_register_led(struct b43legacy_wldev *dev,
+ 	led->dev = dev;
+ 	led->index = led_index;
+ 	led->activelow = activelow;
+-	strlcpy(led->name, name, sizeof(led->name));
++	strscpy(led->name, name, sizeof(led->name));
+ 
+ 	led->led_dev.name = led->name;
+ 	led->led_dev.default_trigger = default_trigger;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+index 7485e784be2a..372deeb69477 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/common.c
+@@ -261,7 +261,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 				     &revinfo, sizeof(revinfo));
+ 	if (err < 0) {
+ 		bphy_err(drvr, "retrieving revision info failed, %d\n", err);
+-		strlcpy(ri->chipname, "UNKNOWN", sizeof(ri->chipname));
++		strscpy(ri->chipname, "UNKNOWN", sizeof(ri->chipname));
+ 	} else {
+ 		ri->vendorid = le32_to_cpu(revinfo.vendorid);
+ 		ri->deviceid = le32_to_cpu(revinfo.deviceid);
+@@ -314,7 +314,7 @@ int brcmf_c_preinit_dcmds(struct brcmf_if *ifp)
+ 
+ 	/* locate firmware version number for ethtool */
+ 	ptr = strrchr(buf, ' ') + 1;
+-	strlcpy(ifp->drvr->fwver, ptr, sizeof(ifp->drvr->fwver));
++	strscpy(ifp->drvr->fwver, ptr, sizeof(ifp->drvr->fwver));
+ 
+ 	/* Query for 'clmver' to get CLM version info from firmware */
+ 	memset(buf, 0, sizeof(buf));
+@@ -424,11 +424,11 @@ static void brcmf_mp_attach(void)
+ 	 * if not set then if available use the platform data version. To make
+ 	 * sure it gets initialized at all, always copy the module param version
+ 	 */
+-	strlcpy(brcmf_mp_global.firmware_path, brcmf_firmware_path,
++	strscpy(brcmf_mp_global.firmware_path, brcmf_firmware_path,
+ 		BRCMF_FW_ALTPATH_LEN);
+ 	if ((brcmfmac_pdata) && (brcmfmac_pdata->fw_alternative_path) &&
+ 	    (brcmf_mp_global.firmware_path[0] == '\0')) {
+-		strlcpy(brcmf_mp_global.firmware_path,
++		strscpy(brcmf_mp_global.firmware_path,
+ 			brcmfmac_pdata->fw_alternative_path,
+ 			BRCMF_FW_ALTPATH_LEN);
+ 	}
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+index bd164a0821f9..5516f7dc10c1 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
+@@ -561,10 +561,10 @@ static void brcmf_ethtool_get_drvinfo(struct net_device *ndev,
+ 
+ 	if (drvr->revinfo.result == 0)
+ 		brcmu_dotrev_str(drvr->revinfo.driverrev, drev);
 -	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
--	strlcpy(info->fw_version, "N/A", sizeof(info->fw_version));
+-	strlcpy(info->version, drev, sizeof(info->version));
+-	strlcpy(info->fw_version, drvr->fwver, sizeof(info->fw_version));
+-	strlcpy(info->bus_info, dev_name(drvr->bus_if->dev),
 +	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
-+	strscpy(info->fw_version, "N/A", sizeof(info->fw_version));
++	strscpy(info->version, drev, sizeof(info->version));
++	strscpy(info->fw_version, drvr->fwver, sizeof(info->fw_version));
++	strscpy(info->bus_info, dev_name(drvr->bus_if->dev),
+ 		sizeof(info->bus_info));
  }
  
- static void netvsc_get_channels(struct net_device *net,
-diff --git a/drivers/net/ipvlan/ipvlan_main.c b/drivers/net/ipvlan/ipvlan_main.c
-index 49ba8a50dfb1..54c94a69c2bb 100644
---- a/drivers/net/ipvlan/ipvlan_main.c
-+++ b/drivers/net/ipvlan/ipvlan_main.c
-@@ -408,8 +408,8 @@ static int ipvlan_ethtool_get_link_ksettings(struct net_device *dev,
- static void ipvlan_ethtool_get_drvinfo(struct net_device *dev,
- 				       struct ethtool_drvinfo *drvinfo)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+index b8379e4034a4..15e99d8865bd 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/firmware.c
+@@ -769,7 +769,7 @@ brcmf_fw_alloc_request(u32 chip, u32 chiprev,
+ 		fwnames[j].path[0] = '\0';
+ 		/* check if firmware path is provided by module parameter */
+ 		if (brcmf_mp_global.firmware_path[0] != '\0') {
+-			strlcpy(fwnames[j].path, mp_path,
++			strscpy(fwnames[j].path, mp_path,
+ 				BRCMF_FW_NAME_LEN);
+ 
+ 			if (end != '/') {
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+index d58525ebe618..a3d5030f6fe0 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/fwsignal.c
+@@ -688,7 +688,7 @@ static void brcmf_fws_macdesc_set_name(struct brcmf_fws_info *fws,
+ 				       struct brcmf_fws_mac_descriptor *desc)
  {
--	strlcpy(drvinfo->driver, IPVLAN_DRV, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, IPV_DRV_VER, sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, IPVLAN_DRV, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, IPV_DRV_VER, sizeof(drvinfo->version));
- }
- 
- static u32 ipvlan_ethtool_get_msglevel(struct net_device *dev)
-diff --git a/drivers/net/macvlan.c b/drivers/net/macvlan.c
-index 1080d6ebff63..713e3354cb2e 100644
---- a/drivers/net/macvlan.c
-+++ b/drivers/net/macvlan.c
-@@ -1043,8 +1043,8 @@ static int macvlan_fdb_del(struct ndmsg *ndm, struct nlattr *tb[],
- static void macvlan_ethtool_get_drvinfo(struct net_device *dev,
- 					struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->driver, "macvlan", sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, "0.1", sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, "macvlan", sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, "0.1", sizeof(drvinfo->version));
- }
- 
- static int macvlan_ethtool_get_link_ksettings(struct net_device *dev,
-diff --git a/drivers/net/net_failover.c b/drivers/net/net_failover.c
-index 21a0435c02de..7a28e082436e 100644
---- a/drivers/net/net_failover.c
-+++ b/drivers/net/net_failover.c
-@@ -324,8 +324,8 @@ static const struct net_device_ops failover_dev_ops = {
- static void nfo_ethtool_get_drvinfo(struct net_device *dev,
- 				    struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->driver, FAILOVER_NAME, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, FAILOVER_VERSION, sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, FAILOVER_NAME, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, FAILOVER_VERSION, sizeof(drvinfo->version));
- }
- 
- static int nfo_ethtool_get_link_ksettings(struct net_device *dev,
-diff --git a/drivers/net/netconsole.c b/drivers/net/netconsole.c
-index ddac61d79145..bdff9ac5056d 100644
---- a/drivers/net/netconsole.c
-+++ b/drivers/net/netconsole.c
-@@ -55,7 +55,7 @@ MODULE_PARM_DESC(oops_only, "Only log oops messages");
- #ifndef	MODULE
- static int __init option_setup(char *opt)
- {
--	strlcpy(config, opt, MAX_PARAM_LENGTH);
-+	strscpy(config, opt, MAX_PARAM_LENGTH);
- 	return 1;
- }
- __setup("netconsole=", option_setup);
-@@ -178,7 +178,7 @@ static struct netconsole_target *alloc_param_target(char *target_config)
- 		goto fail;
- 
- 	nt->np.name = "netconsole";
--	strlcpy(nt->np.dev_name, "eth0", IFNAMSIZ);
-+	strscpy(nt->np.dev_name, "eth0", IFNAMSIZ);
- 	nt->np.local_port = 6665;
- 	nt->np.remote_port = 6666;
- 	eth_broadcast_addr(nt->np.remote_mac);
-@@ -414,7 +414,7 @@ static ssize_t dev_name_store(struct config_item *item, const char *buf,
- 		return -EINVAL;
- 	}
- 
--	strlcpy(nt->np.dev_name, buf, IFNAMSIZ);
-+	strscpy(nt->np.dev_name, buf, IFNAMSIZ);
- 
- 	/* Get rid of possible trailing newline from echo(1) */
- 	len = strnlen(nt->np.dev_name, IFNAMSIZ);
-@@ -630,7 +630,7 @@ static struct config_item *make_netconsole_target(struct config_group *group,
- 		return ERR_PTR(-ENOMEM);
- 
- 	nt->np.name = "netconsole";
--	strlcpy(nt->np.dev_name, "eth0", IFNAMSIZ);
-+	strscpy(nt->np.dev_name, "eth0", IFNAMSIZ);
- 	nt->np.local_port = 6665;
- 	nt->np.remote_port = 6666;
- 	eth_broadcast_addr(nt->np.remote_mac);
-@@ -708,7 +708,7 @@ static int netconsole_netdev_event(struct notifier_block *this,
- 		if (nt->np.dev == dev) {
- 			switch (event) {
- 			case NETDEV_CHANGENAME:
--				strlcpy(nt->np.dev_name, dev->name, IFNAMSIZ);
-+				strscpy(nt->np.dev_name, dev->name, IFNAMSIZ);
- 				break;
- 			case NETDEV_RELEASE:
- 			case NETDEV_JOIN:
-diff --git a/drivers/net/ntb_netdev.c b/drivers/net/ntb_netdev.c
-index 80bdc07f2cd3..464d88ca8ab0 100644
---- a/drivers/net/ntb_netdev.c
-+++ b/drivers/net/ntb_netdev.c
-@@ -364,9 +364,9 @@ static void ntb_get_drvinfo(struct net_device *ndev,
- {
- 	struct ntb_netdev *dev = netdev_priv(ndev);
- 
--	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
--	strlcpy(info->version, NTB_NETDEV_VER, sizeof(info->version));
--	strlcpy(info->bus_info, pci_name(dev->pdev), sizeof(info->bus_info));
-+	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
-+	strscpy(info->version, NTB_NETDEV_VER, sizeof(info->version));
-+	strscpy(info->bus_info, pci_name(dev->pdev), sizeof(info->bus_info));
- }
- 
- static int ntb_get_link_ksettings(struct net_device *dev,
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index ee374a85544a..134637584a83 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -749,7 +749,7 @@ static void adin_get_strings(struct phy_device *phydev, u8 *data)
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(adin_hw_stats); i++) {
--		strlcpy(&data[i * ETH_GSTRING_LEN],
-+		strscpy(&data[i * ETH_GSTRING_LEN],
- 			adin_hw_stats[i].string, ETH_GSTRING_LEN);
- 	}
- }
-diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
-index 287cccf8f7f4..b2c0baa51f39 100644
---- a/drivers/net/phy/bcm-phy-lib.c
-+++ b/drivers/net/phy/bcm-phy-lib.c
-@@ -519,7 +519,7 @@ void bcm_phy_get_strings(struct phy_device *phydev, u8 *data)
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(bcm_phy_hw_stats); i++)
--		strlcpy(data + i * ETH_GSTRING_LEN,
-+		strscpy(data + i * ETH_GSTRING_LEN,
- 			bcm_phy_hw_stats[i].string, ETH_GSTRING_LEN);
- }
- EXPORT_SYMBOL_GPL(bcm_phy_get_strings);
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index a714150f5e8c..a3e810705ce2 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -1952,7 +1952,7 @@ static void marvell_get_strings(struct phy_device *phydev, u8 *data)
- 	int i;
- 
- 	for (i = 0; i < count; i++) {
--		strlcpy(data + i * ETH_GSTRING_LEN,
-+		strscpy(data + i * ETH_GSTRING_LEN,
- 			marvell_hw_stats[i].string, ETH_GSTRING_LEN);
- 	}
- }
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index e78d0bf69bc3..16301634b44e 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1650,7 +1650,7 @@ static void kszphy_get_strings(struct phy_device *phydev, u8 *data)
- 	int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(kszphy_hw_stats); i++) {
--		strlcpy(data + i * ETH_GSTRING_LEN,
-+		strscpy(data + i * ETH_GSTRING_LEN,
- 			kszphy_hw_stats[i].string, ETH_GSTRING_LEN);
- 	}
- }
-diff --git a/drivers/net/phy/mscc/mscc_main.c b/drivers/net/phy/mscc/mscc_main.c
-index 7e3017e7a1c0..8a13b1ad9a33 100644
---- a/drivers/net/phy/mscc/mscc_main.c
-+++ b/drivers/net/phy/mscc/mscc_main.c
-@@ -136,7 +136,7 @@ static void vsc85xx_get_strings(struct phy_device *phydev, u8 *data)
- 		return;
- 
- 	for (i = 0; i < priv->nstats; i++)
--		strlcpy(data + i * ETH_GSTRING_LEN, priv->hw_stats[i].string,
-+		strscpy(data + i * ETH_GSTRING_LEN, priv->hw_stats[i].string,
- 			ETH_GSTRING_LEN);
- }
- 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 12ff276b80ae..2198f1302642 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -370,7 +370,7 @@ int phy_register_fixup(const char *bus_id, u32 phy_uid, u32 phy_uid_mask,
- 	if (!fixup)
- 		return -ENOMEM;
- 
--	strlcpy(fixup->bus_id, bus_id, sizeof(fixup->bus_id));
-+	strscpy(fixup->bus_id, bus_id, sizeof(fixup->bus_id));
- 	fixup->phy_uid = phy_uid;
- 	fixup->phy_uid_mask = phy_uid_mask;
- 	fixup->run = run;
-diff --git a/drivers/net/rionet.c b/drivers/net/rionet.c
-index 39e61e07e489..fbcb9d05da64 100644
---- a/drivers/net/rionet.c
-+++ b/drivers/net/rionet.c
-@@ -443,10 +443,10 @@ static void rionet_get_drvinfo(struct net_device *ndev,
- {
- 	struct rionet_private *rnet = netdev_priv(ndev);
- 
--	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
--	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
--	strlcpy(info->fw_version, "n/a", sizeof(info->fw_version));
--	strlcpy(info->bus_info, rnet->mport->name, sizeof(info->bus_info));
-+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
-+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
-+	strscpy(info->fw_version, "n/a", sizeof(info->fw_version));
-+	strscpy(info->bus_info, rnet->mport->name, sizeof(info->bus_info));
- }
- 
- static u32 rionet_get_msglevel(struct net_device *ndev)
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index aac133a1e27a..6a391a60c2a5 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -2070,8 +2070,8 @@ static const struct net_device_ops team_netdev_ops = {
- static void team_ethtool_get_drvinfo(struct net_device *dev,
- 				     struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
--	strlcpy(drvinfo->version, UTS_RELEASE, sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, DRV_NAME, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, UTS_RELEASE, sizeof(drvinfo->version));
- }
- 
- static int team_ethtool_get_link_ksettings(struct net_device *dev,
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 259b2b84b2b3..3732e51b5ad8 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -3540,15 +3540,15 @@ static void tun_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
- {
- 	struct tun_struct *tun = netdev_priv(dev);
+ 	if (desc == &fws->desc.other)
+-		strlcpy(desc->name, "MAC-OTHER", sizeof(desc->name));
++		strscpy(desc->name, "MAC-OTHER", sizeof(desc->name));
+ 	else if (desc->mac_handle)
+ 		scnprintf(desc->name, sizeof(desc->name), "MAC-%d:%d",
+ 			  desc->mac_handle, desc->interface_id);
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2100.c b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+index 5234511dac78..ac36c899134e 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2100.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2100.c
+@@ -5907,8 +5907,8 @@ static void ipw_ethtool_get_drvinfo(struct net_device *dev,
+ 	struct ipw2100_priv *priv = libipw_priv(dev);
+ 	char fw_ver[64], ucode_ver[64];
  
 -	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 -	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 +	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
 +	strscpy(info->version, DRV_VERSION, sizeof(info->version));
  
- 	switch (tun->flags & TUN_TYPE_MASK) {
- 	case IFF_TUN:
--		strlcpy(info->bus_info, "tun", sizeof(info->bus_info));
-+		strscpy(info->bus_info, "tun", sizeof(info->bus_info));
- 		break;
- 	case IFF_TAP:
--		strlcpy(info->bus_info, "tap", sizeof(info->bus_info));
-+		strscpy(info->bus_info, "tap", sizeof(info->bus_info));
- 		break;
+ 	ipw2100_get_fwversion(priv, fw_ver, sizeof(fw_ver));
+ 	ipw2100_get_ucodeversion(priv, ucode_ver, sizeof(ucode_ver));
+@@ -5916,7 +5916,7 @@ static void ipw_ethtool_get_drvinfo(struct net_device *dev,
+ 	snprintf(info->fw_version, sizeof(info->fw_version), "%s:%d:%s",
+ 		 fw_ver, priv->eeprom_version, ucode_ver);
+ 
+-	strlcpy(info->bus_info, pci_name(priv->pci_dev),
++	strscpy(info->bus_info, pci_name(priv->pci_dev),
+ 		sizeof(info->bus_info));
+ }
+ 
+diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+index 029dacebe751..5b483de18c81 100644
+--- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
++++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
+@@ -10424,8 +10424,8 @@ static void ipw_ethtool_get_drvinfo(struct net_device *dev,
+ 	char date[32];
+ 	u32 len;
+ 
+-	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
++	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
++	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+ 
+ 	len = sizeof(vers);
+ 	ipw_get_ordinal(p, IPW_ORD_STAT_FW_VERSION, vers, &len);
+@@ -10434,7 +10434,7 @@ static void ipw_ethtool_get_drvinfo(struct net_device *dev,
+ 
+ 	snprintf(info->fw_version, sizeof(info->fw_version), "%s (%s)",
+ 		 vers, date);
+-	strlcpy(info->bus_info, pci_name(p->pci_dev),
++	strscpy(info->bus_info, pci_name(p->pci_dev),
+ 		sizeof(info->bus_info));
+ }
+ 
+diff --git a/drivers/net/wireless/intel/iwlegacy/3945-mac.c b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
+index 846138d6e33d..7352d5b2095f 100644
+--- a/drivers/net/wireless/intel/iwlegacy/3945-mac.c
++++ b/drivers/net/wireless/intel/iwlegacy/3945-mac.c
+@@ -3254,7 +3254,7 @@ il3945_store_measurement(struct device *d, struct device_attribute *attr,
+ 
+ 	if (count) {
+ 		char *p = buffer;
+-		strlcpy(buffer, buf, sizeof(buffer));
++		strscpy(buffer, buf, sizeof(buffer));
+ 		channel = simple_strtoul(p, NULL, 0);
+ 		if (channel)
+ 			params.channel = channel;
+diff --git a/drivers/net/wireless/intersil/hostap/hostap_ioctl.c b/drivers/net/wireless/intersil/hostap/hostap_ioctl.c
+index 0a376f112db9..4e0a0c881697 100644
+--- a/drivers/net/wireless/intersil/hostap/hostap_ioctl.c
++++ b/drivers/net/wireless/intersil/hostap/hostap_ioctl.c
+@@ -3848,7 +3848,7 @@ static void prism2_get_drvinfo(struct net_device *dev,
+ 	iface = netdev_priv(dev);
+ 	local = iface->local;
+ 
+-	strlcpy(info->driver, "hostap", sizeof(info->driver));
++	strscpy(info->driver, "hostap", sizeof(info->driver));
+ 	snprintf(info->fw_version, sizeof(info->fw_version),
+ 		 "%d.%d.%d", (local->sta_fw_ver >> 16) & 0xff,
+ 		 (local->sta_fw_ver >> 8) & 0xff,
+diff --git a/drivers/net/wireless/marvell/libertas/ethtool.c b/drivers/net/wireless/marvell/libertas/ethtool.c
+index d8e4f29b690d..9f53308a9935 100644
+--- a/drivers/net/wireless/marvell/libertas/ethtool.c
++++ b/drivers/net/wireless/marvell/libertas/ethtool.c
+@@ -20,8 +20,8 @@ static void lbs_ethtool_get_drvinfo(struct net_device *dev,
+ 		priv->fwrelease >> 16 & 0xff,
+ 		priv->fwrelease >>  8 & 0xff,
+ 		priv->fwrelease       & 0xff);
+-	strlcpy(info->driver, "libertas", sizeof(info->driver));
+-	strlcpy(info->version, lbs_driver_version, sizeof(info->version));
++	strscpy(info->driver, "libertas", sizeof(info->driver));
++	strscpy(info->version, lbs_driver_version, sizeof(info->version));
+ }
+ 
+ /*
+diff --git a/drivers/net/wireless/microchip/wilc1000/mon.c b/drivers/net/wireless/microchip/wilc1000/mon.c
+index b5a1b65c087c..03b7229a0ff5 100644
+--- a/drivers/net/wireless/microchip/wilc1000/mon.c
++++ b/drivers/net/wireless/microchip/wilc1000/mon.c
+@@ -229,7 +229,7 @@ struct net_device *wilc_wfi_init_mon_interface(struct wilc *wl,
+ 		return NULL;
+ 
+ 	wl->monitor_dev->type = ARPHRD_IEEE80211_RADIOTAP;
+-	strlcpy(wl->monitor_dev->name, name, IFNAMSIZ);
++	strscpy(wl->monitor_dev->name, name, IFNAMSIZ);
+ 	wl->monitor_dev->netdev_ops = &wilc_wfi_netdev_ops;
+ 	wl->monitor_dev->needs_free_netdev = true;
+ 
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+index 1593e810b3ca..b71ed42188fc 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/cfg80211.c
+@@ -1223,7 +1223,7 @@ int qtnf_wiphy_register(struct qtnf_hw_info *hw_info, struct qtnf_wmac *mac)
+ 			mac->macinfo.extended_capabilities_len;
  	}
- }
-diff --git a/drivers/net/usb/aqc111.c b/drivers/net/usb/aqc111.c
-index 3020e81159d0..a017e9de2119 100644
---- a/drivers/net/usb/aqc111.c
-+++ b/drivers/net/usb/aqc111.c
-@@ -201,7 +201,7 @@ static void aqc111_get_drvinfo(struct net_device *net,
  
- 	/* Inherit standard device info */
- 	usbnet_get_drvinfo(net, info);
--	strlcpy(info->driver, DRIVER_NAME, sizeof(info->driver));
-+	strscpy(info->driver, DRIVER_NAME, sizeof(info->driver));
- 	snprintf(info->fw_version, sizeof(info->fw_version), "%u.%u.%u",
- 		 aqc111_data->fw_ver.major,
- 		 aqc111_data->fw_ver.minor,
-diff --git a/drivers/net/usb/asix_common.c b/drivers/net/usb/asix_common.c
-index 9ea91c3ff045..72ffc89b477a 100644
---- a/drivers/net/usb/asix_common.c
-+++ b/drivers/net/usb/asix_common.c
-@@ -752,8 +752,8 @@ void asix_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *info)
+-	strlcpy(wiphy->fw_version, hw_info->fw_version,
++	strscpy(wiphy->fw_version, hw_info->fw_version,
+ 		sizeof(wiphy->fw_version));
+ 	wiphy->hw_version = hw_info->hw_version;
+ 
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/commands.c b/drivers/net/wireless/quantenna/qtnfmac/commands.c
+index 0fad53693292..b1b73478d89b 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/commands.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/commands.c
+@@ -967,7 +967,7 @@ qtnf_cmd_resp_proc_hw_info(struct qtnf_bus *bus,
+ 		hwinfo->total_rx_chain, hwinfo->total_tx_chain,
+ 		hwinfo->fw_ver);
+ 
+-	strlcpy(hwinfo->fw_version, bld_label, sizeof(hwinfo->fw_version));
++	strscpy(hwinfo->fw_version, bld_label, sizeof(hwinfo->fw_version));
+ 	hwinfo->hw_version = hw_ver;
+ 
+ 	return 0;
+diff --git a/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c b/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
+index 49421d10e22b..f7d95c9624a0 100644
+--- a/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
++++ b/drivers/net/wireless/realtek/rtl818x/rtl8187/leds.c
+@@ -143,7 +143,7 @@ static int rtl8187_register_led(struct ieee80211_hw *dev,
+ 	led->dev = dev;
+ 	led->ledpin = ledpin;
+ 	led->is_radio = is_radio;
+-	strlcpy(led->name, name, sizeof(led->name));
++	strscpy(led->name, name, sizeof(led->name));
+ 
+ 	led->led_dev.name = led->name;
+ 	led->led_dev.default_trigger = default_trigger;
+diff --git a/drivers/net/wireless/wl3501_cs.c b/drivers/net/wireless/wl3501_cs.c
+index dad38fc04243..1b532e00a56f 100644
+--- a/drivers/net/wireless/wl3501_cs.c
++++ b/drivers/net/wireless/wl3501_cs.c
+@@ -1441,7 +1441,7 @@ static void wl3501_detach(struct pcmcia_device *link)
+ static int wl3501_get_name(struct net_device *dev, struct iw_request_info *info,
+ 			   union iwreq_data *wrqu, char *extra)
  {
- 	/* Inherit standard device info */
- 	usbnet_get_drvinfo(net, info);
--	strlcpy(info->driver, DRIVER_NAME, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->driver, DRIVER_NAME, sizeof(info->driver));
-+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
+-	strlcpy(wrqu->name, "IEEE 802.11-DS", sizeof(wrqu->name));
++	strscpy(wrqu->name, "IEEE 802.11-DS", sizeof(wrqu->name));
+ 	return 0;
  }
  
- int asix_set_mac_address(struct net_device *net, void *p)
-diff --git a/drivers/net/usb/catc.c b/drivers/net/usb/catc.c
-index 843893482abd..ff439ef535ac 100644
---- a/drivers/net/usb/catc.c
-+++ b/drivers/net/usb/catc.c
-@@ -672,8 +672,8 @@ static void catc_get_drvinfo(struct net_device *dev,
- 			     struct ethtool_drvinfo *info)
+@@ -1652,7 +1652,7 @@ static int wl3501_set_nick(struct net_device *dev, struct iw_request_info *info,
+ 
+ 	if (wrqu->data.length > sizeof(this->nick))
+ 		return -E2BIG;
+-	strlcpy(this->nick, extra, wrqu->data.length);
++	strscpy(this->nick, extra, wrqu->data.length);
+ 	return 0;
+ }
+ 
+@@ -1661,7 +1661,7 @@ static int wl3501_get_nick(struct net_device *dev, struct iw_request_info *info,
  {
- 	struct catc *catc = netdev_priv(dev);
--	strlcpy(info->driver, driver_name, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->driver, driver_name, sizeof(info->driver));
-+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
- 	usb_make_path(catc->usbdev, info->bus_info, sizeof(info->bus_info));
+ 	struct wl3501_card *this = netdev_priv(dev);
+ 
+-	strlcpy(extra, this->nick, 32);
++	strscpy(extra, this->nick, 32);
+ 	wrqu->data.length = strlen(extra);
+ 	return 0;
  }
- 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index feb247e355f7..81ca64debc5b 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -894,7 +894,7 @@ static void pegasus_get_drvinfo(struct net_device *dev,
- {
- 	pegasus_t *pegasus = netdev_priv(dev);
- 
--	strlcpy(info->driver, driver_name, sizeof(info->driver));
-+	strscpy(info->driver, driver_name, sizeof(info->driver));
- 	usb_make_path(pegasus->usb, info->bus_info, sizeof(info->bus_info));
- }
- 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index d142ac8fcf6e..09f0c1677a22 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -8601,11 +8601,11 @@ static void rtl8152_get_drvinfo(struct net_device *netdev,
- {
- 	struct r8152 *tp = netdev_priv(netdev);
- 
--	strlcpy(info->driver, MODULENAME, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->driver, MODULENAME, sizeof(info->driver));
-+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
- 	usb_make_path(tp->udev, info->bus_info, sizeof(info->bus_info));
- 	if (!IS_ERR_OR_NULL(tp->rtl_fw.fw))
--		strlcpy(info->fw_version, tp->rtl_fw.version,
-+		strscpy(info->fw_version, tp->rtl_fw.version,
- 			sizeof(info->fw_version));
- }
- 
-diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-index 3d2bf2acca94..97afd7335d86 100644
---- a/drivers/net/usb/rtl8150.c
-+++ b/drivers/net/usb/rtl8150.c
-@@ -769,8 +769,8 @@ static void rtl8150_get_drvinfo(struct net_device *netdev, struct ethtool_drvinf
- {
- 	rtl8150_t *dev = netdev_priv(netdev);
- 
--	strlcpy(info->driver, driver_name, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->driver, driver_name, sizeof(info->driver));
-+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
- 	usb_make_path(dev->udev, info->bus_info, sizeof(info->bus_info));
- }
- 
-diff --git a/drivers/net/usb/sierra_net.c b/drivers/net/usb/sierra_net.c
-index bb4cbe8fc846..b3ae949e6f1c 100644
---- a/drivers/net/usb/sierra_net.c
-+++ b/drivers/net/usb/sierra_net.c
-@@ -612,8 +612,8 @@ static void sierra_net_get_drvinfo(struct net_device *net,
- {
- 	/* Inherit standard device info */
- 	usbnet_get_drvinfo(net, info);
--	strlcpy(info->driver, driver_name, sizeof(info->driver));
--	strlcpy(info->version, DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->driver, driver_name, sizeof(info->driver));
-+	strscpy(info->version, DRIVER_VERSION, sizeof(info->version));
- }
- 
- static u32 sierra_net_get_link(struct net_device *net)
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index aaa89b4cfd50..fd399a8ed973 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1050,9 +1050,9 @@ void usbnet_get_drvinfo (struct net_device *net, struct ethtool_drvinfo *info)
- {
- 	struct usbnet *dev = netdev_priv(net);
- 
--	strlcpy (info->driver, dev->driver_name, sizeof info->driver);
--	strlcpy (info->fw_version, dev->driver_info->description,
--		sizeof info->fw_version);
-+	strscpy(info->driver, dev->driver_name, sizeof(info->driver));
-+	strscpy(info->fw_version, dev->driver_info->description,
-+		sizeof(info->fw_version));
- 	usb_make_path (dev->udev, info->bus_info, sizeof info->bus_info);
- }
- EXPORT_SYMBOL_GPL(usbnet_get_drvinfo);
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 466da01ba2e3..550c85a366a0 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -128,8 +128,8 @@ static int veth_get_link_ksettings(struct net_device *dev,
- 
- static void veth_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
- {
--	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
--	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
-+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
- }
- 
- static void veth_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 9cce7dec7366..e0e57083d442 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -2594,9 +2594,9 @@ static void virtnet_get_drvinfo(struct net_device *dev,
- 	struct virtnet_info *vi = netdev_priv(dev);
- 	struct virtio_device *vdev = vi->vdev;
- 
--	strlcpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
--	strlcpy(info->version, VIRTNET_DRIVER_VERSION, sizeof(info->version));
--	strlcpy(info->bus_info, virtio_bus_name(vdev), sizeof(info->bus_info));
-+	strscpy(info->driver, KBUILD_MODNAME, sizeof(info->driver));
-+	strscpy(info->version, VIRTNET_DRIVER_VERSION, sizeof(info->version));
-+	strscpy(info->bus_info, virtio_bus_name(vdev), sizeof(info->bus_info));
- 
- }
- 
-diff --git a/drivers/net/vmxnet3/vmxnet3_ethtool.c b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-index e2034adc3a1a..18cf7c723201 100644
---- a/drivers/net/vmxnet3/vmxnet3_ethtool.c
-+++ b/drivers/net/vmxnet3/vmxnet3_ethtool.c
-@@ -209,12 +209,12 @@ vmxnet3_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
- {
- 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
- 
--	strlcpy(drvinfo->driver, vmxnet3_driver_name, sizeof(drvinfo->driver));
-+	strscpy(drvinfo->driver, vmxnet3_driver_name, sizeof(drvinfo->driver));
- 
--	strlcpy(drvinfo->version, VMXNET3_DRIVER_VERSION_REPORT,
-+	strscpy(drvinfo->version, VMXNET3_DRIVER_VERSION_REPORT,
- 		sizeof(drvinfo->version));
- 
--	strlcpy(drvinfo->bus_info, pci_name(adapter->pdev),
-+	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
- 		sizeof(drvinfo->bus_info));
- }
- 
-diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
-index 5df7a0abc39d..badf6f09ae51 100644
---- a/drivers/net/vrf.c
-+++ b/drivers/net/vrf.c
-@@ -1541,8 +1541,8 @@ static const struct l3mdev_ops vrf_l3mdev_ops = {
- static void vrf_get_drvinfo(struct net_device *dev,
- 			    struct ethtool_drvinfo *info)
- {
--	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
--	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
-+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
-+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
- }
- 
- static const struct ethtool_ops vrf_ethtool_ops = {
-diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
-index c3285242f74f..939be2e148de 100644
---- a/drivers/net/vxlan/vxlan_core.c
-+++ b/drivers/net/vxlan/vxlan_core.c
-@@ -3313,8 +3313,8 @@ static int vxlan_validate(struct nlattr *tb[], struct nlattr *data[],
- static void vxlan_get_drvinfo(struct net_device *netdev,
- 			      struct ethtool_drvinfo *drvinfo)
- {
--	strlcpy(drvinfo->version, VXLAN_VERSION, sizeof(drvinfo->version));
--	strlcpy(drvinfo->driver, "vxlan", sizeof(drvinfo->driver));
-+	strscpy(drvinfo->version, VXLAN_VERSION, sizeof(drvinfo->version));
-+	strscpy(drvinfo->driver, "vxlan", sizeof(drvinfo->driver));
- }
- 
- static int vxlan_get_link_ksettings(struct net_device *dev,
+@@ -1965,7 +1965,7 @@ static int wl3501_config(struct pcmcia_device *link)
+ 	this->firmware_date[0]	= '\0';
+ 	this->rssi		= 255;
+ 	this->chan		= iw_default_channel(this->reg_domain);
+-	strlcpy(this->nick, "Planet WL3501", sizeof(this->nick));
++	strscpy(this->nick, "Planet WL3501", sizeof(this->nick));
+ 	spin_lock_init(&this->lock);
+ 	init_waitqueue_head(&this->wait);
+ 	netif_start_queue(dev);
 -- 
 2.35.1
 
