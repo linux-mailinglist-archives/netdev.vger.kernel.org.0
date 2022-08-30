@@ -2,160 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 86A9C5A6171
-	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 13:14:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99C645A6177
+	for <lists+netdev@lfdr.de>; Tue, 30 Aug 2022 13:15:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230169AbiH3LN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 07:13:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58824 "EHLO
+        id S229589AbiH3LPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 07:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229750AbiH3LNt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 07:13:49 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A06BEDDA95;
-        Tue, 30 Aug 2022 04:13:48 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MH4N10V1lz1N7J3;
-        Tue, 30 Aug 2022 19:10:09 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 19:13:46 +0800
-Received: from localhost.localdomain (10.69.192.56) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 30 Aug 2022 19:13:46 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lipeng321@huawei.com>, <lanhao@huawei.com>
-Subject: [PATCH net-next 4/4] net: hns3: net: hns3: add querying and setting fec off mode from firmware
-Date:   Tue, 30 Aug 2022 19:11:17 +0800
-Message-ID: <20220830111117.47865-5-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220830111117.47865-1-huangguangbin2@huawei.com>
-References: <20220830111117.47865-1-huangguangbin2@huawei.com>
+        with ESMTP id S229449AbiH3LPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 07:15:30 -0400
+Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA4C35C341
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 04:15:25 -0700 (PDT)
+Received: from imsva.intranet.prolan.hu (imsva.intranet.prolan.hu [10.254.254.252])
+        by fw2.prolan.hu (Postfix) with ESMTPS id 2913A7F51C;
+        Tue, 30 Aug 2022 13:15:22 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 120E434064;
+        Tue, 30 Aug 2022 13:15:22 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ECCCC3405A;
+        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
+Received: from fw2.prolan.hu (unknown [10.254.254.253])
+        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
+        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
+Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
+        by fw2.prolan.hu (Postfix) with ESMTPS id BC4037F51C;
+        Tue, 30 Aug 2022 13:15:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
+        t=1661858121; bh=NGZHmdqYBUo+DVYi7aKUNmOooUXw3O4V6ojsrhk3Un4=;
+        h=From:To:CC:Subject:Date:From;
+        b=MBEaa3sEFanOA7/fWlg0LebUcULYs0oRKx7GA+07CY98un256+05YjnOxXKoSgDL4
+         SoMsxbRoGxv+ByrvK96vdHmgo8AfSF+SOTZi0k45K9IjqTGCletu0IANcs83QSPI0j
+         QgKlN7w5CEYTu54RfzEFDg+bLLz/yWlV3JJkrwroJJ+ueOZP70TwfsT8zm95HvJM3S
+         U4V6jgox0TMkCnGazexkmbDRRmPp3t3rDHI1Ao2HY+7wrhNKbOVUKcPWAYdJJxE2Zi
+         U9ByhMdaeW4CdXyarYJSXsYak/Fth6pqpGCxqdr875/OMYIMOJdoD4X8YdjH/Bo1mB
+         kdfpMrakWhZiw==
+Received: from atlas.intranet.prolan.hu (10.254.0.229) by
+ atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id
+ 15.1.2507.12; Tue, 30 Aug 2022 13:15:21 +0200
+Received: from P-01011.intranet.prolan.hu (10.254.7.28) by
+ atlas.intranet.prolan.hu (10.254.0.229) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Tue, 30 Aug 2022 13:15:21 +0200
+From:   =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>
+To:     <netdev@vger.kernel.org>
+CC:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <qiangqing.zhang@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>, <kernel@pengutronix.de>,
+        =?UTF-8?q?Cs=C3=B3k=C3=A1s=20Bence?= <csokas.bence@prolan.hu>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH v2] net: fec: Use unlocked timecounter reads for saving state
+Date:   Tue, 30 Aug 2022 13:15:16 +0200
+Message-ID: <20220830111516.82875-1-csokas.bence@prolan.hu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ESET-AS: R=OK;S=0;OP=CALC;TIME=1661858121;VERSION=7934;MC=2749217230;TRN=0;CRV=0;IPC=;SP=0;SIPS=0;PI=3;F=0
+X-ESET-Antispam: OK
+X-EsetResult: clean, is OK
+X-EsetId: 37303A29971EF456637263
+X-TM-AS-GCONF: 00
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For some new devices, the FEC mode can not be set to OFF in speed 200G.
-In order to flexibly adapt to all types of devices, driver queries
-fec ability from firmware to decide whether OFF mode can be supported.
+`fec_ptp_save_state()` may be called from an atomic context,
+which makes `fec_ptp_gettime()` unable to acquire a mutex.
+Using the lower-level timecounter ops remedies the problem.
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: f79959220fa5
+
+Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
 ---
- drivers/net/ethernet/hisilicon/hns3/hnae3.h      |  1 +
- .../net/ethernet/hisilicon/hns3/hns3_ethtool.c   | 11 +++++------
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c  | 16 ++++++++++------
- 3 files changed, 16 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/freescale/fec.h     |  4 ++--
+ drivers/net/ethernet/freescale/fec_ptp.c | 19 +++++++++++++------
+ 2 files changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hnae3.h b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-index d7754b180f53..795df7111119 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hnae3.h
-@@ -224,6 +224,7 @@ enum hnae3_fec_mode {
- 	HNAE3_FEC_BASER,
- 	HNAE3_FEC_RS,
- 	HNAE3_FEC_LLRS,
-+	HNAE3_FEC_NONE,
- 	HNAE3_FEC_USER_DEF,
- };
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index b656cda75c92..7bc7ab4b5d3a 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -597,7 +597,7 @@ struct fec_enet_private {
+ 	unsigned int next_counter;
  
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 82a48ec20618..3ca9c2b67da4 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1625,10 +1625,8 @@ static unsigned int loc_to_eth_fec(u8 loc_fec)
- 		eth_fec |= ETHTOOL_FEC_LLRS;
- 	if (loc_fec & BIT(HNAE3_FEC_BASER))
- 		eth_fec |= ETHTOOL_FEC_BASER;
--
--	/* if nothing is set, then FEC is off */
--	if (!eth_fec)
--		eth_fec = ETHTOOL_FEC_OFF;
-+	if (loc_fec & BIT(HNAE3_FEC_NONE))
-+		eth_fec |= ETHTOOL_FEC_OFF;
+ 	struct {
+-		struct timespec64 ts_phc;
++		u64 ns_phc;
+ 		u64 ns_sys;
+ 		u32 at_corr;
+ 		u8 at_inc_corr;
+@@ -613,7 +613,7 @@ int fec_ptp_set(struct net_device *ndev, struct ifreq *ifr);
+ int fec_ptp_get(struct net_device *ndev, struct ifreq *ifr);
  
- 	return eth_fec;
- }
-@@ -1639,8 +1637,7 @@ static unsigned int eth_to_loc_fec(unsigned int eth_fec)
- 	u32 loc_fec = 0;
+ void fec_ptp_save_state(struct fec_enet_private *fep);
+-int fec_ptp_restore_state(struct fec_enet_private *fep);
++void fec_ptp_restore_state(struct fec_enet_private *fep);
  
- 	if (eth_fec & ETHTOOL_FEC_OFF)
--		return loc_fec;
--
-+		loc_fec |= BIT(HNAE3_FEC_NONE);
- 	if (eth_fec & ETHTOOL_FEC_AUTO)
- 		loc_fec |= BIT(HNAE3_FEC_AUTO);
- 	if (eth_fec & ETHTOOL_FEC_RS)
-@@ -1672,6 +1669,8 @@ static int hns3_get_fecparam(struct net_device *netdev,
+ /****************************************************************************/
+ #endif /* FEC_H */
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index 78fb8818d168..2ad93668844a 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -636,7 +636,13 @@ void fec_ptp_save_state(struct fec_enet_private *fep)
+ {
+ 	u32 atime_inc_corr;
  
- 	fec->fec = loc_to_eth_fec(fec_ability);
- 	fec->active_fec = loc_to_eth_fec(fec_mode);
-+	if (!fec->active_fec)
-+		fec->active_fec = ETHTOOL_FEC_OFF;
+-	fec_ptp_gettime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++	if (preempt_count_equals(0)) {
++		spin_lock_irqsave(&fep->tmreg_lock, flags);
++		fep->ptp_saved_state.ns_phc = timecounter_read(&fep->tc);
++		spin_unlock_irqrestore(&fep->tmreg_lock, flags);
++	} else {
++		fep->ptp_saved_state.ns_phc = timecounter_read(&fep->tc);
++	}
+ 	fep->ptp_saved_state.ns_sys = ktime_get_ns();
  
- 	return 0;
- }
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 5cc19ff56121..fcdc978379ff 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -1008,6 +1008,7 @@ static void hclge_update_fec_support(struct hclge_mac *mac)
- 	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_BASER_BIT, mac->supported);
- 	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_RS_BIT, mac->supported);
- 	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_LLRS_BIT, mac->supported);
-+	linkmode_clear_bit(ETHTOOL_LINK_MODE_FEC_NONE_BIT, mac->supported);
- 
- 	if (mac->fec_ability & BIT(HNAE3_FEC_BASER))
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_BASER_BIT,
-@@ -1018,6 +1019,9 @@ static void hclge_update_fec_support(struct hclge_mac *mac)
- 	if (mac->fec_ability & BIT(HNAE3_FEC_LLRS))
- 		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_LLRS_BIT,
- 				 mac->supported);
-+	if (mac->fec_ability & BIT(HNAE3_FEC_NONE))
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_FEC_NONE_BIT,
-+				 mac->supported);
+ 	fep->ptp_saved_state.at_corr = readl(fep->hwp + FEC_ATIME_CORR);
+@@ -644,16 +650,17 @@ void fec_ptp_save_state(struct fec_enet_private *fep)
+ 	fep->ptp_saved_state.at_inc_corr = (u8)(atime_inc_corr >> FEC_T_INC_CORR_OFFSET);
  }
  
- static void hclge_convert_setting_sr(u16 speed_ability,
-@@ -1125,17 +1129,17 @@ static void hclge_convert_setting_fec(struct hclge_mac *mac)
- 	switch (mac->speed) {
- 	case HCLGE_MAC_SPEED_10G:
- 	case HCLGE_MAC_SPEED_40G:
--		mac->fec_ability =
--			BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_AUTO);
-+		mac->fec_ability = BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_AUTO) |
-+				   BIT(HNAE3_FEC_NONE);
- 		break;
- 	case HCLGE_MAC_SPEED_25G:
- 	case HCLGE_MAC_SPEED_50G:
--		mac->fec_ability =
--			BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_RS) |
--			BIT(HNAE3_FEC_AUTO);
-+		mac->fec_ability = BIT(HNAE3_FEC_BASER) | BIT(HNAE3_FEC_RS) |
-+				   BIT(HNAE3_FEC_AUTO) | BIT(HNAE3_FEC_NONE);
- 		break;
- 	case HCLGE_MAC_SPEED_100G:
--		mac->fec_ability = BIT(HNAE3_FEC_RS) | BIT(HNAE3_FEC_AUTO);
-+		mac->fec_ability = BIT(HNAE3_FEC_RS) | BIT(HNAE3_FEC_AUTO) |
-+				   BIT(HNAE3_FEC_NONE);
- 		break;
- 	case HCLGE_MAC_SPEED_200G:
- 		mac->fec_ability = BIT(HNAE3_FEC_RS) | BIT(HNAE3_FEC_AUTO) |
+-int fec_ptp_restore_state(struct fec_enet_private *fep)
++void fec_ptp_restore_state(struct fec_enet_private *fep)
+ {
+ 	u32 atime_inc = readl(fep->hwp + FEC_ATIME_INC) & FEC_T_INC_MASK;
+-	u64 ns_sys;
++	u64 ns;
+ 
+ 	writel(fep->ptp_saved_state.at_corr, fep->hwp + FEC_ATIME_CORR);
+ 	atime_inc |= ((u32)fep->ptp_saved_state.at_inc_corr) << FEC_T_INC_CORR_OFFSET;
+ 	writel(atime_inc, fep->hwp + FEC_ATIME_INC);
+ 
+-	ns_sys = ktime_get_ns() - fep->ptp_saved_state.ns_sys;
+-	timespec64_add_ns(&fep->ptp_saved_state.ts_phc, ns_sys);
+-	return fec_ptp_settime(&fep->ptp_caps, &fep->ptp_saved_state.ts_phc);
++	ns = ktime_get_ns() - fep->ptp_saved_state.ns_sys + fep->ptp_saved_state.ns_phc;
++
++	writel(ns & fep->cc.mask, fep->hwp + FEC_ATIME);
++	timecounter_init(&fep->tc, &fep->cc, ns);
+ }
 -- 
-2.33.0
+2.25.1
 
