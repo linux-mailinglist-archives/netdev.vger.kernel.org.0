@@ -2,157 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 048F25A7F0B
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:38:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A86F5A7F14
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229943AbiHaNig (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 09:38:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
+        id S231247AbiHaNlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 09:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229607AbiHaNif (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:38:35 -0400
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40503D86;
-        Wed, 31 Aug 2022 06:38:33 -0700 (PDT)
-Received: by mail-ed1-f41.google.com with SMTP id b16so18442464edd.4;
-        Wed, 31 Aug 2022 06:38:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=WL2hbn3gfMbnUVzI30rf1ujjncBseT3Kr/X668qXOD8=;
-        b=u0jCH4Jr45szhFmu55fKEwLVufybx2TaKBMdrvFHc7WNsNt59kfZqWd5jeU5UFDYpJ
-         jWjnefXPOx59JtAUhCxiIggpTU5bHodTXX37DCiXad1oK4iN6x0RVZBvyZ6VE1Tuuzqk
-         j5Ejz/OOWltFctL0F6UCGigcYoPuR9ptlkfdW6aC/fG1ocMlYrR3PzTh7StzFJthblNp
-         MSR4tMCgp9iJx65iKUtat41fwPkndzygSWzAcglYcx/0waui+kH1dFWgdjM94XUxaC4y
-         43X7hLVaQyPq4OJM/Zxj5DKlFnYQveVyJ9zWvO5sgLs9KGAuejRmidUTi2RouG1yeW9O
-         J/kw==
-X-Gm-Message-State: ACgBeo25AF5epQ4jCRfmjZkVUX9KLav4fiU7/IihpSqTtI1jeKLzM3Wk
-        ng65w8jQElj2dA4TOX+7trg=
-X-Google-Smtp-Source: AA6agR4fNjZjLwyUTiFXetuPEZLVxhWBVl6a0DVs1VB18bCt1Abom97rGIBjpLWGl0+2PXb1d0WtiQ==
-X-Received: by 2002:aa7:c611:0:b0:447:844d:e5a2 with SMTP id h17-20020aa7c611000000b00447844de5a2mr5761820edq.10.1661953111717;
-        Wed, 31 Aug 2022 06:38:31 -0700 (PDT)
-Received: from localhost (fwdproxy-cln-005.fbsv.net. [2a03:2880:31ff:5::face:b00c])
-        by smtp.gmail.com with ESMTPSA id uo39-20020a170907cc2700b0073da32b7db0sm2346384ejc.199.2022.08.31.06.38.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 06:38:31 -0700 (PDT)
-From:   Breno Leitao <leitao@debian.org>
-To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, leit@fb.com, yoshfuji@linux-ipv6.org,
-        pabeni@redhat.com, dsahern@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
-Date:   Wed, 31 Aug 2022 06:37:58 -0700
-Message-Id: <20220831133758.3741187-1-leitao@debian.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S230520AbiHaNlu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:41:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DF50C9900;
+        Wed, 31 Aug 2022 06:41:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B118461ADD;
+        Wed, 31 Aug 2022 13:41:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC13BC433D6;
+        Wed, 31 Aug 2022 13:41:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661953308;
+        bh=2OVyDIwCVzLaucnnxSgE4rX/OnsOuYwLpXKOxA+L+rQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=gZqlUTbmKCA8DkRggchoaE/FO4dh12DSdcWEVGuo/4Iaw++a9gIA9ATF0lowcCoYg
+         5L3M3m2Ue7MrIlvii3GP7jTDoEgO3Li/J2WvLXJKYrzLRkZ7hwmq33Vla44Ax9u1kQ
+         TgUslEcIIerJzUVOnnG9isEX4e13Zgq14u64radPJ3qF4mvIeB+6ftD9//Ku/jHBrC
+         MwLk0k8Xar9+X9Qj59Facjol2TfJBWeXpiUc0Pe8lvcsDOod/4njyA6E17soFvQBuS
+         sDVJcWbyf746AsTJ0wdDEnmJrGyKX4Z/dyN/PCCD7xRxxeijo72o75uXnk/8NyYYGf
+         AVhCzLykuUvpA==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 23262588B0A; Wed, 31 Aug 2022 15:41:45 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+In-Reply-To: <20220831125608.GA8153@breakpoint.cc>
+References: <20220831101617.22329-1-fw@strlen.de> <87v8q84nlq.fsf@toke.dk>
+ <20220831125608.GA8153@breakpoint.cc>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 31 Aug 2022 15:41:44 +0200
+Message-ID: <87o7w04jjb.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are cases where we need information about the socket during a
-warning, so, it could help us to find bugs that happens that do not have
-a easily repro.
+Florian Westphal <fw@strlen.de> writes:
 
-BPF congestion control algorithms can change socket state in unexpected
-ways, leading to WARNings. Additional information about the socket state
-is useful to identify the culprit.
+> Toke H=C3=B8iland-J=C3=B8rgensen <toke@kernel.org> wrote:
+>> > Tag and program id are dumped to userspace on 'list' to allow to see w=
+hich
+>> > program is in use in case the filename isn't available/present.
+>>=20
+>> It seems a bit odd to include the file path in the kernel as well.
+>
+> Its needed to be able to re-load the ruleset.
 
-This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
-attaches it to tcp_snd_cwnd_set().
+How does that work, exactly? Is this so that the userspace binary can
+query the current ruleset, and feed it back to the kernel expecting it
+to stay the same? Because in that case, if the pinned object goes away
+in the meantime (or changes to a different program), this could lead to
+some really hard to debug errors, where a reload subtly changes the
+behaviour because the BPF program is not in fact the same.
 
-Signed-off-by: Breno Leitao <leitao@debian.org>
----
- include/net/tcp.h       |  3 ++-
- include/net/tcp_debug.h | 10 ++++++++++
- net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+), 1 deletion(-)
- create mode 100644 include/net/tcp_debug.h
+Using IDs would avoid this ambiguity at least, so I think that's a
+better solution. We'd have to make sure the BPF program is not released
+completely until after the reload has finished, so that it doesn't
+suddenly disappear.
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index d10962b9f0d0..73c3970d8839 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -40,6 +40,7 @@
- #include <net/inet_ecn.h>
- #include <net/dst.h>
- #include <net/mptcp.h>
-+#include <net/tcp_debug.h>
- 
- #include <linux/seq_file.h>
- #include <linux/memcontrol.h>
-@@ -1222,7 +1223,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
- 
- static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
- {
--	WARN_ON_ONCE((int)val <= 0);
-+	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
- 	tp->snd_cwnd = val;
- }
- 
-diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-new file mode 100644
-index 000000000000..50e96d87d335
---- /dev/null
-+++ b/include/net/tcp_debug.h
-@@ -0,0 +1,10 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_TCP_DEBUG_H
-+#define _LINUX_TCP_DEBUG_H
-+
-+void tcp_sock_warn(const struct tcp_sock *tp);
-+
-+#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-+		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-+
-+#endif  /* _LINUX_TCP_DEBUG_H */
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index bbe218753662..71771fee72f7 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4684,6 +4684,36 @@ int tcp_abort(struct sock *sk, int err)
- }
- EXPORT_SYMBOL_GPL(tcp_abort);
- 
-+void tcp_sock_warn(const struct tcp_sock *tp)
-+{
-+	const struct sock *sk = (const struct sock *)tp;
-+	struct inet_sock *inet = inet_sk(sk);
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+
-+	WARN_ON(1);
-+
-+	if (!tp)
-+		return;
-+
-+	pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
-+		sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
-+		ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
-+
-+	switch (sk->sk_family) {
-+	case AF_INET:
-+		pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
-+			&inet->inet_daddr);
-+		break;
-+#if IS_ENABLED(CONFIG_IPV6)
-+	case AF_INET6:
-+		pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
-+			&sk->sk_v6_daddr);
-+		break;
-+#endif
-+	}
-+}
-+EXPORT_SYMBOL_GPL(tcp_sock_warn);
-+
- extern struct tcp_congestion_ops tcp_reno;
- 
- static __initdata unsigned long thash_entries;
--- 
-2.30.2
+>> But doesn't NFT already have a per-rule comment feature,
+>> so why add another specifically for BPF?
+>
+> You can attach up to 256 bytes to a rule, yes.
+> Might not be enough for a longer path, and there could be multiple
+> expressions in the same rule.
+>
+> This way was the most simple solution.
 
+My point here was more that if it's just a label for human consumption,
+the comment field should be fine, didn't realise it was needed for the
+tool operation (and see above re: that).
+
+>> Instead we could just teach the
+>> userspace utility to extract metadata from the BPF program (based on the
+>> ID) like bpftool does. This would include the program name, BTW, so it
+>> does have a semantic identifier.
+>
+> Sure, I could change the grammar so it expects a tag or ID, e.g.
+> 'ebpf id 42'
+>
+> If thats preferred, I can change this, it avoids the need for storing
+> the name.
+
+I think for echoing back, just relying on the ID is better as that is at
+least guaranteed to stay constant for the lifetime of the BPF program in
+the kernel. We could still support the 'pinned <path>' syntax on the
+command line so that the initial load could be done from a pinned file,
+just as a user interface improvement...
+
+>> > cbpf bytecode isn't supported.
+>> > add rule ... ebpf pinned "/sys/fs/bpf/myprog"
+>>=20
+>> Any plan to also teach the nft binary to load a BPF program from an ELF
+>> file (instead of relying on pinning)?
+>
+> I used pinning because that is what '-m bpf' uses.
+
+I'm not against supporting pinning, per se (except for the issues noted
+above), but we could do multiple things, including supporting loading
+the program from an object file. This is similar to how TC operates, for
+instance...
+
+-Toke
