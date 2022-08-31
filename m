@@ -2,52 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 284795A7E4E
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CC135A7E59
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:12:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231696AbiHaNKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 09:10:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34714 "EHLO
+        id S231703AbiHaNMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 09:12:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231661AbiHaNKl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:10:41 -0400
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C41253000
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 06:10:38 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R5DeSeoL42KzzHlCug4aMYJ148MKN3EKtd+Y3d/8VD8A/5OsPeIUjO+3d0B58Es9tEew5/2tyA5sdHbHipWjj0YYbH/MusVmdTwkDplibP4qIzVvIpKSXYEj8f7gd8v3/kPrvs/Gpl6FfQVnIicrtXp9njUgmIMl+8sHZ8QkjhsEoe1YIp1p7vPS4Og9A4CltulkYXkf7oxuQWU1V613z4BWkZawvhNTa61rVPCXH7A/yaL3mOO68g7T04tQIW7rSWetpM1R1qFpj+EMCifFEYqJo/7rVhSfI6rPVcPNzwzkaeDQNvJ1fWwZFbeAnJ8aiPCvQdHFTJDk9xrEHAiAlg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FK8j+JRTd0zuexWyOG1/enYtBEP3gNaO/UN1Zq/gJOY=;
- b=lVLEYAi4f4htVS9LZQnxb7OIwv2nGGFa0KKen3tsNO6SkQeLah25n/By6twEmKZTW81a/fnWbyVZ21kNPDkSoFzxZjw5p74TTQ3UfZ5CJAyEJMu/ITYaMEGf6T3/bSjlIqezOtOEHqVJhBGKE37fSEMyhbvo+Zx5ChX4AlUb4D2FOibXPY6Z5nYuQ0bmXmSGMYNkF3e9nuN9JkDTe8SNMNREoPlKRPUCflBKAsKZz4p1lh1+ORkgJnnWdskvVU0AEumdPcfWxSO+UNp8o3QdNBQ9afAODptGzUAr7dsOCevzSrfey9janQpBdjpPgYGEGvXt42QhGBBP/t2EPlrp3g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FK8j+JRTd0zuexWyOG1/enYtBEP3gNaO/UN1Zq/gJOY=;
- b=uZnbfDJ6/22yXUEseQHjf8/jzLwNPgcW3+Zss1jzY/5+QKDZORuuoBcpwFiYCwTsEtKwAgDtdnBj2DiNJOlkEoHXiI758Mi7x6jDAfIlep9KCX7n3MoECCkYy30LZV19FBz9W68HauOoUpjnzQGIIqIUi8/jUESMeVoaOz4uBX66N/c9BFGIS2vEE4EsoN/jxUqixtAkDSAB2MxJODsHhUZoSaez87llPECTT9x2RFlxNgXD4RfWCSUjjnZbB7hW7q4KsQg7vmj+MHQWxCou1jRXz5zHJWCP85m41fsZBH3BIdiflyOBu3ciH0u5KYUd2GRdmiqVS+NEgg1XAPWTgw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3835.namprd12.prod.outlook.com (2603:10b6:5:1c7::12)
- by LV2PR12MB5727.namprd12.prod.outlook.com (2603:10b6:408:17d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
- 2022 13:10:36 +0000
-Received: from DM6PR12MB3835.namprd12.prod.outlook.com
- ([fe80::e52a:9fc5:c7f0:7612]) by DM6PR12MB3835.namprd12.prod.outlook.com
- ([fe80::e52a:9fc5:c7f0:7612%6]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
- 13:10:36 +0000
-Message-ID: <8f60e5ab-dfba-0e02-5d7f-ebd6bebf2572@nvidia.com>
-Date:   Wed, 31 Aug 2022 21:10:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.0
-Subject: Re: [virtio-dev] Re: [PATCH RESEND v4 1/2] virtio-net: introduce and
- use helper function for guest gso support checks
-Content-Language: en-US
-To:     "Michael S. Tsirkin" <mst@redhat.com>
+        with ESMTP id S229862AbiHaNMI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:12:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9909AC275E
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 06:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661951525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z/T15etvI12VltqvvTSCKLwx0EjkTTPcjNU7x17rAxU=;
+        b=MwHvhmVqoqEsFKyQax35aydP5DGdePI23G/L2SSY50ToujhyDjWQCakvPA6v64lk1qiJfe
+        UwBrr8NSuYo0mX6jhCROlz0KgGTne7AXjAGEpbblbEdkzdyS4952D4+yuQcwQRXmpuFOll
+        Ztm9I1+CD8V6ChSq6S9YzXiW4e0hLUE=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-127-O_LBQ4LyPNmwhSifMx5Qnw-1; Wed, 31 Aug 2022 09:12:01 -0400
+X-MC-Unique: O_LBQ4LyPNmwhSifMx5Qnw-1
+Received: by mail-wr1-f72.google.com with SMTP id m21-20020adfa3d5000000b00226d1478469so2169414wrb.21
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 06:12:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=z/T15etvI12VltqvvTSCKLwx0EjkTTPcjNU7x17rAxU=;
+        b=Nu2ZbqN2FarZ5vvZ1DP8YTOYUN21pycpmhBFaoeOIsu5uDQil+pFXODbci8Igr6n77
+         gwG80IDszaDoC+gv4ZCqs5CQIO61DxlFefwaoGSvKkrI5Uxj+Oqq18ExpvXe6z+iV64C
+         q/XRltvP8Fn2GSwPhSfESqA2F0ga8EQT0TrvvokCbxWh3qAxJSTfm9C22K6qQtvG7XPD
+         uPl7pCvO1C5Zx3gT3K9A8do6Dc2tRtokSqi18KXH4Qcoe+6jYTOKHzF6Qn8hdCD3mkCI
+         OksnrZaJc2vI4ddlH45YBExp+gWmPhr8nJ6VL3gjl2mLukBcZ5YKz9aqKjLg9nCOLE6n
+         DxwQ==
+X-Gm-Message-State: ACgBeo3HeeY1SaE2Z2kI6NkVWn5IOT2q73w9bAmr3oM6T6FIsLvNjLNs
+        TEp8au4ORNgtyAfIwGhtvw2HUWFnxdC6sfpITDv6on/lp3rg93G9pKBTNqd7vdOWh9uNX5oJvlH
+        6mzr3xNLuQlflBV5f
+X-Received: by 2002:a5d:6c62:0:b0:222:cda4:e09e with SMTP id r2-20020a5d6c62000000b00222cda4e09emr11718919wrz.449.1661951518850;
+        Wed, 31 Aug 2022 06:11:58 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7ZSYkA7fjm+OZ6sn+qmpM5mhoBEcsS0wdTyllOziEPy0pfYIn3m8l0JSgMpQ2wkc0TAxe4RQ==
+X-Received: by 2002:a5d:6c62:0:b0:222:cda4:e09e with SMTP id r2-20020a5d6c62000000b00222cda4e09emr11718900wrz.449.1661951518513;
+        Wed, 31 Aug 2022 06:11:58 -0700 (PDT)
+Received: from redhat.com ([2.55.191.225])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c3b8500b003a319b67f64sm7823457wms.0.2022.08.31.06.11.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 06:11:58 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 09:11:53 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Gavin Li <gavinl@nvidia.com>
 Cc:     stephen@networkplumber.org, davem@davemloft.net,
         jesse.brandeburg@intel.com, alexander.h.duyck@intel.com,
         kuba@kernel.org, sridhar.samudrala@intel.com, jasowang@redhat.com,
@@ -56,146 +64,177 @@ Cc:     stephen@networkplumber.org, davem@davemloft.net,
         virtio-dev@lists.oasis-open.org, gavi@nvidia.com, parav@nvidia.com,
         Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: Re: [PATCH RESEND v4 2/2] virtio-net: use mtu size as buffer length
+ for big packets
+Message-ID: <20220831090907-mutt-send-email-mst@kernel.org>
 References: <20220831130541.81217-1-gavinl@nvidia.com>
- <20220831130541.81217-2-gavinl@nvidia.com>
- <20220831090721-mutt-send-email-mst@kernel.org>
-From:   Gavin Li <gavinl@nvidia.com>
-In-Reply-To: <20220831090721-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR01CA0170.apcprd01.prod.exchangelabs.com
- (2603:1096:4:28::26) To DM6PR12MB3835.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::12)
+ <20220831130541.81217-3-gavinl@nvidia.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: aae5e620-b6eb-4f83-ef8e-08da8b5230fb
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5727:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eyb7wCUVI9odd7XnJlNGBWWLCDpIPJ8P2h0f03CE/i08FPrVwNNSmXv1OxBOBteNRABslBiGjW8Wy+VsA61NF7v/cU5FAS5JYTBxY76b4lQIGg1APKmNQCtzs6o9GjGHo2pNpHIr46a/y5NNzwpFpUZcYaPW5ZNMMmt6IR4lWaiB7WfIFyv9Uod8DyLdhRfddriSCgUUEnaUH81q2vuRIY7HtzVFKGDL9w+vetopxJbcaoEVbiIC73Vqlp0hB2ETXx5bJtb7dDmNIn5FFKRsb8OzIqzU7FVSTEVx8/pKTwnXLSA2qFUpKu5sQrqapaalfTAejuf/xbhgvUEIFI7CSDMtqGURApr0T9ynbU2fBMM++QgFD4A67CYx3OZ4c4QDoR8FDpnF9xlhqBJtsLgGarZs1CcaPuyO8HqgS3Em+fq+mVaa/BuZbqOjJ71WBwUxwwRy56ad9bbbdRB8bHoug6Zv78R9YX1mXggs15x1P5Gd/I7q09N3R82cwobUx16L3lNYrjtUHOwU4XUz2LI6ZkHjZ7B8VbMeflhCH2wMRGiTXQfLbHRzAwqR8QwSDuVGepojH/sjkz/L8CK/ZRQc35emLhrmerUvdRRVtgAUOE8B4tZZH19Tw2RdSeScZc0Fv6lhnh+g70oscGSgavAtUDGMhIHWDJr/g08CmboxG5QD6UK+8tWlqCbEOIGAQ74cUHP5VQULZRXiFaIjFh5iHEFm3YEJBrh6yEU+OVLj3N74UJnXbMgTGxuTx4BMkEgvH4zsAIjCA6H4PcrILeA+9b09jcmkeo/AqlTnPHo42s0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3835.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(376002)(366004)(39860400002)(7416002)(31686004)(8676002)(4326008)(66476007)(66556008)(66946007)(54906003)(316002)(6916009)(6666004)(6506007)(53546011)(41300700001)(6486002)(26005)(6512007)(478600001)(38100700002)(2616005)(86362001)(186003)(31696002)(5660300002)(36756003)(2906002)(8936002)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?b2E0MzlDTkhkZnZycTVNNVFxTGk0cUZoRTc1QUUraTM1K2NOWTZjZjIxUUFy?=
- =?utf-8?B?d2JSczFIOFF6YXBIMUNiMXY1Umo5aEZyWmJKdEd3cGlUdm9VNFdlcEFmRWQx?=
- =?utf-8?B?Y3NQZndzRVlualJpeTRRY2tsVXVMV3luWm1mQURXbC9ldy9oWHNSeDRkY3gx?=
- =?utf-8?B?WVhhb3hLc3ZyMWZqL05TVzVWbFJKTkRuWmpFMFFvaGU5OHE3ajB2QjdWSWxS?=
- =?utf-8?B?Nm9CTk91UG5RTFFKUG1IUlVjblhRUnBhMjJmdU1YK0tOWjlwTjlkc3p5YUNx?=
- =?utf-8?B?b1Q3REo2TXVNakk3SmlKTHdWbGYvajV4b3R4djVCQk5iVEsySzBOWG5mUVlB?=
- =?utf-8?B?M1IwN1VwZGJKVkl0d2N3bldWMjhJY05Xb3Y3NnZOQ3BNeW5adDVIVnJ4U2pG?=
- =?utf-8?B?U2Z4S1p2b3FjeG4wN1h3dlF2SkZLdSs3T3Rwb0xXWXJXSGZJaFNNNkUzbDVK?=
- =?utf-8?B?Q0QzKzQxVDZlazRkaDNJQzJHOU1hamlUK0N5cWsvMDQyTW5jU2VmTXovMWNq?=
- =?utf-8?B?Q0IzODVXa3hFVlhNZVJPckFRMklZZm50R3llSVZmVVdvazZndTdxY1E5WWhC?=
- =?utf-8?B?MTl4NlIwOU9ZRm4rS3dwOGhsRms0M0RuUllWS3hBdXI4bUlwRWRIS0lxMFZO?=
- =?utf-8?B?VHpnRm1XczI4YzBrL2d1M2o3Mjg0MDg3RlpTTTFjaG1JQWxEUWE5M09HOGRx?=
- =?utf-8?B?dFBFWkplSlRBQU5CcUNSR3c1aWRDR1AzZW1YZFAzMWxPSlQ3TEFMa21jV1dj?=
- =?utf-8?B?U05DQmV1alNMc043b3J1QXBxcXVEYW9lYmxRRTFZVmNsNExIMStCMWxQUVNB?=
- =?utf-8?B?L0tXSHpxNVdYTUoxZStEZUMzV1ZnWEk4QWsxTmpLVHRtQUFaMDViN3BSYTNm?=
- =?utf-8?B?YTZHUnNLYjcvNVlhNUJla0tEVGFDVVMyUzNqYWNkSWYxQ2lIaDBvV2Y0SzJE?=
- =?utf-8?B?NFZjeW1zSEI0WWpsTjhBTWx4d3hFbU9qUGo3V1d1dW1mcFNXMFhzbHg5UTBX?=
- =?utf-8?B?OVZpdDF2ZkZEL0tzeDliRDBrblUzamt2ajNHRkdpcjU4eWdmZjkxYnFrMm16?=
- =?utf-8?B?cm5mUXkwSWoyei9wVE9kc1BOM0ZFT3Z3VW04ajRiV2h0ekNpNGZuUDV6VDBn?=
- =?utf-8?B?Z2RUTXdYUmxCU1FkUFpzcndBcXlmSDlnOU91dEtqQ2FrVkc3RXN1Rmt2L1B6?=
- =?utf-8?B?UnBmcW1oT0pudHoxcVBHM29OUlBtZDA4aHIyMU01K1pTaGdhN1ZwbVJyejB1?=
- =?utf-8?B?MFdEUndRTC9jY3JwcjlrbzlmZWJpenY0QTNFVWZOM1A3WWNISnhkcFpHU1VD?=
- =?utf-8?B?TzNSMWRFQWF3Uit1dE16Z05sNnNUbFVQSDhUcWZ4aHFSbmpBVlRDUC9vaGhY?=
- =?utf-8?B?L0R3VGpIR0tDcm5KWTRIZlpqQjgwdC9VczIrVmZMM1cvcWFPelpxaGVycHdX?=
- =?utf-8?B?alJrbmFidXcrSkp6OGY1U3JNYnJxbUpNMW9UUTFGL3dUS3lCSFIwUldkeWFm?=
- =?utf-8?B?K1FwSHZEVlNlY2ZjUXJkb3RjclZ2ZXdUc0xyemJtMGFkaThiN0wrZi93Ujho?=
- =?utf-8?B?SGg2OWs0enl1aFMzR0hxbFFWYzBhOHp2RzVCcjZGZFZvSm1tZ1owRmJIQlJl?=
- =?utf-8?B?WDkyYlJvOUFVVERKNzZHbTFkR28wTFhmUmtFTGtrYjRxZDE0cGdDd2VZUjkz?=
- =?utf-8?B?eVRIMEZRcktKaVMwV2J1VERMWU8vU2JYTDV3S1FMK1YzL2lOMXBmeUVBQzZB?=
- =?utf-8?B?cGZmMWFyN2Y4SERFN2U5ZDRYYVI4Vm9sdkRGZ0ZNR1ZDM1V0ZDdLZ3ZZWmlq?=
- =?utf-8?B?K1I0STBqcWwyS1NyYXFGVzRLMnUzeWkrSk1maDhxcExtaDY1T2JnYTl1Z09U?=
- =?utf-8?B?Y0dRWHFQOVUyYmhzcEJhMU1ENE5JT0FrNFJBaEN0NGE3TXRMcmd6WVM4Sk5R?=
- =?utf-8?B?R1ZNMnA1Z0pFK1NPcEYrbDVTbDN1NTlhK212QTJxdVA2Y0l3ZDE1K0Q1ZXUx?=
- =?utf-8?B?MkZ1enI5clM1dWY5alRRcnRrcnFnYTd2eXRjbm1lMUNQVDh4RzFjWWlLblZ3?=
- =?utf-8?B?R2tNazlkZTlnTEh4Tk93Nkxlc0U0WHhQWlVYb3cyYzhBNnhPL0x4T0J4SE0w?=
- =?utf-8?Q?0FqdavFTn1pywxuTGg+5+WvXU?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aae5e620-b6eb-4f83-ef8e-08da8b5230fb
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3835.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 13:10:35.9554
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oxskryySqSnw9Ml/2Aq5swne7YMN1lVE4koymxsYaCIQI3t7B6eMbJlaGOwBhBsM0yhz/fcE4X8Bv9KIgJCpeA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5727
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220831130541.81217-3-gavinl@nvidia.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 31, 2022 at 04:05:41PM +0300, Gavin Li wrote:
+> Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
+> packets even when GUEST_* offloads are not present on the device.
+> However, if guest GSO is not supported, it would be sufficient to
+> allocate segments to cover just up the MTU size and no further.
+> Allocating the maximum amount of segments results in a large waste of
+> buffer space in the queue, which limits the number of packets that can
+> be buffered and can result in reduced performance.
+> 
+> Therefore, if guest GSO is not supported, use the MTU to calculate the
+> optimal amount of segments required.
+> 
+> When guest offload is enabled at runtime, RQ already has packets of bytes
+> less than 64K. So when packet of 64KB arrives, all the packets of such
+> size will be dropped. and RQ is now not usable.
+> 
+> So this means that during set_guest_offloads() phase, RQs have to be
+> destroyed and recreated, which requires almost driver reload.
+> 
+> If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
+> always treat them as GSO enabled.
 
-On 8/31/2022 9:08 PM, Michael S. Tsirkin wrote:
-> External email: Use caution opening links or attachments
->
->
-> On Wed, Aug 31, 2022 at 04:05:40PM +0300, Gavin Li wrote:
->> Probe routine is already several hundred lines.
->> Use helper function for guest gso support check.
->>
->> Signed-off-by: Gavin Li <gavinl@nvidia.com>
->> Reviewed-by: Gavi Teitz <gavi@nvidia.com>
->> Reviewed-by: Parav Pandit <parav@nvidia.com>
->> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
->> Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
->> ---
->> changelog:
->> v1->v2
->> - Add new patch
->> ---
->>   drivers/net/virtio_net.c | 13 +++++++++----
->>   1 file changed, 9 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
->> index 9cce7dec7366..e1904877d461 100644
->> --- a/drivers/net/virtio_net.c
->> +++ b/drivers/net/virtio_net.c
->> @@ -3682,6 +3682,14 @@ static int virtnet_validate(struct virtio_device *vdev)
->>        return 0;
->>   }
->>
->> +static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
->> +{
->> +     return (virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->> +             virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
->> +             virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
->> +             virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO));
->> +}
->> +
-> fine but can we please drop the outer ()?
-> they are necessary with if but not with return.
-ACK
->
->
->>   static int virtnet_probe(struct virtio_device *vdev)
->>   {
->>        int i, err = -ENOMEM;
->> @@ -3777,10 +3785,7 @@ static int virtnet_probe(struct virtio_device *vdev)
->>        spin_lock_init(&vi->refill_lock);
->>
->>        /* If we can receive ANY GSO packets, we must allocate large ones. */
->> -     if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
->> -         virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
->> -         virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
->> -         virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
->> +     if (virtnet_check_guest_gso(vi))
->>                vi->big_packets = true;
->>
->>        if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
->> --
->> 2.31.1
->
-> ---------------------------------------------------------------------
-> To unsubscribe, e-mail: virtio-dev-unsubscribe@lists.oasis-open.org
-> For additional commands, e-mail: virtio-dev-help@lists.oasis-open.org
->
+a better way to put this last sentence:
+
+Accordingly, for now we assume that if GSO has been negotiated
+then it has been enabled, even if it's actually been disabled
+at runtime through VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+
+> Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
+> 1 VQ, queue size 1024, before and after the change, with the iperf
+> server running over the virtio-net interface.
+> 
+> MTU(Bytes)/Bandwidth (Gbit/s)
+>              Before   After
+>   1500        22.5     22.4
+>   9000        12.8     25.9
+> 
+> Signed-off-by: Gavin Li <gavinl@nvidia.com>
+> Reviewed-by: Gavi Teitz <gavi@nvidia.com>
+> Reviewed-by: Parav Pandit <parav@nvidia.com>
+> Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> ---
+> changelog:
+> v3->v4
+> - Addressed comments from Si-Wei
+> - Rename big_packets_sg_num with big_packets_num_skbfrags
+> v2->v3
+> - Addressed comments from Si-Wei
+> - Simplify the condition check to enable the optimization
+> v1->v2
+> - Addressed comments from Jason, Michael, Si-Wei.
+> - Remove the flag of guest GSO support, set sg_num for big packets and
+>   use it directly
+> - Recalculate sg_num for big packets in virtnet_set_guest_offloads
+> - Replace the round up algorithm with DIV_ROUND_UP
+> ---
+>  drivers/net/virtio_net.c | 37 ++++++++++++++++++++++++-------------
+>  1 file changed, 24 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index e1904877d461..ba2852b41795 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -225,6 +225,9 @@ struct virtnet_info {
+>  	/* I like... big packets and I cannot lie! */
+>  	bool big_packets;
+>  
+> +	/* number of sg entries allocated for big packets */
+> +	unsigned int big_packets_num_skbfrags;
+> +
+>  	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+>  	bool mergeable_rx_bufs;
+>  
+> @@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+>  	char *p;
+>  	int i, err, offset;
+>  
+> -	sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
+> +	sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
+>  
+> -	/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
+> -	for (i = MAX_SKB_FRAGS + 1; i > 1; --i) {
+> +	/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
+> +	for (i = vi->big_packets_num_skbfrags + 1; i > 1; --i) {
+>  		first = get_a_page(rq, gfp);
+>  		if (!first) {
+>  			if (list)
+> @@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+>  
+>  	/* chain first in list head */
+>  	first->private = (unsigned long)list;
+> -	err = virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
+> +	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrags + 2,
+>  				  first, gfp);
+>  	if (err < 0)
+>  		give_pages(rq, first);
+> @@ -3690,13 +3693,27 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
+>  		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO));
+>  }
+>  
+> +static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
+> +{
+> +	bool guest_gso = virtnet_check_guest_gso(vi);
+> +
+> +	/* If device can receive ANY guest GSO packets, regardless of mtu,
+> +	 * allocate packets of maximum size, otherwise limit it to only
+> +	 * mtu size worth only.
+> +	 */
+> +	if (mtu > ETH_DATA_LEN || guest_gso) {
+> +		vi->big_packets = true;
+> +		vi->big_packets_num_skbfrags = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
+> +	}
+> +}
+> +
+>  static int virtnet_probe(struct virtio_device *vdev)
+>  {
+>  	int i, err = -ENOMEM;
+>  	struct net_device *dev;
+>  	struct virtnet_info *vi;
+>  	u16 max_queue_pairs;
+> -	int mtu;
+> +	int mtu = 0;
+>  
+>  	/* Find if host supports multiqueue/rss virtio_net device */
+>  	max_queue_pairs = 1;
+> @@ -3784,10 +3801,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
+>  	spin_lock_init(&vi->refill_lock);
+>  
+> -	/* If we can receive ANY GSO packets, we must allocate large ones. */
+> -	if (virtnet_check_guest_gso(vi))
+> -		vi->big_packets = true;
+> -
+>  	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+>  		vi->mergeable_rx_bufs = true;
+>  
+> @@ -3853,12 +3866,10 @@ static int virtnet_probe(struct virtio_device *vdev)
+>  
+>  		dev->mtu = mtu;
+>  		dev->max_mtu = mtu;
+> -
+> -		/* TODO: size buffers correctly in this case. */
+> -		if (dev->mtu > ETH_DATA_LEN)
+> -			vi->big_packets = true;
+>  	}
+>  
+> +	virtnet_set_big_packets_fields(vi, mtu);
+> +
+>  	if (vi->any_header_sg)
+>  		dev->needed_headroom = vi->hdr_len;
+>  
+> -- 
+> 2.31.1
+
