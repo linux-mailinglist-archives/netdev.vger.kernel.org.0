@@ -2,102 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 590EE5A8113
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:19:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E56B5A8126
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:25:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231799AbiHaPTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 11:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59692 "EHLO
+        id S231147AbiHaPZE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 11:25:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbiHaPT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:19:29 -0400
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 075DCD8B2D;
-        Wed, 31 Aug 2022 08:19:21 -0700 (PDT)
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27VEt0ai016618;
-        Wed, 31 Aug 2022 15:19:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=b4mSvOEH+vP34dG48xtqm5QYnL6FD+Wz1XH17FHzmWA=;
- b=a6Q7gBbyj8YMBZZ0jAvlVD9Q2pCL/ETx22in1LXv/TNMYt3M+z3fxWWo+uaDwKmREUyU
- BmtKjAjeaX3IXl7ed7xsKJbLc3S8lC6L2KRGNFa4SAe7WTvXzGTuGz6QBHfxACngL4pS
- pgmn4ZUnHRZa7F5hAVnAib/tdMqce3Uo9AMy3LoBUAjcPjG+xikrct/m3iEQJB5R+bso
- wYjsEKqyx9YycDS4ix2DZT0Y0W14faWg5lcfRSzTPDVcJPE74zJ6HMcDhmw6eyfEwo4+
- uc69s+g6IW0DR/hp7KzwlFKjh97dqzLeg+0MmtRhFtQf5OVZ0kB/xaDJWn/asN2wqNy7 YA== 
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3j9mwjkqk8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:02 +0000
-Received: from pps.filterd (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 27VFIcQi011417;
-        Wed, 31 Aug 2022 15:19:01 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 3j7cbkqubm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:01 +0000
-Received: from NALASPPMTA01.qualcomm.com (NALASPPMTA01.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27VFJ1Ev012265;
-        Wed, 31 Aug 2022 15:19:01 GMT
-Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
-        by NALASPPMTA01.qualcomm.com (PPS) with ESMTPS id 27VFJ1G0012263
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 31 Aug 2022 15:19:01 +0000
-Received: from [10.110.0.200] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
- 2022 08:19:00 -0700
-Message-ID: <24ee0926-1f56-f3d4-5531-f615352cda0c@quicinc.com>
-Date:   Wed, 31 Aug 2022 08:18:59 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH] wifi: mac80211_hwsim: check length for virtio packets
-Content-Language: en-US
-To:     Soenke Huster <soenke.huster@eknoes.de>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S230034AbiHaPZC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:25:02 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F21C1277D
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:25:01 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id s11so18829817edd.13
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:25:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=VqtbMFJE4CqO1zuwitVhlJCRoapgI0wUfKm1zo8dyeY=;
+        b=Us0v51cqO0LxgThAO8cqOmOzLZUCMuFwr3rRp4yzuod2UL5E5CubAPwcGSsWdg/wlL
+         BR0EdEn8kUO4WVzlJEfJp2DQkA7WBzBsVMds2pOrAvOLWb4PyfjwBIkFircOZ8VbCF/k
+         QV++rMZ55rm19skg7MtgryonxGj/cPBwgzet9iD9qmtAvhJc/1q/rAXhKnE94UozPj4a
+         CGV6OahNIrevaBS+KKx0Q+Sn8vbE/4gkBs+8wU4rmvLY2ZewXAXsXB5hs1i+iGbO/W/t
+         WeesbGsrVDVJo2bVl9fyURIBYpGTW1ST0vng5su8hNy68Be3d2eA3ZnpMkjRD51so4Z+
+         jqdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=VqtbMFJE4CqO1zuwitVhlJCRoapgI0wUfKm1zo8dyeY=;
+        b=mJxwgg4IMmntNMsUOSywpD8M2mk82N19i40EeO6/GxDKUFety+zvtUGfY+R6cJ8wwX
+         fPQFyKy5idz35MqVyOYtxryEQGzqZtltk2NBDqJ9qOOdECQsZ3e7JUV4bKaqdQIB4dPH
+         PahA7zMAzT1Y/PCP8i9faA44jd0QlQByrYobBQUEkR9qKYx1mJlrhdF6Vv/2sCOukNq5
+         /LE/ncji6mvjsxz3JkoI1ZU9vs/rWGCe0J4AF/bFWJ5CnN0NpEY0evlaRCWDgCi+G8eB
+         stX+LCJKNt5+EQgGp09s76zmwZMhLyrBsRsHIK4+URh1XQTjHgN7yWOBjadmlq1NDF1I
+         p4qg==
+X-Gm-Message-State: ACgBeo0EwwWiLQpGdn/QreRei4WBNaTCjtl5t5/DeQUm/eeD6k5LAqvZ
+        JAAg6pmOF3NzWlQ8tzdHjhk=
+X-Google-Smtp-Source: AA6agR7Zdp9ErInVRo7AxAG8+RF8RIRc7r5MqS0Ihh4BfvP2B13lDPihsjOpvKkgLeaOsjnjitC3GA==
+X-Received: by 2002:a05:6402:3507:b0:448:b672:55ee with SMTP id b7-20020a056402350700b00448b67255eemr8160709edd.107.1661959499673;
+        Wed, 31 Aug 2022 08:24:59 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id c25-20020aa7d619000000b00447b5c37768sm9121539edr.42.2022.08.31.08.24.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 08:24:58 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 18:24:56 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Mattias Forsblad <mattias.forsblad@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-CC:     <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20220831132205.129922-1-soenke.huster@eknoes.de>
-From:   Jeff Johnson <quic_jjohnson@quicinc.com>
-In-Reply-To: <20220831132205.129922-1-soenke.huster@eknoes.de>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
-X-Proofpoint-ORIG-GUID: PACf5UHZvt2zBIsW2CmIEZnqjxQaP8ZT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-31_09,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
- clxscore=1011 mlxlogscore=505 phishscore=0 priorityscore=1501 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2208310076
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net-next v2 2/3] dsa: mv88e6xxx: Add support for RMU in
+ select switches
+Message-ID: <20220831152456.4ph25o75etwd5ayy@skbuf>
+References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
+ <20220826063816.948397-3-mattias.forsblad@gmail.com>
+ <20220830163515.3d2lzzc55vmko325@skbuf>
+ <12761041-1c44-9d56-b24b-b12af142a923@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <12761041-1c44-9d56-b24b-b12af142a923@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/31/2022 6:22 AM, Soenke Huster wrote:
-> An invalid packet with a length shorther than the specified length in the
+On Wed, Aug 31, 2022 at 08:12:09AM +0200, Mattias Forsblad wrote:
+> Please elaborate why this may pose a problem, I might have missed
+> some information.
 
-nit: s/shorther/shorter/
+Because as I said, you need to enable it over the CPU port connected to
+the master which goes up and is operational, and you don't have this
+information at probe time.
 
+> > If you decide to rework this using the master netdev, you can use
+> > dsa_tag_protocol_overhead(master->dsa_ptr->tag_ops). Or even reserve
+> > enough headroom for the larger header (EDSA) and be done with it.
+> > But then you need to construct a different header depending on whether
+> > DSA or EDSA is used.
+> > 
+> 
+> So in the new version a la qca8k we need the 'extra' parameter to
+> see if we need space for EDSA header, thus we need run through the tagger.
+> We can discuss that in the next version.
+
+"thus we need run through the tagger" -> is this a justification that
+you're going to keep the tag_ops->inband_xmit?
+
+You don't _have_ to, you already have access to the tagging protocol in
+use via chip->tag_protocol, you can derive from that if you need the E
+in EDSA or not, and still keep everything within the switch driver.
+
+> > Could you please explain for me what will setting skb->pkt_type to
+> > PACKET_OUTGOING achieve?
+> >
+> 
+> I though it was prudent, will remove if it's not needed.
+
+I honestly don't know what it does.
