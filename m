@@ -2,189 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A035B5A7322
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 03:03:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5ADA5A7325
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 03:04:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231302AbiHaBDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 21:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
+        id S231845AbiHaBDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 21:03:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229819AbiHaBDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 21:03:03 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A8CAED9A
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 18:02:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=qYqw6VSKtlKVEGy0FhBct//rmCUZLswT8PktK7XAxdk=; b=isaU12zhc6iL4qJ6MWmnKkpioD
-        9zwxno2sbgayGiW7gCndARfoRIqstmPSNsJ/mLnYaJwajf7msyNTvdk7hRxH7/cUmDmhzL1zz4TXX
-        ZIR6RSZRtqqWX55Xxy3BLsPl5WuuyKXNWS7uoPxwlIxyqqLfJwxaj1uH3EUrIPxQ/JyE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oTC7y-00F93v-P1; Wed, 31 Aug 2022 03:02:46 +0200
-Date:   Wed, 31 Aug 2022 03:02:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org, mengyuanlou@net-swift.com
-Subject: Re: [PATCH net-next v2 03/16] net: txgbe: Set MAC address and
- register netdev
-Message-ID: <Yw6zNh+TTGyfBzSV@lunn.ch>
-References: <20220830070454.146211-1-jiawenwu@trustnetic.com>
- <20220830070454.146211-4-jiawenwu@trustnetic.com>
+        with ESMTP id S230000AbiHaBDv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 21:03:51 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DADAAEDAC;
+        Tue, 30 Aug 2022 18:03:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1661907829; x=1693443829;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZZuvi0B/Gtgt7aqGUa3waYjoHFd0myWxVgCqaj6jMyo=;
+  b=QQHvSAeRTJA46roKqeruOQw6PzyAbWmN3ZC7xVtUjYGiYRqOqU4Vglut
+   m/93Co2JfJytw9jx/b0o0ms3XL8qZ9wZU+cLQFGfQhHs1ddI1HLBOXcem
+   NtH72LjPiPzhsk0x7zwSk7+2GSPTxX6sWW3Bm4F06zg22FOtUsP3wahlg
+   wdIdM9gRCuUs+4vy75JWKDtPIbanPEhtfnUQa/axBFhzm3coHFBhrotjM
+   9kgV1dz4gXezMwPlQbT9ooqHWKx/tBsACGqbrRCEhEXm7M6QIDKoeFxAz
+   IGj5AI4Z4AJMkf7UXRDPEhlzQs0SWpkCVYCz5PnE3B1h96zoG9Apdk0I8
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="292919299"
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="292919299"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Aug 2022 18:03:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,276,1654585200"; 
+   d="scan'208";a="940257117"
+Received: from lkp-server02.sh.intel.com (HELO 77b6d4e16fc5) ([10.239.97.151])
+  by fmsmga005.fm.intel.com with ESMTP; 30 Aug 2022 18:03:41 -0700
+Received: from kbuild by 77b6d4e16fc5 with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oTC8r-0000ox-0q;
+        Wed, 31 Aug 2022 01:03:41 +0000
+Date:   Wed, 31 Aug 2022 09:03:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Koba Ko <koba.ko@canonical.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        John Allen <john.allen@amd.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org
+Subject: Re: crypto: ccp - Release dma channels before dmaengine unrgister
+Message-ID: <202208310843.cesiRP88-lkp@intel.com>
+References: <20220830093439.951960-1-koba.ko@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220830070454.146211-4-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220830093439.951960-1-koba.ko@canonical.com>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +struct txgbe_ring {
-> +	u8 reg_idx;
-> +} ____cacheline_internodealigned_in_smp;
+Hi Koba,
 
-Am i right in thinking that is one byte actually takes up one L3 cache
-line?
+Thank you for the patch! Perhaps something to improve:
 
->  struct txgbe_adapter {
->  	u8 __iomem *io_addr;    /* Mainly for iounmap use */
-> @@ -18,11 +35,33 @@ struct txgbe_adapter {
->  	struct net_device *netdev;
->  	struct pci_dev *pdev;
->  
-> +	/* Tx fast path data */
-> +	int num_tx_queues;
-> +
-> +	/* TX */
-> +	struct txgbe_ring *tx_ring[TXGBE_MAX_TX_QUEUES] ____cacheline_aligned_in_smp;
-> +
+[auto build test WARNING on herbert-cryptodev-2.6/master]
+[also build test WARNING on herbert-crypto-2.6/master linus/master v6.0-rc3 next-20220830]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-I assume this causes tx_ring to be aligned to a cache line. Have you
-use pahole to see how much space you are wasting? Can some of the
-other members be moved around to reduce the waste? Generally, try to
-arrange everything for RX on one cache line, everything for TX on
-another cache line.
+url:    https://github.com/intel-lab-lkp/linux/commits/Koba-Ko/crypto-ccp-Release-dma-channels-before-dmaengine-unrgister/20220830-173803
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
+config: x86_64-allyesconfig (https://download.01.org/0day-ci/archive/20220831/202208310843.cesiRP88-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-5) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/5aa373b58528f3f99c5a010e76728776f0240603
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Koba-Ko/crypto-ccp-Release-dma-channels-before-dmaengine-unrgister/20220830-173803
+        git checkout 5aa373b58528f3f99c5a010e76728776f0240603
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/crypto/
 
-> +void txgbe_set_rar(struct txgbe_hw *hw, u32 index, u8 *addr, u64 pools,
-> +		   u32 enable_addr)
-> +{
-> +	u32 rar_entries = hw->mac.num_rar_entries;
-> +	u32 rar_low, rar_high;
-> +
-> +	/* Make sure we are using a valid rar index range */
-> +	if (index >= rar_entries) {
-> +		txgbe_info(hw, "RAR index %d is out of range.\n", index);
-> +		return;
-> +	}
-> +
-> +	/* select the MAC address */
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_IDX, index);
-> +
-> +	/* setup VMDq pool mapping */
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_VM_L, pools & 0xFFFFFFFF);
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_VM_H, pools >> 32);
-> +
-> +	/* HW expects these in little endian so we reverse the byte
-> +	 * order from network order (big endian) to little endian
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-And what happens when the machine is already little endian?
+All warnings (new ones prefixed by >>):
 
-> + *  txgbe_clear_rar - Remove Rx address register
-> + *  @hw: pointer to hardware structure
-> + *  @index: Receive address register to write
-> + *
-> + *  Clears an ethernet address from a receive address register.
-> + **/
-> +void txgbe_clear_rar(struct txgbe_hw *hw, u32 index)
-> +{
-> +	u32 rar_entries = hw->mac.num_rar_entries;
-> +
-> +	/* Make sure we are using a valid rar index range */
-> +	if (index >= rar_entries) {
-> +		txgbe_info(hw, "RAR index %d is out of range.\n", index);
+   drivers/crypto/ccp/ccp-dmaengine.c: In function 'ccp_dmaengine_unregister':
+>> drivers/crypto/ccp/ccp-dmaengine.c:770:22: warning: unused variable 'i' [-Wunused-variable]
+     770 |         unsigned int i;
+         |                      ^
+>> drivers/crypto/ccp/ccp-dmaengine.c:769:26: warning: unused variable 'dma_chan' [-Wunused-variable]
+     769 |         struct dma_chan *dma_chan;
+         |                          ^~~~~~~~
 
-dev_err()?
 
-> +		return;
+vim +/i +770 drivers/crypto/ccp/ccp-dmaengine.c
 
-Should this be a void function. It obviously can go wrong, so don't
-you want to return an error code?
+   765	
+   766	void ccp_dmaengine_unregister(struct ccp_device *ccp)
+   767	{
+   768		struct dma_device *dma_dev = &ccp->dma_dev;
+ > 769		struct dma_chan *dma_chan;
+ > 770		unsigned int i;
 
-> +	}
-> +
-> +	/* Some parts put the VMDq setting in the extra RAH bits,
-> +	 * so save everything except the lower 16 bits that hold part
-> +	 * of the address and the address valid bit.
-> +	 */
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_IDX, index);
-> +
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_VM_L, 0);
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_VM_H, 0);
-> +
-> +	wr32(hw, TXGBE_PSR_MAC_SWC_AD_L, 0);
-> +	wr32m(hw, TXGBE_PSR_MAC_SWC_AD_H,
-> +	      (TXGBE_PSR_MAC_SWC_AD_H_AD(~0) |
-> +	       TXGBE_PSR_MAC_SWC_AD_H_ADTYPE(~0) |
-> +	       TXGBE_PSR_MAC_SWC_AD_H_AV),
-> +	      0);
-> +}
-> +
-> +/**
-> + *  txgbe_init_rx_addrs - Initializes receive address filters.
-> + *  @hw: pointer to hardware structure
-> + *
-> + *  Places the MAC address in receive address register 0 and clears the rest
-> + *  of the receive address registers. Clears the multicast table. Assumes
-> + *  the receiver is in reset when the routine is called.
-> + **/
-> +void txgbe_init_rx_addrs(struct txgbe_hw *hw)
-> +{
-> +	u32 rar_entries = hw->mac.num_rar_entries;
-> +	u32 psrctl;
-> +	u32 i;
-> +
-> +	/* If the current mac address is valid, assume it is a software override
-> +	 * to the permanent address.
-> +	 * Otherwise, use the permanent address from the eeprom.
-> +	 */
-> +	if (!is_valid_ether_addr(hw->mac.addr)) {
-> +		/* Get the MAC address from the RAR0 for later reference */
-> +		hw->mac.ops.get_mac_addr(hw, hw->mac.addr);
-> +
-> +		txgbe_dbg(hw, "Keeping Current RAR0 Addr =%.2X %.2X %.2X %.2X %.2X %.2X\n",
-> +			  hw->mac.addr[0], hw->mac.addr[1],
-> +			  hw->mac.addr[2], hw->mac.addr[3],
-> +			  hw->mac.addr[4], hw->mac.addr[5]);
-
-You can use %pM here, to print a MAC address.
-
-> +	} else {
-> +		/* Setup the receive address. */
-> +		txgbe_dbg(hw, "Overriding MAC Address in RAR[0]\n");
-> +		txgbe_dbg(hw, "New MAC Addr =%.2X %.2X %.2X %.2X %.2X %.2X\n",
-> +			  hw->mac.addr[0], hw->mac.addr[1],
-> +			  hw->mac.addr[2], hw->mac.addr[3],
-> +			  hw->mac.addr[4], hw->mac.addr[5]);
-
-Same here.
-
-> +void txgbe_get_san_mac_addr(struct txgbe_hw *hw, u8 *san_mac_addr)
-> +{
-> +	u8 i;
-> +
-> +	/* No addresses available in this EEPROM.  It's not an
-> +	 * error though, so just wipe the local address and return.
-> +	 */
-> +	for (i = 0; i < 6; i++)
-
-ETH_ALEN
-
-	Andrew
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
