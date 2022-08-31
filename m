@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3703E5A86F6
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 21:50:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F28C85A8727
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 21:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbiHaTuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 15:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        id S230521AbiHaT6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 15:58:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230403AbiHaTuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 15:50:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EB245062;
-        Wed, 31 Aug 2022 12:50:16 -0700 (PDT)
+        with ESMTP id S229531AbiHaT6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 15:58:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2740DEEF0E;
+        Wed, 31 Aug 2022 12:58:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 007626192C;
-        Wed, 31 Aug 2022 19:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 409FFC433C1;
-        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A42CB822DC;
+        Wed, 31 Aug 2022 19:58:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DADFAC433D6;
+        Wed, 31 Aug 2022 19:58:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661975415;
-        bh=CwC31PL9899CHPuWsFZ4q787QaQZMEcghhKVzhRL9uA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=j2cnR9nb3gQPKAPASfHrnqXNz6J6tJIZQdj+VcB94ekv3iD9vtBruaHgTjxWim+wa
-         9kCQ9UouT9P25sSdRrD59fOy71iHzPkoCf3RtYGWfKJbhWgtpyyPV2/3E7xK7h0YSe
-         rhGoHis06prcYhEAWwxDaqwyVuNXFDrz+ruQ5QOByRJhrfIYCkjbDfN4bQE621VNzn
-         H29f0v6qPOBOhw32iMBZ3B+o04n7kiT/ZH34tMPV2KHLeXnX9jEwNmng+96OAVbuEU
-         0Y/vmuUPJsgWoTwM5Vvt+RAzSPA+GvQRRWpaypRNTFy5pprEtTTySFrazr3PHEnBna
-         uZOK/LiSlJvkw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 232EDC4166F;
-        Wed, 31 Aug 2022 19:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1661975927;
+        bh=sm71GH8RVOSxlkmJw9DILKfIbjQQHhnDtzuUCa7a+A0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vej9rMn33tgVQT64mL5+CPKnapndlNftAjpvlda+Pz3I9N+p+I/q14iTsqJx976q4
+         eevdCgu1CrjQ0B5kqPbvsmoXek9099Vn80KOK2HUGQ4+kb65ogp22XWZ9fHURNmGdN
+         Ekch00ehgnJ85hzsTFx92en+IX6gh/JWuwXekQblocAfMAi9M9EdLcjyOl8EKnKgxC
+         vYwIELkJ/aVmfPd4lmrICTdPLU9Ez7XQTLAoaVIrxSWHy4C1a05XgSeeMG3uX93L/B
+         0ZpoA+++LJGJnUep8F/+u403I2aqcb3/zT/lnk0kSrNUql9cuG6Me59pPeePL59v1M
+         ag+Onf8Noz9gQ==
+Date:   Wed, 31 Aug 2022 12:58:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     cgel.zte@gmail.com
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xu.xin16@zte.com.cn
+Subject: Re: [PATCH v3 0/3] Namespaceify two sysctls related with route
+Message-ID: <20220831125846.6bb2983a@kernel.org>
+In-Reply-To: <20220830091453.286285-1-xu.xin16@zte.com.cn>
+References: <20220830091453.286285-1-xu.xin16@zte.com.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] Documentation: networking: correct possessive "its"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166197541513.20889.3530530600911600939.git-patchwork-notify@kernel.org>
-Date:   Wed, 31 Aug 2022 19:50:15 +0000
-References: <20220829235414.17110-1-rdunlap@infradead.org>
-In-Reply-To: <20220829235414.17110-1-rdunlap@infradead.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-doc@vger.kernel.org, corbet@lwn.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, jiri@nvidia.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,33 +54,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 29 Aug 2022 16:54:14 -0700 you wrote:
-> Change occurrences of "it's" that are possessive to "its"
-> so that they don't read as "it is".
+On Tue, 30 Aug 2022 09:14:53 +0000 cgel.zte@gmail.com wrote:
+> With the rise of cloud native, more and more container applications are
+> deployed. The network namespace is one of the foundations of the container.
+> The sysctls of error_cost and error_burst are important knobs to control
+> the sending frequency of ICMP_DEST_UNREACH packet for ipv4. When different
+> containers has requirements on the tuning of error_cost and error_burst,
+> for host's security, the sysctls should exist per network namespace.
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Jonathan Corbet <corbet@lwn.net>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: netdev@vger.kernel.org
-> Cc: Jiri Pirko <jiri@nvidia.com>
-> 
-> [...]
+> Different netns has different requirements on the setting of error_cost
+> and error_burst, which are related with limiting the frequency of sending
+> ICMP_DEST_UNREACH packets. Enable them to be configured per netns.
 
-Here is the summary with links:
-  - Documentation: networking: correct possessive "its"
-    https://git.kernel.org/netdev/net/c/404a5ad72011
+One last time, if v6 doesn't need it, neither should v4.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Seems like you're just trying to check a box.
 
-
+I'm dropping these patches from patchwork, please don't repost them
+again, unless someone from the community voices support for merging
+them.
