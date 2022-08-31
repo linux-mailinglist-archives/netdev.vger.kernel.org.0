@@ -2,128 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C2A55A7F6B
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:58:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FB8E5A7F83
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 16:04:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbiHaN6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 09:58:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
+        id S232010AbiHaOEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 10:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232002AbiHaN6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:58:25 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472D1D7585;
-        Wed, 31 Aug 2022 06:57:59 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1oTOE9-0003mP-7S; Wed, 31 Aug 2022 15:57:57 +0200
-Date:   Wed, 31 Aug 2022 15:57:57 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Toke =?iso-8859-15?Q?H=F8iland-J=F8rgensen?= <toke@kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
-        bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
-Message-ID: <20220831135757.GC8153@breakpoint.cc>
-References: <20220831101617.22329-1-fw@strlen.de>
- <87v8q84nlq.fsf@toke.dk>
- <20220831125608.GA8153@breakpoint.cc>
- <87o7w04jjb.fsf@toke.dk>
+        with ESMTP id S232112AbiHaODr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 10:03:47 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C22E1D740A
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 07:03:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=cw3EIDpRaDRX4DCTpWwZ/VTAQ+QKb4NXAKBrPfe2yLs=; b=Vo
+        a7RTDQ2duqWdD7DVh9LVooTdMZgp8eaW9gMjHlqUkjl80aQmXprdrU96U3S9wjUA6+3tnGqbM8lLf
+        mrAonIswqArtlHn+uHtmd8GpJgJu6Hfzok2kQblDRheo/HpjC6yqfd0mwJMjszEEyzONaV8pN4BD/
+        /NRdw075ZIljLfA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oTOJf-00FCyO-3U; Wed, 31 Aug 2022 16:03:39 +0200
+Date:   Wed, 31 Aug 2022 16:03:39 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
+Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [PATCH] Use a spinlock to guard `fep->ptp_clk_on`
+Message-ID: <Yw9qO+3WqqTUAsIG@lunn.ch>
+References: <20220831125631.173171-1-csokas.bence@prolan.hu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-15
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o7w04jjb.fsf@toke.dk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220831125631.173171-1-csokas.bence@prolan.hu>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke Høiland-Jørgensen <toke@kernel.org> wrote:
-> >> It seems a bit odd to include the file path in the kernel as well.
-> >
-> > Its needed to be able to re-load the ruleset.
+On Wed, Aug 31, 2022 at 02:56:31PM +0200, Csókás Bence wrote:
+> Mutexes cannot be taken in a non-preemptible context,
+> causing a panic in `fec_ptp_save_state()`. Replacing
+> `ptp_clk_mutex` by `ptp_clk_lock` fixes this.
 > 
-> How does that work, exactly? Is this so that the userspace binary can
-> query the current ruleset, and feed it back to the kernel expecting it
-> to stay the same?
-
-Yes.
-
-> Because in that case, if the pinned object goes away
-> in the meantime (or changes to a different program), this could lead to
-> some really hard to debug errors, where a reload subtly changes the
-> behaviour because the BPF program is not in fact the same.
-
-Correct, but thats kind of expected when the user changes programs
-logic.
-
-Same with a 'nft list ruleset > /etc/nft.txt', reboot,
-'nft -f /etc/nft.txt' fails because user forgot to load/pin the program
-first.
-
-> Using IDs would avoid this ambiguity at least, so I think that's a
-> better solution. We'd have to make sure the BPF program is not released
-> completely until after the reload has finished, so that it doesn't
-> suddenly disappear.
-
-This should be covered, the destructor runs after the ruleset has been
-detached from the data plan (and after a synchronize_rcu).
-
-> > This way was the most simple solution.
+> Fixes: 91c0d987a9788dcc5fe26baafd73bf9242b68900
+> Fixes: 6a4d7234ae9a3bb31181f348ade9bbdb55aeb5c5
+> Fixes: f79959220fa5fbda939592bf91c7a9ea90419040
 > 
-> My point here was more that if it's just a label for human consumption,
-> the comment field should be fine, didn't realise it was needed for the
-> tool operation (and see above re: that).
-
-Yes, this is unfortunate.  I would like to avoid introducing an
-asymmetry between input and output (as in "... add rule ebpf pinned
-bla', but 'nft list ruleset' showing 'ebpf id 42') or similar, UNLESS we
-can somehow use that alternate output to reconstruct that was originally
-intended.  And so far I can only see that happening with storing some
-label in the kernel for userspace to consume (elf filename, pinned name,
-program name ... ).
-
-To give an example:
-
-With 'ebpf id 42', we might be able to let this get echoed back as if
-user would have said 'ebpf progname myfilter' (I am making this up!),
-just to have a more 'stable' identifier.
-
-This would make it necessary to also support load-by-program-name, of
-course.
-
-> > Sure, I could change the grammar so it expects a tag or ID, e.g.
-> > 'ebpf id 42'
-> >
-> > If thats preferred, I can change this, it avoids the need for storing
-> > the name.
+> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
 > 
-> I think for echoing back, just relying on the ID is better as that is at
-> least guaranteed to stay constant for the lifetime of the BPF program in
-> the kernel.
-
-Yes, I realize that, this is why the id and tag are included in the
-netlink dump, but on the userspace side this information is currently
-hidden and only shown with --debug output.
-
-> >> Any plan to also teach the nft binary to load a BPF program from an ELF
-> >> file (instead of relying on pinning)?
-> >
-> > I used pinning because that is what '-m bpf' uses.
+> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+> ---
+>  drivers/net/ethernet/freescale/fec.h      |  2 +-
+>  drivers/net/ethernet/freescale/fec_main.c | 17 ++++++------
+>  drivers/net/ethernet/freescale/fec_ptp.c  | 32 +++++++++++------------
+>  3 files changed, 26 insertions(+), 25 deletions(-)
 > 
-> I'm not against supporting pinning, per se (except for the issues noted
-> above),
+> diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+> index 0cebe4b63adb..9aac74d14f26 100644
+> --- a/drivers/net/ethernet/freescale/fec.h
+> +++ b/drivers/net/ethernet/freescale/fec.h
+> @@ -557,7 +557,7 @@ struct fec_enet_private {
+>  	struct clk *clk_2x_txclk;
+>  
+>  	bool ptp_clk_on;
+> -	struct mutex ptp_clk_mutex;
+> +	spinlock_t ptp_clk_lock;
+>  	unsigned int num_tx_queues;
+>  	unsigned int num_rx_queues;
+>  
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index b0d60f898249..98d8f8d6034e 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -2029,6 +2029,7 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+>  {
+>  	struct fec_enet_private *fep = netdev_priv(ndev);
+>  	int ret;
+> +	unsigned long flags;
 
-Okay, thanks for clarifying.  -m bpf is a bit older so I was not sure if
-pinning has been deprecated or something like that.
+Please keep to reverse christmas tree
+  
+>  	if (enable) {
+>  		ret = clk_prepare_enable(fep->clk_enet_out);
+> @@ -2036,15 +2037,15 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+>  			return ret;
+>  
+>  		if (fep->clk_ptp) {
+> -			mutex_lock(&fep->ptp_clk_mutex);
+> +			spin_lock_irqsave(&fep->ptp_clk_lock, flags);
 
-> But we could do multiple things, including supporting loading
-> the program from an object file. This is similar to how TC operates, for
-> instance...
+Is the ptp hardware accessed in interrupt context? If not, you can use
+a plain spinlock, not _irqsave..
 
-Right, there is no need to restrict this to one method.
+Looking at fec_enet_interrupt() and fec_enet_collect_events() i do not
+see anything.
+
+    Andrew
