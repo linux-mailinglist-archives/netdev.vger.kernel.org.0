@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A525A7C17
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 13:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24B205A7C18
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 13:19:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230502AbiHaLTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 07:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59052 "EHLO
+        id S231164AbiHaLTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 07:19:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229486AbiHaLTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 07:19:03 -0400
+        with ESMTP id S230332AbiHaLTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 07:19:04 -0400
 Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7214CCC314;
-        Wed, 31 Aug 2022 04:19:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB2DCC315;
+        Wed, 31 Aug 2022 04:19:03 -0700 (PDT)
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 8A2BD126D;
+        by mail.3ffe.de (Postfix) with ESMTPSA id DDB821D5D;
         Wed, 31 Aug 2022 13:19:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661944740;
+        t=1661944741;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=p04O/CIBirtCabMm2McxdbE/HL9u16fsZCxrZFi0bCE=;
-        b=TZeqX7+eHd8LkfGWAqMp3qzyhA1pOsBlxXnhto/GU5uDAHhyYFE2jNYE7QqkcbRtZ12Ukb
-        kIuC0JQMcKFbQk2ucgi1wI70VtYkL1zc5/ABv9GfCJDjnQxZwLC7f7jh/jHno9/DIUvRtl
-        tI7gsmi/Uq9XivW8OJs5ebwmSMO6oUin8/yYA4evkQEHdY7H27PzS7nhyxbLHbncw+5p0R
-        gCnndVK53dPxKmyNkc7LPn3t9LmclriqLcaoN9VL5qOHsECWqXgNZigAymNfrOXbvkn68h
-        o0V4MGZqF4haYybUwKPm3Fdiof+y6fRfpEtTQzug3icy4EdZybijMCfjP5dd2g==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4RlgUh9Xq/X1yi5hKeInY74Q0LlpWB0jRvVBkQA3Or8=;
+        b=rwDRn5aaQI6N2XT8v6ZFuPbUk5prBTWgegbiwMzZ99LAryF8LQbSk9OUtqU+iKqUvovIzF
+        sSnmEqcJBZlvefx99vgAManeOdjPb9B6S/zwrIFLHjNgzKbn6ivHpqkaEF0yhUu5nYhqVs
+        Spf4sQrESeuuYAm4ecd00+SKY7zYbummMeboSW4Jpf9b+Gma2UeuEWVYRo80RLeZT2zxLl
+        HBTr5F+mPU0y8aXe+pPKboFFdr4BmIekweNxcVHIh3SShm8jdDh83SC93sX2AP015BeRbx
+        ErCMAtGL/Kj7xfyiX8mx02DO1lpM3NwVhxPurn9ww1YtSNzoOr+kFhLRdP0J6Q==
 From:   Michael Walle <michael@walle.cc>
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -44,11 +45,14 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     UNGLinuxDriver@microchip.com,
         Philipp Zabel <p.zabel@pengutronix.de>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>
-Subject: [PATCH net-next 0/2] net: lan966x: make reset optional
-Date:   Wed, 31 Aug 2022 13:18:53 +0200
-Message-Id: <20220831111855.1749646-1-michael@walle.cc>
+        linux-kernel@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH net-next 1/2] dt-bindings: net: sparx5: don't require a reset line
+Date:   Wed, 31 Aug 2022 13:18:54 +0200
+Message-Id: <20220831111855.1749646-2-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220831111855.1749646-1-michael@walle.cc>
+References: <20220831111855.1749646-1-michael@walle.cc>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam: Yes
@@ -61,20 +65,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the remaining part of the reset rework on the LAN966x targetting
-the netdev tree.
+Make the reset line optional. It turns out, there is no dedicated reset
+for the switch. Instead, the reset which was used up until now, was kind
+of a global reset. This is now handled elsewhere, thus don't require a
+reset.
 
-The former series can be found at:
-https://lore.kernel.org/lkml/20220826115607.1148489-1-michael@walle.cc/
+Signed-off-by: Michael Walle <michael@walle.cc>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/net/microchip,sparx5-switch.yaml        | 2 --
+ 1 file changed, 2 deletions(-)
 
-Michael Walle (2):
-  dt-bindings: net: sparx5: don't require a reset line
-  net: lan966x: make reset optional
-
- .../devicetree/bindings/net/microchip,sparx5-switch.yaml       | 2 --
- drivers/net/ethernet/microchip/lan966x/lan966x_main.c          | 3 ++-
- 2 files changed, 2 insertions(+), 3 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+index 0807aa7a8f63..57ffeb8fc876 100644
+--- a/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
++++ b/Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+@@ -130,8 +130,6 @@ required:
+   - reg-names
+   - interrupts
+   - interrupt-names
+-  - resets
+-  - reset-names
+   - ethernet-ports
+ 
+ additionalProperties: false
 -- 
 2.30.2
 
