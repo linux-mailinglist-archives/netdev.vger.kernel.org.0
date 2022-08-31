@@ -2,164 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D38CB5A8989
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 01:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D9A5A898A
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 01:38:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230414AbiHaXhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 19:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42510 "EHLO
+        id S230339AbiHaXiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 19:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiHaXhN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 19:37:13 -0400
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35EC792F5
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 16:37:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661989031; x=1693525031;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=ZlVLonYzZcOnzBeoCdqsCpRCjOxY62mjEWaEM6mhE2s=;
-  b=JanqfToz3D1swqMzD7NSE16iVBB2YMuxWzLg0hrasp7A/sH+zq6GkilT
-   +1CkZPuYdxYPIyBh4ZvrHmQGlkoCViHZ0ZFscmcboMWJTDfElGzYpFUNn
-   zV1aMr4/+MO+cLFzscMNDxbGV+Yx/U45k/Hkctg2KVM4+c8QMexC0/5tz
-   xGIDJaI/s+oLqZlEWLPPaOhtgZRzCtFAPie4b72ZdHfs4u5UAnrWxPWjA
-   vjvgNmAPm+b/MkujvJfgDoJkWO9M94dacacIuwsXMUQnq+A0C9LhzHcu/
-   hSxMctBM0XHBzZsjEaa+GEGCK11VuscsXtxjaeLrA1tE6X+y0RHT1C26O
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="293152873"
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="293152873"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 16:37:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,279,1654585200"; 
-   d="scan'208";a="589228522"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orsmga006.jf.intel.com with ESMTP; 31 Aug 2022 16:37:09 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 16:37:03 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Wed, 31 Aug 2022 16:37:03 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31 via Frontend Transport; Wed, 31 Aug 2022 16:37:03 -0700
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.171)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.31; Wed, 31 Aug 2022 16:37:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L323XzLtel9aSnkgY9MEcXXLAO8Q+xRnDTiBotS2KdNyEKhtL7up/jM6/m/qKP+pdjF1CxNqywkDDl4x9ARHrFA3csN36BAhgPKwRNh8MI3Y27NEIxLgkPeXQmuLPgtF/cwszZWq0zFfQJUMOxLunCFenXIAsH90QDygD8R9zmFfr7LjUH4beXfiaG9HThkILIAvFlS9toV/19X28V8xW8fl3zApzYrEtFBiqAVuzikvIxafkLU3dHvQPcqOeYtjV8/S3HauoAK54QrZIWdqpZWSdvAEwvLPcBBNqrszS6nOJrvJq5tib2oOdmJzHPumKNmVoDd2EVk2anrPUXhiKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZlVLonYzZcOnzBeoCdqsCpRCjOxY62mjEWaEM6mhE2s=;
- b=f8M9Vb7lmVzcMiNhGEr0XxBQa2t7qnV2GoPahu8blW4Zgyvyf5Ei+juWQZvcyan/W1DE8C7idJgZLtW4UkqTg60F1xnGkCmCKw4SqF0Mau6X9lM0GKiJtfiWtuEIijCtZF9AO5W4fTt97GcPcVsXMLfJPKFFjLGsWFRm43sqAjEDyNjdYtAbXo423/yjlxLUxxISLY84+A3P7WL6b8/1aIxdrH8Di+ZrIwy0e2sMTgEoJSVAsvT56xWE+pANndCtQXf+L5XmKYSjMzmZk1F6kmHAWi3DRMgkdsA2fHUIZTZ5AUTQKdPrCywvwgN39I+mbm4GzxfyA6Xh+nVJhSFWbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
- by SJ0PR11MB5629.namprd11.prod.outlook.com (2603:10b6:a03:3ab::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Wed, 31 Aug
- 2022 23:37:02 +0000
-Received: from SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::a422:5962:2b89:d7f5]) by SN6PR11MB3229.namprd11.prod.outlook.com
- ([fe80::a422:5962:2b89:d7f5%7]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
- 23:37:02 +0000
-Message-ID: <cd67e60e-6907-755e-38a9-a53c29d8a7c8@intel.com>
-Date:   Wed, 31 Aug 2022 16:36:58 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
- GNSS
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <pabeni@redhat.com>, <edumazet@google.com>,
-        "Michal Michalik" <michal.michalik@intel.com>,
-        <netdev@vger.kernel.org>, <richardcochran@gmail.com>,
-        Gurucharan <gurucharanx.g@intel.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
- <20220829220049.333434-4-anthony.l.nguyen@intel.com>
- <20220831145439.2f268c34@kernel.org>
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-In-Reply-To: <20220831145439.2f268c34@kernel.org>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BY3PR03CA0017.namprd03.prod.outlook.com
- (2603:10b6:a03:39a::22) To SN6PR11MB3229.namprd11.prod.outlook.com
- (2603:10b6:805:ba::28)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d9ce13ea-c771-46e3-e4b3-08da8ba9b444
-X-MS-TrafficTypeDiagnostic: SJ0PR11MB5629:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: l3kO9znPJW4hHSN4eYd/GrsF8ljM1VpmRb8og7+6wWgkSTfZka0O8G6kx3RuwDls43JjkgRrleDtVO2febYXtQdIRPk2WGdM+M8nVzPWu0ZFsO5v+vFR9ZpTDGpHLweAD6gBERs0HVr4YxT5IJiBzC5Vxmkh2i5Hd52PxhTt9yZZ2KdBqKCcT5jgt/4f3xR56t91Ln87+G+hfg7Pp7aEiZBtGp1LNcfbt8XVY+fN+EDPQSSlJ+qQSkdURMRb3THg6DfUnx7omP9sguEL9/vt0r1RPDwtd9Lmatz41XLXisYo+vYPAXOWZo/wmY5WvSHRUdlqpYfQAuBwVA0h2mcMGWg4u6sMbwXN7kf1GRrE4eVX4Yh3jL09yCZGSz4SHtEemwCNWD+OmXeNozmC1p4D6tLdlVU4kb3BimUMOyayhkfL/CBB/Zs3hq+qm6zhk0WsnrPoOsw1xkoAxnTN4ZXwbBglj6mckKvf1QwyQsoSQaA8r1IskHgRI94IIS8zQPh12j1RQ9ocu2+ZPGYaZNzY6ZTGlxohCzXsYs+yMCfctDDmT277VNcicnkK2vMusMyVchyxdchu9LM0cUZ94kpif8HUe58mmQROMOBUpyeAtoL1t3CBpYA/7zMg1IR939IrllGFe/vNpNVm9QZgGuNHxL0pMEVk9DbOzKOxroGF46kp+ETuUrxY1RfU/Rn2RZ3rnXbP4JVU9tQwagR79d8sgLOPfhSaLJ0yvMKjFthLPJEt4WO5JXFY6f/fZCTXgCEboSoDVmBLlRs+aGjWUmicdOddANPDt0DvMWIefDa+7S8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(136003)(366004)(396003)(346002)(39860400002)(8676002)(6486002)(41300700001)(4326008)(478600001)(66946007)(66476007)(66556008)(2906002)(53546011)(5660300002)(6506007)(558084003)(26005)(6512007)(6666004)(8936002)(31686004)(316002)(6916009)(86362001)(54906003)(2616005)(82960400001)(36756003)(31696002)(38100700002)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QzNMS2V4ZStkaStuVzlMdjB2SWk1eTFDTnR4cDQxRzdHVlpFZzlrQ2djSWc1?=
- =?utf-8?B?Ym8xbUs4UXdRSXdnbFdCcG5DNUYwUk9ma09QNjhWTjcremhjVG5ZUTFWK0dV?=
- =?utf-8?B?NkxIaVFvSjdnRjZJSis4alJKMUR1dzRac3RkZkdaMHIvWXdnbDFtTnFWdlJz?=
- =?utf-8?B?YXV6NXJrY0orZG5aUlFaUUQwUjJyck1iZU1HQUI1QURPZU04eGEvZkJRWC9u?=
- =?utf-8?B?TjI0RlRDam5qVWppMWRkRGZNcE1UaG1LUnJtdUg5OTNRcXZkZmhLc1ZnbzdB?=
- =?utf-8?B?Z2tZMjEvRXVzcEkveFlUd1I3NC9wSUVTdENFN1NxZnU0SHViaDZZRS9udkhi?=
- =?utf-8?B?em5DMDI5NlJzTkcxSzY5dHJkSU5LQ3NlMk5Pbk9hTnNSR3NndUZFTWErWW1J?=
- =?utf-8?B?TUVsUFA3UlB4UVE3VGlkdlQ1TlloRnVsUjRORFJ2aFFBdVg3bUZQelFpKzR4?=
- =?utf-8?B?Ni9FOGFFdmdTUGRONWJrY1p3RlZLeVNMWDE2RHVQVDltSWhVZm5OMS83aFR2?=
- =?utf-8?B?WVBvN2k4enVyQktkYVFRUzk2RHZsbC95Q3U2VEZELzA4Nk1IR3hCQlBEcWdJ?=
- =?utf-8?B?blUvWE5IRkwzdDR2cCtUNXRJMHF0Z1I0aCtYYno3akRvZk5oSi9odkcrWmpi?=
- =?utf-8?B?UlBxN2h4elY2KzM3dzBhemszWWpiL1ZRTy9zK283bmJua0sxU0Q3RzB4ODJa?=
- =?utf-8?B?UzZJV3RnaS81SjRnb1pvenRzS2Z2SktRRnVsdjNzMFUvWUdGN3N1MzFpTHRu?=
- =?utf-8?B?R013dUdvZFE1Qkt1dkJwWU16R0p1L0x5UDhCUU9aQWRLL0g0QWZWNzdhQVpQ?=
- =?utf-8?B?bGNQeDlhaHpxaERRcmc2SDJaek5BYjE5bDkwTE52NEtHcXdOWC9RYllLY1JM?=
- =?utf-8?B?eWtRNmxXT0pFT3VVam1tbXNib0NLejNyeXY3ODZOb2pmM3VwMlJZVlhkelRS?=
- =?utf-8?B?YTFkWllCMnJTZ081L0lhZVdKY3dKbFptR0YrcHNkaXBMSjJmZEdlZWdMYjh0?=
- =?utf-8?B?aUpIWVAwUXVXZDFUc1o1TlltZ056QVg5bFlTQkdQSzQzdlV2UzB4VUdsQ25s?=
- =?utf-8?B?SUpVVFFnS2RidDIzNG9Pd2Q3NGJWd2xBYnJNMXdHRGx6NHU4TWhWdDhxUFIy?=
- =?utf-8?B?S1RCREpvSVVrTFVDSVRZamo3MHdiU0wvVzVNT0FvUlpkWmtLSTRpWGVpRk1P?=
- =?utf-8?B?WlNXODRBdEduLytBVzFDcGRxTDltd3ZkVjhFRC84TExKcGJSSTZYQU1tZEtJ?=
- =?utf-8?B?QmcvaTM4OG54ZUlZcDNNREpRMG4rRmovTmtMSGszK3RiWEROR2xkaWZDVVRI?=
- =?utf-8?B?M3RGT1VtcUZDY1dwWU02UlZ0dlltSFZKSE1pVVRrOGhqOGlFcnZ6YVhrSUFI?=
- =?utf-8?B?YWtDNkZ0VzVlWHBJZU1UeW52Mm5tSURiLzdZSWtmWktVa3ErUkxBS053ZFVn?=
- =?utf-8?B?cXFLOVlGdnFWUlE4QWk3cFFJaTVTRjJoTHA5TGZVVGM2R2V1dzg4TExCT2Vu?=
- =?utf-8?B?N1VkMzU0dDIwSTVLckc5NWhsL0tRQy96aGRJS0s5RFNiRjRwODJ0ZHBkSWpk?=
- =?utf-8?B?VzZtUEg0WmtsM2lKMDZuTzg1YTFpaFBxbFhrWC9oTDVmVkMwU2VCVFd6SlFO?=
- =?utf-8?B?bllHZkNUbFRNa2IyMDAyc2t4cVl4Z0JVbUFvdlFGT2pkKzBqTjFTWERJZ3h3?=
- =?utf-8?B?UExWL3ZNL1FYRW44RzRaYTdad1dQNkliM1pqN2RnOVJpaXA4OEhQSjI1ekJ3?=
- =?utf-8?B?bTdoWFlFSGpiQ29vRGhOaXFubmxKODkvV2tYVk50VGFzSkJzbGdISHVrckJk?=
- =?utf-8?B?a3IvUjNEcXZkNjJqTllsMForMnR0djRlWFNYdE96eEF3YWRna09vZUw3VzM4?=
- =?utf-8?B?UWQ0NVc3RWpVQ0xuc3ptWU1tRFp6ZWZwWms3S210bzV6WlVEU0FFR08rRXVC?=
- =?utf-8?B?SGpqS0RMc3IrU29iSDhqR0xPRm5jazJxUk4yU3JsZ0xoWUlSSjJSUHV6d2di?=
- =?utf-8?B?VVp1b0JSWTZ0QWcwTCtoays3OFVrTytvdmZjcmZRUFhkWmhXV1NHOGYwbzFo?=
- =?utf-8?B?MTYxUHBuYk5ydHRwZWhJU3E0WVpNVXFLMjc0T1VudWVQZG9IbXV6S3lkMGE2?=
- =?utf-8?B?NTJLeVpEdk5uWE8reG90SkxuanVSTWV5b05NMnlDVWU4c1BwU2JxZTF2ZTk4?=
- =?utf-8?B?aEE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9ce13ea-c771-46e3-e4b3-08da8ba9b444
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 23:37:01.8994
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EvpT8bXQAyBpKieUWA9anEq1QFAUEpKLE2+DgNCc66CC8p7Pav4sI2ePNjeoeRi6bzrZMnOxI2Ox2PT6jHRVtT0HX66ruMR+2/kXcWL1XvA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5629
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S229567AbiHaXiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 19:38:15 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B6AF75490
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 16:38:14 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-33ef3e5faeeso208850767b3.0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 16:38:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc;
+        bh=pYtQdfR9DdJuwm8vNTghU9PARQVOvGqcSKNgapXYbHw=;
+        b=HjFxDD49bkmiVx3MzbDWByanvIEtnAZZt1OjhutAwP27iKY+270Us9U64k7J/07t3b
+         ChXT0x/VKSdFW75tMHUGiwLHCMqNLyhrAcHeiX9bn4kFGO6KTHC6NavyHGA/+QF7ITxI
+         5d83Gyf4/ZcdJLqa4ruyiz2djO629/3DuKLyBubEGRhoxex3pTibnBoanUWikxFAADeU
+         mmxGsRLTVWM56ggG8n9EKV+7NmEMIUEKcJ2Kbifh95eAIvZFM8HkxkS5eaL2Fa204vqt
+         lQfL9rUCa5qS44yy8xbVZWRW+ZiaufXc+ldNfwF8HfqvAXa/I+Sey5A5fg2r5skWj8e8
+         Gy6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc;
+        bh=pYtQdfR9DdJuwm8vNTghU9PARQVOvGqcSKNgapXYbHw=;
+        b=l+HTtg1NsfE1Nt8Dx0/+0lprFllZG09wKRTEguE8RrqY5LsIZ3kGjipQGiv/Ceajy4
+         LH96VHSkCVqPT/nBRSSukAUsJUpI5cHWpdMeIt4JoLMTwotUnomcUfSElq/Ee69hyiIP
+         7afASR/nSlAuxYysN8M+/JNy5AVvhHpTf3sM4F2GwhCRzzyBSqtazpXCHqjbC1i6at+a
+         qa/6UMq7u4SF6iRqrd+ABUxmK+gPgtcJx4m5idZysRJRkASjwCQhsWbu0m6r+4uT7A5D
+         lRJpqaHq1naHy1wtlM17A3ZBI/6Y1sD0UiipM0fUoV3tUvZ6z040NPIR/M7h6mDsj3+x
+         Rxxg==
+X-Gm-Message-State: ACgBeo0n6LeWnlxSnUPlOpw9GGkdlU18Irug1Q9FvNiZzE3F5+SO7zxz
+        hYBU7jrN9JFYGkYvnS5d0Xn7seisDV2ZzQ==
+X-Google-Smtp-Source: AA6agR40B6L33NjR6vlVAqAMQ5H1ULNtOEaBjGnN3fj89PEHWxbRhV8eDFGmmUeA5SY1o/B/1n540hhHZ9f0iQ==
+X-Received: from edumazet1.c.googlers.com ([fda3:e722:ac3:cc00:2b:7d90:c0a8:395a])
+ (user=edumazet job=sendgmr) by 2002:a05:6902:1501:b0:697:c614:2079 with SMTP
+ id q1-20020a056902150100b00697c6142079mr17248715ybu.389.1661989093536; Wed,
+ 31 Aug 2022 16:38:13 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 23:38:09 +0000
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.2.672.g94769d06f0-goog
+Message-ID: <20220831233809.242987-1-edumazet@google.com>
+Subject: [PATCH net] tcp: TX zerocopy should not sense pfmemalloc status
+From:   Eric Dumazet <edumazet@google.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Shakeel Butt <shakeelb@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -167,13 +68,164 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+We got a recent syzbot report [1] showing a possible misuse
+of pfmemalloc page status in TCP zerocopy paths.
 
+Indeed, for pages coming from user space or other layers,
+using page_is_pfmemalloc() is moot, and possibly could give
+false positives.
 
-On 8/31/2022 2:54 PM, Jakub Kicinski wrote:
-> Please CC GNSS and TTY maintainers on the patches relating to
-> the TTY/GNSS channel going forward.
+There has been attempts to make page_is_pfmemalloc() more robust,
+but not using it in the first place in this context is probably better,
+removing cpu cycles.
 
-I'll be sure to include them on future patches relating to this.
+Note to stable teams :
 
-Thanks,
-Tony
+You need to backport 84ce071e38a6 ("net: introduce
+__skb_fill_page_desc_noacc") as a prereq.
+
+Race is more probable after commit c07aea3ef4d4
+("mm: add a signature in struct page") because page_is_pfmemalloc()
+is now using low order bit from page->lru.next, which can change
+more often than page->index.
+
+Low order bit should never be set for lru.next (when used as an anchor
+in LRU list), so KCSAN report is mostly a false positive.
+
+Backporting to older kernel versions seems not necessary.
+
+[1]
+BUG: KCSAN: data-race in lru_add_fn / tcp_build_frag
+
+write to 0xffffea0004a1d2c8 of 8 bytes by task 18600 on cpu 0:
+__list_add include/linux/list.h:73 [inline]
+list_add include/linux/list.h:88 [inline]
+lruvec_add_folio include/linux/mm_inline.h:105 [inline]
+lru_add_fn+0x440/0x520 mm/swap.c:228
+folio_batch_move_lru+0x1e1/0x2a0 mm/swap.c:246
+folio_batch_add_and_move mm/swap.c:263 [inline]
+folio_add_lru+0xf1/0x140 mm/swap.c:490
+filemap_add_folio+0xf8/0x150 mm/filemap.c:948
+__filemap_get_folio+0x510/0x6d0 mm/filemap.c:1981
+pagecache_get_page+0x26/0x190 mm/folio-compat.c:104
+grab_cache_page_write_begin+0x2a/0x30 mm/folio-compat.c:116
+ext4_da_write_begin+0x2dd/0x5f0 fs/ext4/inode.c:2988
+generic_perform_write+0x1d4/0x3f0 mm/filemap.c:3738
+ext4_buffered_write_iter+0x235/0x3e0 fs/ext4/file.c:270
+ext4_file_write_iter+0x2e3/0x1210
+call_write_iter include/linux/fs.h:2187 [inline]
+new_sync_write fs/read_write.c:491 [inline]
+vfs_write+0x468/0x760 fs/read_write.c:578
+ksys_write+0xe8/0x1a0 fs/read_write.c:631
+__do_sys_write fs/read_write.c:643 [inline]
+__se_sys_write fs/read_write.c:640 [inline]
+__x64_sys_write+0x3e/0x50 fs/read_write.c:640
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+read to 0xffffea0004a1d2c8 of 8 bytes by task 18611 on cpu 1:
+page_is_pfmemalloc include/linux/mm.h:1740 [inline]
+__skb_fill_page_desc include/linux/skbuff.h:2422 [inline]
+skb_fill_page_desc include/linux/skbuff.h:2443 [inline]
+tcp_build_frag+0x613/0xb20 net/ipv4/tcp.c:1018
+do_tcp_sendpages+0x3e8/0xaf0 net/ipv4/tcp.c:1075
+tcp_sendpage_locked net/ipv4/tcp.c:1140 [inline]
+tcp_sendpage+0x89/0xb0 net/ipv4/tcp.c:1150
+inet_sendpage+0x7f/0xc0 net/ipv4/af_inet.c:833
+kernel_sendpage+0x184/0x300 net/socket.c:3561
+sock_sendpage+0x5a/0x70 net/socket.c:1054
+pipe_to_sendpage+0x128/0x160 fs/splice.c:361
+splice_from_pipe_feed fs/splice.c:415 [inline]
+__splice_from_pipe+0x222/0x4d0 fs/splice.c:559
+splice_from_pipe fs/splice.c:594 [inline]
+generic_splice_sendpage+0x89/0xc0 fs/splice.c:743
+do_splice_from fs/splice.c:764 [inline]
+direct_splice_actor+0x80/0xa0 fs/splice.c:931
+splice_direct_to_actor+0x305/0x620 fs/splice.c:886
+do_splice_direct+0xfb/0x180 fs/splice.c:974
+do_sendfile+0x3bf/0x910 fs/read_write.c:1249
+__do_sys_sendfile64 fs/read_write.c:1317 [inline]
+__se_sys_sendfile64 fs/read_write.c:1303 [inline]
+__x64_sys_sendfile64+0x10c/0x150 fs/read_write.c:1303
+do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+value changed: 0x0000000000000000 -> 0xffffea0004a1d288
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 18611 Comm: syz-executor.4 Not tainted 6.0.0-rc2-syzkaller-00248-ge022620b5d05-dirty #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+
+Fixes: c07aea3ef4d4 ("mm: add a signature in struct page")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Shakeel Butt <shakeelb@google.com>
+---
+ include/linux/skbuff.h | 21 +++++++++++++++++++++
+ net/core/datagram.c    |  2 +-
+ net/ipv4/tcp.c         |  2 +-
+ 3 files changed, 23 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index ca8afa382bf2936f12d34dce1aa1329a640802c5..18e163a3460dd41c3875bf41261cc6ca65ede331 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2444,6 +2444,27 @@ static inline void skb_fill_page_desc(struct sk_buff *skb, int i,
+ 	skb_shinfo(skb)->nr_frags = i + 1;
+ }
+ 
++/**
++ * skb_fill_page_desc_noacc - initialise a paged fragment in an skb
++ * @skb: buffer containing fragment to be initialised
++ * @i: paged fragment index to initialise
++ * @page: the page to use for this fragment
++ * @off: the offset to the data with @page
++ * @size: the length of the data
++ *
++ * Variant of skb_fill_page_desc() which does not deal with
++ * pfmemalloc, if page is not owned by us.
++ */
++static inline void skb_fill_page_desc_noacc(struct sk_buff *skb, int i,
++					    struct page *page, int off,
++					    int size)
++{
++	struct skb_shared_info *shinfo = skb_shinfo(skb);
++
++	__skb_fill_page_desc_noacc(shinfo, i, page, off, size);
++	shinfo->nr_frags = i + 1;
++}
++
+ void skb_add_rx_frag(struct sk_buff *skb, int i, struct page *page, int off,
+ 		     int size, unsigned int truesize);
+ 
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 7255531f63ae279204bd6dd1a592ded789d4ac0e..e4ff2db40c9810a4cbbf6540ab5365d79bcdbbe0 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -677,7 +677,7 @@ int __zerocopy_sg_from_iter(struct msghdr *msg, struct sock *sk,
+ 				page_ref_sub(last_head, refs);
+ 				refs = 0;
+ 			}
+-			skb_fill_page_desc(skb, frag++, head, start, size);
++			skb_fill_page_desc_noacc(skb, frag++, head, start, size);
+ 		}
+ 		if (refs)
+ 			page_ref_sub(last_head, refs);
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e5011c136fdb7accd6b86cb38d0817f7b854f9fd..6cdfce6f28672d42ce813ba2a9dc4d18b4939e42 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1015,7 +1015,7 @@ static struct sk_buff *tcp_build_frag(struct sock *sk, int size_goal, int flags,
+ 		skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
+ 	} else {
+ 		get_page(page);
+-		skb_fill_page_desc(skb, i, page, offset, copy);
++		skb_fill_page_desc_noacc(skb, i, page, offset, copy);
+ 	}
+ 
+ 	if (!(flags & MSG_NO_SHARED_FRAGS))
+-- 
+2.37.2.672.g94769d06f0-goog
+
