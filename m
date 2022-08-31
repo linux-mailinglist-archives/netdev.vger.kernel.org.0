@@ -2,140 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CFC55A7E0D
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 14:54:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF915A7E15
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 14:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbiHaMy0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 08:54:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
+        id S231604AbiHaM4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 08:56:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229518AbiHaMyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 08:54:15 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B3DCB8A76
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 05:54:14 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id e18so10733312edj.3
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 05:54:14 -0700 (PDT)
+        with ESMTP id S231635AbiHaM4I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 08:56:08 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E7C979E2
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 05:56:06 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id d1so10989620qvs.0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 05:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc;
-        bh=UTdKbOp1WIihacpgzcGLsJZCpkS1HE5cq3MG6vnftP8=;
-        b=p0ds1VulImntWCZiqWUr9j1x2RTELNT/yEtytC6vwbajApG0dErVsQE2hdqLsKf4Vt
-         SxOe6EbHG48ccFrzBuXTj9Gu+fcyFqCut/66/5ZwJH6OqdSl3DvQaJfx5CTqMVWT5EAq
-         x06+s0sOoOnx0nfvT8mR2njHNzVq2G4cTp2XqnTK/D4e2hwpidNkFoVxVqGJlsrWibG6
-         gatRMAUPTChKLfp12U0IlpiFfb6FCZomTtT7cKV6Nt45rmFBZNU6/sAKyiRJaRO/xsbm
-         JIeZaR+y7ewZKnSiO+2ozH1DS0mj8mjPDO+qf/U5fuoFYBMiZA+d7UXtqZ2nHJftAmTa
-         p8fA==
+        bh=BO8O6Y3MFh/MYUSNiSGbWSukd83AAqr/q1qEVq4rhtU=;
+        b=PFRP3I4V6hDF6ClWskC7YyRPVgroEU86EzD5I2OAZtbykAZoBN+MntDDGcY67zEBIO
+         JMwr8s6OyGw/JXpzcp5YxO29Rt6cq2Z0jvvuqSeRFVEl69gz2pJ9scmGyc2Yt3D+SdZi
+         rW7daxFH/5ydPYaPUoH02MH7lWheOnUh8db3g1+xPddlOFiX3HufzKSmQn8S6efdNUGv
+         7BUqfrcmS/9qV+vh6oaUzhI6cnApWDtKdB5LDjyaTHTZ/N4jd2q3LnF5JOgcYOsH60M4
+         Pii6oyUrljzR89bZtaR4cTGVE4yIzybmWLsohOsvlm3niF4lqWuB5ILZJgb4kVTZVith
+         jYCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:to:subject:message-id:date:from:reply-to
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc;
-        bh=UTdKbOp1WIihacpgzcGLsJZCpkS1HE5cq3MG6vnftP8=;
-        b=RvdTD+Z07YPYtpwhH7h6rKmHhlDMIFmYh0J0zLI6k1msISLoRO4SmCG9QXcy59Bjv6
-         VUm2hdzz8Xg74TzGuc/jPdMUhfXtFMq3OFz7zGu3yeKzyXXe59UOyQ9Ua9ynfysbO2JH
-         aWdx1xg9A/jUjgyWD3FCsxXDmvGBs9CKnBaGi6ooLicOzW4vWm2rl0O+00Vigi9mwOBG
-         1JmF8zxoUDawWFxZCytF6yQRWaok5hYM4DHE8AyC45xtrS1jmXnCmJH15zZuz8J9lqgo
-         rONeiumeLhBTLtYRPuq8U1Agt6EHuQaeHBmWcKbrSZXmPxOH6fJTHoUJ+gC0wpLJZzQd
-         8O/g==
-X-Gm-Message-State: ACgBeo1JJij3rAoJmUP8QXHuV9aTJDMmk7++Dghgjvz3aRn/5GZ5KQCH
-        ZO3rKpIjRnOiP2D+Kn+Wqc3rz6CP2ypRxD1gca4=
-X-Google-Smtp-Source: AA6agR7ynjQSq2WwMb+sDQpsx+iFCrIWeRQsqpYJxXY9r72ZtDZIIbwkZPl2zR6utiSKPJJri5QDgQIMYLjKUVjNyic=
-X-Received: by 2002:a05:6402:337:b0:447:c616:2aed with SMTP id
- q23-20020a056402033700b00447c6162aedmr22628317edw.127.1661950452808; Wed, 31
- Aug 2022 05:54:12 -0700 (PDT)
+        bh=BO8O6Y3MFh/MYUSNiSGbWSukd83AAqr/q1qEVq4rhtU=;
+        b=u4KjWtGa1uZXzEguQzThq6HeC1IpUeUqUKFwmTcQ5kylO6IIYKHNAwElTC0uXzzZrS
+         mntq817Wx+mkZQZF2aWMKzrY2K5idEYP6GW/pLdWcaFiQk6t+feE8ne9fucEZW6BVUwt
+         n99h1K3qRes7UPNcCdfL98zsm6RW5NyRpkb6b5zwSZMSEmMoa2jBcQu1tGZQj0xrNkaf
+         cW26tykKHCflH4gSBLPoMA6InLYnEeCMCrpmogKvyPziCX7Kq8F0Sh4HOqQ1J7R/f8Or
+         /ahf8gsYES+YuHwtw8X30N4wD0/T5tUANlJfJRfs/dneaa6P4f20I6/WDGF8xcVdvy4P
+         Y+9A==
+X-Gm-Message-State: ACgBeo3ShqnJatSpTr9JabTUwJMMwd7ZC/DACWLgfDgBYP/IoczAQmRn
+        fjX5SVv1jzuSN+2XKOkHCt5xna5UZTwCK/98Yr2r9A==
+X-Google-Smtp-Source: AA6agR5pyAZY/OstASlymkYiOH8tvKdnar8p0RXdAbNLqHMM73vhM8UL/aqPyfwJpYQeP6Q+wqKh6ugITdeTl8OvsuI=
+X-Received: by 2002:a05:6214:2489:b0:499:1a3d:42ef with SMTP id
+ gi9-20020a056214248900b004991a3d42efmr3789289qvb.62.1661950565523; Wed, 31
+ Aug 2022 05:56:05 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a98:c049:0:b0:17e:f846:72fc with HTTP; Wed, 31 Aug 2022
- 05:54:12 -0700 (PDT)
-Reply-To: jon768266@gmail.com
-From:   johnson <rahamaaliou74@gmail.com>
-Date:   Wed, 31 Aug 2022 12:54:12 +0000
-Message-ID: <CAHhQV0fYqOTmCSwf-=w+aakObTuummr4cm52BBqjNmX=6ivoOg@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
+References: <20220830185656.268523-1-eric.dumazet@gmail.com> <20220830185656.268523-2-eric.dumazet@gmail.com>
+In-Reply-To: <20220830185656.268523-2-eric.dumazet@gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 31 Aug 2022 08:55:49 -0400
+Message-ID: <CADVnQyn8Mr6FjZjaxPE=9H0GcnThfZX_DHWoM+TwMczPNKpjCg@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] tcp: annotate data-race around challenge_timestamp
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Jason Baron <jbaron@akamai.com>,
+        Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=6.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        LOTS_OF_MONEY,MONEY_FREEMAIL_REPTO,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM,UNDISC_MONEY autolearn=no
-        autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:52c listed in]
-        [list.dnswl.org]
-        * -1.9 BAYES_00 BODY: Bayes spam probability is 0 to 1%
-        *      [score: 0.0000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [jon768266[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [rahamaaliou74[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [rahamaaliou74[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.2 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  2.0 MONEY_FREEMAIL_REPTO Lots of money from someone using free
-        *      email?
-        *  1.5 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jsem r=C3=A1d, =C5=BEe v=C3=A1s mohu informovat o m=C3=A9m =C3=BAsp=C4=9Bch=
-u p=C5=99i p=C5=99evodu t=C4=9Bchto
-prost=C5=99edk=C5=AF ve spolupr=C3=A1ci s nov=C3=BDm partnerem z Indie. V s=
-ou=C4=8Dasn=C3=A9 dob=C4=9B
-jsem v Indii kv=C5=AFli investi=C4=8Dn=C3=ADm projekt=C5=AFm s vlastn=C3=AD=
-m pod=C3=ADlem na celkov=C3=A9
-sum=C4=9B. Mezit=C3=ADm jsem nezapomn=C4=9Bl na va=C5=A1e minul=C3=A9 =C3=
-=BAsil=C3=AD a pokusy pomoci mi
-p=C5=99i p=C5=99evodu t=C4=9Bchto prost=C5=99edk=C5=AF, p=C5=99esto=C5=BEe =
-se n=C3=A1m to n=C4=9Bjak nezda=C5=99ilo.
-Nyn=C3=AD kontaktujte m=C3=A9ho tajemn=C3=ADka v Lome. Spolu s jeho n=C3=AD=
-=C5=BEe uveden=C3=BDm
-kontaktem jsem upustil certifikovanou v=C3=ADzovou kartu do bankomatu a
-po=C5=BE=C3=A1dejte ho, aby po=C5=A1lete v=C3=A1m v=C3=ADzovou kartu ve v=
-=C3=BD=C5=A1i 250 000,00 USD,
-kterou jsem mu nechal jako n=C3=A1hradu za ve=C5=A1ker=C3=A9 minul=C3=A9 =
-=C3=BAsil=C3=AD a pokusy
-pomoci mi v t=C3=A9to z=C3=A1le=C5=BEitosti. Velmi jsem si v=C3=A1=C5=BEil =
-va=C5=A1eho tehdej=C5=A1=C3=ADho
-=C3=BAsil=C3=AD.
+On Tue, Aug 30, 2022 at 2:57 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> challenge_timestamp can be read an written by concurrent threads.
+>
+> This was expected, but we need to annotate the race to avoid potential issues.
+>
+> Following patch moves challenge_timestamp and challenge_count
+> to per-netns storage to provide better isolation.
+>
+> Fixes: 354e4aa391ed ("tcp: RFC 5961 5.2 Blind Data Injection Attack Mitigation")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> ---
 
-Spojte se tedy s moj=C3=AD sekret=C3=A1=C5=99kou a dejte mu pokyn, kam v=C3=
-=A1m m=C3=A1 zaslat
-bankomatovou v=C3=ADzovou kartu obsahuj=C3=ADc=C3=AD =C4=8D=C3=A1stku. Pros=
-=C3=ADm, dejte mi ihned
-v=C4=9Bd=C4=9Bt, jestli ho dostanete, abychom mohli sd=C3=ADlet radost po v=
-=C5=A1ech
-tehdej=C5=A1=C3=ADch =C3=BAtrap=C3=A1ch spole=C4=8Dn=C4=9B. v tuto chv=C3=
-=ADli jsem zde velmi
-zanepr=C3=A1zdn=C4=9Bn kv=C5=AFli investi=C4=8Dn=C3=ADm projekt=C5=AFm, kte=
-r=C3=A9 m=C3=A1m s m=C3=BDm nov=C3=BDm
-partnerem v Indii, p=C5=99epo=C5=A1lete m=C3=A9 sekret=C3=A1=C5=99ce va=C5=
-=A1e informace, va=C5=A1e cel=C3=A1
-jm=C3=A9na, adresu a kontaktn=C3=AD =C4=8D=C3=ADslo pro snadnou komunikaci,=
- dokud
-neobdr=C5=BE=C3=ADte kartu s v=C3=ADzem do bankomatu. (jon768266@gmail.com)
+Acked-by: Neal Cardwell <ncardwell@google.com>
 
-S pozdravem
-Orlando Moris.
+Thanks, Eric!
+
+neal
