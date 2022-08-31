@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F2B5A864A
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 21:00:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C13EC5A8653
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 21:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233165AbiHaTAi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 15:00:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44656 "EHLO
+        id S229437AbiHaTBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 15:01:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232277AbiHaTAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 15:00:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E34B493;
-        Wed, 31 Aug 2022 12:00:17 -0700 (PDT)
+        with ESMTP id S232769AbiHaTBY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 15:01:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0FDA3D21;
+        Wed, 31 Aug 2022 12:01:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 66C90611F6;
-        Wed, 31 Aug 2022 19:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B04BCC433B5;
-        Wed, 31 Aug 2022 19:00:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8912B8229E;
+        Wed, 31 Aug 2022 19:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97E59C433C1;
+        Wed, 31 Aug 2022 19:01:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661972416;
-        bh=MvhRuP3zlkbGUdubRiIusjnGG4E7nIIMzKZytkqpbyc=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=b+mBGYDoGgqmZQx/Vt0p0gqZzk+HHErUuaGzPs75Q3vvS94IRAG0CG/K/vrFBjK1I
-         c2PRE6kCsbBTyh2kcZrIs6NKoUQjqtxKi0htaSOEcYQJOtlgZMy3dL5MB39saqaHdA
-         9Pa/v8TMal8WDQfxEezZv4Dmddh135CBV3JUvpM4WMkCTQ3OUghyt7GPtJHTWFCq2g
-         UC+njYniQE43uew7Y6xw3GF6aNpoMc4Z1ghmMQGTmpzXs1EeKpVAoahvKqhMzN5kUL
-         oaxwzGJaYFP8BNwAwcS0Lnp/c00WkDVwPUM6qS/0Ta3FNpTHsp0uxuYz0/dgnKNgUq
-         HGIHHzpiZ4Eiw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 912F5C4166F;
-        Wed, 31 Aug 2022 19:00:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1661972470;
+        bh=LUaBA/4C31nHwrvwIUWMxHhuvJt/HjUER3lbjrAuo60=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qBMZxXQkFd/O9K0eifHZ09pIJ/x3NYqS/8v7VuzQWELvs1+W0+KST5PwOHuh9ph42
+         yZH/V7zCamObVWHbiS3iFdXFooojrV4FFy/26zcBcmU6l+lNMUIy3Whhedwz+ejLLv
+         LvoxmGFvkOdjwz2BkCg0KmwxsxJVMX4trDF077w/b3db8hqFRXMKnIBCsyd74Auq10
+         3yKHIGWmFTPhsVfPYXXI7AQcI1zWUsKn65SnIY+tmNb+An0iMagAHgltLmbItRTkqS
+         rdPIb7TlUFmuIAQORiXb6UpbOaSxwYR5FC1EhuYiK+XxU45rHTcWaCiI96DCbUzUWp
+         Zlv+So3eieKug==
+Date:   Wed, 31 Aug 2022 14:01:03 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] uapi: net/ipv4: Use __DECLARE_FLEX_ARRAY() helper
+Message-ID: <Yw+v7yUxS896r2cd@work>
+References: <Yw5H3E3a6mmpuTeT@work>
+ <202208311116.62D0CD477@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] selftests: xsk: add missing close() on netns fd
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166197241659.25924.3620860642967353215.git-patchwork-notify@kernel.org>
-Date:   Wed, 31 Aug 2022 19:00:16 +0000
-References: <20220830133905.9945-1-maciej.fijalkowski@intel.com>
-In-Reply-To: <20220830133905.9945-1-maciej.fijalkowski@intel.com>
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202208311116.62D0CD477@keescook>
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,28 +57,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (master)
-by Daniel Borkmann <daniel@iogearbox.net>:
-
-On Tue, 30 Aug 2022 15:39:05 +0200 you wrote:
-> Commit 1034b03e54ac ("selftests: xsk: Simplify cleanup of ifobjects")
-> removed close on netns fd, which is not correct, so let us restore it.
+On Wed, Aug 31, 2022 at 11:17:31AM -0700, Kees Cook wrote:
+> >  struct ip_msfilter {
+> > -	union {
+> > -		struct {
+> > -			__be32		imsf_multiaddr_aux;
+> > -			__be32		imsf_interface_aux;
+> > -			__u32		imsf_fmode_aux;
+> > -			__u32		imsf_numsrc_aux;
+> > +	struct {
 > 
-> Fixes: 1034b03e54ac ("selftests: xsk: Simplify cleanup of ifobjects")
-> Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> 
-> [...]
+> I don't think this internal anonymous struct is needed any more?
 
-Here is the summary with links:
-  - [bpf] selftests: xsk: add missing close() on netns fd
-    https://git.kernel.org/bpf/bpf/c/8a7d61bdc2fa
+yes, aaargh... copy/paste error D:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+I'll respin right away.
 
-
+Thanks!
+--
+Gustavo
