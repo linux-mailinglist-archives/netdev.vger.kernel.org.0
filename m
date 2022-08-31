@@ -2,105 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A97C5A88FF
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 00:31:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42C365A8905
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 00:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232463AbiHaWbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 18:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36158 "EHLO
+        id S232504AbiHaWcX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 18:32:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232286AbiHaWbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 18:31:13 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 502051F2E6;
-        Wed, 31 Aug 2022 15:30:05 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id E54E22126;
-        Thu,  1 Sep 2022 00:30:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1661985003;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5A2fJzkWuA9bifn4MudMipTvJqlngyg+cza0sDoxRl0=;
-        b=1WhjYa1SzJ9k71JE6p5vX6/cBxrlqc3zVmEflXmNFqmEOewjxP7vYZ5kejmmfbdUuFffva
-        G5MGC5GocP7DeNNm2jloqcbS3K8jEK7+APKukF/on/RZyvWTWlzQ+O2GbnISR6g5HgbBe2
-        v/7Gw8TZ/BWs1cK1ugiVP11fu0GG3CYQEiRxSWXQTKD6dcUF2+etuwGRuPN4RQEku0pQi8
-        lDK/gKjJ3rrFMpBgFFjiFOCqCIy8HjTEcfHgUX+McVPwmCBkD9mullNKk9yc+pzsVKNa5K
-        xhoVWUhDcO/Tc+9roHAPCHg2y8YiwqAJLfdfLAbhY8wXtCijfOrq1muQmyISxw==
+        with ESMTP id S232065AbiHaWcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 18:32:22 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6778D74CEF
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 15:32:21 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id p7so10777523lfu.3
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 15:32:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=dTwAMPh/9V/Am+K9PM8dwE1AGq+3RYvXPgc7SOQjnXU=;
+        b=AwCm+X3GWpKn0gfiVI5YDWhY7Hf+771k/0DlcRP6gYXp2EXsCGfghmTJ4IKa/KFpIS
+         ndqIV2Ht4wC63q6JXp0jzti09VE2ztBngbuRXiGlzbegYrDG7GLZ5jjxBI9UU8gUbaG8
+         R+7dCpnkZoa4bYVwZoIQJk9HwWhKNr68vv3LA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=dTwAMPh/9V/Am+K9PM8dwE1AGq+3RYvXPgc7SOQjnXU=;
+        b=Zl3c7d1qcert6mxDPjEJhCI9teAKrxCPZxCrkon+LQzp43E6xoCQY3JawkLCGUMBw7
+         W+8KlwZcO1boHvzS50V9qlFrBdbkye+vE0NVQrb0o6Nu8D12aQ+x7FZR8YYxlNpkx2Ul
+         urvuEjD4X+D7zU+QWV/xrHkV7SzDbp8xsZfQmG7U9jbSkeakgg5tkhsbHbxx34hfrQme
+         2xjfrx0bBopwgncoxlvkTPYZmjA6S5VHYJtobhXQpbhwN/ySEp9abYKzBZDR4TfrwjPz
+         1F0OYm1Fi33Fy+qYyDMxrmFhyVkm1nKQScKIe0YRcXih7m7otLpnSfvF5HvpF3X+7IKs
+         KCdg==
+X-Gm-Message-State: ACgBeo11i1dJmejEZQlYMOs8MIYDJ45koXrVzqyG7bY4yL1FS3hwUvvD
+        YlS8q/AHiNe6/g1cQQvJriEhiIXxiJdLeJuhALSQDw==
+X-Google-Smtp-Source: AA6agR69w+RepP760fxnlu03RE5qBGFOQtu+j9+wYxau+pFkCQzBU/VUmTKGwO9WllApgUbwqxoj9Q==
+X-Received: by 2002:a19:3808:0:b0:494:772d:161 with SMTP id f8-20020a193808000000b00494772d0161mr3191366lfa.308.1661985139515;
+        Wed, 31 Aug 2022 15:32:19 -0700 (PDT)
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com. [209.85.167.42])
+        by smtp.gmail.com with ESMTPSA id e20-20020a196914000000b0048b17852938sm1659683lfc.162.2022.08.31.15.32.12
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 15:32:14 -0700 (PDT)
+Received: by mail-lf1-f42.google.com with SMTP id v26so11678554lfd.10
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 15:32:12 -0700 (PDT)
+X-Received: by 2002:a05:6512:23a1:b0:48a:fde8:ce8c with SMTP id
+ c33-20020a05651223a100b0048afde8ce8cmr10438685lfv.393.1661985132356; Wed, 31
+ Aug 2022 15:32:12 -0700 (PDT)
 MIME-Version: 1.0
-Date:   Thu, 01 Sep 2022 00:30:02 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 08/14] dt-bindings: mtd: relax the nvmem compatible
- string
-In-Reply-To: <20220831214809.GA282739-robh@kernel.org>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-9-michael@walle.cc>
- <20220831214809.GA282739-robh@kernel.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <60308ba420cdd072ea19e11e2e5e7d4b@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220830045923.net-next.v1.1.I4fee0ac057083d4f848caf0fa3a9fd466fc374a0@changeid>
+ <166198321700.20200.2886724035407277786.git-patchwork-notify@kernel.org>
+In-Reply-To: <166198321700.20200.2886724035407277786.git-patchwork-notify@kernel.org>
+From:   Sven van Ashbrook <svenva@chromium.org>
+Date:   Wed, 31 Aug 2022 15:32:00 -0700
+X-Gmail-Original-Message-ID: <CAM7w-FWjcQBOsRa=EK8CAiS_1WvFAjUVktzWx_3ksL5Vs2jGfg@mail.gmail.com>
+Message-ID: <CAM7w-FWjcQBOsRa=EK8CAiS_1WvFAjUVktzWx_3ksL5Vs2jGfg@mail.gmail.com>
+Subject: Re: [PATCH net-next v1] r8152: allow userland to disable multicast
+To:     patchwork-bot+netdevbpf@kernel.org
+Cc:     linux-kernel@vger.kernel.org, levinale@google.com,
+        chithraa@google.com, frankgor@google.com, aaron.ma@canonical.com,
+        dober6023@gmail.com, davem@davemloft.net, edumazet@google.com,
+        chenhao288@hisilicon.com, hayeswang@realtek.com, kuba@kernel.org,
+        jflf_kernel@gmx.com, pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-08-31 23:48, schrieb Rob Herring:
-> On Thu, Aug 25, 2022 at 11:44:17PM +0200, Michael Walle wrote:
->> The "user-otp" and "factory-otp" compatible string just depicts a
->> generic NVMEM device. But an actual device tree node might as well
->> contain a more specific compatible string. Make it possible to add
->> more specific binding elsewere and just match part of the compatibles
->> here.
->> 
->> Signed-off-by: Michael Walle <michael@walle.cc>
->> ---
->>  Documentation/devicetree/bindings/mtd/mtd.yaml | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> In hindsight it looks like we are mixing 2 different purposes of 'which
-> instance is this' and 'what is this'. 'compatible' is supposed to be 
-> the
-> latter.
-> 
-> Maybe there's a better way to handle user/factory? There's a similar
-> need with partitions for A/B or factory/update.
-
-I'm not sure I understand what you mean. It has nothing to with
-user and factory provisionings.
-
-SPI flashes have a user programmable and a factory programmable
-area, some have just one of them. Whereas with A/B you (as in the
-user or the board manufacturer) defines an area within a memory device
-to be either slot A or slot B. But here the flash dictates what's
-factory and what's user storage. It's in the datasheet.
-
-HTH
--michael
+Thank you Hayes and Jakub for taking this upstream.
