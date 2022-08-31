@@ -1,62 +1,62 @@
 Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
-Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 691375A79B3
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 11:04:01 +0200 (CEST)
+Received: from out1.vger.email (unknown [IPv6:2620:137:e000::1:20])
+	by mail.lfdr.de (Postfix) with ESMTP id 26A985A79B4
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 11:04:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbiHaJDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 05:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36312 "EHLO
+        id S231197AbiHaJD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 05:03:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231717AbiHaJDj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 05:03:39 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2051.outbound.protection.outlook.com [40.107.92.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F3D3C04E1
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 02:03:37 -0700 (PDT)
+        with ESMTP id S231753AbiHaJDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 05:03:42 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0B8C00C6
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 02:03:41 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cLGVxDN0lZVFbMoW6f+LFLxqfwWMt4zKxU4yYLm7pql7jCbto81nJs/tS52OX9zEKh17K48Xwxv9kVI2TCVHY8l9FD9y39gHUgSO9vaK5NF6wOoLgXHLnT3JxTMzxprVwGD3FvAkhCN4g4nTD0+NyFtagWCiIat7zX41NOGJpgAlIpdv4nwnI+MjB4VrikgwmC6SZ39MWOQyiYnFol6yPgNG8Ct5bJPKdjbIeWOaz8LWFV8+ST0/sKng1sHnS1aUpqfCEpPwTWWsDguPO3o7geM07uIl5fOgtChuIsx1EQeuA4/9XSAm3E4Who1bpiuaGfLxs6IDSsE1eoCPZnyisw==
+ b=Ca7VR8cnFqbomvEQVuE5LZf4UP/oKmEzm9ljUMv9oKy3oeecFvHIbq468ITL+AmOShTiN1r0ksvtvOB0Ub9Q91rQUBoDwj7oJw1VTO1nXXokQDkLH8T0fbXxNjKmVLhU5YPX3l2DMo9x+iqe9tOh7V24/5Ds9yOJ/n1W0fquCKxEfXgw492Vc6X4vUqT2TDDjWvskGUeNTAMrEXmQajM+ydvivEExFHiOA+l0xFrMiCeINbLiiEXc5sGZy8MyUiVmJlgoiMZ/eKeMNiXw0lP2HwS7AgXNWQIqYfAlZGeHq41xZJeBlHt2GZgyUQTG2nsOZ5wnbqnuf6FLWHv926yVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wP590Bu0rBC23wy+9IS7M1cj6941SHg2afMEMPE1jqw=;
- b=edk6QDVmNlkNASdBhvseqV1yQFTc4C2mc46jBZdLIPsDptolk82jTDzNiVFm0Kb/xWStHQiNAj8x0+ZltYtTqQIpFkSOmfvpMJgLRWQ0YZqwbqaGy4qgWuWqV4oBNTduyVLDjAEPvjenC4GuTDId33FfVojogKEb4RcrRLTURsGza6An0cKVe9cBNQ0NHeSTix5o37aTweq5l7Pir5NO8GufTEom8A7Qa9x+o9E1xufnKZ2/SojiHgTJ3dz/C1xvtFUCsDSYwJ4N0kQwpwLir4GV7NODTXpBfZpZn2Nss0dS8BzZCrvF0jvPdDy0ewlP8QeXPc9o35dZwXOKaoBCpQ==
+ bh=F3zd5mL5JnViM5ht5xvo5Kl9XrKYNDCyPegdrlOt9u0=;
+ b=nuBsBD/jnFjqOP95ZzuISatQqyVfO2joDXDm17vcUvSQqHx/pWUjzckNyI098cRZCTXKm4Ii+YBxItCzM3WOkYYOB/knI9pWXuYCtcJUqXede1dWxBuII6e0oYkn7WCzwSEvzMO/rsH5UCT0rMWSE3fu1gS3PT5fZvKjjV5EeeBW1hgZ5+A4Pn/gykBbvUPSU5oYUF+lFnjbipdD4RCWWsaw+xgvFMmHQy9jKbBc6Yx5W6rrswgN+iQbXdbLpnVYlL9n7ETI+lgKvaLrjr5r5mPNOwUAgVX1XYSsHddKBQXN3hmITHvckw93ZyCfUHd9wcLZGD4b1MsFBQXZyhfQmQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wP590Bu0rBC23wy+9IS7M1cj6941SHg2afMEMPE1jqw=;
- b=UR2PDOCLLLnHxxC7a4mAUAuEjbeFX2lUXJKadFVu0LP/8FQymC7xsfN2FkDKG8qeEuL8pB1PW3gu9RGAvwudH2UJzJiMWGM3kYOqsjt96IdAsByCISLT0Xv/+n/86MHbntfWjypVOW8UQQe3Em9eAuQs8gDNYtXYtDihBlPWFTLaX2nd4p7qWvO5G/89aScbV/yHseli76rNByk6PgHg/ZDCSYoXyRKzL2wrwnDqI2x52VYb4AmZNnrys6inruMUBdij+C/yuG4oKO5GeraCcLls4yE8HEGs/hLQbY3K2NP+tczVwC2X2bTYV990YWHJRMB4YTY7+w0iiJoz4y8gxg==
-Received: from MW3PR06CA0022.namprd06.prod.outlook.com (2603:10b6:303:2a::27)
- by SA0PR12MB4430.namprd12.prod.outlook.com (2603:10b6:806:70::20) with
+ bh=F3zd5mL5JnViM5ht5xvo5Kl9XrKYNDCyPegdrlOt9u0=;
+ b=dCelTeYfgZHDQZ6kioSx90/OI4eh6uaHk4nBvByFNADJ/12dFmXZ8+CGo6A021nEmV5gfy9u4GmMZGX0R5zkko80ulPu6StW37KYqm/JkqDWcAcHgLFXryHkua8DvSfcw1K5aG0CPZSi4GK5NhlEbVVE6q1069/+nP0q9KsxVcMXAWSkjMt5ZxSB/0THtaUmMFzGopJTl2AzKmlmJrkwGJhIAOx+jZrMYQvTsqcKgDwhkC7Ksmc456/dwCD0nN+bmkod+PQAdcpVnbWFu5ypULeQbFyuzC/cOBk39V9YP9wOjjA6gogCrnQOR9wRM7NQkK3590fGs+nHJc6zC6DJKg==
+Received: from MW4PR03CA0231.namprd03.prod.outlook.com (2603:10b6:303:b9::26)
+ by SA0PR12MB4352.namprd12.prod.outlook.com (2603:10b6:806:9c::9) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
- 2022 09:03:35 +0000
-Received: from CO1NAM11FT077.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:2a:cafe::83) by MW3PR06CA0022.outlook.office365.com
- (2603:10b6:303:2a::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
- Transport; Wed, 31 Aug 2022 09:03:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ 2022 09:03:39 +0000
+Received: from CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b9:cafe::32) by MW4PR03CA0231.outlook.office365.com
+ (2603:10b6:303:b9::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
+ Transport; Wed, 31 Aug 2022 09:03:39 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT077.mail.protection.outlook.com (10.13.175.55) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT061.mail.protection.outlook.com (10.13.175.200) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Wed, 31 Aug 2022 09:03:35 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 31 Aug
- 2022 09:03:34 +0000
+ 15.20.5588.10 via Frontend Transport; Wed, 31 Aug 2022 09:03:39 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 31 Aug
+ 2022 09:03:38 +0000
 Received: from nvidia.com (10.126.231.35) by rnnvmail201.nvidia.com
  (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
- 2022 02:03:30 -0700
+ 2022 02:03:34 -0700
 From:   Gavin Li <gavinl@nvidia.com>
 To:     <stephen@networkplumber.org>, <davem@davemloft.net>,
         <jesse.brandeburg@intel.com>, <alexander.h.duyck@intel.com>,
@@ -66,9 +66,9 @@ To:     <stephen@networkplumber.org>, <davem@davemloft.net>,
         <virtualization@lists.linux-foundation.org>,
         <virtio-dev@lists.oasis-open.org>, <mst@redhat.com>
 CC:     <gavi@nvidia.com>, <parav@nvidia.com>
-Subject: [PATCH v4 1/2] virtio-net: introduce and use helper function for guest gso support checks
-Date:   Wed, 31 Aug 2022 12:03:04 +0300
-Message-ID: <20220831090305.63510-2-gavinl@nvidia.com>
+Subject: [PATCH v4 2/2] virtio-net: use mtu size as buffer length for big packets
+Date:   Wed, 31 Aug 2022 12:03:05 +0300
+Message-ID: <20220831090305.63510-3-gavinl@nvidia.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220831090305.63510-1-gavinl@nvidia.com>
 References: <20220831090305.63510-1-gavinl@nvidia.com>
@@ -80,23 +80,23 @@ X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
  rnnvmail201.nvidia.com (10.129.68.8)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d2037364-62ef-4cb6-9a0b-08da8b2faf9e
-X-MS-TrafficTypeDiagnostic: SA0PR12MB4430:EE_
+X-MS-Office365-Filtering-Correlation-Id: d571e5ac-fc4c-4105-86cf-08da8b2fb215
+X-MS-TrafficTypeDiagnostic: SA0PR12MB4352:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: vnpvSgHtV1nYrxnfjYCL1ostCiaGNlfaw3dX+3Jq52ij3xmEeTS9vFZrdk4v08Rk8Ck87oo1+Os5uuKUosHzCi60BZQLno8d/OzvMK+XG+TuEQYrZHLDNXnOEdlQxID1rlHapLwhZnUyPx1AwU91OWbFDAql2THqX2zkmHm3uNgof/OBWUn6e3+q3NfEEPc5eW7aFnd7m7vEybAMRjVOzVcmSKtWsqh3YqX/EY0VP1qc7MNEGU3gu9m2MhPIGO/nmyFxfg2co4P5X5o7x1nAJ3xymHXiiGCF1NnlqukjMpd5f2jneI+tyETEZAVJEAPcq+BJeYv28DYGpGAp2r0Bmh41MC06C7hoe+cV8Pq0N1xnE3mAg90N80dNS52reA4fXtOujqdYwiHwnMmg4V2v0qjThkUnTZLiY0e0+sxvoeZ2hf8exZKMyR4+QsvJvPJ8mF8xtRt7eg96xpowSvGLiW8qtjQ+41M+TivMTEmG5Flt17UM0U2OGvJuyhO18tFSGRFWL5KxPKIIdYB0W1zPJUfjple2RjaDfE2xOpvTHCn/aLDaiipxDS7B9LfrQPsbij8Xs4o8UPAn0cuoZS/heH8R+ynSzxHK7fMBZL6vYioe22y3d3QgS57VzKtb4o4p7pzZ4yH5vLNq9NhXal0JaZmcfCUcG1NQVRJw99kSdjtFlhFC8TI7+u/9qSrsEyfY7AJFdWx/697u6Cp6xo5E57kWsg3x2wMu59ffQGxn3N1vuBFcvphvWJ4YrRKE13L+zKJTERrYzH0pDo/1RbJjggBu+771qFq0qZpj3ztQkEUY8vLggo0bEnEL1fA8uf2V
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(346002)(136003)(39860400002)(396003)(36840700001)(40470700004)(46966006)(55016003)(40480700001)(36860700001)(921005)(356005)(86362001)(40460700003)(82740400003)(81166007)(82310400005)(8676002)(4326008)(478600001)(7416002)(6666004)(5660300002)(41300700001)(70206006)(70586007)(8936002)(110136005)(54906003)(316002)(47076005)(83380400001)(336012)(16526019)(1076003)(186003)(426003)(26005)(6286002)(2906002)(7696005)(2616005)(107886003)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: SoEdyByD5HBX95SK9HCsMesfDZM/nlJjJ9YlsShfRkYwqA2JxtIevjMFSfWhN+Ssb29sr1ssXLd+S8HsFGsc0Nl719oHVVYmmXJA1GUAUfu5DdDlc4GVphwJAMUx3TmAnkwPdUjJ5Uq8FlQ1Q6n5hl6pix84q+0sZCW+zvKNA+RFgKg+q+fJ0KA55RNXRyuZnSFPcOd//qWC17duWmiGftysYucZI2w5QrLOFUBApk9KiTG7QeMwKOMpZxXshKzGe5WxMiEUYkGECgb0ugEQXd5WT4dhaJcg8rddVL5y39JmO3FYYVdSxgwt4PcXlvpibC/4huHPRQIrd9wIqeO0bWHt/3g5EGtXraiSt1djWug11zhbp00EJMTpIeTkhUNBoM2TCw+qpbIqa5hFfiI8ho5z+Y4sP+3piU1ODWgnw7mItPRC7452FN+0YhRLOimRf8O4LP7ZhoObHmGrvXqbRym7wW4vy9LFYTUaVrM9+g13HXD0vHi01PZ/+KKR9+cqM3aONQZUS+LdVTBrUsMEsAGf4lw8BgFCxuLPsLRlDGMAu9IWcPJVEWXdjwQwL0Ek5XcYWr4/zGei/AeQ3NYgSfFtN/qFiUFIVu2dorUuOumNDoA13ZvF40pfoASIlPi7IUjp4YFEZfiWRv3Q5umnWl2KkUmFfdfccLChnQxYo8wWD38udkBfbz6UwjZmST4prbdF6YGiWoX3819P9PL7J82IZC05bD4tharzvYWSC1BlxJmVoq6TQ/Jm8aIV3nUj68F3IXtQZ59KPHdOgf7j6Awv9NyF9liSEwVKo4eVmU7Yd75rCd3XDCGLYWNoGouV
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(346002)(376002)(39860400002)(36840700001)(40470700004)(46966006)(2616005)(1076003)(186003)(36756003)(83380400001)(82740400003)(2906002)(16526019)(7416002)(336012)(5660300002)(82310400005)(426003)(47076005)(8936002)(26005)(6286002)(316002)(36860700001)(7696005)(70206006)(70586007)(4326008)(8676002)(6666004)(107886003)(81166007)(110136005)(86362001)(41300700001)(54906003)(921005)(356005)(55016003)(478600001)(40460700003)(40480700001)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 09:03:35.1383
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 09:03:39.2731
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2037364-62ef-4cb6-9a0b-08da8b2faf9e
+X-MS-Exchange-CrossTenant-Network-Message-Id: d571e5ac-fc4c-4105-86cf-08da8b2fb215
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT077.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT061.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4430
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR12MB4352
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -107,51 +107,149 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Probe routine is already several hundred lines.
-Use helper function for guest gso support check.
+Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
+packets even when GUEST_* offloads are not present on the device.
+However, if guest GSO is not supported, it would be sufficient to
+allocate segments to cover just up the MTU size and no further.
+Allocating the maximum amount of segments results in a large waste of
+buffer space in the queue, which limits the number of packets that can
+be buffered and can result in reduced performance.
+
+Therefore, if guest GSO is not supported, use the MTU to calculate the
+optimal amount of segments required.
+
+When guest offload is enabled at runtime, RQ already has packets of bytes
+less than 64K. So when packet of 64KB arrives, all the packets of such
+size will be dropped. and RQ is now not usable.
+
+So this means that during set_guest_offloads() phase, RQs have to be
+destroyed and recreated, which requires almost driver reload.
+
+If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
+always treat them as GSO enabled.
+
+Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
+1 VQ, queue size 1024, before and after the change, with the iperf
+server running over the virtio-net interface.
+
+MTU(Bytes)/Bandwidth (Gbit/s)
+             Before   After
+  1500        22.5     22.4
+  9000        12.8     25.9
 
 Signed-off-by: Gavin Li <gavinl@nvidia.com>
 Reviewed-by: Gavi Teitz <gavi@nvidia.com>
 Reviewed-by: Parav Pandit <parav@nvidia.com>
 ---
 changelog:
+v3->v4
+- Addressed comments from Si-Wei
+- Rename big_packets_sg_num with big_packets_num_skbfrags
+v2->v3
+- Addressed comments from Si-Wei
+- Simplify the condition check to enable the optimization
 v1->v2
-- Add new patch
+- Addressed comments from Jason, Michael, Si-Wei.
+- Remove the flag of guest GSO support, set sg_num for big packets and
+  use it directly
+- Recalculate sg_num for big packets in virtnet_set_guest_offloads
+- Replace the round up algorithm with DIV_ROUND_UP
 ---
- drivers/net/virtio_net.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/net/virtio_net.c | 37 ++++++++++++++++++++++++-------------
+ 1 file changed, 24 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 9cce7dec7366..e1904877d461 100644
+index e1904877d461..ba2852b41795 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -3682,6 +3682,14 @@ static int virtnet_validate(struct virtio_device *vdev)
- 	return 0;
+@@ -225,6 +225,9 @@ struct virtnet_info {
+ 	/* I like... big packets and I cannot lie! */
+ 	bool big_packets;
+ 
++	/* number of sg entries allocated for big packets */
++	unsigned int big_packets_num_skbfrags;
++
+ 	/* Host will merge rx buffers for big packets (shake it! shake it!) */
+ 	bool mergeable_rx_bufs;
+ 
+@@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+ 	char *p;
+ 	int i, err, offset;
+ 
+-	sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
++	sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
+ 
+-	/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
+-	for (i = MAX_SKB_FRAGS + 1; i > 1; --i) {
++	/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
++	for (i = vi->big_packets_num_skbfrags + 1; i > 1; --i) {
+ 		first = get_a_page(rq, gfp);
+ 		if (!first) {
+ 			if (list)
+@@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
+ 
+ 	/* chain first in list head */
+ 	first->private = (unsigned long)list;
+-	err = virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
++	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrags + 2,
+ 				  first, gfp);
+ 	if (err < 0)
+ 		give_pages(rq, first);
+@@ -3690,13 +3693,27 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
+ 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO));
  }
  
-+static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
++static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
 +{
-+	return (virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO4) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO));
++	bool guest_gso = virtnet_check_guest_gso(vi);
++
++	/* If device can receive ANY guest GSO packets, regardless of mtu,
++	 * allocate packets of maximum size, otherwise limit it to only
++	 * mtu size worth only.
++	 */
++	if (mtu > ETH_DATA_LEN || guest_gso) {
++		vi->big_packets = true;
++		vi->big_packets_num_skbfrags = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
++	}
 +}
 +
  static int virtnet_probe(struct virtio_device *vdev)
  {
  	int i, err = -ENOMEM;
-@@ -3777,10 +3785,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	struct net_device *dev;
+ 	struct virtnet_info *vi;
+ 	u16 max_queue_pairs;
+-	int mtu;
++	int mtu = 0;
+ 
+ 	/* Find if host supports multiqueue/rss virtio_net device */
+ 	max_queue_pairs = 1;
+@@ -3784,10 +3801,6 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
  	spin_lock_init(&vi->refill_lock);
  
- 	/* If we can receive ANY GSO packets, we must allocate large ones. */
--	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
--	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
--	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
--	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
-+	if (virtnet_check_guest_gso(vi))
- 		vi->big_packets = true;
- 
+-	/* If we can receive ANY GSO packets, we must allocate large ones. */
+-	if (virtnet_check_guest_gso(vi))
+-		vi->big_packets = true;
+-
  	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
+ 		vi->mergeable_rx_bufs = true;
+ 
+@@ -3853,12 +3866,10 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 
+ 		dev->mtu = mtu;
+ 		dev->max_mtu = mtu;
+-
+-		/* TODO: size buffers correctly in this case. */
+-		if (dev->mtu > ETH_DATA_LEN)
+-			vi->big_packets = true;
+ 	}
+ 
++	virtnet_set_big_packets_fields(vi, mtu);
++
+ 	if (vi->any_header_sg)
+ 		dev->needed_headroom = vi->hdr_len;
+ 
 -- 
 2.31.1
 
