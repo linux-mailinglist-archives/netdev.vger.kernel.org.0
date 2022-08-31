@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3455A8234
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 779715A8237
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:51:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231435AbiHaPuA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 11:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
+        id S231325AbiHaPvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 11:51:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231962AbiHaPtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:49:52 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7DF1112
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:49:48 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id n23-20020a7bc5d7000000b003a62f19b453so11938009wmk.3
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:49:48 -0700 (PDT)
+        with ESMTP id S231226AbiHaPvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:51:09 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD5A00FB
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:51:08 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id y3so29287877ejc.1
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 08:51:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject:from:to:cc
-         :subject:date;
-        bh=5KSJENTLk4SwH6uBRAADUZRugnJgHy7M1ZUyZ80xvbU=;
-        b=UuvidNMcW217OEM2ndpSB4/tsiQ56ipGh8h9mA4onZjlL6i4PFoZdBQ/aJpIsByrTs
-         +QrldLkXXm6mnz4LUWAAS3r3txRooDJJkPqsTlaQBfCOJNeaogdeItc9ABS9X40KrAWH
-         UgyZ5lgE2i7+CkT/157sZflhvstLd5yRpxRMNBiIsusISFBum9QYyf1jyhO8TQBzBtCk
-         hEqQWLoCKQzAXmC1Za78zXxlc17K0yiFRc9GA0b6FDtpZBQKI50hYb6GpNTZud42mztJ
-         zDUzFfhk7NaHanaGuoPvU3caDtPB/miUKIGJHM3qeaPOBqUXBzcWMWOmnIAhj8pmuuPi
-         db0w==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=8YXY7kgcCtlxEkuep5vzMOjNh6z7ODopnaBrOHxrTC4=;
+        b=h+WPwNZYU3rEtRvyqj4ThKglx/jFTlzmkV0+Ofhx5o2UUF0uHluzf2B1yFksmI3IAI
+         UGizuvIBSfEWHEGv0Xp98l5QMD4xjHY0OcHOZwkGV+NYK2ndpULGEdHXgEzl2dasOXPa
+         0BB7wvfTyvMIB1Z1KAJaWQKfbM9KdblMP1TySCX2mr3I9D/XHnrYRbFvJSdLBkf+FKGi
+         kt/ggXNyHDnumMF2TCDIWg5pp2q6ONXkvkNirEW/+v9xuYJC5/nVXZcPElPScqGoW0/g
+         jUCni0vnyGYPGE5cMPRn8avy6RLn7HVoAZN6piFgcKf7VV7rvNNToiXzhVxSL66P3Gr1
+         LfWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:content-language:in-reply-to:mime-version
-         :user-agent:date:message-id:from:references:cc:to:subject
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=5KSJENTLk4SwH6uBRAADUZRugnJgHy7M1ZUyZ80xvbU=;
-        b=bXoiM8T125wyhV8BStI6ln6wP/Z/aP2W3mTSQYGvdkqFxDg7WydfhMjE25O0NmYCqw
-         qKMToRV+AdRmlg/7kGp/S0SYBnkqTIDj8jbBwEF8OyCrxHG59Uizyl0V2ogD7EqzhpZn
-         RIkkxD7iKpwtCyvOlsh9ifo1I9tmIRL+R4jqCSAe7a73gkSqpju5X1xOgMpJzm8nH9Xu
-         cjsJHk5i+HDX4QAMMcYogqHzvDG2ZrWZmukqWBe0EcUlu+taXhpqKeuzdoGHj3PCAJXW
-         3qq5be0hB0ns9T8+I1xx5KVSZ++MJDoXU9zeL+C/+R801JOg18GYGIjp50XfA0QUwsWL
-         6Nuw==
-X-Gm-Message-State: ACgBeo1Deucqtk82ZDnbvKZHGtq3DgV3cXw/3+FD+y0TG3pSvNS50jrC
-        4B8RyhkYampBdGKQ2mbasno=
-X-Google-Smtp-Source: AA6agR6DJiKx03ROlEasqlNDP9qULhfhsYMp0wtNUaapmbrtsMsZtsKGSghOEfhHGZufs2iV3kH1rA==
-X-Received: by 2002:a05:600c:2256:b0:3a5:c27d:bfb2 with SMTP id a22-20020a05600c225600b003a5c27dbfb2mr2378008wmm.102.1661960986933;
-        Wed, 31 Aug 2022 08:49:46 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
-        by smtp.gmail.com with ESMTPSA id ay19-20020a05600c1e1300b003a682354f63sm2880078wmb.11.2022.08.31.08.49.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 08:49:46 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 2/3] sfc: support PTP over IPv6/UDP
-To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
-        habetsm.xilinx@gmail.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org, richardcochran@gmail.com
-References: <20220825090242.12848-1-ihuguet@redhat.com>
- <20220831101631.13585-1-ihuguet@redhat.com>
- <20220831101631.13585-3-ihuguet@redhat.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <cba0d678-259b-7802-85c1-0cb15dcbb63f@gmail.com>
-Date:   Wed, 31 Aug 2022 16:49:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=8YXY7kgcCtlxEkuep5vzMOjNh6z7ODopnaBrOHxrTC4=;
+        b=P+ftk1puZU7kV7ir4ZwZNMjTHrxSctfu49jBfAaB4Kgxnj3wr0JKMkVvqSZ5jKFjfV
+         un17CiHLrGwdKoTT6iz5TwvXr+71+CCa4fDcunuZBw/v1RxFfoLOm2g7QmU20O1nZrv/
+         myedivKGRR/iuSbIY8kH4c/Yv+CyzLNwqQOBMzwZBOkt5ZzmcPSFkFAXvBnvLnvc8gIj
+         eSkkhTnOE+PJZnWEZCRCFiTzT/16OmAEOv9G5J3n/e228bVtRT4ShQMikWOYYIzBba7o
+         KcAzo887sXmNYG5DVBr6Hte1p49TgVSxkc+BDSwuP0Ab8FQvIk0IykAB4Hk2YXawoelx
+         f2yA==
+X-Gm-Message-State: ACgBeo1aso3aSkAe3OvcynhMjTUcRh1eTJ2HaQw+tzJOqXzM6DwW1vZl
+        g0TvaMyIo5u0PBwNZoJ2Xu0=
+X-Google-Smtp-Source: AA6agR4M8ntdHyfj8dsJi4q19vQvMTXxVNyjQx0j6LztmoVE+p5H4VsFc/J1W5SUBZKJD9nMU2wBmQ==
+X-Received: by 2002:a17:906:99c1:b0:6fe:b01d:134 with SMTP id s1-20020a17090699c100b006feb01d0134mr20337438ejn.598.1661961066673;
+        Wed, 31 Aug 2022 08:51:06 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id fh10-20020a1709073a8a00b007307d099ed7sm7188562ejc.121.2022.08.31.08.51.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 08:51:05 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 18:51:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Romain Naour <romain.naour@smile.fr>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, pabeni@redhat.com,
+        kuba@kernel.org, edumazet@google.com, davem@davemloft.net,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
+        Romain Naour <romain.naour@skf.com>,
+        Arun Ramadoss <arun.ramadoss@microchip.com>
+Subject: Re: [PATCH v2 1/2] net: dsa: microchip: add KSZ9896 switch support
+Message-ID: <20220831155103.2v7lfzierdji3p3e@skbuf>
+References: <20220830075900.3401750-1-romain.naour@smile.fr>
+ <20220831153804.mqkbw2ln6n67m6jf@skbuf>
+ <e7ba61d7-de75-3cfe-ee92-3f234dd36289@smile.fr>
 MIME-Version: 1.0
-In-Reply-To: <20220831101631.13585-3-ihuguet@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e7ba61d7-de75-3cfe-ee92-3f234dd36289@smile.fr>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -77,33 +75,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/08/2022 11:16, Íñigo Huguet wrote:
-> commit bd4a2697e5e2 ("sfc: use hardware tx timestamps for more than
-> PTP") added support for hardware timestamping on TX for cards of the
-> 8000 series and newer, in an effort to provide support for other
-> transports other than IPv4/UDP.
+On Wed, Aug 31, 2022 at 05:43:27PM +0200, Romain Naour wrote:
+> The patch was runtime tested on a 6.0-rc2 kernel and a second time on a 6.0-rc3
+> kernel but not on net-next.
 > 
-> However, timestamping was still not working on RX for these other
-> transports. This patch add support for PTP over IPv6/UDP.
-> 
-> Tested: sync as master and as slave is correct using ptp4l from linuxptp
-> package, both with IPv4 and IPv6.
-> 
-> Suggested-by: Edward Cree <ecree.xilinx@gmail.com>
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> ---
-<snip>> -	rc = efx_filter_insert_filter(efx, &rxfilter, true);
-> +	int rc = efx_filter_insert_filter(efx, rxfilter, true);
->  	if (rc < 0)
->  		return rc;
-> -
->  	ptp->rxfilters[ptp->rxfilters_count] = rc;
->  	ptp->rxfilters_count++;
-> -
->  	return 0;
->  }
+> Is it ok with rc releases or do I need to test on net-next too?
 
-These whitespace changes seem like churn given that this code was
- added in patch #1.  If respinning maybe make the two consistent?
+The kernel development process is that you normally test a patch on the
+git tree on which it is to be eventually applied.
 
--ed
+The net-next.git tree is periodically (weekly) merged with the 6.0
+release candidates where bug fixes land, but it contains newly developed
+material intended for the 6.1 release candidates (hence the "next" name).
+
+If you keep formatting development patches against the plain 6.0 release
+candidates, you may eventually run into a conflict with some other new
+development, and you may never even know.
