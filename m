@@ -2,65 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CC8E5A88B2
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 00:00:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7840E5A88B8
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 00:01:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232461AbiHaWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 18:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S232484AbiHaWA0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 18:00:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232331AbiHaWAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 18:00:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DEAD6B8CE;
-        Wed, 31 Aug 2022 15:00:18 -0700 (PDT)
+        with ESMTP id S232463AbiHaWAY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 18:00:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BB56DAEE;
+        Wed, 31 Aug 2022 15:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C789861B54;
-        Wed, 31 Aug 2022 22:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 325C4C43140;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3F42ACE2371;
+        Wed, 31 Aug 2022 22:00:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 19728C433B5;
         Wed, 31 Aug 2022 22:00:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1661983217;
-        bh=0Id/y64t6cfH50JJx8vqYFk/uzNSHQPlNmuqbIiJDNc=;
+        bh=D2hckKTWv4BB2ko/rlSdTwsjSj88gseeyvmPpsyYjY4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=L2tbZx18UUI5eb9f+nbj2OM8C65zE9IdAgVWMM0V97J/r0SyCq0frSFuyc4HQkXF1
-         AXp3mFNl1CoBp7igprBlgNyTPQK7smdSNTDoi7tHevthxgW7JMj85A+Vr6HX3/SpUK
-         8NpxeZ+tKMuvSyCH1WLQH6szonmRdAIDP3KKjsd8jz5BRDdztKOSdb4NN+flO6UFVs
-         ldPoabPd3bcesPcXcVRAv6UTpBjYXRb1Lpk4a37oI7Kl5SkiI29sLtcR3RUGNoVG7w
-         2ChZKTQT2G+d2CAE+VYnr/nBmJBmMWtGZKZwhQo1M/NNtx5nOaPBIPvVUNSh4C6vXQ
-         siLSuXk0YdA+w==
+        b=OBDpf6NekLJPoBGwSFts/vCEIXfXQ+t8afU++8QV+ZM6wMapDpgV/55jr8/umjNNz
+         nwdZdc0tuQ0UjsNOFU6npmuI7XiByTI/lSL/SPGw4p1TjDgWE5LwspHiPBUfKNB0nr
+         3xC/orlQ5jyxKie1tcQfIpu/j90SBA/4bVby/4ewxGvGhke7Qa5J3/YaJd4iQjgvwa
+         95n4Mz44YO96Lpcw+NAJy5IseI13V71GbgvX+bBs5HascffJOiIDsVWOYXJ1mgRlns
+         Z/g5dI6rCHcqE2bGuJKH3o8m8YEql71KpYjN42Ps8b1hCA3YLQN9YsFTxLbg6cOoGo
+         +nhqd2DFaWmxA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 10271E924DC;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0259CE924D6;
         Wed, 31 Aug 2022 22:00:17 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 1/3] net: move from strlcpy with unused retval to strscpy
+Subject: Re: [PATCH net-next v1] r8152: allow userland to disable multicast
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166198321706.20200.5436138666484099605.git-patchwork-notify@kernel.org>
+Message-Id: <166198321700.20200.2886724035407277786.git-patchwork-notify@kernel.org>
 Date:   Wed, 31 Aug 2022 22:00:17 +0000
-References: <20220830201457.7984-1-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20220830201457.7984-1-wsa+renesas@sang-engineering.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc:     linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, wg@grandegger.com, f.fainelli@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, olteanv@gmail.com,
-        kurt@linutronix.de, kys@microsoft.com, haiyangz@microsoft.com,
-        sthemmin@microsoft.com, wei.liu@kernel.org, decui@microsoft.com,
-        sridhar.samudrala@intel.com, jdmason@kudzu.us,
-        dave.jiang@intel.com, allenbh@gmail.com,
-        michael.hennerich@analog.com, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
-        jiri@resnulli.us, petkan@nucleusys.com, oneukum@suse.com,
-        mst@redhat.com, jasowang@redhat.com, doshir@vmware.com,
-        pv-drivers@vmware.com, dsahern@kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        ntb@lists.linux.dev, linux-usb@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
+References: <20220830045923.net-next.v1.1.I4fee0ac057083d4f848caf0fa3a9fd466fc374a0@changeid>
+In-Reply-To: <20220830045923.net-next.v1.1.I4fee0ac057083d4f848caf0fa3a9fd466fc374a0@changeid>
+To:     Sven van Ashbrook <svenva@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, levinale@google.com,
+        chithraa@google.com, frankgor@google.com, aaron.ma@canonical.com,
+        dober6023@gmail.com, davem@davemloft.net, edumazet@google.com,
+        chenhao288@hisilicon.com, hayeswang@realtek.com, kuba@kernel.org,
+        jflf_kernel@gmx.com, pabeni@redhat.com, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -73,27 +62,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue, 30 Aug 2022 22:14:52 +0200 you wrote:
-> Follow the advice of the below link and prefer 'strscpy' in this
-> subsystem. Conversion is 1:1 because the return value is not used.
-> Generated by a coccinelle script.
+On Tue, 30 Aug 2022 04:59:39 +0000 you wrote:
+> The rtl8152 driver does not disable multicasting when userspace asks
+> it to. For example:
+>  $ ifconfig eth0 -multicast -allmulti
+>  $ tcpdump -p -i eth0  # will still capture multicast frames
 > 
-> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-> Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for CAN
+> Fix by clearing the device multicast filter table when multicast and
+> allmulti are both unset.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2,1/3] net: move from strlcpy with unused retval to strscpy
-    https://git.kernel.org/netdev/net-next/c/fb3ceec187e8
-  - [v2,2/3] net: wireless: move from strlcpy with unused retval to strscpy
-    (no matching commit)
-  - [v2,3/3] net: ethernet: move from strlcpy with unused retval to strscpy
-    https://git.kernel.org/netdev/net-next/c/f029c781dd6d
+  - [net-next,v1] r8152: allow userland to disable multicast
+    https://git.kernel.org/netdev/net-next/c/7305b78ae45f
 
 You are awesome, thank you!
 -- 
