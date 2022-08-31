@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09CFD5A87F2
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 23:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41E5C5A87F8
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 23:17:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229751AbiHaVNv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 17:13:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34374 "EHLO
+        id S231771AbiHaVRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 17:17:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230266AbiHaVNl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 17:13:41 -0400
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01EABDEA44;
-        Wed, 31 Aug 2022 14:13:38 -0700 (PDT)
-Received: from [IPV6:2003:e9:d720:85aa:808b:c60d:ed1c:7084] (p200300e9d72085aa808bc60ded1c7084.dip0.t-ipconnect.de [IPv6:2003:e9:d720:85aa:808b:c60d:ed1c:7084])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 9B993C0253;
-        Wed, 31 Aug 2022 23:13:36 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=datenfreihafen.org;
-        s=2021; t=1661980416;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zWMWIKD9VTkKr1KmGH2YBdLsA0ETWQ5s/8ePpQZheys=;
-        b=g+4G3ht7oXITMo+acGAFsVMDt/H5RW3eriAbEFnCuSMQh2kK3kfM/QVZ2jK3cnkM8N6cQc
-        O1l5mCPzlw7n1SYgYM2DuShTriapHtpbQzd1wSLRtLGwfttMa9wrL1e9mGc3+1XGnjrmiw
-        UHAjugfnig1QFS5wzg6obBdPP5ZryFIUzOOM/KrdFZ50BIyrgKfhQIvf97VOOIAy2EPSOh
-        CG/iGYA3G7PsRhRI2S7uqQ668uH0Y8QFesamkaFQxhQWCYOB8le6VkghEQ6H6pil0y//Ep
-        Ajf90q740WllYYkKgkEoVLU7a7RdhsUEu/8sSswzMNaso4wePzKZnsPFOrHZhA==
-Message-ID: <2b604558-ff97-78be-6534-09e20bebd0d1@datenfreihafen.org>
-Date:   Wed, 31 Aug 2022 23:13:36 +0200
+        with ESMTP id S231755AbiHaVRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 17:17:04 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2117.outbound.protection.outlook.com [40.107.20.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2BA1D21F7;
+        Wed, 31 Aug 2022 14:17:02 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VegpFVN/BMDAbNZP2Kzg3LpDefh/Btzp2ADYSsYN5gcXSBSZih80F8+Qt6177ykLzPtVcnVfXZHDjYQuBTJBVez4ouPz4FjaR86rn0C0kbrm/vMEtVw/R6dbL9vO/xP1t9TXN7UXSQRDjb1E+Szx2DtG3oD0co45oLdUOkdVjyHr1drLLeJ79HAElTxqEgFVSe0RlYOQCmTdrDLCHV7JQnLkOd8527jwO/WP4naJYsbaXTRbD+f+Y9EhMXdZqoijjuetQavLWK2PCBBlykMOtanLdvc9CKR8fUNlDrXV4fPZ0RSr+gI6BPQc9Ua7NqoPofLjWVK9KaqJ3MGRvvp7vw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rKsYHRNhH8ZjG9prD0jx73BlaPhssWAIDKmBR3v4yyA=;
+ b=Vz7vit14ERwKDzZLjDgPBiN560FttTKr/MpyF8P501MgvglOWld6ddiXPYHg7atAwGTaGvKNHNn5txYMxD3cnqKtysAdoMsKYbIvFurdbJwlxmbOqQY36+cWZh0T+GRHolEuTXlgREGq7HZPeeKxyuU+fPgjMVEeu1d9yCg5OzgWSHSDBt5CXeBoERfZbdHNfa1mzys801NIR9y4bH1zEDjVacVL7XC46z5EurPqQlX1BN1opGiCJhvAv/M6j0dO7IwgNIsvU+/Wu/4oPKyt5uSCJ48/tSmqBbiLHp2AwCm2oq+Am1Fcduhadzc7InQ2Gwd0R4ZI/Oz3FKT+oae9Dw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rKsYHRNhH8ZjG9prD0jx73BlaPhssWAIDKmBR3v4yyA=;
+ b=G8ACd/QZz2+SB4qYc7R3SJVk5wV1QdbNq2kju1fv65Y8it0THaROL8SQyj9Zv0mt8DgEJm/u7m0b4fOznoqn01YH33O/vsI2fAChbNCPAzQlHaeRo+fdo5FEHMvnz0XHmn/4PdzGMpbcgiyvNHf1Z699kDL3QAVI4APr3WaOHmo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=plvision.eu;
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM (2603:10a6:102:283::6)
+ by DBAP190MB0855.EURP190.PROD.OUTLOOK.COM (2603:10a6:10:1ae::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Wed, 31 Aug
+ 2022 21:17:00 +0000
+Received: from PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e8ee:18d2:8c59:8ae]) by PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ ([fe80::e8ee:18d2:8c59:8ae%7]) with mapi id 15.20.5566.021; Wed, 31 Aug 2022
+ 21:17:00 +0000
+Date:   Thu, 1 Sep 2022 00:16:56 +0300
+From:   Yevhen Orlov <yevhen.orlov@plvision.eu>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Volodymyr Mytnyk <volodymyr.mytnyk@plvision.eu>,
+        Taras Chornyi <taras.chornyi@plvision.eu>,
+        Mickey Rachamim <mickeyr@marvell.com>,
+        Serhiy Pshyk <serhiy.pshyk@plvision.eu>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        linux-kernel@vger.kernel.org, Taras Chornyi <tchornyi@marvell.com>,
+        Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Subject: Re: [PATCH net-next v4 7/9] net: marvell: prestera: add stub handler
+ neighbour events
+Message-ID: <Yw/PyBkjqaTSaxzM@yorlov.ow.s>
+References: <20220825202415.16312-1-yevhen.orlov@plvision.eu>
+ <20220825202415.16312-8-yevhen.orlov@plvision.eu>
+ <20220830151100.10ea3800@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220830151100.10ea3800@kernel.org>
+X-ClientProxiedBy: AS8PR04CA0083.eurprd04.prod.outlook.com
+ (2603:10a6:20b:313::28) To PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:102:283::6)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next] net: ieee802154: Fix compilation error when
- CONFIG_IEEE802154_NL802154_EXPERIMENTAL is disabled
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>
-Cc:     Gal Pressman <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Leon Romanovsky <leonro@nvidia.com>, linux-wpan@vger.kernel.org
-References: <20220830101237.22782-1-gal@nvidia.com>
- <20220830231330.1c618258@kernel.org>
- <4187e35d-0965-cf65-bff5-e4f71a04d272@nvidia.com>
- <20220830233124.2770ffc2@kernel.org> <20220831112150.36e503bd@kernel.org>
- <36f09967-b211-ef48-7360-b6dedfda73e3@datenfreihafen.org>
- <20220831140947.7e8d06ee@kernel.org>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-In-Reply-To: <20220831140947.7e8d06ee@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: aa867362-0bfb-4e92-7788-08da8b962476
+X-MS-TrafficTypeDiagnostic: DBAP190MB0855:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: euR3wSdz5aNib6Lf4fXr1DVqbtoa+EJFje0vy86khEkCfx13fPTGFbWJEULsLK1c3+pG2WN/GV72QUJpxFVbQ4EmO8k+KDcaQ+3oM0NEYn/2lX6XutnzYUidkCX7lGpVPtHJ9COiSJEzOr2uQzdirKcOxKAJXGdJQWtHHdKmLRq/6QMIIdFAtlOO+X8FbekrWNqkh+l4CL1umZs0CYS/ZExamwGKkxXES7zWgQpWEpj27xIJhgNwmuyvl5hmUgbIp29sW+Ea7sXrMjOmbOni8BmA6r2qzDQnGbpjg/i3QyvQ0OR1KfCMCgAntITNqKL3Pw6NajCDYLjhV7tV2Mod9uvIU6Y/X8v3DaAekgBPYnL/0AbJGQYGbAR80CgdnTImupGHoEa5TBZgDCKgjE2bhRKkfbmubYDbBev1BClqgc96P6A75irDQDCraon0T6Xig6eWoEzEFuLoUIEWd2eTu/VmKvxQ94D8+gOXNwX97oh98wNmp4rieHTeSUqSoCAlH54Nmq5vloP35wzvIFN5kHy53zDlkHvXsMzYhsciWeVa0dRMG9nwoSz91K2U7KBp3MhcnNrxoqkuOjSmGLn5T56E6QLOhA6oD0XuSFh5wy3swKMGNebiiCakYhQZhvqypas0tGV9lWMcJuigR2jVtbgE4GOaz6p4GrMz3vvsa34f/EWgp4bYKvtIKa4n9NWWtUfyVsGqcrteTf+8ZSrAzjPYlmDDSz9HdPgbKCS2WrUAsYOtCat8JIL4Od1bXMEO
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAXP190MB1789.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(34036004)(39830400003)(396003)(376002)(366004)(136003)(346002)(4744005)(83380400001)(2906002)(186003)(7416002)(9686003)(66946007)(41320700001)(5660300002)(44832011)(66574015)(52116002)(26005)(6512007)(8936002)(316002)(6666004)(6506007)(107886003)(66556008)(4326008)(8676002)(66476007)(38350700002)(38100700002)(6916009)(508600001)(41300700001)(54906003)(86362001)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?SNkFDX9rj22QAjz0NrIiFj0sflemiv5uhSZBLVJBHk6I5BbGFj7SvxRzXc8U?=
+ =?us-ascii?Q?Ii1spEWhdZqg9MDFLgRBSlG+zFPeq3hUVJxU3HXZXEd4IhpWwhTOz/mOY9w9?=
+ =?us-ascii?Q?zdjlUfoecExzFKtYMv+cZKOONEe48uZ7wzrwhMD6wpR3cOrJ36y2ibYnulv9?=
+ =?us-ascii?Q?AvTkvIyni2kN6CJe/BtslR1COF7ZJf81ZHqHF80kxTxruQwei+FlJglUtO/+?=
+ =?us-ascii?Q?13bhLcCngJQ/wDhO3zauNrf3+q98EcZB4tKfkdWZkSEEwRjbPVGMSXZB4+1h?=
+ =?us-ascii?Q?EafQObuXEPSsEo1+NRrvpYUuLKFcyAw8eX1YCIJg4uLlszVL0l/VFfx2iqEa?=
+ =?us-ascii?Q?l/Cq4MhbrFSD+bR/CmdjXsrOz97oMcDky6g2DN/wEF5jVAQs53azunGxjIVs?=
+ =?us-ascii?Q?6VHlh1OH76SyKj5nq3H53Sahe1NvOSjizyDk62Cm5h0h+z1NVvfSIAgnGjYc?=
+ =?us-ascii?Q?oNa7RusjW52YudX1hvnOEiMdefJW8diOfvq4xXOtLc0XiryvBKxsAGjkGOXG?=
+ =?us-ascii?Q?m6DSWI7LmX6iR6d1VTDiwcHaFtTpxxzWZ9AZmdjPClo+VWfH1m1PmbLuPp5F?=
+ =?us-ascii?Q?HvbOBm5h4yiRBb9CLb/qfcY7QejDJbTz5vEfHt//Ns+RvZfU3UH04cDW4evx?=
+ =?us-ascii?Q?D1oLwrZ+/foNBtyHJX58n56MBoA2Eh4paNcl8gjXn0LT/xFvPmpYkkwwWbPH?=
+ =?us-ascii?Q?IRv8uLKcSs5gI5EFtUF4l8F+5nJypZ231hUCOH7o/n0hKzXWIdkhsYQ6gima?=
+ =?us-ascii?Q?8svZ2zTe5x0HB3/mbeTqbnqJ7JLZsd2Forr3DptKaXWg/IvXduIm44jsdApt?=
+ =?us-ascii?Q?yKloAOtPmmtEqu2Cwip0PGaN3V7+1hO2qOFS5430qUWbp4tmMjAmukTujcBo?=
+ =?us-ascii?Q?jMeKS3zwa+G8OfbMKt5qJ6Dt5Csa9+M3lQ2rEQNtfkPUneogKNAHH7HgM824?=
+ =?us-ascii?Q?9VWNkaRQP0VoknGIa0hVenDKifGOMkmCEveldDRgCJ/BdZYP4wyLQZCW649m?=
+ =?us-ascii?Q?tn+YfaUK3V+20QfgrruW4ysyWkWxqvqtHQhmczyiUz15H6zV8sMKbz9ig095?=
+ =?us-ascii?Q?KPzcikbDJpUeQrxa2H7EVixLbfXi97UrGwRJhmGabxhvltKrBGq4nP7lqrdM?=
+ =?us-ascii?Q?YItD9M0zyyqH6qosDMgbKfSHngH1O6colDGTjouNqzp8RbfV288jsKvufu1B?=
+ =?us-ascii?Q?Sjeiwjh2DBiP1Z8Z5tBQk8ZpsBQHGbdtl7aJHxAZU1dzXytmUeoS98Nr59Bg?=
+ =?us-ascii?Q?KV/dJEpNz1M52UFIzGWD0ZdETdzW6y+fIu7mUT6H/ju5ao6knG4gJeWm4S/n?=
+ =?us-ascii?Q?C+AvhSoSa8KnY/wXjK9h7IshrB3Gwos7ROMKzVM3uHOIMUKDOkrolV93pjCK?=
+ =?us-ascii?Q?L2hoDYnZwc3tlPchWyWR78R025CPl1MMM4D7kOa/hmJzSn2Peu7xQ0Lo3Pts?=
+ =?us-ascii?Q?Wn5FX7Msy71XkbUREUAVlQhmXFAyRxMpinZQ5FYqz2Cd6iqd8TP6upHg77KE?=
+ =?us-ascii?Q?akNbIq9Xzr5Eyh7tFTP/mf/oxOLWNJSIxLIMu00U9MLdaBLW4yMY2BJJvgo9?=
+ =?us-ascii?Q?s/XXA5X/tPIYfsEPMaaAIu3GRUZyc8c108s2GcWsQKNzhkJbp42wnFqdoRAi?=
+ =?us-ascii?Q?Og=3D=3D?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa867362-0bfb-4e92-7788-08da8b962476
+X-MS-Exchange-CrossTenant-AuthSource: PAXP190MB1789.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 21:17:00.0538
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: vTT8mQbuMJRvcuxAPGGIppNRQwxyMnMV107q5EgOo7N0K8T8EsUkg78flILadm56n1iexDRgHzCtA7MBwu+8QDp/gHyy/sFCIqWyHzDxLEE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAP190MB0855
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Will recheck harder and update.
+Thank you for review.
 
-Hello Jakub.
-
-On 31.08.22 23:09, Jakub Kicinski wrote:
-> On Wed, 31 Aug 2022 22:59:14 +0200 Stefan Schmidt wrote:
->> I was swamped today and I am only now finding time to go through mail.
->>
->> Given the problem these ifdef are raising I am ok with having these
->> commands exposed without them.
->>
->> Our main reason for having this feature marked as experimental is that
->> it does not have much exposure and we fear that some of it needs rewrites.
->>
->> If that really is going to happen we will simply treat the current
->> commands as reserved/burned and come up with other ones if needed. While
->> I hope this will not be needed it is a fair plan for mitigating this.
+On Tue, Aug 30, 2022 at 03:11:00PM -0700, Jakub Kicinski wrote:
+> On Thu, 25 Aug 2022 23:24:13 +0300 Yevhen Orlov wrote:
+> > Actual handler will be added in next patches
 > 
-> Thanks for the replies. I keep going back and forth in my head on
-> what's better - un-hiding or just using NL802154_CMD_SET_WPAN_PHY_NETNS + 1
-> as the start of validation, since it's okay to break experimental commands.
+> Please make sure each point in the patch set builds cleanly.
+> Here we have a warning which disappears with the next patch:
 > 
-> Any preference?
-
-We saw other problems with these being behind ifdefs from build and 
-fuzzing bots. I say its time we un-hide and deal with them being 
-formerly deprecated and replaced by something else if it really comes to 
-changes for them (which we are not sure of)
-
-regards
-Stefan Schmidt
+> drivers/net/ethernet/marvell/prestera/prestera_router.c:624:26: warning: unused variable 'sw' [-Wunused-variable]
+>         struct prestera_switch *sw = net_work->sw;
+>                                 ^
