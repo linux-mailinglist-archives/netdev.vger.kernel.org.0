@@ -2,111 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 076765A82EA
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 18:19:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 268FA5A831B
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 18:25:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231824AbiHaQTP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 12:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
+        id S229959AbiHaQZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 12:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiHaQTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 12:19:14 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B809DD2E8E;
-        Wed, 31 Aug 2022 09:19:13 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id jm11so14565029plb.13;
-        Wed, 31 Aug 2022 09:19:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=IDuruBXPZyRpW8WGVSo/zI+lfAagsc1gmhwpLs9zMR0=;
-        b=BJf4BqZJJFq55/bNNWWPEeMFVJDFfFmCBzIF8E8kgum69JveHcigjWKL32B9dsqd1O
-         0PXEILqNTo8DWARlVnU5Y9LAgDY3VYInXJ8ac1crJODNlzblwKQK6ZFuBTZ6DGtRyhXZ
-         naOTIH8St/UUzaWcBD1R0PoRjhHPaQTuMs/7RubPsNJal1ihgDJUyWYJeA/qZONv/yeH
-         i7s60bqRzz5lAJ+HR+sZp9aDUJA6hTrsmTxF6gBKARtq7deP+5xYwb+lml3BhcyJJkbA
-         mthYBJq8Vl0cG40jQYt3D39BzRPlaCxWwXZC7KblkuYOS6o8Wt+yEAamUM1Gw+e3JFbs
-         WVKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=IDuruBXPZyRpW8WGVSo/zI+lfAagsc1gmhwpLs9zMR0=;
-        b=Tj9O5JbBWBrchiG/ptFKzpiFYjdAnAqgpER1OfRnWx/HXRfWO/+ycDqKpsQm0kJA+V
-         jV4ezqiwb3qWTvRNpRYfiSp2/NdggTD4UbNFBt/xCPUM7lwSLG5vvVBdJ2z0p0QyGpeG
-         gNB9rkgpu7AUdUgWbSy/67/OjAGg9nh946N1DvvZdXO3dMNWNYqHITf9J4QrO1du2e4+
-         PiLzf6Sth//rbXY8nBP1pxaM1vjOtlWBODWdHxWgdsAiQbjchLGE84KD9aH7tf9R4wQX
-         mIyqIY35usG/7tXP/vn9+ZimtTFWmiw0aowwbjU2V9OmDJKjemExd+1+OjShQOcm98Oj
-         dRDA==
-X-Gm-Message-State: ACgBeo1E7zlAaHGBEtxhSJjNgOhZRtFiv5iizTxoeXkU7ZhZxSl0dEzL
-        gs1XOYYF6Ix3ouy1jCDn2Tk=
-X-Google-Smtp-Source: AA6agR4PdcHOIiPhNW3UlboI8HviUh7nmNM1UGp4buynYZ56FU/Vv1XUJ6F+pboYdadfPc+WBQT7EQ==
-X-Received: by 2002:a17:90a:b007:b0:1f1:d31e:4914 with SMTP id x7-20020a17090ab00700b001f1d31e4914mr4120537pjq.36.1661962753308;
-        Wed, 31 Aug 2022 09:19:13 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id z15-20020aa7958f000000b00536aa488062sm7418869pfj.163.2022.08.31.09.19.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 09:19:12 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: cui.jinpeng2@zte.com.cn
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        edumazet@google.com
-Cc:     kuba@kernel.org, pabeni@redhat.com, mailhol.vincent@wanadoo.fr,
-        stefan.maetje@esd.eu, socketcan@hartkopp.net,
-        biju.das.jz@bp.renesas.com, cui.jinpeng2@zte.com.cn,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] can: sja1000: remove redundant variable ret
-Date:   Wed, 31 Aug 2022 16:18:35 +0000
-Message-Id: <20220831161835.306079-1-cui.jinpeng2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S229977AbiHaQY4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 12:24:56 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDD1B4B0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 09:24:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=LZNB626UwmuzbNhucYaYdWbkevcI435CJoyMikA1Zx8=; b=Z3
+        yQ1WRFe86gX1Oz/dRnDaIDoOfKzi9tJVUBhfwJLuUjgUOzk194saOve20fpej7CeBmKVtjCDxSwmz
+        Tah36xznzA2VSV6MJKG99kIAy56/GoQYE+ahBj35k8y7ccqRDz/zhVCbhcawMNrrNQkbOsAZaS5D/
+        qaaBnok03n7wDto=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oTQWJ-00FDWo-0I; Wed, 31 Aug 2022 18:24:51 +0200
+Date:   Wed, 31 Aug 2022 18:24:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?iso-8859-1?B?Q3Pza+Fz?= Bence <csokas.bence@prolan.hu>
+Cc:     netdev@vger.kernel.org, Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [PATCH] Use a spinlock to guard `fep->ptp_clk_on`
+Message-ID: <Yw+LUq3dii2q1FKQ@lunn.ch>
+References: <20220831125631.173171-1-csokas.bence@prolan.hu>
+ <Yw9qO+3WqqTUAsIG@lunn.ch>
+ <79e46d59-436c-ca82-cad4-15c3cb13b1cf@prolan.hu>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <79e46d59-436c-ca82-cad4-15c3cb13b1cf@prolan.hu>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+On Wed, Aug 31, 2022 at 04:21:47PM +0200, Csókás Bence wrote:
+> 
+> On 2022. 08. 31. 16:03, Andrew Lunn wrote:
+> > > diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> > > index b0d60f898249..98d8f8d6034e 100644
+> > > --- a/drivers/net/ethernet/freescale/fec_main.c
+> > > +++ b/drivers/net/ethernet/freescale/fec_main.c
+> > > @@ -2029,6 +2029,7 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+> > >   {
+> > >   	struct fec_enet_private *fep = netdev_priv(ndev);
+> > >   	int ret;
+> > > +	unsigned long flags;
+> > 
+> > Please keep to reverse christmas tree
+> 
+> checkpatch didn't tell me that was a requirement... Easy to fix though.
 
-Return value directly from register_candev() instead of
-getting value from redundant variable ret.
+checkpatch does not have the smarts to detect this. And it is a netdev
+only thing.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
----
- drivers/net/can/sja1000/sja1000.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> > >   	if (enable) {
+> > >   		ret = clk_prepare_enable(fep->clk_enet_out);
+> > > @@ -2036,15 +2037,15 @@ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+> > >   			return ret;
+> > >   		if (fep->clk_ptp) {
+> > > -			mutex_lock(&fep->ptp_clk_mutex);
+> > > +			spin_lock_irqsave(&fep->ptp_clk_lock, flags);
+> > 
+> > Is the ptp hardware accessed in interrupt context? If not, you can use
+> > a plain spinlock, not _irqsave..
+> 
+> `fec_suspend()` calls `fec_enet_clk_enable()`, which may be a
+> non-preemptible context, I'm not sure how the PM subsystem's internals
+> work...
+> Besides, with the way this driver is built, function call dependencies all
+> over the place, I think it's better safe than sorry. I don't think there is
+> any disadvantage (besides maybe a few lost cycles) of using _irqsave in
+> regular process context anyways.
 
-diff --git a/drivers/net/can/sja1000/sja1000.c b/drivers/net/can/sja1000/sja1000.c
-index 98dfd5f295a7..1bb1129b0450 100644
---- a/drivers/net/can/sja1000/sja1000.c
-+++ b/drivers/net/can/sja1000/sja1000.c
-@@ -661,8 +661,6 @@ static const struct ethtool_ops sja1000_ethtool_ops = {
- 
- int register_sja1000dev(struct net_device *dev)
- {
--	int ret;
--
- 	if (!sja1000_probe_chip(dev))
- 		return -ENODEV;
- 
-@@ -673,9 +671,7 @@ int register_sja1000dev(struct net_device *dev)
- 	set_reset_mode(dev);
- 	chipset_init(dev);
- 
--	ret =  register_candev(dev);
--
--	return ret;
-+	return register_candev(dev);
- }
- EXPORT_SYMBOL_GPL(register_sja1000dev);
- 
--- 
-2.25.1
+Those using real time will probably disagree.
 
+There is also a different between not being able to sleep, and not
+being able to process an interrupt for some other hardware. You got a
+report about taking a mutex in atomic context. That just means you
+cannot sleep, probably because a spinlock is held. That is very
+different to not being able to handle interrupts. You only need
+spin_lock_irqsave() if the interrupt handler also needs the same spin
+lock to protect it from a thread using the spin lock.
+
+     Andrew
