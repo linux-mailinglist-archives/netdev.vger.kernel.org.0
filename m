@@ -2,94 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03CEC5A76C2
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 08:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF5275A7704
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 09:05:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229488AbiHaGiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 02:38:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        id S230392AbiHaHFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 03:05:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiHaGie (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 02:38:34 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9B5BD77A;
-        Tue, 30 Aug 2022 23:38:32 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        with ESMTP id S229630AbiHaHFv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 03:05:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E445A2D9
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:05:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1661929548;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mg8FDivTjK0Fno47rCTZSDZ/G71sgK45gh5D1Ko2fqs=;
+        b=OsLC/xIzzQSrh163TngvKjY92ZkvhNe6CDYEba43XgQc7pfZ+TwDZfKcpnwBVbLIF297df
+        IAFikKoEyfCPF7wmnQ9RPhYc2fXCRb+7JcoGuVWhDMCblrPzH+HBjhnBHvcPUq1furrFj+
+        ly1I0WB2wjACi8gymJXhaokrCPSQO0o=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-201-dFBVqmFwO4yY4rhIp3n_XA-1; Wed, 31 Aug 2022 03:05:45 -0400
+X-MC-Unique: dFBVqmFwO4yY4rhIp3n_XA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4MHZJ26Syjz4xG9;
-        Wed, 31 Aug 2022 16:38:25 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1661927907;
-        bh=Mfa+WJavmZH755TJjYyiSYl3pOBeXXNV8JnJ6g3kaaM=;
-        h=Date:From:To:Cc:Subject:From;
-        b=UOCZwsQD+yhdDrElF4fEwZQNxMKQyoFvEIenZKcuQm5N56rgRTsOfruitdP6M5oN5
-         RqEhz7KBkh/IUOKY9ChrFpByRTCxJGleKN7mpld9TUg+V27gNfMgm4+a3o2ainVUqr
-         3MrEqSI87+QqLs1uFT1y1mgief5LHBHnNnLQhhMZz+vB1GKEdtTbFTbj53cfhgmDhn
-         XZuyN3bwMm36vu/RqjgHd1pXfdYRDKIuq3RcNnCHdcYVlqZabcQiCGltJ4HIBHF6jW
-         I9d9LZje8AXkIMdStMIe93lB1KMw9Wjqb7ui+AZu/8sxuCpr3AR3/u/0glk1UV21RB
-         VMH7LPUdVXVEg==
-Date:   Wed, 31 Aug 2022 16:38:24 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Lin Ma <linma@zju.edu.cn>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Fixes tag needs some work in the net tree
-Message-ID: <20220831163824.03b1b61b@canb.auug.org.au>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1D6063800C30;
+        Wed, 31 Aug 2022 07:05:45 +0000 (UTC)
+Received: from p1.luc.cera.cz (unknown [10.40.195.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E5091C15BB3;
+        Wed, 31 Aug 2022 07:05:41 +0000 (UTC)
+Date:   Wed, 31 Aug 2022 09:05:40 +0200
+From:   Ivan Vecera <ivecera@redhat.com>
+To:     "Laba, SlawomirX" <slawomirx.laba@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "Piotrowski, Patryk" <patryk.piotrowski@intel.com>,
+        Vitaly Grinberg <vgrinber@redhat.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] iavf: Detach device during reset task
+Message-ID: <20220831090540.53e324af@p1.luc.cera.cz>
+In-Reply-To: <DM6PR11MB31134AD7D5D1CB5382A5052887799@DM6PR11MB3113.namprd11.prod.outlook.com>
+References: <20220830081627.1205872-1-ivecera@redhat.com>
+        <DM6PR11MB31134AD7D5D1CB5382A5052887799@DM6PR11MB3113.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nyN5hq=.7V8DNzqSK.a3//E";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/nyN5hq=.7V8DNzqSK.a3//E
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, 30 Aug 2022 20:49:54 +0000
+"Laba, SlawomirX" <slawomirx.laba@intel.com> wrote:
 
-Hi all,
+> Ivan, what do you think about this flow [1]? Shouldn't it also goto reset_finish label?
+> 
+> 	if (i == IAVF_RESET_WAIT_COMPLETE_COUNT) {
+> 		dev_err(&adapter->pdev->dev, "Reset never finished (%x)\n",
+> 			reg_val);
+> 		iavf_disable_vf(adapter);
+> 		mutex_unlock(&adapter->client_lock);
+> 		mutex_unlock(&adapter->crit_lock);
+> 		return; /* Do not attempt to reinit. It's dead, Jim. */
+> 	}
+> 
+> I am concerned that if the reset never finishes and iavf goes into disabled state, and then for example if driver reload operation is performed, bad things can happen.
 
-In commit
+I think we should not re-attach device back as the VF is disabled. Detached device causes that userspace (user) won't be able to configure associated interface
+that is correct. Driver reload won't cause anything special in this situation because during module removal the interface is unregistered.
 
-  afe7116f6d3b ("ieee802154/adf7242: defer destroy_workqueue call")
+Thanks,
+Ivan
 
-Fixes tag
-
-  Fixes: 58e9683d1475 ("net: ieee802154: adf7242: Fix OCL calibration
-
-has these problem(s):
-
-  - Subject has leading but no trailing parentheses
-  - Subject has leading but no trailing quotes
-
-In the future, please do not split Fixes tags over more than one line.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nyN5hq=.7V8DNzqSK.a3//E
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmMPAeAACgkQAVBC80lX
-0GyNJQf+P8i+jK3g5oALbtdvvIGDQdgVWWEo/zuXCBbWK2IvBfk4rJIuLgANIuJP
-z+zDVLMHvSPLOaGXPp3vuDtFKhkRhaCzEO4cuw8zVNNaF/T/f0K2rP/2uwPcsxhI
-aWipf1AhKWJ1XvbWHFHr0KxjkwsqJM8De2HEEzvrYgxG+mWTswd1LRNEuWLtCapG
-m2jFnj0FKH802ECugohMWe6GWg1hDiv4fsvZVbAAtUMZqUjUjSyRIN0Xx0UikaSS
-jqt34BQDHeCWnHiMkEQSm/6vU4hc34IAua3RUbT/PO3qmpvzEc9Yd5bnYmXpGubI
-ACq6csofuhEysVnmyRPk4Q/yG3cLig==
-=zAms
------END PGP SIGNATURE-----
-
---Sig_/nyN5hq=.7V8DNzqSK.a3//E--
