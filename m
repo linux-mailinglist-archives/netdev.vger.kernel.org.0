@@ -2,90 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74D845A7CFB
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 14:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC435A7D03
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 14:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229811AbiHaMNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 08:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S229659AbiHaMOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 08:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229599AbiHaMND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 08:13:03 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC5FD1E2E
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 05:13:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661947982; x=1693483982;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zxpSWiTAZR6ZAvdqfxXlOFs3pXGCsF/GCbCTJHi8LQk=;
-  b=ACDyTaau+DD7aIBZeToEuEeUL8gthXhwN8TxwUwLihymn7qtF16/Xf7y
-   D4kNEA6vx13wfi4QhSuntQEIz4jFZ09oWFU8s8M73UX5MmJkburIavFEm
-   dH0vwhTkZrTK3aq6wmwYaLZvqPpA6wCwdZdKaoTlvbYj+/qWxrsMlLzo0
-   TKlAaEjvk6ryRzjT1bAKc3goz2lN+ba5+iacXZar0zXVxHsYoLcMXICql
-   CnK1LG+7JnoolQcAXB6vHOANU5koqmHNrbSYtPHfHnIf3wOKvenAUhFQm
-   /EQ+VWjAl9uE8foZehLxTuWSJVwznSzshXFROm55F7MyIlL+pZogUdtga
-   g==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10455"; a="294172478"
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="294172478"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 05:13:02 -0700
-X-IronPort-AV: E=Sophos;i="5.93,277,1654585200"; 
-   d="scan'208";a="641850711"
-Received: from unknown (HELO localhost.localdomain) ([10.237.112.144])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2022 05:12:56 -0700
-Date:   Wed, 31 Aug 2022 05:16:05 -0400
-From:   Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-To:     Wojciech Drewek <wojciech.drewek@intel.com>
-Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, marcin.szycik@linux.intel.com,
-        kurt@linutronix.de, boris.sukholitko@broadcom.com,
-        vladbu@nvidia.com, komachi.yoshiki@gmail.com, paulb@nvidia.com,
-        baowen.zheng@corigine.com, louis.peens@corigine.com,
-        simon.horman@corigine.com, pablo@netfilter.org,
-        maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
-        jchapman@katalix.com, gnault@redhat.com
-Subject: Re: [RFC PATCH net-next v2 5/5] ice: Add L2TPv3 hardware offload
- support
-Message-ID: <Yw8m1Zp+StyBCah9@localhost.localdomain>
-References: <20220829094412.554018-1-wojciech.drewek@intel.com>
- <20220829094412.554018-6-wojciech.drewek@intel.com>
+        with ESMTP id S229599AbiHaMN5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 08:13:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7188D2EBC;
+        Wed, 31 Aug 2022 05:13:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FE1A618DC;
+        Wed, 31 Aug 2022 12:13:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E296C433D6;
+        Wed, 31 Aug 2022 12:13:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661948035;
+        bh=mCsUJD5LOfeuiHvACicA+nO9wvGQ9ZtmcAbbma6MWno=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=M48LuQOAc92LkpXkEtP6VCZrJZo6LCvB8UACTB/P6ipjYGlosID4fBmzPGr5O1Pd7
+         QSKmYklKtlZQzLjKmNVtiz/8p35FIy1xWgiJA6a7wNQ8ValGjhfe82yed5r4vogQYT
+         JYNsXtdWt/ImpjWgwA1iPOzUC38S3AcLiLkBbSR2bI12oufz89Cfz5Bd0BOylhQN4A
+         aydHX3kdJm2vYrCfNrc4h70z073rnjidOePquVCrn7wIG7iF/gGXvzedmw2WlvhyQt
+         Mr/uhFh5ev2bHyw+I1Ka/QpjG/tLxSgQDBmQAuYwHDhnEOuZ3kH/Iw7YSVtsQQNLga
+         6I76LiP2fFvRw==
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 3DAB9588AEC; Wed, 31 Aug 2022 14:13:53 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+To:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+In-Reply-To: <20220831101617.22329-1-fw@strlen.de>
+References: <20220831101617.22329-1-fw@strlen.de>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 31 Aug 2022 14:13:53 +0200
+Message-ID: <87v8q84nlq.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220829094412.554018-6-wojciech.drewek@intel.com>
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 29, 2022 at 11:44:12AM +0200, Wojciech Drewek wrote:
-> From: Marcin Szycik <marcin.szycik@linux.intel.com>
-> 
-> Add support for offloading packets based on L2TPv3 session id in switchdev
-> mode.
-> 
-> Example filter:
-> tc filter add dev $PF1 ingress prio 1 protocol ip flower ip_proto l2tp \
->     l2tpv3_sid 1234 skip_sw action mirred egress redirect dev $VF1_PR
-> 
-> Changes in iproute2 are required to be able to specify l2tpv3_sid.
-> 
-> ICE COMMS DDP package is required to create a filter as it contains L2TPv3
-> profiles.
-> 
+Florian Westphal <fw@strlen.de> writes:
 
-<snip>
+> This expression is a native replacement for xtables 'bpf' match "pinned" mode.
+> Userspace needs to pass a file descriptor referencing the program (of socket
+> filter type).
+> Userspace should also pass the original pathname for that fd so userspace can
+> print the original filename again.
+>
+> Tag and program id are dumped to userspace on 'list' to allow to see which
+> program is in use in case the filename isn't available/present.
 
-ice part looks fine, thanks.
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+It seems a bit odd to include the file path in the kernel as well. For
+one thing, the same object can be pinned multiple times in different
+paths (even in different mount namespaces), and there's also nothing
+preventing a different program to have been substituted by the pinned
+one by the time the value is echoed back.
+
+Also, there's nothing checking that the path attribute actually contains
+a path, so it's really just an arbitrary label that the kernel promises
+to echo back. But doesn't NFT already have a per-rule comment feature,
+so why add another specifically for BPF? Instead we could just teach the
+userspace utility to extract metadata from the BPF program (based on the
+ID) like bpftool does. This would include the program name, BTW, so it
+does have a semantic identifier.
+
+> cbpf bytecode isn't supported.
+>
+> No new Kconfig option is added: Its included if BPF_SYSCALL is enabled.
+>
+> Proposed nft userspace syntax is:
+>
+> add rule ... ebpf pinned "/sys/fs/bpf/myprog"
+
+Any plan to also teach the nft binary to load a BPF program from an ELF
+file (instead of relying on pinning)?
+
+-Toke
