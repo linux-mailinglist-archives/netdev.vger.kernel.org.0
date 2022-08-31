@@ -2,149 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3515A783A
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 09:56:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8283E5A7864
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 10:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbiHaH4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 03:56:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51454 "EHLO
+        id S231286AbiHaIDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 04:03:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231166AbiHaH4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 03:56:14 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B30F12AD1
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:55:04 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id z20so13782541ljq.3
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=EjNp+7haJJSgy95sPk2VW8hRKYlROSxGZaohd5CN+EI=;
-        b=CwqpdxtS9UCgIfqRkt6+aIZ0njmYiIrSHVdD82RbExYkj+ULE08yVapfltsyJ9hvSW
-         Rb6AyDPrPUcT6w7doSdjava+dERXsqEeqkJ/OdD9iIWnhGyYr2pbtl8OVMc5f2KR9nKS
-         Qejeur1bzAP74t/mQ82tyWDbqmUDC9AhxRI4X9KatAxvosA3H+xbR59V13PI2JEk8yY4
-         qWl8JtRsZaoZqu2Oosv2IdDv4tHuE5U72Xa7zFNCUlFfBxSJzmT7ZvD/IY2EURuy74eP
-         vqquwYSd+wYFYdE4xfwCK7GOhmxagKAy3tb2bHzXyZ0n2wc2lCB65CjuZc7jHCba/tZX
-         bOqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=EjNp+7haJJSgy95sPk2VW8hRKYlROSxGZaohd5CN+EI=;
-        b=ZVzqwD1DhRF/uQ2MtcwxS3Vl8UoNzf9r5/bjWQnQcSO2xNbyL6AUncVg0Aelfpro0W
-         rO3c8/gvcUb1+CRq9K4EyJPYZL0QQPOiRsZ7aW2ozgPHImXAbxkzVlHsXfGH8B3fYAuc
-         RIzi9w71fAhtmS2c1WDDh2ymaX6t/fSwh0Y4W8Io2EThfkiFmxiTYUPG/mw46h1WcTMH
-         x4jBgPqVIj27PiBYG07KFK+bgUluz9S4jloGjwZE463dh6p+cnYGxkFTSbnkNSVidJMl
-         M2cpqFOA7mqaU11Ua0lDfeouYq+kwpZMuvIeo7Iuj8m+eWS2Rn/shtgGLGc9kurPu0f3
-         19Ug==
-X-Gm-Message-State: ACgBeo3DUU2EOON8z4JZla3u1jtcXeYn+1ZgRh36cAe44+EMnpi40TfQ
-        UTSJbG8w4ioVUaXZAjTm1/MhYA==
-X-Google-Smtp-Source: AA6agR5TonQq2egwGvsmAbtSJj7KC2P5OqTK7X6niXiRLekmSFrg4NY6LC2zIVdsJmcKXe2E6Q9IwA==
-X-Received: by 2002:a2e:9d8b:0:b0:265:b87d:b43b with SMTP id c11-20020a2e9d8b000000b00265b87db43bmr3660954ljj.531.1661932501985;
-        Wed, 31 Aug 2022 00:55:01 -0700 (PDT)
-Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
-        by smtp.gmail.com with ESMTPSA id bn38-20020a05651c17a600b0025e778f6f13sm2030296ljb.4.2022.08.31.00.55.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 31 Aug 2022 00:55:01 -0700 (PDT)
-Message-ID: <ffe0e6a8-96ba-e5ed-70c9-f7c6cd9c9ade@linaro.org>
-Date:   Wed, 31 Aug 2022 10:55:00 +0300
+        with ESMTP id S231289AbiHaIDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 04:03:07 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2058.outbound.protection.outlook.com [40.107.21.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25BD1B9F8A;
+        Wed, 31 Aug 2022 01:03:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HNESeeEZZu9lGjfQKwciNP2ZjhAkR5C5AD7gwx6DcsAcSMQNaFsH834a8K7Inf1OUcjK+Vl8uJ8CbbUJj9Tp6SL/7D8wQ1Y+vS+ELAbo1uuPyhNISWKxdMrvcEDMuUM8B3fQ59LpNd7pQmbVDlod16fHfsgD12L8cAcfmnUxWaWJaEoOPlQmVQmUk2fhbGu+zkpTvxxCgnH8Gp1agLypxXNLKD7hQpqK/PQsiW4dj2rJ4JYwreU4Kz7CXLEerEDeqwLIcWTuMNo8VTsV9tbL/Ity1xGDjJm6b5sGHfayLmh145cCLn1CIwmYMg8jKm8xEIWAxptg4UVaYJPDyxtOpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=WKM8lF50Kekz06qdN0izInd8fmkt4syGDxPDUMNPx9U=;
+ b=MTwL6NM9OI2LbvbWl72kVKU52/eqfXqPJeo8HdplPD7C75N0xwgeNzLDcba9iJd7eI34ul5NBtid0oaY9KjApETc7plMcIpx9wqgRzpaUAL3wb03IajcjuZPCNaVP6kUJ5nnjoNcU4OqSzhANTGjmczyHEdFMonuSnPprtr0/8jmskmXfwjUfCyrJD1+CX6eY3VfDgOxRFnYwlpUtCNn0yK6T7eQWj4PTyuFL4X4CJXpnPU22sHK4xdFzadPwEFJ+Vx1HfiCQGtnRUS6pq7rjo5ZOscM50DquLTk8rAVi1wAZyTgU4aK3Ln0BA9MjiciMtD2LmI6I472HL56Lsi+OQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WKM8lF50Kekz06qdN0izInd8fmkt4syGDxPDUMNPx9U=;
+ b=FWrj11jIkghvd07B6zG/KwzvUrBaVVwnmVakeZ7H7mZzQQyux0nhFBCKnEcp9aQfzGLGC17RekgxVwkGhp2pTYiSuFgrcwdVd4hnpE5yD2R3q5uxgnyPWEumpb9WE2uEvX0r9h8zmqeATtnwWj9DOBK1v7nvc40JJUoqjn/oZXo=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
+ by DB6PR04MB2997.eurprd04.prod.outlook.com (2603:10a6:6:a::16) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5566.21; Wed, 31 Aug 2022 08:03:02 +0000
+Received: from DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce]) by DB9PR04MB8106.eurprd04.prod.outlook.com
+ ([fe80::a569:c84a:d972:38ce%7]) with mapi id 15.20.5588.010; Wed, 31 Aug 2022
+ 08:03:02 +0000
+From:   wei.fang@nxp.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: fec: add stop mode support for imx8 platform
+Date:   Wed, 31 Aug 2022 16:02:37 +0800
+Message-Id: <20220831080237.2073452-1-wei.fang@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0001.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::13)
+ To DB9PR04MB8106.eurprd04.prod.outlook.com (2603:10a6:10:24b::13)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-Subject: Re: [PATCH v1 08/14] dt-bindings: mtd: relax the nvmem compatible
- string
-Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-9-michael@walle.cc>
- <e0afa0fc-4718-2aa1-2555-4ebb2274850b@linaro.org>
- <c8aea3ecb0fcf08c42852f99a4f265b6@walle.cc>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <c8aea3ecb0fcf08c42852f99a4f265b6@walle.cc>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bc205802-6c9e-4e2d-5052-08da8b273a2d
+X-MS-TrafficTypeDiagnostic: DB6PR04MB2997:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: IMEvgIRtEAAuQp9QuGkmiBYaCqwlvOQCfYQq0yy9XreN2nTUrjNdGaqgEZi/ZtSWY+SVHWdMXc5lpg8K6QHMRDqEUwzRYrpUA9epAK8lfYJWyfcAxHKCZCttwMS+jdaGQoTemNYCuHvdsexCfE9os3+uNahddHSJSpsPthCT0rUXZzoK0wDwlYRACl9+XFoALRwItIvl/fZ+z2WInDir11AaPpgW8Ipg2/zZbFtXqIqc9eI3mQvwGXDkqe0nTsL4CderQxdfM6CvWMyACt2eiSEQZ1JoQL1iRcxS65hXmReH3ftZyguMKgZmD3gyr774Ow3csosGb0QzqEkOkp7qe4szVzw6xbf+XAUweavr9791NMQY8ETFdjWNH714dvyDaJLbb9Z6s75vU7zoMZ/KbGdJrFX9msWz/7VIfHJ/81EmXWI69dbVbNKWfCmkebC7OZ8ZcZ/3cgVEHbYiPpzvFHRoL2MJ2a5clnTnQExq8PyxWtVIFuVuA/VuOJJPYchuse/OOYzkN5FTnKxcU9QmNQiErPEin+dV6eOpouu5DlTXOVhX/p2C/DlvM68omCkmcGatUcu0kIQT9brHfBsHZYUbVwnrAzweXHkAzgk7IvJKt0JTlwRX2ZKhcQRTAKMW+KKKvbt3v11G7ZZgb+sLVJKD+5ANob4wsD5xnj/GPBMybPv9t+kWCj6DA+mIwtHOs6D6dNM2qqbrU1nQfRw7cwe33sHTQHqzVjTTcv9P5WW6Eq0hyQ32X5ADhRhnjyIFv3T5qjWeX5HjzWFk8L4IdA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB9PR04MB8106.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(346002)(39860400002)(366004)(6666004)(9686003)(52116002)(41300700001)(6486002)(6512007)(186003)(6506007)(26005)(83380400001)(2616005)(2906002)(5660300002)(8936002)(1076003)(316002)(4326008)(8676002)(66476007)(66946007)(66556008)(478600001)(38350700002)(86362001)(38100700002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hTbpo9uh0aqg7vQCjqvadEogG7O/9R01T2fv9TVRS69C7lg94R6p9xc7vUcS?=
+ =?us-ascii?Q?H1mYO6301i//OYu+2iLioOO/+JAN8XUiQBwzR+coCCFp5mFzYBf6iOO0vAj4?=
+ =?us-ascii?Q?qJGcxVPo3DzhUrUAxZPY9YLGH7rmo1nN6OviH7qjpXhDX5QgX+xayiW7Qljo?=
+ =?us-ascii?Q?V6ePY7H+n8c0ATcJ1dQO1d9omNc/xT0UGqU/gSTDYaUnvAtT1e/IjI9lFLhc?=
+ =?us-ascii?Q?OfbgWwa1F4IL/mjCezbIei/8sVSAeaZzmKtkxLuIR0leDGw6Iy5S9usFvTVD?=
+ =?us-ascii?Q?c/5z1hdub2id7+m2zG8TqlZ1tilR80NoWpQ3cNSviyjc+r/3haUSaJYoReaW?=
+ =?us-ascii?Q?8r7snF2HfLQHPAz9KIZDVukiIAgDehknxKyc7Ci+wYydGjati+gepptnKMdE?=
+ =?us-ascii?Q?4ULqLW6y4AdHCxTQx2a2hujg6Lxb6/HEOSvwMprXOes/+7JBnHgHI+EGzi4i?=
+ =?us-ascii?Q?/xcJZ2pKYzVVlU/Em8QCvZj7s1zSqRlHDlC8forwG5whaDexvjbixq3o6OCA?=
+ =?us-ascii?Q?Wp/PMHFlQyFZSub3Q7RjyoobtA8OIXUwft4sb7mKSfvC6SOjEGUIaPIsmMic?=
+ =?us-ascii?Q?jlE3lfTDcUFPHqHkZ/NGxVgck5y/bQGdEgSpjpQxKXTT0US1PI+6FWi72OnG?=
+ =?us-ascii?Q?75s+cesYJhj2d8wE3iM4yYyg1dHUfDss0m91TmswtgvpG+sO8PWSrrd26tui?=
+ =?us-ascii?Q?tI733LhZqG4AHNnGqIGACitegWl0audPQFJHG7z5bL7IN3cn9yhFcCRIlk4b?=
+ =?us-ascii?Q?dKYCzUVFRcw2nIOCb9yET8IGDkOkTtCmZWmdZhigOhx36kGIR3ME1QzpXbVU?=
+ =?us-ascii?Q?LNIT+QSdxGHDNPu/j8HsfmwIG1YoqWKHck1U9tR9iRcP/HKDMSDI5YIT62Hp?=
+ =?us-ascii?Q?QckEvajDUfJIl9oxzV0g8raI4zKpF/p0HKdvtANz6m8grbYil8y+Q8S9COFB?=
+ =?us-ascii?Q?0AP+y7vNq17wKYzfxQYbTWInXxobthC0uqvTvHoDVyz4ibZjLdIDYN6XWY05?=
+ =?us-ascii?Q?qH/TkjM8MpK5mtPItjRI5LFXTE9MES7L+R9srXrgX8FU0Ett3mrxMw7ZO9+E?=
+ =?us-ascii?Q?KJZN3lOBNxJRtLVUMd5tgjDEMIWkhind2NXzNqEv08SBDaUyaj6sc8NFjhjX?=
+ =?us-ascii?Q?hchDe5unAFvw34pD5lg8WCpfnESXdVv0de5vlh2JZJGZMZkO4FMcLTQ6ft9+?=
+ =?us-ascii?Q?v+4lyPh6TK+6+MK/4Pi8/KgValGp0J2zWie//4Q1B/JqCny4dB3CULFkaFtL?=
+ =?us-ascii?Q?C0b/Sc+67zoMjHkfGXB4VjWygpsK+pwqKh5LQQwF5DdyLhQtGgkToZxnhTFO?=
+ =?us-ascii?Q?23NMJZMrJX0k211Mcneo0U+tt/uiIzkmzNSvkudYESyYre4X6lzmvbbPc85Y?=
+ =?us-ascii?Q?9Lphnj0bM50dPgN+m2lWqdV/1Ofl31S+ONwmwaYrWPmFpwyUz+SCiw9cfXWq?=
+ =?us-ascii?Q?CelqTLBoBxWtT0z4qy0LBlfTXgEtezWCxPZZXN+Rcf7fMphNqxdq/jaKL/YW?=
+ =?us-ascii?Q?A78QxXEPc3LjXbPo9wVei1ecXNOP16sCly9+pImIvQDwqFln5jtR4ogTL0fK?=
+ =?us-ascii?Q?hw/y1Ih1oELVtJEttmo2SOYyoazTRbtpdrXuGyWs?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc205802-6c9e-4e2d-5052-08da8b273a2d
+X-MS-Exchange-CrossTenant-AuthSource: DB9PR04MB8106.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 08:03:02.4098
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: FzH73hlhisNYDVSflRMSPHKMcvXM6YShnD4XST0k7tdZHxFJFuPB5xZWVipSrA30eCPYpubTWjBvzs/LEKQtOg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB2997
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 31/08/2022 10:48, Michael Walle wrote:
-> Am 2022-08-31 09:37, schrieb Krzysztof Kozlowski:
->> On 26/08/2022 00:44, Michael Walle wrote:
->>> The "user-otp" and "factory-otp" compatible string just depicts a
->>> generic NVMEM device. But an actual device tree node might as well
->>> contain a more specific compatible string. Make it possible to add
->>> more specific binding elsewere and just match part of the compatibles
->>
->> typo: elsewhere
->>
->>> here.
->>>
->>> Signed-off-by: Michael Walle <michael@walle.cc>
->>> ---
->>>  Documentation/devicetree/bindings/mtd/mtd.yaml | 7 ++++---
->>>  1 file changed, 4 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/mtd/mtd.yaml 
->>> b/Documentation/devicetree/bindings/mtd/mtd.yaml
->>> index 376b679cfc70..0291e439b6a6 100644
->>> --- a/Documentation/devicetree/bindings/mtd/mtd.yaml
->>> +++ b/Documentation/devicetree/bindings/mtd/mtd.yaml
->>> @@ -33,9 +33,10 @@ patternProperties:
->>>
->>>      properties:
->>>        compatible:
->>> -        enum:
->>> -          - user-otp
->>> -          - factory-otp
->>> +        contains:
->>> +          enum:
->>> +            - user-otp
->>> +            - factory-otp
->>
->> This does not work in the "elsewhere" place. You need to use similar
->> approach as we do for syscon or primecell.
-> 
-> I'm a bit confused. Looking at
->    Documentation/devicetree/bindings/arm/primecell.yaml
-> it is done in the same way as this binding.
+From: Wei Fang <wei.fang@nxp.com>
 
-Yes. primecell is like your mtd here. And how are other places with
-primcell (like other places with user-otp) done?
+The current driver support stop mode by calling machine api.
+The patch add dts support to set GPR register for stop request.
 
-> 
-> Whereas, the syscon use a "select:" on top of it. I'm
-> pretty sure, I've tested it without the select and the
-> validator picked up the constraints.
-> 
-> Could you elaborate on what is wrong here? Select missing?
+imx8mq enter stop/exit stop mode by setting GPR bit, which can
+be accessed by A core.
+imx8qm enter stop/exit stop mode by calling IMX_SC ipc APIs that
+communicate with M core ipc service, and the M core set the related
+GPR bit at last.
 
-You got warning from Rob, so run tests. I think you will see the errors,
-just like bot reported them.
+Signed-off-by: Wei Fang <wei.fang@nxp.com>
+---
+ drivers/net/ethernet/freescale/fec.h      |  4 +++
+ drivers/net/ethernet/freescale/fec_main.c | 35 +++++++++++++++++++++++
+ 2 files changed, 39 insertions(+)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index ed7301b69169..cbde8f148c16 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -18,6 +18,8 @@
+ #include <linux/net_tstamp.h>
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/timecounter.h>
++#include <dt-bindings/firmware/imx/rsrc.h>
++#include <linux/firmware/imx/sci.h>
+ 
+ #if defined(CONFIG_M523x) || defined(CONFIG_M527x) || defined(CONFIG_M528x) || \
+     defined(CONFIG_M520x) || defined(CONFIG_M532x) || defined(CONFIG_ARM) || \
+@@ -634,6 +636,8 @@ struct fec_enet_private {
+ 	int pps_enable;
+ 	unsigned int next_counter;
+ 
++	struct imx_sc_ipc *ipc_handle;
++
+ 	u64 ethtool_stats[];
+ };
+ 
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index e8e2aa1e7f01..3be7ee67f379 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1167,6 +1167,34 @@ fec_restart(struct net_device *ndev)
+ 
+ }
+ 
++static int fec_enet_ipc_handle_init(struct fec_enet_private *fep)
++{
++	if (!(of_machine_is_compatible("fsl,imx8qm") ||
++	      of_machine_is_compatible("fsl,imx8qxp") ||
++	      of_machine_is_compatible("fsl,imx8dxl")))
++		return 0;
++
++	return imx_scu_get_handle(&fep->ipc_handle);
++}
++
++static void fec_enet_ipg_stop_set(struct fec_enet_private *fep, bool enabled)
++{
++	struct device_node *np = fep->pdev->dev.of_node;
++	u32 rsrc_id, val;
++	int idx;
++
++	if (!np || !fep->ipc_handle)
++		return;
++
++	idx = of_alias_get_id(np, "ethernet");
++	if (idx < 0)
++		idx = 0;
++	rsrc_id = idx ? IMX_SC_R_ENET_1 : IMX_SC_R_ENET_0;
++
++	val = enabled ? 1 : 0;
++	imx_sc_misc_set_control(fep->ipc_handle, rsrc_id, IMX_SC_C_IPG_STOP, val);
++}
++
+ static void fec_enet_stop_mode(struct fec_enet_private *fep, bool enabled)
+ {
+ 	struct fec_platform_data *pdata = fep->pdev->dev.platform_data;
+@@ -1182,6 +1210,8 @@ static void fec_enet_stop_mode(struct fec_enet_private *fep, bool enabled)
+ 					   BIT(stop_gpr->bit), 0);
+ 	} else if (pdata && pdata->sleep_mode_enable) {
+ 		pdata->sleep_mode_enable(enabled);
++	} else {
++		fec_enet_ipg_stop_set(fep, enabled);
+ 	}
+ }
+ 
+@@ -3817,6 +3847,10 @@ fec_probe(struct platform_device *pdev)
+ 	    !of_property_read_bool(np, "fsl,err006687-workaround-present"))
+ 		fep->quirks |= FEC_QUIRK_ERR006687;
+ 
++	ret = fec_enet_ipc_handle_init(fep);
++	if (ret)
++		goto failed_ipc_init;
++
+ 	if (of_get_property(np, "fsl,magic-packet", NULL))
+ 		fep->wol_flag |= FEC_WOL_HAS_MAGIC_PACKET;
+ 
+@@ -4014,6 +4048,7 @@ fec_probe(struct platform_device *pdev)
+ 		of_phy_deregister_fixed_link(np);
+ 	of_node_put(phy_node);
+ failed_stop_mode:
++failed_ipc_init:
+ failed_phy:
+ 	dev_id--;
+ failed_ioremap:
+-- 
+2.25.1
+
