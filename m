@@ -2,272 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C80C95A7EE3
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:33:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 048F25A7F0B
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 15:38:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231857AbiHaNdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 09:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
+        id S229943AbiHaNig (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 09:38:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231256AbiHaNdD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:33:03 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1698DD25FE
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 06:33:02 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTNpl-0004Am-So; Wed, 31 Aug 2022 15:32:45 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTNpj-0034tL-AN; Wed, 31 Aug 2022 15:32:43 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTNpi-00Da48-2J; Wed, 31 Aug 2022 15:32:42 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v5 7/7] net: pse-pd: add regulator based PSE driver
-Date:   Wed, 31 Aug 2022 15:32:40 +0200
-Message-Id: <20220831133240.3236779-8-o.rempel@pengutronix.de>
+        with ESMTP id S229607AbiHaNif (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 09:38:35 -0400
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40503D86;
+        Wed, 31 Aug 2022 06:38:33 -0700 (PDT)
+Received: by mail-ed1-f41.google.com with SMTP id b16so18442464edd.4;
+        Wed, 31 Aug 2022 06:38:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=WL2hbn3gfMbnUVzI30rf1ujjncBseT3Kr/X668qXOD8=;
+        b=u0jCH4Jr45szhFmu55fKEwLVufybx2TaKBMdrvFHc7WNsNt59kfZqWd5jeU5UFDYpJ
+         jWjnefXPOx59JtAUhCxiIggpTU5bHodTXX37DCiXad1oK4iN6x0RVZBvyZ6VE1Tuuzqk
+         j5Ejz/OOWltFctL0F6UCGigcYoPuR9ptlkfdW6aC/fG1ocMlYrR3PzTh7StzFJthblNp
+         MSR4tMCgp9iJx65iKUtat41fwPkndzygSWzAcglYcx/0waui+kH1dFWgdjM94XUxaC4y
+         43X7hLVaQyPq4OJM/Zxj5DKlFnYQveVyJ9zWvO5sgLs9KGAuejRmidUTi2RouG1yeW9O
+         J/kw==
+X-Gm-Message-State: ACgBeo25AF5epQ4jCRfmjZkVUX9KLav4fiU7/IihpSqTtI1jeKLzM3Wk
+        ng65w8jQElj2dA4TOX+7trg=
+X-Google-Smtp-Source: AA6agR4fNjZjLwyUTiFXetuPEZLVxhWBVl6a0DVs1VB18bCt1Abom97rGIBjpLWGl0+2PXb1d0WtiQ==
+X-Received: by 2002:aa7:c611:0:b0:447:844d:e5a2 with SMTP id h17-20020aa7c611000000b00447844de5a2mr5761820edq.10.1661953111717;
+        Wed, 31 Aug 2022 06:38:31 -0700 (PDT)
+Received: from localhost (fwdproxy-cln-005.fbsv.net. [2a03:2880:31ff:5::face:b00c])
+        by smtp.gmail.com with ESMTPSA id uo39-20020a170907cc2700b0073da32b7db0sm2346384ejc.199.2022.08.31.06.38.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Aug 2022 06:38:31 -0700 (PDT)
+From:   Breno Leitao <leitao@debian.org>
+To:     edumazet@google.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, leit@fb.com, yoshfuji@linux-ipv6.org,
+        pabeni@redhat.com, dsahern@kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
+Date:   Wed, 31 Aug 2022 06:37:58 -0700
+Message-Id: <20220831133758.3741187-1-leitao@debian.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220831133240.3236779-1-o.rempel@pengutronix.de>
-References: <20220831133240.3236779-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add generic, regulator based PSE driver to support simple Power Sourcing
-Equipment without automatic classification support.
+There are cases where we need information about the socket during a
+warning, so, it could help us to find bugs that happens that do not have
+a easily repro.
 
-This driver was tested on 10Bast-T1L switch with regulator based PoDL PSE.
+BPF congestion control algorithms can change socket state in unexpected
+ways, leading to WARNings. Additional information about the socket state
+is useful to identify the culprit.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
+attaches it to tcp_snd_cwnd_set().
+
+Signed-off-by: Breno Leitao <leitao@debian.org>
 ---
-changes v5:
-- use dev_err_probe on devm_regulator_get_exclusive() error
-- add __maybe_unused to the of_device_id
-changes v4:
-- rename to pse_regulator
-changes v2:
-- add regulator_enable test to the probe
-- migrate to the new PSE ethtool API
----
- drivers/net/pse-pd/Kconfig         |  11 +++
- drivers/net/pse-pd/Makefile        |   2 +
- drivers/net/pse-pd/pse_regulator.c | 147 +++++++++++++++++++++++++++++
- 3 files changed, 160 insertions(+)
- create mode 100644 drivers/net/pse-pd/pse_regulator.c
+ include/net/tcp.h       |  3 ++-
+ include/net/tcp_debug.h | 10 ++++++++++
+ net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 1 deletion(-)
+ create mode 100644 include/net/tcp_debug.h
 
-diff --git a/drivers/net/pse-pd/Kconfig b/drivers/net/pse-pd/Kconfig
-index 49c7f0bcff526..73d163704068a 100644
---- a/drivers/net/pse-pd/Kconfig
-+++ b/drivers/net/pse-pd/Kconfig
-@@ -9,3 +9,14 @@ menuconfig PSE_CONTROLLER
- 	  Generic Power Sourcing Equipment Controller support.
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index d10962b9f0d0..73c3970d8839 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -40,6 +40,7 @@
+ #include <net/inet_ecn.h>
+ #include <net/dst.h>
+ #include <net/mptcp.h>
++#include <net/tcp_debug.h>
  
- 	  If unsure, say no.
-+
-+if PSE_CONTROLLER
-+
-+config PSE_REGULATOR
-+	tristate "Regulator based PSE controller"
-+	help
-+	  This module provides support for simple regulator based Ethernet Power
-+	  Sourcing Equipment without automatic classification support. For
-+	  example for basic implementation of PoDL (802.3bu) specification.
-+
-+endif
-diff --git a/drivers/net/pse-pd/Makefile b/drivers/net/pse-pd/Makefile
-index cfa780c7801dd..1b8aa4c70f0b9 100644
---- a/drivers/net/pse-pd/Makefile
-+++ b/drivers/net/pse-pd/Makefile
-@@ -2,3 +2,5 @@
- # Makefile for Linux PSE drivers
+ #include <linux/seq_file.h>
+ #include <linux/memcontrol.h>
+@@ -1222,7 +1223,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
  
- obj-$(CONFIG_PSE_CONTROLLER) += pse_core.o
-+
-+obj-$(CONFIG_PSE_REGULATOR) += pse_regulator.o
-diff --git a/drivers/net/pse-pd/pse_regulator.c b/drivers/net/pse-pd/pse_regulator.c
+ static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+ {
+-	WARN_ON_ONCE((int)val <= 0);
++	TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+ 	tp->snd_cwnd = val;
+ }
+ 
+diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
 new file mode 100644
-index 0000000000000..e2bf8306ca90b
+index 000000000000..50e96d87d335
 --- /dev/null
-+++ b/drivers/net/pse-pd/pse_regulator.c
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Driver for the regulator based Ethernet Power Sourcing Equipment, without
-+// auto classification support.
-+//
-+// Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+//
++++ b/include/net/tcp_debug.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_TCP_DEBUG_H
++#define _LINUX_TCP_DEBUG_H
 +
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/pse-pd/pse.h>
-+#include <linux/regulator/consumer.h>
++void tcp_sock_warn(const struct tcp_sock *tp);
 +
-+struct pse_reg_priv {
-+	struct pse_controller_dev pcdev;
-+	struct regulator *ps; /*power source */
-+	enum ethtool_podl_pse_admin_state admin_state;
-+};
++#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
++		DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
 +
-+static struct pse_reg_priv *to_pse_reg(struct pse_controller_dev *pcdev)
++#endif  /* _LINUX_TCP_DEBUG_H */
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index bbe218753662..71771fee72f7 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -4684,6 +4684,36 @@ int tcp_abort(struct sock *sk, int err)
+ }
+ EXPORT_SYMBOL_GPL(tcp_abort);
+ 
++void tcp_sock_warn(const struct tcp_sock *tp)
 +{
-+	return container_of(pcdev, struct pse_reg_priv, pcdev);
-+}
++	const struct sock *sk = (const struct sock *)tp;
++	struct inet_sock *inet = inet_sk(sk);
++	struct inet_connection_sock *icsk = inet_csk(sk);
 +
-+static int
-+pse_reg_ethtool_set_config(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   const struct pse_control_config *config)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
++	WARN_ON(1);
 +
-+	if (priv->admin_state == config->admin_cotrol)
-+		return 0;
++	if (!tp)
++		return;
 +
-+	switch (config->admin_cotrol) {
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED:
-+		ret = regulator_enable(priv->ps);
++	pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
++		sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
++		ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
++
++	switch (sk->sk_family) {
++	case AF_INET:
++		pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
++			&inet->inet_daddr);
 +		break;
-+	case ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED:
-+		ret = regulator_disable(priv->ps);
++#if IS_ENABLED(CONFIG_IPV6)
++	case AF_INET6:
++		pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
++			&sk->sk_v6_daddr);
 +		break;
-+	default:
-+		dev_err(pcdev->dev, "Unknown admin state %i\n",
-+			config->admin_cotrol);
-+		ret = -ENOTSUPP;
++#endif
 +	}
-+
-+	if (ret)
-+		return ret;
-+
-+	priv->admin_state = config->admin_cotrol;
-+
-+	return 0;
 +}
++EXPORT_SYMBOL_GPL(tcp_sock_warn);
 +
-+static int
-+pse_reg_ethtool_get_status(struct pse_controller_dev *pcdev, unsigned long id,
-+			   struct netlink_ext_ack *extack,
-+			   struct pse_control_status *status)
-+{
-+	struct pse_reg_priv *priv = to_pse_reg(pcdev);
-+	int ret;
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!ret)
-+		status->podl_pw_status = ETHTOOL_PODL_PSE_PW_D_STATUS_DISABLED;
-+	else
-+		status->podl_pw_status =
-+			ETHTOOL_PODL_PSE_PW_D_STATUS_DELIVERING;
-+
-+	status->podl_admin_state = priv->admin_state;
-+
-+	return 0;
-+}
-+
-+static const struct pse_controller_ops pse_reg_ops = {
-+	.ethtool_get_status = pse_reg_ethtool_get_status,
-+	.ethtool_set_config = pse_reg_ethtool_set_config,
-+};
-+
-+static int
-+pse_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct pse_reg_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	if (!pdev->dev.of_node)
-+		return -ENOENT;
-+
-+	priv->ps = devm_regulator_get_exclusive(dev, "pse");
-+	if (IS_ERR(priv->ps))
-+		return dev_err_probe(dev, PTR_ERR(priv->ps),
-+				     "failed to get PSE regulator.\n");
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	ret = regulator_is_enabled(priv->ps);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret)
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_ENABLED;
-+	else
-+		priv->admin_state = ETHTOOL_PODL_PSE_ADMIN_STATE_DISABLED;
-+
-+	priv->pcdev.owner = THIS_MODULE;
-+	priv->pcdev.ops = &pse_reg_ops;
-+	priv->pcdev.dev = dev;
-+	ret = devm_pse_controller_register(dev, &priv->pcdev);
-+	if (ret) {
-+		dev_err(dev, "failed to register PSE controller (%pe)\n",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static const __maybe_unused struct of_device_id pse_reg_of_match[] = {
-+	{ .compatible = "podl-pse-regulator", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, pse_reg_of_match);
-+
-+static struct platform_driver pse_reg_driver = {
-+	.probe		= pse_reg_probe,
-+	.driver		= {
-+		.name		= "PSE regulator",
-+		.of_match_table = of_match_ptr(pse_reg_of_match),
-+	},
-+};
-+module_platform_driver(pse_reg_driver);
-+
-+MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
-+MODULE_DESCRIPTION("regulator based Ethernet Power Sourcing Equipment");
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS("platform:pse-regulator");
+ extern struct tcp_congestion_ops tcp_reno;
+ 
+ static __initdata unsigned long thash_entries;
 -- 
 2.30.2
 
