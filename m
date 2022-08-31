@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 55DAF5A80EB
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CF795A80F2
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 17:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231287AbiHaPIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 11:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43736 "EHLO
+        id S231489AbiHaPJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 11:09:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230215AbiHaPIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:08:13 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574A05300E;
-        Wed, 31 Aug 2022 08:08:12 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id t11-20020a17090a510b00b001fac77e9d1fso21316199pjh.5;
-        Wed, 31 Aug 2022 08:08:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=iWFIf9ElN8TxtCnTHIToMg3ZbWgSB5UvML/M3/3xtpY=;
-        b=AA+qAmQ2Ihx4N9w/DmqJddeCttTFT+CLsKZLA4nehDNwHbgJs4w7dJ+UGuikeI2lPo
-         W2bYWhIxmfwwKIy66KMDNSFVJv3JqUdsG0mhoyR60wNfWaU12l2mbMi3rRfjaqUVIBzB
-         KwGnYujaZ+zTWF0Ray6rQuyEJl1BNVA8QXFUwxaaAp6EZXv8d1LhLK5BWQKKSVksrKlx
-         MBSowfIBKcHg3sJE8XfTmEIyGSkaZfNzJDNuSeaGE6y5x/VO/A146jOLlPb3DMBSDPzk
-         G1mCd4ZVAGz33rctvKBd7IMlTJg4bs2Rqv4cOF9XJORiECUKZi5Lw9DcCBPscxBO4gZP
-         p5bQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=iWFIf9ElN8TxtCnTHIToMg3ZbWgSB5UvML/M3/3xtpY=;
-        b=OlKO51/yu+Hy6uk1cnxIHipDZSGQt8zBoSJeeJ+dIQWTnT4ofiQvjy/pi0PEdDrsUz
-         gNlA6v5iKWhhrpUEIWpJTvusU1Cu0fRQHLnPdtlFYfAz0Tauki0DMpOXeaFr2PuRgZ4f
-         9a8/Sd01fwCfVsYuWbzFfeJ3dq4NJPEwxkRqMQkY+GX3xon3D511LddsgySh4JdYEWle
-         zXzRwP41DKbzApFrH0Px0snr0uJKhl3AEcIUvDppUJBFsKK9P4r/JXi4cnusH0NWKVVX
-         3maYexdE4NtSeCpBnkmPf5ERr0nh4aVmZHm362gfMP0yVaDUR38EwlCQuFyDk5SpsnAQ
-         oZQg==
-X-Gm-Message-State: ACgBeo1zkmCPq1W+6DbnlCrpbL7CPsYSJqXrcUnI5+xTUVdnExhTlQGx
-        PVRLf5DZZUl03ET8eQjzzJk=
-X-Google-Smtp-Source: AA6agR60nDiAOlc9wA/x+4MWn3ZYLxOP+67enaD2S66jhA3wcrX8mg6SfolvUHEsbF6MdbnvYWbJXA==
-X-Received: by 2002:a17:90b:4a05:b0:1fe:289a:3ce1 with SMTP id kk5-20020a17090b4a0500b001fe289a3ce1mr3713139pjb.96.1661958491711;
-        Wed, 31 Aug 2022 08:08:11 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id s5-20020a17090a6e4500b001fa9e7b0c3esm1392289pjm.41.2022.08.31.08.08.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 08:08:11 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: cui.jinpeng2@zte.com.cn
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net
-Cc:     edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] can: kvaser_pciefd: remove redundant variable ret
-Date:   Wed, 31 Aug 2022 15:08:05 +0000
-Message-Id: <20220831150805.305106-1-cui.jinpeng2@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S231282AbiHaPJT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 11:09:19 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A1420543FE;
+        Wed, 31 Aug 2022 08:09:18 -0700 (PDT)
+Date:   Wed, 31 Aug 2022 17:09:15 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@kernel.org>
+Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
+        bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+Message-ID: <Yw95m0mcPeE68fRJ@salvia>
+References: <20220831101617.22329-1-fw@strlen.de>
+ <87v8q84nlq.fsf@toke.dk>
+ <20220831125608.GA8153@breakpoint.cc>
+ <87o7w04jjb.fsf@toke.dk>
+ <20220831135757.GC8153@breakpoint.cc>
+ <87ilm84goh.fsf@toke.dk>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <87ilm84goh.fsf@toke.dk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+On Wed, Aug 31, 2022 at 04:43:26PM +0200, Toke Høiland-Jørgensen wrote:
+> Florian Westphal <fw@strlen.de> writes:
+> 
+> > Toke Høiland-Jørgensen <toke@kernel.org> wrote:
+> >> >> It seems a bit odd to include the file path in the kernel as well.
+> >> >
+> >> > Its needed to be able to re-load the ruleset.
+> >> 
+> >> How does that work, exactly? Is this so that the userspace binary can
+> >> query the current ruleset, and feed it back to the kernel expecting it
+> >> to stay the same?
+> >
+> > Yes.
+> >
+> >> Because in that case, if the pinned object goes away
+> >> in the meantime (or changes to a different program), this could lead to
+> >> some really hard to debug errors, where a reload subtly changes the
+> >> behaviour because the BPF program is not in fact the same.
+> >
+> > Correct, but thats kind of expected when the user changes programs
+> > logic.
+> >
+> > Same with a 'nft list ruleset > /etc/nft.txt', reboot,
+> > 'nft -f /etc/nft.txt' fails because user forgot to load/pin the program
+> > first.
+> 
+> Right, so under what conditions is the identifier expected to survive,
+> exactly? It's okay if it fails after a reboot, but it should keep
+> working while the system is up?
+> 
+> >> > This way was the most simple solution.
+> >> 
+> >> My point here was more that if it's just a label for human consumption,
+> >> the comment field should be fine, didn't realise it was needed for the
+> >> tool operation (and see above re: that).
+> >
+> > Yes, this is unfortunate.  I would like to avoid introducing an
+> > asymmetry between input and output (as in "... add rule ebpf pinned
+> > bla', but 'nft list ruleset' showing 'ebpf id 42') or similar, UNLESS we
+> > can somehow use that alternate output to reconstruct that was originally
+> > intended.  And so far I can only see that happening with storing some
+> > label in the kernel for userspace to consume (elf filename, pinned name,
+> > program name ... ).
+> >
+> > To give an example:
+> >
+> > With 'ebpf id 42', we might be able to let this get echoed back as if
+> > user would have said 'ebpf progname myfilter' (I am making this up!),
+> > just to have a more 'stable' identifier.
+> >
+> > This would make it necessary to also support load-by-program-name, of
+> > course.
+> 
+> Seems like this kind of mapping can be done in userspace without
+> involving the kernel?
+> 
+> For example, the 'progname' thing could be implemented by defining an
+> nft-specific pinning location so that 'ebpf progname myfilter' is
+> equivalent to 'ebpf pinned /sys/bpf/nft/myfilter' and when nft receives
+> an ID from the kernel it goes looking in /sys/bpf/nft to see if it can
+> find the program with that ID and echoes it with the appropriate
+> progname if it does exist?
+> 
+> This could also be extended, so that if a user does '... add rule ebpf
+> file /usr/lib/bpf/myrule.o' the nft binary stashes the id -> .o file
+> mapping somewhere (in /run for instance) so that it can echo back where
+> it got it from later?
+> 
+> In either case I'm not really sure that there's much to be gained from
+> asking the kernel to store an additional label with the program rule?
 
-Return value directly from readl_poll_timeout() instead of
-getting value from redundant variable ret.
+@Florian, could you probably use the object infrastructure to refer to
+the program?
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
----
- drivers/net/can/kvaser_pciefd.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+This might also allow you to refer to this new object type from
+nf_tables maps.
 
-diff --git a/drivers/net/can/kvaser_pciefd.c b/drivers/net/can/kvaser_pciefd.c
-index ed54c0b3c7d4..4e9680c8eb34 100644
---- a/drivers/net/can/kvaser_pciefd.c
-+++ b/drivers/net/can/kvaser_pciefd.c
-@@ -329,12 +329,9 @@ MODULE_DEVICE_TABLE(pci, kvaser_pciefd_id_table);
- static int kvaser_pciefd_spi_wait_loop(struct kvaser_pciefd *pcie, int msk)
- {
- 	u32 res;
--	int ret;
--
--	ret = readl_poll_timeout(pcie->reg_base + KVASER_PCIEFD_SPI_STATUS_REG,
--				 res, res & msk, 0, 10);
- 
--	return ret;
-+	return readl_poll_timeout(pcie->reg_base + KVASER_PCIEFD_SPI_STATUS_REG,
-+			res, res & msk, 0, 10);
- }
- 
- static int kvaser_pciefd_spi_cmd(struct kvaser_pciefd *pcie, const u8 *tx,
--- 
-2.25.1
+It would be good to avoid linear rule-based matching to select what
+program to run.
 
+Maybe this also fits fine for your requirements?
