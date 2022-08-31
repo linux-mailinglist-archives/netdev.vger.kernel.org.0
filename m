@@ -2,114 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85E6B5A7449
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 05:12:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7705A5A7455
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 05:17:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231908AbiHaDMm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 23:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47624 "EHLO
+        id S232134AbiHaDQl convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 30 Aug 2022 23:16:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbiHaDMk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 23:12:40 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49D6B02A8;
-        Tue, 30 Aug 2022 20:12:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=HvIU68aA/rL72BAj/039XHANsPIzEkm3dmrxFvteCJk=; b=Kw3D9UaQL0/MMa6/vqMD1iTx/y
-        AVi+sPBKfCucR8zxYBi/4E7aYePAkW8fjvfDfyftTPnsH4QuP5iA6KIa8iokgqVY7xjOhw6iUljzp
-        5IgYzmOQPmYKSD2EMd+PFY73Qz5vrB6YonkLqqDeae82qzAzD+uo3xWqsY++sfRerOM11jJBExiVp
-        TdwNRgCztmZVChnzF2JdRy8tk+R23+U+onEJwLQV4FhYEq/ynt2NJfB/w4nwtNLCAj53eOGG69crN
-        fK7b7ZDzwiY1ruYxuahy60F6sOLFCNxG+yLuncFYs7k37BnDnQ6bQmGVYBaLMulECIaU3fjZ74WeN
-        WoL9dabQ==;
-Received: from [2601:1c0:6280:3f0::a6b3] (helo=casper.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oTE9b-004hNT-EW; Wed, 31 Aug 2022 03:12:35 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     netdev@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>, Eli Cohen <eli@mellanox.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
-        Ira Weiny <ira.weiny@intel.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH v2] net: mlx5: eliminate anonymous module_init & module_exit
-Date:   Tue, 30 Aug 2022 20:12:29 -0700
-Message-Id: <20220831031229.12313-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.37.2
+        with ESMTP id S232144AbiHaDQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 23:16:27 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 987E644567;
+        Tue, 30 Aug 2022 20:16:15 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 27V3EQhB4014031, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 27V3EQhB4014031
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 31 Aug 2022 11:14:26 +0800
+Received: from RTEXMBS03.realtek.com.tw (172.21.6.96) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 31 Aug 2022 11:14:43 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.7; Wed, 31 Aug 2022 11:14:43 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97]) by
+ RTEXMBS04.realtek.com.tw ([fe80::d902:19b0:8613:5b97%5]) with mapi id
+ 15.01.2375.007; Wed, 31 Aug 2022 11:14:43 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Sven van Ashbrook <svenva@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+CC:     Alex Levin <levinale@google.com>,
+        Chithra Annegowda <chithraa@google.com>,
+        Frank Gorgenyi <frankgor@google.com>,
+        Aaron Ma <aaron.ma@canonical.com>,
+        David Ober <dober6023@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jean-Francois Le Fillatre <jflf_kernel@gmx.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next v1] r8152: allow userland to disable multicast
+Thread-Topic: [PATCH net-next v1] r8152: allow userland to disable multicast
+Thread-Index: AQHYvC1hOy5hN6sTzkWIgD4dfS/00a3IUksA
+Date:   Wed, 31 Aug 2022 03:14:42 +0000
+Message-ID: <b94fb55a06cc4ea5aeb32e919e9607a1@realtek.com>
+References: <20220830045923.net-next.v1.1.I4fee0ac057083d4f848caf0fa3a9fd466fc374a0@changeid>
+In-Reply-To: <20220830045923.net-next.v1.1.I4fee0ac057083d4f848caf0fa3a9fd466fc374a0@changeid>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.203]
+x-kse-serverinfo: RTEXMBS03.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/8/30_=3F=3F_11:23:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,HEXHASH_WORD,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-KSE-Antivirus-Interceptor-Info: fallback
+X-KSE-AntiSpam-Interceptor-Info: fallback
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eliminate anonymous module_init() and module_exit(), which can lead to
-confusion or ambiguity when reading System.map, crashes/oops/bugs,
-or an initcall_debug log.
+Sven van Ashbrook <svenva@chromium.org>
+> Sent: Tuesday, August 30, 2022 1:00 PM
+[...]
+> The rtl8152 driver does not disable multicasting when userspace asks
+> it to. For example:
+>  $ ifconfig eth0 -multicast -allmulti
+>  $ tcpdump -p -i eth0  # will still capture multicast frames
+> 
+> Fix by clearing the device multicast filter table when multicast and
+> allmulti are both unset.
+> 
+> Tested as follows:
+> - Set multicast on eth0 network interface
+> - verify that multicast packets are coming in:
+>   $ tcpdump -p -i eth0
+> - Clear multicast and allmulti on eth0 network interface
+> - verify that no more multicast packets are coming in:
+>   $ tcpdump -p -i eth0
+> 
+> Signed-off-by: Sven van Ashbrook <svenva@chromium.org>
 
-Give each of these init and exit functions unique driver-specific
-names to eliminate the anonymous names.
+Acked-by: Hayes Wang <hayeswang@realtek.com>
 
-Example 1: (System.map)
- ffffffff832fc78c t init
- ffffffff832fc79e t init
- ffffffff832fc8f8 t init
+Best Regards,
+Hayes
 
-Example 2: (initcall_debug log)
- calling  init+0x0/0x12 @ 1
- initcall init+0x0/0x12 returned 0 after 15 usecs
- calling  init+0x0/0x60 @ 1
- initcall init+0x0/0x60 returned 0 after 2 usecs
- calling  init+0x0/0x9a @ 1
- initcall init+0x0/0x9a returned 0 after 74 usecs
-
-Fixes: e126ba97dba9 ("mlx5: Add driver for Mellanox Connect-IB adapters")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Eli Cohen <eli@mellanox.com>
-Cc: Saeed Mahameed <saeedm@nvidia.com>
-Cc: Leon Romanovsky <leon@kernel.org>
-Cc: linux-rdma@vger.kernel.org
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
----
-v2: add Reviewed-by: tags;
-    refresh & resend;
-
- drivers/net/ethernet/mellanox/mlx5/core/main.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -2015,7 +2015,7 @@ static void mlx5_core_verify_params(void
- 	}
- }
- 
--static int __init init(void)
-+static int __init mlx5_init(void)
- {
- 	int err;
- 
-@@ -2050,7 +2050,7 @@ err_debug:
- 	return err;
- }
- 
--static void __exit cleanup(void)
-+static void __exit mlx5_cleanup(void)
- {
- 	mlx5e_cleanup();
- 	mlx5_sf_driver_unregister();
-@@ -2058,5 +2058,5 @@ static void __exit cleanup(void)
- 	mlx5_unregister_debugfs();
- }
- 
--module_init(init);
--module_exit(cleanup);
-+module_init(mlx5_init);
-+module_exit(mlx5_cleanup);
