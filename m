@@ -2,276 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10ECE5A75FB
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 07:51:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE7FE5A75FC
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 07:51:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229831AbiHaFvB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 01:51:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43744 "EHLO
+        id S229852AbiHaFv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 01:51:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbiHaFur (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 01:50:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C7865558
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 22:50:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1661925035;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=/1Gc4iplVnTB0apFsZw2aQwgByP/oAWmtW4VUz4Ez08=;
-        b=SviZRGyAnwPZh35pK37wtYUQdmAANWrZgAcJuE8WTDGnOfYp99MKCzyKssrnX8ClQPsNzF
-        nPSzuOSRZ6+pfIuHwwpx1WyuTqt4mRpf9MLoAbmBp8xxBxljwiEW4YHt68Sj1U6XlmZyNd
-        46FkKUjhKMne2IL6PumpEPusGiTsCnU=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-590-_Bn6IJ3qMZKEMjcvGIjy7g-1; Wed, 31 Aug 2022 01:50:30 -0400
-X-MC-Unique: _Bn6IJ3qMZKEMjcvGIjy7g-1
-Received: by mail-pj1-f69.google.com with SMTP id 2-20020a17090a0b8200b001fdb8fd5f29so3420337pjr.8
-        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 22:50:30 -0700 (PDT)
+        with ESMTP id S229942AbiHaFvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 01:51:12 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDA4BB685
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 22:51:06 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id v26so8223886lfd.10
+        for <netdev@vger.kernel.org>; Tue, 30 Aug 2022 22:51:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=YNzh62ZBAGcav3YWtqHv7cr7GoUpJCoDSI7mFQm4U14=;
+        b=A8+0UmmGnB3r98q4Oiu4U7B+hoMWTu33zyN5FoVSER4eijMp1xw8hxU5gqDd396RA3
+         O5OFiIvxK8uR/yAfK7UBbGFVLRAIi2ux15ENJNzjhX3DkwLadXCY6lpkNfSqhDQW8044
+         vX9V9htav3ghn4mCrZXwoFMPwP3wpQyxAfTNjsw68IniIoZCXbVGLR/SMfcL3+fSFX0O
+         bhCycKypNFUv/kVv6cyOtrsxEPhOJzHqe2sD1nL9sEaZhZAeXoGxzN/XfY2LSi605OvI
+         BXv/EPzI/UpsUUv5BGZZAlxGa5X3FVdqjLMNMdBhFj6jLvE8Yw4uZhryBYoUhZscpsjH
+         0v3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=/1Gc4iplVnTB0apFsZw2aQwgByP/oAWmtW4VUz4Ez08=;
-        b=hDVIxtKjkEqp7oRoCnfzdfzc7yhMFoUqPSsEhjGvKDko1yWVEfsSdJ2kRvuLx6dnPP
-         XXai+YK+KW/xGIVOtHPLWkKE9P+/yjUcTbnT1rQWA3uhh1tDu9IG9yCZ8KYJdfq5RMuU
-         M/IvPi0/1gXGepUuXB32EkiF0fwbRe2OHkOqDrhZlp7ZnBaGpa8W7a6toebXy1THuwdb
-         hLObnZ2YWFS+/Ag3MTmpPM3FmnvxOtk5d/hGyCAayrWajVQtD2cCzDuGUfAB7+G1HmGT
-         Idva2UzCUIt75Jug5mbLO6me3mcglKawjFDT2rxXopslPwt2ihPeR+k/Edv7528/W/p2
-         RgRA==
-X-Gm-Message-State: ACgBeo1q3t/bhJcyfBXdxkTMRUycLpyzdZ0vKYs2+RMxAAMl8Mlmvevq
-        6ap/o++XDCXpqZh2nVss7gOwhqh09ZxP81Z2OJrhf0V9n91BKgfqe6H2YxrfqAXLOOXw7ndB0zI
-        NKsA0gsAkW097PCK09MEeWCSx18AA1Qzd
-X-Received: by 2002:a17:903:120c:b0:172:728a:3b24 with SMTP id l12-20020a170903120c00b00172728a3b24mr24262465plh.61.1661925029503;
-        Tue, 30 Aug 2022 22:50:29 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7SgL/109emdEPXfdUzoIlo6EvJSY6WnewAiDsO9+9TdY7lKIFYehyZyNgAd6etIldUOqhUKRlJu9/Xt4eCLpQ=
-X-Received: by 2002:a17:903:120c:b0:172:728a:3b24 with SMTP id
- l12-20020a170903120c00b00172728a3b24mr24262444plh.61.1661925029212; Tue, 30
- Aug 2022 22:50:29 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=YNzh62ZBAGcav3YWtqHv7cr7GoUpJCoDSI7mFQm4U14=;
+        b=iozlvZ+di4xA7MnpigDAXoGwCQP1ROzaSsmKqWzEetVojzBm1pWHcOvkRt1AOqOdL+
+         oJ8540BRJmzx+tVu4P22qnAI4990mnBqpEquismXIN494fHCHmooDF/np1cJdsEy01tu
+         kTxTdvr9xUsnSJCPZw203+xSoX7H0RYfYWMvseZHAvJ4mlrQRjHYBCwYHsWyMTe+dOe9
+         U8U7rNSUd/u2R2NQaTXUKIv69psxwL1AZFQsLC3Lg+10Mxmm9kNffEIGEl2bUJKF7NwE
+         AAxEubkiiesuH0wgXvqX7rr6sE+Yi4AOLCDiCIq0OPDypMnOOJGjnxXbFH2YlsiXbHZg
+         im1A==
+X-Gm-Message-State: ACgBeo0K/104pcftLRJhfQ6PCVvtgHQZX0wvhdRcrrGeM1/cXsrJBy1k
+        mDYluPjnTz2dGRwDrR082Ls=
+X-Google-Smtp-Source: AA6agR418vPPSoTRl/pOYCNbU/sm1vurm0i0L46zNZkEowFr9vvpDmIY6RHkypMDNkSMvQu3EyCYCw==
+X-Received: by 2002:a05:6512:3f9b:b0:492:d6c7:24e8 with SMTP id x27-20020a0565123f9b00b00492d6c724e8mr8208718lfa.346.1661925064141;
+        Tue, 30 Aug 2022 22:51:04 -0700 (PDT)
+Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
+        by smtp.gmail.com with ESMTPSA id v25-20020ac258f9000000b004918fff6a93sm374330lfo.296.2022.08.30.22.51.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 30 Aug 2022 22:51:03 -0700 (PDT)
+Message-ID: <c735b39c-7685-fc4c-ab0f-527f7d8262fb@gmail.com>
+Date:   Wed, 31 Aug 2022 07:51:02 +0200
 MIME-Version: 1.0
-References: <20220824134055.1328882-1-benjamin.tissoires@redhat.com>
- <20220824134055.1328882-5-benjamin.tissoires@redhat.com> <CAP01T74ZmvoYtG=8wiDm0_X3hrMN8s55CkSzurphDrZ3b86UZQ@mail.gmail.com>
-In-Reply-To: <CAP01T74ZmvoYtG=8wiDm0_X3hrMN8s55CkSzurphDrZ3b86UZQ@mail.gmail.com>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Wed, 31 Aug 2022 07:50:18 +0200
-Message-ID: <CAO-hwJ+Xk=93oCXTp7vWVx_oXmx5=PPwWoAgahLSZBTcD9XQmg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 04/23] bpf/verifier: allow kfunc to return an
- allocated mem
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net-next v2 3/3] rmon: Use RMU if available
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
+ <20220826063816.948397-4-mattias.forsblad@gmail.com>
+ <20220830142014.pytgaiacq2iq2rka@skbuf>
+From:   Mattias Forsblad <mattias.forsblad@gmail.com>
+In-Reply-To: <20220830142014.pytgaiacq2iq2rka@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 26, 2022 at 3:25 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
+On 2022-08-30 16:20, Vladimir Oltean wrote:
+> Hi Forsblad,
+> 
+> On Fri, Aug 26, 2022 at 08:38:16AM +0200, Mattias Forsblad wrote:
+>> If RMU is supported, use that interface to
+>> collect rmon data.
+> 
+> A more adequate commit message would be:
+> 
+> net: dsa: mv88e6xxx: use RMU to collect RMON stats if available
+> 
+> But then, I don't think the splitting of patches is good. I think
+> mv88e6xxx_inband_rcv(), the producer of rmu_raw_stats[], should be
+> introduced along with its consumer. Otherwise I have to jump between one
+> patch and another to be able to comment and see things.
+> 
+
+I'll have that in mind for the next round. The next version will
+look way different after Andrews suggestion.
+
+> Also, it would be good if you could consider actually reporting the RMON
+> stats through the standardized interface (ds->ops->get_rmon_stats) and
+> ethtool -S lan0 --groups rmon, rather than just unstructured ethtool -S.
 >
-> On Wed, 24 Aug 2022 at 15:41, Benjamin Tissoires
-> <benjamin.tissoires@redhat.com> wrote:
-> >
-> > For drivers (outside of network), the incoming data is not statically
-> > defined in a struct. Most of the time the data buffer is kzalloc-ed
-> > and thus we can not rely on eBPF and BTF to explore the data.
-> >
-> > This commit allows to return an arbitrary memory, previously allocated by
-> > the driver.
-> > An interesting extra point is that the kfunc can mark the exported
-> > memory region as read only or read/write.
-> >
-> > So, when a kfunc is not returning a pointer to a struct but to a plain
-> > type, we can consider it is a valid allocated memory assuming that:
-> > - one of the arguments is either called rdonly_buf_size or
-> >   rdwr_buf_size
-> > - and this argument is a const from the caller point of view
-> >
-> > We can then use this parameter as the size of the allocated memory.
-> >
-> > The memory is either read-only or read-write based on the name
-> > of the size parameter.
-> >
-> > Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> >
-> > ---
-> >
-> > changes in v9:
-> > - updated to match upstream (replaced kfunc_flag by a field in
-> >   kfunc_meta)
-> >
-> > no changes in v8
-> >
-> > changes in v7:
-> > - ensures btf_type_is_struct_ptr() checks for a ptr first
-> >   (squashed from next commit)
-> > - remove multiple_ref_obj_id need
-> > - use btf_type_skip_modifiers instead of manually doing it in
-> >   btf_type_is_struct_ptr()
-> > - s/strncmp/strcmp/ in btf_is_kfunc_arg_mem_size()
-> > - check for tnum_is_const when retrieving the size value
-> > - have only one check for "Ensure only one argument is referenced
-> >   PTR_TO_BTF_ID"
-> > - add some more context to the commit message
-> >
-> > changes in v6:
-> > - code review from Kartikeya:
-> >   - remove comment change that had no reasons to be
-> >   - remove handling of PTR_TO_MEM with kfunc releases
-> >   - introduce struct bpf_kfunc_arg_meta
-> >   - do rdonly/rdwr_buf_size check in btf_check_kfunc_arg_match
-> >   - reverted most of the changes in verifier.c
-> >   - make sure kfunc acquire is using a struct pointer, not just a plain
-> >     pointer
-> >   - also forward ref_obj_id to PTR_TO_MEM in kfunc to not use after free
-> >     the allocated memory
-> >
-> > changes in v5:
-> > - updated PTR_TO_MEM comment in btf.c to match upstream
-> > - make it read-only or read-write based on the name of size
-> >
-> > new in v4
-> >
-> > change btf.h
-> >
-> > fix allow kfunc to return an allocated mem
-> > ---
-> >  include/linux/bpf.h   |  9 +++-
-> >  include/linux/btf.h   | 10 +++++
-> >  kernel/bpf/btf.c      | 98 ++++++++++++++++++++++++++++++++++---------
-> >  kernel/bpf/verifier.c | 43 +++++++++++++------
-> >  4 files changed, 128 insertions(+), 32 deletions(-)
-> >
-> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > index 39bd36359c1e..90dd218e0199 100644
-> > --- a/include/linux/bpf.h
-> > +++ b/include/linux/bpf.h
-> > @@ -1932,13 +1932,20 @@ int btf_distill_func_proto(struct bpf_verifier_log *log,
-> >                            const char *func_name,
-> >                            struct btf_func_model *m);
-> > [...]
-> > +
-> >  static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >                                     const struct btf *btf, u32 func_id,
-> >                                     struct bpf_reg_state *regs,
-> >                                     bool ptr_to_mem_ok,
-> > -                                   u32 kfunc_flags)
-> > +                                   struct bpf_kfunc_arg_meta *kfunc_meta)
-> >  {
-> >         enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
-> >         bool rel = false, kptr_get = false, trusted_arg = false;
-> > @@ -6207,12 +6232,12 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >                 return -EINVAL;
-> >         }
-> >
-> > -       if (is_kfunc) {
-> > +       if (is_kfunc && kfunc_meta) {
-> >                 /* Only kfunc can be release func */
-> > -               rel = kfunc_flags & KF_RELEASE;
-> > -               kptr_get = kfunc_flags & KF_KPTR_GET;
-> > -               trusted_arg = kfunc_flags & KF_TRUSTED_ARGS;
-> > -               sleepable = kfunc_flags & KF_SLEEPABLE;
-> > +               rel = kfunc_meta->flags & KF_RELEASE;
-> > +               kptr_get = kfunc_meta->flags & KF_KPTR_GET;
-> > +               trusted_arg = kfunc_meta->flags & KF_TRUSTED_ARGS;
-> > +               sleepable = kfunc_meta->flags & KF_SLEEPABLE;
-> >         }
-> >
-> >         /* check that BTF function arguments match actual types that the
-> > @@ -6225,6 +6250,35 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >
-> >                 t = btf_type_skip_modifiers(btf, args[i].type, NULL);
-> >                 if (btf_type_is_scalar(t)) {
-> > +                       if (is_kfunc && kfunc_meta) {
-> > +                               bool is_buf_size = false;
-> > +
-> > +                               /* check for any const scalar parameter of name "rdonly_buf_size"
-> > +                                * or "rdwr_buf_size"
-> > +                                */
-> > +                               if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
-> > +                                                             "rdonly_buf_size")) {
-> > +                                       kfunc_meta->r0_rdonly = true;
-> > +                                       is_buf_size = true;
-> > +                               } else if (btf_is_kfunc_arg_mem_size(btf, &args[i], reg,
-> > +                                                                    "rdwr_buf_size"))
-> > +                                       is_buf_size = true;
-> > +
-> > +                               if (is_buf_size) {
-> > +                                       if (kfunc_meta->r0_size) {
-> > +                                               bpf_log(log, "2 or more rdonly/rdwr_buf_size parameters for kfunc");
-> > +                                               return -EINVAL;
-> > +                                       }
-> > +
-> > +                                       if (!tnum_is_const(reg->var_off)) {
-> > +                                               bpf_log(log, "R%d is not a const\n", regno);
-> > +                                               return -EINVAL;
-> > +                                       }
-> > +
-> > +                                       kfunc_meta->r0_size = reg->var_off.value;
->
-> Sorry for not pointing it out before, but you will need a call to
-> mark_chain_precision here after this, since the value of the scalar is
-> being used to decide the size of the returned pointer.
 
-No worries.
+Cool, I didn't know it existed. I'll look into that.
+ 
+>>
+>> Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
+>> ---
+>>  drivers/net/dsa/mv88e6xxx/chip.c | 41 ++++++++++++++++++++++++++------
+>>  1 file changed, 34 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+>> index 4c0510abd875..0d0241ace708 100644
+>> --- a/drivers/net/dsa/mv88e6xxx/chip.c
+>> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+>> @@ -1226,16 +1226,30 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
+>>  				     u16 bank1_select, u16 histogram)
+>>  {
+>>  	struct mv88e6xxx_hw_stat *stat;
+>> +	int offset = 0;
+>> +	u64 high;
+>>  	int i, j;
+>>  
+>>  	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
+>>  		stat = &mv88e6xxx_hw_stats[i];
+>>  		if (stat->type & types) {
+>> -			mv88e6xxx_reg_lock(chip);
+>> -			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
+>> -							      bank1_select,
+>> -							      histogram);
+>> -			mv88e6xxx_reg_unlock(chip);
+>> +			if (chip->rmu.ops && chip->rmu.ops->get_rmon &&
+>> +			    !(stat->type & STATS_TYPE_PORT)) {
+>> +				if (stat->type & STATS_TYPE_BANK1)
+>> +					offset = 32;
+>> +
+>> +				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
+>> +				if (stat->size == 8) {
+>> +					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
+>> +							+ 1];
+>> +					data[j] += (high << 32);
+> 
+> What exactly protects ethtool -S, a reader of rmu_raw_stats[], from
+> reading an array that is concurrently overwritten by mv88e6xxx_inband_rcv?
+> 
 
-I do however have a couple of questions (I have strictly no idea what
-mark_chain_precision does):
-- which register number should I call mark_chain_precision() as
-parameter? r0 or regno (the one with the constant)?
-- mark_chain_precision() is declared static in verifier.c. Should I
-export it so btf.c can have access to it, or can I delay the call to
-mark_chain_precision() in verifier.c when I set
-regs[BPF_REG_0].mem_size?
+So for the Marvell SOHO the RMU is purely a request/response protocol. The switchcore
+will not send a frame unless requested, thus no barrier is needed. For other switchcores
+which may have send frames spontaneous additional care may be needed.
 
+>> +				}
+>> +			} else {
+>> +				mv88e6xxx_reg_lock(chip);
+>> +				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
+>> +								      bank1_select, histogram);
+>> +				mv88e6xxx_reg_unlock(chip);
+>> +			}
+>>  
+>>  			j++;
+>>  		}
+>> @@ -1304,8 +1318,8 @@ static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
+>>  	mv88e6xxx_reg_unlock(chip);
+>>  }
+>>  
+>> -static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
+>> -					uint64_t *data)
+>> +static void mv88e6xxx_get_ethtool_stats_mdio(struct dsa_switch *ds, int port,
+>> +					     uint64_t *data)
+>>  {
+>>  	struct mv88e6xxx_chip *chip = ds->priv;
+>>  	int ret;
+>> @@ -1319,7 +1333,20 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
+>>  		return;
+>>  
+>>  	mv88e6xxx_get_stats(chip, port, data);
+>> +}
+>>  
+>> +static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
+>> +					uint64_t *data)
+>> +{
+>> +	struct mv88e6xxx_chip *chip = ds->priv;
+>> +
+>> +	/* If initialization of RMU isn't available
+>> +	 * fall back to MDIO access.
+>> +	 */
+>> +	if (chip->rmu.ops && chip->rmu.ops->get_rmon)
+> 
+> I would create a helper
+> 
+> static bool mv88e6xxx_rmu_available(struct mv88e6xxx_chip *chip)
+> 
+> and use it here and everywhere, for clarity. Testing the presence of
+> chip->rmu.ops is not wrong, but confusing.
+> 
+> Also, testing chip->rmu.ops->get_rmon gains exactly nothing, since it is
+> never NULL when chip->rmu.ops isn't NULL.
+> 
 
->
-> > +                               }
-> > +                       }
-> > +
-> >                         if (reg->type == SCALAR_VALUE)
-> >                                 continue;
-> >                         bpf_log(log, "R%d is not a scalar\n", regno);
-> > @@ -6255,6 +6309,19 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >                 if (ret < 0)
-> >                         return ret;
-> >
-> > +               if (is_kfunc && reg->type == PTR_TO_BTF_ID) {
->
-> I think you can drop this extra check 'reg->type == PTR_TO_BTF_ID),
-> this condition of only one ref_obj_id should hold regardless of the
-> type.
-
-Ack.
-
-Cheers,
-Benjamin
-
->
-> > [...]
->
+Agreed. The next version will draw inspiration from qca8k.
+>> +		chip->rmu.ops->get_rmon(chip, port, data);
+>> +	else
+>> +		mv88e6xxx_get_ethtool_stats_mdio(ds, port, data);
+>>  }
+>>  
+>>  static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
+>> -- 
+>> 2.25.1
+>>
 
