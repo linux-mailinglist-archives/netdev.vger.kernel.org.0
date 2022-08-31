@@ -2,58 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A4A445A77E0
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 09:44:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B395A77E4
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 09:46:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230192AbiHaHov (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 03:44:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46322 "EHLO
+        id S230285AbiHaHqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 03:46:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230123AbiHaHoL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 03:44:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2E33BD29B
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:43:38 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTINi-0006fM-OU; Wed, 31 Aug 2022 09:43:26 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oTINg-0000cV-JU; Wed, 31 Aug 2022 09:43:24 +0200
-Date:   Wed, 31 Aug 2022 09:43:24 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Arun.Ramadoss@microchip.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, san@skov.dk, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
- phylink mac config and link up
-Message-ID: <20220831074324.GD16715@pengutronix.de>
-References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
- <20220830065533.GA18106@pengutronix.de>
- <67690ec6367c9dc6d2df720dcf98e6e332d2105b.camel@microchip.com>
- <20220830095830.flxd3fw4sqyn425m@skbuf>
- <20220830160546.GB16715@pengutronix.de>
+        with ESMTP id S230169AbiHaHpf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 03:45:35 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D263D7B7A0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:45:21 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id bq23so18784008lfb.7
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 00:45:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ouTFxY93nE4Z9QkhFZSLBKekqYyiBXQP19HgDhyZHSU=;
+        b=KaH7MCXXGQGzFH3dRW0/Fv7P3w2fHAmtPvJFEJm8HRZTM7oPKNxSNuqnLws54cFdz2
+         JJbSZe8FWP7wO+KfbvOdXyFVA4wSNxKYi27qCwXtuG1rVbEyDnnYT5SVwk+nVNo81PFm
+         CJ7NBXtdCA5607gVeIVUC/chvc/oEX1EQ7Vl+1Lk3nd1xAglRlrqwBsW37MmJgqCps1B
+         sewjrGFON/2R+WugFtQksVIEnAt5MCSCAsKLJuMEhEbW8gtpiUqnNcwzdHe5SE5WPJli
+         dV7mrnvhlOfRfQIF50u9qmQm5Jp83VE4LhdQT2XLVJoCCS8p0fQV9fNsG/+vel5iApuB
+         TALA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ouTFxY93nE4Z9QkhFZSLBKekqYyiBXQP19HgDhyZHSU=;
+        b=octKFz1tnJxQgTgwVn9n+Hi78y1XAM2i6G/2ykVM3OxwlC4CG1f608uWdeekJR7SoZ
+         wF7WW+nvFafWInxRCVB65eyjMVDHJONBnGMNc6hWL4H3is/FobyZiug6di8Rb0io0MMv
+         7svJaim3d3EAroBGnQqWgz9KUy2rD8F2CzU/UvSaCba++ZdsXQZGTT8v7ojqjFxGEUFy
+         auqVaz5IfGxZgxS4g0GI9MWWeHr/PNlv3SYnHcdaAPWJpEZfuh960cepAZnuQIK9zyph
+         vqroKZbO20bjwtTkLHLTPyGW1afLtQdB1T2ppjnuDbhQVjyWCbGivJAxZiTwCkmwz5Bw
+         NlmA==
+X-Gm-Message-State: ACgBeo0aeeisWUZ0uZ5sx5g3GYfIVihSyJ8L+Xw/8rJFGolevh16DgBI
+        r7xbtdGCxSRtevW6RVk2XMV0/A==
+X-Google-Smtp-Source: AA6agR7DzXu8IZaFW+OBdsWSDmCTnpWerpKoskVDkUfL/4niQUo3xpWIrSAl2jDIzTuo0en6kWFeyw==
+X-Received: by 2002:a05:6512:2354:b0:48a:e29b:2bb4 with SMTP id p20-20020a056512235400b0048ae29b2bb4mr9582773lfu.435.1661931920194;
+        Wed, 31 Aug 2022 00:45:20 -0700 (PDT)
+Received: from [192.168.28.124] (balticom-73-99-134.balticom.lv. [109.73.99.134])
+        by smtp.gmail.com with ESMTPSA id f12-20020a05651c02cc00b00261800f0e02sm53144ljo.26.2022.08.31.00.45.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 31 Aug 2022 00:45:19 -0700 (PDT)
+Message-ID: <b85276ee-3e19-3adb-8077-c1e564e02eb3@linaro.org>
+Date:   Wed, 31 Aug 2022 10:45:18 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220830160546.GB16715@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [PATCH v1 09/14] dt-bindings: nvmem: add YAML schema for the sl28
+ vpd layout
+Content-Language: en-US
+To:     Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-10-michael@walle.cc>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220825214423.903672-10-michael@walle.cc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,76 +90,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 06:05:46PM +0200, Oleksij Rempel wrote:
-> On Tue, Aug 30, 2022 at 12:58:30PM +0300, Vladimir Oltean wrote:
-> > Hello,
-> > 
-> > On Tue, Aug 30, 2022 at 08:15:59AM +0000, Arun.Ramadoss@microchip.com wrote:
-> ...
-> > > Hi Oleksij,
-> > > Is this Bug related to fix in 
-> > > https://lore.kernel.org/lkml/20220829105810.577903823@linuxfoundation.org/
-> > > . 
-> > > It is observed in ksz8794 switch. I think after applying this bug fix
-> > > patch it should work. I don't have ksz8 series to test. I ran the
-> > > regression only for ksz9 series switches. 
-> > 
-> > I find it unlikely that the cited patch will fix a NULL pointer
-> > dereference in ksz_get_gbit(). But rather, some pointer to a structure
-> > is NULL, and we then dereference a member located at its offset 0x5, no?
-> > 
-> > My eyes are on this:
-> > 
-> > 	const u8 *bitval = dev->info->xmii_ctrl1;
-> > 
-> > 		data8 |= FIELD_PREP(P_GMII_1GBIT_M, bitval[P_GMII_NOT_1GBIT]);
-> > 							   ~~~~~~~~~~~~~~~~
-> > 							   this is coincidentally
-> > 							   also 5
+On 26/08/2022 00:44, Michael Walle wrote:
+> Add a schema for the NVMEM layout on Kontron's sl28 boards.
 > 
-> ack.
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+>  .../nvmem/layouts/kontron,sl28-vpd.yaml       | 52 +++++++++++++++++++
+>  1 file changed, 52 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
 > 
-> > See, looking at the struct ksz_chip_data[] array element for KSZ8873
-> > that Oleksij mentions as broken, I do not see xmii_ctrl1 and xmii_ctrl2
-> > as being pointers to anything.
-> > 
-> > 	[KSZ8830] = {
-> > 		.chip_id = KSZ8830_CHIP_ID,
-> > 		.dev_name = "KSZ8863/KSZ8873",
-> > 		.num_vlans = 16,
-> > 		.num_alus = 0,
-> > 		.num_statics = 8,
-> > 		.cpu_ports = 0x4,	/* can be configured as cpu port */
-> > 		.port_cnt = 3,
-> > 		.ops = &ksz8_dev_ops,
-> > 		.mib_names = ksz88xx_mib_names,
-> > 		.mib_cnt = ARRAY_SIZE(ksz88xx_mib_names),
-> > 		.reg_mib_cnt = MIB_COUNTER_NUM,
-> > 		.regs = ksz8863_regs,
-> > 		.masks = ksz8863_masks,
-> > 		.shifts = ksz8863_shifts,
-> > 		.supports_mii = {false, false, true},
-> > 		.supports_rmii = {false, false, true},
-> > 		.internal_phy = {true, true, false},
-> > 	},
-> > 
-> > Should we point them to ksz8795_xmii_ctrl0 and ksz8795_xmii_ctrl1? I don't know.
-> > Could you find out what these should be set to?
-> 
-> xmii_ctrl0/1 are missing and it make no sense to add it.
-> KSZ8873 switch is controlling CPU port MII configuration over global,
-> not port based register.
-> 
-> I'll better define separate ops for this chip.
+> diff --git a/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+> new file mode 100644
+> index 000000000000..e4bc2d9182db
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/nvmem/layouts/kontron,sl28-vpd.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/nvmem/layouts/kontron,sl28-vpd.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: NVMEM layout of the Kontron SMARC-sAL28 vital product data
+> +
+> +maintainers:
+> +  - Michael Walle <michael@walle.cc>
+> +
+> +description:
+> +  The vital product data (VPD) of the sl28 boards contains a serial
+> +  number and a base MAC address. The actual MAC addresses for the
+> +  on-board ethernet devices are derived from this base MAC address by
+> +  adding an offset.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - const: kontron,sl28-vpd
+> +      - const: user-otp
+> +
+> +  serial-number:
+> +    type: object
 
-Hm, not only KSZ8830/KSZ8863/KSZ8873 are affected. ksz8795 compatible
-series with defined .xmii_ctrl0/.xmii_ctrl1 are broken too. Because it
-is writing to the global config register over ksz_pwrite8 function. It
-means, we are writing to 0xa6 instead of 0x06. And to 0xf6 instead of
-0x56.
+You should define the contents of this object. I would expect this to be
+uint32 or string. I think you also need description, as this is not
+really standard field.
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+> +
+> +  base-mac-address:
+
+Fields should be rather described here, not in top-level description.
+
+> +    type: object
+
+On this level:
+    additionalProperties: false
+
+> +
+> +    properties:
+> +      "#nvmem-cell-cells":
+> +        const: 1
+> +
+
+I also wonder why you do not have unit addresses. What if you want to
+have two base MAC addresses?
+
+> +required:
+> +  - compatible
+
+Other fields are I guess required? At least serial-number should be always?
+
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +      otp-1 {
+
+Messed up indentation (use 4 spaces). Generic node name "otp".
+
+> +          compatible = "kontron,sl28-vpd", "user-otp";
+> +
+> +          serial_number: serial-number {
+
+What's the point of the empty node?
+
+> +          };
+> +
+> +          base_mac_address: base-mac-address {
+> +              #nvmem-cell-cells = <1>;
+> +          };
+> +      };
+> +
+> +...
+
+
+Best regards,
+Krzysztof
