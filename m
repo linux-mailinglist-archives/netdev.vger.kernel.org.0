@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63ECD5A7275
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 02:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 366105A727F
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 02:35:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231358AbiHaAen (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 30 Aug 2022 20:34:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45792 "EHLO
+        id S231425AbiHaAep (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 30 Aug 2022 20:34:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbiHaAel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 20:34:41 -0400
+        with ESMTP id S231351AbiHaAen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 30 Aug 2022 20:34:43 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D3FDA598B;
-        Tue, 30 Aug 2022 17:34:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1442AA50ED;
+        Tue, 30 Aug 2022 17:34:41 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 166CE2045E24; Tue, 30 Aug 2022 17:34:39 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 166CE2045E24
+        id 0F5A62045E26; Tue, 30 Aug 2022 17:34:41 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0F5A62045E26
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1661906079;
-        bh=20u8ixO/yuN3YFPTYaorc5Nw1VEF7gX5/pYC5BLxjHY=;
-        h=From:To:Cc:Subject:Date:Reply-To:From;
-        b=KP43ujlHcktDpToBlTMI7ugady0UFWZ+hkEsa6el3NQRGnsjEB+ntVbKck2eLILdE
-         Nq83kDrC/CIesYkDYFj9E1dwDMaN5UyVhzzdSMOQ6FufHbhJ8BgrwDnnPkXvmYgvri
-         LQLEnxblOD1lrec88Yz/WPa7zd/V3du7BEWL869U=
+        s=default; t=1661906081;
+        bh=R0Ccc6zNSWJ/QhUesXcfLsrmb1fRW37OJsK2sDSPHQg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
+        b=EyDIlKIOodZxKTWijKQFgP7rEtdlN5uv/kH1OtBHH4s9sK6Tcq6QUimjN9bTHa393
+         alBWLu5sYgAVPSHgqdvzahpDm0QAL9sUOFV/Z54/hyL2hDE8POoypj65SoR+ZZN4kk
+         5PmMb6ZyISREePyeqWb0qL42PZLSbywIhWMbrKpc=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,10 +38,12 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v5 00/12] Introduce Microsoft Azure Network Adapter (MANA) RDMA driver
-Date:   Tue, 30 Aug 2022 17:34:19 -0700
-Message-Id: <1661906071-29508-1-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v5 01/12] net: mana: Add support for auxiliary device
+Date:   Tue, 30 Aug 2022 17:34:20 -0700
+Message-Id: <1661906071-29508-2-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1661906071-29508-1-git-send-email-longli@linuxonhyperv.com>
+References: <1661906071-29508-1-git-send-email-longli@linuxonhyperv.com>
 Reply-To: longli@microsoft.com
 X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
@@ -55,77 +57,174 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-This patchset implements a RDMA driver for Microsoft Azure Network
-Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary device
-to the Ethernet device.
+In preparation for supporting MANA RDMA driver, add support for auxiliary
+device in the Ethernet driver. The RDMA device is modeled as an auxiliary
+device to the Ethernet device.
 
-The first 11 patches modify the MANA Ethernet driver to support RDMA driver.
-The last patch implementes the RDMA driver.
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Long Li <longli@microsoft.com>
+---
+Change log:
+v3: define mana_adev_idx_alloc and mana_adev_idx_free as static
 
-The user-mode of the driver is being reviewed at:
-https://github.com/linux-rdma/rdma-core/pull/1177
+ drivers/net/ethernet/microsoft/mana/gdma.h    |  2 +
+ .../ethernet/microsoft/mana/mana_auxiliary.h  | 10 +++
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 84 ++++++++++++++++++-
+ 3 files changed, 95 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/net/ethernet/microsoft/mana/mana_auxiliary.h
 
-
-Ajay Sharma (3):
-  net: mana: Set the DMA device max segment size
-  net: mana: Define and process GDMA response code
-    GDMA_STATUS_MORE_ENTRIES
-  net: mana: Define data structures for protection domain and memory
-    registration
-
-Long Li (9):
-  net: mana: Add support for auxiliary device
-  net: mana: Record the physical address for doorbell page region
-  net: mana: Handle vport sharing between devices
-  net: mana: Add functions for allocating doorbell page from GDMA
-  net: mana: Export Work Queue functions for use by RDMA driver
-  net: mana: Record port number in netdev
-  net: mana: Move header files to a common location
-  net: mana: Define max values for SGL entries
-  RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
-
- MAINTAINERS                                   |   4 +
- drivers/infiniband/Kconfig                    |   1 +
- drivers/infiniband/hw/Makefile                |   1 +
- drivers/infiniband/hw/mana/Kconfig            |   7 +
- drivers/infiniband/hw/mana/Makefile           |   4 +
- drivers/infiniband/hw/mana/cq.c               |  80 +++
- drivers/infiniband/hw/mana/device.c           | 129 ++++
- drivers/infiniband/hw/mana/main.c             | 555 ++++++++++++++++++
- drivers/infiniband/hw/mana/mana_ib.h          | 165 ++++++
- drivers/infiniband/hw/mana/mr.c               | 133 +++++
- drivers/infiniband/hw/mana/qp.c               | 501 ++++++++++++++++
- drivers/infiniband/hw/mana/wq.c               | 114 ++++
- .../net/ethernet/microsoft/mana/gdma_main.c   |  96 ++-
- .../net/ethernet/microsoft/mana/hw_channel.c  |   6 +-
- .../net/ethernet/microsoft/mana/mana_bpf.c    |   2 +-
- drivers/net/ethernet/microsoft/mana/mana_en.c | 177 +++++-
- .../ethernet/microsoft/mana/mana_ethtool.c    |   2 +-
- .../net/ethernet/microsoft/mana/shm_channel.c |   2 +-
- .../microsoft => include/net}/mana/gdma.h     | 162 ++++-
- .../net}/mana/hw_channel.h                    |   0
- .../microsoft => include/net}/mana/mana.h     |  23 +-
- include/net/mana/mana_auxiliary.h             |  10 +
- .../net}/mana/shm_channel.h                   |   0
- include/uapi/rdma/ib_user_ioctl_verbs.h       |   1 +
- include/uapi/rdma/mana-abi.h                  |  66 +++
- 25 files changed, 2196 insertions(+), 45 deletions(-)
- create mode 100644 drivers/infiniband/hw/mana/Kconfig
- create mode 100644 drivers/infiniband/hw/mana/Makefile
- create mode 100644 drivers/infiniband/hw/mana/cq.c
- create mode 100644 drivers/infiniband/hw/mana/device.c
- create mode 100644 drivers/infiniband/hw/mana/main.c
- create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
- create mode 100644 drivers/infiniband/hw/mana/mr.c
- create mode 100644 drivers/infiniband/hw/mana/qp.c
- create mode 100644 drivers/infiniband/hw/mana/wq.c
- rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (79%)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
- rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (94%)
- create mode 100644 include/net/mana/mana_auxiliary.h
- rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
- create mode 100644 include/uapi/rdma/mana-abi.h
-
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
+index 41ecd156e95f..d815d323be87 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma.h
++++ b/drivers/net/ethernet/microsoft/mana/gdma.h
+@@ -204,6 +204,8 @@ struct gdma_dev {
+ 
+ 	/* GDMA driver specific pointer */
+ 	void *driver_data;
++
++	struct auxiliary_device *adev;
+ };
+ 
+ #define MINIMUM_SUPPORTED_PAGE_SIZE PAGE_SIZE
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_auxiliary.h b/drivers/net/ethernet/microsoft/mana/mana_auxiliary.h
+new file mode 100644
+index 000000000000..373d59756846
+--- /dev/null
++++ b/drivers/net/ethernet/microsoft/mana/mana_auxiliary.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/* Copyright (c) 2022, Microsoft Corporation. */
++
++#include "mana.h"
++#include <linux/auxiliary_bus.h>
++
++struct mana_adev {
++	struct auxiliary_device adev;
++	struct gdma_dev *mdev;
++};
+diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
+index b7d3ba1b4d17..bfe244aa0eca 100644
+--- a/drivers/net/ethernet/microsoft/mana/mana_en.c
++++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
+@@ -12,6 +12,19 @@
+ #include <net/ip6_checksum.h>
+ 
+ #include "mana.h"
++#include "mana_auxiliary.h"
++
++static DEFINE_IDA(mana_adev_ida);
++
++static int mana_adev_idx_alloc(void)
++{
++	return ida_alloc(&mana_adev_ida, GFP_KERNEL);
++}
++
++static void mana_adev_idx_free(int idx)
++{
++	ida_free(&mana_adev_ida, idx);
++}
+ 
+ /* Microsoft Azure Network Adapter (MANA) functions */
+ 
+@@ -1960,6 +1973,70 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
+ 	return err;
+ }
+ 
++static void adev_release(struct device *dev)
++{
++	struct mana_adev *madev = container_of(dev, struct mana_adev, adev.dev);
++
++	kfree(madev);
++}
++
++static void remove_adev(struct gdma_dev *gd)
++{
++	struct auxiliary_device *adev = gd->adev;
++	int id = adev->id;
++
++	auxiliary_device_delete(adev);
++	auxiliary_device_uninit(adev);
++
++	mana_adev_idx_free(id);
++	gd->adev = NULL;
++}
++
++static int add_adev(struct gdma_dev *gd)
++{
++	struct auxiliary_device *adev;
++	struct mana_adev *madev;
++	int ret;
++
++	madev = kzalloc(sizeof(*madev), GFP_KERNEL);
++	if (!madev)
++		return -ENOMEM;
++
++	adev = &madev->adev;
++	adev->id = mana_adev_idx_alloc();
++	if (adev->id < 0) {
++		ret = adev->id;
++		goto idx_fail;
++	}
++
++	adev->name = "rdma";
++	adev->dev.parent = gd->gdma_context->dev;
++	adev->dev.release = adev_release;
++	madev->mdev = gd;
++
++	ret = auxiliary_device_init(adev);
++	if (ret)
++		goto init_fail;
++
++	ret = auxiliary_device_add(adev);
++	if (ret)
++		goto add_fail;
++
++	gd->adev = adev;
++	return 0;
++
++add_fail:
++	auxiliary_device_uninit(adev);
++
++init_fail:
++	mana_adev_idx_free(adev->id);
++
++idx_fail:
++	kfree(madev);
++
++	return ret;
++}
++
+ int mana_probe(struct gdma_dev *gd, bool resuming)
+ {
+ 	struct gdma_context *gc = gd->gdma_context;
+@@ -2027,6 +2104,8 @@ int mana_probe(struct gdma_dev *gd, bool resuming)
+ 				break;
+ 		}
+ 	}
++
++	err = add_adev(gd);
+ out:
+ 	if (err)
+ 		mana_remove(gd, false);
+@@ -2043,6 +2122,10 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
+ 	int err;
+ 	int i;
+ 
++	/* adev currently doesn't support suspending, always remove it */
++	if (gd->adev)
++		remove_adev(gd);
++
+ 	for (i = 0; i < ac->num_ports; i++) {
+ 		ndev = ac->ports[i];
+ 		if (!ndev) {
+@@ -2075,7 +2158,6 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
+ 	}
+ 
+ 	mana_destroy_eq(ac);
+-
+ out:
+ 	mana_gd_deregister_device(gd);
+ 
 -- 
 2.17.1
 
