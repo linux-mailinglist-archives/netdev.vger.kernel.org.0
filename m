@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3E865A7995
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 10:56:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B1A5A799A
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 10:57:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231693AbiHaI4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 04:56:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45984 "EHLO
+        id S231690AbiHaI5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 04:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiHaI4S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 04:56:18 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A097820D;
-        Wed, 31 Aug 2022 01:55:18 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so7320784pja.4;
-        Wed, 31 Aug 2022 01:55:18 -0700 (PDT)
+        with ESMTP id S231685AbiHaI4k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 04:56:40 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0713D4C;
+        Wed, 31 Aug 2022 01:55:52 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id j5so9645656plj.5;
+        Wed, 31 Aug 2022 01:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date;
-        bh=MuINGSAvN8dmwGydRR1Dg0xBbQjT1kSTnxINwZg/HxY=;
-        b=U1xCiaa2OCFaMU2//b4N0n7SCpxYz6Bcwyubm/QiFWMnWh8vmWenktp7jUbxmj7r2D
-         RTxOwFA6Agwjnaq1tuPcflPUfJkH3WQMrlK6TaSbER7Ysm8pRhdG5f470ffY1AZAVg3W
-         05Gk9q4pqg0qmOaqF5o2oHjf96CveHxWGyFUzk/oSk5n/biBPi44DplZc5VdW8Rayeuj
-         LOvkY4r2/pdmfynaXHec8i+5xM3Sf4fZK0ZAcxihYnAbxqZTsR8KAzDqXMHWuu4dd44F
-         JxpgMDcB5WhywW6IyOzH2QpOm0vSSq9xacKbuq8/c0jJDUOkP4V0Xs9qe3YQoo2Brllm
-         K4BQ==
+        bh=KfqP3P5fzreqUNYWNqqi/aKR4WW6NY9UAjQRNRu9+Qk=;
+        b=hIa7176CXKK35z9AVMa/XaFVWDpb5yjP+xlj/GiO89fhNWE4gtmTNjooGPlqZ+o994
+         7Rdcqi7r+N+1xz4W5gP8qGxhxOCKYmY/axQ9fLB1mrAhdlqvgNjyYeWPhaH2k66JytIZ
+         VPiPHN1rBshG6qgeBk91wPfP6c2SKSoMrHpGxW746IMoFhF9k6aoAQB9UFXJa80U+pV6
+         1wW9H2+obpTGwGE/EB6WRbJ3mvb1XZVnQDgGmDCcklyE0sEEMkr5vEW8GgPw7DTlvDGF
+         KdZUlWzJsmq21BwKPROJ40fbbnSRmtUX8dAVRZQr7sPWkElvf79G/87pcxKbaWM7VhfB
+         JUHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=MuINGSAvN8dmwGydRR1Dg0xBbQjT1kSTnxINwZg/HxY=;
-        b=ejCYyYMTjFMze/SNFNX4PjMpEv4di716c7ZsZ6oAQvGl5TEVX3p+X44AJypiY21sAp
-         U761dGqQmBQahXlzpQBWoJkZmwmcAJNYYzVVo+9IrkhcxrAHnQvTwZ1BeJqOUikgbCDY
-         Xalk5Ksg4mE/aaDnyNOilD21oOokAyo8W1V0fbrT1Pk6QZrZ02Ds3yHsn3CplvY9vFlx
-         KL3CyTBDl5rYABEZEYfLK2+5G6xEVTSbojP8Ci6rKReMeOydLjZ/GPKAGKN9iYV5xLW3
-         h0cagD7IxYYw8h7tzTaiMn67LtDm9wQVLh0EKBMmrPrUL4fXHg05vN3HFb+zDyDq0clC
-         iZbg==
-X-Gm-Message-State: ACgBeo1IwkS4CzrercFE4yXcWyhRRPRSyxWWEyWoS+e90+fvjoqKzbz6
-        Pp9yM9tmxB4jfT+1vLpLPLSO47hSnkUeySG8LMl+oTLF1Ed7v4rm
-X-Google-Smtp-Source: AA6agR5pobNE1EM3kS0q3Rf5cqsvpOMlTx8WA7oaEmiXAPHjAC5DfPpdDdeknL545QFZpkhpTwFEPLZGWSoUK21QNWI=
-X-Received: by 2002:a17:90b:350f:b0:1fb:479b:8e51 with SMTP id
- ls15-20020a17090b350f00b001fb479b8e51mr2258071pjb.46.1661936116860; Wed, 31
- Aug 2022 01:55:16 -0700 (PDT)
+        bh=KfqP3P5fzreqUNYWNqqi/aKR4WW6NY9UAjQRNRu9+Qk=;
+        b=n7+IkV0I694J4rpXhKTvQ2D/kmn77oKWbRIcoiiePI33xCxwZH/iswHnezjL5ujCyH
+         qurrjlH2dtBtblV5x/vPBu7K8EwEQ0lBVxmxKWOClEMy5VgzUFx5M0hRbJzmmJMEr+pq
+         fZznIrtBAbASQl4GkjclgDNtzwhfZtMHtoVXnlWFHrW2Edd0qkKv6nFaedyuKtRPYLQL
+         At44asPfGeCipSjUh3QK2mLJLdVRdhZuTnuGqZnxpyb8IJWpFG/e84DxDiLXsmI8QqRV
+         aIzTPIJ00YkAGcJM0KkxVpXpepUdEH4OBC8vUL6adbD6+VYvXcmGPsu6N2+fu8El9IYr
+         qx6w==
+X-Gm-Message-State: ACgBeo1jOExBEkhzQi4iGd7225nuN0i3soKzVZN3c/ICFTjfLeh/D88u
+        9qv8tMWgG9bhZnq/1U8VeKxgiALTxLRL2lrMv0k=
+X-Google-Smtp-Source: AA6agR5Q7mDCACRvloh77FB6PS1ee4PLZBqEvQQFaTYcaEXQj3Teu0pIhv/TncaRvisJRDj1mcuXB6BJD911OydyUOs=
+X-Received: by 2002:a17:902:d4c2:b0:172:c519:9004 with SMTP id
+ o2-20020a170902d4c200b00172c5199004mr24457708plg.154.1661936151703; Wed, 31
+ Aug 2022 01:55:51 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220830135604.10173-1-maciej.fijalkowski@intel.com> <20220830135604.10173-4-maciej.fijalkowski@intel.com>
-In-Reply-To: <20220830135604.10173-4-maciej.fijalkowski@intel.com>
+References: <20220830135604.10173-1-maciej.fijalkowski@intel.com> <20220830135604.10173-6-maciej.fijalkowski@intel.com>
+In-Reply-To: <20220830135604.10173-6-maciej.fijalkowski@intel.com>
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 31 Aug 2022 10:55:05 +0200
-Message-ID: <CAJ8uoz1sbkE+_-5B3BZQZ-8MqbXVkSi-YkoGEfvBsJa0n_oq9g@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 3/6] selftests: xsk: increase chars for
- interface name
+Date:   Wed, 31 Aug 2022 10:55:40 +0200
+Message-ID: <CAJ8uoz2=OgOvh3xj5mGizMU9jbmzQEzdF_-ftn+Tync4-9W1_w@mail.gmail.com>
+Subject: Re: [PATCH v5 bpf-next 5/6] selftests: xsk: make sure single threaded
+ test terminates
 To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         andrii@kernel.org, netdev@vger.kernel.org,
@@ -67,34 +67,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 4:00 PM Maciej Fijalkowski
+On Tue, Aug 30, 2022 at 4:14 PM Maciej Fijalkowski
 <maciej.fijalkowski@intel.com> wrote:
 >
-> So that "enp240s0f0" or such name can be used against xskxceiver.
-
-Why not bump them up to 16 why you are at it, including
-MAX_INTERFACES_NAMESPACE_CHARS? In any case:
+> For single threaded poll tests call pthread_kill() from main thread so
+> that we are sure worker thread has finished its job and it is possible
+> to proceed with next test types from test suite. It was observed that on
+> some platforms it takes a bit longer for worker thread to exit and next
+> test case sees device as busy in this case.
 
 Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
 
 > Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 > ---
->  tools/testing/selftests/bpf/xskxceiver.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  tools/testing/selftests/bpf/xskxceiver.c | 7 +++++++
+>  1 file changed, 7 insertions(+)
 >
-> diff --git a/tools/testing/selftests/bpf/xskxceiver.h b/tools/testing/selftests/bpf/xskxceiver.h
-> index 8d1c31f127e7..12bfa6e463d3 100644
-> --- a/tools/testing/selftests/bpf/xskxceiver.h
-> +++ b/tools/testing/selftests/bpf/xskxceiver.h
-> @@ -29,7 +29,7 @@
->  #define TEST_FAILURE -1
->  #define TEST_CONTINUE 1
->  #define MAX_INTERFACES 2
-> -#define MAX_INTERFACE_NAME_CHARS 7
-> +#define MAX_INTERFACE_NAME_CHARS 10
->  #define MAX_INTERFACES_NAMESPACE_CHARS 10
->  #define MAX_SOCKETS 2
->  #define MAX_TEST_NAME_SIZE 32
+> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
+> index 4f8a028f5433..8e157c462cd0 100644
+> --- a/tools/testing/selftests/bpf/xskxceiver.c
+> +++ b/tools/testing/selftests/bpf/xskxceiver.c
+> @@ -1345,6 +1345,11 @@ static void testapp_clean_xsk_umem(struct ifobject *ifobj)
+>         munmap(ifobj->umem->buffer, umem_sz);
+>  }
+>
+> +static void handler(int signum)
+> +{
+> +       pthread_exit(NULL);
+> +}
+> +
+>  static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
+>                                                   enum test_type type)
+>  {
+> @@ -1362,6 +1367,7 @@ static int testapp_validate_traffic_single_thread(struct test_spec *test, struct
+>         test->ifobj_rx->shared_umem = false;
+>         test->ifobj_tx->shared_umem = false;
+>
+> +       signal(SIGUSR1, handler);
+>         /* Spawn thread */
+>         pthread_create(&t0, NULL, ifobj->func_ptr, test);
+>
+> @@ -1371,6 +1377,7 @@ static int testapp_validate_traffic_single_thread(struct test_spec *test, struct
+>         if (pthread_barrier_destroy(&barr))
+>                 exit_with_error(errno);
+>
+> +       pthread_kill(t0, SIGUSR1);
+>         pthread_join(t0, NULL);
+>
+>         if (test->total_steps == test->current_step || test->fail) {
 > --
 > 2.34.1
 >
