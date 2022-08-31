@@ -2,119 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B1A5A799A
-	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 10:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 251A85A79B2
+	for <lists+netdev@lfdr.de>; Wed, 31 Aug 2022 11:03:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231690AbiHaI5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 04:57:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45986 "EHLO
+        id S230488AbiHaJDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 05:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231685AbiHaI4k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 04:56:40 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B0713D4C;
-        Wed, 31 Aug 2022 01:55:52 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id j5so9645656plj.5;
-        Wed, 31 Aug 2022 01:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=KfqP3P5fzreqUNYWNqqi/aKR4WW6NY9UAjQRNRu9+Qk=;
-        b=hIa7176CXKK35z9AVMa/XaFVWDpb5yjP+xlj/GiO89fhNWE4gtmTNjooGPlqZ+o994
-         7Rdcqi7r+N+1xz4W5gP8qGxhxOCKYmY/axQ9fLB1mrAhdlqvgNjyYeWPhaH2k66JytIZ
-         VPiPHN1rBshG6qgeBk91wPfP6c2SKSoMrHpGxW746IMoFhF9k6aoAQB9UFXJa80U+pV6
-         1wW9H2+obpTGwGE/EB6WRbJ3mvb1XZVnQDgGmDCcklyE0sEEMkr5vEW8GgPw7DTlvDGF
-         KdZUlWzJsmq21BwKPROJ40fbbnSRmtUX8dAVRZQr7sPWkElvf79G/87pcxKbaWM7VhfB
-         JUHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=KfqP3P5fzreqUNYWNqqi/aKR4WW6NY9UAjQRNRu9+Qk=;
-        b=n7+IkV0I694J4rpXhKTvQ2D/kmn77oKWbRIcoiiePI33xCxwZH/iswHnezjL5ujCyH
-         qurrjlH2dtBtblV5x/vPBu7K8EwEQ0lBVxmxKWOClEMy5VgzUFx5M0hRbJzmmJMEr+pq
-         fZznIrtBAbASQl4GkjclgDNtzwhfZtMHtoVXnlWFHrW2Edd0qkKv6nFaedyuKtRPYLQL
-         At44asPfGeCipSjUh3QK2mLJLdVRdhZuTnuGqZnxpyb8IJWpFG/e84DxDiLXsmI8QqRV
-         aIzTPIJ00YkAGcJM0KkxVpXpepUdEH4OBC8vUL6adbD6+VYvXcmGPsu6N2+fu8El9IYr
-         qx6w==
-X-Gm-Message-State: ACgBeo1jOExBEkhzQi4iGd7225nuN0i3soKzVZN3c/ICFTjfLeh/D88u
-        9qv8tMWgG9bhZnq/1U8VeKxgiALTxLRL2lrMv0k=
-X-Google-Smtp-Source: AA6agR5Q7mDCACRvloh77FB6PS1ee4PLZBqEvQQFaTYcaEXQj3Teu0pIhv/TncaRvisJRDj1mcuXB6BJD911OydyUOs=
-X-Received: by 2002:a17:902:d4c2:b0:172:c519:9004 with SMTP id
- o2-20020a170902d4c200b00172c5199004mr24457708plg.154.1661936151703; Wed, 31
- Aug 2022 01:55:51 -0700 (PDT)
+        with ESMTP id S229984AbiHaJDd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 05:03:33 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2074.outbound.protection.outlook.com [40.107.94.74])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F31C00C0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 02:03:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H3N0f6qeWJwthwNxMKL2Eq4eDbL65MmVAvSVJL3oExbNw1Di2koVJ8KvCtKqVCkvPld/chT7Nds9SlZB/D96PVFJnGdl7CayvuLTd8Nvc5MAQhnsG+q9UbjJBr3KllBC3Dt/eyz1SIHKFlDE4YK0CFsvlWv16lWJGjaYcsaJp0fk+rNbuegXjpcefNBJ4aaQzkrfZIzvkrctf/pEccw93EHwQWyvb8LtsU89Fq7Ahcrzz5cvSYyKGUz2v3SonXBxUuix5IRMF+6hPYK3b0mnUFEBQMSVI2r96Z4W7fH5fYH9J2Npa6DEfx7E2O5wVzBa4BLzfSMX2gVL4nHVgaPOTw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l610MN/Cc7d6YBUHIUe6/7GnbyR/mP/YRiWe+LQFMkA=;
+ b=bUmXEXBjYYBpmjqag8ylgsqFe3AWLobL8WE2eD/YzheIXEtLW0gE4GhHmrOfniB+eRHTpoZb6HoB0/qDEKTXAsys8+0nrNaSMf1fMWbCbuPrTR1Zmy9Jb/eJTw+2hn5lVGedjKCOlhYAwgTUJd6j4nBMkGUMaMhZ71KaxGSIGx85rSK4qGpCjlNMlO4mX2xe2UOgOSk9ifESMYuTeb44TkYP96gjJbJy5Q8jtHjKYqU+hBrhq7weXaX7WaM6OwxJXpcs3cQ9u6nm8C8JPj8meJRMwUIOuCxhZhhPYzLP2E+SU32pFEqHSQCfNV5sOhsXb7qIMlZkwOe6uhH1g7k6PQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l610MN/Cc7d6YBUHIUe6/7GnbyR/mP/YRiWe+LQFMkA=;
+ b=CMebB635LaU+qMx9P0t6H7qT2PNZT/UL+IyhY5zzh4YFyuqly9GYVJaKRdE16qGB2LzvxCWnarJXxgiTHDuaWafftcRXNd72RGGit4dpO4MaU0urC/wPwFr58w0mM25viU+CXsG+Xinrb7icCH/t6tuAo9wX/WC/pXC/c3naCrYZ7k+x911D83ygn73nHoEmsvu9FLOsaMzrE6F4nL6Yu+IyqQM6lIdwbz6HVRunJlB8Vs3pH73dREryKv3z7wyjn7S8dzuZHlp1baSJcd3iBwWP4nfXPMfZ6e4p085p6mDkp66E2Q8f0+5yjfFGmJgT6HResqltmOdLk7tl2A39ow==
+Received: from MW4PR03CA0342.namprd03.prod.outlook.com (2603:10b6:303:dc::17)
+ by PH7PR12MB7137.namprd12.prod.outlook.com (2603:10b6:510:1ed::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5546.21; Wed, 31 Aug
+ 2022 09:03:31 +0000
+Received: from CO1NAM11FT035.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:dc:cafe::98) by MW4PR03CA0342.outlook.office365.com
+ (2603:10b6:303:dc::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15 via Frontend
+ Transport; Wed, 31 Aug 2022 09:03:31 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT035.mail.protection.outlook.com (10.13.175.36) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5588.10 via Frontend Transport; Wed, 31 Aug 2022 09:03:30 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Wed, 31 Aug
+ 2022 09:03:30 +0000
+Received: from nvidia.com (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
+ 2022 02:03:26 -0700
+From:   Gavin Li <gavinl@nvidia.com>
+To:     <stephen@networkplumber.org>, <davem@davemloft.net>,
+        <jesse.brandeburg@intel.com>, <alexander.h.duyck@intel.com>,
+        <kuba@kernel.org>, <sridhar.samudrala@intel.com>,
+        <jasowang@redhat.com>, <loseweigh@gmail.com>,
+        <netdev@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <virtio-dev@lists.oasis-open.org>, <mst@redhat.com>
+CC:     <gavi@nvidia.com>, <parav@nvidia.com>
+Subject: [PATCH v4 0/2] Improve virtio performance for 9k mtu
+Date:   Wed, 31 Aug 2022 12:03:03 +0300
+Message-ID: <20220831090305.63510-1-gavinl@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220830135604.10173-1-maciej.fijalkowski@intel.com> <20220830135604.10173-6-maciej.fijalkowski@intel.com>
-In-Reply-To: <20220830135604.10173-6-maciej.fijalkowski@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 31 Aug 2022 10:55:40 +0200
-Message-ID: <CAJ8uoz2=OgOvh3xj5mGizMU9jbmzQEzdF_-ftn+Tync4-9W1_w@mail.gmail.com>
-Subject: Re: [PATCH v5 bpf-next 5/6] selftests: xsk: make sure single threaded
- test terminates
-To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b3762efb-f531-4808-0c11-08da8b2fad1e
+X-MS-TrafficTypeDiagnostic: PH7PR12MB7137:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: OjI+6N4GUwC3up4NFPmvPiYX1E6gntCPWwjmqFyuyMnXpvXe+g7P9y4lnUClXg9Mw83e+cwRBicVwMrxQPn1Xye2nbI87JcKvW3qb9QN0ozjC82d7tYcERV01fnfbhVEkU0kiyFVOQ+ETG1OyERoVU8Yqs14WhczervELx1GCCFjM0khbtgLzRs50IlFjw8VPRiD0lxU+OK5ocCFDgHMm6QVHFMY6ASb1Lqyo6xBQ+Cf7anlKxxaFiPL51w3iN50Gcsb4oTU9neryBfm4lCYkHYcDE32k8zhd9dfxqKQMhRZquvnfDIvxt2cPrsbs1X8IbVhW0S1IwLZhshb74anVOiRqU65MLARPqJzg4EPITscDvY+W3nZYup17jaHH9RKANbwQoZwNUfzTq9mKLPFIpj26Qs/DeE3Iq388W8n6omuy/R2IyP7/t396/fCsHvwJh/gqMHA/IGSCTwiXtmBSAGtI5hV2GsZBs9PrgOm3Kemfur3M4qZXCaTEcR+Tgngl/ykh4gXCY7UqRMy403hSrzdOfcK9UL81JDqhKN3SEEtwMERmBFqVZfUhJknh1IrWXig8NIELwDNnv99Z9AbD5crj7iCBOD0sdnjnAWMFGQv8Q0u0T4eOEgGnNXwO97sxQrBH1A8Z6hPsnrFerUbLcPgChpaXQCEphztGw69cNmqnisN02JHcysZaydPo6Xij46JmN0IqOKb6Tz1NmeTJforpYMbSRJ9+f/ZfhEVqUXTW4uisHRQhPbmpFPbqXkTffN+OODZsaoWhotmGHudRjXvFdmyvXkOAGSif/4Yo55jfmQBsDAyjtq+L+2sfhbQ
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(136003)(39860400002)(396003)(346002)(46966006)(40470700004)(36840700001)(82310400005)(316002)(40460700003)(4326008)(55016003)(8676002)(70206006)(40480700001)(110136005)(70586007)(5660300002)(7416002)(8936002)(82740400003)(36860700001)(4744005)(6666004)(107886003)(7696005)(2906002)(478600001)(921005)(86362001)(36756003)(356005)(81166007)(54906003)(336012)(83380400001)(1076003)(6286002)(186003)(16526019)(426003)(47076005)(2616005)(41300700001)(26005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Aug 2022 09:03:30.9247
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b3762efb-f531-4808-0c11-08da8b2fad1e
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT035.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7137
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 4:14 PM Maciej Fijalkowski
-<maciej.fijalkowski@intel.com> wrote:
->
-> For single threaded poll tests call pthread_kill() from main thread so
-> that we are sure worker thread has finished its job and it is possible
-> to proceed with next test types from test suite. It was observed that on
-> some platforms it takes a bit longer for worker thread to exit and next
-> test case sees device as busy in this case.
+This small series contains two patches that improves virtio netdevice
+performance for 9K mtu when GRO/ guest TSO is disabled.
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Gavin Li (2):
+  virtio-net: introduce and use helper function for guest gso support
+    checks
+  virtio-net: use mtu size as buffer length for big packets
 
-> Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-> ---
->  tools/testing/selftests/bpf/xskxceiver.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->
-> diff --git a/tools/testing/selftests/bpf/xskxceiver.c b/tools/testing/selftests/bpf/xskxceiver.c
-> index 4f8a028f5433..8e157c462cd0 100644
-> --- a/tools/testing/selftests/bpf/xskxceiver.c
-> +++ b/tools/testing/selftests/bpf/xskxceiver.c
-> @@ -1345,6 +1345,11 @@ static void testapp_clean_xsk_umem(struct ifobject *ifobj)
->         munmap(ifobj->umem->buffer, umem_sz);
->  }
->
-> +static void handler(int signum)
-> +{
-> +       pthread_exit(NULL);
-> +}
-> +
->  static int testapp_validate_traffic_single_thread(struct test_spec *test, struct ifobject *ifobj,
->                                                   enum test_type type)
->  {
-> @@ -1362,6 +1367,7 @@ static int testapp_validate_traffic_single_thread(struct test_spec *test, struct
->         test->ifobj_rx->shared_umem = false;
->         test->ifobj_tx->shared_umem = false;
->
-> +       signal(SIGUSR1, handler);
->         /* Spawn thread */
->         pthread_create(&t0, NULL, ifobj->func_ptr, test);
->
-> @@ -1371,6 +1377,7 @@ static int testapp_validate_traffic_single_thread(struct test_spec *test, struct
->         if (pthread_barrier_destroy(&barr))
->                 exit_with_error(errno);
->
-> +       pthread_kill(t0, SIGUSR1);
->         pthread_join(t0, NULL);
->
->         if (test->total_steps == test->current_step || test->fail) {
-> --
-> 2.34.1
->
+ drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++--------------
+ 1 file changed, 32 insertions(+), 16 deletions(-)
+
+-- 
+2.31.1
+
