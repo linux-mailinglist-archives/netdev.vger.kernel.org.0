@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 607175A9A06
+	by mail.lfdr.de (Postfix) with ESMTP id F04115A9A08
 	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 16:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234583AbiIAOVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 10:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47658 "EHLO
+        id S234601AbiIAOVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 10:21:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbiIAOVB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 10:21:01 -0400
+        with ESMTP id S234207AbiIAOVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 10:21:02 -0400
 Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2071.outbound.protection.outlook.com [40.107.237.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6729432EC1;
-        Thu,  1 Sep 2022 07:21:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACC99419A0;
+        Thu,  1 Sep 2022 07:21:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mQDuxmPMKgq+5eat+j7TfqmgVBa9QJwwxIWNNAdarunVYn1CdbZSx0bCz9W3WPZuBzedFgg/fWp2Ep97Dg4OCi+2AgPpeYCPXRnoO4Ua8WfXa2DikxXdTz6zcFec8mxA1KD/kEoY7e1fA1yDi8OG1y6RXP25hGKA0rsMBvoRkxpOb+rh8cePmJoOhFlBmAGbUDZzLJ+9GCNvIkRpgNuMLHa0l+rwwX8DXtdeyo+eWkJljV567N9ePeDvelpCS9f2AhjsB3CqGKP7zSpb6OwbBMBT6A2NAQ5PJesxsY+spYj1QkBBN84sGQUaEcJqPOL90stDTVKKI9YoYmfijtIfxQ==
+ b=K5tbApyaECetOsLuBxZYmayjz0xSYDjBbWNtw016PGnobXegOkdpO0ngdN5pf9RqoTviepjQLoyTcF93fHCKMtaamz4plDE7UmaQ19OEOsw7TU+bxP7s/Px/KT/RHJD79L0NEGsbFLb9V1RamEdjj8DgOPYKYpNn8uBsOYiR/MH2TWJMaCHEMTk3n2YWzlvixlQDoBAhi1g4pMcVpc8Kiv/PH2Qaka22y+aXu44vgwt8NskfdT/vWhM7AVRT0SrhF/IMPHry4D89lYT5nTx1sZehybtdACH7PgQLsrsNXbGnzuYcWLLc6T1g83OnVUxjyUzEn0LTTDqj3qw9P/sAag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/aB2fdyup4zXlO7Fs2az03ubJD/zt2/t60pbinRpFNQ=;
- b=aBt/156TwEDGCmZgi6MygQeDDQjTKmCV4Lpa575aKRhkvFmmM2GlvYsi/jLGILTvIzy7945rIBP9W8WLj8uPraxebGaHYO7AoTH7paTEA7AOUfin54hzwvMVTD30ZWhjsLDjfzIgywRV+NYT5nyRxaoyAKlmwZy6StQRFQO4Y5cJy08wf5iOGJBf0X4jOyJUIZCbGtWftS1C4USbdPdxO9NQU5IOZklRdeQTEQESIohmZ1L5/4CKvWDIbO4abqUu6Hk2ANGh2MLHcMpQkPGvv8fbBs6fuh5hLUedC7l591RbIADJZwZ8ojzAfIgn9Bhw/rIXQkokmtOSSjR1z97BlQ==
+ bh=LWT5g/0ubjMdjjud63JCmVADsQoTILLj1AtF/TxuYy0=;
+ b=Pal8oJwtncEhzWW6LqV8XomMRjLQVXAYyB502KymR4O4meUFq3TX22kaN0IA4IP+NvidCI72g3O73a0PQqrN/+TV4bg9JexB1aY1j2NLBNQ8JS4eeRQhDD6Ajb+xpzq6TeQ4cVoyFeqrb+4LEe5CDCeDvOhuyRo9FxXx+G6klUT4ETnZ+GckE3yPYCZwytd6i5XyNR8HvF7LRjuKhWXDBmug2Mr4jqOhNEuoYx1m7w4SUPkTFWxrueXNaatsZji2TNKCRF1qccBJ3Q9xwFRP1mhR3ZeJjs1XC+MAAaxcrmsbJ2215qdv09deQlBOJi1GNMxWisyOCza+7Pb4M206Yw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/aB2fdyup4zXlO7Fs2az03ubJD/zt2/t60pbinRpFNQ=;
- b=fhZmiN7U8rZs0slqgczpOzdTFY4A/es294tSxlbS6qTlnkg2JPTIWmw60A2jFK4Mbc7bbnpjIINDfTqK+L725dh1267yyQfGzpk3TGTEJmaLTEmzSGri+y+6zknHB0Achf6pIbb9D7XVkfet5IZbV3YOdEvLZJ2hh6oqtTTLlpMQdz6SushKoQ4cHG4z9I8wWGKFEahlCsB99nVPcsHYi3TZC9kUiTBpX9+EiqAN3eRn5wIIGN3627I0KFlPfY6WfKEP+9eQ3fRlzRP6Kcn4V9pjAslq1Ae8hU5pXcwsKcGZ2DmRSIUWgIv8ZlvyRNp7vUbVIi0GIGXUMlrThJlHCQ==
+ bh=LWT5g/0ubjMdjjud63JCmVADsQoTILLj1AtF/TxuYy0=;
+ b=rJRKUx/oVnsFHmhgjWQI2DhI41O1+ogltyDsCpwce0xfPwrW+0UDjNCMgm0Njt3Lrzbl7cF2qVZEU3jCkD2GERt8992Pm1zI56z9JG3IGH+hoZwgS/hyKb0/C1MNtyFX3J5g8xHEaf2C3iJNcqcebBaAMCcmAuRK35Y0GvqqFvYSmQb2N0pzNzcxhCNzocyn7vFIQwNkeqU759bHDOKKKidl/OKlVkX0ykwBnHpqc7Lg/2G15lOLN8TO5JH7m13QxYZL0naa1ktmXYO3vwmgZz8GiCcqtTJooJ1xKaKeViUIoxWwDbRLvQIBtg0UKHe9khGVUkDlmYNWD9xLu1QGxA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
  by BY5PR12MB5000.namprd12.prod.outlook.com (2603:10b6:a03:1d7::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 1 Sep
- 2022 14:20:57 +0000
+ 2022 14:20:58 +0000
 Received: from MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::462:7fe:f04f:d0d5]) by MN2PR12MB4192.namprd12.prod.outlook.com
  ([fe80::462:7fe:f04f:d0d5%7]) with mapi id 15.20.5588.012; Thu, 1 Sep 2022
- 14:20:57 +0000
+ 14:20:58 +0000
 From:   Jason Gunthorpe <jgg@nvidia.com>
 To:     =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
         dri-devel@lists.freedesktop.org, Leon Romanovsky <leon@kernel.org>,
@@ -49,62 +49,63 @@ To:     =?utf-8?q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
         Sumit Semwal <sumit.semwal@linaro.org>
 Cc:     Kamal Heib <kamalheib1@gmail.com>,
         Mohammad Kabat <mohammadkab@nvidia.com>
-Subject: [PATCH 2/4] RDMA/core: Add UVERBS_ATTR_RAW_FD
-Date:   Thu,  1 Sep 2022 11:20:54 -0300
-Message-Id: <2-v1-bd147097458e+ede-umem_dmabuf_jgg@nvidia.com>
+Subject: [PATCH 3/4] RDMA/mlx5: Add support for dmabuf to devx umem
+Date:   Thu,  1 Sep 2022 11:20:55 -0300
+Message-Id: <3-v1-bd147097458e+ede-umem_dmabuf_jgg@nvidia.com>
 In-Reply-To: <0-v1-bd147097458e+ede-umem_dmabuf_jgg@nvidia.com>
 References: 
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MN2PR01CA0007.prod.exchangelabs.com (2603:10b6:208:10c::20)
- To MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
+X-ClientProxiedBy: BLAPR05CA0025.namprd05.prod.outlook.com
+ (2603:10b6:208:335::6) To MN2PR12MB4192.namprd12.prod.outlook.com
+ (2603:10b6:208:1d5::15)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9e4e12a6-d60d-496c-015d-08da8c253009
+X-MS-Office365-Filtering-Correlation-Id: 147bd910-42ed-4492-60c5-08da8c25302a
 X-MS-TrafficTypeDiagnostic: BY5PR12MB5000:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pDIhVsbNPCH+LhanUheLaUnlGaYL1t0kAYkMcEFk7HH6dbs2Lero7nX8e0hrGuY7rZARQW4B6415QmY63s5m2X+TSJ/7b+gP4hfid6K4MnfwamloC5R2XOBxe+SyUGKYG+2p5PrGBXJwBFhhgnXtYfwZbHf2dtYRzGl0NfXnRk5s72fsd4d720RKSDelHTZTZQwj3pOf/BKHYLrOeMSxO2KOOQ5iorgJ9ydF6BLnqB57wiDOYfKvs0JLCC0KVQX39qRwJMNOajOKLaQ7YTJZWXsnQEI//H0ACkW21qxu2hAEDGQx3r3lk4MjxKSOBaga2c2SQpUL1RjlTOLIL1DbAmR1/Oy2uDFFahiZDZ486bI4UrCQ8O+O8/tBPcDxmnIbaGtaKHBBJlmpcg0IsD5XzwSPU0p3gOkjMeLhgbMGu7K05kKntJni2xThuq9oyXtVdTHMHxTPs73rze7jlsc/L8O9iToIKoTUIIzAc/Jgh/4uizYPQ1MirPXt4jRn2401OtNxH7qKlVYRlW/ShZxVXGWRn1uq/Hk5Nq0QYXEwARdh65d22iFhBJMeAH5ac8wsujBh3CeLzfdZ+r/N6KeC2dj2t09HKm5FvoyzzmkkKWdCXzTh93QSZ0CC+FJcUhFz7NSbTylkE1uBo3CxQzykzVOG2f+ejXXS76902UqgQaYrTD+dVI6chZiincaTmkAXEt8kRXdgd6UBzmpAG0tDZgukU48HQxXKJ+wCYwFdRHwhU2Au2iKPmb67+NRmBnck
+X-Microsoft-Antispam-Message-Info: Z+09MsS3nqOVvrJ8ALEfz/eCUWrTis5gYMj7e5GPU1wFD2qqqnJwFrN5Pwh7pSPTCT4YZoE2+Fo8k+QhPhOAw3bBImpek63/aFc09DlRxW6r0H5CJimzhh7bzfaMIqjgshGPh/bzgu9KWXkmhktsKqbk7YqeCjJJsnP0s7cKFXCkKOSoWBIGsHUkKx9YP64eNwBWo9w8iIhcbBoh0LwBnNHMwGYvIo4cdmC45Qmb7RWN+3Bhthr3mGVZ9x5OuJiNXvUfykehfqmKU3p0foRBLbg8tWuB40ssEEwFs9jOyzij9Y3gr4d0o6MCLRxI8xiH7BfuXe/A7W/XW0JfJaeQE6w2sgHu0ex6uc9xs94I1Y2qpTos0IgYJNYd7ovHXRz8plpG7Ru91kkeYLhAbIu/ArPHadHU27mUxm66+7+EkOiwMICS1sXkwOZcR0Hx7dgc8MuqE7XgaQKlh8oIDeDw5AAfWjG3j0aJtIXcm8C9BGbiAkL0puTYRbHCYkgdkjOoqGBboF8aPQrDbFhQguBkqHEWXzZH5VWZ1z1GPbUS1uvMTQxtN7ukS9lHaRHSE0VWK4xbvt36HtE9gZT2oUFkBhntkgcvlTGt5K2vAFXaHTbdVeVaprkzILSlalUSc8OI9BSTrRzHj5Vc6yvNf3VpU2RSN8TnI+vV/O85NGS+ezPWog0iYfMvCOpN4V4tm9fs0OWFp/C+VtW1N6d6lxl3osXejhHsk5UWn/ZCe5ZQ0DsjhTJMX4kMtBMtYtct3vCu
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(136003)(366004)(396003)(6512007)(66946007)(4326008)(5660300002)(66476007)(6666004)(6506007)(478600001)(107886003)(8676002)(66556008)(6486002)(8936002)(86362001)(41300700001)(83380400001)(2906002)(2616005)(26005)(38100700002)(186003)(316002)(36756003)(110136005)(54906003)(4216001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UKAP33sN7HmkgVXsDBVvWQEhWbPRMDmw/iLMiUsV8ThAzAdGlYubAp8NbzN7?=
- =?us-ascii?Q?eYeXjcAjlxp3rGVGt2m2BSn6WJtuR91xB1OPI+BamoAcbuHe3f8TSLy9c3mm?=
- =?us-ascii?Q?sd2EVniUrece6LnuGT75txH7gKjsDK+LQ95e7R9LxE5HhANp+hH60zPOt+Zl?=
- =?us-ascii?Q?2kd4tPCxm9XqGiqUj77prExKaI8txIviBk4+QBPyIZx53SDsOImHAtvDlGVH?=
- =?us-ascii?Q?GHwn36lewtfhXDu9lgemDYzOpATLJKFhB77AW4Kveh19XgFUv6pzGGb0C1NX?=
- =?us-ascii?Q?Cm0pxb8P7GuOQwKGXh+41Eiy64qJBuLZrguJWJwgiFmjaxd+HxmZJZ1TcVdM?=
- =?us-ascii?Q?/heR/jtGHunaR24dp95KV1sx6TWGFdy20peNHVc1pMvvu/fZmsDuqi4ke7Zi?=
- =?us-ascii?Q?qACzz9SaXmmYK8iNqILxuCGYRp0yPTQz1NC+F1L+PRULtxWnqy3LoO4e3F8I?=
- =?us-ascii?Q?ezK14ABC7TqAMXQ0gRU7GSi99TOGYOySXim9CRKWa+vzQiRpeGv3RLA1iv7+?=
- =?us-ascii?Q?MLsux9v/7UcvX5vE4nbwVuASTjxdEnsapifeJ79ByhkffsEVMoQK6z26NOX9?=
- =?us-ascii?Q?jWMe31qEXLag0Zwvtlo+XOWgtDDpfNIZw42CxMuCEcgnLf+2QUeGDuEYvoQ3?=
- =?us-ascii?Q?Cigf/0TZbT8jyUjCrVVKtQDsFskelfB7MrDH1yMHUmR/T7ZvoQsRzff9Gog4?=
- =?us-ascii?Q?PgBwuDtToI89wJ+zXUcaPxcI8po0F8DdYHpK0wVeq+o74CT4nuOqugpTUaDH?=
- =?us-ascii?Q?Ts/YEEzcriQ3b/ZbkbTmcAPyvczMFFhxq98k03up9nPESlaGjzpnd/Xc6UVc?=
- =?us-ascii?Q?3YljU0AQNM+oJ+tteye8vccTPkMNT/BVSevKlHK8O0JcwC29TTPR5sF2IBf7?=
- =?us-ascii?Q?CKrl3cDLTjJduUPomZfX1x4KPY3oNHUqKXxomHhiprsxMSpl1Wa0REL17cMr?=
- =?us-ascii?Q?GmMyCrgla486trzuOejP9CS/RL3E5jYpu5qpkEMbgJCPeDtKjYfjqHVNYfcK?=
- =?us-ascii?Q?9vTWU4wKVDdsqcZbc3/fdTnMFKcEZWvIlo5jyZeRwYKNF4mnnU8aaDHQv9tL?=
- =?us-ascii?Q?M+QdVTaOx3rML99BAqnx5QW1QXHZa/okrLP5nErLILJYrKRrpNUa/vwT+oKw?=
- =?us-ascii?Q?/Jq2y8TIR3LH3BRI46s4YiSVotDeKPYcObYD7QesOajWpSnzrcuw+seSAIOj?=
- =?us-ascii?Q?EW/f2Z+LqqteX82zexU2UYGXriRFkZLa0Sxqv13mXm19ZoMB5GrUb6KW1Ab5?=
- =?us-ascii?Q?8AD+JbjQJNfzitK4o6co6HZBrtJPQRGl445yA0sDoF70yiVimFPqTTw+mfln?=
- =?us-ascii?Q?pSIbiRMAP7SqT07hAJyJOKvHGIyR/KRRc/dCiqgqh/BeTgIi/EWdBhp9PeoR?=
- =?us-ascii?Q?TzmcvqW2wP1ceR/q/YaVfrihBKURFMFLVescSqODH8oGF7giiP2FwMfaLvPY?=
- =?us-ascii?Q?dTxcUhG8/erM6pqIx20idLDVAZ2Y0sDlJ6uJV3LQEviab4+DGLGGnW0kS95i?=
- =?us-ascii?Q?itfWtoHh5PcS/2+JyZs+VXj0Wt6TcDleOPzxgXgFWEuYkQLjz5fcvHRP914O?=
- =?us-ascii?Q?3X8Br9AEXwdn1TKRkIe26/2FoQXGVXaAmj2uRdag?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?x6dXc0wVw7ppooyxGAXnR90j/mLxcjgTVjGXGbcdGGtFC+IO+z2gucv3/kwP?=
+ =?us-ascii?Q?4WBt3RQZXOzeNBpdIxg6wY0KWQHt9gVkDVhB1EQMGnFuZbVXNdB1lWEmEv74?=
+ =?us-ascii?Q?v/pN8qSPn/Cd4q2Ko60gTeaSTVgLVTx/Kabx/t3Xv7GgpRGhy1mG2rkUQLkN?=
+ =?us-ascii?Q?1RpHTHQNeiPREKsbeUGDkDMkLwR1nUWx+wsCvm8r35yFldNeQD8FOEm5Lmi6?=
+ =?us-ascii?Q?D2jwUCrcHiITwKcnqyEeIE5MgmpcO79ZSJDpIsPCzWleNdMF8fLOot4+xzxm?=
+ =?us-ascii?Q?K2fEZb4/f/98hLA+v/gQgHJd49ATIrVkch3tq05BnFVi3JoKAWG1a0Hak60J?=
+ =?us-ascii?Q?8ZewKgXPvGutRn0EFV7PVxCAeZWxHKCMhg7bIJpElHtdF5krPsB9G1XSq/gr?=
+ =?us-ascii?Q?nOXCzM2xtr019N1HkGfmP0Cc1pkLka0duF9PzyFX6XxO0umiG4Lw9/708JrD?=
+ =?us-ascii?Q?N2OoQcpDgZOege+CyYTnWsPEnANsgQZRuTNuItcAkMjJdFEi+aO/BY0SBY0J?=
+ =?us-ascii?Q?A+mHdmPHnJCUkBf0dG5BUGCshCrsQUtl5XPH5u7PQuAuGT9T3Hbsw+DJBpxF?=
+ =?us-ascii?Q?i97iwynXkdrvA/Ao7HpMy3NXxDi0z3ocY9PqMTNjRr0g8f1SpuUwaZgPh8wL?=
+ =?us-ascii?Q?CtDqkXYRdwPqvBaNm5hq9/1B6EciJj91yTUENGIyLIl1gVOlMEpgAlaCvHvc?=
+ =?us-ascii?Q?2vu0Deg/qopjsMpRsmdqbqnDGC2cI2M8FT2WHwaPq895SdkhyBtvDn7Wgpmc?=
+ =?us-ascii?Q?BuTAbX4TYsulUf6dXxzv5TWBxpYO4EWdRFWGglbuntxjFKx5CU+sU+ABmgv+?=
+ =?us-ascii?Q?I0Al8/7uogw9LeqFxEZ4qZC0TX2kA8KhcEKw9knrjxpVUxAo9m3pJtXcybHE?=
+ =?us-ascii?Q?RaAWmLTPS82W5Y91lZyhc8UPuElV/Y4RxhB3V4dcmBVQMeCdti6lwcIRL0Nh?=
+ =?us-ascii?Q?lbIlYu6yEevQYlqy9OLu91j55MpDJIEadc/zLT0rv6KnMo5yHgh3mt55rc/S?=
+ =?us-ascii?Q?ikOF1puF8h8W6G3w32rBqdzQ5UUiokndEqFL/IrT0QRlCBkleEi+7DxMFmvQ?=
+ =?us-ascii?Q?3l6z4g/DWTPop29Cw6nGdQnIpTqhtEQ8MApCqqlls+fJ6YbFpkNamAu1j3tz?=
+ =?us-ascii?Q?eoIh9Jou6fXIEorR4L80jdWlPCZ2WcG9hd8/Co5IEuUchWDRTkRYbAMgto1V?=
+ =?us-ascii?Q?SPlvk+fD4Ms2mpB3KBQ3FNX1O6x8v5xBGaMNOYbInoZpcW6yzmsDOTxVBL5P?=
+ =?us-ascii?Q?VLNDa91Z8RNSAcquEsGvPIvejsMIJSTlGFqhddrRAcNqhYZCYLVGjs5BrRKc?=
+ =?us-ascii?Q?y8BmbbR545J4aMuYQIiB5RrhVQK/1ioyOeLLm8QwLeuasLZE46wrB2VuQSw3?=
+ =?us-ascii?Q?t+9pvkkKfgJ5sBsxiBvmjMsirGqCtyLoSucXuA6MSqtI3c/mxt2s1TDNHt4Q?=
+ =?us-ascii?Q?fvGB+a+Ag7g6apsothD7PZGkctKYNV6nnq5XQBlLo+iMHUakASomSbQB257S?=
+ =?us-ascii?Q?0QBQkUsAiJApsZkxdY/PMCIwGL8KIJ0vGsSa8mVE7H2QhVa5bfwhRDhJSUja?=
+ =?us-ascii?Q?/yPF/tSUh+5ciYaeB0Ri1fxhhp/z9PJOLM8Vmf7/?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9e4e12a6-d60d-496c-015d-08da8c253009
+X-MS-Exchange-CrossTenant-Network-Message-Id: 147bd910-42ed-4492-60c5-08da8c25302a
 X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 14:20:57.5171
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 14:20:57.7046
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3MayONxtN/zL4PW7xCehQvlc2ay4mi/jVluEOkJMaoVCyd0vXa+ydBenYoQ9bb9D
+X-MS-Exchange-CrossTenant-UserPrincipalName: MIZlG+iQqfBzkvtWFOLpWw6rQThS4EMk4hdwKJg7EO6Rp0EuZQbZjsyMaj6RmdLR
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB5000
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,73 +117,73 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This uses the same passing protocol as UVERBS_ATTR_FD (eg len = 0 data_s64
-= fd), except that the FD is not required to be a uverbs object and the
-core code does not covert the FD to an object handle automatically.
+This is modeled after the similar EFA enablement in commit
+66f4817b5712 ("RDMA/efa: Add support for dmabuf memory regions").
 
-Access to the int fd is provided by uverbs_get_raw_fd().
+Like EFA there is no support for revocation so we simply call the
+ib_umem_dmabuf_get_pinned() to obtain a umem instead of the normal
+ib_umem_get().  Everything else stays the same.
 
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/infiniband/core/uverbs_ioctl.c |  8 ++++++++
- include/rdma/uverbs_ioctl.h            | 13 +++++++++++++
- 2 files changed, 21 insertions(+)
+ drivers/infiniband/hw/mlx5/devx.c        | 24 +++++++++++++++++++++---
+ include/uapi/rdma/mlx5_user_ioctl_cmds.h |  1 +
+ 2 files changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/core/uverbs_ioctl.c b/drivers/infiniband/core/uverbs_ioctl.c
-index 990f0724acc6b6..d9799706c58e99 100644
---- a/drivers/infiniband/core/uverbs_ioctl.c
-+++ b/drivers/infiniband/core/uverbs_ioctl.c
-@@ -337,6 +337,14 @@ static int uverbs_process_attr(struct bundle_priv *pbundle,
+diff --git a/drivers/infiniband/hw/mlx5/devx.c b/drivers/infiniband/hw/mlx5/devx.c
+index 2a2a9e9afc9dad..291e73d7928276 100644
+--- a/drivers/infiniband/hw/mlx5/devx.c
++++ b/drivers/infiniband/hw/mlx5/devx.c
+@@ -2181,9 +2181,25 @@ static int devx_umem_get(struct mlx5_ib_dev *dev, struct ib_ucontext *ucontext,
+ 	if (err)
+ 		return err;
  
- 		break;
- 
-+	case UVERBS_ATTR_TYPE_RAW_FD:
-+		if (uattr->attr_data.reserved || uattr->len != 0 ||
-+		    uattr->data_s64 < INT_MIN || uattr->data_s64 > INT_MAX)
-+			return -EINVAL;
-+		/* _uverbs_get_const_signed() is the accessor */
-+		e->ptr_attr.data = uattr->data_s64;
-+		break;
+-	obj->umem = ib_umem_get(&dev->ib_dev, addr, size, access);
+-	if (IS_ERR(obj->umem))
+-		return PTR_ERR(obj->umem);
++	if (uverbs_attr_is_valid(attrs, MLX5_IB_ATTR_DEVX_UMEM_REG_DMABUF_FD)) {
++		struct ib_umem_dmabuf *umem_dmabuf;
++		int dmabuf_fd;
 +
- 	case UVERBS_ATTR_TYPE_IDRS_ARRAY:
- 		return uverbs_process_idrs_array(pbundle, attr_uapi,
- 						 &e->objs_arr_attr, uattr,
-diff --git a/include/rdma/uverbs_ioctl.h b/include/rdma/uverbs_ioctl.h
-index 23bb404aba12c0..9d45a5b203169e 100644
---- a/include/rdma/uverbs_ioctl.h
-+++ b/include/rdma/uverbs_ioctl.h
-@@ -24,6 +24,7 @@ enum uverbs_attr_type {
- 	UVERBS_ATTR_TYPE_PTR_OUT,
- 	UVERBS_ATTR_TYPE_IDR,
- 	UVERBS_ATTR_TYPE_FD,
-+	UVERBS_ATTR_TYPE_RAW_FD,
- 	UVERBS_ATTR_TYPE_ENUM_IN,
- 	UVERBS_ATTR_TYPE_IDRS_ARRAY,
++		err = uverbs_get_raw_fd(&dmabuf_fd, attrs,
++					MLX5_IB_ATTR_DEVX_UMEM_REG_DMABUF_FD);
++		if (err)
++			return -EFAULT;
++
++		umem_dmabuf = ib_umem_dmabuf_get_pinned(
++			&dev->ib_dev, addr, size, dmabuf_fd, access);
++		if (IS_ERR(umem_dmabuf))
++			return PTR_ERR(umem_dmabuf);
++		obj->umem = &umem_dmabuf->umem;
++	} else {
++		obj->umem = ib_umem_get(&dev->ib_dev, addr, size, access);
++		if (IS_ERR(obj->umem))
++			return PTR_ERR(obj->umem);
++	}
+ 	return 0;
+ }
+ 
+@@ -2833,6 +2849,8 @@ DECLARE_UVERBS_NAMED_METHOD(
+ 	UVERBS_ATTR_PTR_IN(MLX5_IB_ATTR_DEVX_UMEM_REG_LEN,
+ 			   UVERBS_ATTR_TYPE(u64),
+ 			   UA_MANDATORY),
++	UVERBS_ATTR_RAW_FD(MLX5_IB_ATTR_DEVX_UMEM_REG_DMABUF_FD,
++			   UA_OPTIONAL),
+ 	UVERBS_ATTR_FLAGS_IN(MLX5_IB_ATTR_DEVX_UMEM_REG_ACCESS,
+ 			     enum ib_access_flags),
+ 	UVERBS_ATTR_CONST_IN(MLX5_IB_ATTR_DEVX_UMEM_REG_PGSZ_BITMAP,
+diff --git a/include/uapi/rdma/mlx5_user_ioctl_cmds.h b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
+index 3bee490eb5857f..595edad03dfe54 100644
+--- a/include/uapi/rdma/mlx5_user_ioctl_cmds.h
++++ b/include/uapi/rdma/mlx5_user_ioctl_cmds.h
+@@ -174,6 +174,7 @@ enum mlx5_ib_devx_umem_reg_attrs {
+ 	MLX5_IB_ATTR_DEVX_UMEM_REG_ACCESS,
+ 	MLX5_IB_ATTR_DEVX_UMEM_REG_OUT_ID,
+ 	MLX5_IB_ATTR_DEVX_UMEM_REG_PGSZ_BITMAP,
++	MLX5_IB_ATTR_DEVX_UMEM_REG_DMABUF_FD,
  };
-@@ -521,6 +522,11 @@ struct uapi_definition {
- 			  .u.obj.access = _access,                             \
- 			  __VA_ARGS__ } })
  
-+#define UVERBS_ATTR_RAW_FD(_attr_id, ...)                                      \
-+	(&(const struct uverbs_attr_def){                                      \
-+		.id = (_attr_id),                                              \
-+		.attr = { .type = UVERBS_ATTR_TYPE_RAW_FD, __VA_ARGS__ } })
-+
- #define UVERBS_ATTR_PTR_IN(_attr_id, _type, ...)                               \
- 	(&(const struct uverbs_attr_def){                                      \
- 		.id = _attr_id,                                                \
-@@ -999,4 +1005,11 @@ _uverbs_get_const_unsigned(u64 *to,
- 		 uverbs_get_const_default_unsigned(_to, _attrs_bundle, _idx,   \
- 						    _default))
- 
-+static inline int
-+uverbs_get_raw_fd(int *to, const struct uverbs_attr_bundle *attrs_bundle,
-+		  size_t idx)
-+{
-+	return uverbs_get_const_signed(to, attrs_bundle, idx);
-+}
-+
- #endif
+ enum mlx5_ib_devx_umem_dereg_attrs {
 -- 
 2.37.2
 
