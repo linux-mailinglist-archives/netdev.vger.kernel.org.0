@@ -2,263 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF695A9339
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 080A35A9352
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:40:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233917AbiIAJdp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 05:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43160 "EHLO
+        id S233179AbiIAJkg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 05:40:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234102AbiIAJdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:33:42 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AACB133F24;
-        Thu,  1 Sep 2022 02:33:38 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2819DHHd020989;
-        Thu, 1 Sep 2022 09:33:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=M2lvvbaxGtrRwV0nVm9wGyPf2AUEdYar+2aCIoLbIhc=;
- b=fPxkMo6Ms4swS6PDwwg1gtaBil89aiedwN2IdOw5sUybIwUJtk31jlv8aFfMz/yJDQAM
- abdow1H8NsfySW2AcTdzPWPa3rJTbnDeJAPuskt2LrcNo6B6F9oGsw6VtFAPs06bCDAs
- t3hfOd8nkgIVTg9TnmrvgP2fxB+ZcWw0e/vm/2yF+4G8g/GyWyct5sRQq1RTBc1uccnU
- kNUeoWIJCVfG+pontfxotHNLJxEjw+0JzBXssKs3D7EaG36eM+s6x3Ok7bh9vCce18nC
- MufYUvxNSC32/i3rZvFWaM5MwnbRo490pGdnNA/psg+bK3tbpepN2BYmXdUpAv0BYYSM XQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaswjgkhh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 09:33:29 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2819FCAi028356;
-        Thu, 1 Sep 2022 09:33:28 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jaswjgkg0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 09:33:27 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2819LI2d005359;
-        Thu, 1 Sep 2022 09:33:25 GMT
-Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
-        by ppma04dal.us.ibm.com with ESMTP id 3j7awa8d5q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 09:33:25 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2819XNtF66388264
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Sep 2022 09:33:23 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8ADFC6E04E;
-        Thu,  1 Sep 2022 09:33:23 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8C1476E052;
-        Thu,  1 Sep 2022 09:33:21 +0000 (GMT)
-Received: from [9.211.148.222] (unknown [9.211.148.222])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  1 Sep 2022 09:33:21 +0000 (GMT)
-Message-ID: <04dbfe8a-a023-c6cf-8d20-965859c1d33a@linux.ibm.com>
-Date:   Thu, 1 Sep 2022 11:33:20 +0200
+        with ESMTP id S232851AbiIAJke (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:40:34 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2040.outbound.protection.outlook.com [40.107.244.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2329FD8B1A;
+        Thu,  1 Sep 2022 02:40:32 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dCjXN6wbl+NcAU01aViESjqDU0ayXA0Frx9FjUB3qH4R7DMTGF4tP3g/bSsVAF9NU8YIhy8iSELoV+spAwSJz0Mtr4zldLmL5IjKrkUNJrBr5GnfYb9+M1v5Y9EHSsUeFjEcZQOm6tG16lonveT0wSbfnZitUr3H882yMlNMGnog4YLc5/RpZUkuP9ahRVcEGFH8hqliQCTsfNIY8H9MCc8ByOv8Bnv3nYC8mz+oAYPw9Y1b3+eZwPgbARkxfen1cOR+XPzQJsBzKNjeCUcQAflijN5qMPDHKwD6pd2ad9o3OuM5onZV+L8dBABzIbjLsSqJCwBEjGR9M3fslH0GWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=B48T8XiW685plLKgZE2LQ4mYOPPBTF7au37dftSgeDo=;
+ b=D/4PVUvgakX0dvfkfBU2+f8hFcEfEeL0t3xuB1cYRapO/b6Xcsq3DVzap0CHjP6WwUOudOsSnEj2Cfrie15Jlw+Ct5G/hrFZrIUjokCIakDq0yEI94YRxMAJux5N0Sj86DYajlX6sDbO2GjtWQwBSH8QYTI0lgCqCZObVPENIWyjz2pD+smLXZtjCij+zr7vhYs81zVQjjzuOrtWDOoAfUe4PiZgKOUJo6p2XWkhIqgbQbLeJWM5pdi9KeMQ4/g+8ABjuBZ8YxkK9PkenKU5D9X/hLTk2lQ4zhA1DpnAvQfiYBvEpzxNBCupG4tVJBBQhpuxgg2NwTV1TJ9vPXOX8A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.235) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B48T8XiW685plLKgZE2LQ4mYOPPBTF7au37dftSgeDo=;
+ b=a4+oFeyOqDO7DkXeF3G9Gd4nV1k8hCTx2SCquCA4lGPyVvCF85tLdwGEU3BCLH9+VF5sAIYuRYnlux0uqKeMQwUh9S9ufDtopsKeoOXYKYzDAuflU5Y4MtsDkLyH1uvUIbtK9bmHrsJqaasR7cM9TrZB85UqhDnuSp2A6ymRbIZRBk4HjvT+em+AjxsILqhY/0HbaQYySJRP4jPnc8KtrQqijLbniu2r1X/+L5nyOsaaSDb8TAKYn34MB6QqUWwVAupRtjZGGNI24hQpdAs53r4UXEpKF8T4JsxKDg08cNlzRoWRjS7YUQL09+qMKHZ5FqjvolcY0qIfHpynroyp5Q==
+Received: from BN9P222CA0027.NAMP222.PROD.OUTLOOK.COM (2603:10b6:408:10c::32)
+ by BY5PR12MB4935.namprd12.prod.outlook.com (2603:10b6:a03:1d9::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
+ 2022 09:40:30 +0000
+Received: from BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:10c:cafe::fe) by BN9P222CA0027.outlook.office365.com
+ (2603:10b6:408:10c::32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11 via Frontend
+ Transport; Thu, 1 Sep 2022 09:40:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT056.mail.protection.outlook.com (10.13.177.26) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 09:40:29 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Thu, 1 Sep 2022 09:40:29 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.29; Thu, 1 Sep 2022 02:40:28 -0700
+Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.29 via Frontend
+ Transport; Thu, 1 Sep 2022 02:40:25 -0700
+From:   Yishai Hadas <yishaih@nvidia.com>
+To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
+CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
+        <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
+        <cohuck@redhat.com>
+Subject: [PATCH V5 vfio 00/10] Add device DMA logging support for mlx5 driver
+Date:   Thu, 1 Sep 2022 12:38:43 +0300
+Message-ID: <20220901093853.60194-1-yishaih@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH net v4] net/smc: Fix possible access to freed memory in
- link clear
-To:     liuyacan@corp.netease.com, tonylu@linux.alibaba.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        ubraun@linux.vnet.ibm.com, pabeni@redhat.com, wintera@linux.ibm.com
-References: <Yw4bgV6c0LQ6reMc@TonyMac-Alibaba>
- <20220831155303.1758868-1-liuyacan@corp.netease.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <20220831155303.1758868-1-liuyacan@corp.netease.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: j26EjplNWI673IvrRWws-T0MYi4O50Nw
-X-Proofpoint-ORIG-GUID: oCJWhZMQ48iPuglpVMhkpMpxvXeUWt8X
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_06,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- bulkscore=0 lowpriorityscore=0 spamscore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 adultscore=0 mlxlogscore=999 clxscore=1015 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010042
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b247fdf5-c4ab-42fd-ea4a-08da8bfe022a
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4935:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xvvrqLbL32awGiwu90FtIuD3lRSi0sRaQry9DRs2/aLHwuGqpLTiwPgqCUXn0CnfpfOCOyjSZDbzQBfj3XtlsOpGTlGEnLqFzTfHs0nurds5E6mRgQsNRfvs8ejo8BEXebplBu+Y4Zm2Qlusfoo3iPKtZ1sUDFQF9crvBVA1feiHNgHwnUgdYeiwKESd4fbyG+iuFdooQpQw0etM6BCh6XquzcwXTlvSyoI800V2RtdsWHT0t7wtDdWWVxp802HXnrvbltEDjEjhiJzs2iKalVWXYC1AbmI0Gm2xJxcVEmNmomonMn2QBNgdNFEDX8y+sH7s4/q9lCiDUz8Z42eKydN5szvYlhtFdlhU1un+Xec3/0ZkEaeszWp76eQru5qNBVxQzn1r1nO4/obdGpoLS0ha5ySIE6iFXjlWL04TDR3hYuzuppqSzHrRfsHipOSZYpU5qAvIkpM8GHttqcwflOigmN30xRRMKRb5OgwD4KwATuvyUk66LpIMn98wmlWiJBRGAOmCuzclAp+uQiycOt56/PAiPa+GzZXZ+XVa0VnuQvQqYLfxvI1dx5H8x41EdBkT5D0xXlUQPHZb+NgXvztE7DfT5WlUNIAz3l6mZKDxQc7JRfbw3aoWzBNtV6Jz7uuJP/6qUw+X5MsEKZLEN/SvBiw+d2d/uSz0j/uiGVeptXM53/OUHS/YcYnE19tBhG8WnQVFoXNshry1tdGRs8fzwqCRrieQ2hupjJmndZbbdCPRnEfwtsok3H1ADMTZ1Ss+grBFvMIcpCSLRcH14I3sfhlhfX73scQfmpVbWMiyBRsQHBLuYYkrmMGZBICvCSdc01KbX4UBukJc1G/dvc29VYWOi3aZJPxybEhXVRiUnWedjv55KQ6EFyqzwuPP8snWJgwqprVvX26wY6YiO6y2u6QuYGNGro1KDv0i0SQ=
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(346002)(376002)(136003)(40470700004)(46966006)(36840700001)(478600001)(41300700001)(966005)(426003)(26005)(336012)(7696005)(6666004)(186003)(1076003)(47076005)(2616005)(2906002)(8936002)(82310400005)(40480700001)(86362001)(36756003)(110136005)(36860700001)(54906003)(316002)(6636002)(5660300002)(70206006)(70586007)(40460700003)(4326008)(8676002)(83380400001)(81166007)(82740400003)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 09:40:29.8323
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b247fdf5-c4ab-42fd-ea4a-08da8bfe022a
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT056.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4935
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series adds device DMA logging uAPIs and their implementation as
+part of mlx5 driver.
 
+DMA logging allows a device to internally record what DMAs the device is
+initiating and report them back to userspace. It is part of the VFIO
+migration infrastructure that allows implementing dirty page tracking
+during the pre copy phase of live migration. Only DMA WRITEs are logged,
+and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
 
-On 31.08.22 17:53, liuyacan@corp.netease.com wrote:
-> From: Yacan Liu <liuyacan@corp.netease.com>
-> 
-> After modifying the QP to the Error state, all RX WR would be completed
-> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
-> wait for it is done, but destroy the QP and free the link group directly.
-> So there is a risk that accessing the freed memory in tasklet context.
-> 
-> Here is a crash example:
-> 
->   BUG: unable to handle page fault for address: ffffffff8f220860
->   #PF: supervisor write access in kernel mode
->   #PF: error_code(0x0002) - not-present page
->   PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
->   Oops: 0002 [#1] SMP PTI
->   CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
->   Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
->   RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
->   Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
->   RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
->   RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
->   RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
->   RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
->   R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
->   R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
->   FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
->   CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->   CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
->   DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->   DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->   Call Trace:
->    <IRQ>
->    _raw_spin_lock_irqsave+0x30/0x40
->    mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
->    smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
->    tasklet_action_common.isra.21+0x66/0x100
->    __do_softirq+0xd5/0x29c
->    asm_call_irq_on_stack+0x12/0x20
->    </IRQ>
->    do_softirq_own_stack+0x37/0x40
->    irq_exit_rcu+0x9d/0xa0
->    sysvec_call_function_single+0x34/0x80
->    asm_sysvec_call_function_single+0x12/0x20
-> 
-> Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
-> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
-> 
-> ---
-> Chagen in v4:
->    -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
->    -- Remove timeout.
-> Change in v3:
->    -- Tune commit message (Signed-Off tag, Fixes tag).
->       Tune code to avoid column length exceeding.
-> Change in v2:
->    -- Fix some compile warnings and errors.
-> ---
->   net/smc/smc_core.c | 2 ++
->   net/smc/smc_core.h | 2 ++
->   net/smc/smc_wr.c   | 9 +++++++++
->   net/smc/smc_wr.h   | 1 +
->   4 files changed, 14 insertions(+)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index ff49a11f5..f92a916e9 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
->   	lnk->lgr = lgr;
->   	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
->   	lnk->link_idx = link_idx;
-> +	lnk->wr_rx_id_compl = 0;
->   	smc_ibdev_cnt_inc(lnk);
->   	smcr_copy_dev_info_to_link(lnk);
->   	atomic_set(&lnk->conn_cnt, 0);
-> @@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
->   	smcr_buf_unmap_lgr(lnk);
->   	smcr_rtoken_clear_link(lnk);
->   	smc_ib_modify_qp_error(lnk);
-> +	smc_wr_drain_cq(lnk);
->   	smc_wr_free_link(lnk);
->   	smc_ib_destroy_queue_pair(lnk);
->   	smc_ib_dealloc_protection_domain(lnk);
-> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-> index fe8b524ad..285f9bd8e 100644
-> --- a/net/smc/smc_core.h
-> +++ b/net/smc/smc_core.h
-> @@ -115,8 +115,10 @@ struct smc_link {
->   	dma_addr_t		wr_rx_dma_addr;	/* DMA address of wr_rx_bufs */
->   	dma_addr_t		wr_rx_v2_dma_addr; /* DMA address of v2 rx buf*/
->   	u64			wr_rx_id;	/* seq # of last recv WR */
-> +	u64			wr_rx_id_compl; /* seq # of last completed WR */
->   	u32			wr_rx_cnt;	/* number of WR recv buffers */
->   	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
-> +	wait_queue_head_t       wr_rx_empty_wait; /* wait for RQ empty */
->   
->   	struct ib_reg_wr	wr_reg;		/* WR register memory region */
->   	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
-> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
-> index 26f8f240d..bc8793803 100644
-> --- a/net/smc/smc_wr.c
-> +++ b/net/smc/smc_wr.c
-> @@ -454,6 +454,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
->   
->   	for (i = 0; i < num; i++) {
->   		link = wc[i].qp->qp_context;
-> +		link->wr_rx_id_compl = wc[i].wr_id;
->   		if (wc[i].status == IB_WC_SUCCESS) {
->   			link->wr_rx_tstamp = jiffies;
->   			smc_wr_rx_demultiplex(&wc[i]);
-> @@ -465,6 +466,8 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
->   			case IB_WC_RNR_RETRY_EXC_ERR:
->   			case IB_WC_WR_FLUSH_ERR:
->   				smcr_link_down_cond_sched(link);
-> +				if (link->wr_rx_id_compl == link->wr_rx_id)
-> +					wake_up(&link->wr_rx_empty_wait);
->   				break;
->   			default:
->   				smc_wr_rx_post(link); /* refill WR RX */
-> @@ -631,6 +634,11 @@ static void smc_wr_init_sge(struct smc_link *lnk)
->   	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
->   }
->   
-> +void smc_wr_drain_cq(struct smc_link *lnk)
-> +{
-> +	wait_event(lnk->wr_rx_empty_wait, lnk->wr_rx_id_compl == lnk->wr_rx_id);
-> +}
-> +
->   void smc_wr_free_link(struct smc_link *lnk)
->   {
->   	struct ib_device *ibdev;
-> @@ -889,6 +897,7 @@ int smc_wr_create_link(struct smc_link *lnk)
->   	atomic_set(&lnk->wr_tx_refcnt, 0);
->   	init_waitqueue_head(&lnk->wr_reg_wait);
->   	atomic_set(&lnk->wr_reg_refcnt, 0);
-> +	init_waitqueue_head(&lnk->wr_rx_empty_wait);
->   	return rc;
->   
->   dma_unmap:
-> diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
-> index a54e90a11..5ca5086ae 100644
-> --- a/net/smc/smc_wr.h
-> +++ b/net/smc/smc_wr.h
-> @@ -101,6 +101,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
->   int smc_wr_create_link(struct smc_link *lnk);
->   int smc_wr_alloc_link_mem(struct smc_link *lnk);
->   int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
-> +void smc_wr_drain_cq(struct smc_link *lnk);
->   void smc_wr_free_link(struct smc_link *lnk);
->   void smc_wr_free_link_mem(struct smc_link *lnk);
->   void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
+The uAPIs are based on the FEATURE ioctl as were introduced earlier by
+the below RFC [1] and follows the notes that were discussed in the
+mailing list.
 
-Thank you @Yacan for the effort to improve our code! And Thank you @Tony 
-for such valuable suggestions and testing!
-I like the modification of this version. However, this is not a fix 
-patch to upstream, since the patches "[PATCH net-next v2 00/10] optimize 
-the parallelism of SMC-R connections" are still not applied. My 
-sugguestions:
-- Please talk to the author (D. Wythe <alibuda@linux.alibaba.com>) of 
-those patches I mentioned above, and ask if he can take your patch as a 
-part of the patch serie
-- Fix patches should go to net-next
-- Please send always send your new version separately, rather than as 
-reply to your previous version. That makes people confused.
+It includes:
+- A PROBE option to detect if the device supports DMA logging.
+- A SET option to start device DMA logging in given IOVAs ranges.
+- A GET option to read back and clear the device DMA log.
+- A SET option to stop device DMA logging that was previously started.
+
+Extra details exist as part of relevant patches in the series.
+
+In addition, the series adds some infrastructure support for managing an
+IOVA bitmap done by Joao Martins.
+
+It abstracts how an IOVA range is represented in a bitmap that is
+granulated by a given page_size. So it translates all the lifting of
+dealing with user pointers into its corresponding kernel addresses.
+This new functionality abstracts the complexity of user/kernel bitmap
+pointer usage and finally enables an API to set some bits.
+
+This functionality will be used as part of IOMMUFD series for the system
+IOMMU tracking.
+
+Finally, we come with mlx5 implementation based on its device
+specification for the DMA logging APIs.
+
+The matching qemu changes can be previewed here [2].
+They come on top of the v2 migration protocol patches that were sent
+already to the mailing list.
+
+Note:
+- As this series touched mlx5_core parts we may need to send the
+  net/mlx5 patches as a pull request format to VFIO to avoid conflicts
+  before acceptance.
+
+[1] https://lore.kernel.org/all/20220501123301.127279-1-yishaih@nvidia.com/T/
+[2] https://github.com/avihai1122/qemu/commits/device_dirty_tracking
+
+Changes from V4: https://lore.kernel.org/netdev/20220815151109.180403-1-yishaih@nvidia.com/T/
+Patch #4:
+Improvements from Joao for his IOVA bitmap patch to be aligned with Alex
+suggestions. It includes the below:
+* Simplify API by removing iterator helpers to introduce a
+  iova_bitmap_for_each() helper
+* Simplify API by making struct iova_bitmap private and make it the
+  argument of all API callers instead of having the iterator mode.
+* Rename iova_bitmap_init() into _alloc() given that now it allocates
+  the iova_bitmap structure
+* Free the object in iova_bitmap_free(), given the previous change
+* Rename struct iova_bitmap_iter into struct iova_bitmap
+* Rename struct iova_bitmap into struct iova_bitmap_map
+* Rename iova_bitmap_map::dirty into ::mapped and all its references
+* Rename iova_bitmap_map::start_offset into ::pgoff
+* Rename iova_bitmap::data into ::bitmap
+* Rename iova_bitmap::offset into ::mapped_base_index
+* Rename iova_bitmap::count into ::mapped_total_index
+* Change ::mapped_base_index and ::mapped_total_index type to unsigned
+  long
+* Change ::length type to size_t
+* Rename iova_bitmap_iova_to_index into iova_bitmap_offset_to_index()
+* Rename iova_bitmap_index_to_iova into iova_bitmap_index_to_offset()
+* Rename iova_bitmap_iter_remaining() to iova_bitmap_mapped_remaining()
+* Rename iova_bitmap_iova() to iova_bitmap_mapped_iova()
+* Rename iova_bitmap_length() to iova_bitmap_mapped_length()
+* Drop _iter_ suffix and rename @iter into @bitmap in variables/arguments
+* Make a whole bunch of API calls static, given that the iteration is
+  now private
+* Move kdoc into the source file rather than the header
+Patch #5:
+* Adapt to use the new IOVA bitmap API
+* Upon the report UAPI enforce at least 4K page size and not the system
+  PAGE_SIZE as pointed out by Alex.
+* Add an extra overflow checking in both the report/start UAPIs for the
+  input iova and length as pointed out by Jason.
+
+Changes from V3: https://lore.kernel.org/all/202207011231.1oPQhSzo-lkp@intel.com/t/
+Rebase on top of v6.0 rc1.
+Patch #3:
+- Drop the documentation note regarding the 'atomic OR' usage of the bitmap
+  as part of VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT.
+  This deletion was missed as part of V3 to match kernel code.
+  To better clarify, as part of testing V3, we could see a big penalty in
+  performance (*2 in some cases) when the iova bitmap patch used atomic
+  bit operations. As QEMU doesn't really share bitmaps between multiple
+  trackers we saw no reason to use atomics and get a bad performance.
+  If in the future, will be a real use case that will justify it, we can
+  come with VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT_ATOMIC new option with
+  the matching kernel code.
+Patch #4:
+- The rename patch from vfio.c to vfio_main.c was accepted already, not
+  part of this series anymore.
+
+Changes from V2: https://lore.kernel.org/netdev/20220726151232.GF4438@nvidia.com/t/
+Patch #1
+- Add some reserved fields that were missed.
+Patch #3:
+- Improve the UAPI documentation in few places as was asked by Alex and
+  Kevin, based on the discussion in the mailing list.
+Patch #5:
+- Improvements from Joao for his IOVA bitmap patch to be
+  cleaner/simpler as was asked by Alex. It includes the below:
+   * Make iova_to_index and index_to_iova fully symmetrical.
+   * Use 'sizeof(*iter->data) * BITS_PER_BYTE' in both index_to_iova
+     and iova_to_index.
+   * Remove iova_bitmap_init() and just stay with iova_bitmap_iter_init().
+   * s/left/remaining/
+   * To not use @remaining variable for both index and iova/length.
+   * Remove stale comment on max dirty bitmap bits.
+   * Remove DIV_ROUNDUP from iova_to_index() helper and replace with a
+     division.
+   * Use iova rather than length where appropriate, while noting with
+     commentary the usage of length as next relative IOVA.
+   * Rework pinning to be internal and remove that from the iova iter
+     API caller.
+   * get() and put() now teardown iova_bitmap::dirty npages.
+   * Move unnecessary includes into the C file.
+   * Add theory of operation and theory of usage in the header file.
+   * Add more comments on private helpers on less obvious logic
+   * Add documentation on all public APIs.
+  * Change commit to reflect new usage of APIs.
+Patch #6:
+- Drop the hard-coded 1024 for LOG_MAX_RANGES and replace to consider
+  PAGE_SIZE as was suggested by Jason.
+- Return -E2BIG as Alex suggested.
+- Adapt the loop upon logging report to new IOVA bit map stuff.
+
+Changes from V1: https://lore.kernel.org/netdev/202207052209.x00Iykkp-lkp@intel.com/T/
+
+- Patch #6: Fix a note given by krobot, select INTERVAL_TREE for VFIO.
+
+Changes from V0: https://lore.kernel.org/netdev/202207011231.1oPQhSzo-lkp@intel.com/T/
+
+- Drop the first 2 patches that Alex merged already.
+- Fix a note given by krobot, based on Jason's suggestion.
+- Some improvements from Joao for his IOVA bitmap patch to be
+  cleaner/simpler. It includes the below:
+    * Rename iova_bitmap_array_length to iova_bitmap_iova_to_index.
+    * Rename iova_bitmap_index_to_length to iova_bitmap_index_to_iova.
+    * Change iova_bitmap_iova_to_index to take an iova_bitmap_iter
+      as an argument to pair with iova_bitmap_index_to_length.
+    * Make iova_bitmap_iter_done() use >= instead of
+      substraction+comparison. This fixes iova_bitmap_iter_done()
+      return as it was previously returning when !done.
+    * Remove iova_bitmap_iter_length().
+    * Simplify iova_bitmap_length() overcomplicated trailing end check
+    * Convert all sizeof(u64) into sizeof(*iter->data).
+    * Use u64 __user for ::data instead of void in both struct and
+      initialization of iova_bitmap.
+
+Yishai
+
+Joao Martins (1):
+  vfio: Add an IOVA bitmap support
+
+Yishai Hadas (9):
+  net/mlx5: Introduce ifc bits for page tracker
+  net/mlx5: Query ADV_VIRTUALIZATION capabilities
+  vfio: Introduce DMA logging uAPIs
+  vfio: Introduce the DMA logging feature support
+  vfio/mlx5: Init QP based resources for dirty tracking
+  vfio/mlx5: Create and destroy page tracker object
+  vfio/mlx5: Report dirty pages from tracker
+  vfio/mlx5: Manage error scenarios on tracker
+  vfio/mlx5: Set the driver DMA logging callbacks
+
+ drivers/net/ethernet/mellanox/mlx5/core/fw.c  |   6 +
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   1 +
+ drivers/vfio/Kconfig                          |   1 +
+ drivers/vfio/Makefile                         |   6 +-
+ drivers/vfio/iova_bitmap.c                    | 426 ++++++++
+ drivers/vfio/pci/mlx5/cmd.c                   | 995 +++++++++++++++++-
+ drivers/vfio/pci/mlx5/cmd.h                   |  63 +-
+ drivers/vfio/pci/mlx5/main.c                  |   9 +-
+ drivers/vfio/pci/vfio_pci_core.c              |   5 +
+ drivers/vfio/vfio_main.c                      | 175 +++
+ include/linux/iova_bitmap.h                   |  24 +
+ include/linux/mlx5/device.h                   |   9 +
+ include/linux/mlx5/mlx5_ifc.h                 |  83 +-
+ include/linux/vfio.h                          |  21 +-
+ include/uapi/linux/vfio.h                     |  86 ++
+ 15 files changed, 1890 insertions(+), 20 deletions(-)
+ create mode 100644 drivers/vfio/iova_bitmap.c
+ create mode 100644 include/linux/iova_bitmap.h
+
+-- 
+2.18.1
+
