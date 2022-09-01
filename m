@@ -2,139 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF4B5A92BB
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:07:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F2F55A9304
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:20:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234493AbiIAJHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 05:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        id S233231AbiIAJUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 05:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234498AbiIAJGz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:06:55 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6DDBFC73
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:05:41 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p7so12319835lfu.3
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 02:05:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=K1QIsdiZZXDQyu9ZTSWU7/YTQ8jITmfkkrSk3ETOLiw=;
-        b=luwvvoaftVnu/9kyn+cV5qN/UMISS2rzHnDB81Et2F8HBacNYuJ9rlivnAo6MFYTpM
-         rzRnempMyoqUBWaLbKHEEplg9hXLa2+z01FcO66KgFX2OGrhc7G8UX21N9k9VVR/zwv7
-         rra1qCEKBgRnFhN8rIm34wyEKBCpyXYTvINHvnMRaqlphmTeKHNfJoh8IbQtBMYSLwnC
-         elp7vUyBXCMA65cmu3EVQx6HyDZaMD3Jg2+Pe+7UyXjlvqXdT6u2O0Vi2/awCpJtPUT+
-         eI5WJydMlYt6ZBxPnXyhj9zk0roZZuXEhCTnqKZsd6WTctrEsFq9zLS/UtyrcJLXDTkG
-         0VzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=K1QIsdiZZXDQyu9ZTSWU7/YTQ8jITmfkkrSk3ETOLiw=;
-        b=7EVUStUe6XPMRBub+6m35ff+9Tn1DEkVsb5uWHIjIc+Y92xfwo+1oXJvj0YSjhi/ub
-         MyAeOPpYw4e0faD8Rg0tueAx2loCBBFeqDY6Q5UIhA+r7H3+j9zupX2TCu4nreerxQ3G
-         0aR1RFo0BYXQeHXEMu3rE/6pMvMi/JTqEbTi+TeyNO7D7/RHJJNvzV3Dto5/LZE+SWRy
-         BfxGCi0RQ4L2oW/HSmi3P4GB99u6qm9sE8V8th/w1e4sDgV9RTBOc4DhtfGNvYV5hCr0
-         Rep+g0AeDDQ2jp9+nzlVB3ainh41/HPmTtiTBVLMp8V1b9hrrrbBTHbUaeE/FDWySl3Y
-         yHwg==
-X-Gm-Message-State: ACgBeo2Zmxn+ZsS8DMUrCY6uLBhyD6g1Ntk3inJ0vl9afyv4wmUarzzk
-        wWUIx4TI/cMgxST8HC6O1GM=
-X-Google-Smtp-Source: AA6agR5M9NVdHr/OH6wHlycwm/TwLQd8Z6uFnyIyDrSQRVh8BDq34yFnvwkJl0v+vbwcJrfjyiiIpQ==
-X-Received: by 2002:a05:6512:130d:b0:492:8b65:3785 with SMTP id x13-20020a056512130d00b004928b653785mr11062635lfu.351.1662023139300;
-        Thu, 01 Sep 2022 02:05:39 -0700 (PDT)
-Received: from [10.0.1.14] (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id h39-20020a0565123ca700b00491ee1bf301sm1128774lfv.39.2022.09.01.02.05.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 02:05:38 -0700 (PDT)
-Message-ID: <f30871da-abec-477d-1bab-43cbc9108bec@gmail.com>
-Date:   Thu, 1 Sep 2022 11:05:37 +0200
+        with ESMTP id S233982AbiIAJUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:20:15 -0400
+Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41B292F00F
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:20:13 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1662024011; bh=jE5aYXO5o+Pv7NuDIL7qCOKMA3u6a/q/Wk8R4ae8zoQ=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=WOmlZIk6jD7HCE5cf46aavc8CYHK5cF9AP2cbBNU5YP+d5fR+tsqH2FNhKPHajXD3
+         T7QXhiSARVEubXC7AD30sK3SJA2v7NjcC0PYS476Mi3Nfd2dzK52n6AmIubepHbpLX
+         9ypmJ6D1cA7RL9ZXqOducikB+RHPTukQCnFcdXKcByXlWWuDgu/hQ5o4c2ypwmiQ9T
+         04R+MGCJWq3N4Kz8JQ6WVI0yHcZv0QhAZncHkGt1s898hFAUIxsLPcwKXVX2UnHsJV
+         yDHSm/NtNhX0NfoLyFRKZQ2rR8fKweEh3aRQZ+AO5bsd9Wk/RyMzo12duYZhVKhx4v
+         8JFMIOWL4tOxQ==
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        cake@lists.bufferbloat.net, netdev@vger.kernel.org
+Subject: Re: [PATCH net] sch_cake: Return __NET_XMIT_STOLEN when consuming
+ enqueued skb
+In-Reply-To: <20220831200724.45cb3b99@kernel.org>
+References: <20220831092103.442868-1-toke@toke.dk>
+ <166198321517.20200.12054704879498725145.git-patchwork-notify@kernel.org>
+ <87wnao2ha3.fsf@toke.dk> <20220831200724.45cb3b99@kernel.org>
+Date:   Thu, 01 Sep 2022 11:20:10 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87fshb30z9.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next v2 2/3] dsa: mv88e6xxx: Add support for RMU in
- select switches
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-References: <20220826063816.948397-1-mattias.forsblad@gmail.com>
- <20220826063816.948397-3-mattias.forsblad@gmail.com>
- <20220830163515.3d2lzzc55vmko325@skbuf>
- <20220830164226.ohmn6bkwagz6n3pg@skbuf>
-From:   Mattias Forsblad <mattias.forsblad@gmail.com>
-In-Reply-To: <20220830164226.ohmn6bkwagz6n3pg@skbuf>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-08-30 18:42, Vladimir Oltean wrote:
-> On Tue, Aug 30, 2022 at 07:35:15PM +0300, Vladimir Oltean wrote:
->>> +void mv88e6xxx_rmu_master_change(struct dsa_switch *ds, const struct net_device *master,
->>> +				 bool operational)
->>> +{
->>> +	struct mv88e6xxx_chip *chip = ds->priv;
->>> +
->>> +	if (operational)
->>> +		chip->rmu.ops = &mv88e6xxx_bus_ops;
->>> +	else
->>> +		chip->rmu.ops = NULL;
->>> +}
->>
->> There is a subtle but very important point to be careful about here,
->> which is compatibility with multiple CPU ports. If there is a second DSA
->> master whose state flaps from up to down, this should not affect the
->> fact that you can still use RMU over the first DSA master. But in your
->> case it does, so this is a case of how not to write code that accounts
->> for that.
->>
->> In fact, given this fact, I think your function prototypes for
->> chip->info->ops->rmu_enable() are all wrong / not sufficiently
->> reflective of what the hardware can do. If the hardware has a bit mask
->> of ports on which RMU operations are possible, why hardcode using
->> dsa_switch_upstream_port() and not look at which DSA masters/CPU ports
->> are actually up? At least for the top-most switch. For downstream
->> switches we can use dsa_switch_upstream_port(), I guess (even that can
->> be refined, but I'm not aware of setups using multiple DSA links, where
->> each DSA link ultimately goes to a different upstream switch).
-> 
-> Hit "send" too soon. Wanted to give the extra hint that the "master"
-> pointer is given to you here for a reason. You can look at struct
-> dsa_port *cpu_dp = master->dsa_ptr, and figure out the index of the CPU
+Jakub Kicinski <kuba@kernel.org> writes:
 
-Would this work on a system where there are multiple switches? I.e.
+> On Thu, 01 Sep 2022 00:13:24 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Ah, crossed streams (just sent v2[0]).
+>
+> Sorry about that, traveling knocked out my sense of time and I kept
+> thinking it's Thursday, and the discussion happened yesterday :S
 
-SOC <->port6 SC#1 <->port10 SC#2
+Haha, OK, no worries :)
 
-Both have the same master interface (chan0) which gives the same
-cpu_dp->dsa_ptr->index but they have different upstream ports that should 
-be enabled for RMU.
+>> Hmm, okay, so as noted in the changelog to v2, just this patch will
+>> break htb+cake (because htb will now skip htb_activate()); do you prefer
+>> that I send a follow-up to fix HTB in this mode, or to revert this and
+>> apply the fix to sfb in v2 instead?
+>
+> Reverted. Let's review v2 as if v1 was not applied.
 
-> port which can be used for RMU operations. I see that the macros are
-> constructed in a very strange way:
-> 
-> #define MV88E6352_G1_CTL2_RMU_MODE_DISABLED	0x0000
-> #define MV88E6352_G1_CTL2_RMU_MODE_PORT_4	0x1000
-> #define MV88E6352_G1_CTL2_RMU_MODE_PORT_5	0x2000
-> #define MV88E6352_G1_CTL2_RMU_MODE_PORT_6	0x3000
-> 
-> it's as if this is actually a bit mask of ports, and they all can be
-> combined together. The bit in G1_CTL2 whose state we can flip can be
-> made to depend on the number of the CPU port attached to the DSA master
-> which changed state.
+SGTM!
 
+-Toke
