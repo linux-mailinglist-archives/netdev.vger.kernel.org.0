@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E8265A8F1F
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 09:04:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16D1A5A9014
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 09:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233411AbiIAHEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 03:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50850 "EHLO
+        id S233429AbiIAHZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 03:25:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233498AbiIAHEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 03:04:16 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19CDB122697;
-        Thu,  1 Sep 2022 00:04:05 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id 10so13850935iou.2;
-        Thu, 01 Sep 2022 00:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=i383AFik6yhsG3iX8RnrTI6xwTdG+YMrBsOjo22c5D0=;
-        b=ffOiZdh+jXh3qPYSKprm0GZhBE7CDrzYPAQGXFDWZxwlLLJoNTCVqwXaGa5WgDKTc+
-         Zt5y/pM/SYacoDCtW6mw9azEBvAxi4fdA35C5FkYPeGmpcTjziE2SenK/l2HoxQiOGNr
-         ZxMsJB2PPXzrzG/D0Pl2iCk4Qzy4f5mvBpklYarIMYp8BT6z46ZY2orBhMXiPLgBLllw
-         DmiGxMcysqbSX5yDTHCD9RG2FGAuLbHT5ffTwngf1w2MPhIMCFKydng0pdQmx9Ltp0Xr
-         UsJhcPwMDwFtaFZ7+57STIUQHRAv0/xwxOrHqRMrXGW8/SargF7R9f0ZKGU8H/6nkntA
-         z/ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=i383AFik6yhsG3iX8RnrTI6xwTdG+YMrBsOjo22c5D0=;
-        b=TRnQEpHUJqaDcjwdwI5e36jVt8wGjyprUoxPlQzlAEwfuu0glq8B/YNjffl8khqoaf
-         KmIz67L+zSO7MnntETh+PJh6MN3cnJ8xiu37hE8/7A9qdt46EzryMGGrOVcp283CjhI4
-         nfRc7xcxDLDBpaDXaqPAY2QQN33XCCYw+kDzmE/zW5kbeha0VGUON3roT0AG/MMmx1gN
-         CXcId/Rrp5pRdFBIM528UX/8PJuOAt2/beE+yjxOtBO1vwx6fwnElqCcXE/TKKTwmMHb
-         lRmTPW4LzAkvQUg9oBlkEVmR+3GRAI/URNG2FQHdJyHTo8mxVmKovgOE+cmpYaxtlJSz
-         W5lQ==
-X-Gm-Message-State: ACgBeo0FM5D/nS275o2kZaHCTPnlbP4Ba7fqO3qEjp/D6VMoyYQcRU3u
-        jnLB138r3TZR/ldmpH0QdX70NdkzkaEGGFEJZp4=
-X-Google-Smtp-Source: AA6agR6mveoPidXd7UAaBrslM4w5PmPciUvkUWfEG9bL0YPOzXuVhofd+d8O8emP0wcVtN4LDpgeOq+eDdozuUXJ+0I=
-X-Received: by 2002:a6b:5f08:0:b0:688:9846:2f61 with SMTP id
- t8-20020a6b5f08000000b0068898462f61mr13831703iob.65.1662015845142; Thu, 01
- Sep 2022 00:04:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <00000000000092839d0581fd74ad@google.com> <20220901040307.4674-1-khalid.masum.92@gmail.com>
- <YxAyd6++6oWPu9L1@gondor.apana.org.au>
-In-Reply-To: <YxAyd6++6oWPu9L1@gondor.apana.org.au>
-From:   Khalid Masum <khalid.masum.92@gmail.com>
-Date:   Thu, 1 Sep 2022 13:03:53 +0600
-Message-ID: <CAABMjtGgv1GP0F9TJCMFN2psx7ok23BR9pEOyemWHeKvc_LfqA@mail.gmail.com>
-Subject: Re: [PATCH v3] xfrm: Update ipcomp_scratches with NULL if not allocated
-To:     Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        with ESMTP id S233913AbiIAHZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 03:25:22 -0400
+Received: from smtp-out.kfki.hu (smtp-out.kfki.hu [148.6.0.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D278F1223A8;
+        Thu,  1 Sep 2022 00:24:21 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by smtp2.kfki.hu (Postfix) with ESMTP id DBD36CC00FE;
+        Thu,  1 Sep 2022 09:06:06 +0200 (CEST)
+X-Virus-Scanned: Debian amavisd-new at smtp2.kfki.hu
+Received: from smtp2.kfki.hu ([127.0.0.1])
+        by localhost (smtp2.kfki.hu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP; Thu,  1 Sep 2022 09:06:04 +0200 (CEST)
+Received: from blackhole.kfki.hu (blackhole.szhk.kfki.hu [148.6.240.2])
+        by smtp2.kfki.hu (Postfix) with ESMTP id 96B81CC00FF;
+        Thu,  1 Sep 2022 09:06:03 +0200 (CEST)
+Received: by blackhole.kfki.hu (Postfix, from userid 1000)
+        id 90DC13431DF; Thu,  1 Sep 2022 09:06:03 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by blackhole.kfki.hu (Postfix) with ESMTP id 8F2813431DE;
+        Thu,  1 Sep 2022 09:06:03 +0200 (CEST)
+Date:   Thu, 1 Sep 2022 09:06:03 +0200 (CEST)
+From:   Jozsef Kadlecsik <kadlec@netfilter.org>
+To:     Kees Cook <keescook@chromium.org>
+cc:     Jakub Kicinski <kuba@kernel.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, Petr Machata <petrm@nvidia.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] netlink: Bounds-check struct nlmsgerr creation
+In-Reply-To: <20220901064858.1417126-1-keescook@chromium.org>
+Message-ID: <5aad4860-b1c3-d78f-583d-26281626a49@netfilter.org>
+References: <20220901064858.1417126-1-keescook@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 10:18 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
->
-> On Thu, Sep 01, 2022 at 10:03:07AM +0600, Khalid Masum wrote:
-> >
-> > diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
-> > index cb40ff0ff28d..3774d07c5819 100644
-> > --- a/net/xfrm/xfrm_ipcomp.c
-> > +++ b/net/xfrm/xfrm_ipcomp.c
-> > @@ -203,6 +203,7 @@ static void ipcomp_free_scratches(void)
-> >               vfree(*per_cpu_ptr(scratches, i));
-> >
-> >       free_percpu(scratches);
-> > +     ipcomp_scratches = NULL;
-> >  }
->
-> Good catch! This is probably the root cause of all the crashes.
->
-> >  static void * __percpu *ipcomp_alloc_scratches(void)
-> > @@ -215,7 +216,7 @@ static void * __percpu *ipcomp_alloc_scratches(void)
-> >
-> >       scratches = alloc_percpu(void *);
-> >       if (!scratches)
-> > -             return NULL;
-> > +             return ipcomp_scratches = NULL;
->
-> This is unnecessary as with your first hunk, ipcomp_scratches
-> is guaranteed to be NULL.
->
-> Thanks,
-> --
+Hi,
 
-You are right. Instead of setting it to NULL at both places, it makes
-more sense to
-do it when memory is freed.
+On Wed, 31 Aug 2022, Kees Cook wrote:
 
-I shall send a v4 with the suggested change.
+> For 32-bit systems, it might be possible to wrap lnmsgerr content
+> lengths beyond SIZE_MAX. Explicitly test for all overflows, and mark the
+> memcpy() as being unable to internally diagnose overflows.
+> 
+> This also excludes netlink from the coming runtime bounds check on
+> memcpy(), since it's an unusual case of open-coded sizing and
+> allocation. Avoid this future run-time warning:
+> 
+>   memcpy: detected field-spanning write (size 32) of single field "&errmsg->msg" at net/netlink/af_netlink.c:2447 (size 16)
+> 
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Pablo Neira Ayuso <pablo@netfilter.org>
+> Cc: Jozsef Kadlecsik <kadlec@netfilter.org>
+> Cc: Florian Westphal <fw@strlen.de>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: syzbot <syzkaller@googlegroups.com>
+> Cc: netfilter-devel@vger.kernel.org
+> Cc: coreteam@netfilter.org
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> v2: Rebased to -next
+> v1: https://lore.kernel.org/lkml/20220901030610.1121299-3-keescook@chromium.org
+> ---
+>  net/netlink/af_netlink.c | 81 +++++++++++++++++++++++++---------------
+>  1 file changed, 51 insertions(+), 30 deletions(-)
 
-thanks,
- -- Khalid Masum
+Could you add back the net/netfilter/ipset/ip_set_core.c part? Thanks!
+
+Best regards,
+Jozsef
+-
+E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
+Address : Wigner Research Centre for Physics
+          H-1525 Budapest 114, POB. 49, Hungary
