@@ -2,100 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 832D65A9489
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:26:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4FC5A943C
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234127AbiIAKZI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 06:25:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
+        id S233853AbiIAKW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 06:22:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234119AbiIAKZC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:25:02 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC64CF582;
-        Thu,  1 Sep 2022 03:25:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662027900; x=1693563900;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Z5PGIJ24d2/V8jR3uKC69UP3AbGrpcu/ETrBJkm8rrQ=;
-  b=UBsawSrK26fpjiAP0v2ToxrAYYK/Orhpbb0jaeKjBIIwRmMuSHvXnMpI
-   +neiY4i3cEnQLTP7dXPwrCSvNlh1e4AGrNuQ1xlPyEyKRMn8XexddzcPH
-   dKS2tOJxS4sBnnV1rcfb8fJUaixywhN4KTMFWF6HpCHJb0S2DYI1o/Kox
-   4IvL0kxu28iBrj/84EUESyr32zRo83jLDVbYXNWz0eE3I/favNdEmUc0k
-   tlvnSqSlJWTibwKOhzPr0XBPIGYMe8/V0Vj5HfIi/dihud3ubYYKTmdMp
-   l/oUaGDSrHh2N5pM6g/M2oCgvgi5hpLqsa2C44MvXm+8NPVxqbZGbiAjR
-   w==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="321825567"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="321825567"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:25:00 -0700
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="642276453"
-Received: from unknown (HELO localhost.localdomain.bj.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 03:24:58 -0700
-From:   Zhu Lingshan <lingshan.zhu@intel.com>
-To:     jasowang@redhat.com, mst@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [RFC 4/4] vDPA: report device endian-ness to userspace through netlink
-Date:   Thu,  1 Sep 2022 18:16:01 +0800
-Message-Id: <20220901101601.61420-5-lingshan.zhu@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220901101601.61420-1-lingshan.zhu@intel.com>
-References: <20220901101601.61420-1-lingshan.zhu@intel.com>
+        with ESMTP id S233544AbiIAKWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:22:25 -0400
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB53013608B;
+        Thu,  1 Sep 2022 03:22:23 -0700 (PDT)
+Received: by mail-qk1-f181.google.com with SMTP id c9so12823092qkk.6;
+        Thu, 01 Sep 2022 03:22:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=SoW9HnsZJkbcsG3RktqGcPg2MNXcaYIQ7LfyNCFqvLI=;
+        b=oh37PccD3ZAAJpPxxRTvpTpIRD6rGQzkH5jmVx3zLNjdFIXSmITHgAOlCL9Tk2dieS
+         oTVmZaYSpz59mtFdrXl1NKup4+PV7zO70hlgHR8ZQV1criLPIwJ8yhuXAAlW6n3Ka3Ix
+         IFVDN0fageac7kYx+q/t++ci0xRmM7wAfEVhPwOpkz1jP1QiT5VZon+CBXLmim/DHagn
+         ERVuaO7caNHeoEa0zDzXSyOZ+WFz42+Q0kFmbS8tzHcGnIkjfV3OVpsLQOucBdSJf0PJ
+         48KDPsSe11aiPP43GxZJ8+yfjhlW7k/HQh8Ra73w1PPfYFc0N684zwiRj41J9wouuOhS
+         rMGw==
+X-Gm-Message-State: ACgBeo1vcLAQTcizppuyvdAJQ1XoUpQodyTk23EDIBD8pn6+kfX61Y7J
+        m0WQpcE9IKBWeRT2iEQ409qxNmJHs45QVw==
+X-Google-Smtp-Source: AA6agR7zsL1+sbg2g+lOb5Keu8r6RrPlkUVQQQnq7xR1F4nHX63ppkYmaA0StwTzut0kdkaFsOtznQ==
+X-Received: by 2002:a37:a9d8:0:b0:6ba:be20:48e2 with SMTP id s207-20020a37a9d8000000b006babe2048e2mr18330969qke.301.1662027742459;
+        Thu, 01 Sep 2022 03:22:22 -0700 (PDT)
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
+        by smtp.gmail.com with ESMTPSA id hf11-20020a05622a608b00b00344b807bb95sm9816703qtb.74.2022.09.01.03.22.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
+Received: by mail-yb1-f182.google.com with SMTP id g5so7934662ybg.11;
+        Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
+X-Received: by 2002:a25:415:0:b0:696:814:7c77 with SMTP id 21-20020a250415000000b0069608147c77mr18706967ybe.36.1662027741095;
+ Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220830164518.1381632-1-biju.das.jz@bp.renesas.com> <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
+In-Reply-To: <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 1 Sep 2022 12:22:10 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdVbgybWfmUOwyDrP7M0Drcr3okfKNEwm1kAoPNfbQEJMA@mail.gmail.com>
+Message-ID: <CAMuHMdVbgybWfmUOwyDrP7M0Drcr3okfKNEwm1kAoPNfbQEJMA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: can: nxp,sja1000: Document RZ/N1
+ power-domains support
+To:     Biju Das <biju.das.jz@bp.renesas.com>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Biju Das <biju.das@bp.renesas.com>,
+        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces a new netlink attr VDPA_ATTR_DEV_ENDIAN
-to report device endian-ness to usersapce.
+On Tue, Aug 30, 2022 at 6:45 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
+> Document RZ/N1 power-domains support. Also update the example with
+> power-domains property.
+>
+> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+> ---
+> v3:
+>  * Documented power-domains support.
 
-So the userspace tools can be aware of the endian-ness of
-the device, even uninitialized legacy/transitional devices.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
----
- drivers/vdpa/vdpa.c       | 3 +++
- include/uapi/linux/vdpa.h | 1 +
- 2 files changed, 4 insertions(+)
+Gr{oetje,eeting}s,
 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index 8a08caf573d1..d361f951ff63 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -848,6 +848,9 @@ static int vdpa_dev_net_config_fill(struct vdpa_device *vdev, struct sk_buff *ms
- 			      VDPA_ATTR_PAD))
- 		return -EMSGSIZE;
- 
-+	if (nla_put_u8(msg, VDPA_ATTR_DEV_ENDIAN, le))
-+		return -EMSGSIZE;
-+
- 	return vdpa_dev_net_mq_config_fill(vdev, msg, features, &config);
- }
- 
-diff --git a/include/uapi/linux/vdpa.h b/include/uapi/linux/vdpa.h
-index 25c55cab3d7c..bb9797781f97 100644
---- a/include/uapi/linux/vdpa.h
-+++ b/include/uapi/linux/vdpa.h
-@@ -51,6 +51,7 @@ enum vdpa_attr {
- 	VDPA_ATTR_DEV_QUEUE_INDEX,              /* u32 */
- 	VDPA_ATTR_DEV_VENDOR_ATTR_NAME,		/* string */
- 	VDPA_ATTR_DEV_VENDOR_ATTR_VALUE,        /* u64 */
-+	VDPA_ATTR_DEV_ENDIAN,			/* u8 */
- 
- 	/* new attributes must be added above here */
- 	VDPA_ATTR_MAX,
--- 
-2.31.1
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
