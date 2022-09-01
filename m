@@ -2,46 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 021855AA0AF
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:10:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0960A5AA0CA
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:18:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234853AbiIAUKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 16:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
+        id S234840AbiIAUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 16:18:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231589AbiIAUKW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:10:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C6F286FE;
-        Thu,  1 Sep 2022 13:10:19 -0700 (PDT)
+        with ESMTP id S234879AbiIAUSl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:18:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6C87CA98
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 13:18:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 688A961C2F;
-        Thu,  1 Sep 2022 20:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BE1BC433D7;
-        Thu,  1 Sep 2022 20:10:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 895E2B828FC
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 20:18:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E432EC433D6;
+        Thu,  1 Sep 2022 20:18:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662063017;
-        bh=rq8nBVfudyWwGfUgkKprANMLSWkU10YJR0ZDIuz8TRU=;
+        s=k20201202; t=1662063516;
+        bh=dLKFmAPBmJwRRq6yMvJoGRhZjJQtlcTEqlLxmo+Q9jI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u3Y/noazjS5GAFdYfsRFFEkZwZ8AnKI0Dc8X0WNDBxPMfrxQNS3ZYckce6u1sns8o
-         jcI3+3RTnk0OO4rwp0F4pV7XTFYyVp8pfbWcvzNHqHoVfWszQspbrHc2/EHdpU0+re
-         3x5vDKUpqGsqE8Oc1lw+N8eDn/HCZfoy6AWKZDV2hf2YZKZpJx7zlwLHaAEPJqF52y
-         1qpRLj4TE8sk7SjVEGbXo87tuROyK1MMPTevS49CuaSVukrr7x/cawdMD3DJ5kIcc/
-         B4MrekhTErUK1ma1zSjdxKNvK5BMK230PhJuKZPimiXSwSdPemiwTM3G5MOEMJubb0
-         bO4kNpQ1BUFog==
-Date:   Thu, 1 Sep 2022 13:10:16 -0700
+        b=qRt+zdswlv9zzX3qcS7J2o1TnUoyX1H1Aa0jfmy+Kku20buC1aw7BIw+oqEyxurSZ
+         m/lpx6hCv6tlFZW4VJJjhfT7kFO4X8KiW0US4hd/i4FPCAoXpgNEe/HGymHB8sYr7B
+         V5W92EFINx1yS9Xyh2zk105A266j5DHmgPJwn4mSNMgK8KUwWm3fXEjn2O67sk0hHk
+         2sVfBniiw3AlzdbjQMSVWuvb2g/u+S+QoOzp2vWPdmVZrQRUf5k+2Q8MfDOqc8twf+
+         LH4QqwGkN8ouY0ZFvAce/WugNsL3jjnNm4CvMvTRWverK18d1o774/DT02iu0FN/a9
+         OBVoO+8hfWybw==
+Date:   Thu, 1 Sep 2022 13:18:35 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Cc:     wei.fang@nxp.com, davem@davemloft.net, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: fec: add pm_qos support on imx6q platform
-Message-ID: <20220901131016.74a9a730@kernel.org>
-In-Reply-To: <703b0c990f4c7b7db8496cb397fdc6dbccdc1c67.camel@redhat.com>
-References: <20220830070148.2021947-1-wei.fang@nxp.com>
-        <703b0c990f4c7b7db8496cb397fdc6dbccdc1c67.camel@redhat.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        Michal Michalik <michal.michalik@intel.com>,
+        netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gurucharan <gurucharanx.g@intel.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
+ GNSS
+Message-ID: <20220901131835.0fe7b02e@kernel.org>
+In-Reply-To: <YxBHL6YzF2dAWf3q@kroah.com>
+References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
+        <20220829220049.333434-4-anthony.l.nguyen@intel.com>
+        <20220831145439.2f268c34@kernel.org>
+        <YxBHL6YzF2dAWf3q@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -55,28 +62,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 01 Sep 2022 09:17:37 +0200 Paolo Abeni wrote:
-> On Tue, 2022-08-30 at 15:01 +0800, wei.fang@nxp.com wrote:
-> > From: Wei Fang <wei.fang@nxp.com>
+On Thu, 1 Sep 2022 07:46:23 +0200 Greg Kroah-Hartman wrote:
+> > Please CC GNSS and TTY maintainers on the patches relating to 
+> > the TTY/GNSS channel going forward.
 > > 
-> > There is a very low probability that tx timeout will occur during
-> > suspend and resume stress test on imx6q platform. So we add pm_qos
-> > support to prevent system from entering low level idles which may
-> > affect the transmission of tx.
+> > CC: Greg, Jiri, Johan
 > > 
-> > Signed-off-by: Wei Fang <wei.fang@nxp.com>  
+> > We'll pull in a day or two if there are no objections.  
 > 
-> Since this IMHO causes a significal behavior change I suggest to target
-> the net-next tree, does that fit you?
-> 
-> Additionally, it would be great if you could provide in the changelog
-> the references to the relevant platform documentation and (even rough)
-> power consumption delta estimates.
+> Please see above, I'd like to know what is really failing here and why
+> as forcing drivers to have "empty" functions like this is not good and
+> never the goal.
 
-It's a tricky one, we don't want older kernels to potentially hang
-either.
+Thanks for a prompt look!
 
-IIRC Florian did some WoL extensions for BRCM, maybe he has the right
-experience.
-
-Florian, what would you recommend? net or net-next?
+Tony, I presume you may want to sidetrack this patch for now and ship
+the rest so lemme toss this version of the series.
