@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D06E45A963C
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:04:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39D9C5A963F
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233146AbiIAMEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 08:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
+        id S233206AbiIAMEs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 08:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231530AbiIAMEm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:04:42 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF2C41D301
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:04:41 -0700 (PDT)
+        with ESMTP id S232394AbiIAMEn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:04:43 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BA440554
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:04:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662033881; x=1693569881;
+  t=1662033882; x=1693569882;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/iUE+C/YoHTWlabpxbMQDFAlbGOXYtiHq7W6hemCfqo=;
-  b=LO/QHKY8b2oxfWuZCOJ8qmZKMrAR+gnP4reFKc7WoBXFET6JDf8eHgwk
-   42Gb6BFGR3giT9gS7EVOIpPRjr7OmpTXQGPaDDTd2lmbrQXvuuP0zOd58
-   phnJWpXgTmyVvFLqSsaDzYJMul3HrMk+j8lohiCo7R5uLU7OKgHi0NQkl
-   Qv9DQmfbxvIhgKpAkHW+HlZcNrHg4VyO9hhk3azKIElNhiJ4k5uk3ihXt
-   rD4ozWW/DeW6EYrab/mQuYKeKOv4gwoF1mmmfY7JHelnGMSRXzZiemQ0r
-   4ZJevqoMoEPy9MJTjWPC1BVymzh4w/A4OOpnoBL1acFlPwi8TvnlGOtTf
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="381992006"
+  bh=4amD39zOEmluCPQYQNAg9eXou38dE6G14ogv0QNFbVo=;
+  b=kPH3nEtVY95D1cLi3E6ylhiizYJqILkfAkgK9LIVnsRTN+ZaLlLISp5U
+   azo4Y4wEzt2VcB01StbrL2ozqDZIyxrGvFk1ptJtwCJiFuH9GrE+IXVY1
+   RGjFj5VF4jniU5F06L6Y3Cfaw0pU+5Bi5OiVN/awoFYehtzAO91z48u/4
+   b4k7tLLObwb0qrBVKXcVe95dCV/E/Je3SJDo+ZRn6/A7tlHbOOism9b4h
+   KPCl1bwNLLuDCuaiiR+eH3BB1lG3CL3R33ALXWslQzJUEkz5oav44B/ut
+   xQDscCt3og51YLZHjIlDlJ7UxusloumcEfEwGQFzADlDzQe3k4qWsDW7F
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="282674254"
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="381992006"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:04:41 -0700
+   d="scan'208";a="282674254"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:04:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="563433757"
+   d="scan'208";a="608532261"
 Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga003.jf.intel.com with ESMTP; 01 Sep 2022 05:04:36 -0700
+  by orsmga007.jf.intel.com with ESMTP; 01 Sep 2022 05:04:38 -0700
 Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 281C4XRh024211;
-        Thu, 1 Sep 2022 13:04:34 +0100
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 281C4XRi024211;
+        Thu, 1 Sep 2022 13:04:36 +0100
 From:   Wojciech Drewek <wojciech.drewek@intel.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
@@ -53,9 +53,9 @@ Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
         simon.horman@corigine.com, pablo@netfilter.org,
         maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
         jchapman@katalix.com, gnault@redhat.com
-Subject: [RFC PATCH net-next v3 1/5] uapi: move IPPROTO_L2TP to in.h
-Date:   Thu,  1 Sep 2022 14:01:27 +0200
-Message-Id: <20220901120131.1373568-2-wojciech.drewek@intel.com>
+Subject: [RFC PATCH net-next v3 2/5] flow_dissector: Add L2TPv3 dissectors
+Date:   Thu,  1 Sep 2022 14:01:28 +0200
+Message-Id: <20220901120131.1373568-3-wojciech.drewek@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220901120131.1373568-1-wojciech.drewek@intel.com>
 References: <20220901120131.1373568-1-wojciech.drewek@intel.com>
@@ -63,51 +63,105 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IPPROTO_L2TP is currently defined in l2tp.h, but most of
-ip protocols is defined in in.h file. Move it there in order
-to keep code clean.
+Allow to dissect L2TPv3 specific field which is:
+- session ID (32 bits)
+
+L2TPv3 might be transported over IP or over UDP,
+this ipmplementation is only about L2TPv3 over IP.
+IP protocold carries L2TPv3 when ip_proto is
+IPPROTO_L2TP (115).
 
 Acked-by: Guillaume Nault <gnault@redhat.com>
 Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
 ---
- include/uapi/linux/in.h   | 2 ++
- include/uapi/linux/l2tp.h | 2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
+v3: move !dissector_uses_key() check before calling
+    __skb_header_pointer
+---
+ include/net/flow_dissector.h |  9 +++++++++
+ net/core/flow_dissector.c    | 28 ++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/include/uapi/linux/in.h b/include/uapi/linux/in.h
-index 14168225cecd..5a9454c886b3 100644
---- a/include/uapi/linux/in.h
-+++ b/include/uapi/linux/in.h
-@@ -68,6 +68,8 @@ enum {
- #define IPPROTO_PIM		IPPROTO_PIM
-   IPPROTO_COMP = 108,		/* Compression Header Protocol		*/
- #define IPPROTO_COMP		IPPROTO_COMP
-+  IPPROTO_L2TP = 115,		/* Layer 2 Tunnelling Protocol		*/
-+#define IPPROTO_L2TP		IPPROTO_L2TP
-   IPPROTO_SCTP = 132,		/* Stream Control Transport Protocol	*/
- #define IPPROTO_SCTP		IPPROTO_SCTP
-   IPPROTO_UDPLITE = 136,	/* UDP-Lite (RFC 3828)			*/
-diff --git a/include/uapi/linux/l2tp.h b/include/uapi/linux/l2tp.h
-index bab8c9708611..7d81c3e1ec29 100644
---- a/include/uapi/linux/l2tp.h
-+++ b/include/uapi/linux/l2tp.h
-@@ -13,8 +13,6 @@
- #include <linux/in.h>
- #include <linux/in6.h>
+diff --git a/include/net/flow_dissector.h b/include/net/flow_dissector.h
+index 6c74812d64b2..5ccf52ef8809 100644
+--- a/include/net/flow_dissector.h
++++ b/include/net/flow_dissector.h
+@@ -289,6 +289,14 @@ struct flow_dissector_key_pppoe {
+ 	__be16 type;
+ };
  
--#define IPPROTO_L2TP		115
--
- /**
-  * struct sockaddr_l2tpip - the sockaddr structure for L2TP-over-IP sockets
-  * @l2tp_family:  address family number AF_L2TPIP.
++/**
++ * struct flow_dissector_key_l2tpv3:
++ * @session_id: identifier for a l2tp session
++ */
++struct flow_dissector_key_l2tpv3 {
++	__be32 session_id;
++};
++
+ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_CONTROL, /* struct flow_dissector_key_control */
+ 	FLOW_DISSECTOR_KEY_BASIC, /* struct flow_dissector_key_basic */
+@@ -320,6 +328,7 @@ enum flow_dissector_key_id {
+ 	FLOW_DISSECTOR_KEY_HASH, /* struct flow_dissector_key_hash */
+ 	FLOW_DISSECTOR_KEY_NUM_OF_VLANS, /* struct flow_dissector_key_num_of_vlans */
+ 	FLOW_DISSECTOR_KEY_PPPOE, /* struct flow_dissector_key_pppoe */
++	FLOW_DISSECTOR_KEY_L2TPV3, /* struct flow_dissector_key_l2tpv3 */
+ 
+ 	FLOW_DISSECTOR_KEY_MAX,
+ };
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 764c4cb3fe8f..8180e65ab8e2 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -204,6 +204,30 @@ static void __skb_flow_dissect_icmp(const struct sk_buff *skb,
+ 	skb_flow_get_icmp_tci(skb, key_icmp, data, thoff, hlen);
+ }
+ 
++static void __skb_flow_dissect_l2tpv3(const struct sk_buff *skb,
++				      struct flow_dissector *flow_dissector,
++				      void *target_container, const void *data,
++				      int nhoff, int hlen)
++{
++	struct flow_dissector_key_l2tpv3 *key_l2tpv3;
++	struct {
++		__be32 session_id;
++	} *hdr, _hdr;
++
++	if (!dissector_uses_key(flow_dissector, FLOW_DISSECTOR_KEY_L2TPV3))
++		return;
++
++	hdr = __skb_header_pointer(skb, nhoff, sizeof(_hdr), data, hlen, &_hdr);
++	if (!hdr)
++		return;
++
++	key_l2tpv3 = skb_flow_dissector_target(flow_dissector,
++					       FLOW_DISSECTOR_KEY_L2TPV3,
++					       target_container);
++
++	key_l2tpv3->session_id = hdr->session_id;
++}
++
+ void skb_flow_dissect_meta(const struct sk_buff *skb,
+ 			   struct flow_dissector *flow_dissector,
+ 			   void *target_container)
+@@ -1497,6 +1521,10 @@ bool __skb_flow_dissect(const struct net *net,
+ 		__skb_flow_dissect_icmp(skb, flow_dissector, target_container,
+ 					data, nhoff, hlen);
+ 		break;
++	case IPPROTO_L2TP:
++		__skb_flow_dissect_l2tpv3(skb, flow_dissector, target_container,
++					  data, nhoff, hlen);
++		break;
+ 
+ 	default:
+ 		break;
 -- 
 2.31.1
 
