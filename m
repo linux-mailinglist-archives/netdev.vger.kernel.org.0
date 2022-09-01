@@ -2,70 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A44C5A9729
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:46:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ACB85A972D
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:47:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233087AbiIAMqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 08:46:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
+        id S233150AbiIAMrn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 08:47:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232539AbiIAMqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:46:52 -0400
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99DB275E7
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:46:51 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id cv7so10803329qvb.3
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 05:46:51 -0700 (PDT)
+        with ESMTP id S232226AbiIAMrm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:47:42 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC3BDBE1A;
+        Thu,  1 Sep 2022 05:47:41 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id qh18so14160936ejb.7;
+        Thu, 01 Sep 2022 05:47:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date;
-        bh=4KFgvD44iUcZ5dAsfdsR1zvBHtzJns362ASyOF32TIs=;
-        b=O11/pQnJty2AuZqpiQvzmQvtfDFf/bIQ6qGOl3cuXs1EltGpOxgOhZujb4pT6iKwik
-         ubinGgr9h42iQFJgm7TDXayoylrAxvK/Jhh6hqcKRyXTkZ0Q/PF+VHwo5LrbNTACUiJD
-         5694Lc/qqnObxnAWigHqIm8rhPv9Lweess18PNUqlOl5X2iAodAEY//rrB4ZTs82zdRN
-         goWSLgs0kWduwrFT7+OoMaOlZyHFXZ/PmGsN/bbqUzlT+kFnB/sCbD/bMkd0F1mhewAT
-         WXLXk9HMYiClPH/lcro9ZJ1pDGNY3s4mKubgs2SiktH2qYfkQn39w5jvIcZ9pfAFCWQM
-         ma5g==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=L8LYAuplDmX65ai3aFgfTnHS09hziX6y5/VG9KrFqy8=;
+        b=h4Jcy3v7PeLVhJbHHmv7gPnhsG0ahzf9jg0DrRMQ2If+BrMOjxYr3AoMPGbpTbaM+w
+         RpO9123lUcxq2jzmp8cQ8X9LFBkxmg2P8dOHwDQmhzCh6a9gqeX70MQrQXK459dHgP5Z
+         xwerjVQ1Vrse84JGh5jmIt84J4CkOzZbxoSMCfPewAGF8NRHmk38w7ACeAFEr5epPIxe
+         /AOpdvtdbfae29+Xd4YmOPg5WRuXuoz9KSID5/nNrgPWiknD/0bdIYRetX8dYbIPcsAK
+         SyVPiInKZm6Gsy5On5AYaw2u8dTEdmJMO5ize/d6UDgXAZYt6Fqto3FErBJ8FZYRsi4R
+         19pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=4KFgvD44iUcZ5dAsfdsR1zvBHtzJns362ASyOF32TIs=;
-        b=uWQPGG+xIYQjoschEMHz1KtRfiaBHkegBE54tUPPs9P5oj3Mfy2xhyNyACOBiCNz4f
-         ekV1+LGduWJPKgtqLEpuyib9ReBWR7Dp1xRlPBPk7+9Wf3/XIhLEFi9F6GrSv31+TiA3
-         7cuxT3Ft5kvdKqTHSWjkrLDrn+uf/fvzcc17Zyc/AQMHhd43fBNzVf2i0Fygr5PbBIK6
-         JByrmN85MVk7dGpL5q2qBnqC5n9oFYfLntsUqxFvBRFWM9UxL/S+wrSg8n0W74Vuj9ui
-         lVZUOqdbuAg3EeL3Wy/ty9GFSGy2xP+/JGA2I1YfCW2m71VCuqkYWxcaCyVnDpxLeaeR
-         j2bA==
-X-Gm-Message-State: ACgBeo1cgi5dBk2ogrfA35rAcCiL86UWuvhfluXu+aIzFD5ZArZJaCKJ
-        lmHZLd7olBQZWGTlHKr3LsfIEOj2tW3YGQU2/j0VuQ==
-X-Google-Smtp-Source: AA6agR42kW34DFOoR8xdmRTEI7g0q0a5kMNnTC9zQQtI5iUIn2cBt5f1OFQUdJaWCGT39v7sLtVetmHoD21osNHv6HM=
-X-Received: by 2002:a0c:f34f:0:b0:498:fe52:d14c with SMTP id
- e15-20020a0cf34f000000b00498fe52d14cmr18352425qvm.47.1662036410799; Thu, 01
- Sep 2022 05:46:50 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=L8LYAuplDmX65ai3aFgfTnHS09hziX6y5/VG9KrFqy8=;
+        b=I/ftqG/ZGv60GT/w14mezZcbXCCb+17dWDnmY8joxYEzJFvV5Gb3SjeKtLNcFAgqfD
+         uFhsKQ9cLFXO0FyxPFaJYAW4ozBh4Un9WytGBfG9+rzDR4ItkaaqZD8A/hJShh7uHgHR
+         Dfi0FwYSDnelEn5lCUGz9Y6cmb6qOBnnXQyl2No4MkU/MaprtrD9bkSDI12wBlz0ZVtI
+         sXPDu9gpqO70TahuXg2qMnJy5At+8ElW2QL6+F8WrFulFu0EBnChbk8T4fg63ANvU5mc
+         IPVZx7DKKREAsA9n57ecDUCHDRj1LSxqOFczJvMBG9/MoBenWquGxex0EJM8x5N8SZuq
+         wv4w==
+X-Gm-Message-State: ACgBeo2Cn2jPhqzK9nsczpr5TKQbdquITWTxfHkUuZQquAgQ43Y/6f4j
+        m3IiuJmEl9ZPNZATix4mmu8=
+X-Google-Smtp-Source: AA6agR66alJCNSrRBRWnjFW1b+uSJNL88tvbDYZoZQR75AWJRtXCtnRlVgPmiyG76kp8KPnTye93aA==
+X-Received: by 2002:a17:907:7612:b0:741:6559:de26 with SMTP id jx18-20020a170907761200b007416559de26mr15649825ejc.582.1662036460386;
+        Thu, 01 Sep 2022 05:47:40 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id g18-20020a056402181200b0044841a78c70sm1278652edy.93.2022.09.01.05.47.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 05:47:39 -0700 (PDT)
+Date:   Thu, 1 Sep 2022 15:47:37 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Arun.Ramadoss@microchip.com, andrew@lunn.ch,
+        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, san@skov.dk, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        Woojung.Huh@microchip.com, davem@davemloft.net
+Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
+ phylink mac config and link up
+Message-ID: <20220901124737.mrfo3fefjsn4scuy@skbuf>
+References: <20220724092823.24567-1-arun.ramadoss@microchip.com>
+ <20220830065533.GA18106@pengutronix.de>
+ <67690ec6367c9dc6d2df720dcf98e6e332d2105b.camel@microchip.com>
+ <20220830095830.flxd3fw4sqyn425m@skbuf>
+ <20220830160546.GB16715@pengutronix.de>
+ <20220831074324.GD16715@pengutronix.de>
+ <20220831151859.ubpkt5aljrp3hiph@skbuf>
+ <20220831161055.GA2479@pengutronix.de>
+ <6c4666fd48ce41f84dbdad63a5cd6f4d3be25f4a.camel@microchip.com>
+ <20220901112721.GB2479@pengutronix.de>
 MIME-Version: 1.0
-References: <17c87824-7d04-c34e-bf6a-d8b874242636@tmb.nu>
-In-Reply-To: <17c87824-7d04-c34e-bf6a-d8b874242636@tmb.nu>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 1 Sep 2022 08:46:34 -0400
-Message-ID: <CADVnQymRgHWoWjG2Z51+v4S1HUJ2FHCt1O8=vcO2BQTMsZrMBQ@mail.gmail.com>
-Subject: Re: [PATCH net 1/3] netfilter: nf_conntrack_tcp: re-init for syn
- packets only
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Thomas Backlund <tmb@tmb.nu>, Jakub Kicinski <kuba@kernel.org>,
-        stable@kernel.org, patchwork-bot+netdevbpf@kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        netfilter-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901112721.GB2479@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,91 +83,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- theOn Fri, Aug 12, 2022 at 9:27 PM Thomas Backlund <tmb@tmb.nu> wrote:
->
-> Den 2022-08-12 kl. 22:17, skrev Jakub Kicinski:
-> > On Fri, 12 Aug 2022 09:34:14 -0400 Neal Cardwell wrote:
-> >> This first commit is an important bug fix for a serious bug that cause=
-s
-> >> TCP connection hangs for users of TCP fast open and nf_conntrack:
-> >>
-> >>    c7aab4f17021b netfilter: nf_conntrack_tcp: re-init for syn packets =
-only
-> >>
-> >> We are continuing to get reports about the bug that this commit fixes.
-> >>
-> >> It seems this fix was only backported to v5.17 stable release, and not=
- further,
-> >> due to a cherry-pick conflict, because this fix implicitly depends on =
-a
-> >> slightly earlier v5.17 fix in the same spot:
-> >>
-> >>    82b72cb94666 netfilter: conntrack: re-init state for retransmitted =
-syn-ack
-> >>
-> >> I manually verified that the fix c7aab4f17021b can be cleanly cherry-p=
-icked
-> >> into the oldest (v4.9.325) and newest (v5.15.60) longterm release kern=
-els as
-> >> long as we first cherry-pick that related fix that it implicitly depen=
-ds on:
-> >>
-> >> 82b72cb94666b3dbd7152bb9f441b068af7a921b
-> >> netfilter: conntrack: re-init state for retransmitted syn-ack
-> >>
-> >> c7aab4f17021b636a0ee75bcf28e06fb7c94ab48
-> >> netfilter: nf_conntrack_tcp: re-init for syn packets only
-> >>
-> >> So would it be possible to backport both of those fixes with the follo=
-wing
-> >> cherry-picks, to all LTS stable releases?
-> >>
-> >> git cherry-pick 82b72cb94666b3dbd7152bb9f441b068af7a921b
-> >> git cherry-pick c7aab4f17021b636a0ee75bcf28e06fb7c94ab48
-> >
-> > Thanks a lot Neal! FWIW we have recently changed our process and no
-> > longer handle stable submissions ourselves, so in the future feel free
-> > to talk directly to stable@ (and add CC: stable@ tags to patches).
-> >
-> > I'm adding stable@, let's see if Greg & team can pick things up based
-> > on your instructions :)
-> >
->
-> besides testing that they apply,
-> one should also check that the resulting code actually builds...
->
-> net/netfilter/nf_conntrack_proto_tcp.c: In function 'tcp_in_window':
-> net/netfilter/nf_conntrack_proto_tcp.c:560:3: error: implicit
-> declaration of function 'tcp_init_sender'; did you mean 'tcp_init_cwnd'?
-> [-Werror=3Dimplicit-function-declaration]
->
->
->
-> So this one is also needed:
-> cc4f9d62037ebcb811f4908bba2986c01df1bd50
-> netfilter: conntrack: move synack init code to helper
->
-> for it to actually build on 5.15
+On Thu, Sep 01, 2022 at 01:27:21PM +0200, Oleksij Rempel wrote:
+> > The global register 0x06 responsibilities are bit 4 for 10/100mbps
+> > speed selection, bit 5 for flow control and bit 6  for duplex
+> > operation. Since these three are new features added during refactoring
+> > I overlooked it. 
+> > To fix this, either I need to return from the ksz_set_100_10mbit &
+> > ksz_duplex_flowctrl function if the chip_id is ksz87xx or add
+> > dev->dev_ops for this alone.  Kindly suggest on how to proceed.
+> 
+> I would prefer to got ops way, to clean things up.
 
-Thomas =E2=80=93 thanks for catching that!
+I can't say that that one approach is better or worse than the other.
+Indirect function calls are going to be more expensive than conditionals
+on dev->chip_id, but we aren't in a fast path here, so it doesn't matter
+too much.
 
-Florian, can you please confirm that the following patch series would
-be a correct and sensible set of cherry-picks to backport to stable to
-fix this critical nf_conntrack_tcp bug that is black-holing TCP Fast
-Open connections?
+Having indirect function calls will in theory help simplify the logic of
+the main function, but will require good forethought for what constitutes
+an atom of functionality, in a high enough level such as to abstract
+switch differences. Whereas conditionals don't require thinking that far,
+you put them where you need them.
 
-# netfilter: conntrack: move synack init code to helper
-git cherry-pick cc4f9d62037ebcb811f4908bba2986c01df1bd50
+Also, indirect function calls will move the bloat somewhere else. I have
+seen complaints in the past about the mv88e6xxx driver's layered structure,
+making it difficult to see exactly what gets done for a certain chip.
 
-# netfilter: conntrack: re-init state for retransmitted syn-ack
-git cherry-pick 82b72cb94666b3dbd7152bb9f441b068af7a921b
+It is probable that we don't want to mix these styles too much within a
+single driver, so if work has already started towards dev_ops for
+everything, then dev_ops be it, I guess.
 
-# netfilter: nf_conntrack_tcp: re-init for syn packets only
-git cherry-pick c7aab4f17021b636a0ee75bcf28e06fb7c94ab48
-
-(When applied to v4.9.325 the first one needs a trivial conflict
-resolution, but the second two apply cleanly. And the kernel
-compiles.)
-
-thanks,
-neal
+Oleksij, are you going to submit patches with your proposal?
