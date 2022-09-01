@@ -2,75 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D60FC5A8B95
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA9A75A8BA4
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233006AbiIACqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 22:46:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53940 "EHLO
+        id S229826AbiIACwq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 22:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232965AbiIACqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:46:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D924115C785
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 19:46:15 -0700 (PDT)
+        with ESMTP id S231585AbiIACwp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87DE9161DF2
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 19:52:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0BFAAB823F1
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:46:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C435C433D6;
-        Thu,  1 Sep 2022 02:46:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20D5161DD2
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43038C433D6;
+        Thu,  1 Sep 2022 02:52:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662000372;
-        bh=jAgq4+Lrxe8TLYJmCd9EXdtzd5pL0BAHrt1CtL5FQbY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=R4Iw3oLUfDWvObFe14qO5xnzckbJqf/loMjZtGiGLlx5FZ/Om5LU9i5tSZChhD7Vk
-         IcI4hTreXFoOIaLp/+hO1/Dw9qtV2yC3SVu9nFLxF0Sib2KyszDwbE1+9fINZnp8OK
-         lsInfECB41U/ACDw5IBpHHaOq+DFR6XAyBT1XE1FXJEfD3+I/Ed3Fswj56+73gOdU5
-         lijofVyPdvwwMx0UIfoFUpCKoH86TG3Qp300+54lIP+wfl8ETqcTUUQgDm72+MDok3
-         LYsJdF4/2wuyt5S8GJDvB50O49iXQjka5SizHU890CX9YBBhSYPhyhJg9EH0lnbS/X
-         G7AS2LKmqvn7g==
-Date:   Wed, 31 Aug 2022 19:46:11 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Amritha Nambiar <amritha.nambiar@intel.com>
-Cc:     netdev@vger.kernel.org, alexander.h.duyck@intel.com,
-        jhs@mojatatu.com, jiri@resnulli.us, xiyou.wangcong@gmail.com,
-        vinicius.gomes@intel.com, sridhar.samudrala@intel.com
-Subject: Re: [net-next PATCH 0/3] Extend action skbedit to RX queue mapping
-Message-ID: <20220831194611.4113660a@kernel.org>
-In-Reply-To: <166185158175.65874.17492440987811366231.stgit@anambiarhost.jf.intel.com>
-References: <166185158175.65874.17492440987811366231.stgit@anambiarhost.jf.intel.com>
+        s=k20201202; t=1662000763;
+        bh=ujNP13VcDoxALFgaVqzeiCkljDq+K/1hQaTlGeT4xR8=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=d4Fvqa2v/jEpDEYLhU+ujnzN739LZIRBBwFoVlzpzNt5JfaZNmWiY9kCQMLrnwnty
+         NIhyHTbhzPX6LCZNtfWu4txY8Ze0tcMCHNU2Tqoxuv9mVV5MZmzEZ6r60TZUEG8cm+
+         wxy8JxaItpsgoHWLMhXJxqlajeiSAPCcsJV08NK9PgkNcVRjIC1+8aQVZiUYAzmBmy
+         0weq9HeWekZmWQmoq8jiwFtobl0SULevrg6M50L8698pma2iUfc25A/J7EjxYS1XN2
+         eTotah4bwVU3IFom8n+voqd98XGgaE2JjEhLdfg5qZ1bUe794OdfGsThmVNA4JQyrb
+         jPHzIHNrgoZsg==
+Message-ID: <07bc7668-3107-bea2-58e0-75a77af57f7c@kernel.org>
+Date:   Wed, 31 Aug 2022 20:52:42 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH main v2 1/2] macsec: add extended packet number (XPN)
+ support
+Content-Language: en-US
+To:     Emeel Hakim <ehakim@nvidia.com>, sd@queasysnail.net
+Cc:     tariqt@nvidia.com, raeds@nvidia.com, netdev@vger.kernel.org
+References: <20220824091752.25414-1-ehakim@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220824091752.25414-1-ehakim@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 30 Aug 2022 02:28:39 -0700 Amritha Nambiar wrote:
-> Based on the discussion on
-> https://lore.kernel.org/netdev/20220429171717.5b0b2a81@kernel.org/,
-> the following series extends skbedit tc action to RX queue mapping.
-> Currently, skbedit action in tc allows overriding of transmit queue.
-> Extending this ability of skedit action supports the selection of receive
-> queue for incoming packets. Offloading this action is added for receive
-> side. Enabled ice driver to offload this type of filter into the
-> hardware for accepting packets to the device's receive queue.
+On 8/24/22 3:17 AM, Emeel Hakim wrote:
+> @@ -174,14 +181,34 @@ static int parse_sa_args(int *argcp, char ***argvp, struct sa_desc *sa)
+>  
+>  	while (argc > 0) {
+>  		if (strcmp(*argv, "pn") == 0) {
+> -			if (sa->pn != 0)
+> +			if (sa->pn.pn32 != 0)
 
-Thinking about this again - is redirecting to a queue really the most
-useful API to expose? Wouldn't users want to redirect to a set of
-queues, i.e. RSS context?
+pn64 to cover the entire range? ie., pn and xpn on the same command line.
 
-Or in your case the redirect to a set of queues is done by assigning
-a class?
+>  				duparg2("pn", "pn");
+>  			NEXT_ARG();
+> -			ret = get_u32(&sa->pn, *argv, 0);
+> +			ret = get_u32(&sa->pn.pn32, *argv, 0);
+>  			if (ret)
+>  				invarg("expected pn", *argv);
+> -			if (sa->pn == 0)
+> +			if (sa->pn.pn32 == 0)
+>  				invarg("expected pn != 0", *argv);
+> +		} else if (strcmp(*argv, "xpn") == 0) {
+> +			if (sa->pn.pn64 != 0)
+> +				duparg2("xpn", "xpn");
+> +			NEXT_ARG();
+> +			ret = get_u64(&sa->pn.pn64, *argv, 0);
+> +			if (ret)
+> +				invarg("expected pn", *argv);
+> +			if (sa->pn.pn64 == 0)
+> +				invarg("expected pn != 0", *argv);
+> +			sa->xpn = true;
+> +		} else if (strcmp(*argv, "salt") == 0) {
+> +			unsigned int len;
+> +
+> +			NEXT_ARG();
+> +			if (!hexstring_a2n(*argv, sa->salt, MACSEC_SALT_LEN,
+> +					   &len))
+> +				invarg("expected salt", *argv);
+> +		} else if (strcmp(*argv, "ssci") == 0) {
+> +			NEXT_ARG();
+> +			ret = get_u32(&sa->ssci, *argv, 0);
 
-Either way we should start documenting things, so please find (/create)
-some place under Documentation/networking where we can make notes for
-posterity.
+that can fail, so check ret and throw an error message
+
+>  		} else if (strcmp(*argv, "key") == 0) {
+>  			unsigned int len;
+>  
+
+...
+
+
+> @@ -1388,6 +1458,14 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+>  				return ret;
+>  			addattr8(n, MACSEC_BUFLEN,
+>  				 IFLA_MACSEC_OFFLOAD, offload);
+> +		} else if (strcmp(*argv, "xpn") == 0) {
+> +			NEXT_ARG();
+> +			int i;
+> +
+> +			i = parse_on_off("xpn", *argv, &ret);
+
+drop the 'i' and just
+xpn = parse_on_off("xpn", *argv, &ret);
+
+besides you have i as an int when xpn is bool and parse_on_off returns a
+bool.
+
