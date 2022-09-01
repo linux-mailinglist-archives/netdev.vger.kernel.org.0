@@ -2,351 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C0C5A9646
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:05:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 148895A9635
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:03:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233240AbiIAMFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 08:05:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
+        id S233318AbiIAMDg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 08:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233272AbiIAME5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:04:57 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3087DF0F
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662033888; x=1693569888;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=04TBTeUQl3HA9ZnyqH29hoWhzD+0UcyUZscojz1IuE0=;
-  b=UDEMv+8zh1DQExTycP0Gwfq6h+nPG0pbIJkB9ruiP+v03UZYtSb00lTp
-   Ogof3DWHfA5NuLXJ9Fl1bezql7bN1zRFWFMdv7Iqybvjt8D8EJUp2/2bt
-   Kgww+iAMZq6kWdVPpemf0fjbQawuewJY2BkMS3KkMnrY8Ki11DGiXlHVi
-   u4zRR/w9XPLf09/HQPXMYtVHewLFVVz0QT/vNvFEW6HEYq+B6iFwE/Fuy
-   lKEaQDy0UU5UUq95EP9uSApEswEZsnWRRDZjscjD6JgMvEWoqpVyH70m7
-   0rbDVO8VSNo09WKAC2a41/QamzhWHptXF8c5thQkotLC3K9HyvZU52IA0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10457"; a="278712547"
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="278712547"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 05:04:47 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
-   d="scan'208";a="589470736"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga006.jf.intel.com with ESMTP; 01 Sep 2022 05:04:42 -0700
-Received: from switcheroo.igk.intel.com (switcheroo.igk.intel.com [172.22.229.137])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 281C4XRl024211;
-        Thu, 1 Sep 2022 13:04:40 +0100
-From:   Wojciech Drewek <wojciech.drewek@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     alexandr.lobakin@intel.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        marcin.szycik@linux.intel.com, michal.swiatkowski@linux.intel.com,
-        kurt@linutronix.de, boris.sukholitko@broadcom.com,
-        vladbu@nvidia.com, komachi.yoshiki@gmail.com, paulb@nvidia.com,
-        baowen.zheng@corigine.com, louis.peens@corigine.com,
-        simon.horman@corigine.com, pablo@netfilter.org,
-        maksym.glubokiy@plvision.eu, intel-wired-lan@lists.osuosl.org,
-        jchapman@katalix.com, gnault@redhat.com
-Subject: [RFC PATCH net-next v3 5/5] ice: Add L2TPv3 hardware offload support
-Date:   Thu,  1 Sep 2022 14:01:31 +0200
-Message-Id: <20220901120131.1373568-6-wojciech.drewek@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220901120131.1373568-1-wojciech.drewek@intel.com>
-References: <20220901120131.1373568-1-wojciech.drewek@intel.com>
+        with ESMTP id S233313AbiIAMDU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:03:20 -0400
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2060c.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e88::60c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC0BAA354;
+        Thu,  1 Sep 2022 05:03:14 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V0lnIljc5RGjiDymxocKLkbGjdVjGSk9FcknAgUw/+uu5mV1yP3yNe//kIUj1yxStoPnH3/+Fovyfkt6+TuXjTgP1yuR0gv/FO6qD1ty3mHJfnwAFvSV3kBpeSrTZFETjpmSP26o1nB7jCzzfGfveorBWP/k8+bNPfwLp92jFnxg594LBOa/8k5EZcBafcqtZYmT66ZRsxrMPJgK0FKq5hHmBqefkUjwKXM5A6i0D1pzGDf7364GUUB148CeQpm19LXpI1cg8Yr2WCBlCzodijP5YmHHjGIZU8en4HxZJJRp4ThevUn7JPyTwyRDneUCZDPqFoa9r3cxYRsAWElDzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ngMHQhCgTb5LVJq5OQC2zws+WH2ocjC/+w6it2Gulsk=;
+ b=a6mrKeD6FSrlyN0gSgJ16J+AStxnj4+7ltjzXGUm7ahBVk+5qCZ7dm7e4+w+IAtz6DI1ndFO8PwLbXA2FOWVmJpeYaZRqgEcffjx0VJJaHlBnzXDHAJbV0gXPUGAwC+b/06mxQ8sbzhvNp0wnzEp4bQO96/ink9xRnIrIE0971vhxGNPmtanMtFuah7qtlLyA1xUxeBnv33Y1sU2j7KcK3W63PYhIRS4GmRtB3zVxSqTY/6w/Ny5pcbbCcRMyCI2Oatx9JtJDNRHHRx6AlJ+fXBob6Pa7e1yzBZ27zrAfCdNvBm+zqw9Ho9a+1rve/x/9rnWtjP/bORi9stU+HFxMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ngMHQhCgTb5LVJq5OQC2zws+WH2ocjC/+w6it2Gulsk=;
+ b=dJmXiS4h0cW+Lb88C+yA4IM5pH7Nsx5izYjQSf6wbiaxoHEmkSobb9NhN4pB1yngP0bV5eJYhlAx6UOPqBXHukHM9MS7s+CcscINQ86i1xuKMi4k+ipkvadiQr0gYT1V/vNJgJefJiQIW7Ifx6Tz1l8RxRay+koRHyvmzMY0zyWYUp0tU3aW1zM9EosAVY+CZ+n7iDhe4ELpKa0izdLpfHf11fs03zjMtbQuYEplKWBrWTSaYaD8+m6WQgCuFd1pkrD3e4Xuibkl2iuI+Isd/P8JV2wdun+nSQlC+kdvRiG26NTdW8b12zDpXp7YyuIjpfXPRQo7wnBu+dLr5RCU6Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com (2603:10b6:8:93::7) by
+ PH8PR12MB6964.namprd12.prod.outlook.com (2603:10b6:510:1bf::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.16; Thu, 1 Sep
+ 2022 12:02:45 +0000
+Received: from DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::c470:ce6c:1ab6:3e1a]) by DS7PR12MB6288.namprd12.prod.outlook.com
+ ([fe80::c470:ce6c:1ab6:3e1a%7]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
+ 12:02:45 +0000
+Message-ID: <ec9c1279-6871-a6b0-acc8-12a29e707543@nvidia.com>
+Date:   Thu, 1 Sep 2022 15:02:36 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+Subject: Re: [RFC PATCH v2 0/3] Create common DPLL/clock configuration API
+Content-Language: en-US
+To:     Vadim Fedorenko <vfedorenko@novek.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Vadim Fedorenko <vadfed@fb.com>, Aya Levin <ayal@nvidia.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-clk@vger.kernel.org, Ariel Almog <ariela@nvidia.com>,
+        Bar Shapira <bshapira@nvidia.com>
+References: <20220626192444.29321-1-vfedorenko@novek.ru>
+From:   Gal Pressman <gal@nvidia.com>
+In-Reply-To: <20220626192444.29321-1-vfedorenko@novek.ru>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM5P194CA0004.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:203:8f::14) To DS7PR12MB6288.namprd12.prod.outlook.com
+ (2603:10b6:8:93::7)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9ec795be-c37c-437e-4574-08da8c11e19c
+X-MS-TrafficTypeDiagnostic: PH8PR12MB6964:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7YQG3Jn/ol3t3B9iQJGSh3GAdO5ycBvutS3xFOuLLyQpgCcH7YRIxEmZEbCzH/g+kNv21UKpGAimBLOn2Mj/3MetND3jT+WDCi6K5vhTgsny1ZiVTReIoG15xKO6RHJKr4YZxQtL3zL3nv5gBnmX3afY3f2JltPBU/mOdMNOrtFFb3flaRsNRn4+lh900pSbMcTzVkbddbbhOkprvQywwn5Cu0DwjwiJYnG09Izflfq8CmNPObx6rWPhzR7OW0Oqcl2c5FbsolpdYALeIscIuHYTL3wNJAe6A1j8eGRSSzHYvZIpZJuMoll4uf9dp+Hc+gxQUPyHI+xf4Ebkz5q307QNWaRJsGIjYsHo79dQ6V33QQQszGbNuywgZmZBGBz8FSPW7Qq4NJQXdy32SwftK8FQdbhz2Va/ZJKpQQk0lo3MQxAxLrzURXWlOEwsC8JF0pQmbLJEstKZ/c40z3Z75IRpAy5mDBHqCxhWYarbeOoI45n9HjNqnxCmf/0VlaOXppq14rvqktRHORPwQJ+eE0V/40NSCoERCHEEWmCtPncbC+ZiQamzQtEg2LKel7nRamtYSk099N5tvg05moZ4dYezWkAPaEHVovz0PzGWWb2oxQ1Eja5QAcEnlLUO+V+PEKQFk2NSndK0U67zoepNbj0x8oWUuM/VXXj3T30FQDPLJU6BiuShYigKKrcnIyDPVys8y3Rb0KAqPW3UvF1ofx0AxJQQD2M13e/mpGIOQAHtcRzGKlADeSZbLAl9RrSKkkw+4qDgUbETX2RghM1F+xXndcGDdlahNU5dLAbPikE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6288.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(346002)(376002)(136003)(396003)(316002)(6486002)(478600001)(54906003)(8676002)(66476007)(66946007)(36756003)(38100700002)(31696002)(31686004)(66556008)(110136005)(86362001)(107886003)(41300700001)(83380400001)(2616005)(26005)(6666004)(6506007)(4326008)(5660300002)(186003)(53546011)(8936002)(2906002)(4744005)(6512007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MURVNm9mdHNobGdrMkZYamlkMHYxNEk4bXA2eFJsZzZaNTRMNzJJeHJ0ZVgx?=
+ =?utf-8?B?R3dGWDhsUTl5SzR2TVhURDZOT1g4dDl5R2JnTWZnMW50MjZrNVJkSDJ3cXJt?=
+ =?utf-8?B?L3VWV0RueXUzc1VWTWJDeWlBNUVBMjl1bXJua3RwM1A4akRlUEg2MmEwMTVq?=
+ =?utf-8?B?VUtQTzV4VnZKUXJQWTgvVGFZcUs2R05Gc3lEeGJUVmZLRjZBbXludkRMWC9m?=
+ =?utf-8?B?NFBFTVR3TStIcWRqWXAzRFFWdmNoM3RTbDBtbTlaUTFWVjl0dVR0dmhhbHF2?=
+ =?utf-8?B?Nmo5bGlxeDByUU9FYytyN3lLRG96Q0ZtaXBoVndPNFZNRCtUQ01lTXNHRWgw?=
+ =?utf-8?B?bS9oY1JYZnRaMlcwazJkekdiNzRaV3dDWWJGaXhsRUcrWkZiTHlONklnMk03?=
+ =?utf-8?B?eUhuZXZGZENaYUJsUlNvV0wwcHZCNGN0MUthdEUwcnVBcmdWT1hyMk0zZGZO?=
+ =?utf-8?B?ek9vbWhvM0ZXaUI2Um1qbzNLSlNqcjVrR1BwZXFjUTVJeFJiYVFvNUdwNXRZ?=
+ =?utf-8?B?OWplWllnSDhEb2hLU1VJNGRWYTFMNUVFRVIrdC9Vc21mYjYyYnJjUDdOTEkr?=
+ =?utf-8?B?TWF5TFRkRG0rNm5BOCtyM25MNUlUbTBHZ0w3cjBrU2lsSXFqRjJBSzlzTGRR?=
+ =?utf-8?B?Z0JwZVJQSlFybEQxQ0lUNE4yY2w4ZlVnN0xZYzQzN1ZPWnBrR0lwYWN0bVgw?=
+ =?utf-8?B?dTVDOVZ0LzlYd0h0RHdNTmtRSnZTc3dkTWtiQzRPODFodlRyVVVQNks2UTVQ?=
+ =?utf-8?B?L25DSDA2Y2ZxS0NPY3hQaDhxOVFQNFJzeUhEa2ZIRVhGWE1CUUtLczNreE9L?=
+ =?utf-8?B?aldOdk1tYzZSQmVYbG55enRLZlJ0b3REemNlRDdHVW9YQ2RlQ1JYeFJuM003?=
+ =?utf-8?B?RkNjVUR1amtGcW05VG9ENXMwdDhnYXl2L1VFT3U2dU41USsvODgrZU96b01Y?=
+ =?utf-8?B?NzBub2NBdVVaOVZZSThsQ0sxeWloUHEvNTh3Wjg0LzFXNVJyYWtENFJoaFNp?=
+ =?utf-8?B?T3NqUG1BU3B2Z2NHbnpZeW1VVEYyeFpubzJRUXVLZVN0eU4rR3c5RkE1MnBH?=
+ =?utf-8?B?ZHdmend1S2JZZ2dCU3p2djh3eldGUFJhRXUvSU0wZ3J2cWV4ZUJjSWRqTkE1?=
+ =?utf-8?B?SFovZEJOZGRiZlBFS2hJUTFBaTNucjdUQzJscHFwbHVGUU9MbHJJMmR1cVJF?=
+ =?utf-8?B?WFI0K1hUbTA4ZDRFMG1uN0ttUFh4ajdSRkJWc0U3WG5lM3AzZDZHMW5PYTNw?=
+ =?utf-8?B?Rm9LSnpTZmdMOVU1bFIreVRRRlRLSSt3a0RsK3VGakNQYUEwT3Q5UHR0aUZF?=
+ =?utf-8?B?WXBQUjdjT0E5cytRSUd4OGJMUXBsclQ2QUZTK1gxQmNGZ2FRVGM4ZmtvRXdR?=
+ =?utf-8?B?dEhPRkF4WXZ0VjMxOEI5R2dwOUYxTHpYQ0lkdFFqRXduYk1KYWt1Y01kUTZD?=
+ =?utf-8?B?WHFhN21mK2FiOEJVL2dRbkduZE5STnhydnJUUzRUY0V4dEMxQkpuazVRc0lD?=
+ =?utf-8?B?bG5NekxoeXZEZ3RRalB2Nmt1d3UzSGw0cFhhSnVwb3A5OVh2Tjc1UFl3aCs2?=
+ =?utf-8?B?Zlh5NTJ6c05QZDkvQmRFTEtwYXl4Q2hpYm1HNWE2SzV6b1FBVzRvYzR5MEtP?=
+ =?utf-8?B?RUk3Z2k3Z2dnaEU2SDM3ZWgvSDhBbW5yNnZHZFc5bWZpMEJmTVhrbVNLejRv?=
+ =?utf-8?B?RkhQSVczV2dGUzlIRjVzMGJXeEZxRkdGY09WbmNmU3Z0MGlWMkIvWC9TdzVm?=
+ =?utf-8?B?alpFU0tYZGJsWXhvMTF1VmZUMHEwc2JnSzVmaThTVmNDVmN6ZFg4ZFJVT3pi?=
+ =?utf-8?B?WXUwb0Y1dERTRGMxdTBDSmVQKzhUVmh2Mi9QV25EWHowK2p4YnhKRTEyUXk4?=
+ =?utf-8?B?U25DazU1cEtBVHA4REtPSGREMDh5eGgzVS9HWTdMczJ0Z3pGekY5d1RpS2Jt?=
+ =?utf-8?B?Qktjb1VDcVZnWmFlWVdzZmxxOVRXRGNsTUlzeXkwMnZyNm40RzVUTm5mUUtm?=
+ =?utf-8?B?aURDa0FjQzY5bU4rV2ZPamR5L0hEb1lJMmhCQjlnWVF6ZEp0OFh1YmkxcWUy?=
+ =?utf-8?B?TU96Ym9ob00rNTBhaVp6SXVPWjh3TmZmQTJldVNSbkZNK3ArOFRRdlRlY2xq?=
+ =?utf-8?Q?4E8Kdb+lrPMWrO7zzGTEJiiDd?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9ec795be-c37c-437e-4574-08da8c11e19c
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6288.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 12:02:45.5825
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: NeWhrQ/f/++6cK0Jt6/8b15GXgm8FiLwke0dbmq6orgvb3iWdbULwbREdx0GRFE9
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB6964
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcin Szycik <marcin.szycik@linux.intel.com>
+On 26/06/2022 22:24, Vadim Fedorenko wrote:
+> From: Vadim Fedorenko <vadfed@fb.com>
+>
+> Implement common API for clock/DPLL configuration and status reporting.
+> The API utilises netlink interface as transport for commands and event
+> notifications. This API aim to extend current pin configuration and
+> make it flexible and easy to cover special configurations.
 
-Add support for offloading packets based on L2TPv3 session id in switchdev
-mode.
+Hello Vadim,
+I'm trying to understand how we can register our mlx5 hardware with this
+DPLL subsystem, and honestly I don't understand how this is going to be
+used eventually.
 
-Example filter:
-tc filter add dev $PF1 ingress prio 1 protocol ip flower ip_proto l2tp \
-    l2tpv3_sid 1234 skip_sw action mirred egress redirect dev $VF1_PR
+Is there anywhere else I can read more about this work? Maybe some
+documentation explaining the use-cases? Is there userspace code I can
+see to get a sense of the full picture?
 
-Changes in iproute2 are required to be able to specify l2tpv3_sid.
-
-ICE COMMS DDP package is required to create a filter as it contains L2TPv3
-profiles.
-
-Reviewed-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
----
- .../ethernet/intel/ice/ice_protocol_type.h    |  8 +++
- drivers/net/ethernet/intel/ice/ice_switch.c   | 70 ++++++++++++++++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c   | 27 ++++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.h   |  6 ++
- 4 files changed, 109 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ice/ice_protocol_type.h b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-index 560efc7654c7..02a4e1cf624e 100644
---- a/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-+++ b/drivers/net/ethernet/intel/ice/ice_protocol_type.h
-@@ -44,6 +44,7 @@ enum ice_protocol_type {
- 	ICE_GTP,
- 	ICE_GTP_NO_PAY,
- 	ICE_PPPOE,
-+	ICE_L2TPV3,
- 	ICE_VLAN_EX,
- 	ICE_VLAN_IN,
- 	ICE_VXLAN_GPE,
-@@ -111,6 +112,7 @@ enum ice_prot_id {
- #define ICE_UDP_ILOS_HW		53
- #define ICE_GRE_OF_HW		64
- #define ICE_PPPOE_HW		103
-+#define ICE_L2TPV3_HW		104
- 
- #define ICE_UDP_OF_HW	52 /* UDP Tunnels */
- #define ICE_META_DATA_ID_HW 255 /* this is used for tunnel and VLAN type */
-@@ -217,6 +219,11 @@ struct ice_pppoe_hdr {
- 	__be16 ppp_prot_id; /* control and data only */
- };
- 
-+struct ice_l2tpv3_sess_hdr {
-+	__be32 session_id;
-+	__be64 cookie;
-+};
-+
- struct ice_nvgre_hdr {
- 	__be16 flags;
- 	__be16 protocol;
-@@ -235,6 +242,7 @@ union ice_prot_hdr {
- 	struct ice_nvgre_hdr nvgre_hdr;
- 	struct ice_udp_gtp_hdr gtp_hdr;
- 	struct ice_pppoe_hdr pppoe_hdr;
-+	struct ice_l2tpv3_sess_hdr l2tpv3_sess_hdr;
- };
- 
- /* This is mapping table entry that maps every word within a given protocol
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 697feb89188c..075703f513ed 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -42,6 +42,7 @@ enum {
- 	ICE_PKT_GTP_NOPAY	= BIT(8),
- 	ICE_PKT_KMALLOC		= BIT(9),
- 	ICE_PKT_PPPOE		= BIT(10),
-+	ICE_PKT_L2TPV3		= BIT(11),
- };
- 
- struct ice_dummy_pkt_offsets {
-@@ -1258,6 +1259,65 @@ ICE_DECLARE_PKT_TEMPLATE(pppoe_ipv6_udp) = {
- 	0x00, 0x00,		/* 2 bytes for 4 bytes alignment */
- };
- 
-+ICE_DECLARE_PKT_OFFSETS(ipv4_l2tpv3) = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV4_OFOS,	14 },
-+	{ ICE_L2TPV3,		34 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+ICE_DECLARE_PKT_TEMPLATE(ipv4_l2tpv3) = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x08, 0x00,		/* ICE_ETYPE_OL 12 */
-+
-+	0x45, 0x00, 0x00, 0x20, /* ICE_IPV4_IL 14 */
-+	0x00, 0x00, 0x40, 0x00,
-+	0x40, 0x73, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_L2TPV3 34 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00,		/* 2 bytes for 4 bytes alignment */
-+};
-+
-+ICE_DECLARE_PKT_OFFSETS(ipv6_l2tpv3) = {
-+	{ ICE_MAC_OFOS,		0 },
-+	{ ICE_ETYPE_OL,		12 },
-+	{ ICE_IPV6_OFOS,	14 },
-+	{ ICE_L2TPV3,		54 },
-+	{ ICE_PROTOCOL_LAST,	0 },
-+};
-+
-+ICE_DECLARE_PKT_TEMPLATE(ipv6_l2tpv3) = {
-+	0x00, 0x00, 0x00, 0x00, /* ICE_MAC_OFOS 0 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x86, 0xDD,		/* ICE_ETYPE_OL 12 */
-+
-+	0x60, 0x00, 0x00, 0x00, /* ICE_IPV6_IL 14 */
-+	0x00, 0x0c, 0x73, 0x40,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+
-+	0x00, 0x00, 0x00, 0x00, /* ICE_L2TPV3 54 */
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00,		/* 2 bytes for 4 bytes alignment */
-+};
-+
- static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
- 	ICE_PKT_PROFILE(ipv6_gtp, ICE_PKT_TUN_GTPU | ICE_PKT_OUTER_IPV6 |
- 				  ICE_PKT_GTP_NOPAY),
-@@ -1297,6 +1357,8 @@ static const struct ice_dummy_pkt_profile ice_dummy_pkt_profiles[] = {
- 	ICE_PKT_PROFILE(udp_tun_ipv6_tcp, ICE_PKT_TUN_UDP |
- 					  ICE_PKT_INNER_IPV6 |
- 					  ICE_PKT_INNER_TCP),
-+	ICE_PKT_PROFILE(ipv6_l2tpv3, ICE_PKT_L2TPV3 | ICE_PKT_OUTER_IPV6),
-+	ICE_PKT_PROFILE(ipv4_l2tpv3, ICE_PKT_L2TPV3),
- 	ICE_PKT_PROFILE(udp_tun_tcp, ICE_PKT_TUN_UDP | ICE_PKT_INNER_TCP),
- 	ICE_PKT_PROFILE(udp_tun_ipv6_udp, ICE_PKT_TUN_UDP |
- 					  ICE_PKT_INNER_IPV6),
-@@ -4492,6 +4554,7 @@ static const struct ice_prot_ext_tbl_entry ice_prot_ext[ICE_PROTOCOL_LAST] = {
- 	{ ICE_GTP,		{ 8, 10, 12, 14, 16, 18, 20, 22 } },
- 	{ ICE_GTP_NO_PAY,	{ 8, 10, 12, 14 } },
- 	{ ICE_PPPOE,		{ 0, 2, 4, 6 } },
-+	{ ICE_L2TPV3,		{ 0, 2, 4, 6, 8, 10 } },
- 	{ ICE_VLAN_EX,          { 2, 0 } },
- 	{ ICE_VLAN_IN,          { 2, 0 } },
- };
-@@ -4515,6 +4578,7 @@ static struct ice_protocol_entry ice_prot_id_tbl[ICE_PROTOCOL_LAST] = {
- 	{ ICE_GTP,		ICE_UDP_OF_HW },
- 	{ ICE_GTP_NO_PAY,	ICE_UDP_ILOS_HW },
- 	{ ICE_PPPOE,		ICE_PPPOE_HW },
-+	{ ICE_L2TPV3,		ICE_L2TPV3_HW },
- 	{ ICE_VLAN_EX,          ICE_VLAN_OF_HW },
- 	{ ICE_VLAN_IN,          ICE_VLAN_OL_HW },
- };
-@@ -5598,7 +5662,8 @@ ice_find_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 			if (lkups[i].h_u.pppoe_hdr.ppp_prot_id ==
- 			    htons(PPP_IPV6))
- 				match |= ICE_PKT_OUTER_IPV6;
--		}
-+		} else if (lkups[i].type == ICE_L2TPV3)
-+			match |= ICE_PKT_L2TPV3;
- 	}
- 
- 	while (ret->match && (match & ret->match) != ret->match)
-@@ -5699,6 +5764,9 @@ ice_fill_adv_dummy_packet(struct ice_adv_lkup_elem *lkups, u16 lkups_cnt,
- 		case ICE_PPPOE:
- 			len = sizeof(struct ice_pppoe_hdr);
- 			break;
-+		case ICE_L2TPV3:
-+			len = sizeof(struct ice_l2tpv3_sess_hdr);
-+			break;
- 		default:
- 			return -EINVAL;
- 		}
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 42df686e0215..170e04eaad18 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -71,6 +71,10 @@ ice_tc_count_lkups(u32 flags, struct ice_tc_flower_lyr_2_4_hdrs *headers,
- 	if (flags & (ICE_TC_FLWR_FIELD_IP_TOS | ICE_TC_FLWR_FIELD_IP_TTL))
- 		lkups_cnt++;
- 
-+	/* are L2TPv3 options specified? */
-+	if (flags & ICE_TC_FLWR_FIELD_L2TPV3_SESSID)
-+		lkups_cnt++;
-+
- 	/* is L4 (TCP/UDP/any other L4 protocol fields) specified? */
- 	if (flags & (ICE_TC_FLWR_FIELD_DEST_L4_PORT |
- 		     ICE_TC_FLWR_FIELD_SRC_L4_PORT))
-@@ -515,6 +519,17 @@ ice_tc_fill_rules(struct ice_hw *hw, u32 flags,
- 		i++;
- 	}
- 
-+	if (flags & ICE_TC_FLWR_FIELD_L2TPV3_SESSID) {
-+		list[i].type = ICE_L2TPV3;
-+
-+		list[i].h_u.l2tpv3_sess_hdr.session_id =
-+			headers->l2tpv3_hdr.session_id;
-+		list[i].m_u.l2tpv3_sess_hdr.session_id =
-+			cpu_to_be32(0xFFFFFFFF);
-+
-+		i++;
-+	}
-+
- 	/* copy L4 (src, dest) port */
- 	if (flags & (ICE_TC_FLWR_FIELD_DEST_L4_PORT |
- 		     ICE_TC_FLWR_FIELD_SRC_L4_PORT)) {
-@@ -1168,7 +1183,8 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 	      BIT(FLOW_DISSECTOR_KEY_IP) |
- 	      BIT(FLOW_DISSECTOR_KEY_ENC_IP) |
- 	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
--	      BIT(FLOW_DISSECTOR_KEY_PPPOE))) {
-+	      BIT(FLOW_DISSECTOR_KEY_PPPOE) |
-+	      BIT(FLOW_DISSECTOR_KEY_L2TPV3))) {
- 		NL_SET_ERR_MSG_MOD(fltr->extack, "Unsupported key used");
- 		return -EOPNOTSUPP;
- 	}
-@@ -1351,6 +1367,15 @@ ice_parse_cls_flower(struct net_device *filter_dev, struct ice_vsi *vsi,
- 		ice_tc_set_tos_ttl(&match, fltr, headers, false);
- 	}
- 
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_L2TPV3)) {
-+		struct flow_match_l2tpv3 match;
-+
-+		flow_rule_match_l2tpv3(rule, &match);
-+
-+		fltr->flags |= ICE_TC_FLWR_FIELD_L2TPV3_SESSID;
-+		headers->l2tpv3_hdr.session_id = match.key->session_id;
-+	}
-+
- 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_PORTS)) {
- 		struct flow_match_ports match;
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.h b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-index f397ed02606d..ebef34385a4f 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.h
-@@ -30,6 +30,7 @@
- #define ICE_TC_FLWR_FIELD_IP_TTL		BIT(23)
- #define ICE_TC_FLWR_FIELD_ENC_IP_TOS		BIT(24)
- #define ICE_TC_FLWR_FIELD_ENC_IP_TTL		BIT(25)
-+#define ICE_TC_FLWR_FIELD_L2TPV3_SESSID		BIT(26)
- 
- #define ICE_TC_FLOWER_MASK_32   0xFFFFFFFF
- 
-@@ -86,6 +87,10 @@ struct ice_tc_l3_hdr {
- 	u8 ttl;
- };
- 
-+struct ice_tc_l2tpv3_hdr {
-+	__be32 session_id;
-+};
-+
- struct ice_tc_l4_hdr {
- 	__be16 dst_port;
- 	__be16 src_port;
-@@ -98,6 +103,7 @@ struct ice_tc_flower_lyr_2_4_hdrs {
- 	struct ice_tc_vlan_hdr vlan_hdr;
- 	struct ice_tc_vlan_hdr cvlan_hdr;
- 	struct ice_tc_pppoe_hdr pppoe_hdr;
-+	struct ice_tc_l2tpv3_hdr l2tpv3_hdr;
- 	/* L3 (IPv4[6]) layer fields with their mask */
- 	struct ice_tc_l3_hdr l3_key;
- 	struct ice_tc_l3_hdr l3_mask;
--- 
-2.31.1
-
+Thanks
