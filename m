@@ -2,95 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 742AB5AA1D5
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 23:59:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 730ED5AA2AA
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 00:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbiIAV7O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 17:59:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        id S232372AbiIAWOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 18:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232887AbiIAV7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 17:59:13 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D43668B2F0;
-        Thu,  1 Sep 2022 14:59:11 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id lx1so177914ejb.12;
-        Thu, 01 Sep 2022 14:59:11 -0700 (PDT)
+        with ESMTP id S235281AbiIAWOB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 18:14:01 -0400
+Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com [207.171.190.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C45A00F1
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 15:12:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=6nRTNwES/TP25PkA4VNbYU0TCi+KaNu8gfRomvbkU4o=;
-        b=UUgdzrmBcX+jlf8KsQgJkO1M1b1asLxY52gnRqxWBKMUPwLpBSdxaBtDgklBXNLyx2
-         /KhbghDF+ypVNKiYrMxfzdoG/lFyQO95Mz+N6AwZ4uKU8jWCBBXfwXIxPZIyKcObWm3+
-         Nwkc3tMVfXH1MjRtejOs4bs3z10Hn0rm9o7LE/sFb7hMMcYE8T5ao/1+5nQ6x3eUePGR
-         lno1Q5Me7UXeEYANBTYwGut4Dx3F09yHYR6I00+hr0lKdFscqMummzQuHTUdkvx3qFUC
-         7Hb1pqXHot9bcnaqxNTCmBSfW2jJXPx+b/GqgqAuZ6L2jjIgjaTvOMddUxYjtkmzsEnR
-         ltXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=6nRTNwES/TP25PkA4VNbYU0TCi+KaNu8gfRomvbkU4o=;
-        b=O3Uzf8tW/3u0ISLflWR29qfx87G8U1sdqlyE9mk6uPkINWdxMEqAhb565n3u+J7NWE
-         NfrgXsrYHufUCvTI871No4+plrrbeRCF2KrSGpDq2QesMNkKnF+6pdiR7Dr0pBv11Vgg
-         UNxJvCr1L/R3Nld23cM9DJDz6Gk0pyBmF71MK7LCLwxJ2bhs4e56sZl3cp2kbq3sJGUn
-         UF4yxmGLG56D+PPNquDRPrfx5b1iQ++yrrCV++iBkcqGUVENTT8X0J66KJubLgATt/QQ
-         dQUlCrs/iQG9Ne1mll5qiq1uIt8u3mmEHYxWtJaEOQICy+ce3O5E9qsOOBBixrLBxiJo
-         IwMw==
-X-Gm-Message-State: ACgBeo2NmkSGTL4V0b/2ZNv3cqzoNdYBYZ0PPfAqhTvkbmg/vdfMRclb
-        QoH3AodG68Xo5NFGC4hqROhDHdhijuQf53euyZM=
-X-Google-Smtp-Source: AA6agR41ZrDbt+/0ndt4nmpxwr3F3hVBJAniQXt6ez/iEHaAW6jIk+tGpXaGl9lIn9vO8Lw4WxNlXfmfnlJNbyWRQVs=
-X-Received: by 2002:a17:907:3f15:b0:741:7ab9:1c5a with SMTP id
- hq21-20020a1709073f1500b007417ab91c5amr15271308ejc.369.1662069550326; Thu, 01
- Sep 2022 14:59:10 -0700 (PDT)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1662070365; x=1693606365;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=BRICruXywregLv1LJObqhTeo+xVO738bzsvjBRRc5I0=;
+  b=SxDxe3pzVEOPJA3ohEgBqVbkRuozmXhqdum4JmdUoOY44GYK4VDX0aZy
+   jEOrBlyk7IGqbw8hhaYuu5iclIYCwf5U3SkE7/cLLi28nxS/HeqpQe8LP
+   TySaH9KWVIEVZYKpbiqwhw/UsWSa5zXQIjhOw2/gpLjTl0VlVgdBIMtWf
+   0=;
+X-IronPort-AV: E=Sophos;i="5.93,281,1654560000"; 
+   d="scan'208";a="222771738"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1a-bbd95331.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-33001.sea14.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 22:12:30 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1a-bbd95331.us-east-1.amazon.com (Postfix) with ESMTPS id 00481C1A53;
+        Thu,  1 Sep 2022 22:12:27 +0000 (UTC)
+Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.38; Thu, 1 Sep 2022 22:12:27 +0000
+Received: from 88665a182662.ant.amazon.com (10.43.161.172) by
+ EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
+ Thu, 1 Sep 2022 22:12:24 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.com>
+To:     <edumazet@google.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
+Subject: Re: [PATCH v3 net-next 3/5] tcp: Access &tcp_hashinfo via net.
+Date:   Thu, 1 Sep 2022 15:12:16 -0700
+Message-ID: <20220901221216.14973-1-kuniyu@amazon.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <CANn89iJ=D8o2kNRf6aL=Pa=V6m_fOr6bPBY67yjXFgwTCEAHag@mail.gmail.com>
+References: <CANn89iJ=D8o2kNRf6aL=Pa=V6m_fOr6bPBY67yjXFgwTCEAHag@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220831183224.3754305-1-joannelkoong@gmail.com>
- <20220831183224.3754305-2-joannelkoong@gmail.com> <20220901195917.2ho5g5hqsaidzadd@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220901195917.2ho5g5hqsaidzadd@kafai-mbp.dhcp.thefacebook.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Thu, 1 Sep 2022 14:58:59 -0700
-Message-ID: <CAJnrk1ZiYWu1R+mK5_OCZRBGLPx+_bE-fon30zDwSmrcxAxZQQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 1/3] bpf: Add skb dynptrs
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, andrii@kernel.org, daniel@iogearbox.net,
-        ast@kernel.org, memxor@gmail.com, toke@redhat.com, kuba@kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.172]
+X-ClientProxiedBy: EX13D08UWC001.ant.amazon.com (10.43.162.110) To
+ EX19D004ANA001.ant.amazon.com (10.37.240.138)
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 12:59 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Wed, Aug 31, 2022 at 11:32:22AM -0700, Joanne Koong wrote:
-> > +#ifdef CONFIG_NET
-> > +int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to, u32 len);
-> > +int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
-> > +                       u32 len, u64 flags);
-> > +#else /* CONFIG_NET */
-> > +int __bpf_skb_load_bytes(const struct sk_buff *skb, u32 offset, void *to, u32 len)
-> static inline
->
-> This should address the build issue reported by the test bot.
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 1 Sep 2022 14:30:43 -0700
+> On Thu, Sep 1, 2022 at 2:25 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
+> >
+> > From:   Paolo Abeni <pabeni@redhat.com>
+> 
+> > > /Me is thinking aloud...
+> > >
+> > > I'm wondering if the above has some measurable negative effect for
+> > > large deployments using only the main netns?
+> > >
+> > > Specifically, are net->ipv4.tcp_death_row and net->ipv4.tcp_death_row-
+> > > >hashinfo already into the working set data for established socket?
+> > > Would the above increase the WSS by 2 cache-lines?
+> >
+> > Currently, the death_row and hashinfo are touched around tw sockets or
+> > connect().  If connections on the deployment are short-lived or frequently
+> > initiated by itself, that would be host and included in WSS.
+> >
+> > If the workload is server and there's no active-close() socket or
+> > connections are long-lived, then it might not be included in WSS.
+> > But I think it's not likely than the former if the deployment is
+> > large enough.
+> >
+> > If this change had large impact, then we could revert fbb8295248e1
+> > which converted net->ipv4.tcp_death_row into pointer for 0dad4087a86a
+> > that tried to fire a TW timer after netns is freed, but 0dad4087a86a
+> > has already reverted.
+> 
+> 
+> Concern was fast path.
+> 
+> Each incoming packet does a socket lookup.
+> 
+> Fetching hashinfo (instead of &tcp_hashinfo) with a dereference of a
+> field in 'struct net' might inccurr a new cache line miss.
+> 
+> Previously, first cache line of tcp_info was enough to bring a lot of
+> fields in cpu cache.
 
-Awesome, I will add this in for v6. Thanks!
->
-> > +{
-> > +     return -EOPNOTSUPP;
-> > +}
-> > +
-> > +int __bpf_skb_store_bytes(struct sk_buff *skb, u32 offset, const void *from,
-> > +                       u32 len, u64 flags)
-> Same here.
->
-> > +{
-> > +     return -EOPNOTSUPP;
-> > +}
-> > +#endif /* CONFIG_NET */
+Ok, let me test on that if there could be regressions.
