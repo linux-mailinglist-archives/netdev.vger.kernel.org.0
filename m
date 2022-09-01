@@ -2,73 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C7995A927F
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 10:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 065555A928C
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 10:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234296AbiIAI4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 04:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35640 "EHLO
+        id S234333AbiIAI7Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 04:59:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234273AbiIAI4U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 04:56:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81717131DFD
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 01:56:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662022576;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
-        b=Cmpm/rfqf5o2169JdnYIidR7jNgbYmful1YbSCZFNtAFM+/8otHwfwJGWGaupARiD+6oyt
-        qXmBobrMWIZ4uXYb49VEK5dfJJ+mtShowzcJEZDMBh8HR/J/cNC7I5hK0nyKxs0CdKfP/l
-        nvUnuViQ2pMejaRJYMLZedVuUjMC3sQ=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-633-oUJUkYOtM1Cq4MICfSVV-A-1; Thu, 01 Sep 2022 04:56:15 -0400
-X-MC-Unique: oUJUkYOtM1Cq4MICfSVV-A-1
-Received: by mail-qk1-f200.google.com with SMTP id br15-20020a05620a460f00b006bc58c26501so13699323qkb.0
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 01:56:15 -0700 (PDT)
+        with ESMTP id S234244AbiIAI6z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 04:58:55 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE270130A1B
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 01:58:25 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id i27-20020a056e021d1b00b002eb5eb4d200so5525485ila.21
+        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 01:58:25 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=Wlt+f7gBjVGkc0zcQ2pNtyBrX9IrrQuzBjMRXWCKVdg=;
-        b=7hTISNakkCCCLKm7nD6H0Z8xXXPELNiCODkaNxQMw9yr4WhYDcwyux+o5SouF7alA0
-         dA5ZajfNfTFmC6wO9tj/hYysaG/eEAF+zzF/fWxVTKSueQiFX40oxtlY8aWs7M5wFXWI
-         tOZH3V82gkZ2MjQsvNMTq9JbKvzitLDqZqQvskBFR6AqwNd4AC5opOMMMO8ejcxYn9b3
-         br6Ufe1lMlC5BAJeP+oVfUBvgUqtu4AeNzJgxMKuPph/9SdjapwDAewiTnXxS+/RM0Wb
-         WQr9BrxoRDKYvYP/LWlCoazlfdEi7btMQKJ5DBvqvWuDzDk6jq6gtJSy8Y/gtdYhfRgO
-         bfNg==
-X-Gm-Message-State: ACgBeo3whpEQxGQkMUvMOf9yS9Nn/YtazkOHu2PsxMipKeqXFmeZqIJ8
-        vjGkmoDt6ZPvSbLMZM2KyZT7+YwEOf/6hlpYgrOvsumUkqOI/Bntt80sCjUUliv9g1D9XtoDKYC
-        svNvocJr02YI/xFMEyqDXxiAIT5w2Aquz
-X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id cp4-20020a05622a420400b00344e16ce597mr22689197qtb.592.1662022574905;
-        Thu, 01 Sep 2022 01:56:14 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR5u2YDUEtCaIjrrUX8nL8zujU37Phr2hYBocVlhEmZWrU4E4NS/pqAa1UdI+qmflN4UtxuwF42IFeJEHEE3Luc=
-X-Received: by 2002:a05:622a:4204:b0:344:e16c:e597 with SMTP id
- cp4-20020a05622a420400b00344e16ce597mr22689189qtb.592.1662022574715; Thu, 01
- Sep 2022 01:56:14 -0700 (PDT)
+        h=to:from:subject:message-id:date:mime-version:x-gm-message-state
+         :from:to:cc:subject:date;
+        bh=OWc08Czh542+n2j7Jr99E99uAYpH5Cu42kPDNtF9Coo=;
+        b=TSZH0ON8ROtqOInG2yaEmv1ujod00lnFpUzYfTc1ZqS6PRdFOA87ihVYp+shjV1xzh
+         zs6r0lfSBJ3N7RbjAbVM7d17aMEYbcbGFxgHUJc2uvQG+xVZfqc2adbimqhANzaUBFzD
+         z7fxZSPuO1hAu/LCgSMFNsl4obTOXMsGOPnFfdDtrrqM9FZ40tywPFLsDTMYKWu2gADm
+         V2aT2fMltGnItH+6VMuk2UCp4Ody7515f7UL5VONV/1O6HTw+FgZXcXA2lzmJTbVbOWy
+         MpfRyH7AlhOlfT7WnpJNMzMGdMptTzxcVfrObTaCZwRlu2PI9aeJ4bkJyAW2RO64ILTn
+         QkJw==
+X-Gm-Message-State: ACgBeo2paZud6dykoYg1dGUXZiMqyEuC3JnNWpSGcw+djzspUX9/Y0xx
+        DZEnqYwL2lgEC/ZCJehaOUYSqo/oJRaGCuTGoQCEUVG59MMT
+X-Google-Smtp-Source: AA6agR4Qaz3Rzpj8GH4d6W/7aDjLYxNQ7esTtqevTh9xSsx0uWhx3rAtJTM3t1pKLBonmIM4tJO2G1DhrlaeNObzw0zP1ez2APrs
 MIME-Version: 1.0
-References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn> <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-In-Reply-To: <20220901055434.824-2-qtxuning1999@sjtu.edu.cn>
-From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Thu, 1 Sep 2022 10:55:38 +0200
-Message-ID: <CAJaqyWchvGKvtjFg_YkioGYtxSp6MmNVdhPvyRLHuz1aWrtgGA@mail.gmail.com>
-Subject: Re: [RFC v3 1/7] vhost: expose used buffers
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Michael Tsirkin <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kvm list <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>
+X-Received: by 2002:a05:6602:1614:b0:689:d670:be5b with SMTP id
+ x20-20020a056602161400b00689d670be5bmr14058432iow.126.1662022705305; Thu, 01
+ Sep 2022 01:58:25 -0700 (PDT)
+Date:   Thu, 01 Sep 2022 01:58:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f5622905e799d02f@google.com>
+Subject: [syzbot] WARNING: ODEBUG bug in hci_dev_close_sync (2)
+From:   syzbot <syzbot+e6fb0b74cd2dab0c42ec@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, edumazet@google.com, johan.hedberg@gmail.com,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
+        marcel@holtmann.org, netdev@vger.kernel.org, pabeni@redhat.com,
+        syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,76 +56,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 7:55 AM Guo Zhi <qtxuning1999@sjtu.edu.cn> wrote:
->
-> Follow VIRTIO 1.1 spec, only writing out a single used ring for a batch
-> of descriptors.
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->  drivers/vhost/vhost.c | 16 +++++++++++++---
->  1 file changed, 13 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 40097826cff0..26862c8bf751 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -2376,10 +2376,20 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->         vring_used_elem_t __user *used;
->         u16 old, new;
->         int start;
-> +       int copy_n = count;
->
-> +       /**
-> +        * If in order feature negotiated, devices can notify the use of a batch of buffers to
-> +        * the driver by only writing out a single used ring entry with the id corresponding
-> +        * to the head entry of the descriptor chain describing the last buffer in the batch.
-> +        */
-> +       if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-> +               copy_n = 1;
-> +               heads = &heads[count - 1];
-> +       }
->         start = vq->last_used_idx & (vq->num - 1);
->         used = vq->used->ring + start;
-> -       if (vhost_put_used(vq, heads, start, count)) {
-> +       if (vhost_put_used(vq, heads, start, copy_n)) {
->                 vq_err(vq, "Failed to write used");
->                 return -EFAULT;
->         }
-> @@ -2388,7 +2398,7 @@ static int __vhost_add_used_n(struct vhost_virtqueue *vq,
->                 smp_wmb();
->                 /* Log used ring entry write. */
->                 log_used(vq, ((void __user *)used - (void __user *)vq->used),
-> -                        count * sizeof *used);
-> +                        copy_n * sizeof(*used));
+Hello,
 
-log_used reports to the VMM the modified memory by the device. It
-iterates over used descriptors translating them to do so.
+syzbot found the following issue on:
 
-We need to either report here all the descriptors or to modify
-log_used so it reports all the batch with in_order feature. The latter
-has an extra advantage: no need to report these non-existent writes to
-the used ring of the skipped buffers. Although it probably does not
-make a difference in performance.
+HEAD commit:    e022620b5d05 Merge tag 'arm64-fixes' of git://git.kernel.o..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13841183080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=312be25752c7fe30
+dashboard link: https://syzkaller.appspot.com/bug?extid=e6fb0b74cd2dab0c42ec
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
 
-With the current code, we could iterate the heads[] array too, calling
-. However, I think it would be a waste. More on that later.
+Unfortunately, I don't have any reproducer for this issue yet.
 
-Thanks!
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+e6fb0b74cd2dab0c42ec@syzkaller.appspotmail.com
 
->         }
->         old = vq->last_used_idx;
->         new = (vq->last_used_idx += count);
-> @@ -2410,7 +2420,7 @@ int vhost_add_used_n(struct vhost_virtqueue *vq, struct vring_used_elem *heads,
->
->         start = vq->last_used_idx & (vq->num - 1);
->         n = vq->num - start;
-> -       if (n < count) {
-> +       if (n < count && !vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
->                 r = __vhost_add_used_n(vq, heads, n);
->                 if (r < 0)
->                         return r;
-> --
-> 2.17.1
->
+Bluetooth: hci1: hardware error 0x00
+------------[ cut here ]------------
+ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+WARNING: CPU: 2 PID: 3720 at lib/debugobjects.c:502 debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Modules linked in:
+CPU: 2 PID: 3720 Comm: kworker/u19:8 Not tainted 6.0.0-rc2-syzkaller-00248-ge022620b5d05 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+Workqueue: hci1 hci_error_reset
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:502
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 60 f3 48 8a 4c 89 ee 48 c7 c7 00 e7 48 8a e8 9f 21 39 05 <0f> 0b 83 05 35 43 dd 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc900030af920 EFLAGS: 00010086
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+RDX: ffff8880767d6200 RSI: ffffffff81611ee8 RDI: fffff52000615f16
+RBP: 0000000000000001 R08: 0000000000000005 R09: 0000000000000000
+R10: 0000000080000000 R11: 0000000000000000 R12: ffffffff89eeec60
+R13: ffffffff8a48edc0 R14: ffffffff816a50a0 R15: 1ffff92000615f2f
+FS:  0000000000000000(0000) GS:ffff88802ca00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020170000 CR3: 0000000049298000 CR4: 0000000000152ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ debug_object_assert_init lib/debugobjects.c:892 [inline]
+ debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:863
+ debug_timer_assert_init kernel/time/timer.c:792 [inline]
+ debug_assert_init kernel/time/timer.c:837 [inline]
+ del_timer+0x6d/0x110 kernel/time/timer.c:1257
+ try_to_grab_pending+0x6d/0xd0 kernel/workqueue.c:1275
+ __cancel_work_timer+0xa6/0x570 kernel/workqueue.c:3121
+ hci_dev_close_sync+0xc37/0x1130 net/bluetooth/hci_sync.c:4452
+ hci_dev_do_close+0x2d/0x70 net/bluetooth/hci_core.c:554
+ hci_error_reset+0x96/0x130 net/bluetooth/hci_core.c:1050
+ process_one_work+0x991/0x1610 kernel/workqueue.c:2289
+ worker_thread+0x665/0x1080 kernel/workqueue.c:2436
+ kthread+0x2e4/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
 
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
