@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E81605A9D57
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:44:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 832185A9D59
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235104AbiIAQoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 12:44:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48246 "EHLO
+        id S232552AbiIAQoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 12:44:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235090AbiIAQoB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:44:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F2A97B31;
-        Thu,  1 Sep 2022 09:43:58 -0700 (PDT)
+        with ESMTP id S235088AbiIAQoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:44:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805CA979D2;
+        Thu,  1 Sep 2022 09:44:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A816A61FAF;
-        Thu,  1 Sep 2022 16:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D17C433C1;
-        Thu,  1 Sep 2022 16:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 351AEB82897;
+        Thu,  1 Sep 2022 16:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89C06C433C1;
+        Thu,  1 Sep 2022 16:44:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662050637;
-        bh=F0UE1zbi5RFx3ubQb7yZX3C9AdizxwoKe/hy0ZvG3s8=;
+        s=k20201202; t=1662050641;
+        bh=nTRyDE/tlcu26oOgF+fqvvQmycX3GsZj+AE7SDb4RYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fwhZlNEiMK8VwEQS2Yxx49WngT3q70uy5arMIgGZIKcHsqP/pYFB+VJ8qA0YPtsog
-         d4XgDJYSyZApPGQcEkd2FFKGGSe6kZPt8ilnvdUQSWxYDRFvnBnqcK9vHbOIZjyq3e
-         9pNB8wpMWaK2XilPNFPMvUrxEmJ3VKxPqcQ4yOpZ9W09WLLzPIw4GX3UQbuQSASrtw
-         kytHTYZLvV65FBTDdXSAOk2dUAQJjARuYjWhHl4HXDXKsXA6g2jVMePW74UQQ1bpK1
-         CxIjlt5pr0KgZytJsQfl9DBAx1t4JyxLlanwK9UfsGKsPb45VhWlx1wfIA8+RfrB3z
-         vKtgbtsCaHfag==
+        b=eIJpstqvLb7TrRdACrbInjFYN7NaMhFWkWZyHT+UFKZ5tLZd4q6Pf6zB8lsAcZgN4
+         nJPHKH25QO267jpjdEO5Q2SUS3BZz1V0hSgkiG/NCYMFHM9/3v1LQmYe/V7/Owi/hJ
+         menl6eKgFwv+INeadU5zaRgTNGepgkbAneoMVC7hbleE8dbIPvC1zuk2kZkddakEpf
+         dQeEbkrO0YRSGWCW1zX06eMGhwxrli7/WIeN0hPpkkKU+QjJ7DoGYG8y4TuAM7ULq6
+         V0rHAjSF9hYR3UUjEiHGuR0adoxV+8eKW1csIl8zOa3dJ73noY3dUqwd75Bl6c+ly/
+         9FFlkYGLP1VgA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
@@ -39,9 +39,9 @@ Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
         fw@strlen.de, netfilter-devel@vger.kernel.org,
         lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
         memxor@gmail.com
-Subject: [PATCH bpf-next 1/4] bpf: Add support for per-parameter trusted args
-Date:   Thu,  1 Sep 2022 18:43:24 +0200
-Message-Id: <e2a8c940243cba50280818dd6310e08a296e84f0.1662050126.git.lorenzo@kernel.org>
+Subject: [PATCH bpf-next 2/4] selftests/bpf: Extend KF_TRUSTED_ARGS test for __ref annotation
+Date:   Thu,  1 Sep 2022 18:43:25 +0200
+Message-Id: <0f0bcb579a7e214c8286830375dae14d64b1af25.1662050126.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1662050126.git.lorenzo@kernel.org>
 References: <cover.1662050126.git.lorenzo@kernel.org>
@@ -59,170 +59,93 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 
-Similar to how we detect mem, size pairs in kfunc, teach verifier to
-treat __ref suffix on argument name to imply that it must be a trusted
-arg when passed to kfunc, similar to the effect of KF_TRUSTED_ARGS flag
-but limited to the specific parameter. This is required to ensure that
-kfunc that operate on some object only work on acquired pointers and not
-normal PTR_TO_BTF_ID with same type which can be obtained by pointer
-walking. Release functions need not specify such suffix on release
-arguments as they are already expected to receive one referenced
-argument.
+Extend the existing test for KF_TRUSTED_ARGS by also checking whether
+the same happens when a __ref suffix is present in argument name of a
+kfunc.
 
 Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- Documentation/bpf/kfuncs.rst | 18 +++++++++++++++++
- kernel/bpf/btf.c             | 39 ++++++++++++++++++++++++------------
- net/bpf/test_run.c           |  9 +++++++--
- 3 files changed, 51 insertions(+), 15 deletions(-)
+ tools/testing/selftests/bpf/verifier/calls.c | 38 +++++++++++++++-----
+ 1 file changed, 30 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/bpf/kfuncs.rst b/Documentation/bpf/kfuncs.rst
-index 781731749e55..a9d77d12fd0c 100644
---- a/Documentation/bpf/kfuncs.rst
-+++ b/Documentation/bpf/kfuncs.rst
-@@ -72,6 +72,24 @@ argument as its size. By default, without __sz annotation, the size of the type
- of the pointer is used. Without __sz annotation, a kfunc cannot accept a void
- pointer.
- 
-+2.2.2 __ref Annotation
-+----------------------
-+
-+This annotation is used to indicate that the argument is trusted, i.e. it will
-+be a pointer from an acquire function (defined later), and its offset will be
-+zero. This annotation has the same effect as the KF_TRUSTED_ARGS kfunc flag but
-+only on the parameter it is applied to. An example is shown below::
-+
-+        void bpf_task_send_signal(struct task_struct *task__ref, int signal)
-+        {
-+        ...
-+        }
-+
-+Here, bpf_task_send_signal will only act on trusted task_struct pointers, and
-+cannot be used on pointers obtained using pointer walking. This ensures that
-+caller always calls this kfunc on a task whose lifetime is guaranteed for the
-+duration of the call.
-+
- .. _BPF_kfunc_nodef:
- 
- 2.3 Using an existing kernel function
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 903719b89238..7e273f949ee8 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -6140,18 +6140,13 @@ static bool __btf_type_is_scalar_struct(struct bpf_verifier_log *log,
- 	return true;
- }
- 
--static bool is_kfunc_arg_mem_size(const struct btf *btf,
--				  const struct btf_param *arg,
--				  const struct bpf_reg_state *reg)
-+static bool btf_param_match_suffix(const struct btf *btf,
-+				   const struct btf_param *arg,
-+				   const char *suffix)
+diff --git a/tools/testing/selftests/bpf/verifier/calls.c b/tools/testing/selftests/bpf/verifier/calls.c
+index 3fb4f69b1962..891fcda50d9d 100644
+--- a/tools/testing/selftests/bpf/verifier/calls.c
++++ b/tools/testing/selftests/bpf/verifier/calls.c
+@@ -219,7 +219,7 @@
+ 	.errstr = "variable ptr_ access var_off=(0x0; 0x7) disallowed",
+ },
  {
--	int len, sfx_len = sizeof("__sz") - 1;
--	const struct btf_type *t;
-+	int len, sfx_len = strlen(suffix);
- 	const char *param_name;
- 
--	t = btf_type_skip_modifiers(btf, arg->type, NULL);
--	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
--		return false;
--
- 	/* In the future, this can be ported to use BTF tagging */
- 	param_name = btf_name_by_offset(btf, arg->name_off);
- 	if (str_is_empty(param_name))
-@@ -6160,10 +6155,26 @@ static bool is_kfunc_arg_mem_size(const struct btf *btf,
- 	if (len < sfx_len)
- 		return false;
- 	param_name += len - sfx_len;
--	if (strncmp(param_name, "__sz", sfx_len))
-+	return !strncmp(param_name, suffix, sfx_len);
-+}
-+
-+static bool is_kfunc_arg_ref(const struct btf *btf,
-+			     const struct btf_param *arg)
+-	"calls: invalid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID",
++	"calls: invalid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID (KF_TRUSTED_ARGS)",
+ 	.insns = {
+ 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
+ 	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
+@@ -227,10 +227,30 @@
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
+ 	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
+ 	BPF_EXIT_INSN(),
+-	BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
+-	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 16),
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
+-	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_6, 16),
++	BPF_MOV64_IMM(BPF_REG_0, 0),
++	BPF_EXIT_INSN(),
++	},
++	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
++	.fixup_kfunc_btf_id = {
++		{ "bpf_kfunc_call_test_acquire", 3 },
++		{ "bpf_kfunc_call_test_trusted", 7 },
++	},
++	.result_unpriv = REJECT,
++	.result = REJECT,
++	.errstr = "R1 must be referenced",
++},
 +{
-+	return btf_param_match_suffix(btf, arg, "__ref");
-+}
-+
-+static bool is_kfunc_arg_mem_size(const struct btf *btf,
-+				  const struct btf_param *arg,
-+				  const struct bpf_reg_state *reg)
-+{
-+	const struct btf_type *t;
-+
-+	t = btf_type_skip_modifiers(btf, arg->type, NULL);
-+	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
- 		return false;
- 
--	return true;
-+	return btf_param_match_suffix(btf, arg, "__sz");
- }
- 
- static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-@@ -6173,7 +6184,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 				    u32 kfunc_flags)
- {
- 	enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
--	bool rel = false, kptr_get = false, trusted_arg = false;
-+	bool rel = false, kptr_get = false, kf_trusted_args = false;
- 	bool sleepable = false;
- 	struct bpf_verifier_log *log = &env->log;
- 	u32 i, nargs, ref_id, ref_obj_id = 0;
-@@ -6211,7 +6222,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 		/* Only kfunc can be release func */
- 		rel = kfunc_flags & KF_RELEASE;
- 		kptr_get = kfunc_flags & KF_KPTR_GET;
--		trusted_arg = kfunc_flags & KF_TRUSTED_ARGS;
-+		kf_trusted_args = kfunc_flags & KF_TRUSTED_ARGS;
- 		sleepable = kfunc_flags & KF_SLEEPABLE;
- 	}
- 
-@@ -6222,6 +6233,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 		enum bpf_arg_type arg_type = ARG_DONTCARE;
- 		u32 regno = i + 1;
- 		struct bpf_reg_state *reg = &regs[regno];
-+		bool trusted_arg = false;
- 
- 		t = btf_type_skip_modifiers(btf, args[i].type, NULL);
- 		if (btf_type_is_scalar(t)) {
-@@ -6240,6 +6252,7 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
- 		/* Check if argument must be a referenced pointer, args + i has
- 		 * been verified to be a pointer (after skipping modifiers).
- 		 */
-+		trusted_arg = kf_trusted_args || is_kfunc_arg_ref(btf, args + i);
- 		if (is_kfunc && trusted_arg && !reg->ref_obj_id) {
- 			bpf_log(log, "R%d must be referenced\n", regno);
- 			return -EINVAL;
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 25d8ecf105aa..b735accf8750 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -691,7 +691,11 @@ noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
- {
- }
- 
--noinline void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p)
-+noinline void bpf_kfunc_call_test_trusted(struct prog_test_ref_kfunc *p)
-+{
-+}
-+
-+noinline void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p__ref)
- {
- }
- 
-@@ -722,7 +726,8 @@ BTF_ID_FLAGS(func, bpf_kfunc_call_test_fail3)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_pass1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail1)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_mem_len_fail2)
--BTF_ID_FLAGS(func, bpf_kfunc_call_test_ref, KF_TRUSTED_ARGS)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test_trusted, KF_TRUSTED_ARGS)
-+BTF_ID_FLAGS(func, bpf_kfunc_call_test_ref)
- BTF_ID_FLAGS(func, bpf_kfunc_call_test_destructive, KF_DESTRUCTIVE)
- BTF_SET8_END(test_sk_check_kfunc_ids)
- 
++	"calls: invalid kfunc call: referenced arg needs refcounted PTR_TO_BTF_ID (__ref)",
++	.insns = {
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_10),
++	BPF_ALU64_IMM(BPF_ADD, BPF_REG_1, -8),
++	BPF_ST_MEM(BPF_DW, BPF_REG_1, 0, 0),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_JMP_IMM(BPF_JNE, BPF_REG_0, 0, 1),
++	BPF_EXIT_INSN(),
++	BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0, 16),
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+@@ -238,8 +258,7 @@
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ 	.fixup_kfunc_btf_id = {
+ 		{ "bpf_kfunc_call_test_acquire", 3 },
+-		{ "bpf_kfunc_call_test_ref", 8 },
+-		{ "bpf_kfunc_call_test_ref", 10 },
++		{ "bpf_kfunc_call_test_ref", 7 },
+ 	},
+ 	.result_unpriv = REJECT,
+ 	.result = REJECT,
+@@ -259,14 +278,17 @@
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
+ 	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
+ 	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
++	BPF_MOV64_REG(BPF_REG_1, BPF_REG_6),
++	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, BPF_PSEUDO_KFUNC_CALL, 0, 0),
+ 	BPF_MOV64_IMM(BPF_REG_0, 0),
+ 	BPF_EXIT_INSN(),
+ 	},
+ 	.prog_type = BPF_PROG_TYPE_SCHED_CLS,
+ 	.fixup_kfunc_btf_id = {
+ 		{ "bpf_kfunc_call_test_acquire", 3 },
+-		{ "bpf_kfunc_call_test_ref", 8 },
+-		{ "bpf_kfunc_call_test_release", 10 },
++		{ "bpf_kfunc_call_test_trusted", 8 },
++		{ "bpf_kfunc_call_test_ref", 10 },
++		{ "bpf_kfunc_call_test_release", 12 },
+ 	},
+ 	.result_unpriv = REJECT,
+ 	.result = ACCEPT,
 -- 
 2.37.2
 
