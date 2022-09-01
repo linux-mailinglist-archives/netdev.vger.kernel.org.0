@@ -2,85 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7C7B5A8B76
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68DF45A8B7F
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:34:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232881AbiIACa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 22:30:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58116 "EHLO
+        id S232842AbiIACbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 22:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232882AbiIACaV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:30:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F01D40E2E
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 19:30:16 -0700 (PDT)
+        with ESMTP id S232244AbiIACa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:30:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83B0A8CDD;
+        Wed, 31 Aug 2022 19:30:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA17161DBD
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:30:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 33B57C433D7;
-        Thu,  1 Sep 2022 02:30:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01A6361DC6;
+        Thu,  1 Sep 2022 02:30:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C15CEC433C1;
+        Thu,  1 Sep 2022 02:30:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661999415;
-        bh=0FtPRRCR+hwPpfevd8Nh6lf1okppwuwDZEbnpsKadQQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=LDb9FPonAKQdNfukekEy5Iaw8Km7fuxXDBF2tUIynFq31TpwrRcLyOV1qp0bUpbuK
-         Wh3IcpajjBDAt0ye0eqpXygMdIJJ8ibw2nAX6W2bj2cOJXp1rZJQWEbLpZd+CCJt8U
-         WHlpIP41Sw1enVK4/gyvTDQf9j7b/BXmTHoTKevdaWo8ZpkhVt1ZW7v+RtVvoHVq/8
-         2ziVlrD1qXgTUXbie8AqqGjYx5QbEqeH1+Qqldnm8vLnxXYbSSJoMNndusxxiaBcRp
-         1BU9jZOoTJREgip7qY0jgs81hmePgHZ+yb/Q0QjL9l8j0fDpRKsxfDAQc5xnCttU5I
-         xOHB9QFUs0vLA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CDE6E924D6;
-        Thu,  1 Sep 2022 02:30:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1661999453;
+        bh=Nek3NqIi8T1Hdq89mzW0JIiWA7Q1H+spSrgOk3jQjiA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=BXpLuh/15cTIuyY1e4u0s3bIKLH1HSqYys1cu7DS7IV+rkbD+UGTxAHQNof9eirRi
+         aElCkDp84ORaX46urniaXcQVV/EH6XeHOB+0WOPx1bVbDOreaUdC5YEjmKwy84YYsl
+         AGY1OCd2nUYz9yX0Udxwov/q7rvdn59iUFttUi8+nVvPc6mbkb6KaXN0RZDUZfasii
+         n3033tis4dkW0HpAC2imos2c2bMUS9Uff1nfqTii5ST7FGre7j5IAF+NPufvjwF1Jy
+         kWLKuyXFHC0qg4oaiSpUsfEmd9PVwz8LR7lRc7BAspkg9tW6UyoZifF+N5YykamnsE
+         tg3FbqNN9T5oA==
+Message-ID: <46edeb7a-da56-e3f2-a823-a025b9386639@kernel.org>
+Date:   Wed, 31 Aug 2022 20:30:52 -0600
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: axienet: Switch to 64-bit RX/TX statistics
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166199941504.15840.7860646767848460996.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Sep 2022 02:30:15 +0000
-References: <20220829233901.3429419-1-robert.hancock@calian.com>
-In-Reply-To: <20220829233901.3429419-1-robert.hancock@calian.com>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        michal.simek@xilinx.com, linux@armlinux.org.uk,
-        netdev@vger.kernel.org
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH net] ip: fix triggering of 'icmp redirect'
+Content-Language: en-US
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Heng Qi <hengqi@linux.alibaba.com>,
+        Edwin Brossette <edwin.brossette@6wind.com>,
+        kernel test robot <lkp@intel.com>, lkp@lists.01.org,
+        stable@vger.kernel.org, kernel test robot <yujie.liu@intel.com>
+References: <20220829100121.3821-1-nicolas.dichtel@6wind.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220829100121.3821-1-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Mon, 29 Aug 2022 17:39:01 -0600 you wrote:
-> The RX and TX byte/packet statistics in this driver could be overflowed
-> relatively quickly on a 32-bit platform. Switch these stats to use the
-> u64_stats infrastructure to avoid this.
+On 8/29/22 4:01 AM, Nicolas Dichtel wrote:
+> __mkroute_input() uses fib_validate_source() to trigger an icmp redirect.
+> My understanding is that fib_validate_source() is used to know if the src
+> address and the gateway address are on the same link. For that,
+> fib_validate_source() returns 1 (same link) or 0 (not the same network).
+> __mkroute_input() is the only user of these positive values, all other
+> callers only look if the returned value is negative.
 > 
-> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+> Since the below patch, fib_validate_source() didn't return anymore 1 when
+> both addresses are on the same network, because the route lookup returns
+> RT_SCOPE_LINK instead of RT_SCOPE_HOST. But this is, in fact, right.
+> Let's adapat the test to return 1 again when both addresses are on the same
+> link.
+> 
+> CC: stable@vger.kernel.org
+> Fixes: 747c14307214 ("ip: fix dflt addr selection for connected nexthop")
+> Reported-by: kernel test robot <yujie.liu@intel.com>
+> Reported-by: Heng Qi <hengqi@linux.alibaba.com>
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 > ---
->  drivers/net/ethernet/xilinx/xilinx_axienet.h  | 12 ++++++
->  .../net/ethernet/xilinx/xilinx_axienet_main.c | 37 +++++++++++++++++--
->  2 files changed, 45 insertions(+), 4 deletions(-)
+> 
+> This code exists since more than two decades:
+> https://git.kernel.org/pub/scm/linux/kernel/git/davem/netdev-vger-cvs.git/commit/?id=0c2c94df8133f
+> 
+> Please, feel free to comment if my analysis seems wrong.
+> 
+> Regards,
+> Nicolas
+> 
+>  net/ipv4/fib_frontend.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/ipv4/fib_frontend.c b/net/ipv4/fib_frontend.c
+> index f361d3d56be2..943edf4ad4db 100644
+> --- a/net/ipv4/fib_frontend.c
+> +++ b/net/ipv4/fib_frontend.c
+> @@ -389,7 +389,7 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+>  	dev_match = dev_match || (res.type == RTN_LOCAL &&
+>  				  dev == net->loopback_dev);
+>  	if (dev_match) {
+> -		ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
+> +		ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_LINK;
+>  		return ret;
+>  	}
+>  	if (no_addr)
+> @@ -401,7 +401,7 @@ static int __fib_validate_source(struct sk_buff *skb, __be32 src, __be32 dst,
+>  	ret = 0;
+>  	if (fib_lookup(net, &fl4, &res, FIB_LOOKUP_IGNORE_LINKSTATE) == 0) {
+>  		if (res.type == RTN_UNICAST)
+> -			ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_HOST;
+> +			ret = FIB_RES_NHC(res)->nhc_scope >= RT_SCOPE_LINK;
+>  	}
+>  	return ret;
+>  
 
-Here is the summary with links:
-  - [net-next] net: axienet: Switch to 64-bit RX/TX statistics
-    https://git.kernel.org/netdev/net-next/c/cb45a8bf4693
+Looks ok to me.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
