@@ -2,143 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB30B5A9762
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9794B5A9772
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 14:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232682AbiIAMug (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 08:50:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        id S233108AbiIAMzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 08:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232804AbiIAMuc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:50:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AA414086
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:50:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662036628;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WVR8ZGAEIG6jlDjc/QlrwfVcZSi0Y+I1JEJbD87FRlM=;
-        b=GWzmbg+WO85QlVaDNczXXRg+bY2F0HHRKt98YYJetLOIYI1hdpvv3BhIzrEyhGK/Nd8MKj
-        RWJ7+1anh0BePk80bJth3fUdZcK9q6b+sg0asbHlOO7vFozAuTv6eBhRulcEzOIi6ne38x
-        h4EZMgLtICxoxzccBQHZe76O3pflxzg=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-630-v_Yd9yg4NEayIZAC0jSfgw-1; Thu, 01 Sep 2022 08:50:27 -0400
-X-MC-Unique: v_Yd9yg4NEayIZAC0jSfgw-1
-Received: by mail-qt1-f199.google.com with SMTP id k9-20020ac80749000000b0034302b53c6cso13635963qth.22
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 05:50:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=WVR8ZGAEIG6jlDjc/QlrwfVcZSi0Y+I1JEJbD87FRlM=;
-        b=y6Az2WnBu6WOI5NwuvKNvjO8BBy4xyrbREU2EvckZ5I9PtcvB4bxAoe4PBAP91qJBM
-         hfgUcgTpuDX1dHseAjVGu10h/RkRlFjzn53HsbpNGhNtKe/g5ItQbJTAEnwzLYwdf+Rq
-         G8UrAEBpdP4SxmB9+Kgv206rQMh/ZJyNG0OOEW9876AItC8uQ7KHY7WgjRNqYnGbB3N4
-         coMMbZLelrDQC2uIh5jFpdimsIZoeRYoXdVwi7rfRqSLHt9CNz7oWQ8Hl3Ef24VxM5jT
-         9fg9B9gNDOWPaJzVJ/n/AO4gosyxIydytCETQuwovwsY5M6jlzZiwMC48/PeksJq3UXY
-         uvpg==
-X-Gm-Message-State: ACgBeo1E8iXUFmidWMmxtqGLRT58e/C2ENE7o343U+fUGub52PRhq2cU
-        MZJbdIwogv0H+v4H9Snm05A4uvvAqXy+T1CcSMA+h991oJTfqmOdEoNCO8tkdG/GLIDBCPUEt4R
-        Ug7VFe1LA6LxhB6we1hbATs67+ayPoVVC
-X-Received: by 2002:a05:622a:1302:b0:344:8a9d:817d with SMTP id v2-20020a05622a130200b003448a9d817dmr23373426qtk.339.1662036627276;
-        Thu, 01 Sep 2022 05:50:27 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6kObCOgs/8rlva+gwEleVWuBVvZa2Nyj96/+b0fIJuQ008mmaRhNAh00YlyzT5ptnDqJFoMc9wUD036tD5Faw=
-X-Received: by 2002:a05:622a:1302:b0:344:8a9d:817d with SMTP id
- v2-20020a05622a130200b003448a9d817dmr23373413qtk.339.1662036627064; Thu, 01
- Sep 2022 05:50:27 -0700 (PDT)
+        with ESMTP id S233059AbiIAMy7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 08:54:59 -0400
+Received: from corp-front07-corp.i.nease.net (corp-front07-corp.i.nease.net [59.111.134.157])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E967D87;
+        Thu,  1 Sep 2022 05:54:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:In-Reply-To:References:MIME-Version:
+        Content-Transfer-Encoding; bh=HO4P1Pj/1v7dm3Or8hk520xvDIfxZ2pa2V
+        2zOmASKbc=; b=Si4FyFaIlZGnQrN1z3PuPiOYa2Q162Bl4jtGs4GoXCvz4FMjmd
+        Mc9pYSYyd5tEwZcSH6zzvLmy8nE8dos+YRCV3lJN5vMnOF5ZMu13qc9URr+KzinK
+        05UeXWUQ0ZeKA6YW/D40ak3oSoypL1RQIDcRlFcHDdMXjH94uwi/xfk34=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front07-corp.i.nease.net (Coremail) with SMTP id nRDICgCX6+eHqxBjAc0VAA--.40399S2;
+        Thu, 01 Sep 2022 20:54:31 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     wenjia@linux.ibm.com, alibuda@linux.alibaba.com
+Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-s390@vger.kernel.org, liuyacan@corp.netease.com,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        tonylu@linux.alibaba.com, ubraun@linux.vnet.ibm.com,
+        wintera@linux.ibm.com
+Subject: Re: [PATCH net v4] net/smc: Fix possible access to freed memory in link clear
+Date:   Thu,  1 Sep 2022 20:54:31 +0800
+Message-Id: <20220901125431.1782967-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <e86caa18-e416-f6ef-3eb3-f25b5c85a19a@linux.ibm.com>
+References: <e86caa18-e416-f6ef-3eb3-f25b5c85a19a@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220830101237.22782-1-gal@nvidia.com> <20220830231330.1c618258@kernel.org>
- <4187e35d-0965-cf65-bff5-e4f71a04d272@nvidia.com> <20220830233124.2770ffc2@kernel.org>
- <20220831112150.36e503bd@kernel.org> <36f09967-b211-ef48-7360-b6dedfda73e3@datenfreihafen.org>
- <20220831140947.7e8d06ee@kernel.org> <YxBTaxMmHKiLjcCo@unreal>
-In-Reply-To: <YxBTaxMmHKiLjcCo@unreal>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 1 Sep 2022 08:50:16 -0400
-Message-ID: <CAK-6q+hdNJymhcuOp9OJVTgiO2MCqa_xUa_MZuQK3toDLMudhw@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: ieee802154: Fix compilation error when
- CONFIG_IEEE802154_NL802154_EXPERIMENTAL is disabled
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Gal Pressman <gal@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: nRDICgCX6+eHqxBjAc0VAA--.40399S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3ArWUKrWkGr4fCw4xWw13twb_yoW3ZrWDpF
+        W8JF47CF48Xr1UXF109F1FvFnxtw12yFykWr97Kas5AF98t3W8JF1Sqryj9FyDAr4qg3WI
+        v348Jw1Skrn8J3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUXab7IF0VCFI7km07C26c804VAKzcIF0wAFF20E14v26r4j6ryU
+        M7CY07I20VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2
+        IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84AC
+        jcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
+        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
+        JwI_Jr4ln4vEF7Iv6F18KVAqrcv_GVWUtr1rJF1ln4vEF7Iv6F18KVAqrcv_XVWUtr1rJF
+        1ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAa7VCY0VAaVVAqrcv_Jw1UWr13M2AIxVAI
+        cxkEcVAq07x20xvEncxIr21l57IF6s8CjcxG0xyl5I8CrVACY4xI64kE6c02F40Ex7xfMc
+        Ij6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_
+        Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I
+        0E8cxan2IY04v7M4kE6xkIj40Ew7xC0wCjxxvEw4Wlc2IjII80xcxEwVAKI48JMxAIw28I
+        cxkI7VAKI48JMxCjnVAK0II2c7xJMxC20s026xCaFVCjc4AY6r1j6r4UMxCIbVAxMI8I3I
+        0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWU
+        tVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcV
+        CY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAF
+        wI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa
+        7sRiE_M7UUUUU==
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAQCVt77zCWdAAWsX
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+> >>> From: Yacan Liu <liuyacan@corp.netease.com>
+> >>>
+> >>> After modifying the QP to the Error state, all RX WR would be completed
+> >>> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
+> >>> wait for it is done, but destroy the QP and free the link group directly.
+> >>> So there is a risk that accessing the freed memory in tasklet context.
+> >>>
+> >>> Here is a crash example:
+> >>>
+> >>>    BUG: unable to handle page fault for address: ffffffff8f220860
+> >>>    #PF: supervisor write access in kernel mode
+> >>>    #PF: error_code(0x0002) - not-present page
+> >>>    PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
+> >>>    Oops: 0002 [#1] SMP PTI
+> >>>    CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
+> >>>    Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
+> >>>    RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
+> >>>    Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
+> >>>    RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
+> >>>    RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
+> >>>    RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
+> >>>    RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
+> >>>    R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
+> >>>    R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
+> >>>    FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
+> >>>    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> >>>    CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
+> >>>    DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> >>>    DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> >>>    Call Trace:
+> >>>     <IRQ>
+> >>>     _raw_spin_lock_irqsave+0x30/0x40
+> >>>     mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
+> >>>     smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
+> >>>     tasklet_action_common.isra.21+0x66/0x100
+> >>>     __do_softirq+0xd5/0x29c
+> >>>     asm_call_irq_on_stack+0x12/0x20
+> >>>     </IRQ>
+> >>>     do_softirq_own_stack+0x37/0x40
+> >>>     irq_exit_rcu+0x9d/0xa0
+> >>>     sysvec_call_function_single+0x34/0x80
+> >>>     asm_sysvec_call_function_single+0x12/0x20
+> >>>
+> >>> Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
+> >>> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
+> >>>
+> >>> ---
+> >>> Chagen in v4:
+> >>>     -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
+> >>>     -- Remove timeout.
+> >>> Change in v3:
+> >>>     -- Tune commit message (Signed-Off tag, Fixes tag).
+> >>>        Tune code to avoid column length exceeding.
+> >>> Change in v2:
+> >>>     -- Fix some compile warnings and errors.
+> >>> ---
+> >>>    net/smc/smc_core.c | 2 ++
+> >>>    net/smc/smc_core.h | 2 ++
+> >>>    net/smc/smc_wr.c   | 9 +++++++++
+> >>>    net/smc/smc_wr.h   | 1 +
+> >>>    4 files changed, 14 insertions(+)
+> >>>
+> >>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+> >>> index ff49a11f5..f92a916e9 100644
+> >>> --- a/net/smc/smc_core.c
+> >>> +++ b/net/smc/smc_core.c
+> >>> @@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+> >>>    	lnk->lgr = lgr;
+> >>>    	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
+> >>>    	lnk->link_idx = link_idx;
+> >>> +	lnk->wr_rx_id_compl = 0;
+> >>>    	smc_ibdev_cnt_inc(lnk);
+> >>>    	smcr_copy_dev_info_to_link(lnk);
+> >>>    	atomic_set(&lnk->conn_cnt, 0);
+> >>> @@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+> >>>    	smcr_buf_unmap_lgr(lnk);
+> >>>    	smcr_rtoken_clear_link(lnk);
+> >>>    	smc_ib_modify_qp_error(lnk);
+> >>> +	smc_wr_drain_cq(lnk);
+> >>>    	smc_wr_free_link(lnk);
+> >>>    	smc_ib_destroy_queue_pair(lnk);
+> >>>    	smc_ib_dealloc_protection_domain(lnk);
+> >>> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+> >>> index fe8b524ad..285f9bd8e 100644
+> >>> --- a/net/smc/smc_core.h
+> >>> +++ b/net/smc/smc_core.h
+> >>> @@ -115,8 +115,10 @@ struct smc_link {
+> >>>    	dma_addr_t		wr_rx_dma_addr;	/* DMA address of wr_rx_bufs */
+> >>>    	dma_addr_t		wr_rx_v2_dma_addr; /* DMA address of v2 rx buf*/
+> >>>    	u64			wr_rx_id;	/* seq # of last recv WR */
+> >>> +	u64			wr_rx_id_compl; /* seq # of last completed WR */
+> >>>    	u32			wr_rx_cnt;	/* number of WR recv buffers */
+> >>>    	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
+> >>> +	wait_queue_head_t       wr_rx_empty_wait; /* wait for RQ empty */
+> >>>    
+> >>>    	struct ib_reg_wr	wr_reg;		/* WR register memory region */
+> >>>    	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
+> >>> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
+> >>> index 26f8f240d..bc8793803 100644
+> >>> --- a/net/smc/smc_wr.c
+> >>> +++ b/net/smc/smc_wr.c
+> >>> @@ -454,6 +454,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
+> >>>    
+> >>>    	for (i = 0; i < num; i++) {
+> >>>    		link = wc[i].qp->qp_context;
+> >>> +		link->wr_rx_id_compl = wc[i].wr_id;
+> >>>    		if (wc[i].status == IB_WC_SUCCESS) {
+> >>>    			link->wr_rx_tstamp = jiffies;
+> >>>    			smc_wr_rx_demultiplex(&wc[i]);
+> >>> @@ -465,6 +466,8 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
+> >>>    			case IB_WC_RNR_RETRY_EXC_ERR:
+> >>>    			case IB_WC_WR_FLUSH_ERR:
+> >>>    				smcr_link_down_cond_sched(link);
+> >>> +				if (link->wr_rx_id_compl == link->wr_rx_id)
+> >>> +					wake_up(&link->wr_rx_empty_wait);
+> >>>    				break;
+> >>>    			default:
+> >>>    				smc_wr_rx_post(link); /* refill WR RX */
+> >>> @@ -631,6 +634,11 @@ static void smc_wr_init_sge(struct smc_link *lnk)
+> >>>    	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
+> >>>    }
+> >>>    
+> >>> +void smc_wr_drain_cq(struct smc_link *lnk)
+> >>> +{
+> >>> +	wait_event(lnk->wr_rx_empty_wait, lnk->wr_rx_id_compl == lnk->wr_rx_id);
+> >>> +}
+> >>> +
+> >>>    void smc_wr_free_link(struct smc_link *lnk)
+> >>>    {
+> >>>    	struct ib_device *ibdev;
+> >>> @@ -889,6 +897,7 @@ int smc_wr_create_link(struct smc_link *lnk)
+> >>>    	atomic_set(&lnk->wr_tx_refcnt, 0);
+> >>>    	init_waitqueue_head(&lnk->wr_reg_wait);
+> >>>    	atomic_set(&lnk->wr_reg_refcnt, 0);
+> >>> +	init_waitqueue_head(&lnk->wr_rx_empty_wait);
+> >>>    	return rc;
+> >>>    
+> >>>    dma_unmap:
+> >>> diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
+> >>> index a54e90a11..5ca5086ae 100644
+> >>> --- a/net/smc/smc_wr.h
+> >>> +++ b/net/smc/smc_wr.h
+> >>> @@ -101,6 +101,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
+> >>>    int smc_wr_create_link(struct smc_link *lnk);
+> >>>    int smc_wr_alloc_link_mem(struct smc_link *lnk);
+> >>>    int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
+> >>> +void smc_wr_drain_cq(struct smc_link *lnk);
+> >>>    void smc_wr_free_link(struct smc_link *lnk);
+> >>>    void smc_wr_free_link_mem(struct smc_link *lnk);
+> >>>    void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
+> >>
+> >> Thank you @Yacan for the effort to improve our code! And Thank you @Tony
+> >> for such valuable suggestions and testing!
+> >> I like the modification of this version. However, this is not a fix
+> >> patch to upstream, since the patches "[PATCH net-next v2 00/10] optimize
+> >> the parallelism of SMC-R connections" are still not applied. My
+> >> sugguestions:
+> >> - Please talk to the author (D. Wythe <alibuda@linux.alibaba.com>) of
+> >> those patches I mentioned above, and ask if he can take your patch as a
+> >> part of the patch serie
+> >> - Fix patches should go to net-next
+> >> - Please send always send your new version separately, rather than as
+> >> reply to your previous version. That makes people confused.
+> > 
+> > @Wenjia, Thanks a lot for your suggestions and guidance !
+> > 
+> > @D. Wythe, Can you include this patch in your series of patches if it is
+> > convenient?
+> > 
+> > Regards,
+> > Yacan
+> > 
+> One point I was confused, fixes should goto net, sorry!
 
-On Thu, Sep 1, 2022 at 2:38 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Wed, Aug 31, 2022 at 02:09:47PM -0700, Jakub Kicinski wrote:
-> > On Wed, 31 Aug 2022 22:59:14 +0200 Stefan Schmidt wrote:
-> > > I was swamped today and I am only now finding time to go through mail.
-> > >
-> > > Given the problem these ifdef are raising I am ok with having these
-> > > commands exposed without them.
-> > >
-> > > Our main reason for having this feature marked as experimental is that
-> > > it does not have much exposure and we fear that some of it needs rewrites.
-> > >
-> > > If that really is going to happen we will simply treat the current
-> > > commands as reserved/burned and come up with other ones if needed. While
-> > > I hope this will not be needed it is a fair plan for mitigating this.
-> >
-> > Thanks for the replies. I keep going back and forth in my head on
-> > what's better - un-hiding or just using NL802154_CMD_SET_WPAN_PHY_NETNS + 1
-> > as the start of validation, since it's okay to break experimental commands.
-> >
-> > Any preference?
->
-> Jakub,
->
-> There is no such thing like experimental UAPI. Once you put something
-> in UAPI headers and/or allowed users to issue calls from userspace
-> to kernel, they can use it. We don't control how users compile their
-> kernels.
->
-> So it is not break "experimental commands", but break commands that
-> maybe shouldn't exist in first place.
->
-> nl802154 code suffers from two basic mistakes:
-> 1. User visible defines are not part of UAPI headers. For example,
-> include/net/nl802154.h should be in include/uapi/net/....
+Well, @D. Wythe, please ignore the above emails, sorry!
 
-yes, but no because then this will end in breaking UAPI because it
-will be exported to uapi headers if we change them?
-For now we say everybody needs to copy the header on their own into
-their user space application if they want to use the API which means
-it fits for the kernel that they copied from.
-
-> 2. Used Kconfig option for pseudo-UAPI header.
->
-> In this specific case, I checked that Fedora didn't enable this
-> CONFIG_IEEE802154_NL802154_EXPERIMENTAL knob, but someone needs
-> to check debian and other distros too.
->
-
-I would remove the CONFIG_IEEE802154_NL802154_EXPERIMENTAL config
-option but don't move the header to "include/uapi/..." which means
-that the whole nl802154 UAPI (and some others UAPIs) are still
-experimental because it's not part of UAPI "directory".
-btw: the whole subsystem is still experimental because f4671a90c418
-("net/ieee802154: remove depends on CONFIG_EXPERIMENTAL") was never
-acked by any maintainer... but indeed has other reasons why it got
-removed.
-
-- Alex
+Regards,
+Yacan
 
