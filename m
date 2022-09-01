@@ -2,98 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4FC5A943C
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1987C5A946D
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:24:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233853AbiIAKW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 06:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
+        id S234014AbiIAKXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 06:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233544AbiIAKWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:22:25 -0400
-Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB53013608B;
-        Thu,  1 Sep 2022 03:22:23 -0700 (PDT)
-Received: by mail-qk1-f181.google.com with SMTP id c9so12823092qkk.6;
-        Thu, 01 Sep 2022 03:22:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=SoW9HnsZJkbcsG3RktqGcPg2MNXcaYIQ7LfyNCFqvLI=;
-        b=oh37PccD3ZAAJpPxxRTvpTpIRD6rGQzkH5jmVx3zLNjdFIXSmITHgAOlCL9Tk2dieS
-         oTVmZaYSpz59mtFdrXl1NKup4+PV7zO70hlgHR8ZQV1criLPIwJ8yhuXAAlW6n3Ka3Ix
-         IFVDN0fageac7kYx+q/t++ci0xRmM7wAfEVhPwOpkz1jP1QiT5VZon+CBXLmim/DHagn
-         ERVuaO7caNHeoEa0zDzXSyOZ+WFz42+Q0kFmbS8tzHcGnIkjfV3OVpsLQOucBdSJf0PJ
-         48KDPsSe11aiPP43GxZJ8+yfjhlW7k/HQh8Ra73w1PPfYFc0N684zwiRj41J9wouuOhS
-         rMGw==
-X-Gm-Message-State: ACgBeo1vcLAQTcizppuyvdAJQ1XoUpQodyTk23EDIBD8pn6+kfX61Y7J
-        m0WQpcE9IKBWeRT2iEQ409qxNmJHs45QVw==
-X-Google-Smtp-Source: AA6agR7zsL1+sbg2g+lOb5Keu8r6RrPlkUVQQQnq7xR1F4nHX63ppkYmaA0StwTzut0kdkaFsOtznQ==
-X-Received: by 2002:a37:a9d8:0:b0:6ba:be20:48e2 with SMTP id s207-20020a37a9d8000000b006babe2048e2mr18330969qke.301.1662027742459;
-        Thu, 01 Sep 2022 03:22:22 -0700 (PDT)
-Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com. [209.85.219.182])
-        by smtp.gmail.com with ESMTPSA id hf11-20020a05622a608b00b00344b807bb95sm9816703qtb.74.2022.09.01.03.22.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
-Received: by mail-yb1-f182.google.com with SMTP id g5so7934662ybg.11;
-        Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
-X-Received: by 2002:a25:415:0:b0:696:814:7c77 with SMTP id 21-20020a250415000000b0069608147c77mr18706967ybe.36.1662027741095;
- Thu, 01 Sep 2022 03:22:21 -0700 (PDT)
+        with ESMTP id S234020AbiIAKXi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:23:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA291360A2
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 03:23:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662027816;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wcELDvI8lz+P8fQWhkWVynVIxW+VnN22dIpeCjTRvjE=;
+        b=KDsIoQL0VpMP111iADP+9PsmRo3Qz3vshsz9Dwpf06Vyjorc19Lw91QawIZaHeLfrG3E6B
+        JcswM0RZwcJBCmTESHeoMZCakL1tqSogk80B0D6ubvNFxZ7gqThSU0Olwj/Z0CDVOGoSH7
+        s/0tx8S5/GdA5kJHdTqK/WfzVnH3nG4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-633-OmJ1robpO4aXG49sZf7weQ-1; Thu, 01 Sep 2022 06:23:33 -0400
+X-MC-Unique: OmJ1robpO4aXG49sZf7weQ-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 203E4805B9A;
+        Thu,  1 Sep 2022 10:23:33 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.72])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 637C8492C3B;
+        Thu,  1 Sep 2022 10:23:32 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <166201964443.3817988.12088441548413332725.stgit@warthog.procyon.org.uk>
+References: <166201964443.3817988.12088441548413332725.stgit@warthog.procyon.org.uk>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org,
+        Jeffrey E Altman <jaltman@auristor.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/6] rxrpc: Miscellaneous fixes
 MIME-Version: 1.0
-References: <20220830164518.1381632-1-biju.das.jz@bp.renesas.com> <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20220830164518.1381632-2-biju.das.jz@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 1 Sep 2022 12:22:10 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdVbgybWfmUOwyDrP7M0Drcr3okfKNEwm1kAoPNfbQEJMA@mail.gmail.com>
-Message-ID: <CAMuHMdVbgybWfmUOwyDrP7M0Drcr3okfKNEwm1kAoPNfbQEJMA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] dt-bindings: can: nxp,sja1000: Document RZ/N1
- power-domains support
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-can@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>,
-        Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4129910.1662027811.1@warthog.procyon.org.uk>
+Date:   Thu, 01 Sep 2022 11:23:31 +0100
+Message-ID: <4129912.1662027811@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 6:45 PM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> Document RZ/N1 power-domains support. Also update the example with
-> power-domains property.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v3:
->  * Documented power-domains support.
+Please don't pull this.  The kernel test robot spotted a bug in it.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+David
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
