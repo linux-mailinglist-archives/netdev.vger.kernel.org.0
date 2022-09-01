@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF4E75A8DC1
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 07:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD0BD5A8DC6
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 07:56:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233227AbiIAFzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 01:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53460 "EHLO
+        id S233183AbiIAF4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 01:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233215AbiIAFzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 01:55:49 -0400
+        with ESMTP id S233233AbiIAF4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 01:56:03 -0400
 Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84D0A5F208;
-        Wed, 31 Aug 2022 22:55:47 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1997A5F992;
+        Wed, 31 Aug 2022 22:56:01 -0700 (PDT)
 Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
-        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id E3C5A1008B396;
-        Thu,  1 Sep 2022 13:55:22 +0800 (CST)
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 72F5D1008B399;
+        Thu,  1 Sep 2022 13:55:36 +0800 (CST)
 Received: from localhost (localhost.localdomain [127.0.0.1])
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id CA7AE200C0822;
-        Thu,  1 Sep 2022 13:55:22 +0800 (CST)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id 3C8542009BEA0;
+        Thu,  1 Sep 2022 13:55:36 +0800 (CST)
 X-Virus-Scanned: amavisd-new at 
 Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
         by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id MMn6qdJgaft3; Thu,  1 Sep 2022 13:55:22 +0800 (CST)
+        with ESMTP id byLToQIaCGBV; Thu,  1 Sep 2022 13:55:36 +0800 (CST)
 Received: from localhost.localdomain (unknown [202.120.40.82])
         (Authenticated sender: qtxuning1999@sjtu.edu.cn)
-        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 755BB200A5BFF;
-        Thu,  1 Sep 2022 13:55:11 +0800 (CST)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 23565200C0822;
+        Thu,  1 Sep 2022 13:55:22 +0800 (CST)
 From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
 To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
         mst@redhat.com
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
         Guo Zhi <qtxuning1999@sjtu.edu.cn>
-Subject: [RFC v3 3/7] vsock: batch buffers in tx
-Date:   Thu,  1 Sep 2022 13:54:30 +0800
-Message-Id: <20220901055434.824-4-qtxuning1999@sjtu.edu.cn>
+Subject: [RFC v3 4/7] vsock: announce VIRTIO_F_IN_ORDER in vsock
+Date:   Thu,  1 Sep 2022 13:54:31 +0800
+Message-Id: <20220901055434.824-5-qtxuning1999@sjtu.edu.cn>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
 References: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
@@ -49,48 +49,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vsock uses buffers in order, and for tx driver doesn't have to
-know the length of the buffer. So we can do a batch for vsock if
-in order negotiated, only write one used ring for a batch of buffers
+In order feature is used by vsock now, since vsock already use buffer in
+order.
 
 Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
 ---
- drivers/vhost/vsock.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/vhost/vsock.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 368330417bde..e08fbbb5439e 100644
+index e08fbbb5439e..fcf649cbfb02 100644
 --- a/drivers/vhost/vsock.c
 +++ b/drivers/vhost/vsock.c
-@@ -497,7 +497,7 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
- 	struct vhost_vsock *vsock = container_of(vq->dev, struct vhost_vsock,
- 						 dev);
- 	struct virtio_vsock_pkt *pkt;
--	int head, pkts = 0, total_len = 0;
-+	int head, pkts = 0, total_len = 0, add = 0;
- 	unsigned int out, in;
- 	bool added = false;
+@@ -32,6 +32,7 @@
+ enum {
+ 	VHOST_VSOCK_FEATURES = VHOST_FEATURES |
+ 			       (1ULL << VIRTIO_F_ACCESS_PLATFORM) |
++			       (1ULL << VIRTIO_F_IN_ORDER) |
+ 			       (1ULL << VIRTIO_VSOCK_F_SEQPACKET)
+ };
  
-@@ -551,10 +551,18 @@ static void vhost_vsock_handle_tx_kick(struct vhost_work *work)
- 		else
- 			virtio_transport_free_pkt(pkt);
- 
--		vhost_add_used(vq, head, 0);
-+		if (!vhost_has_feature(vq, VIRTIO_F_IN_ORDER)) {
-+			vhost_add_used(vq, head, 0);
-+		} else {
-+			vq->heads[add].id = head;
-+			vq->heads[add++].len = 0;
-+		}
- 		added = true;
- 	} while(likely(!vhost_exceeds_weight(vq, ++pkts, total_len)));
- 
-+	/* If in order feature negotiaged, we can do a batch to increase performance */
-+	if (vhost_has_feature(vq, VIRTIO_F_IN_ORDER) && added)
-+		vhost_add_used_n(vq, vq->heads, add);
- no_more_replies:
- 	if (added)
- 		vhost_signal(&vsock->dev, vq);
 -- 
 2.17.1
 
