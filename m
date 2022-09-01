@@ -2,265 +2,295 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BBE65A8B44
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:14:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7F105A8B49
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 04:14:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232800AbiIACLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 22:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59766 "EHLO
+        id S232789AbiIACLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 22:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232661AbiIACLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:11:17 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2087.outbound.protection.outlook.com [40.107.244.87])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09E8DEC4CE
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 19:11:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NPF/pzs4dvvKft6n7GizK7ma/1ED+mfjKZkH8LHzrfj/73XjQeFmqKxsiDYFG6RCR3DvKVbmFbkB/KtOne9ADNY3tOjhGzVrlC7qRY0VnM7ZxkUPxASd7ygJ0JUjXLe6UoNgzpAxc0ZEJM3invKK6P2VweW5VuMH5r3nb070wm1gfrnJcS4BBKBOtP3Ng10BSAdK/hZsno6RbOTdUgL/vx0wh7IRNVC+zQeYC7e3PHV3QIIfwkWLk57DrblbZuXPxny9r1OJ9uYPgMCPu1znbGA6G0TlEcBeVNFOyVploQvf+WwauNAAXcxbDJZvjMtF2basJh6WDB+DlyjkrgK2+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8sicBn7HVP0Zl6I4m/kz0gvdn6LMvuSNWXq2SKIs2qI=;
- b=ZQRQ+s5WchtkBfKP0mOkGVrPMJS95zozeakQapOpEiV74P+kCLlxcYakBTBdk73BUTmwNJx8cezoYP1s1lJ2aDPjKPQrpPH/l0mXRqw9zkA950dpUAbYvGFyoz+7yrwntgzC7yQT0QgLsnglDzrj0WgPpHSusl3IUBcGQQcwP3+kIFQqO2WiLp2kdStQxw1yGhN8Wf+brWxlsz0dwJbkF37RlWH512WCCs56H84qApK5g++Kl1+utxNwTjTjx1kCbsfESFzH1C1RVXlcnfsV8CEkmXoyn7SURpxRabxEOywWvUexva6B/g89OLUxj64NgV9B8BgnZcz5ZzA1LtxcgA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=lists.linux-foundation.org
- smtp.mailfrom=nvidia.com; dmarc=pass (p=reject sp=reject pct=100) action=none
- header.from=nvidia.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8sicBn7HVP0Zl6I4m/kz0gvdn6LMvuSNWXq2SKIs2qI=;
- b=uSFChjTR3i8xLJXlB+fjngETA3Wt1Q5MYDHsekEeuqhcZU0swddLKummpWSbwVLR3GvjNZquy/eMvleXjgY4xvCCEeaK07i7yLUyfQjt3YBspyhdDJYl2egzzcMs7vriTR+iA4GBGRv3uCmVYUrDiSurOKSMdgRWvZ669krZ14ejX2kEYwhgZ6RQVF+J04eHjeCu2XW+jVT+uke0/Ai+NwBfXutaCnASHwms0jvqHAqJzV+RiNOpsXknWKX9nv8X9/w0pV1Qyy2joKGJJz9Q2NUL57xgtR6Jq3/ngpPzPB6O4EHCxjD3QUh7cIiBBtm/wsAhsMhsDla3Ur+9Of7OcA==
-Received: from MW4PR02CA0003.namprd02.prod.outlook.com (2603:10b6:303:16d::30)
- by CH2PR12MB4230.namprd12.prod.outlook.com (2603:10b6:610:aa::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 1 Sep
- 2022 02:11:13 +0000
-Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:16d:cafe::d8) by MW4PR02CA0003.outlook.office365.com
- (2603:10b6:303:16d::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
- Transport; Thu, 1 Sep 2022 02:11:13 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 02:11:12 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Thu, 1 Sep
- 2022 02:11:08 +0000
-Received: from nvidia.com (10.126.231.35) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Wed, 31 Aug
- 2022 19:11:03 -0700
-From:   Gavin Li <gavinl@nvidia.com>
-To:     <stephen@networkplumber.org>, <davem@davemloft.net>,
-        <jesse.brandeburg@intel.com>, <alexander.h.duyck@intel.com>,
-        <kuba@kernel.org>, <sridhar.samudrala@intel.com>,
-        <jasowang@redhat.com>, <loseweigh@gmail.com>,
-        <netdev@vger.kernel.org>,
-        <virtualization@lists.linux-foundation.org>,
-        <virtio-dev@lists.oasis-open.org>, <mst@redhat.com>
-CC:     <gavi@nvidia.com>, <parav@nvidia.com>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>
-Subject: [PATCH v5 2/2] virtio-net: use mtu size as buffer length for big packets
-Date:   Thu, 1 Sep 2022 05:10:38 +0300
-Message-ID: <20220901021038.84751-3-gavinl@nvidia.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220901021038.84751-1-gavinl@nvidia.com>
-References: <20220901021038.84751-1-gavinl@nvidia.com>
+        with ESMTP id S229499AbiIACLu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:11:50 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC1011B600;
+        Wed, 31 Aug 2022 19:11:44 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id n125so16395364vsc.5;
+        Wed, 31 Aug 2022 19:11:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date;
+        bh=KroYBn34K+6IPJtG48KqQB05BBIR6Vj7x5xtnCrg9Fg=;
+        b=gnvjcA9DHc9pt4Z0/Ob0C1C0SIcolbiussATC3LO8sqnoXYHemdh4iMd31d3Iy7Okv
+         woacFuZluiomXIRm6Hk/J04VrgIdt82/MfVG3/5ybyiNYSbHfg8V93dPSLIcHsiyGIv8
+         LQDS87Zp9NHj/qeow6WXotXauwQlAMGzQujKfzPwfgTkeo+5i8d2PDBluNbnz0J2Oe/E
+         NKsuoMCHj9zjIiP9GTU+Jm0cPescpz6jIR69nXB5kD9DQLijmQFTFuUO7RCooS/VliVg
+         BIRYOm6VHXfIaGg9Cy9erA5SwnpGJYN3zsa042UB0St4rtLaHjU7OwSlUqpHDknYnB2e
+         DS0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=KroYBn34K+6IPJtG48KqQB05BBIR6Vj7x5xtnCrg9Fg=;
+        b=OxDsc83F+f0eXsM0cq7vE6nw7rDl+DX2JNxwyIcdUB6bnyJaYbHEQB6thZRVM9VCpg
+         +0e2LCA/Aup7hCeQHPTjqEp869Vq1fE2hHFSMse6GrfDeZ8Ur1GJgw6v0qUaMGI8eI7H
+         DGw8WbP44gYe5smkRxYqpFyDvz9En3W4eiAUtHQDUwOtzG6pNrBC9EWaMm/27iqxPx8r
+         dt0Zz2A5bHa/BbVSaN6fY5nrpLCCVU3q8Hlt3x3RBonNKUrbY0ytkm10IPvrndWPnGoU
+         TIegPaA02FfEnGyIh4Zj4a2h/lVnrAmbZqfAOkEoTHOz1j1576MVw6741FOZbxJhYFri
+         fbzQ==
+X-Gm-Message-State: ACgBeo2UEQtxv0YT1jfKpijBSEtr6gVllfyQ4QWMCuCvOZ2W8r3LUbEF
+        l4lzefLZ4qbW2RzX0iABdU7VSKm1PEerbEWkCq4lkvlIdkwTl8ti
+X-Google-Smtp-Source: AA6agR7fYwlvcv87NG8oEAGqYd1R7EKZ3yRI/H1W1IFd2oowQGu+fVTNbwv8utKENrM/0o7Cj7ggNQNaTbzC4KkKDwk=
+X-Received: by 2002:a67:e207:0:b0:390:f3f6:a2fc with SMTP id
+ g7-20020a67e207000000b00390f3f6a2fcmr4562818vsa.42.1661998303578; Wed, 31 Aug
+ 2022 19:11:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.126.231.35]
-X-ClientProxiedBy: rnnvmail202.nvidia.com (10.129.68.7) To
- rnnvmail201.nvidia.com (10.129.68.8)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5d3c1690-a485-4164-27b5-08da8bbf3e81
-X-MS-TrafficTypeDiagnostic: CH2PR12MB4230:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 79GIS1xqV2o5U06+T5ioXrkY5Rq6r/uA0QgMldqTuPv/sDOCaETvI+aYtLZ8UGYvcgTMzkY2bfpem15VS+MvVx0BhmY9+Oj2CPmd8zoQxf/wBvzBgz8yFiBJiyD1ygNJv2H0jYvhGyYUtaGi8K/cmDcAMhTEasM63FbypWTGVPY+fmSISbGECNIzlS97I65H8XsKQl0Y3/VuwPuF6THLJs+KtPqrragRONFY0+/bgg6UYSfFUDYQyeIKtau3V9miAVvphTZyfgoN0DL+f0+EwZiBmdhL0j1pVudemTL9ZmI5E7E/7xosrxr1zHKNu68mpqQiQDKJ5teX+fgfRdAZjHutk5t8CfGLi3wAv8kQ8YD8ZqeyVrNDb8ycvsgnpE63FLjlLc+ngnvXFeLz2ccSEQLgNx9pArZibrnkwjB/NkR/D1cy8IIi8PBNLrM52YlTgkUJfZAHN+mARPGK1SEmlB1LHzj58oItrQtbydeXsSB8FDjmUbXK9XTsWHNo+Lx9oKe80BrEhtMu/hOpiDeVIPuxjlfUHViWY7LXlQXBlPTUiaw7wgxFusLAvTVOnuSMCVzFbiEeSaNgX0ZUrQp1mMybUbMbQMf2tPE7hXGIOQdRN372X403S1Da7H9cBVBw42QjUIXw3gRDZXMUjxtftLJtw/XKN1n0wsha71ThNToDfx6G1yK9Nxsw2qLXUlz6MneEEvcXiXnr+Fad+y3Jd7oeMITCvwnyr7todN+5/3O9qKK9Bo8B+u2mI33Lrz/3CaqZufFVVFSaylMyYp/LRoBYHmr5sR/Wkw2WeVQYn6FLVH+POUGjFGmDngVUcxbf
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(376002)(39860400002)(136003)(396003)(346002)(36840700001)(40470700004)(46966006)(110136005)(8676002)(316002)(54906003)(4326008)(70586007)(70206006)(86362001)(7416002)(36756003)(478600001)(5660300002)(8936002)(921005)(356005)(81166007)(41300700001)(82310400005)(2616005)(7696005)(6286002)(2906002)(426003)(6666004)(26005)(82740400003)(36860700001)(83380400001)(16526019)(40460700003)(336012)(55016003)(40480700001)(47076005)(186003)(1076003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 02:11:12.8918
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d3c1690-a485-4164-27b5-08da8bbf3e81
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4230
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <CAB7eexLO88g6ZQzyoDHhE_bW8FAYvS+-U31rOQXo3Ldrtphggw@mail.gmail.com>
+In-Reply-To: <CAB7eexLO88g6ZQzyoDHhE_bW8FAYvS+-U31rOQXo3Ldrtphggw@mail.gmail.com>
+From:   Rondreis <linhaoguo86@gmail.com>
+Date:   Thu, 1 Sep 2022 10:11:32 +0800
+Message-ID: <CAB7eexKDC9ozBc5Nf5xqvLdyGznRP=Q9ZbFtNBo0EKZ-B7o4CQ@mail.gmail.com>
+Subject: Re: KASAN: use-after-free Read in free_netdev
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently add_recvbuf_big() allocates MAX_SKB_FRAGS segments for big
-packets even when GUEST_* offloads are not present on the device.
-However, if guest GSO is not supported, it would be sufficient to
-allocate segments to cover just up the MTU size and no further.
-Allocating the maximum amount of segments results in a large waste of
-buffer space in the queue, which limits the number of packets that can
-be buffered and can result in reduced performance.
+sorry forget to sent to LKML earlier
 
-Therefore, if guest GSO is not supported, use the MTU to calculate the
-optimal amount of segments required.
-
-When guest offload is enabled at runtime, RQ already has packets of bytes
-less than 64K. So when packet of 64KB arrives, all the packets of such
-size will be dropped. and RQ is now not usable.
-
-So this means that during set_guest_offloads() phase, RQs have to be
-destroyed and recreated, which requires almost driver reload.
-
-If VIRTIO_NET_F_CTRL_GUEST_OFFLOADS has been negotiated, then it should
-always treat them as GSO enabled.
-
-Accordingly, for now the assumption is that if guest GSO has been
-negotiated then it has been enabled, even if it's actually been disabled
-at runtime through VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-
-Below is the iperf TCP test results over a Mellanox NIC, using vDPA for
-1 VQ, queue size 1024, before and after the change, with the iperf
-server running over the virtio-net interface.
-
-MTU(Bytes)/Bandwidth (Gbit/s)
-             Before   After
-  1500        22.5     22.4
-  9000        12.8     25.9
-
-Signed-off-by: Gavin Li <gavinl@nvidia.com>
-Reviewed-by: Gavi Teitz <gavi@nvidia.com>
-Reviewed-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
----
-changelog:
-v4->v5
-- Addressed comments from Michael S. Tsirkin
-- Improve commit message
-v3->v4
-- Addressed comments from Si-Wei
-- Rename big_packets_sg_num with big_packets_num_skbfrags
-v2->v3
-- Addressed comments from Si-Wei
-- Simplify the condition check to enable the optimization
-v1->v2
-- Addressed comments from Jason, Michael, Si-Wei.
-- Remove the flag of guest GSO support, set sg_num for big packets and
-  use it directly
-- Recalculate sg_num for big packets in virtnet_set_guest_offloads
-- Replace the round up algorithm with DIV_ROUND_UP
----
- drivers/net/virtio_net.c | 37 ++++++++++++++++++++++++-------------
- 1 file changed, 24 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index f831a0290998..dbffd5f56fb8 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -225,6 +225,9 @@ struct virtnet_info {
- 	/* I like... big packets and I cannot lie! */
- 	bool big_packets;
- 
-+	/* number of sg entries allocated for big packets */
-+	unsigned int big_packets_num_skbfrags;
-+
- 	/* Host will merge rx buffers for big packets (shake it! shake it!) */
- 	bool mergeable_rx_bufs;
- 
-@@ -1331,10 +1334,10 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
- 	char *p;
- 	int i, err, offset;
- 
--	sg_init_table(rq->sg, MAX_SKB_FRAGS + 2);
-+	sg_init_table(rq->sg, vi->big_packets_num_skbfrags + 2);
- 
--	/* page in rq->sg[MAX_SKB_FRAGS + 1] is list tail */
--	for (i = MAX_SKB_FRAGS + 1; i > 1; --i) {
-+	/* page in rq->sg[vi->big_packets_num_skbfrags + 1] is list tail */
-+	for (i = vi->big_packets_num_skbfrags + 1; i > 1; --i) {
- 		first = get_a_page(rq, gfp);
- 		if (!first) {
- 			if (list)
-@@ -1365,7 +1368,7 @@ static int add_recvbuf_big(struct virtnet_info *vi, struct receive_queue *rq,
- 
- 	/* chain first in list head */
- 	first->private = (unsigned long)list;
--	err = virtqueue_add_inbuf(rq->vq, rq->sg, MAX_SKB_FRAGS + 2,
-+	err = virtqueue_add_inbuf(rq->vq, rq->sg, vi->big_packets_num_skbfrags + 2,
- 				  first, gfp);
- 	if (err < 0)
- 		give_pages(rq, first);
-@@ -3690,13 +3693,27 @@ static bool virtnet_check_guest_gso(const struct virtnet_info *vi)
- 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO);
- }
- 
-+static void virtnet_set_big_packets_fields(struct virtnet_info *vi, const int mtu)
-+{
-+	bool guest_gso = virtnet_check_guest_gso(vi);
-+
-+	/* If device can receive ANY guest GSO packets, regardless of mtu,
-+	 * allocate packets of maximum size, otherwise limit it to only
-+	 * mtu size worth only.
-+	 */
-+	if (mtu > ETH_DATA_LEN || guest_gso) {
-+		vi->big_packets = true;
-+		vi->big_packets_num_skbfrags = guest_gso ? MAX_SKB_FRAGS : DIV_ROUND_UP(mtu, PAGE_SIZE);
-+	}
-+}
-+
- static int virtnet_probe(struct virtio_device *vdev)
- {
- 	int i, err = -ENOMEM;
- 	struct net_device *dev;
- 	struct virtnet_info *vi;
- 	u16 max_queue_pairs;
--	int mtu;
-+	int mtu = 0;
- 
- 	/* Find if host supports multiqueue/rss virtio_net device */
- 	max_queue_pairs = 1;
-@@ -3784,10 +3801,6 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	INIT_WORK(&vi->config_work, virtnet_config_changed_work);
- 	spin_lock_init(&vi->refill_lock);
- 
--	/* If we can receive ANY GSO packets, we must allocate large ones. */
--	if (virtnet_check_guest_gso(vi))
--		vi->big_packets = true;
--
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
- 		vi->mergeable_rx_bufs = true;
- 
-@@ -3853,12 +3866,10 @@ static int virtnet_probe(struct virtio_device *vdev)
- 
- 		dev->mtu = mtu;
- 		dev->max_mtu = mtu;
--
--		/* TODO: size buffers correctly in this case. */
--		if (dev->mtu > ETH_DATA_LEN)
--			vi->big_packets = true;
- 	}
- 
-+	virtnet_set_big_packets_fields(vi, mtu);
-+
- 	if (vi->any_header_sg)
- 		dev->needed_headroom = vi->hdr_len;
- 
--- 
-2.31.1
-
+Rondreis <linhaoguo86@gmail.com> =E4=BA=8E2022=E5=B9=B48=E6=9C=8831=E6=97=
+=A5=E5=91=A8=E4=B8=89 16:10=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Hello,
+>
+> When fuzzing the Linux kernel driver v5.18.0, the following crash was tri=
+ggered.
+>
+> HEAD commit: 4b0986a3613c92f4ec1bdc7f60ec66fea135991f
+> git tree: upstream
+>
+> kernel config: https://pastebin.com/h9YFR4Vq
+> C reproducer: https://pastebin.com/fdusnCsb
+> console output: https://pastebin.com/HcL6UmE1
+>
+> Basically, in the c reproducer, we use the gadget module to emulate
+> the process of attaching a usb device (vendor id: 0xbb4, product id:
+> 0xa79, with function: @phonet).
+> To reproduce this crash, we utilize a third-party library to emulate
+> the attaching process: https://github.com/linux-usb-gadgets/libusbgx.
+> Just clone this repository, make install it, and compile the c
+> reproducer with ``` gcc crash.c -lusbgx -lconfig -o crash ``` will do
+> the trick.
+>
+> It would be so appreciate if you have any ideal how to solve this bug.
+>
+> The crash report is as follow:
+>
+> ```
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> BUG: KASAN: use-after-free in free_netdev+0x4d9/0x5a0 net/core/dev.c:1059=
+9
+> Read of size 1 at addr ffff88802a5485c8 by task syz-executor.0/11237
+>
+> CPU: 2 PID: 11237 Comm: syz-executor.0 Not tainted 5.18.0 #2
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.13.0-1ubuntu1.1 04/01/2014
+> Call Trace:
+> <TASK>
+> __dump_stack lib/dump_stack.c:88 [inline]
+> dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> print_address_description mm/kasan/report.c:313 [inline]
+> print_report.cold+0xe5/0x659 mm/kasan/report.c:429
+> kasan_report+0x8a/0x1b0 mm/kasan/report.c:491
+> free_netdev+0x4d9/0x5a0 net/core/dev.c:10599
+> phonet_free_inst+0x92/0xb0 drivers/usb/gadget/function/f_phonet.c:618
+> usb_put_function_instance+0x7f/0xb0 drivers/usb/gadget/functions.c:77
+> config_item_cleanup fs/configfs/item.c:128 [inline]
+> config_item_release+0x11d/0x2f0 fs/configfs/item.c:137
+> kref_put include/linux/kref.h:65 [inline]
+> config_item_put+0x7c/0xa0 fs/configfs/item.c:149
+> configfs_rmdir+0x69f/0xa70 fs/configfs/dir.c:1538
+> vfs_rmdir fs/namei.c:4017 [inline]
+> vfs_rmdir+0x2a0/0x640 fs/namei.c:3994
+> do_rmdir+0x328/0x390 fs/namei.c:4078
+> __do_sys_rmdir fs/namei.c:4097 [inline]
+> __se_sys_rmdir fs/namei.c:4095 [inline]
+> __x64_sys_rmdir+0x3e/0x50 fs/namei.c:4095
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+> RIP: 0033:0x7f84aa0a69cb
+> Code: 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48 83 c8 ff c3 66
+> 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 54 00 00 00 0f 05 <48> 3d
+> 01 f0 ff ff8
+> RSP: 002b:00007f84aa7cda88 EFLAGS: 00000293 ORIG_RAX: 0000000000000054
+> RAX: ffffffffffffffda RBX: 00007f84a4001c10 RCX: 00007f84aa0a69cb
+> RDX: 00007f84a40021c0 RSI: 00007f84aa114825 RDI: 00007f84aa7cda90
+> RBP: 00007f84aa7cda90 R08: 00007f84aa114825 R09: 00007f84aa7cd910
+> R10: 00000000fffffff4 R11: 0000000000000293 R12: 0000000000000000
+> R13: 0000000000000001 R14: 00007f84a4001b70 R15: 00007f84aa198020
+> </TASK>
+>
+> Allocated by task 11185:
+> kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+> kasan_set_track mm/kasan/common.c:45 [inline]
+> set_alloc_info mm/kasan/common.c:436 [inline]
+> ____kasan_kmalloc mm/kasan/common.c:515 [inline]
+> ____kasan_kmalloc mm/kasan/common.c:474 [inline]
+> __kasan_kmalloc+0xa9/0xd0 mm/kasan/common.c:524
+> kasan_kmalloc include/linux/kasan.h:234 [inline]
+> __kmalloc_node+0x1fc/0x450 mm/slub.c:4462
+> kmalloc_node include/linux/slab.h:604 [inline]
+> kvmalloc_node+0x3e/0x190 mm/util.c:580
+> kvmalloc include/linux/slab.h:731 [inline]
+> kvzalloc include/linux/slab.h:739 [inline]
+> alloc_netdev_mqs+0x9d/0x11b0 net/core/dev.c:10491
+> gphonet_setup_default+0x34/0x80 drivers/usb/gadget/function/f_phonet.c:69=
+7
+> phonet_alloc_inst+0x80/0x130 drivers/usb/gadget/function/f_phonet.c:631
+> try_get_usb_function_instance+0x122/0x1e0 drivers/usb/gadget/functions.c:=
+28
+> usb_get_function_instance+0x13/0xa0 drivers/usb/gadget/functions.c:44
+> function_make+0x105/0x3e0 drivers/usb/gadget/configfs.c:605
+> configfs_mkdir+0x46a/0xb90 fs/configfs/dir.c:1327
+> vfs_mkdir+0x620/0x980 fs/namei.c:3931
+> do_mkdirat+0x242/0x2b0 fs/namei.c:3957
+> __do_sys_mkdir fs/namei.c:3977 [inline]
+> __se_sys_mkdir fs/namei.c:3975 [inline]
+> __x64_sys_mkdir+0x61/0x80 fs/namei.c:3975
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> Freed by task 11185:
+> kasan_save_stack+0x1e/0x40 mm/kasan/common.c:38
+> kasan_set_track+0x21/0x30 mm/kasan/common.c:45
+> kasan_set_free_info+0x20/0x30 mm/kasan/generic.c:370
+> ____kasan_slab_free mm/kasan/common.c:366 [inline]
+> ____kasan_slab_free mm/kasan/common.c:328 [inline]
+> __kasan_slab_free+0x11d/0x190 mm/kasan/common.c:374
+> kasan_slab_free include/linux/kasan.h:200 [inline]
+> slab_free_hook mm/slub.c:1728 [inline]
+> slab_free_freelist_hook mm/slub.c:1754 [inline]
+> slab_free mm/slub.c:3510 [inline]
+> kfree+0xec/0x4b0 mm/slub.c:4552
+> kvfree+0x42/0x50 mm/util.c:622
+> netdev_freemem net/core/dev.c:10445 [inline]
+> free_netdev+0x46b/0x5a0 net/core/dev.c:10628
+> gphonet_register_netdev drivers/usb/gadget/function/f_phonet.c:720 [inlin=
+e]
+> pn_bind+0x4cb/0x590 drivers/usb/gadget/function/f_phonet.c:502
+> usb_add_function+0x217/0x930 drivers/usb/gadget/composite.c:337
+> configfs_composite_bind+0x8b6/0x11b0 drivers/usb/gadget/configfs.c:1392
+> udc_bind_to_driver+0x1f4/0x7b0 drivers/usb/gadget/udc/core.c:1504
+> usb_gadget_probe_driver+0x335/0x410 drivers/usb/gadget/udc/core.c:1571
+> gadget_dev_desc_UDC_store+0x17b/0x220 drivers/usb/gadget/configfs.c:287
+> flush_write_buffer fs/configfs/file.c:207 [inline]
+> configfs_write_iter+0x2ea/0x480 fs/configfs/file.c:229
+> call_write_iter include/linux/fs.h:2050 [inline]
+> new_sync_write+0x393/0x570 fs/read_write.c:504
+> vfs_write+0x7c4/0xab0 fs/read_write.c:591
+> ksys_write+0x127/0x250 fs/read_write.c:644
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+>
+> The buggy address belongs to the object at ffff88802a548000
+> which belongs to the cache kmalloc-cg-4k of size 4096
+> The buggy address is located 1480 bytes inside of
+> 4096-byte region [ffff88802a548000, ffff88802a549000)
+>
+> The buggy address belongs to the physical page:
+> page:ffffea0000a95200 refcount:1 mapcount:0 mapping:0000000000000000
+> index:0x0 pfn:0x2a548
+> head:ffffea0000a95200 order:3 compound_mapcount:0 compound_pincount:0
+> memcg:ffff88801aa7a841
+> flags: 0xfff00000010200(slab|head|node=3D0|zone=3D1|lastcpupid=3D0x7ff)
+> raw: 00fff00000010200 0000000000000000 dead000000000001 ffff88801184c140
+> raw: 0000000000000000 0000000000040004 00000001ffffffff ffff88801aa7a841
+> page dumped because: kasan: bad access detected
+> page_owner tracks the page as allocated
+> page last allocated via order 3, migratetype Unmovable, gfp_mask
+> 0xd20c0(__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP|__GFP_NOM=
+EMALLOC),
+> pid7
+> set_page_owner include/linux/page_owner.h:31 [inline]
+> post_alloc_hook mm/page_alloc.c:2434 [inline]
+> prep_new_page+0x297/0x330 mm/page_alloc.c:2441
+> get_page_from_freelist+0x210e/0x3ab0 mm/page_alloc.c:4182
+> __alloc_pages+0x30c/0x6e0 mm/page_alloc.c:5408
+> alloc_pages+0x119/0x250 mm/mempolicy.c:2272
+> alloc_slab_page mm/slub.c:1799 [inline]
+> allocate_slab mm/slub.c:1944 [inline]
+> new_slab+0x2a9/0x3f0 mm/slub.c:2004
+> ___slab_alloc+0xc62/0x1080 mm/slub.c:3005
+> __slab_alloc.isra.0+0x4d/0xa0 mm/slub.c:3092
+> slab_alloc_node mm/slub.c:3183 [inline]
+> __kmalloc_node+0x340/0x450 mm/slub.c:4458
+> kmalloc_node include/linux/slab.h:604 [inline]
+> kvmalloc_node+0x3e/0x190 mm/util.c:580
+> kvmalloc include/linux/slab.h:731 [inline]
+> seq_buf_alloc fs/seq_file.c:38 [inline]
+> seq_read_iter+0x800/0x11e0 fs/seq_file.c:210
+> kernfs_fop_read_iter+0x446/0x5f0 fs/kernfs/file.c:236
+> call_read_iter include/linux/fs.h:2044 [inline]
+> new_sync_read+0x38d/0x600 fs/read_write.c:401
+> vfs_read+0x495/0x5d0 fs/read_write.c:482
+> ksys_read+0x127/0x250 fs/read_write.c:620
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x35/0x80 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x44/0xae
+> page last free stack trace:
+> reset_page_owner include/linux/page_owner.h:24 [inline]
+> free_pages_prepare mm/page_alloc.c:1356 [inline]
+> free_pcp_prepare+0x51f/0xd00 mm/page_alloc.c:1406
+> free_unref_page_prepare mm/page_alloc.c:3328 [inline]
+> free_unref_page+0x19/0x5b0 mm/page_alloc.c:3423
+> __unfreeze_partials+0x3d2/0x3f0 mm/slub.c:2523
+> do_slab_free mm/slub.c:3498 [inline]
+> ___cache_free+0x12c/0x140 mm/slub.c:3517
+> qlink_free mm/kasan/quarantine.c:157 [inline]
+> qlist_free_all+0x6a/0x170 mm/kasan/quarantine.c:176
+> kasan_quarantine_reduce+0x13d/0x180 mm/kasan/quarantine.c:283
+> __kasan_slab_alloc+0xa2/0xc0 mm/kasan/common.c:446
+> kasan_slab_alloc include/linux/kasan.h:224 [inline]
+> slab_post_alloc_hook+0x4d/0x4f0 mm/slab.h:749
+> slab_alloc_node mm/slub.c:3217 [inline]
+> slab_alloc mm/slub.c:3225 [inline]
+> __kmem_cache_alloc_lru mm/slub.c:3232 [inline]
+> kmem_cache_alloc+0x1be/0x460 mm/slub.c:3242
+> kmem_cache_zalloc include/linux/slab.h:704 [inline]
+> __kernfs_new_node+0xd4/0x8b0 fs/kernfs/dir.c:585
+> kernfs_new_node+0x93/0x120 fs/kernfs/dir.c:647
+> kernfs_create_dir_ns+0x48/0x150 fs/kernfs/dir.c:1003
+> internal_create_group+0x7ab/0xba0 fs/sysfs/group.c:136
+> netdev_queue_add_kobject net/core/net-sysfs.c:1659 [inline]
+> netdev_queue_update_kobjects+0x398/0x4d0 net/core/net-sysfs.c:1705
+> register_queue_kobjects net/core/net-sysfs.c:1766 [inline]
+> netdev_register_kobject+0x35d/0x430 net/core/net-sysfs.c:2012
+> register_netdevice+0xb60/0x1290 net/core/dev.c:9961
+>
+> Memory state around the buggy address:
+> ffff88802a548480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88802a548500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> >ffff88802a548580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ^
+> ffff88802a548600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88802a548680: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+>
+> ```
