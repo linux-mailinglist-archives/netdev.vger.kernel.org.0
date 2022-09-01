@@ -2,74 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35D3C5A8F56
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 09:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2D95A8F73
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 09:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233590AbiIAHHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 03:07:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
+        id S233476AbiIAHNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 03:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48160 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233648AbiIAHHR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 03:07:17 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6A95118205
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 00:06:54 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id 130so7348549ybw.8
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 00:06:54 -0700 (PDT)
+        with ESMTP id S233584AbiIAHM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 03:12:58 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9023AE0FFD;
+        Thu,  1 Sep 2022 00:12:24 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id c66so6416285pfc.10;
+        Thu, 01 Sep 2022 00:12:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=zK32TEUGn/Arvhzey5bx898nOws+A6RDwPmVxDOXRRM=;
-        b=OeX9NMuQiEuDkLAHz6Ts3OmmYlLl/gRRAxrz7ydEg+aQp8cEQtJZfKwW/oJrZ+zanE
-         tF3nN9vStDEFgDenYvzGX0NBE4v+G4psAcvPmmQamitEnSSosX0riC0+jT3/41smTjP8
-         LqO9qCYy9QmD3bN1ulpmxxOHu1NpEv5uBHkmHb75WJ/01LdBb6rsB7tKCrloecTfLtRi
-         KCXy+BAIb5ZFvTM8WYDJ+PHmkDnj0YTfUCozOZPmfppZMWF0YL0OYMGh0H9TJBmA65ut
-         HyNnkayrlawPVD9Ny9t0S3Jpz9y6Ar8pddjDRVC0QnR7bLqlZrpV1vXa0dEYWnG40mz5
-         KKDw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=ZnVHYIoePyzft+SR64LAbQjIYKuIRSY5pvCaoRn0uR4=;
+        b=hf0pPpYjDcjPGucGsP6ylkEDuZmBFG9lkrq81PSSVgzqZ+yKJ+duU5RLlxpp0p6zo2
+         Uvo/FIPtgVodEDAvfADDz/Bm72MOBn57TfDwKm0gqqXNIAb0IdvCWYPODaBNAvhQvg09
+         8YPZoZeu8/zE/EscbKW9ptybnGBZ1nrBZtoOfhP97mGUgtCjvTv53bTNcFNBWRQGdJDL
+         Oc4Z4ej3C6cIa5eLoHeM9ze32PFg+gVAn5gHyTKLMc9vettP8fpaYfr1dQQ1tmg/hDrc
+         JxcrvYAVBB+i8N265izt/7+Aaalrmr8wBRJ8IUrsS+1gEcjXqipg8gXPi8Dp5TfQd6GF
+         Qovg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=zK32TEUGn/Arvhzey5bx898nOws+A6RDwPmVxDOXRRM=;
-        b=Lqd4CLKpKk1341CYh6fKT5sbu0CO5L64T9xF5WDw/ei3+4TZFAtDekRX8jp8Lq2GWf
-         Nn4PLbR6mNy2p1qp4pzebjgRv7uHRxrHm8DlABTg1SIlncI1KQ2LrgjCv/861/9DObau
-         xnamIv3C/wL4dSvSIbrZjJFdyxmhI29Zk0mF4abGtxAiMT3IqumkS4fRC/A7Hukqamrp
-         1+gx/tq1/GXA+flGbj9k5NN5uqURP+jpGTVUhZ8YV8TPljPW9RnMDrxLIcfkQZd2RsBA
-         pijxzORG08Rkuz5oDg03ZjqXLox9cwaMHO/m3ihCvO464EuFoL80IM+PXYzI1avMe128
-         4GZw==
-X-Gm-Message-State: ACgBeo2g5bX8SF6Zn+o9hz/Uhniq3nx5lPV0myzwEG5TMxqQprEfyFws
-        oiyDS1rHoMQlzXqmeQf2L0YCWHzMw1nimyONsveaNg==
-X-Google-Smtp-Source: AA6agR7txfyyGwgcudxqDLdEC3BY5D6O/gOKss/ew2QiR82vMl/EkDoLUSR9VwKAqGazOuqej+7FuDxpZ3nJTHT+438=
-X-Received: by 2002:a25:485:0:b0:69e:f6e0:abb9 with SMTP id
- 127-20020a250485000000b0069ef6e0abb9mr3103346ybe.524.1662016013713; Thu, 01
- Sep 2022 00:06:53 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220829065044.1736-1-anand@edgeble.ai> <20220829065044.1736-2-anand@edgeble.ai>
- <Ywy6o2d9j4Z7+WYX@lunn.ch>
-In-Reply-To: <Ywy6o2d9j4Z7+WYX@lunn.ch>
-From:   Anand Moon <anand@edgeble.ai>
-Date:   Thu, 1 Sep 2022 12:36:43 +0530
-Message-ID: <CACF1qnfmzcq55GvsD=GQ+ciLRstZ-7ef1EDaBzKMqBzU0O+WRw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126 support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=ZnVHYIoePyzft+SR64LAbQjIYKuIRSY5pvCaoRn0uR4=;
+        b=y6M3Ouiu+UQF9WOkcj0kMULg0WpkVq8VRJbfXd+fUnlFcfStGj3+4gX5awVzlQU8fr
+         AWzVLSxBTfmo+VLYpP1so4LNukqmO3ZXj0S7Ad092toIi4Tg/QTzLdJQOeqaKEZrbpTA
+         3SPQnaBeI2YOFCyeWpxPrF2makmH/YsM8xNxO5YQiStfjVDoFTG2tXr8JCNebEokZzBh
+         dP5ubcEwtZHiSZOLBN8sAqTffVfd9TCQdCV9TI7Hr/5r/8CxpoWG4WYyN0bEkFwnaN0x
+         tOlxfSOshVq737ntIRar1Gri+HtCYDTIIL5uw1xn77S5At7CvyXxRbBm/GJAVZrlh5sW
+         Refw==
+X-Gm-Message-State: ACgBeo3iki4ALwJP27WEEBne8ARhJ330k7cavbT9Z3rBiRiCs4/ki7pz
+        4pk1sqYUML5JRfo8HjL1pAw=
+X-Google-Smtp-Source: AA6agR4WZoetDvivmlqq9ieW+hP6W9zwvwCVfBpNaU2sUWgZikyExz43/hy+jnpoe89kmajDObQgwg==
+X-Received: by 2002:a63:89c6:0:b0:42b:8246:265 with SMTP id v189-20020a6389c6000000b0042b82460265mr23356525pgd.256.1662016344064;
+        Thu, 01 Sep 2022 00:12:24 -0700 (PDT)
+Received: from fedora.. ([103.230.104.22])
+        by smtp.gmail.com with ESMTPSA id b1-20020a17090a990100b001fdcfe9a731sm2513918pjp.50.2022.09.01.00.12.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 00:12:23 -0700 (PDT)
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>,
-        Jagan Teki <jagan@edgeble.ai>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com,
+        Khalid Masum <khalid.masum.92@gmail.com>
+Subject: [PATCH v4] xfrm: Update ipcomp_scratches with NULL when freed
+Date:   Thu,  1 Sep 2022 13:12:10 +0600
+Message-Id: <20220901071210.8402-1-khalid.masum.92@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <00000000000092839d0581fd74ad@google.com>
+References: <00000000000092839d0581fd74ad@google.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,36 +79,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Currently if ipcomp_alloc_scratches() fails to allocate memory
+ipcomp_scratches holds obsolete address. So when we try to free the
+percpu scratches using ipcomp_free_scratches() it tries to vfree non
+existent vm area. Described below:
 
-On Mon, 29 Aug 2022 at 18:40, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Mon, Aug 29, 2022 at 06:50:42AM +0000, Anand Moon wrote:
-> > Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-> > via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
-> >
-> > This patch adds rv1126 support by adding delay lines of M0 and M1
-> > simultaneously.
->
-> What does 'delay lines' mean with respect to RGMII?
->
-> The RGMII signals need a 2ns delay between the clock and the data
-> lines. There are three places this can happen:
->
-> 1) In the PHY
-> 2) Extra long lines on the PCB
-> 3) In the MAC
->
-> Generally, 1) is used, and controlled via phy-mode. A value of
-> PHY_INTERFACE_MODE_RGMII_ID passed to the PHY driver means it will add
-> these delays.
->
-> You don't want both the MAC and the PHY adding delays.
->
-These are set to enable MAC transmit clock delay set for Tx and Rx for
-iomux group.
->
->     Andrew
+static void * __percpu *ipcomp_alloc_scratches(void)
+{
+        ...
+        scratches = alloc_percpu(void *);
+        if (!scratches)
+                return NULL;
+ipcomp_scratches does not know about this allocation failure.
+Therefore holding the old obsolete address.
+        ...
+}
 
-Thanks
--Anand
+So when we free,
+
+static void ipcomp_free_scratches(void)
+{
+        ...
+        scratches = ipcomp_scratches;
+Assigning obsolete address from ipcomp_scratches
+
+        if (!scratches)
+                return;
+
+        for_each_possible_cpu(i)
+               vfree(*per_cpu_ptr(scratches, i));
+Trying to free non existent page, causing warning: trying to vfree
+existent vm area.
+        ...
+}
+
+Fix this breakage by updating ipcomp_scrtches with NULL when scratches
+is freed
+
+Suggested-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reported-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
+Tested-by: syzbot+5ec9bb042ddfe9644773@syzkaller.appspotmail.com
+Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+---
+Changes since v3:
+- Update ipcomp_scratches to NULL when freed only
+- Link: https://lore.kernel.org/lkml/20220901040307.4674-1-khalid.masum.92@gmail.com/
+
+Changes since v2:
+- Set ipcomp_scratches to NULL when scratches is freed.
+- Update commit message.
+- v2 Link: https://lore.kernel.org/lkml/20220831142938.5882-1-khalid.masum.92@gmail.com/
+
+Changes since v1:
+- Instead of altering usercount, update ipcomp_scratches to NULL
+- Update commit message.
+- v1 Link: https://lore.kernel.org/lkml/20220831014126.6708-1-khalid.masum.92@gmail.com/
+
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index cb40ff0ff28d..3774d07c5819 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -203,6 +203,7 @@ static void ipcomp_free_scratches(void)
+ 		vfree(*per_cpu_ptr(scratches, i));
+ 
+ 	free_percpu(scratches);
++	ipcomp_scratches = NULL;
+ }
+ 
+ static void * __percpu *ipcomp_alloc_scratches(void)
