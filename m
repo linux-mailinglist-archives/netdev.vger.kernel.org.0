@@ -2,54 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E82135A939A
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480D65A93B6
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:57:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233017AbiIAJvi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 05:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51940 "EHLO
+        id S233555AbiIAJ46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 05:56:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230064AbiIAJvh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:51:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3345D130A03
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 02:51:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662025894;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=EIkJHhI6YlCNCZPXjc8HcVZcToMwd0NwhxwtNf/mpro=;
-        b=NK0EQh7aT2wkE/omhatK4TrNGJr7keS+bLzDE2RSz3pT/JDMhu5c8dUdMEBCqbpBG8Syq9
-        NnHXjlobe1Y+JiKJswtElwQOizUY92Vqkck53TWGIFMpS0f0H0x7uX3PaQkHJl19HGORgE
-        QoisrqyifNfj/hqUKgbVvw8KCvT6MBg=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-121-0ej8tHy9OPiIkqsnXBR8GQ-1; Thu, 01 Sep 2022 05:51:33 -0400
-X-MC-Unique: 0ej8tHy9OPiIkqsnXBR8GQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id CC0251C01B31;
-        Thu,  1 Sep 2022 09:51:32 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.192.182])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AC52B2166B26;
-        Thu,  1 Sep 2022 09:51:31 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 6.0-rc4
-Date:   Thu,  1 Sep 2022 11:50:47 +0200
-Message-Id: <20220901095047.19518-1-pabeni@redhat.com>
+        with ESMTP id S232874AbiIAJ4z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:56:55 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A301135D3A;
+        Thu,  1 Sep 2022 02:56:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662026213; x=1693562213;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=XtU3m3IJSt+naltWxPPMwX1WjN5dYYA9EOvoiHs3m70=;
+  b=EDVK/PiTRO3nZMXBxNsy9N7A8bnH1nxHAdKchqEXq+osRYfQCbYH+yZF
+   D9y8EkT0eKiFYRCPqeIE3qYw8GeyZkzW83PDZ2XAOXAq8ul55wznXOq8W
+   l+Umc7ZP5C8CSdbw79SXbG2j73lYC0J9jSti77tRhk7Goj2ejKj8PvZu4
+   qASH/kESQ7QP2pD5Rn9zbzgD10JQb+GMlPEoDamFGTjuhkOcnO7lyF5Xw
+   0X8x3LUXqyRfOX03W1ll1o58prb2xePI7kyIORpOj9DUk0BBsaethwp4N
+   z8kgqpVJGOPmAvaLB+xv9jCFnQ+n3V8cvnZzt+Iz/EZIDg74x0vf4tGTp
+   w==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="275420538"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="275420538"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 02:56:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="788180545"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga005.jf.intel.com with ESMTP; 01 Sep 2022 02:56:52 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 02:56:52 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Thu, 1 Sep 2022 02:56:52 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Thu, 1 Sep 2022 02:56:52 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Thu, 1 Sep 2022 02:56:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cAlEjgUywZ71ql0t2wkdiygNOwEKig/YPsBIDdT3xH+ID4hxPxf+J8dOWxFIU5VaIHW//xtGP8bAnDJQx8YErAdwApg8YXkJsjsxeENZxYnzgwvf8XXF+hc9X+H3JMGfb5npx75SrYIvy2j4MxrlRErw26EsY7EZywp/AQwIRsI1VL13Zu5wPDK1OT3cAkDpTLpohcZL28z/qHe2A5k9maY7czVmgqmZ/+UOoF/b/m/gKWwSyXJZn37TRY/7hLtFzrZmurYLz4GUAJrZ/CHcw4xSpPlylFcjA0PJVaJR0MQd2fLEUScXrRARIF2/1sLiasaPwz8PM80PyYrc+hRgjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=iPBjR46RmSohfmn3XPyRc2buztJF+7POjQVH7QkmbhM=;
+ b=lHIH4oqXCs4vWXR2fHS/7moESz7gApBFytJoBAZ6fQobnP2M3ypVOeGXN8tAOlSzpR/qGfYGC8oLleM+uQjEkgFV14xQuLK7bMlZAbMj9guFI5zfRCoAP28TvbxkQ03N/Aahga5eKiobJfvKvv22ENntaI+AHi0FYHJSEw72yhPbsIwoHs/4g0He9z5Ug8qJvEEmGBJ40RMo1A7MUeqbS5diySAXeU68XVXK6cwgl0Ime5uWyU+z4C52xSRx1+xIvT5CPDh7LjaIezACyyFubgBDCBMbADD7gzJUqzWIqlMAlRTh80oBb62Fnr09FmC3vJHbG5aPlnuwkagdivsLbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BYAPR11MB2983.namprd11.prod.outlook.com (2603:10b6:a03:88::22)
+ by DM6PR11MB3577.namprd11.prod.outlook.com (2603:10b6:5:137::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5566.15; Thu, 1 Sep
+ 2022 09:56:49 +0000
+Received: from BYAPR11MB2983.namprd11.prod.outlook.com
+ ([fe80::e8f8:5cab:24b3:1c8]) by BYAPR11MB2983.namprd11.prod.outlook.com
+ ([fe80::e8f8:5cab:24b3:1c8%4]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
+ 09:56:49 +0000
+From:   "Dubel, Helena Anna" <helena.anna.dubel@intel.com>
+To:     ivecera <ivecera@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "Piotrowski, Patryk" <patryk.piotrowski@intel.com>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Williams, Mitch A" <mitch.a.williams@intel.com>,
+        "Jeff Kirsher" <jeffrey.t.kirsher@intel.com>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "moderated list:INTEL ETHERNET DRIVERS" 
+        <intel-wired-lan@lists.osuosl.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net] i40e: Fix kernel crash during module removal
+Thread-Topic: [PATCH net] i40e: Fix kernel crash during module removal
+Thread-Index: AQHYsYx+3xIczkZuwU6Gew5dabQ5p63KbuBg
+Date:   Thu, 1 Sep 2022 09:56:49 +0000
+Message-ID: <BYAPR11MB298374F50259D6FF3C815B16BE7B9@BYAPR11MB2983.namprd11.prod.outlook.com>
+References: <20220816162230.3486915-1-ivecera@redhat.com>
+In-Reply-To: <20220816162230.3486915-1-ivecera@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.6.500.17
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: aaa0d7ea-3015-44e8-d6c4-08da8c0049c2
+x-ms-traffictypediagnostic: DM6PR11MB3577:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 76qi9tGAyogZmpedhla0ZvzbCa9dwmo30FJp1xsRMcusp0mY5JgqSWrG5VRwc/Iz7kwQQ1+ArmUdHOb/4jd63jjrPs3ShR0PRBiJf0KD2NnImgXphi81Dz8xfhGnGFdua3hgaUBOb4sKDtqSdzJ1BL2dhkHR9yiV9GIeZX1x4/uJ5R9WKcOKYfQR1FCsxzu0Juzp3RfB4jcnjV4BXbuGcBvU5++MklZdZepUA296G/b4gx8R/h2PpYmf4nUR6tiaXU87kHRBlc7/zH5ci9sYAL7nf4/qMVrAJzM1MRK/4BUNwq8a615L8YPfgq/BBEItcUgJqRK/QKPTQlhiPBobepUzRE023QdLEzXGnXMvgXQD8g89psow/ges542igpEVRcaYktiqLsE0/LSv9eOVNzqbdEuWCzp6Mc7wQDtu+LPdrwWhU8cnrrWTEPfjCEsDJGf5UYhkRJfekcnluj7vQGGsBXLSypQGFSRLDpUhq5dJhL50FfuPn2JpHGpABYErAG3ng9XilXqrmFPKc+RQ0xNNSZTCMlk3OxCaKP4iQeV7VdR8rEu9gDgE6jqynNJ+fr9dxudCPom/W85Gsxw3FkAzQMpxQBkfF++rn94hAJ0CPmoj2VZ/onzZeL9crCtcnDvvgqPnJ57pHOlCbo8ksRhkkQgaNv94qGH5uS7ohorhkkL79XwUKKUYD2v1VTkZeIQvSSEshjHd+KzD+wB1bltkUjGXjLjCqVNlcnRQdyItIUgYgsAy9KeeB1N5zVkHvYkzH7a7wmV2997TEKN1hA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB2983.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(39860400002)(346002)(396003)(366004)(136003)(316002)(66446008)(64756008)(7696005)(76116006)(4326008)(478600001)(83380400001)(66946007)(186003)(26005)(86362001)(9686003)(8676002)(71200400001)(53546011)(66556008)(41300700001)(110136005)(54906003)(82960400001)(66476007)(38070700005)(122000001)(2906002)(6506007)(33656002)(5660300002)(8936002)(52536014)(55016003)(38100700002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YYjCJiesmcyQndhAyK5pH0fuKn+Xmy6npx/pt1kYy6vZSfEV1T41e9i25R1O?=
+ =?us-ascii?Q?WXyCBnFxVgi+Gkcduor6MdcmMavuehilpv7Q1iymigytcNYkztTjSs5uEQ+K?=
+ =?us-ascii?Q?JRNVxI6ic6d0ea1j+75msfplrNL3/C/bZCjpvaxEs/MAhY+UyymMGWlLcF//?=
+ =?us-ascii?Q?NSJ9RNWsbJe2mJVoOGI6Dsu4qhC64db96nx/C4YN57JCI+BMneDU3KHH9vCa?=
+ =?us-ascii?Q?xuGM1T4TARH2bw6eiioPK64KVjkRChLk+u6fLVI87W6tLdGE9rEeL3BLcDqA?=
+ =?us-ascii?Q?mMPYReYgTFLHN/xb0LY8Vs9Lm1131SsPf+aHNeWTR4vvbrnmuHKr3XgBWIrZ?=
+ =?us-ascii?Q?95DsD8jNJK0N61h6z9BB2AS247L4eoeCP7hr3sFgidpJT08FvR6+i7aPyYuK?=
+ =?us-ascii?Q?wUp53tvvLdl9IXNNIAZ6Uj2ZASGuWd++7f2AdZdWHnMGSVsBcAGVRFjx8P1F?=
+ =?us-ascii?Q?1BICMomf6ggl2ADFUCD8junKj1EVA72xLXLFPfbuFjGYTJObEHONJcEAFx0R?=
+ =?us-ascii?Q?ztfTgL6rL+VIpEplfBWI/Hf9QhjEph08vXVnJK1hNBnpfzM24Nl4/ubQk+Il?=
+ =?us-ascii?Q?qWO3kNv8uVapscTgu7zlwmk1t/Dn5UgQ/3353H58ltib8B68m+6aWAqR6UpH?=
+ =?us-ascii?Q?O0X3peew7/5K954WU3Rtaq3E9gguSTyE5dlHse4EYvR63hOFjpBSRYRhtMBe?=
+ =?us-ascii?Q?/yj2cPC74LlCjrtze1Nzu0W6uUWS4w4Tk3kURVv7ig38T4bxI66I5h6yMoqw?=
+ =?us-ascii?Q?41qPboQUtG6sNLhDEL9TsFB4yFYRcHWlm1k+lcZ49FJdNE8BIJzdbjFmu9LA?=
+ =?us-ascii?Q?W1XH0X89crTFSMIXEmsulozyE8JP09Uwijn5+8m/6VZX00zyCh5E1Ly76kmz?=
+ =?us-ascii?Q?ud9W2OIppCA77IrCL6gGwjLVIMCMGSKEwgtAuUdCHIyb0pP7Jz4WYjNno4ar?=
+ =?us-ascii?Q?ez7qQU+Wzu53oveHbLmGGF2z177k1ZwJHQioKVHc3qEz4xmyh9dzN6rrSOeS?=
+ =?us-ascii?Q?/o5WP3yFeRJ6kbnv/SwkpYc4xHyt2DcXSQR7PyfLVktxxfjcZNk4VsL88zLh?=
+ =?us-ascii?Q?jL7GkyzyHHVDBdQ+JCY4o8SBJEha+icbPuoGfFFFTI63Kt4y+hy7Iv7Af7FE?=
+ =?us-ascii?Q?kxXvij+2rvMuJXXeZENb0hsagzimtiPPXvzSIYqSnq+9ARn9tRzzFXvXOc7u?=
+ =?us-ascii?Q?WOLxMx5VsNQRS59U/Gm/PJNaJ7Ns91nrBVzoVFmr7qXTsrpGHGhT72a5nZBS?=
+ =?us-ascii?Q?XFJv2fwuqg1H8XJsqFo0c7vr2HpRzLEAmM9A1cOGfGtmxY4ma3ZCFqAzvX6h?=
+ =?us-ascii?Q?nBxMmCUSjdXGAzgq67fmF+6SY/fryG1zAZB07EH5oTHOPZGn36GVYChUzXqV?=
+ =?us-ascii?Q?gU0jTvSc7AhSubGd7LL2nO4XGhosWjkSaN9Hio04oTQ/bJ+3YryCdDWRNxAV?=
+ =?us-ascii?Q?3LOkv2xoC6aN7vud/QHsXyNqA5x7wwVoXnpGQ1fgNcY2cJMvOQ1gKD2DMEQ6?=
+ =?us-ascii?Q?98J855m16uTPkGrHJzH6aRpX/vlohD7hWlYlXqQ7xM/qpm3i6RxobE+r5Umm?=
+ =?us-ascii?Q?F55Z079AN7KOC7kvD4XHnAmPp8w+VE8oiM9vOqpc?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB2983.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aaa0d7ea-3015-44e8-d6c4-08da8c0049c2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Sep 2022 09:56:49.1584
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: H74aaxBzxzG2+qQBt6csxCeJCgqO1sz2lWikVDe+WTAbJ3Cyj4Vf/j/SXGnkPDY6HC19rWrV2iPWfKyo7y7OmRnJoIqpafzGAHmoNEfDOAA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3577
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,288 +165,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Linus!
 
-The following changes since commit 4c612826bec1441214816827979b62f84a097e91:
-
-  Merge tag 'net-6.0-rc3' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-08-25 14:03:58 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-6.0-rc4
-
-for you to fetch changes up to a8424a9b4522a3ab9f32175ad6d848739079071f:
-
-  net/smc: Remove redundant refcount increase (2022-09-01 10:04:45 +0200)
-
-----------------------------------------------------------------
-Networking fixes for 6.0-rc4, including fixes from bluetooth, bpf
-and wireless.
-
-Current release - regressions:
-  - bpf:
-    - fix wrong last sg check in sk_msg_recvmsg()
-    - fix kernel BUG in purge_effective_progs()
-
-  - mac80211:
-    - fix possible leak in ieee80211_tx_control_port()
-    - potential NULL dereference in ieee80211_tx_control_port()
-
-Current release - new code bugs:
-  - nfp: fix the access to management firmware hanging
-
-Previous releases - regressions:
-  - ip: fix triggering of 'icmp redirect'
-
-  - sched: tbf: don't call qdisc_put() while holding tree lock
-
-  - bpf: fix corrupted packets for XDP_SHARED_UMEM
-
-  - bluetooth: hci_sync: fix suspend performance regression
-
-  - micrel: fix probe failure
-
-Previous releases - always broken:
-  - tcp: make global challenge ack rate limitation per net-ns and default disabled
-
-  - tg3: fix potential hang-up on system reboot
-
-  - mac802154: fix reception for no-daddr packets
-
-Misc:
-  - r8152: add PID for the lenovo onelink+ dock
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-
-----------------------------------------------------------------
-Alexei Starovoitov (1):
-      Merge branch 'Fix incorrect pruning for ARG_CONST_ALLOC_SIZE_OR_ZERO'
-
-Alvaro Karsz (1):
-      net: virtio_net: fix notification coalescing comments
-
-Andrey Zhadchenko (1):
-      openvswitch: fix memory leak at failed datapath creation
-
-Archie Pusaka (1):
-      Bluetooth: hci_event: Fix checking conn for le_conn_complete_evt
-
-Axel Rasmussen (1):
-      selftests: net: sort .gitignore file
-
-Casper Andersson (1):
-      net: sparx5: fix handling uneven length packets in manual extraction
-
-Cong Wang (1):
-      kcm: fix strp_init() order and cleanup
-
-Dan Carpenter (3):
-      wifi: cfg80211: debugfs: fix return type in ht40allow_map_read()
-      wifi: mac80211: potential NULL dereference in ieee80211_tx_control_port()
-      net: lan966x: improve error handle in lan966x_fdma_rx_get_frame()
-
-Daniel Borkmann (2):
-      bpf: Partially revert flexible-array member replacement
-      bpf: Don't use tnum_range on array range checking for poke descriptors
-
-Daniel Müller (1):
-      selftests/bpf: Add lru_bug to s390x deny list
-
-David S. Miller (3):
-      Merge tag 'wireless-2022-08-26' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless
-      Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf
-      Merge branch 'u64_stats-fixups'
-
-David Thompson (1):
-      mlxbf_gige: compute MDIO period based on i1clk
-
-Duoming Zhou (1):
-      ethernet: rocker: fix sleep in atomic context bug in neigh_timer_handler
-
-Eric Dumazet (2):
-      tcp: annotate data-race around challenge_timestamp
-      tcp: make global challenge ack rate limitation per net-ns and default disabled
-
-Eyal Birger (1):
-      ip_tunnel: Respect tunnel key's "flow_flags" in IP tunnels
-
-Florian Fainelli (1):
-      net: smsc911x: Stop and start PHY during suspend and resume
-
-Gao Xiao (1):
-      nfp: fix the access to management firmware hanging
-
-Hans de Goede (1):
-      Bluetooth: hci_event: Fix vendor (unknown) opcode status handling
-
-Horatiu Vultur (1):
-      net: phy: micrel: Make the GPIO to be non-exclusive
-
-Jakub Kicinski (4):
-      Merge tag 'for-net-2022-08-25' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth
-      Merge tag 'ieee802154-for-net-2022-08-29' of git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan
-      Merge branch 'tcp-tcp-challenge-ack-fixes'
-      Revert "sch_cake: Return __NET_XMIT_STOLEN when consuming enqueued skb"
-
-Jean-Francois Le Fillatre (1):
-      r8152: add PID for the Lenovo OneLink+ Dock
-
-Jilin Yuan (1):
-      net/ieee802154: fix repeated words in comments
-
-Kai-Heng Feng (1):
-      tg3: Disable tg3 device on system reboot to avoid triggering AER
-
-Kumar Kartikeya Dwivedi (2):
-      bpf: Do mark_chain_precision for ARG_CONST_ALLOC_SIZE_OR_ZERO
-      selftests/bpf: Add regression test for pruning fix
-
-Kuniyuki Iwashima (1):
-      bpf: Fix a data-race around bpf_jit_limit.
-
-Kurt Kanzenbach (1):
-      net: dsa: hellcreek: Print warning only once
-
-Li Qiong (1):
-      ieee802154: cc2520: add rc code in cc2520_tx()
-
-Lin Ma (1):
-      ieee802154/adf7242: defer destroy_workqueue call
-
-Liu Jian (1):
-      skmsg: Fix wrong last sg check in sk_msg_recvmsg()
-
-Lorenzo Bianconi (1):
-      wifi: mac80211: always free sta in __sta_info_alloc in case of error
-
-Luiz Augusto von Dentz (4):
-      Bluetooth: hci_sync: Fix suspend performance regression
-      Bluetooth: L2CAP: Fix build errors in some archs
-      Bluetooth: MGMT: Fix Get Device Flags
-      Bluetooth: ISO: Fix not handling shutdown condition
-
-Magnus Karlsson (1):
-      xsk: Fix corrupted packets for XDP_SHARED_UMEM
-
-Miquel Raynal (1):
-      net: mac802154: Fix a condition in the receive path
-
-Nicolas Dichtel (1):
-      ip: fix triggering of 'icmp redirect'
-
-Pu Lehui (1):
-      bpf, cgroup: Fix kernel BUG in purge_effective_progs
-
-Randy Dunlap (1):
-      Documentation: networking: correct possessive "its"
-
-Sebastian Andrzej Siewior (2):
-      net: dsa: xrs700x: Use irqsave variant for u64 stats update
-      net: Use u64_stats_fetch_begin_irq() for stats fetch.
-
-Siddh Raman Pant (2):
-      wifi: mac80211: Fix UAF in ieee80211_scan_rx()
-      wifi: mac80211: Don't finalize CSA in IBSS mode if state is disconnected
-
-Tetsuo Handa (1):
-      Bluetooth: hci_sync: fix double mgmt_pending_free() in remove_adv_monitor()
-
-Tianyu Yuan (1):
-      nfp: flower: fix ingress police using matchall filter
-
-Toke Høiland-Jørgensen (1):
-      sch_cake: Return __NET_XMIT_STOLEN when consuming enqueued skb
-
-Wang Hai (1):
-      net/sched: fix netdevice reference leaks in attach_default_qdiscs()
-
-Wolfram Sang (1):
-      Bluetooth: move from strlcpy with unused retval to strscpy
-
-Yacan Liu (1):
-      net/smc: Remove redundant refcount increase
-
-Yang Yingliang (1):
-      wifi: mac80211: fix possible leak in ieee80211_tx_control_port()
-
-YiFei Zhu (1):
-      bpf: Restrict bpf_sys_bpf to CAP_PERFMON
-
-Zhengchao Shao (1):
-      net: sched: tbf: don't call qdisc_put() while holding tree lock
-
-Zhengping Jiang (1):
-      Bluetooth: hci_sync: hold hdev->lock when cleanup hci_conn
-
- Documentation/networking/devlink/netdevsim.rst     |   2 +-
- Documentation/networking/driver.rst                |   2 +-
- Documentation/networking/ip-sysctl.rst             |   5 +-
- Documentation/networking/ipvlan.rst                |   2 +-
- Documentation/networking/l2tp.rst                  |   2 +-
- Documentation/networking/switchdev.rst             |   2 +-
- drivers/net/dsa/xrs700x/xrs700x.c                  |   5 +-
- drivers/net/ethernet/broadcom/tg3.c                |   8 +-
- drivers/net/ethernet/cortina/gemini.c              |  24 ++--
- drivers/net/ethernet/fungible/funeth/funeth_txrx.h |   4 +-
- drivers/net/ethernet/google/gve/gve_ethtool.c      |  16 +--
- drivers/net/ethernet/google/gve/gve_main.c         |  12 +-
- drivers/net/ethernet/huawei/hinic/hinic_rx.c       |   4 +-
- drivers/net/ethernet/huawei/hinic/hinic_tx.c       |   4 +-
- .../net/ethernet/mellanox/mlxbf_gige/mlxbf_gige.h  |   4 +-
- .../ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c | 122 ++++++++++++++++++---
- .../ethernet/mellanox/mlxbf_gige/mlxbf_gige_regs.h |   2 +
- .../net/ethernet/mellanox/mlxsw/spectrum_span.c    |   3 +-
- .../net/ethernet/microchip/lan966x/lan966x_fdma.c  |   5 +-
- .../net/ethernet/microchip/sparx5/sparx5_packet.c  |   2 +
- .../net/ethernet/netronome/nfp/flower/qos_conf.c   |   5 +-
- .../net/ethernet/netronome/nfp/nfp_net_common.c    |   8 +-
- .../net/ethernet/netronome/nfp/nfp_net_ethtool.c   |   8 +-
- .../ethernet/netronome/nfp/nfpcore/nfp_nsp_eth.c   |   1 +
- drivers/net/ethernet/rocker/rocker_ofdpa.c         |   2 +-
- drivers/net/ethernet/smsc/smsc911x.c               |   6 +
- drivers/net/ieee802154/adf7242.c                   |   3 +-
- drivers/net/ieee802154/ca8210.c                    |   2 +-
- drivers/net/ieee802154/cc2520.c                    |   1 +
- drivers/net/netdevsim/netdev.c                     |   4 +-
- drivers/net/phy/micrel.c                           |   8 +-
- drivers/net/usb/cdc_ether.c                        |   7 ++
- drivers/net/usb/r8152.c                            |   3 +
- include/net/ip_tunnels.h                           |   4 +-
- include/net/netns/ipv4.h                           |   2 +
- include/uapi/linux/bpf.h                           |   2 +-
- include/uapi/linux/virtio_net.h                    |  14 +--
- kernel/bpf/cgroup.c                                |   4 +-
- kernel/bpf/core.c                                  |   2 +-
- kernel/bpf/syscall.c                               |   2 +-
- kernel/bpf/verifier.c                              |  13 ++-
- net/bluetooth/hci_event.c                          |  13 ++-
- net/bluetooth/hci_sync.c                           |  30 +++--
- net/bluetooth/hidp/core.c                          |   6 +-
- net/bluetooth/iso.c                                |  35 ++++--
- net/bluetooth/l2cap_core.c                         |  10 +-
- net/bluetooth/mgmt.c                               |  72 +++++++-----
- net/core/skmsg.c                                   |   4 +-
- net/dsa/tag_hellcreek.c                            |   2 +-
- net/ipv4/fib_frontend.c                            |   4 +-
- net/ipv4/ip_gre.c                                  |   2 +-
- net/ipv4/ip_tunnel.c                               |   7 +-
- net/ipv4/tcp_input.c                               |  21 ++--
- net/ipv4/tcp_ipv4.c                                |   6 +-
- net/kcm/kcmsock.c                                  |  15 ++-
- net/mac80211/ibss.c                                |   4 +
- net/mac80211/scan.c                                |  11 +-
- net/mac80211/sta_info.c                            |  10 +-
- net/mac80211/tx.c                                  |   3 +-
- net/mac802154/rx.c                                 |   2 +-
- net/mpls/af_mpls.c                                 |   4 +-
- net/openvswitch/datapath.c                         |   4 +-
- net/sched/sch_generic.c                            |  31 +++---
- net/sched/sch_tbf.c                                |   4 +-
- net/smc/af_smc.c                                   |   1 -
- net/wireless/debugfs.c                             |   3 +-
- net/xdp/xsk_buff_pool.c                            |  16 ++-
- tools/testing/selftests/bpf/DENYLIST.s390x         |   1 +
- tools/testing/selftests/bpf/verifier/precise.c     |  25 +++++
- tools/testing/selftests/net/.gitignore             |  50 ++++-----
- 70 files changed, 478 insertions(+), 249 deletions(-)
-
+> -----Original Message-----
+> From: ivecera <ivecera@redhat.com>
+> Sent: wtorek, 16 sierpnia 2022 18:23
+> To: netdev@vger.kernel.org
+> Cc: Piotrowski, Patryk <patryk.piotrowski@intel.com>; Brandeburg, Jesse
+> <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> Eric Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>;
+> Paolo Abeni <pabeni@redhat.com>; Williams, Mitch A
+> <mitch.a.williams@intel.com>; Jeff Kirsher <jeffrey.t.kirsher@intel.com>;
+> Keller, Jacob E <jacob.e.keller@intel.com>; moderated list:INTEL ETHERNET
+> DRIVERS <intel-wired-lan@lists.osuosl.org>; open list <linux-
+> kernel@vger.kernel.org>
+> Subject: [PATCH net] i40e: Fix kernel crash during module removal
+>=20
+> The driver incorrectly frees client instance and subsequent i40e module
+> removal leads to kernel crash.
+>=20
+> Reproducer:
+> 1. Do ethtool offline test followed immediately by another one host# etht=
+ool
+> -t eth0 offline; ethtool -t eth0 offline 2. Remove recursively irdma modu=
+le
+> that also removes i40e module host# modprobe -r irdma
+>=20
+> Result:
+> [ 8675.035651] i40e 0000:3d:00.0 eno1: offline testing starting [ 8675.19=
+3774]
+> i40e 0000:3d:00.0 eno1: testing finished [ 8675.201316] i40e 0000:3d:00.0
+> eno1: offline testing starting [ 8675.358921] i40e 0000:3d:00.0 eno1: tes=
+ting
+> finished [ 8675.496921] i40e 0000:3d:00.0: IRDMA hardware initialization
+> FAILED init_state=3D2 status=3D-110 [ 8686.188955] i40e 0000:3d:00.1:
+> i40e_ptp_stop: removed PHC on eno2 [ 8686.943890] i40e 0000:3d:00.1:
+> Deleted LAN device PF1 bus=3D0x3d dev=3D0x00 func=3D0x01 [ 8686.952669] i=
+40e
+> 0000:3d:00.0: i40e_ptp_stop: removed PHC on eno1 [ 8687.761787] BUG:
+> kernel NULL pointer dereference, address: 0000000000000030 [ 8687.768755]
+> #PF: supervisor read access in kernel mode [ 8687.773895] #PF:
+> error_code(0x0000) - not-present page [ 8687.779034] PGD 0 P4D 0 [
+> 8687.781575] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> [ 8687.785935] CPU: 51 PID: 172891 Comm: rmmod Kdump: loaded Tainted: G
+> W I        5.19.0+ #2
+> [ 8687.794800] Hardware name: Intel Corporation S2600WFD/S2600WFD,
+> BIOS SE5C620.86B.0X.02.0001.051420190324 05/14/2019 [ 8687.805222] RIP:
+> 0010:i40e_lan_del_device+0x13/0xb0 [i40e] [ 8687.810719] Code: d4 84 c0 0=
+f
+> 84 b8 25 01 00 e9 9c 25 01 00 41 bc f4 ff ff ff eb 91 90 0f 1f 44 00 00 4=
+1 54 55 53
+> 48 8b 87 58 08 00 00 48 89 fb <48> 8b 68 30 48 89 ef e8 21 8a 0f d5 48 89=
+ ef e8
+> a9 78 0f d5 48 8b [ 8687.829462] RSP: 0018:ffffa604072efce0 EFLAGS: 00010=
+202
+> [ 8687.834689] RAX: 0000000000000000 RBX: ffff8f43833b2000 RCX:
+> 0000000000000000 [ 8687.841821] RDX: 0000000000000000 RSI:
+> ffff8f4b0545b298 RDI: ffff8f43833b2000 [ 8687.848955] RBP: ffff8f43833b20=
+00
+> R08: 0000000000000001 R09: 0000000000000000 [ 8687.856086] R10:
+> 0000000000000000 R11: 000ffffffffff000 R12: ffff8f43833b2ef0 [ 8687.86321=
+8]
+> R13: ffff8f43833b2ef0 R14: ffff915103966000 R15: ffff8f43833b2008 [
+> 8687.870342] FS:  00007f79501c3740(0000) GS:ffff8f4adffc0000(0000)
+> knlGS:0000000000000000 [ 8687.878427] CS:  0010 DS: 0000 ES: 0000 CR0:
+> 0000000080050033 [ 8687.884174] CR2: 0000000000000030 CR3:
+> 000000014276e004 CR4: 00000000007706e0 [ 8687.891306] DR0:
+> 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000 [
+> 8687.898441] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7:
+> 0000000000000400 [ 8687.905572] PKRU: 55555554 [ 8687.908286] Call Trace:
+> [ 8687.910737]  <TASK>
+> [ 8687.912843]  i40e_remove+0x2c0/0x330 [i40e] [ 8687.917040]
+> pci_device_remove+0x33/0xa0 [ 8687.920962]
+> device_release_driver_internal+0x1aa/0x230
+> [ 8687.926188]  driver_detach+0x44/0x90
+> [ 8687.929770]  bus_remove_driver+0x55/0xe0 [ 8687.933693]
+> pci_unregister_driver+0x2a/0xb0 [ 8687.937967]
+> i40e_exit_module+0xc/0xf48 [i40e]
+>=20
+> Two offline tests cause IRDMA driver failure (ETIMEDOUT) and this failure=
+ is
+> indicated back to i40e_client_subtask() that calls
+> i40e_client_del_instance() to free client instance referenced by pf->cins=
+t and
+> sets this pointer to NULL. During the module removal i40e_remove() calls
+> i40e_lan_del_device() that dereferences
+> pf->cinst that is NULL -> crash.
+> Do not remove client instance when client open callbacks fails and just c=
+lear
+> __I40E_CLIENT_INSTANCE_OPENED bit. The driver also needs to take care
+> about this situation (when netdev is up and client is NOT opened) in
+> i40e_notify_client_of_netdev_close() and calls client close callback only
+> when __I40E_CLIENT_INSTANCE_OPENED is set.
+>=20
+> Fixes: 0ef2d5afb12d ("i40e: KISS the client interface")
+> Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+> ---
+>  drivers/net/ethernet/intel/i40e/i40e_client.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>=20
+
+Tested-by: Helena Anna Dubel <helena.anna.dubel@intel.com>
+---------------------------------------------------------------------------=
+----------
+Intel Technology Poland sp. z o.o.
+ul. Slowackiego 173, 80-298 Gdansk
+KRS 101882, NIP 957-07-52-316
