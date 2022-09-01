@@ -2,285 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23D705A9FBE
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 21:17:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA0615A9FDC
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 21:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiIATQ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 15:16:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57814 "EHLO
+        id S234117AbiIAT0R convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 1 Sep 2022 15:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232301AbiIATQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 15:16:25 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E56B6DAF4;
-        Thu,  1 Sep 2022 12:16:19 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 281Hr3RM031475;
-        Thu, 1 Sep 2022 19:16:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ZC2UVu/GUdhoryRm/9ws29SQmBKepw4YphqXAcfe6qQ=;
- b=hLqu2Xfgz9Y6HoimVTvoeTT0afBBSWzaSjF2WZm6fqh507UCxpVY76V8iyi9f+jcGbW4
- JzCTUEWjFjY7TtQGzxcdlXORHywuDuGw9yo+lQXfBdEczPyu6dWvAxQyfPXynlNevF2k
- ERrew0lZa18hoyslKGlsejutCMS5Dk0LA7pAEsEKNFnEJFWyuFRtbv17ytp/bKRFZhia
- TB1Hm2Im/xB4pT8KF64JZIvZlhw+4kd3tJDHUlUDd00Xl5J9X+hPKRVAHNPhW9qvH2k1
- PhMjLsf8CHkr/ybusAAG1pcpSBvfLhA34N9KvmHK9fD7XdrGEKSf6y6lBaKHKjBU5ULy eQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb1hdjqh9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 19:16:10 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 281J8jWk012724;
-        Thu, 1 Sep 2022 19:16:10 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3jb1hdjqgn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 19:16:10 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 281J57Rg021880;
-        Thu, 1 Sep 2022 19:16:09 GMT
-Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
-        by ppma01dal.us.ibm.com with ESMTP id 3j7awac29r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 19:16:09 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 281JG8f312386988
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 1 Sep 2022 19:16:08 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8D7EA6E054;
-        Thu,  1 Sep 2022 19:16:07 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 617136E052;
-        Thu,  1 Sep 2022 19:16:05 +0000 (GMT)
-Received: from [9.211.148.222] (unknown [9.211.148.222])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu,  1 Sep 2022 19:16:05 +0000 (GMT)
-Message-ID: <5b65eb6b-5ab2-1e6c-10d6-c25e66fa82f4@linux.ibm.com>
-Date:   Thu, 1 Sep 2022 21:16:04 +0200
+        with ESMTP id S233291AbiIAT0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 15:26:15 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1692E5EDCB
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 12:25:31 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2043.outbound.protection.outlook.com [104.47.22.43]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-46-hKZQW-0cNqGE46VUpa8_0A-2; Thu, 01 Sep 2022 21:25:29 +0200
+X-MC-Unique: hKZQW-0cNqGE46VUpa8_0A-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GVAP278MB0167.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:3e::9) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5588.11; Thu, 1 Sep 2022 19:25:28 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::6c6d:333:ab23:3f5b]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::6c6d:333:ab23:3f5b%2]) with mapi id 15.20.5588.010; Thu, 1 Sep 2022
+ 19:25:28 +0000
+Date:   Thu, 1 Sep 2022 21:25:27 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: possible circular locking in
+ kernfs_remove_by_name_ns/devinet_ioctl linux 6.0-rc3
+Message-ID: <20220901192527.GA2269019@francesco-nb.int.toradex.com>
+References: <20220901122129.GA493609@francesco-nb.int.toradex.com>
+In-Reply-To: <20220901122129.GA493609@francesco-nb.int.toradex.com>
+X-ClientProxiedBy: MRXP264CA0018.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:15::30) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.13.0
-Subject: Re: [PATCH net v4] net/smc: Fix possible access to freed memory in
- link clear
-To:     liuyacan@corp.netease.com, alibuda@linux.alibaba.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, tonylu@linux.alibaba.com,
-        ubraun@linux.vnet.ibm.com, wintera@linux.ibm.com
-References: <e86caa18-e416-f6ef-3eb3-f25b5c85a19a@linux.ibm.com>
- <20220901125431.1782967-1-liuyacan@corp.netease.com>
-From:   Wenjia Zhang <wenjia@linux.ibm.com>
-In-Reply-To: <20220901125431.1782967-1-liuyacan@corp.netease.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: GKWzp-ZeW01myidBdu4hgjgl07OjI_Tc
-X-Proofpoint-GUID: dRi01TvaH2d5IZWcLv8gWirogU-j36jd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- phishscore=0 bulkscore=0 adultscore=0 mlxlogscore=999 priorityscore=1501
- mlxscore=0 spamscore=0 suspectscore=0 malwarescore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2209010082
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1a62f178-9284-4b6e-f630-08da8c4fba2e
+X-MS-TrafficTypeDiagnostic: GVAP278MB0167:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: DoonaH6d18mTUusXKqaV916e7q6whrj0AwUBiIPfWO1WoqvbvZrgDVVEvsvqF5+V3lMSN1FkTBid+hRRzR8EXLa+aDaWmdV/JC/6jIu1mj8EGb3FwXYQmc1EwcEcflFx5J2xBF8wrLcH78XO3hV7D9g+afdWi3PhbKLz4KRdaS4Yr31MXl+GkzG3q6QX/3cI5h5buReoRQ7zq/YIF4fodOUAm7I99HdJh96fJxcxjQs6oDXwkR7kfOVhAc/0M9D24pzuBPTGEtxiWff81soevXJAiT1yocuMeDb5spSnB0H3MGWeyR2IRZFqVD5jwcUAJAyFbV1dKMgKnnpO160ddH8nStPf6uf28bpa4i+gnymmov9ZdDHo9DFMppkdgG8OPsOjWwAuKtSUZb6qS81H92Oocn2ryiKemjuz8PTC59K/t5J0I8HQIbFC3eBVaeJQEeCcxu6lDn3GnNoqDPEnpqz2cMUN0OYKiLDWEeEYLXKo6GcnGlT/iXDfum4O9o4DnYuEKa9wip7ZLpNj+0Se26ScT+2Q2Wzgh/pFLX4m4XIgc8Ye2Bz09pXXpQGlQseVM5ZHV7JeImvlPWlpCbXriJGgb1gP5kPJYx53R3MMqhLy2WRaBmTNOVJeUwA4o2aZZmEdEaESUnAWJsQaFeDPPy4RV/cAQw+3un5oZrEyE3uJR5bgSdt8g5uZkZ7JD3WWY4nIKjpyGLmyUq5i6HEx1OSHQFY+PgL118HUhH4tz3NgXnHOER00RFZ8cvlsp+gC7+5vXOltYqInx24GBz31jjh+4EcDeJq6l1T6p1+JUSY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(366004)(346002)(376002)(39850400004)(52116002)(44832011)(2906002)(6862004)(8936002)(5660300002)(66946007)(66476007)(4326008)(316002)(6200100001)(33656002)(478600001)(6506007)(966005)(8676002)(41300700001)(6486002)(1076003)(26005)(83380400001)(186003)(66556008)(38100700002)(6512007)(86362001)(38350700002);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sEJdF+oUqVMD9+IGRi0Jv0pQXxnIYpvMNqSe18O7NZG+6uMuCLXmtXaPSLpY?=
+ =?us-ascii?Q?eyYLFUck7ZUeod9A9Sy/acUScvj4rpcx5/xIUPKDfko+GHAhscVau//xWeJM?=
+ =?us-ascii?Q?LUAjpegDUBjboPWGZ/uCvpre2YU/65/dXGNrk/Gi6yN1kt9AQZsnAZZkf08U?=
+ =?us-ascii?Q?GsxcYl3E1BSEMU5/ahA1ScHZTVViyOnof9QxXN4g2Z9lSXecphLdvPCVn3x3?=
+ =?us-ascii?Q?uyYYtg2b2F3mQQ8MDfKIuX5/CXjj+Jfoz/ytdhMeC0Q85+a5/KumQiNHDCK/?=
+ =?us-ascii?Q?FNoFGEcZbgG7+tARMLZdLc7owuP04+sw3ewBP2zR55cisTFK3GCzF4ohRgrS?=
+ =?us-ascii?Q?d226dQARe0DkmOfloXMg1NJE2OyvVZs9yYqLRe9Xc7Hz2DYLpz2Cct3OAiQL?=
+ =?us-ascii?Q?uZu1Ai25a2fIRLAnnm/XjwZqm3n5JW/q3hGvIa9XkZYc1NzobgMz9Sy2TuG4?=
+ =?us-ascii?Q?F3pzppwqodq/2uRUVst89EFFCe4vx5n/k/Yj3ZlmLPc5+EpN4FycU3WYBPfe?=
+ =?us-ascii?Q?5cayPx5bxk6hdBkyOr/XB2Q+/GRAiGMYdsDBw6QEwDXQ5boUU/peH40+QyLF?=
+ =?us-ascii?Q?vDHxOp2CFvpy2LnoRzRbt7DrPfaYFIkF7fmsMAT3D60kvrJZLVDkVZ1nyEex?=
+ =?us-ascii?Q?bPp3LYDHZ41wVymp5Oz03GQ/sviCaeE5niWAVi5xQLRrz4Pl5w8YmBpk1/X/?=
+ =?us-ascii?Q?R55ZP6zsp/lYo93tBSHMh3RL0uF/LvyhQjIutxvy7ZbeZ+A0Bkb/kOt6Priw?=
+ =?us-ascii?Q?syL85sdIP2xxPvWMyIAvkbOvF1kwMp0pz81Bd1Kcfv8iw09nsFxuODI6JaJc?=
+ =?us-ascii?Q?D7N+l+aVIZ0I1yteavfqRUvtJxvPiqT+1iyimBwVt3RSvBwIGWgX2F9oP6LC?=
+ =?us-ascii?Q?AsCut9JXnDZ7tg0sXO2I02OyGiCmk78//SsHyTLd/Baj4qIb7JVNLMiZK6Up?=
+ =?us-ascii?Q?IuROQfzn8I04jvfsiP5ii5TzmlBSng4biCjzRZysMIJ6vBaHtYLhKj5Gy6o/?=
+ =?us-ascii?Q?LRjyBRuRtSLK6+hZdvng2h0jcFkl5QFoJb+BpSlcx1/1wRBCQ8jDUjCNMRFB?=
+ =?us-ascii?Q?mosCqOjVRUrF5zUzmrjE7ebPVRhG2ldnkRD1zS8U5EedbDXfREz07iavFOmz?=
+ =?us-ascii?Q?FYZbsgNJTmYVo2+g5s70SK6B7QWHzB5wG2sOFPL24pTpj0Hde6MUrwkzanin?=
+ =?us-ascii?Q?iQESDGWaD3eyflhUqgi0lLTXeXv7/P0xuJ0z64eWXBpccjiyIu6BbkRsuMrl?=
+ =?us-ascii?Q?LxYrMlWNY3fTJYqOM5fzg9AAxq0WGqTBIZLEeKg+ex/13COfJtV1Rsfkl91s?=
+ =?us-ascii?Q?2VH5nMqWZyDqOOUT08fU7teDDlopOjQ4mGiLHTnYirOq5VDh1j5YWJPLPXjV?=
+ =?us-ascii?Q?FII0qUkcasuTwPyKpaufZSAXxExUKZIImEYfeDiLK97tD55K6CAKPcjBqDgq?=
+ =?us-ascii?Q?pViQISqAEQ96qpK6SurOfxjTT2PUvBj4OyIlJg4f62lJS9Euil2+BMz92L5A?=
+ =?us-ascii?Q?RMhI8p2RUBAFH49WCP+tLLKfYvihDLaNz9nzXtBtQRmQ6MmAqrTXx7kMtGGJ?=
+ =?us-ascii?Q?IzIO2tiOd/M4RE6tEr6MXkuzQ4JqN1NQ8G6XPIxzwDlaG87iCtNXD/tiRps/?=
+ =?us-ascii?Q?hg=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1a62f178-9284-4b6e-f630-08da8c4fba2e
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 19:25:28.0916
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Kd1F7JDNj82/FTNa6NmPEqIaphJsmJtA6YmQJvTaPWRPNDTs+tywdwrBMJVRuNbCSDcYLflSLjJV5fYNUh9Yfkgb4582K042o/RR/ytVfB0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0167
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Sep 01, 2022 at 02:21:29PM +0200, Francesco Dolcini wrote:
+> [   21.629186] ======================================================
+> [   21.635418] WARNING: possible circular locking dependency detected
+> [   21.641646] 6.0.0-rc3 #7 Not tainted
+> [   21.645256] ------------------------------------------------------
+> [   21.651480] connmand/542 is trying to acquire lock:
+> [   21.656399] c2ce1d70 (kn->active#9){++++}-{0:0}, at: kernfs_remove_by_name_ns+0x50/0xa0
+> [   21.664516]
+>                but task is already holding lock:
+> [   21.670394] c17af6e0 (rtnl_mutex){+.+.}-{3:3}, at: devinet_ioctl+0xc8/0x870
+> [   21.677441]
+>                which lock already depends on the new lock.
+...
+> [   21.945318] Chain exists of:
+>                  kn->active#9 --> udc_lock --> rtnl_mutex
+> 
+> [   21.954902]  Possible unsafe locking scenario:
+> 
+> [   21.960865]        CPU0                    CPU1
+> [   21.965430]        ----                    ----
+> [   21.969994]   lock(rtnl_mutex);
+> [   21.973174]                                lock(udc_lock);
+> [   21.978709]                                lock(rtnl_mutex);
+> [   21.984419]   lock(kn->active#9);
+> [   21.987779]
+>                 *** DEADLOCK ***
+> 
+> [   21.993745] 1 lock held by connmand/542:
+> [   21.997704]  #0: c17af6e0 (rtnl_mutex){+.+.}-{3:3}, at: devinet_ioctl+0xc8/0x870
+> [   22.005191]
+...
+> I have not tried to bisect this yet, just probing if someone has already
+> some idea on this.
 
+Commit 2191c00855b0 ("USB: gadget: Fix use-after-free Read in usb_udc_uevent()")
+introduced this, see
+https://lore.kernel.org/all/20220901192204.GA2268599@francesco-nb.int.toradex.com/
 
-On 01.09.22 14:54, liuyacan@corp.netease.com wrote:
->>>>> From: Yacan Liu <liuyacan@corp.netease.com>
->>>>>
->>>>> After modifying the QP to the Error state, all RX WR would be completed
->>>>> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
->>>>> wait for it is done, but destroy the QP and free the link group directly.
->>>>> So there is a risk that accessing the freed memory in tasklet context.
->>>>>
->>>>> Here is a crash example:
->>>>>
->>>>>     BUG: unable to handle page fault for address: ffffffff8f220860
->>>>>     #PF: supervisor write access in kernel mode
->>>>>     #PF: error_code(0x0002) - not-present page
->>>>>     PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
->>>>>     Oops: 0002 [#1] SMP PTI
->>>>>     CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
->>>>>     Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
->>>>>     RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
->>>>>     Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
->>>>>     RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
->>>>>     RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
->>>>>     RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
->>>>>     RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
->>>>>     R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
->>>>>     R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
->>>>>     FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
->>>>>     CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>>>     CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
->>>>>     DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->>>>>     DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->>>>>     Call Trace:
->>>>>      <IRQ>
->>>>>      _raw_spin_lock_irqsave+0x30/0x40
->>>>>      mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
->>>>>      smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
->>>>>      tasklet_action_common.isra.21+0x66/0x100
->>>>>      __do_softirq+0xd5/0x29c
->>>>>      asm_call_irq_on_stack+0x12/0x20
->>>>>      </IRQ>
->>>>>      do_softirq_own_stack+0x37/0x40
->>>>>      irq_exit_rcu+0x9d/0xa0
->>>>>      sysvec_call_function_single+0x34/0x80
->>>>>      asm_sysvec_call_function_single+0x12/0x20
->>>>>
->>>>> Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
->>>>> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
->>>>>
->>>>> ---
->>>>> Chagen in v4:
->>>>>      -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
->>>>>      -- Remove timeout.
->>>>> Change in v3:
->>>>>      -- Tune commit message (Signed-Off tag, Fixes tag).
->>>>>         Tune code to avoid column length exceeding.
->>>>> Change in v2:
->>>>>      -- Fix some compile warnings and errors.
->>>>> ---
->>>>>     net/smc/smc_core.c | 2 ++
->>>>>     net/smc/smc_core.h | 2 ++
->>>>>     net/smc/smc_wr.c   | 9 +++++++++
->>>>>     net/smc/smc_wr.h   | 1 +
->>>>>     4 files changed, 14 insertions(+)
->>>>>
->>>>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
->>>>> index ff49a11f5..f92a916e9 100644
->>>>> --- a/net/smc/smc_core.c
->>>>> +++ b/net/smc/smc_core.c
->>>>> @@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
->>>>>     	lnk->lgr = lgr;
->>>>>     	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
->>>>>     	lnk->link_idx = link_idx;
->>>>> +	lnk->wr_rx_id_compl = 0;
->>>>>     	smc_ibdev_cnt_inc(lnk);
->>>>>     	smcr_copy_dev_info_to_link(lnk);
->>>>>     	atomic_set(&lnk->conn_cnt, 0);
->>>>> @@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
->>>>>     	smcr_buf_unmap_lgr(lnk);
->>>>>     	smcr_rtoken_clear_link(lnk);
->>>>>     	smc_ib_modify_qp_error(lnk);
->>>>> +	smc_wr_drain_cq(lnk);
->>>>>     	smc_wr_free_link(lnk);
->>>>>     	smc_ib_destroy_queue_pair(lnk);
->>>>>     	smc_ib_dealloc_protection_domain(lnk);
->>>>> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
->>>>> index fe8b524ad..285f9bd8e 100644
->>>>> --- a/net/smc/smc_core.h
->>>>> +++ b/net/smc/smc_core.h
->>>>> @@ -115,8 +115,10 @@ struct smc_link {
->>>>>     	dma_addr_t		wr_rx_dma_addr;	/* DMA address of wr_rx_bufs */
->>>>>     	dma_addr_t		wr_rx_v2_dma_addr; /* DMA address of v2 rx buf*/
->>>>>     	u64			wr_rx_id;	/* seq # of last recv WR */
->>>>> +	u64			wr_rx_id_compl; /* seq # of last completed WR */
->>>>>     	u32			wr_rx_cnt;	/* number of WR recv buffers */
->>>>>     	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
->>>>> +	wait_queue_head_t       wr_rx_empty_wait; /* wait for RQ empty */
->>>>>     
->>>>>     	struct ib_reg_wr	wr_reg;		/* WR register memory region */
->>>>>     	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
->>>>> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
->>>>> index 26f8f240d..bc8793803 100644
->>>>> --- a/net/smc/smc_wr.c
->>>>> +++ b/net/smc/smc_wr.c
->>>>> @@ -454,6 +454,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
->>>>>     
->>>>>     	for (i = 0; i < num; i++) {
->>>>>     		link = wc[i].qp->qp_context;
->>>>> +		link->wr_rx_id_compl = wc[i].wr_id;
->>>>>     		if (wc[i].status == IB_WC_SUCCESS) {
->>>>>     			link->wr_rx_tstamp = jiffies;
->>>>>     			smc_wr_rx_demultiplex(&wc[i]);
->>>>> @@ -465,6 +466,8 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
->>>>>     			case IB_WC_RNR_RETRY_EXC_ERR:
->>>>>     			case IB_WC_WR_FLUSH_ERR:
->>>>>     				smcr_link_down_cond_sched(link);
->>>>> +				if (link->wr_rx_id_compl == link->wr_rx_id)
->>>>> +					wake_up(&link->wr_rx_empty_wait);
->>>>>     				break;
->>>>>     			default:
->>>>>     				smc_wr_rx_post(link); /* refill WR RX */
->>>>> @@ -631,6 +634,11 @@ static void smc_wr_init_sge(struct smc_link *lnk)
->>>>>     	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
->>>>>     }
->>>>>     
->>>>> +void smc_wr_drain_cq(struct smc_link *lnk)
->>>>> +{
->>>>> +	wait_event(lnk->wr_rx_empty_wait, lnk->wr_rx_id_compl == lnk->wr_rx_id);
->>>>> +}
->>>>> +
->>>>>     void smc_wr_free_link(struct smc_link *lnk)
->>>>>     {
->>>>>     	struct ib_device *ibdev;
->>>>> @@ -889,6 +897,7 @@ int smc_wr_create_link(struct smc_link *lnk)
->>>>>     	atomic_set(&lnk->wr_tx_refcnt, 0);
->>>>>     	init_waitqueue_head(&lnk->wr_reg_wait);
->>>>>     	atomic_set(&lnk->wr_reg_refcnt, 0);
->>>>> +	init_waitqueue_head(&lnk->wr_rx_empty_wait);
->>>>>     	return rc;
->>>>>     
->>>>>     dma_unmap:
->>>>> diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
->>>>> index a54e90a11..5ca5086ae 100644
->>>>> --- a/net/smc/smc_wr.h
->>>>> +++ b/net/smc/smc_wr.h
->>>>> @@ -101,6 +101,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
->>>>>     int smc_wr_create_link(struct smc_link *lnk);
->>>>>     int smc_wr_alloc_link_mem(struct smc_link *lnk);
->>>>>     int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
->>>>> +void smc_wr_drain_cq(struct smc_link *lnk);
->>>>>     void smc_wr_free_link(struct smc_link *lnk);
->>>>>     void smc_wr_free_link_mem(struct smc_link *lnk);
->>>>>     void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
->>>>
->>>> Thank you @Yacan for the effort to improve our code! And Thank you @Tony
->>>> for such valuable suggestions and testing!
->>>> I like the modification of this version. However, this is not a fix
->>>> patch to upstream, since the patches "[PATCH net-next v2 00/10] optimize
->>>> the parallelism of SMC-R connections" are still not applied. My
->>>> sugguestions:
->>>> - Please talk to the author (D. Wythe <alibuda@linux.alibaba.com>) of
->>>> those patches I mentioned above, and ask if he can take your patch as a
->>>> part of the patch serie
->>>> - Fix patches should go to net-next
->>>> - Please send always send your new version separately, rather than as
->>>> reply to your previous version. That makes people confused.
->>>
->>> @Wenjia, Thanks a lot for your suggestions and guidance !
->>>
->>> @D. Wythe, Can you include this patch in your series of patches if it is
->>> convenient?
->>>
->>> Regards,
->>> Yacan
->>>
->> One point I was confused, fixes should goto net, sorry!
-> 
-> Well, @D. Wythe, please ignore the above emails, sorry!
-> 
-> Regards,
-> Yacan
-> 
-oh no, I didn't mean that. I think I didn't say clearly. What I mean is 
-that the patch should go to net as a seperate patch if the patch serie 
-from D. Wythe is already applied. But now the patch serie is still not 
-applied, so you can still ask D. Wythe to take your patch as a part of 
-this serie. (Just a suggestion)
+Francesco
+
