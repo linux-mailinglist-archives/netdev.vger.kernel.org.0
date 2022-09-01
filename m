@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0960A5AA0CA
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A158C5AA0D9
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:23:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234840AbiIAUSp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 16:18:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55050 "EHLO
+        id S234903AbiIAUXn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 16:23:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234879AbiIAUSl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:18:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6C87CA98
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 13:18:38 -0700 (PDT)
+        with ESMTP id S232088AbiIAUXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:23:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB40C7285D;
+        Thu,  1 Sep 2022 13:23:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 895E2B828FC
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 20:18:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E432EC433D6;
-        Thu,  1 Sep 2022 20:18:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D890B82934;
+        Thu,  1 Sep 2022 20:23:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 170CEC433D6;
+        Thu,  1 Sep 2022 20:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662063516;
-        bh=dLKFmAPBmJwRRq6yMvJoGRhZjJQtlcTEqlLxmo+Q9jI=;
+        s=k20201202; t=1662063819;
+        bh=DZet2g1JTuCOMZjHO51L2oDBFmnNX7de9n0/D5jATac=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qRt+zdswlv9zzX3qcS7J2o1TnUoyX1H1Aa0jfmy+Kku20buC1aw7BIw+oqEyxurSZ
-         m/lpx6hCv6tlFZW4VJJjhfT7kFO4X8KiW0US4hd/i4FPCAoXpgNEe/HGymHB8sYr7B
-         V5W92EFINx1yS9Xyh2zk105A266j5DHmgPJwn4mSNMgK8KUwWm3fXEjn2O67sk0hHk
-         2sVfBniiw3AlzdbjQMSVWuvb2g/u+S+QoOzp2vWPdmVZrQRUf5k+2Q8MfDOqc8twf+
-         LH4QqwGkN8ouY0ZFvAce/WugNsL3jjnNm4CvMvTRWverK18d1o774/DT02iu0FN/a9
-         OBVoO+8hfWybw==
-Date:   Thu, 1 Sep 2022 13:18:35 -0700
+        b=HjtXBYxssHpdX+ioUY/pQvnV7rZEjNef3L1Er6ytDW2hu3sERZg8CZCG/CzIBjoY5
+         f9TffmuV8aCckpJc4oojYAGPPjv6sB7TsGBiOsCo74bqSpXVzjwwH7aK2ulWd90FH+
+         8bkqXhpTLriLzPW3jq4diOfeAxEK5lHZoT4uMEcKQg7h4a9g3OGlMAOd9sp6k8KqQ6
+         l1HbhSxnvhiz5iD23BQ8LQg5nbo3JcIL5QBqjge4ljqiVy4Wt8udBHXPk5H2R2PAf0
+         kddC3QU8U+CIbQNg4tGp3fcnkcf1YnWFDQ8aiPGJbC9SDKvRS/uzj7b8h6bYZjuUKN
+         VyJbyNd28cWlQ==
+Date:   Thu, 1 Sep 2022 13:23:38 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        Michal Michalik <michal.michalik@intel.com>,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        Gurucharan <gurucharanx.g@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
- GNSS
-Message-ID: <20220901131835.0fe7b02e@kernel.org>
-In-Reply-To: <YxBHL6YzF2dAWf3q@kroah.com>
-References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
-        <20220829220049.333434-4-anthony.l.nguyen@intel.com>
-        <20220831145439.2f268c34@kernel.org>
-        <YxBHL6YzF2dAWf3q@kroah.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Stefan Schmidt <stefan@datenfreihafen.org>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Gal Pressman <gal@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ieee802154: Fix compilation error when
+ CONFIG_IEEE802154_NL802154_EXPERIMENTAL is disabled
+Message-ID: <20220901132338.2953518c@kernel.org>
+In-Reply-To: <YxBTaxMmHKiLjcCo@unreal>
+References: <20220830101237.22782-1-gal@nvidia.com>
+        <20220830231330.1c618258@kernel.org>
+        <4187e35d-0965-cf65-bff5-e4f71a04d272@nvidia.com>
+        <20220830233124.2770ffc2@kernel.org>
+        <20220831112150.36e503bd@kernel.org>
+        <36f09967-b211-ef48-7360-b6dedfda73e3@datenfreihafen.org>
+        <20220831140947.7e8d06ee@kernel.org>
+        <YxBTaxMmHKiLjcCo@unreal>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,19 +64,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Sep 2022 07:46:23 +0200 Greg Kroah-Hartman wrote:
-> > Please CC GNSS and TTY maintainers on the patches relating to 
-> > the TTY/GNSS channel going forward.
-> > 
-> > CC: Greg, Jiri, Johan
-> > 
-> > We'll pull in a day or two if there are no objections.  
+On Thu, 1 Sep 2022 09:38:35 +0300 Leon Romanovsky wrote:
+> There is no such thing like experimental UAPI. Once you put something
+> in UAPI headers and/or allowed users to issue calls from userspace
+> to kernel, they can use it. We don't control how users compile their
+> kernels.
 > 
-> Please see above, I'd like to know what is really failing here and why
-> as forcing drivers to have "empty" functions like this is not good and
-> never the goal.
+> So it is not break "experimental commands", but break commands that
+> maybe shouldn't exist in first place.
+> 
+> nl802154 code suffers from two basic mistakes:
+> 1. User visible defines are not part of UAPI headers. For example,
+> include/net/nl802154.h should be in include/uapi/net/....
+> 2. Used Kconfig option for pseudo-UAPI header.
+> 
+> In this specific case, I checked that Fedora didn't enable this
+> CONFIG_IEEE802154_NL802154_EXPERIMENTAL knob, but someone needs
+> to check debian and other distros too.
+> 
+> Most likely it is not used at all.
 
-Thanks for a prompt look!
-
-Tony, I presume you may want to sidetrack this patch for now and ship
-the rest so lemme toss this version of the series.
+You're right, FWIW. I didn't want to get sidetracked into that before
+we fix the immediate build issue. It's not the only family playing uAPI
+games :(
