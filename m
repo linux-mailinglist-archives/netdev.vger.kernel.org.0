@@ -2,122 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD065A95D9
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 13:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C2F5A95ED
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 13:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232724AbiIALjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 07:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
+        id S232903AbiIALsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 07:48:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232787AbiIALjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 07:39:17 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECDA1139F7C
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 04:39:16 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id b44so22148506edf.9
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 04:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=cwQPFQYC6FfW+75drNomTnV2hgdjj72iaH/y+IIrk4o=;
-        b=B7LK9Rql1meKYTSjNEghBHaiXv0mzI/O6O1KAM0pRjwwuVQ7X+XToZ7+QmNqd/Oopv
-         jue32CGa14LWYRgmKkain1gUL0pHOCZjKvtWnosrhC9QhNs8QQqlQUqBAyTTYMWsr6/V
-         qIYow92MPGHbG9drPLEB6n+BMUn4DoNO4FYqNzjq0YtlT7jNvCN6QgqrYWw1+ZrFY2mr
-         DRw/4IlKs9jxuC0ma0erjhD0DcYoY9e42dh+QRFozDfRy7CwLpPuFKV6H5468N63ERF+
-         HAkrxNebvmXp655HzvNIyDpnQ6RfvOKDoPtMV9dfD4dhQlHzgOC+JXGWEkKth5XM8mpq
-         97yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=cwQPFQYC6FfW+75drNomTnV2hgdjj72iaH/y+IIrk4o=;
-        b=HQYeIoADZZspjFowfJUpEnCoDMQ5iodkxBTL/4JgpBxTWDzedbPypOzzTh2HfP3tiP
-         k+6UK/CtbQpXyULJuxcZxsBwR33l5kYopMWVoS0kVIX1EjFwTBWvTdBMMn5xRHPd7OjP
-         eTBVUmPVNPnW2EQajZzjlMIYl0LKftnZMBoBBthJNhXymZmOYtY8FBt/NVYKl4NsuDsL
-         z4uCsh5tc02hm9gb5QhajTLFKRpyR1hv+k89aY44H7iKWqvuSJH9UAHsWsdQae/0M0so
-         BOgu00PI9vvarwkEA8+IXnU4gZ8sRcsiGiKuy3Qe2wWQZvfZRpxiSPkc5y5wmk2Y5eed
-         +j2g==
-X-Gm-Message-State: ACgBeo34ucRAmGtcIXo2dK5dZRgFKeRM6Kwpkmy9an9xaBmE2w7iFkPI
-        l5Lkh7g5qSZ8uDRR4Gktiqs=
-X-Google-Smtp-Source: AA6agR4MRrmf4TctEZSxVMfUigeie1h3/8JSrWKG1u9gutGGCviwbmG0U4Xk8i6GDteQ50GojbkSjw==
-X-Received: by 2002:a05:6402:5488:b0:443:39c5:5347 with SMTP id fg8-20020a056402548800b0044339c55347mr28607938edb.204.1662032355279;
-        Thu, 01 Sep 2022 04:39:15 -0700 (PDT)
-Received: from skbuf ([188.27.184.197])
-        by smtp.gmail.com with ESMTPSA id dv10-20020a170906b80a00b0073d6234ceebsm8285731ejb.160.2022.09.01.04.39.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 04:39:14 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 14:39:12 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: hellcreek: Print warning only once
-Message-ID: <20220901113912.wrwmftzrjlxsof7y@skbuf>
-References: <20220830163448.8921-1-kurt@linutronix.de>
- <20220831152628.um4ktfj4upcz7zwq@skbuf>
- <87v8q8jjgh.fsf@kurt>
- <20220831234329.w7wnxy4u3e5i6ydl@skbuf>
- <87czcfzkb6.fsf@kurt>
+        with ESMTP id S232859AbiIALsT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 07:48:19 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5E2613A7C2;
+        Thu,  1 Sep 2022 04:48:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662032897; x=1693568897;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=P27EPnIzqpU6RwWBQixwKJlpZ+ZGv6BjVXx8T7VYhF8=;
+  b=b/vpoJf6Tit1yHXkrDgxeDoXZGgMTFucqUxeb8KE3VMU3lo9hMJllwhv
+   psbWHhhfcBgBjfRC3MvdPqVjyTqN+fwyCO7vwfZDL7xQZEy74kIjSGMZu
+   bavYAkNgdMTPV3v+yNYqo3zIQytS+bTzE02n9ahiC0Ql7cBpHooIKKXBB
+   7pOZ0cwtup0wfFlXacA1z+O7upyNKT4lSMwcaDw1LZDU/YpFhGFMd/2Zn
+   PZ8kWun1FB+qnmtWVQsb2tjqAyyTqE7rmPWQIJa8Y3XzrGotRMe7KI3kU
+   9qR3+G9csMVt7SpPysFT1bflhsx/vVcylpTo2KZyflhXbAAToBrs8gqz0
+   g==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10456"; a="357410331"
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="357410331"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Sep 2022 04:48:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,280,1654585200"; 
+   d="scan'208";a="673814318"
+Received: from boxer.igk.intel.com ([10.102.20.173])
+  by fmsmga008.fm.intel.com with ESMTP; 01 Sep 2022 04:48:14 -0700
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     netdev@vger.kernel.org, magnus.karlsson@intel.com,
+        bjorn@kernel.org, john.fastabend@gmail.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v6 bpf-next 0/6] selftests: xsk: real device testing support
+Date:   Thu,  1 Sep 2022 13:48:07 +0200
+Message-Id: <20220901114813.16275-1-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87czcfzkb6.fsf@kurt>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 08:21:33AM +0200, Kurt Kanzenbach wrote:
-> > So from Florian's comment above, he was under case (b), different than yours.
-> > I don't understand why you say that when ACS is set, "the STP frames are
-> > truncated and the trailer tag is gone". Simply altering the ACS bit
-> > isn't going to change the determination made by stmmac_rx(). My guess
-> > based on the current input I have is that it would work fine for you
-> > (but possibly not for Florian).
-> 
-> I thought so too. However, altering the ACS Bit didn't help at all.
+v5->v6:
+* rebase properly
+* collect acks (Magnus)
+* extend char limit for iface/netns to 16 (Magnus)
 
-This is curious. Could you dump the Length/Type Field (LT bits 18:16)
-from the RDES3 for these packets? If ACS does not take effect, it would
-mean the DWMAC doesn't think they're Length packets I guess? Also, does
-the Error Summary say anything? In principle, the length of this packet
-is greater than the EtherType/Length would say, by the size of the tail
-tag. Not sure how that affects the RX parser.
+v4->v5:
+* ice patches have gone through its own way, so they are out of this
+  revision
+* rebase
+* close prog fd on error path in patch 1 (John)
+* pull out patch for closing netns fd and send it separately (John)
+* remove a patch that made Tx completion rely on pkts_in_flight (John)
 
-> We could do some measurements e.g., with perf to determine whether
-> removing the FCS logic has positive or negative effects?
+v3->v4:
+* use ice_{down,up} rather than ice_{stop,open} and check retvals
+  when toggling loopback mode (Jakub)
+* Remove patch that was throwing away xsk->outstanding_tx (Magnus)
 
-Yes, some IP forwarding of 60 byte frames at line rate gigabit or higher
-should do the trick. Testing with MTU sized packets is probably not
-going to show much of a difference.
+v2->v3:
+* split loopback patch to ice_set_features() refactor part and other
+  part with actual loopback toggling support (Alexandr)
+* collect more acks from Magnus
 
-> > How large can you configure the hellcreek switch to send packets towards
-> > the DSA master? Could you force a packet size (including hellcreek tail tag)
-> > comparable to dma_conf->dma_buf_sz?
-> 
-> I don't think so.
-> 
-> > Or if not, perhaps you could hack the way in which stmmac_set_bfsize()
-> > works, or one of the constants?
-> 
-> I'm not sure if i follow you here.
+v1->v2:
+* collect acks from Magnus
+* drop redundant 'ret' variable in patch 4 (Magnus)
+* drop redundant assignments to ifobject->xdp_flags in patch 10 (Magnus)
+* use NETIF_F_LOOPBACK instead of introducing priv-flag (Alexandr)
 
-I mean if you can't bring the MTU of the switch closer to the buffer
-size of the DSA master, at least bring the buffer size closer to the MTU
-of the switch. If this means, idk, hacking the DEFAULT_BUFSIZE macro to
-a lower value such as to force splitting some otherwise "normal" packet
-sizes into 2 buffers, fine.
+Hi!
 
-Then, the next step would be to force this splitting to occur exactly
-where the FCS lies in the buffers. Then I should be able to hear the
-kaboom from over here.
+This set makes it possible to use xskxceiver against real devices that
+support MAC loopback. Currently, xskxceiver assumes that underlying
+device supports native XDP. It is true for veth, but might not be for
+other device that might be used with xskxceiver once this patch set
+land. So, first patch adds a logic to find out if underlying device
+supports XDP so that TEST_MODE_DRV can be used for test suite.
+
+In patch 2, default Rx pkt stream is added so physical device testing
+will be able to use shared UMEM in a way that Tx will utilize first half
+of buffer space and Rx second one. Then, patch 4 adds support for running
+xskxceiver on physical devices.
+
+Patch 6 finally adds new TEST_MODE_ZC for testing zero copy AF_XDP
+driver support.
+
+This work already allowed us to spot and fix two bugs in AF_XDP kernel
+side ([0], [1]).
+
+v1 is here [2].
+v2 is here [3].
+v3 is here [4].
+v4 is here [5].
+v5 is not worth including in here.
+
+[0]: https://lore.kernel.org/bpf/20220425153745.481322-1-maciej.fijalkowski@intel.com/
+[1]: https://lore.kernel.org/bpf/20220607142200.576735-1-maciej.fijalkowski@intel.com/
+[2]: https://lore.kernel.org/bpf/20220610150923.583202-1-maciej.fijalkowski@intel.com/
+[3]: https://lore.kernel.org/bpf/20220614174749.901044-1-maciej.fijalkowski@intel.com/
+[4]: https://lore.kernel.org/bpf/20220615161041.902916-1-maciej.fijalkowski@intel.com/
+[5]: https://lore.kernel.org/bpf/20220616180609.905015-1-maciej.fijalkowski@intel.com/
+
+Thank you.
+
+Maciej Fijalkowski (6):
+  selftests: xsk: query for native XDP support
+  selftests: xsk: introduce default Rx pkt stream
+  selftests: xsk: increase chars for interface name to 16
+  selftests: xsk: add support for executing tests on physical device
+  selftests: xsk: make sure single threaded test terminates
+  selftests: xsk: add support for zero copy testing
+
+ tools/testing/selftests/bpf/test_xsk.sh  |  52 ++-
+ tools/testing/selftests/bpf/xskxceiver.c | 398 +++++++++++++++++------
+ tools/testing/selftests/bpf/xskxceiver.h |  11 +-
+ 3 files changed, 340 insertions(+), 121 deletions(-)
+
+-- 
+2.34.1
+
