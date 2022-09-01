@@ -2,80 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 361AD5AA0F9
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1985AA10A
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 22:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233291AbiIAUgh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 16:36:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51488 "EHLO
+        id S234363AbiIAUqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 16:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233094AbiIAUgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:36:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED00472EF3
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 13:36:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662064593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=KAlQhkA8oZVAtUjKMimmRFck4zP8R2Z4c1q1RUzZKkc=;
-        b=Zf8uTJEy88tl0FzSO+rsURWRMzj4q7FTI4ZiOmyTwbp3K8AQxNxuZTxi4CSFOn9OeQerv4
-        DSJAOz2e4OV/Vax2v5+oZRGnEzhhr564yKxB+DOzZPXmV/hjQCoreVlM5mWt07VTSZ4wj4
-        CkE5Wye+PwhOm0XfPDOCSs5AR6MYfDo=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-76-bDVzqRdqOj27G7spVWdxYQ-1; Thu, 01 Sep 2022 16:36:33 -0400
-X-MC-Unique: bDVzqRdqOj27G7spVWdxYQ-1
-Received: by mail-io1-f72.google.com with SMTP id w7-20020a5d9607000000b0067c6030dfb8so17656iol.10
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 13:36:32 -0700 (PDT)
+        with ESMTP id S233353AbiIAUqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 16:46:04 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3118D56B80
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 13:46:02 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id 72so18585881pfx.9
+        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 13:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc;
+        bh=3FATo+4aSu7y8dsoj+GqrdVX/tRMTr67LwXEb3c92qM=;
+        b=JDejjNU/A1CEVLmDw/kbCrNbdJoDEXGLDDaIyV9Igs/XsnOsjR1Dc6yu+mvq7kTeMM
+         cvw4U0gVZCifDlqJhtwiRsOvulrMamJ1N3LMefiLT5hGizjH0dPJDT5JLnQPTaFNqL7+
+         TUAz8UxE1PUEmXH6jTTj+ycsmdoRAwJ7rPHtU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:organization:references
-         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
-         :from:to:cc:subject:date;
-        bh=KAlQhkA8oZVAtUjKMimmRFck4zP8R2Z4c1q1RUzZKkc=;
-        b=Y/fntbL80FDyW/dGNM/d6zsQqdPlXpuhkJCJ3QO0pceu5301AZsGQa9YxslvH1WE6K
-         +NnZJk/efT0pfKYkhxCfql1awtFLdTviceh1pSsO+JPn0PIISI+FPgql1syZCz6VMm8x
-         QdIvE5LR0+hVpVvSaNf/LOGU+lEE3VZSxOz42vi07Xu9RzRszuOByNCuirjMEOOtzZ1E
-         j1oUuflzvhO78hQU4mwlfoTS/MguxAual+8B26kHZi+qK1qAxI2Di38HNu1xWl/KNp/p
-         IasKRrbgckhD43HEHl29NXWeP2UbpGNWaU/JXPD72i/ewZD6Xb17q9C6nBfr9g7W++1x
-         jPGQ==
-X-Gm-Message-State: ACgBeo2Cb1IJ1qck9BwlS4taaMRnR2MXe5nVzR+1YsrFOPEXDfUSZOBv
-        wGTuNnNOBa+inN41XGTSABZ3i7MUm+9y2F8LfyvAaB8UotCXihcZODBrwOwm0qVJBzdGlzeBHe9
-        BDDHrNgjb0u+zOum3
-X-Received: by 2002:a02:b383:0:b0:34c:e89:bd54 with SMTP id p3-20020a02b383000000b0034c0e89bd54mr4894429jan.290.1662064592200;
-        Thu, 01 Sep 2022 13:36:32 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7LXo9d5a4G1Y1TjUodIAyqy9fvJQjo2moRcKMgTDEwM9dowocrU7kxQd5lUILaT/qDH2Ihdg==
-X-Received: by 2002:a02:b383:0:b0:34c:e89:bd54 with SMTP id p3-20020a02b383000000b0034c0e89bd54mr4894420jan.290.1662064591916;
-        Thu, 01 Sep 2022 13:36:31 -0700 (PDT)
-Received: from redhat.com ([38.15.36.239])
-        by smtp.gmail.com with ESMTPSA id b24-20020a05663801b800b00349deda465asm58914jaq.39.2022.09.01.13.36.27
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc;
+        bh=3FATo+4aSu7y8dsoj+GqrdVX/tRMTr67LwXEb3c92qM=;
+        b=m387d/4ZDcZuPQQEkuS+4lgFBM8anbhWCqRzCwPwr11jGyF+C+vi4Xac8TC7g2qRFJ
+         wHjkkHaDYpuS9l3tKf7LTEVR1MrQyIuW5HmRvGOM5LU6bNPPpP0/5t3XFPtq9XCVuVFn
+         JE5++IuMv8hn+3hkTJdEeYSjATOjqS9FGilVuXNNZaVTbm6dXKHDSivUPt/aG1wQue4y
+         1a6OGTOQhdCcyMvAIUGaQwRHpDI8Dzsc6tZd5VEmED6mEJTtQbXoDViMOAcNQ26dJami
+         yZ58DbiUXW5YBcceqMybkeB9Vb0oGtZ7YEJBFCNMM+Lz+bmXX0ANDOr8Tk3gFIC0I+ci
+         HaiA==
+X-Gm-Message-State: ACgBeo0x6ieZfkKK3OiUrpbO/sQYVIFRX5V8NtYBNrfNEQfCKkTlml1C
+        2/xaekklnR6wE5o2Sr0uI/WwBQ==
+X-Google-Smtp-Source: AA6agR5ZsGlC3fTZ03AIuh04jvZ/ffxqC7vYoNL6qJA03Vhg3EK6HLxeudH2vcuvQD4N+aTvr2burQ==
+X-Received: by 2002:a63:7843:0:b0:42b:4e77:a508 with SMTP id t64-20020a637843000000b0042b4e77a508mr27570344pgc.449.1662065161707;
+        Thu, 01 Sep 2022 13:46:01 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q3-20020aa78423000000b0052d87b76d12sm23827pfn.68.2022.09.01.13.46.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 13:36:29 -0700 (PDT)
-Date:   Thu, 1 Sep 2022 14:36:25 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     joao.m.martins@oracle.com
-Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
-        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        kuba@kernel.org, kevin.tian@intel.com, leonro@nvidia.com,
-        maorg@nvidia.com, cohuck@redhat.com
-Subject: Re: [PATCH V5 vfio 04/10] vfio: Add an IOVA bitmap support
-Message-ID: <20220901143625.4cbd3394.alex.williamson@redhat.com>
-In-Reply-To: <b3916258-bd64-5cc8-7cbe-f7338a96bf58@oracle.com>
-References: <20220901093853.60194-1-yishaih@nvidia.com>
-        <20220901093853.60194-5-yishaih@nvidia.com>
-        <20220901124742.35648bd5.alex.williamson@redhat.com>
-        <b3916258-bd64-5cc8-7cbe-f7338a96bf58@oracle.com>
-Organization: Red Hat
+        Thu, 01 Sep 2022 13:46:00 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     Luca Coelho <luciano.coelho@intel.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        Andy Lavr <andy.lavr@gmail.com>, Kalle Valo <kvalo@kernel.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] iwlwifi: calib: Refactor iwl_calib_result usage for clarity
+Date:   Thu,  1 Sep 2022 13:45:58 -0700
+Message-Id: <20220901204558.2256458-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5095; h=from:subject; bh=dXk9FvP8mQV+OU7HzHs8EJnNRxX0VzSl2ssfNfi+TYY=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBjERoGa6dATzMBuf7tKR2Kr6iz+T5BgWqO5lKzP2H+ tXAHCbyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYxEaBgAKCRCJcvTf3G3AJnCEEA CD5yRk+eEyd95e31q9KVFxtiS/4qWSVLf7kkpCTuMDpudMz7nUxKvg7jTXy2XRiRkpqkwS+UxmsAC0 jrtzN1L/iWsq0KBqjH7uw8Qc0nLos6Ya42Jc+ylzkBMLywoVNW0r2a/JBaMNwCxakQa49fCeKKQpsK ufdhJ/oBicA6OA9NXeGWKu5Wlh/ADv+wvCxadKqd0xwppvmQacyvSjIzuV4choGTHjRuRRkG/BTUBf nVuRVuZ1JVPbwD7nZ+weIPI1WvAW8Ky+Xl8Ly6z72DM66Y2nbldOfg0cz6nnTFeHyZysLmhwT/DS6h YkijlAzekNR90QCKm0Qkn+O54AyhRrRZlGYWnXtObOihyPLgfJpBALGdkCo15y0wQ7HccpBHUItsRS vrAY5y1KYcsPG6pfGCEnNpmU8uqCmqoCTc2rfRc03/LUqsp06vfEi91++48DuBo3iPy0Ny4zeBfpv0 Vib/W0vHtvvuFk5JbC7syM6V25NKeSNzb8u8khHd/MQYJrN42LOWkQb8dQ9KgIHb7MDP5FcPES9K1R pPgRp5CqwkCx7b6QG7Z7apVES3Sv8380ZLHZHw2fdsxwxEEQQhfolh45K6mZS5HBHoUuMboyRDMYwD Dm5x1YW9ST0RxrJmoTfUiDOMy8M9lb0SZMkg9a2zpH8W/cz9BOfYNBov8iFg==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,147 +76,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Sep 2022 20:39:40 +0100
-joao.m.martins@oracle.com wrote:
+In preparation for FORTIFY_SOURCE performing run-time destination buffer
+bounds checking for memcpy(), refactor the use of struct iwl_calib_result:
 
-> On 01/09/2022 19:47, Alex Williamson wrote:
-> > On Thu, 1 Sep 2022 12:38:47 +0300
-> > Yishai Hadas <yishaih@nvidia.com> wrote:
-> >> + * An example of the APIs on how to use/iterate over the IOVA bitmap:
-> >> + *
-> >> + *   bitmap = iova_bitmap_alloc(iova, length, page_size, data);
-> >> + *   if (IS_ERR(bitmap))
-> >> + *       return PTR_ERR(bitmap);
-> >> + *
-> >> + *   ret = iova_bitmap_for_each(bitmap, arg, dirty_reporter_fn);
-> >> + *
-> >> + *   iova_bitmap_free(bitmap);
-> >> + *
-> >> + * An implementation of the lower end (referred to above as
-> >> + * dirty_reporter_fn to exemplify), that is tracking dirty bits would mark
-> >> + * an IOVA as dirty as following:
-> >> + *     iova_bitmap_set(bitmap, iova, page_size);
-> >> + * Or a contiguous range (example two pages):
-> >> + *     iova_bitmap_set(bitmap, iova, 2 * page_size);  
-> > 
-> > This seems like it implies a stronger correlation to the
-> > iova_bitmap_alloc() page_size than actually exists.  The implementation
-> > of the dirty_reporter_fn() may not know the reporting page_size.  The
-> > value here is just a size_t and iova_bitmap handles the rest, right?
-> >   
-> Correct. 
-> 
-> The intent was to show an example of what the different usage have
-> an effect in the end bitmap data (1 page and then 2 pages). An alternative
-> would be:
-> 
-> 	An implementation of the lower end (referred to above as
-> 	dirty_reporter_fn to exemplify), that is tracking dirty bits would mark
-> 	an IOVA range spanning @iova_length as dirty, using the configured
-> 	@page_size:
-> 
->   	  iova_bitmap_set(bitmap, iova, iova_length)
-> 
-> But with a different length variable (i.e. iova_length) to avoid being confused with
-> the length in iova_bitmap_alloc right before this paragraph. But the example in the
-> patch looks a bit more clear on the outcomes to me personally.
+- Have struct iwl_calib_result contain struct iwl_calib_cmd since
+  functions expect to operate on the "data" flex array in "cmd", which
+  follows the "hdr" member.
+- Switch argument passing around to use struct iwl_calib_cmd instead of
+  struct iwl_calib_hdr to prepare functions to see the "data" member.
+- Change iwl_calib_set()'s "len" argument to a size_t since it is always
+  unsigned and is normally receiving the output of sizeof().
+- Add an explicit length sanity check in iwl_calib_set().
+- Adjust the memcpy() to avoid copying across the now visible composite
+  flex array structure.
 
-How about:
+This avoids the future run-time warning:
 
-  Each iteration of the dirty_reporter_fn is called with a unique @iova
-  and @length argument, indicating the current range available through
-  the iova_bitmap.  The dirty_reporter_fn uses iova_bitmap_set() to
-  mark dirty areas within that provided range
+  memcpy: detected field-spanning write (size 8) of single field "&res->hdr" (size 4)
 
-?
+Cc: Luca Coelho <luciano.coelho@intel.com>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Reported-by: Andy Lavr <andy.lavr@gmail.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ drivers/net/wireless/intel/iwlwifi/dvm/agn.h  |  2 +-
+ .../net/wireless/intel/iwlwifi/dvm/calib.c    | 22 ++++++++++---------
+ .../net/wireless/intel/iwlwifi/dvm/ucode.c    |  8 +++----
+ 3 files changed, 17 insertions(+), 15 deletions(-)
 
-...
-> >> +/**
-> >> + * iova_bitmap_for_each() - Iterates over the bitmap
-> >> + * @bitmap: IOVA bitmap to iterate
-> >> + * @opaque: Additional argument to pass to the callback
-> >> + * @fn: Function that gets called for each IOVA range
-> >> + *
-> >> + * Helper function to iterate over bitmap data representing a portion of IOVA
-> >> + * space. It hides the complexity of iterating bitmaps and translating the
-> >> + * mapped bitmap user pages into IOVA ranges to process.
-> >> + *
-> >> + * Return: 0 on success, and an error on failure either upon
-> >> + * iteration or when the callback returns an error.
-> >> + */
-> >> +int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
-> >> +			 int (*fn)(struct iova_bitmap *bitmap,
-> >> +				   unsigned long iova, size_t length,
-> >> +				   void *opaque))  
-> > 
-> > It might make sense to typedef an iova_bitmap_fn_t in the header to use
-> > here.
-> >  
-> OK, will do. I wasn't sure which style was preferred so went with simplest on
-> first take.
-
-It looks like it would be a little cleaner, but yeah, probably largely
-style.
-
-> >> +{
-> >> +	int ret = 0;
-> >> +
-> >> +	for (; !iova_bitmap_done(bitmap) && !ret;
-> >> +	     ret = iova_bitmap_advance(bitmap)) {
-> >> +		ret = fn(bitmap, iova_bitmap_mapped_iova(bitmap),
-> >> +			 iova_bitmap_mapped_length(bitmap), opaque);
-> >> +		if (ret)
-> >> +			break;
-> >> +	}
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +
-> >> +/**
-> >> + * iova_bitmap_set() - Records an IOVA range in bitmap
-> >> + * @bitmap: IOVA bitmap
-> >> + * @iova: IOVA to start
-> >> + * @length: IOVA range length
-> >> + *
-> >> + * Set the bits corresponding to the range [iova .. iova+length-1] in
-> >> + * the user bitmap.
-> >> + *
-> >> + * Return: The number of bits set.  
-> > 
-> > Is this relevant to the caller?
-> >   
-> The thinking that number of bits was a way for caller to validate that
-> 'some bits' was set, i.e. sort of error return value. But none of the callers
-> use it today, it's true. Suppose I should remove it, following bitmap_set()
-> returning void too.
-
-I think 0/-errno are sufficient if we need an error path, otherwise
-void is fine.  As above, the reporter fn isn't strongly tied to the
-page size of the bitmap, so number of bits just didn't make sense to me.
-
-> >> + */
-> >> +unsigned long iova_bitmap_set(struct iova_bitmap *bitmap,
-> >> +			      unsigned long iova, size_t length)
-> >> +{
-> >> +	struct iova_bitmap_map *mapped = &bitmap->mapped;
-> >> +	unsigned long nbits = max(1UL, length >> mapped->pgshift), set = nbits;
-> >> +	unsigned long offset = (iova - mapped->iova) >> mapped->pgshift;  
-> > 
-> > There's no sanity testing here that the caller provided an iova within
-> > the mapped ranged.  Thanks,
-> >   
-> 
-> Much of the bitmap helpers don't check that the offset is within the range
-> of the passed ulong array. So I followed the same thinking and the
-> caller is /provided/ with the range that the IOVA bitmap covers. The intention
-> was minimizing the number of operations given that this function sits on the
-> hot path. I can add this extra check.
-
-Maybe Jason can quote a standard here, audit the callers vs sanitize
-the input.  It'd certainly be fair even if the test were a BUG_ON since
-it violates the defined calling conventions and we're not taking
-arbitrary input, but it could also pretty easily and quietly go into
-the weeds if we do nothing.  Thanks,
-
-Alex
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/agn.h b/drivers/net/wireless/intel/iwlwifi/dvm/agn.h
+index 411a6f6638b4..fefaa414272b 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/agn.h
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/agn.h
+@@ -112,7 +112,7 @@ int iwl_load_ucode_wait_alive(struct iwl_priv *priv,
+ 			      enum iwl_ucode_type ucode_type);
+ int iwl_send_calib_results(struct iwl_priv *priv);
+ int iwl_calib_set(struct iwl_priv *priv,
+-		  const struct iwl_calib_hdr *cmd, int len);
++		  const struct iwl_calib_cmd *cmd, size_t len);
+ void iwl_calib_free_results(struct iwl_priv *priv);
+ int iwl_dump_nic_event_log(struct iwl_priv *priv, bool full_log,
+ 			    char **buf);
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/calib.c b/drivers/net/wireless/intel/iwlwifi/dvm/calib.c
+index a11884fa254b..f488620d2844 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/calib.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/calib.c
+@@ -19,8 +19,7 @@
+ struct iwl_calib_result {
+ 	struct list_head list;
+ 	size_t cmd_len;
+-	struct iwl_calib_hdr hdr;
+-	/* data follows */
++	struct iwl_calib_cmd cmd;
+ };
+ 
+ struct statistics_general_data {
+@@ -43,12 +42,12 @@ int iwl_send_calib_results(struct iwl_priv *priv)
+ 		int ret;
+ 
+ 		hcmd.len[0] = res->cmd_len;
+-		hcmd.data[0] = &res->hdr;
++		hcmd.data[0] = &res->cmd;
+ 		hcmd.dataflags[0] = IWL_HCMD_DFL_NOCOPY;
+ 		ret = iwl_dvm_send_cmd(priv, &hcmd);
+ 		if (ret) {
+ 			IWL_ERR(priv, "Error %d on calib cmd %d\n",
+-				ret, res->hdr.op_code);
++				ret, res->cmd.hdr.op_code);
+ 			return ret;
+ 		}
+ 	}
+@@ -57,19 +56,22 @@ int iwl_send_calib_results(struct iwl_priv *priv)
+ }
+ 
+ int iwl_calib_set(struct iwl_priv *priv,
+-		  const struct iwl_calib_hdr *cmd, int len)
++		  const struct iwl_calib_cmd *cmd, size_t len)
+ {
+ 	struct iwl_calib_result *res, *tmp;
+ 
+-	res = kmalloc(sizeof(*res) + len - sizeof(struct iwl_calib_hdr),
+-		      GFP_ATOMIC);
++	if (check_sub_overflow(len, sizeof(*cmd), &len))
++		return -ENOMEM;
++
++	res = kmalloc(struct_size(res, cmd.data, len), GFP_ATOMIC);
+ 	if (!res)
+ 		return -ENOMEM;
+-	memcpy(&res->hdr, cmd, len);
+-	res->cmd_len = len;
++	res->cmd = *cmd;
++	memcpy(res->cmd.data, cmd->data, len);
++	res->cmd_len = struct_size(cmd, data, len);
+ 
+ 	list_for_each_entry(tmp, &priv->calib_results, list) {
+-		if (tmp->hdr.op_code == res->hdr.op_code) {
++		if (tmp->cmd.hdr.op_code == res->cmd.hdr.op_code) {
+ 			list_replace(&tmp->list, &res->list);
+ 			kfree(tmp);
+ 			return 0;
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/ucode.c b/drivers/net/wireless/intel/iwlwifi/dvm/ucode.c
+index 4b27a53d0bb4..bb13ca5d666c 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/ucode.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/ucode.c
+@@ -356,18 +356,18 @@ static bool iwlagn_wait_calib(struct iwl_notif_wait_data *notif_wait,
+ 			      struct iwl_rx_packet *pkt, void *data)
+ {
+ 	struct iwl_priv *priv = data;
+-	struct iwl_calib_hdr *hdr;
++	struct iwl_calib_cmd *cmd;
+ 
+ 	if (pkt->hdr.cmd != CALIBRATION_RES_NOTIFICATION) {
+ 		WARN_ON(pkt->hdr.cmd != CALIBRATION_COMPLETE_NOTIFICATION);
+ 		return true;
+ 	}
+ 
+-	hdr = (struct iwl_calib_hdr *)pkt->data;
++	cmd = (struct iwl_calib_cmd *)pkt->data;
+ 
+-	if (iwl_calib_set(priv, hdr, iwl_rx_packet_payload_len(pkt)))
++	if (iwl_calib_set(priv, cmd, iwl_rx_packet_payload_len(pkt)))
+ 		IWL_ERR(priv, "Failed to record calibration data %d\n",
+-			hdr->op_code);
++			cmd->hdr.op_code);
+ 
+ 	return false;
+ }
+-- 
+2.34.1
 
