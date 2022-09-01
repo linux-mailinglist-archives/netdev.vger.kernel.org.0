@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDA3F5A9C8F
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A334D5A9D09
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:26:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234831AbiIAQHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 12:07:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32976 "EHLO
+        id S234531AbiIAQ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 12:26:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234738AbiIAQHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:07:12 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5940F72B74
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 09:07:11 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-32a09b909f6so342496957b3.0
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 09:07:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=aOX3b5WRndoOqWfMYuBPMSz6xrM2daGYXLX/7kwuwZ0=;
-        b=GwWs2TE101XCnPEP8wKR+dSw6GxCCnubsLKNO61paDv/b4aqGIMAG18YmmPLgM7tL/
-         9rxLGJP7ak9XNNnjdQbCzL5iB225ng61KZfyh3olNNwiXcwXq+h7ffsMnPZ6pAlJCtYZ
-         bLH1QVrBdzA4VVUk2XpxtrkSITAV/Ux4pJMcF2oCM9VlSnufDfkhwlUbtk195Gwro7U5
-         g7RY3vz6GYmUmLlUKiLSvS3ZL5u8vzZe1L4nTOO/3oih+NGg56PcP0RM+dkrg4Oj4lO2
-         Ba4ny5o4vVi/kMzPE7kpTqTkZZ2uDTniFuM40424qKlkBW1erqkUlj7BbmP4i5zxlw0+
-         FvYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=aOX3b5WRndoOqWfMYuBPMSz6xrM2daGYXLX/7kwuwZ0=;
-        b=HccntUsYLXQiD1huRK/AcZFn6BRwW/fjURHVehMQ+Cj26uoBEGlFJiihLRKjNCj0FO
-         6MXO1gaSbn4uOYLV3EP7IG7VbC4VXq+nyd1L/YhJMBiRgvI2aSAH44SnNha2HSDWL4TX
-         XBDtdhxhMuv246YyDaApYVNJ4liGiYpFu5rmlVz0wSBeRqhGIYjck84SVy6PVVmbcmMz
-         +9hSYg41GVe0lt1TeEFH3BccQ4aHiWE6vQAl46Z7eDbYI5Ys8sEsEthTWkr7nrCO+xTK
-         JxGzGqFtrfQRgXzev0Pkz52jP/29JF6rWt4tJ7FSubyHDpBOsoegf86+/L2N8VyrN/S4
-         k5Yg==
-X-Gm-Message-State: ACgBeo2D8vT+FkRafi38fWg1ijHjgK4nEorb816RX5EZx5m/umPGLVN8
-        7oeSCpr0Pxg0W0SjKx+fKJ28+Uuib0WTx8yiOu09TA==
-X-Google-Smtp-Source: AA6agR4WWi3CPBRYCWEFVbnu2G8pTDzczJE8ASPxBsFd2QD0z+KnsqkUEdVwHr9uF0KxpAAczMEG+KuB9OxJUCT+Ths=
-X-Received: by 2002:a81:1c4b:0:b0:340:972f:abb0 with SMTP id
- c72-20020a811c4b000000b00340972fabb0mr23600297ywc.489.1662048430253; Thu, 01
- Sep 2022 09:07:10 -0700 (PDT)
+        with ESMTP id S233480AbiIAQ0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:26:44 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E02E5A2EA;
+        Thu,  1 Sep 2022 09:26:42 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id B09552010;
+        Thu,  1 Sep 2022 18:26:39 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1662049599;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=5gPdcOh3G4Fq/gjmy/s1uDpAvkIPiHNCGi2EGHEAcyY=;
+        b=Fofb2XGmbZsoPEktyTm7ZjLRg5BSQN5fYg9SGZPjPaYM3Tk05GsaIIDNquFWhF4hA/Z8g6
+        6zId/e4zbLxzIqt6P5s/5YNMRF0gtp4B+/1D2jUVEbj4MM/b7+0fFGcaDgqIENGXRbf7j4
+        eDxVq2MNtDbHaPfljkJCVe0c0S9Krnu5y+0SZn+TNuOafbF/sp/Tl1y0be1Y6ofYCz4OyD
+        Pjl+ZTgWjpYGVpwBWs5xCbRCn55U/QN/5MQnl/K4UW6EcH6foEKPM3Szkj2i4jasc89jKx
+        lLtPodBoFDoh4i5itaaFZsiZ/o2iAPLdHPMI+viYKe+BQgjKyKo/Ys8MrOYpng==
 MIME-Version: 1.0
-References: <20220829114648.GA2409@debian> <CANn89iLkfMUK8n5w00naST9J+KrLaAqqg2r0X9Sd-L0XzpLzSQ@mail.gmail.com>
- <20220901150115.GB31767@debian>
-In-Reply-To: <20220901150115.GB31767@debian>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 1 Sep 2022 09:06:59 -0700
-Message-ID: <CANn89iKMe7WZS-Q4rzqEUUD+ANL6Fmb6BnFo8TvX7y_EVi=HOw@mail.gmail.com>
-Subject: Re: [PATCH 3/4] net-next: frags: add inetpeer frag_mem tracking
-To:     Richard Gobert <richardbgobert@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
+Date:   Thu, 01 Sep 2022 18:26:39 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Martin KaFai Lau <kafai@fb.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-wpan@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Frank Rowand <frowand.list@gmail.com>
+Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
+Subject: Re: [PATCH v1 01/14] net: add helper eth_addr_add()
+In-Reply-To: <20220825214423.903672-2-michael@walle.cc>
+References: <20220825214423.903672-1-michael@walle.cc>
+ <20220825214423.903672-2-michael@walle.cc>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <1682967feab905d06402d0f8402799a8@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 8:03 AM Richard Gobert <richardbgobert@gmail.com> wrote:
->
-> On Mon, Aug 29, 2022 at 03:15:47PM -0700, Eric Dumazet wrote:
-> > We tried to get rid of any dependence over inetpeer, which is not
-> > resistant against DDOS attacks.
-> >
-> > So I would not add a new dependency.
->
-> I see your point. What do you suggest doing differently?
->
-> The inetpeer mechanism is used for IPv4 frags. If it isn't resistant
-> against DDoS attacks, can it perhaps be improved?
+Hi netdev maintainers,
 
-It can be disabled if needed, by changing ipfrag_max_dist sysctl.
+Am 2022-08-25 23:44, schrieb Michael Walle:
+> Add a helper to add an offset to a ethernet address. This comes in 
+> handy
+> if you have a base ethernet address for multiple interfaces.
+> 
+> Signed-off-by: Michael Walle <michael@walle.cc>
 
-Quite frankly IPv4 reassembly unit is a toy, I am always surprised
-some applications are still relying on IP fragments.
+Would it be possible to get an Ack for this patch, so I don't have
+to repost this large (and still growing) series to netdev every time?
+
+I guess it would be ok to have this go through another tree?
+
+-michael
