@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4265A935E
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F1195A9362
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 11:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233860AbiIAJlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 05:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32928 "EHLO
+        id S234102AbiIAJly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 05:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233657AbiIAJlT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:41:19 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3856D1275C3;
-        Thu,  1 Sep 2022 02:41:17 -0700 (PDT)
+        with ESMTP id S233383AbiIAJla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 05:41:30 -0400
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2071.outbound.protection.outlook.com [40.107.95.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89586134D52;
+        Thu,  1 Sep 2022 02:41:27 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OWMLV+lP2zwFKMBuWzh5Vvje1X3ssjOaWPcyFVx6QWLbMWtv5RcQxTlbD/Pl0iNXPP0BLh0O2pEZSS6Q8CY5aANEBNJgt87hGQI3ggBuDE2vHzB2iHifTykWDR+OmYBFc4vk6VGQWVkfGSePL1Jj804sdmoaJ+Sit0l4n/OEnFkt91w/uv5wxQvLVZkWzTfMy8llj3p5qNABNpqnshhXat8kHm3RRwmYClxHq4eK0JR2gJVzYnPd7Pq5n1p5oWQg1W0Ac6KOd6jjBCFxm1R9nxJSe+nK8x8zmKddksH2hcwFXrD1tjWIheIE+8J518oE4fTGH2D8IEkym1v/mScH9A==
+ b=h5dE898yPGibKdFamuhyZHDR5z+Qeav+jV9/sDaxsYtCE/WACfbebtKufx2/IEcCudyEpnxiDRAfcGfcmLE5WM5FonRKDR2B7EjbaDxvFvlY8IHATurVkWJFXpH+srh80qfFmk9JHbITesuEeb5FqxzPbOzNx+TVJiC+6/YQTIXapiHKE9cL52kUIDq+sUm0NPV7fOZ6bbVc+g3NcL1dVVrbJNHXE5V/4KX2o8tIJucWAfVhKyy9wBO36aftgUXUBGkoeSEGHO8SG640kp6g2tX1UqW/fgLGVSt/icJ3ISmzs1YE1TAsD20JcVlVKRvJYnMTKIFoKDjD+TAdJUmz5g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HtBspUcaLnb7pelswA6vSBhAcUtN1JTVPK7JJ7LZzIc=;
- b=L7NGfqMeh67Q5mlsl02EZ9HCO/EKxZBQJ9S3rSLjWKnYqJhh3iir/m6focbErvKi78jcRh2sWaHbyEIopbzwhwVkAevccDz9B8FtXkL5hNaY/FWRQvDEjAJykNwk+63lNZwM2/dhdwYCTHb5Rms+zxEeif1WZ7SKBkwDxq19LgobiydZIUw/03Oxho6Ew/38DocPq8h3/cHdxkFtdeg3ukbTAF41ESG5gjQamNi0nlifFTAhYaFvLLg32hDDVsBT+bvuDH1upsyR1RbwmTJ93Gdy21L+sbcfenncqQDeXHpZHyNAULU4dGR+aBGO5og9ftWbiHHmrn4AlYD1OaeuJQ==
+ bh=6Kpjssiwr10C/jwwOFY87ewiIyPPGiRqn+DCM921VcA=;
+ b=cTyLgP5n9rHTIbeIDWEDIVfVeBjrK/iTtkQsu07tumLfHdXNGlqVb0f47efTIEjNLoNk5jZQa584WO2/aPw6MHq0lWtlNDKkimI6fMu8Cw3qF2ZnGDVOeHn572RtI667DHdmtmX2wHT8SI2zpoAqhgQaPnizeQ5nvfsjUtIcrgOCU12sVP8gj43qkIWNbbDUc6Z/iF8ZYsZp/5tiHxyJeus+3X3HI8cdBYumBvp2v6CLxFJbEsH3QW1+ivU8u1ku1lGDKjM+ghsCvzxPOfPEKFaaK0viASRBWwMGjIrYoCwkgqvkC6BdqKaf52uUEKb7eSxp3JtjfvPZ7/NBlptwIA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HtBspUcaLnb7pelswA6vSBhAcUtN1JTVPK7JJ7LZzIc=;
- b=Fp5ZvHi1xKCvN4FL8WPCkUFnk69X9ErwV5xjFM9UI6fTmq0plmg4nd3Mxn6SDbZDNaKpIz0fSRFP/OF0qkr2C9MFN8t923QBul+b6IhmtuKuctrc8p1EBUWcL94IXtitgXio7UdNd3hOO31liHp0BtPAWi32izZtPdOCXrAXwAxIYbrnWcRIjgvtfo+ci23SEWER/D06ps2VQeKM+wc9iKa5chkIL8usJe1+BLa4hTz+70C/9Fz8RG5nMKs4oN59kIr6JF3oQ17Pg2bs4wztr/lHkodPkoQsEmHjUjRFVX+5USwapR0q630N3nXdP6E+CwQJrsWeQb4dVw63dJcCug==
-Received: from MW4PR04CA0215.namprd04.prod.outlook.com (2603:10b6:303:87::10)
- by PH0PR12MB5647.namprd12.prod.outlook.com (2603:10b6:510:144::5) with
+ bh=6Kpjssiwr10C/jwwOFY87ewiIyPPGiRqn+DCM921VcA=;
+ b=EsJGKIEaHekrbmy52OUyD0QPtGg2DCibPd1VwyBHliApv69kv0uA14UePleQdIPG7m46COJ4dFEGImvcR+HoaiLamYFz0K1ixVyqiIt3foHKtBe5cT6xAECMjbG2jfjc/Kk00Sz0Hk7Qiw5qzEJmXu9jVaLK5hzkNdKTo06uFiklU90K1vFv26zc+Nq0NuSp4/oFeMTWvELLkdNfCH2ytjXu2Kyu+6fVxk00PuzUi2cfRix7N1Q4C/P59ktbnLUqb6Xt1BohU4NcbJek7CdT3SOQDV4hPa0fdDrgsCqcEQOdua5BS3IfFlmXIVJRqWP82GriBzEDe1H+03xQruFpvA==
+Received: from BN9PR03CA0292.namprd03.prod.outlook.com (2603:10b6:408:f5::27)
+ by MN0PR12MB6032.namprd12.prod.outlook.com (2603:10b6:208:3cc::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Thu, 1 Sep
- 2022 09:41:14 +0000
-Received: from CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:87:cafe::c4) by MW4PR04CA0215.outlook.office365.com
- (2603:10b6:303:87::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5504.20 via Frontend
- Transport; Thu, 1 Sep 2022 09:41:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Thu, 1 Sep
+ 2022 09:41:24 +0000
+Received: from BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:f5:cafe::40) by BN9PR03CA0292.outlook.office365.com
+ (2603:10b6:408:f5::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
+ Transport; Thu, 1 Sep 2022 09:41:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT045.mail.protection.outlook.com (10.13.175.181) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.236) by
+ BN8NAM11FT030.mail.protection.outlook.com (10.13.177.146) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 09:41:14 +0000
+ 15.20.5588.10 via Frontend Transport; Thu, 1 Sep 2022 09:41:24 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Thu, 1 Sep 2022 09:40:42 +0000
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Thu, 1 Sep 2022 09:40:46 +0000
 Received: from drhqmail203.nvidia.com (10.126.190.182) by
  drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Thu, 1 Sep 2022 02:40:42 -0700
+ 15.2.986.29; Thu, 1 Sep 2022 02:40:45 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.182) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Thu, 1 Sep 2022 02:40:39 -0700
+ Transport; Thu, 1 Sep 2022 02:40:42 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -67,9 +67,9 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V5 vfio 04/10] vfio: Add an IOVA bitmap support
-Date:   Thu, 1 Sep 2022 12:38:47 +0300
-Message-ID: <20220901093853.60194-5-yishaih@nvidia.com>
+Subject: [PATCH V5 vfio 05/10] vfio: Introduce the DMA logging feature support
+Date:   Thu, 1 Sep 2022 12:38:48 +0300
+Message-ID: <20220901093853.60194-6-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220901093853.60194-1-yishaih@nvidia.com>
 References: <20220901093853.60194-1-yishaih@nvidia.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 40d30024-00bb-425c-975a-08da8bfe1c87
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5647:EE_
+X-MS-Office365-Filtering-Correlation-Id: 39f8b547-0619-4f2c-1b01-08da8bfe2277
+X-MS-TrafficTypeDiagnostic: MN0PR12MB6032:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VOWOSMfvtKZVHpiBM8+V7l3KIfummMbMK3tH6RZ8N/PoWFc11SFaaI4a4m0RbWA6v70RUBrIPOkf3LAGLOb5d+O3lKq252sv05K5ZKG9Q9hC3xnQFKro6/IEEkSVSC8FptLJaUl5F0exwtOoKyVHzdK9lpyt/fnzohTrBAzBqjrnQEUxP+Styj7vefwSP2mmAPaDsahd7GQFeJYMOOJo+TqxohQxhNw4Q9McK6byHKqN8g8zckWl9l7WM2hfikPHCAzCtOxrjrQ8XFeLhabCAM/onPbzZN7R+FlEvRp5+4dvf7b/Ms/azwEGoWZfZHA9veP0oS5wx2XGhjcgidma+4AYbn9QOSzWv9UofGDPEIOaoyKiamUHiU2EqUMLpVMIRyrOKi5+/2c8NQvM7Cc0Vi9N3jHBGB/PebjLiBxHK29Jv0bt3FUTwdcaI6V5IO/svr7417i80KwAYXHHF97vnmCzFHTJd5SUBjunAcwBl+1XL7xBceP/B5saqSQmDFVX63tWlMFNTYgPsdyBE2itt2sAaRySySx7/dxxbj1zODHkMfaSXoKWAvZOTUdzE1wJJcNkPYOrSu+rj6Ocd8KPU/AF2OTz5qZxT+telrpCxHs0uK4TxiHlGYunV0R0f1+YH6OnvhZw/TOykkWA4/cDiMZmzfCohrdwvM2d0+/KHE54RbroKpKuBMERb646RsCOpOlt/Dy4t83xy+/rMCV0ZQ65Vlf2Zxrsm0+wQW6ypROkJPTy/cnyGh+zy86RaHilRWif0SI/qzqHtk1udKXRaaVnI3DjlKYZagBIQNxekWeOrlg/tYh2YhrH/hlCzY3C
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(396003)(136003)(376002)(40470700004)(46966006)(36840700001)(40480700001)(86362001)(7696005)(426003)(47076005)(2906002)(40460700003)(186003)(2616005)(26005)(1076003)(478600001)(4326008)(70206006)(336012)(8676002)(70586007)(8936002)(82740400003)(41300700001)(82310400005)(36860700001)(5660300002)(54906003)(110136005)(6636002)(36756003)(83380400001)(30864003)(316002)(81166007)(6666004)(356005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: kFpr+bAvkSO8Nd2/dSKP03oH1x4YX5xJsMHNnxodmaKgaF+yLu5kB5QhGf6lRp75sHfoKfZUpd5/0NO12p3S5Ewggq3XFlUxyNOq8VBT38XYEdCGphmrUoA7hWxKVkyWy+YFiIIriGtf0E1eT1JQZJSzsc+ZxlQs9PLTEY11CYlNCvBQJPMyDMjTyb1HtlWudVoeaoKzKLGNaI3/bqV9ZbC+WLH1eYVNvCuMC7ypHomsxwtTSkwhzd8R81Cr1vFE6I9HCgZQfC6I5B1dpA51MUYWKf/CvssghA8b9JtReXcBGvWW1h8LfvrBcB7Izi3J2nT4UhJlUk8lMwPilTkEk0ZDT7toaHvZuL56ytUgatehiJxwzQEDxxNlMdJJLfbZnzfYk2fE2mF33XfhwopOljPYWRjlRxTbt3Vla15Z5t0W428J5WCqHM5wSXkLqsTuMjqjK6JGTd9Wn8l0P8s2FRuYgoBV0fM4S2WxHLWP4SUo9aMdD/nLNrZhSLQs00EAr71m/NYfi23Xibd32q32JMfHZ0+WmxVvF1Yughr29aESCp+At8paaIAhUcSctzGCISNoWE8/lW+PKRNrVEBNioIY3IXPj9MXD/jU+UTE4XvBWLQzrzGC8J/HvrVPzkg/25Qfkpn3l7nPDeY9lKHsGDH1Ja3NPFC3ADtQjgIw6Ztsi3TNOBFMlQ/77SSmjLr7fw2DDUEmGVOza9A2mfLQLM9rG7ZhUd/dUrUx07p9D3mdXrRVtwhAD+jd4fQuyhFwK6/6lI26fJN78G8AzhVsf2EuHpmpMYXXunJPw69SFrlYBYWszy2pS+bWiVwsXjMy
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(39860400002)(376002)(136003)(46966006)(36840700001)(40470700004)(82310400005)(40460700003)(8676002)(4326008)(478600001)(316002)(36860700001)(70206006)(86362001)(70586007)(2616005)(1076003)(186003)(81166007)(356005)(47076005)(8936002)(426003)(2906002)(40480700001)(26005)(7696005)(83380400001)(336012)(82740400003)(54906003)(110136005)(6636002)(5660300002)(41300700001)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 09:41:14.1855
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Sep 2022 09:41:24.0812
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 40d30024-00bb-425c-975a-08da8bfe1c87
+X-MS-Exchange-CrossTenant-Network-Message-Id: 39f8b547-0619-4f2c-1b01-08da8bfe2277
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT045.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT030.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5647
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6032
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -105,540 +105,311 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joao Martins <joao.m.martins@oracle.com>
+Introduce the DMA logging feature support in the vfio core layer.
 
-The new facility adds a bunch of wrappers that abstract how an IOVA range
-is represented in a bitmap that is granulated by a given page_size. So it
-translates all the lifting of dealing with user pointers into its
-corresponding kernel addresses backing said user memory into doing finally
-the (non-atomic) bitmap ops to change various bits.
+It includes the processing of the device start/stop/report DMA logging
+UAPIs and calling the relevant driver 'op' to do the work.
 
-The formula for the bitmap is:
+Specifically,
+Upon start, the core translates the given input ranges into an interval
+tree, checks for unexpected overlapping, non aligned ranges and then
+pass the translated input to the driver for start tracking the given
+ranges.
 
-   data[(iova / page_size) / 64] & (1ULL << (iova % 64))
+Upon report, the core translates the given input user space bitmap and
+page size into an IOVA kernel bitmap iterator. Then it iterates it and
+call the driver to set the corresponding bits for the dirtied pages in a
+specific IOVA range.
 
-Where 64 is the number of bits in a unsigned long (depending on arch)
+Upon stop, the driver is called to stop the previous started tracking.
 
-It introduces an IOVA iterator that uses a windowing scheme to minimize the
-pinning overhead, as opposed to pinning it on demand 4K at a time. Assuming
-a 4K kernel page and 4K requested page size, we can use a single kernel
-page to hold 512 page pointers, mapping 2M of bitmap, representing 64G of
-IOVA space.
+The next patches from the series will introduce the mlx5 driver
+implementation for the logging ops.
 
-An example usage of these helpers for a given @base_iova, @page_size,
-@length and __user @data:
-
-   bitmap = iova_bitmap_alloc(base_iova, page_size, length, data);
-   if (IS_ERR(bitmap))
-       return -ENOMEM;
-
-   ret = iova_bitmap_for_each(bitmap, arg, dirty_reporter_fn);
-
-   iova_bitmap_free(bitmap);
-
-An implementation of the lower end -- referred to above as
-dirty_reporter_fn to exemplify -- that is tracking dirty bits would mark
-an IOVA as dirty as following:
-
-	iova_bitmap_set(bitmap, iova, page_size);
-
-Or a contiguous range (example two pages):
-
-	iova_bitmap_set(bitmap, iova, 2 * page_size);
-
-The facility is intended to be used for user bitmaps representing dirtied
-IOVAs by IOMMU (via IOMMUFD) and PCI Devices (via vfio-pci).
-
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 ---
- drivers/vfio/Makefile       |   6 +-
- drivers/vfio/iova_bitmap.c  | 426 ++++++++++++++++++++++++++++++++++++
- include/linux/iova_bitmap.h |  24 ++
- 3 files changed, 454 insertions(+), 2 deletions(-)
- create mode 100644 drivers/vfio/iova_bitmap.c
- create mode 100644 include/linux/iova_bitmap.h
+ drivers/vfio/Kconfig             |   1 +
+ drivers/vfio/pci/vfio_pci_core.c |   5 +
+ drivers/vfio/vfio_main.c         | 175 +++++++++++++++++++++++++++++++
+ include/linux/vfio.h             |  21 +++-
+ 4 files changed, 200 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/Makefile b/drivers/vfio/Makefile
-index 1a32357592e3..d67c604d0407 100644
---- a/drivers/vfio/Makefile
-+++ b/drivers/vfio/Makefile
-@@ -1,9 +1,11 @@
- # SPDX-License-Identifier: GPL-2.0
- vfio_virqfd-y := virqfd.o
+diff --git a/drivers/vfio/Kconfig b/drivers/vfio/Kconfig
+index 6130d00252ed..86c381ceb9a1 100644
+--- a/drivers/vfio/Kconfig
++++ b/drivers/vfio/Kconfig
+@@ -3,6 +3,7 @@ menuconfig VFIO
+ 	tristate "VFIO Non-Privileged userspace driver framework"
+ 	select IOMMU_API
+ 	select VFIO_IOMMU_TYPE1 if MMU && (X86 || S390 || ARM || ARM64)
++	select INTERVAL_TREE
+ 	help
+ 	  VFIO provides a framework for secure userspace device drivers.
+ 	  See Documentation/driver-api/vfio.rst for more details.
+diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
+index c8d3b0450fb3..2b31184dddde 100644
+--- a/drivers/vfio/pci/vfio_pci_core.c
++++ b/drivers/vfio/pci/vfio_pci_core.c
+@@ -1875,6 +1875,11 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
+ 			return -EINVAL;
+ 	}
  
--vfio-y += vfio_main.o
--
- obj-$(CONFIG_VFIO) += vfio.o
++	if (vdev->vdev.log_ops && !(vdev->vdev.log_ops->log_start &&
++	    vdev->vdev.log_ops->log_stop &&
++	    vdev->vdev.log_ops->log_read_and_clear))
++		return -EINVAL;
 +
-+vfio-y += vfio_main.o \
-+	  iova_bitmap.o \
-+
- obj-$(CONFIG_VFIO_VIRQFD) += vfio_virqfd.o
- obj-$(CONFIG_VFIO_IOMMU_TYPE1) += vfio_iommu_type1.o
- obj-$(CONFIG_VFIO_IOMMU_SPAPR_TCE) += vfio_iommu_spapr_tce.o
-diff --git a/drivers/vfio/iova_bitmap.c b/drivers/vfio/iova_bitmap.c
-new file mode 100644
-index 000000000000..4211a16eb542
---- /dev/null
-+++ b/drivers/vfio/iova_bitmap.c
-@@ -0,0 +1,426 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2022, Oracle and/or its affiliates.
-+ * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
-+ */
+ 	/*
+ 	 * Prevent binding to PFs with VFs enabled, the VFs might be in use
+ 	 * by the host or other users.  We cannot capture the VFs if they
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index 7cb56c382c97..bdac797b5059 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -32,6 +32,8 @@
+ #include <linux/vfio.h>
+ #include <linux/wait.h>
+ #include <linux/sched/signal.h>
++#include <linux/interval_tree.h>
 +#include <linux/iova_bitmap.h>
-+#include <linux/mm.h>
-+#include <linux/highmem.h>
+ #include "vfio.h"
+ 
+ #define DRIVER_VERSION	"0.3"
+@@ -1628,6 +1630,167 @@ static int vfio_ioctl_device_feature_migration(struct vfio_device *device,
+ 	return 0;
+ }
+ 
++/* Ranges should fit into a single kernel page */
++#define LOG_MAX_RANGES \
++	(PAGE_SIZE / sizeof(struct vfio_device_feature_dma_logging_range))
 +
-+#define BITS_PER_PAGE (PAGE_SIZE * BITS_PER_BYTE)
-+
-+/*
-+ * struct iova_bitmap_map - A bitmap representing an IOVA range
-+ *
-+ * Main data structure for tracking mapped user pages of bitmap data.
-+ *
-+ * For example, for something recording dirty IOVAs, it will be provided a
-+ * struct iova_bitmap structure, as a general structure for iterating the
-+ * total IOVA range. The struct iova_bitmap_map, though, represents the
-+ * subset of said IOVA space that is pinned by its parent structure (struct
-+ * iova_bitmap).
-+ *
-+ * The user does not need to exact location of the bits in the bitmap.
-+ * From user perspective the only API available is iova_bitmap_set() which
-+ * records the IOVA *range* in the bitmap by setting the corresponding
-+ * bits.
-+ *
-+ * The bitmap is an array of u64 whereas each bit represents an IOVA of
-+ * range of (1 << pgshift). Thus formula for the bitmap data to be set is:
-+ *
-+ *   data[(iova / page_size) / 64] & (1ULL << (iova % 64))
-+ */
-+struct iova_bitmap_map {
-+	/* base IOVA representing bit 0 of the first page */
-+	unsigned long iova;
-+
-+	/* page size order that each bit granules to */
-+	unsigned long pgshift;
-+
-+	/* page offset of the first user page pinned */
-+	unsigned long pgoff;
-+
-+	/* number of pages pinned */
-+	unsigned long npages;
-+
-+	/* pinned pages representing the bitmap data */
-+	struct page **pages;
-+};
-+
-+/*
-+ * struct iova_bitmap - The IOVA bitmap object
-+ *
-+ * Main data structure for iterating over the bitmap data.
-+ *
-+ * Abstracts the pinning work and iterates in IOVA ranges.
-+ * It uses a windowing scheme and pins the bitmap in relatively
-+ * big ranges e.g.
-+ *
-+ * The bitmap object uses one base page to store all the pinned pages
-+ * pointers related to the bitmap. For sizeof(struct page) == 64 it stores
-+ * 512 struct pages which, if the base page size is 4K, it means 2M of bitmap
-+ * data is pinned at a time. If the iova_bitmap page size is also 4K
-+ * then the range window to iterate is 64G.
-+ *
-+ * For example iterating on a total IOVA range of 4G..128G, it will walk
-+ * through this set of ranges:
-+ *
-+ *    4G  -  68G-1 (64G)
-+ *    68G - 128G-1 (64G)
-+ *
-+ * An example of the APIs on how to use/iterate over the IOVA bitmap:
-+ *
-+ *   bitmap = iova_bitmap_alloc(iova, length, page_size, data);
-+ *   if (IS_ERR(bitmap))
-+ *       return PTR_ERR(bitmap);
-+ *
-+ *   ret = iova_bitmap_for_each(bitmap, arg, dirty_reporter_fn);
-+ *
-+ *   iova_bitmap_free(bitmap);
-+ *
-+ * An implementation of the lower end (referred to above as
-+ * dirty_reporter_fn to exemplify), that is tracking dirty bits would mark
-+ * an IOVA as dirty as following:
-+ *     iova_bitmap_set(bitmap, iova, page_size);
-+ * Or a contiguous range (example two pages):
-+ *     iova_bitmap_set(bitmap, iova, 2 * page_size);
-+ *
-+ * The internals of the object uses an index @mapped_base_index that indexes
-+ * which u64 word of the bitmap is mapped, up to @mapped_total_index.
-+ * Those keep being incremented until @mapped_total_index reaches while
-+ * mapping up to PAGE_SIZE / sizeof(struct page*) maximum of pages.
-+ *
-+ * The IOVA bitmap is usually located on what tracks DMA mapped ranges or
-+ * some form of IOVA range tracking that co-relates to the user passed
-+ * bitmap.
-+ */
-+struct iova_bitmap {
-+	/* IOVA range representing the currently mapped bitmap data */
-+	struct iova_bitmap_map mapped;
-+
-+	/* userspace address of the bitmap */
-+	u64 __user *bitmap;
-+
-+	/* u64 index that @mapped points to */
-+	unsigned long mapped_base_index;
-+
-+	/* how many u64 can we walk in total */
-+	unsigned long mapped_total_index;
-+
-+	/* base IOVA of the whole bitmap */
-+	unsigned long iova;
-+
-+	/* length of the IOVA range for the whole bitmap */
-+	size_t length;
-+};
-+
-+/*
-+ * Converts a relative IOVA to a bitmap index.
-+ * This function provides the index into the u64 array (bitmap::bitmap)
-+ * for a given IOVA offset.
-+ * Relative IOVA means relative to the bitmap::mapped base IOVA
-+ * (stored in mapped::iova). All computations in this file are done using
-+ * relative IOVAs and thus avoid an extra subtraction against mapped::iova.
-+ * The user API iova_bitmap_set() always uses a regular absolute IOVAs.
-+ */
-+static unsigned long iova_bitmap_offset_to_index(struct iova_bitmap *bitmap,
-+						 unsigned long iova)
++static int
++vfio_ioctl_device_feature_logging_start(struct vfio_device *device,
++					u32 flags, void __user *arg,
++					size_t argsz)
 +{
-+	unsigned long pgsize = 1 << bitmap->mapped.pgshift;
++	size_t minsz =
++		offsetofend(struct vfio_device_feature_dma_logging_control,
++			    ranges);
++	struct vfio_device_feature_dma_logging_range __user *ranges;
++	struct vfio_device_feature_dma_logging_control control;
++	struct vfio_device_feature_dma_logging_range range;
++	struct rb_root_cached root = RB_ROOT_CACHED;
++	struct interval_tree_node *nodes;
++	u64 iova_end;
++	u32 nnodes;
++	int i, ret;
 +
-+	return iova / (BITS_PER_TYPE(*bitmap->bitmap) * pgsize);
-+}
++	if (!device->log_ops)
++		return -ENOTTY;
 +
-+/*
-+ * Converts a bitmap index to a *relative* IOVA.
-+ */
-+static unsigned long iova_bitmap_index_to_offset(struct iova_bitmap *bitmap,
-+						 unsigned long index)
-+{
-+	unsigned long pgshift = bitmap->mapped.pgshift;
++	ret = vfio_check_feature(flags, argsz,
++				 VFIO_DEVICE_FEATURE_SET,
++				 sizeof(control));
++	if (ret != 1)
++		return ret;
 +
-+	return (index * BITS_PER_TYPE(*bitmap->bitmap)) << pgshift;
-+}
-+
-+/*
-+ * Returns the base IOVA of the mapped range.
-+ */
-+static unsigned long iova_bitmap_mapped_iova(struct iova_bitmap *bitmap)
-+{
-+	unsigned long skip = bitmap->mapped_base_index;
-+
-+	return bitmap->iova + iova_bitmap_index_to_offset(bitmap, skip);
-+}
-+
-+/*
-+ * Pins the bitmap user pages for the current range window.
-+ * This is internal to IOVA bitmap and called when advancing the
-+ * index (@mapped_base_index) or allocating the bitmap.
-+ */
-+static int iova_bitmap_get(struct iova_bitmap *bitmap)
-+{
-+	struct iova_bitmap_map *mapped = &bitmap->mapped;
-+	unsigned long npages;
-+	u64 __user *addr;
-+	long ret;
-+
-+	/*
-+	 * @mapped_base_index is the index of the currently mapped u64 words
-+	 * that we have access. Anything before @mapped_base_index is not
-+	 * mapped. The range @mapped_base_index .. @mapped_total_index-1 is
-+	 * mapped but capped at a maximum number of pages.
-+	 */
-+	npages = DIV_ROUND_UP((bitmap->mapped_total_index -
-+			       bitmap->mapped_base_index) *
-+			       sizeof(*bitmap->bitmap), PAGE_SIZE);
-+
-+	/*
-+	 * We always cap at max number of 'struct page' a base page can fit.
-+	 * This is, for example, on x86 means 2M of bitmap data max.
-+	 */
-+	npages = min(npages,  PAGE_SIZE / sizeof(struct page *));
-+
-+	/*
-+	 * Bitmap address to be pinned is calculated via pointer arithmetic
-+	 * with bitmap u64 word index.
-+	 */
-+	addr = bitmap->bitmap + bitmap->mapped_base_index;
-+
-+	ret = pin_user_pages_fast((unsigned long)addr, npages,
-+				  FOLL_WRITE, mapped->pages);
-+	if (ret <= 0)
++	if (copy_from_user(&control, arg, minsz))
 +		return -EFAULT;
 +
-+	mapped->npages = (unsigned long)ret;
-+	/* Base IOVA where @pages point to i.e. bit 0 of the first page */
-+	mapped->iova = iova_bitmap_mapped_iova(bitmap);
++	nnodes = control.num_ranges;
++	if (!nnodes)
++		return -EINVAL;
 +
-+	/*
-+	 * offset of the page where pinned pages bit 0 is located.
-+	 * This handles the case where the bitmap is not PAGE_SIZE
-+	 * aligned.
-+	 */
-+	mapped->pgoff = offset_in_page(addr);
-+	return 0;
-+}
++	if (nnodes > LOG_MAX_RANGES)
++		return -E2BIG;
 +
-+/*
-+ * Unpins the bitmap user pages and clears @npages
-+ * (un)pinning is abstracted from API user and it's done when advancing
-+ * the index or freeing the bitmap.
-+ */
-+static void iova_bitmap_put(struct iova_bitmap *bitmap)
-+{
-+	struct iova_bitmap_map *mapped = &bitmap->mapped;
++	ranges = u64_to_user_ptr(control.ranges);
++	nodes = kmalloc_array(nnodes, sizeof(struct interval_tree_node),
++			      GFP_KERNEL);
++	if (!nodes)
++		return -ENOMEM;
 +
-+	if (mapped->npages) {
-+		unpin_user_pages(mapped->pages, mapped->npages);
-+		mapped->npages = 0;
-+	}
-+}
++	for (i = 0; i < nnodes; i++) {
++		if (copy_from_user(&range, &ranges[i], sizeof(range))) {
++			ret = -EFAULT;
++			goto end;
++		}
++		if (!IS_ALIGNED(range.iova, control.page_size) ||
++		    !IS_ALIGNED(range.length, control.page_size)) {
++			ret = -EINVAL;
++			goto end;
++		}
 +
-+/**
-+ * iova_bitmap_alloc() - Allocates an IOVA bitmap object
-+ * @iova: Start address of the IOVA range
-+ * @length: Length of the IOVA range
-+ * @page_size: Page size of the IOVA bitmap. It defines what each bit
-+ *             granularity represents
-+ * @data: Userspace address of the bitmap
-+ *
-+ * Allocates an IOVA object and initializes all its fields including the
-+ * first user pages of @data.
-+ *
-+ * Return: A pointer to a newly allocated struct iova_bitmap
-+ * or ERR_PTR() on error.
-+ */
-+struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
-+				      unsigned long page_size, u64 __user *data)
-+{
-+	struct iova_bitmap_map *mapped;
-+	struct iova_bitmap *bitmap;
-+	int rc;
++		if (check_add_overflow(range.iova, range.length, &iova_end) ||
++		    iova_end > ULONG_MAX) {
++			ret = -EOVERFLOW;
++			goto end;
++		}
 +
-+	bitmap = kzalloc(sizeof(*bitmap), GFP_KERNEL);
-+	if (!bitmap)
-+		return ERR_PTR(-ENOMEM);
-+
-+	mapped = &bitmap->mapped;
-+	mapped->pgshift = __ffs(page_size);
-+	bitmap->bitmap = data;
-+	bitmap->mapped_total_index =
-+		iova_bitmap_offset_to_index(bitmap, length - 1) + 1;
-+	bitmap->iova = iova;
-+	bitmap->length = length;
-+	mapped->iova = iova;
-+	mapped->pages = (struct page **)__get_free_page(GFP_KERNEL);
-+	if (!mapped->pages) {
-+		rc = -ENOMEM;
-+		goto err;
++		nodes[i].start = range.iova;
++		nodes[i].last = range.iova + range.length - 1;
++		if (interval_tree_iter_first(&root, nodes[i].start,
++					     nodes[i].last)) {
++			/* Range overlapping */
++			ret = -EINVAL;
++			goto end;
++		}
++		interval_tree_insert(nodes + i, &root);
 +	}
 +
-+	rc = iova_bitmap_get(bitmap);
-+	if (rc)
-+		goto err;
-+	return bitmap;
++	ret = device->log_ops->log_start(device, &root, nnodes,
++					 &control.page_size);
++	if (ret)
++		goto end;
 +
-+err:
-+	iova_bitmap_free(bitmap);
-+	return ERR_PTR(rc);
-+}
-+
-+/**
-+ * iova_bitmap_free() - Frees an IOVA bitmap object
-+ * @bitmap: IOVA bitmap to free
-+ *
-+ * It unpins and releases pages array memory and clears any leftover
-+ * state.
-+ */
-+void iova_bitmap_free(struct iova_bitmap *bitmap)
-+{
-+	struct iova_bitmap_map *mapped = &bitmap->mapped;
-+
-+	iova_bitmap_put(bitmap);
-+
-+	if (mapped->pages) {
-+		free_page((unsigned long)mapped->pages);
-+		mapped->pages = NULL;
++	if (copy_to_user(arg, &control, sizeof(control))) {
++		ret = -EFAULT;
++		device->log_ops->log_stop(device);
 +	}
 +
-+	kfree(bitmap);
-+}
-+
-+/*
-+ * Returns the remaining bitmap indexes from mapped_total_index to process for
-+ * the currently pinned bitmap pages.
-+ */
-+static unsigned long iova_bitmap_mapped_remaining(struct iova_bitmap *bitmap)
-+{
-+	unsigned long remaining;
-+
-+	remaining = bitmap->mapped_total_index - bitmap->mapped_base_index;
-+	remaining = min_t(unsigned long, remaining,
-+	      (bitmap->mapped.npages << PAGE_SHIFT) / sizeof(*bitmap->bitmap));
-+
-+	return remaining;
-+}
-+
-+/*
-+ * Returns the length of the mapped IOVA range.
-+ */
-+static unsigned long iova_bitmap_mapped_length(struct iova_bitmap *bitmap)
-+{
-+	unsigned long max_iova = bitmap->iova + bitmap->length - 1;
-+	unsigned long iova = iova_bitmap_mapped_iova(bitmap);
-+	unsigned long remaining;
-+
-+	/*
-+	 * iova_bitmap_mapped_remaining() returns a number of indexes which
-+	 * when converted to IOVA gives us a max length that the bitmap
-+	 * pinned data can cover. Afterwards, that is capped to
-+	 * only cover the IOVA range in @bitmap::iova .. @bitmap::length.
-+	 */
-+	remaining = iova_bitmap_index_to_offset(bitmap,
-+			iova_bitmap_mapped_remaining(bitmap));
-+
-+	if (iova + remaining - 1 > max_iova)
-+		remaining -= ((iova + remaining - 1) - max_iova);
-+
-+	return remaining;
-+}
-+
-+/*
-+ * Returns true if there's not more data to iterate.
-+ */
-+static bool iova_bitmap_done(struct iova_bitmap *bitmap)
-+{
-+	return bitmap->mapped_base_index >= bitmap->mapped_total_index;
-+}
-+
-+/*
-+ * Advances to the next range, releases the current pinned
-+ * pages and pins the next set of bitmap pages.
-+ * Returns 0 on success or otherwise errno.
-+ */
-+static int iova_bitmap_advance(struct iova_bitmap *bitmap)
-+{
-+	unsigned long iova = iova_bitmap_mapped_length(bitmap) - 1;
-+	unsigned long count = iova_bitmap_offset_to_index(bitmap, iova) + 1;
-+
-+	bitmap->mapped_base_index += count;
-+
-+	iova_bitmap_put(bitmap);
-+	if (iova_bitmap_done(bitmap))
-+		return 0;
-+
-+	/* When advancing the index we pin the next set of bitmap pages */
-+	return iova_bitmap_get(bitmap);
-+}
-+
-+/**
-+ * iova_bitmap_for_each() - Iterates over the bitmap
-+ * @bitmap: IOVA bitmap to iterate
-+ * @opaque: Additional argument to pass to the callback
-+ * @fn: Function that gets called for each IOVA range
-+ *
-+ * Helper function to iterate over bitmap data representing a portion of IOVA
-+ * space. It hides the complexity of iterating bitmaps and translating the
-+ * mapped bitmap user pages into IOVA ranges to process.
-+ *
-+ * Return: 0 on success, and an error on failure either upon
-+ * iteration or when the callback returns an error.
-+ */
-+int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
-+			 int (*fn)(struct iova_bitmap *bitmap,
-+				   unsigned long iova, size_t length,
-+				   void *opaque))
-+{
-+	int ret = 0;
-+
-+	for (; !iova_bitmap_done(bitmap) && !ret;
-+	     ret = iova_bitmap_advance(bitmap)) {
-+		ret = fn(bitmap, iova_bitmap_mapped_iova(bitmap),
-+			 iova_bitmap_mapped_length(bitmap), opaque);
-+		if (ret)
-+			break;
-+	}
-+
++end:
++	kfree(nodes);
 +	return ret;
 +}
 +
-+/**
-+ * iova_bitmap_set() - Records an IOVA range in bitmap
-+ * @bitmap: IOVA bitmap
-+ * @iova: IOVA to start
-+ * @length: IOVA range length
-+ *
-+ * Set the bits corresponding to the range [iova .. iova+length-1] in
-+ * the user bitmap.
-+ *
-+ * Return: The number of bits set.
-+ */
-+unsigned long iova_bitmap_set(struct iova_bitmap *bitmap,
-+			      unsigned long iova, size_t length)
++static int
++vfio_ioctl_device_feature_logging_stop(struct vfio_device *device,
++				       u32 flags, void __user *arg,
++				       size_t argsz)
 +{
-+	struct iova_bitmap_map *mapped = &bitmap->mapped;
-+	unsigned long nbits = max(1UL, length >> mapped->pgshift), set = nbits;
-+	unsigned long offset = (iova - mapped->iova) >> mapped->pgshift;
-+	unsigned long page_idx = offset / BITS_PER_PAGE;
-+	unsigned long page_offset = mapped->pgoff;
-+	void *kaddr;
++	int ret;
 +
-+	offset = offset % BITS_PER_PAGE;
++	if (!device->log_ops)
++		return -ENOTTY;
 +
-+	do {
-+		unsigned long size = min(BITS_PER_PAGE - offset, nbits);
++	ret = vfio_check_feature(flags, argsz,
++				 VFIO_DEVICE_FEATURE_SET, 0);
++	if (ret != 1)
++		return ret;
 +
-+		kaddr = kmap_local_page(mapped->pages[page_idx]);
-+		bitmap_set(kaddr + page_offset, offset, size);
-+		kunmap_local(kaddr);
-+		page_offset = offset = 0;
-+		nbits -= size;
-+		page_idx++;
-+	} while (nbits > 0);
-+
-+	return set;
++	return device->log_ops->log_stop(device);
 +}
-+EXPORT_SYMBOL_GPL(iova_bitmap_set);
-diff --git a/include/linux/iova_bitmap.h b/include/linux/iova_bitmap.h
-new file mode 100644
-index 000000000000..ab3b4fa6ac48
---- /dev/null
-+++ b/include/linux/iova_bitmap.h
-@@ -0,0 +1,24 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (c) 2022, Oracle and/or its affiliates.
-+ * Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved
++
++static int vfio_device_log_read_and_clear(struct iova_bitmap *iter,
++					  unsigned long iova, size_t length,
++					  void *opaque)
++{
++	struct vfio_device *device = opaque;
++
++	return device->log_ops->log_read_and_clear(device, iova, length, iter);
++}
++
++static int
++vfio_ioctl_device_feature_logging_report(struct vfio_device *device,
++					 u32 flags, void __user *arg,
++					 size_t argsz)
++{
++	size_t minsz =
++		offsetofend(struct vfio_device_feature_dma_logging_report,
++			    bitmap);
++	struct vfio_device_feature_dma_logging_report report;
++	struct iova_bitmap *iter;
++	u64 iova_end;
++	int ret;
++
++	if (!device->log_ops)
++		return -ENOTTY;
++
++	ret = vfio_check_feature(flags, argsz,
++				 VFIO_DEVICE_FEATURE_GET,
++				 sizeof(report));
++	if (ret != 1)
++		return ret;
++
++	if (copy_from_user(&report, arg, minsz))
++		return -EFAULT;
++
++	if (report.page_size < SZ_4K || !is_power_of_2(report.page_size))
++		return -EINVAL;
++
++	if (check_add_overflow(report.iova, report.length, &iova_end) ||
++	    iova_end > ULONG_MAX)
++		return -EOVERFLOW;
++
++	iter = iova_bitmap_alloc(report.iova, report.length,
++				 report.page_size,
++				 u64_to_user_ptr(report.bitmap));
++	if (IS_ERR(iter))
++		return PTR_ERR(iter);
++
++	ret = iova_bitmap_for_each(iter, device,
++				   vfio_device_log_read_and_clear);
++
++	iova_bitmap_free(iter);
++	return ret;
++}
++
+ static int vfio_ioctl_device_feature(struct vfio_device *device,
+ 				     struct vfio_device_feature __user *arg)
+ {
+@@ -1661,6 +1824,18 @@ static int vfio_ioctl_device_feature(struct vfio_device *device,
+ 		return vfio_ioctl_device_feature_mig_device_state(
+ 			device, feature.flags, arg->data,
+ 			feature.argsz - minsz);
++	case VFIO_DEVICE_FEATURE_DMA_LOGGING_START:
++		return vfio_ioctl_device_feature_logging_start(
++			device, feature.flags, arg->data,
++			feature.argsz - minsz);
++	case VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP:
++		return vfio_ioctl_device_feature_logging_stop(
++			device, feature.flags, arg->data,
++			feature.argsz - minsz);
++	case VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT:
++		return vfio_ioctl_device_feature_logging_report(
++			device, feature.flags, arg->data,
++			feature.argsz - minsz);
+ 	default:
+ 		if (unlikely(!device->ops->device_feature))
+ 			return -EINVAL;
+diff --git a/include/linux/vfio.h b/include/linux/vfio.h
+index e05ddc6fe6a5..b17f2f454389 100644
+--- a/include/linux/vfio.h
++++ b/include/linux/vfio.h
+@@ -14,6 +14,7 @@
+ #include <linux/workqueue.h>
+ #include <linux/poll.h>
+ #include <uapi/linux/vfio.h>
++#include <linux/iova_bitmap.h>
+ 
+ struct kvm;
+ 
+@@ -33,10 +34,11 @@ struct vfio_device {
+ 	struct device *dev;
+ 	const struct vfio_device_ops *ops;
+ 	/*
+-	 * mig_ops is a static property of the vfio_device which must be set
+-	 * prior to registering the vfio_device.
++	 * mig_ops/log_ops is a static property of the vfio_device which must
++	 * be set prior to registering the vfio_device.
+ 	 */
+ 	const struct vfio_migration_ops *mig_ops;
++	const struct vfio_log_ops *log_ops;
+ 	struct vfio_group *group;
+ 	struct vfio_device_set *dev_set;
+ 	struct list_head dev_set_list;
+@@ -108,6 +110,21 @@ struct vfio_migration_ops {
+ 				   enum vfio_device_mig_state *curr_state);
+ };
+ 
++/**
++ * @log_start: Optional callback to ask the device start DMA logging.
++ * @log_stop: Optional callback to ask the device stop DMA logging.
++ * @log_read_and_clear: Optional callback to ask the device read
++ *         and clear the dirty DMAs in some given range.
 + */
-+#ifndef _IOVA_BITMAP_H_
-+#define _IOVA_BITMAP_H_
++struct vfio_log_ops {
++	int (*log_start)(struct vfio_device *device,
++		struct rb_root_cached *ranges, u32 nnodes, u64 *page_size);
++	int (*log_stop)(struct vfio_device *device);
++	int (*log_read_and_clear)(struct vfio_device *device,
++		unsigned long iova, unsigned long length,
++		struct iova_bitmap *dirty);
++};
 +
-+#include <linux/types.h>
-+
-+struct iova_bitmap;
-+
-+struct iova_bitmap *iova_bitmap_alloc(unsigned long iova, size_t length,
-+				      unsigned long page_size,
-+				      u64 __user *data);
-+void iova_bitmap_free(struct iova_bitmap *bitmap);
-+int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
-+			 int (*fn)(struct iova_bitmap *bitmap,
-+				   unsigned long iova, size_t length,
-+				   void *opaque));
-+unsigned long iova_bitmap_set(struct iova_bitmap *bitmap,
-+			      unsigned long iova, size_t length);
-+
-+#endif
+ /**
+  * vfio_check_feature - Validate user input for the VFIO_DEVICE_FEATURE ioctl
+  * @flags: Arg from the device_feature op
 -- 
 2.18.1
 
