@@ -2,212 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E3CD85A89B9
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 02:09:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA4105A89BA
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 02:11:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231760AbiIAAJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 20:09:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49618 "EHLO
+        id S231451AbiIAAK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 20:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231570AbiIAAJ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 20:09:27 -0400
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D11E115A;
-        Wed, 31 Aug 2022 17:09:25 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 60DF61BF204;
-        Thu,  1 Sep 2022 00:09:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1661990963;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7HecSJBCz5O36GzBTh4mMVoQyvMbAhBFppUr4JLhBpI=;
-        b=kG42d29JD6P4EH+fwB+DyhMKMvqNJfGaSf3+TCsROEmeyssOPghOQy8QomlxZVyVckYJzt
-        3kuULVJ6aL+EGHBhE+GXdU+UEX39xqKmkA7ab6oGZ+tDHS7troHlRrr4vKzi0VFnwZnQJv
-        8o4ZB96RXTWjcWkQGt8apDWdkTtiBAr0F7B8aveEUYSZJ13cDW6lIph2EnQi4huY14ysn1
-        msTRkuaM6UAxP0GClrY68zSvrkJ/U6V5RO+Y/NbYB5mcIDT3Tw9A5gZHybMfxN7agjVM9Z
-        D2xt//+m6pI1aai3Qo/utJ0ngmNT7JQFvukWL0nQCuVrlDpzjm81im27wNWLcA==
-Date:   Thu, 1 Sep 2022 02:09:18 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S229602AbiIAAK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 20:10:57 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82CE37F259
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 17:10:55 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id n8-20020a17090a73c800b001fd832b54f6so896114pjk.0
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 17:10:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=DFPFgAkSz6ZpDaYawuJ9eytD8nlRvU+pO+OB6u1AXMc=;
+        b=YoF4yhvEAfcxVSzc0UnUKWLtuQopRJXluAEmJpxU7ihN9aeqcvAzR0mlgmR5adyPdr
+         aTwrpkBDyRnfeCL/TCgOfh1ZI1WNxHd/xahBB69KstGxVKKvejTH5H1Fwfn/9rX2MIWD
+         yuRVL1FOnvrGP7lmWEJJCKwT1oRdJ0NufD7hGxZmTf4E3laJHKoQ7n19wXj/+ViZa1PE
+         DEvB7V3Am/y3WDj3KXtba5Ij4ICs7QFjyUXPDJ0gOOEroBT3kWDGbF4AzjxDe6L5w724
+         qDlZFkFgoiNsOL18C0jCTf6QIpmM+Xp1446gTx81pR1+M4KGKIgJCuQ1FsTn/pSNM5ob
+         AlJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=DFPFgAkSz6ZpDaYawuJ9eytD8nlRvU+pO+OB6u1AXMc=;
+        b=akfTriOgaapS2fofzJi25QvsCaTpJEYzsTn6RqswjFSWYzMwO0cKNgqIOa5RyMmhIC
+         pqH3R7ZOQwc5lekgE+wfDaEarodtr2zi+rNY7DwwWKhaRz6MMed9zMLrahFlJM7uCRAE
+         /OKuCVsbeYTAP7Gjm6Jg9NWIv5T0jpPAPIr0yBT9JQr65T8nP52g5LmSdjT1hACIJVdc
+         4XupOVmub/WT11Nw3pHA5iHQyrJl6nDME73pZjFmh2GB9Fr7SGhqyvrCQ6u39rjtKzQT
+         YZZUq8Bgc3y5E3NnerxUE0OxRhZxG93HqaXBnJFJ2zCfuw+5HvhBoo+PloqxF4QMnEwd
+         6xgw==
+X-Gm-Message-State: ACgBeo3M6mqfCZrYhbvl4d+uPiznfn+xagWGyzl7rcHEXvh91GxkVrw4
+        UiFE+DA0Vc8huMr4CGzGqG4twmodgrbnmG0UnWcNaQ==
+X-Google-Smtp-Source: AA6agR4Kg4CRjec4Efhwsn0NiN8xP/TK6bmpDwey9WLsdObesVByY93f6v1Xrrfv6UpK8Zim8sreAXjNxxrp0AviPhI=
+X-Received: by 2002:a17:902:b410:b0:172:c9d1:7501 with SMTP id
+ x16-20020a170902b41000b00172c9d17501mr28258768plr.106.1661991054865; Wed, 31
+ Aug 2022 17:10:54 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220831233809.242987-1-edumazet@google.com>
+In-Reply-To: <20220831233809.242987-1-edumazet@google.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Wed, 31 Aug 2022 17:10:42 -0700
+Message-ID: <CALvZod4UTy-1B_0YBdnk2_9u7EBwkVKzQRL0cErP-s2JdW5vPw@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: TX zerocopy should not sense pfmemalloc status
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
- coordinator interfaces
-Message-ID: <20220901020918.2a15a8f9@xps-13>
-In-Reply-To: <20220831173903.1a980653@xps-13>
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
-        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
-        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
-        <20220819191109.0e639918@xps-13>
-        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
-        <20220823182950.1c722e13@xps-13>
-        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
-        <20220824122058.1c46e09a@xps-13>
-        <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
-        <20220824152648.4bfb9a89@xps-13>
-        <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
-        <20220825145831.1105cb54@xps-13>
-        <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
-        <20220826095408.706438c2@xps-13>
-        <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
-        <20220829100214.3c6dad63@xps-13>
-        <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
-        <20220831173903.1a980653@xps-13>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello again,
+On Wed, Aug 31, 2022 at 4:38 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> We got a recent syzbot report [1] showing a possible misuse
+> of pfmemalloc page status in TCP zerocopy paths.
+>
+> Indeed, for pages coming from user space or other layers,
+> using page_is_pfmemalloc() is moot, and possibly could give
+> false positives.
+>
+> There has been attempts to make page_is_pfmemalloc() more robust,
+> but not using it in the first place in this context is probably better,
+> removing cpu cycles.
+>
+> Note to stable teams :
+>
+> You need to backport 84ce071e38a6 ("net: introduce
+> __skb_fill_page_desc_noacc") as a prereq.
+>
+> Race is more probable after commit c07aea3ef4d4
+> ("mm: add a signature in struct page") because page_is_pfmemalloc()
+> is now using low order bit from page->lru.next, which can change
+> more often than page->index.
+>
+> Low order bit should never be set for lru.next (when used as an anchor
+> in LRU list), so KCSAN report is mostly a false positive.
+>
+> Backporting to older kernel versions seems not necessary.
+>
+> [1]
+> BUG: KCSAN: data-race in lru_add_fn / tcp_build_frag
+>
+> write to 0xffffea0004a1d2c8 of 8 bytes by task 18600 on cpu 0:
+> __list_add include/linux/list.h:73 [inline]
+> list_add include/linux/list.h:88 [inline]
+> lruvec_add_folio include/linux/mm_inline.h:105 [inline]
+> lru_add_fn+0x440/0x520 mm/swap.c:228
+> folio_batch_move_lru+0x1e1/0x2a0 mm/swap.c:246
+> folio_batch_add_and_move mm/swap.c:263 [inline]
+> folio_add_lru+0xf1/0x140 mm/swap.c:490
+> filemap_add_folio+0xf8/0x150 mm/filemap.c:948
+> __filemap_get_folio+0x510/0x6d0 mm/filemap.c:1981
+> pagecache_get_page+0x26/0x190 mm/folio-compat.c:104
+> grab_cache_page_write_begin+0x2a/0x30 mm/folio-compat.c:116
+> ext4_da_write_begin+0x2dd/0x5f0 fs/ext4/inode.c:2988
+> generic_perform_write+0x1d4/0x3f0 mm/filemap.c:3738
+> ext4_buffered_write_iter+0x235/0x3e0 fs/ext4/file.c:270
+> ext4_file_write_iter+0x2e3/0x1210
+> call_write_iter include/linux/fs.h:2187 [inline]
+> new_sync_write fs/read_write.c:491 [inline]
+> vfs_write+0x468/0x760 fs/read_write.c:578
+> ksys_write+0xe8/0x1a0 fs/read_write.c:631
+> __do_sys_write fs/read_write.c:643 [inline]
+> __se_sys_write fs/read_write.c:640 [inline]
+> __x64_sys_write+0x3e/0x50 fs/read_write.c:640
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> read to 0xffffea0004a1d2c8 of 8 bytes by task 18611 on cpu 1:
+> page_is_pfmemalloc include/linux/mm.h:1740 [inline]
+> __skb_fill_page_desc include/linux/skbuff.h:2422 [inline]
+> skb_fill_page_desc include/linux/skbuff.h:2443 [inline]
+> tcp_build_frag+0x613/0xb20 net/ipv4/tcp.c:1018
+> do_tcp_sendpages+0x3e8/0xaf0 net/ipv4/tcp.c:1075
+> tcp_sendpage_locked net/ipv4/tcp.c:1140 [inline]
+> tcp_sendpage+0x89/0xb0 net/ipv4/tcp.c:1150
+> inet_sendpage+0x7f/0xc0 net/ipv4/af_inet.c:833
+> kernel_sendpage+0x184/0x300 net/socket.c:3561
+> sock_sendpage+0x5a/0x70 net/socket.c:1054
+> pipe_to_sendpage+0x128/0x160 fs/splice.c:361
+> splice_from_pipe_feed fs/splice.c:415 [inline]
+> __splice_from_pipe+0x222/0x4d0 fs/splice.c:559
+> splice_from_pipe fs/splice.c:594 [inline]
+> generic_splice_sendpage+0x89/0xc0 fs/splice.c:743
+> do_splice_from fs/splice.c:764 [inline]
+> direct_splice_actor+0x80/0xa0 fs/splice.c:931
+> splice_direct_to_actor+0x305/0x620 fs/splice.c:886
+> do_splice_direct+0xfb/0x180 fs/splice.c:974
+> do_sendfile+0x3bf/0x910 fs/read_write.c:1249
+> __do_sys_sendfile64 fs/read_write.c:1317 [inline]
+> __se_sys_sendfile64 fs/read_write.c:1303 [inline]
+> __x64_sys_sendfile64+0x10c/0x150 fs/read_write.c:1303
+> do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> do_syscall_64+0x2b/0x70 arch/x86/entry/common.c:80
+> entry_SYSCALL_64_after_hwframe+0x63/0xcd
+>
+> value changed: 0x0000000000000000 -> 0xffffea0004a1d288
+>
+> Reported by Kernel Concurrency Sanitizer on:
+> CPU: 1 PID: 18611 Comm: syz-executor.4 Not tainted 6.0.0-rc2-syzkaller-00248-ge022620b5d05-dirty #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 07/22/2022
+>
+> Fixes: c07aea3ef4d4 ("mm: add a signature in struct page")
+> Reported-by: syzbot <syzkaller@googlegroups.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Shakeel Butt <shakeelb@google.com>
 
-miquel.raynal@bootlin.com wrote on Wed, 31 Aug 2022 17:39:03 +0200:
-
-> Hi Alexander & Stefan,
->=20
-> aahringo@redhat.com wrote on Mon, 29 Aug 2022 22:23:09 -0400:
->=20
-> I am currently testing my code with the ATUSB devices, the association
-> works, so it's a good news! However I am struggling to get the
-> association working for a simple reason: the crafted ACKs are
-> transmitted (the ATUSB in monitor mode sees it) but I get absolutely
-> nothing on the receiver side.
->=20
-> The logic is:
->=20
-> coord0                 coord1
-> association req ->
->                 <-     ack
->                 <-     association response
-> ack             ->
->=20
-> The first ack is sent by coord1 but coord0 never sees anything. In
-> practice coord0 has sent an association request and received a single
-> one-byte packet in return which I guess is the firmware saying "okay, Tx
-> has been performed". Shall I interpret this byte differently? Does it
-> mean that the ack has also been received?
-
-I think I now have a clearer understanding on how the devices behave.
-
-I turned the devices into promiscuous mode and could observe that some
-frames were considered wrong. Indeed, it looks like the PHYs add the
-FCS themselves, while the spec says that the FCS should be provided to
-the PHY. Anyway, I dropped the FCS calculations from the different MLME
-frames forged and it helped a lot.
-
-I also kind of "discovered" the concept of hardware address filtering
-on atusb which makes me realize that maybe we were not talking about
-the same "filtering" until now.
-
-Associations and disassociations now work properly, I'm glad I fixed
-"everything". I still need to figure out if using the promiscuous mode
-everywhere is really useful or not (maybe the hardware filters were
-disabled in this mode and it made it work). However, using the
-promiscuous mode was the only way I had to receive acknowledgements,
-otherwise they were filtered out by the hardware (the monitor was
-showing that the ack frames were actually being sent).
-
-Finally, changing the channel was also a piece of the puzzle, because I
-think some of my smart light bulbs tried to say hello and it kind of
-disturbed me :)
-
-> I could not find a documentation of the firmware interface, I went
-> through the wiki but I did not find something clear about what to
-> expect or "what the driver should do". But perhaps this will ring a
-> bell on your side?
->=20
-> [...]
->=20
-> > I did not see the v2 until now. Sorry for that. =20
->=20
-> Ah! Ok, no problem :)
->=20
-> >=20
-> > However I think there are missing bits here at the receive handling
-> > side. Which are:
-> >=20
-> > 1. Do a stop_tx(), stop_rx(), start_rx(filtering_level) to go into
-> > other filtering modes while ifup. =20
->=20
-> Who is supposed to change the filtering level?
->=20
-> For now there is only the promiscuous mode being applied and the user
-> has no knowledge about it, it's just something internal.
->=20
-> Changing how the promiscuous mode is applied (using a filtering level
-> instead of a "promiscuous on" boolean) would impact all the drivers
-> and for now we don't really need it.
->=20
-> > I don't want to see all filtering modes here, just what we currently
-> > support with NONE (then with FCS check on software if necessary),
-> > ?THIRD/FOURTH? LEVEL filtering and that's it. What I don't want to see
-> > is runtime changes of phy flags. To tell the receive path what to
-> > filter and what's not. =20
->=20
-> Runtime changes on a dedicated "filtering" PHY flag is what I've used
-> and it works okay for this situation, why don't you want that? It
-> avoids the need for (yet) another rework of the API with the drivers,
-> no?
->=20
-> > 2. set the pan coordinator bit for hw address filter. And there is a
-> > TODO about setting pkt_type in mac802154 receive path which we should
-> > take a look into. This bit should be addressed for coordinator support
-> > even if there is the question about coordinator vs pan coordinator,
-> > then the kernel needs a bit as coordinator iface type parameter to
-> > know if it's a pan coordinator and not coordinator. =20
->=20
-> This is not really something that we can "set". Either the device
-> had performed an association and it is a child device: it is not the
-> PAN coordinator, or it initiated the PAN and it is the PAN coordinator.
-> There are commands to change that later on but those are not supported.
->=20
-> The "PAN coordinator" information is being added in the association
-> series (which comes after the scan). I have handled the pkt_type you are
-> mentioning.
->=20
-> > I think it makes total sense to split this work in transmit handling,
-> > where we had no support at all to send something besides the usual
-> > data path, and receive handling, where we have no way to change the
-> > filtering level besides interface type and ifup time of an interface.
-> > We are currently trying to make a receive path working in a way that
-> > "the other ideas flying around which are good" can be introduced in
-> > future.
-> > If this is done, then take care about how to add the rest of it.
-> >=20
-> > I will look into v2 the next few days.
-
-If possible, I would really like to understand what you expect in terms
-of filtering. Maybe as well a short snippet of code showing what kind
-of interface you have in mind. Are we talking about a rework of the
-promiscuous callback? Are we talking about the hardware filters? What
-are the inputs and outputs for these callbacks? What do we expect from
-the drivers in terms of advertising? I will be glad to make the
-relevant changes once I understand what is needed because on this topic
-I have a clear lack of experience, so I will try to judge what is
-reachable based on your inputs.
-
-Thanks,
-Miqu=C3=A8l
+Reviewed-by: Shakeel Butt <shakeelb@google.com>
