@@ -2,55 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 32AEC5A8D7E
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 07:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACB6D5A8DB7
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 07:55:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232458AbiIAFqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 01:46:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37208 "EHLO
+        id S233176AbiIAFzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 01:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232332AbiIAFqO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 01:46:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99EEC1166C7
-        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 22:46:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 16991619F1
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 05:46:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB0D3C433D6;
-        Thu,  1 Sep 2022 05:46:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662011172;
-        bh=N6sy4DHYjouYCYQ6bWsBoZXK36R1GIhJGaayGM8TQ8U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=CDbV0cpc3rOerT7aDuF2wrdCi8nzQiFRujEe4nG7BZhoysNE+8CmYanyPymvVzntK
-         3Fx3c6INfu0O4BTEb2y8oSwHZv17lu7L7x6A/6kIb3NlPHaEb+Q6uo+pH5bfOSpuwO
-         EBW+pfqmhxkua//B5fj2hqMKUCy4mJLB7dI+XjRM=
-Date:   Thu, 1 Sep 2022 07:46:23 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com,
-        Michal Michalik <michal.michalik@intel.com>,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        Gurucharan <gurucharanx.g@intel.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Johan Hovold <johan@kernel.org>
-Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
- GNSS
-Message-ID: <YxBHL6YzF2dAWf3q@kroah.com>
-References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
- <20220829220049.333434-4-anthony.l.nguyen@intel.com>
- <20220831145439.2f268c34@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831145439.2f268c34@kernel.org>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        with ESMTP id S233145AbiIAFy6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 01:54:58 -0400
+Received: from smtp236.sjtu.edu.cn (smtp236.sjtu.edu.cn [202.120.2.236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5B66375;
+        Wed, 31 Aug 2022 22:54:53 -0700 (PDT)
+Received: from proxy02.sjtu.edu.cn (smtp188.sjtu.edu.cn [202.120.2.188])
+        by smtp236.sjtu.edu.cn (Postfix) with ESMTPS id 5CEFD1008B39D;
+        Thu,  1 Sep 2022 13:54:49 +0800 (CST)
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTP id D6FAB2009BEAD;
+        Thu,  1 Sep 2022 13:54:47 +0800 (CST)
+X-Virus-Scanned: amavisd-new at 
+Received: from proxy02.sjtu.edu.cn ([127.0.0.1])
+        by localhost (proxy02.sjtu.edu.cn [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id GtBnxunfCybj; Thu,  1 Sep 2022 13:54:46 +0800 (CST)
+Received: from localhost.localdomain (unknown [202.120.40.82])
+        (Authenticated sender: qtxuning1999@sjtu.edu.cn)
+        by proxy02.sjtu.edu.cn (Postfix) with ESMTPSA id 00982200A5E62;
+        Thu,  1 Sep 2022 13:54:34 +0800 (CST)
+From:   Guo Zhi <qtxuning1999@sjtu.edu.cn>
+To:     eperezma@redhat.com, jasowang@redhat.com, sgarzare@redhat.com,
+        mst@redhat.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        Guo Zhi <qtxuning1999@sjtu.edu.cn>
+Subject: [RFC v3 0/7] In order support for virtio_ring, vhost and vsock.
+Date:   Thu,  1 Sep 2022 13:54:27 +0800
+Message-Id: <20220901055434.824-1-qtxuning1999@sjtu.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,RCVD_IN_SORBS_WEB,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,46 +47,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 02:54:39PM -0700, Jakub Kicinski wrote:
-> On Mon, 29 Aug 2022 15:00:49 -0700 Tony Nguyen wrote:
-> > From: Michal Michalik <michal.michalik@intel.com>
-> > 
-> > Some third party tools (ex. ubxtool) try to change GNSS TTY parameters
-> > (ex. speed). While being optional implementation, without set_termios
-> > handle this operation fails and prevents those third party tools from
-> > working.
+In virtio-spec 1.1, new feature bit VIRTIO_F_IN_ORDER was introduced.
+When this feature has been negotiated, virtio driver will use
+descriptors in ring order: starting from offset 0 in the table, and
+wrapping around at the end of the table. Vhost devices will always use
+descriptors in the same order in which they have been made available.
+This can reduce virtio accesses to used ring.
 
-What tools are "blocked" by this?  And what is the problem they have
-with just the default happening here?  You are now doing nothing, while
-if you do not have the callback, at least a basic "yes, we accepted
-these values" happens which was intended for userspace to not know that
-there was a problem here.
+Based on updated virtio-spec, this series realized IN_ORDER prototype in virtio
+driver and vhost. Currently IN_ORDER feature supported devices are *vhost_test*
+and *vsock* in vhost and virtio-net in QEMU. IN_ORDER feature works well
+combined with INDIRECT feature in this patch series.
 
-> TTY interface in ice driver is virtual and doesn't need any change
-> > on set_termios, so is left empty. Add this mock to support all Linux TTY
-> > APIs.
+Virtio driver in_order support for packed vq hasn't been done in this patch
+series now.
 
-"mock"?
+Guo Zhi (7):
+  vhost: expose used buffers
+  vhost_test: batch used buffer
+  vsock: batch buffers in tx
+  vsock: announce VIRTIO_F_IN_ORDER in vsock
+  virtio: unmask F_NEXT flag in desc_extra
+  virtio: in order support for virtio_ring
+  virtio: announce VIRTIO_F_IN_ORDER support
 
+ drivers/vhost/test.c         | 16 ++++++--
+ drivers/vhost/vhost.c        | 16 ++++++--
+ drivers/vhost/vsock.c        | 13 +++++-
+ drivers/virtio/virtio_ring.c | 79 +++++++++++++++++++++++++++++++-----
+ 4 files changed, 104 insertions(+), 20 deletions(-)
 
+-- 
+2.17.1
 
-> > 
-> > Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
-> > Signed-off-by: Michal Michalik <michal.michalik@intel.com>
-> > Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-> > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> 
-> Please CC GNSS and TTY maintainers on the patches relating to 
-> the TTY/GNSS channel going forward.
-> 
-> CC: Greg, Jiri, Johan
-> 
-> We'll pull in a day or two if there are no objections.
-
-Please see above, I'd like to know what is really failing here and why
-as forcing drivers to have "empty" functions like this is not good and
-never the goal.
-
-thanks,
-
-greg k-h
