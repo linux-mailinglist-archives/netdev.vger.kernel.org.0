@@ -2,86 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A334D5A9D09
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AA465A9D0A
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 18:27:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234531AbiIAQ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 12:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45858 "EHLO
+        id S234994AbiIAQ0z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 12:26:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233480AbiIAQ0o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:26:44 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E02E5A2EA;
-        Thu,  1 Sep 2022 09:26:42 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id B09552010;
-        Thu,  1 Sep 2022 18:26:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662049599;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=5gPdcOh3G4Fq/gjmy/s1uDpAvkIPiHNCGi2EGHEAcyY=;
-        b=Fofb2XGmbZsoPEktyTm7ZjLRg5BSQN5fYg9SGZPjPaYM3Tk05GsaIIDNquFWhF4hA/Z8g6
-        6zId/e4zbLxzIqt6P5s/5YNMRF0gtp4B+/1D2jUVEbj4MM/b7+0fFGcaDgqIENGXRbf7j4
-        eDxVq2MNtDbHaPfljkJCVe0c0S9Krnu5y+0SZn+TNuOafbF/sp/Tl1y0be1Y6ofYCz4OyD
-        Pjl+ZTgWjpYGVpwBWs5xCbRCn55U/QN/5MQnl/K4UW6EcH6foEKPM3Szkj2i4jasc89jKx
-        lLtPodBoFDoh4i5itaaFZsiZ/o2iAPLdHPMI+viYKe+BQgjKyKo/Ys8MrOYpng==
+        with ESMTP id S234925AbiIAQ0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 12:26:52 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B63E5A8B5
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 09:26:51 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id bh13so16857700pgb.4
+        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 09:26:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=A5e32fasLl3Y+jwVTEFZbCI5JVS0Dg7Fg5+D9kpz9KY=;
+        b=Sk+Dco3CJs/V7bkClUrtUzFnSUsj2US4aJCpK9Suzt2vOwWPhJPqMAo03z6L9a/YOR
+         F8vhPvCVjz51VlyyOnT3/Ji4F1ktWUc2dkvkurOyuaiDxkqtEoYzbtqfG1cGs90CTk3i
+         ZXG+PislW91EoQ80cK6rR55/CcRC2gVVvwCB6LI7FqBN/xOvJaXYajYeZT21JvXRmgm6
+         cd9lRG7/1UYZf+9BKC2hR7Sv0X3kiakmUhkP1QZ2vWly83YpSZamY+25TlAZ4iGURPIW
+         PmVDdq4+fXlIG2ymPSAIQcb6Lq4g9TRbRKwUsgb7Lum8aA5L8O3psXtejvCj2GYbgPmI
+         ApQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=A5e32fasLl3Y+jwVTEFZbCI5JVS0Dg7Fg5+D9kpz9KY=;
+        b=REemUmsrkDIOSlov3Qs/RctjUd/VawOqgqNEqQqgasJleBDbl9AQt+PzWDL2tuW8ar
+         ZUqAHJuUOKPsNmUTkTuUgiNpjOZ4+i1bQVoVStM9m9Fk+Dq5+5UsLxjfJqcx30xNYEYl
+         zeYImCwta/WWSTETieQ1rNGFmzx0NlAsbQU5M5VbY+zzWxfICrXnPNR1L0gc3sDHNF/g
+         rlluj+SGFhlYSPODB7sYJdPoOLK1iFuN7388DLjCYK+b1oU8a1ixRdtVb3hcPBSWdsqv
+         lBqI7DUgL5CQ07ouxBByrvghfeLAVyIKHTt6nEQtxn7V7izXPCZ+DmLgSd1Kngwn7eoB
+         W/IQ==
+X-Gm-Message-State: ACgBeo13q8gZlRi0CMQIMKgODoN9ulYTk/xUxDbccb0P6EtgKR2yXkem
+        bgVPYVJVVCZpgaOv5FZvpek=
+X-Google-Smtp-Source: AA6agR6qDmvEuPjXMIGZDKhuMtffTz5B+iQgK4C5gmPR5noLr0cQQu0YZAH5Br0A1XrHlqVl7+5NPg==
+X-Received: by 2002:a63:dd51:0:b0:430:18d9:edf8 with SMTP id g17-20020a63dd51000000b0043018d9edf8mr8263542pgj.163.1662049610486;
+        Thu, 01 Sep 2022 09:26:50 -0700 (PDT)
+Received: from ?IPV6:2600:8802:b00:4a48:a5f9:a2b6:fad0:5599? ([2600:8802:b00:4a48:a5f9:a2b6:fad0:5599])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa78f23000000b00535e49245d6sm8359475pfr.12.2022.09.01.09.26.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 01 Sep 2022 09:26:50 -0700 (PDT)
+Message-ID: <80f9cb5b-0e02-a367-5263-4fbffec055bb@gmail.com>
+Date:   Thu, 1 Sep 2022 09:26:48 -0700
 MIME-Version: 1.0
-Date:   Thu, 01 Sep 2022 18:26:39 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        =?UTF-8?Q?Rafa=C5=82_Mi=C5=82ecki?= <rafal@milecki.pl>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
+To:     =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>,
+        netdev@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        netdev@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: Re: [PATCH v1 01/14] net: add helper eth_addr_add()
-In-Reply-To: <20220825214423.903672-2-michael@walle.cc>
-References: <20220825214423.903672-1-michael@walle.cc>
- <20220825214423.903672-2-michael@walle.cc>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <1682967feab905d06402d0f8402799a8@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>, kernel@pengutronix.de,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+References: <20220901140402.64804-1-csokas.bence@prolan.hu>
+Content-Language: en-US
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220901140402.64804-1-csokas.bence@prolan.hu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi netdev maintainers,
 
-Am 2022-08-25 23:44, schrieb Michael Walle:
-> Add a helper to add an offset to a ethernet address. This comes in 
-> handy
-> if you have a base ethernet address for multiple interfaces.
+
+On 9/1/2022 7:04 AM, Csókás Bence wrote:
+> Mutexes cannot be taken in a non-preemptible context,
+> causing a panic in `fec_ptp_save_state()`. Replacing
+> `ptp_clk_mutex` by `tmreg_lock` fixes this.
 > 
-> Signed-off-by: Michael Walle <michael@walle.cc>
+> Fixes: 6a4d7234ae9a ("net: fec: ptp: avoid register access when ipg clock is disabled")
+> Fixes: f79959220fa5 ("fec: Restart PPS after link state change")
+> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> Link: https://lore.kernel.org/all/20220827160922.642zlcd5foopozru@pengutronix.de/
+> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+> ---
 
-Would it be possible to get an Ack for this patch, so I don't have
-to repost this large (and still growing) series to netdev every time?
+[snip]
 
-I guess it would be ok to have this go through another tree?
+>   	schedule_delayed_work(&fep->time_keep, HZ);
+>   }
+> @@ -599,8 +593,6 @@ void fec_ptp_init(struct platform_device *pdev, int irq_idx)
+>   	}
+>   	fep->ptp_inc = NSEC_PER_SEC / fep->cycle_speed;
+>   
+> -	spin_lock_init(&fep->tmreg_lock);
 
--michael
+This change needs to be kept as there is no other code in the driver 
+that would initialize the tmreg_lock otherwise. Try building a kernel 
+with spinlock debugging enabled and you should see it barf with an 
+incorrect spinlock bad magic.
+-- 
+Florian
