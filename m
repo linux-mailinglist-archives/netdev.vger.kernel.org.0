@@ -2,147 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA195A9821
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 15:11:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF4465A9830
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 15:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233852AbiIANL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 09:11:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
+        id S234086AbiIANMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 09:12:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233851AbiIANLD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 09:11:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 097E63A480;
-        Thu,  1 Sep 2022 06:05:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4710DB82566;
-        Thu,  1 Sep 2022 13:05:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C332C433D7;
-        Thu,  1 Sep 2022 13:05:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662037512;
-        bh=I1esm+YEXGUP/UKS+J1Eamgs8fxbk/NydYiEPNA7aWM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=HneGwHD+5wujexWiwSzLqVz/B8UXT3d1m2ZA45deooZhdDJ8kbtSddkPcu832LYlE
-         uUUPWiexvwjKehZ8dcteugu1dt1u52n26I4G22wOLz0uc4CtvC5qLSMosNF841mtCd
-         /Z56P5pfWa09objnqgq5BvdXItMkRLcix/B6bASGyA7Az8vjpiYWqoWFxhHghytSpy
-         lctbLSdKvpPTb6XivdzQ3igtAbrV2Cm4Ti6bvoEvL/R21QY2iIyTp0SHrboRKeKUXw
-         3JpsXuZrX7cwry9mukgqT72mMM5tpQtCxalMjKagUZsCpJhG03hlQpbYLjXULt0Y9+
-         TrKEn/SlGGugQ==
-Date:   Thu, 1 Sep 2022 16:05:07 +0300
-From:   Leon Romanovsky <leon@kernel.org>
+        with ESMTP id S233865AbiIANMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 09:12:10 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 821C5CA;
+        Thu,  1 Sep 2022 06:09:25 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id A73BF24000A;
+        Thu,  1 Sep 2022 13:09:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1662037763;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=6u3GGYjtPWk13Ax1G1UvKy+2VYJyczMdtFT6iJqGw6s=;
+        b=iT09kXSlPUjYt7kmzI774fmb+CnjQHJaI9XFSaZlcki5O1CnWT+hl35+1EVElvf4dYA3l9
+        r1a0ODuGS9QofK6TLoASfgLK3FF3nIl0aGGsj1HxLZlDMLjkrjPN71LFe0oJhJTP0oHiEj
+        36zmjSTOfJfnZO5SjA7iJx3+fawsh1OTKSmhyTle1AsYTdt6hH2Utm/sD4F5EBNz5Be75X
+        VafAN7i5Oe59LaP4dYgA4q5KHVHN5rk+QJOk1/Z2nXniAH7S6pPwIG8TTjFu2w2wSJD2Yk
+        bQevUsHbHXytr+64bOvGaEmKcQsQMq+cbr+4yvq7e2BLgLG4PEDtqeJZ4ouM+w==
+Date:   Thu, 1 Sep 2022 15:09:17 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+Cc:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Gal Pressman <gal@nvidia.com>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
         Network Development <netdev@vger.kernel.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: ieee802154: Fix compilation error when
- CONFIG_IEEE802154_NL802154_EXPERIMENTAL is disabled
-Message-ID: <YxCuA3soEjtKW/VI@unreal>
-References: <20220830101237.22782-1-gal@nvidia.com>
- <20220830231330.1c618258@kernel.org>
- <4187e35d-0965-cf65-bff5-e4f71a04d272@nvidia.com>
- <20220830233124.2770ffc2@kernel.org>
- <20220831112150.36e503bd@kernel.org>
- <36f09967-b211-ef48-7360-b6dedfda73e3@datenfreihafen.org>
- <20220831140947.7e8d06ee@kernel.org>
- <YxBTaxMmHKiLjcCo@unreal>
- <CAK-6q+hdNJymhcuOp9OJVTgiO2MCqa_xUa_MZuQK3toDLMudhw@mail.gmail.com>
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+Message-ID: <20220901150917.5246c2d0@xps-13>
+In-Reply-To: <20220901020918.2a15a8f9@xps-13>
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+        <20220701143052.1267509-2-miquel.raynal@bootlin.com>
+        <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
+        <20220819191109.0e639918@xps-13>
+        <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+        <20220823182950.1c722e13@xps-13>
+        <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+        <20220824122058.1c46e09a@xps-13>
+        <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+        <20220824152648.4bfb9a89@xps-13>
+        <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+        <20220825145831.1105cb54@xps-13>
+        <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+        <20220826095408.706438c2@xps-13>
+        <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
+        <20220829100214.3c6dad63@xps-13>
+        <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
+        <20220831173903.1a980653@xps-13>
+        <20220901020918.2a15a8f9@xps-13>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK-6q+hdNJymhcuOp9OJVTgiO2MCqa_xUa_MZuQK3toDLMudhw@mail.gmail.com>
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 08:50:16AM -0400, Alexander Aring wrote:
-> Hi,
-> 
-> On Thu, Sep 1, 2022 at 2:38 AM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Wed, Aug 31, 2022 at 02:09:47PM -0700, Jakub Kicinski wrote:
-> > > On Wed, 31 Aug 2022 22:59:14 +0200 Stefan Schmidt wrote:
-> > > > I was swamped today and I am only now finding time to go through mail.
-> > > >
-> > > > Given the problem these ifdef are raising I am ok with having these
-> > > > commands exposed without them.
-> > > >
-> > > > Our main reason for having this feature marked as experimental is that
-> > > > it does not have much exposure and we fear that some of it needs rewrites.
-> > > >
-> > > > If that really is going to happen we will simply treat the current
-> > > > commands as reserved/burned and come up with other ones if needed. While
-> > > > I hope this will not be needed it is a fair plan for mitigating this.
-> > >
-> > > Thanks for the replies. I keep going back and forth in my head on
-> > > what's better - un-hiding or just using NL802154_CMD_SET_WPAN_PHY_NETNS + 1
-> > > as the start of validation, since it's okay to break experimental commands.
-> > >
-> > > Any preference?
-> >
-> > Jakub,
-> >
-> > There is no such thing like experimental UAPI. Once you put something
-> > in UAPI headers and/or allowed users to issue calls from userspace
-> > to kernel, they can use it. We don't control how users compile their
-> > kernels.
-> >
-> > So it is not break "experimental commands", but break commands that
-> > maybe shouldn't exist in first place.
-> >
-> > nl802154 code suffers from two basic mistakes:
-> > 1. User visible defines are not part of UAPI headers. For example,
-> > include/net/nl802154.h should be in include/uapi/net/....
-> 
-> yes, but no because then this will end in breaking UAPI because it
-> will be exported to uapi headers if we change them?
-> For now we say everybody needs to copy the header on their own into
-> their user space application if they want to use the API which means
-> it fits for the kernel that they copied from.
+Hello,
 
-It is not how UAPI works. Once you allowed me to send ID number XXX to
-the kernel without any header file. I can use it directly, so "hiding"
-files from users make their development harder, but not impossible.
+miquel.raynal@bootlin.com wrote on Thu, 1 Sep 2022 02:09:18 +0200:
 
-Basically, this is how vendoring and fuzzing works.
+> Hello again,
+>=20
+> miquel.raynal@bootlin.com wrote on Wed, 31 Aug 2022 17:39:03 +0200:
+>=20
+> > Hi Alexander & Stefan,
+> >=20
+> > aahringo@redhat.com wrote on Mon, 29 Aug 2022 22:23:09 -0400:
+> >=20
+> > I am currently testing my code with the ATUSB devices, the association
+> > works, so it's a good news! However I am struggling to get the
+> > association working for a simple reason: the crafted ACKs are
+> > transmitted (the ATUSB in monitor mode sees it) but I get absolutely
+> > nothing on the receiver side.
+> >=20
+> > The logic is:
+> >=20
+> > coord0                 coord1
+> > association req ->
+> >                 <-     ack
+> >                 <-     association response
+> > ack             ->
+> >=20
+> > The first ack is sent by coord1 but coord0 never sees anything. In
+> > practice coord0 has sent an association request and received a single
+> > one-byte packet in return which I guess is the firmware saying "okay, Tx
+> > has been performed". Shall I interpret this byte differently? Does it
+> > mean that the ack has also been received? =20
+>=20
+> I think I now have a clearer understanding on how the devices behave.
+>=20
+> I turned the devices into promiscuous mode and could observe that some
+> frames were considered wrong. Indeed, it looks like the PHYs add the
+> FCS themselves, while the spec says that the FCS should be provided to
+> the PHY. Anyway, I dropped the FCS calculations from the different MLME
+> frames forged and it helped a lot.
+>=20
+> I also kind of "discovered" the concept of hardware address filtering
+> on atusb which makes me realize that maybe we were not talking about
+> the same "filtering" until now.
+>=20
+> Associations and disassociations now work properly, I'm glad I fixed
+> "everything". I still need to figure out if using the promiscuous mode
+> everywhere is really useful or not (maybe the hardware filters were
+> disabled in this mode and it made it work). However, using the
+> promiscuous mode was the only way I had to receive acknowledgements,
+> otherwise they were filtered out by the hardware (the monitor was
+> showing that the ack frames were actually being sent).
+>=20
+> Finally, changing the channel was also a piece of the puzzle, because I
+> think some of my smart light bulbs tried to say hello and it kind of
+> disturbed me :)
 
-> 
-> > 2. Used Kconfig option for pseudo-UAPI header.
-> >
-> > In this specific case, I checked that Fedora didn't enable this
-> > CONFIG_IEEE802154_NL802154_EXPERIMENTAL knob, but someone needs
-> > to check debian and other distros too.
-> >
-> 
-> I would remove the CONFIG_IEEE802154_NL802154_EXPERIMENTAL config
-> option but don't move the header to "include/uapi/..." which means
-> that the whole nl802154 UAPI (and some others UAPIs) are still
-> experimental because it's not part of UAPI "directory".
-> btw: the whole subsystem is still experimental because f4671a90c418
-> ("net/ieee802154: remove depends on CONFIG_EXPERIMENTAL") was never
-> acked by any maintainer... but indeed has other reasons why it got
-> removed.
+I tried to scan my ATUSB devices from a Zephyr based Arduino Nano
+BLE but for now it does not work, the ATUSB devices receive the scan
+requests from Zephyr and send their beacons, the ATUSB monitor shows
+the beacons on Wireshark but the ieee80154_recv() callback is never
+triggered on Zephyr side. I am new to this OS so if you have any idea
+or debugging tips, I would be glad to hear them.
 
-I don't know anything about NL802154, just trying to explain that UAPI
-rules are both relevant to binary and compilation compatibility.
+> > I could not find a documentation of the firmware interface, I went
+> > through the wiki but I did not find something clear about what to
+> > expect or "what the driver should do". But perhaps this will ring a
+> > bell on your side?
+> >=20
+> > [...]
+> >  =20
+> > > I did not see the v2 until now. Sorry for that.   =20
+> >=20
+> > Ah! Ok, no problem :)
+> >  =20
+> > >=20
+> > > However I think there are missing bits here at the receive handling
+> > > side. Which are:
+> > >=20
+> > > 1. Do a stop_tx(), stop_rx(), start_rx(filtering_level) to go into
+> > > other filtering modes while ifup.   =20
+> >=20
+> > Who is supposed to change the filtering level?
+> >=20
+> > For now there is only the promiscuous mode being applied and the user
+> > has no knowledge about it, it's just something internal.
+> >=20
+> > Changing how the promiscuous mode is applied (using a filtering level
+> > instead of a "promiscuous on" boolean) would impact all the drivers
+> > and for now we don't really need it.
+> >  =20
+> > > I don't want to see all filtering modes here, just what we currently
+> > > support with NONE (then with FCS check on software if necessary),
+> > > ?THIRD/FOURTH? LEVEL filtering and that's it. What I don't want to see
+> > > is runtime changes of phy flags. To tell the receive path what to
+> > > filter and what's not.   =20
+> >=20
+> > Runtime changes on a dedicated "filtering" PHY flag is what I've used
+> > and it works okay for this situation, why don't you want that? It
+> > avoids the need for (yet) another rework of the API with the drivers,
+> > no?
+> >  =20
+> > > 2. set the pan coordinator bit for hw address filter. And there is a
+> > > TODO about setting pkt_type in mac802154 receive path which we should
+> > > take a look into. This bit should be addressed for coordinator support
+> > > even if there is the question about coordinator vs pan coordinator,
+> > > then the kernel needs a bit as coordinator iface type parameter to
+> > > know if it's a pan coordinator and not coordinator.   =20
+> >=20
+> > This is not really something that we can "set". Either the device
+> > had performed an association and it is a child device: it is not the
+> > PAN coordinator, or it initiated the PAN and it is the PAN coordinator.
+> > There are commands to change that later on but those are not supported.
+> >=20
+> > The "PAN coordinator" information is being added in the association
+> > series (which comes after the scan). I have handled the pkt_type you are
+> > mentioning.
+> >  =20
+> > > I think it makes total sense to split this work in transmit handling,
+> > > where we had no support at all to send something besides the usual
+> > > data path, and receive handling, where we have no way to change the
+> > > filtering level besides interface type and ifup time of an interface.
+> > > We are currently trying to make a receive path working in a way that
+> > > "the other ideas flying around which are good" can be introduced in
+> > > future.
+> > > If this is done, then take care about how to add the rest of it.
+> > >=20
+> > > I will look into v2 the next few days. =20
+>=20
+> If possible, I would really like to understand what you expect in terms
+> of filtering. Maybe as well a short snippet of code showing what kind
+> of interface you have in mind. Are we talking about a rework of the
+> promiscuous callback? Are we talking about the hardware filters? What
+> are the inputs and outputs for these callbacks? What do we expect from
+> the drivers in terms of advertising? I will be glad to make the
+> relevant changes once I understand what is needed because on this topic
+> I have a clear lack of experience, so I will try to judge what is
+> reachable based on your inputs.
 
-In your case, concept of CONFIG_IEEE802154_NL802154_EXPERIMENTAL breaks
-binary compatibility.
+Also, can you please clarify when are we talking about software and
+when about hardware filters.
 
-Thanks
-
-> 
-> - Alex
-> 
+Thanks,
+Miqu=C3=A8l
