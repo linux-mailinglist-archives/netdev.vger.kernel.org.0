@@ -2,112 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 834255A9BD4
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 17:39:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D3805A9C37
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 17:52:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234318AbiIAPiP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 11:38:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58208 "EHLO
+        id S234588AbiIAPvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 11:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234227AbiIAPiO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 11:38:14 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7887AC34;
-        Thu,  1 Sep 2022 08:38:10 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5B4136000C;
-        Thu,  1 Sep 2022 15:38:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662046689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o0DY5K2tOv8e0L2U0j2bDRtdMUYfu9YOVYg6PMh7/YM=;
-        b=HR+WbvK59Zo16aCJfnTS4MAgS6YyKOdg5H7R5CHTmrWCJlbegHj25cxRfDpzu5CD/L0C/E
-        IkZ1UrSDrDViRtDjnOLxHX02TJ4LgKl8sEp2pbJ+DPWh7LFTpLjoU1KCI02ijvXGRGSfnX
-        QxxiT/hpn7cnWI8pNRNn2Ozw5djDHZfrSOPfZU/E8VlB/srUIfNicdKWrPy7qBN+rYEb52
-        Ke/411iZfoDLzAxYufTmEEnou8RITgQhHFm6kSfqUeVQJmjy6fafYO/fiaijH+KMkc327/
-        SuDpezv9RJps58PJCaogJ/VMcwbX+763jnc+/e7sphfb0yx0mPz/3YPHx2L7TQ==
-Date:   Thu, 1 Sep 2022 17:38:07 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <linux@armlinux.org.uk>,
-        <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH net-next] net: lan966x: Extend lan966x with RGMII
- support
-Message-ID: <20220901173807.79c2e996@pc-10.home>
-In-Reply-To: <20220901122346.245786-1-horatiu.vultur@microchip.com>
-References: <20220901122346.245786-1-horatiu.vultur@microchip.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S234721AbiIAPuz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 11:50:55 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 395297FF9B
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 08:50:52 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DD9DCB82830
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 15:50:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02D7AC433D6;
+        Thu,  1 Sep 2022 15:50:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662047449;
+        bh=7PfDV5ggk6DK/srli0S5QjvvMCrUM8EQYY+z+EtOYTU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=u5MvGiJHWsKVCJRwd/578mEeDzbLgVsPnDALX37y5I2dHJx7rVnNDmGN3BmJaGdDD
+         2jquKZySbF4Ee7nOq7RFczhwdPoj1wywFz+3oEVR0/LbVpSMBuQVc69hcGP+PpZ5Hi
+         yngpjXWa0pHJeMJ8ENfjlCrKSf2ceBnDd/6sI/k32Rz1VCQfp/FRCiKAQU6nbo/sQg
+         jUIWWdsW3kimEePcnV+u5uvKKDwmtaFrcQVSsTDMFzuiwYf1V6IEN0yDuprzYYizK8
+         dVxwBGs+6K9e63EMJK5JbJcxN44tAYz7xUaYF22VU9uLeSOoBigcDeb+27FOWg1q1r
+         JRsafv4M1Q36Q==
+Date:   Thu, 1 Sep 2022 08:50:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Thompson <davthompson@nvidia.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "cai.huoqing@linux.dev" <cai.huoqing@linux.dev>,
+        "brgl@bgdev.pl" <brgl@bgdev.pl>, Liming Sun <limings@nvidia.com>,
+        Asmaa Mnebhi <asmaa@nvidia.com>
+Subject: Re: [PATCH net v1] mlxbf_gige: compute MDIO period based on i1clk
+Message-ID: <20220901085047.37a71af4@kernel.org>
+In-Reply-To: <DM6PR12MB553413FEE0C3C357010CDBB3C77B9@DM6PR12MB5534.namprd12.prod.outlook.com>
+References: <20220826155916.12491-1-davthompson@nvidia.com>
+        <20220826184922.030fccb3@kernel.org>
+        <DM6PR12MB553413FEE0C3C357010CDBB3C77B9@DM6PR12MB5534.namprd12.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Horatiu,
-
-On Thu, 1 Sep 2022 14:23:46 +0200
-Horatiu Vultur <horatiu.vultur@microchip.com> wrote:
-
-> Extend lan966x with RGMII support. The MAC supports all RGMII_* modes.
+On Thu, 1 Sep 2022 15:32:13 +0000 David Thompson wrote:
+> > Hm, why did you repost this?  
 > 
-> Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-> ---
->  drivers/net/ethernet/microchip/lan966x/lan966x_main.c    | 8 ++++++++
->  drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c | 3 +++
->  2 files changed, 11 insertions(+)
+> I reposted because the first post failed the "netdev/cc_maintainers" test:
 > 
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c
-> b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c index
-> 1d6e3b641b2e..e2d250ed976b 100644 ---
-> a/drivers/net/ethernet/microchip/lan966x/lan966x_main.c +++
-> b/drivers/net/ethernet/microchip/lan966x/lan966x_main.c @@ -772,6
-> +772,14 @@ static int lan966x_probe_port(struct lan966x *lan966x, u32
-> p, __set_bit(PHY_INTERFACE_MODE_MII,
->  		  port->phylink_config.supported_interfaces);
-> +	__set_bit(PHY_INTERFACE_MODE_RGMII,
-> +		  port->phylink_config.supported_interfaces);
-> +	__set_bit(PHY_INTERFACE_MODE_RGMII_ID,
-> +		  port->phylink_config.supported_interfaces);
-> +	__set_bit(PHY_INTERFACE_MODE_RGMII_RXID,
-> +		  port->phylink_config.supported_interfaces);
-> +	__set_bit(PHY_INTERFACE_MODE_RGMII_TXID,
-> +		  port->phylink_config.supported_interfaces);
+> 	netdev/cc_maintainers	fail	1 blamed authors not CCed: limings@nvidia.com; 1 maintainers not CCed: limings@nvidia.com
+> 
+> In the second post I included "limings@nvidia.com" .
 
-Instead of defining each individual variant, you can use :
-
-	phy_interface_set_rgmii(port->phylink_config.supported_interfaces);
-
->  	__set_bit(PHY_INTERFACE_MODE_GMII,
->  		  port->phylink_config.supported_interfaces);
->  	__set_bit(PHY_INTERFACE_MODE_SGMII,
-> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
-> b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c index
-> 38a7e95d69b4..fb6aee509656 100644 ---
-> a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c +++
-> b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c @@ -59,6
-> +59,9 @@ static void lan966x_phylink_mac_link_up(struct
-> phylink_config *config, port_config->pause |= tx_pause ? MLO_PAUSE_TX
-> : 0; port_config->pause |= rx_pause ? MLO_PAUSE_RX : 0; 
-> +	if (phy_interface_mode_is_rgmii(interface))
-> +		phy_set_speed(port->serdes, speed);
-> +
->  	lan966x_port_config_up(port);
->  }
->  
-
-Best regards,
-
-Maxime
+I see.. FWIW the checks are not 100% accurate, I would have ignored that
+one. We're a little more lax about CCing people from the same company.
+Next time please put the reason in the changelog under the ---
+separator, to avoid any confusion and delays. Thanks!
