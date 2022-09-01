@@ -2,115 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E73DD5A8BAD
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 05:02:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C4E65A8BB6
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 05:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232544AbiIAC7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Aug 2022 22:59:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40108 "EHLO
+        id S232829AbiIADAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Aug 2022 23:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbiIAC7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 22:59:39 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2AEE162155;
-        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id q63so15132004pga.9;
-        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:from:to:cc:subject:date;
-        bh=eVRGKtfHojTP92sNkJnJ80bmZvj7fSvzpyBR/tNw3ks=;
-        b=Z9FrDCeLSWgX3RZSj2UxqAE8u1GU8ozB47W0KevNli961D6+XCr2sF2kcSXaA+mt66
-         bp87G2N6IE6JEEcNo1WYs8rR2EccX6rR0XhQyZBnFmGVaLNzRFolalJog6YKLv0q0Ll0
-         Iuhu8EM2+R8jTPoQ++idc26GxuhUB0bqI7viJ8EombycdKbAQv+9ELLx8wF1wD3Ah4DF
-         AK+DRoOfJJlmYOF35lFIk4kQqQrwxUqbvuMCal9AGB29iH0bPHG+uRyWnn+SlfoJTdgy
-         R0bvt56TLQBY9gD2W48QpXXgio08W9g76BJSe6OCzoR6EIpPimc3XDvF7H1fN8qaSEfr
-         eoXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date;
-        bh=eVRGKtfHojTP92sNkJnJ80bmZvj7fSvzpyBR/tNw3ks=;
-        b=Q9ZGn3m9HSW/BFMpgxNdAggh4wNq6XV1tWCmp59WK3GyLX+UA85g3nQcL3lGT3+sTT
-         0czygwIr1KXNzXOvI4Z5zAR9VBXC7qmHCnrw5bX73BhJXetexUoKgLDF2nPrtermG5jf
-         YUL9tzZK5xv0gWt1TWAJeUEp0nZZoTWjvpBoAEQeMW2QWxPVh3CpOUO4RcxMFJy+FZJ4
-         pC1ov9T+gup2+3zalQhvltz4lt4pfDsi4WObyKt5yNiNgl5MsvQ3zqDa6UwpO30st8fl
-         UnSY/NGVDRNnzaidJD1TdO0v3eKSfuoHcpOklg+W5f+k0TpSDr7zD66y68KK2vhGjukq
-         vq5Q==
-X-Gm-Message-State: ACgBeo3rnQ++vPR92FjUaEpoyT0LmzRTNxXvTrmkw4FELlmMn6wdHNSd
-        gj+CdV/QpNZQBgKJFyTtrWrQWcffCCXPyw==
-X-Google-Smtp-Source: AA6agR5robk+ckbRzd9sqLD+fqCogMqIgVeonf5UanMs9BholsVn+R4Jip+Pi6Wu0kwqJ3LkUNrAlA==
-X-Received: by 2002:a63:5715:0:b0:42a:d7a4:4c30 with SMTP id l21-20020a635715000000b0042ad7a44c30mr24290092pgb.525.1662001176034;
-        Wed, 31 Aug 2022 19:59:36 -0700 (PDT)
-Received: from MBP ([39.170.101.209])
-        by smtp.gmail.com with ESMTPSA id u6-20020a654c06000000b0043057fe66c0sm1014591pgq.48.2022.08.31.19.59.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 31 Aug 2022 19:59:35 -0700 (PDT)
-References: <20220831180950.76907-1-schspa@gmail.com>
- <Yw/HmHcmXBVIg/SW@codewreck.org>
-User-agent: mu4e 1.6.10; emacs 27.2
-From:   Schspa Shi <schspa@gmail.com>
-To:     asmadeus@codewreck.org
-Cc:     ericvh@gmail.com, lucho@ionkov.net, linux_oss@crudebyte.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] p9: trans_fd: Fix deadlock when connection cancel
-Date:   Thu, 01 Sep 2022 10:55:36 +0800
-In-reply-to: <Yw/HmHcmXBVIg/SW@codewreck.org>
-Message-ID: <m2bkrz7qc8.fsf@gmail.com>
+        with ESMTP id S232734AbiIADAT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 31 Aug 2022 23:00:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C237756B
+        for <netdev@vger.kernel.org>; Wed, 31 Aug 2022 20:00:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F1E9B823F1
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 03:00:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C04DAC433D6;
+        Thu,  1 Sep 2022 03:00:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662001215;
+        bh=kKd/EpU7peVF0OYTPjKfQ8slmQsfssTT4JMi2M8dflE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=u917Dg91zbNgfSPBIPkTzOMy5cD3WMD/eOQMMi70ZF/+BwRJDmkIpTDVyBGE7RIzp
+         p7U/Y4ukecbq5KjXSyWJegZn3JB6wFwCldpdxRtCE0N6mwf5RQ71Wktltnk18yfiLf
+         IvaRUh+mVG9j75ct0sdEY4TfutuDacYL09EQROXxXTkqdiZ1pQJj32OREvR6kcGrmE
+         E45DKP5JDAAqrVDmDvfoqP1iKFcGKha217zOt9gSSRGiChwOdlq5gjlbHnK09xDt5v
+         X/CBrFDWfedZfKLpFPgt5SHagck4WPpAwWwQGaOSqgpm0P27R4AdpZMzelCPmYB6r5
+         7OtPv/Vp3CwIA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A395BE924DA;
+        Thu,  1 Sep 2022 03:00:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Print warning only once
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166200121566.29714.11056938922390994481.git-patchwork-notify@kernel.org>
+Date:   Thu, 01 Sep 2022 03:00:15 +0000
+References: <20220830163448.8921-1-kurt@linutronix.de>
+In-Reply-To: <20220830163448.8921-1-kurt@linutronix.de>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
-asmadeus@codewreck.org writes:
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-> Schspa Shi wrote on Thu, Sep 01, 2022 at 02:09:50AM +0800:
->> To fix it, we can add extra reference counter to avoid deadlock, and
->> decrease it after we unlock the client->lock.
->
-> Thanks for the patch!
->
-> Unfortunately I already sent a slightly different version to the list,
-> hidden in another syzbot thread, here:
-> https://lkml.kernel.org/r/YvyD053bdbGE9xoo@codewreck.org
->
-> (yes, sorry, not exactly somewhere I'd expect someone to find it... 9p
-> hasn't had many contributors recently)
->
->
-> Basically instead of taking an extra lock I just released the client
-> lock before calling p9_client_cb, so it shouldn't hang anymore.
->
-> We don't need the lock to call the cb as in p9_conn_cancel we already
-> won't accept any new request and by this point the requests are in a
-> local list that isn't shared anywhere.
->
+On Tue, 30 Aug 2022 18:34:48 +0200 you wrote:
+> In case the source port cannot be decoded, print the warning only once. This
+> still brings attention to the user and does not spam the logs at the same time.
+> 
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>  net/dsa/tag_hellcreek.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ok, thank you for pointing that out.
+Here is the summary with links:
+  - [net-next] net: dsa: hellcreek: Print warning only once
+    https://git.kernel.org/netdev/net/c/52267ce25f60
 
-> If you have a test setup, would you mind testing my patch?
-> That's the main reason I was delaying pushing it.
->
-
-I have test it with my enviroment, it not hang anymore.
-
-> Since you went out of your way to make this patch if you agree with my
-> approach I don't mind adding your sign off or another mark of having
-> worked on it.
->
-> Thank you,
-
+You are awesome, thank you!
 -- 
-BRs
-Schspa Shi
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
