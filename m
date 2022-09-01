@@ -2,58 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57BF95A93ED
-	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:10:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 162AB5A9402
+	for <lists+netdev@lfdr.de>; Thu,  1 Sep 2022 12:14:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232851AbiIAKKX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 06:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51538 "EHLO
+        id S231343AbiIAKOX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 06:14:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232065AbiIAKKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:10:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFCA921E01;
-        Thu,  1 Sep 2022 03:10:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5D9EB82571;
-        Thu,  1 Sep 2022 10:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AAD84C433D7;
-        Thu,  1 Sep 2022 10:10:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662027016;
-        bh=lyF1AoH2SuCW/n4u3M3W/4DQEDCWpqmu0ejVEWc3mWQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RQaJ9mAMUCQCnSAqlo01M8svyC52PJxO+MdtWEiq8Cz9HTmknozU7XBpGsEt+Qn3H
-         vlmWBZpKtOCcVXOXHP+w7t5ajH5oiT2yTx5a/EFKpCmBKJQ1HEr4qOUXskiXtnKsnZ
-         HN00YOeICVel5pvKv4NO0hxcZsvxo+zPF7YRg+nmfbUzlizNBuqEeDYne65/qpLizT
-         2anOYEvAfMwlcTB0ah01aNALg23UOEgPuPpmZT3Fr8O/57luQXN1UkEb3+CVTNymeq
-         HiF/R+digNe6EQ414Mi0GzT87y2d7ZvI++LohOd+Nrw95O0OlGBeBDou4gsoKnRHbE
-         vl5zMJU9SKE2g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 914C3E924D9;
-        Thu,  1 Sep 2022 10:10:16 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233750AbiIAKOW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 06:14:22 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E96C1321C2;
+        Thu,  1 Sep 2022 03:14:20 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1oThCz-0001ZC-AI; Thu, 01 Sep 2022 12:14:01 +0200
+Date:   Thu, 1 Sep 2022 12:14:01 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Florian Westphal <fw@strlen.de>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Toke =?iso-8859-15?Q?H=F8iland-J=F8rgensen?= <toke@kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+Message-ID: <20220901101401.GC4334@breakpoint.cc>
+References: <87v8q84nlq.fsf@toke.dk>
+ <20220831125608.GA8153@breakpoint.cc>
+ <87o7w04jjb.fsf@toke.dk>
+ <20220831135757.GC8153@breakpoint.cc>
+ <87ilm84goh.fsf@toke.dk>
+ <20220831152624.GA15107@breakpoint.cc>
+ <CAADnVQJp5RJ0kZundd5ag-b3SDYir8cF4R_nVbN8Zj9Rcn0rww@mail.gmail.com>
+ <20220831155341.GC15107@breakpoint.cc>
+ <CAADnVQJGQmu02f5B=mc1xJvVWSmk_GNZj9WAUskekykmyo8FzA@mail.gmail.com>
+ <1cc40302-f006-31a7-b270-30813b8f4b67@iogearbox.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCHv3 0/2] RK3588 Ethernet Support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166202701658.6021.5345078422266376617.git-patchwork-notify@kernel.org>
-Date:   Thu, 01 Sep 2022 10:10:16 +0000
-References: <20220830154559.61506-1-sebastian.reichel@collabora.com>
-In-Reply-To: <20220830154559.61506-1-sebastian.reichel@collabora.com>
-To:     Sebastian Reichel <sebastian.reichel@collabora.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
-        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, netdev@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        kernel@collabora.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1cc40302-f006-31a7-b270-30813b8f4b67@iogearbox.net>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,30 +56,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Tue, 30 Aug 2022 17:45:57 +0200 you wrote:
-> This adds ethernet support for the RK3588(s) SoCs.
+Daniel Borkmann <daniel@iogearbox.net> wrote:
+> On 8/31/22 7:26 PM, Alexei Starovoitov wrote:
+> > On Wed, Aug 31, 2022 at 8:53 AM Florian Westphal <fw@strlen.de> wrote:
+> > As a minimum we shouldn't step on the same rakes.
+> > xt_ebpf would be the same dead code as xt_bpf.
 > 
-> Changes since PATCHv2:
->  * Rebased to v6.0-rc1
->  * Wrap DT bindings additions at 80 characters
->  * Add Acked-by from Krzysztof
+> +1, and on top, the user experience will just be horrible. :(
+
+Compared to what?
+
+> > > If you are open to BPF_PROG_TYPE_NETFILTER I can go that route
+> > > as well, raw bpf program attachment via NF_HOOK and the bpf dispatcher,
+> > > but it will take significantly longer to get there.
+> > > 
+> > > It involves reviving
+> > > https://lore.kernel.org/netfilter-devel/20211014121046.29329-1-fw@strlen.de/
+> > 
+> > I missed it earlier. What is the end goal ?
+> > Optimize nft run-time with on the fly generation of bpf byte code ?
 > 
-> [...]
+> Or rather to provide a pendant to nft given existence of xt_bpf, and the
+> latter will be removed at some point? (If so, can't we just deprecate the
+> old xt_bpf?)
 
-Here is the summary with links:
-  - [PATCHv3,1/2] net: ethernet: stmmac: dwmac-rk: Add gmac support for rk3588
-    https://git.kernel.org/netdev/net-next/c/2f2b60a0ec28
-  - [PATCHv3,2/2] dt-bindings: net: rockchip-dwmac: add rk3588 gmac compatible
-    https://git.kernel.org/netdev/net-next/c/a2b77831427c
+See my reply to Alexey, immediate goal was to get rid of the indirect
+calls by providing a tailored/jitted equivalent of nf_hook_slow().
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The next step could be to allow implementation of netfilter hooks
+(i.e., kernel modules that call nf_register_net_hook()) in bpf
+but AFAIU it requires addition of BPF_PROG_TYPE_NETFILTER etc.
 
-
+After that, yes, one could think about how to jit nft_do_chain() and
+all the rest of the nft machinery.
