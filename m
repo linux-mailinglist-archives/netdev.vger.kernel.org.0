@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EFC945AAD80
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 13:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 391605AAD68
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 13:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235380AbiIBLWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 07:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54048 "EHLO
+        id S235663AbiIBLWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 07:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235042AbiIBLWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 07:22:35 -0400
+        with ESMTP id S235494AbiIBLWg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 07:22:36 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42DFC6954;
-        Fri,  2 Sep 2022 04:22:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB5A6C6E86;
+        Fri,  2 Sep 2022 04:22:35 -0700 (PDT)
 Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJwQx0HSJzlWcW;
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJwQx6mRjzlWfB;
         Fri,  2 Sep 2022 19:19:05 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
- 2022 19:22:31 +0800
+ 2022 19:22:32 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>, <davem@davemloft.net>,
@@ -32,9 +32,9 @@ CC:     <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
         <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 02/22] net: sched: act_bpf: get rid of tcf_bpf_walker and tcf_bpf_search
-Date:   Fri, 2 Sep 2022 19:24:26 +0800
-Message-ID: <20220902112446.29858-3-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 03/22] net: sched: act_connmark: get rid of tcf_connmark_walker and tcf_connmark_search
+Date:   Fri, 2 Sep 2022 19:24:27 +0800
+Message-ID: <20220902112446.29858-4-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220902112446.29858-1-shaozhengchao@huawei.com>
 References: <20220902112446.29858-1-shaozhengchao@huawei.com>
@@ -54,51 +54,50 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Use __tcf_generic_walker() and __tcf_idr_search() helpers by saving
-bpf_net_id when registering act_bpf_ops. And then remove the walk
-and lookup hook functions in act_bpf.
+connmark_net_id when registering act_connmark_ops. And then remove
+the walk and lookup hook functions in act_connmark.
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/sched/act_bpf.c | 20 +-------------------
+ net/sched/act_connmark.c | 20 +-------------------
  1 file changed, 1 insertion(+), 19 deletions(-)
 
-diff --git a/net/sched/act_bpf.c b/net/sched/act_bpf.c
-index fea2d78b9ddc..d7fc5c4157d6 100644
---- a/net/sched/act_bpf.c
-+++ b/net/sched/act_bpf.c
-@@ -390,33 +390,15 @@ static void tcf_bpf_cleanup(struct tc_action *act)
- 	tcf_bpf_cfg_cleanup(&tmp);
+diff --git a/net/sched/act_connmark.c b/net/sched/act_connmark.c
+index 09e2aafc8943..e7cc0aba9c4f 100644
+--- a/net/sched/act_connmark.c
++++ b/net/sched/act_connmark.c
+@@ -200,32 +200,14 @@ static inline int tcf_connmark_dump(struct sk_buff *skb, struct tc_action *a,
+ 	return -1;
  }
  
--static int tcf_bpf_walker(struct net *net, struct sk_buff *skb,
--			  struct netlink_callback *cb, int type,
--			  const struct tc_action_ops *ops,
--			  struct netlink_ext_ack *extack)
+-static int tcf_connmark_walker(struct net *net, struct sk_buff *skb,
+-			       struct netlink_callback *cb, int type,
+-			       const struct tc_action_ops *ops,
+-			       struct netlink_ext_ack *extack)
 -{
--	struct tc_action_net *tn = net_generic(net, bpf_net_id);
+-	struct tc_action_net *tn = net_generic(net, connmark_net_id);
 -
 -	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
 -}
 -
--static int tcf_bpf_search(struct net *net, struct tc_action **a, u32 index)
+-static int tcf_connmark_search(struct net *net, struct tc_action **a, u32 index)
 -{
--	struct tc_action_net *tn = net_generic(net, bpf_net_id);
+-	struct tc_action_net *tn = net_generic(net, connmark_net_id);
 -
 -	return tcf_idr_search(tn, a, index);
 -}
 -
- static struct tc_action_ops act_bpf_ops __read_mostly = {
- 	.kind		=	"bpf",
- 	.id		=	TCA_ID_BPF,
-+	.net_id		=	&bpf_net_id,
+ static struct tc_action_ops act_connmark_ops = {
+ 	.kind		=	"connmark",
+ 	.id		=	TCA_ID_CONNMARK,
++	.net_id		=	&connmark_net_id,
  	.owner		=	THIS_MODULE,
- 	.act		=	tcf_bpf_act,
- 	.dump		=	tcf_bpf_dump,
- 	.cleanup	=	tcf_bpf_cleanup,
- 	.init		=	tcf_bpf_init,
--	.walk		=	tcf_bpf_walker,
--	.lookup		=	tcf_bpf_search,
- 	.size		=	sizeof(struct tcf_bpf),
+ 	.act		=	tcf_connmark_act,
+ 	.dump		=	tcf_connmark_dump,
+ 	.init		=	tcf_connmark_init,
+-	.walk		=	tcf_connmark_walker,
+-	.lookup		=	tcf_connmark_search,
+ 	.size		=	sizeof(struct tcf_connmark_info),
  };
  
 -- 
