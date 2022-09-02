@@ -2,148 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40D0C5AB868
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 20:39:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 160295AB86C
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 20:40:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiIBSjM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 14:39:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
+        id S229819AbiIBSkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 14:40:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229719AbiIBSjD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 14:39:03 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAE8788DD0
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 11:39:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662143942; x=1693679942;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=B8ZVWZOjwt2fOVDnzm5YZ89zmhfVCkqhsno6JjREpCA=;
-  b=SCXRfUhawFVFaO0cQr19gC36K5SHtcAkxi02b9NhHaTEAHzQPbf3ca6x
-   FTC+IPM2IW+4sLsMjv+gKxF+2IPhX3nTYBKOXxfnCReFJr3O8VUcHxd9H
-   i+tSVQzVgFY8pP5nEWC0/K8RJHyUlJAe4tmR3mQf5Gj861JXsa/tBbdM1
-   Dr4TkNWhoFg3ndVKtQNIRKn2kaNx/O3Px5i6g2F4cIWAw1NXilp/Y57nO
-   CsdINzO7ybJR1+mEtIrdbj62pSY4kZ7CyDMoUFynojujY49AgPdmoN1Ta
-   +SMbsSJWvMW3btSHkkDMPqNILsaEmg6z1/zCPDbENRI90H0Lc8Eyt7WDC
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="357768802"
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="357768802"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Sep 2022 11:39:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,283,1654585200"; 
-   d="scan'208";a="590170962"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga006.jf.intel.com with ESMTP; 02 Sep 2022 11:39:01 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Ivan Vecera <ivecera@redhat.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        Patryk Piotrowski <patryk.piotrowski@intel.com>,
-        SlawomirX Laba <slawomirx.laba@intel.com>,
-        Vitaly Grinberg <vgrinber@redhat.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 3/3] iavf: Detach device during reset task
-Date:   Fri,  2 Sep 2022 11:38:57 -0700
-Message-Id: <20220902183857.1252065-4-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220902183857.1252065-1-anthony.l.nguyen@intel.com>
-References: <20220902183857.1252065-1-anthony.l.nguyen@intel.com>
+        with ESMTP id S229669AbiIBSkL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 14:40:11 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE19E6E8AA;
+        Fri,  2 Sep 2022 11:40:09 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id gb36so5523580ejc.10;
+        Fri, 02 Sep 2022 11:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=DVxDeaXZfKNHhIDqZtli0aAYoHM/3xsPWidZamTX/6Y=;
+        b=APLqfOR9MAYorEatAahNmr8hGYTR8+l/WKnO2DMs1juMWCmu3b8Y7otG0f6qe29tRb
+         LwjPlcGqB7CRfQHDhVScHpFHMB3nA8SPEQB6tiriF1FhTT7PwmGzgNkwlPmduusrjLVj
+         fZ8bV4E9KgZYQ/6/xOYZxgAu5+EIpUMR5Nb3CLJdiJjHswLRgNDzjcoOtHPOJQdUn5zC
+         Bt9iU8Ge6KjSzCZDeWKYQdhYwmGCB8yOW+gXOv8UtskJZMulyWVLOpeJVe6jmPaBu+6Y
+         L4rvNpaUL9boZ/ajqNrRJx7xXXvSUg2SM93bbrYTtsCh9scySB9jehQrWqSSlEASR/DZ
+         9viw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=DVxDeaXZfKNHhIDqZtli0aAYoHM/3xsPWidZamTX/6Y=;
+        b=h5xUouE9TmnJOnV2ioYFauqXAAmzdlQ/OkgCQWt9fKC8ELlrG/jhxabI/qglHQbLjs
+         Q9NBGo0RMZgG3tnFKvjNxaTFyDNyAceiDu1Czp/F1XMJdwUDtipKnMgnmK4bkG5ANynm
+         bxi6j3oMqSkT+OkVCzw3RlblWZ+m+Uhtn4i+HgUW1867ViLcaaHuIYh/JXfujlsEknhW
+         zorr3FuK832YFChOybecZ1ugnrD1y0FJpuNKeOs/x1TmsHY9IuwC9cp+Vo4iMBLMmm0p
+         FOcdmNsvNM8qxWLfdW+LQCbnwWaEFUzRPee7MYYpZnYef7UYhZ3M4SD/JKcT8RGNiE5a
+         Jn6g==
+X-Gm-Message-State: ACgBeo1t8EMMt//rGqBVUsnpFMfJA7HH6Ss3XQ4bBioXZw3o6d9/dtX+
+        LXXovUk6uYhWgCPZJkVKXfo=
+X-Google-Smtp-Source: AA6agR4TdzcK7kxJ6ekgK4iUOwn/5DLcrn5tZ+5dkRcqyuUoaCXbD8bongQcSRFwxcdcj6AJ6camyQ==
+X-Received: by 2002:a17:906:8251:b0:741:7a62:2376 with SMTP id f17-20020a170906825100b007417a622376mr17971060ejx.689.1662144008166;
+        Fri, 02 Sep 2022 11:40:08 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906210900b0073d61238ae1sm1572560ejt.83.2022.09.02.11.40.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 11:40:07 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 21:40:04 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>
+Subject: Re: [PATCH net-next 0/9] DSA changes for multiple CPU ports (part 4)
+Message-ID: <20220902184004.6tpxo4vdwkqb3fso@skbuf>
+References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
+ <20220902103145.faccoawnaqh6cn3r@skbuf>
+ <3da14763-b495-77eb-e059-b62e496ba7e7@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3da14763-b495-77eb-e059-b62e496ba7e7@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ivan Vecera <ivecera@redhat.com>
+On Fri, Sep 02, 2022 at 11:33:31AM -0700, Florian Fainelli wrote:
+> > at some point I was thinking we could change the way in which dsa_loop
+> > probes, and allow dynamic creation of such interfaces using RTM_NEWLINK;
+> > but looking closer at that, it's a bit more complicated, since we'd need
+> > to attach dsa_loop user ports to a virtual switch, and probe all ports
+> > at the same time rather than one by one.
+> 
+> Yes, not sure the custom netlink operations would be the preferred way of
+> doing that configuration, maybe module parameters and/or debugfs might just
+> do?
 
-iavf_reset_task() takes crit_lock at the beginning and holds
-it during whole call. The function subsequently calls
-iavf_init_interrupt_scheme() that grabs RTNL. Problem occurs
-when userspace initiates during the reset task any ndo callback
-that runs under RTNL like iavf_open() because some of that
-functions tries to take crit_lock. This leads to classic A-B B-A
-deadlock scenario.
+Yeah, or make dsa_loop OF-based and just insert a device tree overlay,
+something of that sort, I'd guess.
 
-To resolve this situation the device should be detached in
-iavf_reset_task() prior taking crit_lock to avoid subsequent
-ndos running under RTNL and reattach the device at the end.
+So it's likely that we won't be extending the DSA rtnl_link_ops too much
+in the future. However, it's also likely that "writable iflink" isn't
+going to be very useful for other virtual netdevices except DSA, either.
+So the argument goes both ways. And while the writable iflink requires a
+new ndo operation, the IFLA_DSA_MASTER can be handled 100% within DSA.
 
-Fixes: 62fe2a865e6d ("i40evf: add missing rtnl_lock() around i40evf_set_interrupt_capability")
-Cc: Jacob Keller <jacob.e.keller@intel.com>
-Cc: Patryk Piotrowski <patryk.piotrowski@intel.com>
-Cc: SlawomirX Laba <slawomirx.laba@intel.com>
-Tested-by: Vitaly Grinberg <vgrinber@redhat.com>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/iavf/iavf_main.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c b/drivers/net/ethernet/intel/iavf/iavf_main.c
-index f39440ad5c50..10aa99dfdcdb 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_main.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
-@@ -2877,6 +2877,11 @@ static void iavf_reset_task(struct work_struct *work)
- 	int i = 0, err;
- 	bool running;
- 
-+	/* Detach interface to avoid subsequent NDO callbacks */
-+	rtnl_lock();
-+	netif_device_detach(netdev);
-+	rtnl_unlock();
-+
- 	/* When device is being removed it doesn't make sense to run the reset
- 	 * task, just return in such a case.
- 	 */
-@@ -2884,7 +2889,7 @@ static void iavf_reset_task(struct work_struct *work)
- 		if (adapter->state != __IAVF_REMOVE)
- 			queue_work(iavf_wq, &adapter->reset_task);
- 
--		return;
-+		goto reset_finish;
- 	}
- 
- 	while (!mutex_trylock(&adapter->client_lock))
-@@ -2954,7 +2959,6 @@ static void iavf_reset_task(struct work_struct *work)
- 
- 	if (running) {
- 		netif_carrier_off(netdev);
--		netif_tx_stop_all_queues(netdev);
- 		adapter->link_up = false;
- 		iavf_napi_disable_all(adapter);
- 	}
-@@ -3084,7 +3088,7 @@ static void iavf_reset_task(struct work_struct *work)
- 	mutex_unlock(&adapter->client_lock);
- 	mutex_unlock(&adapter->crit_lock);
- 
--	return;
-+	goto reset_finish;
- reset_err:
- 	if (running) {
- 		set_bit(__IAVF_VSI_DOWN, adapter->vsi.state);
-@@ -3095,6 +3099,10 @@ static void iavf_reset_task(struct work_struct *work)
- 	mutex_unlock(&adapter->client_lock);
- 	mutex_unlock(&adapter->crit_lock);
- 	dev_err(&adapter->pdev->dev, "failed to allocate resources during reinit\n");
-+reset_finish:
-+	rtnl_lock();
-+	netif_device_attach(netdev);
-+	rtnl_unlock();
- }
- 
- /**
--- 
-2.35.1
-
+I don't know, I'm just rambling, I'm open to suggestions.
