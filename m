@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0225C5AADB8
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC225AADB9
 	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 13:32:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236112AbiIBLcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 07:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S236167AbiIBLcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 07:32:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236110AbiIBLbh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 07:31:37 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF777D8B06
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 04:29:13 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU4rI-0001eb-5X; Fri, 02 Sep 2022 13:29:12 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU4rG-00021e-31; Fri, 02 Sep 2022 13:29:10 +0200
-Date:   Fri, 2 Sep 2022 13:29:10 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Romain Naour <romain.naour@smile.fr>
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, kuba@kernel.org,
-        edumazet@google.com, davem@davemloft.net, olteanv@gmail.com,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        Romain Naour <romain.naour@skf.com>
-Subject: Re: [PATCH v3: net-next 3/4] net: dsa: microchip: ksz9477: remove
- 0x033C and 0x033D addresses from regmap_access_tables
-Message-ID: <20220902112910.GB15827@pengutronix.de>
-References: <20220902101610.109646-1-romain.naour@smile.fr>
- <20220902101610.109646-3-romain.naour@smile.fr>
+        with ESMTP id S235803AbiIBLbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 07:31:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15352B248
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 04:30:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88ADFB82A6F
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 11:30:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 33EEAC433D6;
+        Fri,  2 Sep 2022 11:30:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662118215;
+        bh=4zwp8RVvDmDdbg/P/HHaLUw9iIiFn0/LZvlq0jim6sg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=qBmIhYASJN2mZ2P1p0hHWlvFSO8Wtz4oUReO1ogt4+6JGRBJjF2R+p3FN5oq5tx9c
+         GlRm47qsNO9R72omSPWugcuLxGLZOROv26S0Bgoq6REcy9zS/c43eP+V7/xYSLHyy5
+         Uz6fPr8dx23qnNMjsOKyeXvsyXC8njU7VxApyzzjSgCXrfaZqiAi4ts37qvHgOM+wY
+         Xl5TbPXARBUtB7AHLNZXimL2GxHNwVbR0lk/am7e5Ykzwn7uTkcKq3OksxvCbvKazH
+         0GBPjkUq9zPoHd6DMCC+33GgQlCzTc78oWswvevJGkbdaraWXu1sSoey9BvNjur1q4
+         102DIsWI7z5bQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13AB8E924D5;
+        Fri,  2 Sep 2022 11:30:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220902101610.109646-3-romain.naour@smile.fr>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] sch_sfb: Don't assume the skb is still around after
+ enqueueing to child
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166211821507.29115.10248294582452708288.git-patchwork-notify@kernel.org>
+Date:   Fri, 02 Sep 2022 11:30:15 +0000
+References: <20220831215219.499563-1-toke@toke.dk>
+In-Reply-To: <20220831215219.499563-1-toke@toke.dk>
+To:     =?utf-8?b?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2VuIDx0b2tlQHRva2UuZGs+?=@ci.codeaurora.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        eric.dumazet@gmail.com, davem@davemloft.net,
+        zdi-disclosures@trendmicro.com, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,42 +59,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 12:16:09PM +0200, Romain Naour wrote:
-> From: Romain Naour <romain.naour@skf.com>
-> 
-> According to the KSZ9477S datasheet, there is no global register
-> at 0x033C and 0x033D addresses.
-> 
-> Signed-off-by: Romain Naour <romain.naour@skf.com>
-> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Hello:
 
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> ---
->  drivers/net/dsa/microchip/ksz_common.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+On Wed, 31 Aug 2022 23:52:18 +0200 you wrote:
+> The sch_sfb enqueue() routine assumes the skb is still alive after it has
+> been enqueued into a child qdisc, using the data in the skb cb field in the
+> increment_qlen() routine after enqueue. However, the skb may in fact have
+> been freed, causing a use-after-free in this case. In particular, this
+> happens if sch_cake is used as a child of sfb, and the GSO splitting mode
+> of CAKE is enabled (in which case the skb will be split into segments and
+> the original skb freed).
 > 
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 02fb721c1090..a700631130e0 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -546,7 +546,8 @@ static const struct regmap_range ksz9477_valid_regs[] = {
->  	regmap_reg_range(0x0302, 0x031b),
->  	regmap_reg_range(0x0320, 0x032b),
->  	regmap_reg_range(0x0330, 0x0336),
-> -	regmap_reg_range(0x0338, 0x033e),
-> +	regmap_reg_range(0x0338, 0x033b),
-> +	regmap_reg_range(0x033e, 0x033e),
->  	regmap_reg_range(0x0340, 0x035f),
->  	regmap_reg_range(0x0370, 0x0370),
->  	regmap_reg_range(0x0378, 0x0378),
-> -- 
-> 2.34.3
-> 
-> 
+> [...]
 
+Here is the summary with links:
+  - [net,v2] sch_sfb: Don't assume the skb is still around after enqueueing to child
+    https://git.kernel.org/netdev/net/c/9efd23297cca
+
+You are awesome, thank you!
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
