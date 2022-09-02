@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D47BB5AB2CB
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 16:04:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 675575AB2CA
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 16:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236910AbiIBOEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 10:04:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51386 "EHLO
+        id S238749AbiIBODc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 10:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238868AbiIBODR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 10:03:17 -0400
+        with ESMTP id S237909AbiIBOCs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 10:02:48 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FE8158AB8
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 06:32:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 292A01573FC
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 06:32:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662125458;
+        s=mimecast20190719; t=1662125496;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=jnqQvP0cTU/dFTonPHoQpVpyDjLmSs7Rj6BKnLij0H4=;
-        b=TCd/Xt/LQKfnQJvGL/+FkIfn8Fg8Ndkdmo7ML/V07rXLU+7IAKJ2s/V5XuonmlREt0LaeH
-        A57mogayg9VeZs2R+A3VF+t2dw2BBFHIQiQtSS17kpcve9IT3aKSSZmGxY0RDdJSOhgBJi
-        uhkZCY6s1NsIv8cIni3J6rTwKl9UjQQ=
+        bh=7qlbP1YBTTXbO5Rc9Pod/eIGmEwJskgJn9s6lD0lTZs=;
+        b=EM6Yr+yId2LPlYZceygYbRvV3i74G6Cuqgv9tExgZdZXx1Ab+oRcKxSKLZm/PNIBZJlEya
+        dDP0/GOpFQrFK0uOjJFB5ueSpVmzEa83pHpWpUc4uBfJlg+j4Bf7aC+uSpsM+07YKV6nd/
+        HLwFbWlvDGB4XUIxeuBrz5NR3xQZrcs=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-192-xYGKQ4PGPeqGkUZmsZtZDQ-1; Fri, 02 Sep 2022 09:30:56 -0400
-X-MC-Unique: xYGKQ4PGPeqGkUZmsZtZDQ-1
+ us-mta-22-c9Wffl_TPn6NVE1KfgBVzw-1; Fri, 02 Sep 2022 09:31:23 -0400
+X-MC-Unique: c9Wffl_TPn6NVE1KfgBVzw-1
 Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6027B823F14;
-        Fri,  2 Sep 2022 13:30:55 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id D25CA811E80;
+        Fri,  2 Sep 2022 13:31:11 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.193.218])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 33E24492CA2;
-        Fri,  2 Sep 2022 13:30:52 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 65F9F492C3B;
+        Fri,  2 Sep 2022 13:31:08 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -55,12 +55,13 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v10 18/23] HID: bpf: allow to change the report descriptor
-Date:   Fri,  2 Sep 2022 15:29:33 +0200
-Message-Id: <20220902132938.2409206-19-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v10 22/23] samples/bpf: HID: add Surface Dial example
+Date:   Fri,  2 Sep 2022 15:29:37 +0200
+Message-Id: <20220902132938.2409206-23-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220902132938.2409206-1-benjamin.tissoires@redhat.com>
 References: <20220902132938.2409206-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -73,248 +74,491 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new tracepoint hid_bpf_rdesc_fixup() so we can trigger a
-report descriptor fixup in the bpf world.
+Add a more complete HID-BPF example.
 
-Whenever the program gets attached/detached, the device is reconnected
-meaning that userspace will see it disappearing and reappearing with
-the new report descriptor.
-
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 ---
 
 no changes in v10
 
-no changes in v9
+changes in v9:
+- extend the usage section
+- add sleep while waiting
+- changed the title of the commit
 
 no changes in v8
 
-no changes in v7
+changes in v7:
+- remove unnecessary __must_check definition
 
-changes in v6:
-- use BTF_ID to get the btf_id of hid_bpf_rdesc_fixup
-
-changes in v5:
-- adapted for new API
-
-not in v4
-
-changes in v3:
-- ensure the ctx.size is properly bounded by allocated size
-- s/link_attached/post_link_attach/
-- removed the switch statement with only one case
-
-changes in v2:
-- split the series by bpf/libbpf/hid/selftests and samples
+new in v6
 ---
- drivers/hid/bpf/hid_bpf_dispatch.c  | 77 ++++++++++++++++++++++++++++-
- drivers/hid/bpf/hid_bpf_dispatch.h  |  1 +
- drivers/hid/bpf/hid_bpf_jmp_table.c |  7 +++
- drivers/hid/hid-core.c              |  3 +-
- include/linux/hid_bpf.h             |  8 +++
- 5 files changed, 94 insertions(+), 2 deletions(-)
+ samples/bpf/.gitignore             |   1 +
+ samples/bpf/Makefile               |   6 +-
+ samples/bpf/hid_surface_dial.bpf.c | 161 ++++++++++++++++++++
+ samples/bpf/hid_surface_dial.c     | 232 +++++++++++++++++++++++++++++
+ 4 files changed, 399 insertions(+), 1 deletion(-)
+ create mode 100644 samples/bpf/hid_surface_dial.bpf.c
+ create mode 100644 samples/bpf/hid_surface_dial.c
 
-diff --git a/drivers/hid/bpf/hid_bpf_dispatch.c b/drivers/hid/bpf/hid_bpf_dispatch.c
-index 85186640e5af..830ae2cfca14 100644
---- a/drivers/hid/bpf/hid_bpf_dispatch.c
-+++ b/drivers/hid/bpf/hid_bpf_dispatch.c
-@@ -85,6 +85,63 @@ dispatch_hid_bpf_device_event(struct hid_device *hdev, enum hid_report_type type
- }
- EXPORT_SYMBOL_GPL(dispatch_hid_bpf_device_event);
+diff --git a/samples/bpf/.gitignore b/samples/bpf/.gitignore
+index 65440bd618b2..6a1079d3d064 100644
+--- a/samples/bpf/.gitignore
++++ b/samples/bpf/.gitignore
+@@ -3,6 +3,7 @@ cpustat
+ fds_example
+ hbm
+ hid_mouse
++hid_surface_dial
+ ibumad
+ lathist
+ lwt_len_hist
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index a965bbfaca47..5f5aa7b32565 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -58,6 +58,7 @@ tprogs-y += xdp_redirect
+ tprogs-y += xdp_monitor
  
-+/**
-+ * hid_bpf_rdesc_fixup - Called when the probe function parses the report
-+ * descriptor of the HID device
-+ *
-+ * @ctx: The HID-BPF context
-+ *
-+ * @return 0 on success and keep processing; a positive value to change the
-+ * incoming size buffer; a negative error code to interrupt the processing
-+ * of this event
-+ *
-+ * Declare an %fmod_ret tracing bpf program to this function and attach this
-+ * program through hid_bpf_attach_prog() to have this helper called before any
-+ * parsing of the report descriptor by HID.
+ tprogs-y += hid_mouse
++tprogs-y += hid_surface_dial
+ 
+ # Libbpf dependencies
+ LIBBPF_SRC = $(TOOLS_PATH)/lib/bpf
+@@ -122,6 +123,7 @@ xdp_monitor-objs := xdp_monitor_user.o $(XDP_SAMPLE)
+ xdp_router_ipv4-objs := xdp_router_ipv4_user.o $(XDP_SAMPLE)
+ 
+ hid_mouse-objs := hid_mouse.o
++hid_surface_dial-objs := hid_surface_dial.o
+ 
+ # Tell kbuild to always build the programs
+ always-y := $(tprogs-y)
+@@ -343,6 +345,7 @@ $(obj)/hbm.o: $(src)/hbm.h
+ $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
+ 
+ $(obj)/hid_mouse.o: $(obj)/hid_mouse.skel.h
++$(obj)/hid_surface_dial.o: $(obj)/hid_surface_dial.skel.h
+ 
+ # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
+ # TPROGS_CFLAGS causes conflicts
+@@ -429,9 +432,10 @@ $(BPF_SKELS_LINKED): $(BPF_OBJS_LINKED) $(BPFTOOL)
+ 	$(Q)$(BPFTOOL) gen skeleton $(@:.skel.h=.lbpf.o) name $(notdir $(@:.skel.h=)) > $@
+ 
+ # Generate BPF skeletons for non XDP progs
+-OTHER_BPF_SKELS := hid_mouse.skel.h
++OTHER_BPF_SKELS := hid_mouse.skel.h hid_surface_dial.skel.h
+ 
+ hid_mouse.skel.h-deps := hid_mouse.bpf.o
++hid_surface_dial.skel.h-deps := hid_surface_dial.bpf.o
+ 
+ OTHER_BPF_SRCS_LINKED := $(patsubst %.skel.h,%.bpf.c, $(OTHER_BPF_SKELS))
+ OTHER_BPF_OBJS_LINKED := $(patsubst %.bpf.c,$(obj)/%.bpf.o, $(OTHER_BPF_SRCS_LINKED))
+diff --git a/samples/bpf/hid_surface_dial.bpf.c b/samples/bpf/hid_surface_dial.bpf.c
+new file mode 100644
+index 000000000000..16c821d3decf
+--- /dev/null
++++ b/samples/bpf/hid_surface_dial.bpf.c
+@@ -0,0 +1,161 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2022 Benjamin Tissoires
 + */
-+/* never used by the kernel but declared so we can load and attach a tracepoint */
-+__weak noinline int hid_bpf_rdesc_fixup(struct hid_bpf_ctx *ctx)
++
++#include "vmlinux.h"
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
++
++#define HID_UP_BUTTON		0x0009
++#define HID_GD_WHEEL		0x0038
++
++/* following are kfuncs exported by HID for HID-BPF */
++extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
++			      unsigned int offset,
++			      const size_t __sz) __ksym;
++extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
++extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
++extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
++extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
++			      __u8 *data,
++			      size_t buf__sz,
++			      enum hid_report_type type,
++			      enum hid_class_request reqtype) __ksym;
++
++struct attach_prog_args {
++	int prog_fd;
++	unsigned int hid;
++	int retval;
++};
++
++SEC("syscall")
++int attach_prog(struct attach_prog_args *ctx)
 +{
++	ctx->retval = hid_bpf_attach_prog(ctx->hid,
++					  ctx->prog_fd,
++					  0);
 +	return 0;
 +}
-+ALLOW_ERROR_INJECTION(hid_bpf_rdesc_fixup, ERRNO);
 +
-+u8 *call_hid_bpf_rdesc_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
++SEC("fmod_ret/hid_bpf_device_event")
++int BPF_PROG(hid_event, struct hid_bpf_ctx *hctx)
 +{
++	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 9 /* size */);
++
++	if (!data)
++		return 0; /* EPERM check */
++
++	/* Touch */
++	data[1] &= 0xfd;
++
++	/* X */
++	data[4] = 0;
++	data[5] = 0;
++
++	/* Y */
++	data[6] = 0;
++	data[7] = 0;
++
++	return 0;
++}
++
++/* 72 == 360 / 5 -> 1 report every 5 degrees */
++int resolution = 72;
++int physical = 5;
++
++struct haptic_syscall_args {
++	unsigned int hid;
++	int retval;
++};
++
++static __u8 haptic_data[8];
++
++SEC("syscall")
++int set_haptic(struct haptic_syscall_args *args)
++{
++	struct hid_bpf_ctx *ctx;
++	const size_t size = sizeof(haptic_data);
++	u16 *res;
 +	int ret;
-+	struct hid_bpf_ctx_kern ctx_kern = {
-+		.ctx = {
-+			.hid = hdev,
-+			.size = *size,
-+			.allocated_size = HID_MAX_DESCRIPTOR_SIZE,
-+		},
++
++	if (size > sizeof(haptic_data))
++		return -7; /* -E2BIG */
++
++	ctx = hid_bpf_allocate_context(args->hid);
++	if (!ctx)
++		return -1; /* EPERM check */
++
++	haptic_data[0] = 1;  /* report ID */
++
++	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_GET_REPORT);
++
++	bpf_printk("probed/remove event ret value: %d", ret);
++	bpf_printk("buf: %02x %02x %02x",
++		   haptic_data[0],
++		   haptic_data[1],
++		   haptic_data[2]);
++	bpf_printk("     %02x %02x %02x",
++		   haptic_data[3],
++		   haptic_data[4],
++		   haptic_data[5]);
++	bpf_printk("     %02x %02x",
++		   haptic_data[6],
++		   haptic_data[7]);
++
++	/* whenever resolution multiplier is not 3600, we have the fixed report descriptor */
++	res = (u16 *)&haptic_data[1];
++	if (*res != 3600) {
++//		haptic_data[1] = 72; /* resolution multiplier */
++//		haptic_data[2] = 0;  /* resolution multiplier */
++//		haptic_data[3] = 0;  /* Repeat Count */
++		haptic_data[4] = 3;  /* haptic Auto Trigger */
++//		haptic_data[5] = 5;  /* Waveform Cutoff Time */
++//		haptic_data[6] = 80; /* Retrigger Period */
++//		haptic_data[7] = 0;  /* Retrigger Period */
++	} else {
++		haptic_data[4] = 0;
++	}
++
++	ret = hid_bpf_hw_request(ctx, haptic_data, size, HID_FEATURE_REPORT, HID_REQ_SET_REPORT);
++
++	bpf_printk("set haptic ret value: %d -> %d", ret, haptic_data[4]);
++
++	args->retval = ret;
++
++	hid_bpf_release_context(ctx);
++
++	return 0;
++}
++
++/* Convert REL_DIAL into REL_WHEEL */
++SEC("fmod_ret/hid_bpf_rdesc_fixup")
++int BPF_PROG(hid_rdesc_fixup, struct hid_bpf_ctx *hctx)
++{
++	__u8 *data = hid_bpf_get_data(hctx, 0 /* offset */, 4096 /* size */);
++	__u16 *res, *phys;
++
++	if (!data)
++		return 0; /* EPERM check */
++
++	/* Convert TOUCH into a button */
++	data[31] = HID_UP_BUTTON;
++	data[33] = 2;
++
++	/* Convert REL_DIAL into REL_WHEEL */
++	data[45] = HID_GD_WHEEL;
++
++	/* Change Resolution Multiplier */
++	phys = (__u16 *)&data[61];
++	*phys = physical;
++	res = (__u16 *)&data[66];
++	*res = resolution;
++
++	/* Convert X,Y from Abs to Rel */
++	data[88] = 0x06;
++	data[98] = 0x06;
++
++	return 0;
++}
++
++char _license[] SEC("license") = "GPL";
++u32 _version SEC("version") = 1;
+diff --git a/samples/bpf/hid_surface_dial.c b/samples/bpf/hid_surface_dial.c
+new file mode 100644
+index 000000000000..c700bb0afa81
+--- /dev/null
++++ b/samples/bpf/hid_surface_dial.c
+@@ -0,0 +1,232 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (c) 2022 Benjamin Tissoires
++ *
++ * This program will morph the Microsoft Surface Dial into a mouse,
++ * and depending on the chosen resolution enable or not the haptic feedback:
++ * - a resolution (-r) of 3600 will report 3600 "ticks" in one full rotation
++ *   wihout haptic feedback
++ * - any other resolution will report N "ticks" in a full rotation with haptic
++ *   feedback
++ *
++ * A good default for low resolution haptic scrolling is 72 (1 "tick" every 5
++ * degrees), and set to 3600 for smooth scrolling.
++ */
++
++#include <assert.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <libgen.h>
++#include <signal.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <sys/resource.h>
++#include <unistd.h>
++
++#include <linux/bpf.h>
++#include <linux/errno.h>
++
++#include "bpf_util.h"
++#include <bpf/bpf.h>
++#include <bpf/libbpf.h>
++
++#include "hid_surface_dial.skel.h"
++
++static bool running = true;
++
++struct attach_prog_args {
++	int prog_fd;
++	unsigned int hid;
++	int retval;
++};
++
++struct haptic_syscall_args {
++	unsigned int hid;
++	int retval;
++};
++
++static void int_exit(int sig)
++{
++	running = false;
++	exit(0);
++}
++
++static void usage(const char *prog)
++{
++	fprintf(stderr,
++		"%s: %s [OPTIONS] /sys/bus/hid/devices/0BUS:0VID:0PID:00ID\n\n"
++		"  OPTIONS:\n"
++		"    -r N\t set the given resolution to the device (number of ticks per 360°)\n\n",
++		__func__, prog);
++	fprintf(stderr,
++		"This program will morph the Microsoft Surface Dial into a mouse,\n"
++		"and depending on the chosen resolution enable or not the haptic feedback:\n"
++		"- a resolution (-r) of 3600 will report 3600 'ticks' in one full rotation\n"
++		"  wihout haptic feedback\n"
++		"- any other resolution will report N 'ticks' in a full rotation with haptic\n"
++		"  feedback\n"
++		"\n"
++		"A good default for low resolution haptic scrolling is 72 (1 'tick' every 5\n"
++		"degrees), and set to 3600 for smooth scrolling.\n");
++}
++
++static int get_hid_id(const char *path)
++{
++	const char *str_id, *dir;
++	char uevent[1024];
++	int fd;
++
++	memset(uevent, 0, sizeof(uevent));
++	snprintf(uevent, sizeof(uevent) - 1, "%s/uevent", path);
++
++	fd = open(uevent, O_RDONLY | O_NONBLOCK);
++	if (fd < 0)
++		return -ENOENT;
++
++	close(fd);
++
++	dir = basename((char *)path);
++
++	str_id = dir + sizeof("0003:0001:0A37.");
++	return (int)strtol(str_id, NULL, 16);
++}
++
++static int attach_prog(struct hid_surface_dial_lskel *skel, struct bpf_program *prog, int hid_id)
++{
++	struct attach_prog_args args = {
++		.hid = hid_id,
++		.retval = -1,
 +	};
++	int attach_fd, err;
++	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
++			    .ctx_in = &args,
++			    .ctx_size_in = sizeof(args),
++	);
 +
-+	ctx_kern.data = kmemdup(rdesc, ctx_kern.ctx.allocated_size, GFP_KERNEL);
-+	if (!ctx_kern.data)
-+		goto ignore_bpf;
-+
-+	ret = hid_bpf_prog_run(hdev, HID_BPF_PROG_TYPE_RDESC_FIXUP, &ctx_kern);
-+	if (ret < 0)
-+		goto ignore_bpf;
-+
-+	if (ret) {
-+		if (ret > ctx_kern.ctx.allocated_size)
-+			goto ignore_bpf;
-+
-+		*size = ret;
-+	}
-+
-+	rdesc = krealloc(ctx_kern.data, *size, GFP_KERNEL);
-+
-+	return rdesc;
-+
-+ ignore_bpf:
-+	kfree(ctx_kern.data);
-+	return kmemdup(rdesc, *size, GFP_KERNEL);
-+}
-+EXPORT_SYMBOL_GPL(call_hid_bpf_rdesc_fixup);
-+
- /**
-  * hid_bpf_get_data - Get the kernel memory pointer associated with the context @ctx
-  *
-@@ -176,6 +233,14 @@ static int hid_bpf_allocate_event_data(struct hid_device *hdev)
- 	return __hid_bpf_allocate_data(hdev, &hdev->bpf.device_data, &hdev->bpf.allocated_data);
- }
- 
-+int hid_bpf_reconnect(struct hid_device *hdev)
-+{
-+	if (!test_and_set_bit(ffs(HID_STAT_REPROBED), &hdev->status))
-+		return device_reprobe(&hdev->dev);
-+
-+	return 0;
-+}
-+
- /**
-  * hid_bpf_attach_prog - Attach the given @prog_fd to the given HID device
-  *
-@@ -217,7 +282,17 @@ hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, __u32 flags)
- 			return err;
- 	}
- 
--	return __hid_bpf_attach_prog(hdev, prog_type, prog_fd, flags);
-+	err = __hid_bpf_attach_prog(hdev, prog_type, prog_fd, flags);
-+	if (err)
-+		return err;
-+
-+	if (prog_type == HID_BPF_PROG_TYPE_RDESC_FIXUP) {
-+		err = hid_bpf_reconnect(hdev);
-+		if (err)
-+			return err;
-+	}
-+
-+	return 0;
- }
- 
- /**
-diff --git a/drivers/hid/bpf/hid_bpf_dispatch.h b/drivers/hid/bpf/hid_bpf_dispatch.h
-index 98c378e18b2b..1d1d5bcccbd7 100644
---- a/drivers/hid/bpf/hid_bpf_dispatch.h
-+++ b/drivers/hid/bpf/hid_bpf_dispatch.h
-@@ -18,6 +18,7 @@ int __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_t
- void __hid_bpf_destroy_device(struct hid_device *hdev);
- int hid_bpf_prog_run(struct hid_device *hdev, enum hid_bpf_prog_type type,
- 		     struct hid_bpf_ctx_kern *ctx_kern);
-+int hid_bpf_reconnect(struct hid_device *hdev);
- 
- struct bpf_prog;
- 
-diff --git a/drivers/hid/bpf/hid_bpf_jmp_table.c b/drivers/hid/bpf/hid_bpf_jmp_table.c
-index 0f20deab81ff..3a5ab70d1a95 100644
---- a/drivers/hid/bpf/hid_bpf_jmp_table.c
-+++ b/drivers/hid/bpf/hid_bpf_jmp_table.c
-@@ -59,12 +59,15 @@ static DECLARE_WORK(release_work, hid_bpf_release_progs);
- 
- BTF_ID_LIST(hid_bpf_btf_ids)
- BTF_ID(func, hid_bpf_device_event)			/* HID_BPF_PROG_TYPE_DEVICE_EVENT */
-+BTF_ID(func, hid_bpf_rdesc_fixup)			/* HID_BPF_PROG_TYPE_RDESC_FIXUP */
- 
- static int hid_bpf_max_programs(enum hid_bpf_prog_type type)
- {
- 	switch (type) {
- 	case HID_BPF_PROG_TYPE_DEVICE_EVENT:
- 		return HID_BPF_MAX_PROGS_PER_DEV;
-+	case HID_BPF_PROG_TYPE_RDESC_FIXUP:
++	attach_fd = bpf_program__fd(skel->progs.attach_prog);
++	if (attach_fd < 0) {
++		fprintf(stderr, "can't locate attach prog: %m\n");
 +		return 1;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -234,6 +237,10 @@ static void hid_bpf_release_progs(struct work_struct *work)
- 				if (next->hdev == hdev && next->type == type)
- 					next->hdev = NULL;
- 			}
++	}
 +
-+			/* if type was rdesc fixup, reconnect device */
-+			if (type == HID_BPF_PROG_TYPE_RDESC_FIXUP)
-+				hid_bpf_reconnect(hdev);
- 		}
- 	}
- 
-diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index 9d86f6fb5a45..af67a527e0b1 100644
---- a/drivers/hid/hid-core.c
-+++ b/drivers/hid/hid-core.c
-@@ -1218,7 +1218,8 @@ int hid_open_report(struct hid_device *device)
- 		return -ENODEV;
- 	size = device->dev_rsize;
- 
--	buf = kmemdup(start, size, GFP_KERNEL);
-+	/* call_hid_bpf_rdesc_fixup() ensures we work on a copy of rdesc */
-+	buf = call_hid_bpf_rdesc_fixup(device, start, &size);
- 	if (buf == NULL)
- 		return -ENOMEM;
- 
-diff --git a/include/linux/hid_bpf.h b/include/linux/hid_bpf.h
-index ef76894f7705..2fad6bb489ca 100644
---- a/include/linux/hid_bpf.h
-+++ b/include/linux/hid_bpf.h
-@@ -59,6 +59,7 @@ struct hid_bpf_ctx {
- 
- /* Following functions are tracepoints that BPF programs can attach to */
- int hid_bpf_device_event(struct hid_bpf_ctx *ctx);
-+int hid_bpf_rdesc_fixup(struct hid_bpf_ctx *ctx);
- 
- /* Following functions are kfunc that we export to BPF programs */
- /* available everywhere in HID-BPF */
-@@ -85,6 +86,7 @@ int __hid_bpf_tail_call(struct hid_bpf_ctx *ctx);
- enum hid_bpf_prog_type {
- 	HID_BPF_PROG_TYPE_UNDEF = -1,
- 	HID_BPF_PROG_TYPE_DEVICE_EVENT,			/* an event is emitted from the device */
-+	HID_BPF_PROG_TYPE_RDESC_FIXUP,
- 	HID_BPF_PROG_TYPE_MAX,
- };
- 
-@@ -128,6 +130,7 @@ int hid_bpf_connect_device(struct hid_device *hdev);
- void hid_bpf_disconnect_device(struct hid_device *hdev);
- void hid_bpf_destroy_device(struct hid_device *hid);
- void hid_bpf_device_init(struct hid_device *hid);
-+u8 *call_hid_bpf_rdesc_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size);
- #else /* CONFIG_HID_BPF */
- static inline u8 *dispatch_hid_bpf_device_event(struct hid_device *hid, enum hid_report_type type, u8 *data,
- 						u32 *size, int interrupt) { return 0; }
-@@ -135,6 +138,11 @@ static inline int hid_bpf_connect_device(struct hid_device *hdev) { return 0; }
- static inline void hid_bpf_disconnect_device(struct hid_device *hdev) {}
- static inline void hid_bpf_destroy_device(struct hid_device *hid) {}
- static inline void hid_bpf_device_init(struct hid_device *hid) {}
-+static inline u8 *call_hid_bpf_rdesc_fixup(struct hid_device *hdev, u8 *rdesc, unsigned int *size)
-+{
-+	return kmemdup(rdesc, *size, GFP_KERNEL);
++	args.prog_fd = bpf_program__fd(prog);
++	err = bpf_prog_test_run_opts(attach_fd, &tattr);
++	if (err) {
++		fprintf(stderr, "can't attach prog to hid device %d: %m (err: %d)\n",
++			hid_id, err);
++		return 1;
++	}
++	return 0;
 +}
 +
- #endif /* CONFIG_HID_BPF */
- 
- #endif /* __HID_BPF_H */
++static int set_haptic(struct hid_surface_dial_lskel *skel, int hid_id)
++{
++	struct haptic_syscall_args args = {
++		.hid = hid_id,
++		.retval = -1,
++	};
++	int haptic_fd, err;
++	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattr,
++			    .ctx_in = &args,
++			    .ctx_size_in = sizeof(args),
++	);
++
++	haptic_fd = bpf_program__fd(skel->progs.set_haptic);
++	if (haptic_fd < 0) {
++		fprintf(stderr, "can't locate haptic prog: %m\n");
++		return 1;
++	}
++
++	err = bpf_prog_test_run_opts(haptic_fd, &tattr);
++	if (err) {
++		fprintf(stderr, "can't set haptic configuration to hid device %d: %m (err: %d)\n",
++			hid_id, err);
++		return 1;
++	}
++	return 0;
++}
++
++int main(int argc, char **argv)
++{
++	struct hid_surface_dial_lskel *skel;
++	struct bpf_program *prog;
++	const char *optstr = "r:";
++	const char *sysfs_path;
++	int opt, hid_id, resolution = 72;
++
++	while ((opt = getopt(argc, argv, optstr)) != -1) {
++		switch (opt) {
++		case 'r':
++			{
++				char *endp = NULL;
++				long l = -1;
++
++				if (optarg) {
++					l = strtol(optarg, &endp, 10);
++					if (endp && *endp)
++						l = -1;
++				}
++
++				if (l < 0) {
++					fprintf(stderr,
++						"invalid r option %s - expecting a number\n",
++						optarg ? optarg : "");
++					exit(EXIT_FAILURE);
++				};
++
++				resolution = (int) l;
++				break;
++			}
++		default:
++			usage(basename(argv[0]));
++			return 1;
++		}
++	}
++
++	if (optind == argc) {
++		usage(basename(argv[0]));
++		return 1;
++	}
++
++	sysfs_path = argv[optind];
++	if (!sysfs_path) {
++		perror("sysfs");
++		return 1;
++	}
++
++	skel = hid_surface_dial_lskel__open_and_load();
++	if (!skel) {
++		fprintf(stderr, "%s  %s:%d", __func__, __FILE__, __LINE__);
++		return -1;
++	}
++
++	hid_id = get_hid_id(sysfs_path);
++	if (hid_id < 0) {
++		fprintf(stderr, "can not open HID device: %m\n");
++		return 1;
++	}
++
++	skel->data->resolution = resolution;
++	skel->data->physical = (int)(resolution / 72);
++
++	bpf_object__for_each_program(prog, *skel->skeleton->obj) {
++		/* ignore syscalls */
++		if (bpf_program__get_type(prog) != BPF_PROG_TYPE_TRACING)
++			continue;
++
++		attach_prog(skel, prog, hid_id);
++	}
++
++	signal(SIGINT, int_exit);
++	signal(SIGTERM, int_exit);
++
++	set_haptic(skel, hid_id);
++
++	while (running)
++		sleep(1);
++
++	hid_surface_dial_lskel__destroy(skel);
++
++	return 0;
++}
 -- 
 2.36.1
 
