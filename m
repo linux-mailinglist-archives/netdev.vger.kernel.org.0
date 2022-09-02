@@ -2,106 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC555AB5BA
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 17:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E00A45AB5C5
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 17:54:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237428AbiIBPwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 11:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33390 "EHLO
+        id S237302AbiIBPyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 11:54:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237430AbiIBPwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 11:52:24 -0400
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE7B0D3E6C
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 08:44:32 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id F0BE3240108
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 17:44:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
-        t=1662133471; bh=smFYOenZzqawXSK94gpzdplWB4M1WgA4Yl+z23nc79E=;
-        h=Date:From:To:Cc:Subject:From;
-        b=GTYY0grDsPF04pgNJyGL+9R+6v9+CxNjj+M60rU4hAW3WTG2JEEZCKMIjJLzRwK72
-         pyck59j5Upgxolb9Cik4fTVJmw78XBK90wsScHgbw5nBZx8+//DWribRhtHA2Q/5Xv
-         E2U0d5dtq8jj6FHduIJAHJ7D0rVeCopFqa0fRZpdAsGn234fP5qnIk+X9lQhm6CdMk
-         MY5PM2pTz6TXLVGhB6Yv+0lNZaMrGqRjjQxl53BEnnlFqBSAqZlxjqJX9oVmjBlA3c
-         NyEGCgi0i5HPy2//5s4iyb+zuhdmW5Dey7FpgS4eceMBjkXcXhJGexNlIhzaxd7oK0
-         Qy/V4nFkCZuHg==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4MK2K42hXXz6tmJ;
-        Fri,  2 Sep 2022 17:44:24 +0200 (CEST)
-Date:   Fri,  2 Sep 2022 15:44:20 +0000
-From:   Daniel =?utf-8?Q?M=C3=BCller?= <deso@posteo.net>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, pablo@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, brouer@redhat.com,
-        toke@redhat.com, memxor@gmail.com
-Subject: Re: [PATCH bpf-next 0/4] Introduce bpf_ct_set_nat_info kfunc helper
-Message-ID: <20220902154420.wpox77fwlamul444@nuc>
-References: <cover.1662050126.git.lorenzo@kernel.org>
- <aec3e8d1-6b80-c344-febe-809bbb0308eb@iogearbox.net>
- <YxIUvxY8S256TTUf@lore-desk>
- <df144f34-b44c-cc96-69eb-32eaaf1ac1fb@iogearbox.net>
+        with ESMTP id S237462AbiIBPxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 11:53:43 -0400
+Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CE7EFD9;
+        Fri,  2 Sep 2022 08:47:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
+        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
+        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=CTrG12qWnI/c/AxI8kTL2+rjoFmKz1TXs568RjVaASw=; b=ifKtc5mRxPP/hgk+Ujk1yvgVcL
+        Hd0Yi+M6uyrX3B0eqHzbr8jt3EzwK2h1hez7h9JQijZsTOI/t7b77YbQsg8TdY2kbc1MoO2iNRdqx
+        fZW+VmZsVJeH2MySiJ5JZ5iiLwkpTJLYP/QJ+u3bsptU1mfzf971861j5yM7+VfOck15C0+diOs4j
+        kL+vIvmkhQ8N98uA87gx95GTk2C+k7qFrK5CfD6L/Ay9F4DUKz0oBSilvXKQRLXbmkQV00XqhEMom
+        Y3AJps/tqC2vkBIBL5YH8RPrRMTiOlGrInb/392Q1OI26agkHoUVlC5NwGEFsOUcCRbxKLExnQJoN
+        wxDzstOA==;
+Received: from [92.206.252.219] (helo=javelin)
+        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <lynxis@fe80.eu>)
+        id 1oU8sx-005KhR-5H; Fri, 02 Sep 2022 15:47:11 +0000
+Date:   Fri, 2 Sep 2022 17:47:10 +0200
+From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [PATCH 3/4] net: mediatek: sgmii: mtk_pcs_setup_mode_an: don't
+ rely on register defaults
+Message-ID: <20220902174710.54a1d317@javelin>
+In-Reply-To: <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
+References: <20220820224538.59489-1-lynxis@fe80.eu>
+        <20220820224538.59489-4-lynxis@fe80.eu>
+        <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <df144f34-b44c-cc96-69eb-32eaaf1ac1fb@iogearbox.net>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Sep 02, 2022 at 04:41:28PM +0200, Daniel Borkmann wrote:
-> On 9/2/22 4:35 PM, Lorenzo Bianconi wrote:
-> > On Sep 02, Daniel Borkmann wrote:
-> > > On 9/1/22 6:43 PM, Lorenzo Bianconi wrote:
-> > > > Introduce bpf_ct_set_nat_info kfunc helper in order to set source and
-> > > > destination nat addresses/ports in a new allocated ct entry not inserted
-> > > > in the connection tracking table yet.
-> > > > Introduce support for per-parameter trusted args.
-> > > > 
-> > > > Kumar Kartikeya Dwivedi (2):
-> > > >     bpf: Add support for per-parameter trusted args
-> > > >     selftests/bpf: Extend KF_TRUSTED_ARGS test for __ref annotation
-> > > > 
-> > > > Lorenzo Bianconi (2):
-> > > >     net: netfilter: add bpf_ct_set_nat_info kfunc helper
-> > > >     selftests/bpf: add tests for bpf_ct_set_nat_info kfunc
-> > > > 
-> > > >    Documentation/bpf/kfuncs.rst                  | 18 +++++++
-> > > >    kernel/bpf/btf.c                              | 39 ++++++++++-----
-> > > >    net/bpf/test_run.c                            |  9 +++-
-> > > >    net/netfilter/nf_conntrack_bpf.c              | 49 ++++++++++++++++++-
-> > > >    .../testing/selftests/bpf/prog_tests/bpf_nf.c |  2 +
-> > > >    .../testing/selftests/bpf/progs/test_bpf_nf.c | 26 +++++++++-
-> > > >    tools/testing/selftests/bpf/verifier/calls.c  | 38 +++++++++++---
-> > > >    7 files changed, 156 insertions(+), 25 deletions(-)
-> > > > 
-> > > 
-> > > Looks like this fails BPF CI, ptal:
-> > > 
-> > > https://github.com/kernel-patches/bpf/runs/8147936670?check_suite_focus=true
+On Tue, 23 Aug 2022 16:28:47 +0100
+"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
+
+> On Sun, Aug 21, 2022 at 12:45:37AM +0200, Alexander Couzens wrote:
+> > Ensure autonegotiation is enabled.
 > > 
-> > Hi Daniel,
+> > Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
+> > ---
+> >  drivers/net/ethernet/mediatek/mtk_sgmii.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
 > > 
-> > it seems CONFIG_NF_NAT is not set in the kernel config file.
-> > Am I supposed to enable it in bpf-next/tools/testing/selftests/bpf/config?
+> > diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c
+> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c index
+> > 782812434367..aa69baf1a42f 100644 ---
+> > a/drivers/net/ethernet/mediatek/mtk_sgmii.c +++
+> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c @@ -32,12 +32,13 @@
+> > static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs)
+> > regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER,
+> > SGMII_LINK_TIMER_DEFAULT); 
+> > +	/* disable remote fault & enable auto neg */
+> >  	regmap_read(mpcs->regmap, SGMSYS_SGMII_MODE, &val);
+> > -	val |= SGMII_REMOTE_FAULT_DIS;
+> > +	val |= SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN;  
 > 
-> This would have to be set there and added to the patches, yes. @Andrii/DanielM, is
-> this enough or are other steps needed on top of that?
+> Does SGMII_SPEED_DUPLEX_AN need to be cleared in
+> mtk_pcs_setup_mode_force(), so mtk_pcs_link_up() can force the
+> duplex setting for base-X protocols?
+> 
 
-Yes, I think it should be set at said location. Nothing else should be
-needed in addition that I can think of.
+Yes SGMII_SPEED_DUPLEX_AN needs to be cleared to have FORCE_DUPLEX
+working. But mtk_pcs_setup_mode_force() is clearing it implicit by
 
-Thanks,
-Daniel
+val &= SGMII_DUPLEX_FULL & ~SGMII_IF_MODE_MASK
 
-[...]
+because it's included in the SGMII_IF_MODE_MASK.
+I also don't understand why it's forcing it in the
+mtk_pcs_link_up().
