@@ -2,141 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFC325AB6C2
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DCE5AB6E2
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236385AbiIBQm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 12:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44128 "EHLO
+        id S236179AbiIBQxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 12:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236145AbiIBQm6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:42:58 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3EFF7B1D
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 09:42:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kPqk+3eeJOIxA/inWbYwxu5tzBefjBFUCzjCLUt6lvTfq6HXvpjnfslRqN+p9MdUy23PlaDevzgrZfq5vjbTxxz4UuZFaixPd4wmNFTzYQQoiBPtes6rI3PC+WF/e2RTj/rOshBbeFRiEzgHsvumQMM6Zxryp4jyXEQz1xmwCOp7ZpH+lE8fIdYndl/jyUuRGV9qnHVz7tPfwc/Bm1FSEWVEteqdpDW4nXX+XF4IXiJV/bLUoyS+dK4fDIpmsRj1f1QkiiIq4BwXpUXjaAP/+UJgfzK+pFXTc/9gfBdLG61VIh1TzZHRbxh62/FAVKOCmF9hZErKM8H+VO5IZKSqBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2qGTbAzN9B173NMx4ou4vtuYP+OyF24xcphBlfjSgAE=;
- b=KU0zjPzS7/wLkWAzTPDurW8kWzG1IP/5aqn48rp/RDY417oyys5qMQ39y22QHcUaTAiwFFD6J6PZKg2kUslYhWUM6kOCYpjvAa7olceyQwJ1+iPOE8yYJQP5NRUjVb2Pf8BPPqNg5ksus7BveDVBNs4YqEUTE6ekwHFlibnMnHFGjWudyw4CEndc5dU/UKJzovDKMqVtJP61CPSGdz56F3P6deUb3FQcU1ZLSeG2PsQVMLdhWCfmbQKEdXoz5BCpCErW/75fO2HqWbU4cYQqHkx8OVWm0FvkdT9QVIFEF2LYjBbgL0rj/Fj1QG0q0Bz3BpDQeX4RUbfBK0w2ACcvRA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2qGTbAzN9B173NMx4ou4vtuYP+OyF24xcphBlfjSgAE=;
- b=bCyfH7GXERFIQHWdmNWuqz92sntkXc3zvg8xCj1+bd7Svi8c+A0pAx3DcYdHHRMvK5qk6+QUPieMZ7qQWfO8FxLyIQLwIUmoFH7sXah1VOJyf+bdQuboMF16TiNMX+PVsW/wMSudzQt5qhDttND2zpajnfxbr+6xhGhmjEgGnTRbItyJAUNoYtHaHLZJSl3F82xpw3mn84wZQUC6+ZDrQW2UFHq/rabXD1Uag9ze5mWILpRAb0I290WKrIgOVVRwP8d1CSAwvzXwNHdYJ3o6A7s3IK6W+hrziwO29f3eCAnFvHjm0fnEp/7p9mHCg7lGsX7cC3372bqb9k8Kfr8vfQ==
-Received: from MW4PR04CA0388.namprd04.prod.outlook.com (2603:10b6:303:81::33)
- by CH0PR12MB5217.namprd12.prod.outlook.com (2603:10b6:610:d0::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 2 Sep
- 2022 16:42:55 +0000
-Received: from CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::76) by MW4PR04CA0388.outlook.office365.com
- (2603:10b6:303:81::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
- Transport; Fri, 2 Sep 2022 16:42:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- CO1NAM11FT113.mail.protection.outlook.com (10.13.174.180) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Fri, 2 Sep 2022 16:42:55 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Fri, 2 Sep 2022 16:42:54 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Fri, 2 Sep 2022 09:42:54 -0700
-Received: from vdi.nvidia.com (10.127.8.14) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Fri, 2 Sep 2022 09:42:53 -0700
-From:   David Thompson <davthompson@nvidia.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <cai.huoqing@linux.dev>, <brgl@bgdev.pl>,
-        <limings@nvidia.com>, David Thompson <davthompson@nvidia.com>,
-        Asmaa Mnebhi <asmaa@nvidia.com>
-Subject: [PATCH net v1] mlxbf_gige: clear MDIO gateway lock after read
-Date:   Fri, 2 Sep 2022 12:42:47 -0400
-Message-ID: <20220902164247.19862-1-davthompson@nvidia.com>
-X-Mailer: git-send-email 2.30.1
+        with ESMTP id S235075AbiIBQxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:53:23 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E5B10951D;
+        Fri,  2 Sep 2022 09:53:22 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id r4so3455723edi.8;
+        Fri, 02 Sep 2022 09:53:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=Hgnkg36DqLyHXWGaLke37obXxrGvUZVl10tSfHjo3U4=;
+        b=LXLy/fwogmYyQtsRaqYmDTarsLXs6H6jqpy/+U6imdMpWkXeBdHMq02Emi9CtWIyhM
+         LoTLqiddSBOzvCxrNYnxDQOaU1pxAW7OzuDdR58CojiZD5b8Dz441uwudPN4F1n6cAWH
+         0qeWdwH9QCASROczsCtDyJ2penS7go6xAbE6t0cqstn4P6b1FtvX9ZRk8d53UPmiicKl
+         TgJd6pkJJanDuGS8T2mgAJYCXPFMXw4bFLhCKIb5DzqjbaCfQhdXYL9CLlZ6NO8eBK1j
+         WTFTWex/DkT9CpM3A4fmOfKiN4cBEWYQowLxqVmWByB9OgalP4H1YFyKjG4Rm5TzA50C
+         R0IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=Hgnkg36DqLyHXWGaLke37obXxrGvUZVl10tSfHjo3U4=;
+        b=SLvFvhOux76VkgJ51i2sjDOSS6C7RV2vasein/epUOas9x2eE4AyGjAyj5J1T0cKee
+         g46AHiVk2EK0WeVs3/6jb8s4U6ZnmQDquWIb2jrhT3MOsRb6SGvFyIL56eEt6eJXt2Mh
+         1CxQK1Q+a9ScKthsviNALWj26s80wT82xbyH6j5NLdS/pQ/TzUhgxrU+ManEzyq7ekTl
+         nAeoDiE69hkp7SwkE9Gs+FfaZFiLm95FlvTEZING/2npn6w+44MWMcST18+fhgrGAY/E
+         At2B3LFXWH8W17m4Wvkx3St8lHUglkUPmfGp/4DxdELGnvhW8EyR4rBm9Gw606FuIUPk
+         ZC7A==
+X-Gm-Message-State: ACgBeo3Bb+8LCDORd26s+7iufFSlTMGfNd3RgeCDOKyxCgK6835fwN1b
+        7T+QSaQJHujZzLdxgESLv3pS3nQL6RJ7KxRJkIM=
+X-Google-Smtp-Source: AA6agR6qpPAfSFE5GOdTgEzZGiZRCjwM02CBGNPvle7mE1ssALvBAw6rJ766ER7pI56MhqS/bgsQZDIYCG4R9LzREPk=
+X-Received: by 2002:a05:6402:27ca:b0:43e:ce64:ca07 with SMTP id
+ c10-20020a05640227ca00b0043ece64ca07mr34714274ede.66.1662137600594; Fri, 02
+ Sep 2022 09:53:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0b9a5e64-72ba-406d-eeec-08da8d022faf
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5217:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5jV24nLIjGC33we2Pq5WVBSyy1u/9FRZTY2r6tOUwZIOhkw/nCVg37JXCkI3AtkVS1lFT0UmJEmqqf9tkmKKq8n/ngsIjVNwI9ZTlyqzIQOwviqwqcUWCW4mes8a8SN6DckNjqqT+bvYjih5dZyO+Fe70lPP1EgDqnYohV83ce7+b8Ls+KVQV5Z5h/Go+7/K27clWx+gGlt+fKQI/Mzzr0np25wKjG9QHQFDuFJKTJ33RSiDKQD/O/WdCZK0rii3VcN02zxJVko5nRtaeWd3hOjLMba3H5nW/DNBb/2cjCQ++Ed42Zoyfj9pwQj9One8IkLq+PPZOQ13EskhBXFnZ4DMSu5lfPmCv2bPId1DF/M0QzdLM+lpKfV1E2bJQtNQ++/RLWBw2oGqqDVYFQ+4jeoNv6OYcPm+PjqEZYuGhwikNG5PYfzMuVmslWBWxXS3fUvbtcAPzp7tGpez8LXb7U8Mml46ihKzKTQateHq/KCGbM9SjGQ7oCRdt0ZYYSY/6SqXqC+j4nKzw/laozsNds4O3bb0y/t0MbOqn8nkXxK3cidRPrJ5Tm6PtRFmpO1axBGW1gnX8WODwbU88TK3ms3CAXqawAzjlCm009s5BJDz8aFxbQiGUlK5Jyavz2pZWcTWl7MyqmVP7t7WXKvn5vL9DRBYmMDP4RPCdljYNrUDDLk633rHoXkuf2I1F7Sj22Dkmg4fYf3LOJmO8TkwiuEROJCnv0pqULippKYaM2Hd1k7WTV7dm5wkQRnO63QDyav5TqUGxOqEnQmoCN9FK4cahzwoexZDPVfbsVk5+KNPpEzjng9tZXVu9pMrCz16
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(346002)(136003)(396003)(36840700001)(40470700004)(46966006)(47076005)(1076003)(7696005)(426003)(26005)(186003)(336012)(2616005)(40480700001)(5660300002)(8936002)(86362001)(36756003)(478600001)(41300700001)(107886003)(6666004)(36860700001)(81166007)(83380400001)(356005)(70206006)(70586007)(8676002)(82310400005)(2906002)(54906003)(316002)(40460700003)(82740400003)(110136005)(4326008)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 16:42:55.4763
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0b9a5e64-72ba-406d-eeec-08da8d022faf
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT113.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5217
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <20220831101617.22329-1-fw@strlen.de> <87v8q84nlq.fsf@toke.dk>
+ <20220831125608.GA8153@breakpoint.cc> <87o7w04jjb.fsf@toke.dk>
+ <20220831135757.GC8153@breakpoint.cc> <87ilm84goh.fsf@toke.dk>
+ <20220831152624.GA15107@breakpoint.cc> <CAADnVQJp5RJ0kZundd5ag-b3SDYir8cF4R_nVbN8Zj9Rcn0rww@mail.gmail.com>
+ <20220831155341.GC15107@breakpoint.cc> <CAADnVQJGQmu02f5B=mc1xJvVWSmk_GNZj9WAUskekykmyo8FzA@mail.gmail.com>
+ <1cc40302-f006-31a7-b270-30813b8f4b67@iogearbox.net> <CAHsH6GtCgb1getXASkqzN75cNfm7_GOg8Mng5ZY37yK99XBVMQ@mail.gmail.com>
+In-Reply-To: <CAHsH6GtCgb1getXASkqzN75cNfm7_GOg8Mng5ZY37yK99XBVMQ@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 2 Sep 2022 09:53:09 -0700
+Message-ID: <CAADnVQLSQPnT+8EV15=6MHzMCpfcPn9SOONERLtO2TJY43JUhg@mail.gmail.com>
+Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
+To:     Eyal Birger <eyal.birger@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Florian Westphal <fw@strlen.de>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <martin.lau@linux.dev>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MDIO gateway (GW) lock in BlueField-2 GIGE logic is
-set after read.  This patch adds logic to make sure the
-lock is always cleared at the end of each MDIO transaction.
+On Wed, Aug 31, 2022 at 10:18 PM Eyal Birger <eyal.birger@gmail.com> wrote:
+>
+> On Thu, Sep 1, 2022 at 1:16 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > On 8/31/22 7:26 PM, Alexei Starovoitov wrote:
+> > > On Wed, Aug 31, 2022 at 8:53 AM Florian Westphal <fw@strlen.de> wrote:
+> > >> Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+> > >>>> 1 and 2 have the upside that its easy to handle a 'file not found'
+> > >>>> error.
+> > >>>
+> > >>> I'm strongly against calling into bpf from the inner guts of nft.
+> > >>> Nack to all options discussed in this thread.
+> > >>> None of them make any sense.
+> > >>
+> > >> -v please.  I can just rework userspace to allow going via xt_bpf
+> > >> but its brain damaged.
+> > >
+> > > Right. xt_bpf was a dead end from the start.
+> > > It's time to deprecate it and remove it.
+> > >
+> > >> This helps gradually moving towards move epbf for those that
+> > >> still heavily rely on the classic forwarding path.
+> > >
+> > > No one is using it.
+> > > If it was, we would have seen at least one bug report over
+> > > all these years. We've seen none.
+> > >
+> > > tbh we had a fair share of wrong design decisions that look
+> > > very reasonable early on and turned out to be useless with
+> > > zero users.
+> > > BPF_PROG_TYPE_SCHED_ACT and BPF_PROG_TYPE_LWT*
+> > > are in this category. > All this code does is bit rot.
+> >
+> > +1
+> >
+> > > As a minimum we shouldn't step on the same rakes.
+> > > xt_ebpf would be the same dead code as xt_bpf.
+> >
+> > +1, and on top, the user experience will just be horrible. :(
+> >
+> > >> If you are open to BPF_PROG_TYPE_NETFILTER I can go that route
+> > >> as well, raw bpf program attachment via NF_HOOK and the bpf dispatcher,
+> > >> but it will take significantly longer to get there.
+> > >>
+> > >> It involves reviving
+> > >> https://lore.kernel.org/netfilter-devel/20211014121046.29329-1-fw@strlen.de/
+> > >
+> > > I missed it earlier. What is the end goal ?
+> > > Optimize nft run-time with on the fly generation of bpf byte code ?
+> >
+> > Or rather to provide a pendant to nft given existence of xt_bpf, and the
+> > latter will be removed at some point? (If so, can't we just deprecate the
+> > old xt_bpf?)
+>
+> FWIW we've been using both lwt bpf and xt_bpf on our production workloads
+> for a few years now.
+>
+> xt_bpf allows us to apply custom sophisticated policy logic at connection
+> establishment - which is not really possible (or efficient) using
+> iptables/nft constructs - without needing to reinvent all the facilities that
+> nf provides like connection tracking, ALGs, and simple filtering.
+>
+> As for lwt bpf, We use it for load balancing towards collect md tunnels.
+> While this can be done at tc egress for unfragmented packets, the lwt out hook -
+> when used in tandem with nf fragment reassembly - provides a hooking point
+> where a bpf program can see reassembled packets and load balance based on
+> their internals.
 
-Fixes: f92e1869d74e ("Add Mellanox BlueField Gigabit Ethernet driver")
-Reviewed-by: Asmaa Mnebhi <asmaa@nvidia.com>
-Signed-off-by: David Thompson <davthompson@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-index 85155cd9405c..4aeb927c3715 100644
---- a/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-+++ b/drivers/net/ethernet/mellanox/mlxbf_gige/mlxbf_gige_mdio.c
-@@ -179,6 +179,9 @@ static int mlxbf_gige_mdio_read(struct mii_bus *bus, int phy_add, int phy_reg)
- 	/* Only return ad bits of the gw register */
- 	ret &= MLXBF_GIGE_MDIO_GW_AD_MASK;
- 
-+	/* The MDIO lock is set on read. To release it, clear gw register */
-+	writel(0, priv->mdio_io + MLXBF_GIGE_MDIO_GW_OFFSET);
-+
- 	return ret;
- }
- 
-@@ -203,6 +206,9 @@ static int mlxbf_gige_mdio_write(struct mii_bus *bus, int phy_add,
- 					temp, !(temp & MLXBF_GIGE_MDIO_GW_BUSY_MASK),
- 					5, 1000000);
- 
-+	/* The MDIO lock is set on read. To release it, clear gw register */
-+	writel(0, priv->mdio_io + MLXBF_GIGE_MDIO_GW_OFFSET);
-+
- 	return ret;
- }
- 
--- 
-2.30.1
-
+Sounds very interesting!
+Any open source code to look at ?
