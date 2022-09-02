@@ -2,167 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7905E5AB931
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 22:11:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CD5C5AB963
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 22:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229772AbiIBULP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 16:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60062 "EHLO
+        id S230318AbiIBUSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 16:18:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229873AbiIBULM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 16:11:12 -0400
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C90AEC4D6
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 13:11:04 -0700 (PDT)
-Received: by mail-wr1-x433.google.com with SMTP id u17so3633359wrp.3
-        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 13:11:04 -0700 (PDT)
+        with ESMTP id S230292AbiIBUSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 16:18:39 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18675F076D;
+        Fri,  2 Sep 2022 13:18:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662149919; x=1693685919;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=W9PMYzanE7qUvrRwMfGNnnndhdZCDlWSK9Hy8Z9vR/M=;
+  b=pxfTXTNyV/4ZSfT4wsMVbJmhkyM1mJTuGPYkXijw9kN4ku3XJjLbm7r5
+   rTDve0KE7rEKGlcPRmSCCc+gnurbmU0yzyhjFr02rZYPM0GjmYEQq9Wmx
+   +OkNMgnssz1bRD8SDo96gaanhf4qvqaFmKtrnIwtVc2kN01nzTjwk9P0w
+   aB0TvnhlUY6L+zenRuKldQK9mNoHzqbAYcxK24PXinlddmtjjmVi3zocd
+   0PNyMMzvFE89ZS0jn7CzI0/YjGpTQaOtiU+Cs/382PDIZxzJZyQLL+YkR
+   hkqMSRF2GXUzz1Cfmz6FoBvA9S87XPBVTKQU/90c2yLXHW2JDcbkG7kqr
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
+   d="scan'208";a="178854229"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 13:18:38 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Fri, 2 Sep 2022 13:18:38 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 13:18:38 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nJ9VeDVO/UMyP7F+38ZayT70o6rkKtwVKghvOWa0RSm9XLO6Tm/LSx8y3AgCZb04gifZ5CZC3QT1w5N0TmsX2qgEYAalYk+kanztqHgPlmbH0AB4dMuRytc3HqtH/1uR+JW+BAksOUmhuBR6ThaqozKc7z493re1jjR1+JbJO6r21X3wP2lqGsgKSWbpP9jsL96B0oJ2mf1ATt9ipTev4KbgB7AsMCHsARy/YBGfw3MgRjHzlIrXcYnoBAjKTaO/JdNIDovJsO4aWGHifL5kwFvlu38vKzA5i9qjkaNd9jsofm9Xp3TMr3f3KJdCly82DSy5m8qLLPZw9zX320zHGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GV43VTPDIdDjxkhkLfmjDouhwTx25GH4XQKry6LFBhQ=;
+ b=b2j/k1WCcXW7qBGM2OglV5L0UWd3qb0gSoks1wImREsiducp3RPziPgPGQ1DrI1JGyrpNDx+e9Ry5R2BQklENsvEwTUh6xtDEbSZRBsqasxIpSm94KB2TfGd4kXcwH6xhGlkGoKHQzHkhg/6O+Y+MzvL/TeGoRqpkF268v/RSjTem8c54qAWFOQl983CkinC4yIGmpvSri8ciWzVyAhIDRtwnRChhPQneKDjebxoaLD1m6/ZGVmC6J5onOQoI6GxzlVw6itn7JxGeG0tBLnF+EymCoxn50FgxkrDsizCSzUMko4KNRvBYC1ZEO2wF1IBn3PxDmAoURzohSK+3VaigA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:subject:content-language:cc:to:from
-         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
-        bh=R3tvcbY7zT4Cmw/jgIYI2Y5skpEdmxRTpLBkKCN9oqk=;
-        b=bgnsQimFp09SVRQu6E8cxV2BzTaPTYvMS1+dwcUl/5uduXb2dcSJY8EI/oUvCmFBfB
-         H8y7ia4BEC3mLpvdRbpCTQqcwuXZtwgnnVLV3e+yBh/Xbz3NcjMm7Ov9cph1AJhtHAsY
-         5VGEs7huzyWiT20uUnSNRKtRHnh/x50B0VBVbDmhoNWLqhKK69WGw9IW9IWKWuxJBZIU
-         b03Dq9gipTJQcz7f7ZC8Ors1KjksjHe2DQA76sGwkmV/dX/ui0p8hOQGDNbvOI70SaRr
-         +LcaFq3TB5g4H7x6e53f2kONyp8uIVFh2vTOOllEl5GN5r0rdBzB5Gfs6qYPp/rH62Y0
-         VA3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:subject:content-language:cc:to:from
-         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
-         :cc:subject:date;
-        bh=R3tvcbY7zT4Cmw/jgIYI2Y5skpEdmxRTpLBkKCN9oqk=;
-        b=UQLpuevpsVk6ZnhSCK053NJ8dnGLOOw373SO/tlWIcprYg8uTEK7ddpMK1gBzOvl6y
-         HvRxe0RnNn0LOEHza1bmvZQtjNUatbqVUFwfkQEYdYBKrvmrvy2J54IlBAo1stXV8wpX
-         vHQc1bH1PMeAQGCFyLSQ7Dor/MfvvvGV8fXS55YZ+fVJ5X1QlRbyLSFhygpwTyDXc/60
-         +ZckFqEV1/drWAYRzympUDpiqu5T+MamZ3w5h3SRAV/9iNzG5z7yhUuU2ML/Bs/535Mx
-         WvWuW0tXTIazjRLHXSYyoHMPY/cjQ4J/d71BwJ3xlBu8HcsZYWK7zqsGxT5nXu6q5HBt
-         /Fmg==
-X-Gm-Message-State: ACgBeo1b41ksa5hCC45uUGRGiscGFDoD4VeFwFg6uf6ofBg6eRlaW87A
-        i0OnuvagcooMgPB55cb5iDM=
-X-Google-Smtp-Source: AA6agR65b6jMrAOxNrYAF0LR0b2rOl1tqutKoNfJz/5mxcZfeDYnztCUttgT01OnzMAWyUURgm8MzQ==
-X-Received: by 2002:a5d:4acc:0:b0:225:74d6:57a4 with SMTP id y12-20020a5d4acc000000b0022574d657a4mr17856559wrs.500.1662149462631;
-        Fri, 02 Sep 2022 13:11:02 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:c4c2:4e00:f4b8:68d8:d295:8a3b? (dynamic-2a01-0c23-c4c2-4e00-f4b8-68d8-d295-8a3b.c23.pool.telefonica.de. [2a01:c23:c4c2:4e00:f4b8:68d8:d295:8a3b])
-        by smtp.googlemail.com with ESMTPSA id j17-20020adfea51000000b0021f0af83142sm2238187wrn.91.2022.09.02.13.11.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 13:11:02 -0700 (PDT)
-Message-ID: <bf680a50-a445-6007-e52b-0e0b0696e24c@gmail.com>
-Date:   Fri, 2 Sep 2022 22:10:53 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GV43VTPDIdDjxkhkLfmjDouhwTx25GH4XQKry6LFBhQ=;
+ b=Bl/AlHMxCEgXHHVMnVZiJMa/rQXlkkrJjDIgaq36rTPp/pXnqta8Srv4OWjSgeTjvi/S8JjuUiiwOHb2d1iQ2APutho0WPSusvusMRP+brhEqN7pZ5zqgrDUvb6eQfGiyRZJMUIVOQZy6pc7uFSx+W/trNaq8P+f2a2HQFVgtXU=
+Received: from MWHPR11MB1693.namprd11.prod.outlook.com (2603:10b6:300:2b::21)
+ by CY4PR11MB1848.namprd11.prod.outlook.com (2603:10b6:903:123::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Fri, 2 Sep
+ 2022 20:18:32 +0000
+Received: from MWHPR11MB1693.namprd11.prod.outlook.com
+ ([fe80::ccae:ffc6:d9f5:8535]) by MWHPR11MB1693.namprd11.prod.outlook.com
+ ([fe80::ccae:ffc6:d9f5:8535%9]) with mapi id 15.20.5588.011; Fri, 2 Sep 2022
+ 20:18:32 +0000
+From:   <Jerry.Ray@microchip.com>
+To:     <andrew@lunn.ch>
+CC:     <vivien.didelot@gmail.com>, <f.fainelli@gmail.com>,
+        <olteanv@gmail.com>, <davem@davemloft.net>, <edumazet@google.com>,
+        <kuba@kernel.org>, <pabeni@redhat.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH 2/2] net: dsa: LAN9303: Add basic support for LAN9354
+Thread-Topic: [PATCH 2/2] net: dsa: LAN9303: Add basic support for LAN9354
+Thread-Index: AQHYu9FcWcp1m2N/pU+7PwCEJwtzQq3GQSmAgAZZIHA=
+Date:   Fri, 2 Sep 2022 20:18:32 +0000
+Message-ID: <MWHPR11MB16938C27CC03D84BA2194DC3EF7A9@MWHPR11MB1693.namprd11.prod.outlook.com>
+References: <20220829180037.31078-1-jerry.ray@microchip.com>
+ <20220829180037.31078-2-jerry.ray@microchip.com> <Yw0RfRXGZKl+ZwOi@lunn.ch>
+In-Reply-To: <Yw0RfRXGZKl+ZwOi@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Subject: [PATCH net-next] r8169: merge handling of chip versions 12 and 17
- (RTL8168B)
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 33d0fed5-3326-45af-1930-08da8d204ed0
+x-ms-traffictypediagnostic: CY4PR11MB1848:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: m1fm5yr/9d4wjsxyEW0oUm7PfQlyFGlXriep4Sy/crNndlaGdXclglD+1d70I1qMO+pX2+m0VNlMC6KKUnAf9orf2bgXTD3tdzA62aJJQx+acZv6Xd9SGFLi7vLymt4CEY1fv1hFf/qHVHTim6p0U+/368OHkLD/ARjLHphXxri5kP8EwEsFfmx94OVfJedzwTD+N3tWyrZemhu+IssxsGZBIsMDPC9VXnnHkv9Nni4hjkTxdXz83GUG8itcdR1MTI9HePbvMnGqR8E02hRmxtGEOTztyLKGs+iJdEoYvgvaxMBWqJsCqixedbnbcZefsSbSWBZ/uMre5zbd2luNiBgxIUi9np3NfM3M0Pbq6IUkgEmphHs7XBTKYACUxZWNxbf8T684Q6WQ0xbssIVBiwW+ObbOx23SC+bxHMVjEJW67jTRvGQ6bVP9ulKMRfj+LmTDTHfETQ89+N4gNQGhfB7OzVjiOcllS9udzHab+Ui+jFbkTQDwsiKspVk72wV7b0oY0FcwgesEBr3hJCexVgm5gW3gJjwkYtb+dSHBNMIAsea+KRrKRwFjw1ncn2I9PsI6o6jY/NEjAlskU1Mu3WKoIM8SVzRR6Mb7KC1qibNEUK9A+ovKUs3MEjQdX6jT8fld7YykyA/T10S1yPbBRBETKV8LUUT2PeMuZNNfj9h7uGR0uWh1IR+jVLZVG7s1D2cPGKGeRQbpLqCFJKOGYyV9B3GQSNH2Y3HNj7wW7Uc/mOhpBLGgyjbsTWEI0VpcEw34rklQ02EGA+WOlcsxhw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR11MB1693.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(396003)(136003)(376002)(366004)(39860400002)(7416002)(66556008)(76116006)(5660300002)(122000001)(52536014)(186003)(8936002)(66946007)(66476007)(64756008)(4326008)(8676002)(66446008)(54906003)(316002)(6916009)(38070700005)(33656002)(55016003)(38100700002)(2906002)(26005)(9686003)(478600001)(7696005)(41300700001)(71200400001)(86362001)(83380400001)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?97yvWNMhWZdNI7WozGNdsP5fqFAeeF1FbzNcHfWIEvQbHiiXXnShN/qjVFSt?=
+ =?us-ascii?Q?cL92BTS3Z4O07tf00RHXdrcU0BJJIBsYJN9znSqiuoAlPZvymBhwC1lBRbOD?=
+ =?us-ascii?Q?QY6hTmmYKVcX04cZPb1LIN4Tg2YgSGyRWHsXFMNgUzGo0zqVrRO8k0Tel9n3?=
+ =?us-ascii?Q?FH1rykgBe5IbRDeeEMG99nAZa00uw4ELalWf0EOJw21qWGc2boCzxheWIbyt?=
+ =?us-ascii?Q?7TeXzWMF4mSdvoEbjwyl56Uwy7bXtIEsX3mRWesFnel7UG6M6FhcR4jQUj17?=
+ =?us-ascii?Q?TSubEH29NRGf8ZjbIm5YJik9YVWscXidP9dEyBOeMkdKQ8V8DZELhOfO5/n/?=
+ =?us-ascii?Q?iiAU4dskzle+wJMr6k0KwB+sGk1chx1i62LrrtvaRoeI87BZkbINwyWl2aqD?=
+ =?us-ascii?Q?B2w/Vsme4g93jRJioWqea97vPZi4LVP8UE6X414CvlpDwU1anRZc7qrDCd78?=
+ =?us-ascii?Q?qsaKWx8w9tBHGAlT0TzDcU8gEWwz3Y1QjaWWABFM2YfWskIE94naNyIamsCk?=
+ =?us-ascii?Q?ZS/zySoVQPDLgtfu3J7qePyOmfVgizX8vwo/MmUmRahB0BiCqwrsbiGnyh3i?=
+ =?us-ascii?Q?Y6zdBgHqPeDJsyQ8ra3uE01LjwMxy4+XudYgx/vRASytQALQOt5WzoAp5UAG?=
+ =?us-ascii?Q?JRxNG4x/HmwMY2L4Zlc0G7JPEuVC6sYFmnmdiZuCNYgz+Yt93EflWLmAVB4Y?=
+ =?us-ascii?Q?cE9VWdxkMB3xP33SpHUMKxLNAs8ScZ8750dtf7RXvtJZjBK8eHY8lujS/z+T?=
+ =?us-ascii?Q?Z+13qee1BlDUfEIBehzpk8pTvN8rPb5kDZ+eMNiBqRc9Ph7OE9f4vtbpIoS6?=
+ =?us-ascii?Q?nHMhNpdb79+rdgnjXRWybdZrEV6f77z7obWCeRm5lDrJiLAK98K4XVI2eStM?=
+ =?us-ascii?Q?6mvyM71OaxIDAYBhckzDca4FE6sJ9wrd7YTchYdNOtUtsmf32wKEzVy1O0Lz?=
+ =?us-ascii?Q?Ky4V76hpAKhKw5eimsG2nbgPNqG6MG+zZfc8tZK60+qGl9XfCdkwlNCVbK/O?=
+ =?us-ascii?Q?SEE+XNsfPcMPEkIYBw+HLCBTi3028taZOX0lQp8tp4WqofeU+D1wteyK9MKM?=
+ =?us-ascii?Q?p+3GBi/ARRWVsC/SDPx8vg8N8OupgOdsU2ISzI5p3r4XpOcTPObmUKtx2d0E?=
+ =?us-ascii?Q?yRRw41lI8dv6ffdTjEYtREqQaVGVSO40IRuGDSg7mO/z4XjOxHx8Z/+o1K78?=
+ =?us-ascii?Q?2kSy4j5TwjnhtfaQd5Utoi3O7+6m/lUBAVtpUTV8SyO4G1cmmls0zKeuC/04?=
+ =?us-ascii?Q?f/NhbtKXLylMJGPWJEix+fXOeTkqGFCOlgyqWwvCwy/Svem7TFQU60xuhZQ2?=
+ =?us-ascii?Q?NdfszGZR3LQsOomv06KwWCWkFwlofyccEj1KdsCgGp5lhotyKr0CXyYOd7wY?=
+ =?us-ascii?Q?ki26kunwpoqI4YAA1PM6j/+z88B9b6aoNmEV6DDthdsNzgHhG3dKnPtQA8Az?=
+ =?us-ascii?Q?fcl9Ff+IbREW2vaMgJZlsURI0eMH5A+8KyVlwSFHqSFPGfcnDbYNwvBJAR7z?=
+ =?us-ascii?Q?2YoZqrHrWhVYewTgVKs0yXfIDz5HvvhI1sNGbNHx7XqX91C0GD04KwjaWnyK?=
+ =?us-ascii?Q?0nc5bflpkNExJeZeEojR2ceWHc2KgihOvE94Uw0g?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1693.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 33d0fed5-3326-45af-1930-08da8d204ed0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2022 20:18:32.6608
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: I8fEuOERWoi8KtQ3HBQ0BG8x7uSvY1o4ShSFeDeL1s2MRQO10xaVY27o7ddzYOy4PueFxLzYU+zTAt3raWxNwQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR11MB1848
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's not clear why XID's 380 and 381..387 ever got different chip
-version id's. VER_12 and VER_17 are handled exactly the same.
-Therefore merge handling under the VER_17 umbrella.
+>> -     if ((reg >> 16) !=3D LAN9303_CHIP_ID) {
+>> -             dev_err(chip->dev, "expecting LAN9303 chip, but found: %X\=
+n",
+>> +     if (((reg >> 16) !=3D LAN9303_CHIP_ID) &&
+>> +         ((reg >> 16) !=3D LAN9354_CHIP_ID)) {
+>> +             dev_err(chip->dev, "unexpected device found:=20
+>> + LAN%4.4X\n",
+>>                       reg >> 16);
+>>               return -ENODEV;
+>>       }
+>> @@ -884,7 +889,7 @@ static int lan9303_check_device(struct lan9303 *chip=
+)
+>>       if (ret)
+>>               dev_warn(chip->dev, "failed to disable switching %d\n",=20
+>> ret);
+>>
+>> -     dev_info(chip->dev, "Found LAN9303 rev. %u\n", reg & 0xffff);
+>> +     dev_info(chip->dev, "Found LAN%4.4X rev. %u\n", (reg >> 16), reg=20
+>> + & 0xffff);
+>>
+>>       ret =3D lan9303_detect_phy_setup(chip);
+>>       if (ret) {
+>> diff --git a/drivers/net/dsa/lan9303_mdio.c=20
+>> b/drivers/net/dsa/lan9303_mdio.c index bbb7032409ba..d12c55fdc811=20
+>> 100644
+>> --- a/drivers/net/dsa/lan9303_mdio.c
+>> +++ b/drivers/net/dsa/lan9303_mdio.c
+>> @@ -158,6 +158,7 @@ static void lan9303_mdio_shutdown(struct=20
+>> mdio_device *mdiodev)
+>>
+>>  static const struct of_device_id lan9303_mdio_of_match[] =3D {
+>>       { .compatible =3D "smsc,lan9303-mdio" },
+>> +     { .compatible =3D "microchip,lan9354-mdio" },
+>
+>Please validate that what you find on the board actually is what the compa=
+tible says it should be. If you don't validate it, there will be some DT bl=
+obs that have the wrong value, but probe fine. But then you cannot actually=
+ make use of the compatible string in the driver to do something different =
+between the 9303 and the 9354 because some boards have the wrong compatible=
+....
+>
+>     Andrew
+>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169.h            | 2 +-
- drivers/net/ethernet/realtek/r8169_main.c       | 6 ------
- drivers/net/ethernet/realtek/r8169_phy_config.c | 1 -
- 3 files changed, 1 insertion(+), 8 deletions(-)
+At this time, the driver is meant to support both devices equally.  In the =
+future, I will be adding content that only applies to the LAN9354.  That is=
+ when I'm planning to add .data to the .compatible entries.
 
-diff --git a/drivers/net/ethernet/realtek/r8169.h b/drivers/net/ethernet/realtek/r8169.h
-index 36d382676..5b188ba85 100644
---- a/drivers/net/ethernet/realtek/r8169.h
-+++ b/drivers/net/ethernet/realtek/r8169.h
-@@ -23,7 +23,7 @@ enum mac_version {
- 	RTL_GIGA_MAC_VER_09,
- 	RTL_GIGA_MAC_VER_10,
- 	RTL_GIGA_MAC_VER_11,
--	RTL_GIGA_MAC_VER_12,
-+	/* RTL_GIGA_MAC_VER_12 was handled the same as VER_17 */
- 	RTL_GIGA_MAC_VER_13,
- 	RTL_GIGA_MAC_VER_14,
- 	RTL_GIGA_MAC_VER_16,
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 4e0fae8db..99d0a7b33 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -102,7 +102,6 @@ static const struct {
- 	[RTL_GIGA_MAC_VER_09] = {"RTL8102e/RTL8103e"			},
- 	[RTL_GIGA_MAC_VER_10] = {"RTL8101e"				},
- 	[RTL_GIGA_MAC_VER_11] = {"RTL8168b/8111b"			},
--	[RTL_GIGA_MAC_VER_12] = {"RTL8168b/8111b"			},
- 	[RTL_GIGA_MAC_VER_13] = {"RTL8101e/RTL8100e"			},
- 	[RTL_GIGA_MAC_VER_14] = {"RTL8401"				},
- 	[RTL_GIGA_MAC_VER_16] = {"RTL8101e"				},
-@@ -2029,7 +2028,6 @@ static enum mac_version rtl8169_get_mac_version(u16 xid, bool gmii)
- 		{ 0x7c8, 0x3c0,	RTL_GIGA_MAC_VER_22 },
- 
- 		/* 8168B family. */
--		{ 0x7cf, 0x380,	RTL_GIGA_MAC_VER_12 },
- 		{ 0x7c8, 0x380,	RTL_GIGA_MAC_VER_17 },
- 		{ 0x7c8, 0x300,	RTL_GIGA_MAC_VER_11 },
- 
-@@ -2324,7 +2322,6 @@ static void rtl_jumbo_config(struct rtl8169_private *tp)
- 
- 	rtl_unlock_config_regs(tp);
- 	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_12:
- 	case RTL_GIGA_MAC_VER_17:
- 		if (jumbo) {
- 			readrq = 512;
-@@ -3628,7 +3625,6 @@ static void rtl_hw_config(struct rtl8169_private *tp)
- 		[RTL_GIGA_MAC_VER_09] = rtl_hw_start_8102e_2,
- 		[RTL_GIGA_MAC_VER_10] = NULL,
- 		[RTL_GIGA_MAC_VER_11] = rtl_hw_start_8168b,
--		[RTL_GIGA_MAC_VER_12] = rtl_hw_start_8168b,
- 		[RTL_GIGA_MAC_VER_13] = NULL,
- 		[RTL_GIGA_MAC_VER_14] = rtl_hw_start_8401,
- 		[RTL_GIGA_MAC_VER_16] = NULL,
-@@ -4859,7 +4855,6 @@ static void rtl_wol_shutdown_quirk(struct rtl8169_private *tp)
- 	/* WoL fails with 8168b when the receiver is disabled. */
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_11:
--	case RTL_GIGA_MAC_VER_12:
- 	case RTL_GIGA_MAC_VER_17:
- 		pci_clear_master(tp->pci_dev);
- 
-@@ -5120,7 +5115,6 @@ static int rtl_jumbo_max(struct rtl8169_private *tp)
- 		return JUMBO_7K;
- 	/* RTL8168b */
- 	case RTL_GIGA_MAC_VER_11:
--	case RTL_GIGA_MAC_VER_12:
- 	case RTL_GIGA_MAC_VER_17:
- 		return JUMBO_4K;
- 	/* RTL8168c */
-diff --git a/drivers/net/ethernet/realtek/r8169_phy_config.c b/drivers/net/ethernet/realtek/r8169_phy_config.c
-index 8c04cc56b..7906646f7 100644
---- a/drivers/net/ethernet/realtek/r8169_phy_config.c
-+++ b/drivers/net/ethernet/realtek/r8169_phy_config.c
-@@ -1115,7 +1115,6 @@ void r8169_hw_phy_config(struct rtl8169_private *tp, struct phy_device *phydev,
- 		[RTL_GIGA_MAC_VER_09] = rtl8102e_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_10] = NULL,
- 		[RTL_GIGA_MAC_VER_11] = rtl8168bb_hw_phy_config,
--		[RTL_GIGA_MAC_VER_12] = rtl8168bef_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_13] = NULL,
- 		[RTL_GIGA_MAC_VER_14] = rtl8401_hw_phy_config,
- 		[RTL_GIGA_MAC_VER_16] = NULL,
--- 
-2.37.3
-
+Jerry.
