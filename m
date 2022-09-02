@@ -2,230 +2,294 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DFF645AA76F
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 07:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B43325AA771
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 07:56:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234890AbiIBF4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 01:56:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52348 "EHLO
+        id S234724AbiIBF4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 01:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232670AbiIBF4O (ORCPT
+        with ESMTP id S233706AbiIBF4O (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 01:56:14 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62DBD6A492;
-        Thu,  1 Sep 2022 22:55:57 -0700 (PDT)
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 28208oDA019809;
-        Thu, 1 Sep 2022 22:55:33 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=tQ3yMpodHeCELwKFjuWJw9TX9W4Evc1kj4vzxLz+rMs=;
- b=ThGmSYCrUHhq5KyKSfXegqRMQpoqPn5e4yfy5XVojWHQp25eMrGOAWXUc3VxmYdIezpJ
- S1OUQ/iczPtH+T3wpiHEbtVGptYsDwX3Xoru9rLfkQb7NJSOlLvO5SLahusHLCvoWaZt
- XT7IzFk3gLARsEc0moEC0FjblWjGwsLl1iw= 
-Received: from nam04-bn8-obe.outbound.protection.outlook.com (mail-bn8nam04lp2047.outbound.protection.outlook.com [104.47.74.47])
-        by m0089730.ppops.net (PPS) with ESMTPS id 3jam3vgbkk-1
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B527975387;
+        Thu,  1 Sep 2022 22:56:10 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2825g18I031415;
+        Fri, 2 Sep 2022 05:56:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=PcBB0gDifIZ5JB6RnnJdLQW8pNSpu3ffhFzPoE65GVk=;
+ b=ZB+c7IwRuNRZK5c1jPmBLlfOPmDtqFcPbYs9IR21pcZNM59QzE6h+9RhuriWyxHwFDij
+ Z6Pnimksudl5Htr28dV4VI+nDgOXJnfgVUL/+suL0ravh4OZ6efXfZk0e1GNz5GLIA7D
+ 9EKY0ZPG++QBwT2MRe2Nv1H8FFxQb0mnZ3J0FdVhzTElSc3zQelRS5nMODHzwj2sE88j
+ YWF2eLYfdP51EUF9qxUXpHpO1BeczFpdFAgVyf3kw/uwj6kkjeUFIcqPZFgM9lSIHwm2
+ 5Q1kEWj1oI+V/LMQq52EA2/zHtEbcXDeUoq7guituj+oJJPpYF7EhE5IHHMH3BrVttqu 2g== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jbbwjrfcd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 01 Sep 2022 22:55:33 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IfJcFlY5Nh40o8HdgCF8c4PzpJysZZVkWLTxja+BzwXuS0VD5aOblXkYq+84b+yyqAvB4sRfuq3VKvancKcOUTE6d227NYvS0n0w3g8Zk6Hg6PwBcAeHcDAtB8P2i2gv0+yj07FR3Buni/RhW2VijGTzVpNRC/B3q7C5Sq/Kz+eD0e8jyPyB03bJFNWFZxCCBphJgawvm/crm6HlTvhsOYhA5koSxvWfjDETbxUJAHq8NQzKuWZjFaOE180WyDyLM5Tbqoo1a/sWSrhYdfVNljvIl4UfMTqmjSANp+nd9JuCFi5qmMbjQZ59mFWh7yrWZkuo3HLUrqvhYsZibXMI+g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tQ3yMpodHeCELwKFjuWJw9TX9W4Evc1kj4vzxLz+rMs=;
- b=FgyQQMx00FSk6MpFQlQfAK678P1neHoDBa268WwgSfskyda7QN3DzQxuqmEMk5ppI+O2lZ4K/fo0YAGRk2AgWMIRy9yN3G66a/fQw5irb5c9XYXkkjnWhTbqSC9fwD5Y7fxAK09ieYseQMCLUnY95rj/oL6Uqy+DnNbHS10L7gF8N4ozZ/MyaHK604IMpgX7ZDM4slLgJEg7DRsMFA3VCoYpUSKC96ti9uEAHbb/bZVQKQ1JsB7RA042nrq0QpXc1IOBNyUS6FLnZUCVg2G4nIfnRoM4P6PJLA1zRKoJmw1rAhTUrx/+xGeR6mIgUsDNEBzK8RflmaK30SQEK3lwUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com (2603:10b6:303:104::16)
- by DM5PR15MB1322.namprd15.prod.outlook.com (2603:10b6:3:b6::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Fri, 2 Sep
- 2022 05:55:31 +0000
-Received: from MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::1858:f420:93d2:4b5e]) by MW4PR15MB4475.namprd15.prod.outlook.com
- ([fe80::1858:f420:93d2:4b5e%3]) with mapi id 15.20.5588.014; Fri, 2 Sep 2022
- 05:55:31 +0000
-Date:   Thu, 1 Sep 2022 22:55:27 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     YiFei Zhu <zhuyifei@google.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: Ensure cgroup/connect{4,6}
- programs can bind unpriv ICMP ping
-Message-ID: <20220902055527.knlkzkrwnczpx6xh@kafai-mbp.dhcp.thefacebook.com>
-References: <cover.1662058674.git.zhuyifei@google.com>
- <345fbce9b67e4f287a771c497e8bd1bccff50b58.1662058674.git.zhuyifei@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <345fbce9b67e4f287a771c497e8bd1bccff50b58.1662058674.git.zhuyifei@google.com>
-X-ClientProxiedBy: SJ0PR13CA0188.namprd13.prod.outlook.com
- (2603:10b6:a03:2c3::13) To MW4PR15MB4475.namprd15.prod.outlook.com
- (2603:10b6:303:104::16)
+        Fri, 02 Sep 2022 05:56:03 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 2825nsEA002370;
+        Fri, 2 Sep 2022 05:56:02 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3jbbwjrfb3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Sep 2022 05:56:02 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 2825ojEl015816;
+        Fri, 2 Sep 2022 05:56:01 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma02wdc.us.ibm.com with ESMTP id 3j7aw9x2ga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 02 Sep 2022 05:56:01 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 2825u00T11141836
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 2 Sep 2022 05:56:00 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 672D8124053;
+        Fri,  2 Sep 2022 05:56:00 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9B64E124052;
+        Fri,  2 Sep 2022 05:55:57 +0000 (GMT)
+Received: from [9.211.72.167] (unknown [9.211.72.167])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Fri,  2 Sep 2022 05:55:57 +0000 (GMT)
+Message-ID: <203fa08f-c523-76d7-c9fb-ca6f3a10bd1a@linux.ibm.com>
+Date:   Fri, 2 Sep 2022 07:55:56 +0200
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c821dd77-5523-4e71-73e4-08da8ca7be5d
-X-MS-TrafficTypeDiagnostic: DM5PR15MB1322:EE_
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qFCD4YlhBsdhStdfwFjvmpWdepwvLVUD9FdTxccytwlz5Xs9Vyxn01MoGEa0rdPqR/o0yEP6FYfjgkZi0IQOAG0jkue/wHtVAeGRr5HMyKVg6WkR34pT28q9Yz7eh2+pPWIgX+jnS5gkH72pvkbtOBskQPzqWSgKyJ+0vkbgaoAtt/q2c0f82tZ+YAL9QGXYhC2iSOst9fOg6VJ6BlxfICW3Pfw7MFkYTdruu2hTorNqeLTjGKsq6vsnRXJic8lNuEdbjdFJ3GzErpewTVr0SulYmDXjDeGJXmgVd5CRn/MIo2B/oDWYTfydkcXeMFppi9hzKXc/8d8XpFo8DBeaCG4Dz2huoJ0qcwEswN6tp8X6ci76oaKQBMB2jgo+WAdz8aiUp9nXPlt3OjgO0Q3Snsq6WrYri29YoApDxoBbAKy+ULP18EkYH/TVxa1fIjgji3ok9Q5CXMCuhKBOVEy5BMAMDOXA19NUpTREiHge/7vxyD7Kz/gKnwei8YU7B6zkc8sqAqXCdBFKIFQ85bQXHcxQDXFkWL/GfQ0r0WYQhnXr4fLHa2qM3i2+X+6rDCFYnV6seUF5bbBA34ffEShgjhy2cKiyhHfEGJ/aIxY/zZS37ux4q3Lm0UVErSHTe50Vls+w6a0Q8NpzmtHWqwy/L9YG1Cb5/ZX5fOSX9xLoOiPeTkbV3VgblAbKG+C2SmZKtS7mGgxZs2OqWV3kcwRhzQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR15MB4475.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(136003)(376002)(39860400002)(346002)(83380400001)(86362001)(1076003)(186003)(38100700002)(52116002)(4326008)(66476007)(8676002)(54906003)(66556008)(66946007)(5660300002)(316002)(7416002)(6916009)(41300700001)(8936002)(478600001)(6486002)(9686003)(6512007)(6666004)(2906002)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?yWoZqQxaGo3bHvhuy2YPwBWGi0l0yuXnuceWDxL8C2o4dcCRXQwIM5MYKQI4?=
- =?us-ascii?Q?vt9vChRybBSferIcpci58djzL35mX6YEgxANGnmjbLMpEXNWsxBbUkZW9T/c?=
- =?us-ascii?Q?7To5tzgFBqPCn9KNOgqgZoqHx1GLG7gyrVV1X1CwqsGoWCGPFWQNLlcgEj5Y?=
- =?us-ascii?Q?8ScrQU9yhMkN9/55FyG1qauAIPT0Ms11c5RKW1pR6PiI1h04zujk/OozwnMs?=
- =?us-ascii?Q?Z9iWUG9Oyhu6eT5dZHC1mGvSkYxjYbXjlUb87XgVg6LzadqU5ei/ILC4cyOr?=
- =?us-ascii?Q?hGpv4dGu0XK46Oh1+eho8Rcs+4/XB3h+7cXOlZvzDE3fBdLbvgEOefMHrtrP?=
- =?us-ascii?Q?Ru8zXkB06G7L3ngb84DpGlM7I2lQzQPBCAHA1kiVZm94Vrlt021KQ0oZ28qE?=
- =?us-ascii?Q?keccQHGFgRNQEGAsMpOlBjsfqcT0GhLmAOD+6AZJLk/TJ5WMTnlXbpvlCzLn?=
- =?us-ascii?Q?JG+eMC2oyID4JancV9deZW1ghCyM/3PbxnU9cMJIwhH2eApcQ9lINDuOccqs?=
- =?us-ascii?Q?Vdu5p0B/mXCaZOzIdOPOZ0fcbgo9mSW7LRVk/fSn6cH2Q3hoK7i9WHlFUscz?=
- =?us-ascii?Q?8oIrEsKtlbpJrT6JmLEMGIg3iAua4gK+sD5o/oAqN65dbTLdfIJ5HnEdUObj?=
- =?us-ascii?Q?w5ZjSQV+A+zE6feDimVOzZV0gPsozuXiI3v4a+ChdD9nuxu/ftlRReXgciJO?=
- =?us-ascii?Q?wGW7yYPFZ82yZq6gTBcYIJE2LsiAZxlI4v1BM/IqEEeKQX/2mrWvp8YdCrm8?=
- =?us-ascii?Q?O9zFzohPs8E+OzS0CxIFAq1ZQxZArogIHSfR2sKiHtf33oTkmlpwsV54EHbb?=
- =?us-ascii?Q?H6s2LE+3sorfw/t7lwTdZ5A23ui5brDK/ko7ni3xhF1Z9aQBSp+/AxEJBmHC?=
- =?us-ascii?Q?vDau0DQOP6V/KpoGG8vJEKPD2NMCeu77SofRXCzI7bM+X+Yg5HRUqF9Mftxk?=
- =?us-ascii?Q?PMk89JmIc2AtbhVBfBvyH/nLp51LgrM9/xSaj658OF7ZJy1loew7tuUPIglL?=
- =?us-ascii?Q?V8SSUYPXRezH9iQXPbacmUAxzOpPSP59sMfCLedBaWZNSbXvumt4Z34969FV?=
- =?us-ascii?Q?PchQ0ZAd1JoP31pRwJUQDeEcCLskezWnf868TYzKipG9dXkVuWCpOdlU/jHj?=
- =?us-ascii?Q?4Ppk1CPdkYDyaorn4odpQ+KWS5F7L1QBPc0+EjNwdiwLkv5y7FHeUlWIzSGc?=
- =?us-ascii?Q?EFTSuzqumosj9OkCmV48Qe04djaaaCFb7Q4sgbLxzgaWNsEQrwJpYTF8z9LL?=
- =?us-ascii?Q?IRgwmBp4EU44hPkxoAfjVTUwlbFwJJddT9ORf3Rjd4FTRK/T6qKdeH70j3qr?=
- =?us-ascii?Q?XBYtzjAszh04QD1QIDg53qDIeay9879sbJxVLwvNCmhc0vITBWLlNBzwsPMD?=
- =?us-ascii?Q?LP9PyAGlD6OzG/QMrVi9rh8iuhPoxbbfxoRjGd8dnd32UZLO++HtODYPckVk?=
- =?us-ascii?Q?nPpmDhLizepBLfWS3HOPB312ClWF8swIt3C8YEjRwiVPltTS7KyEkVsuL7uf?=
- =?us-ascii?Q?td8rQzLIIMWpyGfshBjeYbjWWhsbLMNtFCIKodn/KDN9XOHk7w/ucpyjZkm/?=
- =?us-ascii?Q?Gw9DH1fFb3putCtmZ/dFS0ilBm8eAlBGTQCvpg04pey8NRS6EDy0lScw2PzC?=
- =?us-ascii?Q?XA=3D=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c821dd77-5523-4e71-73e4-08da8ca7be5d
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR15MB4475.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 05:55:30.9600
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vG1s35b8Ntg4tHCOrd+NzlH6MJPj7HviwGEr9V+OuZJ+wvlG1QK64IFbAmkMZS8y
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR15MB1322
-X-Proofpoint-GUID: f0_aWGOfCJFgEA9uIaHT-_WOIJtAeB-f
-X-Proofpoint-ORIG-GUID: f0_aWGOfCJFgEA9uIaHT-_WOIJtAeB-f
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.13.0
+Subject: Re: [PATCH net v4] net/smc: Fix possible access to freed memory in
+ link clear
+To:     liuyacan@corp.netease.com
+Cc:     alibuda@linux.alibaba.com, davem@davemloft.net,
+        edumazet@google.com, kgraul@linux.ibm.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        tonylu@linux.alibaba.com, ubraun@linux.vnet.ibm.com,
+        wintera@linux.ibm.com
+References: <5b65eb6b-5ab2-1e6c-10d6-c25e66fa82f4@linux.ibm.com>
+ <20220902021651.2552128-1-liuyacan@corp.netease.com>
+From:   Wenjia Zhang <wenjia@linux.ibm.com>
+In-Reply-To: <20220902021651.2552128-1-liuyacan@corp.netease.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: RF5nU3-lWqS5l1ln4G4dZ7XeLrHlIBmP
+X-Proofpoint-ORIG-GUID: 0okdEcDleZJnlrghTH93_EMoyB2sLB57
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 clxscore=1015 impostorscore=0 adultscore=0 lowpriorityscore=0
+ mlxlogscore=999 bulkscore=0 spamscore=0 malwarescore=0 suspectscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2209020024
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 01, 2022 at 07:15:10PM +0000, YiFei Zhu wrote:
-> diff --git a/tools/testing/selftests/bpf/prog_tests/connect_ping.c b/tools/testing/selftests/bpf/prog_tests/connect_ping.c
-> new file mode 100644
-> index 0000000000000..99b1a2f0c4921
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/connect_ping.c
-> @@ -0,0 +1,318 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +/*
-> + * Copyright 2022 Google LLC.
-> + */
-> +
-> +#define _GNU_SOURCE
-> +#include <sys/mount.h>
-> +
-> +#include <test_progs.h>
-> +#include <cgroup_helpers.h>
-> +#include <network_helpers.h>
-> +
-> +#include "connect_ping.skel.h"
-> +
-> +/* 2001:db8::1 */
-> +#define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }
-> +const struct in6_addr bindaddr_v6 = BINDADDR_V6;
-static
 
-> +
-> +static bool write_sysctl(const char *sysctl, const char *value)
-This has been copied >2 times now which probably shows it will
-also be useful in the future.
-Take this chance to move it to testing_helpers.{h,c}.
 
-> +{
-> +	int fd, err, len;
-> +
-> +	fd = open(sysctl, O_WRONLY);
-> +	if (!ASSERT_GE(fd, 0, "open-sysctl"))
-> +		return false;
-> +
-> +	len = strlen(value);
-> +	err = write(fd, value, len);
-> +	close(fd);
-> +	if (!ASSERT_EQ(err, len, "write-sysctl"))
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
-> +static void test_ipv4(int cgroup_fd)
-> +{
-> +	struct sockaddr_in sa = {
-> +		.sin_family = AF_INET,
-> +		.sin_addr.s_addr = htonl(INADDR_LOOPBACK),
-> +	};
-> +	socklen_t sa_len = sizeof(sa);
-> +	struct connect_ping *obj;
-> +	int sock_fd;
-> +
-> +	sock_fd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
-> +	if (!ASSERT_GE(sock_fd, 0, "sock-create"))
-> +		return;
-> +
-> +	obj = connect_ping__open_and_load();
-> +	if (!ASSERT_OK_PTR(obj, "skel-load"))
-> +		goto close_sock;
-> +
-> +	obj->bss->do_bind = 0;
-> +
-> +	/* Attach connect v4 and connect v6 progs, connect a v4 ping socket to
-> +	 * localhost, assert that only v4 is called, and called exactly once,
-> +	 * and that the socket's bound address is original loopback address.
-> +	 */
-> +	obj->links.connect_v4_prog =
-> +		bpf_program__attach_cgroup(obj->progs.connect_v4_prog, cgroup_fd);
-> +	if (!ASSERT_OK_PTR(obj->links.connect_v4_prog, "cg-attach-v4"))
-> +		goto close_bpf_object;
-> +	obj->links.connect_v6_prog =
-> +		bpf_program__attach_cgroup(obj->progs.connect_v6_prog, cgroup_fd);
-> +	if (!ASSERT_OK_PTR(obj->links.connect_v6_prog, "cg-attach-v6"))
-> +		goto close_bpf_object;
-Overall, it seems like a lot of dup code can be saved
-between test_ipv4, test_ipv6, and their _bind() version.
-
-eg. The skel setup can be done once and the bss variables can be reset
-at the beginning of each test by memset(skel->bss, 0, sizeof(*skel->bss)).
-The result checking part is essentially checking the expected bss values
-and the getsockname result also.
-
-btw, does it make sense to do it as a subtest in
-connect_force_port.c or they are very different?
+On 02.09.22 04:16, liuyacan@corp.netease.com wrote:
+>>>>>>> From: Yacan Liu <liuyacan@corp.netease.com>
+>>>>>>>
+>>>>>>> After modifying the QP to the Error state, all RX WR would be completed
+>>>>>>> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
+>>>>>>> wait for it is done, but destroy the QP and free the link group directly.
+>>>>>>> So there is a risk that accessing the freed memory in tasklet context.
+>>>>>>>
+>>>>>>> Here is a crash example:
+>>>>>>>
+>>>>>>>      BUG: unable to handle page fault for address: ffffffff8f220860
+>>>>>>>      #PF: supervisor write access in kernel mode
+>>>>>>>      #PF: error_code(0x0002) - not-present page
+>>>>>>>      PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
+>>>>>>>      Oops: 0002 [#1] SMP PTI
+>>>>>>>      CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
+>>>>>>>      Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
+>>>>>>>      RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
+>>>>>>>      Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
+>>>>>>>      RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
+>>>>>>>      RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
+>>>>>>>      RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
+>>>>>>>      RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
+>>>>>>>      R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
+>>>>>>>      R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
+>>>>>>>      FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
+>>>>>>>      CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>>>>>      CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
+>>>>>>>      DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+>>>>>>>      DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+>>>>>>>      Call Trace:
+>>>>>>>       <IRQ>
+>>>>>>>       _raw_spin_lock_irqsave+0x30/0x40
+>>>>>>>       mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
+>>>>>>>       smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
+>>>>>>>       tasklet_action_common.isra.21+0x66/0x100
+>>>>>>>       __do_softirq+0xd5/0x29c
+>>>>>>>       asm_call_irq_on_stack+0x12/0x20
+>>>>>>>       </IRQ>
+>>>>>>>       do_softirq_own_stack+0x37/0x40
+>>>>>>>       irq_exit_rcu+0x9d/0xa0
+>>>>>>>       sysvec_call_function_single+0x34/0x80
+>>>>>>>       asm_sysvec_call_function_single+0x12/0x20
+>>>>>>>
+>>>>>>> Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
+>>>>>>> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
+>>>>>>>
+>>>>>>> ---
+>>>>>>> Chagen in v4:
+>>>>>>>       -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
+>>>>>>>       -- Remove timeout.
+>>>>>>> Change in v3:
+>>>>>>>       -- Tune commit message (Signed-Off tag, Fixes tag).
+>>>>>>>          Tune code to avoid column length exceeding.
+>>>>>>> Change in v2:
+>>>>>>>       -- Fix some compile warnings and errors.
+>>>>>>> ---
+>>>>>>>      net/smc/smc_core.c | 2 ++
+>>>>>>>      net/smc/smc_core.h | 2 ++
+>>>>>>>      net/smc/smc_wr.c   | 9 +++++++++
+>>>>>>>      net/smc/smc_wr.h   | 1 +
+>>>>>>>      4 files changed, 14 insertions(+)
+>>>>>>>
+>>>>>>> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+>>>>>>> index ff49a11f5..f92a916e9 100644
+>>>>>>> --- a/net/smc/smc_core.c
+>>>>>>> +++ b/net/smc/smc_core.c
+>>>>>>> @@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+>>>>>>>      	lnk->lgr = lgr;
+>>>>>>>      	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
+>>>>>>>      	lnk->link_idx = link_idx;
+>>>>>>> +	lnk->wr_rx_id_compl = 0;
+>>>>>>>      	smc_ibdev_cnt_inc(lnk);
+>>>>>>>      	smcr_copy_dev_info_to_link(lnk);
+>>>>>>>      	atomic_set(&lnk->conn_cnt, 0);
+>>>>>>> @@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+>>>>>>>      	smcr_buf_unmap_lgr(lnk);
+>>>>>>>      	smcr_rtoken_clear_link(lnk);
+>>>>>>>      	smc_ib_modify_qp_error(lnk);
+>>>>>>> +	smc_wr_drain_cq(lnk);
+>>>>>>>      	smc_wr_free_link(lnk);
+>>>>>>>      	smc_ib_destroy_queue_pair(lnk);
+>>>>>>>      	smc_ib_dealloc_protection_domain(lnk);
+>>>>>>> diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+>>>>>>> index fe8b524ad..285f9bd8e 100644
+>>>>>>> --- a/net/smc/smc_core.h
+>>>>>>> +++ b/net/smc/smc_core.h
+>>>>>>> @@ -115,8 +115,10 @@ struct smc_link {
+>>>>>>>      	dma_addr_t		wr_rx_dma_addr;	/* DMA address of wr_rx_bufs */
+>>>>>>>      	dma_addr_t		wr_rx_v2_dma_addr; /* DMA address of v2 rx buf*/
+>>>>>>>      	u64			wr_rx_id;	/* seq # of last recv WR */
+>>>>>>> +	u64			wr_rx_id_compl; /* seq # of last completed WR */
+>>>>>>>      	u32			wr_rx_cnt;	/* number of WR recv buffers */
+>>>>>>>      	unsigned long		wr_rx_tstamp;	/* jiffies when last buf rx */
+>>>>>>> +	wait_queue_head_t       wr_rx_empty_wait; /* wait for RQ empty */
+>>>>>>>      
+>>>>>>>      	struct ib_reg_wr	wr_reg;		/* WR register memory region */
+>>>>>>>      	wait_queue_head_t	wr_reg_wait;	/* wait for wr_reg result */
+>>>>>>> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
+>>>>>>> index 26f8f240d..bc8793803 100644
+>>>>>>> --- a/net/smc/smc_wr.c
+>>>>>>> +++ b/net/smc/smc_wr.c
+>>>>>>> @@ -454,6 +454,7 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
+>>>>>>>      
+>>>>>>>      	for (i = 0; i < num; i++) {
+>>>>>>>      		link = wc[i].qp->qp_context;
+>>>>>>> +		link->wr_rx_id_compl = wc[i].wr_id;
+>>>>>>>      		if (wc[i].status == IB_WC_SUCCESS) {
+>>>>>>>      			link->wr_rx_tstamp = jiffies;
+>>>>>>>      			smc_wr_rx_demultiplex(&wc[i]);
+>>>>>>> @@ -465,6 +466,8 @@ static inline void smc_wr_rx_process_cqes(struct ib_wc wc[], int num)
+>>>>>>>      			case IB_WC_RNR_RETRY_EXC_ERR:
+>>>>>>>      			case IB_WC_WR_FLUSH_ERR:
+>>>>>>>      				smcr_link_down_cond_sched(link);
+>>>>>>> +				if (link->wr_rx_id_compl == link->wr_rx_id)
+>>>>>>> +					wake_up(&link->wr_rx_empty_wait);
+>>>>>>>      				break;
+>>>>>>>      			default:
+>>>>>>>      				smc_wr_rx_post(link); /* refill WR RX */
+>>>>>>> @@ -631,6 +634,11 @@ static void smc_wr_init_sge(struct smc_link *lnk)
+>>>>>>>      	lnk->wr_reg.access = IB_ACCESS_LOCAL_WRITE | IB_ACCESS_REMOTE_WRITE;
+>>>>>>>      }
+>>>>>>>      
+>>>>>>> +void smc_wr_drain_cq(struct smc_link *lnk)
+>>>>>>> +{
+>>>>>>> +	wait_event(lnk->wr_rx_empty_wait, lnk->wr_rx_id_compl == lnk->wr_rx_id);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>>      void smc_wr_free_link(struct smc_link *lnk)
+>>>>>>>      {
+>>>>>>>      	struct ib_device *ibdev;
+>>>>>>> @@ -889,6 +897,7 @@ int smc_wr_create_link(struct smc_link *lnk)
+>>>>>>>      	atomic_set(&lnk->wr_tx_refcnt, 0);
+>>>>>>>      	init_waitqueue_head(&lnk->wr_reg_wait);
+>>>>>>>      	atomic_set(&lnk->wr_reg_refcnt, 0);
+>>>>>>> +	init_waitqueue_head(&lnk->wr_rx_empty_wait);
+>>>>>>>      	return rc;
+>>>>>>>      
+>>>>>>>      dma_unmap:
+>>>>>>> diff --git a/net/smc/smc_wr.h b/net/smc/smc_wr.h
+>>>>>>> index a54e90a11..5ca5086ae 100644
+>>>>>>> --- a/net/smc/smc_wr.h
+>>>>>>> +++ b/net/smc/smc_wr.h
+>>>>>>> @@ -101,6 +101,7 @@ static inline int smc_wr_rx_post(struct smc_link *link)
+>>>>>>>      int smc_wr_create_link(struct smc_link *lnk);
+>>>>>>>      int smc_wr_alloc_link_mem(struct smc_link *lnk);
+>>>>>>>      int smc_wr_alloc_lgr_mem(struct smc_link_group *lgr);
+>>>>>>> +void smc_wr_drain_cq(struct smc_link *lnk);
+>>>>>>>      void smc_wr_free_link(struct smc_link *lnk);
+>>>>>>>      void smc_wr_free_link_mem(struct smc_link *lnk);
+>>>>>>>      void smc_wr_free_lgr_mem(struct smc_link_group *lgr);
+>>>>>>
+>>>>>> Thank you @Yacan for the effort to improve our code! And Thank you @Tony
+>>>>>> for such valuable suggestions and testing!
+>>>>>> I like the modification of this version. However, this is not a fix
+>>>>>> patch to upstream, since the patches "[PATCH net-next v2 00/10] optimize
+>>>>>> the parallelism of SMC-R connections" are still not applied. My
+>>>>>> sugguestions:
+>>>>>> - Please talk to the author (D. Wythe <alibuda@linux.alibaba.com>) of
+>>>>>> those patches I mentioned above, and ask if he can take your patch as a
+>>>>>> part of the patch serie
+>>>>>> - Fix patches should go to net-next
+>>>>>> - Please send always send your new version separately, rather than as
+>>>>>> reply to your previous version. That makes people confused.
+>>>>>
+>>>>> @Wenjia, Thanks a lot for your suggestions and guidance !
+>>>>>
+>>>>> @D. Wythe, Can you include this patch in your series of patches if it is
+>>>>> convenient?
+>>>>>
+>>>>> Regards,
+>>>>> Yacan
+>>>>>
+>>>> One point I was confused, fixes should goto net, sorry!
+>>>
+>>> Well, @D. Wythe, please ignore the above emails, sorry!
+>>>
+>>> Regards,
+>>> Yacan
+>>>
+>> oh no, I didn't mean that. I think I didn't say clearly. What I mean is
+>> that the patch should go to net as a seperate patch if the patch serie
+>> from D. Wythe is already applied. But now the patch serie is still not
+>> applied, so you can still ask D. Wythe to take your patch as a part of
+>> this serie. (Just a suggestion)
+> 
+> Well, I misunderstood. What I'm not sure about is that the patch serie
+> from D. Wythe is going to the net-next tree, but mine is going to the net.
+> Will this be a problem ?
+> 
+> Regards,
+> Yacan
+> I don't think that would be a problem in this situation.
