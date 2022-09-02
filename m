@@ -2,83 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F9F95AB634
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:09:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DBC35AB63B
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:09:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236326AbiIBQJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 12:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
+        id S237694AbiIBQJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 12:09:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiIBQIV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:08:21 -0400
-Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A406B12BC29;
-        Fri,  2 Sep 2022 09:02:00 -0700 (PDT)
-Received: by mail-qt1-x82c.google.com with SMTP id r6so1795255qtx.6;
-        Fri, 02 Sep 2022 09:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
-        b=FhUCkkvqrme+DUmZztWDxyW9DDj+wrSYyrTFVf4UOHfjt09QSg+oA/zzJNoJPf+vyr
-         qycjjscw4FyzNAXtPfCnpN+CDD2dYbkqVu3vPD4Xb4S0c6l0OA2qGV8FK6Wdv298NFud
-         glz52AYRgM4/3r3agyXbpN/vCngSK24rs+wqcXevLqSkFzvlRU0ZmTsI+SAcAZUVg/eJ
-         0/nb2md1U7wDRVfeWb67FirxksK1zPCp/z1UkAcazvP/pGU+Gh6VGqn3fWigL3mWSL8g
-         cHiL1Lsdms4LjZj4J4bWxGZnXeSmszU1GS/SL5HUHqw5aA+XiT/hGM2T3D/fnHpjJyEU
-         svjA==
+        with ESMTP id S237137AbiIBQJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:09:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F25D7C3F5B
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 09:02:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662134486;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SgHJl1w30qXGPLJjsRfodiLaezwna9ogLkShAQBO/0Q=;
+        b=dSwhDSbKzWCV99+rA2yqZL0alXZRwDZa1ac4zR9YblLQ5f5dOPRbprW1wSqIIo1PjtH6z5
+        05iDabwGEzU5KEkNJQQH9Ty9Tm20nE1HEfwa/sf5r09xADeTQ8MEtpfULAdmO8HX0fYhqt
+        /x8cGX2rhD7mCOUg5cQUbKI5/nY6fWk=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-503-Ls9VmFAmOOGL15GGWoq0oA-1; Fri, 02 Sep 2022 12:01:24 -0400
+X-MC-Unique: Ls9VmFAmOOGL15GGWoq0oA-1
+Received: by mail-ej1-f72.google.com with SMTP id qk37-20020a1709077fa500b00730c2d975a0so1226140ejc.13
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 09:01:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
-        b=aS2yHDoYjCXz6O8px7jrgjufiGGbmengVExz5u1956glL9PCBX3jXfHKSckPYTpdfW
-         FPhSjvhzPUlSdmRB+bal2FbcEzMoLNiamf0Buq13tyAlZj76DbSvq9MTzhJdYaZkVjcD
-         EXBvL6lFpjDkjXsBVCCepQ7WRxhAbDwaS+FNT+jlDdY3akzftGBbCBCPMTqDkSIXVS3y
-         Zkb+slDVrRVs7A1JmGyOD0qzK1dKy33d6ji07XMw7YPj4rM3kZF0iK3A5+41goRtrOCw
-         kd4IBkiyj3sNmfhnFRfdCjQuk6B8sdx4Iock9BglHUzvd+GL8hI784/HE2RPBHokcMby
-         lwkw==
-X-Gm-Message-State: ACgBeo3QIInAJsih+x3xhNHwN/0+5V/7jKCDNQjWdwhx35XSNdCnHnFZ
-        FBR/aDqY90F/l7jlszuW7OU=
-X-Google-Smtp-Source: AA6agR73e8UxlvuT6qwwN5qmS8H+HvmUVahNMtcaO5mwrZ77r6fYQfeOKWR7E9FlRFnVvW5xjf4QKQ==
-X-Received: by 2002:a05:622a:40e:b0:343:7769:5895 with SMTP id n14-20020a05622a040e00b0034377695895mr29463186qtx.467.1662134476733;
-        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id w2-20020ac87182000000b00342f960d26esm1206063qto.15.2022.09.02.09.01.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
-Message-ID: <dce48f19-ff7d-981e-90bb-9005bf2fbd9a@gmail.com>
-Date:   Fri, 2 Sep 2022 09:01:13 -0700
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=SgHJl1w30qXGPLJjsRfodiLaezwna9ogLkShAQBO/0Q=;
+        b=KeKnk2IA5TEE/XEdI/JGW+5dBofbv48O/n02+55tUlB7rM6Bg5YM95Qag5Sqw3JZdW
+         R6T8YjUj7dUPoTn0cQwzpwf35lmDjaM5c/KtT+upPAgROrTzgx3RHArDs75P3IzwdAA2
+         Ja8RAJcC+p41kITl0zC/rf0qI9tAtoBg2ZUxs0cPDKJDWQNb3bQtuXuDdd0w9wxtRyax
+         W5dZVIYF1vWq0sChTOk+WI3xyp0xhC8+ZKgoen0W+NUYd1dxnLTZ7dUBqoBQElqqkh7I
+         7b64H0A3E6vC/lAdbZ2Vh/SvXoPQx4TCTrI4G7wcAH5LeSw8Km1OlpXcl/Wkn6F3fAlD
+         z83Q==
+X-Gm-Message-State: ACgBeo0QRGkyB/tPYwsOVq1RQQC4/pVZw+4xRo6s0/I22JrYXXHSwwEz
+        yLa90/uQ7Znkqz7Lz1eZ6TX6bNl+le3Mh7OfwQrGUZM/vEuFF00LrgtuZafuARwqYqKStylWxnG
+        uiMCOohGOFuXx/OWy
+X-Received: by 2002:a17:906:cc5d:b0:741:38a8:a50a with SMTP id mm29-20020a170906cc5d00b0074138a8a50amr22564454ejb.650.1662134483320;
+        Fri, 02 Sep 2022 09:01:23 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR4aXddeqj3eWlfmKtGE0FV/hQh7Xo7rnOr/ynEFGCa9cz/OWQAGbaqljgEGqCoZ+QVC64Rsew==
+X-Received: by 2002:a17:906:cc5d:b0:741:38a8:a50a with SMTP id mm29-20020a170906cc5d00b0074138a8a50amr22564429ejb.650.1662134483058;
+        Fri, 02 Sep 2022 09:01:23 -0700 (PDT)
+Received: from localhost (net-93-71-3-16.cust.vodafonedsl.it. [93.71.3.16])
+        by smtp.gmail.com with ESMTPSA id 1-20020a170906218100b0073a644ef803sm1464635eju.101.2022.09.02.09.01.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 09:01:22 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 18:01:20 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Daniel =?iso-8859-1?Q?M=FCller?= <deso@posteo.net>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, edumazet@google.com,
+        pabeni@redhat.com, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, brouer@redhat.com,
+        toke@redhat.com, memxor@gmail.com
+Subject: Re: [PATCH bpf-next 0/4] Introduce bpf_ct_set_nat_info kfunc helper
+Message-ID: <YxIo0AisyNproeRX@lore-desk>
+References: <cover.1662050126.git.lorenzo@kernel.org>
+ <aec3e8d1-6b80-c344-febe-809bbb0308eb@iogearbox.net>
+ <YxIUvxY8S256TTUf@lore-desk>
+ <df144f34-b44c-cc96-69eb-32eaaf1ac1fb@iogearbox.net>
+ <20220902154420.wpox77fwlamul444@nuc>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [Patch net-next 2/3] net: dsa: microchip: lan937x: clear the
- POR_READY_INT status bit
-Content-Language: en-US
-To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tristram Ha <Tristram.Ha@microchip.com>
-References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
- <20220902103210.10743-3-arun.ramadoss@microchip.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220902103210.10743-3-arun.ramadoss@microchip.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Tlrij5E7duojB1Rs"
+Content-Disposition: inline
+In-Reply-To: <20220902154420.wpox77fwlamul444@nuc>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -86,15 +86,84 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--Tlrij5E7duojB1Rs
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 9/2/2022 3:32 AM, Arun Ramadoss wrote:
-> In the lan937x_reset_switch(), it masks all the switch and port
-> registers. In the Global_Int_status register, POR ready bit is write 1
-> to clear bit and all other bits are read only. So, this patch clear the
-> por_ready_int status bit by writing 1.
-> 
-> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+> On Fri, Sep 02, 2022 at 04:41:28PM +0200, Daniel Borkmann wrote:
+> > On 9/2/22 4:35 PM, Lorenzo Bianconi wrote:
+> > > On Sep 02, Daniel Borkmann wrote:
+> > > > On 9/1/22 6:43 PM, Lorenzo Bianconi wrote:
+> > > > > Introduce bpf_ct_set_nat_info kfunc helper in order to set source=
+ and
+> > > > > destination nat addresses/ports in a new allocated ct entry not i=
+nserted
+> > > > > in the connection tracking table yet.
+> > > > > Introduce support for per-parameter trusted args.
+> > > > >=20
+> > > > > Kumar Kartikeya Dwivedi (2):
+> > > > >     bpf: Add support for per-parameter trusted args
+> > > > >     selftests/bpf: Extend KF_TRUSTED_ARGS test for __ref annotati=
+on
+> > > > >=20
+> > > > > Lorenzo Bianconi (2):
+> > > > >     net: netfilter: add bpf_ct_set_nat_info kfunc helper
+> > > > >     selftests/bpf: add tests for bpf_ct_set_nat_info kfunc
+> > > > >=20
+> > > > >    Documentation/bpf/kfuncs.rst                  | 18 +++++++
+> > > > >    kernel/bpf/btf.c                              | 39 ++++++++++-=
+----
+> > > > >    net/bpf/test_run.c                            |  9 +++-
+> > > > >    net/netfilter/nf_conntrack_bpf.c              | 49 +++++++++++=
++++++++-
+> > > > >    .../testing/selftests/bpf/prog_tests/bpf_nf.c |  2 +
+> > > > >    .../testing/selftests/bpf/progs/test_bpf_nf.c | 26 +++++++++-
+> > > > >    tools/testing/selftests/bpf/verifier/calls.c  | 38 +++++++++++=
+---
+> > > > >    7 files changed, 156 insertions(+), 25 deletions(-)
+> > > > >=20
+> > > >=20
+> > > > Looks like this fails BPF CI, ptal:
+> > > >=20
+> > > > https://github.com/kernel-patches/bpf/runs/8147936670?check_suite_f=
+ocus=3Dtrue
+> > >=20
+> > > Hi Daniel,
+> > >=20
+> > > it seems CONFIG_NF_NAT is not set in the kernel config file.
+> > > Am I supposed to enable it in bpf-next/tools/testing/selftests/bpf/co=
+nfig?
+> >=20
+> > This would have to be set there and added to the patches, yes. @Andrii/=
+DanielM, is
+> > this enough or are other steps needed on top of that?
+>=20
+> Yes, I think it should be set at said location. Nothing else should be
+> needed in addition that I can think of.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+ack, I will wait a bit for some more feedbacks and then I will post v2.
+
+Regards,
+Lorenzo
+
+>=20
+> Thanks,
+> Daniel
+>=20
+> [...]
+>=20
+
+--Tlrij5E7duojB1Rs
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYxIo0AAKCRA6cBh0uS2t
+rIbZAQCj8I7wj7VpXQ+MtZxUeYwUL5FahOtLqn7oN6s5fEWFyAEAx41hI9kY/c5v
+ILpn9IjIxu/xIMkJtMxuytiEmuOKBg8=
+=cGkM
+-----END PGP SIGNATURE-----
+
+--Tlrij5E7duojB1Rs--
+
