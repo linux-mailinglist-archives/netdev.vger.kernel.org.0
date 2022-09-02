@@ -2,60 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7925AA943
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7CA5AA956
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 10:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235604AbiIBH6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 03:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
+        id S235525AbiIBICJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 04:02:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235606AbiIBH6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:58:15 -0400
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B434EBCCDD;
-        Fri,  2 Sep 2022 00:57:56 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 316B524000A;
-        Fri,  2 Sep 2022 07:57:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662105475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SEKGUH9XtqB9vWizlyyHba1yXsDRTZh/Ba89Xk69NGI=;
-        b=DJIg2Xj3K+xGw9/89z/FYt1J/JXhaSujCOM0uCMxAWmv4aQdEvKhEiC8zI1yJ1rtkZramD
-        cHurjMIJMYKhApo5ex7ZGdIgMPr15Bql1Y8hquf8uidhvj6Z3zP0wRLP9WKriyM9wtLu4V
-        i6WTmITaKfR0HZeLtDnt4yRSB6wbx0bJTQ6Rf2dzX+s5d3GHMu9deE1T7nA9GBmHPlMorL
-        lCLm4YWldo12tGbnzPEfSpHWytN0YudCIeqVxAM3ctz0K5ewzurlRK4m5GHZaAecwdhNvS
-        I0mQLuMRM14iJx9Rlt5Td2w/ltiPX37Ip0OuWa1rgBbATTfDdi/627Xqe/JUUA==
-Date:   Fri, 2 Sep 2022 09:57:49 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v3 4/5] net: altera: tse: convert to phylink
-Message-ID: <20220902095749.6af6af62@pc-10.home>
-In-Reply-To: <20220901211021.52520588@kernel.org>
-References: <20220901143543.416977-1-maxime.chevallier@bootlin.com>
-        <20220901143543.416977-5-maxime.chevallier@bootlin.com>
-        <20220901211021.52520588@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
+        with ESMTP id S234651AbiIBICH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 04:02:07 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31CDFA98D4
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 01:02:07 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJqzf1b8dzlWdc;
+        Fri,  2 Sep 2022 15:58:38 +0800 (CST)
+Received: from huawei.com (10.67.175.31) by dggpemm500024.china.huawei.com
+ (7.185.36.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
+ 2022 16:02:05 +0800
+From:   GUO Zihua <guozihua@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+Subject: [PATCH] net: lantiq_etop: Fix return type for implementation of
+Date:   Fri, 2 Sep 2022 15:58:45 +0800
+Message-ID: <20220902075845.53721-1-guozihua@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.31]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500024.china.huawei.com (7.185.36.203)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -64,26 +44,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
+Since Linux now supports CFI, it will be a good idea to fix mismatched
+return type for implementation of hooks. Otherwise this might get
+cought out by CFI and cause a panic.
 
-On Thu, 1 Sep 2022 21:10:21 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+ltq_etop_tx() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
+change the return type to netdev_tx_t directly.
 
-> On Thu,  1 Sep 2022 16:35:42 +0200 Maxime Chevallier wrote:
-> > This commit converts the Altera Triple Speed Ethernet Controller to
-> > phylink. This controller supports MII, GMII and RGMII with its MAC,
-> > and SGMII + 1000BaseX through a small embedded PCS.
-> > 
-> > The PCS itself has a register set very similar to what is found in a
-> > typical 802.3 ethernet PHY, but this register set memory-mapped
-> > instead of lying on an mdio bus.  
-> 
-> allmodconfig builds report:
-> 
-> ERROR: modpost: missing MODULE_LICENSE() in
-> drivers/net/pcs/pcs-altera-tse.o
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+---
+ drivers/net/ethernet/lantiq_etop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ah you're right, I forgot to specify it. I'll address that in the next
-version, thanks !
+diff --git a/drivers/net/ethernet/lantiq_etop.c b/drivers/net/ethernet/lantiq_etop.c
+index 7cedbe1fdfd7..59aab4086dcc 100644
+--- a/drivers/net/ethernet/lantiq_etop.c
++++ b/drivers/net/ethernet/lantiq_etop.c
+@@ -470,7 +470,7 @@ ltq_etop_stop(struct net_device *dev)
+ 	return 0;
+ }
+ 
+-static int
++static netdev_tx_t
+ ltq_etop_tx(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	int queue = skb_get_queue_mapping(skb);
+-- 
+2.17.1
 
-Maxime
