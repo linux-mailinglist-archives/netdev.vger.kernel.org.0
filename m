@@ -2,250 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC515AA5BA
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 04:25:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7A45AA5C4
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 04:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234552AbiIBCZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 22:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
+        id S234348AbiIBCaP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 22:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235039AbiIBCYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 22:24:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D0D8AA4F2
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 19:24:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662085395;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1/8c/Fh/CrZqosaew4sRviumrQPHcv7KdsIMQf9XuYE=;
-        b=i+P1jzw/e7RqpNMwwxYtTtC4bXGpxeJ1ML/CqjzKg5ISzMj4bVyrqWEPxwBrgGWVcqZESn
-        +H4xzgmrY2IKgxl0r2sl3FfrSgptUNgFbCJhC3lyERaxN5kxVzGx9STFi+YwRVX4KWsdsm
-        suJnb+hn8hFklIDSTidNqeuAiqNO9t4=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-265-Xfx5xwRnNWCgQCvNvMYO1Q-1; Thu, 01 Sep 2022 22:23:14 -0400
-X-MC-Unique: Xfx5xwRnNWCgQCvNvMYO1Q-1
-Received: by mail-qt1-f200.google.com with SMTP id e30-20020ac8011e000000b00342f61e67aeso591711qtg.3
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 19:23:14 -0700 (PDT)
+        with ESMTP id S233598AbiIBCaN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 22:30:13 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFD0255BB;
+        Thu,  1 Sep 2022 19:30:11 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id r69so780797pgr.2;
+        Thu, 01 Sep 2022 19:30:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=D3AdsrAzP/OCg/edNuQ9xj8+/J7mGnaQDmfeSstZF4o=;
+        b=etmvLgpdksRnkUosjQdyioujA+kIpML12lmkCnfGCOavvO1XxHfO4TqJcxHP5b7B0j
+         F6Hou4guyntbnb0VTPiO0OXyp3wWgBno+i1vUs3kKc8cOzVSOv+zYcDaEs4oKmHXusOz
+         Kz6jIDt7pq15ZFqP1aEp9h76JKe7c+t64qfglAp/t9l2JZ8nYeayTjCfPeo23qdGQh5h
+         8GsZIoLf2yVn6ZwKBmzMrnmH9eT5JvGfY4uf6vWy9nin6pXUsSFwHRjZqy43r0vXcIpr
+         G09X2nMO6OY9ApWWYGQTLHPGglne0PCdMjUHak9SF5TTvTgMCYjwMJ2wHDqAPTBWae+d
+         ZlwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=1/8c/Fh/CrZqosaew4sRviumrQPHcv7KdsIMQf9XuYE=;
-        b=wro4vjGvn5BhHmzrXpXODGBjcGD11SgFAPg7669UXjUp4PAeI3YYPVsf8k0a5sVCpO
-         QSnlMrS1ITRLPRfGIKpq3ArsbhmRIJ7WzLcyfg9Sy/iY1GRyyRaqFi8f7IaWUQC5w0G3
-         5+gcxSTZmf2eGgZfVORb1mQS5/4sw9eqbbm7ocC33y1jsFRyHv2sIzCJGuCu4j48eL0q
-         GWafUNMDbM1eI0NG87nDDNiFCQ9qWpkn9XOY8iGDsFwBFMNI0UsFtCyaZXTG8qhk5h+W
-         OHRoMBffFVCNSjd4G5Btr9SpptvXcQx98gyfhlxUkVKL8X6Z6qSIKROLoXMDnu62emue
-         MJTA==
-X-Gm-Message-State: ACgBeo3hMXpdCXdJ5OfV6uFWBipJa2Q2VojA5nlF8ZfK0SE4uPC653gd
-        qViabLnjMSaWRotmJRiiTLgTmnO1OxNmgSeN789iNv0QPCG+N8pqAspitata6ZZ6HK5OPwPH43E
-        fTEcWSnUW2Qq+AMw52DsCszBU39v2AtBd
-X-Received: by 2002:a05:6214:1c07:b0:499:1927:7dc7 with SMTP id u7-20020a0562141c0700b0049919277dc7mr11934223qvc.28.1662085393737;
-        Thu, 01 Sep 2022 19:23:13 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR7QWThC9/kKV0F+kROnR//BC9etIFbQXYNSQqoybAVKjIAOemvi3sfp5o4pKKoB9/vHqDyE5wtXIhbBAFKod5M=
-X-Received: by 2002:a05:6214:1c07:b0:499:1927:7dc7 with SMTP id
- u7-20020a0562141c0700b0049919277dc7mr11934215qvc.28.1662085393519; Thu, 01
- Sep 2022 19:23:13 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=D3AdsrAzP/OCg/edNuQ9xj8+/J7mGnaQDmfeSstZF4o=;
+        b=ZwVfA708rnx7ZJhIcKfxtBEig5r4UoQ+jnBFCJObR8PqrxgiHpbmr8mVQY43yR7ePR
+         4GYosW9GQVhe1QqCoRLoXzPU0HhCV5HYKZO9P9oY078h/fg+9NcSuH3BYlH50gf328q0
+         9DlTHEUwRhrwBj0W1kDcX2+nkYnvnG9xmYR9NHSVg1/mQXgYw8ZnVDPvgpRbGPdjZPDh
+         2sUnDE75rHqA9lfGY8toGw3LDEuG50WdJsmTRQvueMx+kCYi2rGyn3GHuB5YQdVJ+8K/
+         DPyJd/9iLJw0V67nHG6yFv0JbzJ4DsfJuv9e4igPanpKEGtH1VTKzbbzzTaINJwpwaWm
+         r0dw==
+X-Gm-Message-State: ACgBeo2S0dmlSZLPcyfNHiG1c8OMt5rAKMOfoDWlmHups1RwGH9VfCWP
+        Nur3pKnl7DvwAi1SRfAMa44=
+X-Google-Smtp-Source: AA6agR5LBNj3Vby8h2IWgEeZoZ1h88MDc9Z9Qb16Il+pXzlE4DEluuQDO2cTAVQ70i6qAIb5Z+guYw==
+X-Received: by 2002:aa7:9242:0:b0:536:f215:4f4f with SMTP id 2-20020aa79242000000b00536f2154f4fmr34192084pfp.45.1662085810846;
+        Thu, 01 Sep 2022 19:30:10 -0700 (PDT)
+Received: from vultr.guest ([2001:19f0:6001:50ea:5400:4ff:fe1f:fbe2])
+        by smtp.gmail.com with ESMTPSA id j4-20020a170902da8400b0017297a6b39dsm269719plx.265.2022.09.01.19.30.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Sep 2022 19:30:09 -0700 (PDT)
+From:   Yafang Shao <laoar.shao@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, hannes@cmpxchg.org,
+        mhocko@kernel.org, roman.gushchin@linux.dev, shakeelb@google.com,
+        songmuchun@bytedance.com, akpm@linux-foundation.org, tj@kernel.org,
+        lizefan.x@bytedance.com
+Cc:     cgroups@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-mm@kvack.org,
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v3 00/13] bpf: Introduce selectable memcg for bpf map 
+Date:   Fri,  2 Sep 2022 02:29:50 +0000
+Message-Id: <20220902023003.47124-1-laoar.shao@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
- <20220701143052.1267509-2-miquel.raynal@bootlin.com> <CAK-6q+jkUUjAGqEDgU1oJvRkigUbvSO5SXWRau6+320b=GbfxQ@mail.gmail.com>
- <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
- <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
- <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
- <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
- <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
- <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
- <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
- <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
-In-Reply-To: <20220901020918.2a15a8f9@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Thu, 1 Sep 2022 22:23:02 -0400
-Message-ID: <CAK-6q+gbRZ_w-G7WBTQNfjnpawQ0EJ4DuR9tsGPbZpT6MN35cw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
- coordinator interfaces
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On our production environment, we may load, run and pin bpf programs and
+maps in containers. For example, some of our networking bpf programs and
+maps are loaded and pinned by a process running in a container on our
+k8s environment. In this container, there're also running some other
+user applications which watch the networking configurations from remote
+servers and update them on this local host, log the error events, monitor
+the traffic, and do some other stuffs. Sometimes we may need to update 
+these user applications to a new release, and in this update process we
+will destroy the old container and then start a new genration. In order not
+to interrupt the bpf programs in the update process, we will pin the bpf
+programs and maps in bpffs. That is the background and use case on our
+production environment. 
 
-On Wed, Aug 31, 2022 at 8:09 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hello again,
->
-> miquel.raynal@bootlin.com wrote on Wed, 31 Aug 2022 17:39:03 +0200:
->
-> > Hi Alexander & Stefan,
-> >
-> > aahringo@redhat.com wrote on Mon, 29 Aug 2022 22:23:09 -0400:
-> >
-> > I am currently testing my code with the ATUSB devices, the association
-> > works, so it's a good news! However I am struggling to get the
-> > association working for a simple reason: the crafted ACKs are
-> > transmitted (the ATUSB in monitor mode sees it) but I get absolutely
-> > nothing on the receiver side.
-> >
-> > The logic is:
-> >
-> > coord0                 coord1
-> > association req ->
-> >                 <-     ack
-> >                 <-     association response
-> > ack             ->
-> >
-> > The first ack is sent by coord1 but coord0 never sees anything. In
-> > practice coord0 has sent an association request and received a single
-> > one-byte packet in return which I guess is the firmware saying "okay, Tx
-> > has been performed". Shall I interpret this byte differently? Does it
-> > mean that the ack has also been received?
->
-> I think I now have a clearer understanding on how the devices behave.
->
-> I turned the devices into promiscuous mode and could observe that some
-> frames were considered wrong. Indeed, it looks like the PHYs add the
-> FCS themselves, while the spec says that the FCS should be provided to
-> the PHY. Anyway, I dropped the FCS calculations from the different MLME
-> frames forged and it helped a lot.
->
+After switching to memcg-based bpf memory accounting to limit the bpf
+memory, some unexpected issues jumped out at us.
+1. The memory usage is not consistent between the first generation and
+new generations.
+2. After the first generation is destroyed, the bpf memory can't be
+limited if the bpf maps are not preallocated, because they will be
+reparented.
 
-This is currently the case because monitor interfaces and AF_PACKET
-will not have the FCS in the payload. As you already figured out you
-can't refer 802.15.4 promiscuous mode to mac802154 promiscuous mode,
-it was a historically growing term as people wanted to have a sniffer
-device and used a promiscuous term from a datasheet (my guess).
-Vendors has a different meaning of promiscuous mode as the one from
-802.15.4. IFF_PROMISC should be mapped to non-filtered mode which is
-more equal to a sniffer device. However we need to find solutions
-which fulfill everybody.
+Besides, there's another issue that the bpf-map's memcg is breaking the
+memcg hierarchy, because bpf-map has its own memcg. A bpf map can be
+wrote by tasks running in other memcgs, once a writer in other memcg
+writes a shared bpf map, the memory allocated in this writing won't be
+charged to the writer's memcg but it will be charge to bpf-map's own
+memcg instead. IOW, the bpf-map is improperly treated as a task, while
+actually it is a shared resource. This patchset doesn't resolve this
+issue. I will post another RFC once I find a workable solution to
+address it.
 
-> I also kind of "discovered" the concept of hardware address filtering
-> on atusb which makes me realize that maybe we were not talking about
-> the same "filtering" until now.
->
-> Associations and disassociations now work properly, I'm glad I fixed
-> "everything". I still need to figure out if using the promiscuous mode
-> everywhere is really useful or not (maybe the hardware filters were
-> disabled in this mode and it made it work). However, using the
-> promiscuous mode was the only way I had to receive acknowledgements,
-> otherwise they were filtered out by the hardware (the monitor was
-> showing that the ack frames were actually being sent).
->
+This patchset tries to resolve the above two issues by introducing a
+selectable memcg to limit the bpf memory. Currently we only allow to
+select its ancestor to avoid breaking the memcg hierarchy further. 
+Possible use cases of the selectable memcg as follows,
+- Select the root memcg as bpf-map's memcg
+  Then bpf-map's memory won't be throttled by current memcg limit.
+- Put current memcg under a fixed memcg dir and select the fixed memcg
+  as bpf-map's memcg
+  The hierarchy as follows,
 
-This is correct, the most hardware will turn off automatic
-ackknowledge handling if address filtering is off (I am sure I said
-that before). We cannot handle acks on mac802154 if they are time
-critical.
+      Parent-memcg (A fixed dir, i.e. /sys/fs/cgroup/memory/bpf)
+         \
+        Current-memcg (Container dir, i.e. /sys/fs/cgroup/memory/bpf/foo)
 
-> Finally, changing the channel was also a piece of the puzzle, because I
-> think some of my smart light bulbs tried to say hello and it kind of
-> disturbed me :)
->
-> > I could not find a documentation of the firmware interface, I went
-> > through the wiki but I did not find something clear about what to
-> > expect or "what the driver should do". But perhaps this will ring a
-> > bell on your side?
-> >
-> > [...]
-> >
-> > > I did not see the v2 until now. Sorry for that.
-> >
-> > Ah! Ok, no problem :)
-> >
-> > >
-> > > However I think there are missing bits here at the receive handling
-> > > side. Which are:
-> > >
-> > > 1. Do a stop_tx(), stop_rx(), start_rx(filtering_level) to go into
-> > > other filtering modes while ifup.
-> >
-> > Who is supposed to change the filtering level?
-> >
-> > For now there is only the promiscuous mode being applied and the user
-> > has no knowledge about it, it's just something internal.
-> >
-> > Changing how the promiscuous mode is applied (using a filtering level
-> > instead of a "promiscuous on" boolean) would impact all the drivers
-> > and for now we don't really need it.
-> >
-> > > I don't want to see all filtering modes here, just what we currently
-> > > support with NONE (then with FCS check on software if necessary),
-> > > ?THIRD/FOURTH? LEVEL filtering and that's it. What I don't want to see
-> > > is runtime changes of phy flags. To tell the receive path what to
-> > > filter and what's not.
-> >
-> > Runtime changes on a dedicated "filtering" PHY flag is what I've used
-> > and it works okay for this situation, why don't you want that? It
-> > avoids the need for (yet) another rework of the API with the drivers,
-> > no?
-> >
-> > > 2. set the pan coordinator bit for hw address filter. And there is a
-> > > TODO about setting pkt_type in mac802154 receive path which we should
-> > > take a look into. This bit should be addressed for coordinator support
-> > > even if there is the question about coordinator vs pan coordinator,
-> > > then the kernel needs a bit as coordinator iface type parameter to
-> > > know if it's a pan coordinator and not coordinator.
-> >
-> > This is not really something that we can "set". Either the device
-> > had performed an association and it is a child device: it is not the
-> > PAN coordinator, or it initiated the PAN and it is the PAN coordinator.
-> > There are commands to change that later on but those are not supported.
-> >
-> > The "PAN coordinator" information is being added in the association
-> > series (which comes after the scan). I have handled the pkt_type you are
-> > mentioning.
-> >
-> > > I think it makes total sense to split this work in transmit handling,
-> > > where we had no support at all to send something besides the usual
-> > > data path, and receive handling, where we have no way to change the
-> > > filtering level besides interface type and ifup time of an interface.
-> > > We are currently trying to make a receive path working in a way that
-> > > "the other ideas flying around which are good" can be introduced in
-> > > future.
-> > > If this is done, then take care about how to add the rest of it.
-> > >
-> > > I will look into v2 the next few days.
->
-> If possible, I would really like to understand what you expect in terms
-> of filtering. Maybe as well a short snippet of code showing what kind
-> of interface you have in mind. Are we talking about a rework of the
-> promiscuous callback? Are we talking about the hardware filters? What
+  At the map creation time, the bpf-map's memory will be charged
+  into the parent directly without charging into current memcg, and thus
+  current memcg's usage will be consistent among different generations.
+  To limit bpf-map's memory usage, we can set the limit in the parent
+  memcg.
 
-I try to do that over the weekend. Monday is a holiday here.
+Currenly it only supports for bpf map, and we can extend it to bpf prog
+as well.
 
-> are the inputs and outputs for these callbacks? What do we expect from
-> the drivers in terms of advertising? I will be glad to make the
-> relevant changes once I understand what is needed because on this topic
-> I have a clear lack of experience, so I will try to judge what is
-> reachable based on your inputs.
+The observebility can also be supported in the next step, for example,
+showing the bpf map's memcg by 'bpftool map show' or even showing which
+maps are charged to a specific memcg by 'bpftool cgroup show'.
+Furthermore, we may also show an accurate memory size of a bpf map
+instead of an estimated memory size in 'bpftool map show' in the future. 
 
-ok.
+v2->v3:
+- use css_tryget() instead of css_tryget_online() (Shakeel)
+- add comment for get_obj_cgroup_from_cgroup() (Shakeel)
+- add new memcg helper task_under_memcg_hierarchy()
+- add restriction to allow selecting ancestor only to avoid breaking the
+  memcg hierarchy further, per discussion with Tejun 
 
-Thanks.
+v1->v2:
+- cgroup1 is also supported after
+  commit f3a2aebdd6fb ("cgroup: enable cgroup_get_from_file() on cgroup1")
+  So update the commit log.
+- remove incorrect fix to mem_cgroup_put  (Shakeel,Roman,Muchun) 
+- use cgroup_put() in bpf_map_save_memcg() (Shakeel)
+- add detailed commit log for get_obj_cgroup_from_cgroup (Shakeel) 
 
-- Alex
+RFC->v1:
+- get rid of bpf_map container wrapper (Alexei)
+- add the new field into the end of struct (Alexei)
+- get rid of BPF_F_SELECTABLE_MEMCG (Alexei)
+- save memcg in bpf_map_init_from_attr
+- introduce bpf_ringbuf_pages_{alloc,free} and keep them inside
+  kernel/bpf/ringbuf.c  (Andrii)
+
+Yafang Shao (13):
+  cgroup: Update the comment on cgroup_get_from_fd
+  bpf: Introduce new helper bpf_map_put_memcg()
+  bpf: Define bpf_map_{get,put}_memcg for !CONFIG_MEMCG_KMEM
+  bpf: Call bpf_map_init_from_attr() immediately after map creation
+  bpf: Save memcg in bpf_map_init_from_attr()
+  bpf: Use scoped-based charge in bpf_map_area_alloc
+  bpf: Introduce new helpers bpf_ringbuf_pages_{alloc,free}
+  bpf: Use bpf_map_kzalloc in arraymap
+  bpf: Use bpf_map_kvcalloc in bpf_local_storage
+  mm, memcg: Add new helper get_obj_cgroup_from_cgroup
+  mm, memcg: Add new helper task_under_memcg_hierarchy
+  bpf: Add return value for bpf_map_init_from_attr
+  bpf: Introduce selectable memcg for bpf map
+
+ include/linux/bpf.h            |  40 +++++++++++-
+ include/linux/memcontrol.h     |  25 ++++++++
+ include/uapi/linux/bpf.h       |   1 +
+ kernel/bpf/arraymap.c          |  34 +++++-----
+ kernel/bpf/bloom_filter.c      |  11 +++-
+ kernel/bpf/bpf_local_storage.c |  17 +++--
+ kernel/bpf/bpf_struct_ops.c    |  19 +++---
+ kernel/bpf/cpumap.c            |  17 +++--
+ kernel/bpf/devmap.c            |  30 +++++----
+ kernel/bpf/hashtab.c           |  26 +++++---
+ kernel/bpf/local_storage.c     |  11 +++-
+ kernel/bpf/lpm_trie.c          |  12 +++-
+ kernel/bpf/offload.c           |  12 ++--
+ kernel/bpf/queue_stack_maps.c  |  11 +++-
+ kernel/bpf/reuseport_array.c   |  11 +++-
+ kernel/bpf/ringbuf.c           | 104 ++++++++++++++++++++----------
+ kernel/bpf/stackmap.c          |  13 ++--
+ kernel/bpf/syscall.c           | 140 ++++++++++++++++++++++++++++-------------
+ kernel/cgroup/cgroup.c         |   2 +-
+ mm/memcontrol.c                |  48 ++++++++++++++
+ net/core/sock_map.c            |  30 +++++----
+ net/xdp/xskmap.c               |  12 +++-
+ tools/include/uapi/linux/bpf.h |   1 +
+ tools/lib/bpf/bpf.c            |   3 +-
+ tools/lib/bpf/bpf.h            |   3 +-
+ tools/lib/bpf/gen_loader.c     |   2 +-
+ tools/lib/bpf/libbpf.c         |   2 +
+ tools/lib/bpf/skel_internal.h  |   2 +-
+ 28 files changed, 462 insertions(+), 177 deletions(-)
+
+-- 
+1.8.3.1
 
