@@ -2,122 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43CBB5AA7E7
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 08:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BB5E5AA8A7
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:19:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235454AbiIBGPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 02:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        id S232782AbiIBHS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 03:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233121AbiIBGPq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 02:15:46 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0875B7B1FC;
-        Thu,  1 Sep 2022 23:15:46 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id u9-20020a17090a1f0900b001fde6477464so4553392pja.4;
-        Thu, 01 Sep 2022 23:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=uI8Pg9oik5wbpVQ38T64kzAVrJGjyN0eDmTJ2VrDPKY=;
-        b=fNTPySEIj7KPHE8EqHb7fXpGGv3hZywUzfShG7i8VtqGxdwFl91S3gAwihJ3wKmYmv
-         fePtXkjMkl6cwwfO6/CRfKl1tJ80PAuOhcwpb68fGDnbA8kfwBcXGCv/dXpRLGckVx5R
-         hyc6aN049B2ZDpiGFn+wHoAFZSPaNRyCV4QtOI+du1TAy9yusHnCGOWjfUSmnJ1nDYob
-         aGPpJy1f38QXODEpYrK0jw7RrzJACxZ2Z0DiodSBQbUpqmkWmyOGMN2m6nr5PT4iMFXK
-         F+PyJ3XmLcjQQc3McB9rfb33aek6HzLYapwHgE6uqVQ1cnx6n0KmVecxjaTMyC3QsRoN
-         DbNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=uI8Pg9oik5wbpVQ38T64kzAVrJGjyN0eDmTJ2VrDPKY=;
-        b=Hpl1T4m5femT916PIDmrMgY/U3wrcV3iqIS70Q3hGtgsCAT1sG7OXoq26r2F3v2qKt
-         CPXhIbW6cGjpVbgkjQGi55o8PZREIlGtG2poebI7F+SZXiPbrq8ATL2M1GComhd2XdTN
-         G4sCvcj2TfKHIPOSizCUVcFIkc0xGX5ch+Ir6Fq2m0IRfA4DW3NAfbKShAOddKpWGiUZ
-         KbypQ4SKy/hWQ9Hg4hR6lMXvMhKKbKu/rq3t3G0dOaEYUGNArU+1RT798mfoH8LHs60F
-         modlXvdHOYNHopOUs61UBPsa4SwUWOOy0ElOEnaEhv76lLovpSCH+ZKsJQ4Ug39DG5Ux
-         uTFA==
-X-Gm-Message-State: ACgBeo3f2+z7pRGjPPeUQoy+236QgLSjaAekxuPAdVKynrtu+aju7bUQ
-        m6tWqs1K37L/CQImMaU5UHIAqQxNrDgwW9UnbrQ=
-X-Google-Smtp-Source: AA6agR4aNy6J7kNSnprb9Q1xqC9EzkQCAYpnyQ0QXI5eye0pGuYALcheSxUW1hji1p74i5LzI0u3pgrgAc3dLum3kyY=
-X-Received: by 2002:a17:90b:350f:b0:1fb:479b:8e51 with SMTP id
- ls15-20020a17090b350f00b001fb479b8e51mr3185156pjb.46.1662099345453; Thu, 01
- Sep 2022 23:15:45 -0700 (PDT)
+        with ESMTP id S230295AbiIBHS5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:18:57 -0400
+Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E7C65926E
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 00:18:54 -0700 (PDT)
+Received: from imsva.intranet.prolan.hu (imsva.intranet.prolan.hu [10.254.254.252])
+        by fw2.prolan.hu (Postfix) with ESMTPS id 54DF77F4BD;
+        Fri,  2 Sep 2022 09:18:50 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3F10E34064;
+        Fri,  2 Sep 2022 09:18:50 +0200 (CEST)
+Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2519A3405A;
+        Fri,  2 Sep 2022 09:18:50 +0200 (CEST)
+Received: from fw2.prolan.hu (unknown [10.254.254.253])
+        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
+        Fri,  2 Sep 2022 09:18:50 +0200 (CEST)
+Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
+        by fw2.prolan.hu (Postfix) with ESMTPS id E07887F4BD;
+        Fri,  2 Sep 2022 09:18:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
+        t=1662103129; bh=U8RCUGEHIFR8BJssNnIj6o531o4mZYtAqF56h/zK0iw=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To:From;
+        b=MeaNBKBLhkgbwayB8PRFh08nxkJIqOJlL/VCyV0WOvPMma0QckcMCwy6VdqGFwWW1
+         OT5O5BnCJRFGph+4Ww6PPxgd/xf3lk/0Pu1/qxwTB7jocEh9whRPzFO0kvMCAZxKcQ
+         QBteX/gbEH17QDbq7insS+jC1Dc1oehDkWxdpvrcs4/o9zQVsmgPG0+nr7fVOEmdOx
+         yGNV06Rsx9l525UTTBS6leCtIzjPYBaEIHOU4TbZwmv21/1MK3+jOUNahqDEVvvm9R
+         /uT8M63PmZ3KM/VOrAroZDCCJ5uFViML7KdE6zaDXT6n49CsBx9p0TB2VWOSyOK5ud
+         nq0b+fGFJcf/w==
+Received: from [10.254.7.28] (10.254.7.28) by atlas.intranet.prolan.hu
+ (10.254.0.229) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Fri, 2
+ Sep 2022 09:18:49 +0200
+Message-ID: <cf2f3ba9-c4fa-1618-f795-9a27b065ef56@prolan.hu>
+Date:   Fri, 2 Sep 2022 09:18:48 +0200
 MIME-Version: 1.0
-References: <20220901202645.1463552-1-irogers@google.com>
-In-Reply-To: <20220901202645.1463552-1-irogers@google.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 2 Sep 2022 08:15:34 +0200
-Message-ID: <CAJ8uoz0RXAFPfu1v_1UuV-iUZ846ZbHNNB=oCQ=sV=pbLSzvxw@mail.gmail.com>
-Subject: Re: [PATCH v1] selftests/xsk: Avoid use-after-free on ctx
-To:     Ian Rogers <irogers@google.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Mykola Lysenko <mykolal@fb.com>, Shuah Khan <shuah@kernel.org>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
+Content-Language: en-US
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+CC:     <netdev@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        <kernel@pengutronix.de>, Marc Kleine-Budde <mkl@pengutronix.de>
+References: <20220901140402.64804-1-csokas.bence@prolan.hu>
+ <20220901150416.GA1237970@francesco-nb.int.toradex.com>
+From:   =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>
+In-Reply-To: <20220901150416.GA1237970@francesco-nb.int.toradex.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.254.7.28]
+X-ClientProxiedBy: atlas.intranet.prolan.hu (10.254.0.229) To
+ atlas.intranet.prolan.hu (10.254.0.229)
+X-EsetResult: clean, is OK
+X-EsetId: 37303A29971EF456627561
+X-TM-AS-GCONF: 00
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 10:56 PM Ian Rogers <irogers@google.com> wrote:
->
-> The put lowers the reference count to 0 and frees ctx, reading it
-> afterwards is invalid. Move the put after the uses and determine the
-> last use by the reference count being 1.
 
-Thanks for spotting and fixing this Ian.
+On 2022. 09. 01. 17:04, Francesco Dolcini wrote:
+> On Thu, Sep 01, 2022 at 04:04:03PM +0200, Csókás Bence wrote:
+>> Mutexes cannot be taken in a non-preemptible context,
+>> causing a panic in `fec_ptp_save_state()`. Replacing
+>> `ptp_clk_mutex` by `tmreg_lock` fixes this.
+>>
+>> Fixes: 6a4d7234ae9a ("net: fec: ptp: avoid register access when ipg clock is disabled")
+> This should be removed, there was no issue with just this commit. Am I
+> wrong?
+> 
+> One of the reasons of the Fixes tag is to backport to stable releases,
+> and you do not want this commit in 5.15.x.
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+I do want it, actually, because I got a PATCH AUTOSEL already for 
+f79959220fa5fbda939592bf91c7a9ea90419040 for 5.15 & 5.19, but I told 
+them not to backport until this fix is merged too.
 
-> Fixes: 39e940d4abfa ("selftests/xsk: Destroy BPF resources only when ctx refcount drops to 0")
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
->  tools/testing/selftests/bpf/xsk.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/xsk.c b/tools/testing/selftests/bpf/xsk.c
-> index f2721a4ae7c5..0b3ff49c740d 100644
-> --- a/tools/testing/selftests/bpf/xsk.c
-> +++ b/tools/testing/selftests/bpf/xsk.c
-> @@ -1237,15 +1237,15 @@ void xsk_socket__delete(struct xsk_socket *xsk)
->         ctx = xsk->ctx;
->         umem = ctx->umem;
->
-> -       xsk_put_ctx(ctx, true);
-> -
-> -       if (!ctx->refcount) {
-> +       if (ctx->refcount == 1) {
->                 xsk_delete_bpf_maps(xsk);
->                 close(ctx->prog_fd);
->                 if (ctx->has_bpf_link)
->                         close(ctx->link_fd);
->         }
->
-> +       xsk_put_ctx(ctx, true);
-> +
->         err = xsk_get_mmap_offsets(xsk->fd, &off);
->         if (!err) {
->                 if (xsk->rx) {
-> --
-> 2.37.2.789.g6183377224-goog
->
+Bence
