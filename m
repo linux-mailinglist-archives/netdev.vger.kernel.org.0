@@ -2,128 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C04335AB727
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 19:06:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 553A95AB75D
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 19:20:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235509AbiIBRGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 13:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36606 "EHLO
+        id S235538AbiIBRUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 13:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233264AbiIBRGm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 13:06:42 -0400
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A00510F08F;
-        Fri,  2 Sep 2022 10:06:41 -0700 (PDT)
-Received: by mail-ed1-x530.google.com with SMTP id r4so3500071edi.8;
-        Fri, 02 Sep 2022 10:06:41 -0700 (PDT)
+        with ESMTP id S235980AbiIBRUK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 13:20:10 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42C4F23BD2
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 10:20:07 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id k6-20020a05600c1c8600b003a54ecc62f6so1789868wms.5
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 10:20:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=vF2XFYpw7mhuMnmB37UaTh5IVPPGdbZxnrBG6qs8Iwg=;
-        b=nliIoJ1NcIgUFFEUicHIiY9PRwcOIUikhXzqB/tRbd3cHjjYzW3z5A+EWFjBiaAYzL
-         jnpXgNN28BePrcf/2qwKpzmkC5KhkMeIHJbozFn5Ab0oXve8QOFX2WOiiescBHdoQEPY
-         8hq7b2Bs1tamoam0UD/l3pziKVjxoEOZUeZ7YxUyqCilFrDVfkLHdFp0zi0eg2byPBb1
-         MaWfAWtS+Ec9KHIvHcKuXau9E1w0Q9EWC2VimU0cwd/R3YRU9AiJRgVNgIhawqoe4vSD
-         Qq7xeQPlHsM041Otd1vIhPWtITaSTs1DKbwStybKaxep8jhctuaFwF1pHkH72Mb4mFOb
-         K1tw==
+        d=smile-fr.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=6PpIZRvaoxIOKluqpp9kK6PsXeOYuu4+CnZ7rQsB0PA=;
+        b=hL8Xj+S9v1BXNbwCYTUujrg34JLNyzO5+2j8Gj4+4km6E1yh5FqvXdtK0EnyCiLNPk
+         X24m3gFN4bhj4F15pdqVfLMSRa2xKanwk47ZgWy4cvj4Pr2C61Vx6FdronC2LAX8zT3D
+         y7fLEwdu4wKMUPIYV9NzJc58K4Ts5hIYDNaq0LEUta/AxAUradxub9gBJG20qBZOX05K
+         pecSD/yATPtu6Ry9rHABoejnr8ahxx3r4WY109zwJho32lahKJ9QKTc9MpW7ESk0bZfA
+         zlCHu9k3G70L+G3cycZe/4wbXlM3z91JEW52tGRPjCRXUetJL1nxij8uDpooeuBnbmqA
+         rwGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=vF2XFYpw7mhuMnmB37UaTh5IVPPGdbZxnrBG6qs8Iwg=;
-        b=dK/DKsnHxcgfhDZP2P5bQOKWkzA91wGY2JmXqt+e1Q/WIVCjKqHadTwRDt+3rMM+jO
-         vT42w2EAYO1/M52sYJRMI/6fCmEulb/+ACjClXi3gbKBQuGePfZtqOkMboUcnPhM6/4Y
-         3cbQo30hSQwumb9JgHd6WCD8k7jAc0Uuq07X44KbsoqYmLoh/i5sbSe0CYvrw+mR4ruo
-         qAg41rF/uJ/P3IKtNeZ9oA/vU9qL6w+S2Q2/ugPf6omEq3Ltj9PJpC0OuUCi5PoL6tRY
-         VqjL65IuSbDD89rD2QP4XBkq+exEnbyKY9Rbkczd0tDTE3tSEg8WQKkg8npcMrRZHa1Y
-         DuIQ==
-X-Gm-Message-State: ACgBeo0JvgVBxN+LFuhQuX4kUzUdBEDGTCn3cEkp680LskBndGW+CHAn
-        OyBvIWsiURlHmnmtjAAkWeCTfr6Wd3NR5xyuZVl/gvqh
-X-Google-Smtp-Source: AA6agR6yW6d4dajYWkFyaBsN8yOnSjDIP+pOnl+k8E7jJQ5Gl1tSb5WxqX3GXV92VDitaUoVbuxFR93goPIhYfIVM8A=
-X-Received: by 2002:a05:6402:28cd:b0:448:3856:41a3 with SMTP id
- ef13-20020a05640228cd00b00448385641a3mr24319182edb.6.1662138399947; Fri, 02
- Sep 2022 10:06:39 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=6PpIZRvaoxIOKluqpp9kK6PsXeOYuu4+CnZ7rQsB0PA=;
+        b=5UUcI5XU2KPE6+7bl45uQzROj1hj6RKUwzJG0coLGdxc2WPrxOcwdRlzPkiA8yXBTB
+         OkX57CKJf5qSOAvKsMHjoa9mxY7CJy8ogkNpcg/d+Cv9HeddqCY1botAANUYbQ8Yhwul
+         CUAp+/W7RP9fKiXEkbtZz9dmHq7sGvVs6EE4nE+4F/3EpF7dAKUS7IWyjnNkrGg5pdIY
+         /2S3XYJ6XohyDXa2XpwvbvJQdL2VOmrC4dHk7mXzrHXyzyLHEa04/OWT7Qe7w1pgvNjy
+         24HO6RuQfQAd97Wjzek41mu0cKzdLpbDFOLyuy+YKGV+BlnV9tWv9d1s2wo3xNGLhZWm
+         Ctlw==
+X-Gm-Message-State: ACgBeo0VxUzTki5JJq7dWXsdteFUNTJ+di0rXdKzlyZLhFXOuSe7tUaG
+        ZRuCUUz+RoB0cxh1Gds76XzIBIfFo4/tXQ==
+X-Google-Smtp-Source: AA6agR4Xf6WeScULj3lEiXHvJZsD0v5I8q3sP8Ay72oR+gnN1uCbg2wh4fbI1Bk/HrB78XNZg9RZIA==
+X-Received: by 2002:a05:600c:2256:b0:3a5:c27d:bfb2 with SMTP id a22-20020a05600c225600b003a5c27dbfb2mr3509908wmm.102.1662139205679;
+        Fri, 02 Sep 2022 10:20:05 -0700 (PDT)
+Received: from ?IPV6:2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f? (2a01cb058f8a18001c97b8d1b477d53f.ipv6.abo.wanadoo.fr. [2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f])
+        by smtp.gmail.com with ESMTPSA id y14-20020a056000108e00b0022585f6679dsm1968016wrw.106.2022.09.02.10.20.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 10:20:05 -0700 (PDT)
+Message-ID: <353a35c2-477e-2183-109b-e2a08aeab66d@smile.fr>
+Date:   Fri, 2 Sep 2022 19:20:04 +0200
 MIME-Version: 1.0
-References: <87v8q84nlq.fsf@toke.dk> <20220831125608.GA8153@breakpoint.cc>
- <87o7w04jjb.fsf@toke.dk> <20220831135757.GC8153@breakpoint.cc>
- <87ilm84goh.fsf@toke.dk> <20220831152624.GA15107@breakpoint.cc>
- <CAADnVQJp5RJ0kZundd5ag-b3SDYir8cF4R_nVbN8Zj9Rcn0rww@mail.gmail.com>
- <20220831155341.GC15107@breakpoint.cc> <CAADnVQJGQmu02f5B=mc1xJvVWSmk_GNZj9WAUskekykmyo8FzA@mail.gmail.com>
- <1cc40302-f006-31a7-b270-30813b8f4b67@iogearbox.net> <20220901101401.GC4334@breakpoint.cc>
-In-Reply-To: <20220901101401.GC4334@breakpoint.cc>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 2 Sep 2022 10:06:28 -0700
-Message-ID: <CAADnVQJUDcahx2R58zEPNi_uRdgUNtKKUTqndDY-NVd03pB_+Q@mail.gmail.com>
-Subject: Re: [PATCH nf-next] netfilter: nf_tables: add ebpf expression
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v3: net-next 4/4] net: dsa: microchip: add regmap_range
+ for KSZ9896 chip
+Content-Language: en-US
+To:     Arun.Ramadoss@microchip.com, netdev@vger.kernel.org
+Cc:     olteanv@gmail.com, andrew@lunn.ch, UNGLinuxDriver@microchip.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, Woojung.Huh@microchip.com,
+        romain.naour@skf.com, davem@davemloft.net
+References: <20220902101610.109646-1-romain.naour@smile.fr>
+ <20220902101610.109646-4-romain.naour@smile.fr>
+ <cde230f7a85e4f84e3171836cc0e2f73c47d2b82.camel@microchip.com>
+From:   Romain Naour <romain.naour@smile.fr>
+In-Reply-To: <cde230f7a85e4f84e3171836cc0e2f73c47d2b82.camel@microchip.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Sep 1, 2022 at 3:14 AM Florian Westphal <fw@strlen.de> wrote:
->
-> Daniel Borkmann <daniel@iogearbox.net> wrote:
-> > On 8/31/22 7:26 PM, Alexei Starovoitov wrote:
-> > > On Wed, Aug 31, 2022 at 8:53 AM Florian Westphal <fw@strlen.de> wrote:
-> > > As a minimum we shouldn't step on the same rakes.
-> > > xt_ebpf would be the same dead code as xt_bpf.
-> >
-> > +1, and on top, the user experience will just be horrible. :(
->
-> Compared to what?
->
-> > > > If you are open to BPF_PROG_TYPE_NETFILTER I can go that route
-> > > > as well, raw bpf program attachment via NF_HOOK and the bpf dispatcher,
-> > > > but it will take significantly longer to get there.
-> > > >
-> > > > It involves reviving
-> > > > https://lore.kernel.org/netfilter-devel/20211014121046.29329-1-fw@strlen.de/
-> > >
-> > > I missed it earlier. What is the end goal ?
-> > > Optimize nft run-time with on the fly generation of bpf byte code ?
-> >
-> > Or rather to provide a pendant to nft given existence of xt_bpf, and the
-> > latter will be removed at some point? (If so, can't we just deprecate the
-> > old xt_bpf?)
->
-> See my reply to Alexey, immediate goal was to get rid of the indirect
-> calls by providing a tailored/jitted equivalent of nf_hook_slow().
->
-> The next step could be to allow implementation of netfilter hooks
-> (i.e., kernel modules that call nf_register_net_hook()) in bpf
-> but AFAIU it requires addition of BPF_PROG_TYPE_NETFILTER etc.
+Hi Arun,
 
-We were adding new prog and maps types in the past.
-Now new features are being added differently.
-All of the networking either works with sk_buff-s or xdp frames.
-We try hard not to add any new uapi helpers.
-Everything is moving to kfuncs.
-Other sub-systems should be able to use bpf without touching
-the bpf core. See hid-bpf as an example.
-It needs several verifier improvements, but doesn't need
-new prog types, helpers, etc.
+Le 02/09/2022 à 15:33, Arun.Ramadoss@microchip.com a écrit :
+> On Fri, 2022-09-02 at 12:16 +0200, Romain Naour wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>> know the content is safe
+>>
+>> From: Romain Naour <romain.naour@skf.com>
+>>
+>> Add register validation for KSZ9896.
+>>
+> 
+> Hi Oleksij,
+> Do we have any support for regular expression support for the
+> regmap_reg_range, since all the ports have same register configuration
+> except the port number in the msb. Becaue If I need to add regmap
+> validation for lan937x which has 5 variant with port count from 4 to 8
+> it will increase the file size. Do we need to move the register map to
+> other file or adding in ksz_common.c itself is fine.
+> 
 
-> After that, yes, one could think about how to jit nft_do_chain() and
-> all the rest of the nft machinery.
+Notice that the cpu port is special, it has two extra registers (XMII Port Control)
 
-Sounds like a ton of work. All that just to accelerate nft a bit?
-I think there are more impactful projects to work on.
-For example, accelerating classic iptables with bpf would immediately
-help a bunch of users.
+regmap_reg_range(0x6300, 0x6301)
+
+Best regards,
+Romain
+
+
+>> +
+>> +       /* port 5 */
+>> +       regmap_reg_range(0x5000, 0x5001),
+>> +       regmap_reg_range(0x5013, 0x5013),
+>> +       regmap_reg_range(0x5017, 0x5017),
+>> +       regmap_reg_range(0x501b, 0x501b),
+>> +       regmap_reg_range(0x501f, 0x5020),
+>> +       regmap_reg_range(0x5030, 0x5030),
+>> +       regmap_reg_range(0x5100, 0x5115),
+>> +       regmap_reg_range(0x511a, 0x511f),
+>> +       regmap_reg_range(0x5122, 0x5127),
+>> +       regmap_reg_range(0x512a, 0x512b),
+>> +       regmap_reg_range(0x5136, 0x5139),
+>> +       regmap_reg_range(0x513e, 0x513f),
+>> +       regmap_reg_range(0x5400, 0x5401),
+>> +       regmap_reg_range(0x5403, 0x5403),
+>> +       regmap_reg_range(0x5410, 0x5417),
+>> +       regmap_reg_range(0x5420, 0x5423),
+>> +       regmap_reg_range(0x5500, 0x5507),
+>> +       regmap_reg_range(0x5600, 0x5612),
+>> +       regmap_reg_range(0x5800, 0x580f),
+>> +       regmap_reg_range(0x5820, 0x5827),
+>> +       regmap_reg_range(0x5830, 0x5837),
+>> +       regmap_reg_range(0x5840, 0x584b),
+>> +       regmap_reg_range(0x5900, 0x5907),
+>> +       regmap_reg_range(0x5914, 0x5915),
+>> +       regmap_reg_range(0x5a00, 0x5a03),
+>> +       regmap_reg_range(0x5a04, 0x5a07),
+>> +       regmap_reg_range(0x5b00, 0x5b01),
+>> +       regmap_reg_range(0x5b04, 0x5b04),
+>> +
+>> +       /* port 6 */
+>> +       regmap_reg_range(0x6000, 0x6001),
+>> +       regmap_reg_range(0x6013, 0x6013),
+>> +       regmap_reg_range(0x6017, 0x6017),
+>> +       regmap_reg_range(0x601b, 0x601b),
+>> +       regmap_reg_range(0x601f, 0x6020),
+>> +       regmap_reg_range(0x6030, 0x6030),
+>> +       regmap_reg_range(0x6100, 0x6115),
+>> +       regmap_reg_range(0x611a, 0x611f),
+>> +       regmap_reg_range(0x6122, 0x6127),
+>> +       regmap_reg_range(0x612a, 0x612b),
+>> +       regmap_reg_range(0x6136, 0x6139),
+>> +       regmap_reg_range(0x613e, 0x613f),
+>> +       regmap_reg_range(0x6300, 0x6301),
+>> +       regmap_reg_range(0x6400, 0x6401),
+>> +       regmap_reg_range(0x6403, 0x6403),
+>> +       regmap_reg_range(0x6410, 0x6417),
+>> +       regmap_reg_range(0x6420, 0x6423),
+>> +       regmap_reg_range(0x6500, 0x6507),
+>> +       regmap_reg_range(0x6600, 0x6612),
+>> +       regmap_reg_range(0x6800, 0x680f),
+>> +       regmap_reg_range(0x6820, 0x6827),
+>> +       regmap_reg_range(0x6830, 0x6837),
+>> +       regmap_reg_range(0x6840, 0x684b),
+>> +       regmap_reg_range(0x6900, 0x6907),
+>> +       regmap_reg_range(0x6914, 0x6915),
+>> +       regmap_reg_range(0x6a00, 0x6a03),
+>> +       regmap_reg_range(0x6a04, 0x6a07),
+>> +       regmap_reg_range(0x6b00, 0x6b01),
+>> +       regmap_reg_range(0x6b04, 0x6b04),
+>> +};
+>> +
