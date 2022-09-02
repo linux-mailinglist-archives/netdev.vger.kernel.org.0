@@ -2,96 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9BD5AB349
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 16:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB675AB36B
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 16:27:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238121AbiIBOVB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 10:21:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39666 "EHLO
+        id S236644AbiIBO1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 10:27:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236221AbiIBOUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 10:20:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C5A5F5492;
-        Fri,  2 Sep 2022 06:46:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3BFFCB82932;
-        Fri,  2 Sep 2022 13:41:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 493B8C433D7;
-        Fri,  2 Sep 2022 13:41:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662126077;
-        bh=mMsRtna7E2z9yafUmLhJ8p87GPEczi5fo98BTKfwIco=;
-        h=From:To:Cc:Subject:Date:From;
-        b=eLVzjJONXoo8OGfXvkJO/fJjsYzzdITadgxk8ikrhygJH9eKtYJEI+/MsTcCQWDip
-         haeSkZgAQ23q1vlNRBH3sKO42ogw3EOpeQ+xsDBdFWomx+DGGtB394XZPX68InjmhV
-         SVOKCWRaFxne7aZS2tXbZrgqBJB0obRmSqRB7G1U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     mw@semihalf.com, linux@armlinux.org.uk
-Cc:     linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        stable <stable@kernel.org>
-Subject: [PATCH net] net: mvpp2: debugfs: fix memory leak when using debugfs_lookup()
-Date:   Fri,  2 Sep 2022 15:41:11 +0200
-Message-Id: <20220902134111.280657-1-gregkh@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.3
+        with ESMTP id S237270AbiIBO0o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 10:26:44 -0400
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B687B110D9B
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 06:53:56 -0700 (PDT)
+Received: by mail-ot1-x336.google.com with SMTP id 92-20020a9d0be5000000b0063946111607so1463850oth.10
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 06:53:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20210112.gappssmtp.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=TRNEPv/fVZBL+J+K0gbUvPbd/wP8B+12JIvN/V7uTcU=;
+        b=JJEiY1nRuKPAHexQSBWa1G1+D1zLBXZhFgMaAb2sUdoGvIO/vi/5FZjf3cbuXhRuS2
+         UCd9crNd+fUPxT9Fi7I5uObbhL0ex1QkxUU9j4jxgfQiBVy2PaiKUvTB8sXRu9fFVAah
+         KYM7x34v7hcl+UNTbsGMMKlRHV6XMoOvcb2TZQoY8bOAxvWLeI1qeyQgMq8zgOMAaF6b
+         PJe80p9cyT6qYpurA6bBVX9NENNzT/0xn0CRy3P8K3yed0vYzDunlyEfxOh5r2PDPQVM
+         kVGFJ5mDJrgi755A+/6bpL+HDjZYfesebLyl9SLaz24zvcnbRvbh+mKy9sapsSxqkoFV
+         IMJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=TRNEPv/fVZBL+J+K0gbUvPbd/wP8B+12JIvN/V7uTcU=;
+        b=nOD2KBXual3VMwTNrkABQtkTuqtZOuNPq1ZMXmkmKLmFH89RTZBbPKNBYA+7hVUDYK
+         bQClVzf81kwbXf8I5qRS0XCHhw1bKdmMSTGJL5/JWqzo2f3QUZzptv+igrdf2kCqcjqt
+         kMW8cP0PROT1JnOSHmbbSUQ7b/YeHabVtRQ428J1FUSetPYmZBsFvbGBVBi4yGYKOUfx
+         KTuwiL61kiGZy9ftQSAEKOLWoD/s7dov0q84wCfN8kKyuFRsk5SWj0oT7Z3fMPAcO+Tt
+         MEsC4bIfLWUBnDX7XZrh1rO9x9P9l8y8NGrpurOAqfQY+jZeG3uwKRKYcgRU2ZAjU0p4
+         0LCw==
+X-Gm-Message-State: ACgBeo3ouXNchg5d6E1huDjIoLyjZZ05LWKdytRz1nZ6kgVjQzcjNgho
+        rQIFMDJ1VGcg2/EglvujmFdX+XZaRAQdNIU0H6oR9w==
+X-Google-Smtp-Source: AA6agR6zb53YPcXo5kDN/63AZ67C60d0NARcZzDg39E8JP0pQszvgj2ovZPGPXkptzTrSV8v0tYkxi9MEbsv38BvS44=
+X-Received: by 2002:a05:6830:2a17:b0:636:f7fc:98bb with SMTP id
+ y23-20020a0568302a1700b00636f7fc98bbmr14890114otu.223.1662126833447; Fri, 02
+ Sep 2022 06:53:53 -0700 (PDT)
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1587; i=gregkh@linuxfoundation.org; h=from:subject; bh=mMsRtna7E2z9yafUmLhJ8p87GPEczi5fo98BTKfwIco=; b=owGbwMvMwCRo6H6F97bub03G02pJDMlC7N+1l744lmtYcNF3dt+enDnioWdZXk+e/qah/BNngY1c rubHjlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZjIbSaG+Vmftpw5W8G02yRh3RL2D4 Xs/yetrGSYp8bLes56zqsNN2dn8Vwuz+oOEDaSAAA=
-X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220902112446.29858-1-shaozhengchao@huawei.com> <20220902112446.29858-2-shaozhengchao@huawei.com>
+In-Reply-To: <20220902112446.29858-2-shaozhengchao@huawei.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Date:   Fri, 2 Sep 2022 09:53:42 -0400
+Message-ID: <CAM0EoMnxxA5y2W22aMXF+QRqckbkGm9eJoEnu-CaKhgWMM7kdA@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/22] net: sched: act_api: implement generic
+ walker and search for tc action
+To:     Zhengchao Shao <shaozhengchao@huawei.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, martin.lau@linux.dev, daniel@iogearbox.net,
+        john.fastabend@gmail.com, ast@kernel.org, andrii@kernel.org,
+        song@kernel.org, yhs@fb.com, kpsingh@kernel.org, sdf@google.com,
+        haoluo@google.com, jolsa@kernel.org, weiyongjun1@huawei.com,
+        yuehaibing@huawei.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When calling debugfs_lookup() the result must have dput() called on it,
-otherwise the memory will leak over time.  Fix this up to be much
-simpler logic and only create the root debugfs directory once when the
-driver is first accessed.  That resolves the memory leak and makes
-things more obvious as to what the intent is.
+On Fri, Sep 2, 2022 at 7:22 AM Zhengchao Shao <shaozhengchao@huawei.com> wrote:
+>
+> Being able to get tc_action_net by using net_id stored in tc_action_ops
+> and execute the generic walk/search function, add __tcf_generic_walker()
+> and __tcf_idr_search() helpers.
+>
 
-Cc: Marcin Wojtas <mw@semihalf.com>
-Cc: Russell King <linux@armlinux.org.uk>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: netdev@vger.kernel.org
-Cc: stable <stable@kernel.org>
-Fixes: 21da57a23125 ("net: mvpp2: add a debugfs interface for the Header Parser")
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+These are nice cleanups.
+Can you please run all tdc tests for all changes you are making to
+the tc subsystem? Maybe do a kindness and add more tests.
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-index 4a3baa7e0142..0eec05d905eb 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-@@ -700,10 +700,10 @@ void mvpp2_dbgfs_cleanup(struct mvpp2 *priv)
- 
- void mvpp2_dbgfs_init(struct mvpp2 *priv, const char *name)
- {
--	struct dentry *mvpp2_dir, *mvpp2_root;
-+	static struct dentry *mvpp2_root;
-+	struct dentry *mvpp2_dir;
- 	int ret, i;
- 
--	mvpp2_root = debugfs_lookup(MVPP2_DRIVER_NAME, NULL);
- 	if (!mvpp2_root)
- 		mvpp2_root = debugfs_create_dir(MVPP2_DRIVER_NAME, NULL);
- 
--- 
-2.37.3
+Just small  opinions below. Otherwise you can add my ACK.
 
+> Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+> ---
+>  include/net/act_api.h |  1 +
+>  net/sched/act_api.c   | 48 +++++++++++++++++++++++++++++++++++++------
+>  2 files changed, 43 insertions(+), 6 deletions(-)
+>
+> diff --git a/include/net/act_api.h b/include/net/act_api.h
+> index 9cf6870b526e..a79d6e58519e 100644
+\
+
+> @@ -926,7 +945,8 @@ int tcf_register_action(struct tc_action_ops *act,
+>         struct tc_action_ops *a;
+>         int ret;
+>
+> -       if (!act->act || !act->dump || !act->init || !act->walk || !act->lookup)
+> +       if (!act->act || !act->dump || !act->init ||
+> +           (!act->net_id && (!act->walk || !act->lookup)))
+
+I can understand net_id, but why && (!act->walk || !act->lookup) ?
+Assumedly they are now optional, no?
+
+
+> +       if (ops->walk) {
+> +               err = ops->walk(net, skb, &dcb, RTM_DELACTION, ops, extack);
+> +       } else {
+> +               err = __tcf_generic_walker(net, skb, &dcb, RTM_DELACTION, ops, extack);
+> +       }
+
+Bikeshed mod: those braces.
+
+cheers,
+jamal
