@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD4165AAD77
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 13:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 517B25AAD7B
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 13:25:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235985AbiIBLXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 07:23:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
+        id S236031AbiIBLXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 07:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235988AbiIBLXN (ORCPT
+        with ESMTP id S232239AbiIBLXN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 07:23:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03F4D2E81;
-        Fri,  2 Sep 2022 04:22:52 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4MJwRG5lQ0zlWcW;
-        Fri,  2 Sep 2022 19:19:22 +0800 (CST)
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15067D2EA0;
+        Fri,  2 Sep 2022 04:22:53 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4MJwR13v23z1N7k3;
+        Fri,  2 Sep 2022 19:19:09 +0800 (CST)
 Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
  (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 2 Sep
- 2022 19:22:49 +0800
+ 2022 19:22:50 +0800
 From:   Zhengchao Shao <shaozhengchao@huawei.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <bpf@vger.kernel.org>, <davem@davemloft.net>,
@@ -32,9 +32,9 @@ CC:     <daniel@iogearbox.net>, <john.fastabend@gmail.com>,
         <yhs@fb.com>, <kpsingh@kernel.org>, <sdf@google.com>,
         <haoluo@google.com>, <jolsa@kernel.org>, <weiyongjun1@huawei.com>,
         <yuehaibing@huawei.com>, <shaozhengchao@huawei.com>
-Subject: [PATCH net-next 21/22] net: sched: act_vlan: get rid of tcf_vlan_walker and tcf_vlan_search
-Date:   Fri, 2 Sep 2022 19:24:45 +0800
-Message-ID: <20220902112446.29858-22-shaozhengchao@huawei.com>
+Subject: [PATCH net-next 22/22] net: sched: act: remove redundant code in act_api
+Date:   Fri, 2 Sep 2022 19:24:46 +0800
+Message-ID: <20220902112446.29858-23-shaozhengchao@huawei.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220902112446.29858-1-shaozhengchao@huawei.com>
 References: <20220902112446.29858-1-shaozhengchao@huawei.com>
@@ -53,67 +53,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use __tcf_generic_walker() and __tcf_idr_search() helpers by saving
-vlan_net_id when registering act_vlan_ops. And then remove the walk
-and lookup hook functions in act_vlan.
+Based on previous patches of this patchset, the walk and lookup hooks in
+the tc_action_ops structure are no longer used, and redundant code logic
+branches should be removed. tcf_generic_walker() and tcf_idr_search() are
+also used only in the act_api.c, change them to static.
 
 Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
- net/sched/act_vlan.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+ include/net/act_api.h | 10 ----------
+ net/sched/act_api.c   | 42 ++++++++++++------------------------------
+ 2 files changed, 12 insertions(+), 40 deletions(-)
 
-diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
-index 68b5e772386a..54543a5fac38 100644
---- a/net/sched/act_vlan.c
-+++ b/net/sched/act_vlan.c
-@@ -333,16 +333,6 @@ static int tcf_vlan_dump(struct sk_buff *skb, struct tc_action *a,
- 	return -1;
+diff --git a/include/net/act_api.h b/include/net/act_api.h
+index a79d6e58519e..ebd84ef06b5b 100644
+--- a/include/net/act_api.h
++++ b/include/net/act_api.h
+@@ -118,15 +118,10 @@ struct tc_action_ops {
+ 		       struct tcf_result *); /* called under RCU BH lock*/
+ 	int     (*dump)(struct sk_buff *, struct tc_action *, int, int);
+ 	void	(*cleanup)(struct tc_action *);
+-	int     (*lookup)(struct net *net, struct tc_action **a, u32 index);
+ 	int     (*init)(struct net *net, struct nlattr *nla,
+ 			struct nlattr *est, struct tc_action **act,
+ 			struct tcf_proto *tp,
+ 			u32 flags, struct netlink_ext_ack *extack);
+-	int     (*walk)(struct net *, struct sk_buff *,
+-			struct netlink_callback *, int,
+-			const struct tc_action_ops *,
+-			struct netlink_ext_ack *);
+ 	void	(*stats_update)(struct tc_action *, u64, u64, u64, u64, bool);
+ 	size_t  (*get_fill_size)(const struct tc_action *act);
+ 	struct net_device *(*get_dev)(const struct tc_action *a,
+@@ -178,11 +173,6 @@ static inline void tc_action_net_exit(struct list_head *net_list,
+ 	rtnl_unlock();
  }
  
--static int tcf_vlan_walker(struct net *net, struct sk_buff *skb,
--			   struct netlink_callback *cb, int type,
--			   const struct tc_action_ops *ops,
--			   struct netlink_ext_ack *extack)
--{
--	struct tc_action_net *tn = net_generic(net, vlan_net_id);
--
--	return tcf_generic_walker(tn, skb, cb, type, ops, extack);
--}
--
- static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u64 packets,
- 				  u64 drops, u64 lastuse, bool hw)
- {
-@@ -353,13 +343,6 @@ static void tcf_vlan_stats_update(struct tc_action *a, u64 bytes, u64 packets,
- 	tm->lastuse = max_t(u64, tm->lastuse, lastuse);
+-int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
+-		       struct netlink_callback *cb, int type,
+-		       const struct tc_action_ops *ops,
+-		       struct netlink_ext_ack *extack);
+-int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index);
+ int tcf_idr_create(struct tc_action_net *tn, u32 index, struct nlattr *est,
+ 		   struct tc_action **a, const struct tc_action_ops *ops,
+ 		   int bind, bool cpustats, u32 flags);
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 7063d2004199..2d26aec25e3a 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -636,10 +636,10 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
+ 	return ret;
  }
  
--static int tcf_vlan_search(struct net *net, struct tc_action **a, u32 index)
--{
--	struct tc_action_net *tn = net_generic(net, vlan_net_id);
--
--	return tcf_idr_search(tn, a, index);
--}
--
- static size_t tcf_vlan_get_fill_size(const struct tc_action *act)
+-int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
+-		       struct netlink_callback *cb, int type,
+-		       const struct tc_action_ops *ops,
+-		       struct netlink_ext_ack *extack)
++static int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
++			      struct netlink_callback *cb, int type,
++			      const struct tc_action_ops *ops,
++			      struct netlink_ext_ack *extack)
  {
- 	return nla_total_size(sizeof(struct tc_vlan))
-@@ -433,15 +416,14 @@ static int tcf_vlan_offload_act_setup(struct tc_action *act, void *entry_data,
- static struct tc_action_ops act_vlan_ops = {
- 	.kind		=	"vlan",
- 	.id		=	TCA_ID_VLAN,
-+	.net_id		=	&vlan_net_id,
- 	.owner		=	THIS_MODULE,
- 	.act		=	tcf_vlan_act,
- 	.dump		=	tcf_vlan_dump,
- 	.init		=	tcf_vlan_init,
- 	.cleanup	=	tcf_vlan_cleanup,
--	.walk		=	tcf_vlan_walker,
- 	.stats_update	=	tcf_vlan_stats_update,
- 	.get_fill_size	=	tcf_vlan_get_fill_size,
--	.lookup		=	tcf_vlan_search,
- 	.offload_act_setup =	tcf_vlan_offload_act_setup,
- 	.size		=	sizeof(struct tcf_vlan),
- };
+ 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
+ 
+@@ -653,9 +653,8 @@ int tcf_generic_walker(struct tc_action_net *tn, struct sk_buff *skb,
+ 		return -EINVAL;
+ 	}
+ }
+-EXPORT_SYMBOL(tcf_generic_walker);
+ 
+-int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index)
++static int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index)
+ {
+ 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
+ 	struct tc_action *p;
+@@ -674,7 +673,6 @@ int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index)
+ 	}
+ 	return false;
+ }
+-EXPORT_SYMBOL(tcf_idr_search);
+ 
+ static int __tcf_generic_walker(struct net *net, struct sk_buff *skb,
+ 				struct netlink_callback *cb, int type,
+@@ -945,8 +943,7 @@ int tcf_register_action(struct tc_action_ops *act,
+ 	struct tc_action_ops *a;
+ 	int ret;
+ 
+-	if (!act->act || !act->dump || !act->init ||
+-	    (!act->net_id && (!act->walk || !act->lookup)))
++	if (!act->act || !act->dump || !act->init || !act->net_id)
+ 		return -EINVAL;
+ 
+ 	/* We have to register pernet ops before making the action ops visible,
+@@ -1658,16 +1655,10 @@ static struct tc_action *tcf_action_get_1(struct net *net, struct nlattr *nla,
+ 		goto err_out;
+ 	}
+ 	err = -ENOENT;
+-	if (ops->lookup) {
+-		if (ops->lookup(net, &a, index) == 0) {
+-			NL_SET_ERR_MSG(extack, "TC action with specified index not found");
+-			goto err_mod;
+-		}
+-	} else {
+-		if (__tcf_idr_search(net, ops, &a, index) == 0) {
+-			NL_SET_ERR_MSG(extack, "TC action with specified index not found");
+-			goto err_mod;
+-		}
++
++	if (__tcf_idr_search(net, ops, &a, index) == 0) {
++		NL_SET_ERR_MSG(extack, "TC action with specified index not found");
++		goto err_mod;
+ 	}
+ 
+ 	module_put(ops->owner);
+@@ -1730,12 +1721,7 @@ static int tca_action_flush(struct net *net, struct nlattr *nla,
+ 		goto out_module_put;
+ 	}
+ 
+-	if (ops->walk) {
+-		err = ops->walk(net, skb, &dcb, RTM_DELACTION, ops, extack);
+-	} else {
+-		err = __tcf_generic_walker(net, skb, &dcb, RTM_DELACTION, ops, extack);
+-	}
+-
++	err = __tcf_generic_walker(net, skb, &dcb, RTM_DELACTION, ops, extack);
+ 	if (err <= 0) {
+ 		nla_nest_cancel(skb, nest);
+ 		goto out_module_put;
+@@ -2153,11 +2139,7 @@ static int tc_dump_action(struct sk_buff *skb, struct netlink_callback *cb)
+ 	if (nest == NULL)
+ 		goto out_module_put;
+ 
+-	if (a_o->walk)
+-		ret = a_o->walk(net, skb, cb, RTM_GETACTION, a_o, NULL);
+-	else
+-		ret = __tcf_generic_walker(net, skb, cb, RTM_GETACTION, a_o, NULL);
+-
++	ret = __tcf_generic_walker(net, skb, cb, RTM_GETACTION, a_o, NULL);
+ 	if (ret < 0)
+ 		goto out_module_put;
+ 
 -- 
 2.17.1
 
