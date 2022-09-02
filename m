@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EFB25AAE27
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 14:11:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ECC25AAE24
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 14:11:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235869AbiIBMKZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 08:10:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57380 "EHLO
+        id S235855AbiIBMKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 08:10:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235861AbiIBMKV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 08:10:21 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 650C82BB31
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 05:10:19 -0700 (PDT)
+        with ESMTP id S235854AbiIBMKU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 08:10:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22572A73E;
+        Fri,  2 Sep 2022 05:10:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF8B0B82A71
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 12:10:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6AB90C433D7;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE2EF620D1;
+        Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 59A17C433B5;
         Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1662120616;
-        bh=8J8KEmebcmd9bJqIS8o1uvVWF4w55AO/c5rsejpHmHQ=;
+        bh=cfLV+hYmpTeGN4Jr6uIQCPnEFumTwBtZQ2Qc4OquoBs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JGxEQm0t3IwV78LImqt5oSPQBgrX776slHd+ACTYSTEQHfV5TD1n3ExrNTuR2ddft
-         xacjvFHfbCmRx34S6angjFqXqYj1PghghWciI/5OXXx18e6nPXo+dNSHlxHk+nDaSd
-         zm2YyTefKb306vrjRpXZY5za/T4wOCIrB/GESy9CTaTj2h92+1Kppv5Fx9aOR0WR4V
-         PGRatDLhV9e0gkdc9TRwDa0oNq6FGEukrpmvemz4f+eDuhGUDbA5qsKwpHgmy1HlMz
-         S64x+uFv8p94XoYhJQfk7mdV1RE3PxNVgdKb6sX+eSjJu+Jbzpw7mRjUIhzq2fbhd9
-         fc5yo2W/JeYtQ==
+        b=noAS4ZqhKh2VfXz2bKLz9WBA1M3CECYi24vq7zaHqMNueSfJQmbsU7Kbp8WEH8prT
+         HOs28qruw4CU0X1KGU9sXTJ8x9TqYs5sSOQyqSwxta4R0f9dPyjIfEvbzM33AoHuoh
+         T9rdD3XbTcm7z49wKHZ4x2DkuFRidKSfRnnLSmq8lrh8H5HHe4OeHW/+Ed4rme0JYU
+         CwZKVtI2JLtHOmE+40yLIPCu8C8kzDacGfkyllq4351Uxnfl+8XhqIPm6UQlxWnIMk
+         dfjrPHl4fspRwCz9diZGIFXC6UzLrfJjWHA8H5onf8TIhK3VSKr+NbA1Uv6bWxrQhF
+         /AmiBgYfDBhVg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4A116E924E6;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3DC06E924E4;
         Fri,  2 Sep 2022 12:10:16 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] tcp: TX zerocopy should not sense pfmemalloc status
+Subject: Re: [PATCH net v3 0/6] rxrpc: Miscellaneous fixes
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166212061629.16201.8132190832044730498.git-patchwork-notify@kernel.org>
+Message-Id: <166212061624.16201.6479351109057474742.git-patchwork-notify@kernel.org>
 Date:   Fri, 02 Sep 2022 12:10:16 +0000
-References: <20220831233809.242987-1-edumazet@google.com>
-In-Reply-To: <20220831233809.242987-1-edumazet@google.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, eric.dumazet@gmail.com,
-        syzkaller@googlegroups.com, shakeelb@google.com
+References: <166203518656.271364.567426359603115318.stgit@warthog.procyon.org.uk>
+In-Reply-To: <166203518656.271364.567426359603115318.stgit@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, marc.dionne@auristor.com,
+        jaltman@auristor.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,22 +59,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+This series was applied to netdev/net.git (master)
+by David Howells <dhowells@redhat.com>:
 
-On Wed, 31 Aug 2022 23:38:09 +0000 you wrote:
-> We got a recent syzbot report [1] showing a possible misuse
-> of pfmemalloc page status in TCP zerocopy paths.
+On Thu, 01 Sep 2022 13:26:26 +0100 you wrote:
+> Here are some fixes for AF_RXRPC:
 > 
-> Indeed, for pages coming from user space or other layers,
-> using page_is_pfmemalloc() is moot, and possibly could give
-> false positives.
+>  (1) Fix the handling of ICMP/ICMP6 packets.  This is a problem due to
+>      rxrpc being switched to acting as a UDP tunnel, thereby allowing it to
+>      steal the packets before they go through the UDP Rx queue.  UDP
+>      tunnels can't get ICMP/ICMP6 packets, however.  This patch adds an
+>      additional encap hook so that they can.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] tcp: TX zerocopy should not sense pfmemalloc status
-    https://git.kernel.org/netdev/net/c/326140063946
+  - [net,v3,1/6] rxrpc: Fix ICMP/ICMP6 error handling
+    https://git.kernel.org/netdev/net/c/ac56a0b48da8
+  - [net,v3,2/6] rxrpc: Fix an insufficiently large sglist in rxkad_verify_packet_2()
+    https://git.kernel.org/netdev/net/c/0d40f728e283
+  - [net,v3,3/6] rxrpc: Fix local destruction being repeated
+    https://git.kernel.org/netdev/net/c/d3d863036d68
+  - [net,v3,4/6] rxrpc: Fix calc of resend age
+    https://git.kernel.org/netdev/net/c/214a9dc7d852
+  - [net,v3,5/6] afs: Use the operation issue time instead of the reply time for callbacks
+    https://git.kernel.org/netdev/net/c/7903192c4b4a
+  - [net,v3,6/6] rxrpc: Remove rxrpc_get_reply_time() which is no longer used
+    https://git.kernel.org/netdev/net/c/21457f4a91cb
 
 You are awesome, thank you!
 -- 
