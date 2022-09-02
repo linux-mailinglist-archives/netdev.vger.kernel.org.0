@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 280155AAECE
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 14:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC585AAF23
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 14:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236659AbiIBMaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 08:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
+        id S236578AbiIBMeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 08:34:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236770AbiIBM3K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 08:29:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8F1D3EC2;
-        Fri,  2 Sep 2022 05:25:41 -0700 (PDT)
+        with ESMTP id S236941AbiIBMdr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 08:33:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DBEBE3989;
+        Fri,  2 Sep 2022 05:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BDB01620C5;
-        Fri,  2 Sep 2022 12:23:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DD63C433C1;
-        Fri,  2 Sep 2022 12:23:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 02E5D6217A;
+        Fri,  2 Sep 2022 12:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97C0C433D7;
+        Fri,  2 Sep 2022 12:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1662121424;
-        bh=9rW3nqwkG9/teVnWYZkXKjkGH66eiuawPuG42zOstS8=;
+        s=korg; t=1662121574;
+        bh=G2xOLKpuAKcePb2irL1aIOX5dcxSD0R38MJXGNKY5LQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWeBlMxdYyE+MlsJQElaBRcsiMNc5dcDHjzaQl85JgjVWHZav+VBo+osjPzRhAnVE
-         LiMYtmxCEMWulTRVoBJtfwwnVnASQBll9DKTzafjLwIhD6t4KaUt315f/GZ7BazeY8
-         46p1JrqhdokOT/zS4mvQx7LFubM4jt+AfV/HVFA4=
+        b=qvhrj4isx7GO0M7hxmKqynEvjFJV9Q8zLDYQjbkNVEpM4PacxLPSCtW/FtcPvonyi
+         OiAFzCbCSjqnsN5DqvCc8OAvrYRrBvsGD48WuZmOTzxI3UwkTy8QrVocbBMSCXpp+N
+         bv/OONg7hoznWY94sIPZesMLE/01a+2662YkYHKU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -45,12 +45,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Konstantin Khorenko <khorenko@virtuozzo.com>,
         kernel@openvz.org, devel@openvz.org,
         "Denis V. Lunev" <den@openvz.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 38/42] neigh: fix possible DoS due to net iface start/stop loop
-Date:   Fri,  2 Sep 2022 14:19:02 +0200
-Message-Id: <20220902121400.085054125@linuxfoundation.org>
+Subject: [PATCH 4.19 52/56] neigh: fix possible DoS due to net iface start/stop loop
+Date:   Fri,  2 Sep 2022 14:19:12 +0200
+Message-Id: <20220902121402.254709519@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.3
-In-Reply-To: <20220902121358.773776406@linuxfoundation.org>
-References: <20220902121358.773776406@linuxfoundation.org>
+In-Reply-To: <20220902121400.219861128@linuxfoundation.org>
+References: <20220902121400.219861128@linuxfoundation.org>
 User-Agent: quilt/0.67
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -133,10 +133,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 358e84af0210b..8af9761768e00 100644
+index 6233e9856016e..65e80aaa09481 100644
 --- a/net/core/neighbour.c
 +++ b/net/core/neighbour.c
-@@ -222,14 +222,23 @@ static int neigh_del_timer(struct neighbour *n)
+@@ -224,14 +224,23 @@ static int neigh_del_timer(struct neighbour *n)
  	return 0;
  }
  
@@ -164,7 +164,7 @@ index 358e84af0210b..8af9761768e00 100644
  }
  
  static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev)
-@@ -295,9 +304,9 @@ int neigh_ifdown(struct neigh_table *tbl, struct net_device *dev)
+@@ -297,9 +306,9 @@ int neigh_ifdown(struct neigh_table *tbl, struct net_device *dev)
  	write_lock_bh(&tbl->lock);
  	neigh_flush_dev(tbl, dev);
  	pneigh_ifdown_and_unlock(tbl, dev);
@@ -177,7 +177,7 @@ index 358e84af0210b..8af9761768e00 100644
  	return 0;
  }
  EXPORT_SYMBOL(neigh_ifdown);
-@@ -1609,7 +1618,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+@@ -1614,7 +1623,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
  	/* It is not clean... Fix it to unload IPv6 module safely */
  	cancel_delayed_work_sync(&tbl->gc_work);
  	del_timer_sync(&tbl->proxy_timer);
