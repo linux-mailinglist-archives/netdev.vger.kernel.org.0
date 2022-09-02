@@ -2,53 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D22B5AAA80
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 10:47:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 615145AAA8E
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 10:48:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236070AbiIBIrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 04:47:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35154 "EHLO
+        id S236032AbiIBIsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 04:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235909AbiIBIqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 04:46:46 -0400
+        with ESMTP id S235969AbiIBIsB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 04:48:01 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C63E2FFFB;
-        Fri,  2 Sep 2022 01:46:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE71EC6EAF;
+        Fri,  2 Sep 2022 01:47:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC49762156;
-        Fri,  2 Sep 2022 08:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C730DC433D7;
-        Fri,  2 Sep 2022 08:46:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E4162091;
+        Fri,  2 Sep 2022 08:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539C3C433D7;
+        Fri,  2 Sep 2022 08:47:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662108401;
-        bh=0A7WWESMqIZD9mylc1dnG6NGyuh1874ApHc3sUTvw20=;
+        s=k20201202; t=1662108467;
+        bh=IDUrnjPz+nOb4YlnVezby/KSL+PqY47LilgBkDdd/dk=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=ILbO/IiLte49oEs+fL3Ng7qg48I0jm4Kk8bzfAsMPGNm9REGWFF9gtxO4G0ipVElC
-         7nNlug6wHz9Ks8PRbzIrcx/aRT6ziNMa5/6miPmR83EpQLlw2ioU5mfMWOU9SW3/V/
-         HPzY4pmdg8tplJQDYPOvBguAmfX1EKu43CyqG8JEeJ5AgMZPI53E1VOt0W2VmHQ1ap
-         eu6zYlnNlGc2fbo2Sh5zISyJHFv/UWJH5biWJO/hOFskuX9sdEDZsuSTflShbqpHPP
-         6+eG3DwaqWaBOEJq9c6J9cicjOXYmxX5Wg+mZ/mg8SOKVG4f7QT5uFFqftH81LwvkQ
-         +VGCqf/D3MdPQ==
+        b=dO8ur7l9H8qbVFAgTGS6wDY3thHyTWcmKBMckSIwiX7FWRhEGPmy4QYn+xGsvSjm2
+         YxOBzy5Hi5ydgRVP2ZYZOuL1kvDZXfrTxD76uvAvnLwCY5n9vcouL8Q9leKA8xH7SU
+         5psK7leaKhJvdeIDMdCrT1vTpi1ckAxdt7nQn7rBkyUHnlE1OicQ88+cUs67y2TOrm
+         sfRR8tkDm6U29H4YX0Sc4lgAPfQumn1T9bptyOmG1lsDzRPgAwgaz8qGNHhreUN9U6
+         WwgHO4Kx3T9/dp5kq6XnTSj9ELIH/65p5XoXaHet2BZaMR+1cNAtCqSd/lkfx8pbYq
+         hxPDm+bguHkQg==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH v2 linux-next] wifi: wilc1000: remove redundant ret
- variable
+Subject: Re: [v2,2/3] wifi: move from strlcpy with unused retval to strscpy
 From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <20220830105505.287564-1-cui.jinpeng2@zte.com.cn>
-References: <20220830105505.287564-1-cui.jinpeng2@zte.com.cn>
-To:     cgel.zte@gmail.com
-Cc:     ajay.kathat@microchip.com, claudiu.beznea@microchip.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jinpeng Cui <cui.jinpeng2@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
+In-Reply-To: <20220830201457.7984-2-wsa+renesas@sang-engineering.com>
+References: <20220830201457.7984-2-wsa+renesas@sang-engineering.com>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Simon Kelley <simon@thekelleys.org.uk>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Stanislav Yakovlev <stas.yakovlev@gmail.com>,
+        Stanislaw Gruszka <stf_xl@wp.pl>, Jouni Malinen <j@w1.fi>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Herton Ronaldo Krzesinski <herton@canonical.com>,
+        Hin-Tak Leung <htl10@users.sourceforge.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        b43-dev@lists.infradead.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com, libertas-dev@lists.infradead.org
 User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <166210839707.24345.16121764644715977509.kvalo@kernel.org>
-Date:   Fri,  2 Sep 2022 08:46:38 +0000 (UTC)
+Message-ID: <166210845943.24345.11339520901583548559.kvalo@kernel.org>
+Date:   Fri,  2 Sep 2022 08:47:41 +0000 (UTC)
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,22 +75,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cgel.zte@gmail.com wrote:
+Wolfram Sang <wsa+renesas@sang-engineering.com> wrote:
 
-> From: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> Follow the advice of the below link and prefer 'strscpy' in this
+> subsystem. Conversion is 1:1 because the return value is not used.
+> Generated by a coccinelle script.
 > 
-> Return value from cfg80211_rx_mgmt() directly instead of
-> taking this in another redundant variable.
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Jinpeng Cui <cui.jinpeng2@zte.com.cn>
+> Link: https://lore.kernel.org/r/CAHk-=wgfRnXz0W3D37d01q3JFkr_i_uTL=V6A6G1oUZcprmknw@mail.gmail.com/
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
 Patch applied to wireless-next.git, thanks.
 
-1dc13236ef91 wifi: wilc1000: remove redundant ret variable
+bf99f11df4de wifi: move from strlcpy with unused retval to strscpy
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20220830105505.287564-1-cui.jinpeng2@zte.com.cn/
+https://patchwork.kernel.org/project/linux-wireless/patch/20220830201457.7984-2-wsa+renesas@sang-engineering.com/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
