@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3F4D5AB9C6
+	by mail.lfdr.de (Postfix) with ESMTP id 634E65AB9C4
 	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 23:03:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiIBVCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 17:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        id S230503AbiIBVCf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 17:02:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiIBVC2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 17:02:28 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39C97B4424
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 14:02:27 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id 62so2656237iov.5
-        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 14:02:27 -0700 (PDT)
+        with ESMTP id S230477AbiIBVCa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 17:02:30 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6073CBB6B9
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 14:02:28 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id e7so1806999ilc.5
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 14:02:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=wXtVbgfVAjAnFG+gl8zfcyZNigB/A7fWYjmIjrEWnFw=;
-        b=tJ5pt1iOrDE9HnmuU2z91c5o+GjTXTa8xAjYRYQKVx3qijRfKzjWWMIWGcjqfDgZ2v
-         0Sodk0RcMNFYfD6MJeZaUzOWwef4lr3T+anFkraj3Y8tKWIH4oMz3f+yMOX+mayO2b6+
-         owNRcbl8hwj2AQ/8o/gLPXdfcO5rdQbdnMcnF0YnsleKf3S+b6wqixm3f7hIe8OyD+6U
-         xNZgPwXc66i3qahVCbNpAnQezUB0RnSaTm3BrdiP/RNh/9Bkwxk/mzBXefzHNXn4vWDo
-         /aBIzL4jCT0IRBLTv9Qh4PCqdXatpTX+cF6TeJIh67N6OspPedGn34FuS9Qyk/nfOwrS
-         Uw1A==
+        bh=keY88H+1hbyGiRZeqHCulNm4eRlJSKK4BM1mzktooc0=;
+        b=ABPQzlV96Q16lH11eCbT2/RhU70y/fWPsS4Exd+elUdxXiWe579ocaIO3r994OB7th
+         160hfV1GscmW/buhdfA3u/8Dex3EB3cwsG88+xs8G6TGkYpiXLjvSrZRWfcZpdD4PMLT
+         B9OCNmkRRffpls/tAQcT2tsgQmGTlbOS5UkpkFTHE58b6dAVUVZiCpyMqwoYE/ySXPIK
+         8SS0i2AhOmCbgpwI/xTBegZmujrpkuGVA0nQFph8kN4fu/v31tk9UZL9dXpPtaFfu8BB
+         selIZu1pwurYCgrceVYLn6StBzoFW0TDj3GV2iaV0ZFsW7E6Jy4iXchry//DCEwndBn5
+         1NiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=wXtVbgfVAjAnFG+gl8zfcyZNigB/A7fWYjmIjrEWnFw=;
-        b=XboHow7AQ1/AdhjWZVtWNAJYsmYWwTbg2QCLER10PMmRjhDuuu37TuDfAXL8Fd9Mqb
-         5zxnK/7+nYP1t0ZwkIQIdZllytfH2AEbPadfehMMKV0D7q7zFcYYBGdGSkzGQp0AY5X8
-         wtUbKV6s0N+ddqONoUEcx+iharRYVYMqqRdPidkjtrkHP6pKJsRQUsELPOLYPwb2mbx9
-         Bvgxv5elVjOjqrALupxReESroYZ3qLTXn6pfEjDqEab6T3l3bhXBUvWrQsbeDNs5rRqd
-         xg2WwOydo+ywm2CVTWugdPfc6B3v9L8A+SOpSjty+ElDWEH0egQBXGinP+YCs6Pxx12N
-         dboA==
-X-Gm-Message-State: ACgBeo2g3L1yrueZgWD37e0swtpyEdG37Tf1k9+5A9QVdzbWDboM3dtr
-        mYcx81mRCHme+emzou00V9jOOw==
-X-Google-Smtp-Source: AA6agR4HufdtD/9OxH2qjCZXSXxQ/SwmvJ369EXBIREDC4zPnp6YUXWazsZ5BRIui3Crg4Vudg3Z/w==
-X-Received: by 2002:a02:b60d:0:b0:343:5ddd:66b3 with SMTP id h13-20020a02b60d000000b003435ddd66b3mr20698508jam.8.1662152546588;
-        Fri, 02 Sep 2022 14:02:26 -0700 (PDT)
+        bh=keY88H+1hbyGiRZeqHCulNm4eRlJSKK4BM1mzktooc0=;
+        b=M1TWl06W3MFZYEC0Dap6oqx27kh6UliyxnnThFIkF8bWy3MLWh37x04SidSO+1bPm4
+         Qm0ikShw4WFT2PcxXM7dvLASr48kzFVKFjr+MfOZL1gRN0TzQrUdlwDF9cmI3XLazsBX
+         O1aTK7TSCIt+ssydZYW8h979vTlo5syAhWh/aLsrbpJ+MQXUHskL4MEt0LGxJyf1ONgj
+         TcsjGGjqnU0b+BP0I+5vN++xa6OGU2UoSvSmqTo5xPtOvgB/N6A/H9SUY7vFCDk5Vcb1
+         pWpMseGqyJjhU99ZmENeAt86GQ0urA7znOxQp0wXQp+186JWf/NnguXoKTPasMX37Kvs
+         ZBBg==
+X-Gm-Message-State: ACgBeo2lbzZlDR5qJI5Bvi+eoqKGQw5yPLyVjIBZJbUGNcknVtl8lpVZ
+        PEjfjeiw6Ko9hZgal6k8mhHsow==
+X-Google-Smtp-Source: AA6agR7QBR4VEiK7Ff13qBJNczp9ygOUOj0dKr2/XrzzwElGRrNV9oi9nouw9sUmWsMLlb6vVIckfA==
+X-Received: by 2002:a05:6e02:148a:b0:2ea:37bc:b312 with SMTP id n10-20020a056e02148a00b002ea37bcb312mr20726800ilk.96.1662152547675;
+        Fri, 02 Sep 2022 14:02:27 -0700 (PDT)
 Received: from presto.localdomain ([98.61.227.136])
-        by smtp.gmail.com with ESMTPSA id i7-20020a0566022c8700b00689e718d971sm1259208iow.51.2022.09.02.14.02.25
+        by smtp.gmail.com with ESMTPSA id i7-20020a0566022c8700b00689e718d971sm1259208iow.51.2022.09.02.14.02.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 14:02:26 -0700 (PDT)
+        Fri, 02 Sep 2022 14:02:27 -0700 (PDT)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
         pabeni@redhat.com
@@ -56,9 +56,9 @@ Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
         elder@kernel.org, netdev@vger.kernel.org,
         linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 4/6] net: ipa: simplify gsi_channel_trans_last()
-Date:   Fri,  2 Sep 2022 16:02:16 -0500
-Message-Id: <20220902210218.745873-5-elder@linaro.org>
+Subject: [PATCH net-next 5/6] net: ipa: further simplify gsi_channel_trans_last()
+Date:   Fri,  2 Sep 2022 16:02:17 -0500
+Message-Id: <20220902210218.745873-6-elder@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220902210218.745873-1-elder@linaro.org>
 References: <20220902210218.745873-1-elder@linaro.org>
@@ -74,89 +74,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using a little logic we can simplify gsi_channel_trans_last().
-
-The first condition in that function looks like this:
-    if (trans_info->allocated_id != trans_info->free_id)
-And if that's false, we proceed to the next one:
-    if (trans_info->committed_id != trans_info->allocated_id)
-
-Failure of the first test implies:
-    trans_info->allocated_id == trans_info->free_id
-And therefore, the second one can be rewritten this way:
-    if (trans_info->committed_id != trans_info->free_id)
-
-Substituting free_id for allocated_id and committed_id can also be
-done in the code blocks executed when these conditions yield true.
-The net result is that all three blocks for TX endpoints can be
-consolidated into just one.
-
-The two blocks of code at the end of that function (used for both TX
-and RX channels) can be similarly consolidated into a single block.
+Do a little more refactoring in gsi_channel_trans_last() to simplify
+it further.  The resulting code should behave exactly as before.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/gsi.c | 33 +++++++--------------------------
- 1 file changed, 7 insertions(+), 26 deletions(-)
+ drivers/net/ipa/gsi.c | 46 +++++++++++++++++--------------------------
+ 1 file changed, 18 insertions(+), 28 deletions(-)
 
 diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 0983a11409f2d..841a946bc286a 100644
+index 841a946bc286a..16df699009a86 100644
 --- a/drivers/net/ipa/gsi.c
 +++ b/drivers/net/ipa/gsi.c
-@@ -718,46 +718,27 @@ static struct gsi_trans *gsi_channel_trans_last(struct gsi_channel *channel)
- 	 * before we disabled transmits, so check for that.
- 	 */
- 	if (channel->toward_ipa) {
--		/* The last allocated transaction precedes the first free */
--		if (trans_info->allocated_id != trans_info->free_id) {
-+		/* The last allocated, committed, or pending transaction
-+		 * precedes the first free transaction.
-+		 */
-+		if (trans_info->pending_id != trans_info->free_id) {
- 			trans_id = trans_info->free_id - 1;
- 			trans_index = trans_id % channel->tre_count;
- 			trans = &trans_info->trans[trans_index];
- 			goto done;
- 		}
--
--		/* Last committed transaction precedes the first allocated */
--		if (trans_info->committed_id != trans_info->allocated_id) {
--			trans_id = trans_info->allocated_id - 1;
--			trans_index = trans_id % channel->tre_count;
--			trans = &trans_info->trans[trans_index];
--			goto done;
--		}
--
--		/* Last pending transaction precedes the first committed */
--		if (trans_info->pending_id != trans_info->committed_id) {
--			trans_id = trans_info->committed_id - 1;
--			trans_index = trans_id % channel->tre_count;
--			trans = &trans_info->trans[trans_index];
--			goto done;
--		}
- 	}
+@@ -710,42 +710,32 @@ static void gsi_evt_ring_program(struct gsi *gsi, u32 evt_ring_id)
+ static struct gsi_trans *gsi_channel_trans_last(struct gsi_channel *channel)
+ {
+ 	struct gsi_trans_info *trans_info = &channel->trans_info;
++	u32 pending_id = trans_info->pending_id;
+ 	struct gsi_trans *trans;
+-	u16 trans_index;
+ 	u16 trans_id;
  
- 	/* Otherwise (TX or RX) we want to wait for anything that
- 	 * has completed, or has been polled but not released yet.
- 	 *
--	 * The last pending transaction precedes the first committed.
-+	 * The last completed or polled transaction precedes the
-+	 * first pending transaction.
- 	 */
--	if (trans_info->completed_id != trans_info->pending_id) {
-+	if (trans_info->polled_id != trans_info->pending_id) {
- 		trans_id = trans_info->pending_id - 1;
- 		trans_index = trans_id % channel->tre_count;
- 		trans = &trans_info->trans[trans_index];
--		goto done;
+-	/* There is a small chance a TX transaction got allocated just
+-	 * before we disabled transmits, so check for that.
+-	 */
+-	if (channel->toward_ipa) {
+-		/* The last allocated, committed, or pending transaction
++	if (channel->toward_ipa && pending_id != trans_info->free_id) {
++		/* There is a small chance a TX transaction got allocated
++		 * just before we disabled transmits, so check for that.
++		 * The last allocated, committed, or pending transaction
+ 		 * precedes the first free transaction.
+ 		 */
+-		if (trans_info->pending_id != trans_info->free_id) {
+-			trans_id = trans_info->free_id - 1;
+-			trans_index = trans_id % channel->tre_count;
+-			trans = &trans_info->trans[trans_index];
+-			goto done;
+-		}
 -	}
--	if (trans_info->polled_id != trans_info->completed_id) {
--		trans_id = trans_info->completed_id - 1;
+-
+-	/* Otherwise (TX or RX) we want to wait for anything that
+-	 * has completed, or has been polled but not released yet.
+-	 *
+-	 * The last completed or polled transaction precedes the
+-	 * first pending transaction.
+-	 */
+-	if (trans_info->polled_id != trans_info->pending_id) {
+-		trans_id = trans_info->pending_id - 1;
 -		trans_index = trans_id % channel->tre_count;
 -		trans = &trans_info->trans[trans_index];
++		trans_id = trans_info->free_id - 1;
++	} else if (trans_info->polled_id != pending_id) {
++		/* Otherwise (TX or RX) we want to wait for anything that
++		 * has completed, or has been polled but not released yet.
++		 *
++		 * The last completed or polled transaction precedes the
++		 * first pending transaction.
++		 */
++		trans_id = pending_id - 1;
  	} else {
- 		trans = NULL;
+-		trans = NULL;
++		return NULL;
  	}
+-done:
++
+ 	/* Caller will wait for this, so take a reference */
+-	if (trans)
+-		refcount_inc(&trans->refcount);
++	trans = &trans_info->trans[trans_id % channel->tre_count];
++	refcount_inc(&trans->refcount);
+ 
+ 	return trans;
+ }
 -- 
 2.34.1
 
