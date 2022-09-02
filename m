@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D9C55AA93C
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:57:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D7925AA943
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235572AbiIBH5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 03:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54634 "EHLO
+        id S235604AbiIBH6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 03:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235570AbiIBH5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:57:39 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B704B99FF;
-        Fri,  2 Sep 2022 00:57:38 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id f12so1078000plb.11;
-        Fri, 02 Sep 2022 00:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=vIy9hDwkx4yZn4J8a69vMd0+2priltLA6LrvRstnlSw=;
-        b=fpA4Y3ToNbXxHsdaEE0lX/1oD4nWABvDQl4PNC1J/7Ck4uuwpYzTTHBHaOuIiom1ew
-         6nsaohKhgJpMhiBruxbK7FzsuYWlvgLMtlULpP7TvgTqzSkKpSX5BS1eoSHAAxhcjP+Q
-         ny1m+i5dzAv+nfzb/zIJIvQSx4/zH1ztjaW91DI3SzHe2bTy9s7yIwoUh5NdpohJ+uvd
-         8XRuTlwakpDT8jQefggv19R/6MYevAa98mAlPvCXyHXgdqAijutgb3hETd2Ah5hCH5zt
-         T34chFMsoHY8y4cV8BIzm2Yg24A5TYjKsbmGBXA0SULu5CNAVIIyWsoX7inyug/pVzlL
-         zWtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=vIy9hDwkx4yZn4J8a69vMd0+2priltLA6LrvRstnlSw=;
-        b=anJ2Crh0EAeUiL0m+P89sdlbEWRcS+/KiB2waiIXzXYxfTiQp+LiHokySAXo9HcfH/
-         Ty1tNqF6M8GmICR3lqj5Bv3IxokREpjkpzzU8/fKXFqBCa5E3ArkpB0hIyQ41fWgRpWo
-         nsfHyCaFOTdfjwU4jykA8wiqJ4gX0duX8SwMj/ngD+p3hS/Hmi1CqI8ROR8vOt6Dh989
-         uSF/014l9JorvtHDyeakwuECb2gko47r90Hh9x3b572G1h6oauXcTGNb7+F08XcpXMB2
-         gzGfMECefLbmTOBAl5ZuDhJJbr0FKhSsXgbA9MVvSSJIZaaKe7HAeMU+S9jqIrc0SWxA
-         JSbg==
-X-Gm-Message-State: ACgBeo1TSJcysRGbMY+koXOkQoNmwy2WwBXwYYgCpEnMn+3AOWSOBALr
-        C+9S0euLIlFvpuSS6MYDdLY3nkgy0VmyFQ==
-X-Google-Smtp-Source: AA6agR5UAq2hV61FB3FoMipbuvEVVIYjmubJuI4EbaRWyxqf2LPOGobOPPaHb1QY9ryGj21rLTHeBQ==
-X-Received: by 2002:a17:90b:4a82:b0:1f5:5eaa:68a with SMTP id lp2-20020a17090b4a8200b001f55eaa068amr3422244pjb.13.1662105457472;
-        Fri, 02 Sep 2022 00:57:37 -0700 (PDT)
-Received: from localhost.localdomain (lily-optiplex-3070.dynamic.ucsd.edu. [2607:f720:1300:3033::1:4dd])
-        by smtp.googlemail.com with ESMTPSA id q96-20020a17090a17e900b001fd6460c2dcsm4519455pja.44.2022.09.02.00.57.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 00:57:36 -0700 (PDT)
-From:   Li Zhong <floridsleeves@gmail.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Cc:     johannes@sipsolutions.net, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        lily <floridsleeves@gmail.com>
-Subject: [PATCH v1] net/mac80211/agg-tx: check the return value of rcu_dereference_protected_tid_tx()
-Date:   Fri,  2 Sep 2022 00:57:25 -0700
-Message-Id: <20220902075725.2214351-1-floridsleeves@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235606AbiIBH6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:58:15 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B434EBCCDD;
+        Fri,  2 Sep 2022 00:57:56 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 316B524000A;
+        Fri,  2 Sep 2022 07:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1662105475;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SEKGUH9XtqB9vWizlyyHba1yXsDRTZh/Ba89Xk69NGI=;
+        b=DJIg2Xj3K+xGw9/89z/FYt1J/JXhaSujCOM0uCMxAWmv4aQdEvKhEiC8zI1yJ1rtkZramD
+        cHurjMIJMYKhApo5ex7ZGdIgMPr15Bql1Y8hquf8uidhvj6Z3zP0wRLP9WKriyM9wtLu4V
+        i6WTmITaKfR0HZeLtDnt4yRSB6wbx0bJTQ6Rf2dzX+s5d3GHMu9deE1T7nA9GBmHPlMorL
+        lCLm4YWldo12tGbnzPEfSpHWytN0YudCIeqVxAM3ctz0K5ewzurlRK4m5GHZaAecwdhNvS
+        I0mQLuMRM14iJx9Rlt5Td2w/ltiPX37Ip0OuWa1rgBbATTfDdi/627Xqe/JUUA==
+Date:   Fri, 2 Sep 2022 09:57:49 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v3 4/5] net: altera: tse: convert to phylink
+Message-ID: <20220902095749.6af6af62@pc-10.home>
+In-Reply-To: <20220901211021.52520588@kernel.org>
+References: <20220901143543.416977-1-maxime.chevallier@bootlin.com>
+        <20220901143543.416977-5-maxime.chevallier@bootlin.com>
+        <20220901211021.52520588@kernel.org>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: lily <floridsleeves@gmail.com>
+Hello Jakub,
 
-Check the return value of rcu_dereference_protected_tid_tx(), which
-could be NULL and result in null pointer dereference if not checked.
+On Thu, 1 Sep 2022 21:10:21 -0700
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Signed-off-by: Li Zhong <floridsleeves@gmail.com>
----
- net/mac80211/agg-tx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+> On Thu,  1 Sep 2022 16:35:42 +0200 Maxime Chevallier wrote:
+> > This commit converts the Altera Triple Speed Ethernet Controller to
+> > phylink. This controller supports MII, GMII and RGMII with its MAC,
+> > and SGMII + 1000BaseX through a small embedded PCS.
+> > 
+> > The PCS itself has a register set very similar to what is found in a
+> > typical 802.3 ethernet PHY, but this register set memory-mapped
+> > instead of lying on an mdio bus.  
+> 
+> allmodconfig builds report:
+> 
+> ERROR: modpost: missing MODULE_LICENSE() in
+> drivers/net/pcs/pcs-altera-tse.o
 
-diff --git a/net/mac80211/agg-tx.c b/net/mac80211/agg-tx.c
-index 07c892aa8c73..ce5f4a39bce2 100644
---- a/net/mac80211/agg-tx.c
-+++ b/net/mac80211/agg-tx.c
-@@ -503,6 +503,8 @@ void ieee80211_tx_ba_session_handle_start(struct sta_info *sta, int tid)
- 	int ret;
- 
- 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-+	if (!tid_tx)
-+		return;
- 
- 	/*
- 	 * Start queuing up packets for this aggregation session.
-@@ -742,6 +744,8 @@ static void ieee80211_agg_tx_operational(struct ieee80211_local *local,
- 	lockdep_assert_held(&sta->ampdu_mlme.mtx);
- 
- 	tid_tx = rcu_dereference_protected_tid_tx(sta, tid);
-+	if (!tid_tx)
-+		return;
- 	params.buf_size = tid_tx->buf_size;
- 	params.amsdu = tid_tx->amsdu;
- 
--- 
-2.25.1
+Ah you're right, I forgot to specify it. I'll address that in the next
+version, thanks !
 
+Maxime
