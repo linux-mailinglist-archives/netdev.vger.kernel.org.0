@@ -2,128 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 285FA5AAAA2
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 10:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A26D65AAB61
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 11:28:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbiIBIwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 04:52:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52036 "EHLO
+        id S236157AbiIBJ2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 05:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235703AbiIBIwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 04:52:01 -0400
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8DC7CAB2
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 01:52:00 -0700 (PDT)
-Received: by mail-io1-xd2d.google.com with SMTP id 10so1099142iou.2
-        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 01:52:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=edgeble-ai.20210112.gappssmtp.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=fP5QUufc8/nDF8+DKG6kWqz0eNAOkgRskOzTNgrAPTY=;
-        b=EVSQlDtpd3k83YmFx7EANYTPSj6pRkjkBpZTnZ3YsQVqwLh5bkWw04Rsq4WALtMlQP
-         bNUxfYGeuwsjlw1cc4NZ95JJJgWqtpvU1UKFRR0GuLTyMCUFkza77EXIIkYAyjyfmnxJ
-         r5SGXWd3T2Zogth/tQwHhtDjoHGVQ9hc3xloflJ0xO74TrzfsWxebKIbINXZyvxZrdsP
-         PLD8EAAfKJ4HapDpsx2AqDi9zT0L9mB6B2ai/Ow77OA4oIZLqCq/e/aEo0XoIOkIh2FY
-         M2drf6KSfMSCb9EDvfql4lqIo1d6pChqjGpdvar4l55XiWDo5pkDJlO8+uj5el7u4FH6
-         djDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=fP5QUufc8/nDF8+DKG6kWqz0eNAOkgRskOzTNgrAPTY=;
-        b=xP1wSSIe9AYIC2LRrbMuJvzYfl4I4bSfSP06CrBzFAw1lIn5DrQxwlGi1d6Qm+ROzo
-         L01xGin7GYYjW08Y+EOFazpErT44JJzRUxIk1cDvZvEi9NL+TLDA8yqBjaUvp0kyLjXh
-         rIzusQBbYoUJycqe3TJHwAKS2fBq1MmATiLqxxOoWbNzX1srynNYPHA48IV7xHX84RW/
-         R6gucf2l1BBSMZlGHpqlxAb8y3gZYlOiuqb70uN0bC/cc8m2IYAZCrMVnqlADUlgatFR
-         N6Cb1wFvR4qUHSJxTllIixzs668A5hZFsGWEgfsvqhOOOcjBzgVmtEJqdKlbTuTofPTC
-         Lbiw==
-X-Gm-Message-State: ACgBeo3Ir2i7s09jHsLVFj4yA+Pp9uKb/EkGAph9Ufkk/R8tRxfWBIrU
-        C8GlVZGMR0Kpqzq+Lvai8w1TlGhXd2eo52Hz4sMnrg==
-X-Google-Smtp-Source: AA6agR4w6j8Z8678KqWSVpdc1/Jc0po1marz2l8xOyZP+RhwkUrNvN3wWEP5gPchjuSBEMB+vtt29IjvqNLQVmup2mg=
-X-Received: by 2002:a02:ce8e:0:b0:349:ce44:38dc with SMTP id
- y14-20020a02ce8e000000b00349ce4438dcmr20231978jaq.298.1662108719577; Fri, 02
- Sep 2022 01:51:59 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220829065044.1736-1-anand@edgeble.ai> <20220829065044.1736-2-anand@edgeble.ai>
- <Ywy6o2d9j4Z7+WYX@lunn.ch> <CA+VMnFzNcPesS8Mn2mwr-RDXf5sRz-2A3K+syDmpCo1va6JwMw@mail.gmail.com>
- <YxChtBzavS1Fooxs@lunn.ch>
-In-Reply-To: <YxChtBzavS1Fooxs@lunn.ch>
-From:   Jagan Teki <jagan@edgeble.ai>
-Date:   Fri, 2 Sep 2022 14:21:48 +0530
-Message-ID: <CA+VMnFy7KUzY_Hj5sX16XR1K=FouA+J7hCKu5j_94khHVmbEJg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] net: ethernet: stmicro: stmmac: dwmac-rk: Add rv1126 support
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Anand Moon <anand@edgeble.ai>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
+        with ESMTP id S235581AbiIBJ2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 05:28:18 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E756AC9EA4
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 02:27:51 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oU2xh-00030r-57; Fri, 02 Sep 2022 11:27:41 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oU2xd-003T6s-GX; Fri, 02 Sep 2022 11:27:39 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oU2xe-00AoBZ-PY; Fri, 02 Sep 2022 11:27:38 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Sugar Zhang <sugar.zhang@rock-chips.com>,
-        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Arun.Ramadoss@microchip.com
+Subject: [PATCH net v1 1/1] net: dsa: microchip: fix kernel oops on ksz8 switches
+Date:   Fri,  2 Sep 2022 11:27:37 +0200
+Message-Id: <20220902092737.2576142-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 1 Sept 2022 at 17:42, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Sep 01, 2022 at 12:56:09PM +0530, Jagan Teki wrote:
-> > On Mon, 29 Aug 2022 at 18:40, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > On Mon, Aug 29, 2022 at 06:50:42AM +0000, Anand Moon wrote:
-> > > > Rockchip RV1126 has GMAC 10/100/1000M ethernet controller
-> > > > via RGMII and RMII interfaces are configured via M0 and M1 pinmux.
-> > > >
-> > > > This patch adds rv1126 support by adding delay lines of M0 and M1
-> > > > simultaneously.
-> > >
-> > > What does 'delay lines' mean with respect to RGMII?
-> >
-> > These are MAC receive clock delay lengths.
-> >
-> > >
-> > > The RGMII signals need a 2ns delay between the clock and the data
-> > > lines. There are three places this can happen:
-> > >
-> > > 1) In the PHY
-> > > 2) Extra long lines on the PCB
-> > > 3) In the MAC
-> > >
-> > > Generally, 1) is used, and controlled via phy-mode. A value of
-> > > PHY_INTERFACE_MODE_RGMII_ID passed to the PHY driver means it will add
-> > > these delays.
-> > >
-> > > You don't want both the MAC and the PHY adding delays.
-> >
-> > Yes, but these are specific to MAC, not related to PHY delays. Similar
-> > to what is there in other Rockchip SoC families like RK3366, 3368,
-> > 3399, 3128, but these MAC clock delay lengths are grouped based on the
-> > iomux group in RV1126. We have iomux group 0 (M0) and group 1 (M1), so
-> > the rgmii has to set these lengths irrespective of whether PHY add's
-> > or not.
->
-> So this is just fine tuning, in the order of pico seconds?
->
-> If that is all it is, then this is fine. It becomes a problem when it
-> is 2ns.
+After driver refactoring we was running ksz9477 specific CPU port
+configuration on ksz8 family which ended with kernel oops. So, make sure
+we run this code only on ksz9477 compatible devices.
 
-Yes, it is fine I think. We have tested the delay mentioned as per the
-documentation.
+Tested on KSZ8873 and KSZ9477.
 
-tx_delay: Range value is 0~0x7F
-rx_delay: Range value is 0~0x7F
+Fixes: da8cd08520f3 ("net: dsa: microchip: add support for common phylink mac link up")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz_common.c | 30 ++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
 
-Thanks,
-Jagan.
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 6bd69a7e6809d..872aba63e7d43 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -170,6 +170,13 @@ static const struct ksz_dev_ops ksz8_dev_ops = {
+ 	.exit = ksz8_switch_exit,
+ };
+ 
++static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
++					unsigned int mode,
++					phy_interface_t interface,
++					struct phy_device *phydev, int speed,
++					int duplex, bool tx_pause,
++					bool rx_pause);
++
+ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.setup = ksz9477_setup,
+ 	.get_port_addr = ksz9477_get_port_addr,
+@@ -196,6 +203,7 @@ static const struct ksz_dev_ops ksz9477_dev_ops = {
+ 	.mdb_del = ksz9477_mdb_del,
+ 	.change_mtu = ksz9477_change_mtu,
+ 	.max_mtu = ksz9477_max_mtu,
++	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
+ 	.config_cpu_port = ksz9477_config_cpu_port,
+ 	.enable_stp_addr = ksz9477_enable_stp_addr,
+ 	.reset = ksz9477_reset_switch,
+@@ -230,6 +238,7 @@ static const struct ksz_dev_ops lan937x_dev_ops = {
+ 	.mdb_del = ksz9477_mdb_del,
+ 	.change_mtu = lan937x_change_mtu,
+ 	.max_mtu = ksz9477_max_mtu,
++	.phylink_mac_link_up = ksz9477_phylink_mac_link_up,
+ 	.config_cpu_port = lan937x_config_cpu_port,
+ 	.enable_stp_addr = ksz9477_enable_stp_addr,
+ 	.reset = lan937x_reset_switch,
+@@ -1656,13 +1665,13 @@ static void ksz_duplex_flowctrl(struct ksz_device *dev, int port, int duplex,
+ 	ksz_prmw8(dev, port, regs[P_XMII_CTRL_0], mask, val);
+ }
+ 
+-static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+-				    unsigned int mode,
+-				    phy_interface_t interface,
+-				    struct phy_device *phydev, int speed,
+-				    int duplex, bool tx_pause, bool rx_pause)
++static void ksz9477_phylink_mac_link_up(struct ksz_device *dev, int port,
++					unsigned int mode,
++					phy_interface_t interface,
++					struct phy_device *phydev, int speed,
++					int duplex, bool tx_pause,
++					bool rx_pause)
+ {
+-	struct ksz_device *dev = ds->priv;
+ 	struct ksz_port *p;
+ 
+ 	p = &dev->ports[port];
+@@ -1676,6 +1685,15 @@ static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
+ 	ksz_port_set_xmii_speed(dev, port, speed);
+ 
+ 	ksz_duplex_flowctrl(dev, port, duplex, tx_pause, rx_pause);
++}
++
++static void ksz_phylink_mac_link_up(struct dsa_switch *ds, int port,
++				    unsigned int mode,
++				    phy_interface_t interface,
++				    struct phy_device *phydev, int speed,
++				    int duplex, bool tx_pause, bool rx_pause)
++{
++	struct ksz_device *dev = ds->priv;
+ 
+ 	if (dev->dev_ops->phylink_mac_link_up)
+ 		dev->dev_ops->phylink_mac_link_up(dev, port, mode, interface,
+-- 
+2.30.2
+
