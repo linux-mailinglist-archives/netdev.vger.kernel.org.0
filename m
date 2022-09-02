@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCFC5AA8CE
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8575AA8D2
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234641AbiIBHgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 03:36:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41388 "EHLO
+        id S235259AbiIBHhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 03:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232699AbiIBHgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:36:07 -0400
-Received: from fw2.prolan.hu (fw2.prolan.hu [193.68.50.107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1885A53D2B
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 00:35:59 -0700 (PDT)
-Received: from imsva.intranet.prolan.hu (imss.intranet.prolan.hu [10.254.254.252])
-        by fw2.prolan.hu (Postfix) with ESMTPS id 3D5777F4A9;
-        Fri,  2 Sep 2022 09:35:58 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2889334064;
-        Fri,  2 Sep 2022 09:35:58 +0200 (CEST)
-Received: from imsva.intranet.prolan.hu (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0E3503405A;
-        Fri,  2 Sep 2022 09:35:58 +0200 (CEST)
-Received: from fw2.prolan.hu (unknown [10.254.254.253])
-        by imsva.intranet.prolan.hu (Postfix) with ESMTPS;
-        Fri,  2 Sep 2022 09:35:58 +0200 (CEST)
-Received: from atlas.intranet.prolan.hu (atlas.intranet.prolan.hu [10.254.0.229])
-        by fw2.prolan.hu (Postfix) with ESMTPS id CCFC17F4A9;
-        Fri,  2 Sep 2022 09:35:57 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=prolan.hu; s=mail;
-        t=1662104157; bh=BfATqbZYQgFnaahUr7guN6Z7Y9sMOU9KAZ7zMQjSyuk=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To:From;
-        b=cymMT1HQDZ/VBFfMJ6Gus9wrg5uOKpQNAXBwmwOxP+vvTKi+33+sgVrp3BWcyireZ
-         YTwGHsN0t4F4RmDMBCzb+R0rUzPAzrMom3KQLMnoF+hUqbte693FcttcLIjKgYrjPu
-         gp3iAsBDKdlaqTyaTLfKTceNCkIQHx95SqT7LetFqiUaQskXCHVaOeXdUL9fFOTdbd
-         5qBx2ekxlX0cb66bvyWxcSKZKiBBxZieGdW6jbCnPOZzAgpz/caD9OHfhLqlbTWZwC
-         l/9NLSmAvRf8JPNtPWbxmEqjVuqE6qroyLXD4WD3k9q+wNYDtZq1TotSGowX/p5AVY
-         xtxe3511qBWQw==
-Received: from [10.254.7.28] (10.254.7.28) by atlas.intranet.prolan.hu
- (10.254.0.229) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P521) id 15.1.2507.12; Fri, 2
- Sep 2022 09:35:57 +0200
-Message-ID: <6703a552-8d23-6136-c0b8-c68845d00aa8@prolan.hu>
-Date:   Fri, 2 Sep 2022 09:35:56 +0200
+        with ESMTP id S233218AbiIBHhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:37:34 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A32D73936;
+        Fri,  2 Sep 2022 00:37:33 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id l65so1099931pfl.8;
+        Fri, 02 Sep 2022 00:37:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date;
+        bh=SUpu6LE3Bg1N7sM9B4FOf+h9/LVY6PqSU+bwKRQ0w90=;
+        b=HUTjs1pkKOMO9HiNmZRNq0ZWGNuOat/h1TmqrfLtlyWhL6h+fikdz6CdTQWOyK8reX
+         yfIRKADSqRrU/H9u3XON+IhtzSTXKeTqqY2fjqyiqvg9g+EPURIJSsIq5fTwHymmapAt
+         LQDvGPyRyzYTgxScNKjLl+80lZ/JFaIwlqe6C4aMJQg9bho6A+Y0osIs59notUHacSy8
+         lQl9D0zLHHgL80WmSnNqijg/7zjotcbziOskOYnGlXzAsP2Wo2cR7RilsY2HGyWfm5ph
+         L7bf4MkVcgR2L4Z1mRNYXPE5EAONynVeCJ5B5MgkGhA6aFcrHtp/b7a7V1uOBuBsvmA2
+         2wJQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date;
+        bh=SUpu6LE3Bg1N7sM9B4FOf+h9/LVY6PqSU+bwKRQ0w90=;
+        b=zXNAWvh7xTuFTF9u6yY3sBj2fuScHVAKFuJYSP9luX+498sbvUjwQXZGixZRpFy7aE
+         U5P46D6sRVT/TVjwqFfK6omjn4noZr2LfKRc/2Gxhh6jc8t+uxM+xFmi6M/qsmv1YQY2
+         LyCyLNE5wkuveo89z5ldSDcEjr61IF9gBN/SBLNFWfLN4PxSrHdWLCUnkmN8EtBynvVX
+         g5xtB57/x5Oy5sIjWNx/ik4c73AapTnoch1lFZEtNujaYrDIYwvKIhKOzGnSMwnQ9pIJ
+         Eb3BfS0z5Bs0inIkC4HlVNt0+6SZoX4ljeBglJe3wgQXxbdHaJ0bmziOJXEzFMnYrndW
+         O4wA==
+X-Gm-Message-State: ACgBeo3Ai4IMa69j7aF4opXMjRPxHUMQPz+MwWGmgwPuSQoEMOm3bP5d
+        E3VkzI9qZrdJDpQ0Usc6Z2PTpsst/Y8=
+X-Google-Smtp-Source: AA6agR5/tXJBEmsdkgToFTmjPmHUsp/dvq5yBzTMQr6MrvRZDCpTpntr/t05Wcfx+NcnFLfwSuWE2Q==
+X-Received: by 2002:a63:fe12:0:b0:42a:e57:7464 with SMTP id p18-20020a63fe12000000b0042a0e577464mr29836274pgh.552.1662104252627;
+        Fri, 02 Sep 2022 00:37:32 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id l64-20020a639143000000b0042b435c6526sm729221pge.79.2022.09.02.00.37.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 00:37:32 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.songyi@zte.com.cn
+To:     steffen.klassert@secunet.com
+Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhang songyi <zhang.songyi@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH linux-next] xfrm: Remove the unneeded result variable
+Date:   Fri,  2 Sep 2022 07:37:17 +0000
+Message-Id: <20220902073717.319844-1-zhang.songyi@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
-Content-Language: en-US
-To:     Florian Fainelli <f.fainelli@gmail.com>, <netdev@vger.kernel.org>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Francesco Dolcini <francesco.dolcini@toradex.com>,
-        Andrew Lunn <andrew@lunn.ch>, <kernel@pengutronix.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-References: <20220901140402.64804-1-csokas.bence@prolan.hu>
- <80f9cb5b-0e02-a367-5263-4fbffec055bb@gmail.com>
-From:   =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>
-In-Reply-To: <80f9cb5b-0e02-a367-5263-4fbffec055bb@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.254.7.28]
-X-ClientProxiedBy: atlas.intranet.prolan.hu (10.254.0.229) To
- atlas.intranet.prolan.hu (10.254.0.229)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A29971EF456627561
-X-TM-AS-GCONF: 00
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: zhang songyi <zhang.songyi@zte.com.cn>
 
-On 2022. 09. 01. 18:26, Florian Fainelli wrote:
-> 
->>       schedule_delayed_work(&fep->time_keep, HZ);
->>   }
->> @@ -599,8 +593,6 @@ void fec_ptp_init(struct platform_device *pdev, 
->> int irq_idx)
->>       }
->>       fep->ptp_inc = NSEC_PER_SEC / fep->cycle_speed;
->> -    spin_lock_init(&fep->tmreg_lock);
-> 
-> This change needs to be kept as there is no other code in the driver 
-> that would initialize the tmreg_lock otherwise. Try building a kernel 
-> with spinlock debugging enabled and you should see it barf with an 
-> incorrect spinlock bad magic.
+Return the xfrmi_create() directly instead of storing it in another
+redundant variable.
 
-`fec_ptp_init()` is called from `fec_probe()`, which init's the spinlock:
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
+---
+ net/xfrm/xfrm_interface.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- > @@ -3907,7 +3908,7 @@ fec_probe(struct platform_device *pdev)
- >         }
- >
- >         fep->ptp_clk_on = false;
- > -       mutex_init(&fep->ptp_clk_mutex);
- > +       spin_lock_init(&fep->tmreg_lock);
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 5a67b120c4db..5508dc11ce42 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -774,7 +774,6 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 	struct net *net = dev_net(dev);
+ 	struct xfrm_if_parms p = {};
+ 	struct xfrm_if *xi;
+-	int err;
+ 
+ 	xfrmi_netlink_parms(data, &p);
+ 	if (p.collect_md) {
+@@ -804,8 +803,7 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 	xi->net = net;
+ 	xi->dev = dev;
+ 
+-	err = xfrmi_create(dev);
+-	return err;
++	return xfrmi_create(dev);
+ }
+ 
+ static void xfrmi_dellink(struct net_device *dev, struct list_head *head)
+-- 
+2.25.1
 
-Bence
+
