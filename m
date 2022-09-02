@@ -2,134 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE7D5AA45A
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 02:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FB35AA4B3
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 02:55:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233795AbiIBA2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 20:28:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34126 "EHLO
+        id S234026AbiIBAyO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 20:54:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232199AbiIBA2C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 20:28:02 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C03F194EFD
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 17:28:01 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 28208pkD018342
-        for <netdev@vger.kernel.org>; Thu, 1 Sep 2022 17:28:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=facebook; bh=AaEt7Q3ZHEEiNEJDTzWAp0gFrVoSuSH9qSvdafmSdzk=;
- b=qCZEFTXaKMgiyYcH96lR2hrK19qy1A/nvEpN4MrA+ZZrQcJ8KAgsbttdYOLbcoBWEg/O
- PCehaVNrXMwYYcRgeBppAyfzUuxu9sGV6vIMKzmbgtLQRDVAZhVjmV0jh7Kh9Eh9/3cq
- Kazfx/YW1D/EZgdTqhAMUhOZx9u+rfYRq8k= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3jaur6d3f3-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 17:28:00 -0700
-Received: from twshared10425.14.frc2.facebook.com (2620:10d:c085:108::4) by
- mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.31; Thu, 1 Sep 2022 17:27:58 -0700
-Received: by devbig933.frc1.facebook.com (Postfix, from userid 6611)
-        id 589328C47A37; Thu,  1 Sep 2022 17:27:50 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, <kernel-team@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH v2 bpf-next 00/17] bpf: net: Remove duplicated code from bpf_getsockopt()
-Date:   Thu, 1 Sep 2022 17:27:50 -0700
-Message-ID: <20220902002750.2887415-1-kafai@fb.com>
-X-Mailer: git-send-email 2.30.2
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: oho68MVZKNliihQdinKCiFh27OLLMahN
-X-Proofpoint-GUID: oho68MVZKNliihQdinKCiFh27OLLMahN
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S232835AbiIBAyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 20:54:13 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D5183BC3
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 17:54:12 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id d126so563190vsd.13
+        for <netdev@vger.kernel.org>; Thu, 01 Sep 2022 17:54:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=Z4jZhw7mGJwuXQjUPY9DDPjI76uAYRiiTmD0/hJHRkM=;
+        b=nIyyFwXzkH01PkquT1Rue1bNSrCVjD98245QZcpk8KOScszIgLbylNpaBS6YJIdqKU
+         FsL0wilrkLm1cskXgcVpKf7/PMkTTrsk9DFvWcoOl3UfIKORtrfnWAWZ0B+MsB3vxnP5
+         tf5cUegvBBAOZxP2g18E3tNH/y4vZLj9oYlPH9WBzF2/7Yw7C9FUHrCVkglCA+CCgF2G
+         hpoOhk382Kck/l5yOtaVuEQ3LnbDeKIVssUmtras+Tb/lOdozkc2HlH7gT1Q10K7vZeV
+         L7T850wzHs2FGE4KMnUpzLlZUQ/w0A9I07zJ/41S7rBnyTiWpCeh4wpiV+90LuQLXQwB
+         ufIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=Z4jZhw7mGJwuXQjUPY9DDPjI76uAYRiiTmD0/hJHRkM=;
+        b=pUz4gp4sYOP4i98/Urqg0vljUhFqCtdzH6X/trnvM+mbndnPkWEOFvGl/WGEwpcj6S
+         UvYsST59v/7wy3Glb0N4e/VXl+OhzxgK1mtAXDiL4Pc51uf4pXqCQom3fY+tasWwfmnS
+         EUE6YBdlK+OX0TNOwUiOX1ePADZdb0Lg95SFHh6JmUdhOtsEKNZzi2UfFdKW106SMsF1
+         X8h3e+TmJmesfOmCHbFpzaW4//q8QQbYyA5zZ0gb4vvLUPC5KZ66G1RZBXK2x6JRdLt0
+         cf1iZn77oNf6G3RdeXt8ojPdqh1xR3rX8EIEYd3TnC/7qa7qFo2R9YKOc2uNGEsrImYh
+         QhSw==
+X-Gm-Message-State: ACgBeo0oHySoHZoxL/NUCRUk+BO3P42FS4ouhqOV71ePSMFyXV2OA7i6
+        tzWtm6g/2zqXJh/0q5u8L2zMJAWMrXrW4UEc28j+6A==
+X-Google-Smtp-Source: AA6agR4eK/rvBWvQKYqMgWclKa76PDOzLtRuN2u8uCKDsbgPEogq6bx3tt/nJSUP7wDE9TpWE+18IrBrRutIk5cRqlE=
+X-Received: by 2002:a67:d313:0:b0:390:ee9f:610a with SMTP id
+ a19-20020a67d313000000b00390ee9f610amr6689227vsj.17.1662080051630; Thu, 01
+ Sep 2022 17:54:11 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-01_12,2022-08-31_03,2022-06-22_01
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220829195805.1.Ic8eabc8ed89a07c3d52726dd017539069faac6c4@changeid>
+In-Reply-To: <20220829195805.1.Ic8eabc8ed89a07c3d52726dd017539069faac6c4@changeid>
+From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
+Date:   Thu, 1 Sep 2022 17:54:00 -0700
+Message-ID: <CAN61AdcHDEB=nG7sti8uiqv534P1N21VCx+XuqnkVUOjeoADkg@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: Call shutdown for HCI_USER_CHANNEL
+To:     linux-bluetooth@vger.kernel.org
+Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin KaFai Lau <martin.lau@kernel.org>
+Please avoid merging.
 
-The earlier commits [0] removed duplicated code from bpf_setsockopt().
-This series is to remove duplicated code from bpf_getsockopt().
+After additional testing, I've found a problem with btusb->shutdown
+not working for Intel controllers.
 
-Unlike the setsockopt() which had already changed to take
-the sockptr_t argument, the same has not been done to
-getsockopt().  This is the extra step being done in this
-series.
+btusb_shutdown_intel uses __hci_sync_cmd(...) to send the command and
+the command complete will not get captured because it is using hci
+user channel. We'll need a more invasive change to remove the
+userchannel flag during close so that the stack can properly clean up.
 
-[0]: https://lore.kernel.org/all/20220817061704.4174272-1-kafai@fb.com/
 
-v2:
-- The previous v2 did not reach the list. It is a resend.
-- Add comments on bpf_getsockopt() should not free
-  the saved_syn (Stanislav)
-- Explicitly null-terminate the tcp-cc name (Stanislav)
-
-Martin KaFai Lau (17):
-  net: Change sock_getsockopt() to take the sk ptr instead of the sock
-    ptr
-  bpf: net: Change sk_getsockopt() to take the sockptr_t argument
-  bpf: net: Avoid sk_getsockopt() taking sk lock when called from bpf
-  bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument
-  bpf: net: Avoid do_tcp_getsockopt() taking sk lock when called from
-    bpf
-  bpf: net: Change do_ip_getsockopt() to take the sockptr_t argument
-  bpf: net: Avoid do_ip_getsockopt() taking sk lock when called from bpf
-  net: Remove unused flags argument from do_ipv6_getsockopt
-  net: Add a len argument to compat_ipv6_get_msfilter()
-  bpf: net: Change do_ipv6_getsockopt() to take the sockptr_t argument
-  bpf: net: Avoid do_ipv6_getsockopt() taking sk lock when called from
-    bpf
-  bpf: Embed kernel CONFIG check into the if statement in bpf_getsockopt
-  bpf: Change bpf_getsockopt(SOL_SOCKET) to reuse sk_getsockopt()
-  bpf: Change bpf_getsockopt(SOL_TCP) to reuse do_tcp_getsockopt()
-  bpf: Change bpf_getsockopt(SOL_IP) to reuse do_ip_getsockopt()
-  bpf: Change bpf_getsockopt(SOL_IPV6) to reuse do_ipv6_getsockopt()
-  selftest/bpf: Add test for bpf_getsockopt()
-
- include/linux/filter.h                        |   3 +-
- include/linux/igmp.h                          |   4 +-
- include/linux/mroute.h                        |   6 +-
- include/linux/mroute6.h                       |   4 +-
- include/linux/sockptr.h                       |   5 +
- include/net/ip.h                              |   2 +
- include/net/ipv6.h                            |   4 +-
- include/net/ipv6_stubs.h                      |   2 +
- include/net/sock.h                            |   2 +
- include/net/tcp.h                             |   2 +
- net/core/filter.c                             | 220 ++++++++----------
- net/core/sock.c                               |  51 ++--
- net/ipv4/igmp.c                               |  22 +-
- net/ipv4/ip_sockglue.c                        |  98 ++++----
- net/ipv4/ipmr.c                               |   9 +-
- net/ipv4/tcp.c                                |  92 ++++----
- net/ipv6/af_inet6.c                           |   1 +
- net/ipv6/ip6mr.c                              |  10 +-
- net/ipv6/ipv6_sockglue.c                      |  95 ++++----
- net/ipv6/mcast.c                              |   8 +-
- .../selftests/bpf/progs/bpf_tracing_net.h     |   1 +
- .../selftests/bpf/progs/setget_sockopt.c      | 148 ++++--------
- 22 files changed, 379 insertions(+), 410 deletions(-)
-
---=20
-2.30.2
-
+On Mon, Aug 29, 2022 at 7:58 PM Abhishek Pandit-Subedi
+<abhishekpandit@google.com> wrote:
+>
+> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+>
+> Some drivers depend on shutdown being called for proper operation.
+> There's no reason to restrict this from being called when using
+> HCI_USER_CHANNEL.
+>
+> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+> ---
+> This is easy to reproduce on QCA6174-A, which uses the hci_qca driver.
+> Simply open the socket, bind as userchannel and close again. It will
+> succeed the first time and fail the second time (because shutdown wasn't
+> called). A similar bug also occurs with btmtksdio (using MT7921).
+>
+> Question for maintainers: What is a driver supposed to be doing during
+> shutdown? We should add some documentation to `struct hci_dev` to
+> clarify.
+>
+>
+>  net/bluetooth/hci_sync.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
+> index e08c0503027d..be78fd708f16 100644
+> --- a/net/bluetooth/hci_sync.c
+> +++ b/net/bluetooth/hci_sync.c
+> @@ -4680,7 +4680,6 @@ int hci_dev_close_sync(struct hci_dev *hdev)
+>         }
+>
+>         if (!hci_dev_test_flag(hdev, HCI_UNREGISTER) &&
+> -           !hci_dev_test_flag(hdev, HCI_USER_CHANNEL) &&
+>             test_bit(HCI_UP, &hdev->flags)) {
+>                 /* Execute vendor specific shutdown routine */
+>                 if (hdev->shutdown)
+> --
+> 2.37.2.672.g94769d06f0-goog
+>
