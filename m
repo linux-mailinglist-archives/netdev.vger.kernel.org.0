@@ -2,109 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8575AA8D2
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E495AA903
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 09:43:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235259AbiIBHhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 03:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42838 "EHLO
+        id S235284AbiIBHnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 03:43:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233218AbiIBHhe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:37:34 -0400
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A32D73936;
-        Fri,  2 Sep 2022 00:37:33 -0700 (PDT)
-Received: by mail-pf1-x435.google.com with SMTP id l65so1099931pfl.8;
-        Fri, 02 Sep 2022 00:37:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=SUpu6LE3Bg1N7sM9B4FOf+h9/LVY6PqSU+bwKRQ0w90=;
-        b=HUTjs1pkKOMO9HiNmZRNq0ZWGNuOat/h1TmqrfLtlyWhL6h+fikdz6CdTQWOyK8reX
-         yfIRKADSqRrU/H9u3XON+IhtzSTXKeTqqY2fjqyiqvg9g+EPURIJSsIq5fTwHymmapAt
-         LQDvGPyRyzYTgxScNKjLl+80lZ/JFaIwlqe6C4aMJQg9bho6A+Y0osIs59notUHacSy8
-         lQl9D0zLHHgL80WmSnNqijg/7zjotcbziOskOYnGlXzAsP2Wo2cR7RilsY2HGyWfm5ph
-         L7bf4MkVcgR2L4Z1mRNYXPE5EAONynVeCJ5B5MgkGhA6aFcrHtp/b7a7V1uOBuBsvmA2
-         2wJQ==
+        with ESMTP id S235436AbiIBHm7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 03:42:59 -0400
+Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02EFEBAD9C
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 00:42:58 -0700 (PDT)
+Received: by mail-ed1-f44.google.com with SMTP id r4so1543675edi.8
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 00:42:57 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=SUpu6LE3Bg1N7sM9B4FOf+h9/LVY6PqSU+bwKRQ0w90=;
-        b=zXNAWvh7xTuFTF9u6yY3sBj2fuScHVAKFuJYSP9luX+498sbvUjwQXZGixZRpFy7aE
-         U5P46D6sRVT/TVjwqFfK6omjn4noZr2LfKRc/2Gxhh6jc8t+uxM+xFmi6M/qsmv1YQY2
-         LyCyLNE5wkuveo89z5ldSDcEjr61IF9gBN/SBLNFWfLN4PxSrHdWLCUnkmN8EtBynvVX
-         g5xtB57/x5Oy5sIjWNx/ik4c73AapTnoch1lFZEtNujaYrDIYwvKIhKOzGnSMwnQ9pIJ
-         Eb3BfS0z5Bs0inIkC4HlVNt0+6SZoX4ljeBglJe3wgQXxbdHaJ0bmziOJXEzFMnYrndW
-         O4wA==
-X-Gm-Message-State: ACgBeo3Ai4IMa69j7aF4opXMjRPxHUMQPz+MwWGmgwPuSQoEMOm3bP5d
-        E3VkzI9qZrdJDpQ0Usc6Z2PTpsst/Y8=
-X-Google-Smtp-Source: AA6agR5/tXJBEmsdkgToFTmjPmHUsp/dvq5yBzTMQr6MrvRZDCpTpntr/t05Wcfx+NcnFLfwSuWE2Q==
-X-Received: by 2002:a63:fe12:0:b0:42a:e57:7464 with SMTP id p18-20020a63fe12000000b0042a0e577464mr29836274pgh.552.1662104252627;
-        Fri, 02 Sep 2022 00:37:32 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id l64-20020a639143000000b0042b435c6526sm729221pge.79.2022.09.02.00.37.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 00:37:32 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: zhang.songyi@zte.com.cn
-To:     steffen.klassert@secunet.com
-Cc:     herbert@gondor.apana.org.au, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zhang songyi <zhang.songyi@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH linux-next] xfrm: Remove the unneeded result variable
-Date:   Fri,  2 Sep 2022 07:37:17 +0000
-Message-Id: <20220902073717.319844-1-zhang.songyi@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=hYc1BgRQTqFp6kArhlEDUXpNgOxV8EtZ92C9F9zU1Jw=;
+        b=WHxEuZo43hc+WdgiRGMpLXDVwTHYffew8+4paK3qP82MMDBVM4H387ZZaXLzor5HXO
+         aZzyiyNAB/UqY6l2bS0uPyDx8jfGtVfUOdt6ujiNx0T+0gNUc+asZpXwJMVrsfpvBaau
+         jd0WQd3O0BxXl3qT+KzgBn4y4gkqPc8xXIbwwx1nloiwjrWCDUIxpvjeFyk/6dWm4aOf
+         qiUKsD6vJs4bthSGBud5fT1JFfikwNM3M+z+i29np/ycjuo/+7uyg32LfuuooGEjYEqN
+         XOELGtYuKywUDGQTFQE4Yow7Zqf3WIWgFO2cdLe9/IaR/kwIOO6HR/nkUGk0gD9XLjju
+         qkDQ==
+X-Gm-Message-State: ACgBeo2Ppj6/V3nPoGAMMtgrezVkOoN8dHKgFEd+uXCJyKdzha9D+lYm
+        sbhO0fEVVMI9Rhi0lN1EUaw=
+X-Google-Smtp-Source: AA6agR6oQrqTJa9aMPYzkq30in5sWP+WGTdhDuVbY2Ky3xyVGqDI5n1H5Spj5BUl0Ljivflz2UTCAw==
+X-Received: by 2002:a05:6402:4305:b0:448:5b80:757a with SMTP id m5-20020a056402430500b004485b80757amr21461469edc.198.1662104576276;
+        Fri, 02 Sep 2022 00:42:56 -0700 (PDT)
+Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
+        by smtp.gmail.com with ESMTPSA id lb14-20020a170907784e00b00741a0c3f4cdsm812049ejc.189.2022.09.02.00.42.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 00:42:55 -0700 (PDT)
+Message-ID: <6a426c91-5c03-a328-d341-ef98bc3d8115@kernel.org>
+Date:   Fri, 2 Sep 2022 09:42:54 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.0
+Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle to
+ GNSS
+Content-Language: en-US
+To:     Johan Hovold <johan@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        Michal Michalik <michal.michalik@intel.com>,
+        netdev@vger.kernel.org, richardcochran@gmail.com,
+        Gurucharan <gurucharanx.g@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
+ <20220829220049.333434-4-anthony.l.nguyen@intel.com>
+ <20220831145439.2f268c34@kernel.org> <YxBU5AV4jfqaExaW@hovoldconsulting.com>
+From:   Jiri Slaby <jirislaby@kernel.org>
+In-Reply-To: <YxBU5AV4jfqaExaW@hovoldconsulting.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: zhang songyi <zhang.songyi@zte.com.cn>
+On 01. 09. 22, 8:44, Johan Hovold wrote:
+> Looks like this was merged in 5.18 with 43113ff73453 ("ice: add TTY for
+> GNSS module for E810T device") without any input from people familiar
+> with tty either.
 
-Return the xfrmi_create() directly instead of storing it in another
-redundant variable.
+FWIW doesn't it crash in ice_gnss_tty_write() on parallel tty opens due to:
+          tty->driver_data = NULL;
+in ice_gnss_tty_open()?
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: zhang songyi <zhang.songyi@zte.com.cn>
----
- net/xfrm/xfrm_interface.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+There are many "interesting" constructs in the driver...
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 5a67b120c4db..5508dc11ce42 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -774,7 +774,6 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
- 	struct net *net = dev_net(dev);
- 	struct xfrm_if_parms p = {};
- 	struct xfrm_if *xi;
--	int err;
- 
- 	xfrmi_netlink_parms(data, &p);
- 	if (p.collect_md) {
-@@ -804,8 +803,7 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
- 	xi->net = net;
- 	xi->dev = dev;
- 
--	err = xfrmi_create(dev);
--	return err;
-+	return xfrmi_create(dev);
- }
- 
- static void xfrmi_dellink(struct net_device *dev, struct list_head *head)
+thanks,
 -- 
-2.25.1
-
+js
+suse labs
 
