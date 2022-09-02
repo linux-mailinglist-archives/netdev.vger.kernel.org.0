@@ -2,63 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6293F5ABA9E
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 00:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 633215ABAB8
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 00:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230165AbiIBWE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 18:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        id S230291AbiIBWQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 18:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231481AbiIBWEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 18:04:35 -0400
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37C6AFCA06;
-        Fri,  2 Sep 2022 15:04:08 -0700 (PDT)
-Received: by mail-pj1-x1033.google.com with SMTP id fa2so3225089pjb.2;
-        Fri, 02 Sep 2022 15:04:07 -0700 (PDT)
+        with ESMTP id S229623AbiIBWQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 18:16:36 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4561AA032A
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 15:16:35 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id a9-20020a17090a8c0900b001fff9a99c0fso1401000pjo.5
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 15:16:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date;
-        bh=bRGWcmrLWTN0iCYEgWIMpsWdyoVsz6juOIhN3krZLjU=;
-        b=m5ScyHtrwMLj69oD++9ubbS3xEaOJJvuMKpdDPaztEq/KAahi1gmsj83Re8Irw1dkF
-         4AmREaYYDqPCOztoQbND8+ptk1uQDNBLwJvEYoHmU4jLbs9ST4+gDo77EUhlTLDSvssA
-         zWRMEOrZyMrwv6xVfOQ88T7hPHZkxmWsOWl8H+XnFK7QnM3uIkr7SjiRvWKkfeKKCGHa
-         cZukNGWWQpBPT9zZde2CM8oTnUvvEUWE1PYYPTFm0cBj/G4ehXqd6KvAdMH7lKHYhQtt
-         LJ2I+ESvymmmnVWWHXVK2mtSLfEZa0uLSVoRW9VqI8AkWbbVis+HKDUUhHo6C0yRyXvH
-         Ar9g==
+        d=google.com; s=20210112;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date;
+        bh=Bh3U2E64C9QgQ7uAnXLjMJWJpvMMy/IcNnabGflMPaI=;
+        b=Sz4k555vieOfiRqNHm2fa7Zrha640Ob2D9ONPRQCeuVt+m9s3O8/Wt43T6AU8SE/SY
+         v/EGgDMcVGV9nQNnIE6cobRVvD+hTAUy1tZQ9Xk7Yf4ETk/fWudxzsdv8HdM1JACSk3g
+         pM9ei7VPh9K1QoON/Zwe9GHoqrd2hOSnQ/srmIIv1swV8bT5F1o9puZASPjW6/laNpBP
+         W6w3ja+ro0cQ2QrWDgCSRp0lNccaeMxtjvLFMIznTcrbC2vAMXt/NBwiqFfa/ZbW5Guw
+         fPLg8ClctTyK66N1jZFiBLzY3WFaFCvjbzqmmj1R2/rxLsXHdeWOvkVonhUiTjj/X8bu
+         4Www==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date;
-        bh=bRGWcmrLWTN0iCYEgWIMpsWdyoVsz6juOIhN3krZLjU=;
-        b=hXgxcbJtRnvsncoZkFU1j9z5Pv5YlROWmatHSuE4gBZmaDFHTEUqBdE7OmKxZrIZMi
-         zOIhn9uLBq5TL1+Ez+2QoQCg6OFrElBqp4HWGRreHtaLv4ppuSmP8fAy0dcUvJuRBNUT
-         xw3F5UP1e4lGDJF4OSae3cxcHhXK4KpTNnO8cd/FhpdPfPopmhEwvvlgfHXXgzooWQuQ
-         ID5W9z2TwgCy5QrKq2AN5iIzu+QJY02R3znCCziy5/KwtTciMKUHRTImQZr6uYrfmoil
-         GsJHBtNA57JcCRZ0RUbOidfiv1kKxd0WdQ4/EWe8dw2Ftq9c4wzRiuEqKWgQk0PI+329
-         lj2w==
-X-Gm-Message-State: ACgBeo2hz28QWghszE7KrqyGbPPgh8ugaXP9XKN91ho+NwvqagzZ2E+m
-        8EDHE2tFL0b5LcxKuS5LOVOHTr5AIeE=
-X-Google-Smtp-Source: AA6agR4+NXZELVUfiRUYyyp28L0V4rwpw4Ncg63iqrpTR7gvEH0mLkF4UjTUCD+ePNc3oXO85MaO7w==
-X-Received: by 2002:a17:903:124e:b0:172:7d49:b843 with SMTP id u14-20020a170903124e00b001727d49b843mr36961948plh.52.1662156246584;
-        Fri, 02 Sep 2022 15:04:06 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id c3-20020aa79523000000b0053813de1fdasm2340282pfp.28.2022.09.02.15.04.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 15:04:05 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth 2022-09-02
-Date:   Fri,  2 Sep 2022 15:04:04 -0700
-Message-Id: <20220902220404.2013285-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.37.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date;
+        bh=Bh3U2E64C9QgQ7uAnXLjMJWJpvMMy/IcNnabGflMPaI=;
+        b=rzNIKp8otk6fm7sY4WuZiHspySZwX7LkG1NBTDfDjrFg/BDSINHkkb6x4K5dc5vYn3
+         bTW10VFC6IJ3URJDPEHkIpQrk2Y7PteqUCiZDIwVHI0Y3nvmx7viV0GNdj1iVHiAssvX
+         eFGdn6lRWREvb33cXCv0g21M2cH++gMAHW5x1JbqtBBuHDkg+YVOBrDPAfYeancwkVXN
+         NAAXQDtpXnac8cnyLiXz9/hEEY5RZ9zWdIg4mlsBuhVCbkH4fcM+APvbXqJdNZf3zrwd
+         nlGyW/ZsLFvB6a4PHEzRqW71YNxnpQtDBQX3uZubINwh7Smb7nKlao+CD/+bEnn49NA3
+         avqw==
+X-Gm-Message-State: ACgBeo2nArGbmkhoXBGW9+XFQqi7nvIfgqOryKoo06hIPz9OEb1xfkD7
+        vj8cP14VyBQ3DSKZ6s1mR3j8OnE=
+X-Google-Smtp-Source: AA6agR6/G1ix2sGJUJSuRYZeQSXlLouOinEnX5a7t0AflyvR0shyKG5oczRBr9Ppu8tCoJ9lhMTlnTA=
+X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
+ (user=sdf job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
+ t9-20020a17090a024900b001e0a8a33c6cmr733pje.0.1662156994353; Fri, 02 Sep 2022
+ 15:16:34 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 15:16:32 -0700
+In-Reply-To: <20220902002750.2887415-1-kafai@fb.com>
+Mime-Version: 1.0
+References: <20220902002750.2887415-1-kafai@fb.com>
+Message-ID: <YxKAwN/PgQE4pAon@google.com>
+Subject: Re: [PATCH v2 bpf-next 00/17] bpf: net: Remove duplicated code from bpf_getsockopt()
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        David Miller <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
+        Paolo Abeni <pabeni@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,26 +72,75 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit e7506d344bf180096a86ec393515861fb5245915:
+On 09/01, Martin KaFai Lau wrote:
+> From: Martin KaFai Lau <martin.lau@kernel.org>
 
-  Merge tag 'rxrpc-fixes-20220901' of git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs (2022-09-02 12:45:32 +0100)
+> The earlier commits [0] removed duplicated code from bpf_setsockopt().
+> This series is to remove duplicated code from bpf_getsockopt().
 
-are available in the Git repository at:
+> Unlike the setsockopt() which had already changed to take
+> the sockptr_t argument, the same has not been done to
+> getsockopt().  This is the extra step being done in this
+> series.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-09-02
+> [0]: https://lore.kernel.org/all/20220817061704.4174272-1-kafai@fb.com/
 
-for you to fetch changes up to be318363daa2939453b4d80981de3e9c28b66135:
+> v2:
+> - The previous v2 did not reach the list. It is a resend.
+> - Add comments on bpf_getsockopt() should not free
+>    the saved_syn (Stanislav)
+> - Explicitly null-terminate the tcp-cc name (Stanislav)
 
-  Bluetooth: hci_sync: Fix hci_read_buffer_size_sync (2022-09-02 14:01:28 -0700)
+Looks great!
 
-----------------------------------------------------------------
-bluetooth pull request for net:
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
 
- - Fix regression preventing ACL packet transmission
+> Martin KaFai Lau (17):
+>    net: Change sock_getsockopt() to take the sk ptr instead of the sock
+>      ptr
+>    bpf: net: Change sk_getsockopt() to take the sockptr_t argument
+>    bpf: net: Avoid sk_getsockopt() taking sk lock when called from bpf
+>    bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument
+>    bpf: net: Avoid do_tcp_getsockopt() taking sk lock when called from
+>      bpf
+>    bpf: net: Change do_ip_getsockopt() to take the sockptr_t argument
+>    bpf: net: Avoid do_ip_getsockopt() taking sk lock when called from bpf
+>    net: Remove unused flags argument from do_ipv6_getsockopt
+>    net: Add a len argument to compat_ipv6_get_msfilter()
+>    bpf: net: Change do_ipv6_getsockopt() to take the sockptr_t argument
+>    bpf: net: Avoid do_ipv6_getsockopt() taking sk lock when called from
+>      bpf
+>    bpf: Embed kernel CONFIG check into the if statement in bpf_getsockopt
+>    bpf: Change bpf_getsockopt(SOL_SOCKET) to reuse sk_getsockopt()
+>    bpf: Change bpf_getsockopt(SOL_TCP) to reuse do_tcp_getsockopt()
+>    bpf: Change bpf_getsockopt(SOL_IP) to reuse do_ip_getsockopt()
+>    bpf: Change bpf_getsockopt(SOL_IPV6) to reuse do_ipv6_getsockopt()
+>    selftest/bpf: Add test for bpf_getsockopt()
 
-----------------------------------------------------------------
-Luiz Augusto von Dentz (1):
-      Bluetooth: hci_sync: Fix hci_read_buffer_size_sync
+>   include/linux/filter.h                        |   3 +-
+>   include/linux/igmp.h                          |   4 +-
+>   include/linux/mroute.h                        |   6 +-
+>   include/linux/mroute6.h                       |   4 +-
+>   include/linux/sockptr.h                       |   5 +
+>   include/net/ip.h                              |   2 +
+>   include/net/ipv6.h                            |   4 +-
+>   include/net/ipv6_stubs.h                      |   2 +
+>   include/net/sock.h                            |   2 +
+>   include/net/tcp.h                             |   2 +
+>   net/core/filter.c                             | 220 ++++++++----------
+>   net/core/sock.c                               |  51 ++--
+>   net/ipv4/igmp.c                               |  22 +-
+>   net/ipv4/ip_sockglue.c                        |  98 ++++----
+>   net/ipv4/ipmr.c                               |   9 +-
+>   net/ipv4/tcp.c                                |  92 ++++----
+>   net/ipv6/af_inet6.c                           |   1 +
+>   net/ipv6/ip6mr.c                              |  10 +-
+>   net/ipv6/ipv6_sockglue.c                      |  95 ++++----
+>   net/ipv6/mcast.c                              |   8 +-
+>   .../selftests/bpf/progs/bpf_tracing_net.h     |   1 +
+>   .../selftests/bpf/progs/setget_sockopt.c      | 148 ++++--------
+>   22 files changed, 379 insertions(+), 410 deletions(-)
 
- net/bluetooth/hci_sync.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> --
+> 2.30.2
+
