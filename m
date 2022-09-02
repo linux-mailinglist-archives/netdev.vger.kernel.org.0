@@ -2,196 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CB115AB99B
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 22:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 263855AB9A4
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 22:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbiIBUu7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 16:50:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S230384AbiIBUws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 16:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229579AbiIBUu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 16:50:58 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88DB4A723E;
-        Fri,  2 Sep 2022 13:50:52 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-12566bc8e52so4435724fac.12;
-        Fri, 02 Sep 2022 13:50:52 -0700 (PDT)
+        with ESMTP id S229980AbiIBUwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 16:52:46 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CE6D4BD4
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 13:52:44 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id a36so4183668edf.5
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 13:52:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date;
+        bh=/mRXpzrYYF2RNaSr3QgZLz1Gce9SNxFWGeHwVJda9dQ=;
+        b=jwadJ0nE7DpcByfjTk+akqw9P/i/p2UH9YpjxvmTpF6VTLyVURc5untxPNN4w/H/rl
+         i1d+/cAQE+AQZdH1UM/r5CzQ/ntOxXM6r4HHY0+VNb2wycjoZ4nIz2mEn1la7TQeGwnl
+         LMjl8iaqsrYG8sbnXEEqiQf6DZ+B04XLFQBN0bOO333dPqJEW5IvPP/XaH3UiIPyHE1L
+         jIuCvGOQ9zxXAqAjfhOxJxAuKvMYD4uJOwhk67X8EGjBIkTHtHuAolAEWQ4OCTBJnu1J
+         8JTzyF3gowQnyB+t5aktZ8DTUqz6W25dqF8LhZaPRiz1BJI1KBCu2w7lcQTSHjb8H/rp
+         k0ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
-        bh=EOpW4WejvYrrZZZ/HuJUkBNhBHbazAogZY3qNbeFoIE=;
-        b=1wMI1uEW3gqE0RtsGS5DDkVyA5/M0C1nhP8xWlck6Y4Nep1B6JRetlSKMp1N39S/p5
-         WzVBqc2A92HTreTwOdnb09cIaKIJb2MBtCJqkkUvFpCdHyx0sdV7rd7fcbX49bZOAuCX
-         d8QzJh7tMbm5cYY+dV2A4HAoYOUTeiIkPecQaGq0ejE1MjZIc5GIgsONv56ugnpaNvtu
-         xRR3urmAqAKMp3VjbF9zXpZopKTyLXiHrNdwp9j5ZhySwUdmEE8SmDq4FJJ7JwTpjFGE
-         qfT2bGKZfyFFKoSrxDHmMos+qwLjjugPutr1B3SKA7XHeh8H1fyKXVuGBretMTAnYArp
-         Brbw==
-X-Gm-Message-State: ACgBeo3Xjpg2S/hshI8xWb0uQewkTgPs4p3RyoGDYllfDPEkGWY1LbXa
-        d0uPt7UupyPl0Xplgfs/JQ==
-X-Google-Smtp-Source: AA6agR6pbUe/gxk0J9hqcfJSe/UXp4BZrJcIVle5VJp0L2jHl3JHWDzqJYX6EIL/eM+UckcDY9L+/w==
-X-Received: by 2002:a05:6808:1a13:b0:344:d744:5950 with SMTP id bk19-20020a0568081a1300b00344d7445950mr2661425oib.243.1662151851753;
-        Fri, 02 Sep 2022 13:50:51 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id h34-20020a9d2f25000000b00638ab4c953asm1429274otb.74.2022.09.02.13.50.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 13:50:51 -0700 (PDT)
-Received: (nullmailer pid 392304 invoked by uid 1000);
-        Fri, 02 Sep 2022 20:50:50 -0000
-Date:   Fri, 2 Sep 2022 15:50:50 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jonathan Corbet <corbet@lwn.net>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-        David Jander <david@protonic.nl>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v5 6/7] dt-bindings: net: pse-dt: add bindings
- for regulator based PoDL PSE controller
-Message-ID: <20220902205050.GA382567-robh@kernel.org>
-References: <20220831133240.3236779-1-o.rempel@pengutronix.de>
- <20220831133240.3236779-7-o.rempel@pengutronix.de>
+        h=content-transfer-encoding:content-language:cc:to:subject:from
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date;
+        bh=/mRXpzrYYF2RNaSr3QgZLz1Gce9SNxFWGeHwVJda9dQ=;
+        b=5YnRt9VghUkQAvN2m5uc5B+yvc+yp9u+uIXPGVg89PQXdmkfRHYpTZIqXKSxJrzu9S
+         T4VAwVGILnY+N1Rcjrpw0Tu5ByoIXwFeehIcToq5MO2dHlWhdKbt/Qine76UZSe3VyqP
+         hFIjtENMITthf/xP1mWLRU+aeF4P4bpOrxOyi5Xx221srQ7qp8D/TuIilWpBF6j57PIw
+         HOY1QcR8KrJPMowYTGhKWbF8zj/8IKJ6vfoDPohKJFoClVCmSB3a0zyxJxurLMssXF8R
+         XOUSefuDR6CxFs54xx9LlEL3i29RZu4yLmP+Nx2r/WTvbFFjiShd+uYteOsnGNQYv4Cc
+         CyPA==
+X-Gm-Message-State: ACgBeo2A42mSrYQg4jJAgbR66SuBnKtRcgmNGA5ayCOduTWkgouj8o5n
+        2oXubTdeprMWd8s1IAVE2v8=
+X-Google-Smtp-Source: AA6agR4q82/n9g8JzjXbGCf3l8VYqnismZli3Fvog811hYoB7Rigfqsp5s+I5ZUj7X2P/WxMJNkPXQ==
+X-Received: by 2002:a05:6402:5202:b0:448:ab5d:3b89 with SMTP id s2-20020a056402520200b00448ab5d3b89mr19034410edd.343.1662151962872;
+        Fri, 02 Sep 2022 13:52:42 -0700 (PDT)
+Received: from ?IPV6:2a01:c23:c4c2:4e00:f4b8:68d8:d295:8a3b? (dynamic-2a01-0c23-c4c2-4e00-f4b8-68d8-d295-8a3b.c23.pool.telefonica.de. [2a01:c23:c4c2:4e00:f4b8:68d8:d295:8a3b])
+        by smtp.googlemail.com with ESMTPSA id b4-20020a1709062b4400b007317f017e64sm1711617ejg.134.2022.09.02.13.52.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 13:52:42 -0700 (PDT)
+Message-ID: <68bd1e34-4251-4306-cc7d-e5ccc578acd9@gmail.com>
+Date:   Fri, 2 Sep 2022 22:52:34 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220831133240.3236779-7-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.13.0
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: use devm_clk_get_optional_enabled() to
+ simplify the code
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 03:32:39PM +0200, Oleksij Rempel wrote:
-> Add bindings for the regulator based Ethernet PoDL PSE controller and
-> generic bindings for all PSE controllers.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
-> changes v5:
-> - rename to podl-pse-regulator.yaml
-> - remove compatible description
-> - remove "-1" on node name
-> - add pse-controller.yaml for common properties
-> changes v4:
-> - rename to PSE regulator
-> - drop currently unused properties
-> - use own compatible for PoDL PSE
-> changes v2:
-> - rename compatible to more generic "ieee802.3-pse"
-> - add class and type properties for PoDL and PoE variants
-> - add pairs property
-> ---
->  .../net/pse-pd/podl-pse-regulator.yaml        | 40 +++++++++++++++++++
->  .../bindings/net/pse-pd/pse-controller.yaml   | 28 +++++++++++++
->  2 files changed, 68 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
->  create mode 100644 Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml b/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
-> new file mode 100644
-> index 0000000000000..c6b1c188abf7e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/pse-pd/podl-pse-regulator.yaml
-> @@ -0,0 +1,40 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/pse-pd/podl-pse-regulator.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Regulator based Power Sourcing Equipment
-> +
-> +maintainers:
-> +  - Oleksij Rempel <o.rempel@pengutronix.de>
-> +
-> +description: Regulator based PoDL PSE controller. The device must be referenced
-> +  by the PHY node to control power injection to the Ethernet cable.
-> +
-> +allOf:
-> +  - $ref: "pse-controller.yaml#"
-> +
-> +properties:
-> +  compatible:
-> +    const: podl-pse-regulator
-> +
-> +  '#pse-cells':
-> +    const: 0
-> +
-> +  pse-supply:
-> +    description: Power supply for the PSE controller
-> +
-> +additionalProperties: false
-> +
-> +required:
-> +  - compatible
-> +  - pse-supply
-> +
-> +examples:
-> +  - |
-> +    ethernet-pse {
-> +      compatible = "podl-pse-regulator";
-> +      pse-supply = <&reg_t1l1>;
-> +      #pse-cells = <0>;
-> +    };
-> diff --git a/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml b/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
-> new file mode 100644
-> index 0000000000000..36e398fea220c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/pse-pd/pse-controller.yaml
-> @@ -0,0 +1,28 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/pse-pd/pse-controller.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: PSE Generic Bindings
+Now that we have devm_clk_get_optional_enabled(), we don't have to
+open-code it.
 
-What is PSE?
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 37 ++---------------------
+ 1 file changed, 3 insertions(+), 34 deletions(-)
 
-When would I use this binding? Does this follow some spec? Who is 
-the consumer? Please answer all those questions in this doc.
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a8b0070bb..e6fb6f223 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5122,37 +5122,6 @@ static int rtl_jumbo_max(struct rtl8169_private *tp)
+ 	}
+ }
+ 
+-static void rtl_disable_clk(void *data)
+-{
+-	clk_disable_unprepare(data);
+-}
+-
+-static int rtl_get_ether_clk(struct rtl8169_private *tp)
+-{
+-	struct device *d = tp_to_dev(tp);
+-	struct clk *clk;
+-	int rc;
+-
+-	clk = devm_clk_get(d, "ether_clk");
+-	if (IS_ERR(clk)) {
+-		rc = PTR_ERR(clk);
+-		if (rc == -ENOENT)
+-			/* clk-core allows NULL (for suspend / resume) */
+-			rc = 0;
+-		else
+-			dev_err_probe(d, rc, "failed to get clk\n");
+-	} else {
+-		tp->clk = clk;
+-		rc = clk_prepare_enable(clk);
+-		if (rc)
+-			dev_err(d, "failed to enable clk: %d\n", rc);
+-		else
+-			rc = devm_add_action_or_reset(d, rtl_disable_clk, clk);
+-	}
+-
+-	return rc;
+-}
+-
+ static void rtl_init_mac_address(struct rtl8169_private *tp)
+ {
+ 	u8 mac_addr[ETH_ALEN] __aligned(2) = {};
+@@ -5216,9 +5185,9 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return -ENOMEM;
+ 
+ 	/* Get the *optional* external "ether_clk" used on some boards */
+-	rc = rtl_get_ether_clk(tp);
+-	if (rc)
+-		return rc;
++	tp->clk = devm_clk_get_optional_enabled(&pdev->dev, "ether_clk");
++	if (IS_ERR(tp->clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(tp->clk), "failed to get ether_clk\n");
+ 
+ 	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+ 	rc = pcim_enable_device(pdev);
+-- 
+2.37.3
 
-> +
-> +maintainers:
-> +  - Oleksij Rempel <o.rempel@pengutronix.de>
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^ethernet-pse(@[a-f0-9]+)?$"
-
-The format of the unit-address depends on the bus, so it shouldn't be 
-defined here. Just '^ethernet-pse(@.*)?$'.
-
-> +
-> +  "#pse-cells":
-> +    description:
-> +      Used to uniquely identify a PSE instance within an IC. Will be
-> +      0 on PSE nodes with only a single output and at least 1 on nodes
-> +      controlling several outputs.
-> +    enum: [0, 1]
-> +
-> +required:
-> +  - "#pse-cells"
-> +
-> +additionalProperties: true
-> +
-> +...
-> -- 
-> 2.30.2
-> 
-> 
