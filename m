@@ -2,63 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 171D55AABEE
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 11:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5595AAC08
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 12:07:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235696AbiIBJ5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 05:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
+        id S235500AbiIBKHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 06:07:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235656AbiIBJ5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 05:57:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19171CE4B6
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 02:57:18 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU3QC-0006vm-Ff; Fri, 02 Sep 2022 11:57:08 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oU3QB-0005Eq-97; Fri, 02 Sep 2022 11:57:07 +0200
-Date:   Fri, 2 Sep 2022 11:57:07 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Arun.Ramadoss@microchip.com, andrew@lunn.ch,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        vivien.didelot@gmail.com, san@skov.dk, linux@armlinux.org.uk,
-        f.fainelli@gmail.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        Woojung.Huh@microchip.com, davem@davemloft.net
-Subject: Re: [Patch net-next v2 0/9] net: dsa: microchip: add support for
- phylink mac config and link up
-Message-ID: <20220902095707.GA15827@pengutronix.de>
-References: <20220830065533.GA18106@pengutronix.de>
- <67690ec6367c9dc6d2df720dcf98e6e332d2105b.camel@microchip.com>
- <20220830095830.flxd3fw4sqyn425m@skbuf>
- <20220830160546.GB16715@pengutronix.de>
- <20220831074324.GD16715@pengutronix.de>
- <20220831151859.ubpkt5aljrp3hiph@skbuf>
- <20220831161055.GA2479@pengutronix.de>
- <6c4666fd48ce41f84dbdad63a5cd6f4d3be25f4a.camel@microchip.com>
- <20220901112721.GB2479@pengutronix.de>
- <20220901124737.mrfo3fefjsn4scuy@skbuf>
+        with ESMTP id S235365AbiIBKHP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 06:07:15 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D1DE99265
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 03:07:14 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id n17so1659997wrm.4
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 03:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date;
+        bh=PhHQ8RyBsxuJvvY+8C+AWydzhj3GUNz3lbYvul6n+9o=;
+        b=Q/Zq5d9KUmaas79+80zUMAtLh6/rGyaRn5QsFkBCfYTCeA/OjpeGV3QD/ajC0KOQlK
+         F46svkKISCGAIU3cKPXCVHdWSIkW9eEljG/gjgtnqpvbuMK/ZFJMfkLf8VIRh6Nghdu8
+         +q29dopi5ofKMHI3QBWyPaeObcxB+k60HnTCcXDWdupsZjIlqF33oH0S1St5B1DQBCr9
+         cKQM+pq+OnRo6HE7dGGf4K8fqxK52QKjlPpO881tCMlJVuHCRQC8oKTnBYyMF6BXAUJk
+         IctkFk43MMuX9XbUEs6YQq1pLNxE9OHtbVHMq1ILyEIEOWbmsbTVOLAs95VQNMilJAea
+         yyHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:organization:from:references
+         :cc:to:content-language:subject:reply-to:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=PhHQ8RyBsxuJvvY+8C+AWydzhj3GUNz3lbYvul6n+9o=;
+        b=lxe3rgwLeQzkSc+fL28+4qBEynMDHojBactNfPwEJL9jm1//lU3hGZgkl5hVW5n1HA
+         QKXpDvXiYmzQDc9wnXpNgwrs+qd7qrifkAxnOKjMT3jdjnGJ5+zs1gbr1AdlqJ7CiGnL
+         xc98/QwwdpT17I1HSbtNQKaldwyez09ZetN9peblf+mNXSrRh7j5Ej1ekVE+YHAQwgwY
+         Dh+OzCtGhOz09ii9InexjyPgOnWTIf9J/sIkEGSlpioK5dcVi42kbgf280n9ZfUTQhr7
+         ivOa+/x7hScxaUFMUQlYuqBuHJnQnpyoJSlbOSQshyh5GEN4OuIUCSuoLsGMDTfX0aFg
+         7Hlw==
+X-Gm-Message-State: ACgBeo07qZ9HPWiUehgEFiGLCk/YRnW5fjENHz/uefv+qB+nxzQOgULW
+        w6Op33OMnLVPEIecDXnpCdZRHnmq4u72Vw==
+X-Google-Smtp-Source: AA6agR4TI6pNsrKbyQRBgq+Ms6gkRea+0BeON4icM4M54V8iHfzu9nluq0T6BUgjqdzdEVXWEm5m9A==
+X-Received: by 2002:a5d:6d8f:0:b0:225:6285:47fb with SMTP id l15-20020a5d6d8f000000b00225628547fbmr17675569wrs.211.1662113232671;
+        Fri, 02 Sep 2022 03:07:12 -0700 (PDT)
+Received: from ?IPV6:2a01:e0a:b41:c160:5588:d7c8:6470:f973? ([2a01:e0a:b41:c160:5588:d7c8:6470:f973])
+        by smtp.gmail.com with ESMTPSA id k2-20020a5d6d42000000b00226f0a00348sm1115490wri.111.2022.09.02.03.07.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 03:07:12 -0700 (PDT)
+Message-ID: <fd70dbcd-961f-9edd-78e4-23a7ef20187b@6wind.com>
+Date:   Fri, 2 Sep 2022 12:07:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220901124737.mrfo3fefjsn4scuy@skbuf>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH v3 3/3] ipv4: add documentation of two sysctls about icmp
+Content-Language: en-US
+To:     cgel.zte@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        xu.xin16@zte.com.cn, Yunkai Zhang <zhang.yunkai@zte.com.cn>
+References: <20220830091453.286285-1-xu.xin16@zte.com.cn>
+ <20220830091718.286452-1-xu.xin16@zte.com.cn>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+In-Reply-To: <20220830091718.286452-1-xu.xin16@zte.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,49 +78,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
 
-On Thu, Sep 01, 2022 at 03:47:37PM +0300, Vladimir Oltean wrote:
-> On Thu, Sep 01, 2022 at 01:27:21PM +0200, Oleksij Rempel wrote:
-> > > The global register 0x06 responsibilities are bit 4 for 10/100mbps
-> > > speed selection, bit 5 for flow control and bit 6  for duplex
-> > > operation. Since these three are new features added during refactoring
-> > > I overlooked it. 
-> > > To fix this, either I need to return from the ksz_set_100_10mbit &
-> > > ksz_duplex_flowctrl function if the chip_id is ksz87xx or add
-> > > dev->dev_ops for this alone.  Kindly suggest on how to proceed.
-> > 
-> > I would prefer to got ops way, to clean things up.
+Le 30/08/2022 à 11:17, cgel.zte@gmail.com a écrit :
+> From: xu xin <xu.xin16@zte.com.cn>
 > 
-> I can't say that that one approach is better or worse than the other.
-> Indirect function calls are going to be more expensive than conditionals
-> on dev->chip_id, but we aren't in a fast path here, so it doesn't matter
-> too much.
+> Add the descriptions of the sysctls of error_cost and error_burst in
+> Documentation/networking/ip-sysctl.rst.
 > 
-> Having indirect function calls will in theory help simplify the logic of
-> the main function, but will require good forethought for what constitutes
-> an atom of functionality, in a high enough level such as to abstract
-> switch differences. Whereas conditionals don't require thinking that far,
-> you put them where you need them.
-> 
-> Also, indirect function calls will move the bloat somewhere else. I have
-> seen complaints in the past about the mv88e6xxx driver's layered structure,
-> making it difficult to see exactly what gets done for a certain chip.
-> 
-> It is probable that we don't want to mix these styles too much within a
-> single driver, so if work has already started towards dev_ops for
-> everything, then dev_ops be it, I guess.
-> 
-> Oleksij, are you going to submit patches with your proposal?
+> Signed-off-by: xu xin (CGEL ZTE) <xu.xin16@zte.com.cn>
+> Reviewed-by: Yunkai Zhang (CGEL ZTE) <zhang.yunkai@zte.com.cn>
+Maybe you could resubmit this one alone?
 
-I have send one simple patch for net to make it work. After this
-one will pop-up in then net-next i'll send other patches depending on
-this patch.
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Thank you,
+Nicolas
