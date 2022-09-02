@@ -2,318 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC755AAC2B
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 12:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AAF95AAC62
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 12:29:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235332AbiIBKQX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 06:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
+        id S233014AbiIBK3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 06:29:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbiIBKQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 06:16:21 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45FFA024D
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 03:16:19 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id v7-20020a1cac07000000b003a6062a4f81so3050811wme.1
-        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 03:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile-fr.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=lIu1VMzuHOf4otgmn5PSYSFBtSwiOzrtNK3zHzV551E=;
-        b=ESXd+mUFuCgJ8flokV92U0REiBHOwOVmS0EUCcGrX7avat0KNGPI5W4jdlTPpFgIHs
-         LFlJsAvUh4IukHiqTpbmc6fz48G+IlTYajLFlOcd90wAfZawraN9lgs98+Xjg2l4D16p
-         68+R5m3dZezAZuID/jwvx/tLzARyx4I5CLtSI++VbO2D3dhQKIF2FwDm4leC2U42MCCL
-         guUo5LfuS3a2xNtYQNz1RcLxtNNpVr27RJh9rlR8+n7Pu+gYiN0OP/G9w7H3y7uUizDZ
-         XtcNgKqSkpEQBi4yTzOS1MmmRKAIoY77bZHnaDs1GBmNqM4sxYElZNf6umSa9pauGq7j
-         BrCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=lIu1VMzuHOf4otgmn5PSYSFBtSwiOzrtNK3zHzV551E=;
-        b=tbTxMO/y2MAnlZAZKGm5buAYQQGMh/mzdfpbvhv2JW4QB3xdm2cu0fUra1cAv2BIq8
-         Zcy2ha48S3bYTy0F6cwU+JP2aPC7fANFjY4WwflVA1etkeNNOwUmacIDrsfbDfRGs9K7
-         xgBX1o11EeGHCCmRj9OZuRdmxeIeVSovm18EGb0exch1Ufi3yQ34bd/OMGSLEuayfyet
-         cu0flShWniiav++q/yTM7HqFbP5uUcOCtlLQdebEr9rMHBzvdFAeqvLfiGOOSdZB9+HA
-         KkW49wd5zSCkVOcN11pX/Zw3FdInG4K2Wp2I2ylEToMw7hJLdxUrDIIcXb7mbTyFqsUu
-         mHuw==
-X-Gm-Message-State: ACgBeo2PFyY3j9IJOCSzKrV9e22skaEBtMT5uW0nzm0yI5Eh/GoLgHps
-        8i4dMp352CR2wXxmGPW2OT7Mz6drEPMHFA==
-X-Google-Smtp-Source: AA6agR60z37ISZkEjTfLiQe/r/8jBFmd0kEd3HH07A9vu/SDAzr4hkuCL5NWJIT1qv9fBteLMfiDiA==
-X-Received: by 2002:a7b:c7d8:0:b0:3a6:34d2:1705 with SMTP id z24-20020a7bc7d8000000b003a634d21705mr2269043wmk.206.1662113778106;
-        Fri, 02 Sep 2022 03:16:18 -0700 (PDT)
-Received: from P-NTS-Evian.home (2a01cb058f8a18001c97b8d1b477d53f.ipv6.abo.wanadoo.fr. [2a01:cb05:8f8a:1800:1c97:b8d1:b477:d53f])
-        by smtp.gmail.com with ESMTPSA id a8-20020adfeec8000000b00226d1821abesm1140913wrp.56.2022.09.02.03.16.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Sep 2022 03:16:17 -0700 (PDT)
-From:   Romain Naour <romain.naour@smile.fr>
-To:     netdev@vger.kernel.org
-Cc:     pabeni@redhat.com, kuba@kernel.org, edumazet@google.com,
-        davem@davemloft.net, olteanv@gmail.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch,
-        UNGLinuxDriver@microchip.com, woojung.huh@microchip.com,
-        Romain Naour <romain.naour@skf.com>
-Subject: [PATCH v3: net-next 4/4] net: dsa: microchip: add regmap_range for KSZ9896 chip
-Date:   Fri,  2 Sep 2022 12:16:10 +0200
-Message-Id: <20220902101610.109646-4-romain.naour@smile.fr>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220902101610.109646-1-romain.naour@smile.fr>
-References: <20220902101610.109646-1-romain.naour@smile.fr>
+        with ESMTP id S235223AbiIBK3o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 06:29:44 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC31DBD293
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 03:29:41 -0700 (PDT)
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 282AHVP8021993
+        for <netdev@vger.kernel.org>; Fri, 2 Sep 2022 10:29:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : subject :
+ date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pps0720; bh=pgR36PdRajoavufFSVNP9+P4/RIhGco0/3s078Yy2ZQ=;
+ b=fOeWvdnqQjHDwX4AIqlFbknUvxvc1R1jdZ/+qnaVM8mMtF8XSVd6WMSx9AoDp/0cczIO
+ yiw/ClBup1rxW7DFtM7inJXF2PRHZkWhEKZsZIrWBWvMRswq3mqe7cFwIVjcsNHSH9Or
+ ipLeVc2UTqcSQReq3oJm0hu47hQj3uDidInnGB8d20Noee7l/wtzBepI4uLeSMz0lVme
+ UdiZFDAyjxfkHHMPX7jox+BUlFUGGX7I1FdRkIQspRjxfztI1an+y5TvKnX91s+Aq7qK
+ HxJq8GnLKVCs262gBZbjqVEFnm3lrln73UUSRv9w2a/aVx7vGcAKf6FBogg/HE5GmlwM yA== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3jbfke08p4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 10:29:41 +0000
+Received: from p1wg14923.americas.hpqcorp.net (unknown [10.119.18.111])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id E545BD29C
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 10:29:40 +0000 (UTC)
+Received: from p1wg14927.americas.hpqcorp.net (10.119.18.117) by
+ p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 1 Sep 2022 22:29:12 -1200
+Received: from p1wg14923.americas.hpqcorp.net (10.119.18.111) by
+ p1wg14927.americas.hpqcorp.net (10.119.18.117) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 1 Sep 2022 22:29:12 -1200
+Received: from p1wg14920.americas.hpqcorp.net (16.230.19.123) by
+ p1wg14923.americas.hpqcorp.net (10.119.18.111) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.15
+ via Frontend Transport; Thu, 1 Sep 2022 22:29:12 -1200
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (192.58.206.38)
+ by edge.it.hpe.com (16.230.19.123) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.15; Thu, 1 Sep 2022 22:29:11 -1200
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TeZ6923agmzKn/9IS89707V+9t7coonvkVKWgsUNXSKJHxNA70w+QlS555F7id/YcMEiomAagWkjAO+Z5tyLJWG9Axj8LvkIJiO1oKYDMbg76REVGXMLE1q6o+dt3CXNnmCAJMzFsr+IYqeT1If8loUUcdBL9raAlCPecgE0YNGVHUoy/XtY6Zw4QAGHD7oVsslbLfLYUOslkKE7Fc7Sx/XZB7c7ZHi/IPvaTE5Nl2YsIRrreKvCkB1a1pPRbcwktAiXblW+81Q3BkxtAdOID0jeNmtGMAyRbsog3OXA+LRUPxTPJHzQCaYIfNY1+UbmEr69uFOx3s2c6LzbR2L3Ig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pgR36PdRajoavufFSVNP9+P4/RIhGco0/3s078Yy2ZQ=;
+ b=bdWquJo7yKb+HhfYacHqIrcyxglaaFIPXBPyoACcOcMoDdplK0TryS3Y1cQMOKychezPYqWqrpYBYpVhxAoP+8uqfmdgpmMV0c+jSZVW0LVVUYjn//Q7NXDXiAKZ/C7mB8wOZ7xFL1pKfhwL8p+VKBHa1sy6CqW1mJ83ryoaUa/uVCMQiB5BVx+J24eMX7Ag/b8K4rO3aBzfaouM2NWiOSk0llftyzZtfMcVVuPye0BvN8aHcV97QMWQS3R3SdQLRvLhVneWMpuv79NRzPI0perJBgLVnPHqwyfYNZRbob5aHNKZmzYy6KZx5J4qEmpbkVpLRtg+RrWSVYwhdx3WDQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=hpe.com; dmarc=pass action=none header.from=hpe.com; dkim=pass
+ header.d=hpe.com; arc=none
+Received: from SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:a03:435::12)
+ by MW5PR84MB1714.NAMPRD84.PROD.OUTLOOK.COM (2603:10b6:303:1c1::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 2 Sep
+ 2022 10:29:10 +0000
+Received: from SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::f416:ee64:8c3c:b37b]) by SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM
+ ([fe80::f416:ee64:8c3c:b37b%8]) with mapi id 15.20.5566.021; Fri, 2 Sep 2022
+ 10:29:10 +0000
+From:   "Arankal, Nagaraj" <nagaraj.p.arankal@hpe.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: retrans_stamp not cleared while testing NewReno implementation.
+Thread-Topic: retrans_stamp not cleared while testing NewReno implementation.
+Thread-Index: Adi+trvQEat+6GYxQwSDDFxq9fIdqQ==
+Date:   Fri, 2 Sep 2022 10:29:09 +0000
+Message-ID: <SJ0PR84MB1847BE6C24D274C46A1B9B0EB27A9@SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6c36c18a-cf02-42c7-8a2c-08da8ccdf8fa
+x-ms-traffictypediagnostic: MW5PR84MB1714:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TP5Hq+l0sdhBFyPI3ZMebAfKnTqAelEfSBiBE7pdHEu0IFsmVEOpkUkmtiGi9PUdCO6NWF283Ah+z3PlceO+S1tlVdi1txkX4Jg3KVcgPYMzZgbqBsQZ96pRY5pp3pRGzT9VYVYj+0Qe2jdaBwuo2/hFYGiRZmmHCoO2f8IJbRduemD4LXGX71PCymaKr5JAKd//CDTaqKSrZoFixZsh42nTSwvy0FxOfn3gepBfDHYTF2PCiWAsP4gFlJv9jMiTGRV9VUfktKT016sDUwzuDICH01fgqCVvsIAfC0l3teNrsTAMb6b8n7yPhYT4Dq9mI7q67tO0s4iHM9xkk3DXAxhUO9ELkbjKNvMk0SAXZUAPvQUqs5Udkj9+M2jhhbUbmC/8oDBEmN0CTmtgfkSyU5T95r4ni6v6bI6hIdw+YNSBgFVdjf6WnAnfyOMt94OeChxVx8yjRYoWURNXy04N79uaVand/mDR7ksa/wPzkdwVuE/Gtg85drBNCiLXmTpGY07S4iU2x7p0DMAPXHqn9oWKwF1JF56+u0phawuEc4glfZMeJvuw1xAQDlS7hdeP5ouZifhHTL1oUYh6zLqWqxft0Z2/GylWQ4VHbR41wu2Ab5Jy8MEjpnGkTineatinJgwIaxHDZjvt5BWpzjCchOnN13DMaGNEtScDPZvI2sCcRJnfs3UBU9F+fce8UfkZLFXu436xVyeK/1VJIDGQPDC/E1e1qOr9wvz3+NB43ACK7duRWxIKHxqw4X7h80iJdtwesWHeww7S0KCsV7bHug==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(346002)(366004)(39860400002)(376002)(136003)(396003)(71200400001)(7696005)(66476007)(6506007)(66556008)(66946007)(82960400001)(76116006)(26005)(52536014)(316002)(9686003)(64756008)(38100700002)(41300700001)(86362001)(6916009)(2906002)(8676002)(186003)(66446008)(122000001)(478600001)(5660300002)(55016003)(38070700005)(8936002)(33656002)(83380400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?2+S7X1PG3P4LbGqNWL2/7Y7GkmzRTmBz1CDezIZnuDnAW8wyWASEamNVkdoZ?=
+ =?us-ascii?Q?18UVKEQd5OqFeytQRbndCyLlkPR2Z/M1se+siCiUha6RIq2v3i2uFj3w86tv?=
+ =?us-ascii?Q?lGN3qNDQUhOn9lYSzjtqVTNR9meUyhZybj3dk0diMaj9e5KU9SJwo//xVT0s?=
+ =?us-ascii?Q?I/mZZjdR2v4eRqIHMLlnmU7cdoCn2ni6cHoLwplvf5BoxKKAu4dhYjJaTx+q?=
+ =?us-ascii?Q?VJcHnVYPAZe/cZ9JKTfc/4EBOvpGmtmQaYXIyTuKhWZZ1y1YLQRO85sQpNsc?=
+ =?us-ascii?Q?PK7pcRaAsyZHVfMUiq42aMfr8xr7TrzbTGWO4FQRwuhrofA4aWwkHPlmNdHE?=
+ =?us-ascii?Q?yKaIq3fxHBf3IJZ7u2BrKpW2CGlB3JnwUqb3334rlIqSi0UlcmD8T8rpsuAV?=
+ =?us-ascii?Q?XDryuhCyE8WyuQDfRA47PuDb0eANL/ejlKJ8pgWiaxTRqRuxOciT2qu4Geyt?=
+ =?us-ascii?Q?t1GD9wqtI0g+2b7j1kqyaN6jyRj41leH79sRxDBXstzUUXsgpEnBZAjI+78W?=
+ =?us-ascii?Q?h4oF+GdgeI2vrVqIrjfbv/3HVmZkKeZa9T8FyGk64wcS1HCG/GrQZCcrjlMM?=
+ =?us-ascii?Q?V6z9jvgfs5smFuqHshGm3WwMkHPXnS3+cklI4XUuSk4C5cYuq9sv2BJ+hmHj?=
+ =?us-ascii?Q?dW3oBh8BTwYvKZqyXoEAFxUGg8FTs+xC+eMTTLU8COAysW9upbVTrQzk3gnz?=
+ =?us-ascii?Q?MYBYPOMLGNuRljP+NUaNm9iu46GU2qI0T8s9tbe3R5s9GSRhF+ZlMEfd1Bob?=
+ =?us-ascii?Q?5jbJ3d22OgW3MBfJ2Phch2incONYtvMv+6gYkTfKEFUp3E06rKcOzCEzNkjQ?=
+ =?us-ascii?Q?viQX1b2X3FOme1D0YSPjHZxUagIpqsjwAodXzGMjb96bLEf0KB5/hbV5JaNy?=
+ =?us-ascii?Q?2hbxXKVhlvYUfyXCt4HJXbQNXuJhlbmwhj6eCjfLexmVM5z2zwKx4ircVaiS?=
+ =?us-ascii?Q?HebSFagTkjy1hQzH8hbWLPEPghHpsgtAlUZG0k6+opGDPyKmTAZHQe5qHpNc?=
+ =?us-ascii?Q?5nfcHNDGFkgjplLg3gviLudyS+UdXYq7Sur1phyFIWKO544ch5JaAqpGvOb2?=
+ =?us-ascii?Q?Kr7NJkA7QKvug9NsILbFw/4lQ2gV8NxYIm0CiOCIGsgOyROMaq3LExxflWjk?=
+ =?us-ascii?Q?DIwH7T1ebfg15P2jUl1rVfQx49JdWvzj/uWY0p34YcHlFtDTkd8PASfpsWY0?=
+ =?us-ascii?Q?cTr0BYqDKY9GjSvcw6DRlAUC9M31BZuaeEAtefsF0mBnoVMOpfxSoKE39pIh?=
+ =?us-ascii?Q?L6C3i+zk2tE3dg47Avj4uHTmgHqeGh66Q9P6c1scqj+w8RzuhH/Jw1o9dUyP?=
+ =?us-ascii?Q?J4dnMUSP3bb/XwVO5shxo7gYUYjFwuCSstc80uz4aRvNadb9dNXSmARos0P2?=
+ =?us-ascii?Q?x9+wJnaJA7YlIaN8bc+YO/aN2Rs+POnduJ+pr8u2h93oKQkUfg+6I86cnAkB?=
+ =?us-ascii?Q?8v7xBBIvlA5sNhpO63CeaqiJKMJ63d7LB1jBlgDRI0osDIDsj5cYrn0ljV1N?=
+ =?us-ascii?Q?nUq5Fc6M7qYzwKnBJqdXnHJ5kRJui7CeHlgEWMO5koQxA8vzqiu9rs/ugW8I?=
+ =?us-ascii?Q?4JuYojEDST/z9+J8vM+b3GT9CiG8iHOXbHhtDupoTJj5uX+EMvrN/0i7YopE?=
+ =?us-ascii?Q?SA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR84MB1847.NAMPRD84.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c36c18a-cf02-42c7-8a2c-08da8ccdf8fa
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2022 10:29:09.9543
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 105b2061-b669-4b31-92ac-24d304d195dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BxlYXU6K8T0TFY639x5aSga2CsvzQpFh3K5uKfT1r40uk4t29DbrYn+p58NL8yWThnPepf3hF6frx3Xf3+tyrhPyTIxdDDAMpElfM3ZeFLg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW5PR84MB1714
+X-OriginatorOrg: hpe.com
+X-Proofpoint-GUID: nIVC1iRsFMQkm5SDwhPLzrSBcSiUM7O9
+X-Proofpoint-ORIG-GUID: nIVC1iRsFMQkm5SDwhPLzrSBcSiUM7O9
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-09-02_02,2022-08-31_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ spamscore=0 malwarescore=0 impostorscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 mlxlogscore=999 adultscore=0 bulkscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
+ definitions=main-2209020050
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Romain Naour <romain.naour@skf.com>
+While testing newReno implementation on 4.19.197 based debian kernel, NewRe=
+no(SACK disabled) with connections that have a very low traffic, we may tim=
+eout the connection too early if a second loss occurs after the first one w=
+as successfully acked but no data was transferred later. Below is his descr=
+iption of it:
 
-Add register validation for KSZ9896.
+When SACK is disabled, and a socket suffers multiple separate TCP retransmi=
+ssions, that socket's ETIMEDOUT value is calculated from the time of the *f=
+irst* retransmission instead of the *latest* retransmission.
 
-Signed-off-by: Romain Naour <romain.naour@skf.com>
----
- drivers/net/dsa/microchip/ksz_common.c | 215 +++++++++++++++++++++++++
- 1 file changed, 215 insertions(+)
+This happens because the tcp_sock's retrans_stamp is set once then never cl=
+eared.
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index a700631130e0..7389837ddd84 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -802,6 +802,219 @@ static const struct regmap_access_table ksz9477_register_set = {
- 	.n_yes_ranges = ARRAY_SIZE(ksz9477_valid_regs),
- };
- 
-+static const struct regmap_range ksz9896_valid_regs[] = {
-+	regmap_reg_range(0x0000, 0x0003),
-+	regmap_reg_range(0x0006, 0x0006),
-+	regmap_reg_range(0x0010, 0x001f),
-+	regmap_reg_range(0x0100, 0x0100),
-+	regmap_reg_range(0x0103, 0x0107),
-+	regmap_reg_range(0x010d, 0x010d),
-+	regmap_reg_range(0x0110, 0x0113),
-+	regmap_reg_range(0x0120, 0x0127),
-+	regmap_reg_range(0x0201, 0x0201),
-+	regmap_reg_range(0x0210, 0x0213),
-+	regmap_reg_range(0x0300, 0x0300),
-+	regmap_reg_range(0x0302, 0x030b),
-+	regmap_reg_range(0x0310, 0x031b),
-+	regmap_reg_range(0x0320, 0x032b),
-+	regmap_reg_range(0x0330, 0x0336),
-+	regmap_reg_range(0x0338, 0x033b),
-+	regmap_reg_range(0x033e, 0x033e),
-+	regmap_reg_range(0x0340, 0x035f),
-+	regmap_reg_range(0x0370, 0x0370),
-+	regmap_reg_range(0x0378, 0x0378),
-+	regmap_reg_range(0x037c, 0x037d),
-+	regmap_reg_range(0x0390, 0x0393),
-+	regmap_reg_range(0x0400, 0x040e),
-+	regmap_reg_range(0x0410, 0x042f),
-+
-+	/* port 1 */
-+	regmap_reg_range(0x1000, 0x1001),
-+	regmap_reg_range(0x1013, 0x1013),
-+	regmap_reg_range(0x1017, 0x1017),
-+	regmap_reg_range(0x101b, 0x101b),
-+	regmap_reg_range(0x101f, 0x1020),
-+	regmap_reg_range(0x1030, 0x1030),
-+	regmap_reg_range(0x1100, 0x1115),
-+	regmap_reg_range(0x111a, 0x111f),
-+	regmap_reg_range(0x1122, 0x1127),
-+	regmap_reg_range(0x112a, 0x112b),
-+	regmap_reg_range(0x1136, 0x1139),
-+	regmap_reg_range(0x113e, 0x113f),
-+	regmap_reg_range(0x1400, 0x1401),
-+	regmap_reg_range(0x1403, 0x1403),
-+	regmap_reg_range(0x1410, 0x1417),
-+	regmap_reg_range(0x1420, 0x1423),
-+	regmap_reg_range(0x1500, 0x1507),
-+	regmap_reg_range(0x1600, 0x1612),
-+	regmap_reg_range(0x1800, 0x180f),
-+	regmap_reg_range(0x1820, 0x1827),
-+	regmap_reg_range(0x1830, 0x1837),
-+	regmap_reg_range(0x1840, 0x184b),
-+	regmap_reg_range(0x1900, 0x1907),
-+	regmap_reg_range(0x1914, 0x1915),
-+	regmap_reg_range(0x1a00, 0x1a03),
-+	regmap_reg_range(0x1a04, 0x1a07),
-+	regmap_reg_range(0x1b00, 0x1b01),
-+	regmap_reg_range(0x1b04, 0x1b04),
-+
-+	/* port 2 */
-+	regmap_reg_range(0x2000, 0x2001),
-+	regmap_reg_range(0x2013, 0x2013),
-+	regmap_reg_range(0x2017, 0x2017),
-+	regmap_reg_range(0x201b, 0x201b),
-+	regmap_reg_range(0x201f, 0x2020),
-+	regmap_reg_range(0x2030, 0x2030),
-+	regmap_reg_range(0x2100, 0x2115),
-+	regmap_reg_range(0x211a, 0x211f),
-+	regmap_reg_range(0x2122, 0x2127),
-+	regmap_reg_range(0x212a, 0x212b),
-+	regmap_reg_range(0x2136, 0x2139),
-+	regmap_reg_range(0x213e, 0x213f),
-+	regmap_reg_range(0x2400, 0x2401),
-+	regmap_reg_range(0x2403, 0x2403),
-+	regmap_reg_range(0x2410, 0x2417),
-+	regmap_reg_range(0x2420, 0x2423),
-+	regmap_reg_range(0x2500, 0x2507),
-+	regmap_reg_range(0x2600, 0x2612),
-+	regmap_reg_range(0x2800, 0x280f),
-+	regmap_reg_range(0x2820, 0x2827),
-+	regmap_reg_range(0x2830, 0x2837),
-+	regmap_reg_range(0x2840, 0x284b),
-+	regmap_reg_range(0x2900, 0x2907),
-+	regmap_reg_range(0x2914, 0x2915),
-+	regmap_reg_range(0x2a00, 0x2a03),
-+	regmap_reg_range(0x2a04, 0x2a07),
-+	regmap_reg_range(0x2b00, 0x2b01),
-+	regmap_reg_range(0x2b04, 0x2b04),
-+
-+	/* port 3 */
-+	regmap_reg_range(0x3000, 0x3001),
-+	regmap_reg_range(0x3013, 0x3013),
-+	regmap_reg_range(0x3017, 0x3017),
-+	regmap_reg_range(0x301b, 0x301b),
-+	regmap_reg_range(0x301f, 0x3020),
-+	regmap_reg_range(0x3030, 0x3030),
-+	regmap_reg_range(0x3100, 0x3115),
-+	regmap_reg_range(0x311a, 0x311f),
-+	regmap_reg_range(0x3122, 0x3127),
-+	regmap_reg_range(0x312a, 0x312b),
-+	regmap_reg_range(0x3136, 0x3139),
-+	regmap_reg_range(0x313e, 0x313f),
-+	regmap_reg_range(0x3400, 0x3401),
-+	regmap_reg_range(0x3403, 0x3403),
-+	regmap_reg_range(0x3410, 0x3417),
-+	regmap_reg_range(0x3420, 0x3423),
-+	regmap_reg_range(0x3500, 0x3507),
-+	regmap_reg_range(0x3600, 0x3612),
-+	regmap_reg_range(0x3800, 0x380f),
-+	regmap_reg_range(0x3820, 0x3827),
-+	regmap_reg_range(0x3830, 0x3837),
-+	regmap_reg_range(0x3840, 0x384b),
-+	regmap_reg_range(0x3900, 0x3907),
-+	regmap_reg_range(0x3914, 0x3915),
-+	regmap_reg_range(0x3a00, 0x3a03),
-+	regmap_reg_range(0x3a04, 0x3a07),
-+	regmap_reg_range(0x3b00, 0x3b01),
-+	regmap_reg_range(0x3b04, 0x3b04),
-+
-+	/* port 4 */
-+	regmap_reg_range(0x4000, 0x4001),
-+	regmap_reg_range(0x4013, 0x4013),
-+	regmap_reg_range(0x4017, 0x4017),
-+	regmap_reg_range(0x401b, 0x401b),
-+	regmap_reg_range(0x401f, 0x4020),
-+	regmap_reg_range(0x4030, 0x4030),
-+	regmap_reg_range(0x4100, 0x4115),
-+	regmap_reg_range(0x411a, 0x411f),
-+	regmap_reg_range(0x4122, 0x4127),
-+	regmap_reg_range(0x412a, 0x412b),
-+	regmap_reg_range(0x4136, 0x4139),
-+	regmap_reg_range(0x413e, 0x413f),
-+	regmap_reg_range(0x4400, 0x4401),
-+	regmap_reg_range(0x4403, 0x4403),
-+	regmap_reg_range(0x4410, 0x4417),
-+	regmap_reg_range(0x4420, 0x4423),
-+	regmap_reg_range(0x4500, 0x4507),
-+	regmap_reg_range(0x4600, 0x4612),
-+	regmap_reg_range(0x4800, 0x480f),
-+	regmap_reg_range(0x4820, 0x4827),
-+	regmap_reg_range(0x4830, 0x4837),
-+	regmap_reg_range(0x4840, 0x484b),
-+	regmap_reg_range(0x4900, 0x4907),
-+	regmap_reg_range(0x4914, 0x4915),
-+	regmap_reg_range(0x4a00, 0x4a03),
-+	regmap_reg_range(0x4a04, 0x4a07),
-+	regmap_reg_range(0x4b00, 0x4b01),
-+	regmap_reg_range(0x4b04, 0x4b04),
-+
-+	/* port 5 */
-+	regmap_reg_range(0x5000, 0x5001),
-+	regmap_reg_range(0x5013, 0x5013),
-+	regmap_reg_range(0x5017, 0x5017),
-+	regmap_reg_range(0x501b, 0x501b),
-+	regmap_reg_range(0x501f, 0x5020),
-+	regmap_reg_range(0x5030, 0x5030),
-+	regmap_reg_range(0x5100, 0x5115),
-+	regmap_reg_range(0x511a, 0x511f),
-+	regmap_reg_range(0x5122, 0x5127),
-+	regmap_reg_range(0x512a, 0x512b),
-+	regmap_reg_range(0x5136, 0x5139),
-+	regmap_reg_range(0x513e, 0x513f),
-+	regmap_reg_range(0x5400, 0x5401),
-+	regmap_reg_range(0x5403, 0x5403),
-+	regmap_reg_range(0x5410, 0x5417),
-+	regmap_reg_range(0x5420, 0x5423),
-+	regmap_reg_range(0x5500, 0x5507),
-+	regmap_reg_range(0x5600, 0x5612),
-+	regmap_reg_range(0x5800, 0x580f),
-+	regmap_reg_range(0x5820, 0x5827),
-+	regmap_reg_range(0x5830, 0x5837),
-+	regmap_reg_range(0x5840, 0x584b),
-+	regmap_reg_range(0x5900, 0x5907),
-+	regmap_reg_range(0x5914, 0x5915),
-+	regmap_reg_range(0x5a00, 0x5a03),
-+	regmap_reg_range(0x5a04, 0x5a07),
-+	regmap_reg_range(0x5b00, 0x5b01),
-+	regmap_reg_range(0x5b04, 0x5b04),
-+
-+	/* port 6 */
-+	regmap_reg_range(0x6000, 0x6001),
-+	regmap_reg_range(0x6013, 0x6013),
-+	regmap_reg_range(0x6017, 0x6017),
-+	regmap_reg_range(0x601b, 0x601b),
-+	regmap_reg_range(0x601f, 0x6020),
-+	regmap_reg_range(0x6030, 0x6030),
-+	regmap_reg_range(0x6100, 0x6115),
-+	regmap_reg_range(0x611a, 0x611f),
-+	regmap_reg_range(0x6122, 0x6127),
-+	regmap_reg_range(0x612a, 0x612b),
-+	regmap_reg_range(0x6136, 0x6139),
-+	regmap_reg_range(0x613e, 0x613f),
-+	regmap_reg_range(0x6300, 0x6301),
-+	regmap_reg_range(0x6400, 0x6401),
-+	regmap_reg_range(0x6403, 0x6403),
-+	regmap_reg_range(0x6410, 0x6417),
-+	regmap_reg_range(0x6420, 0x6423),
-+	regmap_reg_range(0x6500, 0x6507),
-+	regmap_reg_range(0x6600, 0x6612),
-+	regmap_reg_range(0x6800, 0x680f),
-+	regmap_reg_range(0x6820, 0x6827),
-+	regmap_reg_range(0x6830, 0x6837),
-+	regmap_reg_range(0x6840, 0x684b),
-+	regmap_reg_range(0x6900, 0x6907),
-+	regmap_reg_range(0x6914, 0x6915),
-+	regmap_reg_range(0x6a00, 0x6a03),
-+	regmap_reg_range(0x6a04, 0x6a07),
-+	regmap_reg_range(0x6b00, 0x6b01),
-+	regmap_reg_range(0x6b04, 0x6b04),
-+};
-+
-+static const struct regmap_access_table ksz9896_register_set = {
-+	.yes_ranges = ksz9896_valid_regs,
-+	.n_yes_ranges = ARRAY_SIZE(ksz9896_valid_regs),
-+};
-+
- const struct ksz_chip_data ksz_switch_chips[] = {
- 	[KSZ8563] = {
- 		.chip_id = KSZ8563_CHIP_ID,
-@@ -993,6 +1206,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.internal_phy	= {true, true, true, true,
- 				   true, false},
- 		.gbit_capable	= {true, true, true, true, true, true},
-+		.wr_table = &ksz9896_register_set,
-+		.rd_table = &ksz9896_register_set,
- 	},
- 
- 	[KSZ9897] = {
--- 
-2.34.3
+Take the following connection:
+
+
+(*1) One data packet sent.
+(*2) Because no ACK packet is received, the packet is retransmitted.
+(*3) The ACK packet is received. The transmitted packet is acknowledged.
+
+At this point the first "retransmission event" has passed and been recovere=
+d from. Any future retransmission is a completely new "event".
+
+(*4) After 16 minutes (to correspond with tcp_retries2=3D15), a new data pa=
+cket is sent. Note: No data is transmitted between (*3) and (*4) and we dis=
+abled keep alives.
+
+The socket's timeout SHOULD be calculated from this point in time, but inst=
+ead it's calculated from the prior "event" 16 minutes ago.
+
+(*5) Because no ACK packet is received, the packet is retransmitted.
+(*6) At the time of the 2nd retransmission, the socket returns ETIMEDOUT.
+
+From the history I came to know that there was a fix included, which would =
+resolve above issue. Please find below patch.
+
+static bool tcp_try_undo_recovery(struct sock *sk)
+                                * is ACKed. For Reno it is MUST to prevent =
+false
+                                * fast retransmits (RFC2582). SACK TCP is s=
+afe. */
+                               tcp_moderate_cwnd(tp);
++                             if (!tcp_any_retrans_done(sk))
++                                             tp->retrans_stamp =3D 0;
+                               return true;
+               }
+ =20
+However, after introducing following fix,=20
+
+[net,1/2] tcp: only undo on partial ACKs in CA_Loss
+
+I am not able to see retrains_stamp reset to Zero.
+Inside tcp_process_loss , we are returning from below code path.
+
+if ((flag & FLAG_SND_UNA_ADVANCED) &&
+            tcp_try_undo_loss(sk, false))
+                return;
+because of which tp->retrans_stamp is never cleared as we failed to invoke =
+tcp_try_undo_recovery.
+
+Is this a known bug in kernel code or is it an expected behavior.
+
+
+- Thanks in advance,
+Nagaraj
 
