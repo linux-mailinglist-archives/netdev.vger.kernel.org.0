@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDBA5AB631
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:08:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F9F95AB634
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 18:09:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237138AbiIBQIe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 12:08:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
+        id S236326AbiIBQJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 12:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237696AbiIBQIH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:08:07 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B809B12BF45;
-        Fri,  2 Sep 2022 09:01:44 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id j6so1719257qvu.10;
-        Fri, 02 Sep 2022 09:01:44 -0700 (PDT)
+        with ESMTP id S237466AbiIBQIV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 12:08:21 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A406B12BC29;
+        Fri,  2 Sep 2022 09:02:00 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id r6so1795255qtx.6;
+        Fri, 02 Sep 2022 09:02:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date;
-        bh=JClXwZoTfaXuBwXhgprZ+soSsQMpY97LHOFOymhsvPs=;
-        b=EvpUwSPfQLEB4N6VUWWvyfKTBefctgE0jbELSJSZvaYzSmiif42cPRZwAItXNH+dMM
-         MA/ISa+r8KDFcqc40+J0w03jEvfZNibWRH7OyXua43FOqUXws2dRbehWRmR9M4+wrYuT
-         Jr45ddvPe1dwK1RQvTPgnqSkQ5tUgz5dcZm1hZ6QEeYFrV69uBTx08d5dHyMpIf6OVmF
-         teEV6/23DLKvuDI0kcnI/gwreSn2InPzY1ETfYdz96vMkg+UAQgmxEJueqFaGpCc9Hdn
-         3EVLfBwwa9a9SejAJxCaglpS5ooiA6MsBh4aYl3mDtfTBbS+jmI1vdt3lxiCOzlqZGbX
-         RyMQ==
+        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
+        b=FhUCkkvqrme+DUmZztWDxyW9DDj+wrSYyrTFVf4UOHfjt09QSg+oA/zzJNoJPf+vyr
+         qycjjscw4FyzNAXtPfCnpN+CDD2dYbkqVu3vPD4Xb4S0c6l0OA2qGV8FK6Wdv298NFud
+         glz52AYRgM4/3r3agyXbpN/vCngSK24rs+wqcXevLqSkFzvlRU0ZmTsI+SAcAZUVg/eJ
+         0/nb2md1U7wDRVfeWb67FirxksK1zPCp/z1UkAcazvP/pGU+Gh6VGqn3fWigL3mWSL8g
+         cHiL1Lsdms4LjZj4J4bWxGZnXeSmszU1GS/SL5HUHqw5aA+XiT/hGM2T3D/fnHpjJyEU
+         svjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date;
-        bh=JClXwZoTfaXuBwXhgprZ+soSsQMpY97LHOFOymhsvPs=;
-        b=dd55Z27k0V0hpMAmIBW8yQGw8m5fanHRBCzKmEwBEIVghzFgs3yk0vDhf9RJllYEVF
-         i4QXXaEaMO1vKjJg+JMW+LKmOx9DZOkt0aQvQfoWjv8Ce5hAfnRuzefL8v0Osu/qZAR/
-         n21Y9eJO0ZyURhgbRgJcsdXKfMaGGZfTx7yv4lwcTL9mQlVn+vC6lrOZWCvFmwPPNfhF
-         gmhF9O/zfva1n+YLHLmWr9EYwaPlGi/H51v152NQgcju84LCpqH99QFZIzFcBfUJHdwC
-         +9CXd8i2hb6SfJrHihdUGJY5l3e3ZssXSQpiaSZ9Qj3zgvOOXpjo9cFMOyItLqzCjdPn
-         ioew==
-X-Gm-Message-State: ACgBeo31SX7Y/swsbYCw9hWPfH3bPPEBj8e89clVMDJQZpj3Y/baGkds
-        JM6QTJBBiRGZSXVo7oJ3qWY=
-X-Google-Smtp-Source: AA6agR4YBehGmDDaB/lQkRt4wqnmniyvn125xQ3AWF0PQLQES9s/hoSawjoBG7mDaL9j6M2sZX/YMA==
-X-Received: by 2002:a05:6214:19e1:b0:476:95b7:1dc9 with SMTP id q1-20020a05621419e100b0047695b71dc9mr29172370qvc.124.1662134453000;
-        Fri, 02 Sep 2022 09:00:53 -0700 (PDT)
+        bh=hr32zQkQAMFpdycV9mqRMwFDXvtj260nxYs/HAKXI+Q=;
+        b=aS2yHDoYjCXz6O8px7jrgjufiGGbmengVExz5u1956glL9PCBX3jXfHKSckPYTpdfW
+         FPhSjvhzPUlSdmRB+bal2FbcEzMoLNiamf0Buq13tyAlZj76DbSvq9MTzhJdYaZkVjcD
+         EXBvL6lFpjDkjXsBVCCepQ7WRxhAbDwaS+FNT+jlDdY3akzftGBbCBCPMTqDkSIXVS3y
+         Zkb+slDVrRVs7A1JmGyOD0qzK1dKy33d6ji07XMw7YPj4rM3kZF0iK3A5+41goRtrOCw
+         kd4IBkiyj3sNmfhnFRfdCjQuk6B8sdx4Iock9BglHUzvd+GL8hI784/HE2RPBHokcMby
+         lwkw==
+X-Gm-Message-State: ACgBeo3QIInAJsih+x3xhNHwN/0+5V/7jKCDNQjWdwhx35XSNdCnHnFZ
+        FBR/aDqY90F/l7jlszuW7OU=
+X-Google-Smtp-Source: AA6agR73e8UxlvuT6qwwN5qmS8H+HvmUVahNMtcaO5mwrZ77r6fYQfeOKWR7E9FlRFnVvW5xjf4QKQ==
+X-Received: by 2002:a05:622a:40e:b0:343:7769:5895 with SMTP id n14-20020a05622a040e00b0034377695895mr29463186qtx.467.1662134476733;
+        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
 Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id m7-20020a05620a290700b006b9593e2f68sm1700006qkp.4.2022.09.02.09.00.50
+        by smtp.gmail.com with ESMTPSA id w2-20020ac87182000000b00342f960d26esm1206063qto.15.2022.09.02.09.01.14
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 02 Sep 2022 09:00:52 -0700 (PDT)
-Message-ID: <a02f9bf8-cfa5-931e-c2da-d4ce79c6412d@gmail.com>
-Date:   Fri, 2 Sep 2022 09:00:49 -0700
+        Fri, 02 Sep 2022 09:01:16 -0700 (PDT)
+Message-ID: <dce48f19-ff7d-981e-90bb-9005bf2fbd9a@gmail.com>
+Date:   Fri, 2 Sep 2022 09:01:13 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
  Thunderbird/102.2.1
-Subject: Re: [Patch net-next 1/3] net: dsa: microchip: add reference to
- ksz_device inside the ksz_port
+Subject: Re: [Patch net-next 2/3] net: dsa: microchip: lan937x: clear the
+ POR_READY_INT status bit
 Content-Language: en-US
 To:     Arun Ramadoss <arun.ramadoss@microchip.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
@@ -70,9 +70,9 @@ Cc:     Woojung Huh <woojung.huh@microchip.com>,
         Russell King <linux@armlinux.org.uk>,
         Tristram Ha <Tristram.Ha@microchip.com>
 References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
- <20220902103210.10743-2-arun.ramadoss@microchip.com>
+ <20220902103210.10743-3-arun.ramadoss@microchip.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220902103210.10743-2-arun.ramadoss@microchip.com>
+In-Reply-To: <20220902103210.10743-3-arun.ramadoss@microchip.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -88,17 +88,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 9/2/2022 3:32 AM, Arun Ramadoss wrote:
-> struct ksz_port doesn't have reference to ksz_device as of now. In order
-> to find out from which port interrupt has triggered, we need to pass the
-> struct ksz_port as a host data. When the interrupt is triggered, we can
-> get the port from which interrupt triggered, but to identify it is phy
-> interrupt we have to read status register. The regmap structure for
-> accessing the device register is present in the ksz_device struct. To
-> access the ksz_device from the ksz_port, the reference is added to it
-> with port number as well.
+> In the lan937x_reset_switch(), it masks all the switch and port
+> registers. In the Global_Int_status register, POR ready bit is write 1
+> to clear bit and all other bits are read only. So, this patch clear the
+> por_ready_int status bit by writing 1.
 > 
 > Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
