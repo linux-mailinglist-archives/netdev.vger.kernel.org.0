@@ -2,101 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E00A45AB5C5
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 17:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 987B65AB5C1
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 17:53:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237302AbiIBPyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 11:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40500 "EHLO
+        id S237214AbiIBPx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 11:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237462AbiIBPxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 11:53:43 -0400
-Received: from mail.base45.de (mail.base45.de [IPv6:2001:67c:2050:320::77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138CE7EFD9;
-        Fri,  2 Sep 2022 08:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=fe80.eu;
-        s=20190804; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:
-        In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=CTrG12qWnI/c/AxI8kTL2+rjoFmKz1TXs568RjVaASw=; b=ifKtc5mRxPP/hgk+Ujk1yvgVcL
-        Hd0Yi+M6uyrX3B0eqHzbr8jt3EzwK2h1hez7h9JQijZsTOI/t7b77YbQsg8TdY2kbc1MoO2iNRdqx
-        fZW+VmZsVJeH2MySiJ5JZ5iiLwkpTJLYP/QJ+u3bsptU1mfzf971861j5yM7+VfOck15C0+diOs4j
-        kL+vIvmkhQ8N98uA87gx95GTk2C+k7qFrK5CfD6L/Ay9F4DUKz0oBSilvXKQRLXbmkQV00XqhEMom
-        Y3AJps/tqC2vkBIBL5YH8RPrRMTiOlGrInb/392Q1OI26agkHoUVlC5NwGEFsOUcCRbxKLExnQJoN
-        wxDzstOA==;
-Received: from [92.206.252.219] (helo=javelin)
-        by mail.base45.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <lynxis@fe80.eu>)
-        id 1oU8sx-005KhR-5H; Fri, 02 Sep 2022 15:47:11 +0000
-Date:   Fri, 2 Sep 2022 17:47:10 +0200
-From:   Alexander 'lynxis' Couzens <lynxis@fe80.eu>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [PATCH 3/4] net: mediatek: sgmii: mtk_pcs_setup_mode_an: don't
- rely on register defaults
-Message-ID: <20220902174710.54a1d317@javelin>
-In-Reply-To: <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
-References: <20220820224538.59489-1-lynxis@fe80.eu>
-        <20220820224538.59489-4-lynxis@fe80.eu>
-        <YwTyLwRnQ+eTXeDr@shell.armlinux.org.uk>
+        with ESMTP id S237449AbiIBPxl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 11:53:41 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4698E3AD
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 08:47:38 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id l5so1764916qtv.4
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 08:47:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=I6DLbA6+N1avN3+xQJSnlQttqSVvWVJ9tAApzjqTJ1c=;
+        b=Uhh349/XUA55qwTFjn9hG79/GPp9bRpIR1aM9LE6uhEclEy7E3Ms5nGNGPn12pa1U+
+         cwUl3X/G8GdlU/hg1BNTVoVKRCaSH9EhX4iaASdKJKZW+xfrV0PFDjgPF9zBTb3aQMXH
+         U5Se1p7dFFztZAerPr2FVf5CxdST4CulSB5wzHy4uzr0QKyF8S8WlLQKiHn6NmjUZTGt
+         HGgygVS+ggsDNRgRQ9mLCIzxMnYZVOj1F59L/YASPAT01o9vAg7QKIE4JCLd6+hUx3/l
+         3+MtrU/IDXkS5lVS+63o7DYAH/B3H+w8p75ga+AH5UCRF9DyFONp8mUSibcx5YxjBOSE
+         6KzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=I6DLbA6+N1avN3+xQJSnlQttqSVvWVJ9tAApzjqTJ1c=;
+        b=4PCJu+Noy5lwdp3RRhd1iSvb+3n3wilQKbtLMl5pTfF3IYYtz7IvFjLXK4Il8MfoPI
+         8k9TTFga4ieuMvUg6jaMfmKsxjlTwJ/vfIUVl5fWVkQ+QF8988HL0RBL4oHD9C4ZenXJ
+         16QUZlK2HOM15oI4+jq1zDeMcvWjbCZp2+UGENEtqOiypUvSIBiuM6a45WuS/FaYRvv5
+         dYcOURk2qZhq0sN3q7huFEctttHFAAZWd+ATUbR7hxLpH29n1rjqOa8/75jEUcKojqCv
+         iqtG6meU6ELcnTqgQNd9ZTBc6hPX9jnMx54QTvjW23TRJ0h+k5XfWmHruwphZuAMx1Lc
+         BFNA==
+X-Gm-Message-State: ACgBeo3iGpLCSsrRSClhW+2riluYvJMmznZenSTBsnqFIs0UxX2GDXrd
+        o3LBQpqxWF+B4sf5QIMT9sA=
+X-Google-Smtp-Source: AA6agR591Wl84MIxfuQdZozApxH08EIf2wfRTC/HwjmABw5la02qVQTGGjMsQWr8OLXtdqlzDhYWbQ==
+X-Received: by 2002:a05:622a:1483:b0:343:7ba3:f60f with SMTP id t3-20020a05622a148300b003437ba3f60fmr28951418qtx.94.1662133657364;
+        Fri, 02 Sep 2022 08:47:37 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id s13-20020a05620a0bcd00b006bb82221013sm1796495qki.0.2022.09.02.08.47.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 02 Sep 2022 08:47:36 -0700 (PDT)
+Message-ID: <d4667ada-bee0-e7c8-4456-b27e30cfffd0@gmail.com>
+Date:   Fri, 2 Sep 2022 08:47:34 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.2.1
+Subject: Re: [PATCH v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
+Content-Language: en-US
+To:     =?UTF-8?B?Q3PDs2vDoXMgQmVuY2U=?= <csokas.bence@prolan.hu>,
+        netdev@vger.kernel.org
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Andrew Lunn <andrew@lunn.ch>, kernel@pengutronix.de,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+References: <20220901140402.64804-1-csokas.bence@prolan.hu>
+ <80f9cb5b-0e02-a367-5263-4fbffec055bb@gmail.com>
+ <6703a552-8d23-6136-c0b8-c68845d00aa8@prolan.hu>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <6703a552-8d23-6136-c0b8-c68845d00aa8@prolan.hu>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 23 Aug 2022 16:28:47 +0100
-"Russell King (Oracle)" <linux@armlinux.org.uk> wrote:
 
-> On Sun, Aug 21, 2022 at 12:45:37AM +0200, Alexander Couzens wrote:
-> > Ensure autonegotiation is enabled.
-> > 
-> > Signed-off-by: Alexander Couzens <lynxis@fe80.eu>
-> > ---
-> >  drivers/net/ethernet/mediatek/mtk_sgmii.c | 5 +++--
-> >  1 file changed, 3 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c index
-> > 782812434367..aa69baf1a42f 100644 ---
-> > a/drivers/net/ethernet/mediatek/mtk_sgmii.c +++
-> > b/drivers/net/ethernet/mediatek/mtk_sgmii.c @@ -32,12 +32,13 @@
-> > static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs)
-> > regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER,
-> > SGMII_LINK_TIMER_DEFAULT); 
-> > +	/* disable remote fault & enable auto neg */
-> >  	regmap_read(mpcs->regmap, SGMSYS_SGMII_MODE, &val);
-> > -	val |= SGMII_REMOTE_FAULT_DIS;
-> > +	val |= SGMII_REMOTE_FAULT_DIS | SGMII_SPEED_DUPLEX_AN;  
+
+On 9/2/2022 12:35 AM, Csókás Bence wrote:
 > 
-> Does SGMII_SPEED_DUPLEX_AN need to be cleared in
-> mtk_pcs_setup_mode_force(), so mtk_pcs_link_up() can force the
-> duplex setting for base-X protocols?
+> On 2022. 09. 01. 18:26, Florian Fainelli wrote:
+>>
+>>>       schedule_delayed_work(&fep->time_keep, HZ);
+>>>   }
+>>> @@ -599,8 +593,6 @@ void fec_ptp_init(struct platform_device *pdev, 
+>>> int irq_idx)
+>>>       }
+>>>       fep->ptp_inc = NSEC_PER_SEC / fep->cycle_speed;
+>>> -    spin_lock_init(&fep->tmreg_lock);
+>>
+>> This change needs to be kept as there is no other code in the driver 
+>> that would initialize the tmreg_lock otherwise. Try building a kernel 
+>> with spinlock debugging enabled and you should see it barf with an 
+>> incorrect spinlock bad magic.
 > 
+> `fec_ptp_init()` is called from `fec_probe()`, which init's the spinlock:
+> 
+>  > @@ -3907,7 +3908,7 @@ fec_probe(struct platform_device *pdev)
+>  >         }
+>  >
+>  >         fep->ptp_clk_on = false;
+>  > -       mutex_init(&fep->ptp_clk_mutex);
+>  > +       spin_lock_init(&fep->tmreg_lock);
 
-Yes SGMII_SPEED_DUPLEX_AN needs to be cleared to have FORCE_DUPLEX
-working. But mtk_pcs_setup_mode_force() is clearing it implicit by
-
-val &= SGMII_DUPLEX_FULL & ~SGMII_IF_MODE_MASK
-
-because it's included in the SGMII_IF_MODE_MASK.
-I also don't understand why it's forcing it in the
-mtk_pcs_link_up().
+Ah indeed, I missed that, thanks!
+-- 
+Florian
