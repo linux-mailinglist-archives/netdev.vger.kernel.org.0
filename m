@@ -2,156 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 942EF5AABB2
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 11:43:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C757C5AABB8
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 11:47:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235754AbiIBJnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 05:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42054 "EHLO
+        id S235599AbiIBJrF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 05:47:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235317AbiIBJnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 05:43:09 -0400
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63922CD7A7;
-        Fri,  2 Sep 2022 02:43:07 -0700 (PDT)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 2827kweY016249;
-        Fri, 2 Sep 2022 09:42:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2022-7-12;
- bh=Yt81hw2rJOfeW2QRU62lvVk3nNrCtOD/tn/PPyJqYXQ=;
- b=VOAWvqV9GZfppRe8msYLMIPdSbk/+VQw0+Pt8to93qs/e9zroei9psnTCMP/4DiEB00M
- IKSjw27afSJpIkjWMRByyEXYe390z2cDRqGhZwJ/X5+3KNK3HSOGcsLV50/6Jlff8LmU
- 5HxkWQ+Ma3tEZhu+b+2tDURgRPavFDmZSiBjOO+BHWYGKaowYBCCRS+HayxHX29uX6sD
- /lZBwqoxhnqseAKV59HyqQoQAJTHFtKWpbGpK/bL9Z76bzgAxiswE1j1NK6k99BvmS2f
- fmvGv1dZYowxM2bddE7nf+gablRlqoZFdEvdGaBhNT3E56g6orJElsBcsojM0EHfO0eT /A== 
-Received: from iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta02.appoci.oracle.com [147.154.18.20])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3j7a22etq8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Sep 2022 09:42:50 +0000
-Received: from pps.filterd (iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 2826aEX9002065;
-        Fri, 2 Sep 2022 09:42:49 GMT
-Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2172.outbound.protection.outlook.com [104.47.73.172])
-        by iadpaimrmta02.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3jarqkrhpq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 02 Sep 2022 09:42:49 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=h0XI76DNKvJbI4S0ZyAiT1kiDODgqb3EPLwv/DY0qgtz/pupDqf1GmbREf6VfpugsuDfu3RmtmfGFOxHTATwywvQpnikRouzNMcYPQdUuPpUIfXDpTVHmLxLYTVjdQveNfLY3GBJi9oKPn15sy0gdXHW5a6rY/ijPPDU7RvOAZ1lkJaQP5sCfYjbxWKMgm+qrKjAliAtlNAUYPofQ0kzZqjeS3FwOq77YI0YbiqpOjM0J+yrKQYrv4q9vSj9/1LvIjJHAyHQ478UB19+ixruDGhWPllrX9rYIgVY65rwYk1NVYYL4KDyqb71DzUyNNBLX4Bm+nZDxytb2lCywp3yPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Yt81hw2rJOfeW2QRU62lvVk3nNrCtOD/tn/PPyJqYXQ=;
- b=TXxtuntLDfLfGBPgAKKljxCY7lMsSOWivytB/jmDwv9lUahy7rgJvnpCcTtZEh6XMfarNTviOZuEiT0SiB854+r7hHXcdqmz+EBPRvwHFfKWvjPFDldjKS684bw3UXjAZ9plhNme6f8b3NLvmUF4qNjqWm+c01klPBl2WEV+YKGx7sTqi2oVgDapi5sv9DCOwtLtFT81d3v87hAfNHJxvDUzUUR58bL0EoO5vcJJonVUTFkY/5tLIDeghdNn/nsBQ34MOz4KpNQHrk0CExFCq5vQNZR80a1rnh/5DGAaIGp3+tzp+faVckO9drI/wDRxz7qYEWovP8p+rvxHJvMeWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        with ESMTP id S229496AbiIBJrD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 05:47:03 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1E1C6965
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 02:47:02 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id n17so1593157wrm.4
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 02:47:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Yt81hw2rJOfeW2QRU62lvVk3nNrCtOD/tn/PPyJqYXQ=;
- b=E+bfqcgUzeFj7JFiI/m3XMdRiQM5WlaPLuaRIb9/VsqyKeSxByqlYkgr5mZhpmlGuncj+op8yf9k5kmp1Gu+BPTdMeFpII31NoYDOtDed4yltSHaLFFLpB9q8C9DzB2V9BTkPKbP1LDikoJBthJt1uClrOfh8qaMLhxXNMHu9Gw=
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com (2603:10b6:208:331::11)
- by CH0PR10MB5114.namprd10.prod.outlook.com (2603:10b6:610:dd::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Fri, 2 Sep
- 2022 09:42:47 +0000
-Received: from BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::2077:5586:566a:3189]) by BLAPR10MB4835.namprd10.prod.outlook.com
- ([fe80::2077:5586:566a:3189%6]) with mapi id 15.20.5588.010; Fri, 2 Sep 2022
- 09:42:47 +0000
-Message-ID: <4cc88875-feb7-4d78-26f9-9009b5083525@oracle.com>
-Date:   Fri, 2 Sep 2022 10:42:41 +0100
-Subject: Re: [PATCH V5 vfio 04/10] vfio: Add an IOVA bitmap support
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
-        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
-        kuba@kernel.org, kevin.tian@intel.com, leonro@nvidia.com,
-        maorg@nvidia.com, cohuck@redhat.com
-References: <20220901093853.60194-1-yishaih@nvidia.com>
- <20220901093853.60194-5-yishaih@nvidia.com>
- <20220901124742.35648bd5.alex.williamson@redhat.com>
- <b3916258-bd64-5cc8-7cbe-f7338a96bf58@oracle.com>
- <20220901143625.4cbd3394.alex.williamson@redhat.com>
-Content-Language: en-US
-From:   Joao Martins <joao.m.martins@oracle.com>
-In-Reply-To: <20220901143625.4cbd3394.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P123CA0003.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:a6::15) To BLAPR10MB4835.namprd10.prod.outlook.com
- (2603:10b6:208:331::11)
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:from:to:cc:subject:date;
+        bh=+l1Xr+0Z0mOUoPyNq6K9ZPyL+4bv81oIhNt9jZTE08A=;
+        b=Udl0RIy+0uWxsbcYJNOsWTwRxiu1pZtvEbCP1sieUXFqbQWzzj/Lb2GZtJ63RSrVwV
+         JTeiW3+oYW0pxGQTlHLvmgd5y4uEyYbCw7vkFHVzl7g3LhDgBFp31JTptsYgC7qnXOQw
+         2bZ/VqujXHpT/0ADpKTJtnFRaYcxAoNuHHWDGu1SU+JSO+HyPKIQYzbnDhDUDAtBhVNS
+         Re4YxVo+58M+asW0OjyQV1ekTnZdanvieH8R6x3dRItmjWg+gtGDxufuhF0CkMSesxkr
+         Fo8IkUlJmzG1LVKWs9/D+cupcRRmmUqKCXKm99C/0LlwFoU40+g50Dj54O72siMIDf9i
+         0khg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:sender:x-gm-message-state:from:to:cc:subject:date;
+        bh=+l1Xr+0Z0mOUoPyNq6K9ZPyL+4bv81oIhNt9jZTE08A=;
+        b=2bgZGp0kkxqLam0Ec+AbiELX4RFRDK02fBxbeNsC4QlpqDwryAYk9zDNTn4nji/kjo
+         UQQLZem0h0i9BNjyYK4L8BAHzON/JNm2jKzc6+R7zuhlwliq8NwyJK9o7xoFIezhCKWk
+         wIExGbKJ+kApQQSdMgmgAMWutsbrZewfT5MZd4fF+LL+ToCoxVr+lTjILWy6v0fxhHYH
+         Tyu8vexvOvtvz1BzJh0XLwrjTEPPdqIiy0FRMO5elFuUWo2rjsHonGTpRo7LpTtch2hu
+         v1ByA+x+qkPgzuzU1WgnEoakH92ME/OD5giG3jhwuUGOq5AXn515xSI7Arvcvg6cgwoS
+         WuSw==
+X-Gm-Message-State: ACgBeo1M4/w3rRoXpN8DES1zqEoUWQuX76ortC6xVQvdrmlNKOyeco7z
+        d74/Gs3X6AAGS9D2KTnwm0myY39dcuvTjw==
+X-Google-Smtp-Source: AA6agR5SImGHzkzvMoAIJKGvjJgTvi8MnAt4HOWdWuSS6X27gUPPW0YvhYJ+RfR0wkLEETHMtw9lWQ==
+X-Received: by 2002:adf:e845:0:b0:226:d461:9cf1 with SMTP id d5-20020adfe845000000b00226d4619cf1mr15255591wrn.136.1662112020365;
+        Fri, 02 Sep 2022 02:47:00 -0700 (PDT)
+Received: from localhost.localdomain ([2a00:79e1:abc:1113:5a49:8afe:d853:893])
+        by smtp.gmail.com with ESMTPSA id c1-20020a5d4141000000b002258413c310sm1084889wrq.88.2022.09.02.02.46.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 02:47:00 -0700 (PDT)
+Sender: David Lebrun <target0x@gmail.com>
+From:   David Lebrun <dav.lebrun@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Lebrun <dav.lebrun@gmail.com>, edumazet@google.com,
+        Lucas Leong <wmliang.tw@gmail.com>,
+        David Lebrun <dlebrun@google.com>
+Subject: [PATCH net] ipv6: sr: fix out-of-bounds read when setting HMAC data.
+Date:   Fri,  2 Sep 2022 10:45:06 +0100
+Message-Id: <20220902094506.89156-1-dav.lebrun@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd0d59e8-33fa-41b8-5d37-08da8cc77e54
-X-MS-TrafficTypeDiagnostic: CH0PR10MB5114:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MRTudh32pxNxxccsSjQBCUKjzIkhXXUbt/rV/g2orvfw6Mj0q+2B/3WRl9dJx1K6CUlx5Dm88LCER9IqeQBXGD6y1ldRmyGqwoZytPTJ4mAumH0HikZPztSOylu6/2AsOIljrLgmsB8ycVxzYW58MEys0np88kWcjMmCUiQuJvVGm66W0RSmuKzLetNJT0qwLigxfSgTka4nLA6kbB0M5qNvRQNgNGlmmwCP+/AMSej3J4Y9xWYSejitheq2BowpYJK9BPe+p8MrgGsoLa4NYmasWtA10hKT4osVFhPP1mrOgdQwnPDXAdHJuw0YF6td3upNRjT7Aiw239JQI7lBgWexkYfWX+x+6lqUWVSs7JAyU+JnviCGjWwCSpxeiRLAVTX9PV80YwIweP6jCf411gl7JCcy3HKBOk73G7oVQDZvFl4sjVT1bhTuVz4FkqRCDfQq5zkDJ0QqOvacekucaAzcof89q2F7MUgmOpw3v0hfoJXu/4BaQE9SF5nDIt2PkOBTIzZEywIlrpBgLWeuwjmd4ehuyBtmT1S9nJdt7US/KGUBgcQ1A0kGX9gqg7LZ0uygPO9bzehWtdSKIPGt2P73IN5kC4ih6QwpW6aYJeTpYdeirRHq+CwKqGBJwn0gF0/nINlvuxpiV2hLIybQBrgs9IVElCrxIVr+ZW3QMMc56or5FEkgoKcM55l1XxPXAoLHuHXjeoAJqbZJgfMIFN8OsJ5712fuyZ1t+Nt8jesMvd6klN9Hnm92y1OYNZG5
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BLAPR10MB4835.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(39860400002)(376002)(396003)(346002)(6506007)(186003)(316002)(83380400001)(6916009)(6486002)(2616005)(53546011)(36756003)(2906002)(6512007)(5660300002)(41300700001)(31686004)(26005)(66476007)(86362001)(31696002)(66946007)(8936002)(38100700002)(4326008)(6666004)(7416002)(8676002)(478600001)(66556008)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?d3hSVXU2VzJFeUIxZ1RkUEN0MU1mcGU1cnl4ZHpZQnhtTUd0TzdwZ1p2c0NM?=
- =?utf-8?B?aG95bUlrY3JPRllHeXNPMWcrTk9IaVNEQ3IwbUpwYWlmSWVsMWlQdHdrY3dQ?=
- =?utf-8?B?SmZnR2RwUGhtU2lsMEJQbVBON0pOdWhHWnBqVGFWVUN1NGYxZ1g3WWI1Vyt2?=
- =?utf-8?B?TEpRVXpYenh1MjMwZk43d1hKTnFFZjR5UGdXTVQxa2krWlJvWTBlZnMvQWRz?=
- =?utf-8?B?ZkRTaHJobWdCVXh3eW16b0s5UGRWV0E0TFJic2xjb1NLNlpBVDlyTG55aGhU?=
- =?utf-8?B?VmdOZW4xYTZqaVN0d0pNUnlEVHp3bFVGL3cyaURxM2RHbDd6bUd3eFc5Ykpy?=
- =?utf-8?B?L0ZzM3doZ3dNdDNUbDZoT0V3VTYxZG8rK3VKVlF4TFlIbngxbk12QUJYclpO?=
- =?utf-8?B?WkF3U1dIaTl0bndOTVlJcTdFL0ZtU2ZrTmlwcGQ5S1NzZXZnTXl4eUZJZzNS?=
- =?utf-8?B?UnUxY2crYzMzM1BYSmYxN1NpeGJqaTFlN0JHU2l0WWV5TnkzS1doRTBCMTJr?=
- =?utf-8?B?ZXBUMkNXSHVsWW5OaGtXVG9xWlhGTVJGRmZranZmRmdWYmltZlhDd0ZFZmY4?=
- =?utf-8?B?VEJCRDhGTUZtWVArUjlsOVV5d201OXNQOU9wZG9GVzRrQm85S01QYXg2eHBq?=
- =?utf-8?B?ak1pWkQ1ZHNnak5kMGJtS2YvZXQwK0gxSlFvbUhwelhCNDlFV2h2M05UMk1r?=
- =?utf-8?B?UjNKemhnTllRZkkzSWl4Mmd2TllwWjNacnFwNDVPaGpyNldTRy9SRlBHcHE2?=
- =?utf-8?B?aUo4djdLS1hndmJFUFp0R0t3cGJGZzN5ZUUzM2ppbHdZT21tQ1R0Sm1HajRK?=
- =?utf-8?B?eEpjZjZUNnRobnpNS3VEaStZR0ZoUExidnpyUlVBOEtpUjBKcUdGQjJLWi9p?=
- =?utf-8?B?Z3Q4NHBTN1l1TnN4WkZLVXJER1hDNXF0cFNoOElyQlVQa05zcU15MmlQcm14?=
- =?utf-8?B?ZlZ1c21SWVJZVXAxRDgyL0Z1Ny9HYXpPaUw0SHAxQUU1UDRqRnZCSmlaQ2RY?=
- =?utf-8?B?R29GWmpNaXRxbGZydTdHSjlCRndkLzM5WW5ia21sYlNBRnVucVpXVEpDNnhM?=
- =?utf-8?B?QmozeDdVeGo0T3hzU2pBWURhdWtKZmo4YUZ0ZFFQOXhYdkVCZGoxTzFhWHMw?=
- =?utf-8?B?Tm5yNHpoVytwSk12Tit5VXdtWHdzbi9DVlZJR2hyc2dnVmRtbmVTVlNHL3BI?=
- =?utf-8?B?SnlMd21WTjJ1VEJEZWpnUmFWYXNBRzU3VFRjY3o1REluYlRwT2J6K2lrL3ZG?=
- =?utf-8?B?ZG1kaHVFeUR5cjRNMktRT0lpd2lrM24vY2NST3ZBZDR5cnR5dVo5RTVzMGsy?=
- =?utf-8?B?dStCRDcvdEdiU0MranNNaTlQOWpNQWQrbEIwYXUwQkZ5NzhiZkJlV3VPcHp1?=
- =?utf-8?B?ZlI2TlY4ZTNUdUUwZXBEVGtHR1VLWUVaNGp6RERuT1ZyWjJIVnRIYXVlUkdN?=
- =?utf-8?B?V0ZPSW85WmNoelhZNHp4Wm1HT1pBOVFNcjc2TGt5TEQvNG5JbFd4RnlCK0lk?=
- =?utf-8?B?Y2o0ZXo5N2tpcXZqNWh4T0FuZEx4bXEyczFUL292WGFiVkVBWGpLVm9UR2RR?=
- =?utf-8?B?VHhjWGN1dng5YUM4STRJS3YvOER6YTZsaTY2VkwySVdLRUNjUE1zY2cvQ3dp?=
- =?utf-8?B?TjZONVlEOWFxTTNjcnZEdkZjbnBCSEIwSFpFUmxiT1AvaGh2UXJ3QWN1eDZt?=
- =?utf-8?B?S2Z2em55NkpwNjlzeGd0d2xIYTJTcWY1bU9xaWJlNFhJSEJCQkMwTDQrNk5F?=
- =?utf-8?B?cEl2eTk0RkhrUzd6UUlhK1R3WUsraUhxdklCN0VzeFpGT0d2R2RPdFIrbWN6?=
- =?utf-8?B?dDh1b09OOTdnaHkvUmJTeTZVYVZqbzV0dE5RR0thMlNxRWtZS3U3eVorMGdP?=
- =?utf-8?B?Z0NBY244VUVoTUUvc0RKYk1mWElkOUttUmZZMjIxc2paSVZIWDhlRWlON0Zi?=
- =?utf-8?B?VXZUOWY3czI2blNPVERPV0d0Zk5jTnFKM0k0ekVITGxkOTZYVVUvN0pXRjFK?=
- =?utf-8?B?QklpN2M0NkVuSktkdmI4MDR2OXNhTXZjc3lEQ0xEdGw0Mk1EeG5sWW9NWEIy?=
- =?utf-8?B?NW9SeG1iNW9FZDVldktSN25NTHVNZUd0NENNNi80M3hpaGVIbEtsVk1pOVRa?=
- =?utf-8?B?ZncrN3RYVnRtSGI5VHdoUEQ5cDhtSGs1UUlBRGVTZ1dxOWJ1N3hDV29nYXFO?=
- =?utf-8?B?U2c9PQ==?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd0d59e8-33fa-41b8-5d37-08da8cc77e54
-X-MS-Exchange-CrossTenant-AuthSource: BLAPR10MB4835.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2022 09:42:47.4215
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Dfe7sZ0SblbWFXgQy0i2vT1/6P0f1npyLu29FJ6iHn9xfcppvLs50foVXnDORiZiD8fdrWSuYTK2Qsj7B552cyrOHuW/qTLT/MKv7FPXbbo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5114
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-09-02_01,2022-08-31_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 mlxlogscore=999
- phishscore=0 suspectscore=0 malwarescore=0 adultscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2207270000 definitions=main-2209020045
-X-Proofpoint-GUID: eLsnZe60AtCerahNpdbCwuFhx_vHugDJ
-X-Proofpoint-ORIG-GUID: eLsnZe60AtCerahNpdbCwuFhx_vHugDJ
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -159,137 +69,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/09/2022 21:36, Alex Williamson wrote:
-> On Thu, 1 Sep 2022 20:39:40 +0100
-> joao.m.martins@oracle.com wrote:
-> 
->> On 01/09/2022 19:47, Alex Williamson wrote:
->>> On Thu, 1 Sep 2022 12:38:47 +0300
->>> Yishai Hadas <yishaih@nvidia.com> wrote:
->>>> + * An example of the APIs on how to use/iterate over the IOVA bitmap:
->>>> + *
->>>> + *   bitmap = iova_bitmap_alloc(iova, length, page_size, data);
->>>> + *   if (IS_ERR(bitmap))
->>>> + *       return PTR_ERR(bitmap);
->>>> + *
->>>> + *   ret = iova_bitmap_for_each(bitmap, arg, dirty_reporter_fn);
->>>> + *
->>>> + *   iova_bitmap_free(bitmap);
->>>> + *
->>>> + * An implementation of the lower end (referred to above as
->>>> + * dirty_reporter_fn to exemplify), that is tracking dirty bits would mark
->>>> + * an IOVA as dirty as following:
->>>> + *     iova_bitmap_set(bitmap, iova, page_size);
->>>> + * Or a contiguous range (example two pages):
->>>> + *     iova_bitmap_set(bitmap, iova, 2 * page_size);  
->>>
->>> This seems like it implies a stronger correlation to the
->>> iova_bitmap_alloc() page_size than actually exists.  The implementation
->>> of the dirty_reporter_fn() may not know the reporting page_size.  The
->>> value here is just a size_t and iova_bitmap handles the rest, right?
->>>   
->> Correct. 
->>
->> The intent was to show an example of what the different usage have
->> an effect in the end bitmap data (1 page and then 2 pages). An alternative
->> would be:
->>
->> 	An implementation of the lower end (referred to above as
->> 	dirty_reporter_fn to exemplify), that is tracking dirty bits would mark
->> 	an IOVA range spanning @iova_length as dirty, using the configured
->> 	@page_size:
->>
->>   	  iova_bitmap_set(bitmap, iova, iova_length)
->>
->> But with a different length variable (i.e. iova_length) to avoid being confused with
->> the length in iova_bitmap_alloc right before this paragraph. But the example in the
->> patch looks a bit more clear on the outcomes to me personally.
-> 
-> How about:
-> 
->   Each iteration of the dirty_reporter_fn is called with a unique @iova
->   and @length argument, indicating the current range available through
->   the iova_bitmap.  The dirty_reporter_fn uses iova_bitmap_set() to
->   mark dirty areas within that provided range
-> 
-> ?
-> 
-Yeah, much clearer. Perhaps I'll add a : and the API usage like this:
+From: David Lebrun <dlebrun@google.com>
 
-   Each iteration of the dirty_reporter_fn is called with a unique @iova
-   and @length argument, indicating the current range available through
-   the iova_bitmap.  The dirty_reporter_fn uses iova_bitmap_set() to
-   mark dirty areas (@iova_length) within that provided range as following:
+The SRv6 layer allows defining HMAC data that can later be used to sign IPv6
+Segment Routing Headers. This configuration is realised via netlink through
+four attributes: SEG6_ATTR_HMACKEYID, SEG6_ATTR_SECRET, SEG6_ATTR_SECRETLEN and
+SEG6_ATTR_ALGID. Because the SECRETLEN attribute is decoupled from the actual
+length of the SECRET attribute, it is possible to provide invalid combinations
+(e.g., secret = "", secretlen = 64). This case is not checked in the code and
+with an appropriately crafted netlink message, an out-of-bounds read of up
+to 64 bytes (max secret length) can occur past the skb end pointer and into
+skb_shared_info:
 
-	iova_bitmap_set(bitmap, iova, iova_length)
+Breakpoint 1, seg6_genl_sethmac (skb=<optimized out>, info=<optimized out>) at net/ipv6/seg6.c:208
+208		memcpy(hinfo->secret, secret, slen);
+(gdb) bt
+ #0  seg6_genl_sethmac (skb=<optimized out>, info=<optimized out>) at net/ipv6/seg6.c:208
+ #1  0xffffffff81e012e9 in genl_family_rcv_msg_doit (skb=skb@entry=0xffff88800b1f9f00, nlh=nlh@entry=0xffff88800b1b7600,
+    extack=extack@entry=0xffffc90000ba7af0, ops=ops@entry=0xffffc90000ba7a80, hdrlen=4, net=0xffffffff84237580 <init_net>, family=<optimized out>,
+    family=<optimized out>) at net/netlink/genetlink.c:731
+ #2  0xffffffff81e01435 in genl_family_rcv_msg (extack=0xffffc90000ba7af0, nlh=0xffff88800b1b7600, skb=0xffff88800b1f9f00,
+    family=0xffffffff82fef6c0 <seg6_genl_family>) at net/netlink/genetlink.c:775
+ #3  genl_rcv_msg (skb=0xffff88800b1f9f00, nlh=0xffff88800b1b7600, extack=0xffffc90000ba7af0) at net/netlink/genetlink.c:792
+ #4  0xffffffff81dfffc3 in netlink_rcv_skb (skb=skb@entry=0xffff88800b1f9f00, cb=cb@entry=0xffffffff81e01350 <genl_rcv_msg>)
+    at net/netlink/af_netlink.c:2501
+ #5  0xffffffff81e00919 in genl_rcv (skb=0xffff88800b1f9f00) at net/netlink/genetlink.c:803
+ #6  0xffffffff81dff6ae in netlink_unicast_kernel (ssk=0xffff888010eec800, skb=0xffff88800b1f9f00, sk=0xffff888004aed000)
+    at net/netlink/af_netlink.c:1319
+ #7  netlink_unicast (ssk=ssk@entry=0xffff888010eec800, skb=skb@entry=0xffff88800b1f9f00, portid=portid@entry=0, nonblock=<optimized out>)
+    at net/netlink/af_netlink.c:1345
+ #8  0xffffffff81dff9a4 in netlink_sendmsg (sock=<optimized out>, msg=0xffffc90000ba7e48, len=<optimized out>) at net/netlink/af_netlink.c:1921
+...
+(gdb) p/x ((struct sk_buff *)0xffff88800b1f9f00)->head + ((struct sk_buff *)0xffff88800b1f9f00)->end
+$1 = 0xffff88800b1b76c0
+(gdb) p/x secret
+$2 = 0xffff88800b1b76c0
+(gdb) p slen
+$3 = 64 '@'
 
-And of course I'll change this in the commit message.
+The OOB data can then be read back from userspace by dumping HMAC state. This
+commit fixes this by ensuring SECRETLEN cannot exceed the actual length of
+SECRET.
 
-> ...
->>>> +/**
->>>> + * iova_bitmap_for_each() - Iterates over the bitmap
->>>> + * @bitmap: IOVA bitmap to iterate
->>>> + * @opaque: Additional argument to pass to the callback
->>>> + * @fn: Function that gets called for each IOVA range
->>>> + *
->>>> + * Helper function to iterate over bitmap data representing a portion of IOVA
->>>> + * space. It hides the complexity of iterating bitmaps and translating the
->>>> + * mapped bitmap user pages into IOVA ranges to process.
->>>> + *
->>>> + * Return: 0 on success, and an error on failure either upon
->>>> + * iteration or when the callback returns an error.
->>>> + */
->>>> +int iova_bitmap_for_each(struct iova_bitmap *bitmap, void *opaque,
->>>> +			 int (*fn)(struct iova_bitmap *bitmap,
->>>> +				   unsigned long iova, size_t length,
->>>> +				   void *opaque))  
->>>
->>> It might make sense to typedef an iova_bitmap_fn_t in the header to use
->>> here.
->>>  
->> OK, will do. I wasn't sure which style was preferred so went with simplest on
->> first take.
-> 
-> It looks like it would be a little cleaner, but yeah, probably largely
-> style.
-> 
-/me nods
+Reported-by: Lucas Leong <wmliang.tw@gmail.com>
+Tested: verified that EINVAL is correctly returned when secretlen > len(secret)
+Fixes: 4f4853dc1c9c1 ("ipv6: sr: implement API to control SR HMAC structure")
+Signed-off-by: David Lebrun <dlebrun@google.com>
+---
+ net/ipv6/seg6.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
+index 5421cc7c935f..29346a6eec9f 100644
+--- a/net/ipv6/seg6.c
++++ b/net/ipv6/seg6.c
+@@ -191,6 +191,11 @@ static int seg6_genl_sethmac(struct sk_buff *skb, struct genl_info *info)
+ 		goto out_unlock;
+ 	}
  
->>>> +{
->>>> +	int ret = 0;
->>>> +
->>>> +	for (; !iova_bitmap_done(bitmap) && !ret;
->>>> +	     ret = iova_bitmap_advance(bitmap)) {
->>>> +		ret = fn(bitmap, iova_bitmap_mapped_iova(bitmap),
->>>> +			 iova_bitmap_mapped_length(bitmap), opaque);
->>>> +		if (ret)
->>>> +			break;
->>>> +	}
->>>> +
->>>> +	return ret;
->>>> +}
->>>> +
->>>> +/**
->>>> + * iova_bitmap_set() - Records an IOVA range in bitmap
->>>> + * @bitmap: IOVA bitmap
->>>> + * @iova: IOVA to start
->>>> + * @length: IOVA range length
->>>> + *
->>>> + * Set the bits corresponding to the range [iova .. iova+length-1] in
->>>> + * the user bitmap.
->>>> + *
->>>> + * Return: The number of bits set.  
->>>
->>> Is this relevant to the caller?
->>>   
->> The thinking that number of bits was a way for caller to validate that
->> 'some bits' was set, i.e. sort of error return value. But none of the callers
->> use it today, it's true. Suppose I should remove it, following bitmap_set()
->> returning void too.
-> 
-> I think 0/-errno are sufficient if we need an error path, otherwise
-> void is fine.  As above, the reporter fn isn't strongly tied to the
-> page size of the bitmap, so number of bits just didn't make sense to me.
-> 
++	if (slen > nla_len(info->attrs[SEG6_ATTR_SECRET])) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	if (hinfo) {
+ 		err = seg6_hmac_info_del(net, hmackeyid);
+ 		if (err)
+-- 
+2.25.1
 
-OK, I am dropping it for now.
