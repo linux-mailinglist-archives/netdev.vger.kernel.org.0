@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63BD35AA5D9
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 04:30:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9582C5AA5D5
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 04:30:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234758AbiIBCaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Sep 2022 22:30:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
+        id S235039AbiIBCaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Sep 2022 22:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234332AbiIBCaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 22:30:14 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D103275DF;
-        Thu,  1 Sep 2022 19:30:13 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id h188so737829pgc.12;
-        Thu, 01 Sep 2022 19:30:13 -0700 (PDT)
+        with ESMTP id S234707AbiIBCaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Sep 2022 22:30:17 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5207B13F47;
+        Thu,  1 Sep 2022 19:30:15 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id x80so816257pgx.0;
+        Thu, 01 Sep 2022 19:30:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=7uI5yxQ2IficxCafBouZLQeDm3f9EVu1uBy3AFKC6gc=;
-        b=OFJXxBSBYOssoMkoywl9EoB3k6QrkEaHd8YL02U+QnpsTC0UA4fodDgpSL5b5LWBLX
-         nLgkHuPVwidqPfsnsj8JHUDLGBuIyEEBczjpRgWekusWdvlQ7O5GLfNXILnfWwkwAPMJ
-         hcJ2ifQutv33yG3kxTre9B7m3UTbVLhx74iQdT6qSkb9YwbhX7EK8Gsn17MRAfi/hNG1
-         6Svh8N4fpVQKpD4jLnAFBmhHGs6Pbi/lGpjyvsVXTIgrjPlqDpEWOT1O2plNLLZMq3/C
-         Pyiw6ih9zAawcl99mJzJSBR019T2VD/ls6nn2v1UxhwxYmwSSUpvlAAX2eLUKf3JXR6f
-         eZMg==
+        bh=Ia4obLCjxStcu+ICWYF8jUpLC+DBctMa/v2GHxl/gGU=;
+        b=mGoieldFRW2ZsDHdEN4SGCykyr50uN6imE/RwcMpTgP+UImu3qxKPcjshQFMbcPCH0
+         uYa4R3RNELwqch3SIr0C74TTS/jL857Xy8RcS9/k21JMyxJJUf2YNaFFVlcjqcqfB+yw
+         /Oe8BEVARTMeYoQ3hPeJvdKL3YSyxw/d0xpdKh1Zngx9QJIJ82ylFj4vVhnLCIQzPjcC
+         DlDpvggQJ9jWbT5zHIXw4sJqpNqrnagdYX8K6LbXA8oO+uLEspmkDZS/yf3+UxDeUQi3
+         YNWr/PkVUiPiWmBkX+/KeXFXBAEVgHn2Ex8HMJ5uO9B1PmrOuU68MCDIg8ElFlywwvOx
+         Ovkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=7uI5yxQ2IficxCafBouZLQeDm3f9EVu1uBy3AFKC6gc=;
-        b=5F/Pi4ST4B0syjt1JlQNybb1xFlAY+MgzHzJ3lle7sUBjV5OYFwMxujeHWTr2lsQfc
-         sn53RpVgU2tJxE6xyA1HEgW2/9soRaDjOso6VHlWlpbpUlldqn7aj/UjoHPoGMJHTnvn
-         APg5p/QvzPU3Hk/oXsEhHotUDeqZL11tNi4fqug/TrAfnps9zctFfCJd1mijC4ihnXgi
-         tWNzvZyytulqXM961pSqhGGN6U2JsBbNpKed11W6zDEzjwD6o4P7jw2Zozoydcm5yoP/
-         FOEzig0r2V3z0m6tK+ZdtMD/C/XtGyQwji5snxVAqDulErnADjyTCBxH5lqY5qrpRc3m
-         UcUA==
-X-Gm-Message-State: ACgBeo0zqsOsRtR2o5VbyjQ8sviu8bYQQfyYVL/0/2XvpqpzT+l5XAQU
-        usx5uIx2WJbycSUDkl/qfM8=
-X-Google-Smtp-Source: AA6agR7KvJ3/nC3lYOZJPIL8xkpq5Mcjsx/aQlho5wzkyPrwzNAvnub08SZ4yh6Sj9fhmkLywjW2qg==
-X-Received: by 2002:a05:6a02:10e:b0:42a:b42b:5692 with SMTP id bg14-20020a056a02010e00b0042ab42b5692mr28380447pgb.67.1662085812826;
-        Thu, 01 Sep 2022 19:30:12 -0700 (PDT)
+        bh=Ia4obLCjxStcu+ICWYF8jUpLC+DBctMa/v2GHxl/gGU=;
+        b=1zm2O9RjaUW8v7I0e8LsDrJ/YlFm7ftRLhzsDP8sNpGF2gNF3kzqcxle52/6MzLssx
+         J9ECTPOTH5yjeiJN9EmffVEJN8+8TI0tSN0L5clV0aWn8v5sT6n0NGSXQUL+h8Gs/dwB
+         M8yGlhPVklse9wkRGMs81hlDP0QtJVoXxFQQNdvsDUvP3ybtJjDLx2I6zK/zQTfbN9y+
+         lfDwLBOW5FrALkj1jf4/hM5tfv/CoatVKL61ZK8+rJYlEhiYbLePMZptAvK6sX7kx+qX
+         kBu3tsLjqhz/6uCsvDOSyVkrTKPRm0qrD5jxmPCa+PnkscGJPWNHFT/3GEQTcEXN+9aL
+         p0eg==
+X-Gm-Message-State: ACgBeo2sG6BxTkQUkvEUD1THogrKdod4uZowWHBKnA19KLexYsnYxE/y
+        VgqrFNQiVRptiCwNHDCVZPg=
+X-Google-Smtp-Source: AA6agR5zZ7j+yw+Nu++fMWh4vrCtPC8eJ/5esneE7CzVfU+r/WXj/ixS9SxXhktPvUmgl1TQfxfquA==
+X-Received: by 2002:a63:a516:0:b0:42b:8bb2:7036 with SMTP id n22-20020a63a516000000b0042b8bb27036mr24798037pgf.389.1662085814905;
+        Thu, 01 Sep 2022 19:30:14 -0700 (PDT)
 Received: from vultr.guest ([2001:19f0:6001:50ea:5400:4ff:fe1f:fbe2])
-        by smtp.gmail.com with ESMTPSA id j4-20020a170902da8400b0017297a6b39dsm269719plx.265.2022.09.01.19.30.10
+        by smtp.gmail.com with ESMTPSA id j4-20020a170902da8400b0017297a6b39dsm269719plx.265.2022.09.01.19.30.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Sep 2022 19:30:12 -0700 (PDT)
+        Thu, 01 Sep 2022 19:30:14 -0700 (PDT)
 From:   Yafang Shao <laoar.shao@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -58,11 +58,10 @@ To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
         lizefan.x@bytedance.com
 Cc:     cgroups@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-mm@kvack.org,
-        Yafang Shao <laoar.shao@gmail.com>,
-        Yosry Ahmed <yosryahmed@google.com>
-Subject: [PATCH bpf-next v3 01/13] cgroup: Update the comment on cgroup_get_from_fd
-Date:   Fri,  2 Sep 2022 02:29:51 +0000
-Message-Id: <20220902023003.47124-2-laoar.shao@gmail.com>
+        Yafang Shao <laoar.shao@gmail.com>
+Subject: [PATCH bpf-next v3 02/13] bpf: Introduce new helper bpf_map_put_memcg()
+Date:   Fri,  2 Sep 2022 02:29:52 +0000
+Message-Id: <20220902023003.47124-3-laoar.shao@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220902023003.47124-1-laoar.shao@gmail.com>
 References: <20220902023003.47124-1-laoar.shao@gmail.com>
@@ -78,30 +77,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit f3a2aebdd6fb ("cgroup: enable cgroup_get_from_file() on cgroup1")
-we can open a cgroup1 dir as well. So let's update the comment.
+Replace the open-coded mem_cgroup_put() with a new helper
+bpf_map_put_memcg(). That could make it more clear.
 
-Cc: Yosry Ahmed <yosryahmed@google.com>
-Cc: Hao Luo <haoluo@google.com>
-Cc: Tejun Heo <tj@kernel.org>
 Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
 ---
- kernel/cgroup/cgroup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/syscall.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index 5f4502a..b7d2e55 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -6625,7 +6625,7 @@ struct cgroup *cgroup_get_from_path(const char *path)
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 4e9d462..7ce024c 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -441,6 +441,11 @@ static struct mem_cgroup *bpf_map_get_memcg(const struct bpf_map *map)
+ 	return root_mem_cgroup;
+ }
  
- /**
-  * cgroup_get_from_fd - get a cgroup pointer from a fd
-- * @fd: fd obtained by open(cgroup2_dir)
-+ * @fd: fd obtained by open(cgroup_dir)
-  *
-  * Find the cgroup from a fd which should be obtained
-  * by opening a cgroup directory.  Returns a pointer to the
++static void bpf_map_put_memcg(struct mem_cgroup *memcg)
++{
++	mem_cgroup_put(memcg);
++}
++
+ void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
+ 			   int node)
+ {
+@@ -451,7 +456,7 @@ void *bpf_map_kmalloc_node(const struct bpf_map *map, size_t size, gfp_t flags,
+ 	old_memcg = set_active_memcg(memcg);
+ 	ptr = kmalloc_node(size, flags | __GFP_ACCOUNT, node);
+ 	set_active_memcg(old_memcg);
+-	mem_cgroup_put(memcg);
++	bpf_map_put_memcg(memcg);
+ 
+ 	return ptr;
+ }
+@@ -465,7 +470,7 @@ void *bpf_map_kzalloc(const struct bpf_map *map, size_t size, gfp_t flags)
+ 	old_memcg = set_active_memcg(memcg);
+ 	ptr = kzalloc(size, flags | __GFP_ACCOUNT);
+ 	set_active_memcg(old_memcg);
+-	mem_cgroup_put(memcg);
++	bpf_map_put_memcg(memcg);
+ 
+ 	return ptr;
+ }
+@@ -480,7 +485,7 @@ void __percpu *bpf_map_alloc_percpu(const struct bpf_map *map, size_t size,
+ 	old_memcg = set_active_memcg(memcg);
+ 	ptr = __alloc_percpu_gfp(size, align, flags | __GFP_ACCOUNT);
+ 	set_active_memcg(old_memcg);
+-	mem_cgroup_put(memcg);
++	bpf_map_put_memcg(memcg);
+ 
+ 	return ptr;
+ }
 -- 
 1.8.3.1
 
