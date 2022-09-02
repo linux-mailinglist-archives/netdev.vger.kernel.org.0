@@ -2,145 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 633215ABAB8
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 00:16:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 000595ABB07
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 01:08:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230291AbiIBWQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 18:16:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57544 "EHLO
+        id S229918AbiIBXIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 19:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiIBWQg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 18:16:36 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4561AA032A
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 15:16:35 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id a9-20020a17090a8c0900b001fff9a99c0fso1401000pjo.5
-        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 15:16:35 -0700 (PDT)
+        with ESMTP id S229496AbiIBXIG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 19:08:06 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5BB3F23DA
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 16:08:04 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id y141so3279011pfb.7
+        for <netdev@vger.kernel.org>; Fri, 02 Sep 2022 16:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date;
-        bh=Bh3U2E64C9QgQ7uAnXLjMJWJpvMMy/IcNnabGflMPaI=;
-        b=Sz4k555vieOfiRqNHm2fa7Zrha640Ob2D9ONPRQCeuVt+m9s3O8/Wt43T6AU8SE/SY
-         v/EGgDMcVGV9nQNnIE6cobRVvD+hTAUy1tZQ9Xk7Yf4ETk/fWudxzsdv8HdM1JACSk3g
-         pM9ei7VPh9K1QoON/Zwe9GHoqrd2hOSnQ/srmIIv1swV8bT5F1o9puZASPjW6/laNpBP
-         W6w3ja+ro0cQ2QrWDgCSRp0lNccaeMxtjvLFMIznTcrbC2vAMXt/NBwiqFfa/ZbW5Guw
-         fPLg8ClctTyK66N1jZFiBLzY3WFaFCvjbzqmmj1R2/rxLsXHdeWOvkVonhUiTjj/X8bu
-         4Www==
+        d=chromium.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=2Y8DDYCQ2otafS/ANml07S73pAs/kgkgSqxooJ7MzEo=;
+        b=gZymZsu4nzF/sx2Kz8zdZO31rMaivj6sqqslSfIi8ycb86aOj28XmAjpjIbdkCFQ7r
+         1skyr/j6bBsNu89R3L78IRSsABgw3ZrAO6Vc19tV0nU8nt2luO9ZtwPs5x/v28CNEn/2
+         k4161ORZTExXAnMbY7/dBGXpFV6cKkAhVn9Hw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date;
-        bh=Bh3U2E64C9QgQ7uAnXLjMJWJpvMMy/IcNnabGflMPaI=;
-        b=rzNIKp8otk6fm7sY4WuZiHspySZwX7LkG1NBTDfDjrFg/BDSINHkkb6x4K5dc5vYn3
-         bTW10VFC6IJ3URJDPEHkIpQrk2Y7PteqUCiZDIwVHI0Y3nvmx7viV0GNdj1iVHiAssvX
-         eFGdn6lRWREvb33cXCv0g21M2cH++gMAHW5x1JbqtBBuHDkg+YVOBrDPAfYeancwkVXN
-         NAAXQDtpXnac8cnyLiXz9/hEEY5RZ9zWdIg4mlsBuhVCbkH4fcM+APvbXqJdNZf3zrwd
-         nlGyW/ZsLFvB6a4PHEzRqW71YNxnpQtDBQX3uZubINwh7Smb7nKlao+CD/+bEnn49NA3
-         avqw==
-X-Gm-Message-State: ACgBeo2nArGbmkhoXBGW9+XFQqi7nvIfgqOryKoo06hIPz9OEb1xfkD7
-        vj8cP14VyBQ3DSKZ6s1mR3j8OnE=
-X-Google-Smtp-Source: AA6agR6/G1ix2sGJUJSuRYZeQSXlLouOinEnX5a7t0AflyvR0shyKG5oczRBr9Ppu8tCoJ9lhMTlnTA=
-X-Received: from sdf.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5935])
- (user=sdf job=sendgmr) by 2002:a17:90a:249:b0:1e0:a8a3:3c6c with SMTP id
- t9-20020a17090a024900b001e0a8a33c6cmr733pje.0.1662156994353; Fri, 02 Sep 2022
- 15:16:34 -0700 (PDT)
-Date:   Fri, 2 Sep 2022 15:16:32 -0700
-In-Reply-To: <20220902002750.2887415-1-kafai@fb.com>
-Mime-Version: 1.0
-References: <20220902002750.2887415-1-kafai@fb.com>
-Message-ID: <YxKAwN/PgQE4pAon@google.com>
-Subject: Re: [PATCH v2 bpf-next 00/17] bpf: net: Remove duplicated code from bpf_getsockopt()
-From:   sdf@google.com
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=2Y8DDYCQ2otafS/ANml07S73pAs/kgkgSqxooJ7MzEo=;
+        b=XYebgT7hORei116haGEMMFvDvTAF/09nO3x1MOiBQXqNURX357A2JaWwrmY2KtjRGV
+         3M5YehMaR4x6gqGqb+NNei8XkDaLiZWgRyA17JG5Hr1dyaoczOiCC/F8XV7bgRPDMIHk
+         6owswJYg80IUWqjZkiV7RmC+PEjcGwR0kF3oKASNLFuft9P9Ur+40rEgcjzGO4+38lB/
+         sDNrkliZ4vjSz6U1ACS9NvZHkREMxnTV4tCycp1zKN8FQEOxVhFq2DHBAJN99bLR0FNT
+         DS8f4NrlCEvgcwas34UMzrdbY/8oDp9QaiYwpM8tNauOU2VnQZ1bn/QVRO6sNqaI1J7e
+         ouUg==
+X-Gm-Message-State: ACgBeo02BaXCI1d1VVHKvr7Qdk9dEjEjH9P1Y+R9Z29YLSUysholCCYr
+        w09TmlcaTSSEeHU9iaQHCxeNgpXtkJWM/A==
+X-Google-Smtp-Source: AA6agR6G3F1xMyBZPBMpPkGlBoDBrXr4WjKwOB3BRE0dZXW8W2Nl66PYsdn9DsbS0atfylWEgULAbw==
+X-Received: by 2002:a63:41c5:0:b0:42c:6b7f:6d95 with SMTP id o188-20020a6341c5000000b0042c6b7f6d95mr19124355pga.175.1662160084174;
+        Fri, 02 Sep 2022 16:08:04 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q23-20020a170902bd9700b0016dbaf3ff2esm2207368pls.22.2022.09.02.16.08.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Sep 2022 16:08:03 -0700 (PDT)
+Date:   Fri, 2 Sep 2022 16:08:01 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>, kernel-team@fb.com,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3] netlink: Bounds-check struct nlmsgerr creation
+Message-ID: <202209021555.9EE2FBD3A@keescook>
+References: <20220901071336.1418572-1-keescook@chromium.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220901071336.1418572-1-keescook@chromium.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/01, Martin KaFai Lau wrote:
-> From: Martin KaFai Lau <martin.lau@kernel.org>
+On Thu, Sep 01, 2022 at 12:13:36AM -0700, Kees Cook wrote:
+> For 32-bit systems, it might be possible to wrap lnmsgerr content
+> lengths beyond SIZE_MAX. Explicitly test for all overflows, and mark the
+> memcpy() as being unable to internally diagnose overflows.
+> 
+> This also excludes netlink from the coming runtime bounds check on
+> memcpy(), since it's an unusual case of open-coded sizing and
+> allocation. Avoid this future run-time warning:
+> 
+>   memcpy: detected field-spanning write (size 32) of single field "&errmsg->msg" at net/netlink/af_netlink.c:2447 (size 16)
 
-> The earlier commits [0] removed duplicated code from bpf_setsockopt().
-> This series is to remove duplicated code from bpf_getsockopt().
+To get rid of the above warning...
 
-> Unlike the setsockopt() which had already changed to take
-> the sockptr_t argument, the same has not been done to
-> getsockopt().  This is the extra step being done in this
-> series.
+> [...]
+> -		memcpy(&errmsg->msg, nlh, nlh->nlmsg_len);
+> +		unsafe_memcpy(&errmsg->msg, nlh, nlh->nlmsg_len,
+> +			      /* "payload" was explicitly bounds-checked, based on
+> +			       * the size of nlh->nlmsg_len.
+> +			       */);
 
-> [0]: https://lore.kernel.org/all/20220817061704.4174272-1-kafai@fb.com/
+above is the "fix", since the compiler has no way to know how to bounds
+check the arguments. But, to write that comment, I added all these
+things:
 
-> v2:
-> - The previous v2 did not reach the list. It is a resend.
-> - Add comments on bpf_getsockopt() should not free
->    the saved_syn (Stanislav)
-> - Explicitly null-terminate the tcp-cc name (Stanislav)
+> [...]
+> -	if (extack->cookie_len)
+> -		tlvlen += nla_total_size(extack->cookie_len);
+> +	if (extack->_msg &&
+> +	    check_add_overflow(*tlvlen, nla_total_size(strlen(extack->_msg) + 1), tlvlen))
+> +		return false;
 
-Looks great!
+If that's not desirable, then I guess the question I want to ask is
+"what can I put in the unsafe_memcpy() comment above that proves these
+values have been sanity checked? In other words, how do we know that
+tlvlen hasn't overflowed? (I don't know what other sanity checking may
+have already happened, so I'm looking directly at the size calculations
+here.)
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
+I assume this isn't more desirable:
 
-> Martin KaFai Lau (17):
->    net: Change sock_getsockopt() to take the sk ptr instead of the sock
->      ptr
->    bpf: net: Change sk_getsockopt() to take the sockptr_t argument
->    bpf: net: Avoid sk_getsockopt() taking sk lock when called from bpf
->    bpf: net: Change do_tcp_getsockopt() to take the sockptr_t argument
->    bpf: net: Avoid do_tcp_getsockopt() taking sk lock when called from
->      bpf
->    bpf: net: Change do_ip_getsockopt() to take the sockptr_t argument
->    bpf: net: Avoid do_ip_getsockopt() taking sk lock when called from bpf
->    net: Remove unused flags argument from do_ipv6_getsockopt
->    net: Add a len argument to compat_ipv6_get_msfilter()
->    bpf: net: Change do_ipv6_getsockopt() to take the sockptr_t argument
->    bpf: net: Avoid do_ipv6_getsockopt() taking sk lock when called from
->      bpf
->    bpf: Embed kernel CONFIG check into the if statement in bpf_getsockopt
->    bpf: Change bpf_getsockopt(SOL_SOCKET) to reuse sk_getsockopt()
->    bpf: Change bpf_getsockopt(SOL_TCP) to reuse do_tcp_getsockopt()
->    bpf: Change bpf_getsockopt(SOL_IP) to reuse do_ip_getsockopt()
->    bpf: Change bpf_getsockopt(SOL_IPV6) to reuse do_ipv6_getsockopt()
->    selftest/bpf: Add test for bpf_getsockopt()
+-	if (extack->cookie_len)
+-		tlvlen += nla_total_size(extack->cookie_len);
++	if (extack->cookie_len) {
++		size_t len = nla_total_size(extack->cookie_len);
++
++		if (WARN_ON_ONCE(len > SIZE_MAX - tlvlen))
++			return 0;
++		tlvlen += len;
++	}
 
->   include/linux/filter.h                        |   3 +-
->   include/linux/igmp.h                          |   4 +-
->   include/linux/mroute.h                        |   6 +-
->   include/linux/mroute6.h                       |   4 +-
->   include/linux/sockptr.h                       |   5 +
->   include/net/ip.h                              |   2 +
->   include/net/ipv6.h                            |   4 +-
->   include/net/ipv6_stubs.h                      |   2 +
->   include/net/sock.h                            |   2 +
->   include/net/tcp.h                             |   2 +
->   net/core/filter.c                             | 220 ++++++++----------
->   net/core/sock.c                               |  51 ++--
->   net/ipv4/igmp.c                               |  22 +-
->   net/ipv4/ip_sockglue.c                        |  98 ++++----
->   net/ipv4/ipmr.c                               |   9 +-
->   net/ipv4/tcp.c                                |  92 ++++----
->   net/ipv6/af_inet6.c                           |   1 +
->   net/ipv6/ip6mr.c                              |  10 +-
->   net/ipv6/ipv6_sockglue.c                      |  95 ++++----
->   net/ipv6/mcast.c                              |   8 +-
->   .../selftests/bpf/progs/bpf_tracing_net.h     |   1 +
->   .../selftests/bpf/progs/setget_sockopt.c      | 148 ++++--------
->   22 files changed, 379 insertions(+), 410 deletions(-)
+Or maybe wrap it nicely with a local macro and return 0 instead of
+trying to pass an error up a layer?
 
-> --
-> 2.30.2
++#define TLVADD(amount)	do { \
++	if (WARN_ON_ONCE(check_add_overflow(tlvlen, amount, &tlvlen))) \
++		return 0; \
++} while (0)
 
+...
+	if (extack->cookie_len)
+-		tlvlen += nla_total_size(extack->cookie_len);
++		TLVADD(nla_total_size(extack->cookie_len));
+
+-- 
+Kees Cook
