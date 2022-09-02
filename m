@@ -2,54 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AB085AA6C9
-	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 06:10:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E975AA6C8
+	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 06:10:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234445AbiIBEKW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 00:10:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
+        id S234011AbiIBEKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 00:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234221AbiIBEKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 00:10:20 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0095632066
-        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 21:10:18 -0700 (PDT)
+        with ESMTP id S229482AbiIBEKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 00:10:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65942DABA
+        for <netdev@vger.kernel.org>; Thu,  1 Sep 2022 21:10:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87E5ECE2950
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 04:10:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B5ED8C433B5;
-        Fri,  2 Sep 2022 04:10:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0FE961F6A
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 04:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 171D2C43142;
+        Fri,  2 Sep 2022 04:10:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662091814;
-        bh=X6Sh1GLGzcjf5HWKApYGwzk9soYOj7EmNjdAbMqcZPY=;
+        s=k20201202; t=1662091815;
+        bh=uQDlbGQT/0I0gPLmYfdu37E9Fgzc71oqHFOZOeJBhwM=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=p4w5aRnBPArvF0i9Fm9aCMxhFms+bGwwIpLDaCO2TardEyK0pQQEjKHr6ixmHwLZM
-         hSiwXq8SbwJVEGT2SAXUwdyS4Yzz8b+UhUn32cWdHmT02jud0Lc+44pcyfQiXW5wTb
-         bK2LcW+1ZzRbkB7SgG6xsTL4lNV7cTKWlofdK8kuK/nHWpL60dnzJp6qlYZkMBZB5C
-         a/g1dt5M4s3lbTB4qWAnOYPBft9dshGEeUgXHV9ScjitRYbYKhUbwJ85X337/ek/3x
-         xzaeSFamgkaFmntJCYCtwKYxNJfAT8YAkJFyxlB4+bMeIkN9DybROQ4Av3ibA9lUXz
-         bSDCA81gfD8MQ==
+        b=F9BJAaYG6igauM0bJ4JuSAMkIzJJ37/8WsIB9KE2mpZrVgWSx7Jlah+GqOuk0WGUG
+         i+D0m1nWNoXL7dH1Y3iA3GykAlI81yma6ua6QjJT4hV87SNxnTJ30tZKROvEWrMXp9
+         b5TS8BdGnX9nOHnfMazbPaXcSD8ZgDxMuQKz/CtCCzTiloQApN4EFA1Rfrt2soTiY9
+         3WYmvKAH7YPtEl1z4KsBf4PlFPVF9hHikIwZCKad05E38zQ2p1HlyYiX9ks1ca5q4r
+         J56kr52FO8c/D4Yiw1k0VbR0NYOKz65z8jtkV7PRcUBWgGFIZvy/pqaD9JTxUiU6qV
+         mpuQ0/jqXAXBg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 977CEE924D6;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F2DABE924D6;
         Fri,  2 Sep 2022 04:10:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] Revert "net: phy: meson-gxl: improve link-up behavior"
+Subject: Re: [PATCH net-next] ipv6: tcp: send consistent autoflowlabel in SYN_RECV
+ state
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166209181460.19149.17976066584717562078.git-patchwork-notify@kernel.org>
+Message-Id: <166209181498.19149.13471751013086116719.git-patchwork-notify@kernel.org>
 Date:   Fri, 02 Sep 2022 04:10:14 +0000
-References: <8deeeddc-6b71-129b-1918-495a12dc11e3@gmail.com>
-In-Reply-To: <8deeeddc-6b71-129b-1918-495a12dc11e3@gmail.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, andrew@lunn.ch, linux@armlinux.org.uk,
-        narmstrong@baylibre.com, khilman@baylibre.com,
-        jbrunet@baylibre.com, martin.blumenstingl@googlemail.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
+References: <20220831203729.458000-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220831203729.458000-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, ncardwell@google.com, edumazet@google.com
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,22 +59,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed, 31 Aug 2022 21:20:49 +0200 you wrote:
-> This reverts commit 2c87c6f9fbddc5b84d67b2fa3f432fcac6d99d93.
-> Meanwhile it turned out that the following commit is the proper
-> workaround for the issue that 2c87c6f9fbdd tries to address.
-> a3a57bf07de2 ("net: stmmac: work around sporadic tx issue on link-up")
-> It's nor clear why the to be reverted commit helped for one user,
-> for others it didn't make a difference.
+On Wed, 31 Aug 2022 13:37:29 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> This is a followup of commit c67b85558ff2 ("ipv6: tcp: send consistent
+> autoflowlabel in TIME_WAIT state"), but for SYN_RECV state.
+> 
+> In some cases, TCP sends a challenge ACK on behalf of a SYN_RECV request.
+> WHen this happens, we want to use the flow label that was used when
+> the prior SYNACK packet was sent, instead of another one.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] Revert "net: phy: meson-gxl: improve link-up behavior"
-    https://git.kernel.org/netdev/net/c/7fdc77665f3d
+  - [net-next] ipv6: tcp: send consistent autoflowlabel in SYN_RECV state
+    https://git.kernel.org/netdev/net-next/c/aa51b80e1af4
 
 You are awesome, thank you!
 -- 
