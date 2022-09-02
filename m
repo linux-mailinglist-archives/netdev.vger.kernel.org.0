@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E075ABA0C
+	by mail.lfdr.de (Postfix) with ESMTP id 6DA0C5ABA0D
 	for <lists+netdev@lfdr.de>; Fri,  2 Sep 2022 23:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231126AbiIBVac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 17:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S230456AbiIBVaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 17:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230521AbiIBVab (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 17:30:31 -0400
+        with ESMTP id S229640AbiIBVa3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 17:30:29 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3540FE398C;
-        Fri,  2 Sep 2022 14:30:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E46AFEA315;
+        Fri,  2 Sep 2022 14:30:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1662154228; x=1693690228;
-  h=from:to:subject:date:message-id:mime-version;
-  bh=KOTH4JPhMsOiAZR2ZzLX0VQD5TijJ7XjKW80Z9C78Wc=;
-  b=R+t6FRkH9dcQKaBeYJiB56k1Zah3bdu92MDIkfXaQBBtqj2fXnnIIptw
-   anlT1K5JHTYDLB0/cFJQlkmFFX8h7wZdBwURsJqKK2i2T91EEWen4+wnZ
-   v2bWoPQPHpB18c7UK+VlfFj8Nsw7hM78LUZIOXHQCROYgRwFyxIfMcQB/
-   Zs7sYnLsj8fwFwYiCdO5agvbbbSwSPcjWeVU2IrDVSTSs8rcCOpX2Jko8
-   NlMnVHQBQxxhCLWZgyQqaC3eipDzaKCYMIiDsKC4d3FJo5z1zazNpzWAm
-   TsGZ1PEeLuSPCqSyq+XqKYL9z8IGhWDYowEzRoT5boZVdVF4TNvxF8TfN
-   A==;
+  t=1662154227; x=1693690227;
+  h=from:to:subject:date:message-id:in-reply-to:references:
+   mime-version;
+  bh=0tijxlJT+sH8I3kLfF1FY/I3t/XXkOUKz1feGpP7oK0=;
+  b=KZAnLylfyMFBn4KfN81S5Hhr5hWY6BRPBBY8cU4dUu+9xN+8dBlv3zpl
+   HKsyh0njqbenqcxmgsZkVIXXmhTvhOZ60IkX8i0lyp1or5kfzwl0RVXK8
+   kUdaULxWflei2NKM9apt67ZaFd7YZC98CLqDj6nfJdy5TK2lx9zAdtTyE
+   4Oo5BQSJfXptFi9zyP77lEluJ4gCufm1pej/cZib12Zw0ovsO9wOSw8MQ
+   vUfjzg0lB7KdQvGoFYwKApbWBn9T6pScqNtWb3siKZPtGlJF5RHte+iDs
+   88vMjUiextQlIn/00PCE0Bfdxrdcptl3m7jisA4d6M5pww380D4RDVNED
+   g==;
 X-IronPort-AV: E=Sophos;i="5.93,285,1654585200"; 
-   d="scan'208";a="111997240"
+   d="scan'208";a="111997226"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 14:30:28 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Sep 2022 14:30:26 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.12; Fri, 2 Sep 2022 14:30:23 -0700
+ 15.1.2507.12; Fri, 2 Sep 2022 14:30:25 -0700
 Received: from AUS-LT-C33025.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 14:30:21 -0700
+ 15.1.2507.12 via Frontend Transport; Fri, 2 Sep 2022 14:30:23 -0700
 From:   Jerry Ray <jerry.ray@microchip.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -47,10 +48,12 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, <netdev@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, Jerry Ray <jerry.ray@microchip.com>
-Subject: [PATCH v2 1/2] net: dsa: LAN9303: Add early read to sync
-Date:   Fri, 2 Sep 2022 16:30:20 -0500
-Message-ID: <20220902213021.23151-1-jerry.ray@microchip.com>
+Subject: [PATCH v2 2/2] net: dsa: LAN9303: Add basic support for LAN9354
+Date:   Fri, 2 Sep 2022 16:30:21 -0500
+Message-ID: <20220902213021.23151-2-jerry.ray@microchip.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220902213021.23151-1-jerry.ray@microchip.com>
+References: <20220902213021.23151-1-jerry.ray@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -63,77 +66,99 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add initial BYTE_ORDER read to sync the 32-bit accesses over the 16-bit
-mdio bus to improve driver robustness.
+Adding support for the LAN9354 device by allowing it to use
+the LAN9303 DSA driver.  These devices have the same underlying
+access and control methods and from a feature set point of view
+the LAN9354 is a superset of the LAN9303.
 
-The lan9303 expects two mdio read transactions back-to-back to read a
-32-bit register. The first read transaction causes the other half of the
-32-bit register to get latched.  The subsequent read returns the latched
-second half of the 32-bit read. The BYTE_ORDER register is an exception to
-this rule. As it is a constant value, there is no need to latch the second
-half. We read this register first in case there were reads during the boot
-loader process that might have occurred prior to this driver taking over
-ownership of accessing this device.
+The MDIO access method has been tested on a SAMA5D3-EDS board
+with a LAN9354 RMII daughter card.
 
-This patch has been tested on the SAMA5D3-EDS with a LAN9303 RMII daughter
-card.
+While the SPI access method should also be the same, it has not
+been tested and as such is not included at this time.
 
 Signed-off-by: Jerry Ray <jerry.ray@microchip.com>
 ---
- drivers/net/dsa/lan9303-core.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/net/dsa/Kconfig        |  6 +++---
+ drivers/net/dsa/lan9303-core.c | 11 ++++++++---
+ drivers/net/dsa/lan9303_mdio.c |  1 +
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index d8ae0e8af2a0..07507b4820d7 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -76,7 +76,7 @@ config NET_DSA_SMSC_LAN9303
+ 	select NET_DSA_TAG_LAN9303
+ 	select REGMAP
+ 	help
+-	  This enables support for the SMSC/Microchip LAN9303 3 port ethernet
++	  This enables support for the Microchip LAN9303/LAN9354 3 port ethernet
+ 	  switch chips.
+ 
+ config NET_DSA_SMSC_LAN9303_I2C
+@@ -90,11 +90,11 @@ config NET_DSA_SMSC_LAN9303_I2C
+ 	  for I2C managed mode.
+ 
+ config NET_DSA_SMSC_LAN9303_MDIO
+-	tristate "SMSC/Microchip LAN9303 3-ports 10/100 ethernet switch in MDIO managed mode"
++	tristate "Microchip LAN9303/LAN9354 3-ports 10/100 ethernet switch in MDIO managed mode"
+ 	select NET_DSA_SMSC_LAN9303
+ 	depends on VLAN_8021Q || VLAN_8021Q=n
+ 	help
+-	  Enable access functions if the SMSC/Microchip LAN9303 is configured
++	  Enable access functions if the Microchip LAN9303/LAN9354 is configured
+ 	  for MDIO managed mode.
+ 
+ config NET_DSA_VITESSE_VSC73XX
 diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index e03ff1f267bb..9d5302001abf 100644
+index 9d5302001abf..9e04541c3144 100644
 --- a/drivers/net/dsa/lan9303-core.c
 +++ b/drivers/net/dsa/lan9303-core.c
-@@ -32,6 +32,7 @@
- #define LAN9303_INT_EN 0x17
- # define LAN9303_INT_EN_PHY_INT2_EN BIT(27)
- # define LAN9303_INT_EN_PHY_INT1_EN BIT(26)
-+#define LAN9303_BYTE_ORDER 0x19
- #define LAN9303_HW_CFG 0x1D
- # define LAN9303_HW_CFG_READY BIT(27)
- # define LAN9303_HW_CFG_AMDX_EN_PORT2 BIT(26)
-@@ -851,10 +852,6 @@ static int lan9303_check_device(struct lan9303 *chip)
- 	if (ret) {
- 		dev_err(chip->dev, "failed to read chip revision register: %d\n",
- 			ret);
--		if (!chip->reset_gpio) {
--			dev_dbg(chip->dev,
--				"hint: maybe failed due to missing reset GPIO\n");
--		}
+@@ -22,6 +22,10 @@
+  */
+ #define LAN9303_CHIP_REV 0x14
+ # define LAN9303_CHIP_ID 0x9303
++# define LAN9352_CHIP_ID 0x9352
++# define LAN9353_CHIP_ID 0x9353
++# define LAN9354_CHIP_ID 0x9354
++# define LAN9355_CHIP_ID 0x9355
+ #define LAN9303_IRQ_CFG 0x15
+ # define LAN9303_IRQ_CFG_IRQ_ENABLE BIT(8)
+ # define LAN9303_IRQ_CFG_IRQ_POL BIT(4)
+@@ -855,8 +859,9 @@ static int lan9303_check_device(struct lan9303 *chip)
  		return ret;
  	}
  
-@@ -1349,6 +1346,7 @@ static int lan9303_probe_reset_gpio(struct lan9303 *chip,
- int lan9303_probe(struct lan9303 *chip, struct device_node *np)
- {
- 	int ret;
-+	u32 reg;
- 
- 	mutex_init(&chip->indirect_mutex);
- 	mutex_init(&chip->alr_mutex);
-@@ -1359,6 +1357,19 @@ int lan9303_probe(struct lan9303 *chip, struct device_node *np)
- 
- 	lan9303_handle_reset(chip);
- 
-+	/* First read to the device.  This is a Dummy read to ensure MDIO */
-+	/* access is in 32-bit sync. */
-+	ret = lan9303_read(chip->regmap, LAN9303_BYTE_ORDER, &reg);
-+	if (ret) {
-+		dev_err(chip->dev, "failed to access the device: %d\n",
-+			ret);
-+		if (!chip->reset_gpio) {
-+			dev_dbg(chip->dev,
-+				"hint: maybe failed due to missing reset GPIO\n");
-+		}
-+		return ret;
-+	}
-+
- 	ret = lan9303_check_device(chip);
+-	if ((reg >> 16) != LAN9303_CHIP_ID) {
+-		dev_err(chip->dev, "expecting LAN9303 chip, but found: %X\n",
++	if (((reg >> 16) != LAN9303_CHIP_ID) &&
++	    ((reg >> 16) != LAN9354_CHIP_ID)) {
++		dev_err(chip->dev, "unexpected device found: LAN%4.4X\n",
+ 			reg >> 16);
+ 		return -ENODEV;
+ 	}
+@@ -872,7 +877,7 @@ static int lan9303_check_device(struct lan9303 *chip)
  	if (ret)
- 		return ret;
+ 		dev_warn(chip->dev, "failed to disable switching %d\n", ret);
+ 
+-	dev_info(chip->dev, "Found LAN9303 rev. %u\n", reg & 0xffff);
++	dev_info(chip->dev, "Found LAN%4.4X rev. %u\n", (reg >> 16), reg & 0xffff);
+ 
+ 	ret = lan9303_detect_phy_setup(chip);
+ 	if (ret) {
+diff --git a/drivers/net/dsa/lan9303_mdio.c b/drivers/net/dsa/lan9303_mdio.c
+index bbb7032409ba..d12c55fdc811 100644
+--- a/drivers/net/dsa/lan9303_mdio.c
++++ b/drivers/net/dsa/lan9303_mdio.c
+@@ -158,6 +158,7 @@ static void lan9303_mdio_shutdown(struct mdio_device *mdiodev)
+ 
+ static const struct of_device_id lan9303_mdio_of_match[] = {
+ 	{ .compatible = "smsc,lan9303-mdio" },
++	{ .compatible = "microchip,lan9354-mdio" },
+ 	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, lan9303_mdio_of_match);
 -- 
 2.17.1
 
