@@ -2,191 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D425F5ABFDA
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 18:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CCE75ABFDC
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 18:44:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230044AbiICQm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 12:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
+        id S230247AbiICQoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 12:44:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbiICQm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 12:42:57 -0400
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F169558DCB
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 09:42:55 -0700 (PDT)
-Received: by mail-yb1-xb2d.google.com with SMTP id g5so7225856ybg.11
-        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 09:42:55 -0700 (PDT)
+        with ESMTP id S229732AbiICQoH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 12:44:07 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4A9458DDD
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 09:44:06 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id fc24so341758ejc.3
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 09:44:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
-        b=dgVVPwawmNQY+PcfCST6C1ozjH/moAM3P6JfJ/jE+ALX0LudC/lNAeRkNsr2LO8CFO
-         DBt+z1dIDeLtRE/RDA7tcnKvBVRBUdzGO/tR7jDlPmF6sgWzNQyuJzbKelfbfRZi77bT
-         mZ5E8L1UOwHO63q8zTa2fnjVDGjttQP5vNHlVfu6W8IP3ujb6RUJYhBs5wlhO4vOI3dN
-         dPD1bETDc9TYJWXFemlKftkTU+5AN3Bum/kCpuMTDU7rpyMsWN5jOybqE8vd72jAL52r
-         6GPy13kOx8ZRdI537AbEla6QMmWGSKAosS687pUj+3i6+NUMbV0qh2PnL6GD/BQ1TnIY
-         qTvw==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date;
+        bh=LiU7+LK7QIZ956P+nAlbuHFlGIUkfFMf+/fB6MzRof4=;
+        b=GVDNt7G1Yms4qMBv4RzWcIc1nwwnjhipXPkWyUkdqmE7OsVWaq8+mwIL4d6+0ChQ6y
+         eycu+Td1TMhcVaic+0VKPDlzsfi4PqhhI0FgshSzVGWmt80pu4iNf677g+xUPSsQVQTV
+         sBviZ+Nez+t5DLKdhxK/BejLorKfLFrpcg3CmadisgJhwQ4O3EwwcJZBOD+qJxAfclIa
+         TzWCgDI3cgo7oSLTl4OVm+paqDeqNVzLsiIc05MWuY4l5YSF7lcVU9ZBCFi6UI9s3xRC
+         LggEIAfGNdYmyZCdhuvFBLGjW91hChwabj4SwzIZkE07LvnGz/OyckeFkeBbAxQM1B4Q
+         QFMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
-        b=0aL5ADGznEeJkpoWy4+4GctZ8ggLtjEf9a6mpZ1c/o5mkl2sW5V5eaRnJfv/s4fSQ5
-         MHcJah/VtbExcovAamMcDtpDgBnhkqiiaUhl6yt7UU0OA1PKNv0XNN7gvAyneEo26oWj
-         corM4/Mn75PWn2JlRsPkTumdMkmAzGFoguzF+oomzpRb/+YJRpPQH4WCEqPyuMbBjWoi
-         lfbvugaDknZnLHr5gUbwktcFN/i5w7k6KZJuQixJ6dwHMoqSifxlSsjdbzWMCu29d4s2
-         CwasU1BOeMFo++h2qgx5zmLO+9tK+G41xDSPc3OUYbZhKoKGQalIo+IUEF7yl+sZPSpq
-         sDNw==
-X-Gm-Message-State: ACgBeo3rY9JA1QNb6VBDKnVkwbNdlcRYlMr+UHiSTEx5zXRjpZj+YCE8
-        3O42Q/fJSO/HTyO6T+7/3h8k8y6cAEo9/MwDxRHXmR7MbnZp+Q==
-X-Google-Smtp-Source: AA6agR6ah/QjgtNirwQaFdAVShtS797fncfIZTBqVfrd8xWghWo0iF9beuaHqowoqp8R3YGFBT+ALgMpA2CH8vPcicU=
-X-Received: by 2002:a25:84cd:0:b0:67a:699e:4e84 with SMTP id
- x13-20020a2584cd000000b0067a699e4e84mr26241370ybm.407.1662223374901; Sat, 03
- Sep 2022 09:42:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220831133758.3741187-1-leitao@debian.org>
-In-Reply-To: <20220831133758.3741187-1-leitao@debian.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Sat, 3 Sep 2022 09:42:43 -0700
-Message-ID: <CANn89iLe9spogp7eaXPziA0L-FqJ0w=6VxdWDL6NKGobTyuQRw@mail.gmail.com>
-Subject: Re: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
-To:     Breno Leitao <leitao@debian.org>
-Cc:     David Miller <davem@davemloft.net>,
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date;
+        bh=LiU7+LK7QIZ956P+nAlbuHFlGIUkfFMf+/fB6MzRof4=;
+        b=HX98FAVfBRLdwqdnVrtfpn7/DrY6w84iG+XgzRsW1VYljopDtmep4HpgTfkS1Pt7EE
+         WmU3E3NjGPU1w/Uke9Ij4UDIprQIQ45ia0OuEFLFkqQrSlW7hnTel9y9GdTXaZR/2RoV
+         T3V9aG4dO3Si+T7LWma/K4OAyiqfIoNTJTjVKouTwCErCsTgEJTfB1mMlbStzkL/PSr+
+         Q4ieck4xYODtg54z4QWJn4oXJK1lIt5z80/B8IQVr9um6jSTdhSLf3B5o6wbJ1vY6vv7
+         P+yyteqtM4kJyUVxFpjVuPZ1bXg0O1omd1L7BY1/5KrEW0wZmoWpMrzPWrpjVyAWUEtd
+         FHfA==
+X-Gm-Message-State: ACgBeo181XxdWJU45kTbY68apwdD1yn1c6b5UUWnyujCQeDmxijkpoWE
+        iu9rZcIvAkFm3W5F1cYl6aWIiXP6HPU=
+X-Google-Smtp-Source: AA6agR6S/qswmY8Fa8gfTOuXfqrmqSY/59J8EIwgSHJiXKmfiTawJI/iOK97+SjUK5YFrXXiGAZi7A==
+X-Received: by 2002:a17:907:60c7:b0:739:52ba:cbd0 with SMTP id hv7-20020a17090760c700b0073952bacbd0mr30938681ejc.152.1662223445241;
+        Sat, 03 Sep 2022 09:44:05 -0700 (PDT)
+Received: from skbuf ([188.27.184.197])
+        by smtp.gmail.com with ESMTPSA id 9-20020a170906300900b00742a4debae1sm2620049ejz.6.2022.09.03.09.44.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 03 Sep 2022 09:44:04 -0700 (PDT)
+Date:   Sat, 3 Sep 2022 19:44:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>, leit@fb.com,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        David Ahern <dsahern@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Print warning only once
+Message-ID: <20220903164402.4gmxipv2iol37r4g@skbuf>
+References: <20220830163448.8921-1-kurt@linutronix.de>
+ <20220831152628.um4ktfj4upcz7zwq@skbuf>
+ <87v8q8jjgh.fsf@kurt>
+ <20220831234329.w7wnxy4u3e5i6ydl@skbuf>
+ <87czcfzkb6.fsf@kurt>
+ <20220901113912.wrwmftzrjlxsof7y@skbuf>
+ <87r10sr3ou.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87r10sr3ou.fsf@kurt>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 6:38 AM Breno Leitao <leitao@debian.org> wrote:
->
-> There are cases where we need information about the socket during a
-> warning, so, it could help us to find bugs that happens that do not have
-> a easily repro.
->
-> BPF congestion control algorithms can change socket state in unexpected
-> ways, leading to WARNings. Additional information about the socket state
-> is useful to identify the culprit.
+On Sat, Sep 03, 2022 at 03:24:33PM +0200, Kurt Kanzenbach wrote:
+> > Yes, some IP forwarding of 60 byte frames at line rate gigabit or higher
+> > should do the trick. Testing with MTU sized packets is probably not
+> > going to show much of a difference.
+> 
+> Well, I don't see much of a difference. However, running iperf3 with
+> small packets is nowhere near line rate of 100Mbit/s.
 
-Well, this suggests we need to fix BPF side ?
+Try something smarter than iperf3, like CONFIG_NET_PKTGEN=y on a link
+partner as traffic generator. I had this command lying around, I forget
+exactly what it does.
 
-Not sure how this can happen, because TCP_BPF_IW has
-
-if (val <= 0 || tp->data_segs_out > tp->syn_data)
-     ret = -EINVAL;
-else
-    tcp_snd_cwnd_set(tp, val);
-
-It seems you already found the issue in an eBPF CC, can you share the details ?
-
-
->
-> This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
-> attaches it to tcp_snd_cwnd_set().
-
-Well, I feel this will need constant additions... the state of a
-custom BPF CC is opaque to core TCP stack anyway ?
-
->
-> Signed-off-by: Breno Leitao <leitao@debian.org>
-> ---
->  include/net/tcp.h       |  3 ++-
->  include/net/tcp_debug.h | 10 ++++++++++
->  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
->  3 files changed, 42 insertions(+), 1 deletion(-)
->  create mode 100644 include/net/tcp_debug.h
->
-> diff --git a/include/net/tcp.h b/include/net/tcp.h
-> index d10962b9f0d0..73c3970d8839 100644
-> --- a/include/net/tcp.h
-> +++ b/include/net/tcp.h
-> @@ -40,6 +40,7 @@
->  #include <net/inet_ecn.h>
->  #include <net/dst.h>
->  #include <net/mptcp.h>
-> +#include <net/tcp_debug.h>
->
->  #include <linux/seq_file.h>
->  #include <linux/memcontrol.h>
-> @@ -1222,7 +1223,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
->
->  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
->  {
-> -       WARN_ON_ONCE((int)val <= 0);
-> +       TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
->         tp->snd_cwnd = val;
->  }
->
-> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
-> new file mode 100644
-> index 000000000000..50e96d87d335
-> --- /dev/null
-> +++ b/include/net/tcp_debug.h
-> @@ -0,0 +1,10 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +#ifndef _LINUX_TCP_DEBUG_H
-> +#define _LINUX_TCP_DEBUG_H
-> +
-> +void tcp_sock_warn(const struct tcp_sock *tp);
-> +
-> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
-> +               DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
-> +
-> +#endif  /* _LINUX_TCP_DEBUG_H */
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index bbe218753662..71771fee72f7 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -4684,6 +4684,36 @@ int tcp_abort(struct sock *sk, int err)
->  }
->  EXPORT_SYMBOL_GPL(tcp_abort);
->
-> +void tcp_sock_warn(const struct tcp_sock *tp)
-> +{
-> +       const struct sock *sk = (const struct sock *)tp;
-> +       struct inet_sock *inet = inet_sk(sk);
-> +       struct inet_connection_sock *icsk = inet_csk(sk);
-> +
-> +       WARN_ON(1);
-> +
-> +       if (!tp)
-> +               return;
-> +
-> +       pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
-> +               sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
-> +               ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
-> +
-> +       switch (sk->sk_family) {
-> +       case AF_INET:
-> +               pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
-> +                       &inet->inet_daddr);
-> +               break;
-> +#if IS_ENABLED(CONFIG_IPV6)
-> +       case AF_INET6:
-> +               pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
-> +                       &sk->sk_v6_daddr);
-> +               break;
-> +#endif
-> +       }
-> +}
-> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
-> +
->  extern struct tcp_congestion_ops tcp_reno;
->
->  static __initdata unsigned long thash_entries;
-> --
-> 2.30.2
->
+/root/git/net-next/samples/pktgen/pktgen_sample03_burst_single_flow.sh \
+	-i eth1 -s 64 -m 00:04:9f:05:de:0a -d 20.0.0.2  -t 2 -f 13 -c 4 -p 400 -n 0 -b 4
