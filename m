@@ -2,1253 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA975ABDDA
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 10:32:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 409965ABDEE
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 10:57:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbiICIcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 04:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33354 "EHLO
+        id S231266AbiICI5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 04:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232303AbiICIcF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 04:32:05 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D0FD1E22
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 01:32:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1662193922; x=1693729922;
-  h=message-id:date:mime-version:from:subject:cc:references:
-   to:in-reply-to:content-transfer-encoding;
-  bh=+ZTXWc5FhqMRJPJrFtrch79u2nn2h0rFa/Rv5YMZFzM=;
-  b=DFpLFhzjKGMRxFJjdwn0pPVM8KJyGYsNp3Qus+mz9FKw67akb8HqGrxe
-   c3cfozmqGEr/+x9JFLfMCiG12LKXPGFIGtomWLHrc3KsiMFeu6yUr0NTC
-   5T6RIQauBshuZWbJd1qv4ogbXXafZNL6qJ9ldee3U2lv6oV+Rxw0asLHp
-   G6Y4uNxsmITVnXPFpsrnilEJ4QQNihmp8ZWc0ICDz6JA8WwZdw/lvO5Ms
-   +dFCV2oQ8qKFjpfriCwoYROzhIJzSK+yYbSxbPO42leyL0GAeKBhT7Wre
-   Km3yXzDwKD2pVQSU/JVVhDfd2Tqpvmi4IGOzIo9t9dLBnKWqU2hB6/6z8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10458"; a="360097849"
-X-IronPort-AV: E=Sophos;i="5.93,286,1654585200"; 
-   d="scan'208";a="360097849"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 01:32:02 -0700
-X-IronPort-AV: E=Sophos;i="5.93,286,1654585200"; 
-   d="scan'208";a="643217496"
-Received: from mckumar-mobl2.gar.corp.intel.com (HELO [10.215.127.108]) ([10.215.127.108])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 01:31:58 -0700
-Message-ID: <8458896f-9207-e548-f485-6218201c9099@linux.intel.com>
-Date:   Sat, 3 Sep 2022 14:01:56 +0530
+        with ESMTP id S229515AbiICI5B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 04:57:01 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9A5F58095
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 01:56:59 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id az27so4973962wrb.6
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 01:56:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date;
+        bh=pdGBJ52jvn20zHrG6NZf07erpY0roxV5dm6Z7m+c+UU=;
+        b=QIA7dvExi9nA20b0a+inXURlOZ8gHQ4JumbrcPeVqBrRSoRDSjzGFOWh+QZ4ziNSnn
+         IWgCu6Fk2ukWGSxhvZxg7KbejWL58LSSy4YnXh+eWIH/2Fo6VPIKLBlyWBpZ81WH+ilZ
+         jYoyrKU/TZRzWjI2d/yHoJ944iZUW0zVxjf45coNV8pJ3XeRixAVfh5Fu9wCmc8G7hg/
+         WieMN5RXH/FuBnqBO7dAbzAYIExJ0L83xr1ZGiSi6+h8lzs76U6T/MsA+TZVOmnsBa5B
+         EzJt01I7fZqrqQ7Lk5O3r4uGh73Y9Ez7ZORjPnalTSa53ZZ9OLXi1aDTPgHpjyKPSblA
+         nHNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date;
+        bh=pdGBJ52jvn20zHrG6NZf07erpY0roxV5dm6Z7m+c+UU=;
+        b=ZkcNwbrGkl+z4uPQzWcSj9a/5CFEA3Kd5ECzRVtY81qXxDBiPHX5KbF2yF6I0rs7T0
+         rUj8ItJXfCWCAEdhDryinvB3wn8yu5YAmlnl3jO+y8vluxIa4/Vw7DVF0lbnBTtjJT3X
+         AUWHLC+JgxC+Fqwvie5OakF+JrBCpRz5d8e8M1rb8MDe294CZMoo4ah7VhRFwNUusTG/
+         S33qLz2z3QjW+2PoEAkVXXe25MvaqctNUQHNyif2DOAfax8PPjTDAjyyHk0CpnzeKlTW
+         K5j83eNGpbNCnED3jPK8lTjNQjq5Eaadb1auu2z+RWAig74c8tedywc8zmCsrhyR/XZ0
+         t1Hg==
+X-Gm-Message-State: ACgBeo2EYPsNIbldiPKM9PC7euTqLQAgkp/92EOt3MofijyOqiqm2eId
+        /I2QqIxaS3NiQ+IU2+tVkA4=
+X-Google-Smtp-Source: AA6agR6gxAb0Flry6RFRiIFcloBvba6EghArSpdlRORpGoU4hX+GMJ8n0YoBfvTXN9Mq0UinR0GEMQ==
+X-Received: by 2002:adf:fa8e:0:b0:226:ef5c:3b31 with SMTP id h14-20020adffa8e000000b00226ef5c3b31mr8615369wrr.459.1662195417975;
+        Sat, 03 Sep 2022 01:56:57 -0700 (PDT)
+Received: from [44.168.19.21] (lfbn-idf1-1-596-24.w86-242.abo.wanadoo.fr. [86.242.59.24])
+        by smtp.gmail.com with ESMTPSA id d16-20020adfe850000000b0022526db2363sm3469840wrn.30.2022.09.03.01.56.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 03 Sep 2022 01:56:57 -0700 (PDT)
+Message-ID: <b7ea9aaf-374a-c4dd-2fef-ace17a8ccae2@gmail.com>
+Date:   Sat, 3 Sep 2022 10:56:56 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.13.0
-From:   "Kumar, M Chetan" <m.chetan.kumar@linux.intel.com>
-Subject: Re: [PATCH net-next 4/5] net: wwan: t7xx: Enable devlink based fw
- flashing and coredump collection
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "Sudi, Krishna C" <krishna.c.sudi@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>,
-        Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
-References: <20220816042405.2416972-1-m.chetan.kumar@intel.com>
- <CAHNKnsT1E1A25iNN143kRZ=R5cC=P6zDJ+RkXhKYZopG4i38yQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH net] ax25: fix incorrect dev_tracker usage
 Content-Language: en-US
-To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
-In-Reply-To: <CAHNKnsT1E1A25iNN143kRZ=R5cC=P6zDJ+RkXhKYZopG4i38yQ@mail.gmail.com>
+To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Duoming Zhou <duoming@zju.edu.cn>
+References: <20220728051821.3160118-1-eric.dumazet@gmail.com>
+ <c1b350f033f0e07f45351689499bbed98b987f3e.camel@redhat.com>
+ <CANn89iLQibnxDzQmuNB2qJ98wvC_R99OD3bPJVEsREmtUPxiXQ@mail.gmail.com>
+ <0ca8e102e553c86bb0e3f2e6d76c883ff8d411b1.camel@redhat.com>
+ <CANn89i+qDDtnUvF5F5zz5pHNzC=pxvJ8-uyta5aLtgSGwh5pcg@mail.gmail.com>
+From:   Bernard Pidoux <bernard.f6bvp@gmail.com>
+In-Reply-To: <CANn89i+qDDtnUvF5F5zz5pHNzC=pxvJ8-uyta5aLtgSGwh5pcg@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/30/2022 7:51 AM, Sergey Ryazanov wrote:
-> On Tue, Aug 16, 2022 at 7:12 AM <m.chetan.kumar@intel.com> wrote:
->> From: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
->>
->> This patch brings-in support for t7xx wwan device firmware flashing &
->> coredump collection using devlink.
->>
->> Driver Registers with Devlink framework.
->> Implements devlink ops flash_update callback that programs modem firmware.
->> Creates region & snapshot required for device coredump log collection.
->> On early detection of wwan device in fastboot mode driver sets up CLDMA0 HW
->> tx/rx queues for raw data transfer then registers with devlink framework.
->> Upon receiving firmware image & partition details driver sends fastboot
->> commands for flashing the firmware.
->>
->> In this flow the fastboot command & response gets exchanged between driver
->> and device. Once firmware flashing is success completion status is reported
->> to user space application.
->>
->> Below is the devlink command usage for firmware flashing
->>
->> $devlink dev flash pci/$BDF file ABC.img component ABC
->>
->> Note: ABC.img is the firmware to be programmed to "ABC" partition.
->>
->> In case of coredump collection when wwan device encounters an exception
->> it reboots & stays in fastboot mode for coredump collection by host driver.
->> On detecting exception state driver collects the core dump, creates the
->> devlink region & reports an event to user space application for dump
->> collection. The user space application invokes devlink region read command
->> for dump collection.
->>
->> Below are the devlink commands used for coredump collection.
->>
->> devlink region new pci/$BDF/mr_dump
->> devlink region read pci/$BDF/mr_dump snapshot $ID address $ADD length $LEN
->> devlink region del pci/$BDF/mr_dump snapshot $ID
->>
->> Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
->> Signed-off-by: Devegowda Chandrashekar <chandrashekar.devegowda@intel.com>
->> Signed-off-by: Mishra Soumya Prakash <soumya.prakash.mishra@intel.com>
-> 
-> [skipped]
-> 
->> diff --git a/drivers/net/wwan/t7xx/t7xx_pci.h b/drivers/net/wwan/t7xx/t7xx_pci.h
->> index a87c4cae94ef..1017d21aad59 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_pci.h
->> +++ b/drivers/net/wwan/t7xx/t7xx_pci.h
->> @@ -59,6 +59,7 @@ typedef irqreturn_t (*t7xx_intr_callback)(int irq, void *param);
->>    * @md_pm_lock: protects PCIe sleep lock
->>    * @sleep_disable_count: PCIe L1.2 lock counter
->>    * @sleep_lock_acquire: indicates that sleep has been disabled
->> + * @dl: devlink struct
->>    */
->>   struct t7xx_pci_dev {
->>          t7xx_intr_callback      intr_handler[EXT_INT_NUM];
->> @@ -79,6 +80,7 @@ struct t7xx_pci_dev {
->>          spinlock_t              md_pm_lock;             /* Protects PCI resource lock */
->>          unsigned int            sleep_disable_count;
->>          struct completion       sleep_lock_acquire;
->> +       struct t7xx_devlink     *dl;
->>   };
->>
->>   enum t7xx_pm_id {
->> diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
->> index 6a96ee6d9449..070097a658d1 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_port.h
->> +++ b/drivers/net/wwan/t7xx/t7xx_port.h
->> @@ -129,6 +129,7 @@ struct t7xx_port {
->>          int                             rx_length_th;
->>          bool                            chan_enable;
->>          struct task_struct              *thread;
->> +       struct t7xx_devlink     *dl;
-> 
-> The devlink state container is the device wide entity, and the device
-> state container already carries a pointer to it. So why do we need a
-> pointer copy inside the port state container?
-
-Will drop it.
-
-> 
->>   };
->>
->>   int t7xx_get_port_mtu(struct t7xx_port *port);
->> diff --git a/drivers/net/wwan/t7xx/t7xx_port_devlink.c b/drivers/net/wwan/t7xx/t7xx_port_devlink.c
->> new file mode 100644
->> index 000000000000..026a1db42f69
->> --- /dev/null
->> +++ b/drivers/net/wwan/t7xx/t7xx_port_devlink.c
->> @@ -0,0 +1,705 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Copyright (c) 2022, Intel Corporation.
->> + */
->> +
->> +#include <linux/bitfield.h>
->> +#include <linux/debugfs.h>
->> +#include <linux/vmalloc.h>
->> +
->> +#include "t7xx_hif_cldma.h"
->> +#include "t7xx_pci_rescan.h"
->> +#include "t7xx_port_devlink.h"
->> +#include "t7xx_port_proxy.h"
->> +#include "t7xx_state_monitor.h"
->> +#include "t7xx_uevent.h"
->> +
->> +static struct t7xx_devlink_region_info t7xx_devlink_region_list[T7XX_TOTAL_REGIONS] = {
->> +       {"mr_dump", T7XX_MRDUMP_SIZE},
->> +       {"lk_dump", T7XX_LKDUMP_SIZE},
->> +};
-> 
-> This array probably should be const.
-> 
-> Also, region indexes can be used in the array initialization to
-> clearly state element relations with other arrays:
-> 
-> static const t7xx_devlink_region_info t7xx_devlink_region_infos[] = {
->     [T7XX_MRDUMP_INDEX] = {"mr_dump", T7XX_MRDURM_SIZE},
->     [T7XX_LDDUMP_INDEX] = {"ld_dump", T7XX_LKDUMP_SIZE},
-> };
-
-Ok. will change it as per your suggestion.
-
-> 
->> +static int t7xx_devlink_port_read(struct t7xx_port *port, char *buf, size_t count)
->> +{
->> +       int ret = 0, read_len;
->> +       struct sk_buff *skb;
->> +
->> +       spin_lock_irq(&port->rx_wq.lock);
->> +       if (skb_queue_empty(&port->rx_skb_list)) {
->> +               ret = wait_event_interruptible_locked_irq(port->rx_wq,
->> +                                                         !skb_queue_empty(&port->rx_skb_list));
->> +               if (ret == -ERESTARTSYS) {
->> +                       spin_unlock_irq(&port->rx_wq.lock);
->> +                       return -EINTR;
->> +               }
->> +       }
->> +       skb = skb_dequeue(&port->rx_skb_list);
->> +       spin_unlock_irq(&port->rx_wq.lock);
->> +
->> +       read_len = count > skb->len ? skb->len : count;
->> +       memcpy(buf, skb->data, read_len);
->> +       dev_kfree_skb(skb);
-> 
-> Here the call will lose the remaining packet data if the buffer is
-> less than the skb data. Should the driver keep the skb leftover data
-> for subsequent port read calls? E.g.
-> 
-> if (read_len < skb->len) {
->      skb_pull(skb, read_len);
->      skb_queue_head(&port->rx_skb_list, skb);
-> } else {
->      consume_skb(skb);
-> }
-
-We should not discard leftover data.
-Will consider your changes.
-
-
-> 
->> +
->> +       return ret ? ret : read_len;
->> +}
->> +
->> +static int t7xx_devlink_port_write(struct t7xx_port *port, const char *buf, size_t count)
->> +{
->> +       const struct t7xx_port_conf *port_conf = port->port_conf;
->> +       size_t actual_count;
->> +       struct sk_buff *skb;
->> +       int ret, txq_mtu;
->> +
->> +       txq_mtu = t7xx_get_port_mtu(port);
->> +       if (txq_mtu < 0)
->> +               return -EINVAL;
->> +
->> +       actual_count = count > txq_mtu ? txq_mtu : count;
->> +       skb = __dev_alloc_skb(actual_count, GFP_KERNEL);
-> 
-> This way the function will lose data past the MTU boundary. Should the
-> fragmentation code be implemented here and should the
-> t7xx_devlink_fb_send_buffer() wrapper be dropped? Or maybe place
-> WARN_ON() here at least?
-
-Ok. Will drop t7xx_devlink_fb_send_buffer() and implement the 
-fragementation logic here.
-
->> +       if (!skb)
->> +               return -ENOMEM;
->> +
->> +       skb_put_data(skb, buf, actual_count);
->> +       ret = t7xx_port_send_raw_skb(port, skb);
->> +       if (ret) {
->> +               dev_err(port->dev, "write error on %s, size: %zu, ret: %d\n",
->> +                       port_conf->name, actual_count, ret);
->> +               dev_kfree_skb(skb);
->> +               return ret;
->> +       }
->> +
->> +       return actual_count;
->> +}
->> +
->> +static int t7xx_devlink_fb_handle_response(struct t7xx_port *port, int *data)
->> +{
->> +       int ret = 0, index = 0, return_data = 0, read_bytes;
->> +       char status[T7XX_FB_RESPONSE_SIZE + 1];
->> +
->> +       while (index < T7XX_FB_RESP_COUNT) {
->> +               index++;
->> +               read_bytes = t7xx_devlink_port_read(port, status, T7XX_FB_RESPONSE_SIZE);
->> +               if (read_bytes < 0) {
->> +                       dev_err(port->dev, "status read failed");
->> +                       ret = -EIO;
->> +                       break;
->> +               }
->> +
->> +               status[read_bytes] = '\0';
->> +               if (!strncmp(status, T7XX_FB_RESP_INFO, strlen(T7XX_FB_RESP_INFO))) {
->> +                       break;
->> +               } else if (!strncmp(status, T7XX_FB_RESP_OKAY, strlen(T7XX_FB_RESP_OKAY))) {
->> +                       break;
->> +               } else if (!strncmp(status, T7XX_FB_RESP_FAIL, strlen(T7XX_FB_RESP_FAIL))) {
->> +                       ret = -EPROTO;
->> +                       break;
->> +               } else if (!strncmp(status, T7XX_FB_RESP_DATA, strlen(T7XX_FB_RESP_DATA))) {
->> +                       if (data) {
->> +                               if (!kstrtoint(status + strlen(T7XX_FB_RESP_DATA), 16,
->> +                                              &return_data)) {
->> +                                       *data = return_data;
->> +                               } else {
->> +                                       dev_err(port->dev, "kstrtoint error!\n");
->> +                                       ret = -EPROTO;
->> +                               }
->> +                       }
->> +                       break;
->> +               }
->> +       }
->> +
->> +       return ret;
->> +}
->> +
->> +static int t7xx_devlink_fb_raw_command(char *cmd, struct t7xx_port *port, int *data)
->> +{
->> +       int ret, cmd_size = strlen(cmd);
->> +
->> +       if (cmd_size > T7XX_FB_COMMAND_SIZE) {
-> 
-> Just curious, is T7XX_FB_COMMAND_SIZE a real hardware limitation or is
-> this just-in-case check?
-
-It is a just-in-case check.
-So far fastboot commands supported are with in this len.
-
-
-> 
->> +               dev_err(port->dev, "command length %d is long\n", cmd_size);
->> +               return -EINVAL;
->> +       }
->> +
->> +       if (cmd_size != t7xx_devlink_port_write(port, cmd, cmd_size)) {
->> +               dev_err(port->dev, "raw command = %s write failed\n", cmd);
->> +               return -EIO;
->> +       }
->> +
->> +       dev_dbg(port->dev, "raw command = %s written to the device\n", cmd);
->> +       ret = t7xx_devlink_fb_handle_response(port, data);
->> +       if (ret)
->> +               dev_err(port->dev, "raw command = %s response FAILURE:%d\n", cmd, ret);
->> +
->> +       return ret;
->> +}
->> +
->> +static int t7xx_devlink_fb_send_buffer(struct t7xx_port *port, const u8 *buf, size_t size)
->> +{
->> +       size_t remaining = size, offset = 0, len;
->> +       int write_done;
->> +
->> +       if (!size)
->> +               return -EINVAL;
->> +
->> +       while (remaining) {
->> +               len = min_t(size_t, remaining, CLDMA_DEDICATED_Q_BUFF_SZ);
->> +               write_done = t7xx_devlink_port_write(port, buf + offset, len);
->> +
->> +               if (write_done < 0) {
->> +                       dev_err(port->dev, "write to device failed in %s", __func__);
->> +                       return -EIO;
->> +               } else if (write_done != len) {
->> +                       dev_err(port->dev, "write Error. Only %d/%zu bytes written",
->> +                               write_done, len);
->> +                       return -EIO;
->> +               }
->> +
->> +               remaining -= len;
->> +               offset += len;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +static int t7xx_devlink_fb_download_command(struct t7xx_port *port, size_t size)
->> +{
->> +       char download_command[T7XX_FB_COMMAND_SIZE];
->> +
->> +       snprintf(download_command, sizeof(download_command), "%s:%08zx",
->> +                T7XX_FB_CMD_DOWNLOAD, size);
->> +       return t7xx_devlink_fb_raw_command(download_command, port, NULL);
->> +}
->> +
->> +static int t7xx_devlink_fb_download(struct t7xx_port *port, const u8 *buf, size_t size)
->> +{
->> +       int ret;
->> +
->> +       if (size <= 0 || size > SIZE_MAX) {
->> +               dev_err(port->dev, "file is too large to download");
->> +               return -EINVAL;
->> +       }
->> +
->> +       ret = t7xx_devlink_fb_download_command(port, size);
->> +       if (ret)
->> +               return ret;
->> +
->> +       ret = t7xx_devlink_fb_send_buffer(port, buf, size);
->> +       if (ret)
->> +               return ret;
->> +
->> +       return t7xx_devlink_fb_handle_response(port, NULL);
->> +}
->> +
->> +static int t7xx_devlink_fb_flash(const char *cmd, struct t7xx_port *port)
->> +{
->> +       char flash_command[T7XX_FB_COMMAND_SIZE];
->> +
->> +       snprintf(flash_command, sizeof(flash_command), "%s:%s", T7XX_FB_CMD_FLASH, cmd);
->> +       return t7xx_devlink_fb_raw_command(flash_command, port, NULL);
->> +}
->> +
->> +static int t7xx_devlink_fb_flash_partition(const char *partition, const u8 *buf,
->> +                                          struct t7xx_port *port, size_t size)
->> +{
->> +       int ret;
->> +
->> +       ret = t7xx_devlink_fb_download(port, buf, size);
->> +       if (ret)
->> +               return ret;
->> +
->> +       return t7xx_devlink_fb_flash(partition, port);
->> +}
->> +
->> +static int t7xx_devlink_fb_get_core(struct t7xx_port *port)
->> +{
->> +       struct t7xx_devlink_region_info *mrdump_region;
->> +       char mrdump_complete_event[T7XX_FB_EVENT_SIZE];
->> +       u32 mrd_mb = T7XX_MRDUMP_SIZE / (1024 * 1024);
->> +       struct t7xx_devlink *dl = port->dl;
->> +       int clen, dlen = 0, result = 0;
->> +       unsigned long long zipsize = 0;
->> +       char mcmd[T7XX_FB_MCMD_SIZE];
->> +       size_t offset_dlen = 0;
->> +       char *mdata;
->> +
->> +       set_bit(T7XX_MRDUMP_STATUS, &dl->status);
->> +       mdata = kmalloc(T7XX_FB_MDATA_SIZE, GFP_KERNEL);
->> +       if (!mdata) {
->> +               result = -ENOMEM;
->> +               goto get_core_exit;
->> +       }
->> +
->> +       mrdump_region = dl->dl_region_info[T7XX_MRDUMP_INDEX];
->> +       mrdump_region->dump = vmalloc(mrdump_region->default_size);
-> 
-> Maybe move this allocation to the devlink initialization function to
-> make it symmetrical to the buffer freeing on devlink deinitialization?
-
-Sure. Will move ->dump allocation to devlink init.
-
-
-> 
->> +       if (!mrdump_region->dump) {
->> +               kfree(mdata);
->> +               result = -ENOMEM;
->> +               goto get_core_exit;
->> +       }
->> +
->> +       result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_MRDUMP, port, NULL);
->> +       if (result) {
->> +               dev_err(port->dev, "%s command failed\n", T7XX_FB_CMD_OEM_MRDUMP);
->> +               vfree(mrdump_region->dump);
->> +               kfree(mdata);
->> +               goto get_core_exit;
->> +       }
->> +
->> +       while (mrdump_region->default_size > offset_dlen) {
->> +               clen = t7xx_devlink_port_read(port, mcmd, sizeof(mcmd));
-> 
-> Just terminate the response string and you can use strcmp() below. E.g.
-> 
-> clen = t7xx_devlink_port_read(port, mcmd, sizeof(mcmd) - 1);
-> mcmd[clen] = '\0';
-> if (strcmp(mcmd, ....) != 0) {
->      ...
-> } else if (strcmp(mcmd, ...) != 0) {
->      ....
-> }
-
-Ok. Will change it as per your suggestion.
-
-> 
->> +               if (clen == strlen(T7XX_FB_CMD_RTS) &&
->> +                   (!strncmp(mcmd, T7XX_FB_CMD_RTS, strlen(T7XX_FB_CMD_RTS)))) {
->> +                       memset(mdata, 0, T7XX_FB_MDATA_SIZE);
->> +                       dlen = 0;
->> +                       memset(mcmd, 0, sizeof(mcmd));
->> +                       clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_CTS);
->> +
->> +                       if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-> 
-> This command string copying and sending can be simplified to:
-> 
-> t7xx_devlink_fb_raw_command(T7XX_FB_CMD_CTS, port, NULL)
-
-
-Ok. Will change it as per your suggestion.
-
-> 
->> +                               dev_err(port->dev, "write for _CTS failed:%d\n", clen);
->> +                               goto get_core_free_mem;
->> +                       }
->> +
->> +                       dlen = t7xx_devlink_port_read(port, mdata, T7XX_FB_MDATA_SIZE);
->> +                       if (dlen <= 0) {
->> +                               dev_err(port->dev, "read data error(%d)\n", dlen);
->> +                               goto get_core_free_mem;
->> +                       }
->> +
->> +                       zipsize += (unsigned long long)(dlen);
->> +                       memcpy(mrdump_region->dump + offset_dlen, mdata, dlen);
-> 
-> Why is this reading into the intermediate buffer needed?
-> t7xx_devlink_port_read() will copy the data from an skb to the buffer
-> using memcpy(). So why not just use the dump buffer with a proper
-> offer? E.g.
-> 
-> t7xx_devlink_port_read(..., mrdump_region->dump + offset_dlen,
-> mrdump_region->default_size - offset_dlen);
-> 
-> BTW, copying memory between the buffers without the dlen check can
-> potentially cause a buffer overflow.
-
-Its not required.
-Will make changes as per your suggestion.
-
-> 
->> +                       offset_dlen += dlen;
->> +                       memset(mcmd, 0, sizeof(mcmd));
->> +                       clen = snprintf(mcmd, sizeof(mcmd), "%s", T7XX_FB_CMD_FIN);
->> +                       if (t7xx_devlink_port_write(port, mcmd, clen) != clen) {
-> 
-> t7xx_devlink_fb_raw_command(T7XX_FB_CMD_FIN, port, NULL) ?
-> 
->> +                               dev_err(port->dev, "%s: _FIN failed, (Read %05d:%05llu)\n",
->> +                                       __func__, clen, zipsize);
->> +                               goto get_core_free_mem;
->> +                       }
->> +               } else if ((clen == strlen(T7XX_FB_RESP_MRDUMP_DONE)) &&
->> +                         (!strncmp(mcmd, T7XX_FB_RESP_MRDUMP_DONE,
->> +                                   strlen(T7XX_FB_RESP_MRDUMP_DONE)))) {
->> +                       dev_dbg(port->dev, "%s! size:%zd\n", T7XX_FB_RESP_MRDUMP_DONE, offset_dlen);
->> +                       mrdump_region->actual_size = offset_dlen;
->> +                       snprintf(mrdump_complete_event, sizeof(mrdump_complete_event),
->> +                                "%s size=%zu", T7XX_UEVENT_MRDUMP_READY, offset_dlen);
->> +                       t7xx_uevent_send(dl->dev, mrdump_complete_event);
->> +                       kfree(mdata);
->> +                       result = 0;
->> +                       goto get_core_exit;
->> +               } else {
->> +                       dev_err(port->dev, "getcore protocol error (read len %05d)\n", clen);
->> +                       goto get_core_free_mem;
->> +               }
->> +       }
->> +
->> +       dev_err(port->dev, "mrdump exceeds %uMB size. Discarded!", mrd_mb);
->> +       t7xx_uevent_send(port->dev, T7XX_UEVENT_MRD_DISCD);
->> +
->> +get_core_free_mem:
->> +       kfree(mdata);
->> +       vfree(mrdump_region->dump);
->> +       clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
->> +       return -EPROTO;
->> +
->> +get_core_exit:
->> +       clear_bit(T7XX_MRDUMP_STATUS, &dl->status);
->> +       return result;
->> +}
->> +
->> +static int t7xx_devlink_fb_dump_log(struct t7xx_port *port)
->> +{
->> +       struct t7xx_devlink_region_info *lkdump_region;
->> +       char lkdump_complete_event[T7XX_FB_EVENT_SIZE];
->> +       struct t7xx_devlink *dl = port->dl;
->> +       int dlen, datasize = 0, result;
->> +       size_t offset_dlen = 0;
->> +       u8 *data;
->> +
->> +       set_bit(T7XX_LKDUMP_STATUS, &dl->status);
->> +       result = t7xx_devlink_fb_raw_command(T7XX_FB_CMD_OEM_LKDUMP, port, &datasize);
->> +       if (result) {
->> +               dev_err(port->dev, "%s command returns failure\n", T7XX_FB_CMD_OEM_LKDUMP);
->> +               goto lkdump_exit;
->> +       }
->> +
->> +       lkdump_region = dl->dl_region_info[T7XX_LKDUMP_INDEX];
->> +       if (datasize > lkdump_region->default_size) {
->> +               dev_err(port->dev, "lkdump size is more than %dKB. Discarded!",
->> +                       T7XX_LKDUMP_SIZE / 1024);
->> +               t7xx_uevent_send(dl->dev, T7XX_UEVENT_LKD_DISCD);
->> +               result = -EPROTO;
->> +               goto lkdump_exit;
->> +       }
->> +
->> +       data = kzalloc(datasize, GFP_KERNEL);
->> +       if (!data) {
->> +               result = -ENOMEM;
->> +               goto lkdump_exit;
->> +       }
->> +
->> +       lkdump_region->dump = vmalloc(lkdump_region->default_size);
->> +       if (!lkdump_region->dump) {
->> +               kfree(data);
->> +               result = -ENOMEM;
->> +               goto lkdump_exit;
->> +       }
->> +
->> +       while (datasize > 0) {
->> +               dlen = t7xx_devlink_port_read(port, data, datasize);
->> +               if (dlen <= 0) {
->> +                       dev_err(port->dev, "lkdump read error ret = %d", dlen);
->> +                       kfree(data);
->> +                       result = -EPROTO;
->> +                       goto lkdump_exit;
->> +               }
->> +
->> +               memcpy(lkdump_region->dump + offset_dlen, data, dlen);
->> +               datasize -= dlen;
->> +               offset_dlen += dlen;
->> +       }
->> +
->> +       dev_dbg(port->dev, "LKDUMP DONE! size:%zd\n", offset_dlen);
->> +       lkdump_region->actual_size = offset_dlen;
->> +       snprintf(lkdump_complete_event, sizeof(lkdump_complete_event), "%s size=%zu",
->> +                T7XX_UEVENT_LKDUMP_READY, offset_dlen);
->> +       t7xx_uevent_send(dl->dev, lkdump_complete_event);
->> +       kfree(data);
->> +       clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
->> +       return t7xx_devlink_fb_handle_response(port, NULL);
->> +
->> +lkdump_exit:
->> +       clear_bit(T7XX_LKDUMP_STATUS, &dl->status);
->> +       return result;
->> +}
->> +
->> +static int t7xx_devlink_flash_update(struct devlink *devlink,
->> +                                    struct devlink_flash_update_params *params,
->> +                                    struct netlink_ext_ack *extack)
->> +{
->> +       struct t7xx_devlink *dl = devlink_priv(devlink);
->> +       const char *component = params->component;
->> +       const struct firmware *fw = params->fw;
->> +       char flash_event[T7XX_FB_EVENT_SIZE];
->> +       struct t7xx_port *port;
->> +       int ret;
->> +
->> +       port = dl->port;
->> +       if (port->dl->mode != T7XX_FB_DL_MODE) {
->> +               dev_err(port->dev, "Modem is not in fastboot download mode!");
->> +               ret = -EPERM;
->> +               goto err_out;
->> +       }
->> +
->> +       if (dl->status != T7XX_DEVLINK_IDLE) {
->> +               dev_err(port->dev, "Modem is busy!");
->> +               ret = -EBUSY;
->> +               goto err_out;
->> +       }
->> +
->> +       if (!component || !fw->data) {
->> +               ret = -EINVAL;
->> +               goto err_out;
->> +       }
->> +
->> +       set_bit(T7XX_FLASH_STATUS, &dl->status);
->> +       dev_dbg(port->dev, "flash partition name:%s binary size:%zu\n", component, fw->size);
->> +       ret = t7xx_devlink_fb_flash_partition(component, fw->data, port, fw->size);
->> +       if (ret) {
->> +               devlink_flash_update_status_notify(devlink, "flashing failure!",
->> +                                                  params->component, 0, 0);
->> +               snprintf(flash_event, sizeof(flash_event), "%s for [%s]",
->> +                        T7XX_UEVENT_FLASHING_FAILURE, params->component);
->> +       } else {
->> +               devlink_flash_update_status_notify(devlink, "flashing success!",
->> +                                                  params->component, 0, 0);
->> +               snprintf(flash_event, sizeof(flash_event), "%s for [%s]",
->> +                        T7XX_UEVENT_FLASHING_SUCCESS, params->component);
->> +       }
->> +
->> +       t7xx_uevent_send(dl->dev, flash_event);
->> +
->> +err_out:
->> +       clear_bit(T7XX_FLASH_STATUS, &dl->status);
->> +       return ret;
->> +}
->> +
->> +static int t7xx_devlink_reload_down(struct devlink *devlink, bool netns_change,
->> +                                   enum devlink_reload_action action,
->> +                                   enum devlink_reload_limit limit,
->> +                                   struct netlink_ext_ack *extack)
->> +{
->> +       struct t7xx_devlink *dl = devlink_priv(devlink);
->> +
->> +       switch (action) {
->> +       case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
->> +               dl->set_fastboot_dl = 1;
-> 
-> A devlink expert may correct me, but this use of the driver reload
-> action to implicitly switch to fastboot mode looks like an incorrect
-> API use (see the reload action description in
-> Documentation/networking/devlink/devlink-reload.rst).
-> 
-> Most probably, the driver should implement a devlink param that
-> controls the device operation mode: normal or fastboot. Or just one
-> boolean param 'fastboot' that enables/disables fastboot mode. And only
-> after explicitly switching the device mode, the user should fire the
-> driver/firmware reload command.
-
-Ok. will implement new devlink 'fastboot' param to control device 
-operational mode.
-
-> 
-> To me, this looks like a less surprising way for the user to switch
-> between normal and flashing modes.
-> 
->> +               return 0;
->> +       case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
->> +               return t7xx_devlink_fb_raw_command(T7XX_FB_CMD_REBOOT, dl->port, NULL);
->> +       default:
->> +               /* Unsupported action should not get to this function */
->> +               return -EOPNOTSUPP;
->> +       }
->> +}
->> +
->> +static int t7xx_devlink_reload_up(struct devlink *devlink,
->> +                                 enum devlink_reload_action action,
->> +                                 enum devlink_reload_limit limit,
->> +                                 u32 *actions_performed,
->> +                                 struct netlink_ext_ack *extack)
->> +{
->> +       struct t7xx_devlink *dl = devlink_priv(devlink);
->> +       *actions_performed = BIT(action);
->> +       switch (action) {
->> +       case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
->> +       case DEVLINK_RELOAD_ACTION_FW_ACTIVATE:
->> +               t7xx_rescan_queue_work(dl->mtk_dev->pdev);
->> +               return 0;
->> +       default:
->> +               /* Unsupported action should not get to this function */
->> +               return -EOPNOTSUPP;
->> +       }
->> +}
->> +
->> +/* Call back function for devlink ops */
->> +static const struct devlink_ops devlink_flash_ops = {
->> +       .supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT,
-> 
-> There is no such flag since f94b606325c1 ("net: devlink: limit flash
-> component name to match version returned by info_get()").
-
-Thanks for pointing.
-Author gave heads-up on this changeset. We are working on it.
-
-> 
->> +       .flash_update = t7xx_devlink_flash_update,
->> +       .reload_actions = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
->> +                         BIT(DEVLINK_RELOAD_ACTION_FW_ACTIVATE),
->> +       .reload_down = t7xx_devlink_reload_down,
->> +       .reload_up = t7xx_devlink_reload_up,
->> +};
->> +
->> +static int t7xx_devlink_region_snapshot(struct devlink *dl, const struct devlink_region_ops *ops,
->> +                                       struct netlink_ext_ack *extack, u8 **data)
->> +{
->> +       struct t7xx_devlink_region_info *region_info = ops->priv;
->> +       struct t7xx_devlink *t7xx_dl = devlink_priv(dl);
->> +       u8 *snapshot_mem;
->> +
->> +       if (t7xx_dl->status != T7XX_DEVLINK_IDLE) {
->> +               dev_err(t7xx_dl->dev, "Modem is busy!");
->> +               return -EBUSY;
->> +       }
->> +
->> +       dev_dbg(t7xx_dl->dev, "accessed devlink region:%s index:%d", ops->name, region_info->entry);
-> 
-> Since the region info pointer is stored inside the ops private data
-> pointer, the region index can be evaluated using pointer arithmetic:
-> 
-> int idx = region_info - t7xx_devlink_region_list;
-> 
-> if (idx == T7XX_MRDUMP_INDEX) {
->      ...
-> } else if (idx == T7XX_LKDUMP_INDEX) {
->      ...
-> } else {
->      return -ENOENT;
-> }
-
-Will drop entry from region list.
-
-
-> 
->> +       if (!strncmp(ops->name, "mr_dump", strlen("mr_dump"))) {
->> +               if (!region_info->dump) {
->> +                       dev_err(t7xx_dl->dev, "devlink region:%s dump memory is not valid!",
->> +                               region_info->region_name);
->> +                       return -ENOMEM;
->> +               }
->> +
->> +               snapshot_mem = vmalloc(region_info->default_size);
->> +               if (!snapshot_mem)
->> +                       return -ENOMEM;
->> +
->> +               memcpy(snapshot_mem, region_info->dump, region_info->default_size);
->> +               *data = snapshot_mem;
->> +       } else if (!strncmp(ops->name, "lk_dump", strlen("lk_dump"))) {
->> +               int ret;
->> +
->> +               ret = t7xx_devlink_fb_dump_log(t7xx_dl->port);
->> +               if (ret)
->> +                       return ret;
->> +
->> +               *data = region_info->dump;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +/* To create regions for dump files */
->> +static int t7xx_devlink_create_region(struct t7xx_devlink *dl)
-> 
-> This function is entitled 'create_region', but it creates multiple
-> regionS at once. It is better to rename it to 'create_regionS'.
-
-Ok. will rename it to create_regions.
-
-> 
-> Am I right if I say that this code was copied from the iosm driver? I
-> am asking because the iosm devlink integration was merged too quickly
-> without proper review. My bad. And now I see that it suffers from the
-> same issues as noted below.
-> 
->> +{
->> +       struct devlink_region_ops *region_ops;
->> +       int rc, i;
->> +
->> +       region_ops = dl->dl_region_ops;
->> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++) {
->> +               region_ops[i].name = t7xx_devlink_region_list[i].region_name;
-> 
-> As Ilpo already said, it is a matter of taste how to design the loops,
-> but I had construct it like this:
-> 
-> BUILD_BUG_ON(ARRAY_SIZE(t7xx_devlink_region_list) > ARRAY_SIZE(dl->regions));
-> for (i = 0; i < ARRAY_SIZE(t7xx_devlink_region_list); ++i) {
->      region_ops = &dl->dl_region_ops[i];
->      region_ops->name = t7xx_devlink_region_list[i].name;
-> 
-> Please note the BUILD_BUG_ON() use: checking the sizes of related
-> arrays may save a lot of time in the future and helps to document this
-> relationship.
-
-Sure. will consider it.
-
-> 
->> +               region_ops[i].snapshot = t7xx_devlink_region_snapshot;
->> +               region_ops[i].destructor = vfree;
->> +               dl->dl_region[i] =
->> +               devlink_region_create(dl->dl_ctx, &region_ops[i], T7XX_MAX_SNAPSHOTS,
->> +                                     t7xx_devlink_region_list[i].default_size);
-> 
-> indentation
-> 
->> +
-> 
-> Odd empty line between the region creation call and the result check.
-
-Will fix it.
-
-> 
->> +               if (IS_ERR(dl->dl_region[i])) {
->> +                       rc = PTR_ERR(dl->dl_region[i]);
->> +                       dev_err(dl->dev, "devlink region fail,err %d", rc);
->> +                       for ( ; i >= 0; i--)
->> +                               devlink_region_destroy(dl->dl_region[i]);
->> +
->> +                       return rc;
->> +               }
->> +
->> +               t7xx_devlink_region_list[i].entry = i;
->> +               region_ops[i].priv = t7xx_devlink_region_list + i;
->> +       }
->> +
->> +       return 0;
->> +}
->> +
->> +/* To Destroy devlink regions */
->> +static void t7xx_devlink_destroy_region(struct t7xx_devlink *dl)
->> +{
->> +       u8 i;
->> +
->> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++)
->> +               devlink_region_destroy(dl->dl_region[i]);
->> +}
->> +
->> +int t7xx_devlink_register(struct t7xx_pci_dev *t7xx_dev)
->> +{
->> +       struct devlink *dl_ctx;
->> +
->> +       dl_ctx = devlink_alloc(&devlink_flash_ops, sizeof(struct t7xx_devlink),
->> +                              &t7xx_dev->pdev->dev);
->> +       if (!dl_ctx)
->> +               return -ENOMEM;
->> +
->> +       devlink_set_features(dl_ctx, DEVLINK_F_RELOAD);
->> +       devlink_register(dl_ctx);
->> +       t7xx_dev->dl = devlink_priv(dl_ctx);
->> +       t7xx_dev->dl->dl_ctx = dl_ctx;
->> +
->> +       return 0;
->> +}
->> +
->> +void t7xx_devlink_unregister(struct t7xx_pci_dev *t7xx_dev)
->> +{
->> +       struct devlink *dl_ctx = priv_to_devlink(t7xx_dev->dl);
->> +
->> +       devlink_unregister(dl_ctx);
->> +       devlink_free(dl_ctx);
->> +}
->> +
->> +/**
->> + * t7xx_devlink_region_init - Initialize/register devlink to t7xx driver
->> + * @port: Pointer to port structure
->> + * @dw: Pointer to devlink work structure
->> + * @wq: Pointer to devlink workqueue structure
->> + *
->> + * Returns: Pointer to t7xx_devlink on success and NULL on failure
->> + */
->> +static struct t7xx_devlink *t7xx_devlink_region_init(struct t7xx_port *port,
->> +                                                    struct t7xx_devlink_work *dw,
->> +                                                    struct workqueue_struct *wq)
-> 
-> This function is entitled 'region_init', but it contains the common
-> devlink initialization code. Probably some or all of its contents
-> should be moved to the caller function (t7xx_devlink_init) to
-> consolidate the initialization code.
-
-Sure. will refactor it.
-
-> 
->> +{
->> +       struct t7xx_pci_dev *mtk_dev = port->t7xx_dev;
->> +       struct t7xx_devlink *dl = mtk_dev->dl;
->> +       int rc, i;
->> +
->> +       dl->dl_ctx = mtk_dev->dl->dl_ctx;
->> +       dl->mtk_dev = mtk_dev;
->> +       dl->dev = &mtk_dev->pdev->dev;
->> +       dl->mode = T7XX_FB_NO_MODE;
->> +       dl->status = T7XX_DEVLINK_IDLE;
->> +       dl->dl_work = dw;
->> +       dl->dl_wq = wq;
->> +       for (i = 0; i < T7XX_TOTAL_REGIONS; i++) {
->> +               dl->dl_region_info[i] = &t7xx_devlink_region_list[i];
-> 
-> This assignment will lead to various hard-to-investigate issues once a
-> user connects a couple of modems to a host. Since the region_info
-> structure contains the run-time modified fields. See also comments
-> near the structure definition above.
-
-Sure. will refactor code as per your suggestion.
-
-> 
->> +               dl->dl_region_info[i]->dump = NULL;
->> +       }
->> +       dl->port = port;
->> +       port->dl = dl;
->> +
->> +       rc = t7xx_devlink_create_region(dl);
->> +       if (rc) {
->> +               dev_err(dl->dev, "devlink region creation failed, rc %d", rc);
->> +               return NULL;
->> +       }
->> +
->> +       return dl;
->> +}
->> +
->> +/**
->> + * t7xx_devlink_region_deinit - To unintialize the devlink from T7XX driver.
->> + * @dl:        Devlink instance
->> + */
->> +static void t7xx_devlink_region_deinit(struct t7xx_devlink *dl)
->> +{
->> +       dl->mode = T7XX_FB_NO_MODE;
->> +       t7xx_devlink_destroy_region(dl);
->> +}
->> +
->> +static void t7xx_devlink_work_handler(struct work_struct *data)
->> +{
->> +       struct t7xx_devlink_work *dl_work;
->> +
->> +       dl_work = container_of(data, struct t7xx_devlink_work, work);
->> +       t7xx_devlink_fb_get_core(dl_work->port);
->> +}
->> +
->> +static int t7xx_devlink_init(struct t7xx_port *port)
->> +{
->> +       struct t7xx_devlink_work *dl_work;
->> +       struct workqueue_struct *wq;
->> +
->> +       dl_work = kmalloc(sizeof(*dl_work), GFP_KERNEL);
->> +       if (!dl_work)
->> +               return -ENOMEM;
->> +
->> +       wq = create_workqueue("t7xx_devlink");
->> +       if (!wq) {
->> +               kfree(dl_work);
->> +               dev_err(port->dev, "create_workqueue failed\n");
->> +               return -ENODATA;
->> +       }
->> +
->> +       INIT_WORK(&dl_work->work, t7xx_devlink_work_handler);
->> +       dl_work->port = port;
->> +       port->rx_length_th = T7XX_MAX_QUEUE_LENGTH;
->> +
->> +       if (!t7xx_devlink_region_init(port, dl_work, wq))
->> +               return -ENOMEM;
->> +
->> +       return 0;
->> +}
->> +
->> +static void t7xx_devlink_uninit(struct t7xx_port *port)
->> +{
->> +       struct t7xx_devlink *dl = port->dl;
->> +       struct sk_buff *skb;
->> +       unsigned long flags;
->> +
->> +       vfree(dl->dl_region_info[T7XX_MRDUMP_INDEX]->dump);
->> +       if (dl->dl_wq)
->> +               destroy_workqueue(dl->dl_wq);
->> +       kfree(dl->dl_work);
->> +
->> +       t7xx_devlink_region_deinit(port->dl);
->> +       spin_lock_irqsave(&port->rx_skb_list.lock, flags);
->> +       while ((skb = __skb_dequeue(&port->rx_skb_list)) != NULL)
->> +               dev_kfree_skb(skb);
->> +       spin_unlock_irqrestore(&port->rx_skb_list.lock, flags);
-> 
-> skb_queue_purge(&port->rx_skb_list) ?
-
-Ok. Will replace it.
-
-> 
->> +}
-> 
-> [skipped]
-> 
->> diff --git a/drivers/net/wwan/t7xx/t7xx_port_devlink.h b/drivers/net/wwan/t7xx/t7xx_port_devlink.h
->> new file mode 100644
->> index 000000000000..85384e40519e
->> --- /dev/null
->> +++ b/drivers/net/wwan/t7xx/t7xx_port_devlink.h
->> @@ -0,0 +1,85 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only
->> + *
->> + * Copyright (c) 2022, Intel Corporation.
->> + */
->> +
->> +#ifndef __T7XX_PORT_DEVLINK_H__
->> +#define __T7XX_PORT_DEVLINK_H__
->> +
->> +#include <net/devlink.h>
->> +
->> +#include "t7xx_pci.h"
->> +
->> +#define T7XX_MAX_QUEUE_LENGTH 32
->> +#define T7XX_FB_COMMAND_SIZE  64
->> +#define T7XX_FB_RESPONSE_SIZE 64
->> +#define T7XX_FB_MCMD_SIZE     64
->> +#define T7XX_FB_MDATA_SIZE    1024
->> +#define T7XX_FB_RESP_COUNT    30
->> +
->> +#define T7XX_FB_CMD_RTS          "_RTS"
->> +#define T7XX_FB_CMD_CTS          "_CTS"
->> +#define T7XX_FB_CMD_FIN          "_FIN"
->> +#define T7XX_FB_CMD_OEM_MRDUMP   "oem mrdump"
->> +#define T7XX_FB_CMD_OEM_LKDUMP   "oem dump_pllk_log"
->> +#define T7XX_FB_CMD_DOWNLOAD     "download"
->> +#define T7XX_FB_CMD_FLASH        "flash"
->> +#define T7XX_FB_CMD_REBOOT       "reboot"
->> +#define T7XX_FB_RESP_MRDUMP_DONE "MRDUMP08_DONE"
->> +#define T7XX_FB_RESP_OKAY        "OKAY"
->> +#define T7XX_FB_RESP_FAIL        "FAIL"
->> +#define T7XX_FB_RESP_DATA        "DATA"
->> +#define T7XX_FB_RESP_INFO        "INFO"
->> +
->> +#define T7XX_FB_EVENT_SIZE      50
->> +
->> +#define T7XX_MAX_SNAPSHOTS  1
->> +#define T7XX_MAX_REGION_NAME_LENGTH 20
->> +#define T7XX_MRDUMP_SIZE    (160 * 1024 * 1024)
->> +#define T7XX_LKDUMP_SIZE    (256 * 1024)
->> +#define T7XX_TOTAL_REGIONS  2
->> +
->> +#define T7XX_FLASH_STATUS   0
->> +#define T7XX_MRDUMP_STATUS  1
->> +#define T7XX_LKDUMP_STATUS  2
->> +#define T7XX_DEVLINK_IDLE   0
->> +
->> +#define T7XX_FB_NO_MODE     0
->> +#define T7XX_FB_DL_MODE     1
->> +#define T7XX_FB_DUMP_MODE   2
->> +
->> +#define T7XX_MRDUMP_INDEX   0
->> +#define T7XX_LKDUMP_INDEX   1
-> 
-> Maybe convert these macros to enum and use them more actively? E.g.
-> 
-> /* Internal region indexes */
-> enum t7xx_regions {
->      T7XX_REGION_MRDUMP,
->      T7XX_REGION_LKDUMP,
->      T7XX_REGIONS_NUM
-> };
-> 
->> +struct t7xx_devlink_work {
->> +       struct work_struct work;
->> +       struct t7xx_port *port;
->> +};
-> 
-> You can embed the _work_ structure into the t7xx_devlink structure, so
-> you do not need this ad hoc structure with all the dynamic memory
-> allocation and pointers juggling associated with it.
-> 
->> +struct t7xx_devlink_region_info {
->> +       char region_name[T7XX_MAX_REGION_NAME_LENGTH];
->> +       u32 default_size;
->> +       u32 actual_size;
->> +       u32 entry;
->> +       u8 *dump;
->> +};
-> 
-> This structure mixes static initialization data and run-time state.
-> Also, the set of arrays inside the t7xx_devlink structure makes the
-> code harder to read. What if we split this structure into a static
-> configuration structure and a runtime state container structure? And
-> place all runtime data (e.g. ops, devlink region pointer, etc.) into
-> this common state container.
-> 
-> struct t7xx_devlink_region_info {
->      const char *name;
->      size_t size;
-> };
-> 
-> struct t7xx_devlink_region {
->      const struct t7xx_devlink_region_info *info;
->      struct devlink_region_ops ops;
->      struct devlink_region *dlreg;
->      size_t data_len;
->      void *buf;
-> };
-> 
-> struct t7xx_devlink {
->      ...
->      struct t7xx_devlink_region regions[T7XX_TOTAL_REGIONS];
-> };
-> 
-> So the initialization will become:
-> 
-> for (...) {
->      dl->region[i].info = &t7xx_devlink_regions[i];
->      dl->region[i].ops.name = dl->region[i].info->name;
->      dl->region[i].ops.priv = &dl->region[i];
->      ...
-> }
-> 
-> And the region index always can be evaluated from the info pointer:
-> 
-> idx = ((struct t7xx_devlink_region *)ops->priv)->info - t7xx_devlink_regions;
-
-
-Thank you for the details.
-Will refactor code as per your suggestion.
-
-> 
->> +struct t7xx_devlink {
->> +       struct t7xx_pci_dev *mtk_dev;
->> +       struct t7xx_port *port;
->> +       struct device *dev;
-> 
-> This field is unused.
-
-devlink.c is using it in few place. But in many places we are referring 
-dev from port container.
-Will drop it and refer to port container instead.
-
-> 
->> +       struct devlink *dl_ctx;
->> +       struct t7xx_devlink_work *dl_work;
->> +       struct workqueue_struct *dl_wq;
->> +       struct t7xx_devlink_region_info *dl_region_info[T7XX_TOTAL_REGIONS];
->> +       struct devlink_region_ops dl_region_ops[T7XX_TOTAL_REGIONS];
->> +       struct devlink_region *dl_region[T7XX_TOTAL_REGIONS];
->> +       u8 mode;
->> +       unsigned long status;
->> +       int set_fastboot_dl;
->> +};
->> +
->> +int t7xx_devlink_register(struct t7xx_pci_dev *t7xx_dev);
->> +void t7xx_devlink_unregister(struct t7xx_pci_dev *t7xx_dev);
->> +
->> +#endif /*__T7XX_PORT_DEVLINK_H__*/
-> 
-> [skipped]
-> 
->> diff --git a/drivers/net/wwan/t7xx/t7xx_state_monitor.c b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
->> index 9c222809371b..00e143c8d568 100644
->> --- a/drivers/net/wwan/t7xx/t7xx_state_monitor.c
->> +++ b/drivers/net/wwan/t7xx/t7xx_state_monitor.c
-> 
-> [skipped]
-> 
->> @@ -239,8 +252,16 @@ static void t7xx_lk_stage_event_handling(struct t7xx_fsm_ctl *ctl, unsigned int
->>                          return;
->>                  }
->>
->> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
->> +                       port->dl->mode = T7XX_FB_DUMP_MODE;
->> +               else
->> +                       port->dl->mode = T7XX_FB_DL_MODE;
->>                  port->port_conf->ops->enable_chl(port);
->>                  t7xx_cldma_start(md_ctrl);
->> +               if (lk_event == LK_EVENT_CREATE_PD_PORT)
->> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DUMP_MODE);
->> +               else
->> +                       t7xx_uevent_send(dev, T7XX_UEVENT_MODEM_FASTBOOT_DL_MODE);
->>                  break;
->>
->>          case LK_EVENT_RESET:
-> 
-> [skipped]
-> 
->> @@ -318,6 +349,7 @@ static void fsm_routine_ready(struct t7xx_fsm_ctl *ctl)
->>
->>          ctl->curr_state = FSM_STATE_READY;
->>          t7xx_fsm_broadcast_ready_state(ctl);
->> +       t7xx_uevent_send(&md->t7xx_dev->pdev->dev, T7XX_UEVENT_MODEM_READY);
->>          t7xx_md_event_notify(md, FSM_READY);
->>   }
-> 
-> These UEVENT things look at least unrelated to the patch. If the
-> deriver is really need it, please factor out it into a separate patch
-> with a comment describing why userspace wants to see these events.
-> 
-> On the other hand, this looks like a custom tracing implementation. It
-> might be better to use simple debug messages instead or even the
-> tracing API, which is much more powerful than any uevent.
-
-Driver is reporting modem status (up, down, exception, etc) via uevent.
-The wwan user space services use these states for taking some action.
-So we have choose uevent for reporting modem status to user space.
-
-Is it ok we retain this logic ? I will drop it from this patch and send
-it as a separate patch for review.
-
--- 
-Chetan
+VGhpcyBwYXRjaCBpcyBzdGlsbCBub3QgYXBwbGllZCB0byBuZXQtbmV4dC4NClRoaXMgaXMg
+cHJvYmFibHkgZHVlIHRvIHJlbmFtaW5nIHRoaW5nIC4uLiB0aGF0IHdhcyBjb25mdXNpbmcu
+DQoNCkFueSBwb3NzaWJpbGl0eSB0byBidWlsZCBvbiBmb3Igb2xkIHN0YWJsZXMgPw0KDQpF
+cmljIGNvdWxkIHlvdSBjbGFyaWZ5IHRoZSBzaXR1YXRpb24gPw0KDQpSZWdhcmRzLA0KDQpC
+ZXJuYXJkDQoNCkxlIDAzLzA4LzIwMjIgw6AgMDk6MTUsIEVyaWMgRHVtYXpldCBhIMOpY3Jp
+dMKgOg0KPiBPbiBXZWQsIEF1ZyAzLCAyMDIyIGF0IDEyOjAzIEFNIFBhb2xvIEFiZW5pIDxw
+YWJlbmlAcmVkaGF0LmNvbT4gd3JvdGU6DQo+Pg0KPj4gT24gVHVlLCAyMDIyLTA4LTAyIGF0
+IDIzOjQ2IC0wNzAwLCBFcmljIER1bWF6ZXQgd3JvdGU6DQo+Pj4gT24gVHVlLCBBdWcgMiwg
+MjAyMiBhdCAxMToyMyBQTSBQYW9sbyBBYmVuaSA8cGFiZW5pQHJlZGhhdC5jb20+IHdyb3Rl
+Og0KPj4+Pg0KPj4+PiBPbiBXZWQsIDIwMjItMDctMjcgYXQgMjI6MTggLTA3MDAsIEVyaWMg
+RHVtYXpldCB3cm90ZToNCj4+Pj4+IEZyb206IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29v
+Z2xlLmNvbT4NCj4+Pj4+DQo+Pj4+PiBXaGlsZSBpbnZlc3RpZ2F0aW5nIGEgc2VwYXJhdGUg
+cm9zZSBpc3N1ZSBbMV0sIGFuZCBlbmFibGluZw0KPj4+Pj4gQ09ORklHX05FVF9ERVZfUkVG
+Q05UX1RSQUNLRVI9eSwgQmVybmFyZCByZXBvcnRlZCBhbiBvcnRob2dvbmFsIGF4MjUgaXNz
+dWUgWzJdDQo+Pj4+Pg0KPj4+Pj4gQW4gYXgyNV9kZXYgY2FuIGJlIHVzZWQgYnkgb25lIChv
+ciBtYW55KSBzdHJ1Y3QgYXgyNV9jYi4NCj4+Pj4+IFdlIHRodXMgbmVlZCBkaWZmZXJlbnQg
+ZGV2X3RyYWNrZXIsIG9uZSBwZXIgc3RydWN0IGF4MjVfY2IuDQo+Pj4+Pg0KPj4+Pj4gQWZ0
+ZXIgdGhpcyBwYXRjaCBpcyBhcHBsaWVkLCB3ZSBhcmUgYWJsZSB0byBmb2N1cyBvbiByb3Nl
+Lg0KPj4+Pj4NCj4+Pj4+IFsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9uZXRkZXYvZmI3
+NTQ0YTEtZjQyZS05MjU0LTE4Y2MtYzliMDcxZjRjYTcwQGZyZWUuZnIvDQo+Pj4+Pg0KPj4+
+Pj4gWzJdDQo+Pj4+PiBbICAyMDUuNzk4NzIzXSByZWZlcmVuY2UgYWxyZWFkeSByZWxlYXNl
+ZC4NCj4+Pj4+IFsgIDIwNS43OTg3MzJdIGFsbG9jYXRlZCBpbjoNCj4+Pj4+IFsgIDIwNS43
+OTg3MzRdICBheDI1X2JpbmQrMHgxYTIvMHgyMzAgW2F4MjVdDQo+Pj4+PiBbICAyMDUuNzk4
+NzQ3XSAgX19zeXNfYmluZCsweGVhLzB4MTEwDQo+Pj4+PiBbICAyMDUuNzk4NzUzXSAgX194
+NjRfc3lzX2JpbmQrMHgxOC8weDIwDQo+Pj4+PiBbICAyMDUuNzk4NzU4XSAgZG9fc3lzY2Fs
+bF82NCsweDVjLzB4ODANCj4+Pj4+IFsgIDIwNS43OTg3NjNdICBlbnRyeV9TWVNDQUxMXzY0
+X2FmdGVyX2h3ZnJhbWUrMHg0NC8weGFlDQo+Pj4+PiBbICAyMDUuNzk4NzY4XSBmcmVlZCBp
+bjoNCj4+Pj4+IFsgIDIwNS43OTg3NzBdICBheDI1X3JlbGVhc2UrMHgxMTUvMHgzNzAgW2F4
+MjVdDQo+Pj4+PiBbICAyMDUuNzk4Nzc4XSAgX19zb2NrX3JlbGVhc2UrMHg0Mi8weGIwDQo+
+Pj4+PiBbICAyMDUuNzk4NzgyXSAgc29ja19jbG9zZSsweDE1LzB4MjANCj4+Pj4+IFsgIDIw
+NS43OTg3ODVdICBfX2ZwdXQrMHg5Zi8weDI2MA0KPj4+Pj4gWyAgMjA1Ljc5ODc4OV0gIF9f
+X19mcHV0KzB4ZS8weDEwDQo+Pj4+PiBbICAyMDUuNzk4NzkyXSAgdGFza193b3JrX3J1bisw
+eDY0LzB4YTANCj4+Pj4+IFsgIDIwNS43OTg3OThdICBleGl0X3RvX3VzZXJfbW9kZV9wcmVw
+YXJlKzB4MThiLzB4MTkwDQo+Pj4+PiBbICAyMDUuNzk4ODA0XSAgc3lzY2FsbF9leGl0X3Rv
+X3VzZXJfbW9kZSsweDI2LzB4NDANCj4+Pj4+IFsgIDIwNS43OTg4MDhdICBkb19zeXNjYWxs
+XzY0KzB4NjkvMHg4MA0KPj4+Pj4gWyAgMjA1Ljc5ODgxMl0gIGVudHJ5X1NZU0NBTExfNjRf
+YWZ0ZXJfaHdmcmFtZSsweDQ0LzB4YWUNCj4+Pj4+IFsgIDIwNS43OTg4MjddIC0tLS0tLS0t
+LS0tLVsgY3V0IGhlcmUgXS0tLS0tLS0tLS0tLQ0KPj4+Pj4gWyAgMjA1Ljc5ODgyOV0gV0FS
+TklORzogQ1BVOiAyIFBJRDogMjYwNSBhdCBsaWIvcmVmX3RyYWNrZXIuYzoxMzYgcmVmX3Ry
+YWNrZXJfZnJlZS5jb2xkKzB4NjAvMHg4MQ0KPj4+Pj4gWyAgMjA1Ljc5ODgzN10gTW9kdWxl
+cyBsaW5rZWQgaW46IHJvc2UgbmV0cm9tIG1raXNzIGF4MjUgcmZjb21tIGNtYWMgYWxnaWZf
+aGFzaCBhbGdpZl9za2NpcGhlciBhZl9hbGcgYm5lcCBzbmRfaGRhX2NvZGVjX2hkbWkgbmxz
+X2lzbzg4NTlfMSBpOTE1IHJ0dzg4Xzg4MjFjZSBydHc4OF84ODIxYyB4ODZfcGtnX3RlbXBf
+dGhlcm1hbCBydHc4OF9wY2kgaW50ZWxfcG93ZXJjbGFtcCBydHc4OF9jb3JlIHNuZF9oZGFf
+Y29kZWNfcmVhbHRlayBzbmRfaGRhX2NvZGVjX2dlbmVyaWMgbGVkdHJpZ19hdWRpbyBjb3Jl
+dGVtcCBzbmRfaGRhX2ludGVsIGt2bV9pbnRlbCBzbmRfaW50ZWxfZHNwY2ZnIG1hYzgwMjEx
+IHNuZF9oZGFfY29kZWMga3ZtIGkyY19hbGdvX2JpdCBkcm1fYnVkZHkgZHJtX2RwX2hlbHBl
+ciBidHVzYiBkcm1fa21zX2hlbHBlciBzbmRfaHdkZXAgYnRydGwgc25kX2hkYV9jb3JlIGJ0
+YmNtIGpveWRldiBjcmN0MTBkaWZfcGNsbXVsIGJ0aW50ZWwgY3JjMzJfcGNsbXVsIGdoYXNo
+X2NsbXVsbmlfaW50ZWwgbWVpX2hkY3AgYnRtdGsgaW50ZWxfcmFwbF9tc3IgYWVzbmlfaW50
+ZWwgYmx1ZXRvb3RoIGlucHV0X2xlZHMgc25kX3BjbSBjcnlwdG9fc2ltZCBzeXNjb3B5YXJl
+YSBwcm9jZXNzb3JfdGhlcm1hbF9kZXZpY2VfcGNpX2xlZ2FjeSBzeXNmaWxscmVjdCBjcnlw
+dGQgaW50ZWxfc29jX2R0c19pb3NmIHNuZF9zZXEgc3lzaW1nYmx0IGVjZGhfZ2VuZXJpYyBm
+Yl9zeXNfZm9wcyByYXBsIGxpYmFyYzQgcHJvY2Vzc29yX3RoZXJtYWxfZGV2aWNlIGludGVs
+X2NzdGF0ZSBwcm9jZXNzb3JfdGhlcm1hbF9yZmltIGNlYyBzbmRfdGltZXIgZWNjIHNuZF9z
+ZXFfZGV2aWNlIGNmZzgwMjExIHByb2Nlc3Nvcl90aGVybWFsX21ib3ggbWVpX21lIHByb2Nl
+c3Nvcl90aGVybWFsX3JhcGwgbWVpIHJjX2NvcmUgYXQyNCBzbmQgaW50ZWxfcGNoX3RoZXJt
+YWwgaW50ZWxfcmFwbF9jb21tb24gdHRtIHNvdW5kY29yZSBpbnQzNDB4X3RoZXJtYWxfem9u
+ZSB2aWRlbw0KPj4+Pj4gWyAgMjA1Ljc5ODk0OF0gIG1hY19oaWQgYWNwaV9wYWQgc2NoX2Zx
+X2NvZGVsIGlwbWlfZGV2aW50ZiBpcG1pX21zZ2hhbmRsZXIgZHJtIG1zciBwYXJwb3J0X3Bj
+IHBwZGV2IGxwIHBhcnBvcnQgcmFtb29wcyBwc3RvcmVfYmxrIHJlZWRfc29sb21vbiBwc3Rv
+cmVfem9uZSBlZmlfcHN0b3JlIGlwX3RhYmxlcyB4X3RhYmxlcyBhdXRvZnM0IGhpZF9nZW5l
+cmljIHVzYmhpZCBoaWQgaTJjX2k4MDEgaTJjX3NtYnVzIHI4MTY5IHhoY2lfcGNpIGFoY2kg
+bGliYWhjaSByZWFsdGVrIGxwY19pY2ggeGhjaV9wY2lfcmVuZXNhcyBbbGFzdCB1bmxvYWRl
+ZDogYXgyNV0NCj4+Pj4+IFsgIDIwNS43OTg5OTJdIENQVTogMiBQSUQ6IDI2MDUgQ29tbTog
+YXgyNWlwZCBOb3QgdGFpbnRlZCA1LjE4LjExLUY2QlZQICMzDQo+Pj4+PiBbICAyMDUuNzk4
+OTk2XSBIYXJkd2FyZSBuYW1lOiBUbyBiZSBmaWxsZWQgYnkgTy5FLk0uIFRvIGJlIGZpbGxl
+ZCBieSBPLkUuTS4vQ0szLCBCSU9TIDUuMDExIDA5LzE2LzIwMjANCj4+Pj4+IFsgIDIwNS43
+OTg5OTldIFJJUDogMDAxMDpyZWZfdHJhY2tlcl9mcmVlLmNvbGQrMHg2MC8weDgxDQo+Pj4+
+PiBbICAyMDUuNzk5MDA1XSBDb2RlOiBlOCBkMiAwMSA5YiBmZiA4MyA3YiAxOCAwMCA3NCAx
+NCA0OCBjNyBjNyAyZiBkNyBmZiA5OCBlOCAxMCA2ZSBmYyBmZiA4YiA3YiAxOCBlOCBiOCAw
+MSA5YiBmZiA0YyA4OSBlZSA0YyA4OSBlNyBlOCA1ZCBmZCAwNyAwMCA8MGY+IDBiIGI4IGVh
+IGZmIGZmIGZmIGU5IDMwIDA1IDliIGZmIDQxIDBmIGI2IGY3IDQ4IGM3IGM3IGEwIGZhIDRl
+DQo+Pj4+PiBbICAyMDUuNzk5MDA4XSBSU1A6IDAwMTg6ZmZmZmFmNTI4MTA3Mzk1OCBFRkxB
+R1M6IDAwMDEwMjg2DQo+Pj4+PiBbICAyMDUuNzk5MDExXSBSQVg6IDAwMDAwMDAwODAwMDAw
+MDAgUkJYOiBmZmZmOWEwYmQ2ODdlYmUwIFJDWDogMDAwMDAwMDAwMDAwMDAwMA0KPj4+Pj4g
+WyAgMjA1Ljc5OTAxNF0gUkRYOiAwMDAwMDAwMDAwMDAwMDAxIFJTSTogMDAwMDAwMDAwMDAw
+MDI4MiBSREk6IDAwMDAwMDAwZmZmZmZmZmYNCj4+Pj4+IFsgIDIwNS43OTkwMTZdIFJCUDog
+ZmZmZmFmNTI4MTA3M2ExMCBSMDg6IDAwMDAwMDAwMDAwMDAwMDMgUjA5OiBmZmZmZmZmZmZm
+ZmQ1NjE4DQo+Pj4+PiBbICAyMDUuNzk5MDE5XSBSMTA6IDAwMDAwMDAwMDBmZmZmMTAgUjEx
+OiAwMDAwMDAwMDAwMDAwMDBmIFIxMjogZmZmZjlhMGJjNTMzODRkMA0KPj4+Pj4gWyAgMjA1
+Ljc5OTAyMl0gUjEzOiAwMDAwMDAwMDAwMDAwMjgyIFIxNDogMDAwMDAwMDBhZTAwMDAwMSBS
+MTU6IDAwMDAwMDAwMDAwMDAwMDENCj4+Pj4+IFsgIDIwNS43OTkwMjRdIEZTOiAgMDAwMDAw
+MDAwMDAwMDAwMCgwMDAwKSBHUzpmZmZmOWEwZDBmMzAwMDAwKDAwMDApIGtubEdTOjAwMDAw
+MDAwMDAwMDAwMDANCj4+Pj4+IFsgIDIwNS43OTkwMjhdIENTOiAgMDAxMCBEUzogMDAwMCBF
+UzogMDAwMCBDUjA6IDAwMDAwMDAwODAwNTAwMzMNCj4+Pj4+IFsgIDIwNS43OTkwMzFdIENS
+MjogMDAwMDdmZjZiODMxMTU1NCBDUjM6IDAwMDAwMDAwMWFjMTAwMDQgQ1I0OiAwMDAwMDAw
+MDAwMTcwNmUwDQo+Pj4+PiBbICAyMDUuNzk5MDMzXSBDYWxsIFRyYWNlOg0KPj4+Pj4gWyAg
+MjA1Ljc5OTAzNV0gIDxUQVNLPg0KPj4+Pj4gWyAgMjA1Ljc5OTAzOF0gID8gYXgyNV9kZXZf
+ZGV2aWNlX2Rvd24rMHhkOS8weDFiMCBbYXgyNV0NCj4+Pj4+IFsgIDIwNS43OTkwNDddICA/
+IGF4MjVfZGV2aWNlX2V2ZW50KzB4OWYvMHgyNzAgW2F4MjVdDQo+Pj4+PiBbICAyMDUuNzk5
+MDU1XSAgPyByYXdfbm90aWZpZXJfY2FsbF9jaGFpbisweDQ5LzB4NjANCj4+Pj4+IFsgIDIw
+NS43OTkwNjBdICA/IGNhbGxfbmV0ZGV2aWNlX25vdGlmaWVyc19pbmZvKzB4NTIvMHhhMA0K
+Pj4+Pj4gWyAgMjA1Ljc5OTA2NV0gID8gZGV2X2Nsb3NlX21hbnkrMHhjOC8weDEyMA0KPj4+
+Pj4gWyAgMjA1Ljc5OTA3MF0gID8gdW5yZWdpc3Rlcl9uZXRkZXZpY2VfbWFueSsweDEzZC8w
+eDg5MA0KPj4+Pj4gWyAgMjA1Ljc5OTA3M10gID8gdW5yZWdpc3Rlcl9uZXRkZXZpY2VfcXVl
+dWUrMHg5MC8weGUwDQo+Pj4+PiBbICAyMDUuNzk5MDc2XSAgPyB1bnJlZ2lzdGVyX25ldGRl
+disweDFkLzB4MzANCj4+Pj4+IFsgIDIwNS43OTkwODBdICA/IG1raXNzX2Nsb3NlKzB4N2Mv
+MHhjMCBbbWtpc3NdDQo+Pj4+PiBbICAyMDUuNzk5MDg0XSAgPyB0dHlfbGRpc2NfY2xvc2Ur
+MHgyZS8weDQwDQo+Pj4+PiBbICAyMDUuNzk5MDg5XSAgPyB0dHlfbGRpc2NfaGFuZ3VwKzB4
+MTM3LzB4MjEwDQo+Pj4+PiBbICAyMDUuNzk5MDkyXSAgPyBfX3R0eV9oYW5ndXAucGFydC4w
+KzB4MjA4LzB4MzUwDQo+Pj4+PiBbICAyMDUuNzk5MDk4XSAgPyB0dHlfdmhhbmd1cCsweDE1
+LzB4MjANCj4+Pj4+IFsgIDIwNS43OTkxMDNdICA/IHB0eV9jbG9zZSsweDEyNy8weDE2MA0K
+Pj4+Pj4gWyAgMjA1Ljc5OTEwOF0gID8gdHR5X3JlbGVhc2UrMHgxMzkvMHg1ZTANCj4+Pj4+
+IFsgIDIwNS43OTkxMTJdICA/IF9fZnB1dCsweDlmLzB4MjYwDQo+Pj4+PiBbICAyMDUuNzk5
+MTE4XSAgYXgyNV9kZXZfZGV2aWNlX2Rvd24rMHhkOS8weDFiMCBbYXgyNV0NCj4+Pj4+IFsg
+IDIwNS43OTkxMjZdICBheDI1X2RldmljZV9ldmVudCsweDlmLzB4MjcwIFtheDI1XQ0KPj4+
+Pj4gWyAgMjA1Ljc5OTEzNV0gIHJhd19ub3RpZmllcl9jYWxsX2NoYWluKzB4NDkvMHg2MA0K
+Pj4+Pj4gWyAgMjA1Ljc5OTE0MF0gIGNhbGxfbmV0ZGV2aWNlX25vdGlmaWVyc19pbmZvKzB4
+NTIvMHhhMA0KPj4+Pj4gWyAgMjA1Ljc5OTE0Nl0gIGRldl9jbG9zZV9tYW55KzB4YzgvMHgx
+MjANCj4+Pj4+IFsgIDIwNS43OTkxNTJdICB1bnJlZ2lzdGVyX25ldGRldmljZV9tYW55KzB4
+MTNkLzB4ODkwDQo+Pj4+PiBbICAyMDUuNzk5MTU3XSAgdW5yZWdpc3Rlcl9uZXRkZXZpY2Vf
+cXVldWUrMHg5MC8weGUwDQo+Pj4+PiBbICAyMDUuNzk5MTYxXSAgdW5yZWdpc3Rlcl9uZXRk
+ZXYrMHgxZC8weDMwDQo+Pj4+PiBbICAyMDUuNzk5MTY1XSAgbWtpc3NfY2xvc2UrMHg3Yy8w
+eGMwIFtta2lzc10NCj4+Pj4+IFsgIDIwNS43OTkxNzBdICB0dHlfbGRpc2NfY2xvc2UrMHgy
+ZS8weDQwDQo+Pj4+PiBbICAyMDUuNzk5MTczXSAgdHR5X2xkaXNjX2hhbmd1cCsweDEzNy8w
+eDIxMA0KPj4+Pj4gWyAgMjA1Ljc5OTE3OF0gIF9fdHR5X2hhbmd1cC5wYXJ0LjArMHgyMDgv
+MHgzNTANCj4+Pj4+IFsgIDIwNS43OTkxODRdICB0dHlfdmhhbmd1cCsweDE1LzB4MjANCj4+
+Pj4+IFsgIDIwNS43OTkxODhdICBwdHlfY2xvc2UrMHgxMjcvMHgxNjANCj4+Pj4+IFsgIDIw
+NS43OTkxOTNdICB0dHlfcmVsZWFzZSsweDEzOS8weDVlMA0KPj4+Pj4gWyAgMjA1Ljc5OTE5
+OV0gIF9fZnB1dCsweDlmLzB4MjYwDQo+Pj4+PiBbICAyMDUuNzk5MjAzXSAgX19fX2ZwdXQr
+MHhlLzB4MTANCj4+Pj4+IFsgIDIwNS43OTkyMDhdICB0YXNrX3dvcmtfcnVuKzB4NjQvMHhh
+MA0KPj4+Pj4gWyAgMjA1Ljc5OTIxM10gIGRvX2V4aXQrMHgzM2IvMHhhYjANCj4+Pj4+IFsg
+IDIwNS43OTkyMTddICA/IF9faGFuZGxlX21tX2ZhdWx0KzB4YzRmLzB4MTVmMA0KPj4+Pj4g
+WyAgMjA1Ljc5OTIyNF0gIGRvX2dyb3VwX2V4aXQrMHgzNS8weGEwDQo+Pj4+PiBbICAyMDUu
+Nzk5MjI4XSAgX194NjRfc3lzX2V4aXRfZ3JvdXArMHgxOC8weDIwDQo+Pj4+PiBbICAyMDUu
+Nzk5MjMyXSAgZG9fc3lzY2FsbF82NCsweDVjLzB4ODANCj4+Pj4+IFsgIDIwNS43OTkyMzhd
+ICA/IGhhbmRsZV9tbV9mYXVsdCsweGJhLzB4MjkwDQo+Pj4+PiBbICAyMDUuNzk5MjQyXSAg
+PyBkZWJ1Z19zbXBfcHJvY2Vzc29yX2lkKzB4MTcvMHgyMA0KPj4+Pj4gWyAgMjA1Ljc5OTI0
+Nl0gID8gZnByZWdzX2Fzc2VydF9zdGF0ZV9jb25zaXN0ZW50KzB4MjYvMHg1MA0KPj4+Pj4g
+WyAgMjA1Ljc5OTI1MV0gID8gZXhpdF90b191c2VyX21vZGVfcHJlcGFyZSsweDQ5LzB4MTkw
+DQo+Pj4+PiBbICAyMDUuNzk5MjU2XSAgPyBpcnFlbnRyeV9leGl0X3RvX3VzZXJfbW9kZSsw
+eDkvMHgyMA0KPj4+Pj4gWyAgMjA1Ljc5OTI2MF0gID8gaXJxZW50cnlfZXhpdCsweDMzLzB4
+NDANCj4+Pj4+IFsgIDIwNS43OTkyNjNdICA/IGV4Y19wYWdlX2ZhdWx0KzB4ODcvMHgxNzAN
+Cj4+Pj4+IFsgIDIwNS43OTkyNjhdICA/IGFzbV9leGNfcGFnZV9mYXVsdCsweDgvMHgzMA0K
+Pj4+Pj4gWyAgMjA1Ljc5OTI3M10gIGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdmcmFtZSsw
+eDQ0LzB4YWUNCj4+Pj4+IFsgIDIwNS43OTkyNzddIFJJUDogMDAzMzoweDdmZjZiODBlYWNh
+MQ0KPj4+Pj4gWyAgMjA1Ljc5OTI4MV0gQ29kZTogVW5hYmxlIHRvIGFjY2VzcyBvcGNvZGUg
+Ynl0ZXMgYXQgUklQIDB4N2ZmNmI4MGVhYzc3Lg0KPj4+Pj4gWyAgMjA1Ljc5OTI4M10gUlNQ
+OiAwMDJiOjAwMDA3ZmZmNmRmZDQ3MzggRUZMQUdTOiAwMDAwMDI0NiBPUklHX1JBWDogMDAw
+MDAwMDAwMDAwMDBlNw0KPj4+Pj4gWyAgMjA1Ljc5OTI4N10gUkFYOiBmZmZmZmZmZmZmZmZm
+ZmRhIFJCWDogMDAwMDdmZjZiODIxNWEwMCBSQ1g6IDAwMDA3ZmY2YjgwZWFjYTENCj4+Pj4+
+IFsgIDIwNS43OTkyOTBdIFJEWDogMDAwMDAwMDAwMDAwMDAzYyBSU0k6IDAwMDAwMDAwMDAw
+MDAwZTcgUkRJOiAwMDAwMDAwMDAwMDAwMDAxDQo+Pj4+PiBbICAyMDUuNzk5MjkzXSBSQlA6
+IDAwMDAwMDAwMDAwMDAwMDEgUjA4OiBmZmZmZmZmZmZmZmZmZjgwIFIwOTogMDAwMDAwMDAw
+MDAwMDAyOA0KPj4+Pj4gWyAgMjA1Ljc5OTI5NV0gUjEwOiAwMDAwMDAwMDAwMDAwMDAwIFIx
+MTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDA3ZmY2YjgyMTVhMDANCj4+Pj4+IFsgIDIw
+NS43OTkyOThdIFIxMzogMDAwMDAwMDAwMDAwMDAwMCBSMTQ6IDAwMDA3ZmY2YjgyMWFlZTgg
+UjE1OiAwMDAwN2ZmNmI4MjFhZjAwDQo+Pj4+PiBbICAyMDUuNzk5MzA0XSAgPC9UQVNLPg0K
+Pj4+Pj4NCj4+Pj4+IEZpeGVzOiBmZWVmMzE4Yzg1NWEgKCJheDI1OiBmaXggVUFGIGJ1Z3Mg
+b2YgbmV0X2RldmljZSBjYXVzZWQgYnkgcmViaW5kaW5nIG9wZXJhdGlvbiIpDQo+Pj4+PiBS
+ZXBvcnRlZC1ieTogQmVybmFyZCBGNkJWUCA8ZjZidnBAZnJlZS5mcj4NCj4+Pj4+IFNpZ25l
+ZC1vZmYtYnk6IEVyaWMgRHVtYXpldCA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT4NCj4+Pj4+IENj
+OiBEdW9taW5nIFpob3UgPGR1b21pbmdAemp1LmVkdS5jbj4NCj4+Pj4+IC0tLQ0KPj4+Pj4g
+ICBpbmNsdWRlL25ldC9heDI1LmggfCAxICsNCj4+Pj4+ICAgbmV0L2F4MjUvYWZfYXgyNS5j
+IHwgNCArKy0tDQo+Pj4+PiAgIDIgZmlsZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAy
+IGRlbGV0aW9ucygtKQ0KPj4+Pj4NCj4+Pj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9h
+eDI1LmggYi9pbmNsdWRlL25ldC9heDI1LmgNCj4+Pj4+IGluZGV4IGE0MjdhMDU2NzJlMmFh
+YjE1OGVmZDQ0MzgxZmUyMTkwZDljYjg5NjkuLmY4Y2YzNjI5YTQxOTM0Zjk2ZjMzZTVkNzBh
+ZDkwY2M4YWU3OTZkMzggMTAwNjQ0DQo+Pj4+PiAtLS0gYS9pbmNsdWRlL25ldC9heDI1LmgN
+Cj4+Pj4+ICsrKyBiL2luY2x1ZGUvbmV0L2F4MjUuaA0KPj4+Pj4gQEAgLTIzNiw2ICsyMzYs
+NyBAQCB0eXBlZGVmIHN0cnVjdCBheDI1X2NiIHsNCj4+Pj4+ICAgICAgICBheDI1X2FkZHJl
+c3MgICAgICAgICAgICBzb3VyY2VfYWRkciwgZGVzdF9hZGRyOw0KPj4+Pj4gICAgICAgIGF4
+MjVfZGlnaSAgICAgICAgICAgICAgICpkaWdpcGVhdDsNCj4+Pj4+ICAgICAgICBheDI1X2Rl
+diAgICAgICAgICAgICAgICAqYXgyNV9kZXY7DQo+Pj4+PiArICAgICBuZXRkZXZpY2VfdHJh
+Y2tlciAgICAgICBkZXZfdHJhY2tlcjsNCj4+Pj4+ICAgICAgICB1bnNpZ25lZCBjaGFyICAg
+ICAgICAgICBpYW1kaWdpOw0KPj4+Pj4gICAgICAgIHVuc2lnbmVkIGNoYXIgICAgICAgICAg
+IHN0YXRlLCBtb2R1bHVzLCBwaWRpbmNsOw0KPj4+Pj4gICAgICAgIHVuc2lnbmVkIHNob3J0
+ICAgICAgICAgIHZzLCB2ciwgdmE7DQo+Pj4+DQo+Pj4+IEknbSBzb3JyeSBmb3IgdGhlIFt0
+b29dIGxhdGUgZmVlZGJhY2ssIGJ1dCBpdCBsb29rcyBsaWtlIHRoaXMgcGF0Y2gNCj4+Pj4g
+Zm9yZ290IHRvIHJlbW92ZSB0aGUgb2xkL3VudXNlZCB0cmFja2VyIGZyb20gYXgyNV9kZXYs
+IG9yIGFtIEkgbWlzc2luZw0KPj4+PiBzb21ldGhpbmc/DQo+Pj4NCj4+PiBJIHRoaW5rIHlv
+dSBhcmUgY29uZnVzZWQgOykNCj4+DQo+PiBJbmRlZWQgSSdtIChob3BlZnVsbHkgSSB3YXMp
+Lg0KPj4NCj4+DQo+Pj4gVGhlIG90aGVyIHRyYWNrZXIgaXMgc3RpbGwgdXNlZC4NCj4+Pg0K
+Pj4+IE9ubHkgdGhlIGJsYW1lZCBwYXRjaCAoZmVlZjMxOGM4NTVhICgiYXgyNTogZml4IFVB
+RiBidWdzIG9mIG5ldF9kZXZpY2UNCj4+PiBjYXVzZWQgYnkgcmViaW5kaW5nIG9wZXJhdGlv
+biIpKSBuZWVkZWQNCj4+PiBhIHNlcGFyYXRlIHRyYWNrZXIgaW4gJ3N0cnVjdCBheDI1X2Ni
+Jy4NCj4+DQo+PiBTbyB0aGlzIGNvbmZsaWN0IHJlc29sdXRpb246DQo+Pg0KPj4gaHR0cHM6
+Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtbmV4dC8yMDIyMDgwMjE1MTkzMi4yODMwMTEwLTEt
+YnJvb25pZUBrZXJuZWwub3JnL1QvI3UNCj4+DQo+PiBpcyB3cm9uZyAtIHRoZSBmaXJzdCBj
+aHVuY2sgbXVzdCBiZSBkcm9wcGVkLCBvbmx5IHRoZSBsYXN0IDIgYXJlDQo+PiByZXF1aXJl
+ZCwgcmlnaHQ/DQo+IA0KPiBJbmRlZWQsIHRoaXMgY29uZmxpY3QgcmVzb2x1dGlvbiBpcyB3
+cm9uZy4NCj4gDQo+IEkga25ldyB0aGlzIHJlbmFtaW5nIHRoaW5nIHdhcyBnb2luZyB0byBo
+dXJ0IHVzLCB0aGlzIGlzIG9ubHkgdGhlIGJlZ2lubmluZyA6Lw0KPiANCj4gVGhhbmtzLg0K
+PiANCj4+DQo+PiBUaGFua3MsDQo+Pg0KPj4gUGFvbG8NCj4+DQo=
