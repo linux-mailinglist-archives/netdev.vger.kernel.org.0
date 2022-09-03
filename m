@@ -2,256 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2D365ABC77
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 04:51:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C2605ABC7F
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 04:53:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbiICCvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 22:51:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59796 "EHLO
+        id S231521AbiICCxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 22:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231511AbiICCu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 22:50:59 -0400
-Received: from smtp-fw-2101.amazon.com (smtp-fw-2101.amazon.com [72.21.196.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660A186B70
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 19:50:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1662173458; x=1693709458;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=1g/u9waKSVdoO36VYD44WjzMVe/7kx9X1xMQva7xIWc=;
-  b=XN6asUAbtyZiqg2bQ3k3eTEVxKFv56uz4j/KwYiI5GRZCY8YAKU1oWQw
-   ejguh/kn1YKqSSTt0cZuTAFmpbPdqhq6GN1FW28VgwfhujJTBLIqvL5KG
-   1bNfQcyGxyxdZGaMvQ1sSoU5uS1Kw0gYACHNbjlVYCxAG/O/k3LqFyZWM
-   M=;
-X-IronPort-AV: E=Sophos;i="5.93,286,1654560000"; 
-   d="scan'208";a="237205129"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-2101.iad2.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Sep 2022 02:50:46 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1d-f20e0c8b.us-east-1.amazon.com (Postfix) with ESMTPS id 36F378B756;
-        Sat,  3 Sep 2022 02:50:44 +0000 (UTC)
-Received: from EX19D004ANA001.ant.amazon.com (10.37.240.138) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.38; Sat, 3 Sep 2022 02:50:44 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.230) by
- EX19D004ANA001.ant.amazon.com (10.37.240.138) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA) id 15.2.1118.12;
- Sat, 3 Sep 2022 02:50:42 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-To:     <edumazet@google.com>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <kuni1840@gmail.com>,
-        <kuniyu@amazon.com>, <netdev@vger.kernel.org>, <pabeni@redhat.com>
-Subject: Re: [PATCH v3 net-next 3/5] tcp: Access &tcp_hashinfo via net.
-Date:   Fri, 2 Sep 2022 19:50:34 -0700
-Message-ID: <20220903025034.98192-1-kuniyu@amazon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <CANn89iLHKRZU_+vdQAf-RYn5gDxRN4-9_k4wn5N7xAzadGH=EA@mail.gmail.com>
-References: <CANn89iLHKRZU_+vdQAf-RYn5gDxRN4-9_k4wn5N7xAzadGH=EA@mail.gmail.com>
+        with ESMTP id S231363AbiICCxa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 22:53:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBE7A86C2A;
+        Fri,  2 Sep 2022 19:53:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A2C54B82D0E;
+        Sat,  3 Sep 2022 02:53:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9524C433D6;
+        Sat,  3 Sep 2022 02:53:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662173606;
+        bh=OUYx9zqyVhkPwKlBXjzCx3T9nSj8tuR4ByliWLPFxNM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LyWkGIYwv2Gpf20eWkMR5EpzxrZuPMrWhZ6Y8KlZzD+vLhsfN5a+A7/9k99ZGslxe
+         ganDQ8ch4bBysvmjAGq831CecqiRy3GHP6u5qSGQnne7YpVH3m4A5G0VPSrqyYc6uJ
+         hcxCh5zoPbJKk77ZwmYNhGOlEi5p1KR51RGjto5VG0bkwERGv8IO1hsyQ6U86lIqw1
+         LBMAFUmwCNgtHpYAWBRLYaOhg3yxqsLgzOBlxZLBZy4T4F+l7Iu4qS51goF9xHNOuf
+         tOJRghHz0+T43wkVhLJiQKRdtExWhwWLW3dd6yhXudD6ULme1lRIfzO3dmDQjxgCe9
+         nLI2K/UQYm/6Q==
+Date:   Fri, 2 Sep 2022 19:53:24 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v3] netlink: Bounds-check struct nlmsgerr creation
+Message-ID: <20220902195324.15a9ae30@kernel.org>
+In-Reply-To: <202209021555.9EE2FBD3A@keescook>
+References: <20220901071336.1418572-1-keescook@chromium.org>
+        <202209021555.9EE2FBD3A@keescook>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.230]
-X-ClientProxiedBy: EX13d09UWA003.ant.amazon.com (10.43.160.227) To
- EX19D004ANA001.ant.amazon.com (10.37.240.138)
-X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 2 Sep 2022 19:30:31 -0700
-> On Fri, Sep 2, 2022 at 6:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> >
-> > From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-> > Date:   Fri, 2 Sep 2022 18:12:43 -0700
-> > > From:   Eric Dumazet <edumazet@google.com>
-> > > Date:   Fri, 2 Sep 2022 17:53:18 -0700
-> > > > On Fri, Sep 2, 2022 at 5:44 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > > >
-> > > > > From:   Kuniyuki Iwashima <kuniyu@amazon.com>
-> > > > > Date:   Thu, 1 Sep 2022 15:12:16 -0700
-> > > > > > From:   Eric Dumazet <edumazet@google.com>
-> > > > > > Date:   Thu, 1 Sep 2022 14:30:43 -0700
-> > > > > > > On Thu, Sep 1, 2022 at 2:25 PM Kuniyuki Iwashima <kuniyu@amazon.com> wrote:
-> > > > > > > >
-> > > > > > > > From:   Paolo Abeni <pabeni@redhat.com>
-> > > > > > >
-> > > > > > > > > /Me is thinking aloud...
-> > > > > > > > >
-> > > > > > > > > I'm wondering if the above has some measurable negative effect for
-> > > > > > > > > large deployments using only the main netns?
-> > > > > > > > >
-> > > > > > > > > Specifically, are net->ipv4.tcp_death_row and net->ipv4.tcp_death_row-
-> > > > > > > > > >hashinfo already into the working set data for established socket?
-> > > > > > > > > Would the above increase the WSS by 2 cache-lines?
-> > > > > > > >
-> > > > > > > > Currently, the death_row and hashinfo are touched around tw sockets or
-> > > > > > > > connect().  If connections on the deployment are short-lived or frequently
-> > > > > > > > initiated by itself, that would be host and included in WSS.
-> > > > > > > >
-> > > > > > > > If the workload is server and there's no active-close() socket or
-> > > > > > > > connections are long-lived, then it might not be included in WSS.
-> > > > > > > > But I think it's not likely than the former if the deployment is
-> > > > > > > > large enough.
-> > > > > > > >
-> > > > > > > > If this change had large impact, then we could revert fbb8295248e1
-> > > > > > > > which converted net->ipv4.tcp_death_row into pointer for 0dad4087a86a
-> > > > > > > > that tried to fire a TW timer after netns is freed, but 0dad4087a86a
-> > > > > > > > has already reverted.
-> > > > > > >
-> > > > > > >
-> > > > > > > Concern was fast path.
-> > > > > > >
-> > > > > > > Each incoming packet does a socket lookup.
-> > > > > > >
-> > > > > > > Fetching hashinfo (instead of &tcp_hashinfo) with a dereference of a
-> > > > > > > field in 'struct net' might inccurr a new cache line miss.
-> > > > > > >
-> > > > > > > Previously, first cache line of tcp_info was enough to bring a lot of
-> > > > > > > fields in cpu cache.
-> > > > > >
-> > > > > > Ok, let me test on that if there could be regressions.
-> > > > >
-> > > > > I tested tcp_hashinfo vs tcp_death_row->hashinfo with super_netperf
-> > > > > and collected HW cache-related metrics with perf.
-> > > > >
-> > > > > After the patch the number of L1 miss seems to increase, but the
-> > > > > instructions per cycle also increases, and cache miss rate did not
-> > > > > change.  Also, there was not performance regression for netperf.
-> > > > >
-> > > > >
-> > > > > Tested:
-> > > > >
-> > > > > # cat perf_super_netperf
-> > > > > echo 0 > /proc/sys/kernel/nmi_watchdog
-> > > > > echo 3 > /proc/sys/vm/drop_caches
-> > > > >
-> > > > > perf stat -a \
-> > > > >      -e cycles,instructions,cache-references,cache-misses,bus-cycles \
-> > > > >      -e L1-dcache-loads,L1-dcache-load-misses,L1-dcache-stores \
-> > > > >      -e dTLB-loads,dTLB-load-misses \
-> > > > >      -e LLC-loads,LLC-load-misses,LLC-stores \
-> > > > >      ./super_netperf $(($(nproc) * 2)) -H 10.0.0.142 -l 60 -fM
-> > > > >
-> > > > > echo 1 > /proc/sys/kernel/nmi_watchdog
-> > > > >
-> > > > >
-> > > > > Before:
-> > > > >
-> > > > > # ./perf_super_netperf
-> > > > > 2929.81
-> > > > >
-> > > > >  Performance counter stats for 'system wide':
-> > > > >
-> > > > >    494,002,600,338      cycles                                                        (23.07%)
-> > > > >    241,230,662,890      instructions              #    0.49  insn per cycle           (30.76%)
-> > > > >      6,303,603,008      cache-references                                              (38.45%)
-> > > > >      1,421,440,332      cache-misses              #   22.550 % of all cache refs      (46.15%)
-> > > > >      4,861,179,308      bus-cycles                                                    (46.15%)
-> > > > >     65,410,735,599      L1-dcache-loads                                               (46.15%)
-> > > > >     12,647,247,339      L1-dcache-load-misses     #   19.34% of all L1-dcache accesses  (30.77%)
-> > > > >     32,912,656,369      L1-dcache-stores                                              (30.77%)
-> > > > >     66,015,779,361      dTLB-loads                                                    (30.77%)
-> > > > >         81,293,994      dTLB-load-misses          #    0.12% of all dTLB cache accesses  (30.77%)
-> > > > >      2,946,386,949      LLC-loads                                                     (30.77%)
-> > > > >        257,223,942      LLC-load-misses           #    8.73% of all LL-cache accesses  (30.77%)
-> > > > >      1,183,820,461      LLC-stores                                                    (15.38%)
-> > > > >
-> > > > >       62.132250590 seconds time elapsed
-> > > > >
-> > > >
-> > > > This test will not be able to see a difference really...
-> > > >
-> > > > What is needed is to measure the latency when nothing at all is in the caches.
-> > > >
-> > > > Vast majority of real world TCP traffic is light or moderate.
-> > > > Packets are received and cpu has to bring X cache lines into L1 in
-> > > > order to process one packet.
-> > > >
-> > > > We slowly are increasing X over time :/
-> > > >
-> > > > pahole is your friend, more than a stress-test.
-> > >
-> > > Here's pahole result on my local build.  As Paolo said, we
-> > > need 2 cachelines for tcp_death_row and the hashinfo?
-> > >
-> > > How about moving hashinfo as the first member of struct
-> > > inet_timewait_death_row and convert it to just struct
-> > > instead of pointer so that we need 1 cache line to read
-> > > hashinfo?
-> >
-> > Like this.
-> >
-> > $ pahole -EC netns_ipv4 vmlinux
-> > struct netns_ipv4 {
-> >         struct inet_timewait_death_row {
-> >                 struct inet_hashinfo * hashinfo __attribute__((__aligned__(64)));        /*     0     8 */
-> >                 /* typedef refcount_t */ struct refcount_struct {
-> >                         /* typedef atomic_t */ struct {
-> >                                 int counter;                                             /*     8     4 */
-> >                         } refs; /*     8     4 */
-> >                 } tw_refcount; /*     8     4 */
-> >                 int                sysctl_max_tw_buckets;                                /*    12     4 */
-> >         } tcp_death_row __attribute__((__aligned__(64))) __attribute__((__aligned__(64))); /*     0    64 */
-> >
-> >         /* XXX last struct has 48 bytes of padding */
-> >
-> >         /* --- cacheline 1 boundary (64 bytes) --- */
-> > ...
-> > } __attribute__((__aligned__(64)));
-> >
-> >
-> > ---8<---
-> > diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-> > index 6320a76cefdc..dee53193d258 100644
-> > --- a/include/net/netns/ipv4.h
-> > +++ b/include/net/netns/ipv4.h
-> > @@ -32,16 +32,15 @@ struct ping_group_range {
-> >  struct inet_hashinfo;
-> >
-> >  struct inet_timewait_death_row {
-> > -       refcount_t              tw_refcount;
-> > -
-> >         struct inet_hashinfo    *hashinfo ____cacheline_aligned_in_smp;
-> > +       refcount_t              tw_refcount;
+On Fri, 2 Sep 2022 16:08:01 -0700 Kees Cook wrote:
+> > -	if (extack->cookie_len)
+> > -		tlvlen += nla_total_size(extack->cookie_len);
+> > +	if (extack->_msg &&
+> > +	    check_add_overflow(*tlvlen, nla_total_size(strlen(extack->_msg) + 1), tlvlen))
+> > +		return false;  
 > 
-> This would be very bad. tw_refcount would share a cache line with hashinfo.
-> 
-> false sharing is more problematic than a cache line miss in read mode.
+> If that's not desirable, then I guess the question I want to ask is
+> "what can I put in the unsafe_memcpy() comment above that proves these
+> values have been sanity checked? In other words, how do we know that
+> tlvlen hasn't overflowed? (I don't know what other sanity checking may
+> have already happened, so I'm looking directly at the size calculations
+> here.)
 
-Ah, exactly.
-Then I will add ____cacheline_aligned_in_smp to tw_refcount, instead of
-keeping the original order, to avoid invalidation by sysctl_max_tw_buckets
-change, which wouldn't be so frequently done though.
+The netlink helpers for adding attributes check whether there is enough
+space left in the skb. So if the calculation overflows, so be it. We'll
+hit EMSGSIZE in the writing phase and unwind. The writing should make
+no assumptions about the skb size. In fact all dumps will routinely hit
+EMSGSIZE as we try to fit as many objects into a skb as possible, so we
+unwind the one that would go over. Unwinding is well exercised in a lot
+of netlink code (not here, MSG_DONE/MSG_ERROR ain't a dump).
 
- struct inet_timewait_death_row {
--       refcount_t              tw_refcount;
--
--       struct inet_hashinfo    *hashinfo ____cacheline_aligned_in_smp;
-+       struct inet_hashinfo    *hashinfo;
-+       refcount_t              tw_refcount ____cacheline_aligned_in_smp;
-        int                     sysctl_max_tw_buckets;
- };
+The pre-calculation is just an estimate, if the message size ends up
+being insane it really doesn't matter if the calculation is 0, INT_MAX
+or random(). User is not gonna get a response, anyway.
 
-
-> 
-> >         int                     sysctl_max_tw_buckets;
-> >  };
-> >
-> >  struct tcp_fastopen_context;
-> >
-> >  struct netns_ipv4 {
-> > -       struct inet_timewait_death_row *tcp_death_row;
-> > +       struct inet_timewait_death_row tcp_death_row;
-> >
-> >  #ifdef CONFIG_SYSCTL
-> >         struct ctl_table_header *forw_hdr;
-> > ---8<---
-> >
+... unless someone uses the unsafe helpers like __nlmsg_put() rather
+than nlmsg_put(), hence my suggestion in the other email.
