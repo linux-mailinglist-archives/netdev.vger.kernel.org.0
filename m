@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2845ABC69
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 04:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5190E5ABC6D
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 04:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230429AbiICCsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Sep 2022 22:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53548 "EHLO
+        id S231381AbiICCuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Sep 2022 22:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229508AbiICCso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 22:48:44 -0400
+        with ESMTP id S231298AbiICCuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Sep 2022 22:50:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24E47654F;
-        Fri,  2 Sep 2022 19:48:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E48315007F;
+        Fri,  2 Sep 2022 19:50:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8A13B82D2A;
-        Sat,  3 Sep 2022 02:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA749C433D6;
-        Sat,  3 Sep 2022 02:48:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A28D2B82D0E;
+        Sat,  3 Sep 2022 02:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DEADC433D6;
+        Sat,  3 Sep 2022 02:50:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662173320;
-        bh=3tuTu62i+EDrSJ1yXiAR1GlbDcTjwTm2SCW314HHXFI=;
+        s=k20201202; t=1662173409;
+        bh=x7AJOvmatw37iAWqWym8U5Ez6tAqtDaKH6PPmaWjdtE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=J2RfPJFu22l+OFQ56bAojRDj7GAMOyUqZ7KRD3gJ/XZqLCpGDN5GgX7NyAd3ex9bQ
-         QGwCSWmYesze3HqhV0+AKSqwms1qMeewZ8fRdFCpb9bstMbrKdnEBn0NWjBaveaR9d
-         8/2EwMy3H/KJ2Usx3dMr54NgG47TbFEDzfei2u7fkl2l1LtGlZg0fqT1MRni3FdI2j
-         m3Ruks2EyMETJnoBFZMtRnXGisPdOAaiyv9kXRYN8580XNwa6utjywoPneQauYCLJn
-         gA/SqpgQuEOOiXSVwZ6NKBQHsF42g7XdVET5DKyAAA4Nfyv+mN4QeFcOv8mtZh3XhU
-         UEYDrYVbcIUlA==
-Date:   Sat, 3 Sep 2022 04:48:32 +0200
+        b=V8UKzxvsZ11Hc0XF4uNg7dnJs1ESe/yXiWQU4ATvyxHuuUBtAkx2JeuXArfYS2RSN
+         iJ0IhcGxoQksY5WTSHjemao/QTebvE/VwjwFRzXbMbom56CN86V9F8h2KeZ3nICV7k
+         v9wIZtRVw/8m1u9QB2+b/dDgi8PIP1qzRQbm9pK0ZuUrjVh3HejG296SGVDn51AAnB
+         YclvujsXD1FNEIxbmuyokEASknyR4HeZKoBq4XKHNqLSfnaQWHhPARn78VqQARo4JV
+         hHAuP+7VsI0l6EUfwsuu9/lmvz4e0G9LAaRzxAIA0AxWcvW3Otuyx+gm9pEL913shx
+         A9mw/RiG4+Weg==
+Date:   Sat, 3 Sep 2022 04:50:00 +0200
 From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -46,12 +46,11 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Vladimir Oltean <olteanv@gmail.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        UNGLinuxDriver@microchip.com,
         Colin Foster <colin.foster@in-advantage.com>,
         Roopa Prabhu <roopa@nvidia.com>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Tobias Waldekranz <tobias@waldekranz.com>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
         DENG Qingfang <dqfext@gmail.com>,
         Alvin =?UTF-8?B?xaBpcHJhZ2E=?= <alsi@bang-olufsen.dk>,
         Linus Walleij <linus.walleij@linaro.org>,
@@ -60,10 +59,10 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Sean Wang <sean.wang@mediatek.com>
 Subject: Re: [PATCH net-next 0/9] DSA changes for multiple CPU ports (part
  4)
-Message-ID: <20220903044832.125984e2@thinkpad>
-In-Reply-To: <20220902103145.faccoawnaqh6cn3r@skbuf>
+Message-ID: <20220903045000.6df542a9@thinkpad>
+In-Reply-To: <63124f17.170a0220.80d35.2d31@mx.google.com>
 References: <20220830195932.683432-1-vladimir.oltean@nxp.com>
-        <20220902103145.faccoawnaqh6cn3r@skbuf>
+        <63124f17.170a0220.80d35.2d31@mx.google.com>
 X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -78,42 +77,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2 Sep 2022 10:31:46 +0000
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Fri, 2 Sep 2022 20:44:37 +0200
+Christian Marangi <ansuelsmth@gmail.com> wrote:
 
 > On Tue, Aug 30, 2022 at 10:59:23PM +0300, Vladimir Oltean wrote:
+> > Those who have been following part 1:
+> > https://patchwork.kernel.org/project/netdevbpf/cover/20220511095020.562461-1-vladimir.oltean@nxp.com/
+> > part 2:
+> > https://patchwork.kernel.org/project/netdevbpf/cover/20220521213743.2735445-1-vladimir.oltean@nxp.com/
+> > and part 3:
+> > https://patchwork.kernel.org/project/netdevbpf/cover/20220819174820.3585002-1-vladimir.oltean@nxp.com/
+> > will know that I am trying to enable the second internal port pair from
+> > the NXP LS1028A Felix switch for DSA-tagged traffic via "ocelot-8021q".
+> > 
 > > This series represents the final part of that effort. We have:
 > > 
-> > - the introduction of new UAPI in the form of IFLA_DSA_MASTER  
+> > - the introduction of new UAPI in the form of IFLA_DSA_MASTER
+> > 
+> > - preparation for LAG DSA masters in terms of suppressing some
+> >   operations for masters in the DSA core that simply don't make sense
+> >   when those masters are a bonding/team interface
+> > 
+> > - handling all the net device events that occur between DSA and a
+> >   LAG DSA master, including migration to a different DSA master when the
+> >   current master joins a LAG, or the LAG gets destroyed
+> > 
+> > - updating documentation
+> > 
+> > - adding an implementation for NXP LS1028A, where things are insanely
+> >   complicated due to hardware limitations. We have 2 tagging protocols:
+> > 
+> >   * the native "ocelot" protocol (NPI port mode). This does not support
+> >     CPU ports in a LAG, and supports a single DSA master. The DSA master
+> >     can be changed between eno2 (2.5G) and eno3 (1G), but all ports must
+> >     be down during the changing process, and user ports assigned to the
+> >     old DSA master will refuse to come up if the user requests that
+> >     during a "transient" state.
+> > 
+> >   * the "ocelot-8021q" software-defined protocol, where the Ethernet
+> >     ports connected to the CPU are not actually "god mode" ports as far
+> >     as the hardware is concerned. So here, static assignment between
+> >     user and CPU ports is possible by editing the PGID_SRC masks for
+> >     the port-based forwarding matrix, and "CPU ports in a LAG" simply
+> >     means "a LAG like any other".
+> > 
+> > The series was regression-tested on LS1028A using the local_termination.sh
+> > kselftest, in most of the possible operating modes and tagging protocols.
+> > I have not done a detailed performance evaluation yet, but using LAG, is
+> > possible to exceed the termination bandwidth of a single CPU port in an
+> > iperf3 test with multiple senders and multiple receivers.
+> > 
+> > There was a previous RFC posted, which contains most of these changes,
+> > however it's so old by now that it's unlikely anyone of the reviewers
+> > remembers it in detail. I've applied most of the feedback requested by
+> > Florian and Ansuel there.
+> > https://lore.kernel.org/netdev/20220523104256.3556016-1-olteanv@gmail.com/  
 > 
-> Call for opinions: when I resend this, should I keep rtnl_link_ops,
-> or should I do what Marek attempted to do, and make the existing iflink
-> between a user port and its master writable from user space?
-> https://lore.kernel.org/netdev/20190824024251.4542-4-marek.behun@nic.cz/
+> Hi,
+> I would love to test this but for me it's a bit problematic to use a
+> net-next kernel. I wonder if it's possible to backport the 4 part to
+> older kernel or other prereq are needed. (I know backporting the 4 part
+> will be crazy but it's something that has to be done anyway to actually
+> use this on OpenWrt where we currently use 5.10 and 5.15)
 > 
-> I'm not sure if we have that many more use cases for rtnl_link_ops..
-> at some point I was thinking we could change the way in which dsa_loop
-> probes, and allow dynamic creation of such interfaces using RTM_NEWLINK;
-> but looking closer at that, it's a bit more complicated, since we'd need
-> to attach dsa_loop user ports to a virtual switch, and probe all ports
-> at the same time rather than one by one.
+> Would be good to know if the 4 part require other changes to dsa core to
+> make a LAG implementation working. (talking for 5.15 since backporting
+> this to 5.10 is a nono...)
 
-My opinion is that it would be better to add new DSA specific netlink
-operations instead of using the existing iflink as I did in the that
-patch.
+Just use the newest kernel. Trust me, backporting new DSA changes to
+5.15 is painful. And to 5.10 and earlier it is a literal hell.
 
-I think that DSA should have it's own IP subcommands. Using the
-standard, already existing API, is not sufficient for more complex
-configurations/DSA routing settings. Consider DSA where there are
-multiple switches and the switches are connected via multiple ports:
-
-+----------+   +---------------+   +---------+
-|     eth0 <---> sw0p0   sw0p2 <---> sw1p0
-| cpu      |   |               |   |        ....
-|     eth1 <---> sw0p1   s20p3 <---> sw1p1
-+----------+   +---------------+   +---------+
-
-The routing is more complicated in this scenario. The old API is not
-sufficient.
-
-Marek
+:) Marek
