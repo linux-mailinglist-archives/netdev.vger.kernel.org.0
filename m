@@ -2,202 +2,326 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68A895AC003
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 19:26:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 117D25AC096
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 20:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbiICRZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 13:25:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33890 "EHLO
+        id S232361AbiICSVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 14:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229526AbiICRZu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 13:25:50 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16BEA3ECDA
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 10:25:49 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id r6so3675356qtx.6
-        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 10:25:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date;
-        bh=5uo2VvNIqC/VuePKgb7EZNtUEulmQHaK3W6mVfr7RVQ=;
-        b=exc+oYWZOUjRrmYbzETO4sWCuv0OHlDUPhNPug6cckP/2hc+KK3vEOzCF2Pz0DQKCy
-         0ZJub0l67mVlg99uiJDirWCZJwKaREz6PvdfwmRHdvb+I9zS5F9jYp5VNaBUrggt9kqC
-         Uw/lqVO1VUva3hqRQ5sAcxXaQlaBSRe3b+zHG5qFIKGU0zmIhQ07H94GukjLNEOK5hVP
-         aLJp/FRTiTaBuJlZ4Ja660fuvFj9NuL/Ag/G5dC/Rf1bbQ0rDfOp5KzVx/C0/ggEcn07
-         jcxD80riyLdsNX3aHmAKQM1XdY5z0eDqcbkC5YjEsMuvYvUOOjrYvz2gIgG03fwYQaBz
-         yd1w==
+        with ESMTP id S231305AbiICSVa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 14:21:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B1804C638
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 11:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662229288;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9vUwm+ZLlJ49I/kvdB8M6Mu/W/Id29WXk+ZzGVSsdeY=;
+        b=ION9KxBlpdOAHmSlJGMUHuAMP0SIEjez6E/l2zG7HwO75RA6yCSnjPKU+7Fpzq12tH7A81
+        cOvOKD/0G/ktSt0jO7bBL02Za43HDfv4/d8L0kzISfIX33C7USx29hFPRcaS8RYrXcmQX1
+        sY4W4N1qWkwEIQpYid3lTalEQV9+VgY=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-623-UltbrlMFPUW0uoFxuJ79WQ-1; Sat, 03 Sep 2022 14:21:27 -0400
+X-MC-Unique: UltbrlMFPUW0uoFxuJ79WQ-1
+Received: by mail-qt1-f199.google.com with SMTP id cm10-20020a05622a250a00b003437b745ccdso3907021qtb.18
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 11:21:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=5uo2VvNIqC/VuePKgb7EZNtUEulmQHaK3W6mVfr7RVQ=;
-        b=XXUPpw/70gA3qsi1ybZEKRsbTSCjlgrk3mWS6h2q1eRBlV923RIdrj+LclEZU/Rgqm
-         kgPGW4t/MkQQXuV0OqqP57QAg7ZNrlAw3mAB4Ious6eW8S4JQcGW6Xw5W3TSLBJjSd2R
-         fxAPIB/r04h4YMDxfhlIOb2ujqwUZhLD449r51xJkybzqblOI6adheyIriglReatLRoS
-         KHEpQtBUKZQJXrfd0C8T9I+d6mS2R1I7m1KRfN2kaE9FZLJX/pUoMDtYluvpqTQQEGsg
-         T/hpkQG+ZvkiFj1XoyX/x3jcvu1LDoJKGc1+FNVQfY6/tqzJJMZe2nZsKakf03OQSqWH
-         ZvsA==
-X-Gm-Message-State: ACgBeo3Y55O+iaikRWqoSR+K/SfhuedfQkQ/CXKsSsK3qycejbFxTltb
-        9Oncz7zaTRbbjfm+1tAvT5pFU0G65yE=
-X-Google-Smtp-Source: AA6agR5mPbTuKcqejx9YazLO+vRGumEtnsBXPEOC5I53yX5Difp3fzm0QXwYUfOi+6O/M/GEoTEvwA==
-X-Received: by 2002:ac8:7d50:0:b0:344:64af:d709 with SMTP id h16-20020ac87d50000000b0034464afd709mr32477354qtb.639.1662225948154;
-        Sat, 03 Sep 2022 10:25:48 -0700 (PDT)
-Received: from [192.168.1.102] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id e8-20020ac81308000000b0031d283f4c4dsm3250012qtj.60.2022.09.03.10.25.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Sep 2022 10:25:47 -0700 (PDT)
-Message-ID: <a1b21de9-a379-f920-e7d1-07ac7f5a7e96@gmail.com>
-Date:   Sat, 3 Sep 2022 10:25:45 -0700
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=9vUwm+ZLlJ49I/kvdB8M6Mu/W/Id29WXk+ZzGVSsdeY=;
+        b=Imoa4eJIfEIjYx3a1/g/a+QH65+sI7pYhk/VWAb4SCUyUOEVlf7EhjFxlvrxSDwFnv
+         2K7znutfVevY9k3hoxVcp3W5PVBLDAYPIEVmtG/JMwbvsQV39iq5W3eZbP/Ec5qfRiJd
+         +qKaV1TMoFsv3E2tWSVoDMbS+peG8hAMrriTRgB51PeiQhE59IxGQpfCD9pItTZpe2CJ
+         83Rd/UTnqL/COfohyh08wLnCyw2vzCsRt1W3WIlAsVvnjxdDjYGPVCseamyVa9dsVznX
+         S/G4ndyu8Rh4pylJbmi+UN+NyQj3hvdTnj7Pf/ICkWBmcOFHTL+x/8iQxVULd7R0ZCPf
+         l3Qw==
+X-Gm-Message-State: ACgBeo1/TP+RgT+9PtHkDH5S+mYmZeeVMfPwE9+yMHwrtDvjRmYZyXeM
+        hVmyTcwifj4RXysa/bs01qWh2p2Pj4iEP+GpKOdqLovr2LYJWkZXNIcdFlDBe6HaDHOgk2A3pq3
+        P0ATP0Qa48vw6NmaOW/m2gHw0TG9Xv/YS
+X-Received: by 2002:a05:6214:5086:b0:499:2979:2df4 with SMTP id kk6-20020a056214508600b0049929792df4mr13266368qvb.2.1662229286577;
+        Sat, 03 Sep 2022 11:21:26 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR65oJ1Qc8s8YzgUoRVDObKOWz/BWziJGs5Pajo4U0NT0AVw0EKynSHDFHkuMJlLC1rC8cjA4GdHotpbqyi8aR0=
+X-Received: by 2002:a05:6214:5086:b0:499:2979:2df4 with SMTP id
+ kk6-20020a056214508600b0049929792df4mr13266357qvb.2.1662229286249; Sat, 03
+ Sep 2022 11:21:26 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-Subject: Re: [PATCH net-next] net: dsa: hellcreek: Print warning only once
-Content-Language: en-US
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+ <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+ <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+ <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+ <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+ <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
+ <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
+ <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
+ <20220901150917.5246c2d0@xps-13> <CAK-6q+g1Gnew=zWsnW=HAcLTqFYHF+P94Q+Ywh7Rir8J8cgCgw@mail.gmail.com>
+ <20220903020829.67db0af8@xps-13> <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
+ <20220903180556.6430194b@xps-13>
+In-Reply-To: <20220903180556.6430194b@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sat, 3 Sep 2022 14:21:15 -0400
+Message-ID: <CAK-6q+guC=eYQtUX=2wvhUTyNC+iNWSVuiBHC94soVUrLoBYGg@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        netdev@vger.kernel.org
-References: <20220830163448.8921-1-kurt@linutronix.de>
- <20220831152628.um4ktfj4upcz7zwq@skbuf> <87v8q8jjgh.fsf@kurt>
- <20220831234329.w7wnxy4u3e5i6ydl@skbuf> <87czcfzkb6.fsf@kurt>
- <20220901113912.wrwmftzrjlxsof7y@skbuf> <87r10sr3ou.fsf@kurt>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <87r10sr3ou.fsf@kurt>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+On Sat, Sep 3, 2022 at 12:06 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Sat, 3 Sep 2022 10:20:24 -0400:
+>
+> > Hi,
+> >
+> > On Fri, Sep 2, 2022 at 8:08 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > ...
+> > > >
+> > > > I am sorry, I never looked into Zephyr for reasons... Do they not have
+> > > > something like /proc/interrupts look if you see a counter for your
+> > > > 802.15.4 transceiver?
+> > > >
+> > > > > Also, can you please clarify when are we talking about software and
+> > > > > when about hardware filters.
+> > > > >
+> > > >
+> > > > Hardware filter is currently e.g. promiscuous mode on or off setting.
+> > > > Software filtering is depending which receive path the frame is going
+> > > > and which hardware filter is present which then acts like actually
+> > > > with hardware filtering.
+> > > > I am not sure if this answers this question?
+> > >
+> > > I think my understand gets clearer now that I've digged into Zephyr's
+> > > ieee802154 layer and in the at86rf230 datasheet.
+> > >
+> >
+> > okay, I think for zephyr questions you are here on the wrong mailinglist.
+> >
+> > > I will answer the previous e-mail but just for not I wanted to add that
+> > > I managed to get Zephyr working, I had to mess around in the code a
+> > > little bit and actually I discovered a net command which is necessary
+> > > to use in order to turn the iface up, whatever.
+> > >
+> >
+> > aha.
+> >
+> > > So I was playing with the atusb devices and I _think_ I've found a
+> > > firmware bug or a hardware bug which is going to be problematic. In
+> >
+> > the firmware is open source, I think it's fine to send patches here (I
+> > did it as well once for do a quick hack to port it to rzusb) the atusb
+> > is "mostly" at the point that they can do open hardware from the
+> > qi-hardware organization.
+> >
+> > > iface.c, when creating the interface, if you set the hardware filters
+> > > (set_panid/short/ext_addr()) there is no way you will be able to get a
+> > > fully transparent promiscuous mode. I am not saying that the whole
+> >
+> > What is a transparent promiscuous mode?
+>
+> I observe something very weird:
+>
+> A/ If at start up time we set promisc_mode(true) and then we set the hw
+> address filters, all the frames are forwarded to the MAC.
+>
+> B/ If at start up time we set the hw address filters and then set
+> promisc_mode(true), there is some filtering happening (like the Acks
+> which are dropped by the PHY.
+>
+> I need to investigate this further because I don't get why in case B we
+> don't have the same behavior than in case A.
+>
 
-On 9/3/2022 6:24 AM, Kurt Kanzenbach wrote:
-> On Thu Sep 01 2022, Vladimir Oltean wrote:
->> On Thu, Sep 01, 2022 at 08:21:33AM +0200, Kurt Kanzenbach wrote:
->>>> So from Florian's comment above, he was under case (b), different than yours.
->>>> I don't understand why you say that when ACS is set, "the STP frames are
->>>> truncated and the trailer tag is gone". Simply altering the ACS bit
->>>> isn't going to change the determination made by stmmac_rx(). My guess
->>>> based on the current input I have is that it would work fine for you
->>>> (but possibly not for Florian).
->>>
->>> I thought so too. However, altering the ACS Bit didn't help at all.
->>
->> This is curious. Could you dump the Length/Type Field (LT bits 18:16)
->> from the RDES3 for these packets? If ACS does not take effect, it would
->> mean the DWMAC doesn't think they're Length packets I guess? Also, does
->> the Error Summary say anything? In principle, the length of this packet
->> is greater than the EtherType/Length would say, by the size of the tail
->> tag. Not sure how that affects the RX parser.
-> 
-> That's the point. The RX parser seems to be affected by the tail
-> tag. I'll have a look at the packets with ACS feature set.
-> 
->>
->>> We could do some measurements e.g., with perf to determine whether
->>> removing the FCS logic has positive or negative effects?
->>
->> Yes, some IP forwarding of 60 byte frames at line rate gigabit or higher
->> should do the trick. Testing with MTU sized packets is probably not
->> going to show much of a difference.
-> 
-> Well, I don't see much of a difference. However, running iperf3 with
-> small packets is nowhere near line rate of 100Mbit/s. Nevertheless, I
-> like the following patch more, because it looks cleaner than adding more
-> checks to the receive path. It fixes my problem. Florian's use case
-> should also work.
+Looking in the datasheet I see only set address filters -> then
+setting promiscuous mode is specified? Not the other way around...
 
-LGTM, some suggestions below.
+> > > promiscuous mode does not work anymore, I don't really know. What I was
+> > > interested in were the acks, and getting them is a real pain. At least,
+> > > enabling the promiscuous mode after setting the hw filters will lead to
+> > > the acks being dropped immediately while if the promiscuous mode is
+> > > enabled first (like on monitor interfaces) the acks are correctly
+> > > forwarded by the PHY.
+> >
+> > If we would not disable AACK handling (means we receive a frame with
+> > ack requested bit set we send a ack back) we would ack every frame it
+> > receives (speaking on at86rf233).
+>
+> Yes, but when sending MAC frames I would like to:
+> - be in promiscuous mode in Rx (tx paused) in order for the MAC to be
+>   aware of the acks being received (unless there is another way to do
+>   that, see below)
+> - still ack the received frames automatically
+>
+> Unless we decide that we must only ack the expected frames manually?
+>
 
-> 
->  From 5a54383167c624a90ba460531fccabbb87d40e51 Mon Sep 17 00:00:00 2001
-> From: Kurt Kanzenbach <kurt@linutronix.de>
-> Date: Fri, 2 Sep 2022 19:49:52 +0200
-> Subject: [PATCH] net: stmmac: Disable automatic FCS/Pad stripping
-> 
-> The stmmac has the possibility to automatically strip the padding/FCS for IEEE
-> 802.3 type frames. This feature is enabled conditionally. Therefore, the stmmac
-> receive path has to have a determination logic whether the FCS has to be
-> stripped in software or not.
-> 
-> In fact, for DSA this ACS feature is disabled and the determination logic
-> doesn't check for it properly. For instance, when using DSA in combination with
-> an older stmmac (pre version 4), the FCS is not stripped by hardware or software
-> which is problematic.
-> 
-> So either add another check for DSA to the fast path or simply disable ACS
-> feature completely. The latter approach has been chosen, because most of the
-> time the FCS is stripped in software anyway and it removes conditionals from the
-> receive fast path.
-> 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-> ---
->   .../net/ethernet/stmicro/stmmac/dwmac100.h    |  2 +-
->   .../net/ethernet/stmicro/stmmac/dwmac1000.h   |  2 +-
->   .../ethernet/stmicro/stmmac/dwmac1000_core.c  |  9 -------
->   .../ethernet/stmicro/stmmac/dwmac100_core.c   |  8 ------
->   .../net/ethernet/stmicro/stmmac/stmmac_main.c | 26 +++----------------
->   5 files changed, 6 insertions(+), 41 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac100.h b/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
-> index 35ab8d0bdce7..7ab791c8d355 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
-> @@ -56,7 +56,7 @@
->   #define MAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
->   #define MAC_CONTROL_RE		0x00000004	/* Receiver Enable */
->   
-> -#define MAC_CORE_INIT (MAC_CONTROL_HBD | MAC_CONTROL_ASTP)
-> +#define MAC_CORE_INIT (MAC_CONTROL_HBD)
->   
->   /* MAC FLOW CTRL defines */
->   #define MAC_FLOW_CTRL_PT_MASK	0xffff0000	/* Pause Time Mask */
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-> index 3c73453725f9..4296ddda8aaa 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-> @@ -126,7 +126,7 @@ enum inter_frame_gap {
->   #define GMAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
->   #define GMAC_CONTROL_RE		0x00000004	/* Receiver Enable */
->   
-> -#define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL_ACS | \
-> +#define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | \
->   			GMAC_CONTROL_BE | GMAC_CONTROL_DCRS)
->   
->   /* GMAC Frame Filter defines */
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-> index fc8759f146c7..35d7c1cb1cf1 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-> @@ -15,7 +15,6 @@
->   #include <linux/crc32.h>
->   #include <linux/slab.h>
->   #include <linux/ethtool.h>
-> -#include <net/dsa.h>
->   #include <asm/io.h>
->   #include "stmmac.h"
->   #include "stmmac_pcs.h"
-> @@ -24,7 +23,6 @@
->   static void dwmac1000_core_init(struct mac_device_info *hw,
->   				struct net_device *dev)
+We can't handle ack frames on mac802154 in my opinion. Or what does
+manually mean?
 
-You should be able to remove the net_device reference here since we do 
-not use it anymore after the removal of netdev_uses_dsa() or 
-de-referencing of priv.
+Is the ack frame required as a mac command operation or as a response
+to a transmitted frame because the other side will do retransmissions
+if they don't see an ack back? The second case is not possible to
+implement on mac802154, it must be offloaded.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> > > While looking at the history of the drivers, I realized that the
+> > > TX_ARET mode was not supported by the firmware in 2015 (that's what you
+> >
+> > There exists ARET and AACK, both are mac mechanisms which must be
+> > offloaded on the hardware. Note that those only do "something" if the
+> > ack request bit in the frame is set.
+>
+> Absolutely (for the record, that's also an issue I had with Zephyr, I
+> had to use the shell to explicitly ask the AR bit to be set in the
+> outgoing frames, even though this in most MAC frames this is not a user
+> choice, it's expected by the spec).
+>
+
+fyi: we have also a default_ackreq behaviour if we set the ack frame
+on all data frames or not. However it's currently set to not set the
+ackreq bit because most hardware outside can't handle it (even if
+required by the spec). If you have a requirement to set ack request
+bit then do it, if there is hardware outside which cannot handle it,
+it's their problem. However the dataframes which are sent via user
+space socket depending on the use case if they want to set it or not
+but if they set it you need to know your network.
+
+> > ARET will retransmit if no ack is received after some while, etc.
+> > mostly coupled with CSMA/CA handling. We cannot guarantee such timings
+> > on the Linux layer. btw: mac80211 can also not handle acks on the
+> > software layer, it must be offloaded.
+>
+> On the Tx side, when sending eg. an association request or an
+> association response, I must expect and wait for an ack. This is
+> what I am struggling to do. How can I know that a frame which I just
+> transmitted has been acked? Bonus points, how can I do that in such a
+> way that it will work with other devices? (hints below)
+>
+
+You can't do this in mac802154 if there is a timing critical
+requirement here. Is there a timing critical requirement here?
+
+> > AACK will send a back if a frame with ack request bit was received.
+> >
+> > > say in a commit) I have seen no further updates about it so I guess
+> > > it's still not available. I don't see any other way to know if a
+> > > frame's ack has been received or not reliably.
+> >
+> > You implemented it for the at86rf230 driver (the spi one which is what
+> > also atusb uses). You implemented the
+> >
+> > ctx->trac = IEEE802154_NO_ACK;
+> >
+> > which signals the upper layer that if the ack request bit is set, that
+> > there was no ack.
+> >
+> > But yea, there is a missing feature for atusb yet which requires
+> > firmware changes as well.
+>
+> :'(
+>
+> Let's say I don't have the time to update the firmware ;). I also assume
+> that other transceivers (or even the drivers) might be limited on this
+> regard as well. How should I handle those "I should wait for the ack to
+> be received" situation while trying to associate?
+>
+
+If other transceivers cannot handle giving us feedback if ack was
+received or not and we have the mandatory requirement to know it, it
+is poor hardware/driver. As I said if the spec requires to check on an
+ack or not we need to get his information, if the hardware/driver
+can't deliver this... then just assume an ACK was received as it
+returns TX_SUCCESS (or whatever the return value was). I said before
+that some hardware will act weird if they don't support it.
+
+> The tricky case is the device receiving the ASSOC_REQ:
+> - the request is received
+> - an ack must be sent (this is okay in most cases I guess)
+> - the device must send an association response (also ok)
+> - and wait for the response to be acked...
+>         * either I use the promisc mode when sending the response
+>           (because of possible race conditions) and I expect the ack to
+>           be forwarded to the MAC
+>                 -> This does not work on atusb, enabling promiscuous
+>                 mode after the init does not turn the PHY into
+>                 promiscuous mode as expected (discussed above)
+>         * or I don't turn the PHY in promiscuous mode and I expect it
+>           to return a clear status about if the ACK was received
+>                 -> But this seem to be unsupported with the current
+>                 ATUSB firmware, I fear other devices could have similar
+>                 limitations
+>         * or I just assume the acks are received blindly
+>                 -> Not sure this is robust enough?
+>
+
+Assume you always get an ack back until somebody implements this
+feature in their driver (It's already implemented so as they return
+TX_SUCCESS). We cannot do much more I think... it is not robust but
+then somebody needs to update the driver/firmware.
+
+It's more weird if the otherside does not support AACK, because ARET
+will send them 3 times (by default) the same frame. That's why we have
+the policy to not set the ackreq bit if it's not required.
+
+> What is your "less worse" choice?
+>
+> > Btw: I can imagine that hwsim "fakes" such
+> > offload behaviours.
+>
+> My current implementation actually did handle all the acks (waiting for
+> them and sending them) from the MAC. I'm currently migrating the ack
+> sending part to the hw. For the reception, that's the big question.
+>
+
+In my opinion we should never deal with ack frames on mac802154 level,
+neither on hwsim, this is an offloaded functionality. What I have in
+mind is to fake a "TX_NO_ACK" return value as a probability parameter
+to return it sometimes. E.g. as netem and drop rate, etc. Then we
+could do some testing with it.
+
+> > > Do you think I can just ignore the acks during an association in
+> > > mac802154?
+> >
+> > No, even we should WARN_ON ack frames in states we don't expect them
+> > because they must be offloaded on hardware.
+> >
+> > I am not sure if I am following what is wrong with the trac register
+> > and NO_ACK, this is the information if we got an ack or not. Do you
+> > need to turn off address filters while "an association"?
+>
+> If we have access to the TRAC register, I believe we no longer need to
+> turn off address filters.
+>
+
+That sounds good.
+
+- Alex
+
