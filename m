@@ -2,311 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D619A5ABF1D
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 15:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A96155ABF50
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 16:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231153AbiICNYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 09:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41244 "EHLO
+        id S230459AbiICOUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 10:20:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231132AbiICNYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 09:24:43 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6AD10562
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 06:24:37 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1662211475;
+        with ESMTP id S230018AbiICOUm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 10:20:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 516245D0D3
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 07:20:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662214839;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=SiP2ZxrTmI1d495SWlanI9uEuVZnAEP4yIPhNMTL3lI=;
-        b=ENRFacNxZTs2qvQhuYG4kQM7kRtJeXOOCaWJvlV6N3C30F1kVW0jp9BSEsc271qstTMzaP
-        YK2BLwpIZb8bflfy8E+odzQvzEkndMCT7TtYfDyXX9b5iECkEinkAlbFwUwksq6GYspxra
-        qr2pUcVS3j2wrfOcA5hNu53JsGnSFXujp2d15uZOuNhXoLYHM2DBBrwQiraTQvhz9uxLKR
-        onqPe4fWagaDqpgyFnyAZiQd3CMbRLXbNfuFVCFuvJpN43LRBwivrxZNPMWzOBUGPPJhHg
-        cKJxxtHaWhe6vzd/VbMzJi7A0/RRnP+w8hU8WBbj00GC1nJ551gPuJJw3uAzBA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1662211475;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SiP2ZxrTmI1d495SWlanI9uEuVZnAEP4yIPhNMTL3lI=;
-        b=9V8EGM8dw0miG8G4I1lBpvDgf8miy4/KwoWFr4hWmN8ld4Ovy5F0C7uckbJdGFovwuiXKp
-        tODMXolU36hTQnDA==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: hellcreek: Print warning only once
-In-Reply-To: <20220901113912.wrwmftzrjlxsof7y@skbuf>
-References: <20220830163448.8921-1-kurt@linutronix.de>
- <20220831152628.um4ktfj4upcz7zwq@skbuf> <87v8q8jjgh.fsf@kurt>
- <20220831234329.w7wnxy4u3e5i6ydl@skbuf> <87czcfzkb6.fsf@kurt>
- <20220901113912.wrwmftzrjlxsof7y@skbuf>
-Date:   Sat, 03 Sep 2022 15:24:33 +0200
-Message-ID: <87r10sr3ou.fsf@kurt>
+        bh=MHHb9r0sbrRKH/m8uZjeeKsiFWFQ+NOalW8jzj7qfIc=;
+        b=M0Usdd8eCPdiOJw7/9yjVKcQyDA2DK/374Idg+Tkqnm4Bohv/jgyfreMq/C1iD/pn4ybxO
+        kzdBLs8HIvPDnn4dtsVamE0R522Um1SGjL5V0+J0OwYQvrR9t3+Ic7MSS1SAwZ1XxkYvD3
+        9pKqnfycODJRUp7BS3ZCexcf+bYdYKk=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-587-5w4DrJqLM3uFcTRmEyTriA-1; Sat, 03 Sep 2022 10:20:36 -0400
+X-MC-Unique: 5w4DrJqLM3uFcTRmEyTriA-1
+Received: by mail-qk1-f200.google.com with SMTP id n15-20020a05620a294f00b006b5768a0ed0so4070355qkp.7
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 07:20:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=MHHb9r0sbrRKH/m8uZjeeKsiFWFQ+NOalW8jzj7qfIc=;
+        b=zbUnTA6n+pH+Ns0qTxUZNDhx05HLViqEa0tnUfGpumW/WlattRsmsuI3IYRSsiCNhm
+         soUszncwg4pIVRFEgTJzTVTIFHgXXMRC/gv9w81lfHSG2hiXBF4qxzLyq5q0rm/N97+V
+         755OnMHfSy2Oqz6aBK0MOUjBdJ8gU6fwW3C13XNI1oQdEjJRLKu6Rv0Y2GtLos24MGqJ
+         Z2bDT2ymFDy0AHlxRhYzpZF7ikx6OMeeCPuYZi3wpuKY4I6Ca8u3uxd0LwE+xrNK5KPT
+         RPMyvcvWrxCFN54/YHHx0484iHEK3I7KfETbezAOm1XJY/O6JpNLsiUq0EIynQnLFIYA
+         PTZw==
+X-Gm-Message-State: ACgBeo2YUdBFeJobGMSyd1zq+cUeMk5qnF0cjpOAVRv30ztQWEkMipAR
+        oOH6IkJwhdx4lPAindH4N7tbIkVxp2KVJlhhIE4S67taAPpkWb31uhQgDXGbS+bvJbLzZCL/jpf
+        0F+Z2Wpt31J0hyDgcJjA3rMkjDnyXkMal
+X-Received: by 2002:a05:6214:2581:b0:499:91e:2fb with SMTP id fq1-20020a056214258100b00499091e02fbmr24202831qvb.59.1662214836120;
+        Sat, 03 Sep 2022 07:20:36 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR7YguVSerMmsxLYr5u7bpg1KNMUj3aYUbLmVd5GkvhjjaS0yRDDeK+dAn6pHZ9gt4F+O4PUBvVlBWQD3a1ipRA=
+X-Received: by 2002:a05:6214:2581:b0:499:91e:2fb with SMTP id
+ fq1-20020a056214258100b00499091e02fbmr24202800qvb.59.1662214835855; Sat, 03
+ Sep 2022 07:20:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+ <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+ <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+ <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+ <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+ <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+ <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
+ <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
+ <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
+ <20220901150917.5246c2d0@xps-13> <CAK-6q+g1Gnew=zWsnW=HAcLTqFYHF+P94Q+Ywh7Rir8J8cgCgw@mail.gmail.com>
+ <20220903020829.67db0af8@xps-13>
+In-Reply-To: <20220903020829.67db0af8@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sat, 3 Sep 2022 10:20:24 -0400
+Message-ID: <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-On Thu Sep 01 2022, Vladimir Oltean wrote:
-> On Thu, Sep 01, 2022 at 08:21:33AM +0200, Kurt Kanzenbach wrote:
->> > So from Florian's comment above, he was under case (b), different than=
- yours.
->> > I don't understand why you say that when ACS is set, "the STP frames a=
-re
->> > truncated and the trailer tag is gone". Simply altering the ACS bit
->> > isn't going to change the determination made by stmmac_rx(). My guess
->> > based on the current input I have is that it would work fine for you
->> > (but possibly not for Florian).
->>=20
->> I thought so too. However, altering the ACS Bit didn't help at all.
+On Fri, Sep 2, 2022 at 8:08 PM Miquel Raynal <miquel.raynal@bootlin.com> wr=
+ote:
+...
+> >
+> > I am sorry, I never looked into Zephyr for reasons... Do they not have
+> > something like /proc/interrupts look if you see a counter for your
+> > 802.15.4 transceiver?
+> >
+> > > Also, can you please clarify when are we talking about software and
+> > > when about hardware filters.
+> > >
+> >
+> > Hardware filter is currently e.g. promiscuous mode on or off setting.
+> > Software filtering is depending which receive path the frame is going
+> > and which hardware filter is present which then acts like actually
+> > with hardware filtering.
+> > I am not sure if this answers this question?
 >
-> This is curious. Could you dump the Length/Type Field (LT bits 18:16)
-> from the RDES3 for these packets? If ACS does not take effect, it would
-> mean the DWMAC doesn't think they're Length packets I guess? Also, does
-> the Error Summary say anything? In principle, the length of this packet
-> is greater than the EtherType/Length would say, by the size of the tail
-> tag. Not sure how that affects the RX parser.
+> I think my understand gets clearer now that I've digged into Zephyr's
+> ieee802154 layer and in the at86rf230 datasheet.
+>
 
-That's the point. The RX parser seems to be affected by the tail
-tag. I'll have a look at the packets with ACS feature set.
+okay, I think for zephyr questions you are here on the wrong mailinglist.
+
+> I will answer the previous e-mail but just for not I wanted to add that
+> I managed to get Zephyr working, I had to mess around in the code a
+> little bit and actually I discovered a net command which is necessary
+> to use in order to turn the iface up, whatever.
+>
+
+aha.
+
+> So I was playing with the atusb devices and I _think_ I've found a
+> firmware bug or a hardware bug which is going to be problematic. In
+
+the firmware is open source, I think it's fine to send patches here (I
+did it as well once for do a quick hack to port it to rzusb) the atusb
+is "mostly" at the point that they can do open hardware from the
+qi-hardware organization.
+
+> iface.c, when creating the interface, if you set the hardware filters
+> (set_panid/short/ext_addr()) there is no way you will be able to get a
+> fully transparent promiscuous mode. I am not saying that the whole
+
+What is a transparent promiscuous mode?
+
+> promiscuous mode does not work anymore, I don't really know. What I was
+> interested in were the acks, and getting them is a real pain. At least,
+> enabling the promiscuous mode after setting the hw filters will lead to
+> the acks being dropped immediately while if the promiscuous mode is
+> enabled first (like on monitor interfaces) the acks are correctly
+> forwarded by the PHY.
+
+If we would not disable AACK handling (means we receive a frame with
+ack requested bit set we send a ack back) we would ack every frame it
+receives (speaking on at86rf233).
 
 >
->> We could do some measurements e.g., with perf to determine whether
->> removing the FCS logic has positive or negative effects?
+> While looking at the history of the drivers, I realized that the
+> TX_ARET mode was not supported by the firmware in 2015 (that's what you
+
+There exists ARET and AACK, both are mac mechanisms which must be
+offloaded on the hardware. Note that those only do "something" if the
+ack request bit in the frame is set.
+
+ARET will retransmit if no ack is received after some while, etc.
+mostly coupled with CSMA/CA handling. We cannot guarantee such timings
+on the Linux layer. btw: mac80211 can also not handle acks on the
+software layer, it must be offloaded.
+
+AACK will send a back if a frame with ack request bit was received.
+
+> say in a commit) I have seen no further updates about it so I guess
+> it's still not available. I don't see any other way to know if a
+> frame's ack has been received or not reliably.
+
+You implemented it for the at86rf230 driver (the spi one which is what
+also atusb uses). You implemented the
+
+ctx->trac =3D IEEE802154_NO_ACK;
+
+which signals the upper layer that if the ack request bit is set, that
+there was no ack.
+
+But yea, there is a missing feature for atusb yet which requires
+firmware changes as well. Btw: I can imagine that hwsim "fakes" such
+offload behaviours.
+
 >
-> Yes, some IP forwarding of 60 byte frames at line rate gigabit or higher
-> should do the trick. Testing with MTU sized packets is probably not
-> going to show much of a difference.
+> Do you think I can just ignore the acks during an association in
+> mac802154?
 
-Well, I don't see much of a difference. However, running iperf3 with
-small packets is nowhere near line rate of 100Mbit/s. Nevertheless, I
-like the following patch more, because it looks cleaner than adding more
-checks to the receive path. It fixes my problem. Florian's use case
-should also work.
+No, even we should WARN_ON ack frames in states we don't expect them
+because they must be offloaded on hardware.
 
-From=205a54383167c624a90ba460531fccabbb87d40e51 Mon Sep 17 00:00:00 2001
-From: Kurt Kanzenbach <kurt@linutronix.de>
-Date: Fri, 2 Sep 2022 19:49:52 +0200
-Subject: [PATCH] net: stmmac: Disable automatic FCS/Pad stripping
+I am not sure if I am following what is wrong with the trac register
+and NO_ACK, this is the information if we got an ack or not. Do you
+need to turn off address filters while "an association"?
 
-The stmmac has the possibility to automatically strip the padding/FCS for I=
-EEE
-802.3 type frames. This feature is enabled conditionally. Therefore, the st=
-mmac
-receive path has to have a determination logic whether the FCS has to be
-stripped in software or not.
+Another idea how to get them? The Atmel datasheet states the
+> following, which is not encouraging:
+>
+>         If (Destination Addressing Mode =3D 0 OR 1) AND (Source
+>         Addressing Mode =3D 0) no IRQ_5 (AMI) is generated, refer to
+>         Section 8.1.2.2 =E2=80=9CFrame Control Field (FCF)=E2=80=9D on pa=
+ge 80. This
+>         effectively causes all acknowledgement frames not to be
+>         announced, which otherwise always pass the fil- ter, regardless
+>         of whether they are intended for this device or not.
 
-In fact, for DSA this ACS feature is disabled and the determination logic
-doesn't check for it properly. For instance, when using DSA in combination =
-with
-an older stmmac (pre version 4), the FCS is not stripped by hardware or sof=
-tware
-which is problematic.
+I hope the answers above are helpful because I don't know how this can
+be useful here.
 
-So either add another check for DSA to the fast path or simply disable ACS
-feature completely. The latter approach has been chosen, because most of the
-time the FCS is stripped in software anyway and it removes conditionals fro=
-m the
-receive fast path.
+- Alex
 
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-=2D--
- .../net/ethernet/stmicro/stmmac/dwmac100.h    |  2 +-
- .../net/ethernet/stmicro/stmmac/dwmac1000.h   |  2 +-
- .../ethernet/stmicro/stmmac/dwmac1000_core.c  |  9 -------
- .../ethernet/stmicro/stmmac/dwmac100_core.c   |  8 ------
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 26 +++----------------
- 5 files changed, 6 insertions(+), 41 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac100.h b/drivers/net/e=
-thernet/stmicro/stmmac/dwmac100.h
-index 35ab8d0bdce7..7ab791c8d355 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac100.h
-@@ -56,7 +56,7 @@
- #define MAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
- #define MAC_CONTROL_RE		0x00000004	/* Receiver Enable */
-=20
-=2D#define MAC_CORE_INIT (MAC_CONTROL_HBD | MAC_CONTROL_ASTP)
-+#define MAC_CORE_INIT (MAC_CONTROL_HBD)
-=20
- /* MAC FLOW CTRL defines */
- #define MAC_FLOW_CTRL_PT_MASK	0xffff0000	/* Pause Time Mask */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h b/drivers/net/=
-ethernet/stmicro/stmmac/dwmac1000.h
-index 3c73453725f9..4296ddda8aaa 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
-@@ -126,7 +126,7 @@ enum inter_frame_gap {
- #define GMAC_CONTROL_TE		0x00000008	/* Transmitter Enable */
- #define GMAC_CONTROL_RE		0x00000004	/* Receiver Enable */
-=20
-=2D#define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | GMAC_CONTROL=
-_ACS | \
-+#define GMAC_CORE_INIT (GMAC_CONTROL_JD | GMAC_CONTROL_PS | \
- 			GMAC_CONTROL_BE | GMAC_CONTROL_DCRS)
-=20
- /* GMAC Frame Filter defines */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers=
-/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-index fc8759f146c7..35d7c1cb1cf1 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
-@@ -15,7 +15,6 @@
- #include <linux/crc32.h>
- #include <linux/slab.h>
- #include <linux/ethtool.h>
-=2D#include <net/dsa.h>
- #include <asm/io.h>
- #include "stmmac.h"
- #include "stmmac_pcs.h"
-@@ -24,7 +23,6 @@
- static void dwmac1000_core_init(struct mac_device_info *hw,
- 				struct net_device *dev)
- {
-=2D	struct stmmac_priv *priv =3D netdev_priv(dev);
- 	void __iomem *ioaddr =3D hw->pcsr;
- 	u32 value =3D readl(ioaddr + GMAC_CONTROL);
- 	int mtu =3D dev->mtu;
-@@ -32,13 +30,6 @@ static void dwmac1000_core_init(struct mac_device_info *=
-hw,
- 	/* Configure GMAC core */
- 	value |=3D GMAC_CORE_INIT;
-=20
-=2D	/* Clear ACS bit because Ethernet switch tagging formats such as
-=2D	 * Broadcom tags can look like invalid LLC/SNAP packets and cause the
-=2D	 * hardware to truncate packets on reception.
-=2D	 */
-=2D	if (netdev_uses_dsa(dev) || !priv->plat->enh_desc)
-=2D		value &=3D ~GMAC_CONTROL_ACS;
-=2D
- 	if (mtu > 1500)
- 		value |=3D GMAC_CONTROL_2K;
- 	if (mtu > 2000)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c b/drivers/=
-net/ethernet/stmicro/stmmac/dwmac100_core.c
-index ebcad8dd99db..f799f8f824e8 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac100_core.c
-@@ -15,7 +15,6 @@
- **************************************************************************=
-*****/
-=20
- #include <linux/crc32.h>
-=2D#include <net/dsa.h>
- #include <asm/io.h>
- #include "stmmac.h"
- #include "dwmac100.h"
-@@ -28,13 +27,6 @@ static void dwmac100_core_init(struct mac_device_info *h=
-w,
-=20
- 	value |=3D MAC_CORE_INIT;
-=20
-=2D	/* Clear ASTP bit because Ethernet switch tagging formats such as
-=2D	 * Broadcom tags can look like invalid LLC/SNAP packets and cause the
-=2D	 * hardware to truncate packets on reception.
-=2D	 */
-=2D	if (netdev_uses_dsa(dev))
-=2D		value &=3D ~MAC_CONTROL_ASTP;
-=2D
- 	writel(value, ioaddr + MAC_CONTROL);
-=20
- #ifdef STMMAC_VLAN_TAG_USED
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/ne=
-t/ethernet/stmicro/stmmac/stmmac_main.c
-index 74f348e27005..0df248a5321e 100644
-=2D-- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -41,7 +41,6 @@
- #include <linux/bpf_trace.h>
- #include <net/pkt_cls.h>
- #include <net/xdp_sock_drv.h>
-=2D#include <net/dsa.h>
- #include "stmmac_ptp.h"
- #include "stmmac.h"
- #include "stmmac_xdp.h"
-@@ -5015,16 +5014,8 @@ static int stmmac_rx_zc(struct stmmac_priv *priv, in=
-t limit, u32 queue)
- 		buf1_len =3D stmmac_rx_buf1_len(priv, p, status, len);
- 		len +=3D buf1_len;
-=20
-=2D		/* ACS is set; GMAC core strips PAD/FCS for IEEE 802.3
-=2D		 * Type frames (LLC/LLC-SNAP)
-=2D		 *
-=2D		 * llc_snap is never checked in GMAC >=3D 4, so this ACS
-=2D		 * feature is always disabled and packets need to be
-=2D		 * stripped manually.
-=2D		 */
-=2D		if (likely(!(status & rx_not_ls)) &&
-=2D		    (likely(priv->synopsys_id >=3D DWMAC_CORE_4_00) ||
-=2D		     unlikely(status !=3D llc_snap))) {
-+		/* ACS is disabled; strip manually. */
-+		if (likely(!(status & rx_not_ls))) {
- 			buf1_len -=3D ETH_FCS_LEN;
- 			len -=3D ETH_FCS_LEN;
- 		}
-@@ -5201,17 +5192,8 @@ static int stmmac_rx(struct stmmac_priv *priv, int l=
-imit, u32 queue)
- 		buf2_len =3D stmmac_rx_buf2_len(priv, p, status, len);
- 		len +=3D buf2_len;
-=20
-=2D		/* ACS is set; GMAC core strips PAD/FCS for IEEE 802.3
-=2D		 * Type frames (LLC/LLC-SNAP)
-=2D		 *
-=2D		 * llc_snap is never checked in GMAC >=3D 4, so this ACS
-=2D		 * feature is always disabled and packets need to be
-=2D		 * stripped manually.
-=2D		 */
-=2D		if (likely(!(status & rx_not_ls)) &&
-=2D		    (likely(priv->synopsys_id >=3D DWMAC_CORE_4_00) ||
-=2D		     unlikely(netdev_uses_dsa(priv->dev)) ||
-=2D		     unlikely(status !=3D llc_snap))) {
-+		/* ACS is disabled; strip manually */
-+		if (likely(!(status & rx_not_ls))) {
- 			if (buf2_len)
- 				buf2_len -=3D ETH_FCS_LEN;
- 			else
-=2D-=20
-2.30.2
-
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJHBAEBCgAxFiEEvLm/ssjDfdPf21mSwZPR8qpGc4IFAmMTVZITHGt1cnRAbGlu
-dXRyb25peC5kZQAKCRDBk9HyqkZzgtNaD/44XHzVMyphTufWjvkWuso2fc5a1ALA
-/8Bqn+qnIogX76UkLsdtrBrXy3JlCUziOEHOynnCsXOnbPxor8ee4CIDpSCB7b52
-KyEqGaizOfGCgo0l9pJKHbCZ9LXXhEkSYvOVeP1Oom/1/g+XT96nO8CLs+Q5s9o0
-EqhJjJYRedEYxVdLJt0Th3yIae0Wret7B+Gf9akmjbxCyOYGpjzEcLsTGX8+Xgn+
-hH81NP6PDkcUFk/lM9NcmfnnGTj2P5VOFuemibSRgr0hXcYEZHt8YjQJlEPwrchp
-T9R+8X5AtY85L4MRBwYzJ1o3WxIOAShiP1jAWlhdNi3fc1EKhKoING6yeLfu/f6z
-hGFld41riqzAbEe6F/FuKj00/P70PQGGPoR+VQaOoLbN1d4XAvKGhYS33C9APs78
-cRqlolMRu09UiQL2LwF0/1f6Mb5ngcJSPLgsE14FX5XawikidaGQZgqnDv+aIUBp
-zJB67dl/n9m70YSUhCZ6y+/S/UR9c0mBNezqmiFzqlMUOkDnKdLFvYgSGEMwjgaR
-mbsj3JVLxFvg7ov5wp2MWUQnk0MN0bdN3gWrqeP6EBh4nFOn0sNCG2Fe7c9qt7VG
-3y5ZJJ6fDOH1UvqBNzybEyPoYXQcN/j2RjYSdqYdKJUV7Rk4hK7DIFrW/EOC3As+
-ul+JfgCXkF8qfA==
-=uBM3
------END PGP SIGNATURE-----
---=-=-=--
