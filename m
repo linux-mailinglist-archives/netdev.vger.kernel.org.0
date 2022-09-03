@@ -2,175 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8D0C5ABF60
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 16:31:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 024445ABF64
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 16:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230281AbiICOby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 10:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
+        id S230197AbiICOrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 10:47:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiICObx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 10:31:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC8B53037
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 07:31:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662215510;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=olK16FGKKB/44r4p61ENDPEYYBM2UVFGLBEQWvgpGpc=;
-        b=ehHFROaHum+u/mxDJSd2E2re/y+EIpRMN2Jik4WfXHIgrAV10NMuAGLQf1e010m2J3racO
-        +JRoVvYYRYI6nigIVPBDbN2dfG9y/R/5EQtmL9xHyu1uRztIw18ihAv9hhsEtR+ljI+cnk
-        WfHgBDyvZIr3C+A/ZM/OUWKhB7BESfE=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-539-wEDYwBNVN76Ezh_XbfhkKg-1; Sat, 03 Sep 2022 10:31:49 -0400
-X-MC-Unique: wEDYwBNVN76Ezh_XbfhkKg-1
-Received: by mail-qv1-f72.google.com with SMTP id u4-20020a0c8dc4000000b00498f6359b6dso3058603qvb.17
-        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 07:31:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=olK16FGKKB/44r4p61ENDPEYYBM2UVFGLBEQWvgpGpc=;
-        b=FAXaygkDcEUWGCPhMKOQ6nKdeH+YVNkn6pZrhXH7hj90wjWYtkr5b3VEiFJh9nSc48
-         /uRoHmARWMxYV8/i0A959RnauGRjf281CV+kQCTBSQx9592JRHAw9CgysJgncdWP0Fad
-         nbPyDlzXkCrYrHHZZ1IxIO/v5qaAJsV2WaRdHlv0aLIwZpy5qhdQO8ARMdynG5Nc/f6v
-         aYWS2xO1fjbicBp+hKzEw1LRXv9JGbcD9p2G8K3XzqTuW8q7rPQt12zQEV8mdEIjD0O0
-         MmikeMMTDXM2SZts9soCCsfEmGoMACv1wHLYECgUz/o4IybyEKw5+BWXdEbo11lMrOrw
-         MOFg==
-X-Gm-Message-State: ACgBeo19jR/R75CoDs/Q6JAnlltjYQHXZ/GvRuQJU8gfltiJngyAMgEA
-        kE3Gj6SR0FYE6s50nCgHxCPyVHM461kZT2TWoYrVPT6XmytoNX0ynaEj3b2WIcXHj5TVjw4TX3W
-        pxYqz0qYmBtKMPcFg+EjAGE7FbSRKVqC6
-X-Received: by 2002:a05:620a:2908:b0:6bb:5c2b:4226 with SMTP id m8-20020a05620a290800b006bb5c2b4226mr26789225qkp.27.1662215508924;
-        Sat, 03 Sep 2022 07:31:48 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR6b3mlOppN6cjfEVmQ+t3x3BXFGyuRrXMod3c8cMERARTmnYNqDWG9izYyYpwGEEP5GusaHDcMrrOe8JNGeTmo=
-X-Received: by 2002:a05:620a:2908:b0:6bb:5c2b:4226 with SMTP id
- m8-20020a05620a290800b006bb5c2b4226mr26789211qkp.27.1662215508712; Sat, 03
- Sep 2022 07:31:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
- <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
- <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
- <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
- <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
- <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
- <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
- <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
- <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
- <20220901150917.5246c2d0@xps-13> <CAK-6q+g1Gnew=zWsnW=HAcLTqFYHF+P94Q+Ywh7Rir8J8cgCgw@mail.gmail.com>
- <20220903020829.67db0af8@xps-13> <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
-In-Reply-To: <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sat, 3 Sep 2022 10:31:37 -0400
-Message-ID: <CAK-6q+gW=s=tWBrkN=CaiyoLM8kqeF0iRuS21AqDMQdQcE9H5A@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
- coordinator interfaces
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S229516AbiICOrf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 10:47:35 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2076.outbound.protection.outlook.com [40.107.96.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9864C57573;
+        Sat,  3 Sep 2022 07:47:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=J/nz80ptUJtdNp6fdXPYgUgYMkqdhJra7UpQv5kFl92Xuxa7YZ7kBgnBh/HlqamPXZBpLIPLm+JOsZVQsUEBUSdNIj4rgvpX/lJ8UyEyvhwielKxz2NzlMdcMI6ScSwCmKOqqczm9M7snf5c9ag1dc0ulTBAa7fQshYJ2fN9IcxvPLX3ntmh32bwSj2nDPOyIoKQxypNdyWIJ2Hnvk5LduTCxDOv8SCVDEesWypnudkXTqIaWR2ovTgNmA5drHlCHAxbBtjZK7I74bCqW60jy/HBGOlu5rkTAmFmciGxgW6kVoUSb/PnBAmmh5Vux76ZI4mEcYL+RJRwgxM2/Nsjmg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=//S8YGU7HPCZ1fW1TPlMZPJ9muiJj7+Yrq8yGv8R0+o=;
+ b=jr3NXCn6S6JpkV+/5KfE3N/MFIQj069goTcJfCEH4RH84SMbKzrzw3Ig0hLFsLCnFoNRXvZYXpKWD758189Ew41OVS5or16LTUJ1CrZwcF22FgRvv7PyEAIY3RGDE5fQGef76+WL2AVqV35v6Pqoj+u/qRfgq6k8fyYdBFOOUHhuMQ/nhbaLRLJy45coUN3xjpQYJoSW3JVsDUrXIEcwrrP0zRlbbovoWXl1eURL57Yf8QkHei3WwhCkUDh5WleNJDs51eIDGCGCtAnO4VOpTS8t1EfObP9KAADPZhp5y+F58R1M6D5pjv5PtSURFuC+DjaQUo5u6yWGifLOxZpkDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=//S8YGU7HPCZ1fW1TPlMZPJ9muiJj7+Yrq8yGv8R0+o=;
+ b=HvDU4SjSHVcKGce6ZRYB2U1v5VsW5RaCTmC/PYtcZoRBjbLTSmOVzCcxNFMzmTh/A7GlhyXnUqSq6MGQ9LWV3XOCXGhDFyVB7Ylz4r6dFnGjT99e4lO+voHbjhc5aVHAo/gCIzjm/tB+JV0FBFuuHKA2YhyXAnpcwyuzdC3QrHqAL8+Rn9NMmVMw506lKlRMPevWh0ZBKAOhd1362kg46uQhhFiYpKTmDamWI3D6ZDYZ6/FP/lofvBik27W3OLW/UMGt7FrhOgarO82YZfv1Vkc0sJ8SVPNp4Fg63fYBmEzcqfU0rmaUsN50xUbfW+59dhe3VIn4binaXZ1RV8jpdw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from PH7SPRMB0001.namprd12.prod.outlook.com (2603:10b6:510:13c::20)
+ by CH0PR12MB5234.namprd12.prod.outlook.com (2603:10b6:610:d1::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Sat, 3 Sep
+ 2022 14:47:33 +0000
+Received: from PH7SPRMB0001.namprd12.prod.outlook.com
+ ([fe80::3ca6:ba11:2893:980e]) by PH7SPRMB0001.namprd12.prod.outlook.com
+ ([fe80::3ca6:ba11:2893:980e%6]) with mapi id 15.20.5504.025; Sat, 3 Sep 2022
+ 14:47:33 +0000
+Date:   Sat, 3 Sep 2022 17:47:27 +0300
+From:   Ido Schimmel <idosch@nvidia.com>
+To:     netdev@kapio-technology.com
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yuwei Wang <wangyuweihx@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH v5 net-next 6/6] selftests: forwarding: add test of
+ MAC-Auth Bypass to locked port tests
+Message-ID: <YxNo/0+/Sbg9svid@shredder>
+References: <YwpgvkojEdytzCAB@shredder>
+ <7654860e4d7d43c15d482c6caeb6a773@kapio-technology.com>
+ <YwxtVhlPjq+M9QMY@shredder>
+ <2967ccc234bb672f5440a4b175b73768@kapio-technology.com>
+ <Ywyj1VF1wlYqlHb6@shredder>
+ <9e1a9eb218bbaa0d36cb98ff5d4b97d7@kapio-technology.com>
+ <YwzPJ2oCYJQHOsXD@shredder>
+ <69db7606896c77924c11a6c175c4b1a6@kapio-technology.com>
+ <YwzjPcQjfLPk3q/k@shredder>
+ <f1a17512266ac8b61444e7f0e568aca7@kapio-technology.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f1a17512266ac8b61444e7f0e568aca7@kapio-technology.com>
+X-ClientProxiedBy: VI1P194CA0016.EURP194.PROD.OUTLOOK.COM
+ (2603:10a6:800:be::26) To PH7SPRMB0001.namprd12.prod.outlook.com
+ (2603:10b6:510:13c::20)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ff7a252f-a920-49ce-4bf8-08da8dbb3bb9
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5234:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vg4cRqWosMfdio+iuzZcynU4i0dMHKZOzD+8o0afNUj3rQlNCSS4UGSnnaPWGPCP7DPHdQPYZs2s4hYN1Nx+77U14E/cDvN/Q4LwdHpEuaS51XKitKvL8EN+TQUgJx4YL+/DxdRjW5POu0JpMjbGoS5rcMxs5/ugHHM9zTTAIQVN6OAZMfq/M4+XMXO6/i8FZl9tjrp2BgKklgiZFUB2zGLHpjWtYAkyGDFgArjXCcIU2If82NoUn4uK+alBhvwiOTnLp7bc5vgUr1oR0u6yND8VkzHZuCrde6FUnV4FmEQxRit9zy4so+/YXfhpkcJemGpuvQ6+IhfHM8eg7VhEbSpiwjI0Fsa/SEaWWhkeYlr8jYP2DeqQXVQtBX/3vMw1aeS8S8QRKEsi2d4Z0tzgqXqfsDyWIWglbaWJcY9eBwutsexqLSPeDHd8PNr6lg1c5L2fjSV9D0NEsE3NGnaJhvIOOFL5ikRVQTcaYc/Ky68l9QdhfMzeYsUVkcPHtrpDq9kHreDow8fskrcriuiXBnAWU8LF0nC1kcSQIv8uEYE60PhgDZfS6Z84A0t6ZBazVbfanqO5IWzX3Dp9KAhySQSXzZxfON7UMKkSVlFUtPSEiQEguAVSpI+HE+/ZuEvRI/CRilIJT6nMP7CgAOJs6nIngjXWExzWMWO9xXBEtm0CdCAWLzPQYUQyJ0fLlUJiNueTNxBEj4NKDgR0k5tTkQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0001.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(4636009)(366004)(39860400002)(346002)(396003)(376002)(136003)(4326008)(83380400001)(8676002)(66946007)(66476007)(66556008)(5660300002)(8936002)(7416002)(7406005)(6506007)(26005)(53546011)(6666004)(478600001)(6486002)(41300700001)(186003)(6512007)(9686003)(316002)(6916009)(86362001)(54906003)(33716001)(38100700002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ipCueTJAd9ejXskW0/DswyC6Ay7q2FlUsOsrU6bStDshex8FvnOf6n1BDB14?=
+ =?us-ascii?Q?L8dlKOCWzq/HUba/YXLHGB6y55s0X34iICfGTkpp6o6ysrEchlXVDeP6+Yg+?=
+ =?us-ascii?Q?X3Oo54ftMNIKNiSOKp86av8EYxxDYdOnfbmOpeIGSAXmagbMxYwlsxMBqMEP?=
+ =?us-ascii?Q?oi7uGz99hQcFzktNwr+NZhj/oOFWRC6rGWCaDC5Rp1uobylbrrOAceFlDcXg?=
+ =?us-ascii?Q?Xp3yTisGld3zqhhLAWfvXqRnLPq9/KuhweF5654EL5yIA5MRrkuBjSCk0jvx?=
+ =?us-ascii?Q?zT9fpI8nIWMoFru+jIb0PQZ1zdaS3ZpVtX3IIQsUFIhrhpeeOON7yzOe50Kf?=
+ =?us-ascii?Q?PyUBsVDi5z83y/Icd3kNvMBqRxmv8aOPAZAptyFEKXJHLB4YNbW1PETnLVLQ?=
+ =?us-ascii?Q?N/U1Cdy441Ngqu7ADICEnfvzrRbkiMvEFR6CQB+GEeOI+LcQ6HWm/vWYSEqm?=
+ =?us-ascii?Q?8zCD9az//9sFxIBB8IZlXW9FlI/K8fq/E2eMWjhGF1KbeTI/UcKgIloeBpfb?=
+ =?us-ascii?Q?bXW52aUr8UI92stk5d1PH3gbRaezsySm4wMJVX0aOyfWJHxsQx7jLKzflC9j?=
+ =?us-ascii?Q?cfcOT7fQa97EqN6TRCACn91KNJgOir9H1PZMPwdvlENZsmQushza1lwIXH/E?=
+ =?us-ascii?Q?mcfnycyB4lCUhNqwo1wI9vYStXbbRqn8glAHbbszuKrxJfvGorDitOt641nM?=
+ =?us-ascii?Q?29unSnYBRMnoZ4dz+hE9VZEi2w0HSqmQtgrsHbJW+TiXHd01xGT6KyprrKLj?=
+ =?us-ascii?Q?sIpPDZpCxTYZsPAbQvIRjNg9wRZWn7MSEnCJHrWUNO/dXQlEIityHEvlgP/9?=
+ =?us-ascii?Q?DApqTcYfFs81toOxvPh+jgtgqtWJk9CvbuwvXNN3p/HTgF7w1Ml2a9K7p3dY?=
+ =?us-ascii?Q?2+2Jev4yKufCg42YSPrHRNEHCigCWEuroZ13siS4sSwJQu9jNmV8lnZuNfuF?=
+ =?us-ascii?Q?WB95HdNm0XWTBdZ6CB4ktz0M+0IPmH9SWdKHmqgjLPGUUqPN0XGFtFkzTt8R?=
+ =?us-ascii?Q?KcLLQIxoN+AiUX+Y/qH82jEJT+NATW2oxlPApkZMLAU6j5ykIe/SlsUUyGaD?=
+ =?us-ascii?Q?HgJnuLb1wObraiuHvwSMK/ZF9aaJAbD2IJg1Fpj165Qm90cLCub8NEzGabmN?=
+ =?us-ascii?Q?qc8tChsUbvnTB6mNEm2+ydXohYpVdG27b2pSin3YnZ08xZ6HKa4Y7uW+UwG9?=
+ =?us-ascii?Q?A8qVr2MY5ZfC6MPXap6Nwqrm1llXXqYPsT+s06mpxDk/aiJBSNAB0N/+TqhA?=
+ =?us-ascii?Q?xTe7qIxuitP/2C7ZfZPEe+qpJIZDpOF2DbLWviXBFjvY+7CwcmkyTp+fzmDI?=
+ =?us-ascii?Q?d+kJsspbpXln2lm94h/2OjyeLZgpdxBl6zYlSmInW2yQptxWX2XwDcg/IU+1?=
+ =?us-ascii?Q?vj7TzDvKPOQd732k8Xq6J2x+gvEZ5UhOTCjQ6LJyzabb4qQhmV1wWAinQBON?=
+ =?us-ascii?Q?QfVV0GClk24GIQi8S4yQaQRA5nk98hA8dwHPTcOHvPTTe8hApsfoteZS4yYC?=
+ =?us-ascii?Q?0TpnnNwlPJ3GAmvlSUo1U2AKApsQrJ8W1CssPHftY/wCD5rtmlctRjSOpqCw?=
+ =?us-ascii?Q?F1iO9ky/Rw3ln2vUxK8XZaGRBZm+HqGWq3eeJ+Wf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ff7a252f-a920-49ce-4bf8-08da8dbb3bb9
+X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0001.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2022 14:47:32.9090
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: rkid4jbzCxjABPX5LM9qKezQeYjQ7l/L1wVCSvD2TRq/M0Bc2c2zWgytc/o00th5mgHNd7MmmQE7isrMwq26TA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5234
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Sat, Sep 3, 2022 at 10:20 AM Alexander Aring <aahringo@redhat.com> wrote:
->
-> Hi,
->
-> On Fri, Sep 2, 2022 at 8:08 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> ...
-> > >
-> > > I am sorry, I never looked into Zephyr for reasons... Do they not have
-> > > something like /proc/interrupts look if you see a counter for your
-> > > 802.15.4 transceiver?
-> > >
-> > > > Also, can you please clarify when are we talking about software and
-> > > > when about hardware filters.
+On Mon, Aug 29, 2022 at 06:13:14PM +0200, netdev@kapio-technology.com wrote:
+> On 2022-08-29 18:03, Ido Schimmel wrote:
+> > On Mon, Aug 29, 2022 at 05:08:23PM +0200, netdev@kapio-technology.com
+> > wrote:
+> > > On 2022-08-29 16:37, Ido Schimmel wrote:
+> > > > On Mon, Aug 29, 2022 at 02:04:42PM +0200, netdev@kapio-technology.com
+> > > > wrote:
+> > > > > On 2022-08-29 13:32, Ido Schimmel wrote:
+> > > > > Port association is needed for MAB to work at all on mv88e6xxx, but
+> > > > > for
+> > > > > 802.1X port association is only needed for dynamic ATU entries.
 > > > >
-> > >
-> > > Hardware filter is currently e.g. promiscuous mode on or off setting.
-> > > Software filtering is depending which receive path the frame is going
-> > > and which hardware filter is present which then acts like actually
-> > > with hardware filtering.
-> > > I am not sure if this answers this question?
-> >
-> > I think my understand gets clearer now that I've digged into Zephyr's
-> > ieee802154 layer and in the at86rf230 datasheet.
-> >
->
-> okay, I think for zephyr questions you are here on the wrong mailinglist.
->
-> > I will answer the previous e-mail but just for not I wanted to add that
-> > I managed to get Zephyr working, I had to mess around in the code a
-> > little bit and actually I discovered a net command which is necessary
-> > to use in order to turn the iface up, whatever.
-> >
->
-> aha.
->
-> > So I was playing with the atusb devices and I _think_ I've found a
-> > firmware bug or a hardware bug which is going to be problematic. In
->
-> the firmware is open source, I think it's fine to send patches here (I
-> did it as well once for do a quick hack to port it to rzusb) the atusb
-> is "mostly" at the point that they can do open hardware from the
-> qi-hardware organization.
->
-> > iface.c, when creating the interface, if you set the hardware filters
-> > (set_panid/short/ext_addr()) there is no way you will be able to get a
-> > fully transparent promiscuous mode. I am not saying that the whole
->
-> What is a transparent promiscuous mode?
->
-> > promiscuous mode does not work anymore, I don't really know. What I was
-> > interested in were the acks, and getting them is a real pain. At least,
-> > enabling the promiscuous mode after setting the hw filters will lead to
-> > the acks being dropped immediately while if the promiscuous mode is
-> > enabled first (like on monitor interfaces) the acks are correctly
-> > forwarded by the PHY.
->
-> If we would not disable AACK handling (means we receive a frame with
-> ack requested bit set we send a ack back) we would ack every frame it
-> receives (speaking on at86rf233).
->
-> >
-> > While looking at the history of the drivers, I realized that the
-> > TX_ARET mode was not supported by the firmware in 2015 (that's what you
->
-> There exists ARET and AACK, both are mac mechanisms which must be
-> offloaded on the hardware. Note that those only do "something" if the
-> ack request bit in the frame is set.
->
-> ARET will retransmit if no ack is received after some while, etc.
-> mostly coupled with CSMA/CA handling. We cannot guarantee such timings
-> on the Linux layer. btw: mac80211 can also not handle acks on the
-> software layer, it must be offloaded.
->
-> AACK will send a back if a frame with ack request bit was received.
+> > > > Ageing of dynamic entries in the bridge requires learning to be on as
+> > > > well, but in these test cases you are only using static entries and
+> > > > there is no reason to enable learning in the bridge for that. I prefer
+> > > > not to leak this mv88e6xxx implementation detail to user space and
+> > > > instead have the driver enable port association based on whether
+> > > > "learning" or "mab" is on.
+> > > >
+> > > 
+> > > Then it makes most sense to have the mv88e6xxx driver enable port
+> > > association when then port is locked, as it does now.
+> > 
+> > As you wish, but like you wrote "802.1X port association is only needed
+> > for dynamic ATU entries" and in this case user space needs to enable
+> > learning (for refresh only) so you can really key off learning on
+> > "learning || mab". User space can decide to lock the port and work with
+> > static entries and then learning is not required.
+> 
+> I will of course remove all "learning on" in the selftests, which is what I
+> think you are referring to. In the previous I am referring to the code in
+> the driver itself which I understand shall turn on port association with
+> locked ports, e.g. no need for "learning on" when using the feature in
+> general outside selftests...
 
-will send an ack back*
+"learning on" is needed when dynamic FDB entries are used to authorize
+hosts. Without learning being enabled, the bridge driver (or the
+underlying hardware) will not refresh the entries during forwarding and
+they will age out, resulting in packet loss until the hosts are
+re-authorized.
 
-- Alex
+Given the current test cases only use static entries, there is no need
+to enable learning on locked ports. This will change when test cases are
+added with dynamic entries.
 
+Regarding mv88e6xxx, my understanding is that you also need learning
+enabled for MAB (I assume for the violation interrupts). Therefore, for
+mv88e6xxx, learning can be enabled if learning is on or MAB is on.
+Enabling it based on whether the port is locked or not seems inaccurate.
