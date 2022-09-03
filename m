@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22C4F5ABD04
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 06:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 958E15ABD07
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 06:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231823AbiICEaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 00:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        id S231846AbiICEaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 00:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229905AbiICEaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 00:30:22 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE0F402CA
-        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 21:30:21 -0700 (PDT)
+        with ESMTP id S229905AbiICEaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 00:30:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AECB45143C
+        for <netdev@vger.kernel.org>; Fri,  2 Sep 2022 21:30:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26EFCB82E4F
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 04:30:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C5ABDC433D7;
-        Sat,  3 Sep 2022 04:30:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62464B82E4D
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 04:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F3D18C4347C;
+        Sat,  3 Sep 2022 04:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662179418;
-        bh=znfy1MwVQ4oR5OwBIjFWY47tTDWxcGU1Su14/E6QAa8=;
+        s=k20201202; t=1662179421;
+        bh=DO+Qh5ggNYHZPVXOd3dbr3H6dYkqYck2klXC11tLfx4=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ee4n6CbzyMbUwurvOr0RwG6+hFesOqZn5Xley+hfwUpIw6txI3JKJ0lNJie2+bgWG
-         10izchi7QTlovWQu9cQcOf5AGxLiD6QZlWSVDoIUDnVsofiI9HkUHgj18xly++95t7
-         coqQboJP9nRRkHZ6991KIZHQzUldyTk2P2QefuhvSJPVa0oCkI8j8pkoDfBXJE49sa
-         F8VKU9PmJCik3pTKfncEVb45CCzBXpPqAoltTP9uB7pPZtZbuO1ijACbZpVpOca7E5
-         k7R2oJKeXzgyR900yjgwNLKd1pr5AHEs33mOtaCSrlvBb/LNaImx+sCMlt8eorBkIb
-         n/QkLL4R5QWuA==
+        b=s/ZhWdp4AZ3PTWM6uR0Ya+m1a588hSxnWKYzQBNY4tc3sAx070s92VOF910T6ZKTT
+         3cS+K4aCdTlVsB+ESJ0o1a7Ax1CmMoFceV0XdauX5/bXYo7L+hlGI2ISE0basgneul
+         wkoYkcZLCMYH00i819SHfZX48fGwiVq/p6iKbe8CLHIzeMIUfAQDgQKt/nKUlkxeO3
+         QB0cJ6TnQBhPAebVUXKk4HDtzM64N5sEXTS6nFyZXwlOyosln2wt3mdocrBO5eFdln
+         eTCP7X8KPIw8BFKhEsigV/ddjYs/z9PimfykbBp2Gr2d+PcBX52n0399Cn6ZdqtsDm
+         UfZ/DN7SCmP5Q==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A9864E924D9;
-        Sat,  3 Sep 2022 04:30:18 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D6A55C73FE1;
+        Sat,  3 Sep 2022 04:30:20 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
+Subject: Re: [RESEND PATCH] net: xscale: Fix return type for implementation of
+ ndo_start_xmit
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166217941868.8630.12397808960218340130.git-patchwork-notify@kernel.org>
-Date:   Sat, 03 Sep 2022 04:30:18 +0000
-References: <20220901140402.64804-1-csokas.bence@prolan.hu>
-In-Reply-To: <20220901140402.64804-1-csokas.bence@prolan.hu>
-To:     =?utf-8?b?Q3PDs2vDoXMgQmVuY2UgPGNzb2thcy5iZW5jZUBwcm9sYW4uaHU+?=@ci.codeaurora.org
-Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
-        davem@davemloft.net, kuba@kernel.org,
-        francesco.dolcini@toradex.com, andrew@lunn.ch,
-        kernel@pengutronix.de, mkl@pengutronix.de
+Message-Id: <166217942087.8630.15322887773567713403.git-patchwork-notify@kernel.org>
+Date:   Sat, 03 Sep 2022 04:30:20 +0000
+References: <20220902081612.60405-1-guozihua@huawei.com>
+In-Reply-To: <20220902081612.60405-1-guozihua@huawei.com>
+To:     GUO Zihua <guozihua@huawei.com>
+Cc:     netdev@vger.kernel.org, khalasa@piap.pl
 X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,25 +58,22 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This patch was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 1 Sep 2022 16:04:03 +0200 you wrote:
-> Mutexes cannot be taken in a non-preemptible context,
-> causing a panic in `fec_ptp_save_state()`. Replacing
-> `ptp_clk_mutex` by `tmreg_lock` fixes this.
+On Fri, 2 Sep 2022 16:16:12 +0800 you wrote:
+> Since Linux now supports CFI, it will be a good idea to fix mismatched
+> return type for implementation of hooks. Otherwise this might get
+> cought out by CFI and cause a panic.
 > 
-> Fixes: 6a4d7234ae9a ("net: fec: ptp: avoid register access when ipg clock is disabled")
-> Fixes: f79959220fa5 ("fec: Restart PPS after link state change")
-> Reported-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Link: https://lore.kernel.org/all/20220827160922.642zlcd5foopozru@pengutronix.de/
-> Signed-off-by: Csókás Bence <csokas.bence@prolan.hu>
+> eth_xmit() would return either NETDEV_TX_BUSY or NETDEV_TX_OK, so
+> change the return type to netdev_tx_t directly.
 > 
 > [...]
 
 Here is the summary with links:
-  - [v2] net: fec: Use a spinlock to guard `fep->ptp_clk_on`
-    https://git.kernel.org/netdev/net/c/b353b241f1eb
+  - [RESEND] net: xscale: Fix return type for implementation of ndo_start_xmit
+    https://git.kernel.org/netdev/net-next/c/0dbaf0fa6232
 
 You are awesome, thank you!
 -- 
