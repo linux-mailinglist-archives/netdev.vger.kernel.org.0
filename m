@@ -2,178 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68F955ABF5C
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 16:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8D0C5ABF60
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 16:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229810AbiICO1j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 10:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40634 "EHLO
+        id S230281AbiICOby (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 10:31:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229516AbiICO1d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 10:27:33 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2075.outbound.protection.outlook.com [40.107.220.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA94E46;
-        Sat,  3 Sep 2022 07:27:32 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J3BqDwWV5jndyHorQLlkuBTqMARP5mtjkiaEdP4G5bl6bBj3gx7bSJtcUGkBvam2ygEEbBkXa4hbMVlFGvCQZc9tZ8V2MJm2OkLZz0cxsbxJ50DW39i2b0eImfY2fn6SWRNH/dIfFikvjh2Iz66KMemu5tOPcwpz2Vl4jSfVA2VVLoQ6Nr0ZOkAt393EeCUZ1DLFD6ee428TyKWs0wEHRAWlGMntqwrL6kJscpqWm0pAS+sQo16whSrIRQ21+XkMo8Aw0LDc5TCHvmp5/UI7oAJQv4sb0xJTUKH7F6J4mOGffQrlzuAqIOYbegP5ciiSFtn/1TdO1uJjfZUVQSP2EQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WHAKHgWjZAOaaPp2HHLGjzbEtlsjTXqeR6A1s5GRr4c=;
- b=m8iXRwa0jXO+NJQ/NAn0nTCcyKl4NZfuAwrVHw1MwwITWVFmyp7UYy4GPHyM4mC7yNOyOXymsPn0pik+eSt/b9p4eZ4hYYLH87jsjJGSpKyhxBX8KpSAmW12LyPSwL6f7uMTcbsdOXjjTRwfjb+5ZxKsd8rhQX0yCfF1doQ/jQPpx0ezKO3vS3Tw+P26KwAYCepSAxJ8deu+2jUCZoJxe+/14bTcp3Rl1zttMuUEsaXzPNgbqrbsHKGGQipYcpyKL8N+TCuUu14nx2ipiVuE7SmILo6LM2moF7mh11cesPD7ynjZeQw6oO6eMdVjlY2DR3uUnW3bXgIUYsH3cCvHIg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WHAKHgWjZAOaaPp2HHLGjzbEtlsjTXqeR6A1s5GRr4c=;
- b=ZunKZ7m1QohTUL/Ww3q/sFCuKC1YP9l0QpgkUEnwh21DBf5nDFJhToJGm7AuUUnOGKVnYUY9tfV0ma5VZr9zZjNYMpNXSvtNEIwuBSi9Z8kweiQp+sCMLDHL+S2g8YVIQs9L8OvRQ0WrQfk8DUuP+qZEhH9z7O9Bgr/jqaqQbeQUvUWjQ8KiuUxOWHhNy0pfBe/Wpp2Lsb7LNm8YHqi9HTeAkebQUNEZm3jYl9pB/Gl9i7hHHDhdk8gFc4+4e5VEzT6NxEaL8JXUOcwAMiZblCXVLjJauvfD192ebK8w37ZBniYrz1b5BLbpOQZ3Am0/7EEJUf6ytJ0vz0RgZZygSA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from PH7SPRMB0001.namprd12.prod.outlook.com (2603:10b6:510:13c::20)
- by LV2PR12MB5800.namprd12.prod.outlook.com (2603:10b6:408:178::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Sat, 3 Sep
- 2022 14:27:31 +0000
-Received: from PH7SPRMB0001.namprd12.prod.outlook.com
- ([fe80::3ca6:ba11:2893:980e]) by PH7SPRMB0001.namprd12.prod.outlook.com
- ([fe80::3ca6:ba11:2893:980e%6]) with mapi id 15.20.5504.025; Sat, 3 Sep 2022
- 14:27:30 +0000
-Date:   Sat, 3 Sep 2022 17:27:24 +0300
-From:   Ido Schimmel <idosch@nvidia.com>
-To:     netdev@kapio-technology.com
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yuwei Wang <wangyuweihx@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
-Subject: Re: [PATCH v5 net-next 1/6] net: bridge: add locked entry fdb flag
- to extend locked port feature
-Message-ID: <YxNkTIYg5eZR6o79@shredder>
-References: <20220826114538.705433-1-netdev@kapio-technology.com>
- <20220826114538.705433-2-netdev@kapio-technology.com>
- <e9eb5b72-073a-f182-13b7-37fc53611d5f@blackwall.org>
- <972663825881d135d19f9e391b2b7587@kapio-technology.com>
- <Ywzlfzns/vDDiKB1@shredder>
- <c9f474f0761f77d093db88da05d536cb@kapio-technology.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c9f474f0761f77d093db88da05d536cb@kapio-technology.com>
-X-ClientProxiedBy: VI1PR04CA0083.eurprd04.prod.outlook.com
- (2603:10a6:803:64::18) To PH7SPRMB0001.namprd12.prod.outlook.com
- (2603:10b6:510:13c::20)
+        with ESMTP id S229516AbiICObx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 10:31:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC8B53037
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 07:31:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662215510;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=olK16FGKKB/44r4p61ENDPEYYBM2UVFGLBEQWvgpGpc=;
+        b=ehHFROaHum+u/mxDJSd2E2re/y+EIpRMN2Jik4WfXHIgrAV10NMuAGLQf1e010m2J3racO
+        +JRoVvYYRYI6nigIVPBDbN2dfG9y/R/5EQtmL9xHyu1uRztIw18ihAv9hhsEtR+ljI+cnk
+        WfHgBDyvZIr3C+A/ZM/OUWKhB7BESfE=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-539-wEDYwBNVN76Ezh_XbfhkKg-1; Sat, 03 Sep 2022 10:31:49 -0400
+X-MC-Unique: wEDYwBNVN76Ezh_XbfhkKg-1
+Received: by mail-qv1-f72.google.com with SMTP id u4-20020a0c8dc4000000b00498f6359b6dso3058603qvb.17
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 07:31:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=olK16FGKKB/44r4p61ENDPEYYBM2UVFGLBEQWvgpGpc=;
+        b=FAXaygkDcEUWGCPhMKOQ6nKdeH+YVNkn6pZrhXH7hj90wjWYtkr5b3VEiFJh9nSc48
+         /uRoHmARWMxYV8/i0A959RnauGRjf281CV+kQCTBSQx9592JRHAw9CgysJgncdWP0Fad
+         nbPyDlzXkCrYrHHZZ1IxIO/v5qaAJsV2WaRdHlv0aLIwZpy5qhdQO8ARMdynG5Nc/f6v
+         aYWS2xO1fjbicBp+hKzEw1LRXv9JGbcD9p2G8K3XzqTuW8q7rPQt12zQEV8mdEIjD0O0
+         MmikeMMTDXM2SZts9soCCsfEmGoMACv1wHLYECgUz/o4IybyEKw5+BWXdEbo11lMrOrw
+         MOFg==
+X-Gm-Message-State: ACgBeo19jR/R75CoDs/Q6JAnlltjYQHXZ/GvRuQJU8gfltiJngyAMgEA
+        kE3Gj6SR0FYE6s50nCgHxCPyVHM461kZT2TWoYrVPT6XmytoNX0ynaEj3b2WIcXHj5TVjw4TX3W
+        pxYqz0qYmBtKMPcFg+EjAGE7FbSRKVqC6
+X-Received: by 2002:a05:620a:2908:b0:6bb:5c2b:4226 with SMTP id m8-20020a05620a290800b006bb5c2b4226mr26789225qkp.27.1662215508924;
+        Sat, 03 Sep 2022 07:31:48 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6b3mlOppN6cjfEVmQ+t3x3BXFGyuRrXMod3c8cMERARTmnYNqDWG9izYyYpwGEEP5GusaHDcMrrOe8JNGeTmo=
+X-Received: by 2002:a05:620a:2908:b0:6bb:5c2b:4226 with SMTP id
+ m8-20020a05620a290800b006bb5c2b4226mr26789211qkp.27.1662215508712; Sat, 03
+ Sep 2022 07:31:48 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ce7d7b87-cb03-4be7-e836-08da8db86f38
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5800:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: SabiY0UnTzVKsN6PSH/NjywdRMA3RfGtbOwC1nibYIZJBOcbvAXKolMzOTWAi0GiYzsvOMHHEkkRNObczFenMwuWeM2KvCaGLjecnZ4J984Z2LAl3kVMGka7QeoDrd1XZbbkMaIe24UgjJTDKFHjG6+VGPMJlAYOG5qZx7e+HVj9I0b1EHCN/alSKZg+w+grKtPB/gPEpkcoL5AYoOX19n1DyoVZoboliTlUnexnvA5u4ztVouSZ+0RGNXC5+3lf495WN+zI5MfqIj22ZPNI8Io2flFfzjJza7s+lV8FzaXl4c+p8Y3YuHFssBNezNaYlMsKUwZSXQSj1EcMSx2MEHr24fXFAAB2wC5PJWfW7jEoPR8qhtBhjNkE9chTVdmvW1OXm/BcDJHKhEanlbQZeD8azANdckKeICcxDL8dP6LM6RZmv35s9ozEUS1aCtdr/B7i2UKmvSL6zvLJia7r6/TKvtBAinw33WF9zKA/y58ZuDUwtxgZwiTP+ePvN73a0jJ3RJ1U0JLUE7qajm9ItovFgeGvxe1iamrFcU28dVGLtlB4MUSmZ/UI7yJEGLIGRsv1FuZAESqW9OoZ4406EtDOYtl2B9lKbAD8AXpH57mFKOxYop1UjJzjr2te2ITSa1yKcck6VlJsua1Ynyfn+dRjQNf2oN2qm9VsuVnG4+o/Tbljsbq/7C05IYOxe1RK+i55ksLLE8c/41U4nKn9P8HBPQO+xg8Y4FCmjM1FUZoXiKKlrXr8gkk/I4NmAn2Z8RxoBAnBMSehZ6wx4aheNw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7SPRMB0001.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(39860400002)(376002)(346002)(136003)(396003)(366004)(7406005)(5660300002)(38100700002)(8936002)(186003)(4326008)(66556008)(66946007)(2906002)(66476007)(7416002)(86362001)(6916009)(8676002)(966005)(316002)(33716001)(6506007)(6512007)(6666004)(53546011)(83380400001)(478600001)(9686003)(54906003)(26005)(41300700001)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ze7P5EUqGM/+Kzf8ftn7A/d8R/jH3BxO3VDn0zGPhf3PxxuREvIdmcsdvD4P?=
- =?us-ascii?Q?2UrpCZpQHyAw0zAleEUuguseFNPKsj7Imgbk5qNazKTQdRJ7C0Nn/t52ZQFQ?=
- =?us-ascii?Q?NCYH81LJWtSrwkJ3Jxt3sMXHcMln7iEvwMXCzgJkhNBQ0kzkoQC/dZCxCUnh?=
- =?us-ascii?Q?OTFTDFcSj+ZkY7dOHofDu32aWxDp9Wm6XvwIFTjvZH3FnavXPTlm6LXi2ev8?=
- =?us-ascii?Q?MUG5PsajgJ0JwHrtpBiV0kD+E5j4Kq5HCOn6UaCitkXmpraFyzfBW/CyrLDc?=
- =?us-ascii?Q?UNR5gkpMXiAGk1zdBwELAy20w5NTsbfKFC6BDOD8WQR0nRN14DbliAZ1yxeA?=
- =?us-ascii?Q?ygepWyIBk57ceMVuwPky/NX9/olg3RxiyjCWCOgVMJUqZLQjYRoIkIlzIVfX?=
- =?us-ascii?Q?Vpy+8ekfOf8PDgiSSKHLoj0X5pn3N88ypSYitnC3qZ5ZIxHU8mAYAIZGi+9c?=
- =?us-ascii?Q?rvrH3MCtgj2akXjqHYqw7NRhFla/cNlxzj3q3YWMV/wxEPTL4ojut2W9wmHx?=
- =?us-ascii?Q?vAX0867SVqpIRrotHOyURSKIU8d6c1BvlTOVWwgdTQiqSxKZXMKrUUYRZO8d?=
- =?us-ascii?Q?L3WJ5pQrkHCo7c7CU+f1jKyJkDKo3a72oHwcgQx8RvjkI+8EFQ3B42ovIDlh?=
- =?us-ascii?Q?d1DMD1uXrJjd0Le5kGcAcApCESajoF3493dlz/zQiLF5gBvL5zQrVgXDoYnP?=
- =?us-ascii?Q?19l9VIs/8ZxG67Jc0y5Radifmh2/XbQNAHlCap3a3F9REscgbfBQ64Ic++3K?=
- =?us-ascii?Q?FiNcFdVizP+GS3PXZIxm67bWvRnf3mID9A5exbH1WjW6hs1OMi2c7lxX+Dyz?=
- =?us-ascii?Q?u/S6gJZhuiRWbqcopwRgPS8lHUIINMCMfAarLbXFMPF5lchynyao1ieboWN0?=
- =?us-ascii?Q?3J/dKZydoE4CVS9f9a0B7xRG4pAHyeX4qB4cgA9x30/n3vBiA8D5KITPFZCV?=
- =?us-ascii?Q?fBhA3dHV13lwU5JxOWSxiRL6mtYDdi35ImHFvOybLFBR1LZTxtCcd75859LI?=
- =?us-ascii?Q?F7801KgmIlB9AMa89gfBBWglst6BLsj2oWDCG2rHmAeQ4M0qBVgbfzvnI87N?=
- =?us-ascii?Q?8y8Pux9Ts2E1ko/ZDku/yMSH7BRVtoGHjjpgx0GpiBt5UrqOftnkO57a+LD1?=
- =?us-ascii?Q?UW3zrt6Fm/eStq8xsfo2+X0AHbQSOG8aI/L5GxISxumYXIMmznZztH2vnJVU?=
- =?us-ascii?Q?trLALW1RD3IPrkWSSuWMZ+gBZadglXQBFd6a+QsHUoZx2wD9kbPQFOLgcPAX?=
- =?us-ascii?Q?VoeIyc506976bjtXAOjWXNxkZcRtkDPNc9VS0x2ODULpD+ZquzccVyEMB46X?=
- =?us-ascii?Q?+aD93SksjG1ziWDWiJeZsi06IF3lgt9ENAdxpUpCPwjJdUdpv765bd9xBIoe?=
- =?us-ascii?Q?2NANzPGHiFm2Cm8WZLG0qWCiBpN6DrgLlHgJ0/zjl7om7s3UXHZJGqD7T1vu?=
- =?us-ascii?Q?+KNdbmPCGBnhaVnlQij3d22l78m56JhQT4ceoL0VgMe3iGDk6CT9CbDmYZPr?=
- =?us-ascii?Q?x5jNftVn6PD3Gbzzj/Xz8jk6nuGvnlI8/TrOBpi8378p5l+nPURGjKxBVq9v?=
- =?us-ascii?Q?6HqQ2/w5W82ndwBPZMYHrThLpUmoR+vYE9OTKK9Z?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce7d7b87-cb03-4be7-e836-08da8db86f38
-X-MS-Exchange-CrossTenant-AuthSource: PH7SPRMB0001.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2022 14:27:30.8345
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vl4YXdQNRVlSblRqkMr5tvg3OJwy8TGlB8kXkgUQXEFKuaQG6F4TRucEupphAjRVv3qdCk+Ru3WbzKoz1GtBhw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5800
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
+ <20220819191109.0e639918@xps-13> <CAK-6q+gCY3ufaADHNQWJGNpNZJMwm=fhKfe02GWkfGEdgsMVzg@mail.gmail.com>
+ <20220823182950.1c722e13@xps-13> <CAK-6q+jfva++dGkyX_h2zQGXnoJpiOu5+eofCto=KZ+u6KJbJA@mail.gmail.com>
+ <20220824122058.1c46e09a@xps-13> <CAK-6q+gjgQ1BF-QrT01JWh+2b3oL3RU+SoxUf5t7h3Hc6R8pcg@mail.gmail.com>
+ <20220824152648.4bfb9a89@xps-13> <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
+ <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
+ <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
+ <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
+ <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
+ <20220901150917.5246c2d0@xps-13> <CAK-6q+g1Gnew=zWsnW=HAcLTqFYHF+P94Q+Ywh7Rir8J8cgCgw@mail.gmail.com>
+ <20220903020829.67db0af8@xps-13> <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
+In-Reply-To: <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sat, 3 Sep 2022 10:31:37 -0400
+Message-ID: <CAK-6q+gW=s=tWBrkN=CaiyoLM8kqeF0iRuS21AqDMQdQcE9H5A@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
+ coordinator interfaces
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 30, 2022 at 04:19:16PM +0200, netdev@kapio-technology.com wrote:
-> On 2022-08-29 18:12, Ido Schimmel wrote:
-> > On Mon, Aug 29, 2022 at 04:02:46PM +0200, netdev@kapio-technology.com
-> > wrote:
-> > > On 2022-08-27 13:30, Nikolay Aleksandrov wrote:
-> > > > On 26/08/2022 14:45, Hans Schultz wrote:
-> > > >
-> > > > Hi,
-> > > > Please add the blackhole flag in a separate patch.
-> > > > A few more comments and questions below..
-> > > >
-> > > 
-> > > Hi,
-> > > if userspace is to set this flag I think I need to change stuff in
-> > > rtnetlink.c, as I will need to extent struct ndmsg with a new u32
-> > > entry as
-> > > the old u8 flags is full.
-> > 
-> > You cannot extend 'struct ndmsg'. That's why 'NDA_FLAGS_EXT' was
-> > introduced. See:
-> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2c611ad97a82b51221bb0920cc6cac0b1d4c0e52
-> > 
-> > 'NTF_EXT_BLACKHOLE' belongs in 'NDA_FLAGS_EXT' like you have it now, but
-> > the kernel should not reject it in br_fdb_add().
-> > 
-> > > Maybe this is straight forward, but I am not so sure as I don't know
-> > > that
-> > > code too well. Maybe someone can give me a hint...?
-> 
-> The question I have is if I can use nlh_flags to send the extended flags
-> further on to fdb_add_entry(), where I expect to need it?
+Hi,
 
-A separate argument looks cleaner to me.
+On Sat, Sep 3, 2022 at 10:20 AM Alexander Aring <aahringo@redhat.com> wrote:
+>
+> Hi,
+>
+> On Fri, Sep 2, 2022 at 8:08 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> ...
+> > >
+> > > I am sorry, I never looked into Zephyr for reasons... Do they not have
+> > > something like /proc/interrupts look if you see a counter for your
+> > > 802.15.4 transceiver?
+> > >
+> > > > Also, can you please clarify when are we talking about software and
+> > > > when about hardware filters.
+> > > >
+> > >
+> > > Hardware filter is currently e.g. promiscuous mode on or off setting.
+> > > Software filtering is depending which receive path the frame is going
+> > > and which hardware filter is present which then acts like actually
+> > > with hardware filtering.
+> > > I am not sure if this answers this question?
+> >
+> > I think my understand gets clearer now that I've digged into Zephyr's
+> > ieee802154 layer and in the at86rf230 datasheet.
+> >
+>
+> okay, I think for zephyr questions you are here on the wrong mailinglist.
+>
+> > I will answer the previous e-mail but just for not I wanted to add that
+> > I managed to get Zephyr working, I had to mess around in the code a
+> > little bit and actually I discovered a net command which is necessary
+> > to use in order to turn the iface up, whatever.
+> >
+>
+> aha.
+>
+> > So I was playing with the atusb devices and I _think_ I've found a
+> > firmware bug or a hardware bug which is going to be problematic. In
+>
+> the firmware is open source, I think it's fine to send patches here (I
+> did it as well once for do a quick hack to port it to rzusb) the atusb
+> is "mostly" at the point that they can do open hardware from the
+> qi-hardware organization.
+>
+> > iface.c, when creating the interface, if you set the hardware filters
+> > (set_panid/short/ext_addr()) there is no way you will be able to get a
+> > fully transparent promiscuous mode. I am not saying that the whole
+>
+> What is a transparent promiscuous mode?
+>
+> > promiscuous mode does not work anymore, I don't really know. What I was
+> > interested in were the acks, and getting them is a real pain. At least,
+> > enabling the promiscuous mode after setting the hw filters will lead to
+> > the acks being dropped immediately while if the promiscuous mode is
+> > enabled first (like on monitor interfaces) the acks are correctly
+> > forwarded by the PHY.
+>
+> If we would not disable AACK handling (means we receive a frame with
+> ack requested bit set we send a ack back) we would ack every frame it
+> receives (speaking on at86rf233).
+>
+> >
+> > While looking at the history of the drivers, I realized that the
+> > TX_ARET mode was not supported by the firmware in 2015 (that's what you
+>
+> There exists ARET and AACK, both are mac mechanisms which must be
+> offloaded on the hardware. Note that those only do "something" if the
+> ack request bit in the frame is set.
+>
+> ARET will retransmit if no ack is received after some while, etc.
+> mostly coupled with CSMA/CA handling. We cannot guarantee such timings
+> on the Linux layer. btw: mac80211 can also not handle acks on the
+> software layer, it must be offloaded.
+>
+> AACK will send a back if a frame with ack request bit was received.
 
-> (the extended flags are u32, while nlh_flags are u16)
+will send an ack back*
+
+- Alex
+
