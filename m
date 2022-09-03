@@ -2,103 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC5775ABFAF
-	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 18:11:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D425F5ABFDA
+	for <lists+netdev@lfdr.de>; Sat,  3 Sep 2022 18:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229694AbiICQKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Sep 2022 12:10:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51272 "EHLO
+        id S230044AbiICQm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Sep 2022 12:42:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiICQKv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 12:10:51 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEDBE52E7B
-        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 09:10:40 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id c59so6306528edf.10
-        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 09:10:40 -0700 (PDT)
+        with ESMTP id S229509AbiICQm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Sep 2022 12:42:57 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F169558DCB
+        for <netdev@vger.kernel.org>; Sat,  3 Sep 2022 09:42:55 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id g5so7225856ybg.11
+        for <netdev@vger.kernel.org>; Sat, 03 Sep 2022 09:42:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date;
-        bh=CsfQQCBFm+OZdqC4A1e77KQXd7CNjhlhrXIxhjh0JNU=;
-        b=X/VFa0HRTImW58bsMauDnmQeDrts4EO7I04lC8cL5RG7hsOSdHcMtCI9PvX8SwEtwS
-         Sdcla8LzYwHrtFNTzJ5VCc5eTnRMwOojboe1e4PzB5xvMHMyenn8TD/nnk9L/FhKUO68
-         InRu7G6amAPpSbW4ueDLxuH7YpmIZuTQi3oXK5V22bk3GZ4UZH3iKnPlTGGMtX2Ncvwv
-         SJP0WQKsL/kN6oH2C1j9FiZ5vduJeSaxcgxGc6owoHj55J/IMkHdetQOTGH9bGjrk8Z+
-         d2H8X1Ek/lKrLuhZfXL7W/KsZ9b0NfCnrqSbT8wQDszH4Qk68ghTq4MkmVVWvAHYlbK3
-         3Zhg==
+        d=google.com; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date;
+        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
+        b=dgVVPwawmNQY+PcfCST6C1ozjH/moAM3P6JfJ/jE+ALX0LudC/lNAeRkNsr2LO8CFO
+         DBt+z1dIDeLtRE/RDA7tcnKvBVRBUdzGO/tR7jDlPmF6sgWzNQyuJzbKelfbfRZi77bT
+         mZ5E8L1UOwHO63q8zTa2fnjVDGjttQP5vNHlVfu6W8IP3ujb6RUJYhBs5wlhO4vOI3dN
+         dPD1bETDc9TYJWXFemlKftkTU+5AN3Bum/kCpuMTDU7rpyMsWN5jOybqE8vd72jAL52r
+         6GPy13kOx8ZRdI537AbEla6QMmWGSKAosS687pUj+3i6+NUMbV0qh2PnL6GD/BQ1TnIY
+         qTvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:subject:from:content-language
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date;
-        bh=CsfQQCBFm+OZdqC4A1e77KQXd7CNjhlhrXIxhjh0JNU=;
-        b=tcDJ2Dh1GScsyNTRewM9cGAp/ixo6a+fjKE5vc+4O+UUJcDLYnGLYRSrrNsfgEd825
-         lwcsrG1HG5xF9DZwnw30elEmRRsBr75BbFWMab/Bn/kkRgEwCMXMfKo64AFKWRUkFdoc
-         cOc9gyftu3usaH9uXdftxs2SGqffFDc7lwW2V0G1rAb8gtIsiw8edRMMiV7rEN++YHY7
-         WQq98AbdVbR4Q1Gd1Fi4xRaCA2zk49QJY3U4URDARiSuMgK55hneaMcYeRdTW9OixudT
-         pHe3n7SbLnNjsbdKmI+IZupeBdoRK989vwp5f+SDy/2xUgQHe3Yo04wQovG+2LKma1mQ
-         eiMw==
-X-Gm-Message-State: ACgBeo2YPmq9dePHZzZSrQp3fNV+Kl1zJXeM1zYJqzTNY5Kg9aWlp21r
-        hQ/3cl1I+XqmypKWpu/SqvO0QYc7n5k=
-X-Google-Smtp-Source: AA6agR5PuEKNEoIxPzmlO1scePJGUAP4bV2qSBGBKWkMZJzSPlGAINsrMlFmXvMeikkAAiH3Z0PwKQ==
-X-Received: by 2002:a05:6402:440f:b0:435:2e63:aca9 with SMTP id y15-20020a056402440f00b004352e63aca9mr36586518eda.162.1662221439265;
-        Sat, 03 Sep 2022 09:10:39 -0700 (PDT)
-Received: from ?IPV6:2a01:c23:bdec:da00:5920:51b2:99c1:4c89? (dynamic-2a01-0c23-bdec-da00-5920-51b2-99c1-4c89.c23.pool.telefonica.de. [2a01:c23:bdec:da00:5920:51b2:99c1:4c89])
-        by smtp.googlemail.com with ESMTPSA id lb14-20020a170907784e00b00741a0c3f4cdsm2624710ejc.189.2022.09.03.09.10.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 03 Sep 2022 09:10:38 -0700 (PDT)
-Message-ID: <86fd2d55-4fc3-f242-a427-7a7164f44f46@gmail.com>
-Date:   Sat, 3 Sep 2022 18:10:34 +0200
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=MSlpVQM6LPBbdPdYsvwpuDS2GznLXHNkiHs1OXe0l/E=;
+        b=0aL5ADGznEeJkpoWy4+4GctZ8ggLtjEf9a6mpZ1c/o5mkl2sW5V5eaRnJfv/s4fSQ5
+         MHcJah/VtbExcovAamMcDtpDgBnhkqiiaUhl6yt7UU0OA1PKNv0XNN7gvAyneEo26oWj
+         corM4/Mn75PWn2JlRsPkTumdMkmAzGFoguzF+oomzpRb/+YJRpPQH4WCEqPyuMbBjWoi
+         lfbvugaDknZnLHr5gUbwktcFN/i5w7k6KZJuQixJ6dwHMoqSifxlSsjdbzWMCu29d4s2
+         CwasU1BOeMFo++h2qgx5zmLO+9tK+G41xDSPc3OUYbZhKoKGQalIo+IUEF7yl+sZPSpq
+         sDNw==
+X-Gm-Message-State: ACgBeo3rY9JA1QNb6VBDKnVkwbNdlcRYlMr+UHiSTEx5zXRjpZj+YCE8
+        3O42Q/fJSO/HTyO6T+7/3h8k8y6cAEo9/MwDxRHXmR7MbnZp+Q==
+X-Google-Smtp-Source: AA6agR6ah/QjgtNirwQaFdAVShtS797fncfIZTBqVfrd8xWghWo0iF9beuaHqowoqp8R3YGFBT+ALgMpA2CH8vPcicU=
+X-Received: by 2002:a25:84cd:0:b0:67a:699e:4e84 with SMTP id
+ x13-20020a2584cd000000b0067a699e4e84mr26241370ybm.407.1662223374901; Sat, 03
+ Sep 2022 09:42:54 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.2.1
-To:     Francois Romieu <romieu@fr.zoreil.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        Eric Dumazet <edumazet@google.com>,
+References: <20220831133758.3741187-1-leitao@debian.org>
+In-Reply-To: <20220831133758.3741187-1-leitao@debian.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Sat, 3 Sep 2022 09:42:43 -0700
+Message-ID: <CANn89iLe9spogp7eaXPziA0L-FqJ0w=6VxdWDL6NKGobTyuQRw@mail.gmail.com>
+Subject: Re: [PATCH RESEND net-next] tcp: socket-specific version of WARN_ON_ONCE()
+To:     Breno Leitao <leitao@debian.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, leit@fb.com,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <1b1349bd-bb99-de1b-8323-2685d20f0c10@gmail.com>
- <YxNw/6qh5gwWZH7N@electric-eye.fr.zoreil.com>
-Content-Language: en-US
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] r8169: remove not needed net_ratelimit() check
-In-Reply-To: <YxNw/6qh5gwWZH7N@electric-eye.fr.zoreil.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        David Ahern <dsahern@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 03.09.2022 17:21, Francois Romieu wrote:
-> Heiner Kallweit <hkallweit1@gmail.com> :
->> We're not in a hot path and don't want to miss this message,
->> therefore remove the net_ratelimit() check.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> 
-> There had historically been some user push against excess "spam"
-> messages, even when systems are able to stand a gazillion of phy
-> generated messages - resources constrained systems may not - due
-> to dysfunctionning hardware or externally triggered events.
-> 
-> Things may have changed though.
-> 
-I don't have a strong opinion here and would follow the net
-maintainers decision. I looked at a few other drivers and none of
-them protects link up/down messages. If also other network-related
-components print a message on link-up, then we might miss the
-PHY message due to the network-global nature of net_ratelimit().
-In general newer drivers don't seem to use net_ratelimit()
-extensively, even though that's not really an argument against
-using it.
+On Wed, Aug 31, 2022 at 6:38 AM Breno Leitao <leitao@debian.org> wrote:
+>
+> There are cases where we need information about the socket during a
+> warning, so, it could help us to find bugs that happens that do not have
+> a easily repro.
+>
+> BPF congestion control algorithms can change socket state in unexpected
+> ways, leading to WARNings. Additional information about the socket state
+> is useful to identify the culprit.
 
+Well, this suggests we need to fix BPF side ?
+
+Not sure how this can happen, because TCP_BPF_IW has
+
+if (val <= 0 || tp->data_segs_out > tp->syn_data)
+     ret = -EINVAL;
+else
+    tcp_snd_cwnd_set(tp, val);
+
+It seems you already found the issue in an eBPF CC, can you share the details ?
+
+
+>
+> This diff creates a TCP socket-specific version of WARN_ON_ONCE(), and
+> attaches it to tcp_snd_cwnd_set().
+
+Well, I feel this will need constant additions... the state of a
+custom BPF CC is opaque to core TCP stack anyway ?
+
+>
+> Signed-off-by: Breno Leitao <leitao@debian.org>
+> ---
+>  include/net/tcp.h       |  3 ++-
+>  include/net/tcp_debug.h | 10 ++++++++++
+>  net/ipv4/tcp.c          | 30 ++++++++++++++++++++++++++++++
+>  3 files changed, 42 insertions(+), 1 deletion(-)
+>  create mode 100644 include/net/tcp_debug.h
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index d10962b9f0d0..73c3970d8839 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -40,6 +40,7 @@
+>  #include <net/inet_ecn.h>
+>  #include <net/dst.h>
+>  #include <net/mptcp.h>
+> +#include <net/tcp_debug.h>
+>
+>  #include <linux/seq_file.h>
+>  #include <linux/memcontrol.h>
+> @@ -1222,7 +1223,7 @@ static inline u32 tcp_snd_cwnd(const struct tcp_sock *tp)
+>
+>  static inline void tcp_snd_cwnd_set(struct tcp_sock *tp, u32 val)
+>  {
+> -       WARN_ON_ONCE((int)val <= 0);
+> +       TCP_SOCK_WARN_ON_ONCE(tp, (int)val <= 0);
+>         tp->snd_cwnd = val;
+>  }
+>
+> diff --git a/include/net/tcp_debug.h b/include/net/tcp_debug.h
+> new file mode 100644
+> index 000000000000..50e96d87d335
+> --- /dev/null
+> +++ b/include/net/tcp_debug.h
+> @@ -0,0 +1,10 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _LINUX_TCP_DEBUG_H
+> +#define _LINUX_TCP_DEBUG_H
+> +
+> +void tcp_sock_warn(const struct tcp_sock *tp);
+> +
+> +#define TCP_SOCK_WARN_ON_ONCE(tcp_sock, condition) \
+> +               DO_ONCE_LITE_IF(condition, tcp_sock_warn, tcp_sock)
+> +
+> +#endif  /* _LINUX_TCP_DEBUG_H */
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index bbe218753662..71771fee72f7 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -4684,6 +4684,36 @@ int tcp_abort(struct sock *sk, int err)
+>  }
+>  EXPORT_SYMBOL_GPL(tcp_abort);
+>
+> +void tcp_sock_warn(const struct tcp_sock *tp)
+> +{
+> +       const struct sock *sk = (const struct sock *)tp;
+> +       struct inet_sock *inet = inet_sk(sk);
+> +       struct inet_connection_sock *icsk = inet_csk(sk);
+> +
+> +       WARN_ON(1);
+> +
+> +       if (!tp)
+> +               return;
+> +
+> +       pr_warn("Socket Info: family=%u state=%d sport=%u dport=%u ccname=%s cwnd=%u",
+> +               sk->sk_family, sk->sk_state, ntohs(inet->inet_sport),
+> +               ntohs(inet->inet_dport), icsk->icsk_ca_ops->name, tcp_snd_cwnd(tp));
+> +
+> +       switch (sk->sk_family) {
+> +       case AF_INET:
+> +               pr_warn("saddr=%pI4 daddr=%pI4", &inet->inet_saddr,
+> +                       &inet->inet_daddr);
+> +               break;
+> +#if IS_ENABLED(CONFIG_IPV6)
+> +       case AF_INET6:
+> +               pr_warn("saddr=%pI6 daddr=%pI6", &sk->sk_v6_rcv_saddr,
+> +                       &sk->sk_v6_daddr);
+> +               break;
+> +#endif
+> +       }
+> +}
+> +EXPORT_SYMBOL_GPL(tcp_sock_warn);
+> +
+>  extern struct tcp_congestion_ops tcp_reno;
+>
+>  static __initdata unsigned long thash_entries;
+> --
+> 2.30.2
+>
