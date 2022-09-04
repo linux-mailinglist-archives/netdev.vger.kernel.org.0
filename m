@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B49E95AC46A
-	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 15:16:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B6B5AC46D
+	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 15:16:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233671AbiIDNQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 09:16:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
+        id S233904AbiIDNQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 09:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233848AbiIDNQL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 09:16:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6697533E24
-        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 06:16:09 -0700 (PDT)
+        with ESMTP id S233492AbiIDNQ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 09:16:26 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B308D31EC7
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 06:16:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2DC160EF1
-        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 13:16:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78F8C433C1;
-        Sun,  4 Sep 2022 13:16:07 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 08803CE0E9D
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 13:16:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0162C433D6;
+        Sun,  4 Sep 2022 13:16:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662297368;
-        bh=6n5MVR2iUK4wQkSvhG+EF7zmVgooY7XFHCJ0KZHGNRk=;
+        s=k20201202; t=1662297380;
+        bh=2M9HDGMw17Puz6EZpCKukP0BNeS/7ycgvJgf16l6UbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p8ZT7qq+kyUX2uTETkYyYRYgGOKfiNKgHNuxxZqQBxccObcP6e1BxVzcA16qzCAQg
-         c7AfWWEb++AxU9iLF3/tt2LFd+kRe1bg1tJFpvm3Mqwvo9vBAzhC0DkgVMyakROh+L
-         I6z9obfXx+BCoOB/PEKblJmP9IkW0p49tPm/A1xuvhj4fMAtd1w7zqjbJSgJ+KST8S
-         sroCnSFnYSXVgX/qHCjROs3Uy2hjkI20pN2r0tuKipzS1Cb54p9Zt1mUmg0aSWPZZh
-         bHnjhlCYciTyBuxBkV2NPPCAtF0qujz36YlZ2CMOtXa9pE1zFyPr7fEwOaXOsJHgqf
-         X3gUyVY2F57pw==
+        b=H9V3PkXWDvE4VYIGUkukcmtIHuZ6MSS0PB+KPiTfZBBMh4NkzSCnomCFSlmwMqUT7
+         o7AHPqXU8JaaOBmpFTBtl2ArAhTGFcxjRGxmokWg06+cIdU6yQ6LJlj4o0MKTMYvBO
+         pb4TRHwgoJH6+HFtPB/5K8BWWFjuwZqhJvG4n1MSsjvgORD7ehzLndX4rxwklZjsdB
+         mtA9FrNzHDMPXkAAnvsEyodJW5nulwX7oxix4aitdlhHJPj2Bnf14PQ7sFpsqXECBr
+         HFP7g10qJKp0UVHdBldYG8AXTRBKHwEJOXBsF6F0nwGbT+IfQMotu+01ZC/WCJwnoD
+         Cm4KmTzgoPRYw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -41,9 +41,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Bharat Bhushan <bbhushan2@marvell.com>
-Subject: [PATCH RFC xfrm-next v3 6/8] xfrm: enforce separation between priorities of HW/SW policies
-Date:   Sun,  4 Sep 2022 16:15:40 +0300
-Message-Id: <1b9d865971972a63eaa2c076afd71743952bd3c8.1662295929.git.leonro@nvidia.com>
+Subject: [PATCH RFC xfrm-next v3 7/8] xfrm: add support to HW update soft and hard limits
+Date:   Sun,  4 Sep 2022 16:15:41 +0300
+Message-Id: <4d8f2155e79af5a12f6358337bdc0f035f687769.1662295929.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.37.2
 In-Reply-To: <cover.1662295929.git.leonro@nvidia.com>
 References: <cover.1662295929.git.leonro@nvidia.com>
@@ -61,238 +61,99 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Devices that implement IPsec full offload mode offload policies too.
-In RX path, it causes to the situation that HW can't effectively handle
-mixed SW and HW priorities unless users make sure that HW offloaded
-policies have higher priorities.
+Both in RX and TX, the traffic that performs IPsec full offload
+transformation is accounted by HW. It is needed to properly handle
+hard limits that require to drop the packet.
 
-In order to make sure that users have coherent picture, let's require
-that HW offloaded policies have always (both RX and TX) higher priorities
-than SW ones.
+It means that XFRM core needs to update internal counters with the one
+that accounted by the HW, so new callbacks are introduced in this patch.
 
-To do not over engineer the code, HW policies are treated as SW ones and
-don't take into account netdev to allow reuse of same priorities for
-different devices.
+In case of soft or hard limit is occurred, the driver should call to
+xfrm_state_check_expire() that will perform key rekeying exactly as
+done by XFRM core.
 
-Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/netns/xfrm.h |   8 ++-
- net/xfrm/xfrm_policy.c   | 113 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 120 insertions(+), 1 deletion(-)
+ include/linux/netdevice.h |  1 +
+ include/net/xfrm.h        | 17 +++++++++++++++++
+ net/xfrm/xfrm_output.c    |  1 -
+ net/xfrm/xfrm_state.c     |  4 ++++
+ 4 files changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
-index bd7c3be4af5d..f0cfa0faf611 100644
---- a/include/net/netns/xfrm.h
-+++ b/include/net/netns/xfrm.h
-@@ -29,6 +29,11 @@ struct xfrm_policy_hthresh {
- 	u8			rbits6;
- };
- 
-+struct xfrm_policy_prio {
-+	u32 max_sw_prio;
-+	u32 min_hw_prio;
-+};
-+
- struct netns_xfrm {
- 	struct list_head	state_all;
- 	/*
-@@ -52,7 +57,7 @@ struct netns_xfrm {
- 	unsigned int		policy_idx_hmask;
- 	struct hlist_head	policy_inexact[XFRM_POLICY_MAX];
- 	struct xfrm_policy_hash	policy_bydst[XFRM_POLICY_MAX];
--	unsigned int		policy_count[XFRM_POLICY_MAX * 2];
-+	unsigned int		policy_count[XFRM_POLICY_MAX * 3];
- 	struct work_struct	policy_hash_work;
- 	struct xfrm_policy_hthresh policy_hthresh;
- 	struct list_head	inexact_bins;
-@@ -67,6 +72,7 @@ struct netns_xfrm {
- 	u32			sysctl_acq_expires;
- 
- 	u8			policy_default[XFRM_POLICY_MAX];
-+	struct xfrm_policy_prio	policy_prio[XFRM_POLICY_MAX];
- 
- #ifdef CONFIG_SYSCTL
- 	struct ctl_table_header	*sysctl_hdr;
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 56ccedbb7212..69ef85424d4b 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -1570,13 +1570,70 @@ static struct xfrm_policy *xfrm_policy_insert_list(struct hlist_head *chain,
- 	return delpol;
- }
- 
-+static int __xfrm_policy_check_hw_priority(struct net *net,
-+					   struct xfrm_policy *policy, int dir)
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index c1db9eaa3dca..e38154d7b4cd 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1026,6 +1026,7 @@ struct xfrmdev_ops {
+ 	bool	(*xdo_dev_offload_ok) (struct sk_buff *skb,
+ 				       struct xfrm_state *x);
+ 	void	(*xdo_dev_state_advance_esn) (struct xfrm_state *x);
++	void	(*xdo_dev_state_update_curlft) (struct xfrm_state *x);
+ 	int	(*xdo_dev_policy_add) (struct xfrm_policy *x);
+ 	void	(*xdo_dev_policy_delete) (struct xfrm_policy *x);
+ 	void	(*xdo_dev_policy_free) (struct xfrm_policy *x);
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 38fff78a1421..100ca45d8172 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1563,6 +1563,23 @@ struct xfrm_state *xfrm_stateonly_find(struct net *net, u32 mark, u32 if_id,
+ struct xfrm_state *xfrm_state_lookup_byspi(struct net *net, __be32 spi,
+ 					      unsigned short family);
+ int xfrm_state_check_expire(struct xfrm_state *x);
++#ifdef CONFIG_XFRM_OFFLOAD
++static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x)
 +{
-+	int left, right;
++	struct xfrm_dev_offload *xdo = &x->xso;
++	struct net_device *dev = xdo->dev;
 +
-+	lockdep_assert_held(&net->xfrm.xfrm_policy_lock);
-+
-+	if (!net->xfrm.policy_count[dir])
-+		/* Adding first policy */
-+		return 0;
-+
-+	if (policy->xdo.type != XFRM_DEV_OFFLOAD_FULL) {
-+		/* SW priority */
-+		if (!net->xfrm.policy_count[2 * XFRM_POLICY_MAX + dir])
-+			/* Special case to allow reuse maximum priority
-+			 * (U32_MAX) for SW policies, when no HW policy exist.
-+			 */
-+			return 0;
-+
-+		left = policy->priority;
-+		right = net->xfrm.policy_prio[dir].min_hw_prio;
-+	} else {
-+		/* HW priority */
-+		left = net->xfrm.policy_prio[dir].max_sw_prio;
-+		right = policy->priority;
-+	}
-+	if (left >= right)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
-+static void __xfrm_policy_update_hw_priority(struct net *net,
-+					     struct xfrm_policy *policy,
-+					     int dir)
-+{
-+	u32 *hw_prio, *sw_prio;
-+
-+	lockdep_assert_held(&net->xfrm.xfrm_policy_lock);
-+
-+	if (policy->xdo.type != XFRM_DEV_OFFLOAD_FULL) {
-+		sw_prio = &net->xfrm.policy_prio[dir].max_sw_prio;
-+		*sw_prio = max(*sw_prio, policy->priority);
++	if (x->xso.type != XFRM_DEV_OFFLOAD_FULL)
 +		return;
-+	}
 +
-+	hw_prio = &net->xfrm.policy_prio[dir].min_hw_prio;
-+	*hw_prio = min(*hw_prio, policy->priority);
++	if (dev && dev->xfrmdev_ops &&
++	    dev->xfrmdev_ops->xdo_dev_state_update_curlft)
++		dev->xfrmdev_ops->xdo_dev_state_update_curlft(x);
++
 +}
++#else
++static inline void xfrm_dev_state_update_curlft(struct xfrm_state *x) {}
++#endif
+ void xfrm_state_insert(struct xfrm_state *x);
+ int xfrm_state_add(struct xfrm_state *x);
+ int xfrm_state_update(struct xfrm_state *x);
+diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
+index dde009be8463..a22033350ddc 100644
+--- a/net/xfrm/xfrm_output.c
++++ b/net/xfrm/xfrm_output.c
+@@ -560,7 +560,6 @@ static int xfrm_output_one(struct sk_buff *skb, int err)
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTSTATEPROTOERROR);
+ 			goto error_nolock;
+ 		}
+-
+ 		dst = skb_dst_pop(skb);
+ 		if (!dst) {
+ 			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 91c32a3b6924..83d307cb526f 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -549,6 +549,8 @@ static enum hrtimer_restart xfrm_timer_handler(struct hrtimer *me)
+ 	int err = 0;
+ 
+ 	spin_lock(&x->lock);
++	xfrm_dev_state_update_curlft(x);
 +
- int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
+ 	if (x->km.state == XFRM_STATE_DEAD)
+ 		goto out;
+ 	if (x->km.state == XFRM_STATE_EXPIRED)
+@@ -1786,6 +1788,8 @@ EXPORT_SYMBOL(xfrm_state_update);
+ 
+ int xfrm_state_check_expire(struct xfrm_state *x)
  {
- 	struct net *net = xp_net(policy);
- 	struct xfrm_policy *delpol;
- 	struct hlist_head *chain;
-+	int ret;
- 
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
-+	ret = __xfrm_policy_check_hw_priority(net, policy, dir);
-+	if (ret) {
-+		spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
-+		return ret;
-+	}
++	xfrm_dev_state_update_curlft(x);
 +
- 	chain = policy_hash_bysel(net, &policy->selector, policy->family, dir);
- 	if (chain)
- 		delpol = xfrm_policy_insert_list(chain, policy, excl);
-@@ -1606,6 +1663,7 @@ int xfrm_policy_insert(int dir, struct xfrm_policy *policy, int excl)
- 	policy->curlft.use_time = 0;
- 	if (!mod_timer(&policy->timer, jiffies + HZ))
- 		xfrm_pol_hold(policy);
-+	__xfrm_policy_update_hw_priority(net, policy, dir);
- 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
+ 	if (!x->curlft.use_time)
+ 		x->curlft.use_time = ktime_get_real_seconds();
  
- 	if (delpol)
-@@ -2271,6 +2329,8 @@ static void __xfrm_policy_link(struct xfrm_policy *pol, int dir)
- 
- 	list_add(&pol->walk.all, &net->xfrm.policy_all);
- 	net->xfrm.policy_count[dir]++;
-+	if (pol->xdo.type == XFRM_DEV_OFFLOAD_FULL)
-+		net->xfrm.policy_count[2 * XFRM_POLICY_MAX + dir]++;
- 	xfrm_pol_hold(pol);
- }
- 
-@@ -2290,6 +2350,8 @@ static struct xfrm_policy *__xfrm_policy_unlink(struct xfrm_policy *pol,
- 	}
- 
- 	list_del_init(&pol->walk.all);
-+	if (pol->xdo.type == XFRM_DEV_OFFLOAD_FULL)
-+		net->xfrm.policy_count[2 * XFRM_POLICY_MAX + dir]--;
- 	net->xfrm.policy_count[dir]--;
- 
- 	return pol;
-@@ -2305,12 +2367,58 @@ static void xfrm_sk_policy_unlink(struct xfrm_policy *pol, int dir)
- 	__xfrm_policy_unlink(pol, XFRM_POLICY_MAX + dir);
- }
- 
-+static void __xfrm_policy_delete_prio(struct net *net,
-+				      struct xfrm_policy *policy, int dir)
-+{
-+	struct xfrm_policy *pol;
-+	u32 sw_prio = 0;
-+
-+	lockdep_assert_held(&net->xfrm.xfrm_policy_lock);
-+
-+	if (!net->xfrm.policy_count[dir]) {
-+		net->xfrm.policy_prio[dir].max_sw_prio = sw_prio;
-+		net->xfrm.policy_prio[dir].min_hw_prio = U32_MAX;
-+		return;
-+	}
-+
-+	if (policy->xdo.type == XFRM_DEV_OFFLOAD_FULL &&
-+	    !net->xfrm.policy_count[2 * XFRM_POLICY_MAX + dir]) {
-+		net->xfrm.policy_prio[dir].min_hw_prio = U32_MAX;
-+		return;
-+	}
-+
-+	list_for_each_entry(pol, &net->xfrm.policy_all, walk.all) {
-+		if (pol->walk.dead)
-+			continue;
-+
-+		if (policy->xdo.type != XFRM_DEV_OFFLOAD_FULL) {
-+			/* SW priority */
-+			if (pol->xdo.type == XFRM_DEV_OFFLOAD_FULL) {
-+				net->xfrm.policy_prio[dir].max_sw_prio = sw_prio;
-+				return;
-+			}
-+			sw_prio = pol->priority;
-+			continue;
-+		}
-+		/* HW priority */
-+		if (pol->xdo.type != XFRM_DEV_OFFLOAD_FULL)
-+			continue;
-+
-+		net->xfrm.policy_prio[dir].min_hw_prio = pol->priority;
-+		return;
-+	}
-+
-+	net->xfrm.policy_prio[dir].max_sw_prio = sw_prio;
-+}
-+
- int xfrm_policy_delete(struct xfrm_policy *pol, int dir)
- {
- 	struct net *net = xp_net(pol);
- 
- 	spin_lock_bh(&net->xfrm.xfrm_policy_lock);
- 	pol = __xfrm_policy_unlink(pol, dir);
-+	if (pol)
-+		__xfrm_policy_delete_prio(net, pol, dir);
- 	spin_unlock_bh(&net->xfrm.xfrm_policy_lock);
- 	if (pol) {
- 		xfrm_dev_policy_delete(pol);
-@@ -4112,6 +4220,7 @@ static int __net_init xfrm_policy_init(struct net *net)
- 
- 		net->xfrm.policy_count[dir] = 0;
- 		net->xfrm.policy_count[XFRM_POLICY_MAX + dir] = 0;
-+		net->xfrm.policy_count[2 * XFRM_POLICY_MAX + dir] = 0;
- 		INIT_HLIST_HEAD(&net->xfrm.policy_inexact[dir]);
- 
- 		htab = &net->xfrm.policy_bydst[dir];
-@@ -4197,6 +4306,10 @@ static int __net_init xfrm_net_init(struct net *net)
- 	net->xfrm.policy_default[XFRM_POLICY_FWD] = XFRM_USERPOLICY_ACCEPT;
- 	net->xfrm.policy_default[XFRM_POLICY_OUT] = XFRM_USERPOLICY_ACCEPT;
- 
-+	net->xfrm.policy_prio[XFRM_POLICY_IN].min_hw_prio = U32_MAX;
-+	net->xfrm.policy_prio[XFRM_POLICY_FWD].min_hw_prio = U32_MAX;
-+	net->xfrm.policy_prio[XFRM_POLICY_OUT].min_hw_prio = U32_MAX;
-+
- 	rv = xfrm_statistics_init(net);
- 	if (rv < 0)
- 		goto out_statistics;
 -- 
 2.37.2
 
