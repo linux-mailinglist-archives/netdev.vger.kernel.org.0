@@ -2,47 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E5995AC80A
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 00:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80BFB5AC813
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 01:01:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235217AbiIDWtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 18:49:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
+        id S234774AbiIDXB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 19:01:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbiIDWtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 18:49:02 -0400
-Received: from shiva-su2.sorbonne-universite.fr (shiva-su2.sorbonne-universite.fr [134.157.0.153])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2BF3228E3C;
-        Sun,  4 Sep 2022 15:49:00 -0700 (PDT)
-Received: from nirriti.ent.upmc.fr (nirriti.dsi.upmc.fr [134.157.0.215])
-        by shiva-su2.sorbonne-universite.fr (Postfix) with ESMTP id 9862D413FDB0;
-        Mon,  5 Sep 2022 00:48:57 +0200 (CEST)
-Received: from [44.168.19.21] (lfbn-idf1-1-596-24.w86-242.abo.wanadoo.fr [86.242.59.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        with ESMTP id S229596AbiIDXBy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 19:01:54 -0400
+X-Greylist: delayed 342 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 04 Sep 2022 16:01:52 PDT
+Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D582CDD8;
+        Sun,  4 Sep 2022 16:01:52 -0700 (PDT)
+Received: from localhost (7of9.are-b.org [127.0.0.1])
+        by 7of9.schinagl.nl (Postfix) with ESMTP id B1A11186CF67;
+        Mon,  5 Sep 2022 00:56:08 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1662332168; bh=phA1KDNGpHpv+f9x5R/STb/SPozqbuTHV7NLvQ1f8PY=;
+        h=From:To:Cc:Subject:Date;
+        b=R87eR7MpBXwdGi0JqXtn2cbnS+2lRuvHnEJH11WUTM4T+Sgtx9zqIy1w5KlgCqV/0
+         WMAHz709Q/Leom28gwdIlcp0y5SkWb1VkfgRIaunnfQ21hCfuI4ni6Vf43VqsGV90j
+         9dzJXmGRI+WAkYrzTWz7o/OZQdfxX0quXAGDGHns=
+X-Virus-Scanned: amavisd-new at schinagl.nl
+Received: from 7of9.schinagl.nl ([127.0.0.1])
+        by localhost (7of9.schinagl.nl [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id cL2gxblWpbqr; Mon,  5 Sep 2022 00:56:00 +0200 (CEST)
+Received: from valexia.are-b.org (unknown [10.2.11.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pidoux)
-        by nirriti.ent.upmc.fr (Postfix) with ESMTPSA id C373F1234C71D;
-        Mon,  5 Sep 2022 00:48:58 +0200 (CEST)
-Message-ID: <4cb974e2-d5ba-d610-7fe8-4089256a9854@free.fr>
-Date:   Mon, 5 Sep 2022 00:48:58 +0200
+        by 7of9.schinagl.nl (Postfix) with ESMTPSA id B6282186CF62;
+        Mon,  5 Sep 2022 00:56:00 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1662332160; bh=phA1KDNGpHpv+f9x5R/STb/SPozqbuTHV7NLvQ1f8PY=;
+        h=From:To:Cc:Subject:Date;
+        b=CJQd91rUdNmr9+/Sg0QrZg85JRb2YoSyrSUA5vjQgG2g/DmpOxCb+ztCN2Fe5Laz6
+         md89y51MPwJw7MqMASlLQ9jc4iuKawRIYx+4m2++CEXUe+z+2JcV83vsQHGJxnQ0cw
+         wdoHSWK5hA9eudX7K5PQr0r1Jh+RNipL8xEeIV34=
+From:   Olliver Schinagl <oliver@schinagl.nl>
+To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
+Cc:     inux-kernel@vger.kernel.org,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Olliver Schinagl <oliver@schinagl.nl>
+Subject: [PATCH] phy: Add helpers for setting/clearing bits in paged registers
+Date:   Mon,  5 Sep 2022 00:55:55 +0200
+Message-Id: <20220904225555.1994290-1-oliver@schinagl.nl>
+X-Mailer: git-send-email 2.37.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-To:     edumazet@google.com
-Cc:     davem@davemloft.net, duoming@zju.edu.cn, f6bvp@free.fr,
-        kuba@kernel.org, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        pabeni@redhat.com, ralf@linux-mips.org
-References: <CANn89i+FBa-KLJz5xPvk3jO3Miww4Vs+qw4nPf_9SPwiWpyTWw@mail.gmail.com>
-Subject: Re: [PATCH 1/1] [PATCH] net: rose: fix unregistered netdevice:
- waiting for rose0 to become free
-Content-Language: en-US
-From:   f6bvp <f6bvp@free.fr>
-In-Reply-To: <CANn89i+FBa-KLJz5xPvk3jO3Miww4Vs+qw4nPf_9SPwiWpyTWw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,FREEMAIL_FROM,
-        NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_NEUTRAL,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,215 +60,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linux bernard-f6bvp 6.0.0-rc3-DEBUG+ #6 SMP PREEMPT_DYNAMIC Sun Sep 4 
-19:40:14 CEST 2022 x86_64 x86_64 x86_64 GNU/Linux
-
-
-Trying to removing rose module when it is no more in use is still impossible
-
-# lsmod
-
-Module                  Size  Used by
-
-rose                   53248  -1
-
-ax25                   65536  1 rose
-
-
-
-#dmesg
-..........
-[17199.188170] NET: Unregistered PF_ROSE protocol family
-
-[17209.327901] unregister_netdevice: waiting for rose0 to become free. 
-Usage count = 17
-
-[17209.327910] leaked reference.
-
-[17209.327913]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.327923]  rose_route_frame+0x287/0x740 [rose]
-
-[17209.327928]  ax25_rx_iframe.part.0+0x8a/0x340 [ax25]
-
-[17209.327936]  ax25_rx_iframe+0x13/0x20 [ax25]
-
-[17209.327942]  ax25_std_frame_in+0x7ae/0x810 [ax25]
-
-[17209.327948]  ax25_rcv.constprop.0+0x5ee/0x880 [ax25]
-
-[17209.327953]  ax25_kiss_rcv+0x6c/0x90 [ax25]
-
-[17209.327959]  __netif_receive_skb_one_core+0x91/0xa0
-
-[17209.327964]  __netif_receive_skb+0x15/0x60
-
-[17209.327968]  process_backlog+0x96/0x140
-
-[17209.327971]  __napi_poll+0x33/0x190
-
-[17209.327974]  net_rx_action+0x19f/0x300
-
-[17209.327977]  __do_softirq+0x103/0x366
-
-[17209.327983] leaked reference.
-
-[17209.327985]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.327990]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.327995]  call_timer_fn+0x2c/0x150
-
-[17209.328000]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328003]  run_timer_softirq+0x3f/0xa0
-
-[17209.328007]  __do_softirq+0x103/0x366
-
-[17209.328011] leaked reference.
-
-[17209.328013]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328018]  rose_route_frame+0x287/0x740 [rose]
-
-[17209.328023]  ax25_rx_iframe.part.0+0x8a/0x340 [ax25]
-
-[17209.328028]  ax25_rx_iframe+0x13/0x20 [ax25]
-
-[17209.328034]  ax25_std_frame_in+0x7ae/0x810 [ax25]
-
-[17209.328040]  ax25_rcv.constprop.0+0x5ee/0x880 [ax25]
-
-[17209.328045]  ax25_kiss_rcv+0x6c/0x90 [ax25]
-
-[17209.328050]  __netif_receive_skb_one_core+0x91/0xa0
-
-[17209.328054]  __netif_receive_skb+0x15/0x60
-
-[17209.328057]  process_backlog+0x96/0x140
-
-[17209.328060]  __napi_poll+0x33/0x190
-
-[17209.328063]  net_rx_action+0x19f/0x300
-
-[17209.328067]  __do_softirq+0x103/0x366
-
-[17209.328071] leaked reference.
-
-[17209.328072]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328077]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328082]  call_timer_fn+0x2c/0x150
-
-[17209.328085]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328089]  run_timer_softirq+0x3f/0xa0
-
-[17209.328092]  __do_softirq+0x103/0x366
-
-[17209.328096] leaked reference.
-
-[17209.328098]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328103]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328107]  call_timer_fn+0x2c/0x150
-
-[17209.328111]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328114]  run_timer_softirq+0x3f/0xa0
-
-[17209.328117]  __do_softirq+0x103/0x366
-
-[17209.328121] leaked reference.
-
-[17209.328123]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328128]  rose_route_frame+0x287/0x740 [rose]
-
-[17209.328133]  ax25_rx_iframe.part.0+0x8a/0x340 [ax25]
-
-[17209.328138]  ax25_rx_iframe+0x13/0x20 [ax25]
-
-[17209.328144]  ax25_std_frame_in+0x7ae/0x810 [ax25]
-
-[17209.328150]  ax25_rcv.constprop.0+0x5ee/0x880 [ax25]
-
-[17209.328155]  ax25_kiss_rcv+0x6c/0x90 [ax25]
-
-[17209.328160]  __netif_receive_skb_one_core+0x91/0xa0
-
-[17209.328164]  __netif_receive_skb+0x15/0x60
-
-[17209.328167]  process_backlog+0x96/0x140
-
-[17209.328170]  __napi_poll+0x33/0x190
-
-[17209.328173]  net_rx_action+0x19f/0x300
-
-[17209.328176]  __do_softirq+0x103/0x366
-
-[17209.328180] leaked reference.
-
-[17209.328182]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328187]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328192]  call_timer_fn+0x2c/0x150
-
-[17209.328195]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328198]  run_timer_softirq+0x3f/0xa0
-
-[17209.328202]  __do_softirq+0x103/0x366
-
-[17209.328206] leaked reference.
-
-[17209.328208]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328212]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328217]  call_timer_fn+0x2c/0x150
-
-[17209.328220]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328223]  run_timer_softirq+0x3f/0xa0
-
-[17209.328227]  __do_softirq+0x103/0x366
-
-[17209.328231] leaked reference.
-
-[17209.328232]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328237]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328242]  call_timer_fn+0x2c/0x150
-
-[17209.328245]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328248]  run_timer_softirq+0x3f/0xa0
-
-[17209.328252]  __do_softirq+0x103/0x366
-
-[17209.328256] leaked reference.
-
-[17209.328258]  rose_rx_call_request+0x334/0x7b0 [rose]
-
-[17209.328262]  rose_loopback_timer+0xa3/0x1c0 [rose]
-
-[17209.328267]  call_timer_fn+0x2c/0x150
-
-[17209.328270]  __run_timers.part.0+0x1d9/0x280
-
-[17209.328273]  run_timer_softirq+0x3f/0xa0
-
-[17209.328277]  __do_softirq+0x103/0x366
-
-
-
-
-
-
-
+As we have helpers for setting/clearing bits in PHY registers and MMD
+registers, add also helpers to do the same with paged registers.
+
+Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
+---
+ include/linux/phy.h | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d844..6f13dc9b4fe5 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1262,6 +1262,32 @@ static inline int phy_clear_bits_mmd(struct phy_device *phydev, int devad,
+ 	return phy_modify_mmd(phydev, devad, regnum, val, 0);
+ }
+ 
++/**
++ * phy_set_bits_paged - Convenience function for setting bits in a paged register
++ * @phydev: the phy_device struct
++ * @page: the page for the phy
++ * @regnum: register number to write
++ * @val: bits to set
++ */
++static inline int phy_set_bits_paged(struct phy_device *phydev, int page,
++				     u32 regnum, u16 val)
++{
++	return phy_modify_paged(phydev, page, regnum, 0, val);
++}
++
++/**
++ * phy_clear_bits_paged - Convenience function for clearing bits in a paged register
++ * @phydev: the phy_device struct
++ * @page: the page for the phy
++ * @regnum: register number to write
++ * @val: bits to clear
++ */
++static inline int phy_clear_bits_paged(struct phy_device *phydev, int page,
++				       u32 regnum, u16 val)
++{
++	return phy_modify_paged(phydev, page, regnum, val, 0);
++}
++
+ /**
+  * phy_interrupt_is_valid - Convenience function for testing a given PHY irq
+  * @phydev: the phy_device struct
+-- 
+2.37.2
 
