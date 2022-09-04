@@ -2,145 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 143375AC52A
-	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 17:58:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ECFE5AC57B
+	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 18:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234697AbiIDP6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 11:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51036 "EHLO
+        id S234801AbiIDQpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 12:45:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234631AbiIDP6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 11:58:23 -0400
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB1642F38E;
-        Sun,  4 Sep 2022 08:58:15 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045192;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0VOGfxpk_1662307089;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VOGfxpk_1662307089)
-          by smtp.aliyun-inc.com;
-          Sun, 04 Sep 2022 23:58:10 +0800
-Date:   Sun, 4 Sep 2022 23:58:09 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     liuyacan@corp.netease.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        ubraun@linux.vnet.ibm.com, pabeni@redhat.com, wenjia@linux.ibm.com,
-        wintera@linux.ibm.com
-Subject: Re: [PATCH net v4] net/smc: Fix possible access to freed memory in
- link clear
-Message-ID: <YxTLEakKhpge8T/3@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <Yw4bgV6c0LQ6reMc@TonyMac-Alibaba>
- <20220831155303.1758868-1-liuyacan@corp.netease.com>
+        with ESMTP id S230337AbiIDQpi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 12:45:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237BA26567
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 09:45:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 941C5B80D5D
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 16:45:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52568C433D6;
+        Sun,  4 Sep 2022 16:45:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662309934;
+        bh=fdJbNgEvJjteiMSYUnDOKNdXHddFLV8ijKcIrugeacM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VSKzigUWZlNzgmQ4r3Ba/XnWqmHxWrbmrPRGwNwPSpAB1wzVatIvO3Nj4FQPYQp4r
+         YiKlb1k0BYIE9oe01mDEX6pQ0uQzYgcABuQMJlYn+bopupJ28uQbwk0Fsj2XpmkyS9
+         n4SoQJpA8xAZ6eM2HO33oqrhCjGUemjjg4gFLFg/s+NbXr78Z6nXKST81HybYgXp+e
+         MM4jzrgR/gBf/b3g01AFIibQQGEII6zi2i+fi2qL7YbN0j6FlRbU0WhRpHKCNB6rLl
+         Uryo4nOoNDTlcv38ItK/ect41agDWVggouHeoLJspmrr98VYtWvK0SjD75QH0IFI3T
+         ZX3Dp1be5RjUA==
+Date:   Sun, 4 Sep 2022 19:45:29 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paolo Abeni <pabeni@redhat.com>, Raed Salem <raeds@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH xfrm-next v3 0/6] Extend XFRM core to allow full offload
+ configuration
+Message-ID: <YxTWKatwm5vuBovt@unreal>
+References: <cover.1661260787.git.leonro@nvidia.com>
+ <20220829075403.GL566407@gauss3.secunet.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220831155303.1758868-1-liuyacan@corp.netease.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220829075403.GL566407@gauss3.secunet.de>
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 31, 2022 at 11:53:03PM +0800, liuyacan@corp.netease.com wrote:
-> From: Yacan Liu <liuyacan@corp.netease.com>
+On Mon, Aug 29, 2022 at 09:54:03AM +0200, Steffen Klassert wrote:
+> On Tue, Aug 23, 2022 at 04:31:57PM +0300, Leon Romanovsky wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> > 
+> > Changelog:
+> > v3:
+> >  * I didn't hear any suggestion what term to use instead of
+> >    "full offload", so left it as is. It is used in commit messages
+> >    and documentation only and easy to rename.
+> >  * Added performance data and background info to cover letter
+> >  * Reused xfrm_output_resume() function to support multiple XFRM transformations
+> >  * Add PMTU check in addition to driver .xdo_dev_offload_ok validation
+> >  * Documentation is in progress, but not part of this series yet.
+> > v2: https://lore.kernel.org/all/cover.1660639789.git.leonro@nvidia.com
+> >  * Rebased to latest 6.0-rc1
+> >  * Add an extra check in TX datapath patch to validate packets before
+> >    forwarding to HW.
+> >  * Added policy cleanup logic in case of netdev down event
+> > v1: https://lore.kernel.org/all/cover.1652851393.git.leonro@nvidia.com
+> >  * Moved comment to be before if (...) in third patch.
+> > v0: https://lore.kernel.org/all/cover.1652176932.git.leonro@nvidia.com
+> > -----------------------------------------------------------------------
+> > 
+> > The following series extends XFRM core code to handle a new type of IPsec
+> > offload - full offload.
+> > 
+> > In this mode, the HW is going to be responsible for the whole data path,
+> > so both policy and state should be offloaded.
+> > 
+> > IPsec full offload is an improved version of IPsec crypto mode,
+> > In full mode, HW is responsible to trim/add headers in addition to
+> > decrypt/encrypt. In this mode, the packet arrives to the stack as already
+> > decrypted and vice versa for TX (exits to HW as not-encrypted).
+> > 
+> > Devices that implement IPsec full offload mode offload policies too.
+> > In the RX path, it causes the situation that HW can't effectively
+> > handle mixed SW and HW priorities unless users make sure that HW offloaded
+> > policies have higher priorities.
+> > 
+> > To make sure that users have a coherent picture, we require that
+> > HW offloaded policies have always (both RX and TX) higher priorities
+> > than SW ones.
+> > 
+> > To not over-engineer the code, HW policies are treated as SW ones and
+> > don't take into account netdev to allow reuse of the same priorities for
+> > different devices.
+> > 
+> > There are several deliberate limitations:
+> >  * No software fallback
+> >  * Fragments are dropped, both in RX and TX
+> >  * No sockets policies
+> >  * Only IPsec transport mode is implemented
 > 
-> After modifying the QP to the Error state, all RX WR would be completed
-> with WC in IB_WC_WR_FLUSH_ERR status. Current implementation does not
-> wait for it is done, but destroy the QP and free the link group directly.
-> So there is a risk that accessing the freed memory in tasklet context.
+> ... and you still have not answered the fundamental questions:
 > 
-> Here is a crash example:
+> As implemented, the software does not hold any state.
+> I.e. there is no sync between hardware and software
+> regarding stats, liftetime, lifebyte, packet counts
+> and replay window. IKE rekeying and auditing is based
+> on these, how should this be done?
+
+I hope that the patch added in v4 clarifies it. There is a sync between
+HW and core in regarding of packet counts. The HW generates event and
+calls to xfrm_state_check_expire() to make sure that already existing
+logic will do rekeying.
+
+The replay window will be handled in similar way. HW will generate an
+event.
+
 > 
->  BUG: unable to handle page fault for address: ffffffff8f220860
->  #PF: supervisor write access in kernel mode
->  #PF: error_code(0x0002) - not-present page
->  PGD f7300e067 P4D f7300e067 PUD f7300f063 PMD 8c4e45063 PTE 800ffff08c9df060
->  Oops: 0002 [#1] SMP PTI
->  CPU: 1 PID: 0 Comm: swapper/1 Kdump: loaded Tainted: G S         OE     5.10.0-0607+ #23
->  Hardware name: Inspur NF5280M4/YZMB-00689-101, BIOS 4.1.20 07/09/2018
->  RIP: 0010:native_queued_spin_lock_slowpath+0x176/0x1b0
->  Code: f3 90 48 8b 32 48 85 f6 74 f6 eb d5 c1 ee 12 83 e0 03 83 ee 01 48 c1 e0 05 48 63 f6 48 05 00 c8 02 00 48 03 04 f5 00 09 98 8e <48> 89 10 8b 42 08 85 c0 75 09 f3 90 8b 42 08 85 c0 74 f7 48 8b 32
->  RSP: 0018:ffffb3b6c001ebd8 EFLAGS: 00010086
->  RAX: ffffffff8f220860 RBX: 0000000000000246 RCX: 0000000000080000
->  RDX: ffff91db1f86c800 RSI: 000000000000173c RDI: ffff91db62bace00
->  RBP: ffff91db62bacc00 R08: 0000000000000000 R09: c00000010000028b
->  R10: 0000000000055198 R11: ffffb3b6c001ea58 R12: ffff91db80e05010
->  R13: 000000000000000a R14: 0000000000000006 R15: 0000000000000040
->  FS:  0000000000000000(0000) GS:ffff91db1f840000(0000) knlGS:0000000000000000
->  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  CR2: ffffffff8f220860 CR3: 00000001f9580004 CR4: 00000000003706e0
->  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->  Call Trace:
->   <IRQ>
->   _raw_spin_lock_irqsave+0x30/0x40
->   mlx5_ib_poll_cq+0x4c/0xc50 [mlx5_ib]
->   smc_wr_rx_tasklet_fn+0x56/0xa0 [smc]
->   tasklet_action_common.isra.21+0x66/0x100
->   __do_softirq+0xd5/0x29c
->   asm_call_irq_on_stack+0x12/0x20
->   </IRQ>
->   do_softirq_own_stack+0x37/0x40
->   irq_exit_rcu+0x9d/0xa0
->   sysvec_call_function_single+0x34/0x80
->   asm_sysvec_call_function_single+0x12/0x20
+> How can tunnel mode work with this offload?
+
+I don't see any issues here. Same rules will apply here. 
+
 > 
-> Fixes: bd4ad57718cc ("smc: initialize IB transport incl. PD, MR, QP, CQ, event, WR")
-> Signed-off-by: Yacan Liu <liuyacan@corp.netease.com>
-> 
-> ---
-> Chagen in v4:
->   -- Remove the rx_drain flag because smc_wr_rx_post() may not have been called.
->   -- Remove timeout.
-> Change in v3:
->   -- Tune commit message (Signed-Off tag, Fixes tag).
->      Tune code to avoid column length exceeding.
-> Change in v2:
->   -- Fix some compile warnings and errors.
-> ---
->  net/smc/smc_core.c | 2 ++
->  net/smc/smc_core.h | 2 ++
->  net/smc/smc_wr.c   | 9 +++++++++
->  net/smc/smc_wr.h   | 1 +
->  4 files changed, 14 insertions(+)
-> 
-> diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-> index ff49a11f5..f92a916e9 100644
-> --- a/net/smc/smc_core.c
-> +++ b/net/smc/smc_core.c
-> @@ -757,6 +757,7 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
->  	lnk->lgr = lgr;
->  	smc_lgr_hold(lgr); /* lgr_put in smcr_link_clear() */
->  	lnk->link_idx = link_idx;
-> +	lnk->wr_rx_id_compl = 0;
->  	smc_ibdev_cnt_inc(lnk);
->  	smcr_copy_dev_info_to_link(lnk);
->  	atomic_set(&lnk->conn_cnt, 0);
-> @@ -1269,6 +1270,7 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
->  	smcr_buf_unmap_lgr(lnk);
->  	smcr_rtoken_clear_link(lnk);
->  	smc_ib_modify_qp_error(lnk);
-> +	smc_wr_drain_cq(lnk);
-
-smc_wr_drain_cq() can put into smc_wr_free_link(). Since
-smc_wr_free_link() do the same things together, such as waiting for
-resources cleaning up about wr.
-
->  	smc_wr_free_link(lnk);
->  	smc_ib_destroy_queue_pair(lnk);
->  	smc_ib_dealloc_protection_domain(lnk);
-
-<snip>
-
-The patch tested good in our environment. If you are going to send the
-v5 patch, you can go with my review.
-
-Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
-
-Cheers,
-Tony Lu
+> I want to see the full picture before I consider to
+> apply this.
