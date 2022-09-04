@@ -2,212 +2,317 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A575AC34F
-	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 09:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 081935AC35D
+	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 09:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233408AbiIDHsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 03:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        id S232470AbiIDH4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 03:56:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233476AbiIDHsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 03:48:10 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2071.outbound.protection.outlook.com [40.107.96.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B9747B88
-        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 00:48:07 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=C4l7X6mzK3dlLCL10TUPYtPtC3uCf+xx7uf6LBm2/5D/b4Jg+l1Iu5xvhc7/UEhZr7dJxr8QzsXnQ/9KnuimUDeCDYernoLn91VzxgrUsG7X/UpIGRgMvMqMtgtq7Ot3IL6TaliXvw8brzLvr7vITx7SIOynKn51Y1V+FE5a/0yLVtUkw1WS8jHHE+d8CHCYoKppp/2mxT637/S5g7kTsharonr4VwvrqF2QPzvpvyxew++rzG0f5yy5S4dmgpS19g6mnlgDm37QPpnaMiCtzKyAUGW0mJSYFCxxZWtWIYiqjBaTIuEWfw+Qs6ZdiKE7wjsawk7XuvtEUZaclz0w7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gkd3LTmLYSfjQMuvvcnTumxzpmo+BGps75chov4GjgQ=;
- b=Hr/y4wz6JmBGCo3GlIN4IPoqk43DeG0aVXlWgT0+ieclcXi6zetuCcpYugPB02+uI1QAZaN7U0dxxIxrROennS/QHsov4sS1Dbjn3nMwvG3G4Argp+u7fEhwqlY0JUV1sa4NSjHPnGXgG7rtnpIHJG/YjdlBJTo0vl5HMoHaFegjRhcyBD8HzbBrGgLZkL6IictWmTPc5KGmi57WbF+C/zG0AP0QfdTU9hlIpcu6B2TJ6omGMTPCSoGY5bXsdcKlt2TNFizFLjvbRXLCe2b1lfpcbJfzrt5MgyJdhNe1nFkOC38x/2R2gTGzNk0wEOR0ZRGpW3rsyvMSRkZ7DJYiZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gkd3LTmLYSfjQMuvvcnTumxzpmo+BGps75chov4GjgQ=;
- b=lHxmTFwSrcGwDgW91iyTm1oDUCs2dgrczF+eZJ4uQ1ezctK6JnQyBABm8QHo/r9WYrgChOjVI/2QLFtnkhFMxFY8L8Ii+G3MPVmS9gUtE43RfWrlqco+lbQamR6HHCvSwFpcNI+zDOzebapeVSoljs8hzOcOoBgjjDJayAUTDJ5DnVNmCJBVmfAN9oqZDUe6i7G8o0CGE2g8sRPQ0LgXCyn4XEY76WvGqKObhpezKYZ72PwZORNK7mUYZNb+jzhezBgsTNVH9vJiBNGz58VboSSeoToOUdr93YDmgh3EXpe0yGGsM5S5KD7h04vE//ovFqji/O9AUtsXKF3x0iNWGQ==
-Received: from MW4P221CA0026.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::31)
- by LV2PR12MB5727.namprd12.prod.outlook.com (2603:10b6:408:17d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.16; Sun, 4 Sep
- 2022 07:48:05 +0000
-Received: from CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8b:cafe::58) by MW4P221CA0026.outlook.office365.com
- (2603:10b6:303:8b::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12 via Frontend
- Transport; Sun, 4 Sep 2022 07:48:05 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.234) by
- CO1NAM11FT007.mail.protection.outlook.com (10.13.174.131) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Sun, 4 Sep 2022 07:48:05 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.38; Sun, 4 Sep
- 2022 07:48:04 +0000
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail204.nvidia.com
- (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.29; Sun, 4 Sep 2022
- 00:48:04 -0700
-Received: from vdi.nvidia.com (10.127.8.9) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server id 15.2.986.29 via Frontend Transport; Sun, 4 Sep
- 2022 00:48:02 -0700
-From:   Emeel Hakim <ehakim@nvidia.com>
-To:     <dsahern@kernel.org>, <sd@queasysnail.net>
-CC:     <netdev@vger.kernel.org>, <raeds@nvidia.com>, <tariqt@nvidia.com>,
-        "Emeel Hakim" <ehakim@nvidia.com>
-Subject: [PATCH main v3 2/2] macsec: add user manual description for extended packet number feature
-Date:   Sun, 4 Sep 2022 10:47:29 +0300
-Message-ID: <20220904074729.4804-2-ehakim@nvidia.com>
-X-Mailer: git-send-email 2.21.3
-In-Reply-To: <20220904074729.4804-1-ehakim@nvidia.com>
-References: <20220904074729.4804-1-ehakim@nvidia.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1e53972d-482c-4723-d22f-08da8e49cd2c
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5727:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +9CkKKZ/0cBQB+f/Z4Y/Ji2Pg8c5WjyPoYkzxOzgKt2PQKuOJTjGGDesk9l75G839TBIuskmY6D4/h3GaTPv/EkZ14bbXfuVhaQeMZl4soVGDWDce6asyHJZtn/UOwgRcpPKZhllQkmSjYysxZYMC5F3zKO7ww7DGaxgkpyUxfre9HN0SKWRkD+aEW7gO0XV94cAMvjs8R+w/k6a4faEo6dlEAar3Z7zegY6SnChBVfaQwgzyRS3mmCMqhTHmdx4hQDx88QkIbZn7wZId78icgQZj6PSxKJQ5Kk3iw7TAz1tRO8uQLU2HIh9Tzg40jUhhCyiFOrljQ0b7stad9zUq/t6Ajhmro3sOBpneE002qpB6UGTXALlUOq37ottzNcc6TOtGh4XhVdWVriCU22B8NP0C0I7mvIznsRH9dU70wJMqxxso4P4K2cY8te+YmxcfhwtD/vn6nr4zXjuss8TolboFq0W5aM/lW5JcP9/iQBQUpg4azgseuHiryDRoksHz4dYNZmbGC9mG5uEpreoE+H65qAfJNUtEREkflHwi6YUuPhWSzWIPvQ0ZlJ5Rf2YjNoFTrIsz7MH08ukmAdOULq0cTHnHxXwRxHxY4+9uk8OyaPn6QIeU9ZTt7W9Q20aO8+BjYitbPF60251Y0Bn5Vs6AszeteveSmSm0GUcG5QtL/JWQbuy1j6ZjS2ABgfIxiG+2ocrxgatZ3W0I+SN1MjOEuT8spwbiT66VylEsF8r1t+5Cn+G6rd5x4imebcvxz423qS/TcsInE4l5h1eE0Sv6Zqit1pGnhzuTVoxpzY=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(39860400002)(136003)(376002)(346002)(36840700001)(46966006)(40470700004)(356005)(81166007)(8676002)(36860700001)(40460700003)(4326008)(83380400001)(82310400005)(70206006)(110136005)(316002)(70586007)(54906003)(40480700001)(5660300002)(2616005)(8936002)(82740400003)(26005)(2906002)(426003)(1076003)(47076005)(186003)(336012)(6666004)(7696005)(478600001)(41300700001)(86362001)(107886003)(36756003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2022 07:48:05.1276
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1e53972d-482c-4723-d22f-08da8e49cd2c
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT007.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5727
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S233556AbiIDHzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 03:55:54 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA19A1EAC0
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 00:55:51 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id 8732FC021; Sun,  4 Sep 2022 09:55:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1662278148; bh=RSLgPrhQqbW72basg88SEZLdG8kXMwkENFlWHAvbrUE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=UWzaMk8tLv9n/CyXVDy2918RAp9YPf1ZaRe8VBq2Klw/RptI7TEdlMRbb/9R7sbQr
+         FaUePCS8r5yXsVwYpZSVdICH0gtls3asr7sYTB20lQrIH+kvmnMnp8sdSCZmJn7vHT
+         ylYLFv6Obyxt7Jwas/xgOz5u5O57xJ88C5o6+SmIYKwRuewzQ56uCi3qSPg+RP+EZR
+         7lW9W3mlU2kK0RskNEjpUktn84giIJeKNxZK6KrhvheYEGNkkKoO9qWjqQQdpwsOB/
+         veKf6Gq3fmq9Nv/Ie8iA94X3UTvvv4IPziIw3A3jESqJZskgcGGvySQD9PSUZ129Uk
+         uCwKrVVLerdtg==
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 76DABC009;
+        Sun,  4 Sep 2022 09:55:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1662278146; bh=RSLgPrhQqbW72basg88SEZLdG8kXMwkENFlWHAvbrUE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=BdzzO1zC0MC4Gjlvddo6jtCB1vDqaWavxnBobJwlwQd+UIErJe7MQPGGGny6lOIXi
+         SdwhwPqtEkcgf/4EqwpIMycqx1NKBVZ36sdpLsXzsuI/DhdDUTjy/ilrn9gXW/9Fv/
+         WXOrZ+Xwb+WL32+9mR1Y4n50n4OGxsVpS/LbMTSUklt8YZBwrwyL27q1YS3sM06alU
+         PJ94ZUHmrKkhw22hhRI1YkF96Hgw+rZ2RptbEEi3czeLJF9ftmc7nnXN0A/CbjrhUQ
+         xlSed6bI7voTF4K/EKZ47/wVUvzcmhR9XpDHMLNt8OlxLW2ROfIo6ftST/diIfMH3K
+         oz+6FFijsjmFQ==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 8d837fb6;
+        Sun, 4 Sep 2022 07:55:42 +0000 (UTC)
+Date:   Sun, 4 Sep 2022 16:55:27 +0900
+From:   Dominique Martinet <asmadeus@codewreck.org>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Christian Schoenebeck <linux_oss@crudebyte.com>,
+        syzbot <syzbot+2f20b523930c32c160cc@syzkaller.appspotmail.com>,
+        v9fs-developer@lists.sourceforge.net,
+        syzkaller-bugs@googlegroups.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2] net/9p: use a dedicated spinlock for modifying IDR
+Message-ID: <YxRZ7xtcUiYcPaw0@codewreck.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <40f15366-6027-ec7a-e151-bcc108855cb8@I-love.SAKURA.ne.jp>
+ <68540a56-6a5f-87e9-3c21-49c58758bfaf@I-love.SAKURA.ne.jp>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the user manual describing how to use extended packet number (XPN)
-feature for macsec. As part of configuring XPN, providing ssci and salt is
-required hence update user manual on  how to provide the above as part of
-the ip macsec command.
+Tetsuo Handa wrote on Sun, Sep 04, 2022 at 04:06:36PM +0900:
+> Changes in v2:
+>   Make this spinlock per "struct p9_client", though I don't know how we
+>   should update "@lock" when "@idr_lock" also protects @fids and @reqs...
 
-Signed-off-by: Emeel Hakim <ehakim@nvidia.com>
+Sorry for the trouble, this is not what I meant: this v2 makes 'lock'
+being unused except for trans_fd, which isn't optimal for other
+transports like e.g. virtio or rdma.
+
+In hindsight it's probably faster to just send a diff... Happy to keep
+you as author if you'd like, or sign off or whatever you prefer -- I
+wouldn't have guessed what that report meant without you.
+
+(Reply to your other mail after the diff chunk)
+
 ---
-V1->V2: 
-- Updated documentation.
-
-V2->V3:
-
- man/man8/ip-macsec.8 | 52 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 51 insertions(+), 1 deletion(-)
-
-diff --git a/man/man8/ip-macsec.8 b/man/man8/ip-macsec.8
-index bb816157..991a775a 100644
---- a/man/man8/ip-macsec.8
-+++ b/man/man8/ip-macsec.8
-@@ -19,6 +19,7 @@ ip-macsec \- MACsec device configuration
- .BR scb " { " on " | " off " } ] ["
- .BR protect " { " on " | " off " } ] ["
- .BR replay " { " on " | " off " } ] ["
-+.BR xpn " { " on " | " off " } ] ["
- .BI window " WINDOW"
- ] [
- .BR validate " { " strict " | " check " | " disabled " } ] ["
-@@ -63,7 +64,13 @@ ip-macsec \- MACsec device configuration
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index ef5760971f1e..5b4807411281 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -91,6 +91,7 @@ struct p9_poll_wait {
+  * @mux_list: list link for mux to manage multiple connections (?)
+  * @client: reference to client instance for this connection
+  * @err: error state
++ * @req_lock: lock protecting req_list and requests statuses
+  * @req_list: accounting for requests which have been sent
+  * @unsent_req_list: accounting for requests that haven't been sent
+  * @rreq: read request
+@@ -114,6 +115,7 @@ struct p9_conn {
+ 	struct list_head mux_list;
+ 	struct p9_client *client;
+ 	int err;
++	spinlock_t req_lock;
+ 	struct list_head req_list;
+ 	struct list_head unsent_req_list;
+ 	struct p9_req_t *rreq;
+@@ -189,10 +191,10 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
  
- .IR OPTS " := [ "
- .BR pn " { "
--.IR 1..2^32-1 " } ] ["
-+.IR 1..2^32-1 " } |"
-+.BR xpn " { "
-+.IR 1..2^64-1 " } ] ["
-+.B salt
-+.IR SALT " ] ["
-+.B ssci
-+.IR <u32> " ] ["
- .BR on " | " off " ]"
- .br
- .IR SCI " := { "
-@@ -75,6 +82,8 @@ ip-macsec \- MACsec device configuration
+ 	p9_debug(P9_DEBUG_ERROR, "mux %p err %d\n", m, err);
+ 
+-	spin_lock(&m->client->lock);
++	spin_lock(&m->req_lock);
+ 
+ 	if (m->err) {
+-		spin_unlock(&m->client->lock);
++		spin_unlock(&m->req_lock);
+ 		return;
+ 	}
+ 
+@@ -205,7 +207,7 @@ static void p9_conn_cancel(struct p9_conn *m, int err)
+ 		list_move(&req->req_list, &cancel_list);
+ 	}
+ 
+-	spin_unlock(&m->client->lock);
++	spin_unlock(&m->req_lock);
+ 
+ 	list_for_each_entry_safe(req, rtmp, &cancel_list, req_list) {
+ 		p9_debug(P9_DEBUG_ERROR, "call back req %p\n", req);
+@@ -360,7 +362,7 @@ static void p9_read_work(struct work_struct *work)
+ 	if ((m->rreq) && (m->rc.offset == m->rc.capacity)) {
+ 		p9_debug(P9_DEBUG_TRANS, "got new packet\n");
+ 		m->rreq->rc.size = m->rc.offset;
+-		spin_lock(&m->client->lock);
++		spin_lock(&m->req_lock);
+ 		if (m->rreq->status == REQ_STATUS_SENT) {
+ 			list_del(&m->rreq->req_list);
+ 			p9_client_cb(m->client, m->rreq, REQ_STATUS_RCVD);
+@@ -369,14 +371,14 @@ static void p9_read_work(struct work_struct *work)
+ 			p9_debug(P9_DEBUG_TRANS,
+ 				 "Ignore replies associated with a cancelled request\n");
+ 		} else {
+-			spin_unlock(&m->client->lock);
++			spin_unlock(&m->req_lock);
+ 			p9_debug(P9_DEBUG_ERROR,
+ 				 "Request tag %d errored out while we were reading the reply\n",
+ 				 m->rc.tag);
+ 			err = -EIO;
+ 			goto error;
+ 		}
+-		spin_unlock(&m->client->lock);
++		spin_unlock(&m->req_lock);
+ 		m->rc.sdata = NULL;
+ 		m->rc.offset = 0;
+ 		m->rc.capacity = 0;
+@@ -454,10 +456,10 @@ static void p9_write_work(struct work_struct *work)
+ 	}
+ 
+ 	if (!m->wsize) {
+-		spin_lock(&m->client->lock);
++		spin_lock(&m->req_lock);
+ 		if (list_empty(&m->unsent_req_list)) {
+ 			clear_bit(Wworksched, &m->wsched);
+-			spin_unlock(&m->client->lock);
++			spin_unlock(&m->req_lock);
+ 			return;
+ 		}
+ 
+@@ -472,7 +474,7 @@ static void p9_write_work(struct work_struct *work)
+ 		m->wpos = 0;
+ 		p9_req_get(req);
+ 		m->wreq = req;
+-		spin_unlock(&m->client->lock);
++		spin_unlock(&m->req_lock);
+ 	}
+ 
+ 	p9_debug(P9_DEBUG_TRANS, "mux %p pos %d size %d\n",
+@@ -670,10 +672,10 @@ static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
+ 	if (m->err < 0)
+ 		return m->err;
+ 
+-	spin_lock(&client->lock);
++	spin_lock(&m->req_lock);
+ 	req->status = REQ_STATUS_UNSENT;
+ 	list_add_tail(&req->req_list, &m->unsent_req_list);
+-	spin_unlock(&client->lock);
++	spin_unlock(&m->req_lock);
+ 
+ 	if (test_and_clear_bit(Wpending, &m->wsched))
+ 		n = EPOLLOUT;
+@@ -688,11 +690,13 @@ static int p9_fd_request(struct p9_client *client, struct p9_req_t *req)
+ 
+ static int p9_fd_cancel(struct p9_client *client, struct p9_req_t *req)
+ {
++	struct p9_trans_fd *ts = client->trans;
++	struct p9_conn *m = &ts->conn;
+ 	int ret = 1;
+ 
+ 	p9_debug(P9_DEBUG_TRANS, "client %p req %p\n", client, req);
+ 
+-	spin_lock(&client->lock);
++	spin_lock(&m->req_lock);
+ 
+ 	if (req->status == REQ_STATUS_UNSENT) {
+ 		list_del(&req->req_list);
+@@ -700,21 +704,24 @@ static int p9_fd_cancel(struct p9_client *client, struct p9_req_t *req)
+ 		p9_req_put(client, req);
+ 		ret = 0;
+ 	}
+-	spin_unlock(&client->lock);
++	spin_unlock(&m->req_lock);
+ 
+ 	return ret;
  }
- .br
- .IR PORT " := { " 1..2^16-1 " } "
-+.br
-+.IR SALT " := 96-bit hex string "
  
- 
- .SH DESCRIPTION
-@@ -116,6 +125,29 @@ type.
- .nf
- # ip link add link eth0 macsec0 type macsec port 11 encrypt on offload mac
- 
-+.SH EXTENDED PACKET NUMBER EXAMPLES
-+.PP
-+.SS Create a MACsec device on link eth0 with enabled extended packet number (offload is disabled by default)
-+.nf
-+# ip link add link eth0 macsec0 type macsec port 11 encrypt on xpn on
-+.PP
-+.SS Configure a secure association on that device
-+.nf
-+# ip macsec add macsec0 tx sa 0 xpn 1024 on salt 838383838383838383838383 ssci 123 key 01 81818181818181818181818181818181
-+.PP
-+.SS Configure a receive channel
-+.nf
-+# ip macsec add macsec0 rx port 11 address c6:19:52:8f:e6:a0
-+.PP
-+.SS Configure a receive association
-+.nf
-+# ip macsec add macsec0 rx port 11 address c6:19:52:8f:e6:a0 sa 0 xpn 1 on salt 838383838383838383838383 ssci 123 key 00 82828282828282828282828282828282
-+.PP
-+.SS Display MACsec configuration
-+.nf
-+# ip macsec show
-+.PP
+ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
+ {
++	struct p9_trans_fd *ts = client->trans;
++	struct p9_conn *m = &ts->conn;
 +
- .SH NOTES
- This tool can be used to configure the 802.1AE keys of the interface. Note that 802.1AE uses GCM-AES
- with a initialization vector (IV) derived from the packet number. The same key must not be used
-@@ -125,6 +157,24 @@ that reconfigures the keys. It is wrong to just configure the keys statically an
- indefinitely. The suggested and standardized way for key management is 802.1X-2010, which is implemented
- by wpa_supplicant.
+ 	p9_debug(P9_DEBUG_TRANS, "client %p req %p\n", client, req);
  
-+.SH EXTENDED PACKET NUMBER NOTES
-+Passing flag
-+.B xpn
-+to
-+.B ip link add
-+command using the
-+.I macsec
-+type requires using the keyword
-+.B 'xpn'
-+instead of
-+.B 'pn'
-+in addition to providing a salt using the
-+.B 'salt'
-+keyword when using the
-+.B ip macsec
-+command.
+-	spin_lock(&client->lock);
++	spin_lock(&m->req_lock);
+ 	/* Ignore cancelled request if message has been received
+ 	 * before lock.
+ 	 */
+ 	if (req->status == REQ_STATUS_RCVD) {
+-		spin_unlock(&client->lock);
++		spin_unlock(&m->req_lock);
+ 		return 0;
+ 	}
+ 
+@@ -723,7 +730,8 @@ static int p9_fd_cancelled(struct p9_client *client, struct p9_req_t *req)
+ 	 */
+ 	list_del(&req->req_list);
+ 	req->status = REQ_STATUS_FLSHD;
+-	spin_unlock(&client->lock);
++	spin_unlock(&m->req_lock);
 +
-+
- .SH SEE ALSO
- .br
- .BR ip-link (8)
--- 
-2.21.3
+ 	p9_req_put(client, req);
+ 
+ 	return 0;
+@@ -832,6 +840,7 @@ static int p9_fd_open(struct p9_client *client, int rfd, int wfd)
+ 
+ 	client->trans = ts;
+ 	client->status = Connected;
++	spin_lock_init(&ts->conn.req_lock);
+ 
+ 	return 0;
+ 
+@@ -866,6 +875,7 @@ static int p9_socket_open(struct p9_client *client, struct socket *csocket)
+ 	p->wr = p->rd = file;
+ 	client->trans = p;
+ 	client->status = Connected;
++	spin_lock_init(&p->conn.req_lock);
+ 
+ 	p->rd->f_flags |= O_NONBLOCK;
+ 
+---
 
+
+Tetsuo Handa wrote on Sun, Sep 04, 2022 at 04:17:37PM +0900:
+> On 2022/09/04 15:36, Dominique Martinet wrote:
+> > We have an idr per client though so this is needlessly adding contention
+> > between multiple 9p mounts.
+> > 
+> > That probably doesn't matter too much in the general case,
+> 
+> I thought this is not a hot operation where contention matters.
+
+Each IO on the filesystem will take this lock, so while I assume idr
+will likely be orders of magnitude faster than any network call we might
+as well keep it as separate as possible.
+I don't know.
+
+> >                                                            but adding a
+> > different lock per connection is cheap so let's do it the other way
+> > around: could you add a lock to the p9_conn struct in net/9p/trans_fd.c
+> > and replace c->lock by it there?
+> 
+> Not impossible, but may not be cheap for lockdep.
+
+It's still a single lock per mount, for most syzcaller tests with a
+single mount call it should be identical?
+
+> > That should have identical effect as other transports don't use client's
+> > .lock ; and the locking in trans_fd.c is to protect req's status and
+> > trans_fd's own lists which is orthogonal to client's lock that protects
+> > tag allocations. I agree it should work in theory.
+> > 
+> > (If you don't have time to do this this patch has been helpful enough and
+> > I can do it eventually)
+> 
+> Sent as https://lkml.kernel.org/r/68540a56-6a5f-87e9-3c21-49c58758bfaf@I-love.SAKURA.ne.jp .
+> 
+> By the way, I think credit for the patch on
+> https://syzkaller.appspot.com/bug?extid=50f7e8d06c3768dd97f3 goes to
+> Hillf Danton...
+
+Eh, with your link I'd agree, but I never got any mail from him.
+
+Looking at the patch link, he dropped v9fs-developer, netdev and all the
+maintainers from his patch (kept syzcaller, linux-kernel@vger and
+syzbot) so I don't think I can realisticly be expected to know he
+submitted a patch...
+
+As a matter of fact I've implemented the exact same solution on Aug 17 a
+week later, and another first time contributor sent another patch on
+Sept 1st as I didn't send a separate mail for it either; this is a bit
+ridiculous... Would have saved me time if he'd just kept the bare
+minimum of Ccs :/
+
+
+Well, I honestly don't care -- he was first so sure, if he speaks up I
+can change the author, but I'm definitely not going to go out of my way
+for someone who didn't help me; I already don't have enough time for
+9p...
+
+-- 
+Dominique
