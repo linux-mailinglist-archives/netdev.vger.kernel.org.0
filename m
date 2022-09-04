@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 57B9D5AC4BC
-	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 16:18:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB1215AC4C3
+	for <lists+netdev@lfdr.de>; Sun,  4 Sep 2022 16:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233970AbiIDOSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 10:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
+        id S234126AbiIDOWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 10:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiIDOSK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 10:18:10 -0400
-Received: from smtp.smtpout.orange.fr (smtp-15.smtpout.orange.fr [80.12.242.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB96B2E689
-        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 07:18:08 -0700 (PDT)
+        with ESMTP id S229754AbiIDOWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 10:22:54 -0400
+Received: from smtp.smtpout.orange.fr (smtp08.smtpout.orange.fr [80.12.242.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3E832ECD
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 07:22:52 -0700 (PDT)
 Received: from pop-os.home ([90.11.190.129])
         by smtp.orange.fr with ESMTPA
-        id UqRoo6N75sfCIUqRooeLOU; Sun, 04 Sep 2022 16:18:07 +0200
+        id UqWOoEaZwJvOZUqWOotKwX; Sun, 04 Sep 2022 16:22:51 +0200
 X-ME-Helo: pop-os.home
 X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 04 Sep 2022 16:18:07 +0200
+X-ME-Date: Sun, 04 Sep 2022 16:22:51 +0200
 X-ME-IP: 90.11.190.129
 From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
@@ -31,22 +31,22 @@ To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
 Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
-Subject: [PATCH] ice: switch: Simplify memory allocation
-Date:   Sun,  4 Sep 2022 16:18:02 +0200
-Message-Id: <55ff1825aee6e655c41cb6770ca44f0fbdbfec00.1662301068.git.christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] ice: Simplify memory allocation in ice_sched_init_port()
+Date:   Sun,  4 Sep 2022 16:22:46 +0200
+Message-Id: <7cd7cb09607c46763e846d1fa7158ce9fdfca3e6.1662301342.git.christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'rbuf' is locale to the ice_get_initial_sw_cfg() function.
+'buf' is locale to the ice_sched_init_port() function.
 There is no point in using devm_kzalloc()/devm_kfree().
 
 use kzalloc()/kfree() instead.
@@ -54,33 +54,31 @@ use kzalloc()/kfree() instead.
 Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
 As a side effect, it also require less memory. devm_kzalloc() has a small
-memory overhead, and requesting ICE_SW_CFG_MAX_BUF_LEN (i.e. 2048) bytes,
-4096 are really allocated.
+memory overhead, and requesting ICE_AQ_MAX_BUF_LEN (i.e. 4096) bytes,
+8192 are really allocated.
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_sched.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 697feb89188c..eb6e19deb70d 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -2274,9 +2274,7 @@ int ice_get_initial_sw_cfg(struct ice_hw *hw)
- 	int status;
- 	u16 i;
+diff --git a/drivers/net/ethernet/intel/ice/ice_sched.c b/drivers/net/ethernet/intel/ice/ice_sched.c
+index 7947223536e3..118595763bba 100644
+--- a/drivers/net/ethernet/intel/ice/ice_sched.c
++++ b/drivers/net/ethernet/intel/ice/ice_sched.c
+@@ -1212,7 +1212,7 @@ int ice_sched_init_port(struct ice_port_info *pi)
+ 	hw = pi->hw;
  
--	rbuf = devm_kzalloc(ice_hw_to_dev(hw), ICE_SW_CFG_MAX_BUF_LEN,
--			    GFP_KERNEL);
--
-+	rbuf = kzalloc(ICE_SW_CFG_MAX_BUF_LEN, GFP_KERNEL);
- 	if (!rbuf)
+ 	/* Query the Default Topology from FW */
+-	buf = devm_kzalloc(ice_hw_to_dev(hw), ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
++	buf = kzalloc(ICE_AQ_MAX_BUF_LEN, GFP_KERNEL);
+ 	if (!buf)
  		return -ENOMEM;
  
-@@ -2324,7 +2322,7 @@ int ice_get_initial_sw_cfg(struct ice_hw *hw)
- 		}
- 	} while (req_desc && !status);
+@@ -1290,7 +1290,7 @@ int ice_sched_init_port(struct ice_port_info *pi)
+ 		pi->root = NULL;
+ 	}
  
--	devm_kfree(ice_hw_to_dev(hw), rbuf);
-+	kfree(rbuf);
+-	devm_kfree(ice_hw_to_dev(hw), buf);
++	kfree(buf);
  	return status;
  }
  
