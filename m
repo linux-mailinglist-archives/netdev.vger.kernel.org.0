@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CB675ADA47
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 22:34:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7CE45ADA46
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 22:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232213AbiIEUeq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 16:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
+        id S232224AbiIEUer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 16:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232304AbiIEUeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 16:34:37 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 626B61274C;
-        Mon,  5 Sep 2022 13:34:33 -0700 (PDT)
+        with ESMTP id S232411AbiIEUei (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 16:34:38 -0400
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC74912D37;
+        Mon,  5 Sep 2022 13:34:34 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0AE70FF806;
-        Mon,  5 Sep 2022 20:34:29 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id BFDDBFF809;
+        Mon,  5 Sep 2022 20:34:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662410071;
+        t=1662410073;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QbxqkGaHKi0NxH/H0WQJBiuO9z2O2S8Yads0Qpz0QKw=;
-        b=IEnznJlP6m6MD1ueUX+CWufchrzSj58xBil1KfC1Q9WM/sL5G6KtNZoQFUqPufAhP2Exqr
-        YlqSRKpNdTuYpGOPnwBUGeihFT8Xowls9g3ovM2bXtx5MHsacRluCta0vg8uArelzE8BQm
-        VCOyffqBUz3lXM1cspl3ZIBPgrX75vW6iKKArApUdQ9vPTYraq9+M6lZkcltjdyTQPjYz5
-        7v3pLUOTTEALlztt6C+uji1nY32Wq67dblyLHdZ5vkRAQOK22r12IqtvSFdsn7JgYJLGln
-        9nwWWRM1bGelgqcSei/8uvbBFfBTF8Yo9w/rQ7kw+LzJH+Ml99OLVLsBe/QLig==
+        bh=mZKlFR7u8gogbm+qAE1RDrSenefC4AOY9IMlFnB/ekA=;
+        b=QttuPNS7Ri3mqoAhBpR6UahSQorD5vkevf/N0yUG/5WwdbSfOOnDxNfWH4X1voGQt3Jbqi
+        aWqDQ+j6CmjplxvjqhsHZ8Qqu9unU6/Iqo3iCyi4RKn4lZcyL8uQ3uyvZsIZR6gzvRhc07
+        z5cm6HOdGMH0Z3N5x2XXv8JLQnJqEvUjTQZujvJaaNtkAW3gmAMPCFy4fI3/Lzz22tGCVs
+        wbYU+RdkQ9fk6LeyuCD61gXBYOJEv16JR73uFuqGL5C68k7dQi9O4J00Re6N9CdRgOV0tA
+        1snt8bauGROyxVLorKgVoN0uY2PMsDrlm8R+G3TQU5FzHpoNRwkrJ86SU77HZg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -42,10 +42,11 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Frederic Blain <frederic.blain@qorvo.com>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexander Aring <aahringo@redhat.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan/next v3 8/9] net: mac802154: Ensure proper general purpose frame filtering
-Date:   Mon,  5 Sep 2022 22:34:11 +0200
-Message-Id: <20220905203412.1322947-9-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan/next v3 9/9] ieee802154: atusb: add support for trac feature
+Date:   Mon,  5 Sep 2022 22:34:12 +0200
+Message-Id: <20220905203412.1322947-10-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
 References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
@@ -53,138 +54,98 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of the PHYs seem to cope with the standard filtering rules by
-default. Some of them might not, like hwsim which is only software, and
-in this case advertises its real filtering level with the new
-"filtering" internal value.
+From: Alexander Aring <aahringo@redhat.com>
 
-The core then needs to check what is expected by looking at the PHY
-requested filtering level and possibly apply additional filtering
-rules.
+This patch adds support for reading the trac register if atusb firmware
+reports tx done. There is currently a feature to compare a sequence
+number, if the payload is 1 it tells the driver only the sequence number
+is available if it's two there is additional the trac status register as
+payload.
 
+Currently the atusb_in_good() function determines if it's a tx done or
+rx done if according the payload length. This patch is doing the same
+and assumes this behaviour.
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/net/ieee802154_netdev.h |  8 ++++
- net/mac802154/rx.c              | 78 +++++++++++++++++++++++++++++++++
- 2 files changed, 86 insertions(+)
+ drivers/net/ieee802154/atusb.c | 33 ++++++++++++++++++++++++++++-----
+ 1 file changed, 28 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/ieee802154_netdev.h b/include/net/ieee802154_netdev.h
-index d0d188c3294b..1b82bbafe8c7 100644
---- a/include/net/ieee802154_netdev.h
-+++ b/include/net/ieee802154_netdev.h
-@@ -69,6 +69,14 @@ struct ieee802154_hdr_fc {
- #endif
- };
+diff --git a/drivers/net/ieee802154/atusb.c b/drivers/net/ieee802154/atusb.c
+index 2c338783893d..95a4a3cdc8a4 100644
+--- a/drivers/net/ieee802154/atusb.c
++++ b/drivers/net/ieee802154/atusb.c
+@@ -191,7 +191,7 @@ static void atusb_work_urbs(struct work_struct *work)
  
-+enum ieee802154_frame_version {
-+	IEEE802154_2003_STD,
-+	IEEE802154_2006_STD,
-+	IEEE802154_STD,
-+	IEEE802154_RESERVED_STD,
-+	IEEE802154_MULTIPURPOSE_STD = IEEE802154_2003_STD,
-+};
-+
- struct ieee802154_hdr {
- 	struct ieee802154_hdr_fc fc;
- 	u8 seq;
-diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index c43289c0fdd7..bc46e4a7669d 100644
---- a/net/mac802154/rx.c
-+++ b/net/mac802154/rx.c
-@@ -52,6 +52,84 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
- 				mac_cb(skb)->type);
- 			goto fail;
- 		}
-+	} else if (sdata->required_filtering == IEEE802154_FILTERING_4_FRAME_FIELDS &&
-+		   sdata->required_filtering > wpan_phy->filtering) {
-+		/* Level 4 filtering: Frame fields validity */
-+
-+		/* a) Drop reserved frame types */
-+		switch (mac_cb(skb)->type) {
-+		case IEEE802154_FC_TYPE_BEACON:
-+		case IEEE802154_FC_TYPE_DATA:
-+		case IEEE802154_FC_TYPE_ACK:
-+		case IEEE802154_FC_TYPE_MAC_CMD:
+ /* ----- Asynchronous USB -------------------------------------------------- */
+ 
+-static void atusb_tx_done(struct atusb *atusb, u8 seq)
++static void atusb_tx_done(struct atusb *atusb, u8 seq, int reason)
+ {
+ 	struct usb_device *usb_dev = atusb->usb_dev;
+ 	u8 expect = atusb->tx_ack_seq;
+@@ -199,7 +199,10 @@ static void atusb_tx_done(struct atusb *atusb, u8 seq)
+ 	dev_dbg(&usb_dev->dev, "%s (0x%02x/0x%02x)\n", __func__, seq, expect);
+ 	if (seq == expect) {
+ 		/* TODO check for ifs handling in firmware */
+-		ieee802154_xmit_complete(atusb->hw, atusb->tx_skb, false);
++		if (reason == IEEE802154_SUCCESS)
++			ieee802154_xmit_complete(atusb->hw, atusb->tx_skb, false);
++		else
++			ieee802154_xmit_error(atusb->hw, atusb->tx_skb, reason);
+ 	} else {
+ 		/* TODO I experience this case when atusb has a tx complete
+ 		 * irq before probing, we should fix the firmware it's an
+@@ -215,7 +218,8 @@ static void atusb_in_good(struct urb *urb)
+ 	struct usb_device *usb_dev = urb->dev;
+ 	struct sk_buff *skb = urb->context;
+ 	struct atusb *atusb = SKB_ATUSB(skb);
+-	u8 len, lqi;
++	int result = IEEE802154_SUCCESS;
++	u8 len, lqi, trac;
+ 
+ 	if (!urb->actual_length) {
+ 		dev_dbg(&usb_dev->dev, "atusb_in: zero-sized URB ?\n");
+@@ -224,8 +228,27 @@ static void atusb_in_good(struct urb *urb)
+ 
+ 	len = *skb->data;
+ 
+-	if (urb->actual_length == 1) {
+-		atusb_tx_done(atusb, len);
++	switch (urb->actual_length) {
++	case 2:
++		trac = TRAC_MASK(*(skb->data + 1));
++		switch (trac) {
++		case TRAC_SUCCESS:
++		case TRAC_SUCCESS_DATA_PENDING:
++			/* already IEEE802154_SUCCESS */
++			break;
++		case TRAC_CHANNEL_ACCESS_FAILURE:
++			result = IEEE802154_CHANNEL_ACCESS_FAILURE;
++			break;
++		case TRAC_NO_ACK:
++			result = IEEE802154_NO_ACK;
 +			break;
 +		default:
-+			dev_dbg(&sdata->dev->dev, "unrecognized frame type 0x%x\n",
-+				mac_cb(skb)->type);
-+			goto fail;
++			result = IEEE802154_SYSTEM_ERROR;
 +		}
 +
-+		/* b) Drop reserved frame versions */
-+		switch (hdr->fc.version) {
-+		case IEEE802154_2003_STD:
-+		case IEEE802154_2006_STD:
-+		case IEEE802154_STD:
-+			break;
-+		default:
-+			dev_dbg(&sdata->dev->dev,
-+				"unrecognized frame version 0x%x\n",
-+				hdr->fc.version);
-+			goto fail;
-+		}
-+
-+		/* c) PAN ID constraints */
-+		if ((mac_cb(skb)->dest.mode == IEEE802154_ADDR_LONG ||
-+		     mac_cb(skb)->dest.mode == IEEE802154_ADDR_SHORT) &&
-+		    mac_cb(skb)->dest.pan_id != span &&
-+		    mac_cb(skb)->dest.pan_id != cpu_to_le16(IEEE802154_PANID_BROADCAST)) {
-+			dev_dbg(&sdata->dev->dev,
-+				"unrecognized PAN ID %04x\n",
-+				le16_to_cpu(mac_cb(skb)->dest.pan_id));
-+			goto fail;
-+		}
-+
-+		/* d1) Short address constraints */
-+		if (mac_cb(skb)->dest.mode == IEEE802154_ADDR_SHORT &&
-+		    mac_cb(skb)->dest.short_addr != sshort &&
-+		    mac_cb(skb)->dest.short_addr != cpu_to_le16(IEEE802154_ADDR_BROADCAST)) {
-+			dev_dbg(&sdata->dev->dev,
-+				"unrecognized short address %04x\n",
-+				le16_to_cpu(mac_cb(skb)->dest.short_addr));
-+			goto fail;
-+		}
-+
-+		/* d2) Extended address constraints */
-+		if (mac_cb(skb)->dest.mode == IEEE802154_ADDR_LONG &&
-+		    mac_cb(skb)->dest.extended_addr != wpan_dev->extended_addr) {
-+			dev_dbg(&sdata->dev->dev,
-+				"unrecognized long address 0x%016llx\n",
-+				mac_cb(skb)->dest.extended_addr);
-+			goto fail;
-+		}
-+
-+		/* d4) Specific PAN coordinator case (no parent) */
-+		if ((mac_cb(skb)->type == IEEE802154_FC_TYPE_DATA ||
-+		     mac_cb(skb)->type == IEEE802154_FC_TYPE_MAC_CMD) &&
-+		    mac_cb(skb)->dest.mode == IEEE802154_ADDR_NONE) {
-+			dev_dbg(&sdata->dev->dev,
-+				"relaying is not supported\n");
-+			goto fail;
-+		}
-+	}
-+
-+	/* e) Beacon frames follow specific PAN ID rules */
-+	if (mac_cb(skb)->type == IEEE802154_FC_TYPE_BEACON &&
-+	    span != cpu_to_le16(IEEE802154_PANID_BROADCAST) &&
-+	    mac_cb(skb)->dest.pan_id != span) {
-+		dev_dbg(&sdata->dev->dev,
-+			"invalid beacon PAN ID %04x\n",
-+			le16_to_cpu(mac_cb(skb)->dest.pan_id));
-+		goto fail;
++		fallthrough;
++	case 1:
++		atusb_tx_done(atusb, len, result);
+ 		return;
  	}
  
- 	switch (mac_cb(skb)->dest.mode) {
 -- 
 2.34.1
 
