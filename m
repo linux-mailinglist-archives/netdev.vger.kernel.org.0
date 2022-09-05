@@ -2,110 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44AFE5ACEB9
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 11:23:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95FBB5ACEBD
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 11:23:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236130AbiIEJUk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 05:20:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32920 "EHLO
+        id S236146AbiIEJUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 05:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236199AbiIEJUe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 05:20:34 -0400
-Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564963CBE7;
-        Mon,  5 Sep 2022 02:20:27 -0700 (PDT)
-Received: from localhost (7of9.are-b.org [127.0.0.1])
-        by 7of9.schinagl.nl (Postfix) with ESMTP id 3DCA0186D1DD;
-        Mon,  5 Sep 2022 11:20:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1662369626; bh=TXY8AK2KX6KdV4YDAf6gZv3LILVU/MMo1Yis53F5F0U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Lacy7sjlUvAPyWCfOHqdlMuyLRTVPKzSPy/xIyKfZgNFFdYNR9Mc5wn4d7UPG0ude
-         B4SidhQlNNRTUizfiKpwNiM92xqfsAe6u58KV44Z0SeoXPeY3771Fu1+kvTOGusX6k
-         aPytC+JkkRa/aPFXCY6zWDtbDN34a1kiN3ov+l54=
-X-Virus-Scanned: amavisd-new at schinagl.nl
-Received: from 7of9.schinagl.nl ([127.0.0.1])
-        by localhost (7of9.schinagl.nl [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id Hq-PAFgQOPQT; Mon,  5 Sep 2022 11:20:25 +0200 (CEST)
-Received: from valexia.are-b.org (unknown [10.2.11.251])
+        with ESMTP id S236199AbiIEJUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 05:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CC41EEEE
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 02:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by 7of9.schinagl.nl (Postfix) with ESMTPSA id 7BAF6186D1D8;
-        Mon,  5 Sep 2022 11:20:25 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
-        t=1662369625; bh=TXY8AK2KX6KdV4YDAf6gZv3LILVU/MMo1Yis53F5F0U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=tcnBbbwOBeK+Vq09NShJskYp4kfR/VRy+muxil+aov++8Jgdk0AraF64hvdD4Rvjn
-         sdXUWE0v/ooLwDO6a1Qbv0HcMIuQ+rUW2y3/igi+skoNkRypDqTrRGw51/jiNR9DDL
-         T9g+v/Nl4ZU/3qQ7gCiAbRWniNci55FL0zozswnc=
-From:   Olliver Schinagl <oliver@schinagl.nl>
-To:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>
-Cc:     inux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Olliver Schinagl <oliver@schinagl.nl>
-Subject: [PATCH 2/2] phy: Add helpers for setting/clearing bits in paged registers
-Date:   Mon,  5 Sep 2022 11:20:07 +0200
-Message-Id: <20220905092007.1999943-3-oliver@schinagl.nl>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220905092007.1999943-1-oliver@schinagl.nl>
-References: <20220905092007.1999943-1-oliver@schinagl.nl>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 534AA61196
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 09:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AAF75C43151;
+        Mon,  5 Sep 2022 09:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1662369614;
+        bh=RCCV5oL5XnH8hnlFvUNa6JVYeWdvMCjlTm4W0lwUtXs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bwrcAjVxmxreoeYg2PtM3fg67syG1+TSFYwHrhGAR+e3EblMx5g/g7rWyziTW6zGe
+         WxhZB3OhAilGHjwCQiXTvWDV9XmwdsmNrDULABPFehEyc+5DDeEHvSIEHIml/+pXwx
+         MzJEPTQ6YgewqIhCkLVN5gkwLhQvDBtZ6SLkkdTRMr0ZRwY36TrD8OcP73WRQ3AOYo
+         zOWMF7UQrWl2IGJuKYUkm4gs3JWukPQvzCx9MAc6CIWiGQ86dnvs6tBVonwjMl6zSL
+         myS9P3xUkSvyJoVW3t1nmeT4bsLIM45svg7asxciyI5MIBQGvLRZ/xUIUuYtxu4BA3
+         cKHaKWY3QLxMg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 79A4AC4166E;
+        Mon,  5 Sep 2022 09:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCHv2 net 0/3] bonding: fix lladdr finding and confirmation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <166236961448.25096.10408618632391937070.git-patchwork-notify@kernel.org>
+Date:   Mon, 05 Sep 2022 09:20:14 +0000
+References: <20220830093722.153161-1-liuhangbin@gmail.com>
+In-Reply-To: <20220830093722.153161-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, davem@davemloft.net, kuba@kernel.org,
+        jtoppins@redhat.com, pabeni@redhat.com, dsahern@gmail.com
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As we have helpers for setting/clearing bits in PHY registers and MMD
-registers, add also helpers to do the same with paged registers.
+Hello:
 
-Signed-off-by: Olliver Schinagl <oliver@schinagl.nl>
----
- include/linux/phy.h | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 7a2332615b8b..c9be4e6c676b 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1272,6 +1272,32 @@ static inline int phy_clear_bits_mmd(struct phy_device *phydev, int devad,
- 	return phy_modify_mmd(phydev, devad, regnum, val, 0);
- }
- 
-+/**
-+ * phy_set_bits_paged - Convenience function for setting bits in a paged register
-+ * @phydev: the phy_device struct
-+ * @page: the page for the phy
-+ * @regnum: register number to write
-+ * @val: bits to set
-+ */
-+static inline int phy_set_bits_paged(struct phy_device *phydev, int page,
-+				     u32 regnum, u16 val)
-+{
-+	return phy_modify_paged(phydev, page, regnum, 0, val);
-+}
-+
-+/**
-+ * phy_clear_bits_paged - Convenience function for clearing bits in a paged register
-+ * @phydev: the phy_device struct
-+ * @page: the page for the phy
-+ * @regnum: register number to write
-+ * @val: bits to clear
-+ */
-+static inline int phy_clear_bits_paged(struct phy_device *phydev, int page,
-+				       u32 regnum, u16 val)
-+{
-+	return phy_modify_paged(phydev, page, regnum, val, 0);
-+}
-+
- /**
-  * phy_interrupt_is_valid - Convenience function for testing a given PHY irq
-  * @phydev: the phy_device struct
+On Tue, 30 Aug 2022 17:37:19 +0800 you wrote:
+> This patch set fixed 3 issues when setting lladdr as bonding IPv6 target.
+> Please see each patch for the details.
+> 
+> v2: separate the patch to 3 parts
+> 
+> Hangbin Liu (3):
+>   bonding: use unspecified address if no available link local address
+>   bonding: add all node mcast address when slave up
+>   bonding: accept unsolicited NA message
+> 
+> [...]
+
+Here is the summary with links:
+  - [PATCHv2,net,1/3] bonding: use unspecified address if no available link local address
+    https://git.kernel.org/netdev/net/c/b7f14132bf58
+  - [PATCHv2,net,2/3] bonding: add all node mcast address when slave up
+    https://git.kernel.org/netdev/net/c/fd16eb948ea8
+  - [PATCHv2,net,3/3] bonding: accept unsolicited NA message
+    https://git.kernel.org/netdev/net/c/592335a4164c
+
+You are awesome, thank you!
 -- 
-2.37.2
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
