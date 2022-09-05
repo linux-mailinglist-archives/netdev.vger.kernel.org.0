@@ -2,90 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1FF45AD9B0
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 21:34:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E2ED5AD9CE
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 21:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232165AbiIETeT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 15:34:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53232 "EHLO
+        id S232066AbiIETln (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 15:41:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232314AbiIETeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 15:34:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3167C48C85
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 12:34:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662406448;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fGOlsWwSa8ZGUxPA20rFqLx1jsDgyftEVjIopoX70IA=;
-        b=DJLEyNLv6r8lHZ3iOE81PqqfFeRRotduf7lwETEuEVcQDKeGiVyAjVwk4vGgAUPTdDzb1J
-        CoBgtvsckzAvGyLBEqUGHbC865OTbc3t5jsRrZJTG7g0vFc0vHdD7bfP8DrnawuDhPsHMk
-        12/hFn/+Pse6qBbm55oS3APqroOJPyU=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-205-nk4hqmu3MiCsFGOQ_hT6Vw-1; Mon, 05 Sep 2022 15:34:07 -0400
-X-MC-Unique: nk4hqmu3MiCsFGOQ_hT6Vw-1
-Received: by mail-ed1-f69.google.com with SMTP id y14-20020a056402440e00b0044301c7ccd9so6189290eda.19
-        for <netdev@vger.kernel.org>; Mon, 05 Sep 2022 12:34:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date;
-        bh=fGOlsWwSa8ZGUxPA20rFqLx1jsDgyftEVjIopoX70IA=;
-        b=2jvmJeExZNIn1nDXyUcfaeKBySmCDlBd12e7LZOmDO5NP8d9YgGPGp2DGkpfnLVkoH
-         3qy/HbVBYBCdaFPclYTjsm7imNPLOjWQCF/HrqVnru1IYvoc+QggvCHyyFknz/Uxstdi
-         uBo1w8uQcbNd3NOqUY/6vAwb2ZInshyhyQKH1Dz33OWbZGtiXQxWAlMkOqIS/0f7+R1X
-         02SIjQyFvytg8en1v3+h/XzMUvWgzwoDDIHuekQgllDlTHqjDcoWscf5ZVtj8a0n3sbU
-         OFatPA0Qh8CNFfjDtzSh54XBBf0AtiDnDxHbf2cWQVEjJC5bL/CmTH2S6HzMG6SVT9HN
-         7APQ==
-X-Gm-Message-State: ACgBeo0cuv8lDyNCcPLX72cTPa1m8LeSOh4kgyawnSEW01BI5Nqp8IRF
-        NKaUEuIqEeJv0z1ZXDqazqO8nu3NOTpqIHtdTFjZ2V03QQl1AZ67OEeaHwfJeLFVinH9KNLYNqZ
-        qmcPk1SfvjZCxsvjg
-X-Received: by 2002:a17:907:b013:b0:73d:c708:3f22 with SMTP id fu19-20020a170907b01300b0073dc7083f22mr35691646ejc.608.1662406445869;
-        Mon, 05 Sep 2022 12:34:05 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4kjYck+srPVqFYsjNNDOiM6zLxfeRKTo3aLp0Bmn89Bz/3zrtCeqasGL3QMzEPQwisD3cazg==
-X-Received: by 2002:a17:907:b013:b0:73d:c708:3f22 with SMTP id fu19-20020a170907b01300b0073dc7083f22mr35691630ejc.608.1662406445545;
-        Mon, 05 Sep 2022 12:34:05 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id y2-20020aa7ce82000000b004483a543794sm6889460edv.96.2022.09.05.12.34.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Sep 2022 12:34:02 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id F2CDC589586; Mon,  5 Sep 2022 21:34:01 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <martin.lau@linux.dev>,
-        Song Liu <song@kernel.org>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        Hao Luo <haoluo@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Cc:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH bpf-next v2 3/3] bpf: Use 64-bit return value for bpf_prog_run
-Date:   Mon,  5 Sep 2022 21:33:59 +0200
-Message-Id: <20220905193359.969347-4-toke@redhat.com>
-X-Mailer: git-send-email 2.37.2
-In-Reply-To: <20220905193359.969347-1-toke@redhat.com>
-References: <20220905193359.969347-1-toke@redhat.com>
+        with ESMTP id S232333AbiIETll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 15:41:41 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D77815070C
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 12:41:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1662406896; x=1693942896;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=/QRCCsvG8qOJBmRdC2ELSmb4XJQFIgayRlYZwAvrIc0=;
+  b=I7gT0QszqNo3j/hl0it3vjpDpLhQdwJ8xfKbw9SBJiAehVttAG8dCzdK
+   RMI56AU/DD+S2tY786X4u88BbkfzYjx7idotRF8c4f7TkEYjZ++gQJ0Js
+   OjnMHey6mnO9h4lh+fZfSrujyU6+Ed9t3RO+XfLQ5QYONkdeMeDE02eA0
+   yUJg5+a5Lnl7tSoOJ3aovQ7MUxg4PHOZNi0yxVEuVq2/L8dMOFSnGfduy
+   UDvGIXAV8RVAE78yjvE5vFw059yP/0jzc4b8vun/Zaxx61GrIBflRjAPe
+   tkfEz47sP6f2rvaFEKjcadm3j5EbWjF9qh6yEqIqniNZJFhQBG3YZj90g
+   A==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10461"; a="358161246"
+X-IronPort-AV: E=Sophos;i="5.93,292,1654585200"; 
+   d="scan'208";a="358161246"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Sep 2022 12:41:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,292,1654585200"; 
+   d="scan'208";a="646993006"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga001.jf.intel.com with ESMTP; 05 Sep 2022 12:41:36 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31; Mon, 5 Sep 2022 12:41:36 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.31 via Frontend Transport; Mon, 5 Sep 2022 12:41:36 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.176)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.31; Mon, 5 Sep 2022 12:41:35 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mMb0BRrEmOG7SQ3QmgrViVKQjxFdoyvAptcDNtgwH1bwFbQoPvWh1OcjHkXuC4UqGtoVWA/GDtE5L2PrzATltctrJqwRxpcpWVUA6F9WzSMEHByOMNq2iZ2FE9SUP+Y+Eg46LE4Qg+wq+188seXaEPy1b7ixbFrulXoIado+2U8xjaPIxumh2b+9/IKeNuO4WLyhXtKxp2atKThnaw7+M6sr6ReL0RTI3QzcUSw7zCC39AS3oCwbPpzd9zHow7dyzMC6GMsH0wpGpVpJQ/hFV0lHaDCoFDlF61ohxksGfCpzgESJQUQryqqdZIf/+k9VX7/pZO2CLWDWHVJtE04OYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/QRCCsvG8qOJBmRdC2ELSmb4XJQFIgayRlYZwAvrIc0=;
+ b=Zj8LQp623mQg191zt7/DiQb4CI/8KbUgeTPvVGZ+khiQESvnjxcPcJNigrHtOxQL3jjqip3yATF6aL3KFaZyynFOobeOqkotOp2+L++x/jYgpfJFoNbj+9PT1ddVId49+hbHGsbrGvCcD3O6GqR6qUMgAeR5DqCMDL8Bx/+PzdV3yzS2FghvuBFwiiJD+QpIPPGp0MHja9h7Aucd+Ix+NstAP/zNjFB+pG0bhwcB10okxfkmsWqdFySH949Y29Z0qH8YD5NdCfp+thFaa1e2NUl5eT/ZCPh0Y7VzLFZCWKJS0+39cJDQc2gEwsmvK6/t7pzFA7O8JjKOdcH0aI9v8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN6PR11MB4177.namprd11.prod.outlook.com (2603:10b6:405:83::31)
+ by BN6PR11MB1444.namprd11.prod.outlook.com (2603:10b6:405:a::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.12; Mon, 5 Sep
+ 2022 19:41:34 +0000
+Received: from BN6PR11MB4177.namprd11.prod.outlook.com
+ ([fe80::40b5:32b6:ab73:3b8b]) by BN6PR11MB4177.namprd11.prod.outlook.com
+ ([fe80::40b5:32b6:ab73:3b8b%7]) with mapi id 15.20.5588.015; Mon, 5 Sep 2022
+ 19:41:34 +0000
+From:   "Michalik, Michal" <michal.michalik@intel.com>
+To:     Johan Hovold <johan@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "G, GurucharanX" <gurucharanx.g@intel.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>
+Subject: RE: [PATCH net 3/3] ice: Add set_termios tty operations handle to
+ GNSS
+Thread-Topic: [PATCH net 3/3] ice: Add set_termios tty operations handle to
+ GNSS
+Thread-Index: AQHYu/L55I/9qMiXWE+dtrk9hjKUpa3JkKOAgACUJACABx/9MA==
+Date:   Mon, 5 Sep 2022 19:41:34 +0000
+Message-ID: <BN6PR11MB4177480C375591CF5BA8E812E37F9@BN6PR11MB4177.namprd11.prod.outlook.com>
+References: <20220829220049.333434-1-anthony.l.nguyen@intel.com>
+ <20220829220049.333434-4-anthony.l.nguyen@intel.com>
+ <20220831145439.2f268c34@kernel.org> <YxBU5AV4jfqaExaW@hovoldconsulting.com>
+In-Reply-To: <YxBU5AV4jfqaExaW@hovoldconsulting.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.500.17
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 78193112-e224-446a-b0ec-08da8f76a3d8
+x-ms-traffictypediagnostic: BN6PR11MB1444:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YDDayQ2WE6EPH6QzFa23oEWr+Kjzr+v5IsJ/lPnC6GLnyiQ1pAmrqPRSSfIxeJPPAYlyGsLoEADbKbsQvTQmSIM0sdh66f2YRxkEGSQ+Jx3mbn4aOEfIlGB07xHESWmw6TlzGnRxZ/2RHfuxSeeHlROs4tyaAHrGU1XGfmaTx887MCSXQTOrF36mbLE64HOjjLqqdRI/OBSdtCJe/4oVWYW0Mm26UPero1xrvnCcTehFV9J5HkiZqhjbKuI1WyYtlUCMhXXzS59X32RT2NeSZyHc4ui6vRpIFvcuKN6PqsVAKphJx3rRpAPxKoY72WR5aa2JbCQ5uk7/LS6R3f+ECjOd8nPEKiIpg4b/j6WVZVIbIRlTbnNZiYZxxHCYPKGoGuklWS0KXbbPSBu2PuaMRFUEknRTv+BOmsAqHJlDN7CvekvRFQkYSHm4GdRsdEPrxe8TS1HkUXV5NvT9l2U2D3GuSv9mvLDTa8UcdPg27KdGdSBfULuyVh0zqyHog7LQAERiQlgyFj+AOUMo6EEGIiCx/RZqhalVQV6HQi+WiIpLgwdu0A0SF6mM01yqCuIMvXPBeO9tkMTJV5QKTgtpOYmV/IFKTd7L2cS0CCwZtT3grMUhMxwF69hpW3pr6JCIzYGSsYTIb/zAJibczYc1VkI0IkRhJkKZqT7+AikdSjWlIcV76Apn/nMS4F3ThOYXnQj4mk/HEXhCnf1mHYGFZwh4t+UBY/+7SZMAgWaX/HzyafqtjymfpBCQyekxwK3oqpNzSdR7yvBw+opNDezncA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR11MB4177.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(376002)(366004)(396003)(346002)(39860400002)(136003)(53546011)(478600001)(9686003)(83380400001)(52536014)(5660300002)(2906002)(8936002)(41300700001)(7696005)(86362001)(33656002)(186003)(6506007)(71200400001)(26005)(38070700005)(82960400001)(8676002)(55016003)(6636002)(64756008)(66446008)(66476007)(66556008)(66946007)(76116006)(110136005)(316002)(54906003)(38100700002)(122000001)(4326008);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RqYdYo5ChD4yiQ69Xlha+1SuUmREoe0dI2vL10mq9ij0Jdg8XkJbgE3FyieT?=
+ =?us-ascii?Q?oqnt5f3kkHnF6v1hTMXvb3EwAagvN2a6GRbkhQlh307ovvGsZfGz+QiRVI39?=
+ =?us-ascii?Q?9uC+vPhVfOzRL6CVQX6dahZQZMd2f8dKgzFrR3X9U56DWAVM0nYHuIGmXdv/?=
+ =?us-ascii?Q?6PT7Unlf/WkVep/atv6UxWiu/dDPEYsLyNmSuVJOFl2ClhbPf3L7Ks94AHmj?=
+ =?us-ascii?Q?8vcQkNRQzpj6diZfVqCSqKW2R5kRBC4UdF9ckJJ6eptvLw8jN9zO99BGdZS9?=
+ =?us-ascii?Q?bqH6HJRqxAcuPGsGve3WOoJWGLiCmL49AmgWSl3dJSHl6a0xaM0nT/j/7Ip6?=
+ =?us-ascii?Q?Y6Fg9mnLVxQPmc43PhWxcCcPiH4lvDB10PvpKpXyt9Pj+znKPKt/yJe0ozZb?=
+ =?us-ascii?Q?zBts4156blRgvSVfOoEHn/FSTR6a4yPmi33wV26eJKPtz4P4mpjHCB7UZYAH?=
+ =?us-ascii?Q?4sknZQNntkarbdv/p9nDlGoFWcMtZGL3uvY23BVBrs3/NqXgmzRwqOOvhIZz?=
+ =?us-ascii?Q?qYRt9PdvTPlVRu7eUkkUAtzZLZj20yQOXUbr3hjLWnLlMscDOZ1iEdrICOnM?=
+ =?us-ascii?Q?59J44XcSPqsMTjJyx7R9CYSqqApCN3+7ex42KnacBlzvOEVNRT169Nz9Wzxa?=
+ =?us-ascii?Q?dpucdxEhgISroph3g/Ei19yBKN0msoIlxTSJmN0pfN093f3/N2WXDj5YdGQa?=
+ =?us-ascii?Q?1KiA+qLyAuhOkcbQ8BKF8MczMEOeruEpnLDSb4I9LnfqetBGWMu5L1Elpg3P?=
+ =?us-ascii?Q?F5L7z+qej/PHkQOonH6zROy30i1efC+KDeG9D5BBsXoxPwr61IaEuoApbaPx?=
+ =?us-ascii?Q?Q93Q+Jcekoxipn/7w9Dc3wKL5E7ALd0TYfL/9y9h2GefY3M7tG3VAhNUdHqL?=
+ =?us-ascii?Q?9GyRsuLd/uZPQVYH2cPW2Ee7a/SYMrYjV+4Ds0e1jT1zPhhpU9nv8NUYoGwS?=
+ =?us-ascii?Q?t6q408G7Lw7iXOLRzLsF+2vbg3UhUfcNVADa2EkkCL6rZGhgi7DAzqWVtC/F?=
+ =?us-ascii?Q?0GmS0aGcLM+pIn5WnuvcWMAvVRlX5iLe+4+dkP689AJkWtDdeFMnfcvJWNcU?=
+ =?us-ascii?Q?X9L0w8lvrMDmus9qIrzRsvEneP8cRkQZ/qTTDVleYscPMqLwSZNCrWF5s+8h?=
+ =?us-ascii?Q?aUBIiy2ffjtBMx2p2s6+zGmB5+u2d6K9/e7eYhzCU2K6XIJI07Csb9vFqkWE?=
+ =?us-ascii?Q?BL1PjZ3Q7Up2QfrLRvWIl9ZWc0S4ZdUKp3VFsVO8jmchISGR5pPmtb+DjLfU?=
+ =?us-ascii?Q?E7jW7e7lmvFAezvxtEtBQr4eyGXH0PZpjAzjKBajy3w0WW+9N58unH4IxJph?=
+ =?us-ascii?Q?sALgFEA2xyOg/O+Q1hNEOnRlQje/Jh6NxbLp8UiPfZ1Lqt9bF3ctySqRSfL+?=
+ =?us-ascii?Q?cjAhXm9Xq0QGIx+RD3tpbDWPPaJoHPxCMJl7/hcI/VVGvn4c4U/jkr0+13yI?=
+ =?us-ascii?Q?JJKHWePzIulOG5IPiFjp8eUi9THMwuqbmu7TM1loZ05xTXsf7NJN+BysMgt7?=
+ =?us-ascii?Q?N+9RtVRv0TBsKIUVagQlHz/ug5fs+JUEPF86snk7IJ58my6IXjJGPK30ns5h?=
+ =?us-ascii?Q?3yP5KC54u53MHfE66f0/qGqqZrHyVbkqqLFzU29QiVy6kwyopHNUekF8wxp4?=
+ =?us-ascii?Q?Ng=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB4177.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78193112-e224-446a-b0ec-08da8f76a3d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2022 19:41:34.3521
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IaqT/3+KT18fQImFlQkMiFOaS9qblpLeks5hi1HV7Rf2iWI5w7IM4XmtAAs9HG8x8mDmM9Re7WCN0KwS51Y9UuSlrVVHdrSAuc4u7kRrfyc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1444
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -94,440 +160,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Hello Johan,
 
-BPF ABI always uses 64-bit return value, but so far __bpf_prog_run and
-higher level wrappers always truncated the return value to 32-bit. We want
-to be able to introduce a new BPF program type that returns a PTR_TO_BTF_ID
-or NULL from the BPF program to the caller context in the kernel. To be
-able to use this returned pointer value, the bpf_prog_run invocation needs
-to be able to return a 64-bit value, so update the definitions to allow
-this.
+Much thanks for valuable feedback. We really appreciate that you have point=
+ed that
+problem so we can fix it as soon as possible.=20
 
-To avoid code churn in the whole kernel, we let the compiler handle
-truncation normally, and allow new call sites to utilize the 64-bit
-return value, by receiving the return value as a u64.
+BR,
+M^2
 
-Reviewed-by: Stanislav Fomichev <sdf@google.com>
-Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- include/linux/bpf-cgroup.h | 12 ++++++------
- include/linux/bpf.h        | 14 +++++++-------
- include/linux/filter.h     | 34 +++++++++++++++++-----------------
- kernel/bpf/cgroup.c        | 12 ++++++------
- kernel/bpf/core.c          | 14 +++++++-------
- kernel/bpf/offload.c       |  4 ++--
- net/bpf/test_run.c         | 21 ++++++++++++---------
- net/packet/af_packet.c     |  7 +++++--
- 8 files changed, 62 insertions(+), 56 deletions(-)
+> -----Original Message-----
+> From: Johan Hovold <johan@kernel.org>=20
+> Sent: Thursday, September 1, 2022 8:45 AM
+> To: Jakub Kicinski <kuba@kernel.org>; Nguyen, Anthony L <anthony.l.nguyen=
+@intel.com>
+> Cc: davem@davemloft.net; pabeni@redhat.com; edumazet@google.com; Michalik=
+, Michal <michal.michalik@intel.com>; netdev@vger.kernel.org; richardcochra=
+n@gmail.com; G, GurucharanX <gurucharanx.g@intel.com>; Greg Kroah-Hartman <=
+gregkh@linuxfoundation.org>; Jiri Slaby <jirislaby@kernel.org>
+> Subject: Re: [PATCH net 3/3] ice: Add set_termios tty operations handle t=
+o GNSS
+>=20
+> On Wed, Aug 31, 2022 at 02:54:39PM -0700, Jakub Kicinski wrote:
+> > On Mon, 29 Aug 2022 15:00:49 -0700 Tony Nguyen wrote:
+> > > From: Michal Michalik <michal.michalik@intel.com>
+> > >=20
+> > > Some third party tools (ex. ubxtool) try to change GNSS TTY parameter=
+s
+> > > (ex. speed). While being optional implementation, without set_termios
+> > > handle this operation fails and prevents those third party tools from
+> > > working. TTY interface in ice driver is virtual and doesn't need any =
+change
+> > > on set_termios, so is left empty. Add this mock to support all Linux =
+TTY
+> > > APIs.
+> > >=20
+> > > Fixes: 43113ff73453 ("ice: add TTY for GNSS module for E810T device")
+> > > Signed-off-by: Michal Michalik <michal.michalik@intel.com>
+> > > Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker =
+at Intel)
+> > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> >=20
+> > Please CC GNSS and TTY maintainers on the patches relating to=20
+> > the TTY/GNSS channel going forward.
+> >=20
+> > CC: Greg, Jiri, Johan
+> >=20
+> > We'll pull in a day or two if there are no objections.
+>=20
+> Hmm. Why was this implemented as a roll-your-own tty driver instead of
+> using the GNSS subsystem, which also would have allowed for a smaller
+> (and likely less buggy) implementation?
+>=20
+> Looks like this was merged in 5.18 with 43113ff73453 ("ice: add TTY for
+> GNSS module for E810T device") without any input from people familiar
+> with tty either.
+>=20
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 57e9e109257e..85ae187e5d41 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -23,12 +23,12 @@ struct ctl_table;
- struct ctl_table_header;
- struct task_struct;
- 
--unsigned int __cgroup_bpf_run_lsm_sock(const void *ctx,
--				       const struct bpf_insn *insn);
--unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
--					 const struct bpf_insn *insn);
--unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
--					  const struct bpf_insn *insn);
-+u64 __cgroup_bpf_run_lsm_sock(const void *ctx,
-+			      const struct bpf_insn *insn);
-+u64 __cgroup_bpf_run_lsm_socket(const void *ctx,
-+				const struct bpf_insn *insn);
-+u64 __cgroup_bpf_run_lsm_current(const void *ctx,
-+				 const struct bpf_insn *insn);
- 
- #ifdef CONFIG_CGROUP_BPF
- 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 222cba23e6d9..f32f33f5c827 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -58,8 +58,8 @@ typedef u64 (*bpf_callback_t)(u64, u64, u64, u64, u64);
- typedef int (*bpf_iter_init_seq_priv_t)(void *private_data,
- 					struct bpf_iter_aux_info *aux);
- typedef void (*bpf_iter_fini_seq_priv_t)(void *private_data);
--typedef unsigned int (*bpf_func_t)(const void *,
--				   const struct bpf_insn *);
-+typedef u64 (*bpf_func_t)(const void *,
-+			  const struct bpf_insn *);
- struct bpf_iter_seq_info {
- 	const struct seq_operations *seq_ops;
- 	bpf_iter_init_seq_priv_t init_seq_private;
-@@ -896,7 +896,7 @@ struct bpf_dispatcher {
- 	struct bpf_ksym ksym;
- };
- 
--static __always_inline __nocfi unsigned int bpf_dispatcher_nop_func(
-+static __always_inline __nocfi u64 bpf_dispatcher_nop_func(
- 	const void *ctx,
- 	const struct bpf_insn *insnsi,
- 	bpf_func_t bpf_func)
-@@ -925,7 +925,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs);
- }
- 
- #define DEFINE_BPF_DISPATCHER(name)					\
--	noinline __nocfi unsigned int bpf_dispatcher_##name##_func(	\
-+	noinline __nocfi u64 bpf_dispatcher_##name##_func(		\
- 		const void *ctx,					\
- 		const struct bpf_insn *insnsi,				\
- 		bpf_func_t bpf_func)					\
-@@ -936,7 +936,7 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs);
- 	struct bpf_dispatcher bpf_dispatcher_##name =			\
- 		BPF_DISPATCHER_INIT(bpf_dispatcher_##name);
- #define DECLARE_BPF_DISPATCHER(name)					\
--	unsigned int bpf_dispatcher_##name##_func(			\
-+	u64 bpf_dispatcher_##name##_func(				\
- 		const void *ctx,					\
- 		const struct bpf_insn *insnsi,				\
- 		bpf_func_t bpf_func);					\
-@@ -1140,7 +1140,7 @@ struct bpf_prog {
- 	u8			tag[BPF_TAG_SIZE];
- 	struct bpf_prog_stats __percpu *stats;
- 	int __percpu		*active;
--	unsigned int		(*bpf_func)(const void *ctx,
-+	u64			(*bpf_func)(const void *ctx,
- 					    const struct bpf_insn *insn);
- 	struct bpf_prog_aux	*aux;		/* Auxiliary fields */
- 	struct sock_fprog_kern	*orig_prog;	/* Original BPF program */
-@@ -1489,7 +1489,7 @@ static inline void bpf_reset_run_ctx(struct bpf_run_ctx *old_ctx)
- /* BPF program asks to set CN on the packet. */
- #define BPF_RET_SET_CN						(1 << 0)
- 
--typedef u32 (*bpf_prog_run_fn)(const struct bpf_prog *prog, const void *ctx);
-+typedef u64 (*bpf_prog_run_fn)(const struct bpf_prog *prog, const void *ctx);
- 
- static __always_inline u32
- bpf_prog_run_array(const struct bpf_prog_array *array,
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index eff295509f03..d6c2deffdcc3 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -567,16 +567,16 @@ struct sk_filter {
- 
- DECLARE_STATIC_KEY_FALSE(bpf_stats_enabled_key);
- 
--typedef unsigned int (*bpf_dispatcher_fn)(const void *ctx,
--					  const struct bpf_insn *insnsi,
--					  unsigned int (*bpf_func)(const void *,
--								   const struct bpf_insn *));
-+typedef u64 (*bpf_dispatcher_fn)(const void *ctx,
-+				 const struct bpf_insn *insnsi,
-+				 u64 (*bpf_func)(const void *,
-+						 const struct bpf_insn *));
- 
--static __always_inline u32 __bpf_prog_run(const struct bpf_prog *prog,
-+static __always_inline u64 __bpf_prog_run(const struct bpf_prog *prog,
- 					  const void *ctx,
- 					  bpf_dispatcher_fn dfunc)
- {
--	u32 ret;
-+	u64 ret;
- 
- 	cant_migrate();
- 	if (static_branch_unlikely(&bpf_stats_enabled_key)) {
-@@ -596,7 +596,7 @@ static __always_inline u32 __bpf_prog_run(const struct bpf_prog *prog,
- 	return ret;
- }
- 
--static __always_inline u32 bpf_prog_run(const struct bpf_prog *prog, const void *ctx)
-+static __always_inline u64 bpf_prog_run(const struct bpf_prog *prog, const void *ctx)
- {
- 	return __bpf_prog_run(prog, ctx, bpf_dispatcher_nop_func);
- }
-@@ -609,10 +609,10 @@ static __always_inline u32 bpf_prog_run(const struct bpf_prog *prog, const void
-  * invocation of a BPF program does not require reentrancy protection
-  * against a BPF program which is invoked from a preempting task.
-  */
--static inline u32 bpf_prog_run_pin_on_cpu(const struct bpf_prog *prog,
-+static inline u64 bpf_prog_run_pin_on_cpu(const struct bpf_prog *prog,
- 					  const void *ctx)
- {
--	u32 ret;
-+	u64 ret;
- 
- 	migrate_disable();
- 	ret = bpf_prog_run(prog, ctx);
-@@ -708,13 +708,13 @@ static inline u8 *bpf_skb_cb(const struct sk_buff *skb)
- }
- 
- /* Must be invoked with migration disabled */
--static inline u32 __bpf_prog_run_save_cb(const struct bpf_prog *prog,
-+static inline u64 __bpf_prog_run_save_cb(const struct bpf_prog *prog,
- 					 const void *ctx)
- {
- 	const struct sk_buff *skb = ctx;
- 	u8 *cb_data = bpf_skb_cb(skb);
- 	u8 cb_saved[BPF_SKB_CB_LEN];
--	u32 res;
-+	u64 res;
- 
- 	if (unlikely(prog->cb_access)) {
- 		memcpy(cb_saved, cb_data, sizeof(cb_saved));
-@@ -729,10 +729,10 @@ static inline u32 __bpf_prog_run_save_cb(const struct bpf_prog *prog,
- 	return res;
- }
- 
--static inline u32 bpf_prog_run_save_cb(const struct bpf_prog *prog,
-+static inline u64 bpf_prog_run_save_cb(const struct bpf_prog *prog,
- 				       struct sk_buff *skb)
- {
--	u32 res;
-+	u64 res;
- 
- 	migrate_disable();
- 	res = __bpf_prog_run_save_cb(prog, skb);
-@@ -740,11 +740,11 @@ static inline u32 bpf_prog_run_save_cb(const struct bpf_prog *prog,
- 	return res;
- }
- 
--static inline u32 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
-+static inline u64 bpf_prog_run_clear_cb(const struct bpf_prog *prog,
- 					struct sk_buff *skb)
- {
- 	u8 *cb_data = bpf_skb_cb(skb);
--	u32 res;
-+	u64 res;
- 
- 	if (unlikely(prog->cb_access))
- 		memset(cb_data, 0, BPF_SKB_CB_LEN);
-@@ -759,14 +759,14 @@ DECLARE_STATIC_KEY_FALSE(bpf_master_redirect_enabled_key);
- 
- u32 xdp_master_redirect(struct xdp_buff *xdp);
- 
--static __always_inline u32 bpf_prog_run_xdp(const struct bpf_prog *prog,
-+static __always_inline u64 bpf_prog_run_xdp(const struct bpf_prog *prog,
- 					    struct xdp_buff *xdp)
- {
- 	/* Driver XDP hooks are invoked within a single NAPI poll cycle and thus
- 	 * under local_bh_disable(), which provides the needed RCU protection
- 	 * for accessing map entries.
- 	 */
--	u32 act = __bpf_prog_run(prog, xdp, BPF_DISPATCHER_FUNC(xdp));
-+	u64 act = __bpf_prog_run(prog, xdp, BPF_DISPATCHER_FUNC(xdp));
- 
- 	if (static_branch_unlikely(&bpf_master_redirect_enabled_key)) {
- 		if (act == XDP_TX && netif_is_bond_slave(xdp->rxq->dev))
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 121b5a5edb64..9dffd786b541 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -63,8 +63,8 @@ bpf_prog_run_array_cg(const struct cgroup_bpf *cgrp,
- 	return run_ctx.retval;
- }
- 
--unsigned int __cgroup_bpf_run_lsm_sock(const void *ctx,
--				       const struct bpf_insn *insn)
-+u64 __cgroup_bpf_run_lsm_sock(const void *ctx,
-+			      const struct bpf_insn *insn)
- {
- 	const struct bpf_prog *shim_prog;
- 	struct sock *sk;
-@@ -85,8 +85,8 @@ unsigned int __cgroup_bpf_run_lsm_sock(const void *ctx,
- 	return ret;
- }
- 
--unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
--					 const struct bpf_insn *insn)
-+u64 __cgroup_bpf_run_lsm_socket(const void *ctx,
-+				const struct bpf_insn *insn)
- {
- 	const struct bpf_prog *shim_prog;
- 	struct socket *sock;
-@@ -107,8 +107,8 @@ unsigned int __cgroup_bpf_run_lsm_socket(const void *ctx,
- 	return ret;
- }
- 
--unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
--					  const struct bpf_insn *insn)
-+u64 __cgroup_bpf_run_lsm_current(const void *ctx,
-+				 const struct bpf_insn *insn)
- {
- 	const struct bpf_prog *shim_prog;
- 	struct cgroup *cgrp;
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 639437f36928..7549d765f7b6 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1999,7 +1999,7 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 
- #define PROG_NAME(stack_size) __bpf_prog_run##stack_size
- #define DEFINE_BPF_PROG_RUN(stack_size) \
--static unsigned int PROG_NAME(stack_size)(const void *ctx, const struct bpf_insn *insn) \
-+static u64 PROG_NAME(stack_size)(const void *ctx, const struct bpf_insn *insn) \
- { \
- 	u64 stack[stack_size / sizeof(u64)]; \
- 	u64 regs[MAX_BPF_EXT_REG]; \
-@@ -2043,8 +2043,8 @@ EVAL4(DEFINE_BPF_PROG_RUN_ARGS, 416, 448, 480, 512);
- 
- #define PROG_NAME_LIST(stack_size) PROG_NAME(stack_size),
- 
--static unsigned int (*interpreters[])(const void *ctx,
--				      const struct bpf_insn *insn) = {
-+static u64 (*interpreters[])(const void *ctx,
-+			     const struct bpf_insn *insn) = {
- EVAL6(PROG_NAME_LIST, 32, 64, 96, 128, 160, 192)
- EVAL6(PROG_NAME_LIST, 224, 256, 288, 320, 352, 384)
- EVAL4(PROG_NAME_LIST, 416, 448, 480, 512)
-@@ -2069,8 +2069,8 @@ void bpf_patch_call_args(struct bpf_insn *insn, u32 stack_depth)
- }
- 
- #else
--static unsigned int __bpf_prog_ret0_warn(const void *ctx,
--					 const struct bpf_insn *insn)
-+static u64 __bpf_prog_ret0_warn(const void *ctx,
-+				const struct bpf_insn *insn)
- {
- 	/* If this handler ever gets executed, then BPF_JIT_ALWAYS_ON
- 	 * is not working properly, so warn about it!
-@@ -2205,8 +2205,8 @@ struct bpf_prog *bpf_prog_select_runtime(struct bpf_prog *fp, int *err)
- }
- EXPORT_SYMBOL_GPL(bpf_prog_select_runtime);
- 
--static unsigned int __bpf_prog_ret1(const void *ctx,
--				    const struct bpf_insn *insn)
-+static u64 __bpf_prog_ret1(const void *ctx,
-+			   const struct bpf_insn *insn)
- {
- 	return 1;
- }
-diff --git a/kernel/bpf/offload.c b/kernel/bpf/offload.c
-index 13e4efc971e6..d6a37ab87511 100644
---- a/kernel/bpf/offload.c
-+++ b/kernel/bpf/offload.c
-@@ -246,8 +246,8 @@ static int bpf_prog_offload_translate(struct bpf_prog *prog)
- 	return ret;
- }
- 
--static unsigned int bpf_prog_warn_on_exec(const void *ctx,
--					  const struct bpf_insn *insn)
-+static u64 bpf_prog_warn_on_exec(const void *ctx,
-+				 const struct bpf_insn *insn)
- {
- 	WARN(1, "attempt to execute device eBPF program on the host!");
- 	return 0;
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index 25d8ecf105aa..f0827d8690f1 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -370,7 +370,7 @@ static int bpf_test_run_xdp_live(struct bpf_prog *prog, struct xdp_buff *ctx,
- }
- 
- static int bpf_test_run(struct bpf_prog *prog, void *ctx, u32 repeat,
--			u32 *retval, u32 *time, bool xdp)
-+			u64 *retval, u32 *time, bool xdp)
- {
- 	struct bpf_prog_array_item item = {.prog = prog};
- 	struct bpf_run_ctx *old_ctx;
-@@ -757,7 +757,7 @@ int bpf_prog_test_run_tracing(struct bpf_prog *prog,
- 	struct bpf_fentry_test_t arg = {};
- 	u16 side_effect = 0, ret = 0;
- 	int b = 2, err = -EFAULT;
--	u32 retval = 0;
-+	u64 retval = 0;
- 
- 	if (kattr->test.flags || kattr->test.cpu || kattr->test.batch_size)
- 		return -EINVAL;
-@@ -797,7 +797,7 @@ int bpf_prog_test_run_tracing(struct bpf_prog *prog,
- struct bpf_raw_tp_test_run_info {
- 	struct bpf_prog *prog;
- 	void *ctx;
--	u32 retval;
-+	u64 retval;
- };
- 
- static void
-@@ -1045,15 +1045,15 @@ int bpf_prog_test_run_skb(struct bpf_prog *prog, const union bpf_attr *kattr,
- 			  union bpf_attr __user *uattr)
- {
- 	bool is_l2 = false, is_direct_pkt_access = false;
-+	u32 size = kattr->test.data_size_in, duration;
- 	struct net *net = current->nsproxy->net_ns;
- 	struct net_device *dev = net->loopback_dev;
--	u32 size = kattr->test.data_size_in;
- 	u32 repeat = kattr->test.repeat;
- 	struct __sk_buff *ctx = NULL;
--	u32 retval, duration;
- 	int hh_len = ETH_HLEN;
- 	struct sk_buff *skb;
- 	struct sock *sk;
-+	u64 retval;
- 	void *data;
- 	int ret;
- 
-@@ -1241,15 +1241,16 @@ int bpf_prog_test_run_xdp(struct bpf_prog *prog, const union bpf_attr *kattr,
- 	bool do_live = (kattr->test.flags & BPF_F_TEST_XDP_LIVE_FRAMES);
- 	u32 tailroom = SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
- 	u32 batch_size = kattr->test.batch_size;
--	u32 retval = 0, duration, max_data_sz;
- 	u32 size = kattr->test.data_size_in;
- 	u32 headroom = XDP_PACKET_HEADROOM;
- 	u32 repeat = kattr->test.repeat;
- 	struct netdev_rx_queue *rxqueue;
- 	struct skb_shared_info *sinfo;
-+	u32 duration, max_data_sz;
- 	struct xdp_buff xdp = {};
- 	int i, ret = -EINVAL;
- 	struct xdp_md *ctx;
-+	u64 retval = 0;
- 	void *data;
- 
- 	if (prog->expected_attach_type == BPF_XDP_DEVMAP ||
-@@ -1407,7 +1408,8 @@ int bpf_prog_test_run_flow_dissector(struct bpf_prog *prog,
- 	struct bpf_flow_keys flow_keys;
- 	const struct ethhdr *eth;
- 	unsigned int flags = 0;
--	u32 retval, duration;
-+	u32 duration;
-+	u64 retval;
- 	void *data;
- 	int ret;
- 
-@@ -1472,8 +1474,9 @@ int bpf_prog_test_run_sk_lookup(struct bpf_prog *prog, const union bpf_attr *kat
- 	struct bpf_sk_lookup_kern ctx = {};
- 	u32 repeat = kattr->test.repeat;
- 	struct bpf_sk_lookup *user_ctx;
--	u32 retval, duration;
- 	int ret = -EINVAL;
-+	u32 duration;
-+	u64 retval;
- 
- 	if (kattr->test.flags || kattr->test.cpu || kattr->test.batch_size)
- 		return -EINVAL;
-@@ -1571,8 +1574,8 @@ int bpf_prog_test_run_syscall(struct bpf_prog *prog,
- 	void __user *ctx_in = u64_to_user_ptr(kattr->test.ctx_in);
- 	__u32 ctx_size_in = kattr->test.ctx_size_in;
- 	void *ctx = NULL;
--	u32 retval;
- 	int err = 0;
-+	u64 retval;
- 
- 	/* doesn't support data_in/out, ctx_out, duration, or repeat or flags */
- 	if (kattr->test.data_in || kattr->test.data_out ||
-diff --git a/net/packet/af_packet.c b/net/packet/af_packet.c
-index 5cbe07116e04..bc4d9ff6f91c 100644
---- a/net/packet/af_packet.c
-+++ b/net/packet/af_packet.c
-@@ -1444,8 +1444,11 @@ static unsigned int fanout_demux_bpf(struct packet_fanout *f,
- 
- 	rcu_read_lock();
- 	prog = rcu_dereference(f->bpf_prog);
--	if (prog)
--		ret = bpf_prog_run_clear_cb(prog, skb) % num;
-+	if (prog) {
-+		ret = bpf_prog_run_clear_cb(prog, skb);
-+		/* For some architectures, we need to do modulus in 32-bit width */
-+		ret %= num;
-+	}
- 	rcu_read_unlock();
- 
- 	return ret;
--- 
-2.37.2
+Original author is off, but to be completely honest with you - we most like=
+ly
+did not noticed the possiblity to align to GNSS subsystem. That is a mistak=
+e -
+we are working on understanding if we can easily fix that. We will back you=
+ you
+as soon as came up with the solution.
 
+> Johan
+>
