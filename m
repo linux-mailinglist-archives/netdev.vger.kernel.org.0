@@ -2,196 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6499A5ACE5B
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 11:04:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6DF5ACEB8
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 11:23:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237581AbiIEJEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 05:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37558 "EHLO
+        id S235949AbiIEJTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 05:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236127AbiIEJED (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 05:04:03 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D25240560;
-        Mon,  5 Sep 2022 02:04:02 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id t70so1772526pgc.5;
-        Mon, 05 Sep 2022 02:04:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=tIUedo3Gp+QoPuNX92HScl+5kGzWmBlWIt8drVj5myM=;
-        b=n1iLbE1U7V0t6SHTmePm5vUWlyLKYEgbygLUkU6/Rp7uvtRlM2Vy/IXRhvVZ2faiey
-         56bO1NU5zIxyqGGytiGzMJ5zGl09TR9m5UXpUboj3cYuJhb760sXtgC9Vsgql0xVozWY
-         dS04t5u6iWeUGjKUZ9rKcLoFWNQStmXzLyA60KhnDfbWNooSRoVQvwLidlOnmmOMIV+T
-         k5YUZPlW86f0K7q76J29jv94P0mXaeh/iAKU/sQHa5i3xMdpzEYcUllu9gVy7xoaXDtF
-         HlkPpMvhn37EpyUd7GrsDShJwjgl02hrZlH3eMjO+JOxlwRFE46T3HxIOaUmhVgoDT/F
-         M23A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=tIUedo3Gp+QoPuNX92HScl+5kGzWmBlWIt8drVj5myM=;
-        b=p5uanva8uRXeIx/LK6vYzUW2dW4Nvr4gfDyMWWB/LR/EnScIKmfEy2sZAvUm8Lj+g6
-         eKXaFqUXJLhKcxFD2qdO3NTOfcJEkHr6HscrxyL3pRSxJodFpbBkyMTVDVDOywDS3IKp
-         QxbsTPpsIsy04/f2q3HXvvJ69Ganigc6Btl/wmGFx/HCY7USZ16yaQLXgyU5EClk6vNb
-         TDj3L7YXE1RJ7uPH4bK1XrUOtSWIOU7O61FHtKU1+IDQW0G0Vs9Oz3uji1r2Wr6pfJvv
-         wGenE28bf7t9gGgAsN5G0K2QDHYmoqF34ih1exyO3oS+Zrve45kDNx6TiKLs1rnI3CCD
-         4kIA==
-X-Gm-Message-State: ACgBeo3id+8LhUBiN5QZ1QAcPdUv7UZPIGtRNEd4lNSdLKfIUsj3HUHh
-        CExDNLS3gpmVS6RwVBBF4NOUhnG4vlALqlApdPM=
-X-Google-Smtp-Source: AA6agR4ZMPjZewSNXNkizsnySexkQUMcIlatGYRZ/e6MEJSDlQlwzhn4aGWDucTPosRtNpFhxt1ztF6cqFoOoKhT+JQ=
-X-Received: by 2002:a05:6a00:1307:b0:53a:9663:1bd6 with SMTP id
- j7-20020a056a00130700b0053a96631bd6mr28026364pfu.55.1662368642066; Mon, 05
- Sep 2022 02:04:02 -0700 (PDT)
+        with ESMTP id S237403AbiIEJTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 05:19:45 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 236BD5594;
+        Mon,  5 Sep 2022 02:19:43 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bNt18qRtQ/CfkRHFxpsAVTC+Ow5zep0AZfcAPrVqYIgntygVQ8em1/LsuQUL/gNERwDKPaGpiGsXH5Dqn3yxMbRhM7DquX/AcfKvo7jgS/Dnxxeg1tDgE/l5f/toRpwCc6khSZQmFR3lZtSF8uwNk1grGutAdzJDLvBvtbMf410kADjt2kDyBhLYubjBHlk/bi5NTdYQrSXaG77t4A7O89u8rTx0KoGSjkWJCdZ6sVCeQOeSWoFXCOfPo0YXdkxIJmBC/rBe/OfyVQW6GnOA8B+C3hc4CH8gG5Cb6pm8vJBmma8Eo8Hp9feshZRJpmX6mxGSWPv+T5PlV1/8+Tzqtg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=BSnlDnrmocEzMHR16bndPmDjBRuDaRg5dDQZidhFj0M=;
+ b=I9twFxvdjl+F3uy5KEai2OjsAZjC0bUAdCUABGm5F2skayuifKgxa9jjG64IyAoHqNsPx2C2VHrJuJVq8bszWkeCfD9O+K59oXZ8kGoUMx2wHmCpD7hED5L/0Vi64wGUzmLn0lJxRNDTzC0civTL1fBTRuuOa2782Z0U0h3KPLBtYACLsG9XGhjLJrH/irHrsluh/g1CitvZTmyvd+Oe2yO3Iy/kxJZVtlztLPRCI6BG1col4kry56/JTV/R2J4W9pkVaclHmEgVwbVnwTb6c2fPGpzbX2w3uJU9bAjVq7F6hnlDycqne/sI7joCr2Q4fsJzK7kDp36rO4Fbc67Z7Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BSnlDnrmocEzMHR16bndPmDjBRuDaRg5dDQZidhFj0M=;
+ b=E0BJaKlZubmKIEYqmw91AS4FRgKkH2rhb0b6cJ40oU1Y4jlNakvltOXg4JAssdaC44WIVtI9ARI3jfbgO2tZC4J8CdJNuI6zMCDsbt+Rwhn60oFaO6rfRK0uqaxnNVl1AfmnzWR10stV3BaMH+phTgzSpbUu6ZCXPQ5GlbN0+UFUHhTHzXNmzFGiGR1joeLxhsBKFDmPtViCqZbSdkcpBkHL2mg6V0i8qqf423svA0nYzgtyNyxVa0m9oJhxT3v+1PGnLQ0z9ACu7dj+fVbHLFZdNodOkBGOZ+LTNbwkwWMdX4RPYN9RByRrH526tnjVYcCrit46Ssvv5rh07o6Qbw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com (2603:10b6:208:261::8)
+ by BY5PR12MB4308.namprd12.prod.outlook.com (2603:10b6:a03:20a::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18; Mon, 5 Sep
+ 2022 09:19:40 +0000
+Received: from MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::51f3:15f4:a31a:7406]) by MN2PR12MB4373.namprd12.prod.outlook.com
+ ([fe80::51f3:15f4:a31a:7406%5]) with mapi id 15.20.5588.018; Mon, 5 Sep 2022
+ 09:19:40 +0000
+Date:   Mon, 5 Sep 2022 18:19:35 +0900
+From:   Benjamin Poirier <bpoirier@nvidia.com>
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+Cc:     netdev@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Shuah Khan <shuah@kernel.org>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net v2 1/3] net: bonding: Unsync device addresses on
+ ndo_stop
+Message-ID: <YxW/J+1GX4iN0bfU@d3>
+References: <20220902014516.184930-1-bpoirier@nvidia.com>
+ <20220902014516.184930-2-bpoirier@nvidia.com>
+ <27922.1662143320@famine>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <27922.1662143320@famine>
+X-ClientProxiedBy: TYWPR01CA0012.jpnprd01.prod.outlook.com
+ (2603:1096:400:a9::17) To MN2PR12MB4373.namprd12.prod.outlook.com
+ (2603:10b6:208:261::8)
 MIME-Version: 1.0
-References: <20220905050400.1136241-1-imagedong@tencent.com> <da8998cba112cbdea9d403052732c794f3882bd2.camel@redhat.com>
-In-Reply-To: <da8998cba112cbdea9d403052732c794f3882bd2.camel@redhat.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Mon, 5 Sep 2022 17:03:50 +0800
-Message-ID: <CADxym3agY5PmVOgCKpxO8mwrCTGnJ6BNvYZUcgu0jwRJEiawHw@mail.gmail.com>
-Subject: Re: [PATCH net] net: mptcp: fix unreleased socket in accept queue
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     mathew.j.martineau@linux.intel.com, matthieu.baerts@tessares.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, mptcp@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 284e479b-cb96-40b3-cec8-08da8f1fc2e7
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4308:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Svteeuw0JSSoOto5s2+t2NF2kX0l2aRhF9NG42ToWDPMapS9Pf7K9S2DxQlQ1j8Ppv4mO98EPstEdyNG5WLJUE5GnxljfgLwhAt2Sh1wvUG2oIz7inueLUgm0Q4FoBbqO63MfibowR4JUfzr14hvhuiadzVye0fLgtIURKJ9Y66MwOtHBR94x8Z7ukVo7HUbcBWCMwgMJeUJV3gj7qVleRfnxjAaMGgJ7MiG/y2qfty1knWaASLRqqFcppnIAs43ZJOLjmJeJyjkPPKf/FolakNERNVh2gJj1ACz6mFyTWaceNWYfmGLpspv/GJ1RighcU4rJFOmoPeBZsHKWTofjM2GcPGFCAubJwC3JplLsEPap1p6GIfwmQYvb68GxWs+qPDyemMpLEUJ6ZgB4MOrYCJ7McKYOF7ofVEdfWgi4lSvlGp6wkoKuVPW3Up0UojA38vZhoTpz6O5gz7RaMYP1gSk6cwOJ870s6gzaoW/YXcjGtzK7gZzrS3gzf/Vud3C3EA5515ix8mmdlC7pAxrIulTqyEJzSbz/MQWquSnIyKmuGQYK04CxO07Yw+H41sSwqm3VKRoy48Kc1z0DIhPuun+qPuURuz7ScvGiXsboeej3x294i89apXzJWwzEe+OlPbh10PXh+Nmsa2xUTTlo1XYthkIBUeWDqkhX1c5Osinj/YGJ5kLa2V2j7Kk9P4N
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4373.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(376002)(396003)(136003)(366004)(346002)(39860400002)(8936002)(2906002)(7416002)(53546011)(41300700001)(33716001)(6506007)(83380400001)(9686003)(26005)(186003)(6512007)(6666004)(5660300002)(86362001)(478600001)(8676002)(4326008)(66476007)(6486002)(66946007)(66556008)(316002)(6916009)(38100700002)(54906003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UC+7Cmf3emZKdmP9T2hQCs208UAybqiB1Wo4rE9oraE7BeNaRzcXuCeCg3GI?=
+ =?us-ascii?Q?/KlHUvCtDMIBW74UqBUY41aoX6Wod5l7i+YrVI9RboDvMXs+WqdN2Dhkbd2Y?=
+ =?us-ascii?Q?8pjMbCNV8BcuknKJed76gXnnaqI564VVSkEd6G8FylN9AaeNvkdYP4EdTJGJ?=
+ =?us-ascii?Q?wFW/3TY5IzF+C2U3N1bbO6OCT7Jp2kShJ2TCWdDhUc7pbalOYeMJIHeA/Yy9?=
+ =?us-ascii?Q?ewyX1vSmhc2BnkSNRKKphD/CAOFtESZoXbFn2KcRKog3zoGu0ra/kB9RWzb7?=
+ =?us-ascii?Q?TEpOWT5QbZF+hkEsuBKc059Vw5lDL76qooiRIgx8atju0k1LzPJvktGXOnM2?=
+ =?us-ascii?Q?wRxu/sIFkz8XXLZHOd5hz6hURwhgEcxHDLJD87+rSdahOdKB9t7ACk7pMGZW?=
+ =?us-ascii?Q?VxxD6ORAFjiPAWc0baGqmKU8HpQ3Ka2tYC61nDq8s+LmCTZw3kMNaOrQsdYW?=
+ =?us-ascii?Q?U+W5mWRL3tBClSvEj/pCy39FVuZdYIWmrsaByvEHLWu3dkUbUnHOD/vaJe5E?=
+ =?us-ascii?Q?O5i4iKG1So62OdHh5CY80iQL32gg5OIVD2m6sxye5CJDzURdcoDDf/1JdzKA?=
+ =?us-ascii?Q?1g1hS8cNWDACP6XXSgMNHM+LKKop2k6N1r0Z8qJokP0ZujaTh8bpNfRckoSE?=
+ =?us-ascii?Q?Ye8SjfgdUEb0t+6XzKwb3SSAhV1lP51TX4b9l3drTU6ZPtqItPswV4zl55Zm?=
+ =?us-ascii?Q?dZmYaX20mQF3CbR4X+AyGm/2il5yvF1nRuM7kBbD5gMKRHvMalPsQaz1ApGD?=
+ =?us-ascii?Q?4VKgN7CdXYW2ZDTQulv+aGS4/2CTkRbpuSgwQIs63E5+7ynstKGOv2z6DeLo?=
+ =?us-ascii?Q?fqVQ/ioYgVCx2Q0N0Q16N97azi2F7XMtNFZXfGPPmvFUcHqknU7eSeBo6bmu?=
+ =?us-ascii?Q?lMBXOguQGHfzmrv6yXdcile5sK3WisEAArE7NNQmF7VPNpN5++5aexlzaPpX?=
+ =?us-ascii?Q?tc/KmM9rYGp66cQdACmfGBagRVB4f0meRJKzjHCIf6A1kvcf/QWqqaHIY+Xa?=
+ =?us-ascii?Q?Iwiy4k7VNgIevUzofwOSkPDSCseOG0r29qa+4pvqNKseJejeQdUnEWmip6ad?=
+ =?us-ascii?Q?wdmUSDn0wVEza1fDzMAXBn+5IlogPKn4YLf9atsLdyKS0zleGpPDBmVPKTwW?=
+ =?us-ascii?Q?9ReExWwUsnBlEnBmvOdncHBIIH7jOYcFt+hHm8IU2VquFJRPFcTxiLi94QGv?=
+ =?us-ascii?Q?R2H9hFkI9nKFLDEja2qGvbJU9FGFHyi1ye+aKppJW7Rn1w5zPEPR7nNBTedD?=
+ =?us-ascii?Q?ZyK2JSuwoXEfYrN3XeFdG50CCWTY47V8O2hmAvPcO0XWSDDvIq/S4+SO+O3O?=
+ =?us-ascii?Q?n91bQjEPYk3PfEI3PS6i4X7yhrD0Skh6ILv5WCXwFWz51m1adRj5ooW5/g8m?=
+ =?us-ascii?Q?rfaJ9qn3VlZcHit3GtOmV84p/jp+wahfVhgyUsB3fCM+qH6jkJgZmZSa3AyY?=
+ =?us-ascii?Q?OJsRp3dqwSIAG4mYxNAc4eTE04/ZD14WdwS0fTNaVyltC+pYOUTuJkilPCby?=
+ =?us-ascii?Q?CQsHYa+1vy4dEM3qU+Hjtjev7+d4udU2nZNxI7khjedyE3wOCQ7pXaGi+gmQ?=
+ =?us-ascii?Q?5nQQSqYx2WFxP2uZQD56b6gDfBlKZHljJuyOsY0q?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 284e479b-cb96-40b3-cec8-08da8f1fc2e7
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4373.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 09:19:40.4326
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +UQLFR56T6grGX+5jjxc2ljY2Pd61mr+JB+s3Dg68Aft2zz5XzIp4PHeqNA/Ok62lUB1r0bvqUW5qrn70iYSMg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4308
+X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 5, 2022 at 4:26 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Mon, 2022-09-05 at 13:04 +0800, menglong8.dong@gmail.com wrote:
-> > From: Menglong Dong <imagedong@tencent.com>
-> >
-> > The mptcp socket and its subflow sockets in accept queue can't be
-> > released after the process exit.
-> >
-> > While the release of a mptcp socket in listening state, the
-> > corresponding tcp socket will be released too. Meanwhile, the tcp
-> > socket in the unaccept queue will be released too. However, only init
-> > subflow is in the unaccept queue, and the joined subflow is not in the
-> > unaccept queue, which makes the joined subflow won't be released, and
-> > therefore the corresponding unaccepted mptcp socket will not be released
-> > to.
-> >
-> > This can be reproduced easily with following steps:
-> >
-> > 1. create 2 namespace and veth:
-> >    $ ip netns add mptcp-client
-> >    $ ip netns add mptcp-server
-> >    $ sysctl -w net.ipv4.conf.all.rp_filter=0
-> >    $ ip netns exec mptcp-client sysctl -w net.mptcp.enabled=1
-> >    $ ip netns exec mptcp-server sysctl -w net.mptcp.enabled=1
-> >    $ ip link add red-client netns mptcp-client type veth peer red-server \
-> >      netns mptcp-server
-> >    $ ip -n mptcp-server address add 10.0.0.1/24 dev red-server
-> >    $ ip -n mptcp-server address add 192.168.0.1/24 dev red-server
-> >    $ ip -n mptcp-client address add 10.0.0.2/24 dev red-client
-> >    $ ip -n mptcp-client address add 192.168.0.2/24 dev red-client
-> >    $ ip -n mptcp-server link set red-server up
-> >    $ ip -n mptcp-client link set red-client up
-> >
-> > 2. configure the endpoint and limit for client and server:
-> >    $ ip -n mptcp-server mptcp endpoint flush
-> >    $ ip -n mptcp-server mptcp limits set subflow 2 add_addr_accepted 2
-> >    $ ip -n mptcp-client mptcp endpoint flush
-> >    $ ip -n mptcp-client mptcp limits set subflow 2 add_addr_accepted 2
-> >    $ ip -n mptcp-client mptcp endpoint add 192.168.0.2 dev red-client id \
-> >      1 subflow
-> >
-> > 3. listen and accept on a port, such as 9999. The nc command we used
-> >    here is modified, which makes it uses mptcp protocol by default.
-> >    And the default backlog is 1:
-> >    ip netns exec mptcp-server nc -l -k -p 9999
-> >
-> > 4. open another *two* terminal and connect to the server with the
-> >    following command:
-> >    $ ip netns exec mptcp-client nc 10.0.0.1 9999
-> >    input something after connect, to triger the connection of the second
-> >    subflow
-> >
-> > 5. exit all the nc command, and check the tcp socket in server namespace.
-> >    And you will find that there is one tcp socket in CLOSE_WAIT state
-> >    and can't release forever.
->
-> Thank you for the report!
->
-> I have a doubt WRT the above scenario: AFAICS 'nc' will accept the
-> incoming sockets ASAP, so the unaccepted queue should be empty at
-> shutdown, but that does not fit with your description?!?
->
+On 2022-09-02 11:28 -0700, Jay Vosburgh wrote:
+> Benjamin Poirier <bpoirier@nvidia.com> wrote:
+> 
+> 	Repeating a couple of questions that I suspect were missed the
+> first time around:
 
-By default, as far as in my case, nc won't accept the new connection
-until the first connection closes with the '-k' set. Therefor, the second
-connection will stay in the unaccepted queue.
+Thanks for repeating, I did miss the other questions, sorry.
 
-> > There are some solutions that I thought:
-> >
-> > 1. release all unaccepted mptcp socket with mptcp_close() while the
-> >    listening tcp socket release in mptcp_subflow_queue_clean(). This is
-> >    what we do in this commit.
-> > 2. release the mptcp socket with mptcp_close() in subflow_ulp_release().
-> > 3. etc
-> >
->
-> Can you please point to a commit introducing the issue?
->
+[...]
+> >@@ -2171,12 +2169,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+> > 		dev_uc_sync_multiple(slave_dev, bond_dev);
+> > 		netif_addr_unlock_bh(bond_dev);
+> > 
+> >-		if (BOND_MODE(bond) == BOND_MODE_8023AD) {
+> >-			/* add lacpdu mc addr to mc list */
+> >-			u8 lacpdu_multicast[ETH_ALEN] = MULTICAST_LACPDU_ADDR;
+> >-
+> >+		if (BOND_MODE(bond) == BOND_MODE_8023AD)
+> > 			dev_mc_add(slave_dev, lacpdu_multicast);
+> >-		}
+> > 	}
+> 
+> 	Just to make sure I'm clear (not missing something in the
+> churn), the above changes regarding lacpdu_multicast have no functional
+> impact, correct?  They appear to move lacpdu_multicast to global scope
+> for use in the change just below.
 
-In fact, I'm not sure. In my case, I found this issue in kernel 5.10.
-And I wanted to find the solution in the upstream, but find that
-upstream has this issue too.
+Yes, that's right - no functional impact. I'll split that to a separate
+patch to make it clearer.
 
-Hmm...I am curious if this issue exists in the beginning? I
-can't find the opportunity that the joined subflow which are
-unaccepted can be released.
+> > 	bond->slave_cnt++;
+> >@@ -4211,6 +4205,9 @@ static int bond_open(struct net_device *bond_dev)
+> > 		/* register to receive LACPDUs */
+> > 		bond->recv_probe = bond_3ad_lacpdu_recv;
+> > 		bond_3ad_initiate_agg_selection(bond, 1);
+> >+
+> >+		bond_for_each_slave(bond, slave, iter)
+> >+			dev_mc_add(slave->dev, lacpdu_multicast);
+> > 	}
+> 
+> 	After this change, am I understanding correctly that both
+> bond_enslave() and bond_open() will call dev_mc_add() for
+> lacpdu_multicast?  Since dev_mc_add() -> __dev_mc_add() calls
+> __hw_addr_add_ex() with sync=false and exclusive=false, could that allow
+> us to end up with two references for lacpdu_multicast?
 
-> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> > ---
-> >  net/mptcp/subflow.c | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> >
-> > diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-> > index c7d49fb6e7bd..e39dff5d5d84 100644
-> > --- a/net/mptcp/subflow.c
-> > +++ b/net/mptcp/subflow.c
-> > @@ -1770,6 +1770,10 @@ void mptcp_subflow_queue_clean(struct sock *listener_ssk)
-> >               msk->first = NULL;
-> >               msk->dl_next = NULL;
-> >               unlock_sock_fast(sk, slow);
-> > +
-> > +             /*  */
-> > +             sock_hold(sk);
-> > +             sk->sk_prot->close(sk);
->
-> You can call mptcp_close() directly here.
->
-> Perhaps we could as well drop the mptcp_sock_destruct() hack?
+You are correct once again. When enslaving to an up bond (case in the
+selftest), it is ok, but when enslaving to a down bond and then setting
+it up, there is a double add.
 
-Do you mean to call mptcp_sock_destruct() directly here?
-
->
-> Perhpas even providing a __mptcp_close() variant not acquiring the
-> socket lock and move such close call inside the existing sk socket lock
-> above?
->
-
-Yeah, sounds nice.
-
-Thanks!
-Menglong Dong
-
-> Thanks,
->
-> Paolo
->
+Thanks for the review. I'll send a v3.
