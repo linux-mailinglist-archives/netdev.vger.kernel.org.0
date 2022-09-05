@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 591745AD3A7
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 15:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 229975AD3B0
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 15:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237547AbiIENTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 09:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38196 "EHLO
+        id S237517AbiIENT0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 09:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237142AbiIENT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 09:19:27 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB67DC55
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 06:19:23 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id q7so13118431lfu.5
-        for <netdev@vger.kernel.org>; Mon, 05 Sep 2022 06:19:23 -0700 (PDT)
+        with ESMTP id S237142AbiIENTZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 09:19:25 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD0CD6C
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 06:19:24 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id z25so13147977lfr.2
+        for <netdev@vger.kernel.org>; Mon, 05 Sep 2022 06:19:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
-        bh=+mD0iKagknglHLO8QviyxvGGQLiBT8uexkZdQOgZcjY=;
-        b=IQy5PqiLXtNzI9htrrjyqGXi68j4cZdfXeI7r3woj2p+f2mywayfSZGXI6ELspxokz
-         8h1k8VLjNGyeDhQIOMVtK6J5IjDu57o+JIxV7dBrsTmpv0dgpGzSrh/pXWcS279BJL3Y
-         1M9716QfoxbVOoFJEDI4ZEPGpckDZo5qXwBFNHEK8g7GdsdpK2fXoH8CtcKjR6gyH1ti
-         XI9WobPVOApl77sqF+QFj7jC5DkC2cJJ2Ff4RzNYGUSlgTfpdwtMbZIx9fZnRFAxbssA
-         +VxS7xt2PFLRAV/4uqAJ8ixRfZlPR4PmXCzfAjtdE+L+Fnt0Aw77xTAhW63WTmY83oh4
-         1q+A==
+        bh=WHENLs/fuMy7aqfkzSr/iT4uDSXA3TwJ9sEcYa0tI/o=;
+        b=e/eRZMprVUwUyWqvne8iPf+SnDhlPcmG5dlSNbx6MSWP68lj8+e2i1JgczBWCItndK
+         P/J7J1zq9NklH1ATQMQfslJ+PqI+9LRyVKqZo2dBcZT6N1LTeGwTdL401bSjUAEhlvq9
+         kIW8Q+my+3Cqe8ZCIKAnXnAzA8+pGSd+2CMbwzgK04qLtWRZSbnIr4vbaKN1oQ8k4IGv
+         fnaErZ1yaxIoTrtPsjW2+oMk5Da2cNWU4s66Pz3hpTU3NWff/b+n9DxZHqHZKlC6weZ5
+         17teqLc+v3F1zZU/VpHLF8NUgkHp1bJQAH/mfw35GkcNhXYQ9vpd0sDyv9cUfO+SdlvK
+         6w3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date;
-        bh=+mD0iKagknglHLO8QviyxvGGQLiBT8uexkZdQOgZcjY=;
-        b=h+94ZqVMSdzRj5NNK62zwW9YkznzOHm8yhpVEykvcbFWjraJKUyljLZpWJKzv5FzHb
-         0G1UEtNaGV2f8xMeC/HJhuSJGOkyqVcDj2J9g9fpep5suoTjh0iwELB6Fy+JimMR8qrY
-         vDphH0rB9wfZ29IzvBLhPnCgKipr9v7P07bx2v7RI5Ld/jseEcpTvx85hEMFO95BRybO
-         n8M+vOvdm0c6MZfQMEEK8PgvOlBJF9DXOOefjFZr+jXv/2B0LHzmU7UXveVUDmX+Mp2Z
-         MCyljxUl+THA7gZ9E3cpqooK3u3l4CDmIi9+CkJwBcPac1vBDcBhCaHwXHeM1o1Rjbi5
-         DVmQ==
-X-Gm-Message-State: ACgBeo19wKpRbKpsNYd0wNkfmVA4dorhG/IJQjq1YbsbvSATLwzm4R/Z
-        kgqYuZtSlvllklKfCk++zRV18GtTyLNZoKvj
-X-Google-Smtp-Source: AA6agR44mrbTwGlf4TmLd0hRAoy6sO2coJbT1w/+fb0N0aT9d450SMsfFpJ5HXaFPzldJVMEyn+hWA==
-X-Received: by 2002:a05:6512:3b2c:b0:494:7661:1a01 with SMTP id f44-20020a0565123b2c00b0049476611a01mr10447340lfv.58.1662383961623;
-        Mon, 05 Sep 2022 06:19:21 -0700 (PDT)
+        bh=WHENLs/fuMy7aqfkzSr/iT4uDSXA3TwJ9sEcYa0tI/o=;
+        b=HXwe2V3JfLezjU5EO4xg8L6iDAm4HmMMep2njkYZ4fBzOUZvWrksYl1PujS2QlUC2y
+         ikgNqnN77loAkQjWy92U/UidQivUSNaMZEd3aEtBjt81LHVets/QRMsMQTX+f7fFYfif
+         Hq59AUn1lhZhwH03D4IMAxk61JOUIwV5xlHkWsdhjDnvNBNpbCqmHW/HApdpiRSv2PG+
+         WYd9ty9Ka0LGus4KJEjidZRs4AjDSm0lK71qtSYiMZjya8GRrNX5FNl8yZ3cSky7DEn1
+         o0nA9h/xHeuVDWRGNPhMDK3RQzdIOPQsDWYWfC1C5PqUTIrBGnIr9uzw4zNw0CwTStsI
+         KE1Q==
+X-Gm-Message-State: ACgBeo3EamyzW2wEQpDxpo/D4HdEmXJ5UMUw4KmhnUjtKa7U2B9XXw4A
+        06t/yPTbxcFNf5XJnrxbRnQGdV8L+tKfkA/s
+X-Google-Smtp-Source: AA6agR41lqd+w0vt67NCJ+7HW4Ty6vwLMMJe90MPG63DVhtmPTVioXDjR2EWbzyErVT6DsYniEL8Cw==
+X-Received: by 2002:a05:6512:3e0b:b0:494:735c:c7ec with SMTP id i11-20020a0565123e0b00b00494735cc7ecmr11392982lfv.373.1662383962295;
+        Mon, 05 Sep 2022 06:19:22 -0700 (PDT)
 Received: from wse-c0089.westermo.com (h-98-128-229-160.NA.cust.bahnhof.se. [98.128.229.160])
-        by smtp.gmail.com with ESMTPSA id u14-20020a05651220ce00b004947fcf0c0bsm1183565lfr.281.2022.09.05.06.19.20
+        by smtp.gmail.com with ESMTPSA id u14-20020a05651220ce00b004947fcf0c0bsm1183565lfr.281.2022.09.05.06.19.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Sep 2022 06:19:21 -0700 (PDT)
+        Mon, 05 Sep 2022 06:19:22 -0700 (PDT)
 From:   Mattias Forsblad <mattias.forsblad@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -59,9 +59,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Mattias Forsblad <mattias.forsblad@gmail.com>
-Subject: [PATCH net-next v3 1/2] net: dsa: mv88e6xxx: Add functionality for handling RMU frames.
-Date:   Mon,  5 Sep 2022 15:19:16 +0200
-Message-Id: <20220905131917.3643193-2-mattias.forsblad@gmail.com>
+Subject: [PATCH net-next v3 2/2] net: qca8k: Use convenience function for sending frames.
+Date:   Mon,  5 Sep 2022 15:19:17 +0200
+Message-Id: <20220905131917.3643193-3-mattias.forsblad@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220905131917.3643193-1-mattias.forsblad@gmail.com>
 References: <20220905131917.3643193-1-mattias.forsblad@gmail.com>
@@ -77,919 +77,211 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Marvell SOHO family has a secondary channel for sending
-control data other than the ordinary MDIO channel. The
-switch can process specially crafted ethernet frames
-as control frames. Add functionality for creating, sending,
-receiving and processing those frames. This channel is
-best suited for accessing larger data structures in the
-switch.
-Use this control channel for getting RMON counters.
+Use new dsa convenience function to send command frames.
 
 Signed-off-by: Mattias Forsblad <mattias.forsblad@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/Makefile  |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c    |  73 +++++--
- drivers/net/dsa/mv88e6xxx/chip.h    |  21 ++
- drivers/net/dsa/mv88e6xxx/global1.c |  76 +++++++
- drivers/net/dsa/mv88e6xxx/global1.h |   3 +
- drivers/net/dsa/mv88e6xxx/rmu.c     | 310 ++++++++++++++++++++++++++++
- drivers/net/dsa/mv88e6xxx/rmu.h     |  28 +++
- include/net/dsa.h                   |  20 +-
- net/dsa/dsa.c                       |  28 +++
- net/dsa/dsa2.c                      |   2 +
- net/dsa/tag_dsa.c                   |  32 ++-
- 11 files changed, 575 insertions(+), 19 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.c
- create mode 100644 drivers/net/dsa/mv88e6xxx/rmu.h
+ drivers/net/dsa/qca/qca8k-8xxx.c | 61 +++++++++-----------------------
+ 1 file changed, 17 insertions(+), 44 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Makefile b/drivers/net/dsa/mv88e6xxx/Makefile
-index c8eca2b6f959..105d7bd832c9 100644
---- a/drivers/net/dsa/mv88e6xxx/Makefile
-+++ b/drivers/net/dsa/mv88e6xxx/Makefile
-@@ -15,3 +15,4 @@ mv88e6xxx-objs += port_hidden.o
- mv88e6xxx-$(CONFIG_NET_DSA_MV88E6XXX_PTP) += ptp.o
- mv88e6xxx-objs += serdes.o
- mv88e6xxx-objs += smi.o
-+mv88e6xxx-objs += rmu.o
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 6f4ea39ab466..81fd9b7a9afa 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -42,6 +42,7 @@
- #include "ptp.h"
- #include "serdes.h"
- #include "smi.h"
-+#include "rmu.h"
- 
- static void assert_reg_lock(struct mv88e6xxx_chip *chip)
- {
-@@ -1233,16 +1234,30 @@ static int mv88e6xxx_stats_get_stats(struct mv88e6xxx_chip *chip, int port,
- 				     u16 bank1_select, u16 histogram)
- {
- 	struct mv88e6xxx_hw_stat *stat;
-+	int offset = 0;
-+	u64 high;
- 	int i, j;
- 
- 	for (i = 0, j = 0; i < ARRAY_SIZE(mv88e6xxx_hw_stats); i++) {
- 		stat = &mv88e6xxx_hw_stats[i];
- 		if (stat->type & types) {
--			mv88e6xxx_reg_lock(chip);
--			data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
--							      bank1_select,
--							      histogram);
--			mv88e6xxx_reg_unlock(chip);
-+			if (mv88e6xxx_rmu_available(chip) &&
-+			    !(stat->type & STATS_TYPE_PORT)) {
-+				if (stat->type & STATS_TYPE_BANK1)
-+					offset = 32;
-+
-+				data[j] = chip->ports[port].rmu_raw_stats[stat->reg + offset];
-+				if (stat->size == 8) {
-+					high = chip->ports[port].rmu_raw_stats[stat->reg + offset
-+							+ 1];
-+					data[j] += (high << 32);
-+				}
-+			} else {
-+				mv88e6xxx_reg_lock(chip);
-+				data[j] = _mv88e6xxx_get_ethtool_stat(chip, stat, port,
-+								      bank1_select, histogram);
-+				mv88e6xxx_reg_unlock(chip);
-+			}
- 
- 			j++;
- 		}
-@@ -1311,8 +1326,8 @@ static void mv88e6xxx_get_stats(struct mv88e6xxx_chip *chip, int port,
- 	mv88e6xxx_reg_unlock(chip);
- }
- 
--static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
--					uint64_t *data)
-+static void mv88e6xxx_get_ethtool_stats_mdio(struct dsa_switch *ds, int port,
-+					     uint64_t *data)
- {
- 	struct mv88e6xxx_chip *chip = ds->priv;
- 	int ret;
-@@ -1326,7 +1341,18 @@ static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
- 		return;
- 
- 	mv88e6xxx_get_stats(chip, port, data);
-+}
-+
-+static void mv88e6xxx_get_ethtool_stats(struct dsa_switch *ds, int port,
-+					uint64_t *data)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
- 
-+	/* If RMU isn't available fall back to MDIO access. */
-+	if (mv88e6xxx_rmu_available(chip))
-+		chip->rmu.ops->get_rmon(chip, port, data);
-+	else
-+		mv88e6xxx_get_ethtool_stats_mdio(ds, port, data);
- }
- 
- static int mv88e6xxx_get_regs_len(struct dsa_switch *ds, int port)
-@@ -1535,14 +1561,6 @@ static int mv88e6xxx_trunk_setup(struct mv88e6xxx_chip *chip)
- 	return 0;
- }
- 
--static int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip)
--{
--	if (chip->info->ops->rmu_disable)
--		return chip->info->ops->rmu_disable(chip);
--
--	return 0;
--}
--
- static int mv88e6xxx_pot_setup(struct mv88e6xxx_chip *chip)
- {
- 	if (chip->info->ops->pot_clear)
-@@ -4098,6 +4116,7 @@ static const struct mv88e6xxx_ops mv88e6085_ops = {
- 	.ppu_disable = mv88e6185_g1_ppu_disable,
- 	.reset = mv88e6185_g1_reset,
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
-+	.rmu_enable = mv88e6085_g1_rmu_enable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.stu_getnext = mv88e6352_g1_stu_getnext,
-@@ -4181,6 +4200,7 @@ static const struct mv88e6xxx_ops mv88e6097_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6085_g1_rmu_disable,
-+	.rmu_enable = mv88e6085_g1_rmu_enable,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.phylink_get_caps = mv88e6095_phylink_get_caps,
-@@ -5300,6 +5320,7 @@ static const struct mv88e6xxx_ops mv88e6352_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6352_g1_rmu_disable,
-+	.rmu_enable = mv88e6352_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
-@@ -5367,6 +5388,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-@@ -5434,6 +5456,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-@@ -5504,6 +5527,7 @@ static const struct mv88e6xxx_ops mv88e6393x_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6352_g1_reset,
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
-+	.rmu_enable = mv88e6390_g1_rmu_enable,
- 	.atu_get_hash = mv88e6165_g1_atu_get_hash,
- 	.atu_set_hash = mv88e6165_g1_atu_set_hash,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-@@ -6861,6 +6885,23 @@ static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
- 	return err_sync ? : err_pvt;
- }
- 
-+int mv88e6xxx_connect_tag_protocol(struct dsa_switch *ds,
-+				   enum dsa_tag_protocol proto)
-+{
-+	struct dsa_tagger_data *tagger_data = ds->tagger_data;
-+
-+	switch (proto) {
-+	case DSA_TAG_PROTO_DSA:
-+	case DSA_TAG_PROTO_EDSA:
-+		tagger_data->decode_frame2reg = mv88e6xxx_decode_frame2reg_handler;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
- static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.get_tag_protocol	= mv88e6xxx_get_tag_protocol,
- 	.change_tag_protocol	= mv88e6xxx_change_tag_protocol,
-@@ -6926,6 +6967,8 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
- 	.crosschip_lag_change	= mv88e6xxx_crosschip_lag_change,
- 	.crosschip_lag_join	= mv88e6xxx_crosschip_lag_join,
- 	.crosschip_lag_leave	= mv88e6xxx_crosschip_lag_leave,
-+	.master_state_change	= mv88e6xxx_master_change,
-+	.connect_tag_protocol	= mv88e6xxx_connect_tag_protocol,
- };
- 
- static int mv88e6xxx_register_switch(struct mv88e6xxx_chip *chip)
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index e693154cf803..c7477b716473 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -266,6 +266,7 @@ struct mv88e6xxx_vlan {
- struct mv88e6xxx_port {
- 	struct mv88e6xxx_chip *chip;
- 	int port;
-+	u64 rmu_raw_stats[64];
- 	struct mv88e6xxx_vlan bridge_pvid;
- 	u64 serdes_stats[2];
- 	u64 atu_member_violation;
-@@ -282,6 +283,17 @@ struct mv88e6xxx_port {
- 	struct devlink_region *region;
- };
- 
-+struct mv88e6xxx_rmu {
-+	/* RMU resources */
-+	struct net_device *master_netdev;
-+	const struct mv88e6xxx_bus_ops *ops;
-+	/* Mutex for RMU operations */
-+	struct mutex mutex;
-+	u16 got_id;
-+	u8 request_cmd;
-+	int inband_seqno;
-+};
-+
- enum mv88e6xxx_region_id {
- 	MV88E6XXX_REGION_GLOBAL1 = 0,
- 	MV88E6XXX_REGION_GLOBAL2,
-@@ -410,12 +422,16 @@ struct mv88e6xxx_chip {
- 
- 	/* Bridge MST to SID mappings */
- 	struct list_head msts;
-+
-+	/* RMU resources */
-+	struct mv88e6xxx_rmu rmu;
- };
- 
- struct mv88e6xxx_bus_ops {
- 	int (*read)(struct mv88e6xxx_chip *chip, int addr, int reg, u16 *val);
- 	int (*write)(struct mv88e6xxx_chip *chip, int addr, int reg, u16 val);
- 	int (*init)(struct mv88e6xxx_chip *chip);
-+	int (*get_rmon)(struct mv88e6xxx_chip *chip, int port, uint64_t *data);
- };
- 
- struct mv88e6xxx_mdio_bus {
-@@ -637,6 +653,7 @@ struct mv88e6xxx_ops {
- 
- 	/* Remote Management Unit operations */
- 	int (*rmu_disable)(struct mv88e6xxx_chip *chip);
-+	int (*rmu_enable)(struct mv88e6xxx_chip *chip, int port);
- 
- 	/* Precision Time Protocol operations */
- 	const struct mv88e6xxx_ptp_ops *ptp_ops;
-@@ -804,4 +821,8 @@ static inline void mv88e6xxx_reg_unlock(struct mv88e6xxx_chip *chip)
- 
- int mv88e6xxx_fid_map(struct mv88e6xxx_chip *chip, unsigned long *bitmap);
- 
-+static inline bool mv88e6xxx_rmu_available(struct mv88e6xxx_chip *chip)
-+{
-+	return chip->rmu.master_netdev ? 1 : 0;
-+}
- #endif /* _MV88E6XXX_CHIP_H */
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
-index 5848112036b0..f6c288ece0ba 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1.c
-@@ -466,18 +466,94 @@ int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- 				      MV88E6085_G1_CTL2_RM_ENABLE, 0);
- }
- 
-+int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
-+{
-+	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
-+
-+	dev_dbg(chip->dev, "RMU: Enabling on port %d", upstream_port);
-+
-+	switch (upstream_port) {
-+	case 9:
-+		val = MV88E6085_G1_CTL2_RM_ENABLE;
-+		break;
-+	case 10:
-+		val = MV88E6085_G1_CTL2_RM_ENABLE | MV88E6085_G1_CTL2_P10RM;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6085_G1_CTL2_P10RM |
-+				      MV88E6085_G1_CTL2_RM_ENABLE, val);
-+}
-+
- int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
- 				      MV88E6352_G1_CTL2_RMU_MODE_DISABLED);
- }
- 
-+int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int port)
-+{
-+	int val = MV88E6352_G1_CTL2_RMU_MODE_DISABLED;
-+	int upstream_port;
-+
-+	upstream_port = dsa_switch_upstream_port(chip->ds);
-+	dev_dbg(chip->dev, "RMU: Enabling on port %d", upstream_port);
-+	if (upstream_port < 0)
-+		return -EOPNOTSUPP;
-+
-+	switch (upstream_port) {
-+	case 4:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_4;
-+		break;
-+	case 5:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_5;
-+		break;
-+	case 6:
-+		val = MV88E6352_G1_CTL2_RMU_MODE_PORT_6;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6352_G1_CTL2_RMU_MODE_MASK,
-+			val);
-+}
-+
- int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
- 				      MV88E6390_G1_CTL2_RMU_MODE_DISABLED);
- }
- 
-+int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port)
-+{
-+	int val = MV88E6390_G1_CTL2_RMU_MODE_DISABLED;
-+
-+	dev_dbg(chip->dev, "RMU: Enabling on port %d", upstream_port);
-+
-+	switch (upstream_port) {
-+	case 0:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_0;
-+		break;
-+	case 1:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_1;
-+		break;
-+	case 9:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_9;
-+		break;
-+	case 10:
-+		val = MV88E6390_G1_CTL2_RMU_MODE_PORT_10;
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_RMU_MODE_MASK,
-+			val);
-+}
-+
- int mv88e6390_g1_stats_set_histogram(struct mv88e6xxx_chip *chip)
- {
- 	return mv88e6xxx_g1_ctl2_mask(chip, MV88E6390_G1_CTL2_HIST_MODE_MASK,
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index 65958b2a0d3a..29c0c8acb583 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -313,8 +313,11 @@ int mv88e6250_g1_ieee_pri_map(struct mv88e6xxx_chip *chip);
- int mv88e6185_g1_set_cascade_port(struct mv88e6xxx_chip *chip, int port);
- 
- int mv88e6085_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6085_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- int mv88e6352_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6352_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- int mv88e6390_g1_rmu_disable(struct mv88e6xxx_chip *chip);
-+int mv88e6390_g1_rmu_enable(struct mv88e6xxx_chip *chip, int upstream_port);
- 
- int mv88e6xxx_g1_set_device_number(struct mv88e6xxx_chip *chip, int index);
- 
-diff --git a/drivers/net/dsa/mv88e6xxx/rmu.c b/drivers/net/dsa/mv88e6xxx/rmu.c
-new file mode 100644
-index 000000000000..7bc5b1ea3e9b
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/rmu.c
-@@ -0,0 +1,310 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Marvell 88E6xxx Switch Remote Management Unit Support
-+ *
-+ * Copyright (c) 2022 Mattias Forsblad <mattias.forsblad@gmail.com>
-+ *
-+ */
-+
-+#include <asm/unaligned.h>
-+#include "rmu.h"
-+#include "global1.h"
-+
-+#define MV88E6XXX_DSA_HLEN	4
-+
-+static const u8 rmu_dest_addr[ETH_ALEN] = { 0x01, 0x50, 0x43, 0x00, 0x00, 0x00 };
-+
-+#define MV88E6XXX_RMU_L2_BYTE1_RESV_VAL		0x3e
-+#define MV88E6XXX_RMU				1
-+#define MV88E6XXX_RMU_PRIO			6
-+#define MV88E6XXX_RMU_RESV2			0xf
-+
-+#define MV88E6XXX_SOURCE_PORT			GENMASK(6, 3)
-+#define MV88E6XXX_SOURCE_DEV			GENMASK(5, 0)
-+#define MV88E6XXX_CPU_CODE_MASK			GENMASK(7, 6)
-+#define MV88E6XXX_TRG_DEV_MASK			GENMASK(4, 0)
-+#define MV88E6XXX_RMU_CODE_MASK			GENMASK(1, 1)
-+#define MV88E6XXX_RMU_PRIO_MASK			GENMASK(7, 5)
-+#define MV88E6XXX_RMU_L2_BYTE1_RESV		GENMASK(7, 2)
-+#define MV88E6XXX_RMU_L2_BYTE2_RESV		GENMASK(3, 0)
-+
-+#define MV88E6XXX_RMU_RESP_FORMAT_1		0x0001
-+#define MV88E6XXX_RMU_RESP_FORMAT_2		0x0002
-+#define MV88E6XXX_RMU_RESP_ERROR		0xffff
-+
-+#define MV88E6XXX_RMU_RESP_CODE_GOT_ID		0x0000
-+#define MV88E6XXX_RMU_RESP_CODE_DUMP_MIB	0x1020
-+
-+static void mv88e6xxx_rmu_create_l2(struct sk_buff *skb, struct dsa_port *dp)
-+{
-+	struct mv88e6xxx_chip *chip = dp->ds->priv;
-+	struct ethhdr *eth;
-+	u8 *edsa_header;
-+	u8 *dsa_header;
-+	u8 extra = 0;
-+
-+	if (chip->tag_protocol == DSA_TAG_PROTO_EDSA)
-+		extra = 4;
-+
-+	/* Create RMU L2 header */
-+	dsa_header = skb_push(skb, 6);
-+	dsa_header[0] = FIELD_PREP(MV88E6XXX_CPU_CODE_MASK, MV88E6XXX_RMU);
-+	dsa_header[0] |= FIELD_PREP(MV88E6XXX_TRG_DEV_MASK, dp->ds->index);
-+	dsa_header[1] = FIELD_PREP(MV88E6XXX_RMU_CODE_MASK, 1);
-+	dsa_header[1] |= FIELD_PREP(MV88E6XXX_RMU_L2_BYTE1_RESV, MV88E6XXX_RMU_L2_BYTE1_RESV_VAL);
-+	dsa_header[2] = FIELD_PREP(MV88E6XXX_RMU_PRIO_MASK, MV88E6XXX_RMU_PRIO);
-+	dsa_header[2] |= MV88E6XXX_RMU_L2_BYTE2_RESV;
-+	dsa_header[3] = ++chip->rmu.inband_seqno;
-+	dsa_header[4] = 0;
-+	dsa_header[5] = 0;
-+
-+	/* Insert RMU MAC destination address /w extra if needed */
-+	skb_push(skb, ETH_ALEN * 2 + extra);
-+	eth = (struct ethhdr *)skb->data;
-+	memcpy(eth->h_dest, rmu_dest_addr, ETH_ALEN);
-+	memcpy(eth->h_source, chip->rmu.master_netdev->dev_addr, ETH_ALEN);
-+
-+	if (extra) {
-+		edsa_header = (u8 *)&eth->h_proto;
-+		edsa_header[0] = (ETH_P_EDSA >> 8) & 0xff;
-+		edsa_header[1] = ETH_P_EDSA & 0xff;
-+		edsa_header[2] = 0x00;
-+		edsa_header[3] = 0x00;
-+	}
-+}
-+
-+static int mv88e6xxx_rmu_send_wait(struct mv88e6xxx_chip *chip, int port,
-+				   int request, const char *msg, int len)
-+{
-+	struct dsa_port *dp;
-+	struct sk_buff *skb;
-+	unsigned char *data;
-+	int ret = 0;
-+
-+	dp = dsa_to_port(chip->ds, port);
-+	if (!dp)
-+		return 0;
-+
-+	skb = netdev_alloc_skb(chip->rmu.master_netdev, 64);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	/* Take height for an eventual EDSA header */
-+	skb_reserve(skb, 2 * ETH_HLEN + 4);
-+	skb_reset_network_header(skb);
-+
-+	/* Insert RMU L3 message */
-+	data = skb_put(skb, len);
-+	memcpy(data, msg, len);
-+
-+	mv88e6xxx_rmu_create_l2(skb, dp);
-+
-+	mutex_lock(&chip->rmu.mutex);
-+
-+	chip->rmu.request_cmd = request;
-+
-+	ret = dsa_switch_inband_tx(dp->ds, skb, NULL, MV88E6XXX_RMU_WAIT_TIME_MS);
-+	if (ret < 0) {
-+		dev_err(chip->dev,
-+			"RMU: timeout waiting for request %d (%pe) on port %d\n",
-+			request, ERR_PTR(ret), port);
-+	}
-+
-+	mutex_unlock(&chip->rmu.mutex);
-+
-+	return ret > 0 ? 0 : ret;
-+}
-+
-+static int mv88e6xxx_rmu_get_id(struct mv88e6xxx_chip *chip, int port)
-+{
-+	const u8 get_id[8] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-+	int ret = -1;
-+
-+	if (chip->rmu.got_id)
-+		return 0;
-+
-+	ret = mv88e6xxx_rmu_send_wait(chip, port, MV88E6XXX_RMU_REQ_GET_ID, get_id, 8);
-+	if (ret) {
-+		dev_dbg(chip->dev, "RMU: error for command GET_ID %pe\n", ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int mv88e6xxx_rmu_stats_get(struct mv88e6xxx_chip *chip, int port, uint64_t *data)
-+{
-+	u8 dump_mib[8] = { 0x00, 0x01, 0x00, 0x00, 0x10, 0x20, 0x00, 0x00 };
-+	int ret;
-+
-+	ret = mv88e6xxx_rmu_get_id(chip, port);
-+	if (ret)
-+		return ret;
-+
-+	/* Send a GET_MIB command */
-+	dump_mib[7] = port;
-+	ret = mv88e6xxx_rmu_send_wait(chip, port, MV88E6XXX_RMU_REQ_DUMP_MIB, dump_mib, 8);
-+	if (ret) {
-+		dev_dbg(chip->dev, "RMU: error for command DUMP_MIB %pe port %d\n",
-+			ERR_PTR(ret), port);
-+		return ret;
-+	}
-+
-+	/* Update MIB for port */
-+	if (chip->info->ops->stats_get_stats)
-+		return chip->info->ops->stats_get_stats(chip, port, data);
-+
-+	return 0;
-+}
-+
-+void mv88e6xxx_master_change(struct dsa_switch *ds, const struct net_device *master,
-+			     bool operational)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct dsa_port *cpu_dp;
-+	int port;
-+
-+	cpu_dp = master->dsa_ptr;
-+	port = dsa_towards_port(ds, cpu_dp->ds->index, cpu_dp->index);
-+
-+	mv88e6xxx_reg_lock(chip);
-+
-+	if (operational) {
-+		if (chip->info->ops->rmu_enable) {
-+			if (!chip->info->ops->rmu_enable(chip, port))
-+				chip->rmu.master_netdev = (struct net_device *)master;
-+			else
-+				dev_err(chip->dev, "RMU: Unable to enable on port %d", port);
-+		}
-+
-+	} else {
-+		chip->rmu.master_netdev = NULL;
-+		if (chip->info->ops->rmu_disable)
-+			chip->info->ops->rmu_disable(chip);
-+	}
-+
-+	mv88e6xxx_reg_unlock(chip);
-+}
-+
-+static void mv88e6xxx_prod_id_handler(struct dsa_switch *ds, struct sk_buff *skb)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	u16 prodnum;
-+
-+	prodnum = get_unaligned_be16(&skb->data[2]);
-+	chip->rmu.got_id = prodnum;
-+	dev_dbg_ratelimited(chip->dev, "RMU: received id OK with product number: 0x%04x\n",
-+			    chip->rmu.got_id);
-+}
-+
-+static void mv88e6xxx_mib_handler(struct dsa_switch *ds, struct sk_buff *skb)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	struct mv88e6xxx_port *p;
-+	u8 port;
-+	int i;
-+
-+	port = FIELD_GET(MV88E6XXX_SOURCE_PORT, skb->data[7]);
-+	p = &chip->ports[port];
-+	if (!p) {
-+		dev_err_ratelimited(chip->dev, "RMU: illegal port number in response: %d\n", port);
-+		return;
-+	}
-+
-+	/* Copy whole array for further
-+	 * processing according to chip type
-+	 */
-+	for (i = 0; i < MV88E6XXX_RMU_MAX_RMON; i++)
-+		p->rmu_raw_stats[i] = get_unaligned_be32(&skb->data[12 + i * 4]);
-+}
-+
-+static int mv88e6xxx_validate_mac(struct dsa_switch *ds, struct sk_buff *skb)
-+{
-+	struct mv88e6xxx_chip *chip = ds->priv;
-+	unsigned char *ethhdr;
-+
-+	/* Check matching MAC */
-+	ethhdr = skb_mac_header(skb);
-+	if (!ether_addr_equal(chip->rmu.master_netdev->dev_addr, ethhdr)) {
-+		dev_dbg_ratelimited(ds->dev, "RMU: mismatching MAC address for request. Rx %pM expecting %pM\n",
-+				    ethhdr, chip->rmu.master_netdev->dev_addr);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+void mv88e6xxx_decode_frame2reg_handler(struct net_device *dev, struct sk_buff *skb)
-+{
-+	struct dsa_tagger_data *tagger_data;
-+	struct dsa_port *dp = dev->dsa_ptr;
-+	struct dsa_switch *ds = dp->ds;
-+	struct mv88e6xxx_chip *chip;
-+	int source_device;
-+	u8 *dsa_header;
-+	u16 format;
-+	u16 code;
-+	u8 seqno;
-+
-+	tagger_data = ds->tagger_data;
-+
-+	if (mv88e6xxx_validate_mac(ds, skb))
-+		return;
-+
-+	/* Decode Frame2Reg DSA portion */
-+	dsa_header = skb->data - 2;
-+
-+	source_device = FIELD_GET(MV88E6XXX_SOURCE_DEV, dsa_header[0]);
-+	ds = dsa_switch_find(ds->dst->index, source_device);
-+	if (!ds) {
-+		net_dbg_ratelimited("RMU: Didn't find switch with index %d", source_device);
-+		return;
-+	}
-+
-+	chip = ds->priv;
-+	seqno = dsa_header[3];
-+	if (seqno != chip->rmu.inband_seqno) {
-+		net_dbg_ratelimited("RMU: wrong seqno received. Was %d, expected %d",
-+				    seqno, chip->rmu.inband_seqno);
-+		return;
-+	}
-+
-+	/* Pull DSA L2 data */
-+	skb_pull(skb, MV88E6XXX_DSA_HLEN);
-+
-+	format = get_unaligned_be16(&skb->data[0]);
-+	if (format != MV88E6XXX_RMU_RESP_FORMAT_1 &&
-+	    format != MV88E6XXX_RMU_RESP_FORMAT_2) {
-+		net_dbg_ratelimited("RMU: received unknown format 0x%04x", format);
-+		return;
-+	}
-+
-+	code = get_unaligned_be16(&skb->data[4]);
-+	if (code == MV88E6XXX_RMU_RESP_ERROR) {
-+		net_dbg_ratelimited("RMU: error response code 0x%04x", code);
-+		return;
-+	}
-+
-+	if (code == MV88E6XXX_RMU_RESP_CODE_GOT_ID)
-+		mv88e6xxx_prod_id_handler(ds, skb);
-+	else if (code == MV88E6XXX_RMU_RESP_CODE_DUMP_MIB)
-+		mv88e6xxx_mib_handler(ds, skb);
-+
-+	dsa_switch_inband_complete(ds, NULL);
-+}
-+
-+static const struct mv88e6xxx_bus_ops mv88e6xxx_bus_ops = {
-+	.get_rmon = mv88e6xxx_rmu_stats_get,
-+};
-+
-+int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip)
-+{
-+	mutex_init(&chip->rmu.mutex);
-+
-+	chip->rmu.ops = &mv88e6xxx_bus_ops;
-+
-+	if (chip->info->ops->rmu_disable)
-+		return chip->info->ops->rmu_disable(chip);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/dsa/mv88e6xxx/rmu.h b/drivers/net/dsa/mv88e6xxx/rmu.h
-new file mode 100644
-index 000000000000..cf84b7005331
---- /dev/null
-+++ b/drivers/net/dsa/mv88e6xxx/rmu.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * Marvell 88E6xxx Switch Remote Management Unit Support
-+ *
-+ * Copyright (c) 2022 Mattias Forsblad <mattias.forsblad@gmail.com>
-+ *
-+ */
-+
-+#ifndef _MV88E6XXX_RMU_H_
-+#define _MV88E6XXX_RMU_H_
-+
-+#include "chip.h"
-+
-+#define MV88E6XXX_RMU_MAX_RMON			64
-+
-+#define MV88E6XXX_RMU_REQ_GET_ID		1
-+#define MV88E6XXX_RMU_REQ_DUMP_MIB		2
-+
-+#define MV88E6XXX_RMU_WAIT_TIME_MS		20
-+
-+int mv88e6xxx_rmu_setup(struct mv88e6xxx_chip *chip);
-+
-+void mv88e6xxx_master_change(struct dsa_switch *ds, const struct net_device *master,
-+			     bool operational);
-+
-+void mv88e6xxx_decode_frame2reg_handler(struct net_device *dev, struct sk_buff *skb);
-+
-+#endif /* _MV88E6XXX_RMU_H_ */
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index f2ce12860546..5c8dccc8bc3e 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -130,6 +130,11 @@ struct dsa_lag {
- 	refcount_t refcount;
- };
- 
-+struct dsa_tagger_data {
-+	void (*decode_frame2reg)(struct net_device *netdev,
-+				 struct sk_buff *skb);
-+};
-+
- struct dsa_switch_tree {
- 	struct list_head	list;
- 
-@@ -495,6 +500,8 @@ struct dsa_switch {
- 	unsigned int		max_num_bridges;
- 
- 	unsigned int		num_ports;
-+
-+	struct completion	inband_done;
- };
- 
- static inline struct dsa_port *dsa_to_port(struct dsa_switch *ds, int p)
-@@ -822,7 +829,7 @@ struct dsa_switch_ops {
- 	 * in current use. The switch driver can provide handlers for certain
- 	 * types of packets for switch management.
- 	 */
--	int	(*connect_tag_protocol)(struct dsa_switch *ds,
-+	int (*connect_tag_protocol)(struct dsa_switch *ds,
- 					enum dsa_tag_protocol proto);
- 
- 	/* Optional switch-wide initialization and destruction methods */
-@@ -1390,6 +1397,17 @@ void dsa_tag_drivers_register(struct dsa_tag_driver *dsa_tag_driver_array[],
- void dsa_tag_drivers_unregister(struct dsa_tag_driver *dsa_tag_driver_array[],
- 				unsigned int count);
- 
-+int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-+			 struct completion *completion, unsigned long timeout);
-+static inline void dsa_switch_inband_complete(struct dsa_switch *ds, struct completion *completion)
-+{
-+	/* Custom completion? */
-+	if (completion)
-+		complete(completion);
-+	else
-+		complete(&ds->inband_done);
-+}
-+
- #define dsa_tag_driver_module_drivers(__dsa_tag_drivers_array, __count)	\
- static int __init dsa_tag_driver_module_init(void)			\
- {									\
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index be7b320cda76..2d7add779b6f 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -324,6 +324,34 @@ int dsa_switch_resume(struct dsa_switch *ds)
- EXPORT_SYMBOL_GPL(dsa_switch_resume);
- #endif
- 
-+int dsa_switch_inband_tx(struct dsa_switch *ds, struct sk_buff *skb,
-+			 struct completion *completion, unsigned long timeout)
-+{
-+	int ret;
-+	struct completion *com;
-+
-+	/* Custom completion? */
-+	if (completion)
-+		com = completion;
-+	else
-+		com = &ds->inband_done;
-+
-+	reinit_completion(com);
-+
-+	if (skb)
-+		dev_queue_xmit(skb);
-+
-+	ret = wait_for_completion_timeout(com, msecs_to_jiffies(timeout));
-+	if (ret <= 0) {
-+		dev_dbg(ds->dev, "DSA inband: timeout waiting for answer\n");
-+
-+		return -ETIMEDOUT;
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(dsa_switch_inband_tx);
-+
- static struct packet_type dsa_pack_type __read_mostly = {
- 	.type	= cpu_to_be16(ETH_P_XDSA),
- 	.func	= dsa_switch_rcv,
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index ed56c7a554b8..a1b3ecfdffb8 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1746,6 +1746,8 @@ static int dsa_switch_probe(struct dsa_switch *ds)
- 		dsa_tree_put(dst);
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index 1d3e7782a71f..7c9782be8dfe 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
++++ b/drivers/net/dsa/qca/qca8k-8xxx.c
+@@ -160,7 +160,7 @@ static void qca8k_rw_reg_ack_handler(struct dsa_switch *ds, struct sk_buff *skb)
+ 			       QCA_HDR_MGMT_DATA2_LEN);
  	}
  
-+	init_completion(&ds->inband_done);
-+
- 	return err;
+-	complete(&mgmt_eth_data->rw_done);
++	dsa_switch_inband_complete(ds, &mgmt_eth_data->rw_done);
  }
  
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index e4b6e3f2a3db..3dd1dcddaf05 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -198,7 +198,10 @@ static struct sk_buff *dsa_xmit_ll(struct sk_buff *skb, struct net_device *dev,
- static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 				  u8 extra)
+ static struct sk_buff *qca8k_alloc_mdio_header(enum mdio_cmd cmd, u32 reg, u32 *val,
+@@ -228,6 +228,7 @@ static void qca8k_mdio_header_fill_seq_num(struct sk_buff *skb, u32 seq_num)
+ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
  {
-+	struct dsa_tagger_data *tagger_data;
-+	struct dsa_port *dp = dev->dsa_ptr;
- 	bool trap = false, trunk = false;
-+	struct dsa_switch *ds = dp->ds;
- 	int source_device, source_port;
- 	enum dsa_code code;
- 	enum dsa_cmd cmd;
-@@ -218,9 +221,9 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
++	struct dsa_switch *ds = priv->ds;
+ 	struct sk_buff *skb;
+ 	bool ack;
+ 	int ret;
+@@ -248,17 +249,12 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
  
- 		switch (code) {
- 		case DSA_CODE_FRAME2REG:
--			/* Remote management is not implemented yet,
--			 * drop.
--			 */
-+			tagger_data = ds->tagger_data;
-+			if (likely(tagger_data->decode_frame2reg))
-+				tagger_data->decode_frame2reg(dev, skb);
- 			return NULL;
- 		case DSA_CODE_ARP_MIRROR:
- 		case DSA_CODE_POLICY_MIRROR:
-@@ -323,6 +326,25 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 	return skb;
+ 	skb->dev = priv->mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the mdio pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	*val = mgmt_eth_data->data[0];
+ 	if (len > QCA_HDR_MGMT_DATA1_LEN)
+@@ -280,6 +276,7 @@ static int qca8k_read_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ {
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
++	struct dsa_switch *ds = priv->ds;
+ 	struct sk_buff *skb;
+ 	bool ack;
+ 	int ret;
+@@ -300,17 +297,12 @@ static int qca8k_write_eth(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+ 
+ 	skb->dev = priv->mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the mdio pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  msecs_to_jiffies(QCA8K_ETHERNET_TIMEOUT));
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -441,24 +433,21 @@ static struct regmap_config qca8k_regmap_config = {
+ };
+ 
+ static int
+-qca8k_phy_eth_busy_wait(struct qca8k_mgmt_eth_data *mgmt_eth_data,
++qca8k_phy_eth_busy_wait(struct qca8k_priv *priv,
+ 			struct sk_buff *read_skb, u32 *val)
+ {
++	struct qca8k_mgmt_eth_data *mgmt_eth_data = &priv->mgmt_eth_data;
+ 	struct sk_buff *skb = skb_copy(read_skb, GFP_KERNEL);
++	struct dsa_switch *ds = priv->ds;
+ 	bool ack;
+ 	int ret;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the copy pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -480,6 +469,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	struct sk_buff *write_skb, *clear_skb, *read_skb;
+ 	struct qca8k_mgmt_eth_data *mgmt_eth_data;
+ 	u32 write_val, clear_val = 0, val;
++	struct dsa_switch *ds = priv->ds;
+ 	struct net_device *mgmt_master;
+ 	int ret, ret1;
+ 	bool ack;
+@@ -540,17 +530,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	clear_skb->dev = mgmt_master;
+ 	write_skb->dev = mgmt_master;
+ 
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the write pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(write_skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(write_skb);
+-
+-	ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-					  QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, write_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	ack = mgmt_eth_data->ack;
+ 
+@@ -569,7 +554,7 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	ret = read_poll_timeout(qca8k_phy_eth_busy_wait, ret1,
+ 				!(val & QCA8K_MDIO_MASTER_BUSY), 0,
+ 				QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC, false,
+-				mgmt_eth_data, read_skb, &val);
++				priv, read_skb, &val);
+ 
+ 	if (ret < 0 && ret1 < 0) {
+ 		ret = ret1;
+@@ -577,17 +562,13 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 	}
+ 
+ 	if (read) {
+-		reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 		/* Increment seq_num and set it in the read pkt */
+ 		mgmt_eth_data->seq++;
+ 		qca8k_mdio_header_fill_seq_num(read_skb, mgmt_eth_data->seq);
+ 		mgmt_eth_data->ack = false;
+ 
+-		dev_queue_xmit(read_skb);
+-
+-		ret = wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-						  QCA8K_ETHERNET_TIMEOUT);
++		ret = dsa_switch_inband_tx(ds, read_skb, &mgmt_eth_data->rw_done,
++					   QCA8K_ETHERNET_TIMEOUT);
+ 
+ 		ack = mgmt_eth_data->ack;
+ 
+@@ -606,17 +587,12 @@ qca8k_phy_eth_command(struct qca8k_priv *priv, bool read, int phy,
+ 		kfree_skb(read_skb);
+ 	}
+ exit:
+-	reinit_completion(&mgmt_eth_data->rw_done);
+-
+ 	/* Increment seq_num and set it in the clear pkt */
+ 	mgmt_eth_data->seq++;
+ 	qca8k_mdio_header_fill_seq_num(clear_skb, mgmt_eth_data->seq);
+ 	mgmt_eth_data->ack = false;
+ 
+-	dev_queue_xmit(clear_skb);
+-
+-	wait_for_completion_timeout(&mgmt_eth_data->rw_done,
+-				    QCA8K_ETHERNET_TIMEOUT);
++	ret = dsa_switch_inband_tx(ds, clear_skb, &mgmt_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ 
+ 	mutex_unlock(&mgmt_eth_data->mutex);
+ 
+@@ -1528,7 +1504,7 @@ static void qca8k_mib_autocast_handler(struct dsa_switch *ds, struct sk_buff *sk
+ exit:
+ 	/* Complete on receiving all the mib packet */
+ 	if (refcount_dec_and_test(&mib_eth_data->port_parsed))
+-		complete(&mib_eth_data->rw_done);
++		dsa_switch_inband_complete(ds, &mib_eth_data->rw_done);
  }
  
-+static int dsa_tag_connect(struct dsa_switch *ds)
-+{
-+	struct dsa_tagger_data *tagger_data;
-+
-+	tagger_data = kzalloc(sizeof(*tagger_data), GFP_KERNEL);
-+	if (!tagger_data)
-+		return -ENOMEM;
-+
-+	ds->tagger_data = tagger_data;
-+
-+	return 0;
-+}
-+
-+static void dsa_tag_disconnect(struct dsa_switch *ds)
-+{
-+	kfree(ds->tagger_data);
-+	ds->tagger_data = NULL;
-+}
-+
- #if IS_ENABLED(CONFIG_NET_DSA_TAG_DSA)
+ static int
+@@ -1543,8 +1519,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
  
- static struct sk_buff *dsa_xmit(struct sk_buff *skb, struct net_device *dev)
-@@ -343,6 +365,8 @@ static const struct dsa_device_ops dsa_netdev_ops = {
- 	.proto	  = DSA_TAG_PROTO_DSA,
- 	.xmit	  = dsa_xmit,
- 	.rcv	  = dsa_rcv,
-+	.connect  = dsa_tag_connect,
-+	.disconnect = dsa_tag_disconnect,
- 	.needed_headroom = DSA_HLEN,
- };
+ 	mutex_lock(&mib_eth_data->mutex);
  
-@@ -385,6 +409,8 @@ static const struct dsa_device_ops edsa_netdev_ops = {
- 	.proto	  = DSA_TAG_PROTO_EDSA,
- 	.xmit	  = edsa_xmit,
- 	.rcv	  = edsa_rcv,
-+	.connect  = dsa_tag_connect,
-+	.disconnect = dsa_tag_disconnect,
- 	.needed_headroom = EDSA_HLEN,
- };
+-	reinit_completion(&mib_eth_data->rw_done);
+-
+ 	mib_eth_data->req_port = dp->index;
+ 	mib_eth_data->data = data;
+ 	refcount_set(&mib_eth_data->port_parsed, QCA8K_NUM_PORTS);
+@@ -1562,8 +1536,7 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
+ 	if (ret)
+ 		goto exit;
+ 
+-	ret = wait_for_completion_timeout(&mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+-
++	ret = dsa_switch_inband_tx(ds, NULL, &mib_eth_data->rw_done, QCA8K_ETHERNET_TIMEOUT);
+ exit:
+ 	mutex_unlock(&mib_eth_data->mutex);
  
 -- 
 2.25.1
