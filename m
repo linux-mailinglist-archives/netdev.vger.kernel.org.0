@@ -2,97 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F66F5AD3BE
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 15:23:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE0E05AD3D6
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 15:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237587AbiIENUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 09:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41254 "EHLO
+        id S237280AbiIEN1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 09:27:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237183AbiIENUT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 09:20:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 605003C15A;
-        Mon,  5 Sep 2022 06:20:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 137E5B8119C;
-        Mon,  5 Sep 2022 13:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B142EC43141;
-        Mon,  5 Sep 2022 13:20:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1662384015;
-        bh=szAT6+dGFI+pJU9JhkQozMXyv0TluMnN2z3VZBNzSMU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=GIUjLk30wORS/+0g7AYumuV1UnABCPWTuhHD57kNbJZFMsRJNmlKkTjnkrLRYuRax
-         7f+V+qLt2b/Oe2PmEYOY1ltvtKBhTZCN5L35JMdtyY66czsekgNBCpnGG/LhZNycFO
-         Tpxu0z6BDOfSTYVoZYi9EIn3JOTQrRVzhstJaSvC8lP+6WHvz6n1ACTh3wJhiDxLOV
-         8efPjrQ1O0mdmMnacRENm8J+mexGVVAuENme6OQbTM49TS5oKAR8MIf1CmTlmyS7hc
-         gMSejwyg0eRWbNNZDAr70w2z8C7CYtnQXogyvqXdjKZEPgc4xrfxuPB01UQy5xLuYJ
-         JMhJjBIgpoS3w==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9B7F0E1CABF;
-        Mon,  5 Sep 2022 13:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net-next 0/3] net: dsa: microchip: lan937x: enable interrupt
- for internal phy link detection
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <166238401563.22589.9260356369397863227.git-patchwork-notify@kernel.org>
-Date:   Mon, 05 Sep 2022 13:20:15 +0000
-References: <20220902103210.10743-1-arun.ramadoss@microchip.com>
-In-Reply-To: <20220902103210.10743-1-arun.ramadoss@microchip.com>
+        with ESMTP id S230314AbiIEN1E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 09:27:04 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E942D40BD2;
+        Mon,  5 Sep 2022 06:27:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=mdWCP2Z4OGF3Cn0l3It6siclPH5+K+Wk+JlGp94/LHY=; b=SjXigyoVpYE3wZDUd4goTLXLLV
+        1vuDQQoXFwZkJcIrZ3EQA3aeF976bizaFA/kTIeVHwPq+/SA4ZXyz1hSYI9M/rklHGGmMtW5lxMdJ
+        RJfZXsvkIfmsQZI8O0NpIgqVWOKv1/62NVKftQmcrkPSKEBRAqzd/bqf0PH5FLcUA0S4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oVC7x-00FePq-Lu; Mon, 05 Sep 2022 15:27:01 +0200
+Date:   Mon, 5 Sep 2022 15:27:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
 To:     Arun Ramadoss <arun.ramadoss@microchip.com>
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        woojung.huh@microchip.com, UNGLinuxDriver@microchip.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux@armlinux.org.uk,
-        Tristram.Ha@microchip.com
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        UNGLinuxDriver@microchip.com, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Subject: Re: [Patch net] net: phy: lan87xx: change interrupt src of link_up
+ to comm_ready
+Message-ID: <YxX5JaRfyvKLrHw5@lunn.ch>
+References: <20220905072017.9839-1-arun.ramadoss@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220905072017.9839-1-arun.ramadoss@microchip.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 2 Sep 2022 16:02:07 +0530 you wrote:
-> This patch series enables the internal phy link detection for lan937x using the
-> interrupt method. lan937x acts as the interrupt controller for the internal
-> ports and phy, the irq_domain is registered for the individual ports and in
-> turn for the individual port interrupts.
+On Mon, Sep 05, 2022 at 12:50:17PM +0530, Arun Ramadoss wrote:
+> Currently phy link up/down interrupt is enabled using the
+> LAN87xx_INTERRUPT_MASK register. In the lan87xx_read_status function,
+> phy link is determined using the T1_MODE_STAT_REG register comm_ready bit.
+> comm_ready bit is set using the loc_rcvr_status & rem_rcvr_status.
+> Whenever the phy link is up, LAN87xx_INTERRUPT_SOURCE link_up bit is set
+> first but comm_ready bit takes some time to set based on local and
+> remote receiver status.
+> As per the current implementation, interrupt is triggered using link_up
+> but the comm_ready bit is still cleared in the read_status function. So,
+> link is always down.  Initially tested with the shared interrupt
+> mechanism with switch and internal phy which is working, but after
+> implementing interrupt controller it is not working.
+> It can fixed either by updating the read_status function to read from
+> LAN87XX_INTERRUPT_SOURCE register or enable the interrupt mask for
+> comm_ready bit. But the validation team recommends the use of comm_ready
+> for link detection.
+> This patch fixes by enabling the comm_ready bit for link_up in the
+> LAN87XX_INTERRUPT_MASK_2 register (MISC Bank) and link_down in
+> LAN87xx_INTERRUPT_MASK register.
 > 
-> RFC v3 -> Patch v1
-> - Removed the RFC v3 1/3 from the series - changing exit from reset
-> - Changed the variable name in ksz_port from irq to pirq
-> - Added the check for return value of irq_find_mapping during phy irq
->   registeration.
-> - Moved the clearing of POR_READY_INT from girq_thread_fn to
->   lan937x_reset_switch
-> 
-> [...]
+> Fixes: 8a1b415d70b7 ("net: phy: added ethtool master-slave configuration
+> 		     support")
 
-Here is the summary with links:
-  - [net-next,1/3] net: dsa: microchip: add reference to ksz_device inside the ksz_port
-    https://git.kernel.org/netdev/net-next/c/f3c165459c51
-  - [net-next,2/3] net: dsa: microchip: lan937x: clear the POR_READY_INT status bit
-    https://git.kernel.org/netdev/net-next/c/f313936261ac
-  - [net-next,3/3] net: dsa: microchip: lan937x: add interrupt support for port phy link
-    https://git.kernel.org/netdev/net-next/c/c9cd961c0d43
+Please don't wrap such lines, even when they are longer than 80
+characters. They are used by tooling during back porting.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
