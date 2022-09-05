@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 036A05AD104
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 13:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 697365AD102
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 13:06:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237820AbiIEK7w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 06:59:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
+        id S238002AbiIEK7y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 06:59:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237968AbiIEK72 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 06:59:28 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2061.outbound.protection.outlook.com [40.107.93.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E39BC0F;
-        Mon,  5 Sep 2022 03:59:24 -0700 (PDT)
+        with ESMTP id S237290AbiIEK7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 06:59:31 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2068.outbound.protection.outlook.com [40.107.94.68])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8531E3883;
+        Mon,  5 Sep 2022 03:59:29 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AyMH8larCdLnR4u0BXAOSz7/vnlcpp6ja0qWusx7no7ZLbKPK92BdOEJ151IZV9t3afp3VnkBHVr6AxcBP+oPYHsknXUiSCzziMLf3P8/OeWDKayGswEZBBkLSq9IAOXn/IREiZaznymKFSDIyaHLXXXUF8JRpsx+1Qkl8YouOnfP+lJzTmGPeQagn1PYnYezmDJqjJqKGAxVfVRoBrqQPbd4sCPfCwEN2Atk9sVr5xw1Ge9WdDUxRto8rPF9i92SsiPjX/gJbxlB1ChgqrwO8SioL5QZUxR0ewVT1dZe7qO3mjJKbdJqMsl+oYY9ELdDPrWgAfCJ5OsOMKOVrYjnw==
+ b=kf7XkFSs/QALKeMQXhUQz+Ct7ONU+qUUEbCjNsDlewuSb6tdsI4GujeyNDc38z5ZjuJcbs688d5WCWonF8ffyR4VpXDQJFzEIV5K7XLdY2YO2K48xGNk5QrFP+WdnTDwnsXzozPNU2liTXXrnm4YD7roZ85J9klVoihu2MjTBuf/LJsmQmKYwn1Nm/YhZBijE7BySN24OYaQqyF4Eo3/3T/DxmpfM58IGTnAhUBonKP7wM6t2BH6Llb1i+hXJ8mrTf6nmiY+ttT4opX355nQWEv0WkGPddFrQWmvO4F+HnCBbT3e33MDAPvssUg0c1LLMrJAk0PxHXs7aj+rEyKE0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BnIlSwJ06iYNjceq+jVzPQMtj9fK4PNS/WWz6aoqcqs=;
- b=VUt9zdyie6NmaaFrpdz2ClAmA3tuTvFardQFA5rLp0bbA8wH5ALui9QO7QOYfdwCPlBn0Xk4Mpe7/xRRGK09ma8o6aadsCLlxmbM1YYW1ep1CWI//tk/1znwP2DJ6eOOt/a9vyh+OFS/ye/AFimn7rqDw5QAW2eDWVqLikMFiYZJ0ICzsWc4rQ/kwf5TPLl74TKL+jJVjRg+BWMOw9LP27zo1UCTElzC2Zl36PqGWYK7zWg/42jfxesj4vVlgnnvHDscxjaN1nh2af7mRDtBfr9DJH130LvPv26EFscihT1DB7Vm6FivShvSVlNfvj+vMKsUJqIiBGNVO+q7YUW8xA==
+ bh=1JGCx88CIG8mePg4BMFmBURFbej+fYal6iwvLEDpxts=;
+ b=NP5oG10ED6JuzIztnRcNmtzoYU+Y/6du0h9n67Zpsz4IbzuaDQIHgTsWjW7lf0Jbhb4hnDd2KF2pHrqbS7WOH2Bii9WzwiB5jT2ODEnl/GpSrH7aBpWcDvOPpCl9MDw4CCKkWMawuFy7ypOj+aS8lBTHBYc4cimQyzxMw9j9VUhwey7ZDMUi36Sbs0NOOcmULd5kxbC075ymAVKdlDG/6U6ZR/g3MXFN/y+8f19r5LKjVvyWlQXCGhENoPGPI87zlKjoxMbvSSOFwBJCwEBOToH0kzMKZqhGAVOh5hEUsXJS+Fvbzt4hm/Gd/Phte0ZdimXCAOiS8ACoobXDCg2nyw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.234) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BnIlSwJ06iYNjceq+jVzPQMtj9fK4PNS/WWz6aoqcqs=;
- b=Zmntj+FZ8YOAmHIQ/r6+7EiwmQ2m7vfQ2vSwv7ryJq1d4WYPNycWjB0Yii6hl/BnEayDxFE+v6fAhhSuHnbcONjkhDPYujabnp3MgoSXLNA7SVFTZB+6l1G64SPP6LZ+qHrw5ViUCoPYxf/osVL0afJtawmPL384CFMTvBO7mIMXC2cQY0lpoXo2uKXPfndAXfdrIkW1DdUp0wofjV1tswAcg2wo9AuPexYgvqjskRchJPUSVRzUbs8dBViObNcxD69FZe71TvQROcqVI0HdjeTFtYB+6jgZyXlP/dc5dblOewXfLd3LRdQLNLkVMlGsJZoY6xcaYClNvypHKtrW3g==
-Received: from BN9PR03CA0618.namprd03.prod.outlook.com (2603:10b6:408:106::23)
- by CY5PR12MB6057.namprd12.prod.outlook.com (2603:10b6:930:2e::17) with
+ bh=1JGCx88CIG8mePg4BMFmBURFbej+fYal6iwvLEDpxts=;
+ b=TrvA0025Ns40I+wy8DTVm0+SY0v9teGlh/IxVUOUlKcLhp6v4L3F7FDSZW1gfvnGH9TUr/p5MnaJBSGHiz0SxFC4+vaLgSyhDrQ6QwlmZa1oZTV3EyLLfue/kHlXa3M3z10TkM4QPXGmcOh7XxthsX33YFa2kcvjknJdgeNoitw4k4/3pyE7mwzVUvku1qRPnhcGOk2WH8W+UOre7gkI2BKJgWTOJYXOC3afsU4iXBUC8GfaJc5j4mPd8FmDr5ps/WdTQ8Wrya4G9cw6DlnageUCM/REYotahVtCHVua7uOoDyqEjthjCLNp8GAWJtLQqDEgGFT1ZvJH6ribDZhiXQ==
+Received: from DM6PR02CA0123.namprd02.prod.outlook.com (2603:10b6:5:1b4::25)
+ by BL3PR12MB6641.namprd12.prod.outlook.com (2603:10b6:208:38d::8) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.17; Mon, 5 Sep
- 2022 10:59:22 +0000
-Received: from BN8NAM11FT085.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:106:cafe::c1) by BN9PR03CA0618.outlook.office365.com
- (2603:10b6:408:106::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.13 via Frontend
- Transport; Mon, 5 Sep 2022 10:59:22 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.14; Mon, 5 Sep
+ 2022 10:59:26 +0000
+Received: from DM6NAM11FT072.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1b4:cafe::e1) by DM6PR02CA0123.outlook.office365.com
+ (2603:10b6:5:1b4::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10 via Frontend
+ Transport; Mon, 5 Sep 2022 10:59:25 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- BN8NAM11FT085.mail.protection.outlook.com (10.13.176.100) with Microsoft SMTP
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.234) by
+ DM6NAM11FT072.mail.protection.outlook.com (10.13.173.181) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Mon, 5 Sep 2022 10:59:22 +0000
+ 15.20.5588.10 via Frontend Transport; Mon, 5 Sep 2022 10:59:25 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Mon, 5 Sep 2022 10:59:22 +0000
+ DRHQMAIL101.nvidia.com (10.27.9.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Mon, 5 Sep 2022 10:59:25 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Mon, 5 Sep 2022 03:59:21 -0700
+ 15.2.986.29; Mon, 5 Sep 2022 03:59:24 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Mon, 5 Sep 2022 03:59:18 -0700
+ Transport; Mon, 5 Sep 2022 03:59:21 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -67,9 +67,9 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V6 vfio 02/10] net/mlx5: Query ADV_VIRTUALIZATION capabilities
-Date:   Mon, 5 Sep 2022 13:58:44 +0300
-Message-ID: <20220905105852.26398-3-yishaih@nvidia.com>
+Subject: [PATCH V6 vfio 03/10] vfio: Introduce DMA logging uAPIs
+Date:   Mon, 5 Sep 2022 13:58:45 +0300
+Message-ID: <20220905105852.26398-4-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220905105852.26398-1-yishaih@nvidia.com>
 References: <20220905105852.26398-1-yishaih@nvidia.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d3055b37-5d9d-4e13-4ec2-08da8f2db087
-X-MS-TrafficTypeDiagnostic: CY5PR12MB6057:EE_
+X-MS-Office365-Filtering-Correlation-Id: d7262da2-21b0-4566-4953-08da8f2db293
+X-MS-TrafficTypeDiagnostic: BL3PR12MB6641:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Sb/ccr4Li+ZF1ABnPQMJbO8Zd8G8ozrCl10UwCEByj8K2Rqa56d7gU3z38OvHjyiPrwM7jNujw2daDxe5d7n55QWcLrKc6izSO0I99oaYZCQUHu9KPydzhDkkQgRfwA8ZyH/y2/LPv2PpAgAawJhVdVd2mwzIGQOcp9cqtDSkO0baKoBth+5yE5nVIeGKdjy5kvdCNQGavkLOC/WoblZTmokB5lxJqVfpSbYG37nojF9VfEO5qrxS+mn8eDCgEQkJ6GCCRy9b4bMYYQ0vv/1ZjOTy5FGjWQusYxBhOZ6LzvKtzhlOZqlcj8DRtvnDMd+DfT5/CZo2g6L7cngVqGtQNDXPcpkKdf6bSnH99xIvhvttTkFaaM8g1cJR/8Yr7hUKddZ2vruwjuYF4TkDORabQwwvxHjxSuceEU71h8Hs1ny0yvaDyqjyU9F7MQsq9U+12LIdoNsrOVN693MDpUs9qTX1in8WrERIvQtfZ0fIK/xM7wy/95B4ReWIxzZeD5lg6f8zDeg6mSiDdl0MP7CcQvnlWRrCR336VAYrmxy5NCBZiuV29bm84RtYtjNk0FAG76HRe4Lehc8xedZEb37f1ezILlfY6zfgergU+rV066Sk43yeAHBkb9yz5yAKJOOWajgNXEkTPwAWq3LXpvW7LPRg7lF40PmT98/a9WZhOMmNCRyyzz1hyd8589Jw3AXCLIa8SzaplXLk0+poFHU1D68+cHEgwZm2hgp4sNeBi/lBUJVd/fNeq9AcI7I0QInku47eBNQNrQcJWKAWN4uPsWiITj/ZvOGmCxm9oRzMMLDLwBEwf0mmgfaj1VD3waQ
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(346002)(376002)(39860400002)(40470700004)(36840700001)(46966006)(47076005)(426003)(186003)(1076003)(336012)(2616005)(40480700001)(8936002)(26005)(5660300002)(36756003)(86362001)(478600001)(41300700001)(6666004)(7696005)(40460700003)(82740400003)(356005)(316002)(70586007)(82310400005)(70206006)(36860700001)(54906003)(110136005)(6636002)(2906002)(81166007)(4326008)(8676002)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: jPofayb9uxfQ0dQyWdUzOoew56O7ltTRD8TQFXLX1QA7NUVycAw5fW24s5ZfJ8LdE0CE2dTdUM9SdXEEzLitrG8LZM8BnRNXwU5H1ZrKV5wyDtdb2ZleIkLSqZS84aq8rFPUAunlzsYfoFcshxoGjxO/ocM4s92nz6lorIgpqmTN3xbWuQX6bpZ6zRUQrRk1R5an+tzpLDPyiIlEb/4tz8EzMwP60F50i8Cft/q3ImCJZyj11yxYIKgbY+x4Ufwb26oHfUK83s2WI2kSD0SISkgM379mwGP0qHUqJW5XLvtCVh2OWHTP+jutctNePDd20d3Yz798EhbWTYjXFiAMvUDHiqspdd2HocrfIiGjVRsQ2Ioc3Rp1NnAiH4FMo6tAW+JQlPLt8sYpPZQiqAz9FV8olpgeDGx0ZZyciMKkgL9mvbVB+bCciKoLCiTZRFlNUc4iHG5wAs2yzDfOcnoN0yShYuPcup4c6seak2PVyOfFjrWpvCRW+3UybDBkK+0/4H5tQVxyPo6d2iRqYZleqtJqb/I9V3fBrtHZnBIUiZ2j1W8lJ81k4i1p5P+8Twn4mb93t/Ibh8No1W+5VfoyTVURycu0gTu68ZqiOJb33wMkgPSSIw0yQYgbynNBD/NzWqF3WyByF0fn12o3WoB4CSNdaf01JZoic49hzbdU+5yd8S3c5ySHAOE8Mwj7QnQ6mmKdFGcdrLK1rUPYrlmAyYZYyc+bAr9vtb1uaG8/xCAVEYcwtkNMLUmKUUnA9b5sea5R2I+OAfusqrUITsT+ELHNrBCdqGaKBEGRLM6AKPCRsV7VPuR8cPa0y3Q9CGf4
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(136003)(396003)(376002)(39860400002)(346002)(36840700001)(46966006)(40470700004)(40460700003)(83380400001)(356005)(36860700001)(2906002)(81166007)(54906003)(70586007)(70206006)(8676002)(4326008)(40480700001)(82740400003)(316002)(6636002)(110136005)(82310400005)(1076003)(8936002)(5660300002)(7696005)(426003)(336012)(47076005)(186003)(2616005)(26005)(86362001)(41300700001)(6666004)(478600001)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 10:59:22.2585
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 10:59:25.7393
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d3055b37-5d9d-4e13-4ec2-08da8f2db087
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7262da2-21b0-4566-4953-08da8f2db293
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT085.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT072.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6057
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR12MB6641
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -105,75 +105,128 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Query ADV_VIRTUALIZATION capabilities which provide information for
-advanced virtualization related features.
+DMA logging allows a device to internally record what DMAs the device is
+initiating and report them back to userspace. It is part of the VFIO
+migration infrastructure that allows implementing dirty page tracking
+during the pre copy phase of live migration. Only DMA WRITEs are logged,
+and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
 
-Current capabilities refer to the page tracker object which is used for
-tracking the pages that are dirtied by the device.
+This patch introduces the DMA logging involved uAPIs.
+
+It uses the FEATURE ioctl with its GET/SET/PROBE options as of below.
+
+It exposes a PROBE option to detect if the device supports DMA logging.
+It exposes a SET option to start device DMA logging in given IOVAs
+ranges.
+It exposes a SET option to stop device DMA logging that was previously
+started.
+It exposes a GET option to read back and clear the device DMA log.
+
+Extra details exist as part of vfio.h per a specific option.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/fw.c   | 6 ++++++
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 1 +
- include/linux/mlx5/device.h                    | 9 +++++++++
- 3 files changed, 16 insertions(+)
+ include/uapi/linux/vfio.h | 86 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 86 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw.c b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-index 079fa44ada71..483a51870505 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw.c
-@@ -273,6 +273,12 @@ int mlx5_query_hca_caps(struct mlx5_core_dev *dev)
- 			return err;
- 	}
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index 76a173f973de..d7d8e0922376 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -1042,6 +1042,92 @@ struct vfio_device_low_power_entry_with_wakeup {
+  */
+ #define VFIO_DEVICE_FEATURE_LOW_POWER_EXIT 5
  
-+	if (MLX5_CAP_GEN(dev, adv_virtualization)) {
-+		err = mlx5_core_get_caps(dev, MLX5_CAP_ADV_VIRTUALIZATION);
-+		if (err)
-+			return err;
-+	}
++/*
++ * Upon VFIO_DEVICE_FEATURE_SET start/stop device DMA logging.
++ * VFIO_DEVICE_FEATURE_PROBE can be used to detect if the device supports
++ * DMA logging.
++ *
++ * DMA logging allows a device to internally record what DMAs the device is
++ * initiating and report them back to userspace. It is part of the VFIO
++ * migration infrastructure that allows implementing dirty page tracking
++ * during the pre copy phase of live migration. Only DMA WRITEs are logged,
++ * and this API is not connected to VFIO_DEVICE_FEATURE_MIG_DEVICE_STATE.
++ *
++ * When DMA logging is started a range of IOVAs to monitor is provided and the
++ * device can optimize its logging to cover only the IOVA range given. Each
++ * DMA that the device initiates inside the range will be logged by the device
++ * for later retrieval.
++ *
++ * page_size is an input that hints what tracking granularity the device
++ * should try to achieve. If the device cannot do the hinted page size then
++ * it's the driver choice which page size to pick based on its support.
++ * On output the device will return the page size it selected.
++ *
++ * ranges is a pointer to an array of
++ * struct vfio_device_feature_dma_logging_range.
++ *
++ * The core kernel code guarantees to support by minimum num_ranges that fit
++ * into a single kernel page. User space can try higher values but should give
++ * up if the above can't be achieved as of some driver limitations.
++ *
++ * A single call to start device DMA logging can be issued and a matching stop
++ * should follow at the end. Another start is not allowed in the meantime.
++ */
++struct vfio_device_feature_dma_logging_control {
++	__aligned_u64 page_size;
++	__u32 num_ranges;
++	__u32 __reserved;
++	__aligned_u64 ranges;
++};
 +
- 	return 0;
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index c085b031abfc..de9c315a85fc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -1488,6 +1488,7 @@ static const int types[] = {
- 	MLX5_CAP_IPSEC,
- 	MLX5_CAP_PORT_SELECTION,
- 	MLX5_CAP_DEV_SHAMPO,
-+	MLX5_CAP_ADV_VIRTUALIZATION,
- };
- 
- static void mlx5_hca_caps_free(struct mlx5_core_dev *dev)
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index b5f58fd37a0f..5b41b9fb3d48 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -1200,6 +1200,7 @@ enum mlx5_cap_type {
- 	MLX5_CAP_DEV_SHAMPO = 0x1d,
- 	MLX5_CAP_GENERAL_2 = 0x20,
- 	MLX5_CAP_PORT_SELECTION = 0x25,
-+	MLX5_CAP_ADV_VIRTUALIZATION = 0x26,
- 	/* NUM OF CAP Types */
- 	MLX5_CAP_NUM
- };
-@@ -1365,6 +1366,14 @@ enum mlx5_qcam_feature_groups {
- 	MLX5_GET(port_selection_cap, \
- 		 mdev->caps.hca[MLX5_CAP_PORT_SELECTION]->max, cap)
- 
-+#define MLX5_CAP_ADV_VIRTUALIZATION(mdev, cap) \
-+	MLX5_GET(adv_virtualization_cap, \
-+		 mdev->caps.hca[MLX5_CAP_ADV_VIRTUALIZATION]->cur, cap)
++struct vfio_device_feature_dma_logging_range {
++	__aligned_u64 iova;
++	__aligned_u64 length;
++};
 +
-+#define MLX5_CAP_ADV_VIRTUALIZATION_MAX(mdev, cap) \
-+	MLX5_GET(adv_virtualization_cap, \
-+		 mdev->caps.hca[MLX5_CAP_ADV_VIRTUALIZATION]->max, cap)
++#define VFIO_DEVICE_FEATURE_DMA_LOGGING_START 6
 +
- #define MLX5_CAP_FLOWTABLE_PORT_SELECTION(mdev, cap) \
- 	MLX5_CAP_PORT_SELECTION(mdev, flow_table_properties_port_selection.cap)
++/*
++ * Upon VFIO_DEVICE_FEATURE_SET stop device DMA logging that was started
++ * by VFIO_DEVICE_FEATURE_DMA_LOGGING_START
++ */
++#define VFIO_DEVICE_FEATURE_DMA_LOGGING_STOP 7
++
++/*
++ * Upon VFIO_DEVICE_FEATURE_GET read back and clear the device DMA log
++ *
++ * Query the device's DMA log for written pages within the given IOVA range.
++ * During querying the log is cleared for the IOVA range.
++ *
++ * bitmap is a pointer to an array of u64s that will hold the output bitmap
++ * with 1 bit reporting a page_size unit of IOVA. The mapping of IOVA to bits
++ * is given by:
++ *  bitmap[(addr - iova)/page_size] & (1ULL << (addr % 64))
++ *
++ * The input page_size can be any power of two value and does not have to
++ * match the value given to VFIO_DEVICE_FEATURE_DMA_LOGGING_START. The driver
++ * will format its internal logging to match the reporting page size, possibly
++ * by replicating bits if the internal page size is lower than requested.
++ *
++ * The LOGGING_REPORT will only set bits in the bitmap and never clear or
++ * perform any initialization of the user provided bitmap.
++ *
++ * If any error is returned userspace should assume that the dirty log is
++ * corrupted. Error recovery is to consider all memory dirty and try to
++ * restart the dirty tracking, or to abort/restart the whole migration.
++ *
++ * If DMA logging is not enabled, an error will be returned.
++ *
++ */
++struct vfio_device_feature_dma_logging_report {
++	__aligned_u64 iova;
++	__aligned_u64 length;
++	__aligned_u64 page_size;
++	__aligned_u64 bitmap;
++};
++
++#define VFIO_DEVICE_FEATURE_DMA_LOGGING_REPORT 8
++
+ /* -------- API for Type1 VFIO IOMMU -------- */
  
+ /**
 -- 
 2.18.1
 
