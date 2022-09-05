@@ -2,232 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C41D5ADB73
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 00:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A46665ADB8D
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 00:53:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiIEWfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 18:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58932 "EHLO
+        id S231868AbiIEWxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 18:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232289AbiIEWfT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 18:35:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE511EC66
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 15:35:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1662417317;
+        with ESMTP id S230076AbiIEWxX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 18:53:23 -0400
+Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD74696FE;
+        Mon,  5 Sep 2022 15:53:22 -0700 (PDT)
+Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.3ffe.de (Postfix) with ESMTPSA id 9A0AF1237;
+        Tue,  6 Sep 2022 00:53:20 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
+        t=1662418400;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=C2/Mydp8vjCANndV/tTiRuz68eLKVMoiyb7tyhGhFWw=;
-        b=P+stzy0aAA9Lbi0gCOyln+KxV8QyDzA0WvbC1b2yE6fYxm54UjdGe+uq610AbWQogPAMwj
-        vV6OEWImCioXAD/ltCbaQB4CwSqdp8aYNVPrj9baFxyb+z8qDe52VK2P5c1kl9SCz2t0jt
-        i6d88I8x8qgfPGZWKUmJnUDgjbKiu48=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
- us-mta-294-MDxhYYe7OTmck3WTPHIyKQ-1; Mon, 05 Sep 2022 18:35:16 -0400
-X-MC-Unique: MDxhYYe7OTmck3WTPHIyKQ-1
-Received: by mail-qk1-f198.google.com with SMTP id x22-20020a05620a259600b006b552a69231so7642191qko.18
-        for <netdev@vger.kernel.org>; Mon, 05 Sep 2022 15:35:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=C2/Mydp8vjCANndV/tTiRuz68eLKVMoiyb7tyhGhFWw=;
-        b=imVGosl7MzmU62s0OySLT9bpGHssNKrSBPaQ69kOOQAqJxYy89EG59nUXRD4kzbkFQ
-         rHvxHy/z1v3fVeog3bh5bU3iGoPjPH8O6qWjm6gup93O2hgQ7fQVhGVXui4uQ+0ICCwi
-         1kCQpOTm2Zy86uIPXxOsBh24BXtBCKeI5Y67pOiEc+2aPQ8On7I+/zqTwlSgRtQG0Y+d
-         LDWwgoCphaeVhOg9VJY3Y4j79EWgtadTO+qeaY4mu9O8WQx/v3uqXakgEbdjMr/p/iDH
-         IwHCjpTL6FI65oOuibEzQTk7xdR7MmAAmB5fZnDwdXEJEfX23Xuezbppc4aR5UQnXKFx
-         9MaA==
-X-Gm-Message-State: ACgBeo0ltzHA+VeUy8V1Dz/2d75c8Z6a8MRl4luX10gJg1a1cZbg/mZT
-        xnlqDuP4eCdp6MmDmg24yVB7DWa5tZdGCFvL4YV3TnkYv0pPXjgpNYjSG72X+RrG37kNrMDVxfL
-        NS1SFAthUR2heh9Jlz8y8eD27a7YPDh2H
-X-Received: by 2002:a05:620a:44cb:b0:6c9:c460:8838 with SMTP id y11-20020a05620a44cb00b006c9c4608838mr1081qkp.770.1662417315760;
-        Mon, 05 Sep 2022 15:35:15 -0700 (PDT)
-X-Google-Smtp-Source: AA6agR4R3rST4GNyXnVICYcos5fM5YQx+lIc5De3VVYdshhff7fETZK+3CoD4oazZWFUJqNGaYUFsVaMBD7r9+VDZqA=
-X-Received: by 2002:a05:620a:44cb:b0:6c9:c460:8838 with SMTP id
- y11-20020a05620a44cb00b006c9c4608838mr1051qkp.770.1662417315363; Mon, 05 Sep
- 2022 15:35:15 -0700 (PDT)
+        bh=/By73UdS4I5mXEc+O0lv8vgBFlHY3Pw70xtrxrWK0x0=;
+        b=uqIwMHV5QXcnmwPSQQFAGiGSIpvCewYSE95VUUm7vli6FaCVmqoEBkzLaStZ5E3ssMoXN8
+        gUFNsTKZEOTasqeL8B4aU/0DlQZtZ4JrTi1ikPo8SxJc+htVmrzHQ2p4KZwHKOySw5NEXg
+        UK+hs34g6mR+b9JXAGvGADxYDTW8w4CnyIf/9z9qg1WnLzPG2u+YCPxXhIw9uSvflOCeuP
+        IRbHF68NE8ZRfndEEzwt+AtPdoqoMmIpv3i9IgXeSAVHOUP5jjtIcGmVTMVTpEPqIa99eS
+        /MOJR8km43shSZE4wCpD6ErddsvLdbtdDhVEhOGlkWst8R+wMIKNCeVoNhSFNQ==
 MIME-Version: 1.0
-References: <20220701143052.1267509-1-miquel.raynal@bootlin.com>
- <CAK-6q+itA0C4zPAq5XGKXgCHW5znSFeB-YDMp3uB9W-kLV6WaA@mail.gmail.com>
- <20220825145831.1105cb54@xps-13> <CAK-6q+j3LMoSe_7u0WqhowdPV9KM-6g0z-+OmSumJXCZfo0CAw@mail.gmail.com>
- <20220826095408.706438c2@xps-13> <CAK-6q+gxD0TkXzUVTOiR4-DXwJrFUHKgvccOqF5QMGRjfZQwvw@mail.gmail.com>
- <20220829100214.3c6dad63@xps-13> <CAK-6q+gJwm0bhHgMVBF_pmjD9zSrxxHvNGdTrTm0fG-hAmSaUQ@mail.gmail.com>
- <20220831173903.1a980653@xps-13> <20220901020918.2a15a8f9@xps-13>
- <20220901150917.5246c2d0@xps-13> <CAK-6q+g1Gnew=zWsnW=HAcLTqFYHF+P94Q+Ywh7Rir8J8cgCgw@mail.gmail.com>
- <20220903020829.67db0af8@xps-13> <CAK-6q+hO1i=xvXx3wHo658ph93FwuVs_ssjG0=jnphEe8a+gxw@mail.gmail.com>
- <20220903180556.6430194b@xps-13> <CAK-6q+hXrUOzrsucOw3vJMu3UscOMG8X3E74px6bEZoDO4PLjw@mail.gmail.com>
- <CAK-6q+iA80oRi_NJODNkJTJmkVkcvMwO=HxRr-bPT3-u6f7iLA@mail.gmail.com>
- <CAK-6q+jiDcf_M6S+gWh_qms=dMPaSb4daPC7Afs6RZjQdHGinQ@mail.gmail.com> <20220905051608.5354637a@xps-13>
-In-Reply-To: <20220905051608.5354637a@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Mon, 5 Sep 2022 18:35:04 -0400
-Message-ID: <CAK-6q+jCWE_M+LXdToHy-kH91hZsD2qGycCU3tsSKqjjt=UjFw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next 01/20] net: mac802154: Allow the creation of
- coordinator interfaces
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+Date:   Tue, 06 Sep 2022 00:53:20 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        werner@almesberger.net
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Richie Pearn <richard.pearn@nxp.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 net 1/3] net: dsa: felix: tc-taprio intervals smaller
+ than MTU should send at least one packet
+In-Reply-To: <20220905170125.1269498-2-vladimir.oltean@nxp.com>
+References: <20220905170125.1269498-1-vladimir.oltean@nxp.com>
+ <20220905170125.1269498-2-vladimir.oltean@nxp.com>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <d50be0e224c70453e1a4a7d690cfdf1b@walle.cc>
+X-Sender: michael@walle.cc
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Am 2022-09-05 19:01, schrieb Vladimir Oltean:
+> The blamed commit broke tc-taprio schedules such as this one:
+> 
+> tc qdisc replace dev $swp1 root taprio \
+>         num_tc 8 \
+>         map 0 1 2 3 4 5 6 7 \
+>         queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
+>         base-time 0 \
+>         sched-entry S 0x7f 990000 \
+>         sched-entry S 0x80  10000 \
+>         flags 0x2
+> 
+> because the gate entry for TC 7 (S 0x80 10000 ns) now has a static 
+> guard
+> band added earlier than its 'gate close' event, such that packet
+> overruns won't occur in the worst case of the largest packet possible.
+> 
+> Since guard bands are statically determined based on the per-tc
+> QSYS_QMAXSDU_CFG_* with a fallback on the port-based QSYS_PORT_MAX_SDU,
+> we need to discuss what happens with TC 7 depending on kernel version,
+> since the driver, prior to commit 55a515b1f5a9 ("net: dsa: felix: drop
+> oversized frames with tc-taprio instead of hanging the port"), did not
+> touch QSYS_QMAXSDU_CFG_*, and therefore relied on QSYS_PORT_MAX_SDU.
+> 
+> 1 (before vsc9959_tas_guard_bands_update): QSYS_PORT_MAX_SDU defaults 
+> to
+>   1518, and at gigabit this introduces a static guard band (independent
+>   of packet sizes) of 12144 ns, plus QSYS::HSCH_MISC_CFG.FRM_ADJ (bit
+>   time of 20 octets => 160 ns). But this is larger than the time window
+>   itself, of 10000 ns. So, the queue system never considers a frame 
+> with
+>   TC 7 as eligible for transmission, since the gate practically never
+>   opens, and these frames are forever stuck in the TX queues and hang
+>   the port.
+> 
+> 2 (after vsc9959_tas_guard_bands_update): Under the sole goal of
+>   enabling oversized frame dropping, we make an effort to set
+>   QSYS_QMAXSDU_CFG_7 to 1230 bytes. But QSYS_QMAXSDU_CFG_7 plays
+>   one more role, which we did not take into account: per-tc static 
+> guard
+>   band, expressed in L2 byte time (auto-adjusted for FCS and L1 
+> overhead).
+>   There is a discrepancy between what the driver thinks (that there is
+>   no guard band, and 100% of min_gate_len[tc] is available for egress
+>   scheduling) and what the hardware actually does (crops the equivalent
+>   of QSYS_QMAXSDU_CFG_7 ns out of min_gate_len[tc]). In practice, this
+>   means that the hardware thinks it has exactly 0 ns for scheduling tc 
+> 7.
+> 
+> In both cases, even minimum sized Ethernet frames are stuck on egress
+> rather than being considered for scheduling on TC 7, even if they would
+> fit given a proper configuration. Considering the current situation,
+> with vsc9959_tas_guard_bands_update(), frames between 60 octets and 
+> 1230
+> octets in size are not eligible for oversized dropping (because they 
+> are
+> smaller than QSYS_QMAXSDU_CFG_7), but won't be considered as eligible
+> for scheduling either, because the min_gate_len[7] (10000 ns) minus the
+> guard band determined by QSYS_QMAXSDU_CFG_7 (1230 octets * 8 ns per
+> octet == 9840 ns) minus the guard band auto-added for L1 overhead by
+> QSYS::HSCH_MISC_CFG.FRM_ADJ (20 octets * 8 ns per octet == 160 octets)
+> leaves 0 ns for scheduling in the queue system proper.
+> 
+> Investigating the hardware behavior, it becomes apparent that the queue
+> system needs precisely 33 ns of 'gate open' time in order to consider a
+> frame as eligible for scheduling to a tc. So the solution to this
+> problem is to amend vsc9959_tas_guard_bands_update(), by giving the
+> per-tc guard bands less space by exactly 33 ns, just enough for one
+> frame to be scheduled in that interval. This allows the queue system to
+> make forward progress for that port-tc, and prevents it from hanging.
+> 
+> Fixes: 297c4de6f780 ("net: dsa: felix: re-enable TAS guard band mode")
+> Reported-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-On Sun, Sep 4, 2022 at 11:16 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Sat, 3 Sep 2022 15:40:35 -0400:
->
-> > Hi,
-> >
-> > On Sat, Sep 3, 2022 at 3:10 PM Alexander Aring <aahringo@redhat.com> wrote:
-> > >
-> > > On Sat, Sep 3, 2022 at 3:07 PM Alexander Aring <aahringo@redhat.com> wrote:
-> > > >
-> > > > Hi,
-> > > >
-> > > > On Sat, Sep 3, 2022 at 12:06 PM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
-> > > > ...
-> > > > >
-> > > > > On the Tx side, when sending eg. an association request or an
-> > > > > association response, I must expect and wait for an ack. This is
-> > > > > what I am struggling to do. How can I know that a frame which I just
-> > > > > transmitted has been acked? Bonus points, how can I do that in such a
-> > > > > way that it will work with other devices? (hints below)
-> > > > >
-> > > > > > AACK will send a back if a frame with ack request bit was received.
-> > > > > >
-> > > > > > > say in a commit) I have seen no further updates about it so I guess
-> > > > > > > it's still not available. I don't see any other way to know if a
-> > > > > > > frame's ack has been received or not reliably.
-> > > > > >
-> > > > > > You implemented it for the at86rf230 driver (the spi one which is what
-> > > > > > also atusb uses). You implemented the
-> > > > > >
-> > > > > > ctx->trac = IEEE802154_NO_ACK;
-> > > > > >
-> > > > > > which signals the upper layer that if the ack request bit is set, that
-> > > > > > there was no ack.
-> > > > > >
-> > > > > > But yea, there is a missing feature for atusb yet which requires
-> > > > > > firmware changes as well.
-> > > > >
-> > > > > :'(
-> > > >
-> > > > There is a sequence handling in tx done on atusb firmware and I think
-> > > > it should be pretty easy to add a byte for trac status.
-> > > >
-> > > > diff --git a/atusb/fw/mac.c b/atusb/fw/mac.c
-> > > > index 835002c..156bd95 100644
-> > > > --- a/atusb/fw/mac.c
-> > > > +++ b/atusb/fw/mac.c
-> > > > @@ -116,7 +116,7 @@ static void receive_frame(void)
-> > > >
-> > > >  static bool handle_irq(void)
-> > > >  {
-> > > > -       uint8_t irq;
-> > > > +       uint8_t irq, data[2];
-> > > >
-> > > >         irq = reg_read(REG_IRQ_STATUS);
-> > > >         if (!(irq & IRQ_TRX_END))
-> > > > @@ -124,7 +124,15 @@ static bool handle_irq(void)
-> > > >
-> > > >         if (txing) {
-> > > >                 if (eps[1].state == EP_IDLE) {
-> > > > -                       usb_send(&eps[1], &this_seq, 1, tx_ack_done, NULL);
-> > > > +                       data[0] = tx_ack_done;
-> > > > +
-> > > > +                       spi_begin();
-> > > > +                       spi_io(REG_TRX_STATE);
-> > > > +
-> > > > +                       data[1] = spi_recv();
-> > > > +                       spi_end();
-> > >
-> > > data[1] = reg_read(REG_TRX_STATE) as seen above for REG_IRQ_STATUS
-> > > would be better here...
-> > >
-> >
-> > after digging the code more, there is another queue case which we
-> > should handle, also correct using buffer parameter instead of the
-> > callback parameter which was stupid... However I think the direction
-> > is clear. Sorry for the spam.
->
-> Don't be, your feedback is just super useful.
->
-> > diff --git a/atusb/fw/mac.c b/atusb/fw/mac.c
-> > index 835002c..b52ba1a 100644
-> > --- a/atusb/fw/mac.c
-> > +++ b/atusb/fw/mac.c
-> > @@ -32,7 +32,7 @@ static uint8_t tx_buf[MAX_PSDU];
-> >  static uint8_t tx_size = 0;
-> >  static bool txing = 0;
-> >  static bool queued_tx_ack = 0;
-> > -static uint8_t next_seq, this_seq, queued_seq;
-> > +static uint8_t next_seq, this_seq, queued_seq, queued_tx_trac;
-> >
-> >
-> >  /* ----- Receive buffer management ----------------------------------------- */
-> > @@ -57,6 +57,7 @@ static void tx_ack_done(void *user);
-> >  static void usb_next(void)
-> >  {
-> >         const uint8_t *buf;
-> > +       uint8_t data[2];
-> >
-> >         if (rx_in != rx_out) {
-> >                 buf = rx_buf[rx_out];
-> > @@ -65,7 +66,9 @@ static void usb_next(void)
-> >         }
-> >
-> >         if (queued_tx_ack) {
-> > -               usb_send(&eps[1], &queued_seq, 1, tx_ack_done, NULL);
-> > +               data[0] = queued_seq;
-> > +               data[1] = queued_tx_trac;
-> > +               usb_send(&eps[1], data, sizeof(data), tx_ack_done, NULL);
+I haven't looked at the overall code, but the solution described
+above sounds good.
 
-This is also broken, see below.
+FWIW, I don't think such a schedule, where exactly one frame
+can be sent, is very likely in the wild though. Imagine a piece
+of software is generating one frame per cycle. It might happen
+that during one (hardware) cycle there is no frame ready (because
+it is software and it jitters), but then in the next cycle, there
+are now two frames ready. In that case you'll always lag one frame
+behind and you'll never recover from it.
 
-> >                 queued_tx_ack = 0;
-> >         }
-> >  }
-> > @@ -116,7 +119,7 @@ static void receive_frame(void)
-> >
-> >  static bool handle_irq(void)
-> >  {
-> > -       uint8_t irq;
-> > +       uint8_t irq, data[2];
->
-> I don't know why, but defining data on the stack just does not work.
-> Defining it above with the other static variables is okay. I won't
-> fight more for "today" but if someone has an explanation I am all hears.
+Either I'd make sure I can send at two frames in one cycle, or
+my software would only send a frame every other cycle.
 
-I can explain it... following the usb_send() it will end in usb_io()
-and this is an asynchronous function to use somehow the USB IP core
-API of the mcu... it's wrong to use a stack variable here because it
-can be overwritten. I am sorry, I did not keep that in mind...
+Thanks for taking care of this!
 
-- Alex
-
+-michael
