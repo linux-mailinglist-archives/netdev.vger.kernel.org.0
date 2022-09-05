@@ -2,210 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A3AC25AD5DD
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 17:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A2255AD690
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 17:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238680AbiIEPJp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 11:09:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56224 "EHLO
+        id S239053AbiIEPaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 11:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238414AbiIEPJQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 11:09:16 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2049.outbound.protection.outlook.com [40.107.20.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49218578BA;
-        Mon,  5 Sep 2022 08:09:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BOlEfPA3+M5ErH2TTjZL+H7Ij+X8PoPozVhezxRKOwRftfizEPCsMkdMQhQu0AvU1r/EaCVl4Wt5evW3CAFirz+HteENU79ryWO385xYyHZ/cHRo8b2E6+2cU0pLkGIq5Ncal0BlcrOkFEbcXgShlx4K2A0gV+au3y5tkRz3oj7NnGv5/ILyVOskEt7TejW4omx7wRuKVSFW3d/Vr3TzNlX4Ge9KHBtxgs3zeLPWZP7qaIVJnJ0PMRAw0aRgW1/q9CvLLfmpFS47v6Gc2t3PsMcMN/unHeaxolK3rLqlcuIolalR5PfEVMQolkNb4uyE18WUW5AN77Wn72J0eMS8cw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=d5Xy1SP/4vVsm2Wx/rag6u83ZWyeEmTFEUaMEib9N/M=;
- b=ixKxdXSs7tGNVtxCqCOsH8tT2x7T0zOfwWhpPIpnP6hugSFEyoC4x8OVOG0dkA+1i5b1UZ1MdSiLsuMWk9Axolk43ZLX2VD8CC7myLv1RRwiZShJjIDc38rZ8rRJRWIZijskNxSqu5tsXL8mqE+MnfcZv03zHy/xLnYbNoVHGWRrwXiiIAq+MNBE7+2ZhdpOtakukNiOORGce4BhMzBqOUXBKZQhT8whYs5Q+wI+jYVu8yUNt2qYv3CDvOhBYuVySbVKiNiSsevStABpRcc5IJKRfk77P02CtrRNRhtaS3dHU8quJb75bMYTpaRUFTUWopXmh8QoVUNLeUFR53rb+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=stud.acs.upb.ro; dmarc=pass action=none
- header.from=stud.acs.upb.ro; dkim=pass header.d=stud.acs.upb.ro; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=stud.acs.upb.ro;
-Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- (2603:10a6:803:e::11) by DU2PR01MB8655.eurprd01.prod.exchangelabs.com
- (2603:10a6:10:2fa::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.10; Mon, 5 Sep
- 2022 15:09:02 +0000
-Received: from VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- ([fe80::792e:fa13:2b7e:599]) by
- VI1PR0102MB3166.eurprd01.prod.exchangelabs.com ([fe80::792e:fa13:2b7e:599%7])
- with mapi id 15.20.5588.012; Mon, 5 Sep 2022 15:09:02 +0000
-From:   andrei.tachici@stud.acs.upb.ro
-To:     linux-kernel@vger.kernel.org
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        vegard.nossum@oracle.com, joel@jms.id.au, l.stelmach@samsung.com,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        devicetree@vger.kernel.org
-Subject: [net-next v6 3/3] dt-bindings: net: adin1110: Add docs
-Date:   Mon,  5 Sep 2022 18:08:31 +0300
-Message-Id: <20220905150831.26554-4-andrei.tachici@stud.acs.upb.ro>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220905150831.26554-1-andrei.tachici@stud.acs.upb.ro>
-References: <20220905150831.26554-1-andrei.tachici@stud.acs.upb.ro>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: VI1PR0801CA0083.eurprd08.prod.outlook.com
- (2603:10a6:800:7d::27) To VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
- (2603:10a6:803:e::11)
+        with ESMTP id S239052AbiIEP3l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 11:29:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4023161B06;
+        Mon,  5 Sep 2022 08:28:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1662391698; x=1693927698;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=9hWaN9acBIohRFlHNDY7+B00DJKPDvnznUdTdjPJ05M=;
+  b=Y1xALwJ1ZDuAP4vHRggxrc8ubQ1XzDr4nh7En4bcwUICxXNmD6LHGaIS
+   ccVa1ZSIsaSrOawr+5l6T3YlRt4y4d/65B4WnQ6AA5kDw0uRHWXSEr+kJ
+   brAAJLjvZrvE8Dib4Ke+AkhqmRcYKpGmF4U889GQuPHdPr+bSwTH3iX/E
+   qpcPZSqF4b4OgG++xxkbhQIT1HZ5tPRqG8TF1/1OYrsQt336guboDiygq
+   qAWCUf+foMPr8OP3C4p3U1XNNnQOlK46LVdKY0VM7Z4q/YUkkbLJiVD82
+   j0Q4vkPKDt5AEfvmrMr5zknNUMi+vVzdFfYJVUnov3jWF+rjzabdIvxwU
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,291,1654585200"; 
+   d="scan'208";a="179234989"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 Sep 2022 08:28:16 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.12; Mon, 5 Sep 2022 08:28:09 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2507.12 via Frontend Transport; Mon, 5 Sep 2022 08:28:05 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <arun.ramadoss@microchip.com>,
+        <prasanna.vengateshan@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, <andrew@lunn.ch>,
+        <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>
+Subject: [Patch net v2] net: phy: lan87xx: change interrupt src of link_up to comm_ready
+Date:   Mon, 5 Sep 2022 20:57:50 +0530
+Message-ID: <20220905152750.5079-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 22fcc361-1f28-49ea-a908-08da8f50913c
-X-MS-TrafficTypeDiagnostic: DU2PR01MB8655:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Qx+Kz/FwtXSQFfOeZ44edmvkYMz4CSd0bs4KkUNWoc5j2g9DkzgEnXKj0FDs8qvDdVEcE0QAcwuof3OaUx4kFyx6r1cXNxKexFmPQECfOFV6tsWlLSJWlqMVT6vkEn8pFzKcw83Mge9bXDJiSzDlq0d/iK7OSB2lglWfCj7LZ4lPqweJY1zspdiVbAVhKQDX+HAsMmDH4p6ogVuzHYiAI/IbKtGvswDcw0vTr19Wsd4PWSgKw9WGWVUIjMxl+lG9qATeSpgyW91D+818/gzt1EOcFzTNHdn7ulLR6jaS9Rap7VR4Ip0ySUWxfIZPvx0XpGGZZhsEFvv1wuisRkaYJewLlGVx3znpq1cAnYoQx9YYjdZqoGSF8lbZnBHBM5o+j3GK7fU66v3XGpwQWC5Ba1AFNeAPrzWSm6WOI9pgd+KztPTO72GkfjCRhvLxCfc2olEK/cf685PhbEB5cjSx5kScxrBkjGQT9AISz5lems6omCWUZ8/f9Oh7UNdQd1opPxDclgkA3ZwXrKzMLWm1KCjmb1UbGywyV9krLZAVOKTNya3SvMCnWQee5me+SdGk5q1oub4N/VKqg9mukhs2WT8p2zOtPOXEia1MHqOOkVK6VgYuPxkWFNFt2e4niyhgcq2iuOAsLdiWq67LPaN2P8l/rpO0Hmw89NrGA4gWTqgfpa7UUXIMHvaZHOFjI33eX5cwPxuS2xwXDH4/wYkRNgoAs7M2rXnsTH/ML8ghO5vCHUlnS9Pird0cHB7paE4bSNn+4GlBBT1wIJD1DeTwkYfWWd5futpq/GxTD/gLRtk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0102MB3166.eurprd01.prod.exchangelabs.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(39860400002)(346002)(376002)(366004)(396003)(66556008)(6486002)(966005)(66476007)(2906002)(4326008)(66946007)(316002)(478600001)(786003)(6916009)(5660300002)(41320700001)(8936002)(7416002)(8676002)(83380400001)(38350700002)(86362001)(38100700002)(52116002)(6506007)(6666004)(9686003)(1076003)(26005)(41300700001)(6512007)(186003)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sj4Xw/zSOrQQArjAWuICLpM7038acwAnujSqu4WJASOpnuRe/J/6IQbVq4Bq?=
- =?us-ascii?Q?8k4j5tzM6igfWfEFd4bzIbI3R4sKz6H89xUIQxKBipvqyC/wdVTe81bg+TS9?=
- =?us-ascii?Q?gMKvynInm0edjWCsR/UV74nmTJXk2D7erPybtLaU06eElNjQioe7drlLpy0/?=
- =?us-ascii?Q?j4JrwDoJ6YOsVAQwUIqMyWy8bB7qKcsIL3eOrBDtuzvU31nn64FMwkwkIuPC?=
- =?us-ascii?Q?Tvkg5Jdjqly89BWXVyEQCs72P7UHgzLnBJRIf5bjfWyNnPdqmmd7GVIAKZyU?=
- =?us-ascii?Q?a099ve9gycjVew9SS7NvqZzGiqTPQAwNnzdD4OA/le22c4CRXYI/BINmF8p9?=
- =?us-ascii?Q?XYD3Hdw72HuXw6VJdzKbov6l0KgtDix2/zlO0O6ocK99IOX66N67HMIF4leC?=
- =?us-ascii?Q?/cTs21mFgwwqO/hqyNQO+Yl3VmphJ5wrwQejuHjezQINFrReSDT4N2p3wdpA?=
- =?us-ascii?Q?iiI+v6oVA+goJrCmfEYVaN67OAe+WrPUf0CxNpariFUwSSpd9mdbKzCFI3fx?=
- =?us-ascii?Q?ywlE/LiexJuJDF7rFpQpo8DZUqCVcyVtevVUswWbmM89NF8xnI/45epGugGU?=
- =?us-ascii?Q?NN6/YYCTgjaBqNue2p7tXji0GFHRKq1aXT+xYxVEIyDM8rk1dVOVnrA/7mYJ?=
- =?us-ascii?Q?buG3Wwin5SNFiBcDJqN24g3qckJv/Twu7IyEGEdiawLN9kw3Wn8k8AnxsR1T?=
- =?us-ascii?Q?09Ld2XOvRVYxNwJNdExhrUrXilzSFB3+GPi/jYOHIKoTXm3IfgRBTm+Rh1eM?=
- =?us-ascii?Q?gvXvz1Bz7qXdiMvGj5rS/cDTbvrN2zJudAR6IhseVAKB8BOYScD321pAty+Z?=
- =?us-ascii?Q?pPcDVTuXlE7GEWfcQOSrP62OMGv/OP9Q/c0t8YfSUMXU071GekoBvf2F/K3X?=
- =?us-ascii?Q?GFca7zu5JKasUrLyA+tYXcsI5cfst1y2cF0nc5o0PRZCGgFgX1VEeDQc6Cx5?=
- =?us-ascii?Q?w5MrKmbzJIzet5xCC1UbVaJOAlREnJaHk0IZ6T6Byhj2aSrUFfIoXVCHqzlX?=
- =?us-ascii?Q?dHehh5WHazNkGZxqHM4k6pwFYx0qBCQeF3nq+ggvUDlATikQ3xTvKwgKIYlj?=
- =?us-ascii?Q?6es5u4qkdIEpxBCJAoGa066q3gUgwyetycATVRgT3fq+c+o1m2Ua2RCno1G4?=
- =?us-ascii?Q?FFoAWes9Ghh2vgVjkgumv9XIr2CBoO7q18SisDLb2iTPYabW2xoMTvzNTEbU?=
- =?us-ascii?Q?4mnjkmeHlLkJKyi+a18oDEnQae6Yr20CCmOZMcoVv7d9hb65IlFu3yQceSwQ?=
- =?us-ascii?Q?M6anGXkHFU7/FgSnUywsRcr0w+ZdFkCYBgs4foXibjNmDg0SLZD0WClTn5bz?=
- =?us-ascii?Q?r64HPi14LecDfV2u3uNWFwyXo5zkHcodIohdVpkcxgwjUGAXwMWku12L31au?=
- =?us-ascii?Q?yYH76rTXIwHp7U3Sx1zjbprgGXVZcQKjJZB6OOXyhIzmemEEJi1x3zcGj5lG?=
- =?us-ascii?Q?oRo/IeE1sWcrJSzqNDqbFK8uJBpfS9EO6qbgUSgmeFRT3HkLwO/KlI3Ylch0?=
- =?us-ascii?Q?mAYWypqMSWa9z19oCjtgEM7m6gaLtCxHve23kmFl3PhyRlB7uFC1IE/3bKqm?=
- =?us-ascii?Q?bdblXh7clyy7Syj/WxJ8SeOdODC51NCTZo3Oggb6ter3JSVRl46gKoLQ9K/h?=
- =?us-ascii?Q?cIpeCLgHiOKudQvOld0Huws=3D?=
-X-OriginatorOrg: stud.acs.upb.ro
-X-MS-Exchange-CrossTenant-Network-Message-Id: 22fcc361-1f28-49ea-a908-08da8f50913c
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0102MB3166.eurprd01.prod.exchangelabs.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 15:09:02.5829
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 2d8cc8ba-8dda-4334-9e5c-fac2092e9bac
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: skPGUQo4+lNs8LwX4buD3FD+/4nt58T4KV+W9ygGnU/ccJB4DLyQWVOTaCgBpCFcujmJo6cQH9MIgkYmYZ+4Jeg+5fErPYlPnSuvvz3rMTo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR01MB8655
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+Currently phy link up/down interrupt is enabled using the
+LAN87xx_INTERRUPT_MASK register. In the lan87xx_read_status function,
+phy link is determined using the T1_MODE_STAT_REG register comm_ready bit.
+comm_ready bit is set using the loc_rcvr_status & rem_rcvr_status.
+Whenever the phy link is up, LAN87xx_INTERRUPT_SOURCE link_up bit is set
+first but comm_ready bit takes some time to set based on local and
+remote receiver status.
+As per the current implementation, interrupt is triggered using link_up
+but the comm_ready bit is still cleared in the read_status function. So,
+link is always down.  Initially tested with the shared interrupt
+mechanism with switch and internal phy which is working, but after
+implementing interrupt controller it is not working.
+It can fixed either by updating the read_status function to read from
+LAN87XX_INTERRUPT_SOURCE register or enable the interrupt mask for
+comm_ready bit. But the validation team recommends the use of comm_ready
+for link detection.
+This patch fixes by enabling the comm_ready bit for link_up in the
+LAN87XX_INTERRUPT_MASK_2 register (MISC Bank) and link_down in
+LAN87xx_INTERRUPT_MASK register.
 
-Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Fixes: 8a1b415d70b7 ("net: phy: added ethtool master-slave configuration support")
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- .../devicetree/bindings/net/adi,adin1110.yaml | 77 +++++++++++++++++++
- 1 file changed, 77 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+v1 -> v2
+- Updated the fixes tag
 
-diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-new file mode 100644
-index 000000000000..b6bd8ee38a18
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
-@@ -0,0 +1,77 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/adi,adin1110.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+ drivers/net/phy/microchip_t1.c | 58 +++++++++++++++++++++++++++++++---
+ 1 file changed, 54 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/phy/microchip_t1.c b/drivers/net/phy/microchip_t1.c
+index d4c93d59bc53..8569a545e0a3 100644
+--- a/drivers/net/phy/microchip_t1.c
++++ b/drivers/net/phy/microchip_t1.c
+@@ -28,12 +28,16 @@
+ 
+ /* Interrupt Source Register */
+ #define LAN87XX_INTERRUPT_SOURCE                (0x18)
++#define LAN87XX_INTERRUPT_SOURCE_2              (0x08)
+ 
+ /* Interrupt Mask Register */
+ #define LAN87XX_INTERRUPT_MASK                  (0x19)
+ #define LAN87XX_MASK_LINK_UP                    (0x0004)
+ #define LAN87XX_MASK_LINK_DOWN                  (0x0002)
+ 
++#define LAN87XX_INTERRUPT_MASK_2                (0x09)
++#define LAN87XX_MASK_COMM_RDY			BIT(10)
 +
-+title: ADI ADIN1110 MAC-PHY
+ /* MISC Control 1 Register */
+ #define LAN87XX_CTRL_1                          (0x11)
+ #define LAN87XX_MASK_RGMII_TXC_DLY_EN           (0x4000)
+@@ -424,17 +428,55 @@ static int lan87xx_phy_config_intr(struct phy_device *phydev)
+ 	int rc, val = 0;
+ 
+ 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
+-		/* unmask all source and clear them before enable */
+-		rc = phy_write(phydev, LAN87XX_INTERRUPT_MASK, 0x7FFF);
++		/* clear all interrupt */
++		rc = phy_write(phydev, LAN87XX_INTERRUPT_MASK, val);
++		if (rc < 0)
++			return rc;
 +
-+maintainers:
-+  - Alexandru Tachici <alexandru.tachici@analog.com>
+ 		rc = phy_read(phydev, LAN87XX_INTERRUPT_SOURCE);
+-		val = LAN87XX_MASK_LINK_UP | LAN87XX_MASK_LINK_DOWN;
++		if (rc < 0)
++			return rc;
 +
-+description: |
-+  The ADIN1110 is a low power single port 10BASE-T1L MAC-
-+  PHY designed for industrial Ethernet applications. It integrates
-+  an Ethernet PHY core with a MAC and all the associated analog
-+  circuitry, input and output clock buffering.
++		rc = access_ereg(phydev, PHYACC_ATTR_MODE_WRITE,
++				 PHYACC_ATTR_BANK_MISC,
++				 LAN87XX_INTERRUPT_MASK_2, val);
++		if (rc < 0)
++			return rc;
 +
-+  The ADIN2111 is a low power, low complexity, two-Ethernet ports
-+  switch with integrated 10BASE-T1L PHYs and one serial peripheral
-+  interface (SPI) port. The device is designed for industrial Ethernet
-+  applications using low power constrained nodes and is compliant
-+  with the IEEE 802.3cg-2019 Ethernet standard for long reach
-+  10 Mbps single pair Ethernet (SPE).
++		rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
++				 PHYACC_ATTR_BANK_MISC,
++				 LAN87XX_INTERRUPT_SOURCE_2, 0);
++		if (rc < 0)
++			return rc;
 +
-+  The device has a 4-wire SPI interface for communication
-+  between the MAC and host processor.
++		/* enable link down and comm ready interrupt */
++		val = LAN87XX_MASK_LINK_DOWN;
+ 		rc = phy_write(phydev, LAN87XX_INTERRUPT_MASK, val);
++		if (rc < 0)
++			return rc;
 +
-+allOf:
-+  - $ref: ethernet-controller.yaml#
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++		val = LAN87XX_MASK_COMM_RDY;
++		rc = access_ereg(phydev, PHYACC_ATTR_MODE_WRITE,
++				 PHYACC_ATTR_BANK_MISC,
++				 LAN87XX_INTERRUPT_MASK_2, val);
+ 	} else {
+ 		rc = phy_write(phydev, LAN87XX_INTERRUPT_MASK, val);
+-		if (rc)
++		if (rc < 0)
+ 			return rc;
+ 
+ 		rc = phy_read(phydev, LAN87XX_INTERRUPT_SOURCE);
++		if (rc < 0)
++			return rc;
 +
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adin1110
-+      - adi,adin2111
++		rc = access_ereg(phydev, PHYACC_ATTR_MODE_WRITE,
++				 PHYACC_ATTR_BANK_MISC,
++				 LAN87XX_INTERRUPT_MASK_2, val);
++		if (rc < 0)
++			return rc;
 +
-+  reg:
-+    maxItems: 1
++		rc = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
++				 PHYACC_ATTR_BANK_MISC,
++				 LAN87XX_INTERRUPT_SOURCE_2, 0);
+ 	}
+ 
+ 	return rc < 0 ? rc : 0;
+@@ -444,6 +486,14 @@ static irqreturn_t lan87xx_handle_interrupt(struct phy_device *phydev)
+ {
+ 	int irq_status;
+ 
++	irq_status  = access_ereg(phydev, PHYACC_ATTR_MODE_READ,
++				  PHYACC_ATTR_BANK_MISC,
++				  LAN87XX_INTERRUPT_SOURCE_2, 0);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
 +
-+  adi,spi-crc:
-+    description: |
-+      Enable CRC8 checks on SPI read/writes.
-+    type: boolean
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ethernet@0 {
-+            compatible = "adi,adin2111";
-+            reg = <0>;
-+            spi-max-frequency = <24500000>;
-+
-+            adi,spi-crc;
-+
-+            interrupt-parent = <&gpio>;
-+            interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
-+
-+            local-mac-address = [ 00 11 22 33 44 55 ];
-+        };
-+    };
+ 	irq_status = phy_read(phydev, LAN87XX_INTERRUPT_SOURCE);
+ 	if (irq_status < 0) {
+ 		phy_error(phydev);
+
+base-commit: aa51b80e1af47b3781abb1fb1666445a7616f0cd
 -- 
-2.25.1
+2.36.1
 
