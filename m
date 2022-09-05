@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8171C5AD10C
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 13:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3B5C5AD118
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 13:06:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237994AbiIELAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 07:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46212 "EHLO
+        id S238151AbiIELAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 07:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237982AbiIEK7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 06:59:49 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2054.outbound.protection.outlook.com [40.107.223.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 118031571A;
-        Mon,  5 Sep 2022 03:59:48 -0700 (PDT)
+        with ESMTP id S237995AbiIEK7x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 06:59:53 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAD71707D;
+        Mon,  5 Sep 2022 03:59:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y7eWZY0KPst713MpqUUI+XJXuoSMd25+HxO9nbMCmFfJo+Pl5Q22UAI3SreBFjgDorQsIzvg0AH4Toqrv4sN5X9OtaFb8pzLLXkV30/9Ng4dDS0hv7l3YVTpxxWjS6Xl/lQh7Q52SHk0wubKfNuwvlU/ol40IHbYOoxzKid9+40Rs+o/GwK3uW6oX/AT7/WUqLeEwFiRmyBFEtkg5rWboanNFmtu1G1ZlBBki1sEbteCOGIKdsqOI1yEkCE+X0SW/qWzvRLa5I1N0so/yVvo4ebBdbdSB43GngiLZHuztiOGxyeAi0fqxHGDjdju3LWn0hAsvQJ2Z1dHVx+Sr5Gbvg==
+ b=CTxe0fI88nvyn7LEcb13jH91KwlJAxU9VHCqmdjBTUcKCm7r9Z47ZNo8fpsElqsUq4tC9u9f+c3OHBS0/jwcb1huYUKUiSpYNry3LIlqonaC5mCoezp6b08aD3DaHRplnlo3nyOn0wgMYIU50u7WdADyQ7P9qgZHkxNyjINR3jtNGtqu4k66xkZRv5MLj/HuW+ucrt1Y46PQNk+gfwh3Q+IFtEbryvc+wudWtuo38WoyHECbTkvs0/R3Yw/hVIw3kgm64rA8dxADE2YxIrHkCn3ygx46XIknPttS4ya+TDHYvY0D0v8YQxqo8MlKNl9+gimNIZZuOjoNPdGjqQKdHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Wb5B38pz2fgEyssjvA29VUF1xQ36PldquXyFPWiE7LQ=;
- b=G8ayL3RN7PQB7Zxj3EF7POmVh6ZyKOslW7p5/sifPu5WymA6gsoLtoS/sSMP95WT7flJDlgh3A9r/mFzyVSLpGeOLvRO+YP44Q/BNbKW622/jB2EzQmnfAYEhLXNwPGBSVJ7JnMYK4RHXi3pffdfIBjvJVTdHH9dRRk1Gks6m39dKs1C+GPSXuyn7taQKaw/iRmffTNSaDZPRORA7sjEjyakblxQxgVfeawvIRrhLwRlab61m0Nt3I+Dxzf5Bv/NY09EC4EOt+Zl0a5Ia/B84oY3VrZ80Izi27gIYqFnNAybNuslVpjm0pUBUZdP+PFcli6Q/Y1gQbchgCF7A6vbQw==
+ bh=uE6sjx0oSA79BfIgkJVMlmUd3p6BL3oGNTJ2eCqwAtA=;
+ b=BiIGQuqpTmVWatYRlVE4+8hEtPvkQHXTv1RhO2Dz6WGF1yQ6G5jiuraOLR1aapMcBAYNNMD8ZEZazd2qkvRQsLr5ULs5AL4jRkJkUNvHUm5QgJ7Mc/uBt7rdufl9qR+/3ZiODdrFNrnWZw9HD6ttJaLVSUnBvh6o5vkt+8V4FVR74kxQeDIqNmM2znlvMqDe6J4HtvSFICp7qAXzQ7wJjBXgwKSugHvCGJDVguT+Ew+JOO4aJT+We8N7gAzhHKN2hZiCFPMjjCClwvHATHRoQn4bVFAxdSAqXjlLMwUBzJ7OG8DHdCBXLVEK1a9HarbKhdDYrx8qlkg9XJqMaAoLMg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.238) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Wb5B38pz2fgEyssjvA29VUF1xQ36PldquXyFPWiE7LQ=;
- b=CpuERb65+JQtweSvV698VY8l1OtjVUy+4+jZeybX3G9L/p33I3v9n14fyqSGW333+rucUgevhG6jkH1OhL3AFEF97cGetBp+hvbC+rOdjjmPzHGDm1/PxmUstaEHWrl9sE56DAaGF/aRLts1/nHKUKRTm6wJgIy+rqu47dkNIpQE2Ng4C02v71UgRsri1r7WJXmStHFZzybipJ0iKNiATzinTbIyoCEgCEj3qVlj40354NXXry+Su0Ue/X2vm+4gPWLCYzu+PtCId1Rlkz6OkT1xux7GNG2YXUrGfk81/Qs7bRgn8DEHGgqCk1Ba8uaIuXpkzNoglRN99AQamRMX/Q==
-Received: from MW4PR03CA0221.namprd03.prod.outlook.com (2603:10b6:303:b9::16)
- by IA1PR12MB7615.namprd12.prod.outlook.com (2603:10b6:208:428::17) with
+ bh=uE6sjx0oSA79BfIgkJVMlmUd3p6BL3oGNTJ2eCqwAtA=;
+ b=l2STwdazBwwS4G9ipVNDFXUQFhpT6f1eJGcuuVgtih7qRl0yQLHJYopshlqrDprtIoyqwSGE9v5x8+soDK7SkTjT6d8UhQGThebIeod/r9PS4KIUeVuqL0ailKEMhvVbrXDVKZNTbSsVooR42nxgVaFGqoTTzRGpt9904rbt1EDKUm0B5XfSTNoauwLWl5pPOb0QrEKNJg/lZ9RrSkSBwcvFSqJsZixGuYDO4331x0aQTdp0AodCBssoxqk7t2HNpJdnmUij5QVc2on+2rRI9i4ObRhZToS9k1LFQnZwc+38gPLzxYbXM5V42I3sDktzQd4709Qr5/zZm48PHfUeig==
+Received: from BN9PR03CA0570.namprd03.prod.outlook.com (2603:10b6:408:138::35)
+ by SJ1PR12MB6267.namprd12.prod.outlook.com (2603:10b6:a03:456::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.16; Mon, 5 Sep
- 2022 10:59:46 +0000
-Received: from CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b9:cafe::6a) by MW4PR03CA0221.outlook.office365.com
- (2603:10b6:303:b9::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.14 via Frontend
- Transport; Mon, 5 Sep 2022 10:59:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ 2022 10:59:49 +0000
+Received: from BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:138:cafe::82) by BN9PR03CA0570.outlook.office365.com
+ (2603:10b6:408:138::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.18 via Frontend
+ Transport; Mon, 5 Sep 2022 10:59:49 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT032.mail.protection.outlook.com (10.13.174.218) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (12.22.5.238) by
+ BN8NAM11FT004.mail.protection.outlook.com (10.13.176.164) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5588.10 via Frontend Transport; Mon, 5 Sep 2022 10:59:45 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.38; Mon, 5 Sep 2022 10:59:45 +0000
+ 15.20.5588.10 via Frontend Transport; Mon, 5 Sep 2022 10:59:49 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.38; Mon, 5 Sep 2022 10:59:48 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.29; Mon, 5 Sep 2022 03:59:44 -0700
+ 15.2.986.29; Mon, 5 Sep 2022 03:59:48 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.986.29 via Frontend
- Transport; Mon, 5 Sep 2022 03:59:42 -0700
+ Transport; Mon, 5 Sep 2022 03:59:45 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>
 CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
@@ -67,9 +67,9 @@ CC:     <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
         <kevin.tian@intel.com>, <joao.m.martins@oracle.com>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V6 vfio 09/10] vfio/mlx5: Manage error scenarios on tracker
-Date:   Mon, 5 Sep 2022 13:58:51 +0300
-Message-ID: <20220905105852.26398-10-yishaih@nvidia.com>
+Subject: [PATCH V6 vfio 10/10] vfio/mlx5: Set the driver DMA logging callbacks
+Date:   Mon, 5 Sep 2022 13:58:52 +0300
+Message-ID: <20220905105852.26398-11-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220905105852.26398-1-yishaih@nvidia.com>
 References: <20220905105852.26398-1-yishaih@nvidia.com>
@@ -78,23 +78,23 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: af2e190a-f356-418c-83b0-08da8f2dbe8b
-X-MS-TrafficTypeDiagnostic: IA1PR12MB7615:EE_
+X-MS-Office365-Filtering-Correlation-Id: ca38ab54-68ba-4e15-098f-08da8f2dc0b8
+X-MS-TrafficTypeDiagnostic: SJ1PR12MB6267:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /RZSgSWNW5SO2hLJ95CDDoVCWeRROXjaPWm1BGU72biK+3yRjgN7OQl71I7qwoLPE+mhcmDYSbOVjT77UkuPpxMrfVM6/JEJsYzwWQTfaVGXrKZsPfvwh8rWTP/O/wyrRnKE7cx6iUjbE5Jj3MpLlAqwfKarzrtfaBudHZKIW1huOCj6AFAMIS/SsWoT+SGPJPMl3zK9r8geYGSoYwD7bx9aFUGPlyk2pi2uVI8JPnuX/+U9ghlLUo1JuvOq3jpUDL8EZlC/LCYaqxXT0lTcDm+KINwYPQB1FYZ10C50fqXIYyV62igeoxBgPHW9M+Lhf5PIc63XwOWqxc4H5/89xJsaMPjJAOZlgmZiNf/sL7Cy7/B22qQFhKKasoE3VYRQfkNoL7waCzf1kkJnYUhHKcP/bDy9qJuK4Db2WyqTQq3NYGn0zCYaXyIpjU92R9rtu4irC+vq4A9N3pN+RgD/FMabnluK6wAJjXR5nt1pwLrvMn/h7+5Ifc1cQG+4fQfxE2vctmv/pR/io/vi2nJ2kOrJQamdCtYUhK75QcS9W1Ocg58b7dQGRDPB2UlNLT29fi05VcHXdWjs1P0LNEO1CSzMhkf0h6ooo6fKBN5NM27Isju5kzBx1IZ8+0+qG0dn8ckAPQr2yO9gyCuKKW7wVQoTIRZsMP2XN6uZuuYXx1sjlygUR7rDxEZlC+mSCoGAyD9W9nYhcQ/zcgbuUp6mCaTXPKMhCKW7rVQInfCovQRBDSh1cqMVg2ezSxMto6cxGrJUGT9a6Ww5sGU6FtOfOuqsmE6WO/jfeQLDjgwruh4=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(346002)(376002)(136003)(396003)(40470700004)(46966006)(36840700001)(356005)(83380400001)(40460700003)(36860700001)(54906003)(82740400003)(81166007)(8676002)(4326008)(110136005)(82310400005)(70586007)(316002)(2906002)(70206006)(6636002)(336012)(40480700001)(1076003)(5660300002)(8936002)(26005)(2616005)(186003)(7696005)(426003)(6666004)(478600001)(86362001)(41300700001)(47076005)(36756003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: jm8vFtnnjKIxe4w3bb4lGEGibzQBOrqj9D6+GLrHcVFcxZuiY73od3mITEZx/lD0Tloni2miCbXhpzXFyJ3Ya21XJMMSmpQThp3Ld0Fbo8I3FlTOd78dkr/VFTkADSEWB8mXdUI+hTeXxeuNR9Nr6l671G/d3A96ehMle8z8/wUP6AJPuPqOLsawW/SWbAwH8FEXkv/u+912HkGPVvnmBMxGleAywmT+ByK555gLUgg41ZOqgTubJG1PGHO7Fy3ig69A3UWO+n8FuqHwHpt3OZhm9U3bCv3r1Q6BBEIHoqWvSRxablbnD+2wd6HTHbmjWhFLks651vml7/SP7QjCnASxtzqLLtQjNcog6Zyu038nl/AlrjPD8JfR7zWAXZkDDkqsUhMoqACW8yuZdSYNZWiy12/OFpaVI2ElQ2/00o0OK4a+7Pxdz15kkc0oxSA5ji4FMsolBFBC/fAyDjM/mvr/sQh9Nl1mCJAChdPH5GhIKzE95PQGCO7pO0qeRsJbD5NA7H6GEr9x7BZgEGxBvEVQxVYAf2COtigW8wjLx/0axPjDsdUNmFO95NDQ0BiSUqrskWtPzYIBnIXCeU+AgrS0qwpZDYebTFJBR8v3qqMstt0TXpiziRknLZnEC2fWCaIR7Q3Xi0qYqTG5XMwjRK3hGw8my0kw4hx1gJb9UsMqvEBl98jjNpaNo4TegxxA9RTxDEls7H22hPL7N6CNxrdnKF0j1cNBnZOEtvCJQDqqlOPpcTW3reiTUFUhw4wm9NfwstHzo1I7LTxtq+PN72tZorAfFtMzPTjD7TulQhJ5WiotGXAU5EJSaI2ypMzz
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(136003)(376002)(346002)(39860400002)(46966006)(40470700004)(36840700001)(86362001)(41300700001)(36756003)(8936002)(40480700001)(7696005)(40460700003)(6666004)(70586007)(2906002)(336012)(478600001)(26005)(5660300002)(8676002)(4326008)(70206006)(356005)(83380400001)(1076003)(186003)(36860700001)(82310400005)(82740400003)(6636002)(426003)(47076005)(54906003)(2616005)(316002)(81166007)(110136005)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 10:59:45.8367
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Sep 2022 10:59:49.4058
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: af2e190a-f356-418c-83b0-08da8f2dbe8b
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca38ab54-68ba-4e15-098f-08da8f2dc0b8
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT004.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7615
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ1PR12MB6267
 X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -105,154 +105,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle async error events and health/recovery flow to safely stop the
-tracker upon error scenarios.
+Now that everything is ready set the driver DMA logging callbacks if
+supported by the device.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 ---
- drivers/vfio/pci/mlx5/cmd.c | 61 +++++++++++++++++++++++++++++++++++--
- drivers/vfio/pci/mlx5/cmd.h |  2 ++
- 2 files changed, 61 insertions(+), 2 deletions(-)
+ drivers/vfio/pci/mlx5/cmd.c  | 5 ++++-
+ drivers/vfio/pci/mlx5/cmd.h  | 3 ++-
+ drivers/vfio/pci/mlx5/main.c | 9 ++++++++-
+ 3 files changed, 14 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index fa9ddd926500..3e92b4d92be2 100644
+index 3e92b4d92be2..c604b70437a5 100644
 --- a/drivers/vfio/pci/mlx5/cmd.c
 +++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -70,6 +70,13 @@ int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
- 	return 0;
+@@ -126,7 +126,8 @@ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev)
  }
  
-+static void set_tracker_error(struct mlx5vf_pci_core_device *mvdev)
-+{
-+	/* Mark the tracker under an error and wake it up if it's running */
-+	mvdev->tracker.is_err = true;
-+	complete(&mvdev->tracker_comp);
-+}
-+
- static int mlx5fv_vf_event(struct notifier_block *nb,
- 			   unsigned long event, void *data)
+ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
+-			       const struct vfio_migration_ops *mig_ops)
++			       const struct vfio_migration_ops *mig_ops,
++			       const struct vfio_log_ops *log_ops)
  {
-@@ -100,6 +107,8 @@ void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev)
- 	if (!mvdev->migrate_cap)
- 		return;
+ 	struct pci_dev *pdev = mvdev->core_device.pdev;
+ 	int ret;
+@@ -169,6 +170,8 @@ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
+ 		VFIO_MIGRATION_P2P;
+ 	mvdev->core_device.vdev.mig_ops = mig_ops;
+ 	init_completion(&mvdev->tracker_comp);
++	if (MLX5_CAP_GEN(mvdev->mdev, adv_virtualization))
++		mvdev->core_device.vdev.log_ops = log_ops;
  
-+	/* Must be done outside the lock to let it progress */
-+	set_tracker_error(mvdev);
- 	mutex_lock(&mvdev->state_mutex);
- 	mlx5vf_disable_fds(mvdev);
- 	_mlx5vf_free_page_tracker_resources(mvdev);
-@@ -619,6 +628,47 @@ static void mlx5vf_destroy_cq(struct mlx5_core_dev *mdev,
- 	mlx5_db_free(mdev, &cq->db);
- }
- 
-+static void mlx5vf_cq_event(struct mlx5_core_cq *mcq, enum mlx5_event type)
-+{
-+	if (type != MLX5_EVENT_TYPE_CQ_ERROR)
-+		return;
-+
-+	set_tracker_error(container_of(mcq, struct mlx5vf_pci_core_device,
-+				       tracker.cq.mcq));
-+}
-+
-+static int mlx5vf_event_notifier(struct notifier_block *nb, unsigned long type,
-+				 void *data)
-+{
-+	struct mlx5_vhca_page_tracker *tracker =
-+		mlx5_nb_cof(nb, struct mlx5_vhca_page_tracker, nb);
-+	struct mlx5vf_pci_core_device *mvdev = container_of(
-+		tracker, struct mlx5vf_pci_core_device, tracker);
-+	struct mlx5_eqe *eqe = data;
-+	u8 event_type = (u8)type;
-+	u8 queue_type;
-+	int qp_num;
-+
-+	switch (event_type) {
-+	case MLX5_EVENT_TYPE_WQ_CATAS_ERROR:
-+	case MLX5_EVENT_TYPE_WQ_ACCESS_ERROR:
-+	case MLX5_EVENT_TYPE_WQ_INVAL_REQ_ERROR:
-+		queue_type = eqe->data.qp_srq.type;
-+		if (queue_type != MLX5_EVENT_QUEUE_TYPE_QP)
-+			break;
-+		qp_num = be32_to_cpu(eqe->data.qp_srq.qp_srq_n) & 0xffffff;
-+		if (qp_num != tracker->host_qp->qpn &&
-+		    qp_num != tracker->fw_qp->qpn)
-+			break;
-+		set_tracker_error(mvdev);
-+		break;
-+	default:
-+		break;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
- static void mlx5vf_cq_complete(struct mlx5_core_cq *mcq,
- 			       struct mlx5_eqe *eqe)
- {
-@@ -680,6 +730,7 @@ static int mlx5vf_create_cq(struct mlx5_core_dev *mdev,
- 	pas = (__be64 *)MLX5_ADDR_OF(create_cq_in, in, pas);
- 	mlx5_fill_page_frag_array(&cq->buf.frag_buf, pas);
- 	cq->mcq.comp = mlx5vf_cq_complete;
-+	cq->mcq.event = mlx5vf_cq_event;
- 	err = mlx5_core_create_cq(mdev, &cq->mcq, in, inlen, out, sizeof(out));
- 	if (err)
- 		goto err_vec;
-@@ -1014,6 +1065,7 @@ _mlx5vf_free_page_tracker_resources(struct mlx5vf_pci_core_device *mvdev)
- 
- 	WARN_ON(mvdev->mdev_detach);
- 
-+	mlx5_eq_notifier_unregister(mdev, &tracker->nb);
- 	mlx5vf_cmd_destroy_tracker(mdev, tracker->id);
- 	mlx5vf_destroy_qp(mdev, tracker->fw_qp);
- 	mlx5vf_free_qp_recv_resources(mdev, tracker->host_qp);
-@@ -1127,6 +1179,8 @@ int mlx5vf_start_page_tracker(struct vfio_device *vdev,
- 	if (err)
- 		goto err_activate;
- 
-+	MLX5_NB_INIT(&tracker->nb, mlx5vf_event_notifier, NOTIFY_ANY);
-+	mlx5_eq_notifier_register(mdev, &tracker->nb);
- 	*page_size = host_qp->tracked_page_size;
- 	mvdev->log_active = true;
- 	mlx5vf_state_mutex_unlock(mvdev);
-@@ -1273,7 +1327,8 @@ int mlx5vf_tracker_read_and_clear(struct vfio_device *vdev, unsigned long iova,
- 		goto end;
- 
- 	tracker->status = MLX5_PAGE_TRACK_STATE_REPORTING;
--	while (tracker->status == MLX5_PAGE_TRACK_STATE_REPORTING) {
-+	while (tracker->status == MLX5_PAGE_TRACK_STATE_REPORTING &&
-+	       !tracker->is_err) {
- 		poll_err = mlx5vf_cq_poll_one(cq, tracker->host_qp, dirty,
- 					      &tracker->status);
- 		if (poll_err == CQ_EMPTY) {
-@@ -1294,8 +1349,10 @@ int mlx5vf_tracker_read_and_clear(struct vfio_device *vdev, unsigned long iova,
- 	}
- 
- 	if (tracker->status == MLX5_PAGE_TRACK_STATE_ERROR)
--		err = -EIO;
-+		tracker->is_err = true;
- 
-+	if (tracker->is_err)
-+		err = -EIO;
  end:
- 	mlx5vf_state_mutex_unlock(mvdev);
- 	return err;
+ 	mlx5_vf_put_core_dev(mvdev->mdev);
 diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
-index fa1f9ab4d3d0..8b0ae40c620c 100644
+index 8b0ae40c620c..921d5720a1e5 100644
 --- a/drivers/vfio/pci/mlx5/cmd.h
 +++ b/drivers/vfio/pci/mlx5/cmd.h
-@@ -82,10 +82,12 @@ struct mlx5_vhca_qp {
- struct mlx5_vhca_page_tracker {
- 	u32 id;
- 	u32 pdn;
-+	u8 is_err:1;
- 	struct mlx5_uars_page *uar;
- 	struct mlx5_vhca_cq cq;
- 	struct mlx5_vhca_qp *host_qp;
- 	struct mlx5_vhca_qp *fw_qp;
-+	struct mlx5_nb nb;
- 	int status;
+@@ -118,7 +118,8 @@ int mlx5vf_cmd_resume_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
+ int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
+ 					  size_t *state_size);
+ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev,
+-			       const struct vfio_migration_ops *mig_ops);
++			       const struct vfio_migration_ops *mig_ops,
++			       const struct vfio_log_ops *log_ops);
+ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev);
+ void mlx5vf_cmd_close_migratable(struct mlx5vf_pci_core_device *mvdev);
+ int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+index a9b63d15c5d3..759a5f5f7b3f 100644
+--- a/drivers/vfio/pci/mlx5/main.c
++++ b/drivers/vfio/pci/mlx5/main.c
+@@ -579,6 +579,12 @@ static const struct vfio_migration_ops mlx5vf_pci_mig_ops = {
+ 	.migration_get_state = mlx5vf_pci_get_device_state,
  };
  
++static const struct vfio_log_ops mlx5vf_pci_log_ops = {
++	.log_start = mlx5vf_start_page_tracker,
++	.log_stop = mlx5vf_stop_page_tracker,
++	.log_read_and_clear = mlx5vf_tracker_read_and_clear,
++};
++
+ static const struct vfio_device_ops mlx5vf_pci_ops = {
+ 	.name = "mlx5-vfio-pci",
+ 	.open_device = mlx5vf_pci_open_device,
+@@ -602,7 +608,8 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+ 	if (!mvdev)
+ 		return -ENOMEM;
+ 	vfio_pci_core_init_device(&mvdev->core_device, pdev, &mlx5vf_pci_ops);
+-	mlx5vf_cmd_set_migratable(mvdev, &mlx5vf_pci_mig_ops);
++	mlx5vf_cmd_set_migratable(mvdev, &mlx5vf_pci_mig_ops,
++				  &mlx5vf_pci_log_ops);
+ 	dev_set_drvdata(&pdev->dev, &mvdev->core_device);
+ 	ret = vfio_pci_core_register_device(&mvdev->core_device);
+ 	if (ret)
 -- 
 2.18.1
 
