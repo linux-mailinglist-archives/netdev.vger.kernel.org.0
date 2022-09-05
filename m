@@ -2,127 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F4F5AD90D
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 20:33:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776CB5AD95C
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 21:06:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231786AbiIESdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 14:33:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45194 "EHLO
+        id S229689AbiIETFv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 15:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232009AbiIESdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 14:33:38 -0400
-Received: from mail-vk1-xa35.google.com (mail-vk1-xa35.google.com [IPv6:2607:f8b0:4864:20::a35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4426F52824;
-        Mon,  5 Sep 2022 11:33:37 -0700 (PDT)
-Received: by mail-vk1-xa35.google.com with SMTP id g185so4463752vkb.13;
-        Mon, 05 Sep 2022 11:33:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date;
-        bh=mdiYTElc0N7vxtlgVoJ4ru4DWj2kj5bPdL6LfLpy0aM=;
-        b=D8oBhUif2Jjk678o2fHLYtmnpB6UYZ7abkmoEbTSB7gYd+aR7NJTzbHizWX0tEsttg
-         94prx+9nmPlCZdE5toZMsp430z+gngCXzzQ8F0xiJjKACppBxdxBLTlqIcPPacfPndOw
-         Z0Lqt285BGObRHpVzemZKZ/kraVoHaDn4JSYqvYh6Nh5r6wWFZtrxjWA7nvig9Ud7IFJ
-         xcs8Pv7moCtVzQwibbdhdRJ3R/sMYt1epwFDFt15E3PejndhkY4f8QjW6Ee3NYrLE9xB
-         xToTfryH++k4nKcj4DdExkema16S3GQs73HBYq5kYCwNzB+TI5x6OI0EPu/Ajcdi79z+
-         Fb6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date;
-        bh=mdiYTElc0N7vxtlgVoJ4ru4DWj2kj5bPdL6LfLpy0aM=;
-        b=2P0ekqFKsU5YNn8p+z0Rx8wNWlOXWkrKM+FNLCzVgXQEoOoTVmgrEUZ/Ky1wQqR1EX
-         kAyjkAj9+vMO7todrk0aUW/K1TRXcw39GPg+sbM9XKZ+7T2z0Ewp+mBYaT1xi2HERjVO
-         htRntOAxGpRqpQgahUOailp21hGAsoFvp2N1gCPFfqOh669yMBPX2lcdUBiVBTsqbYKY
-         K5I/gIjwUquH/1b0KDhEOZJ9oM3EC3RIV6wia6ZtjRizwtJ+Tl94K+cX54mOcpEV9XhX
-         aJRaDcNcGZIlp5FHna2utJWk/yI4fXN+dZlQiGV5rxMJRVWDpzdVUFglYNdoJA+2QTxs
-         Jf1A==
-X-Gm-Message-State: ACgBeo3wNE928k6BFnDzmFMJb8tzRldqDiv7lGsMFAvdsPxKDTd9FZKV
-        7NtEZXBxy970o/umH51NMC689hrDidLA5cjfmCvpA9F5
-X-Google-Smtp-Source: AA6agR5O+agHArA/yt3Tr7w/AexHtBdz7ROCfVnT2AWabzEmYu4CO6i9d2nt4ec+fPUaR8DJL5zcLXKUYod+baz4ttw=
-X-Received: by 2002:a05:6122:2212:b0:374:2fb5:19ef with SMTP id
- bb18-20020a056122221200b003742fb519efmr13937297vkb.2.1662402816175; Mon, 05
- Sep 2022 11:33:36 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220825181210.284283-1-vschneid@redhat.com> <20220825181210.284283-5-vschneid@redhat.com>
- <YwfmIDEbRT4JfsZp@yury-laptop> <xhsmh5yi1db56.mognet@vschneid.remote.csb>
-In-Reply-To: <xhsmh5yi1db56.mognet@vschneid.remote.csb>
-From:   Yury Norov <yury.norov@gmail.com>
-Date:   Mon, 5 Sep 2022 11:33:24 -0700
-Message-ID: <CAAH8bW8DHTgXFB4wvjQqNqk7cbsYNk-SvBHL48tQwEBor_34hg@mail.gmail.com>
-Subject: Re: [PATCH v3 4/9] cpumask: Introduce for_each_cpu_andnot()
-To:     Valentin Schneider <vschneid@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        with ESMTP id S229518AbiIETFu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 15:05:50 -0400
+Received: from mail.toke.dk (mail.toke.dk [IPv6:2a0c:4d80:42:2001::664])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4347131239
+        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 12:05:49 -0700 (PDT)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
+        t=1662404747; bh=81xDJkqlBtWOjoTc0Yh8oDALTquAaij/49mXC/vyKSo=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=CC/C3BXBCZ0dWLO2Db5/RTMZHxf+yc531Hfy+UoJu8oPRObHxoom/CefiMkHmJlYP
+         ElmvDmmulhYTw01OyWByT5+qp+0UQsCJbySK1Exo653PGrbsp0RQMa3NxlXtzDIDre
+         c9lXGqf+KCQr2EJvxcQbe6LTCqIaXxcZUk5X9vHrXeU1GGv50XydXV5/z95JYoQjJe
+         +8CVCZa+1yluD6G0uYa8BQ0xY+2l3e2d7A+HBBcbIxo1Pgz7ebOQ6PTG3NdHEw8xin
+         MQWnIdBr5L6NH/MSEmsT9F6ncVcUi6k+oBaSk0NFtWQ9qxsc97xH7X5l1yAVGrE1WC
+         aAccV76GgxoMA==
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, Jiri Pirko <jiri@resnulli.us>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        zdi-disclosures@trendmicro.com, Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Ingo Molnar <mingo@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH net v2] sch_sfb: Don't assume the skb is still around
+ after enqueueing to child
+In-Reply-To: <YxY4DR8hoMUDgpxu@pop-os.localdomain>
+References: <20220831092103.442868-1-toke@toke.dk>
+ <20220831215219.499563-1-toke@toke.dk>
+ <YxY4DR8hoMUDgpxu@pop-os.localdomain>
+Date:   Mon, 05 Sep 2022 21:05:47 +0200
+X-Clacks-Overhead: GNU Terry Pratchett
+Message-ID: <87k06hzlo4.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 5, 2022 at 9:44 AM Valentin Schneider <vschneid@redhat.com> wrote:
->
-> On 25/08/22 14:14, Yury Norov wrote:
-> > On Thu, Aug 25, 2022 at 07:12:05PM +0100, Valentin Schneider wrote:
-> >> +#define for_each_cpu_andnot(cpu, mask1, mask2)                              \
-> >> +    for ((cpu) = -1;                                                \
-> >> +            (cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)),   \
-> >> +            (cpu) < nr_cpu_ids;)
-> >
-> > The standard doesn't guarantee the order of execution of last 2 lines,
-> > so you might end up with unreliable code. Can you do it in a more
-> > conventional style:
-> >    #define for_each_cpu_andnot(cpu, mask1, mask2)                     \
-> >       for ((cpu) = cpumask_next_andnot(-1, (mask1), (mask2));         \
-> >               (cpu) < nr_cpu_ids;                                     \
-> >               (cpu) = cpumask_next_andnot((cpu), (mask1), (mask2)))
-> >
->
-> IIUC the order of execution *is* guaranteed as this is a comma operator,
-> not argument passing:
->
->   6.5.17 Comma operator
->
->   The left operand of a comma operator is evaluated as a void expression;
->   there is a sequence point after its evaluation. Then the right operand is
->   evaluated; the result has its type and value.
->
-> for_each_cpu{_and}() uses the same pattern (which I simply copied here).
->
-> Still, I'd be up for making this a bit more readable. I did a bit of
-> digging to figure out how we ended up with that pattern, and found
->
->   7baac8b91f98 ("cpumask: make for_each_cpu_mask a bit smaller")
->
-> so this appears to have been done to save up on generated instructions.
-> *if* it is actually OK standard-wise, I'd vote to leave it as-is.
+Cong Wang <xiyou.wangcong@gmail.com> writes:
 
-Indeed. I probably messed with ANSI C.
+> On Wed, Aug 31, 2022 at 11:52:18PM +0200, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> The sch_sfb enqueue() routine assumes the skb is still alive after it has
+>> been enqueued into a child qdisc, using the data in the skb cb field in =
+the
+>> increment_qlen() routine after enqueue. However, the skb may in fact have
+>> been freed, causing a use-after-free in this case. In particular, this
+>> happens if sch_cake is used as a child of sfb, and the GSO splitting mode
+>> of CAKE is enabled (in which case the skb will be split into segments and
+>> the original skb freed).
+>>=20
+>> Fix this by copying the sfb cb data to the stack before enqueueing the s=
+kb,
+>> and using this stack copy in increment_qlen() instead of the skb pointer
+>> itself.
+>>=20
+>
+> I am not sure if I understand this correctly, but clearly there is
+> another use of skb right before increment_qlen()... See line 406 below:
+>
+> 402 enqueue:
+> 403         memcpy(&cb, sfb_skb_cb(skb), sizeof(cb));
+> 404         ret =3D qdisc_enqueue(skb, child, to_free);
+> 405         if (likely(ret =3D=3D NET_XMIT_SUCCESS)) {
+> 406                 qdisc_qstats_backlog_inc(sch, skb);  // <=3D=3D HERE
+> 407                 sch->q.qlen++;
+> 408                 increment_qlen(&cb, q);
+>
+> It also uses skb->cb actually... You probably want to save qdisc_pkt_len(=
+skb)
+> too.
 
-Sorry for the noise.
+Ah, oops, didn't realise qdisc_pkt_len() also used the cb field; will
+send another follow-up, thanks for spotting this!
+
+-Toke
