@@ -2,51 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB7355ADC0D
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 01:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 214EC5ADC10
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 01:57:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232222AbiIEX4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 19:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        id S232742AbiIEX47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 19:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbiIEX4r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 19:56:47 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 173EA5AA26;
-        Mon,  5 Sep 2022 16:56:47 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id r69so9160129pgr.2;
-        Mon, 05 Sep 2022 16:56:47 -0700 (PDT)
+        with ESMTP id S232775AbiIEX45 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 19:56:57 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33ED167156;
+        Mon,  5 Sep 2022 16:56:55 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id c24so9119500pgg.11;
+        Mon, 05 Sep 2022 16:56:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date;
-        bh=yG2nsd5/34KZh2Ljv+YOVUI4bCWzz44qCZZJaZQXcIE=;
-        b=jwQ7xjGRpjqZBJX0RitfI2JOv3JRzOaCEou9RQnxmEomm8uZkMG+4mu9e+sPoJpI/L
-         /lI6ZAMYDXGUtEyUSquoiaqZ+j1EKewkC5I2uOv+awexiajeL93T1UaVNVLmQBVYVrcb
-         bnBzAuCji5LGJgQ1WCuR497gA9WwQVeuAqDyenytoOnGB5ZenLYmUXenXyyieaQAZfil
-         zjJg5QC5T+P7cojQyNL9yIOPLHXjmiwj2pzHdaXv/SJ79CQk4dM7bIOG0lZMPPvO6F6B
-         7Fc4Q6Ca3Wsqoo5JHdHgoa+f5cxDB0wu7E5n0IDkzKrk4CMcSqsOrfnouX5d0SJKgam+
-         vWaA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date;
+        bh=HxSa1nifl/BjX4IHSZwDFpkRT1uZIgkAl2NNuJKauFc=;
+        b=igHu4PgNQHWwp544lo/os2ZQ09E310HyxSJoqP/7Oo8TMGEf6ZlVucL7lBaJpcT0Yd
+         EpZZUZubSRzixOsaWplXxMB9pxcJeD5cf6KOqO8FREFIGdDLaPzlQDnj9Y4yDvunkv98
+         62ZZ8WmcVC44VFm3ayQxZOj0dcMzU4a2ijXT20A/OreUOFgCLzkyQqGFQhJuw24RIdTF
+         y5hrVuJ/byp5Uw1pf3Ouhqx2t6vE6DzliOdrlTeIpPKlMBVSiI/4lfQ6GuJvytBf/NIo
+         YcrgvnJpT7j9Xmzo6eoE2Se9U6vqmbwzjBO10AEq/lwxcq5Tu2JscuYck6CG5wqEgm4h
+         Q5DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date;
-        bh=yG2nsd5/34KZh2Ljv+YOVUI4bCWzz44qCZZJaZQXcIE=;
-        b=UTL5FP8doLKjGLgks6J9SqtNxzpwpkTLirybSjS/mgpN6KkfCzyPIzSjg61JJhspu0
-         A2E1iOkgNsURoh0TuvjkTPJVjrae/pcg+SOgDNFdSEo9e0/+6TN8jhI+AWMWrv/K64A+
-         OfunzokTzSAmfy6gDVVAUx/PJUvN9gfRZQ2PxRUX7ODodcrViOszb5qFarBTl1mSAYS/
-         WTz0LjX6qUAvllZ4qiXq1JHODySYN/iXGz1oHRgRGPS66gSoF+RDyn7uuwipVBCed3R/
-         73TVJ9pBiP4yIzkSRb+9ikUEXjB7oYf87Aw1IGWf49XsEHzDgVzEDE/U8EhI692AMIeB
-         YW0A==
-X-Gm-Message-State: ACgBeo32Ah0TN14EdkLxBrOFgN80gXhObLcjGOCTbxBBshDUwNb5oauJ
-        M61dAuLVovkOufxlV+0Z/Jk=
-X-Google-Smtp-Source: AA6agR6AyDvPMSYp2d+Sum7aE/V0wjZupDIJx2E1mWHPq7oRrMlI7aTHTfXVrD6sMl2K6TZXzSB7Pg==
-X-Received: by 2002:a05:6a00:88a:b0:53a:b7a0:ea3a with SMTP id q10-20020a056a00088a00b0053ab7a0ea3amr29406689pfj.21.1662422206546;
-        Mon, 05 Sep 2022 16:56:46 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date;
+        bh=HxSa1nifl/BjX4IHSZwDFpkRT1uZIgkAl2NNuJKauFc=;
+        b=st2KTSH2PxKHJUcBhvqFNS+lmWLBAqYX7B17jTjGZ8fu4U5xfRgzrBjWA/cODPIZ11
+         TR2XZkIyEy/VmLtxu1ENLgNzDw2Fj1BPH/N+W6H3uqHUcmE8khx+sB8T9XFJQpMCQ4xT
+         mWw//d9O0B6+M5OzVff7BelaYssW2NuX15TFZbM4VjhTu0IIJwz+QHJe12b8SSyYdIRM
+         /9eP9DHNDkakwjdGilbNvpCh7Kdp4SCmhhx5LAgUfEFTLsYG7BotEAfzcCAKFy3+sgjV
+         yrlh/IzssngCFGN6O2SH0cN73qHix417JwrzS7Afaxsh7d+sSlga8Y/FpKLWcT3tKxZC
+         iZWQ==
+X-Gm-Message-State: ACgBeo1q1CaMWtcgOi5enHQif4UhEG1gw/S9XfIOjsnMdna0WVdqFJsZ
+        R94YdB/ILC3za4wnmfjaqi0=
+X-Google-Smtp-Source: AA6agR6AalO/X1wxUzxRBt1wOQhvPR3J3uYbqv142JppgLbGvt7zZWNTHzEuMhAdTbmTglc7fVcY4Q==
+X-Received: by 2002:aa7:9e12:0:b0:53e:27d8:b71b with SMTP id y18-20020aa79e12000000b0053e27d8b71bmr238339pfq.46.1662422213841;
+        Mon, 05 Sep 2022 16:56:53 -0700 (PDT)
 Received: from localhost.localdomain ([76.132.249.1])
-        by smtp.gmail.com with ESMTPSA id g26-20020aa79dda000000b00537f13d217bsm8405530pfq.76.2022.09.05.16.56.41
+        by smtp.gmail.com with ESMTPSA id g26-20020aa79dda000000b00537f13d217bsm8405530pfq.76.2022.09.05.16.56.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Sep 2022 16:56:45 -0700 (PDT)
+        Mon, 05 Sep 2022 16:56:53 -0700 (PDT)
 From:   rentao.bupt@gmail.com
 To:     "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
@@ -63,10 +64,13 @@ To:     "David S . Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 0/2] net: ftgmac100: support fixed link
-Date:   Mon,  5 Sep 2022 16:56:32 -0700
-Message-Id: <20220905235634.20957-1-rentao.bupt@gmail.com>
+Cc:     Tao Ren <rentao.bupt@gmail.com>
+Subject: [PATCH net-next 1/2] net: ftgmac100: support fixed link
+Date:   Mon,  5 Sep 2022 16:56:33 -0700
+Message-Id: <20220905235634.20957-2-rentao.bupt@gmail.com>
 X-Mailer: git-send-email 2.37.3
+In-Reply-To: <20220905235634.20957-1-rentao.bupt@gmail.com>
+References: <20220905235634.20957-1-rentao.bupt@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -79,23 +83,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tao Ren <taoren@fb.com>
+From: Tao Ren <rentao.bupt@gmail.com>
 
-The patch series adds fixed link support to ftgmac100 driver.
+Support fixed link in ftgmac100 driver. Fixed link is used on several
+Meta OpenBMC platforms, such as Elbert (AST2620) and Wedge400 (AST2520).
 
-Patch #1 adds fixed link logic into ftgmac100 driver.
+Signed-off-by: Tao Ren <rentao.bupt@gmail.com>
+---
+ drivers/net/ethernet/faraday/ftgmac100.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-Patch #2 enables mac3 controller in Elbert dts, and mac3 is connected to
-the onboard switch directly.
-
-Tao Ren (2):
-  net: ftgmac100: support fixed link
-  ARM: dts: aspeed: elbert: Enable mac3 controller
-
- .../boot/dts/aspeed-bmc-facebook-elbert.dts   | 11 +++++++++
- drivers/net/ethernet/faraday/ftgmac100.c      | 24 +++++++++++++++++++
- 2 files changed, 35 insertions(+)
-
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 9277d5fb5052..da04beee5865 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1701,10 +1701,14 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
+ 
+ static void ftgmac100_phy_disconnect(struct net_device *netdev)
+ {
++	struct ftgmac100 *priv = netdev_priv(netdev);
++
+ 	if (!netdev->phydev)
+ 		return;
+ 
+ 	phy_disconnect(netdev->phydev);
++	if (of_phy_is_fixed_link(priv->dev->of_node))
++		of_phy_deregister_fixed_link(priv->dev->of_node);
+ }
+ 
+ static void ftgmac100_destroy_mdio(struct net_device *netdev)
+@@ -1867,6 +1871,26 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 			err = -EINVAL;
+ 			goto err_phy_connect;
+ 		}
++	} else if (np && of_phy_is_fixed_link(np)) {
++		struct phy_device *phy;
++
++		err = of_phy_register_fixed_link(np);
++		if (err) {
++			dev_err(&pdev->dev, "Failed to register fixed PHY\n");
++			goto err_phy_connect;
++		}
++
++		phy = of_phy_get_and_connect(priv->netdev, np,
++					     &ftgmac100_adjust_link);
++		if (!phy) {
++			dev_err(&pdev->dev, "Failed to connect to fixed PHY\n");
++			of_phy_deregister_fixed_link(np);
++			err = -EINVAL;
++			goto err_phy_connect;
++		}
++
++		/* Display what we found */
++		phy_attached_info(phy);
+ 	} else if (np && of_get_property(np, "phy-handle", NULL)) {
+ 		struct phy_device *phy;
+ 
 -- 
 2.30.2
 
