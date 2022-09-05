@@ -2,164 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A46665ADB8D
-	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 00:53:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 499AE5ADC06
+	for <lists+netdev@lfdr.de>; Tue,  6 Sep 2022 01:54:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231868AbiIEWxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 18:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
+        id S229822AbiIEXyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 19:54:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230076AbiIEWxX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 18:53:23 -0400
-Received: from mail.3ffe.de (0001.3ffe.de [159.69.201.130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD74696FE;
-        Mon,  5 Sep 2022 15:53:22 -0700 (PDT)
-Received: from 3ffe.de (0001.3ffe.de [IPv6:2a01:4f8:c0c:9d57::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.3ffe.de (Postfix) with ESMTPSA id 9A0AF1237;
-        Tue,  6 Sep 2022 00:53:20 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2022082101;
-        t=1662418400;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/By73UdS4I5mXEc+O0lv8vgBFlHY3Pw70xtrxrWK0x0=;
-        b=uqIwMHV5QXcnmwPSQQFAGiGSIpvCewYSE95VUUm7vli6FaCVmqoEBkzLaStZ5E3ssMoXN8
-        gUFNsTKZEOTasqeL8B4aU/0DlQZtZ4JrTi1ikPo8SxJc+htVmrzHQ2p4KZwHKOySw5NEXg
-        UK+hs34g6mR+b9JXAGvGADxYDTW8w4CnyIf/9z9qg1WnLzPG2u+YCPxXhIw9uSvflOCeuP
-        IRbHF68NE8ZRfndEEzwt+AtPdoqoMmIpv3i9IgXeSAVHOUP5jjtIcGmVTMVTpEPqIa99eS
-        /MOJR8km43shSZE4wCpD6ErddsvLdbtdDhVEhOGlkWst8R+wMIKNCeVoNhSFNQ==
+        with ESMTP id S229546AbiIEXyS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 19:54:18 -0400
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2051.outbound.protection.outlook.com [40.107.104.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37B7F51A06;
+        Mon,  5 Sep 2022 16:54:17 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iuOWkSHFqCCQlkhmD7/2rqxocBS72+ZvQ3Xl2KuP3yoVmtK+Gh77vn8E2KK8lFHO1uvKE54snrlSqR1BpASgMnyXbzKxntQQdiUDh1NYm08+9P3Ev0/2frZGkVe75Tth4P9rPDd2ayW6LrNOztiyyFdGemLuCTL7CiIYGMjG3K8c3HxtpAcpWDIJeho6OT2HYNrf7D5Yx88xLDAjt9vgy6bRRyeZQcv3cA3rEqs6zi23DKmdB8ukr8aug6zbNxZu8prlQ244TfvNdBmjAiUqTsUzARURhIDzpCLlz04OrfSV7lBhfQM0rA597N08uZH7UfK2TwQfGeiadOAYS6vrSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ITLWPEgPR6mnCcRsaF7aygSIRd+yn0DYQ9iTOMDmQEE=;
+ b=I+JQt+wn6/UasOUaHSd9488BhbNl88Oc4dF0jt2ZVxDSJwnJhaw1lxVI7nD9m+s+mTZ2CF2Or0zzEkAGnvi7/Lf3+rujcKUSvgfY2bNUi1OkYV8Fr+b7D34gwg8lNzs3kbO+EWPU/Sl/dfNRa0BP/M5nBWZIk/05sliGwkCyl89GO4LPeocMiuVgz/ChlCYN2odlylh3BPtzCB/fsZSYc3W30s4+zqHglj7ct3wMTk+8vNbepEP4FvyOF8+7/t6LTfXpSun95jf8ShCF9GbFYHSJNtH2H/HjR09wHGUrBSOaJlGgCbTE2EBG/6JG1cUpwWN3CweeGQP9CawV7YubPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ITLWPEgPR6mnCcRsaF7aygSIRd+yn0DYQ9iTOMDmQEE=;
+ b=gtEEJqaBy7DxT+5rLGqBE9SRXlCzGRClOh6ClguFJUxNRHipMJZtRWNuXzOuY6i7FWlmDKw3a184jgtIYqNbtYBYViQQogVh0fFwsvGjLwI5Io5yfymfn2gLk1wp3qu4+2DgaAj1OIuI+siE7x8nNfD8Rgl2jkJ3ocPIZF8WmBA=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB4771.eurprd04.prod.outlook.com (2603:10a6:208:c4::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5588.11; Mon, 5 Sep
+ 2022 23:54:14 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3412:9d57:ec73:fef3%5]) with mapi id 15.20.5588.017; Mon, 5 Sep 2022
+ 23:54:14 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Michael Walle <michael@walle.cc>
+CC:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>, Leo Li <leoyang.li@nxp.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH devicetree] arm64: dts: ls1028a-rdb: add more ethernet
+ aliases
+Thread-Topic: [PATCH devicetree] arm64: dts: ls1028a-rdb: add more ethernet
+ aliases
+Thread-Index: AQHYwW37dzULUFcX/0OQXQkpZmzQZq3RZ7aAgAAbB4A=
+Date:   Mon, 5 Sep 2022 23:54:14 +0000
+Message-ID: <20220905235413.6nfqi6vsp7iv32q3@skbuf>
+References: <20220905212458.1549179-1-vladimir.oltean@nxp.com>
+ <d00682d7e7aec2f979236338e7b3a688@walle.cc>
+In-Reply-To: <d00682d7e7aec2f979236338e7b3a688@walle.cc>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9fe55502-b611-46f8-2646-08da8f99eff6
+x-ms-traffictypediagnostic: AM0PR04MB4771:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: c485J7tBJSAyBc/8kHTXcIR8HoCzKajIwZHOFeSc6Q5mVO1xXgbUjA990oXfOGdWPTcoOBVjrx0wXWN1H8e2KqaZfeNJfGLlHlQllEmXyMFyGvCHZyE75Vwytt2ob1SgMgkajuZCsR5IApUOD7fwCY4FjDOXkB3tCWadextqk63efOyds8q0n49LaXlB3GaWylpP2Lcuw+OIanJnb6wWtw00LujWz4XoblCWwtLeZI9mN5MCy9Mpdf3wLEBaVQJXxenKUE5GdJh1gtGpwtMzfF/AbPE2k2MExjM0zKC1UUifwtRlbsxJhnE+JsIual6HuxYpIFv8JYk1t9jiHNp+FHsaLcSHPzc2Nd6oN58y1x65VpgO7rYTOakEjyFvtFGVh2LuoACArs0fOV61Rre9Duhj16PnhTbnAYIdczUEvovUlV6ScxHEnTraARwwGdn4O7BPE1M/VGkyXWVBnLhrndc5jQI6DNwfeHalyljRguqdKbdDzcJO9/RHjXSIEq2FJCklRWhS4qhB25kTblqm6rGUmAa5mLUe3Edc8VuMUP+nvmbLf7yGI8ca6p1AYDHxXgPO1V/bLksvye5MaSH0jRfrO5OaxXeUpiY+T5/tSNdh58UXNBSRlyV3JDYkDuP+MgAFFIplbVGJVEEthGVw+eu96ucnXzO4c749tOqW9bmePvsVk2uMlGPAeoW/kMTfoPTbAd7EN1toZIygIjRXWZE8+OdO9JOg+eBPBUiTTfQNOIJhZIySIcJ5CGwS/ngqy4AmzPLwkMsSoQGA9RBoEVlM6Atmc0HngADni8cRbvKFAc5jFdA0brZ4CM0zgas5u9uWeAe6Ya0HkFVf7XGEkZRwvuzMxwrT6egqU9cZ0S+RpajLHdCN4voeKGRmachi
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(7916004)(376002)(136003)(396003)(366004)(39860400002)(346002)(8936002)(478600001)(122000001)(186003)(1076003)(38100700002)(71200400001)(44832011)(2906002)(6486002)(966005)(5660300002)(66946007)(64756008)(6916009)(316002)(66556008)(66446008)(54906003)(76116006)(4326008)(8676002)(66476007)(86362001)(9686003)(6512007)(26005)(66574015)(33716001)(83380400001)(41300700001)(38070700005)(6506007)(414714003)(473944003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ZLnaGfRoj4jLRtS/2vVDEIb43aSL4f6PeiTkdj3zd6zJfCdPdJVbq0hPMOsI?=
+ =?us-ascii?Q?x9M2YOtM1WfRZu8TriYGweauhJ0/qgzPKlsmN3rRBC+bII/SohyVnfYrbPAP?=
+ =?us-ascii?Q?UdV39VzmJpMLdn7gazCXPzNpCYtKVcm54Rb30Q83zWTARzfLGN1X5oaAo9b/?=
+ =?us-ascii?Q?zfhNYdHDPqZOMzLhbvq1+O0gxS0zQUH2O6amy1bA4CUewwvi17eQVYFO337Q?=
+ =?us-ascii?Q?l0rRvw4ovR6Rqzanq5tHRdhbKqwKt8ZaZ+ABigQGjqn/0sa9Q4kN2cioQxiN?=
+ =?us-ascii?Q?oZfLtHh7W5wLnDpbPxEPrjxQRbCMpVaJdChuYPXwTHvss5tdCwm88YI3OFZN?=
+ =?us-ascii?Q?HurxV4TlO1LE6vbnKO0aa7WTAZxHkbv5GMGUIiALdYtPEfQVS79oQOYbZkMm?=
+ =?us-ascii?Q?t8VMg6EHZu0GQFmy5BD4tWbpcZPGvDqQsdxwE4bx03y9SOPkXESx+XV6HboG?=
+ =?us-ascii?Q?8p+ZVMOvQwCdnjy79a+5tLBJAXe11HqYtnSHqhoClu9TI5uFZH7vcxa+gc0L?=
+ =?us-ascii?Q?AnUnUGI/095yirRK1kPrXsIgDXid09swJtgfynrTeWdQrYVq1XXH1y4DT8B9?=
+ =?us-ascii?Q?P+F3+hsfSiYtu8AZwVVsklnIa+54VLN0wXOXbPPab6/jb1BTzohEE6Xy4Bsv?=
+ =?us-ascii?Q?CavF8I8m5vEMR+F/9iVUiD47p0chO3n+GY8uofYGKJXq1ahb1INHiUg62IUB?=
+ =?us-ascii?Q?xT5fUpG+0WIIrOC2Rw2aecu66GuXZLga7IiKFuzerbBCDEoKxSuA+UyPkLj7?=
+ =?us-ascii?Q?K/Whfk1+3my03W5ZEAkxoZGaG6ykCSQ3xhSuWQJzAqVbX+Il75pGaB7jsBYA?=
+ =?us-ascii?Q?hMbRNg+QFaxkkG9RqY9ckay/bLkFQen2KpaghcHpWAdfUBHG16PcYAUO2+mf?=
+ =?us-ascii?Q?FgyZQdDE3XqJqHgIIVH4IhDZmkJLIcCiuEoKaiyOcKrUIlV26D8pUC6ChGjd?=
+ =?us-ascii?Q?gNuujUnyyj8VRsiSGRF8hKbcKnySE0iz53+qGj22IjY+HET/FKEaVfbFrfXm?=
+ =?us-ascii?Q?+WSzE3hy5n3HbVrwsXwW9d1ffOAioMyYv0xYAQTN8FxGpE58xQRg0IHA7O4j?=
+ =?us-ascii?Q?0SZ1NJ5hMm6BbQWjSn2XhNHywvXKph5FDFfbtcNm2CEFg5qpaQrvKZh6snOa?=
+ =?us-ascii?Q?T+K7/kaM+KvdL0174PzVmQY8ReW/XFDFtCuoraOovxKXxGkfzdPLlCPvjOk9?=
+ =?us-ascii?Q?A9NxlauYHrX4Ltsvtynw5TbiNgwNbQw9oNWf+Q2i01JUTznTO2D30oMqjkah?=
+ =?us-ascii?Q?5OtVDfXjRW5TgDTj5Glof5O/KmtzkB0TKErq2XTtbMxcrtDCE1k4LF+BU/Ti?=
+ =?us-ascii?Q?gDv11007MwD4mkLU8dmTE1I9rHh34aKR0EMRQh/dCzGQuImmxILf4pXcOyLd?=
+ =?us-ascii?Q?WI0v2v/XuPiRn5tVF9Uwhe/9Fk07Yw7axXYPPGkSqWEeGOXFbrKHVqaHb0Bi?=
+ =?us-ascii?Q?z9UIw85dgob8nSVr/WOvKFvwh+n+m77wSHxnHRux3x1k3qF2d/LKJdCTZE+b?=
+ =?us-ascii?Q?RSfDAGS3omzvlmo2sN+M5cRyoiazFBpD0JPYOIRcxw2QSFK0xmIhnsVDRm0B?=
+ =?us-ascii?Q?9i8n9s6JImuBqKwi0Q8/i0w4+Eik1Pb1YY016HKxovUwE5npTBXCgUfcyiqb?=
+ =?us-ascii?Q?Mg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <43BCFB0AC6C8454AA19DFACC2BB0AACA@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Date:   Tue, 06 Sep 2022 00:53:20 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Richie Pearn <richard.pearn@nxp.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 net 1/3] net: dsa: felix: tc-taprio intervals smaller
- than MTU should send at least one packet
-In-Reply-To: <20220905170125.1269498-2-vladimir.oltean@nxp.com>
-References: <20220905170125.1269498-1-vladimir.oltean@nxp.com>
- <20220905170125.1269498-2-vladimir.oltean@nxp.com>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <d50be0e224c70453e1a4a7d690cfdf1b@walle.cc>
-X-Sender: michael@walle.cc
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9fe55502-b611-46f8-2646-08da8f99eff6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Sep 2022 23:54:14.4532
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ae16PL9EzMLASflTxNZMhkz0kuCutJk9pVWBJepoXvTLgzQQgNKcTUq7TyZIp8hOdGtKrxYvjWyzgspGIZjSlg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4771
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am 2022-09-05 19:01, schrieb Vladimir Oltean:
-> The blamed commit broke tc-taprio schedules such as this one:
-> 
-> tc qdisc replace dev $swp1 root taprio \
->         num_tc 8 \
->         map 0 1 2 3 4 5 6 7 \
->         queues 1@0 1@1 1@2 1@3 1@4 1@5 1@6 1@7 \
->         base-time 0 \
->         sched-entry S 0x7f 990000 \
->         sched-entry S 0x80  10000 \
->         flags 0x2
-> 
-> because the gate entry for TC 7 (S 0x80 10000 ns) now has a static 
-> guard
-> band added earlier than its 'gate close' event, such that packet
-> overruns won't occur in the worst case of the largest packet possible.
-> 
-> Since guard bands are statically determined based on the per-tc
-> QSYS_QMAXSDU_CFG_* with a fallback on the port-based QSYS_PORT_MAX_SDU,
-> we need to discuss what happens with TC 7 depending on kernel version,
-> since the driver, prior to commit 55a515b1f5a9 ("net: dsa: felix: drop
-> oversized frames with tc-taprio instead of hanging the port"), did not
-> touch QSYS_QMAXSDU_CFG_*, and therefore relied on QSYS_PORT_MAX_SDU.
-> 
-> 1 (before vsc9959_tas_guard_bands_update): QSYS_PORT_MAX_SDU defaults 
-> to
->   1518, and at gigabit this introduces a static guard band (independent
->   of packet sizes) of 12144 ns, plus QSYS::HSCH_MISC_CFG.FRM_ADJ (bit
->   time of 20 octets => 160 ns). But this is larger than the time window
->   itself, of 10000 ns. So, the queue system never considers a frame 
-> with
->   TC 7 as eligible for transmission, since the gate practically never
->   opens, and these frames are forever stuck in the TX queues and hang
->   the port.
-> 
-> 2 (after vsc9959_tas_guard_bands_update): Under the sole goal of
->   enabling oversized frame dropping, we make an effort to set
->   QSYS_QMAXSDU_CFG_7 to 1230 bytes. But QSYS_QMAXSDU_CFG_7 plays
->   one more role, which we did not take into account: per-tc static 
-> guard
->   band, expressed in L2 byte time (auto-adjusted for FCS and L1 
-> overhead).
->   There is a discrepancy between what the driver thinks (that there is
->   no guard band, and 100% of min_gate_len[tc] is available for egress
->   scheduling) and what the hardware actually does (crops the equivalent
->   of QSYS_QMAXSDU_CFG_7 ns out of min_gate_len[tc]). In practice, this
->   means that the hardware thinks it has exactly 0 ns for scheduling tc 
-> 7.
-> 
-> In both cases, even minimum sized Ethernet frames are stuck on egress
-> rather than being considered for scheduling on TC 7, even if they would
-> fit given a proper configuration. Considering the current situation,
-> with vsc9959_tas_guard_bands_update(), frames between 60 octets and 
-> 1230
-> octets in size are not eligible for oversized dropping (because they 
-> are
-> smaller than QSYS_QMAXSDU_CFG_7), but won't be considered as eligible
-> for scheduling either, because the min_gate_len[7] (10000 ns) minus the
-> guard band determined by QSYS_QMAXSDU_CFG_7 (1230 octets * 8 ns per
-> octet == 9840 ns) minus the guard band auto-added for L1 overhead by
-> QSYS::HSCH_MISC_CFG.FRM_ADJ (20 octets * 8 ns per octet == 160 octets)
-> leaves 0 ns for scheduling in the queue system proper.
-> 
-> Investigating the hardware behavior, it becomes apparent that the queue
-> system needs precisely 33 ns of 'gate open' time in order to consider a
-> frame as eligible for scheduling to a tc. So the solution to this
-> problem is to amend vsc9959_tas_guard_bands_update(), by giving the
-> per-tc guard bands less space by exactly 33 ns, just enough for one
-> frame to be scheduled in that interval. This allows the queue system to
-> make forward progress for that port-tc, and prevents it from hanging.
-> 
-> Fixes: 297c4de6f780 ("net: dsa: felix: re-enable TAS guard band mode")
-> Reported-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, Sep 06, 2022 at 12:17:29AM +0200, Michael Walle wrote:
+> First, let me say, I'm fine with this patch. But I'm not sure,
+> how many MAC addresses are actually reserved on your
+> RDB/QDS boards?
 
-I haven't looked at the overall code, but the solution described
-above sounds good.
+AFAIK, the Reference Design Boards are sold with an unprogrammed I2C
+EEPROM, but with a sticker containing 5 MAC addresses on the bottom of
+the board. It doesn't have a clear correspondence between MAC addresses
+and their intended use, although I suspect that one MAC address is
+intended for each RJ45 port (although that isn't how I use them).
 
-FWIW, I don't think such a schedule, where exactly one frame
-can be sent, is very likely in the wild though. Imagine a piece
-of software is generating one frame per cycle. It might happen
-that during one (hardware) cycle there is no frame ready (because
-it is software and it jitters), but then in the next cycle, there
-are now two frames ready. In that case you'll always lag one frame
-behind and you'll never recover from it.
+For the QIXIS Development Boards, I have no clue, it's probably even
+nonsensical to talk about MAC address reservations since there is just
+one onboard Ethernet port (RGMII) and the rest is routed via SERDES to
+PCIe slots, to pluggable riser cards, from which Linux/U-Boot don't bother
+too much to read back any info, even though I can't exclude something
+like an EEPROM may be available on those cards too. In any case, I think
+QDS boards don't leave the lab, so it doesn't matter too much.
 
-Either I'd make sure I can send at two frames in one cycle, or
-my software would only send a frame every other cycle.
+The way I use the MAC addresses from the sticker of my RDBs, on a day to
+day basis, is:
 
-Thanks for taking care of this!
+ethaddr (eno0) - #1
+eth1addr (eno2) - #2
+eth2addr (swp0) - #2
+eth3addr (swp1) - #2
+eth4addr (swp2) - #2
+eth5addr (swp3) - #2
 
--michael
+And now I'm adding these new env variables:
+
+eth6addr (swp4) - #2
+eth7addr (swp5) - #2
+eth8addr (eno3) - #3
+
+So I still have 2 more unique MAC addresses to burn through.
+
+> I guess, they being evaluation boards you don't care? ;)
+
+I do care a bit, but not that much.
+
+> On the Kontron sl28 boards we reserve just 8 and that is
+> already a lot for a board with max 6 out facing ports. 4 of
+> these ports used to be a switch, so in theory it should work
+
+/used/ to be a switch? What happened to them? Details? Or you mean
+"4 ports are used as a switch"?
+
+> with 3 MAC addresses, right?
+
+Which 3 MAC addresses would those be? Not sure I'm following. enetc #0,
+enetc #1, enetc #2? That could work, multiple DSA user ports can share
+the same MAC address (inherited from the DSA master or not) and things
+would work just fine unless you connect them to each other.
+
+> Or even just 2 if there is no need to terminate any traffic on the
+> switch interfaces.
+
+And here, which 2? enetc #0 and enetc #1?
+
+> Anyway, do we really need so many addresses?
+
+idk, who's "we" and what does "need" mean? (serious questions)
+
+I'm not sure I can give you any answer to this question. As an engineer
+working with the kernel, I need to roll the LS1028A Ethernet around on
+all its sides. The Linux RDB/QDS support will inevitably reflect what we
+need to test. Everybody else will have a fixed configuration, and the
+user reviews will vary from 'internet works! 5 stars!' to 'internet
+doesn't work! 1 star!'.
+
+To offer that quality of service for all front-facing ports, you don't
+need much. I know of a 12 port industrial switch that entered production
+with 1 MAC address, the "termination" address. It's fine, when it's
+marketed as a switch, people come to expect that and don't wonder too much.
+
+> What are the configurations here? For what is the address of the
+> internal ports used?
+
+By internal ports you mean swp4/swp5, or eno2/eno3? If eno2/eno3, then a
+configuration where having MAC addresses on these interfaces is useful
+to me is running some of the kselftests on the LS1028A-RDB, which does
+not have enough external enetc ports for 2 loopback pairs, so I do
+this, thereby having 1 external loopback through a cable, and 1 internal
+loopback in the SoC:
+
+./psfp.sh eno0 swp0 swp4 eno2
+https://github.com/torvalds/linux/blob/master/tools/testing/selftests/drive=
+rs/net/ocelot/psfp.sh
+
+Speaking of kselftests, it actually doesn't matter that much what the
+MAC addresses *are*, since we don't enter any network, just loop back
+traffic. In fact we have an environment variable STABLE_MAC_ADDRS, which
+when set, configures the ports to use some predetermined MAC addresses.
+
+There are other configurations where it is useful for eno2 to see DSA
+untagged traffic. These are downstream 802.1CB (where this hardware can
+offload redundant streams in the forwarding plane, but not in the
+termination plane, so we use eno2 as forwarding plane, for termination),
+DPDK on eno2 (which mainline Linux doesn't care about), and vfio-pci +
+QEMU, where DSA switch control still belongs to the Linux host, but the
+guest has 'internet'.
+
+> Let's say we are in the "port extender mode" and use the
+> second internal port as an actual switch port, that would
+> then be:
+> 2x external enetc
+> 1x internal enetc
+> 4x external switch ports in port extender mode
+>=20
+> Which makes 7 addresses. The internal enetc port doesn't
+> really make sense in a port extender mode, because there
+> is no switching going on.
+
+It can make sense. You can run ptp4l -i eno2, and ptp4l -i swp4, as
+separate processes, and you can get high quality synchronization between
+/dev/ptp0 (enetc) and /dev/ptp1 (felix) over internal Ethernet (there
+isn't any other mechanism in the SoC to keep them in sync if that is
+needed for some use case like a boundary_clock_jbod between eno0 + eno1
++ swp0-swp3).
+
+> So uhm, 6 addresses are the maximum?
+
+No, the maximum is given by the number of ports, PFs and VFs. But that's
+a high number. It's the theoretical maximum. Then there's the practical
+maximum, which is given by what kind of embedded system is built with it.
+I think that the more general-purpose the system is, the more garden
+variety the networking use cases will be. I also think it would be very
+absurd for everybody to reserve a number of MAC addresses equal to the
+number of possibilities in which the LS1028A can expose IP termination
+points, if they're likely to never need them.
+
+> This is the MAC address distribution for now on the
+> sl28 boards:
+> https://lore.kernel.org/linux-devicetree/20220901221857.2600340-19-michae=
+l@walle.cc/
+>=20
+> Please tell me if I'm missing something here.
+
+My 2 cents, if you don't need anything special like in-SoC PTP, 802.1CB,
+virtualization, and don't habitually connect ports of the same ports to
+each other or do some other sorts of redundant networking without VLANs,
+then there isn't too much wrong with one MAC address per RJ45 port, but
+best discuss with those who are actually marketing the devices.=
