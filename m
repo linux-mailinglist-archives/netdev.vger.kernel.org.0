@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DF7D5ADA44
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 22:34:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5B6C5ADA43
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 22:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232477AbiIEUeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 16:34:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36072 "EHLO
+        id S231547AbiIEUel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 16:34:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232144AbiIEUeb (ORCPT
+        with ESMTP id S232262AbiIEUeb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 16:34:31 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3207ABC9D;
-        Mon,  5 Sep 2022 13:34:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA4F963C4;
+        Mon,  5 Sep 2022 13:34:29 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 0E7D4FF80D;
-        Mon,  5 Sep 2022 20:34:24 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D5137FF80E;
+        Mon,  5 Sep 2022 20:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1662410066;
+        t=1662410068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/e293u4SAALQGFw2YMCR7A1y/RTvMly0aNfu43ICJMU=;
-        b=JGxS9e1pyjStB26Q+drkPY9ybTCC7nsoW4GtESNzWqYc09ifNlsheHQJwX6pQFiw0NxGYZ
-        sev7D/bDHXD/ZCnWh+VNufECACvWGT7w6P5Nu3mYtEqvoxM1sqYurc/k8Op0RV+PAsAIY3
-        3nVdGSWXYX0P7D15TVstonrwFGpQsGKT8FauOebXBeORM37NpulEnlO9YT55Lict1zMrAK
-        MejU4UijXbqLOpRKay3gqeCB7XM7FsPMwkCdoxsXcyqaYHkEeeqAmrfabc5fzlMmE6+LaO
-        UVmfLi4/j/4PUASjpYeUWbStdGEKVevsCuh+9RSeNZQmVuYNWrqirPeKPmqJnQ==
+        bh=DNNdmI66tnHE7JkGyA+dXRGyooXsRfbcjOPzeUejA5I=;
+        b=h0cqncYmilzr5paY0ZE6NPApkSALeLXbc0w5jQ/rcEPWvcEifrnvjs3jWhGrxHnGWIkPzi
+        FOGaqnDH/2cxjb2l3Tg1KtBxcJrwaShwZIZ6HCfPZ8yC/TcFazbVCfAP8kNtblcR8dsIFF
+        7gysXOC5ZDOM087RUUNI3ZBa8KPTKA5wLHjsOVP2uqJnNGydKZKcm4Tqat6KlzH3Y5np0o
+        u6iVTulB2Fsu8dPoNfcaCKkAUTMr/nNxlPIlGK4kIb6pGiFkoQ2Td9ayDZDRGbHyPeUXdm
+        CFsJ0H4upvxUQa0F2ZfNUQsrWjENmJDJXyKeOoH6MIASFGE+pqTY1S3kY/zSWg==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -43,9 +43,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan/next v3 5/9] net: mac802154: Drop IEEE802154_HW_RX_DROP_BAD_CKSUM
-Date:   Mon,  5 Sep 2022 22:34:08 +0200
-Message-Id: <20220905203412.1322947-6-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan/next v3 6/9] net: mac802154: Add promiscuous software filtering
+Date:   Mon,  5 Sep 2022 22:34:09 +0200
+Message-Id: <20220905203412.1322947-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
 References: <20220905203412.1322947-1-miquel.raynal@bootlin.com>
@@ -62,87 +62,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This IEEE802154_HW_RX_DROP_BAD_CKSUM flag was only used by hwsim to
-reflect the fact that it would not validate the checksum (FCS). In other
-words, the filtering level of hwsim is always "NONE" while the core
-expects it to be higher.
-
-Now that we have access to real filtering levels, we can actually use
-them and always enforce the "NONE" level in hwsim. This case is already
-correctly handled in the receive so we can drop the flag.
+Currently, the promiscuous mode was not as open as it should. It was not
+a big deal because until now promiscuous modes were only used on monitor
+interfaces, which would never go this far in the filtering. But as we
+might now use this promiscuous mode with NODEs or COORDs, it becomes
+necessary to really forward the packets to the upper layers without
+additional filtering when relevant. Let's add the necessary logic to
+handle this situation.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/net/ieee802154/mac802154_hwsim.c | 3 ++-
- include/net/mac802154.h                  | 4 ----
- net/mac802154/rx.c                       | 7 ++-----
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ net/mac802154/rx.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
-index 38c217bd7c82..d18a1391b61f 100644
---- a/drivers/net/ieee802154/mac802154_hwsim.c
-+++ b/drivers/net/ieee802154/mac802154_hwsim.c
-@@ -148,6 +148,7 @@ static int hwsim_hw_start(struct ieee802154_hw *hw)
- 	struct hwsim_phy *phy = hw->priv;
- 
- 	phy->suspended = false;
-+	hw->phy->filtering = IEEE802154_FILTERING_NONE;
- 	return 0;
- }
- 
-@@ -791,7 +792,7 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
- 	phy->idx = idx;
- 	INIT_LIST_HEAD(&phy->edges);
- 
--	hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;
-+	hw->flags = IEEE802154_HW_PROMISCUOUS;
- 	hw->parent = dev;
- 
- 	err = ieee802154_register_hw(hw);
-diff --git a/include/net/mac802154.h b/include/net/mac802154.h
-index 357d25ef627a..4a3a9de9da73 100644
---- a/include/net/mac802154.h
-+++ b/include/net/mac802154.h
-@@ -111,9 +111,6 @@ struct ieee802154_hw {
-  *	promiscuous mode setting.
-  *
-  * @IEEE802154_HW_RX_OMIT_CKSUM: Indicates that receiver omits FCS.
-- *
-- * @IEEE802154_HW_RX_DROP_BAD_CKSUM: Indicates that receiver will not filter
-- *	frames with bad checksum.
-  */
- enum ieee802154_hw_flags {
- 	IEEE802154_HW_TX_OMIT_CKSUM	= BIT(0),
-@@ -123,7 +120,6 @@ enum ieee802154_hw_flags {
- 	IEEE802154_HW_AFILT		= BIT(4),
- 	IEEE802154_HW_PROMISCUOUS	= BIT(5),
- 	IEEE802154_HW_RX_OMIT_CKSUM	= BIT(6),
--	IEEE802154_HW_RX_DROP_BAD_CKSUM	= BIT(7),
- };
- 
- /* Indicates that receiver omits FCS and xmitter will add FCS on it's own. */
 diff --git a/net/mac802154/rx.c b/net/mac802154/rx.c
-index 26df79911f3e..bd1a92fceef7 100644
+index bd1a92fceef7..8a8c5a4a2f28 100644
 --- a/net/mac802154/rx.c
 +++ b/net/mac802154/rx.c
-@@ -270,15 +270,12 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
+@@ -196,10 +196,31 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
+ 	int ret;
+ 	struct ieee802154_sub_if_data *sdata;
+ 	struct ieee802154_hdr hdr;
++	struct sk_buff *skb2;
  
- 	ieee802154_monitors_rx(local, skb);
++	/* Level 2 filtering: Avoid further processing in IEEE 802.15.4 promiscuous modes */
++	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
++		if (!ieee802154_sdata_running(sdata))
++			continue;
++
++		if (sdata->required_filtering < IEEE802154_FILTERING_1_FCS ||
++		    sdata->required_filtering > IEEE802154_FILTERING_2_PROMISCUOUS)
++			continue;
++
++		skb2 = skb_clone(skb, GFP_ATOMIC);
++		if (skb2) {
++			skb2->dev = sdata->dev;
++			ieee802154_deliver_skb(skb2);
++
++			sdata->dev->stats.rx_packets++;
++			sdata->dev->stats.rx_bytes += skb->len;
++		}
++	}
++
++	/* Common filtering between level 3 and 4: frame headers validity */
+ 	ret = ieee802154_parse_frame_start(skb, &hdr);
+ 	if (ret) {
+-		pr_debug("got invalid frame\n");
++		dev_dbg(&sdata->dev->dev, "invalid frame headers\n");
+ 		kfree_skb(skb);
+ 		return;
+ 	}
+@@ -208,7 +229,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
+ 		if (!ieee802154_sdata_running(sdata))
+ 			continue;
  
--	/* Check if transceiver doesn't validate the checksum.
--	 * If not we validate the checksum here.
--	 */
-+	/* Level 1 filtering: Check the FCS by software when relevant */
- 	/* TODO do whatever you want here if necessary to filter by
- 	 * check on IEEE802154_FILTERING_NONE. And upcomming receive
- 	 * path in which state the phy is e.g. scanning.
- 	 */
--	if (local->hw.flags & IEEE802154_HW_RX_DROP_BAD_CKSUM ||
--	    local->phy->filtering == IEEE802154_FILTERING_NONE) {
-+	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
- 		crc = crc_ccitt(0, skb->data, skb->len);
- 		if (crc) {
- 			rcu_read_unlock();
+-		if (sdata->required_filtering == IEEE802154_FILTERING_NONE)
++		if (sdata->required_filtering <= IEEE802154_FILTERING_2_PROMISCUOUS)
+ 			continue;
+ 
+ 		ieee802154_subif_frame(sdata, skb, &hdr);
 -- 
 2.34.1
 
