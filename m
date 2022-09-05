@@ -2,96 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB225AD835
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 19:14:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C465AD857
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 19:24:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237628AbiIEROD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 13:14:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40660 "EHLO
+        id S238024AbiIERXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 13:23:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237123AbiIEROB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 13:14:01 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE4362AB4;
-        Mon,  5 Sep 2022 10:14:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=CUMIXcV5t7ZQeqthxA5sV3p/yXcIvPxOuRdWJnvekYM=; b=Bgh+hwiypOFveZbbjwinXdyxqh
-        Hp9ztqlk0eHMoGBZWeofYXhpoo0Ee+cf9uzkZLgdQzBRXbkrWo3b00pQ3NzloLr0iYjRAbhmOmPjh
-        vSUyjE+kabeaUv+7gTMpboCiF0dCTG95SeARdHYuNLpK0OJa12AP/iuUmuHCKxHvpTkM=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oVFfJ-00FfSv-Ew; Mon, 05 Sep 2022 19:13:41 +0200
-Date:   Mon, 5 Sep 2022 19:13:41 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Xiaowu Ding <xiaowu.ding@jaguarmicro.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "palmer@dabbelt.com" <palmer@dabbelt.com>,
-        "paul.walmsley@sifive.com" <paul.walmsley@sifive.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>
-Subject: Re: =?utf-8?B?562U5aSNOiBbUEFUQw==?= =?utf-8?Q?H?= net-next] driver:
- cadence macb driver support acpi mode
-Message-ID: <YxYuRaXxtyMIF/A6@lunn.ch>
-References: <20220824121351.578-1-xiaowu.ding@jaguarmicro.com>
- <YwZA+1z7BDCXZn/3@lunn.ch>
- <PS2PR06MB343298952D34545A7372FEFAF27F9@PS2PR06MB3432.apcprd06.prod.outlook.com>
+        with ESMTP id S238010AbiIERXT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 13:23:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F8D52FC4;
+        Mon,  5 Sep 2022 10:23:19 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B62E6144F;
+        Mon,  5 Sep 2022 17:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD7BC433D6;
+        Mon,  5 Sep 2022 17:23:17 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="TNueuWIj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1662398595;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=QGF4zwsRqDXlEODl32ZtykriL3evuX7a16SgJVtXROs=;
+        b=TNueuWIjHMZbhy3cN61L79VIeQ39tBC5k+XKr2YIzdk3h91M3D6hxFCpDtyY/S9QEc3nfq
+        HWDelmeJb60ci9CuwKXhlWyTeNYnKAQDk7KM+6g+8Z07NYjV/53emIefMF4IiS0+KKPm/R
+        LPvKN5EHRGTpiOVKFsGY6yD5ONm1Oo0=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id d97d00fa (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Mon, 5 Sep 2022 17:23:14 +0000 (UTC)
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: [PATCH] iwlwifi: don't spam logs with NSS>2 messages
+Date:   Mon,  5 Sep 2022 19:22:46 +0200
+Message-Id: <20220905172246.105383-1-Jason@zx2c4.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PS2PR06MB343298952D34545A7372FEFAF27F9@PS2PR06MB3432.apcprd06.prod.outlook.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 05, 2022 at 02:25:06AM +0000, Xiaowu Ding wrote:
-> Hi Andrew:
-> 	Thank you very much for your advices.
->  
-> 	There will be some problems with the clk_hw_register_fixed_rate interface in the acpi mode.
-> 	It seems that the kernel common clock framework can not support the acpi mode,just support the dt mode.
+I get a log line like this every 4 seconds when connected to my AP:
 
-It has two modes:
+[15650.221468] iwlwifi 0000:09:00.0: Got NSS = 4 - trimming to 2
 
-https://elixir.bootlin.com/linux/v6.0-rc4/source/drivers/clk/clkdev.c#L100
-struct clk *clk_get(struct device *dev, const char *con_id)
-{
-	const char *dev_id = dev ? dev_name(dev) : NULL;
-	struct clk_hw *hw;
+Looking at the code, this seems to be related to a hardware limitation,
+and there's nothing to be done. In an effort to keep my dmesg
+manageable, downgrade this error to "debug" rather than "info".
 
-	if (dev && dev->of_node) {
-		hw = of_clk_get_hw(dev->of_node, 0, con_id);
-		if (!IS_ERR(hw) || PTR_ERR(hw) == -EPROBE_DEFER)
-			return clk_hw_create_clk(dev, hw, dev_id, con_id);
-	}
+Cc: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-	return __clk_get_sys(dev, dev_id, con_id);
-}
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 5eb28f8ee87e..11536f115198 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -1833,8 +1833,8 @@ static void iwl_mvm_parse_ppe(struct iwl_mvm *mvm,
+ 	* If nss < MAX: we can set zeros in other streams
+ 	*/
+ 	if (nss > MAX_HE_SUPP_NSS) {
+-		IWL_INFO(mvm, "Got NSS = %d - trimming to %d\n", nss,
+-			 MAX_HE_SUPP_NSS);
++		IWL_DEBUG_INFO(mvm, "Got NSS = %d - trimming to %d\n", nss,
++			       MAX_HE_SUPP_NSS);
+ 		nss = MAX_HE_SUPP_NSS;
+ 	}
+ 
+-- 
+2.37.3
 
-If dev has an of_node, it uses of_clk_get_hw().
-
-If dev does not have an of node, it uses __clk_get_sys(), which looks
-purely using the clock name.
-
-The common clock framework is older than DT, and so does not force you
-to use DT. Please look at making __clk_get_sys() work for you
-scenario. You should just need to register the fixed clock using the
-correct name. Look at some of the very old boards which have not been
-converted to DT.
-
-   Andrew
