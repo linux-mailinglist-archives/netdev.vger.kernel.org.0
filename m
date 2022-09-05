@@ -2,78 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22EB35AD7E7
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 18:55:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 624425AD7F6
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 18:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231194AbiIEQyE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Sep 2022 12:54:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41382 "EHLO
+        id S237499AbiIEQ70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Sep 2022 12:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237618AbiIEQxv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 12:53:51 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4668A4F66A
-        for <netdev@vger.kernel.org>; Mon,  5 Sep 2022 09:53:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=k2l9yz+he8FGnjcVFUgQnA0e4Agd4V2sSdppyYADFa0=; b=vRsaD25GV/4tz4qOkv6kAyAN8T
-        9upHCyF+RgfoKZ/IZ1cHsDFAmh+3BHmS0bPePs78HjabkE6RfZwIoW9elJO6skE49/Ov0nJF635Tm
-        LHFzThKEU13FzDTL55W28ArlAZ4McK0gEmR9lN/sxoxHjq9vs2JTjGAj5Riv+uiMqCRY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oVFLq-00FfJn-NN; Mon, 05 Sep 2022 18:53:34 +0200
-Date:   Mon, 5 Sep 2022 18:53:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Casper Andersson <casper.casan@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S237395AbiIEQ7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Sep 2022 12:59:24 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0613BD1;
+        Mon,  5 Sep 2022 09:59:22 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id az24-20020a05600c601800b003a842e4983cso6035764wmb.0;
+        Mon, 05 Sep 2022 09:59:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:from:to:cc:subject:date;
+        bh=kBO13UtRr0SWrtmik6tjpAxMEsZ+XRCQYT/mFBGsQKc=;
+        b=KNmRwCLYZ+pCTjK/ihObgilSV3xmsKUdKpr3KFr16T2CzyNWIef12SH5Z65EDv5MGr
+         2DnoPgB0nkKemCgkM/c+Ras2uY1v5FXRzolHuZVqswtY+dPnQfKiasXeHjW+0TT+Om1Q
+         tQ9eBco7SDbgZU6BPJGNagW+FqWqnLBC1ws2v3fzoKWLkuGCnRR6N1/0vq/OaowuzQ/0
+         Ey7Y0+d41mP9GJW+l0takmtQxIhmUaGMNifHlxujveck670qWRl067a62egdcDsYQUmZ
+         +xy11pPq0Zax3uBa80j+x3K0HtMYKOP0DpHTl2tdRo2gjtOeqAGx4nMs3bqUsvOfNAx3
+         myrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:subject:cc
+         :to:from:date:message-id:x-gm-message-state:from:to:cc:subject:date;
+        bh=kBO13UtRr0SWrtmik6tjpAxMEsZ+XRCQYT/mFBGsQKc=;
+        b=m3iw/BuHgmJb8e39n0B4bXnw7c/cDJPuase159/O2aLiLhlTtZ+u92tlI2lYmTdNOH
+         REPE+e4XfTbM/u2MgUoBTKEb3lfawqH4klZ+S7jz8hdiA7P6RLM5lf3o1k1MCr8KQzHr
+         9DUEnGC90sehvYKb9rqoksPmSIb/GgTjr0ftTMJI2c4RCgAyr4uMwaU8uWp5b6ab5YyW
+         YjYjN+EApwzJDsxp0/GLEs9c2zJikVQX7j1z4dBg9I0PqRAYjZmk/dK8BhhbR5U9M0Kg
+         dg+r9BFckpwgCun0qxd2AQ2rsd9XGI0TTXvXAzrWBk+gMyyYLk9LcC9OWm6qgBFHB0tj
+         AJhw==
+X-Gm-Message-State: ACgBeo3xK7vFwjpTwOsY58zun46JqZBPasC3sC5bm0K1Y0bJSCKZ8ZU4
+        rKCC+puAFklZ+FYBMcgtdt4=
+X-Google-Smtp-Source: AA6agR5SqvwKydijnR3iFbl7xo1zcpxxo2RQPkvLlwEPeQg/MTRp9RYxPTJDLf9ntbeEQn9s98HGdQ==
+X-Received: by 2002:a05:600c:3c94:b0:3ae:ca8c:acfb with SMTP id bg20-20020a05600c3c9400b003aeca8cacfbmr4702026wmb.199.1662397161290;
+        Mon, 05 Sep 2022 09:59:21 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-134.ip85.fastwebnet.it. [93.42.70.134])
+        by smtp.gmail.com with ESMTPSA id o16-20020a05600c4fd000b003a5c999cd1asm14742926wmq.14.2022.09.05.09.59.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Sep 2022 09:59:20 -0700 (PDT)
+Message-ID: <63162ae8.050a0220.8ac07.db3e@mx.google.com>
+X-Google-Original-Message-ID: <YxYq5oF15RXKmGqJ@Ansuel-xps.>
+Date:   Mon, 5 Sep 2022 18:59:18 +0200
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        UNGLinuxDriver@microchip.com, netdev@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH net-next] net: sparx5: fix return values to correctly use
- bool
-Message-ID: <YxYpjjYPK6lQzGAw@lunn.ch>
-References: <20220902084521.3466638-1-casper.casan@gmail.com>
- <YxIyRDzQt5cN7Lbn@lunn.ch>
- <20220905152855.ud6a7cqbygoyvnfj@wse-c0155>
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [net PATCH] net: dsa: qca8k: fix NULL pointer dereference for
+ of_device_get_match_data
+References: <20220904215319.13070-1-ansuelsmth@gmail.com>
+ <20220905165039.vcgqwjpyoy2eqlsp@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220905152855.ud6a7cqbygoyvnfj@wse-c0155>
+In-Reply-To: <20220905165039.vcgqwjpyoy2eqlsp@skbuf>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 05, 2022 at 05:33:44PM +0200, Casper Andersson wrote:
-> Hi,
-> 
-> On 2022-09-02 18:41, Andrew Lunn wrote:
-> > On Fri, Sep 02, 2022 at 10:45:21AM +0200, Casper Andersson wrote:
-> > > Function was declared to return bool, but used error return strategy (0
-> > > for success, else error). Now correctly uses bool to indicate whether
-> > > the entry was found or not.
+On Mon, Sep 05, 2022 at 07:50:39PM +0300, Vladimir Oltean wrote:
+> On Sun, Sep 04, 2022 at 11:53:19PM +0200, Christian Marangi wrote:
+> > of_device_get_match_data is called on priv->dev before priv->dev is
+> > actually set. Move of_device_get_match_data after priv->dev is correctly
+> > set to fix this kernel panic.
 > > 
-> > I think it would be better to actually return an int. < 0 error, 0 =
-> > not foumd > 1 found. You can then return ETIMEDOUT etc.
-> > 
-> >     Andrew
+> > Fixes: 3bb0844e7bcd ("net: dsa: qca8k: cache match data to speed up access")
+> > Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> > ---
 > 
-> I can submit a new version with this. But since the commit title will be
-> different I assume I should make it a new patch and not a v2.
+> Did this ever work? Was it tested when you sent the big refactoring
+> patch set?
 
-I don't think it matters if it is a new patch, or a v2. There is some
-attempts to track patches through their revisions, but subjects do
-change as patches get revised, so it is never a precise things.
+I have to be honest here. I feel really embarrassed about this.
+The short story is that the refactor was tested on Openwrt with 5.15 by
+manually applying the changes. This fix was applied there but I forgot
+to put it in the final series.
 
-       Andrew
+I notice this mistake only now that I'm backporting patches and the
+manually applied fix was reset.
+
+Again I'm really sorry.
+
+-- 
+	Ansuel
