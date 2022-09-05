@@ -2,58 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D34C5AC882
-	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 03:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D0515AC891
+	for <lists+netdev@lfdr.de>; Mon,  5 Sep 2022 03:35:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235124AbiIEB0o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Sep 2022 21:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37986 "EHLO
+        id S235317AbiIEBet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Sep 2022 21:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiIEB0m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 21:26:42 -0400
-Received: from out162-62-57-137.mail.qq.com (out162-62-57-137.mail.qq.com [162.62.57.137])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DB82BB0D
-        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 18:26:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
-        s=s201512; t=1662341197;
-        bh=YIE8sJ2GxvwPy8tD7EYzlAYfVnYvTWwBsPmlX9YPYv0=;
-        h=From:To:Cc:Subject:Date;
-        b=EQK6EeCfz1V063X5OSzU4zO/IkhR7hPkyYrzgITk5QtFmNySMU3iVXcgJ8YnNK+G9
-         +0DjK6LUQREKbMCrKgUXAqong7Ad0tpN6UYAPo4gACooTS6IoKNUyv/jVTRsWJfdBj
-         pZNaPSQ1k/YSNc+fJ/+InJ3BZZRjLoHEJaL5otF8=
-Received: from localhost.localdomain ([220.180.239.55])
-        by newxmesmtplogicsvrsza30.qq.com (NewEsmtp) with SMTP
-        id 64A95C5E; Mon, 05 Sep 2022 09:25:10 +0800
-X-QQ-mid: xmsmtpt1662341110tndn78uzk
-Message-ID: <tencent_E50CA8A206904897C2D20DDAE90731183C05@qq.com>
-X-QQ-XMAILINFO: NQR8mRxMnur9ZWgqfJXkZM4H4vOysS4TklrQQhM+P+Ej9Syk9Sq/AudcFZzF2R
-         fugW62F6ffsfWk9IKEDRHBG+02SAx4sD/Hw/TckfMiP1mrZdLBiS+sd/1B7k3DL3yS/w8BExiu+H
-         gAgPy+NIfO/EvODK5QcUsXa4uudd3Ql236ddTYts2ihWr6Z9Kqg0ab6BsGKtolH1hOZxh29ALy5T
-         RjOU2INrZqPWUjwCdaHr/quI395Ndm7Pk26oVqL4OY0Xn9dQA42xjKXiULh6+8ekaPamBqg0SyvO
-         Rongy1d4mnC3LBT0pBMY2dbPDmo5pBzjwj8McgMWl6UNNPK3MDM+/DWalFBZVv9sKhEUI2+sg8AU
-         G7ypTnLCgJSOG8LfZWGli+dl9jhwfEdyMXN9db8vBY1U26D7LVK3bxIQBc9tv7kXl+dS8fXysGSQ
-         gTED/w9siCb0ibE/M3YOaQLn+5tZ9VmmDsCCEfSZ4BNgk5lNgCBouEOTKZ65K7Y4hsO7Ppax/jFB
-         7ZsfGCoJh6/dcFZU4tzM8GrwaYtdUwPGwVKfuG6jpAHbPMGBZyiFgGO0LA8hdTlskh0dME/YxMiL
-         e540ryjDXntcJ43S8gvuRAVIFShaoi11O5i1iHqIPAx7rP9x0bjAnnjcuuXIVwG7RtckadLSiWKv
-         iBe0JjE/YOErLJ57dY00K+wL72H3MPjqNtzogcTZDdsOnW7jP3T8vm6FlPJoaxX0J83v/i2PkoJ3
-         nsrykLUE1Ba/zrXGVTkLDJ4HvHYi2T9foRgNBoc77nsyNuXlIISv0475qlo6rGnNo7odu1ZqzTLV
-         3bKXaH8p/AQUjCXqby+O350k+BxhoOt49EsBmetdsraLZXAPEUPAjyJwn/hQlk5EvgpqAekyIxtY
-         +ZCsgEhXSPucF+KUuoGjGVIrVi87VcTTs8GC9wrrpoNEkTp9UBZykPMy6GG6cSLXAU2dwq1PUJLF
-         IfwgnjwDLFttfq1l/R+9y6q0zWZIhP1btwYjQbuQS7aN+cBowC2KqUS+LeL5SVxaiM6TT2Ngo=
-From:   "jerry.meng" <jerry-meng@foxmail.com>
-To:     bjorn@mork.no, davem@davemloft.net
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, "jerry.meng" <jerry-meng@foxmail.com>
-Subject: [PATCH] net: usb: qmi_wwan: add Quectel RM520N
-Date:   Mon,  5 Sep 2022 09:24:52 +0800
-X-OQ-MSGID: <20220905012452.36343-1-jerry-meng@foxmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S230286AbiIEBer (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Sep 2022 21:34:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C53111810
+        for <netdev@vger.kernel.org>; Sun,  4 Sep 2022 18:34:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1662341685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ETFgaft46ODpaKViq/0Cxuj5XpxgnYE+9qnLqCaNLLY=;
+        b=CuVV+fF5VEuRxnntI7qLkS40E27UGGe0F2h9IzoE0q2v+TFaR4vAGxtw+cWPYmIz0G1Agk
+        NkV8Hqetqn93NOYqxYL5fv97cmMrHiXjYabZgk7GJd466bPr2+y5G3rfl7yrGmBN6v/ZTk
+        gCj0ArJyCQ42FQ3lNlYmn7MYcmFqOHE=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_128_GCM_SHA256) id
+ us-mta-365-ivYhjSWLOcGx4Jg6-91R_w-1; Sun, 04 Sep 2022 21:34:44 -0400
+X-MC-Unique: ivYhjSWLOcGx4Jg6-91R_w-1
+Received: by mail-qt1-f200.google.com with SMTP id bz20-20020a05622a1e9400b003436a76c6e6so5899181qtb.1
+        for <netdev@vger.kernel.org>; Sun, 04 Sep 2022 18:34:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date;
+        bh=ETFgaft46ODpaKViq/0Cxuj5XpxgnYE+9qnLqCaNLLY=;
+        b=hzlEmqKClwudlaMNO63iy7sLkmTQrkrWgGGbpEAvxlkea+ojbMRuMYeiIrX4hHejBn
+         3oK/NkIl8T74Wq7bdkcYHGTBSlrc5ePAYnfVSdBGAiCGJb7Ar8swufdZP5h3E875lEr/
+         Sy/+RcxtDIiTVNa+xYTE70iJXhcqttcxIlrcn/C7PqIT5rMJBr1jAWlbwkCmkxsFxsey
+         drZ7kAW/D5hmsLoDDj0Z7JcDrnmwMtBYmni/uEi2mXktjDVNYQ1mkShobUUV/9qQ34Jz
+         B0zEkpKlWrOLHP2V8QSmFF51TEG+QauHOuSH0xLIBVu6j/pq7M+/7NyRlnNDyxB+weAs
+         0Yew==
+X-Gm-Message-State: ACgBeo1jeoujQTtcQ5C6XjsYZtBurR3OU4fu93IdmgBpAwlPD5ewzGP4
+        dArPusxb1gcKO0MfAisxGPMWfcAZypn/ECXLEM5AsLMwPNfPxnZslQU90iHR+6w4OT/VHnaFlLR
+        M7vQKSUcxv/KRicCt0nBH0YOAEyQnaw4i
+X-Received: by 2002:a05:622a:4:b0:344:94b7:a396 with SMTP id x4-20020a05622a000400b0034494b7a396mr36797026qtw.123.1662341683556;
+        Sun, 04 Sep 2022 18:34:43 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR6MUrEFU3sxIKdHpQVkbH9ejXtBcvFdTFMTJ4qnE+HjMKJQ/9L4EzX5KkOYGVD0uBZpJV1TVHP/jEDuCjcWr6U=
+X-Received: by 2002:a05:622a:4:b0:344:94b7:a396 with SMTP id
+ x4-20020a05622a000400b0034494b7a396mr36797022qtw.123.1662341683373; Sun, 04
+ Sep 2022 18:34:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        HELO_DYNAMIC_IPADDR,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,RDNS_DYNAMIC,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+References: <20220826144049.256134-1-miquel.raynal@bootlin.com> <20220826144049.256134-3-miquel.raynal@bootlin.com>
+In-Reply-To: <20220826144049.256134-3-miquel.raynal@bootlin.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sun, 4 Sep 2022 21:34:32 -0400
+Message-ID: <CAK-6q+gYTPOiGO5kmqdPUOySwtrL_vaWLav7ehbOWihvKhYevA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 02/11] net: mac802154: Drop IEEE802154_HW_RX_DROP_BAD_CKSUM
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,55 +82,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add support for Quectel RM520N which is based on Qualcomm SDX62 chip.
+Hi,
 
-0x0801: DIAG + NMEA + AT + MODEM + RMNET
+On Fri, Aug 26, 2022 at 10:41 AM Miquel Raynal
+<miquel.raynal@bootlin.com> wrote:
+>
+> This IEEE802154_HW_RX_DROP_BAD_CKSUM flag was only used by hwsim to
+> reflect the fact that it would not validate the checksum (FCS). In other
+> words, the filtering level of hwsim is always "NONE" while the core
+> expects it to be higher.
+>
+> Now that we have access to real filtering levels, we can actually use
+> them and always enforce the "NONE" level in hwsim. Handling this case
+> correctly in the receive path permits to drop the above mentioned flag.
+>
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> ---
+>  drivers/net/ieee802154/mac802154_hwsim.c | 10 +++++++++-
+>  include/net/mac802154.h                  |  4 ----
+>  net/mac802154/rx.c                       |  6 ++----
+>  3 files changed, 11 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/net/ieee802154/mac802154_hwsim.c b/drivers/net/ieee802154/mac802154_hwsim.c
+> index 38c217bd7c82..d7e4048e8743 100644
+> --- a/drivers/net/ieee802154/mac802154_hwsim.c
+> +++ b/drivers/net/ieee802154/mac802154_hwsim.c
+> @@ -148,6 +148,8 @@ static int hwsim_hw_start(struct ieee802154_hw *hw)
+>         struct hwsim_phy *phy = hw->priv;
+>
+>         phy->suspended = false;
+> +       hw->phy->filtering = IEEE802154_FILTERING_NONE;
+> +
+>         return 0;
+>  }
+>
+> @@ -161,6 +163,9 @@ static void hwsim_hw_stop(struct ieee802154_hw *hw)
+>  static int
+>  hwsim_set_promiscuous_mode(struct ieee802154_hw *hw, const bool on)
+>  {
+> +       /* hwsim does not filter anything, so enforce the NONE level */
+> +       hw->phy->filtering = IEEE802154_FILTERING_NONE;
+> +
+>         return 0;
+>  }
+>
+> @@ -791,7 +796,10 @@ static int hwsim_add_one(struct genl_info *info, struct device *dev,
+>         phy->idx = idx;
+>         INIT_LIST_HEAD(&phy->edges);
+>
+> -       hw->flags = IEEE802154_HW_PROMISCUOUS | IEEE802154_HW_RX_DROP_BAD_CKSUM;
+> +       /* This is a lie, hwsim does not even filter bad FCS, but we need to
+> +        * advertize a PROMISCUOUS to be able to create COORD interfaces.
+> +        */
 
-T:  Bus=03 Lev=01 Prnt=01 Port=01 Cnt=02 Dev#= 10 Spd=480  MxCh= 0
-D:  Ver= 2.10 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs=  1
-P:  Vendor=2c7c ProdID=0801 Rev= 5.04
-S:  Manufacturer=Quectel
-S:  Product=RM520N-GL
-S:  SerialNumber=384af524
-C:* #Ifs= 5 Cfg#= 1 Atr=a0 MxPwr=500mA
-I:* If#= 0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30 Driver=option
-E:  Ad=01(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=81(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=40 Driver=option
-E:  Ad=83(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 2 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=85(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=84(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=03(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 3 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=00 Prot=00 Driver=option
-E:  Ad=87(I) Atr=03(Int.) MxPS=  10 Ivl=32ms
-E:  Ad=86(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=04(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 4 Alt= 0 #EPs= 3 Cls=ff(vend.) Sub=ff Prot=ff Driver=qmi_wwan
-E:  Ad=88(I) Atr=03(Int.) MxPS=   8 Ivl=32ms
-E:  Ad=8e(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=0f(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
+I think this is now different because PROMISCUOUS/any disable address
+filtering will disable AACK and this is not what we want, or? This
+comment was made with the assumption to deal with acks which we can't?
 
-Signed-off-by: jerry.meng <jerry-meng@foxmail.com>
----
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+I did not look further into this patch series yet.
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 709e3c59e340..0cb187def5bc 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1087,6 +1087,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0512)},	/* Quectel EG12/EM12 */
- 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0620)},	/* Quectel EM160R-GL */
- 	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0800)},	/* Quectel RM500Q-GL */
-+	{QMI_MATCH_FF_FF_FF(0x2c7c, 0x0801)},	/* Quectel RM520N */
- 
- 	/* 3. Combined interface devices matching on interface number */
- 	{QMI_FIXED_INTF(0x0408, 0xea42, 4)},	/* Yota / Megafon M100-1 */
--- 
-2.25.1
-
+- Alex
 
